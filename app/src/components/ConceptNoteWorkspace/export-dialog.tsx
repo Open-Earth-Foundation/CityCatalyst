@@ -35,7 +35,7 @@ import {
 
 interface ExportDialogProps {
   draft: ConceptNoteDraftState | null;
-  hasUploadedEvidence: boolean;
+  hasGroundedSources: boolean;
   lng: string;
   noteName: string;
   onOpenChange: (open: boolean) => void;
@@ -44,7 +44,7 @@ interface ExportDialogProps {
 
 export function ExportDialog({
   draft,
-  hasUploadedEvidence,
+  hasGroundedSources,
   lng,
   noteName,
   onOpenChange,
@@ -149,22 +149,22 @@ export function ExportDialog({
                   gap={3}
                   border="1px solid"
                   borderColor={
-                    hasUploadedEvidence
+                    hasGroundedSources
                       ? "sentiment.positiveDefault"
                       : "sentiment.warningDefault"
                   }
                   borderRadius="rounded"
                   bg={
-                    hasUploadedEvidence
+                    hasGroundedSources
                       ? "sentiment.positiveOverlay"
                       : "sentiment.warningOverlay"
                   }
                   p={3}
                 >
                   <Icon
-                    as={hasUploadedEvidence ? LuCheck : LuCircleAlert}
+                    as={hasGroundedSources ? LuCheck : LuCircleAlert}
                     color={
-                      hasUploadedEvidence
+                      hasGroundedSources
                         ? "sentiment.positiveDefault"
                         : "sentiment.warningDefault"
                     }
@@ -175,12 +175,12 @@ export function ExportDialog({
                       fontWeight="semibold"
                       color="content.primary"
                     >
-                      {hasUploadedEvidence
+                      {hasGroundedSources
                         ? t("source-context-ready")
                         : t("source-context-recommended")}
                     </Text>
                     <Text fontSize="label.sm" color="content.secondary">
-                      {hasUploadedEvidence
+                      {hasGroundedSources
                         ? t("source-context-ready-export")
                         : t("source-context-recommended-export")}
                     </Text>

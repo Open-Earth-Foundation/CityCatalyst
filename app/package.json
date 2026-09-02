@@ -97,7 +97,7 @@
     "next-swagger-doc": "^0.4.1",
     "next-themes": "^0.4.6",
     "nodemailer": "^7.0.11",
-    "openai": "^4.68.1",
+    "openai": "^7.4.0",
     "pg": "^8.16.0",
     "pigeon-maps": "^0.22.1",
     "pino": "^9.6.0",

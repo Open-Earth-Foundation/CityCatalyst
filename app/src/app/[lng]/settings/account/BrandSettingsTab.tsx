@@ -209,7 +209,8 @@ const BrandSettingsTab = ({
             shadow="1dp"
             borderRadius="4px"
             border="inputBox"
-            fontSize="body.lg"
+            fontSize="md"
+            css={{ "--select-trigger-height": "44px" }}
             h="full"
             w="full"
             _focus={{
@@ -228,6 +229,7 @@ const BrandSettingsTab = ({
                 <SelectValueText
                   color="content.tertiary"
                   fontWeight="medium"
+                  fontSize="md"
                   placeholder={t("select-theme")}
                   w="full"
                 />

@@ -36,6 +36,8 @@ export function LanguageSelector({
           required: t("preferred-language-required"),
         })}
         defaultValue={defaultValue}
+        h="44px"
+        fontSize="md"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>

@@ -119,6 +119,8 @@ const PreferencesTab = ({
                     required: t("numerical-formats-required"),
                   })}
                   defaultValue={NumberFormatEnum.COMMA_AND_DOT}
+                  h="44px"
+                  fontSize="md"
                 >
                   {numberFormatOptions.map((option) => (
                     <option key={option.value} value={option.value}>

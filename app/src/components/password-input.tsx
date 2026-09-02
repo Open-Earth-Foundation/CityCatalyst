@@ -1,4 +1,4 @@
-import { Box, Icon, Text } from "@chakra-ui/react";
+import { Box, Icon, InputProps, Text } from "@chakra-ui/react";
 import {
   FieldError,
   FieldValues,
@@ -26,6 +26,7 @@ export default function PasswordInput<
   watchPassword = "",
   isSubmitted = true,
   validate,
+  inputProps,
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
@@ -38,6 +39,7 @@ export default function PasswordInput<
   watchPassword?: string;
   isSubmitted?: boolean;
   validate?: (value: string) => string | boolean;
+  inputProps?: InputProps;
 }) {
   const labelName = name || t("password");
 
@@ -76,6 +78,7 @@ export default function PasswordInput<
           required: t("please-enter-password"),
           validate,
         })}
+        {...inputProps}
       />
 
       <Box>{children}</Box>

@@ -51,7 +51,8 @@ export default function CreateTokenForm({
             placeholder={t("token-name-placeholder")}
             value={tokenName}
             onChange={(e) => onTokenNameChange(e.target.value)}
-            h="48px"
+            h="44px"
+            fontSize="md"
             borderRadius="4px"
             borderColor="border.default"
             bg="base.light"
@@ -64,7 +65,8 @@ export default function CreateTokenForm({
             <NativeSelectField
               value={expiresIn}
               onChange={(e) => onExpiresInChange(e.target.value)}
-              h="48px"
+              h="44px"
+              fontSize="md"
               borderRadius="4px"
               borderColor="border.neutral"
               shadow="sm"

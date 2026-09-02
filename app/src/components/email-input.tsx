@@ -1,5 +1,5 @@
 import { emailPattern } from "@/util/validation";
-import { Input } from "@chakra-ui/react";
+import { Input, InputProps } from "@chakra-ui/react";
 import {
   FieldError,
   FieldValues,
@@ -19,6 +19,7 @@ export default function EmailInput<TFieldValues extends FieldValues>({
   id = "email" as Path<TFieldValues>,
   disabled = false,
   defaultValue = "",
+  inputProps,
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
@@ -28,6 +29,7 @@ export default function EmailInput<TFieldValues extends FieldValues>({
   id?: Path<TFieldValues>;
   disabled?: boolean;
   defaultValue?: string;
+  inputProps?: InputProps;
 }) {
   return (
     <Field
@@ -56,6 +58,7 @@ export default function EmailInput<TFieldValues extends FieldValues>({
             message: t("email-invalid"),
           },
         })}
+        {...inputProps}
       />
       {children}
     </Field>

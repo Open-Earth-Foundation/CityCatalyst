@@ -62,6 +62,8 @@ export function ProfessionSelect({
           <NativeSelectField
             {...register("title")}
             defaultValue={defaultValue ?? ""}
+            h="44px"
+            fontSize="md"
           >
             <option value="">{t("select-a-profession")}</option>
             {options.map((option) => (

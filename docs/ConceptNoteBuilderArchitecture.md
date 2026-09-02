@@ -432,11 +432,6 @@ flowchart TB
 | `drafting_document`    | application context, complete run bundle, current chapter, all earlier chapter Markdown | no tools; one structured chapter call at a time |
 | `editing_document`     | selected chapter/revision and per-document summaries                         | document edit tools plus selected-source query    |
 
-The chapter drafter remains tool-free. After an accepted gap `answer` or
-`correction`, a separate review-only invocation temporarily loads only
-`select_chapters_for_rewrite`; that tool returns a chapter-number array and is
-not registered for drafting or ordinary Concept Note chat.
-
 Export is not a workflow step for the LLM. It is a document workspace button
 that calls export preflight and generation routes against the current chapters
 and template.
@@ -791,7 +786,6 @@ important planning rules are:
 These are the logical workflow/document tables the CNB backend needs to use.
 `concept_note_chapters`, `concept_note_chapter_revisions`,
 `concept_note_evidence_links`, `concept_note_gaps`,
-`concept_note_gap_resolutions`, `concept_note_chapter_reviews`,
 `concept_note_matched_projects`, and `concept_note_exports` live under
 `CNB_DATABASE_URL`. Climate Advisor consumes them through typed
 service/repository contracts.
@@ -811,9 +805,7 @@ erDiagram
     concept_note_runs ||--o{ concept_note_matched_projects : "stores"
     concept_note_runs ||--o{ concept_note_exports : "produces"
     concept_note_chapters ||--o{ concept_note_chapter_revisions : "has"
-    concept_note_chapters ||--o{ concept_note_chapter_reviews : "confirms"
     concept_note_chapters ||--o{ concept_note_evidence_links : "cites"
-    concept_note_gaps ||--o{ concept_note_gap_resolutions : "records"
 
     concept_note_runs {
         uuid run_id
@@ -865,14 +857,9 @@ erDiagram
         uuid chapter_id
         string field_key
         string severity
-        text question
-        text why_asking
-        jsonb suggestions
-        jsonb source_refs
+        text reason
         string status
-        int version
         timestamp created_at
-        timestamp updated_at
     }
 
     concept_note_chapters {
@@ -884,9 +871,6 @@ erDiagram
         string status
         bool required
         bool user_locked
-        uuid confirmed_revision_id
-        string regeneration_status
-        string regeneration_error
         timestamp created_at
         timestamp updated_at
     }
@@ -899,26 +883,6 @@ erDiagram
         string change_type
         text body_markdown
         jsonb patch_summary
-        timestamp created_at
-    }
-
-    concept_note_gap_resolutions {
-        uuid resolution_id
-        uuid gap_id
-        string action
-        text answer
-        string actor_user_id
-        jsonb source_refs
-        uuid idempotency_key
-        timestamp created_at
-    }
-
-    concept_note_chapter_reviews {
-        uuid review_id
-        uuid chapter_id
-        uuid revision_id
-        string user_id
-        uuid idempotency_key
         timestamp created_at
     }
 
@@ -972,12 +936,6 @@ before passing the identifier into the workflow.
 `concept_note_chapter_revisions` enforces a unique
 `(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
 revision.
-
-Gap resolutions and chapter reviews are append-only. A gap resolution is unique
-per `(gap_id, idempotency_key)`, and a chapter review is unique per
-`(chapter_id, idempotency_key)`. `concept_note_chapters.confirmed_revision_id`
-points to the exact revision that the user last confirmed; a newer source-driven
-revision therefore remains a proposal instead of replacing confirmed content.
 
 For uploads, the authenticated CityCatalyst upload route generates a new UUID v4
 `upload_id` for each accepted initial request. CA first creates the run-bound
@@ -1425,14 +1383,8 @@ flowchart TB
     Revisions --> Chapters
     DocService --> Gaps["Missing facts / gaps"]
     Gaps --> Workspace
-    Workspace --> UserAnswers["Answer, dismiss,<br/>or defer noncritical gap"]
+    Workspace --> UserAnswers["User answers<br/>or marks unavailable"]
     UserAnswers --> DocService
-    DocService --> Regenerate["Regenerate affected chapter"]
-    Regenerate --> ImpactReview["For answers/corrections:<br/>review every other chapter"]
-    ImpactReview --> Selected["Rewrite selected<br/>chapter numbers"]
-    Regenerate --> DraftReview["Draft<br/>Review & confirm"]
-    Selected --> DraftReview
-    DraftReview -->|"explicit user confirmation"| Ready["Ready"]
     Context --> EvidenceLinks["Evidence links<br/>claim -> selected source"]
     Chapters --> EvidenceLinks
     EvidenceLinks --> Workspace
@@ -1450,25 +1402,8 @@ How it works:
 - The workspace shows editable chapters as the main document surface.
 - Every add, delete, restore, reorder, or text edit creates a chapter revision.
   Revisions are an audit/history trail; they do not feed evidence links.
-- Missing facts are stored as structured gaps with a stable field key, focused
-  question, rationale, severity, state, grounded suggestions, source references,
-  and optimistic-concurrency version. They do not create chapters by themselves.
-- Answering or dismissing a gap appends an audit event and first regenerates its
-  chapter. After an `answer` or `correction`, a separate review-only LLM call
-  inspects every other chapter. It receives all chapter bodies when they fit the
-  configured prompt budget; otherwise deterministic token slices cover every
-  body. Its only tool returns the sorted chapter numbers that need the confirmed
-  information, and only those chapters are rewritten. The new revisions retain
-  the source gap/resolution provenance and preserve confirmed revisions as
-  reviewable proposals. A non-critical gap may instead remain visible as a
-  non-blocking caveat; a critical gap cannot be deferred.
-- Regeneration produces a Draft. Only explicit confirmation of the current
-  revision—through the Draft view or the equivalent chat action—sets Ready.
-  Clima may announce that a chapter is ready for review but cannot auto-promote
-  it.
-- A newly processed source runs an impact scan. Unaffected Ready chapters stay
-  unchanged; affected Ready chapters retain their confirmed revision and receive
-  a proposed revision or a newly opened blocking gap that requires review.
+- Missing facts are stored as gaps and surfaced to the user in the workspace.
+  They do not create chapters by themselves.
 - Evidence links are shown to the user to explain why a claim was grounded.
   They are review/audit UI only and are ignored by DOCX/PDF export.
 - A five-minute reconciler marks chapter-drafting leases left `running` for more
@@ -1484,9 +1419,6 @@ Chapter fields should support the editable document surface:
 - `status`: `empty`, `draft`, `needs_review`, `ready`, `deleted`
 - `required`
 - `user_locked`
-- `confirmed_revision_id`
-- `regeneration_status`: `idle`, `processing`, `failed`
-- `regeneration_error`
 
 `concept_note_chapters` stores chapter metadata only. Chapter Markdown is stored
 only in `concept_note_chapter_revisions.body_markdown`. The current chapter body
@@ -1508,27 +1440,6 @@ Revision fields should support history and conflict handling:
 Every revision stores the complete `body_markdown`, including revisions created
 for non-text chapter operations, so any historical chapter state can be
 reconstructed without reading Markdown from `concept_note_chapters`.
-
-### Structured gap lifecycle API
-
-The browser and Climate Advisor expose the same run-scoped mutations through
-CityCatalyst's authenticated proxies:
-
-- `GET /v1/concept-notes/{run_id}/draft` returns chapters, structured gaps,
-  open/caveat counts, current/confirmed/proposed revision numbers, the preserved
-  confirmed body for proposal comparison, regeneration state, and one focused
-  gap.
-- `POST /v1/concept-notes/{run_id}/gaps/{gap_id}/resolve` accepts `action`, an
-  optional answer, `expected_version`, and an idempotency key. Valid actions are
-  `answer`, `correction`, `not_a_gap`, and `defer_as_caveat`.
-- `POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/confirm` accepts the
-  expected current revision and an idempotency key.
-
-Both mutations recheck run ownership. Stale gap versions or chapter revisions
-return a conflict. An accepted answer remains in the append-only resolution log
-if regeneration fails; the chapter exposes a retryable failure state rather
-than losing user input. Existing draft polling reports processing and completion
-transitions, so this flow does not require SSE.
 
 ## Document Tool Deep Dive
 
@@ -1707,10 +1618,13 @@ Rules:
   dropping content. For native Markdown, derives deterministic heading/block
   anchors from the stored UTF-8 bytes and partitions without inventing
   synthetic pagination.
-- Uses configured GPT-5.4 mini readers with process-wide concurrency no greater
-  than four, then GPT-5.4 for final document synthesis.
-- Requires every partition reader to acknowledge every segment and verifies
-  every retained excerpt as an exact substring of its cited source location.
+- Uses configured GPT-5.6 Luna readers with low reasoning and process-wide
+  concurrency no greater than three, then GPT-5.6 Sol with medium reasoning for
+  final document synthesis. Both retain tool-free structured outputs through
+  OpenRouter Chat Completions and omit temperature.
+- Requires exactly one ordered result per input section and verifies every
+  retained excerpt as an exact substring of that section. Generated segment
+  identifiers are attached only by backend code, never included in the prompt.
 - Requires every factual sentence in a synthesized document summary to remain
   self-contained and supported by an exact retained excerpt. Conflicting
   evidence remains explicit instead of being silently reconciled.
@@ -1745,10 +1659,18 @@ source content. Climate Advisor registers its function-tool implementation
 after the bundle is ready, and only during `interviewing`,
 `drafting_document`, or `editing_document`.
 
-The main CNB agent selects one `upload_id` from the always-on summaries and asks
-one bounded natural-language question. Questions spanning documents require
+The model-facing context excludes identifier and fingerprint fields recursively;
+the persisted bundle above retains its backend IDs and integrity metadata. The
+main CNB agent selects a source by its one-based, model-safe `source_index` from
+the always-on summaries and asks one bounded natural-language question. The tool
+maps that index to the persisted upload inside the authorized run, so duplicate
+label/filename pairs remain independently queryable. Its model-facing result
+returns the source index but omits upload IDs.
+Generated block fingerprints are replaced with readable document headings, while
+the backend retains exact block anchors for source verification.
+Questions spanning documents require
 separate calls. The function re-fetches and verifies that document, fans out
-tool-free GPT-5.4 mini readers over every source-preserving partition using
+tool-free GPT-5.6 Luna readers over every source-preserving partition using
 deterministic code-controlled `Runner.run` calls, and returns only after every
 partition succeeds. Its result contains the source label, verified page- or
 block-located excerpts, source-unit/segment coverage counts, and reader caveats for the calling agent
@@ -1757,6 +1679,24 @@ to combine. If no passage supports the question it returns an explicit
 ignored and reader agents receive no external tools.
 
 ### Internal Research Capabilities
+
+The JSON model boundary is distinct from the persisted schemas in this document.
+Model-facing data omits database UUIDs, generated record/chapter references, source
+hashes, storage paths and build bookkeeping. Research uses `ResearchPromptResult`:
+public source URLs, zero-based record positions in field paths, and evidence-array
+positions. Code validates these selections and reconstructs the internal
+`FundingOpportunityResearchResult` before existing provenance checks and persistence.
+Existing record names/order must be preserved; new records append. Unknown source
+URLs, invalid positions and reassigned rows trigger a bounded correction retry.
+
+Funder identity matching uses exact canonical names and rejects ambiguity.
+Similar-project selection returns one decision per input candidate, with its name
+and one-based evidence positions; code restores the internal IDs and applies the
+existing tag, evidence and selection-limit validation. Source readers similarly
+use ordered sections, and summary synthesis receives pages/readable headings.
+Chapter inputs and retained CNB tool history use the identifier-free projection.
+The backend and provider protocol still retain identifiers necessary for ownership,
+integrity, trace correlation and tool-response routing.
 
 These are internal service capabilities, not user-facing tools. They are invoked
 by workflow orchestration during funder profiling, similar-project matching, and
@@ -2281,23 +2221,38 @@ The configured prompt/model roles are:
 ```yaml
 models:
   cnb_source_reader:
-    name: openai/gpt-5.4-mini
+    name: openai/gpt-5.6-luna
+    reasoning_effort: low
   cnb_source_synthesizer:
-    name: openai/gpt-5.4
+    name: openai/gpt-5.6-sol
+    reasoning_effort: medium
 prompts:
   cnb_source_document_mapping: "prompts/cnb/source_document_mapping.md"
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
 ```
 
+The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-sol`) with explicit
+`reasoning_effort: none` for its Chat Completions function-tool loop. Funding
+research and similar-project selection use Sol with medium reasoning on the
+existing Responses API path; canonical-funder identity matching uses Luna with
+low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
+
 Prompt composition should follow the current CA pattern:
 
 - General chat keeps using the default prompt.
-- Active CNB runs currently keep the default prompt; the dedicated Concept Note
-  prompt belongs with the future writing and editing workflow.
-- Runtime context injection is separate from prompt-file composition.
-- That future prompt should describe chapter editing rules, evidence-review
-  rules, and no-fabrication guardrails.
+- Active CNB context chat composes `prompts.core` with `prompts.cnb_chat`
+  (`prompts/cnb/chat.md`), using the same `<additional_instructions>` wrapper as
+  Stationary Energy review chat. It provides source-query guidance, evidence
+  handling, and no-fabrication rules without granting document-mutation tools.
+- Runtime context injection is separate from prompt-file composition. CNB bundle
+  JSON and its unavailable-bundle marker use application-generated `user`-role
+  data messages, not `system` messages. Retained `INTERNAL_TOOL_OUTPUT_JSON`
+  messages are likewise projected to the user role for CNB only; live tool-call
+  messages retain their protocol roles. The system prompt identifies these as
+  untrusted evidence rather than user requests and retains the behavioral rules.
+- Future chat-driven editing adds chapter-editing and approval rules separately;
+  the current CNB chat must not claim that suggested wording was saved.
 
 CNB context should be injected as a bounded JSON block:
 
@@ -2307,6 +2262,33 @@ CURRENT_DOCUMENT_STATE_JSON
 ACTIVE_WORKFLOW_STEP
 UI_CONTEXT
 ```
+
+## MLflow Interaction Names
+
+Run logging uses explicit `MlflowClient` run IDs stored in a task-local context,
+not MLflow's thread-local fluent active-run stack. All shared logging helpers and
+run termination target that ID. Failed starts mask the enclosing target, queued
+writes drain before closure, and exceptions/cancellation terminate only the
+affected request. Trace metadata explicitly links to the source run through
+`mlflow.sourceRun` and records session/user using MLflow 3.2 metadata keys.
+CNB chat carries `prompt_name=cnb_chat` for the composed CNB workflow prompt.
+
+All user-initiated CNB telemetry uses the `Clima` experiment and the visible
+`workflow=CNB` tag. The durable CNB `run_id` remains a correlation tag; it must
+not be embedded in `mlflow.runName`. The run name identifies the interaction
+boundary with this stable, low-cardinality contract:
+
+| CNB interaction | `mlflow.runName` | Integration boundary |
+| --- | --- | --- |
+| Start or idempotently replay a CNB run | `cnb_start` | `POST /v1/concept-notes/start` |
+| Ask a non-mutating question in the CNB chat | `cnb_chat` | `/v1/messages` with an active `concept_note_run_id` |
+| Answer, correct, skip, or retry missing information | `cnb_missing_information` | The run-scoped gap-resolution operation from CC-730 |
+| Propose or apply a document edit through chat | `cnb_chat_edit` | The dedicated revision operation planned in CC-732 |
+
+The future CC-732 flow must classify edit intent before opening its MLflow run:
+ordinary questions remain `cnb_chat`, while a durable edit proposal or apply
+operation uses `cnb_chat_edit`. More detailed actions belong in tags or spans so
+dashboards can group the four interaction types without parsing dynamic names.
 
 ## SSE Events
 

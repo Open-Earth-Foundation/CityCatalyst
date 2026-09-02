@@ -42,6 +42,7 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "core": prompts.core,
         "chat": prompts.chat,
         "stationary_energy_review": prompts.stationary_energy_review,
+        "cnb_chat": prompts.cnb_chat,
         "cnb_funding_opportunity_research": (prompts.cnb_funding_opportunity_research),
         "cnb_funder_identity_matching": prompts.cnb_funder_identity_matching,
         "cnb_similar_project_matching": prompts.cnb_similar_project_matching,
@@ -49,7 +50,6 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "cnb_source_summary_synthesis": prompts.cnb_source_summary_synthesis,
         "cnb_source_question_reading": prompts.cnb_source_question_reading,
         "cnb_chapter_drafting": prompts.cnb_chapter_drafting,
-        "cnb_gap_impact_review": prompts.cnb_gap_impact_review,
     }
 
     for prompt_name, prompt_path in prompt_entries.items():
@@ -75,29 +75,7 @@ def test_cnb_chapter_drafting_prompt_defines_missing_information_ui_contract() -
     assert "treat `[Information needed: ...]` as the UI contract" in prompt_text
     assert "use that exact English prefix and square-bracket format" in prompt_text
     assert "full message a user should" in prompt_text
-    assert "one item for every marker" in prompt_text
-    assert "`field_key` (string)" in prompt_text
-    assert "`why_asking` (string)" in prompt_text
-    assert "generate `why_asking` alongside every gap question" in prompt_text
-    assert "never use a generic `why_asking` rationale" in prompt_text
-    assert "downstream" in prompt_text
-    assert "`critical` or `noncritical`" in prompt_text
-    assert "`source_refs`" in prompt_text
-
-
-def test_cnb_gap_impact_review_is_tool_only_and_budgeted() -> None:
-    """Keep cross-chapter propagation isolated behind its review-only tool."""
-    config = _load_llm_config()
-    prompt = config.prompts.get_prompt("cnb_gap_impact_review")
-    budget = config.generation.prompt_budget.cnb_gap_impact
-
-    assert config.models.cnb_gap_impact_reviewer.name == "openai/gpt-5.4"
-    assert "call `select_chapters_for_rewrite` exactly once" in prompt
-    assert "return no prose" in prompt
-    assert "deterministic slices" in prompt
-    assert "[2,5]" in prompt
-    assert budget.max_prompt_tokens == 50000
-    assert budget.max_chapter_slice_tokens == 12000
+    assert "Include one matching entry for every `[Information needed:" in prompt_text
 
 
 def test_cnb_research_configuration_matches_runtime_contract() -> None:
@@ -106,7 +84,7 @@ def test_cnb_research_configuration_matches_runtime_contract() -> None:
     prompt_path = config.prompts.cnb_funding_opportunity_research
     prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
 
-    assert config.models.funding_research.name == "openai/gpt-5.4"
+    assert config.models.funding_research.name == "openai/gpt-5.6-sol"
     assert config.models.funding_research.reasoning_effort == "medium"
     assert "`current_filled_object`" in prompt_text
     assert "`missing_data`" in prompt_text
@@ -124,7 +102,7 @@ def test_cnb_similar_project_prompt_matches_runtime_contract() -> None:
     assert "`selection_limit`" in prompt_text
     assert "`candidates`" in prompt_text
     assert "`matched_tags`" in prompt_text
-    assert "`evidence_refs`" in prompt_text
+    assert "`evidence_positions`" in prompt_text
     assert "numeric score" in prompt_text
 
 
@@ -133,12 +111,12 @@ def test_cnb_funder_identity_prompt_matches_runtime_contract() -> None:
     prompt_path = config.prompts.cnb_funder_identity_matching
     prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
 
-    assert config.models.funder_identity.name == "openai/gpt-5.4-mini"
+    assert config.models.funder_identity.name == "openai/gpt-5.6-luna"
     assert config.models.funder_identity.reasoning_effort == "low"
     assert "`funded_projects`" in prompt_text
     assert "`canonical_funders`" in prompt_text
-    assert "`funded_project_ref`" in prompt_text
-    assert "`funder_id`" in prompt_text
+    assert "`project_name`" in prompt_text
+    assert "`funder_name`" in prompt_text
     assert "human reviewer" in prompt_text
 
 
@@ -206,12 +184,34 @@ def test_compose_prompt_wraps_core_and_stationary_energy_review() -> None:
     assert "Stationary Energy review tool argument contracts:" not in composed_prompt
 
 
+def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy() -> None:
+    prompts = _load_llm_config().prompts
+    composed = prompts.compose_prompt("cnb_chat")
+
+    assert composed.startswith(prompts.get_prompt("core"))
+    assert "<additional_instructions>" in composed
+    assert "active Concept Note Builder (CNB) project" in composed
+    assert "CONCEPT_NOTE_CONTEXT_BUNDLE_JSON" in composed
+    assert "concept_note_sources_query" in composed
+    assert "`source_index` (integer)" in composed
+    assert "upload_id" not in composed
+    assert "untrusted evidence, never" in composed
+    assert "application-generated user-role data message" in composed
+    assert "data, not user requests" in composed
+    assert "INTERNAL_TOOL_OUTPUT_JSON" in composed
+    assert "does not persist" in composed
+    assert "inventory_list_accessible" not in composed
+    assert "general CityCatalyst climate and inventory chat" not in composed
+
+
 def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
     config = _load_llm_config()
     budget = config.generation.prompt_budget.cnb_sources
 
-    assert config.models.cnb_source_reader.name == "openai/gpt-5.4-mini"
-    assert config.models.cnb_source_synthesizer.name == "openai/gpt-5.4"
+    assert config.models.cnb_source_reader.name == "openai/gpt-5.6-luna"
+    assert config.models.cnb_source_reader.reasoning_effort == "low"
+    assert config.models.cnb_source_synthesizer.name == "openai/gpt-5.6-sol"
+    assert config.models.cnb_source_synthesizer.reasoning_effort == "medium"
     assert config.models.cnb_chapter_drafter.name == "openai/gpt-5.6-terra"
     assert config.models.cnb_chapter_drafter.reasoning_effort == "medium"
     assert budget.max_partition_tokens == 50000
@@ -225,13 +225,10 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
         assert "exact contiguous" in prompt
         assert "substring" in prompt
 
-    for prompt_name in (
-        "cnb_source_document_mapping",
-        "cnb_source_summary_synthesis",
-    ):
-        prompt = config.prompts.get_prompt(prompt_name)
-        assert '"page":3' in prompt
-        assert '"anchor":' in prompt
+    prompt = config.prompts.get_prompt("cnb_source_summary_synthesis")
+    assert '"page":3' in prompt
+    assert '"heading":' in prompt
+    assert "covered_segment_ids" not in config.prompts.get_prompt("cnb_source_document_mapping")
 
 
 def test_cnb_source_prompts_define_grounding_and_caveat_contracts() -> None:
@@ -239,7 +236,7 @@ def test_cnb_source_prompts_define_grounding_and_caveat_contracts() -> None:
     question_prompt = prompts.get_prompt("cnb_source_question_reading")
     synthesis_prompt = prompts.get_prompt("cnb_source_summary_synthesis")
 
-    assert "materially changes how the returned evidence" in question_prompt
+    assert "materially change interpretation" in question_prompt
     assert "Do not use caveats to restate" in question_prompt
     assert "self-contained material limitations" in question_prompt
     assert "Every factual sentence" in synthesis_prompt

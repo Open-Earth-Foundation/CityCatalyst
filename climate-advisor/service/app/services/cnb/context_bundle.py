@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -21,10 +21,6 @@ from app.persistence.concept_notes.context_bundle import (
 )
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
-from app.services.cnb.chapter_drafting import (
-    ConceptNoteChapterDraftService,
-    schedule_chapter_revalidation,
-)
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceUnit,
@@ -61,14 +57,12 @@ class ContextBundleService:
             verify_source_artifact
         ),
         cc_client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
-        schedule_revalidation_fn: Callable[..., None] | None = None,
     ) -> None:
         """Store dependencies so background resources are created inside the task."""
         self.session_factory = session_factory
         self.analyze_document_fn = analyze_document_fn
         self.verify_source_artifact_fn = verify_source_artifact_fn
         self.cc_client_factory = cc_client_factory
-        self.schedule_revalidation_fn = schedule_revalidation_fn
 
     async def begin(
         self,
@@ -108,12 +102,13 @@ class ContextBundleService:
         try:
             cc_client = self.cc_client_factory()
             selected_sources: list[SelectedSource] = []
-            uploads_to_analyze: list[ConceptNoteUploadSnapshot] = []
 
             # Reuse unchanged source analyses and run the LLM only for new inputs.
             if active.uploads:
                 analysis_settings = get_settings()
-                contract_version = source_analysis_contract_version(analysis_settings)
+                contract_version = source_analysis_contract_version(
+                    analysis_settings
+                )
                 reader_limit = asyncio.Semaphore(
                     analysis_settings.llm.generation.prompt_budget.cnb_sources.max_concurrency
                 )
@@ -121,6 +116,7 @@ class ContextBundleService:
                     source.upload_id: source for source in active.previous_sources
                 }
                 selected_by_upload: dict[UUID, SelectedSource] = {}
+                uploads_to_analyze: list[ConceptNoteUploadSnapshot] = []
                 for upload in active.uploads:
                     previous = previous_by_upload.get(upload.upload_id)
                     if previous is not None and _can_reuse_source_analysis(
@@ -167,7 +163,7 @@ class ContextBundleService:
                 )
 
             # A bundle without uploads is ready and can be rebuilt after an upload.
-            completed = await complete_build(
+            return await complete_build(
                 session_factory=self.session_factory,
                 user_id=user_id,
                 run_id=run_id,
@@ -178,25 +174,6 @@ class ContextBundleService:
                 optional_sources=optional_statuses,
                 warnings=warnings,
             )
-            if (
-                completed
-                and uploads_to_analyze
-                and self.schedule_revalidation_fn is not None
-            ):
-                analyzed_upload_ids = {
-                    upload.upload_id for upload in uploads_to_analyze
-                }
-                source_refs = [
-                    source.source_label
-                    for source in selected_sources
-                    if source.upload_id in analyzed_upload_ids
-                ]
-                self.schedule_revalidation_fn(
-                    run_id=run_id,
-                    user_id=user_id,
-                    source_refs=source_refs,
-                )
-            return completed
         except SourceAnalysisError as exc:
             await self._record_failure(
                 user_id=user_id,
@@ -465,7 +442,7 @@ async def run_context_bundle_reconciler(
         try:
             recovered = await recover_stale_builds(
                 session_factory=get_session_factory(),
-                stale_before=datetime.now(UTC) - stale_after,
+                stale_before=datetime.now(timezone.utc) - stale_after,
             )
             if recovered:
                 logger.warning(
@@ -481,23 +458,7 @@ def get_context_bundle_service() -> ContextBundleService | None:
     try:
         return ContextBundleService(
             get_session_factory(),
-            schedule_revalidation_fn=_schedule_source_revalidation,
         )
     except Exception:
         logger.exception("Concept Note context-bundle storage is unavailable")
         return None
-
-
-def _schedule_source_revalidation(
-    *,
-    run_id: UUID,
-    user_id: str,
-    source_refs: list[str],
-) -> None:
-    """Queue source-impact revalidation with production database dependencies."""
-    schedule_chapter_revalidation(
-        service=ConceptNoteChapterDraftService(get_session_factory()),
-        run_id=run_id,
-        user_id=user_id,
-        source_refs=source_refs,
-    )

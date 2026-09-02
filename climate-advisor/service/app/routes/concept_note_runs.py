@@ -5,15 +5,16 @@ from __future__ import annotations
 from typing import Annotated
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.db.session import get_session
 from app.models.cnb.concept_note_application_context import (
     ConceptNoteApplicationContextResponse,
 )
-from app.models.cnb.concept_note_draft import (
-    ConceptNoteChapterConfirmRequest,
-    ConceptNoteDraftResponse,
-    ConceptNoteGapResolveRequest,
-)
+from app.models.cnb.concept_note_draft import ConceptNoteDraftResponse
 from app.models.cnb.concept_note_runs import (
     ConceptNoteRenameRequest,
     ConceptNoteRunListResponse,
@@ -28,18 +29,22 @@ from app.services.cnb.chapter_drafting import (
     ConceptNoteChapterDraftService,
     get_chapter_draft_service,
     schedule_chapter_drafting,
-    schedule_gap_regeneration,
 )
 from app.services.cnb.context_bundle import (
     ContextBundleService,
     get_context_bundle_service,
 )
-from app.services.concept_note_runs import ConceptNoteRunService
 from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
+from app.services.concept_note_runs import ConceptNoteRunService
+from app.utils.cnb_observability import CNBInteraction
+from app.utils.mlflow_logging import (
+    climate_advisor_experiment_name,
+    log_tags,
+    set_span_outputs,
+    start_run as start_mlflow_run,
+    start_trace_span,
+    update_current_trace_context,
+)
 
 router = APIRouter()
 
@@ -79,12 +84,47 @@ async def start_concept_note_run(
     session: AsyncSession = Depends(get_session),
 ) -> JSONResponse:
     """Create a concept-note run or replay an identical idempotent request."""
-    service = ConceptNoteRunService(session)
-    response = await service.start_run_and_schedule_context(
-        payload,
-        authorization=authorization,
-        context_bundle_service=context_bundle_service,
-    )
+    interaction = CNBInteraction.START
+    with start_mlflow_run(
+        run_name=interaction.mlflow_run_name,
+        experiment_name=climate_advisor_experiment_name(),
+        tags={
+            "endpoint": "/v1/concept-notes/start",
+            "workflow": "CNB",
+            "workflow_name": "concept_note_run_lifecycle",
+            "interaction": interaction.value,
+        },
+    ), start_trace_span(
+        name="CNB start",
+        span_type="CHAIN",
+        attributes={
+            "workflow": "CNB",
+            "workflow_name": "concept_note_run_lifecycle",
+            "interaction": interaction.value,
+        },
+    ) as span:
+        service = ConceptNoteRunService(session)
+        response = await service.start_run_and_schedule_context(
+            payload,
+            authorization=authorization,
+            context_bundle_service=context_bundle_service,
+        )
+        result = "created" if response.created else "replayed"
+        correlation_tags = {
+            "concept_note_run_id": str(response.run_id),
+            "result": result,
+        }
+        log_tags(correlation_tags)
+        update_current_trace_context(
+            session_id=response.run_id,
+            tags={
+                "workflow": "CNB",
+                "interaction": interaction.value,
+                **correlation_tags,
+            },
+            metadata=correlation_tags,
+        )
+        set_span_outputs(span, correlation_tags)
 
     return JSONResponse(
         status_code=201 if response.created else 200,
@@ -271,96 +311,5 @@ async def start_concept_note_drafting(
         else:
             http_response.status_code = status.HTTP_200_OK
         return draft
-    except ChapterDraftingError as exc:
-        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
-
-
-@router.post(
-    "/concept-notes/{run_id}/gaps/{gap_id}/resolve",
-    response_model=ConceptNoteDraftResponse,
-    status_code=status.HTTP_202_ACCEPTED,
-    responses={200: {"model": ConceptNoteDraftResponse}},
-)
-async def resolve_concept_note_gap(
-    run_id: UUID,
-    gap_id: UUID,
-    payload: ConceptNoteGapResolveRequest,
-    draft_service: Annotated[
-        ConceptNoteChapterDraftService | None,
-        Depends(get_chapter_draft_service),
-    ],
-    http_response: Response,
-    user_id: str = Query(..., min_length=1),
-    authorization: str | None = Header(default=None),
-    session: AsyncSession = Depends(get_session),
-) -> ConceptNoteDraftResponse:
-    """Accept one audited gap disposition and regenerate its chapter."""
-    run_service = ConceptNoteRunService(session)
-    run = await run_service.get_authorized_run(
-        run_id=run_id,
-        requested_user_id=user_id,
-        authorization=authorization,
-    )
-    if draft_service is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Concept Note chapter drafting is unavailable",
-        )
-    try:
-        draft, start = await draft_service.resolve_gap(
-            run=run,
-            gap_id=gap_id,
-            payload=payload,
-        )
-        if start.should_regenerate:
-            schedule_gap_regeneration(
-                service=draft_service,
-                run_id=run.run_id,
-                user_id=run.user_id,
-                chapter_id=start.chapter_id,
-                gap_id=gap_id,
-                resolution_id=start.resolution_id,
-            )
-        else:
-            http_response.status_code = status.HTTP_200_OK
-        return draft
-    except ChapterDraftingError as exc:
-        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
-
-
-@router.post(
-    "/concept-notes/{run_id}/chapters/{chapter_id}/confirm",
-    response_model=ConceptNoteDraftResponse,
-)
-async def confirm_concept_note_chapter(
-    run_id: UUID,
-    chapter_id: UUID,
-    payload: ConceptNoteChapterConfirmRequest,
-    draft_service: Annotated[
-        ConceptNoteChapterDraftService | None,
-        Depends(get_chapter_draft_service),
-    ],
-    user_id: str = Query(..., min_length=1),
-    authorization: str | None = Header(default=None),
-    session: AsyncSession = Depends(get_session),
-) -> ConceptNoteDraftResponse:
-    """Confirm one exact gap-free chapter revision as Ready."""
-    run_service = ConceptNoteRunService(session)
-    run = await run_service.get_authorized_run(
-        run_id=run_id,
-        requested_user_id=user_id,
-        authorization=authorization,
-    )
-    if draft_service is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Concept Note chapter drafting is unavailable",
-        )
-    try:
-        return await draft_service.confirm_chapter(
-            run=run,
-            chapter_id=chapter_id,
-            payload=payload,
-        )
     except ChapterDraftingError as exc:
         raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc

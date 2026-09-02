@@ -19,8 +19,6 @@ CNB_TABLES = {
     "concept_note_chapter_revisions",
     "concept_note_evidence_links",
     "concept_note_gaps",
-    "concept_note_gap_resolutions",
-    "concept_note_chapter_reviews",
     "concept_note_matched_projects",
     "concept_note_exports",
     "funders",
@@ -166,8 +164,6 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
             "ix_concept_note_gaps_run_status",
             "ix_concept_note_gaps_chapter",
         },
-        "concept_note_gap_resolutions": {"ix_concept_note_gap_resolutions_gap"},
-        "concept_note_chapter_reviews": {"ix_concept_note_chapter_reviews_chapter"},
         "concept_note_matched_projects": {
             "ix_concept_note_matched_projects_run_decision"
         },
@@ -203,14 +199,6 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         item["name"]
         for item in inspector.get_unique_constraints("concept_note_chapter_revisions")
     }
-    gap_resolution_uniques = {
-        item["name"]
-        for item in inspector.get_unique_constraints("concept_note_gap_resolutions")
-    }
-    review_uniques = {
-        item["name"]
-        for item in inspector.get_unique_constraints("concept_note_chapter_reviews")
-    }
     match_uniques = {
         item["name"]
         for item in inspector.get_unique_constraints("concept_note_matched_projects")
@@ -219,8 +207,6 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
     assert "uq_funded_projects_source_identity" in project_uniques
     assert "uq_source_documents_content_hash_url" in source_uniques
     assert "uq_concept_note_chapter_revisions_number" in revision_uniques
-    assert "uq_concept_note_gap_resolutions_idempotency" in gap_resolution_uniques
-    assert "uq_concept_note_chapter_reviews_idempotency" in review_uniques
     assert "uq_concept_note_matched_projects_run_project" in match_uniques
     template_uniques = {
         item["name"] for item in inspector.get_unique_constraints("funder_templates")
@@ -241,17 +227,9 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
             ("funded_project_id",): "CASCADE",
             ("source_document_id",): "RESTRICT",
         },
-        "concept_note_chapters": {
-            ("confirmed_revision_id",): "SET NULL",
-        },
         "concept_note_chapter_revisions": {("chapter_id",): "CASCADE"},
         "concept_note_evidence_links": {("chapter_id",): "CASCADE"},
         "concept_note_gaps": {("chapter_id",): "SET NULL"},
-        "concept_note_gap_resolutions": {("gap_id",): "CASCADE"},
-        "concept_note_chapter_reviews": {
-            ("chapter_id",): "CASCADE",
-            ("revision_id",): "CASCADE",
-        },
         "concept_note_matched_projects": {("funded_project_id",): "RESTRICT"},
     }
     for table_name, expected in expected_fk_deletes.items():
@@ -279,7 +257,8 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         }
 
     opportunity_columns = {
-        item["name"]: item for item in inspector.get_columns("funding_opportunities")
+        item["name"]: item
+        for item in inspector.get_columns("funding_opportunities")
     }
     project_columns = {
         item["name"]: item for item in inspector.get_columns("funded_projects")
@@ -308,23 +287,13 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
             "user_locked",
             "created_at",
             "updated_at",
-            "regeneration_status",
         },
         "concept_note_chapter_revisions": {
             "body_markdown",
             "patch_summary",
             "created_at",
         },
-        "concept_note_gaps": {
-            "status",
-            "suggestions",
-            "source_refs",
-            "version",
-            "created_at",
-            "updated_at",
-        },
-        "concept_note_gap_resolutions": {"source_refs", "created_at"},
-        "concept_note_chapter_reviews": {"created_at"},
+        "concept_note_gaps": {"status", "created_at"},
         "concept_note_matched_projects": {"matched_tags", "evidence", "caveats"},
     }
     for table_name, column_names in expected_default_columns.items():
@@ -337,7 +306,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         revision = connection.execute(
             text("SELECT version_num FROM cnb_alembic_version")
         ).scalar_one()
-    assert revision == "20260823_120000"
+    assert revision == "20260821_120000"
 
     _run_alembic(
         config="cnb-alembic.ini",

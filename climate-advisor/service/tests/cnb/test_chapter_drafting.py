@@ -5,7 +5,7 @@ from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from typing import Any, cast
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
 import pytest
@@ -18,31 +18,17 @@ from app.models.cnb.concept_note_application_context import (
     ConceptNoteApplicationContextResponse,
 )
 from app.models.cnb.concept_note_draft import (
-    ConceptNoteChapterConfirmRequest,
     ConceptNoteChapterDraftOutput,
-    ConceptNoteDraftGapOutput,
     ConceptNoteDraftResponse,
-    ConceptNoteGapResolveRequest,
-    ConceptNoteGapSuggestion,
 )
 from app.models.db.concept_note import ConceptNoteRun
-from app.persistence.concept_notes.workspace import (
-    WorkspaceChapterSnapshot,
-    WorkspaceGapResolutionSnapshot,
-    WorkspaceGapSnapshot,
-)
-from app.routes.concept_note_runs import (
-    confirm_concept_note_chapter,
-    resolve_concept_note_gap,
-    start_concept_note_drafting,
-)
+from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.routes.concept_note_runs import start_concept_note_drafting
 from app.services.cnb.chapter_drafting import (
     ChapterDraftingError,
     ChapterDraftingRunUnavailableError,
     ChapterDraftingTemplateError,
     ConceptNoteChapterDraftService,
-    _sanitize_generated_output,
-    _select_impacted_chapters,
     recover_stale_drafts,
     run_chapter_drafting_reconciler,
 )
@@ -68,7 +54,7 @@ class FakeWorkspace:
         *,
         chapter_id: UUID,
         body_markdown: str,
-        missing_information: list[ConceptNoteDraftGapOutput],
+        missing_information: list[str],
     ) -> bool:
         assert missing_information == []
         index = next(
@@ -101,14 +87,8 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
                 required=True,
                 user_locked=False,
                 body_markdown=None,
-                gaps=[],
-                revision_id=None,
+                missing_information=[],
                 revision_number=None,
-                confirmed_body_markdown=None,
-                confirmed_revision_number=None,
-                proposed_revision_number=None,
-                regeneration_status="idle",
-                regeneration_error=None,
             )
             for index, chapter_id in enumerate(chapter_ids)
         ]
@@ -158,8 +138,15 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         )
     )
     included_sources = ApplicationContextIncludedSources(ghgi=True)
+    source = {
+        "source_label": "Drainage plan",
+        "page_count": 1,
+        "block_count": None,
+        "key_excerpts": [{"text": "Drainage upgrades", "page": 1}],
+    }
+    run_context = {"context_bundle": {"selected_sources": [source]}}
     service._load_run_context = AsyncMock(
-        return_value=({"context_bundle": {}}, included_sources)
+        return_value=(run_context, included_sources)
     )
     service._lease_is_active = AsyncMock(return_value=True)
     service._mark_current_chapter = AsyncMock(return_value=True)
@@ -178,10 +165,18 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         "Chapter 2",
     ]
     assert payloads[0]["previous_chapters"] == []
+    for payload in payloads:
+        assert payload["run_context"]["context_bundle"]["selected_sources"] == [
+            {
+                "source_label": "Drainage plan",
+                "key_excerpts": [{"text": "Drainage upgrades", "page": 1}],
+            }
+        ]
+    assert source["page_count"] == 1
+    assert source["block_count"] is None
     assert payloads[0]["application_context"]["included_sources"]["ghgi"] is True
     assert payloads[1]["previous_chapters"] == [
         {
-            "chapter_ref": "chapter-1",
             "title": "Chapter 1",
             "body_markdown": "Draft for Chapter 1",
         }
@@ -196,230 +191,6 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         service._load_owned_run.return_value,
         included_sources=included_sources,
     )
-
-
-async def test_confirmed_answer_rewrites_only_review_selected_other_chapters() -> None:
-    """Review every other chapter but regenerate only returned chapter numbers."""
-    source_chapter_id = uuid4()
-    target_chapter_id = uuid4()
-    untouched_chapter_id = uuid4()
-    resolution_id = uuid4()
-    gap = WorkspaceGapSnapshot(
-        gap_id=uuid4(),
-        field_key="opening_date",
-        question="Confirm the opening date.",
-        why_asking="The delivery schedule depends on it.",
-        severity="critical",
-        state="resolved",
-        suggestions=[],
-        source_refs=[],
-        version=2,
-        resolution=WorkspaceGapResolutionSnapshot(
-            resolution_id=resolution_id,
-            action="answer",
-            answer="1 January 2029",
-            actor_user_id="owner",
-            source_refs=["schedule.pdf"],
-            created_at=datetime.now(UTC),
-        ),
-        created_at=datetime.now(UTC),
-        updated_at=datetime.now(UTC),
-    )
-
-    def chapter(chapter_id: UUID, position: int, title: str):
-        return WorkspaceChapterSnapshot(
-            chapter_id=chapter_id,
-            chapter_ref=f"chapter-{position + 1}",
-            title=title,
-            position=position,
-            status="draft",
-            required=True,
-            user_locked=False,
-            body_markdown=f"## {title}\n\nCurrent text.",
-            gaps=[gap] if position == 0 else [],
-            revision_id=uuid4(),
-            revision_number=1,
-            confirmed_body_markdown=None,
-            confirmed_revision_number=None,
-            proposed_revision_number=None,
-            regeneration_status="idle",
-            regeneration_error=None,
-        )
-
-    chapters = [
-        chapter(source_chapter_id, 0, "Summary"),
-        chapter(target_chapter_id, 1, "Timeline"),
-        chapter(untouched_chapter_id, 2, "Climate impact"),
-    ]
-
-    class PropagationWorkspace:
-        def __init__(self):
-            self.started: list[UUID] = []
-            self.saved: list[dict[str, Any]] = []
-
-        async def list_chapters(self, *, run_id: UUID):
-            assert run_id == RUN_ID
-            return chapters
-
-        async def begin_gap_impact_regeneration(self, **kwargs):
-            self.started.append(kwargs["chapter_id"])
-            return True
-
-        async def save_gap_impact_regeneration(self, **kwargs):
-            self.saved.append(kwargs)
-            return True
-
-        async def fail_gap_impact_regeneration(self, **kwargs):
-            raise AssertionError(f"Unexpected failure: {kwargs}")
-
-    reviewer = SimpleNamespace(select_chapters=AsyncMock(return_value=[2]))
-    payloads: list[dict[str, Any]] = []
-
-    async def generate(payload: dict[str, Any]) -> ConceptNoteChapterDraftOutput:
-        payloads.append(payload)
-        return ConceptNoteChapterDraftOutput(
-            body_markdown="## Timeline\n\nOpening is planned for 1 January 2029."
-        )
-
-    workspace = PropagationWorkspace()
-    service = cast(
-        ConceptNoteChapterDraftService,
-        object.__new__(ConceptNoteChapterDraftService),
-    )
-    service._workspace = workspace
-    service._impact_reviewer = reviewer
-    service._generate_chapter_override = generate
-
-    await service._propagate_resolved_information(
-        run_id=RUN_ID,
-        user_id="owner",
-        source_chapter=chapters[0],
-        source_gap=gap,
-        application_context=cast(
-            ConceptNoteApplicationContextResponse,
-            SimpleNamespace(model_dump=lambda **_: {}),
-        ),
-        run_context={"context_bundle": {}},
-        template_by_ref={},
-    )
-
-    reviewed = reviewer.select_chapters.await_args.kwargs["chapters"]
-    assert [item.position + 1 for item in reviewed] == [2, 3]
-    assert workspace.started == [target_chapter_id]
-    assert len(workspace.saved) == 1
-    assert workspace.saved[0]["chapter_id"] == target_chapter_id
-    assert workspace.saved[0]["source_resolution_id"] == resolution_id
-    assert payloads[0]["propagated_information"] == [
-        {
-            "source_chapter_number": 1,
-            "field_key": "opening_date",
-            "question": "Confirm the opening date.",
-            "answer": "1 January 2029",
-            "action": "answer",
-        }
-    ]
-
-
-def test_only_source_grounded_suggestions_survive_sanitization() -> None:
-    """Drop unsupported suggestions while retaining the structured gap itself."""
-    generated = ConceptNoteChapterDraftOutput(
-        body_markdown="Draft",
-        missing_information=[
-            ConceptNoteDraftGapOutput(
-                field_key="co_financing",
-                question="What co-financing is committed?",
-                why_asking="The programme requires a contribution.",
-                severity="noncritical",
-                suggestions=[
-                    ConceptNoteGapSuggestion(
-                        value="EUR 100,000",
-                        source_refs=["budget.xlsx"],
-                    ),
-                    ConceptNoteGapSuggestion(
-                        value="EUR 200,000",
-                        source_refs=["unknown-source"],
-                    ),
-                ],
-            )
-        ],
-    )
-
-    sanitized = _sanitize_generated_output(
-        generated,
-        {
-            "context_bundle": {
-                "selected_sources": [
-                    {"source_label": "budget.xlsx", "upload_id": "upload-1"}
-                ]
-            }
-        },
-    )
-
-    assert [item.value for item in sanitized.missing_information[0].suggestions] == [
-        "EUR 100,000"
-    ]
-
-
-def test_source_impact_scan_leaves_unrelated_ready_chapters_unchanged() -> None:
-    """Select only a chapter whose durable text overlaps the new source."""
-    chapters = [
-        WorkspaceChapterSnapshot(
-            chapter_id=uuid4(),
-            chapter_ref="finance",
-            title="Financing plan",
-            position=0,
-            status="ready",
-            required=True,
-            user_locked=False,
-            body_markdown="The municipal budget provides co-financing.",
-            gaps=[],
-            revision_id=uuid4(),
-            revision_number=2,
-            confirmed_body_markdown="The municipal budget provides co-financing.",
-            confirmed_revision_number=2,
-            proposed_revision_number=None,
-            regeneration_status="idle",
-            regeneration_error=None,
-        ),
-        WorkspaceChapterSnapshot(
-            chapter_id=uuid4(),
-            chapter_ref="governance",
-            title="Governance",
-            position=1,
-            status="ready",
-            required=True,
-            user_locked=False,
-            body_markdown="A steering committee oversees delivery.",
-            gaps=[],
-            revision_id=uuid4(),
-            revision_number=1,
-            confirmed_body_markdown="A steering committee oversees delivery.",
-            confirmed_revision_number=1,
-            proposed_revision_number=None,
-            regeneration_status="idle",
-            regeneration_error=None,
-        ),
-    ]
-
-    impacted = _select_impacted_chapters(
-        chapters,
-        run_context={
-            "context_bundle": {
-                "selected_sources": [
-                    {
-                        "upload_id": "upload-1",
-                        "source_label": "budget.xlsx",
-                        "summary": "The municipal budget confirms co-financing.",
-                        "topics": ["finance"],
-                        "key_excerpts": [],
-                    }
-                ]
-            }
-        },
-        source_refs=["budget.xlsx"],
-    )
-
-    assert [chapter.chapter_ref for chapter in impacted] == ["finance"]
 
 
 async def test_recovery_marks_only_stale_running_drafts_retryable(tmp_path) -> None:
@@ -540,111 +311,6 @@ async def test_completed_draft_start_returns_200(monkeypatch) -> None:
     assert result == draft
     assert http_response.status_code == 200
     schedule.assert_not_awaited()
-
-
-async def test_gap_resolution_authorizes_and_schedules_regeneration(
-    monkeypatch,
-) -> None:
-    """Queue a chapter rewrite only after the owning run accepts the mutation."""
-    gap_id = uuid4()
-    chapter_id = uuid4()
-    resolution_id = uuid4()
-    run = SimpleNamespace(run_id=RUN_ID, user_id="user-1")
-    authorize = AsyncMock(return_value=run)
-    monkeypatch.setattr(
-        "app.routes.concept_note_runs.ConceptNoteRunService",
-        lambda _: SimpleNamespace(get_authorized_run=authorize),
-    )
-    schedule = Mock()
-    monkeypatch.setattr(
-        "app.routes.concept_note_runs.schedule_gap_regeneration",
-        schedule,
-    )
-    draft = ConceptNoteDraftResponse(
-        run_id=RUN_ID,
-        status="complete",
-        completed_chapters=1,
-        total_chapters=1,
-    )
-    start = SimpleNamespace(
-        chapter_id=chapter_id,
-        resolution_id=resolution_id,
-        should_regenerate=True,
-    )
-    draft_service = SimpleNamespace(resolve_gap=AsyncMock(return_value=(draft, start)))
-    payload = ConceptNoteGapResolveRequest(
-        action="answer",
-        answer="The municipality will contribute EUR 100,000.",
-        expected_version=1,
-        idempotency_key=uuid4(),
-    )
-
-    result = await resolve_concept_note_gap(
-        run_id=RUN_ID,
-        gap_id=gap_id,
-        payload=payload,
-        draft_service=draft_service,  # type: ignore[arg-type]
-        http_response=Response(status_code=202),
-        user_id="user-1",
-        authorization="Bearer token",
-        session=AsyncMock(),
-    )
-
-    assert result == draft
-    authorize.assert_awaited_once()
-    draft_service.resolve_gap.assert_awaited_once_with(
-        run=run,
-        gap_id=gap_id,
-        payload=payload,
-    )
-    schedule.assert_called_once_with(
-        service=draft_service,
-        run_id=RUN_ID,
-        user_id="user-1",
-        chapter_id=chapter_id,
-        gap_id=gap_id,
-        resolution_id=resolution_id,
-    )
-
-
-async def test_chapter_confirmation_uses_exact_revision_mutation(monkeypatch) -> None:
-    """Forward the versioned review request only after run authorization."""
-    chapter_id = uuid4()
-    run = SimpleNamespace(run_id=RUN_ID, user_id="user-1")
-    authorize = AsyncMock(return_value=run)
-    monkeypatch.setattr(
-        "app.routes.concept_note_runs.ConceptNoteRunService",
-        lambda _: SimpleNamespace(get_authorized_run=authorize),
-    )
-    draft = ConceptNoteDraftResponse(
-        run_id=RUN_ID,
-        status="complete",
-        completed_chapters=1,
-        total_chapters=1,
-    )
-    draft_service = SimpleNamespace(confirm_chapter=AsyncMock(return_value=draft))
-    payload = ConceptNoteChapterConfirmRequest(
-        expected_revision=3,
-        idempotency_key=uuid4(),
-    )
-
-    result = await confirm_concept_note_chapter(
-        run_id=RUN_ID,
-        chapter_id=chapter_id,
-        payload=payload,
-        draft_service=draft_service,  # type: ignore[arg-type]
-        user_id="user-1",
-        authorization="Bearer token",
-        session=AsyncMock(),
-    )
-
-    assert result == draft
-    authorize.assert_awaited_once()
-    draft_service.confirm_chapter.assert_awaited_once_with(
-        run=run,
-        chapter_id=chapter_id,
-        payload=payload,
-    )
 
 
 @pytest.mark.parametrize(

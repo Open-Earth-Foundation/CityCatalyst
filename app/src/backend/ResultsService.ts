@@ -74,11 +74,7 @@ interface GroupedActivityResult {
 
 /** we get this names for the sectors in the query from the FE */
 export type SectorNamesInFE =
-  | "stationary-energy"
-  | "transportation"
-  | "waste"
-  | "ippu"
-  | "afolu";
+  "stationary-energy" | "transportation" | "waste" | "ippu" | "afolu";
 
 /** and we convert them to the names they have in the DB */
 const SectorMappingsFromFEToDB = {
@@ -144,6 +140,7 @@ export async function getTotalEmissionsBySectorAndSubsector(
            JOIN "Sector" s ON iv.sector_id = s.sector_id
            LEFT JOIN "SubSector" ss on iv.sub_sector_id = ss.subsector_id
     WHERE iv.inventory_id = :inventoryId
+    AND iv.co2eq >= 0
     GROUP BY iv.inventory_id, s.reference_number, ss.reference_number
     ORDER BY iv.inventory_id, SUM(iv.co2eq) DESC;
   `;

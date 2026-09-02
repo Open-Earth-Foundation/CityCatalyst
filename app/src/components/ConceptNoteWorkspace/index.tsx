@@ -27,11 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
-import type {
-  ConceptNoteDraftChapter,
-  ConceptNoteGap,
-  ConceptNoteUploadResponse,
-} from "@/util/types";
+import type { ConceptNoteUploadResponse } from "@/util/types";
 
 import {
   getConceptNoteBundleProgress,
@@ -79,17 +75,10 @@ export function ConceptNoteWorkspace({
   const reducedMotion = useReducedMotion() ?? false;
   const [tab, setTab] = useState<WorkspaceTab>("draft");
   const [exportOpen, setExportOpen] = useState(false);
-  const [reviewGapChapterId, setReviewGapChapterId] = useState<string | null>(
-    null,
-  );
-  const [reviewGapId, setReviewGapId] = useState<string | null>(null);
   const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
   const [uploadDetails, setUploadDetails] =
     useState<ConceptNoteUploadResponse | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [workspaceMutationError, setWorkspaceMutationError] = useState<
-    string | null
-  >(null);
 
   const {
     data: run,
@@ -118,7 +107,6 @@ export function ConceptNoteWorkspace({
     cityId,
   });
   const { data: inventory } = api.useGetInventoryByCityIdQuery(cityId);
-  const { data: cityDashboard } = api.useGetCityDashboardQuery({ cityId, lng });
   const { data: cityFiles } = api.useGetUserFilesQuery(cityId);
   const [uploadSourceMutation, uploadState] =
     api.useUploadConceptNoteSourceMutation();
@@ -128,10 +116,6 @@ export function ConceptNoteWorkspace({
     api.useRetryConceptNoteContextBundleMutation();
   const [startDraftMutation, startDraftState] =
     api.useStartConceptNoteDraftMutation();
-  const [resolveGapMutation, resolveGapState] =
-    api.useResolveConceptNoteGapMutation();
-  const [confirmChapterMutation, confirmChapterState] =
-    api.useConfirmConceptNoteChapterMutation();
   const { data: refreshedUpload, isError: uploadRefreshFailed } =
     api.useGetConceptNoteUploadStatusQuery(
       { runId, uploadId: activeUploadId ?? "" },
@@ -234,73 +218,6 @@ export function ConceptNoteWorkspace({
     }
   }
 
-  async function resolveGap(
-    gap: ConceptNoteGap,
-    action: "answer" | "correction" | "not_a_gap" | "defer_as_caveat",
-    answer?: string,
-  ): Promise<void> {
-    setWorkspaceMutationError(null);
-    try {
-      await resolveGapMutation({
-        runId,
-        gapId: gap.gap_id,
-        action,
-        answer,
-        expectedVersion: gap.version,
-        idempotencyKey: crypto.randomUUID(),
-      }).unwrap();
-      await refetchDraft();
-    } catch {
-      setWorkspaceMutationError(t("gap-resolution-error"));
-    }
-  }
-
-  async function confirmChapter(
-    chapter: ConceptNoteDraftChapter,
-  ): Promise<void> {
-    if (!chapter.revision_number) {
-      return;
-    }
-    setWorkspaceMutationError(null);
-    try {
-      await confirmChapterMutation({
-        runId,
-        chapterId: chapter.chapter_id,
-        expectedRevision: chapter.revision_number,
-        idempotencyKey: crypto.randomUUID(),
-      }).unwrap();
-      await refetchDraft();
-    } catch {
-      setWorkspaceMutationError(t("chapter-confirm-error"));
-    }
-  }
-
-  function reviewDraftFirst(): void {
-    setTab("draft");
-    window.requestAnimationFrame(() => {
-      const preview = document.querySelector<HTMLElement>(
-        '[data-testid="concept-note-draft-preview"]',
-      );
-      preview?.scrollIntoView({
-        behavior: reducedMotion ? "auto" : "smooth",
-        block: "nearest",
-      });
-      preview?.focus({ preventScroll: true });
-    });
-  }
-
-  function reviewChapterGaps(
-    chapter: ConceptNoteDraftChapter,
-    selectedGap?: ConceptNoteGap,
-  ): void {
-    const firstOpenGap = chapter.gaps.find((gap) => gap.state === "open");
-    if (!firstOpenGap) {
-      return;
-    }
-    setReviewGapChapterId(chapter.chapter_id);
-    setReviewGapId(selectedGap?.gap_id ?? firstOpenGap.gap_id);
-  }
-
   if (runLoading) {
     return (
       <Box
@@ -308,7 +225,7 @@ export function ConceptNoteWorkspace({
         minH={0}
         overflow="hidden"
         bg="background.alternativeLight"
-        px={{ base: 2, md: 5 }}
+        px={{ base: 4, md: 10 }}
         py={8}
       >
         <VStack
@@ -323,7 +240,7 @@ export function ConceptNoteWorkspace({
           <Grid
             flex={1}
             minH={0}
-            gap={2.5}
+            gap={5}
             gridTemplateColumns={{
               base: "minmax(0, 1fr)",
               md: "440px minmax(0, 1fr)",
@@ -408,7 +325,7 @@ export function ConceptNoteWorkspace({
           minH={0}
           maxW="1480px"
           mx="auto"
-          px={{ base: 2, md: 5 }}
+          px={{ base: 4, md: 10 }}
           py={6}
         >
           <HStack flexShrink={0} gap={2} color="content.tertiary">
@@ -468,7 +385,7 @@ export function ConceptNoteWorkspace({
             flex={1}
             minH={0}
             overflow="hidden"
-            gap={2.5}
+            gap={5}
             alignItems="stretch"
             gridTemplateColumns={{
               base: "minmax(0, 1fr)",
@@ -482,17 +399,8 @@ export function ConceptNoteWorkspace({
             <ConceptNoteChatPanel
               bundleStatus={bundle.status}
               documentGrounding={bundle.documentGrounding}
-              draft={draft ?? null}
-              isConfirmingChapter={confirmChapterState.isLoading}
-              isResolvingGap={resolveGapState.isLoading}
               lng={lng}
-              mutationError={workspaceMutationError}
-              onConfirmChapter={confirmChapter}
               onOpenContext={() => setTab("context")}
-              onReviewDraft={reviewDraftFirst}
-              onResolveGap={resolveGap}
-              reviewGapChapterId={reviewGapChapterId}
-              reviewGapId={reviewGapId}
               threadId={run.thread_id}
             />
 
@@ -562,14 +470,11 @@ export function ConceptNoteWorkspace({
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}
-                  isConfirmingChapter={confirmChapterState.isLoading}
                   isRetrying={retryBundleState.isLoading}
                   isStartingDraft={startDraftState.isLoading}
                   lng={lng}
                   noteName={run.name}
-                  onConfirmChapter={confirmChapter}
                   onOpenContext={() => setTab("context")}
-                  onReviewChapterGaps={reviewChapterGaps}
                   onRetry={() => void retryContextBundle()}
                   onStartDrafting={() => void startDrafting()}
                 />
@@ -597,7 +502,6 @@ export function ConceptNoteWorkspace({
                 <ContextTab
                   applicationContext={applicationContext ?? null}
                   bundle={bundle}
-                  cityDashboard={cityDashboard ?? null}
                   cityFilesCount={files.length}
                   cityName={cityName}
                   country={city?.country ?? null}
@@ -622,7 +526,7 @@ export function ConceptNoteWorkspace({
 
       <ExportDialog
         draft={draft ?? null}
-        hasGroundedSources={bundle.readySources > 0}
+        hasUploadedEvidence={bundle.availableContext.uploadedDocuments}
         lng={lng}
         noteName={run.name}
         open={exportOpen}

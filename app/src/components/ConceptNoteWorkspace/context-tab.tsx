@@ -1,20 +1,14 @@
 "use client";
 
 import type { ChangeEvent } from "react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 import { Box, Flex, Grid, HStack, Icon, Text, VStack } from "@chakra-ui/react";
-import {
-  LuChevronRight,
-  LuCircleAlert,
-  LuRefreshCw,
-  LuUpload,
-} from "react-icons/lu";
+import { LuCircleAlert, LuRefreshCw, LuUpload } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import type {
-  CityDashboardResponse,
   ConceptNoteApplicationContext,
   ConceptNoteUploadResponse,
 } from "@/util/types";
@@ -24,15 +18,10 @@ import {
   type ConceptNoteBundleProgress,
 } from "../ConceptNoteDashboard/utils";
 import { uploadStatusTranslationKey } from "../ConceptNoteWiringHarness/utils";
-import {
-  ContextDetailsDialog,
-  type ContextDetailKey,
-} from "./context-details-dialog";
 
 interface ContextTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
   bundle: ConceptNoteBundleProgress;
-  cityDashboard: CityDashboardResponse | null;
   cityFilesCount: number;
   cityName: string;
   country: string | null;
@@ -58,8 +47,6 @@ interface ContextCardProps {
   status: string;
   tone?: ContextTone;
   value: string;
-  viewLabel?: string;
-  onClick?: () => void;
 }
 
 function toneColor(tone: ContextTone): string {
@@ -120,26 +107,11 @@ function ContextCard({
   status,
   tone = "neutral",
   value,
-  viewLabel,
-  onClick,
 }: ContextCardProps) {
   return (
-    <Box
-      as={onClick ? "button" : "div"}
-      minW={0}
-      textAlign="start"
-      cursor={onClick ? "pointer" : "default"}
-      onClick={onClick}
-      _hover={onClick ? { borderColor: "interactive.control" } : undefined}
-      _focusVisible={
-        onClick
-          ? {
-              outline: "2px solid",
-              outlineColor: "interactive.control",
-              outlineOffset: "2px",
-            }
-          : undefined
-      }
+    <VStack
+      align="stretch"
+      gap={2}
       minH="128px"
       border="1px solid"
       borderColor="border.neutral"
@@ -147,52 +119,35 @@ function ContextCard({
       bg="base.light"
       p={3}
     >
-      <VStack align="stretch" gap={2} h="full">
-        <ContextSectionLabel>{label}</ContextSectionLabel>
-        <ContextStatusBadge label={status} tone={tone} />
-        <Text
-          fontFamily="heading"
-          fontSize="body.sm"
-          fontWeight="semibold"
-          color="content.primary"
-        >
-          {value}
-        </Text>
-        <VStack align="stretch" gap={0.5}>
-          {details.filter(Boolean).map((detail) => (
-            <Text
-              key={detail}
-              fontSize="10px"
-              lineHeight="16px"
-              color="content.tertiary"
-            >
-              {detail}
-            </Text>
-          ))}
-        </VStack>
-        {onClick && viewLabel && (
-          <HStack mt="auto" gap={1} color="content.link">
-            <Text
-              fontFamily="heading"
-              fontSize="10px"
-              fontWeight="semibold"
-              textTransform="uppercase"
-              letterSpacing="0.5px"
-            >
-              {viewLabel}
-            </Text>
-            <Icon as={LuChevronRight} boxSize={3} />
-          </HStack>
-        )}
+      <ContextSectionLabel>{label}</ContextSectionLabel>
+      <ContextStatusBadge label={status} tone={tone} />
+      <Text
+        fontFamily="heading"
+        fontSize="body.sm"
+        fontWeight="semibold"
+        color="content.primary"
+      >
+        {value}
+      </Text>
+      <VStack align="stretch" gap={0.5}>
+        {details.filter(Boolean).map((detail) => (
+          <Text
+            key={detail}
+            fontSize="10px"
+            lineHeight="16px"
+            color="content.tertiary"
+          >
+            {detail}
+          </Text>
+        ))}
       </VStack>
-    </Box>
+    </VStack>
   );
 }
 
 export function ContextTab({
   applicationContext,
   bundle,
-  cityDashboard,
   cityFilesCount,
   cityName,
   country,
@@ -211,7 +166,6 @@ export function ContextTab({
 }: ContextTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [detailKey, setDetailKey] = useState<ContextDetailKey | null>(null);
   const ghgiIncluded =
     bundle.availableContext.ghgi ||
     (applicationContext?.included_sources.ghgi ?? false);
@@ -233,39 +187,6 @@ export function ContextTab({
       : upload?.status === "failed"
         ? "warning"
         : "neutral";
-  const ghgiAvailable = Boolean(
-    cityDashboard?.widgets.ghgi?.inventory &&
-    cityDashboard.widgets.ghgi.totalEmissions,
-  );
-  const ccraAvailable = Boolean(cityDashboard?.widgets.ccra?.topRisks?.length);
-  const hiapAvailable = Boolean(
-    (cityDashboard?.widgets.hiap?.mitigation?.rankedActions?.length ?? 0) > 0 ||
-    (cityDashboard?.widgets.hiap?.adaptation?.rankedActions?.length ?? 0) > 0,
-  );
-  const detailStatus =
-    detailKey === "funder"
-      ? t(applicationContext?.funder ? "connected" : "not-connected")
-      : detailKey === "ghgi"
-        ? t(ghgiIncluded ? "connected" : "available-to-run")
-        : detailKey === "ccra"
-          ? t(ccraIncluded ? "included-in-run" : "connected")
-          : detailKey === "hiap"
-            ? t(hiapIncluded ? "included-in-run" : "connected")
-            : t(cityIncluded ? "included-in-run" : "not-included-in-run");
-  const detailTone: ContextTone =
-    detailKey === "city"
-      ? cityIncluded
-        ? "positive"
-        : "warning"
-      : detailKey === "ghgi"
-        ? ghgiIncluded
-          ? "positive"
-          : "neutral"
-        : detailKey === "funder"
-          ? applicationContext?.funder
-            ? "positive"
-            : "warning"
-          : "positive";
 
   function onFileChange(event: ChangeEvent<HTMLInputElement>): void {
     const file = event.target.files?.[0];
@@ -301,10 +222,6 @@ export function ContextTab({
             details={[[cityName, country].filter(Boolean).join(", ")]}
             status={t(cityIncluded ? "included-in-run" : "not-included-in-run")}
             tone={cityIncluded ? "positive" : "warning"}
-            viewLabel={t("view-context-data")}
-            onClick={
-              cityDashboard?.population ? () => setDetailKey("city") : undefined
-            }
           />
           <ContextCard
             label={t("ghg-inventory")}
@@ -318,8 +235,6 @@ export function ContextTab({
             ]}
             status={t(ghgiIncluded ? "connected" : "available-to-run")}
             tone={ghgiIncluded ? "positive" : "neutral"}
-            viewLabel={t("view-context-data")}
-            onClick={ghgiAvailable ? () => setDetailKey("ghgi") : undefined}
           />
           <ContextCard
             label={t("climate-risk-assessment")}
@@ -329,21 +244,58 @@ export function ContextTab({
             details={[t("ccra-not-in-bundle")]}
             status={t(ccraIncluded ? "included-in-run" : "not-connected")}
             tone={ccraIncluded ? "positive" : "warning"}
-            viewLabel={t("view-context-data")}
-            onClick={ccraAvailable ? () => setDetailKey("ccra") : undefined}
           />
           <ContextCard
             label={t("hiap-context")}
             value={hiapIncluded ? hiapStatusLabel : t("not-available")}
-            details={[t("hiap-optional")]}
+            details={[
+              t(hiapIncluded ? "hiap-optional" : "hiap-impact-missing-summary"),
+            ]}
             status={t(
               hiapIncluded ? "included-in-run" : "bundle-source-missing",
             )}
             tone={hiapIncluded ? "positive" : "warning"}
-            viewLabel={t("view-context-data")}
-            onClick={hiapAvailable ? () => setDetailKey("hiap") : undefined}
           />
         </Grid>
+
+        {!hiapIncluded && (
+          <Flex
+            data-testid="hiap-missing-impact"
+            role="status"
+            align="start"
+            gap={3}
+            border="1px solid"
+            borderColor="sentiment.warningDefault"
+            borderRadius="rounded"
+            bg="sentiment.warningOverlay"
+            p={4}
+          >
+            <Icon
+              as={LuCircleAlert}
+              flexShrink={0}
+              mt={0.5}
+              color="sentiment.warningDefault"
+            />
+            <Box>
+              <Text
+                fontFamily="heading"
+                fontSize="body.sm"
+                fontWeight="semibold"
+                color="content.primary"
+              >
+                {t("hiap-impact-missing-title")}
+              </Text>
+              <Text
+                mt={1}
+                fontSize="label.sm"
+                lineHeight="20px"
+                color="content.secondary"
+              >
+                {t("hiap-impact-missing-description")}
+              </Text>
+            </Box>
+          </Flex>
+        )}
       </VStack>
 
       <VStack align="stretch" gap={2}>
@@ -371,12 +323,6 @@ export function ContextTab({
               applicationContext?.funder ? "connected" : "not-connected",
             )}
             tone={applicationContext?.funder ? "positive" : "warning"}
-            viewLabel={t("view-context-data")}
-            onClick={
-              applicationContext?.funder
-                ? () => setDetailKey("funder")
-                : undefined
-            }
           />
           <ContextCard
             label={t("similar-funded-projects")}
@@ -527,22 +473,6 @@ export function ContextTab({
           </Button>
         </Flex>
       )}
-
-      <ContextDetailsDialog
-        applicationContext={applicationContext}
-        cityDashboard={cityDashboard}
-        cityName={cityName}
-        country={country}
-        detailKey={detailKey}
-        lng={lng}
-        status={detailStatus}
-        tone={detailTone}
-        onOpenChange={(open) => {
-          if (!open) {
-            setDetailKey(null);
-          }
-        }}
-      />
     </VStack>
   );
 }

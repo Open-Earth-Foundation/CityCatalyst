@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import base64
 import json
 import time
@@ -13,10 +14,13 @@ import pytest
 
 pytest.importorskip("pgvector.sqlalchemy")
 
+from app.services import citycatalyst_client as citycatalyst_client_module
 from app.services.citycatalyst_client import (
     CityCatalystClient,
+    CityCatalystClientError,
     TokenRefreshError,
 )
+from app.utils.single_flight_cache import SingleFlightTTLCache
 
 
 class _StubAsyncClient:
@@ -26,6 +30,7 @@ class _StubAsyncClient:
 
     async def post(self, url: str, **kwargs: Any) -> httpx.Response:
         self.requests.append({"url": url, **kwargs})
+        await asyncio.sleep(0)
         if not self._responses:
             raise AssertionError("No stubbed responses left")
         return self._responses.pop(0)
@@ -72,6 +77,158 @@ def _refresh_payload(
 
 
 class CityCatalystClientAuthTests(unittest.IsolatedAsyncioTestCase):
+    async def asyncSetUp(self) -> None:
+        """Give every test isolated process-local authorization caches."""
+        identity_patch = patch.object(
+            citycatalyst_client_module,
+            "_IDENTITY_CACHE",
+            SingleFlightTTLCache[str](max_entries=16),
+        )
+        city_patch = patch.object(
+            citycatalyst_client_module,
+            "_CITY_CACHE",
+            SingleFlightTTLCache[dict[str, Any]](max_entries=16),
+        )
+        identity_patch.start()
+        city_patch.start()
+        self.addCleanup(identity_patch.stop)
+        self.addCleanup(city_patch.stop)
+
+    async def test_identity_validation_is_shared_and_cached_across_clients(
+        self,
+    ) -> None:
+        token = _unsigned_jwt({"exp": int(time.time()) + 3600})
+        stub = _StubAsyncClient(
+            [_response(200, json_data={"user_id": "user-123"})]
+        )
+        first_client = CityCatalystClient(
+            base_url="https://cc.example",
+            api_key="test-api-key",
+        )
+        second_client = CityCatalystClient(
+            base_url="https://cc.example",
+            api_key="test-api-key",
+        )
+
+        with patch.object(
+            first_client,
+            "_get_client",
+            new=AsyncMock(return_value=stub),
+        ), patch.object(
+            second_client,
+            "_get_client",
+            new=AsyncMock(return_value=stub),
+        ):
+            users = await asyncio.gather(
+                first_client.validate_user_identity(token),
+                second_client.validate_user_identity(token),
+            )
+            cached_user = await second_client.validate_user_identity(token)
+
+        self.assertEqual(users, ["user-123", "user-123"])
+        self.assertEqual(cached_user, "user-123")
+        self.assertEqual(len(stub.requests), 1)
+
+    async def test_identity_validation_failure_is_not_cached(self) -> None:
+        token = _unsigned_jwt({"exp": int(time.time()) + 3600})
+        stub = _StubAsyncClient(
+            [
+                _response(503, json_data={"error": "Unavailable"}),
+                _response(200, json_data={"user_id": "user-123"}),
+            ]
+        )
+        client = CityCatalystClient(
+            base_url="https://cc.example",
+            api_key="test-api-key",
+        )
+
+        with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+            with self.assertRaises(CityCatalystClientError):
+                await client.validate_user_identity(token)
+            user_id = await client.validate_user_identity(token)
+
+        self.assertEqual(user_id, "user-123")
+        self.assertEqual(len(stub.requests), 2)
+
+    async def test_expired_identity_token_is_not_retained(self) -> None:
+        token = _unsigned_jwt({"exp": int(time.time()) - 1})
+        stub = _StubAsyncClient(
+            [
+                _response(200, json_data={"user_id": "user-123"}),
+                _response(200, json_data={"user_id": "user-123"}),
+            ]
+        )
+        client = CityCatalystClient(
+            base_url="https://cc.example",
+            api_key="test-api-key",
+        )
+
+        with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+            await client.validate_user_identity(token)
+            await client.validate_user_identity(token)
+
+        self.assertEqual(len(stub.requests), 2)
+
+    async def test_city_reads_are_shared_cached_and_copied(self) -> None:
+        token = _unsigned_jwt({"exp": int(time.time()) + 3600})
+        client = CityCatalystClient(
+            base_url="https://cc.example",
+            api_key="test-api-key",
+        )
+        get_with_auto_refresh = AsyncMock(
+            return_value=_response(
+                200,
+                json_data={"city_id": "city-1", "metadata": {"name": "Krakow"}},
+            )
+        )
+
+        with patch.object(
+            client,
+            "get_with_auto_refresh",
+            new=get_with_auto_refresh,
+        ):
+            first, second = await asyncio.gather(
+                client.get_city("city-1", token, "user-123"),
+                client.get_city("city-1", token, "user-123"),
+            )
+            first["metadata"]["name"] = "Changed"
+            cached = await client.get_city("city-1", token, "user-123")
+
+        self.assertEqual(second["metadata"]["name"], "Krakow")
+        self.assertEqual(cached["metadata"]["name"], "Krakow")
+        get_with_auto_refresh.assert_awaited_once()
+
+    async def test_city_cache_is_isolated_by_token_user_and_city(self) -> None:
+        token_one = _unsigned_jwt({"exp": int(time.time()) + 3600, "jti": "one"})
+        token_two = _unsigned_jwt({"exp": int(time.time()) + 3600, "jti": "two"})
+        client = CityCatalystClient(
+            base_url="https://cc.example",
+            api_key="test-api-key",
+        )
+        get_with_auto_refresh = AsyncMock(
+            side_effect=[
+                _response(200, json_data={"request": 1}),
+                _response(200, json_data={"request": 2}),
+                _response(200, json_data={"request": 3}),
+                _response(200, json_data={"request": 4}),
+            ]
+        )
+
+        with patch.object(
+            client,
+            "get_with_auto_refresh",
+            new=get_with_auto_refresh,
+        ):
+            results = [
+                await client.get_city("city-1", token_one, "user-1"),
+                await client.get_city("city-1", token_two, "user-1"),
+                await client.get_city("city-1", token_one, "user-2"),
+                await client.get_city("city-2", token_one, "user-1"),
+            ]
+
+        self.assertEqual([result["request"] for result in results], [1, 2, 3, 4])
+        self.assertEqual(get_with_auto_refresh.await_count, 4)
+
     async def test_refresh_token_normalizes_base_url_and_validates_payload(self) -> None:
         with patch(
             "app.services.citycatalyst_client.get_settings",

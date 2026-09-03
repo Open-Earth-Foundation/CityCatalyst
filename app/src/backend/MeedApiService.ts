@@ -206,9 +206,11 @@ export default class MeedApiService {
     });
 
     // make API request to MEED API
+    const requestId = randomUUID(); // to be able to save it to snapshot later
     const result: MeedRankResponse = await this.makeRequest(
       "prioritize",
       fullRequest,
+      requestId,
     );
 
     const rankedActionsRaw: MeedResponseActionRanked[] =
@@ -228,6 +230,26 @@ export default class MeedApiService {
         where: { inventoryId },
         transaction,
       });
+
+      // delete existing rank snapshots so there's only one per inventory
+      await db.models.MeedRankSnapshot.destroy({
+        where: { inventoryId },
+        transaction,
+      });
+
+      // store snapshot of ranking request and response so it can be used to generate a report
+      await db.models.MeedRankSnapshot.create(
+        {
+          id: randomUUID(),
+          inventoryId,
+          request: {
+            meta: { requestId },
+            requestData: fullRequest,
+          },
+          response: result,
+        },
+        { transaction },
+      );
 
       const rankedActions = await db.models.MeedActionRanked.bulkCreate(
         rankedActionsRaw.map((action) => ({
@@ -483,23 +505,37 @@ export default class MeedApiService {
         request: rankSnapshot.request,
         response: rankSnapshot.response,
       },
-      debugContextOnly, // TODO disable after testing
+      debugContextOnly,
     };
     const result = await this.makeRequest("reports/output-plan", data);
     console.log(result);
-    // TODO save result to DB
-    return result;
+
+    // save result to database
+    const report = await db.models.MeedActionReport.create({
+      id: randomUUID(),
+      inventoryId,
+      actionId: result.action_id,
+      languages: result.language,
+      chapters: result.chapters,
+    });
+
+    return report;
   }
 
-  private static async makeRequest(route: string, data: object | null = null) {
+  private static async makeRequest(
+    route: string,
+    data: object | null = null,
+    requestId: string | undefined = undefined,
+  ) {
     const method = data == null ? "GET" : "POST";
+    requestId = requestId ?? randomUUID();
     const body =
       data == null
         ? undefined
         : JSON.stringify({
             requestData: data,
             meta: {
-              requestId: randomUUID(),
+              requestId,
             },
           });
     const response = await fetch(MEED_API_URL + route, {

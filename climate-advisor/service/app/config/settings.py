@@ -132,6 +132,7 @@ class ResearchModelConfig(BaseModel):
 class ModelsConfig(BaseModel):
     orchestrator: RoleModelConfig
     agentic_flow: Optional[RoleModelConfig] = None
+    cnb_chat: Optional[RoleModelConfig] = None
     funding_research: ResearchModelConfig
     funder_identity: ResearchModelConfig
     cnb_source_reader: ResearchModelConfig

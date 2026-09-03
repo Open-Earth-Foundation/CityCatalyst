@@ -21,9 +21,10 @@ def test_all_active_ca_model_defaults_use_the_requested_family():
     expected = {
         "orchestrator": ("openai/gpt-5.6-luna", "none"),
         "agentic_flow": ("openai/gpt-5.6-sol", "none"),
+        "cnb_chat": ("openai/gpt-5.6-sol", "medium"),
         "funding_research": ("openai/gpt-5.6-sol", "medium"),
-        "funder_identity": ("openai/gpt-5.6-luna", "low"),
-        "cnb_source_reader": ("openai/gpt-5.6-luna", "low"),
+        "funder_identity": ("openai/gpt-5.6-terra", "medium"),
+        "cnb_source_reader": ("openai/gpt-5.6-terra", "medium"),
         "cnb_source_synthesizer": ("openai/gpt-5.6-sol", "medium"),
         "cnb_chapter_drafter": ("openai/gpt-5.6-terra", "medium"),
     }
@@ -51,7 +52,7 @@ def completion(model, *, content=None, tool_calls=None, finish_reason="stop"):
 
 @pytest.mark.parametrize("mode", ["general", "cnb", "stationary_energy", "custom"])
 @pytest.mark.asyncio
-async def test_chat_modes_round_trip_function_tools_with_explicit_none(
+async def test_chat_modes_round_trip_function_tools_with_configured_reasoning(
     monkeypatch, mode
 ):
     requests = []
@@ -99,7 +100,9 @@ async def test_chat_modes_round_trip_function_tools_with_explicit_none(
     monkeypatch.setattr(
         "app.services.agent_service.AsyncOpenAI", lambda **kwargs: client
     )
-    service = AgentService()
+    service = AgentService(
+        concept_note_run_id=uuid4() if mode == "cnb" else None,
+    )
     try:
         model = service.preferred_model_for_context(
             concept_note_run_id=str(uuid4()) if mode == "cnb" else None,
@@ -124,7 +127,8 @@ async def test_chat_modes_round_trip_function_tools_with_explicit_none(
         if mode == "custom":
             assert "reasoning_effort" not in body
         else:
-            assert body["reasoning_effort"] == "none"
+            expected_effort = "medium" if mode == "cnb" else "none"
+            assert body["reasoning_effort"] == expected_effort
         assert "temperature" not in body
         assert body["tools"][0]["function"]["name"] == "lookup_evidence"
     assert any(

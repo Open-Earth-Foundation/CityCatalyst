@@ -84,7 +84,7 @@ const LogoUploadCard = ({
                 borderRadius="2xl"
               />
             )}
-            {(files.length > 0 || defaultUrl) && (
+            {files.length === 0 && defaultUrl && (
               <IconButton
                 data-testid="activity-more-icon"
                 aria-label="more-icon"

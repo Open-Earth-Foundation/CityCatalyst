@@ -125,6 +125,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
               type="submit"
               loading={isSubmitting}
               h={16}
+              minW="175px"
               disabled={!isValid || !passwordValid}
             >
               {t("reset-button")}

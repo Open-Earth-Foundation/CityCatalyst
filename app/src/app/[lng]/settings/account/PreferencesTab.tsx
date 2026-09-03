@@ -135,6 +135,7 @@ const PreferencesTab = ({
               loading={isSubmitting}
               h="48px"
               w="auto"
+              minW="175px"
               paddingTop="16px"
               paddingBottom="16px"
               px="24px"

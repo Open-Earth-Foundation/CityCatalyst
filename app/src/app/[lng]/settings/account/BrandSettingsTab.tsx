@@ -139,12 +139,9 @@ const BrandSettingsTab = ({
       setOrganization({
         logoUrl: response?.logoUrl ?? null,
       });
-      // Persist theme for next-themes, then reload so branding remounts cleanly.
+      // Persist theme for next-themes; org query cache invalidation refreshes the rest.
       setTheme(nextThemeKey);
       showSuccessToast();
-      window.setTimeout(() => {
-        window.location.reload();
-      }, 400);
     } catch (err) {
       setTheme(previousThemeKey);
       logger.error({ err: err }, "Failed to update white label settings:");
@@ -169,16 +166,6 @@ const BrandSettingsTab = ({
         fontStyle="normal"
       >
         {t("brand-settings")}
-      </Text>
-      <Text
-        color="content.tertiary"
-        fontWeight="normal"
-        lineHeight="24"
-        fontSize="body.lg"
-        letterSpacing="wide"
-        marginTop="8px"
-      >
-        {t("brand-settings-description")}
       </Text>
       <Box mt={9}>
         <Field w="full" label={t("logo")}>
@@ -218,11 +205,7 @@ const BrandSettingsTab = ({
               shadow: "none",
             }}
           >
-            <SelectTrigger
-              borderWidth="1px"
-              borderColor="border.neutral"
-              borderRadius="md"
-            >
+            <SelectTrigger borderColor="border.neutral" borderRadius="md">
               <HStack w="full">
                 <Box h={5} w={5} bg={selectedThemeValue?.color} />
                 <SelectValueText
@@ -275,6 +258,7 @@ const BrandSettingsTab = ({
           <Button
             onClick={handleSubmit}
             h={16}
+            minW="175px"
             disabled={!hasChanges}
             variant="solid"
             loading={isSettingWhiteLabel}

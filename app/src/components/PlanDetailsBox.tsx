@@ -20,12 +20,6 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
 
   if (!organization) return null;
 
-  const supportEmails = (env("NEXT_PUBLIC_SUPPORT_EMAILS") ?? "")
-    .split(",")
-    .map((email) => email.trim())
-    .filter((email) => email && email !== "greta@openearth.org")
-    .join(",");
-
   const {
     planType,
     projectCount,
@@ -77,9 +71,9 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
         </HStack>
         <BodyLarge color="content.tertiary" mt="24px">
           {t("contact-us-to-upgrade")}{" "}
-          <Link href={`mailto:${supportEmails}`}>
+          <Link href={`mailto:${env("NEXT_PUBLIC_SUPPORT_EMAILS")}`}>
             <Text as="span" color="content.link">
-              {supportEmails}
+              {env("NEXT_PUBLIC_SUPPORT_EMAILS")}
             </Text>
           </Link>
         </BodyLarge>

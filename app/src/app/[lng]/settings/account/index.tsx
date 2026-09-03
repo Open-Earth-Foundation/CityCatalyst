@@ -88,7 +88,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
                 )}
               </TabContent>
             )}
-            <TabContent value="account-details" p={0} gap="24px">
+            <TabContent value="account-details" p={0}>
               {isUserInfoLoading ? (
                 <ProgressLoader />
               ) : (

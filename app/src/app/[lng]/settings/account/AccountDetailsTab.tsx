@@ -107,7 +107,7 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
             register={register}
             error={errors.email}
             id="email"
-            inputProps={{ h: "44px", fontSize: "md" }}
+            inputProps={{ h: "44px", fontSize: "md", shadow: "1dp" }}
           />
           {showTitle && (
             <ProfessionSelect

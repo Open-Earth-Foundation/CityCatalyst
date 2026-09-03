@@ -1,9 +1,6 @@
-import { HStack } from "@chakra-ui/react";
 import { FieldError, UseFormRegister } from "react-hook-form";
 import { TFunction } from "i18next";
-import { MdInfoOutline } from "react-icons/md";
 
-import { BodyMedium } from "@/components/package/Texts/Body";
 import { Field } from "@/components/ui/field";
 import {
   NativeSelectField,
@@ -45,41 +42,31 @@ export function ProfessionSelect({
     ? professionOptions
     : professionOptions.filter((option) => option.value !== "oef_admin");
   return (
-    <>
-      <Field
-        label={t("profession")}
-        invalid={!!error}
-        errorText={error?.message}
+    <Field
+      label={t("profession")}
+      invalid={!!error}
+      errorText={error?.message}
+    >
+      <NativeSelectRoot
+        shadow="2dp"
+        borderRadius="4px"
+        border="inputBox"
+        background={error ? "sentiment.negativeOverlay" : "background.default"}
       >
-        <NativeSelectRoot
-          shadow="2dp"
-          borderRadius="4px"
-          border="inputBox"
-          background={
-            error ? "sentiment.negativeOverlay" : "background.default"
-          }
+        <NativeSelectField
+          {...register("title")}
+          defaultValue={defaultValue ?? ""}
+          h="44px"
+          fontSize="md"
         >
-          <NativeSelectField
-            {...register("title")}
-            defaultValue={defaultValue ?? ""}
-            h="44px"
-            fontSize="md"
-          >
-            <option value="">{t("select-a-profession")}</option>
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {t(option.label)}
-              </option>
-            ))}
-          </NativeSelectField>
-        </NativeSelectRoot>
-      </Field>
-      <HStack>
-        <BodyMedium color="content.link">
-          <MdInfoOutline />
-        </BodyMedium>
-        <BodyMedium>{t("position-description")}</BodyMedium>
-      </HStack>
-    </>
+          <option value="">{t("select-a-profession")}</option>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {t(option.label)}
+            </option>
+          ))}
+        </NativeSelectField>
+      </NativeSelectRoot>
+    </Field>
   );
 }

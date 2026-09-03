@@ -2,12 +2,11 @@ import React from "react";
 import { useTranslation } from "@/i18n/client";
 import { Box, Text, Link, HStack, Icon } from "@chakra-ui/react";
 import { BodyLarge } from "@/components/package/Texts/Body";
-import { TitleMedium } from "@/components/package/Texts/Title";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import i18next from "i18next";
 import { OrganizationResponse } from "@/util/types";
 import { env } from "@/lib/runtime-env";
-import { BiFolder } from "react-icons/bi";
-import { CitiesBuildingIcon, CityLimitIcon } from "./icons";
+import { CitiesBuildingIcon, CityLimitIcon, PlanFolderIcon } from "./icons";
 import { PlanBadge } from "@/components/PlanBadge";
 import { getOrganizationPlanDisplay } from "@/util/plan-details";
 import { OrganizationPlanType } from "@/util/enums";
@@ -20,6 +19,12 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
   const { t } = useTranslation(i18next.language, "settings");
 
   if (!organization) return null;
+
+  const supportEmails = (env("NEXT_PUBLIC_SUPPORT_EMAILS") ?? "")
+    .split(",")
+    .map((email) => email.trim())
+    .filter((email) => email && email !== "greta@openearth.org")
+    .join(",");
 
   const {
     planType,
@@ -34,11 +39,12 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
 
   return (
     <HStack
-      align="flex-start"
+      align="center"
       backgroundColor="white"
       p={6}
-      marginTop={4}
       gap="24px"
+      borderRadius="8px"
+      boxShadow="shadow-lg"
     >
       <PlanBadge
         planType={planType}
@@ -46,12 +52,12 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
         t={t}
       />
       <Box flex={1}>
-        <TitleMedium color="content.secondary" mb="16px">
+        <TitleLarge color="content.secondary" mb="16px">
           {organization.name}
-        </TitleMedium>
+        </TitleLarge>
         <HStack gap="24px" flexWrap="wrap">
           <HStack>
-            <Icon as={BiFolder} />
+            <Icon as={PlanFolderIcon} boxSize="24px" />
             <BodyLarge color="content.secondary">
               {projectCount} {t("projects")}
             </BodyLarge>
@@ -71,9 +77,9 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
         </HStack>
         <BodyLarge color="content.tertiary" mt="24px">
           {t("contact-us-to-upgrade")}{" "}
-          <Link href={`mailto:${env("NEXT_PUBLIC_SUPPORT_EMAILS")}`}>
+          <Link href={`mailto:${supportEmails}`}>
             <Text as="span" color="content.link">
-              {env("NEXT_PUBLIC_SUPPORT_EMAILS")}
+              {supportEmails}
             </Text>
           </Link>
         </BodyLarge>
@@ -83,3 +89,4 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
 };
 
 export default PlanDetailsBox;
+

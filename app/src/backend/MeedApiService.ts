@@ -4,6 +4,9 @@ import PopulationService from "./PopulationService";
 import createHttpError from "http-errors";
 import { InventoryService } from "./InventoryService";
 import { randomUUID } from "node:crypto";
+import { createHash } from "node:crypto";
+import { logger } from "@/services/logger";
+import { registerMEEDRanking } from "@/backend/meed/MeedNativeInputCatalogService";
 
 const MEED_API_URL = process.env.HIAP_MEED_API_URL + "/v1/";
 
@@ -87,10 +90,28 @@ type MeedResponseActionRemoved = {
   };
 };
 
+function canonicalize(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (!value || typeof value !== "object") return value;
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, entry]) => [key, canonicalize(entry)]),
+  );
+}
+
+function digest(value: unknown): string {
+  return createHash("sha256")
+    .update(JSON.stringify(canonicalize(value)))
+    .digest("hex");
+}
+
 export default class MeedApiService {
   public static async runRanking(
     inventoryId: string,
     requestBody: RunRankingRequest,
+    userId?: string,
   ): Promise<unknown> {
     const inventory = await db.models.Inventory.findOne({
       where: { inventoryId },
@@ -129,8 +150,10 @@ export default class MeedApiService {
     });
 
     // enrich frontend request with inventory data from database
-    const fullRequest = requestBody as RunRankingFullRequest;
-    fullRequest.cityDataList = requestBody.cityDataList.map((cityData) => {
+    const fullRequest: RunRankingFullRequest = {
+      ...requestBody,
+      createExplanations: requestBody.createExplanations ?? false,
+      cityDataList: requestBody.cityDataList.map((cityData) => {
       return {
         ...cityData,
         locode: inventory.city.locode ?? "",
@@ -192,7 +215,9 @@ export default class MeedApiService {
           ),
         },
       };
-    });
+      }),
+    };
+    const inputDigest = digest(fullRequest);
 
     // make API request to MEED API
     const result: MeedRankResponse = await this.makeRequest(
@@ -201,27 +226,48 @@ export default class MeedApiService {
     );
 
     const rankedActionsRaw: MeedResponseActionRanked[] =
-      result.results[0].ranked_actions;
+      result.results?.[0]?.ranked_actions ?? [];
     const removedActionsRaw: MeedResponseActionRemoved[] =
-      result.results[0].removed_actions;
-    const weights = result.results[0].metadata.weights;
+      result.results?.[0]?.removed_actions ?? [];
+    const weights = result.results?.[0]?.metadata?.weights ?? {};
+    if (rankedActionsRaw.length + removedActionsRaw.length === 0) {
+      throw new createHttpError.BadRequest(
+        "MEED API returned an incomplete ranking",
+      );
+    }
+    const contentDigest = digest({
+      rankedActions: rankedActionsRaw,
+      removedActions: removedActionsRaw,
+      weights,
+    });
 
-    // save result to database
-    const data = await db.sequelize?.transaction(async (transaction) => {
-      // delete previous data if it's present
-      await db.models.MeedActionRanked.destroy({
-        where: { inventoryId },
-        transaction,
-      });
-      await db.models.MeedActionRemoved.destroy({
-        where: { inventoryId },
-        transaction,
-      });
+    if (!db.sequelize) {
+      throw new createHttpError.InternalServerError(
+        "Database is not initialized",
+      );
+    }
+
+    const data = await db.sequelize.transaction(async (transaction) => {
+      const ranking = await db.models.MeedRanking.create(
+        {
+          id: randomUUID(),
+          inventoryId,
+          userId: userId ?? null,
+          inputDigest,
+          contentDigest,
+          status: "completed",
+          actionCount: rankedActionsRaw.length + removedActionsRaw.length,
+          requestedLanguages: requestBody.requestedLanguages,
+          topN: requestBody.topN ?? null,
+        },
+        { transaction },
+      );
 
       const rankedActions = await db.models.MeedActionRanked.bulkCreate(
         rankedActionsRaw.map((action) => ({
           id: randomUUID(),
           inventoryId,
+          rankingId: ranking.id,
           actionId: action.action_id,
           rank: action.rank,
           finalScore: action.final_score,
@@ -237,8 +283,9 @@ export default class MeedApiService {
       const removedActions = await db.models.MeedActionRemoved.bulkCreate(
         removedActionsRaw.map(
           (action) => ({
-            id: randomUUID(),
-            inventoryId,
+          id: randomUUID(),
+          inventoryId,
+          rankingId: ranking.id,
             actionId: action.action_id,
             actionName: action.action_name,
             removalReason: action.removal_reason,
@@ -254,13 +301,40 @@ export default class MeedApiService {
           { transaction },
         ),
       );
-      return { rankedActions, removedActions };
+      return { ranking, rankedActions, removedActions };
     });
 
-    return data;
+    try {
+      await registerMEEDRanking(data.ranking.id);
+    } catch (error) {
+      logger.error(
+        { error, rankingId: data.ranking.id, inventoryId },
+        "Failed to register MEED ranking in NativeInputCatalog",
+      );
+    }
+
+    return {
+      rankedActions: data.rankedActions,
+      removedActions: data.removedActions,
+    };
   }
 
-  public static async getRanking(inventoryId: string) {
+  public static async getRanking(inventoryId: string, _userId?: string) {
+    const latestRanking = await db.models.MeedRanking.findOne({
+      where: { inventoryId, status: "completed" },
+      order: [["created", "DESC"]],
+    });
+    if (latestRanking) {
+      const rankedActions = await db.models.MeedActionRanked.findAll({
+        where: { rankingId: latestRanking.id },
+        order: [["rank", "ASC"]],
+      });
+      const removedActions = await db.models.MeedActionRemoved.findAll({
+        where: { rankingId: latestRanking.id },
+      });
+      return { rankedActions, removedActions };
+    }
+
     const rankedActions = await db.models.MeedActionRanked.findAll({
       where: {
         inventoryId,

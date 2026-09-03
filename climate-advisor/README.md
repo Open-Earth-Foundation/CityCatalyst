@@ -723,7 +723,11 @@ normalized request returns the original run with HTTP `200` and
 `created: false`; using that key with different input returns HTTP `409`.
 
 `GET /v1/concept-notes?user_id=...&city_id=...` validates the same token identity
-and live city access, then returns only that user's runs for the selected city.
+and city access, then returns only that user's runs for the selected city.
+Successful CityCatalyst identity and city responses are reused within the
+Climate Advisor process for at most 30 seconds, never beyond the bearer token's
+JWT expiry. The cache uses only a one-way token fingerprint, coalesces
+concurrent checks, and does not retain failed or denied responses.
 Runs are ordered by `updated_at`, `created_at`, and `run_id`, all descending, so
 the result is stable and most-recently-updated first. Upload registration and
 failed, retry, or ready lifecycle transitions refresh the parent run's
@@ -732,10 +736,11 @@ stored scope identifiers, lifecycle fields, timestamps, and `progress_summary`
 copied from the persisted `context_summary`.
 
 `GET /v1/concept-notes/{run_id}?user_id=...` returns only an owned run and
-revalidates current city access before responding. It exposes the same persisted
-status, workflow step, and progress summary as the list contract. `PATCH` on the
-same route accepts a trimmed 1-120 character `name` and updates both the run and
-its dedicated thread title.
+requires current city access before responding, using the same short-lived
+successful-authorization cache. It exposes the same persisted status, workflow
+step, and progress summary as the list contract. `PATCH` on the same route
+accepts a trimmed 1-120 character `name` and updates both the run and its
+dedicated thread title.
 
 `POST /v1/concept-notes/{run_id}/duplicate` requires `Idempotency-Key` and
 creates a new run and empty chat. It copies current chapter content, context, and
@@ -788,7 +793,8 @@ The repository adapter reads and updates the migrated
 `concept_note_runs` and `concept_note_context_bundles` tables. It replaces only
 the GHGI and/or HIAP sections built by the current request, preserving the rest
 of the bundle under the same database lock. Before reusing either cached
-section, the route revalidates live city access and the selected inventory.
+section, the route requires city access and the selected inventory. City access
+may reuse the short-lived successful authorization described above.
 GHGI status and emissions payloads must each contain GPC sectors I-V exactly
 once. Incomplete or noncanonical CityCatalyst capability payloads return
 `503 invalid_cc_context` without being persisted. A valid stored snapshot is

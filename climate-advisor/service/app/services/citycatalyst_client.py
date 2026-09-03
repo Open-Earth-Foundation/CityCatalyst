@@ -11,19 +11,47 @@ This module provides an HTTP client for secure communication with CityCatalyst:
 
 from __future__ import annotations
 
+import copy
+import hashlib
 import logging
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import Any, Dict, Optional, Tuple
 
 import httpx
 from app.config import get_settings
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
+from app.utils.single_flight_cache import SingleFlightTTLCache
 from app.utils.token_manager import (
+    get_token_expiry,
     is_token_expired,
     parse_jwt_claims,
 )
 
 logger = logging.getLogger(__name__)
+
+_AUTHORIZATION_CACHE_TTL_SECONDS = 30.0
+_AUTHORIZATION_CACHE_MAX_ENTRIES = 1024
+_IDENTITY_CACHE = SingleFlightTTLCache[str](
+    max_entries=_AUTHORIZATION_CACHE_MAX_ENTRIES
+)
+_CITY_CACHE = SingleFlightTTLCache[dict[str, Any]](
+    max_entries=_AUTHORIZATION_CACHE_MAX_ENTRIES
+)
+
+
+def _token_fingerprint(token: str) -> str:
+    """Return a one-way cache key without retaining the bearer token."""
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def _authorization_cache_ttl(token: str) -> float:
+    """Cap authorization reuse at 30 seconds and the token's JWT expiry."""
+    expires_at = get_token_expiry(token)
+    if expires_at is None:
+        return 0.0
+    remaining_seconds = (expires_at - datetime.now(UTC)).total_seconds()
+    return max(0.0, min(_AUTHORIZATION_CACHE_TTL_SECONDS, remaining_seconds))
 
 
 @dataclass(frozen=True)
@@ -421,6 +449,16 @@ class CityCatalystClient:
                 "CC_BASE_URL not configured",
                 status_code=503,
             )
+
+        cache_key = (self.base_url, _token_fingerprint(token))
+        return await _IDENTITY_CACHE.get_or_load(
+            cache_key,
+            ttl_seconds=_authorization_cache_ttl(token),
+            loader=lambda: self._request_user_identity(token),
+        )
+
+    async def _request_user_identity(self, token: str) -> str:
+        """Validate one bearer token directly with CityCatalyst."""
         client = await self._get_client()
         try:
             response = await client.post(
@@ -895,6 +933,34 @@ class CityCatalystClient:
         Raises:
             CityCatalystClientError: If API call fails
         """
+        if not self.base_url:
+            raise CityCatalystClientError("CC_BASE_URL not configured")
+
+        cache_key = (
+            self.base_url,
+            _token_fingerprint(token),
+            user_id,
+            city_id,
+        )
+        city = await _CITY_CACHE.get_or_load(
+            cache_key,
+            ttl_seconds=_authorization_cache_ttl(token),
+            loader=lambda: self._request_city(
+                city_id=city_id,
+                token=token,
+                user_id=user_id,
+            ),
+        )
+        return copy.deepcopy(city)
+
+    async def _request_city(
+        self,
+        *,
+        city_id: str,
+        token: str,
+        user_id: str,
+    ) -> Dict[str, Any]:
+        """Fetch one city directly from CityCatalyst."""
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 

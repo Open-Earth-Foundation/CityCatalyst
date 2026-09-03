@@ -365,6 +365,10 @@ Stationary Energy chat also has a dedicated prompt budget:
 
 - Token refresh flows through `TokenHandler`.
 - Inventory tools call CityCatalyst APIs with the scoped bearer token.
+- Successful bearer-token identity and city reads use a bounded, process-local
+  30-second cache in `CityCatalystClient`. Keys contain a one-way token
+  fingerprint; concurrent checks share one request, token expiry shortens the
+  TTL, and failures are never retained.
 - Stationary Energy draft-save uses the existing CityCatalyst draft-save route
   after CA has assembled a complete reviewed draft state.
 - Inventory commit is not executed directly by CA chat tools; CA returns a

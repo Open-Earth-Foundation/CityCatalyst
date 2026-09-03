@@ -1,0 +1,13 @@
+{
+  "run_id": "2026-09-03-real2025-sonnet-claude-sonnet-4-5",
+  "provider": "OpenRouter",
+  "model_requested": "anthropic/claude-sonnet-4.5",
+  "input_file": "2025_Annual_CAP_Report_FINAL_06-17-26_web.pdf",
+  "input_sha256": "cc1eca34c15afc0fa6fd9d3ed3ccd96098e3ffd588287082d76abd9fa0a75a6e",
+  "source_mode": "OpenRouter chat completions with native file input (mistral-files-signed-url)",
+  "mistral_transport_file_id": "32aa4974-a78a-44d0-b216-d1b8a2222bff",
+  "elapsed_ms": 362348,
+  "status": "error",
+  "error": "{\"message\": \"The operation was aborted\", \"code\": 504}",
+  "secret_persisted": false
+}

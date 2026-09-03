@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSetCurrentUserDataMutation } from "@/services/api";
-import { TFunction } from "i18next";
+import i18next, { TFunction } from "i18next";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { LANGUAGES, UpdateUserPayload, UserInfoResponse } from "@/util/types";
@@ -26,6 +26,9 @@ const numberFormatOptions = [
   { value: NumberFormatEnum.SPACE_AND_COMMA, label: "space-and-comma" },
   { value: NumberFormatEnum.APOSTROPHE_AND_DOT, label: "apostrophe-and-dot" },
 ];
+const selectableNumberFormats = new Set<string>(
+  numberFormatOptions.map((option) => option.value),
+);
 
 const PreferencesTab = ({
   t,
@@ -42,16 +45,45 @@ const PreferencesTab = ({
     handleSubmit,
     register,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ProfileInputs>();
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
 
+  // Falls back to the language currently active in the navbar (rather than
+  // a hardcoded default) when the user has no saved preference yet.
+  const navbarLanguage = (i18next.language as LANGUAGES) || LANGUAGES.en;
+  const savedPreferredLanguage =
+    (userInfo?.preferredLanguage as LANGUAGES) || navbarLanguage;
+  // Treats any unset or unrecognized value (e.g. the legacy "default" enum
+  // member, which is no longer offered as an option) as comma-and-dot,
+  // matching how formatNumber() already resolves those values.
+  const savedNumberFormat =
+    userInfo?.numberFormat && selectableNumberFormats.has(userInfo.numberFormat)
+      ? (userInfo.numberFormat as NumberFormatEnum)
+      : NumberFormatEnum.COMMA_AND_DOT;
+
   useEffect(() => {
     if (userInfo) {
-      setValue("preferredLanguage", userInfo.preferredLanguage);
-      setValue("numberFormat", userInfo.numberFormat);
+      setValue("preferredLanguage", savedPreferredLanguage);
+      setValue("numberFormat", savedNumberFormat);
     }
-  }, [setValue, userInfo]);
+  }, [setValue, userInfo, savedPreferredLanguage, savedNumberFormat]);
+
+  const watchedPreferredLanguage = watch("preferredLanguage");
+  const watchedNumberFormat = watch("numberFormat");
+
+  const hasChanges = useMemo(
+    () =>
+      watchedPreferredLanguage !== savedPreferredLanguage ||
+      watchedNumberFormat !== savedNumberFormat,
+    [
+      watchedPreferredLanguage,
+      watchedNumberFormat,
+      savedPreferredLanguage,
+      savedNumberFormat,
+    ],
+  );
 
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     const payload: UpdateUserPayload = {
@@ -89,9 +121,7 @@ const PreferencesTab = ({
             errorText={errors.preferredLanguage?.message}
           >
             <LanguageSelector
-              defaultValue={
-                (userInfo.preferredLanguage as LANGUAGES) || LANGUAGES.en
-              }
+              defaultValue={savedPreferredLanguage}
               register={register}
               error={errors.preferredLanguage}
               t={t}
@@ -118,7 +148,7 @@ const PreferencesTab = ({
                   {...register("numberFormat", {
                     required: t("numerical-formats-required"),
                   })}
-                  defaultValue={NumberFormatEnum.COMMA_AND_DOT}
+                  defaultValue={savedNumberFormat}
                 >
                   {numberFormatOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -133,11 +163,10 @@ const PreferencesTab = ({
             <Button
               type="submit"
               loading={isSubmitting}
-              h="48px"
+              disabled={!hasChanges}
+              h={16}
               w="auto"
               minW="175px"
-              paddingTop="16px"
-              paddingBottom="16px"
               px="24px"
               letterSpacing="widest"
               textTransform="uppercase"

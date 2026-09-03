@@ -452,6 +452,45 @@ export default class MeedApiService {
     return actions;
   }
 
+  public static async generatePlan(
+    inventoryId: string,
+    languages: string[],
+    actionId: string,
+    debugContextOnly: boolean,
+  ) {
+    const inventory = await db.models.Inventory.findOne({
+      where: { inventoryId },
+      include: [{ model: db.models.City, as: "city" }],
+    });
+    if (!inventory) {
+      throw new createHttpError.NotFound("Inventory not found");
+    }
+
+    const rankSnapshot = await db.models.MeedRankSnapshot.findOne({
+      where: { inventoryId },
+    });
+    if (!rankSnapshot) {
+      throw new createHttpError.NotFound(
+        "Rank snapshot not found - run ranking first",
+      );
+    }
+
+    const data = {
+      locode: inventory.city.locode,
+      actionId,
+      language: languages,
+      prioritizationSnapshot: {
+        request: rankSnapshot.request,
+        response: rankSnapshot.response,
+      },
+      debugContextOnly, // TODO disable after testing
+    };
+    const result = await this.makeRequest("reports/output-plan", data);
+    console.log(result);
+    // TODO save result to DB
+    return result;
+  }
+
   private static async makeRequest(route: string, data: object | null = null) {
     const method = data == null ? "GET" : "POST";
     const body =

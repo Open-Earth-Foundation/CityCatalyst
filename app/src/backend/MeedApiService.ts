@@ -427,6 +427,12 @@ export default class MeedApiService {
       })
       .filter((rankedAction) => !!rankedAction.canonicalExplanation);
 
+    if (rankedActions.length === 0) {
+      throw new createHttpError.BadRequest(
+        "Missing action explanations in source language",
+      );
+    }
+
     const result = await this.makeRequest("explanations/translate", {
       sourceLanguage,
       targetLanguages,

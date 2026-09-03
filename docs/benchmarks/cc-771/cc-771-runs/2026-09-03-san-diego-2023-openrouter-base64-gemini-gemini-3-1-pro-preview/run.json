@@ -1,0 +1,44 @@
+{
+  "run_id": "2026-09-03-san-diego-2023-openrouter-base64-gemini-gemini-3-1-pro-preview",
+  "provider": "OpenRouter",
+  "model_requested": "google/gemini-3.1-pro-preview",
+  "model_returned": "google/gemini-3.1-pro-preview",
+  "provider_returned": "Google",
+  "input_file": "2023_CAP_Annual_Report_9-23-24_AM_FINAL.pdf",
+  "input_sha256": "3a9281508afff21de1176c18be8f6026e0cd96e4c4db684f57368597f2f06bbd",
+  "input_bytes": 17484557,
+  "source_mode": "OpenRouter chat completions with native file input (base64)",
+  "mistral_transport_file_id": null,
+  "prompt": "Convert the attached PDF into faithful Markdown for a document-ingestion pipeline.\n\nRequirements:\n- Preserve all narrative text and tables accurately.\n- Do not treat charts, figures, or images as decoration.\n- For every chart or figure, add a grounded textual representation including its title, axes, units, series/categories, visible values, trends, targets, and callouts whenever readable.\n- Do not merely insert an image placeholder such as ![image](image.png).\n- Keep the output as the document content in Markdown; do not answer these instructions separately.\n- Do not invent values. If a visual value is unreadable, state that explicitly.\n",
+  "provider_config": {
+    "allow_fallbacks": false,
+    "require_parameters": true
+  },
+  "http_status": 200,
+  "elapsed_ms": 85757,
+  "usage": {
+    "prompt_tokens": 10536,
+    "completion_tokens": 11591,
+    "total_tokens": 22127,
+    "cost": 0.160164,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.160164,
+      "upstream_inference_prompt_cost": 0.021072,
+      "upstream_inference_completions_cost": 0.139092
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 5291,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "openrouter_request_id": "gen-1788408306-lYbPQYMa3uXQyqhtCfud",
+  "secret_persisted": false
+}

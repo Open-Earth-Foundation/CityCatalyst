@@ -1,0 +1,44 @@
+{
+  "run_id": "2026-09-03-san-diego-2025-openrouter-url-claude-opus-5",
+  "provider": "OpenRouter",
+  "model_requested": "anthropic/claude-opus-5",
+  "model_returned": "anthropic/claude-opus-5",
+  "provider_returned": "Claude Platform on AWS",
+  "input_file": "2025_Annual_CAP_Report_FINAL_06-17-26_web.pdf",
+  "input_sha256": "cc1eca34c15afc0fa6fd9d3ed3ccd96098e3ffd588287082d76abd9fa0a75a6e",
+  "input_bytes": 16417512,
+  "source_mode": "OpenRouter chat completions with native file input (mistral-files-signed-url)",
+  "mistral_transport_file_id": "32aa4974-a78a-44d0-b216-d1b8a2222bff",
+  "prompt": "Convert the attached PDF into faithful Markdown for a document-ingestion pipeline.\n\nRequirements:\n- Preserve all narrative text and tables accurately.\n- Do not treat charts, figures, or images as decoration.\n- For every chart or figure, add a grounded textual representation including its title, axes, units, series/categories, visible values, trends, targets, and callouts whenever readable.\n- Do not merely insert an image placeholder such as ![image](image.png).\n- Keep the output as the document content in Markdown; do not answer these instructions separately.\n- Do not invent values. If a visual value is unreadable, state that explicitly.\n",
+  "provider_config": {
+    "allow_fallbacks": false,
+    "require_parameters": true
+  },
+  "http_status": 200,
+  "elapsed_ms": 258683,
+  "usage": {
+    "prompt_tokens": 72025,
+    "completion_tokens": 24398,
+    "total_tokens": 96423,
+    "cost": 0.970075,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.970075,
+      "upstream_inference_prompt_cost": 0.360125,
+      "upstream_inference_completions_cost": 0.60995
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "openrouter_request_id": "gen-1788407749-WSQr2AjclsR4Tzg80FAU",
+  "secret_persisted": false
+}

@@ -1,0 +1,44 @@
+{
+  "run_id": "2026-09-03-real2023-gemini25-gemini-2-5-pro",
+  "provider": "OpenRouter",
+  "model_requested": "google/gemini-2.5-pro",
+  "model_returned": "google/gemini-2.5-pro",
+  "provider_returned": "Google",
+  "input_file": "2023_CAP_Annual_Report_9-23-24_AM_FINAL.pdf",
+  "input_sha256": "3a9281508afff21de1176c18be8f6026e0cd96e4c4db684f57368597f2f06bbd",
+  "input_bytes": 17484557,
+  "source_mode": "OpenRouter chat completions with native file input (base64)",
+  "mistral_transport_file_id": null,
+  "prompt": "Convert the attached PDF into faithful Markdown for a document-ingestion pipeline.\n\nRequirements:\n- Preserve all narrative text and tables accurately.\n- Do not treat charts, figures, or images as decoration.\n- For every chart or figure, add a grounded textual representation including its title, axes, units, series/categories, visible values, trends, targets, and callouts whenever readable.\n- Do not merely insert an image placeholder such as ![image](image.png).\n- Keep the output as the document content in Markdown; do not answer these instructions separately.\n- Do not invent values. If a visual value is unreadable, state that explicitly.\n",
+  "provider_config": {
+    "allow_fallbacks": false,
+    "require_parameters": true
+  },
+  "http_status": 200,
+  "elapsed_ms": 78996,
+  "usage": {
+    "prompt_tokens": 5296,
+    "completion_tokens": 8784,
+    "total_tokens": 14080,
+    "cost": 0.09446,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.09446,
+      "upstream_inference_prompt_cost": 0.00662,
+      "upstream_inference_completions_cost": 0.08784
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1434,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "openrouter_request_id": "gen-1788438658-5r3hJX4Nc4kmTSmMWTF3",
+  "secret_persisted": false
+}

@@ -1,0 +1,299 @@
+{
+  "pages": [
+    {
+      "index": 0,
+      "markdown": "# Municipal Climate Action Plan\n\nSynthetic document for comparing PDF-to-Markdown and visual OCR tools\n\n## Executive summary\n\nThe City of Greenfield is preparing a climate action plan for the 2026-2030 period. The plan combines transport, buildings, and waste measures to reduce greenhouse gas emissions while protecting residents from heat and flooding.\n\nBetween 2020 and 2025, estimated citywide emissions decreased from 95 to 65 ktCO2e. The largest reduction came from public transport improvements and a cleaner electricity mix. The next phase focuses on reducing peak summer electricity demand, expanding tree canopy, and improving the reliability of household waste collection.\n\n|  Indicator | 2025 baseline | 2030 direction  |\n| --- | --- | --- |\n|  Total emissions | 65 ktCO2e | Reduce toward 50 ktCO2e  |\n|  Tree canopy coverage | 22% of urban area | Increase to 30%  |\n|  Households with weekly recycling | 61% | Increase to 85%  |\n|  Buildings with heat resilience upgrades | 18% | Increase to 45%  |\n\n**Important: some benchmark facts are intentionally presented only in the chart on the next page. A complete extraction should preserve those visual facts in textual form.**\n\nSynthetic benchmark document - CC-771\n\nPage 1",
+      "images": [],
+      "tables": [],
+      "hyperlinks": [],
+      "header": null,
+      "footer": null,
+      "dimensions": {
+        "dpi": 87,
+        "height": 1018,
+        "width": 720
+      },
+      "confidence_scores": null,
+      "blocks": [
+        {
+          "top_left_x": 68,
+          "top_left_y": 65,
+          "bottom_right_x": 558,
+          "bottom_right_y": 100,
+          "content": "# Municipal Climate Action Plan",
+          "confidence_scores": null,
+          "type": "title"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 109,
+          "bottom_right_x": 567,
+          "bottom_right_y": 128,
+          "content": "Synthetic document for comparing PDF-to-Markdown and visual OCR tools",
+          "confidence_scores": null,
+          "type": "text"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 150,
+          "bottom_right_x": 298,
+          "bottom_right_y": 175,
+          "content": "## Executive summary",
+          "confidence_scores": null,
+          "type": "title"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 186,
+          "bottom_right_x": 658,
+          "bottom_right_y": 239,
+          "content": "The City of Greenfield is preparing a climate action plan for the 2026-2030 period. The plan combines transport, buildings, and waste measures to reduce greenhouse gas emissions while protecting residents from heat and flooding.",
+          "confidence_scores": null,
+          "type": "text"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 250,
+          "bottom_right_x": 658,
+          "bottom_right_y": 321,
+          "content": "Between 2020 and 2025, estimated citywide emissions decreased from 95 to 65 ktCO2e. The largest reduction came from public transport improvements and a cleaner electricity mix. The next phase focuses on reducing peak summer electricity demand, expanding tree canopy, and improving the reliability of household waste collection.",
+          "confidence_scores": null,
+          "type": "text"
+        },
+        {
+          "top_left_x": 94,
+          "top_left_y": 339,
+          "bottom_right_x": 621,
+          "bottom_right_y": 511,
+          "content": "|  Indicator | 2025 baseline | 2030 direction  |\n| --- | --- | --- |\n|  Total emissions | 65 ktCO2e | Reduce toward 50 ktCO2e  |\n|  Tree canopy coverage | 22% of urban area | Increase to 30%  |\n|  Households with weekly recycling | 61% | Increase to 85%  |\n|  Buildings with heat resilience upgrades | 18% | Increase to 45%  |",
+          "confidence_scores": null,
+          "type": "table",
+          "table_id": null
+        },
+        {
+          "top_left_x": 108,
+          "top_left_y": 542,
+          "bottom_right_x": 600,
+          "bottom_right_y": 597,
+          "content": "**Important: some benchmark facts are intentionally presented only in the chart on the next page. A complete extraction should preserve those visual facts in textual form.**",
+          "confidence_scores": null,
+          "type": "text"
+        },
+        {
+          "top_left_x": 60,
+          "top_left_y": 975,
+          "bottom_right_x": 263,
+          "bottom_right_y": 990,
+          "content": "Synthetic benchmark document - CC-771",
+          "confidence_scores": null,
+          "type": "footer"
+        },
+        {
+          "top_left_x": 621,
+          "top_left_y": 975,
+          "bottom_right_x": 665,
+          "bottom_right_y": 990,
+          "content": "Page 1",
+          "confidence_scores": null,
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "markdown": "## Visual evidence: emissions trend\n\nThe figure below contains information that is not repeated in the surrounding paragraphs. It should be interpreted as part of the document, not treated as decoration.\n\n![img-0.jpeg](img-0.jpeg)\n\n### Questions that a good extraction should answer\n\n- Which sector had the highest emissions in 2020?\n- In which year did transport emissions first fall below 35 ktCO2e?\n- What is the 2030 target shown by the dashed line?\n- What was the combined 2025 emissions value across the three sectors?\n- Which sector shows the smallest absolute reduction between 2020 and 2025?\n\nSynthetic benchmark document - CC-771\n\nPage 2",
+      "images": [
+        {
+          "id": "img-0.jpeg",
+          "top_left_x": 99,
+          "top_left_y": 155,
+          "bottom_right_x": 593,
+          "bottom_right_y": 406,
+          "image_base64": null,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": null,
+      "footer": null,
+      "dimensions": {
+        "dpi": 87,
+        "height": 1018,
+        "width": 720
+      },
+      "confidence_scores": null,
+      "blocks": [
+        {
+          "top_left_x": 66,
+          "top_left_y": 63,
+          "bottom_right_x": 453,
+          "bottom_right_y": 89,
+          "content": "## Visual evidence: emissions trend",
+          "confidence_scores": null,
+          "type": "title"
+        },
+        {
+          "top_left_x": 66,
+          "top_left_y": 101,
+          "bottom_right_x": 649,
+          "bottom_right_y": 136,
+          "content": "The figure below contains information that is not repeated in the surrounding paragraphs. It should be interpreted as part of the document, not treated as decoration.",
+          "confidence_scores": null,
+          "type": "text"
+        },
+        {
+          "top_left_x": 99,
+          "top_left_y": 155,
+          "bottom_right_x": 593,
+          "bottom_right_y": 406,
+          "content": "![img-0.jpeg](img-0.jpeg)",
+          "confidence_scores": null,
+          "type": "image",
+          "image_id": "img-0.jpeg"
+        },
+        {
+          "top_left_x": 66,
+          "top_left_y": 452,
+          "bottom_right_x": 466,
+          "bottom_right_y": 473,
+          "content": "### Questions that a good extraction should answer",
+          "confidence_scores": null,
+          "type": "title"
+        },
+        {
+          "top_left_x": 105,
+          "top_left_y": 483,
+          "bottom_right_x": 579,
+          "bottom_right_y": 629,
+          "content": "- Which sector had the highest emissions in 2020?\n- In which year did transport emissions first fall below 35 ktCO2e?\n- What is the 2030 target shown by the dashed line?\n- What was the combined 2025 emissions value across the three sectors?\n- Which sector shows the smallest absolute reduction between 2020 and 2025?",
+          "confidence_scores": null,
+          "type": "list"
+        },
+        {
+          "top_left_x": 59,
+          "top_left_y": 974,
+          "bottom_right_x": 263,
+          "bottom_right_y": 990,
+          "content": "Synthetic benchmark document - CC-771",
+          "confidence_scores": null,
+          "type": "footer"
+        },
+        {
+          "top_left_x": 621,
+          "top_left_y": 974,
+          "bottom_right_x": 665,
+          "bottom_right_y": 990,
+          "content": "Page 2",
+          "confidence_scores": null,
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "markdown": "# Implementation measures and monitoring\n\nThe city will track progress through quarterly reporting. Departments should report both the activity completed and the measurable outcome. When results differ from the expected direction, the program manager should record the reason and the corrective action.\n\n## Priority measures\n\n|  Measure | Owner | 2026 milestone | Evidence  |\n| --- | --- | --- | --- |\n|  Bus corridor electrification | Mobility Office | 12 additional electric buses | Fleet register and route data  |\n|  Cool-roof upgrades | Buildings Unit | 1,200 homes upgraded | Permit records and inspection sample  |\n|  Food-waste collection | Public Works | Pilot in 4 districts | Collection logs and contamination rate  |\n|  Urban tree planting | Parks Department | 8,000 trees planted | GIS inventory and survival survey  |\n\n## Interpretation notes\n\nThe values in this document are synthetic and are intended only for tool comparison. A benchmark evaluator should check whether the extracted Markdown retains units, years, category names, numerical values, and the direction of change. It should also flag unsupported claims, missing values, and any mismatch between the chart and the extracted narrative.\n\nDocument identifier: CC-771-OCR-BENCHMARK-V1 | Language: English | Data status: synthetic\n\nSynthetic benchmark document - CC-771\n\nPage 3",
+      "images": [],
+      "tables": [],
+      "hyperlinks": [],
+      "header": null,
+      "footer": null,
+      "dimensions": {
+        "dpi": 87,
+        "height": 1018,
+        "width": 720
+      },
+      "confidence_scores": null,
+      "blocks": [
+        {
+          "top_left_x": 68,
+          "top_left_y": 64,
+          "bottom_right_x": 559,
+          "bottom_right_y": 91,
+          "content": "# Implementation measures and monitoring",
+          "confidence_scores": null,
+          "type": "title"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 101,
+          "bottom_right_x": 639,
+          "bottom_right_y": 172,
+          "content": "The city will track progress through quarterly reporting. Departments should report both the activity completed and the measurable outcome. When results differ from the expected direction, the program manager should record the reason and the corrective action.",
+          "confidence_scores": null,
+          "type": "text"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 183,
+          "bottom_right_x": 216,
+          "bottom_right_y": 203,
+          "content": "## Priority measures",
+          "confidence_scores": null,
+          "type": "title"
+        },
+        {
+          "top_left_x": 94,
+          "top_left_y": 207,
+          "bottom_right_x": 621,
+          "bottom_right_y": 401,
+          "content": "|  Measure | Owner | 2026 milestone | Evidence  |\n| --- | --- | --- | --- |\n|  Bus corridor electrification | Mobility Office | 12 additional electric buses | Fleet register and route data  |\n|  Cool-roof upgrades | Buildings Unit | 1,200 homes upgraded | Permit records and inspection sample  |\n|  Food-waste collection | Public Works | Pilot in 4 districts | Collection logs and contamination rate  |\n|  Urban tree planting | Parks Department | 8,000 trees planted | GIS inventory and survival survey  |",
+          "confidence_scores": null,
+          "type": "table",
+          "table_id": null
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 429,
+          "bottom_right_x": 237,
+          "bottom_right_y": 448,
+          "content": "## Interpretation notes",
+          "confidence_scores": null,
+          "type": "title"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 453,
+          "bottom_right_x": 644,
+          "bottom_right_y": 543,
+          "content": "The values in this document are synthetic and are intended only for tool comparison. A benchmark evaluator should check whether the extracted Markdown retains units, years, category names, numerical values, and the direction of change. It should also flag unsupported claims, missing values, and any mismatch between the chart and the extracted narrative.",
+          "confidence_scores": null,
+          "type": "text"
+        },
+        {
+          "top_left_x": 87,
+          "top_left_y": 554,
+          "bottom_right_x": 635,
+          "bottom_right_y": 589,
+          "content": "Document identifier: CC-771-OCR-BENCHMARK-V1 | Language: English | Data status: synthetic",
+          "confidence_scores": null,
+          "type": "text"
+        },
+        {
+          "top_left_x": 60,
+          "top_left_y": 974,
+          "bottom_right_x": 263,
+          "bottom_right_y": 990,
+          "content": "Synthetic benchmark document - CC-771",
+          "confidence_scores": null,
+          "type": "footer"
+        },
+        {
+          "top_left_x": 621,
+          "top_left_y": 974,
+          "bottom_right_x": 665,
+          "bottom_right_y": 990,
+          "content": "Page 3",
+          "confidence_scores": null,
+          "type": "footer"
+        }
+      ]
+    }
+  ],
+  "model": "mistral-ocr-latest",
+  "document_annotation": null,
+  "usage_info": {
+    "pages_processed": 3,
+    "doc_size_bytes": 96348
+  }
+}

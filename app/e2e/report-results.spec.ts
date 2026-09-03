@@ -118,8 +118,7 @@ async function submitActivity(page: Page, addEmissionModal: Locator) {
 
 function openScopePanel(page: Page, scope: 1 | 2) {
   return page
-    .locator('[role="tabpanel"][data-state="open"]')
-    .or(page.getByRole("tabpanel", { name: new RegExp(`Scope ${scope}`, "i") }))
+    .getByRole("tabpanel", { name: new RegExp(`Scope ${scope}`, "i") })
     .first();
 }
 
@@ -208,9 +207,11 @@ async function addScope2ResidentialEmissions(
   const addEmissionModal = page.getByTestId("add-emission-modal");
   await expect(addEmissionModal).toBeVisible();
 
+  // Do not use building-type-all: it is exclusive and conflicts if Scope 1
+  // already recorded an "all" activity (or if this test retries).
   await addEmissionModal
     .getByLabel(/Building type/i)
-    .selectOption("building-type-all");
+    .selectOption("building-type-high-rise-residential-buildings");
   await addEmissionModal
     .getByLabel(/Energy usage type/i)
     .selectOption("energy-usage-electricity");

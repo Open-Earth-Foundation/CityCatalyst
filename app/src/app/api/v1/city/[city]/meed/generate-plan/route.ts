@@ -64,3 +64,47 @@ export const POST = apiHandler(async (req, { session }) => {
   );
   return NextResponse.json({ data: result });
 });
+
+/**
+ * @swagger
+ * /api/v1/city/{city}/meed/generate-plan:
+ *   get:
+ *     tags:
+ *       - meed
+ *       - city
+ *     operationId: getMeedPlan
+ *     summary: Fetches saved MEED+ city action report for a given inventory from the database
+ *     description: Fetches saved MEED+ city action report for a given inventory from the database
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: actionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Plan retrieved
+ */
+const getRankingQuery = z.object({
+  inventoryId: z.string().uuid(),
+  actionId: z.string().min(1),
+});
+export const GET = apiHandler(async (_req, { session, searchParams }) => {
+  const { inventoryId, actionId } = getRankingQuery.parse(searchParams);
+  await PermissionService.canAccessInventory(session, inventoryId);
+
+  const result = await MeedApiService.getPlan(inventoryId, actionId);
+  return NextResponse.json({ data: result });
+});

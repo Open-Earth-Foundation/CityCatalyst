@@ -507,6 +507,7 @@ export default class MeedApiService {
       },
       debugContextOnly,
     };
+    console.log("DATA", JSON.stringify(data, null, 2));
     const result = await this.makeRequest("reports/output-plan", data);
     console.log(result);
 
@@ -520,6 +521,21 @@ export default class MeedApiService {
     });
 
     return report;
+  }
+
+  public static async getPlan(inventoryId: string, actionId: string) {
+    const plan = await db.models.MeedActionReport.findOne({
+      where: {
+        inventoryId,
+        actionId,
+      },
+    });
+
+    if (!plan) {
+      throw new createHttpError.NotFound("Plan not found");
+    }
+
+    return plan;
   }
 
   private static async makeRequest(

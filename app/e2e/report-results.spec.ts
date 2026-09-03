@@ -85,7 +85,8 @@ async function submitActivity(page: Page, addEmissionModal: Locator) {
     .waitForResponse(
       (resp) =>
         resp.url().includes("/activity-value") &&
-        resp.request().method() === "POST",
+        resp.request().method() === "POST" &&
+        resp.status() !== 308,
       { timeout: 60000 },
     )
     .catch(() => null);

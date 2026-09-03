@@ -88,7 +88,9 @@ async function downloadFormat(
     (resp) =>
       resp.url().includes(`/inventory/${inventoryId}/download`) &&
       resp.url().includes(`format=${format}`) &&
-      resp.request().method() === "GET",
+      resp.request().method() === "GET" &&
+      // Skip 308 trailing-slash redirects; wait for the final payload.
+      resp.status() === 200,
     { timeout: 60000 },
   );
 

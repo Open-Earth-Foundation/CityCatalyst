@@ -67,14 +67,52 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
 }
 
 async function fillEnergyConsumptionAmount(addEmissionModal: Locator) {
-  const energyField = addEmissionModal.getByLabel(/^Energy Consumption$/i);
-  await expect(energyField).toBeVisible({ timeout: 10000 });
-  await energyField.fill("100");
+  // FormattedNumberInput has no htmlFor label wiring; amount is the first
+  // decimal input in the modal (filled before emission-factor fields).
+  const energyInput = addEmissionModal
+    .locator('input[inputmode="decimal"]')
+    .first();
+
+  await expect(energyInput).toBeVisible({ timeout: 10000 });
+  await energyInput.click();
+  await energyInput.fill("");
+  await energyInput.fill("100");
+  await expect(energyInput).toHaveValue(/100/);
 }
 
-async function submitActivity(addEmissionModal: Locator) {
+async function submitActivity(page: Page, addEmissionModal: Locator) {
+  const createResponsePromise = page
+    .waitForResponse(
+      (resp) =>
+        resp.url().includes("/activity-value") &&
+        resp.request().method() === "POST",
+      { timeout: 60000 },
+    )
+    .catch(() => null);
+
   await addEmissionModal.getByTestId("add-emission-modal-submit").click();
-  await expect(addEmissionModal).not.toBeVisible({ timeout: 60000 });
+
+  try {
+    await expect(addEmissionModal).not.toBeVisible({ timeout: 60000 });
+  } catch {
+    const createResponse = await createResponsePromise;
+    if (createResponse && !createResponse.ok()) {
+      const body = await createResponse.text().catch(() => "");
+      throw new Error(
+        `Activity create failed with status ${createResponse.status()}: ${body}`,
+      );
+    }
+
+    const validationHints = await addEmissionModal
+      .locator("[data-invalid], [aria-invalid='true']")
+      .allTextContents()
+      .catch(() => []);
+    throw new Error(
+      `Add-emission modal stayed open after submit. Validation hints: ${
+        validationHints.filter(Boolean).join(" | ") || "none found"
+      }`,
+    );
+  }
 }
 
 function openScopePanel(page: Page, scope: 1 | 2) {
@@ -137,7 +175,7 @@ async function addScope1ResidentialEmissions(
     .selectOption("units-cubic-meters");
   await fillCustomEmissionFactors(addEmissionModal);
 
-  await submitActivity(addEmissionModal);
+  await submitActivity(page, addEmissionModal);
 }
 
 async function addScope2ResidentialEmissions(
@@ -176,12 +214,12 @@ async function addScope2ResidentialEmissions(
     .getByLabel(/Energy usage type/i)
     .selectOption("energy-usage-electricity");
   await fillEnergyConsumptionAmount(addEmissionModal);
-  await addEmissionModal
-    .getByLabel(/Select Unit/i)
-    .selectOption("units-kilowatt-hours");
+  const unitSelect = addEmissionModal.getByLabel(/Select Unit/i);
+  await unitSelect.selectOption("units-kilowatt-hours");
+  await expect(unitSelect).toHaveValue("units-kilowatt-hours");
   await fillCustomEmissionFactors(addEmissionModal);
 
-  await submitActivity(addEmissionModal);
+  await submitActivity(page, addEmissionModal);
 }
 
 async function openEmissionInventoryResultsTab(page: Page) {

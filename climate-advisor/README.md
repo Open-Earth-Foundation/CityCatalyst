@@ -495,6 +495,22 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 - **Liveness Check**: http://localhost:8080/health
 - **Database Readiness Check**: http://localhost:8080/ready
 
+### Portable CNB demo fixture
+
+The tracked [Krakow demo fixture](fixtures/cnb/krakow/README.md) packages the
+source PDF, reviewed EIB reference data, and a sanitized Concept Note run used
+to exercise the missing-information review flow. After applying the CA and CNB
+migrations, seed it with:
+
+```powershell
+$env:CA_DATABASE_URL = "postgresql://climateadvisor:climateadvisor@localhost:5433/climateadvisor"
+$env:CNB_DATABASE_URL = "postgresql://climateadvisor:climateadvisor@localhost:5433/cnb"
+uv run --directory service python -m scripts.seed_cnb_demo_fixture
+```
+
+The fixture guide documents ownership overrides, idempotent behavior, and the
+local flow checks. Raw database dumps and environment files must not be added.
+
 ## Configuration
 
 ### LLM Configuration

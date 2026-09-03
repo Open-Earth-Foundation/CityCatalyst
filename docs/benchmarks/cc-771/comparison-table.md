@@ -93,3 +93,22 @@ The expected result is the benchmark oracle or validation target. The observed r
 - This final comparison table
 
 The synthetic fixture is controlled and its figures are not real climate statistics. The real-document results are representative evidence, not a substitute for sanitized CC documents from the production storage path.
+
+## Official benchmark context: OCRBench v2
+
+OCRBench v2 is a bilingual benchmark for large multimodal models with 10,000 human-verified question-answer pairs across 31 scenarios. It evaluates recognition, referring, spotting, extraction, parsing, calculation, understanding, and reasoning over text-rich images.
+
+It is not directly comparable to CC-771: OCRBench v2 evaluates image-level question answering, while CC-771 evaluates end-to-end PDF-to-Markdown extraction on a controlled chart fixture and two long real-world PDF reports. The official results are therefore external context, not replacements for the CC-771 runs.
+
+| CC-771 model | Official OCRBench v2 entry | English average | Chinese average | Match quality |
+| --- | --- | ---: | ---: | --- |
+| Gemini 3.1 Pro Preview | Gemini 3 Pro Preview | 63.4 (2026.06) | 63.8 (2026.06) | Closest published entry; version name is not identical |
+| Gemini 2.5 Pro | Gemini-2.5-Pro | 59.3 (2026.06) | 62.2 (2026.06) | Exact model match |
+| GPT-5.2 | GPT-5.2 | 50.5 (2026.03) | 52.6 (2026.03) | Exact model match |
+| Claude Opus 5 | Claude Opus 4.6 | 48.4 (2026.03) | 59.8 (2026.03) | Closest published entry; version mismatch |
+| Claude Sonnet 4.5 | Claude-sonnet-4-20250514 | 42.4 (2026.03) | Not listed | Closest published entry; version mismatch |
+| Mistral OCR latest | No exact entry | Not listed | Not listed | Do not substitute Ministral-3-14B; it is a different model |
+
+Among exact or explicitly closest matches, Gemini 2.5 Pro has the strongest official score for an exact match in the English leaderboard (59.3), followed by GPT-5.2 (50.5). This differs from CC-771, where GPT-5.2 was the best quality/cost candidate and Claude Opus 5 produced the strongest visual extraction. The difference is expected because the task mix, input transport, document length, prompting, and scoring criteria differ.
+
+Sources: [official OCRBench v2 leaderboard](https://99franklin.github.io/ocrbench_v2/), [OCRBench v2 paper](https://arxiv.org/abs/2501.00321), and [official OCRBench repository](https://github.com/Yuliang-Liu/MultimodalOCR).

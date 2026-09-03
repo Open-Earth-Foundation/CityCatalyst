@@ -495,12 +495,17 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 - **Liveness Check**: http://localhost:8080/health
 - **Database Readiness Check**: http://localhost:8080/ready
 
-### Portable CNB demo fixture
+### Portable CNB demo fixtures
 
-The tracked [Krakow demo fixture](fixtures/cnb/krakow/README.md) packages the
-source PDF, reviewed EIB reference data, and a sanitized Concept Note run used
-to exercise the missing-information review flow. After applying the CA and CNB
-migrations, seed it with:
+The tracked CNB fixtures package source PDFs, reviewed funding reference data,
+and sanitized Concept Note runs for two complementary review flows:
+
+- [Krakow](fixtures/cnb/krakow/README.md): an EIB urban-transit concept note
+  with answered gaps and a confirmed chapter.
+- [Richfield](fixtures/cnb/richfield/README.md): a Minnesota flood-hazard grant
+  application with eight draft sections and 83 structured gaps.
+
+After applying the CA and CNB migrations, seed the default Krakow fixture with:
 
 ```powershell
 $env:CA_DATABASE_URL = "postgresql://climateadvisor:climateadvisor@localhost:5433/climateadvisor"
@@ -508,8 +513,9 @@ $env:CNB_DATABASE_URL = "postgresql://climateadvisor:climateadvisor@localhost:54
 uv run --directory service python -m scripts.seed_cnb_demo_fixture
 ```
 
-The fixture guide documents ownership overrides, idempotent behavior, and the
-local flow checks. Raw database dumps and environment files must not be added.
+Pass `--fixture ../fixtures/cnb/richfield/richfield-demo.json` to seed Richfield.
+The fixture guides document ownership overrides, idempotent behavior, and local
+flow checks. Raw database dumps and environment files must not be added.
 
 ## Configuration
 

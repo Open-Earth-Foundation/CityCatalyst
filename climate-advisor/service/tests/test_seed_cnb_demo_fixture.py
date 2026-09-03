@@ -1,6 +1,8 @@
 """Tests for the portable CNB demo fixture seeder."""
 
 import hashlib
+import json
+from pathlib import Path
 from uuid import UUID
 
 import pytest
@@ -10,6 +12,23 @@ from service.scripts.seed_cnb_demo_fixture import (
     _replace_fixture_identifiers,
     _validate_fixture,
 )
+
+
+CLIMATE_ADVISOR_ROOT = Path(__file__).resolve().parents[2]
+
+
+@pytest.mark.parametrize(
+    "relative_path",
+    [
+        Path("fixtures/cnb/krakow/krakow-demo.json"),
+        Path("fixtures/cnb/richfield/richfield-demo.json"),
+    ],
+)
+def test_tracked_fixture_document_integrity(relative_path: Path) -> None:
+    fixture_path = CLIMATE_ADVISOR_ROOT / relative_path
+    payload = json.loads(fixture_path.read_text(encoding="utf-8"))
+
+    _validate_fixture(payload, fixture_path)
 
 
 def test_validate_fixture_checks_document_integrity(tmp_path) -> None:

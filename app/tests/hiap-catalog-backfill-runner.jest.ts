@@ -94,7 +94,7 @@ describe("HIAP catalog backfill runner", () => {
     expect(savedCheckpoints.at(-1)).toEqual({
       rankings: { cursor: null, completed: true },
       actionPlans: { cursor: null, completed: true },
-      meedRankings: { cursor: null, completed: true },
+      meedRankings: { cursor: null, completed: false },
     });
   });
 
@@ -141,7 +141,9 @@ describe("HIAP catalog backfill runner", () => {
         }),
       ),
       processActionPlansPage: jest.fn(),
-      processMeedRankingsPage: jest.fn(),
+      processMeedRankingsPage: jest
+        .fn()
+        .mockResolvedValue(page({ scanned: 0, repaired: 0 })),
     };
 
     await expect(
@@ -158,7 +160,7 @@ describe("HIAP catalog backfill runner", () => {
     expect(savedCheckpoints.at(-1)).toEqual({
       rankings: { cursor: null, completed: false },
       actionPlans: { cursor: null, completed: true },
-      meedRankings: { cursor: null, completed: true },
+      meedRankings: { cursor: null, completed: false },
     });
   });
 
@@ -258,6 +260,114 @@ describe("HIAP catalog backfill runner", () => {
       limit: 10,
       dryRun: false,
       cursor: undefined,
+    });
+  });
+
+  it("keeps MEED backfill continuous after a completed checkpoint", async () => {
+    const meedCursor = {
+      created: "2026-01-01T00:00:00.000Z",
+      id: "ranking-b",
+    };
+    const newRankingCursor = {
+      created: "2026-01-02T00:00:00.000Z",
+      id: "ranking-c",
+    };
+    const savedCheckpoints: HIAPCatalogBackfillCheckpoint[] = [];
+    const deps: HIAPCatalogBackfillRunnerDeps = {
+      acquireLock: jest.fn().mockResolvedValue({ connectionId: "lock-1" }),
+      releaseLock: jest.fn().mockResolvedValue(undefined),
+      loadCheckpoint: jest.fn().mockResolvedValue({
+        rankings: { cursor: null, completed: true },
+        actionPlans: { cursor: null, completed: true },
+        meedRankings: { cursor: meedCursor, completed: true },
+      }),
+      saveCheckpoint: jest.fn(async (checkpoint) => {
+        savedCheckpoints.push(checkpoint);
+      }),
+      processRankingsPage: jest.fn(),
+      processActionPlansPage: jest.fn(),
+      processMeedRankingsPage: jest.fn().mockResolvedValue(
+        page({
+          scanned: 1,
+          repaired: 1,
+          nextCursor: newRankingCursor,
+        }),
+      ),
+    };
+
+    await runHIAPCatalogBackfill(
+      { batchSize: 10, maxBatchesPerType: 1, dryRun: false },
+      deps,
+    );
+
+    expect(deps.processMeedRankingsPage).toHaveBeenCalledWith({
+      limit: 10,
+      dryRun: false,
+      cursor: meedCursor,
+    });
+    expect(savedCheckpoints.at(-1)?.meedRankings).toEqual({
+      cursor: newRankingCursor,
+      completed: false,
+    });
+  });
+
+  it("retries a failed MEED registration from the previous cursor", async () => {
+    const previousCursor = {
+      created: "2026-01-01T00:00:00.000Z",
+      id: "ranking-b",
+    };
+    const failedRankingCursor = {
+      created: "2026-01-02T00:00:00.000Z",
+      id: "ranking-c",
+    };
+    let checkpoint: HIAPCatalogBackfillCheckpoint = {
+      rankings: { cursor: null, completed: true },
+      actionPlans: { cursor: null, completed: true },
+      meedRankings: { cursor: previousCursor, completed: true },
+    };
+    const meedPages = [
+      page({
+        repaired: 0,
+        failed: 1,
+        nextCursor: failedRankingCursor,
+      }),
+      page({
+        repaired: 1,
+        nextCursor: failedRankingCursor,
+      }),
+    ];
+    const processMeedRankingsPage = jest
+      .fn()
+      .mockImplementation(async () => meedPages.shift());
+    const deps: HIAPCatalogBackfillRunnerDeps = {
+      acquireLock: jest.fn().mockResolvedValue({ connectionId: "lock-1" }),
+      releaseLock: jest.fn().mockResolvedValue(undefined),
+      loadCheckpoint: jest.fn(async () => checkpoint),
+      saveCheckpoint: jest.fn(async (nextCheckpoint) => {
+        checkpoint = nextCheckpoint;
+      }),
+      processRankingsPage: jest.fn(),
+      processActionPlansPage: jest.fn(),
+      processMeedRankingsPage,
+    };
+    const config = { batchSize: 10, maxBatchesPerType: 1, dryRun: false };
+
+    await runHIAPCatalogBackfill(config, deps);
+    await runHIAPCatalogBackfill(config, deps);
+
+    expect(processMeedRankingsPage).toHaveBeenNthCalledWith(1, {
+      limit: 10,
+      dryRun: false,
+      cursor: previousCursor,
+    });
+    expect(processMeedRankingsPage).toHaveBeenNthCalledWith(2, {
+      limit: 10,
+      dryRun: false,
+      cursor: previousCursor,
+    });
+    expect(checkpoint.meedRankings).toEqual({
+      cursor: failedRankingCursor,
+      completed: false,
     });
   });
 });

@@ -308,9 +308,7 @@ export async function backfillMissingMEEDRankingsPage(
     failed,
     hasMore,
     nextCursor:
-      hasMore && rankings.length > 0
-        ? cursorFor(rankings[rankings.length - 1])
-        : null,
+      rankings.length > 0 ? cursorFor(rankings[rankings.length - 1]) : null,
   };
 }
 

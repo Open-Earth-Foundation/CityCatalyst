@@ -345,7 +345,10 @@ async function processPages(
   let progress = checkpoint[kind];
   let pages = 0;
 
-  if (progress.completed) return { totals, checkpoint, pages };
+  const isContinuousMeed = kind === "meedRankings";
+  if (progress.completed && !isContinuousMeed) {
+    return { totals, checkpoint, pages };
+  }
 
   while (
     config.maxBatchesPerType === undefined ||
@@ -367,10 +370,12 @@ async function processPages(
       cursor:
         page.failed > 0
           ? progress.cursor
-          : page.hasMore
-            ? page.nextCursor
-            : null,
-      completed: page.failed === 0 && !page.hasMore,
+          : isContinuousMeed
+            ? (page.nextCursor ?? progress.cursor)
+            : page.hasMore
+              ? page.nextCursor
+              : null,
+      completed: isContinuousMeed ? false : page.failed === 0 && !page.hasMore,
     };
     checkpoint =
       kind === "rankings"

@@ -325,6 +325,26 @@ describe("MeedNativeInputCatalogService", () => {
     expect(registerNativeInput).not.toHaveBeenCalled();
   });
 
+  it("returns the last ranking cursor even when the page has no more rows", async () => {
+    const lastCreated = new Date("2026-08-24T13:00:00.000Z");
+    rankingModel.findAll.mockResolvedValue([
+      { ...completedRanking, id: "ranking-last", created: lastCreated },
+    ]);
+
+    await expect(
+      backfillMissingMEEDRankingsPage({ limit: 2, dryRun: true }),
+    ).resolves.toEqual({
+      scanned: 1,
+      repaired: 1,
+      failed: 0,
+      hasMore: false,
+      nextCursor: {
+        created: lastCreated.toISOString(),
+        id: "ranking-last",
+      },
+    });
+  });
+
   it("withdraws active MEED catalog entries for an inventory without deleting history", async () => {
     catalogModel.findAll.mockResolvedValue([
       { id: "catalog-1" },

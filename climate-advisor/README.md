@@ -770,7 +770,11 @@ CityCatalyst exposes authenticated proxy routes at
 scoped CA token, forwards the duplicate idempotency key, and preserves Climate
 Advisor response statuses. Climate Advisor remains authoritative for run ownership
 and its stored city binding. The CityCatalyst dashboard consumes these routes; its
-implementation details live in the repository architecture guide.
+implementation details live in the repository architecture guide. The
+CityCatalyst proxy reuses one successfully issued CA token per user until one
+minute before its reported expiry and coalesces concurrent issuance. This
+process-local token reuse gives Climate Advisor a stable credential to validate
+through its 30-second successful-authorization cache.
 
 ### Concept Note city-context baseline
 

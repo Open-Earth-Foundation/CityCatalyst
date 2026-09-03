@@ -369,6 +369,9 @@ Stationary Energy chat also has a dedicated prompt budget:
   30-second cache in `CityCatalystClient`. Keys contain a one-way token
   fingerprint; concurrent checks share one request, token expiry shortens the
   TTL, and failures are never retained.
+- The CityCatalyst Concept Note proxy also reuses one successfully issued CA
+  token per user until one minute before expiry. Concurrent issuance is
+  coalesced so polling routes present the same valid token to the CA cache.
 - Stationary Energy draft-save uses the existing CityCatalyst draft-save route
   after CA has assembled a complete reviewed draft state.
 - Inventory commit is not executed directly by CA chat tools; CA returns a

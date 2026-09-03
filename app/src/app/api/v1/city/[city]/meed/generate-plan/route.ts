@@ -27,6 +27,7 @@ import z from "zod";
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [inventoryId, languages, actionId]
  *             properties:
  *               inventoryId:
  *                 type: string
@@ -39,7 +40,6 @@ import z from "zod";
  *                 type: string
  *               debugContextOnly:
  *                 type: boolean
- *                 required: false
  *     responses:
  *       200:
  *         description: Output plan generated

@@ -49,8 +49,8 @@ import z from "zod";
 const translateActionsRequest = z.object({
   inventoryId: z.string().uuid(),
   sourceLanguage: z.string().min(2),
-  targetLanguages: z.array(z.string().min(2)),
-  actionIds: z.array(z.string().min(1)),
+  targetLanguages: z.array(z.string().min(2)).min(1),
+  actionIds: z.array(z.string().min(1)).min(1),
 });
 
 export const POST = apiHandler(async (req, { session }) => {

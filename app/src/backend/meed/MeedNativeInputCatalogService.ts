@@ -1,17 +1,18 @@
-import { Op } from "sequelize";
+import { Op, QueryTypes, type Transaction } from "sequelize";
 
 import { db } from "@/models";
 import {
   registerNativeInput,
-  supersedeNativeInput,
   withdrawNativeInput,
   type RegisterNativeInputInput,
   type NativeInputCatalogRegistration,
 } from "@/backend/NativeInputCatalogService";
+import type { NativeInputCatalog } from "@/models/NativeInputCatalog";
 import { logger } from "@/services/logger";
 
 const MEED_MODULE = "hiap_meed" as const;
 const MEED_RANKING_SOURCE_TYPE = "hiap_meed_ranking" as const;
+const MEED_RANKING_LOCK_PREFIX = "citycatalyst:hiap-meed-ranking:";
 
 export type MEEDCatalogBackfillCursor = {
   created: string;
@@ -52,12 +53,10 @@ type CatalogScope = {
 };
 
 type CatalogModel = {
-  findAll: (
-    options: Record<string, unknown>,
-  ) => Promise<Array<Record<string, unknown>>>;
+  findAll: (options: Record<string, unknown>) => Promise<NativeInputCatalog[]>;
   findOne: (
     options: Record<string, unknown>,
-  ) => Promise<Record<string, unknown> | null>;
+  ) => Promise<NativeInputCatalog | null>;
 };
 
 type MeedRankingModel = {
@@ -85,9 +84,13 @@ function models(): MeedModels {
   return db.models as MeedModels;
 }
 
-async function resolveScope(ranking: MeedRankingLike): Promise<CatalogScope> {
+async function resolveScope(
+  ranking: MeedRankingLike,
+  transaction?: Transaction,
+): Promise<CatalogScope> {
   const inventory = ranking.inventoryId
     ? await db.models.Inventory.findByPk(ranking.inventoryId, {
+        transaction,
         include: [
           {
             model: db.models.City,
@@ -129,14 +132,20 @@ async function resolveScope(ranking: MeedRankingLike): Promise<CatalogScope> {
   return scope;
 }
 
-async function loadRanking(rankingId: string): Promise<MeedRankingLike> {
-  const ranking = await models().MeedRanking.findByPk(rankingId);
+async function loadRanking(
+  rankingId: string,
+  transaction?: Transaction,
+): Promise<MeedRankingLike> {
+  const ranking = await models().MeedRanking.findByPk(rankingId, {
+    transaction,
+  });
   if (!ranking) throw new Error("MEED ranking not found");
   return ranking;
 }
 
 async function buildMEEDRankingInput(
   ranking: MeedRankingLike,
+  transaction?: Transaction,
 ): Promise<RegisterNativeInputInput> {
   if (ranking.status !== "completed") {
     throw new Error("Only completed MEED rankings can enter the catalog");
@@ -153,17 +162,19 @@ async function buildMEEDRankingInput(
   const rankedActions = await models().MeedActionRanked.findAll({
     where: { rankingId: ranking.id },
     attributes: ["id"],
+    transaction,
   });
   const removedActions = await models().MeedActionRemoved.findAll({
     where: { rankingId: ranking.id },
     attributes: ["id"],
+    transaction,
   });
   const actionCount = rankedActions.length + removedActions.length;
   if (actionCount === 0) {
     throw new Error("Only persisted MEED rankings can enter the catalog");
   }
 
-  const scope = await resolveScope(ranking);
+  const scope = await resolveScope(ranking, transaction);
   const sourceId = ranking.id;
 
   return {
@@ -184,22 +195,95 @@ async function buildMEEDRankingInput(
   };
 }
 
-async function supersedePreviousVersions(
-  input: RegisterNativeInputInput,
-  replacementCatalogId: string,
+async function lockMEEDInventory(
+  transaction: Transaction,
+  inventoryId: string,
 ): Promise<void> {
-  const activeEntries = await models().NativeInputCatalog.findAll({
+  if (!db.sequelize) {
+    throw new Error("Database is not initialized");
+  }
+
+  await db.sequelize.query("SELECT pg_advisory_xact_lock(hashtext($1))", {
+    replacements: [`${MEED_RANKING_LOCK_PREFIX}${inventoryId}`],
+    transaction,
+    type: QueryTypes.SELECT,
+  });
+}
+
+function compareRankingOrder(
+  left: MeedRankingLike,
+  right: MeedRankingLike,
+): number {
+  if (!left.created || !right.created) {
+    throw new Error("MEED rankings require a created timestamp");
+  }
+
+  const createdDifference = left.created.getTime() - right.created.getTime();
+  if (createdDifference !== 0) return createdDifference;
+  if (left.id === right.id) return 0;
+  return left.id > right.id ? 1 : -1;
+}
+
+async function findActiveMEEDEntries(
+  input: RegisterNativeInputInput,
+  transaction: Transaction,
+): Promise<NativeInputCatalog[]> {
+  return models().NativeInputCatalog.findAll({
     where: {
       owningModule: MEED_MODULE,
       sourceType: MEED_RANKING_SOURCE_TYPE,
       inventoryId: input.inventoryId,
       availability: "active",
     },
+    transaction,
   });
+}
 
-  for (const catalog of activeEntries) {
-    if (catalog.id === replacementCatalogId) continue;
-    await supersedeNativeInput(String(catalog.id), input);
+async function supersedeCatalogEntry(
+  catalog: NativeInputCatalog,
+  replacementCatalogId: string,
+  transaction: Transaction,
+): Promise<void> {
+  if (catalog.id === replacementCatalogId) return;
+  await catalog.update(
+    {
+      availability: "superseded",
+      supersededById: replacementCatalogId,
+    },
+    { transaction },
+  );
+}
+
+async function reconcileMEEDCatalogInTransaction(
+  ranking: MeedRankingLike,
+  input: RegisterNativeInputInput,
+  registration: NativeInputCatalogRegistration,
+  transaction: Transaction,
+): Promise<void> {
+  const activeEntries = await findActiveMEEDEntries(input, transaction);
+  const entries = activeEntries.some(
+    (catalog) => catalog.id === registration.catalog.id,
+  )
+    ? activeEntries
+    : [...activeEntries, registration.catalog];
+
+  const rankedEntries = await Promise.all(
+    entries.map(async (catalog) => ({
+      catalog,
+      ranking:
+        catalog.id === registration.catalog.id
+          ? ranking
+          : await loadRanking(String(catalog.sourceId), transaction),
+    })),
+  );
+  const winner = rankedEntries.reduce((current, candidate) =>
+    compareRankingOrder(candidate.ranking, current.ranking) > 0
+      ? candidate
+      : current,
+  );
+
+  for (const entry of rankedEntries) {
+    await supersedeCatalogEntry(entry.catalog, winner.catalog.id, transaction);
   }
 }
 
@@ -240,24 +324,42 @@ function cursorFor(record: MeedRankingLike): MEEDCatalogBackfillCursor {
 export async function registerMEEDRanking(
   rankingId: string,
 ): Promise<NativeInputCatalogRegistration> {
-  const ranking = await loadRanking(rankingId);
-  const input = await buildMEEDRankingInput(ranking);
-  const existing = await models().NativeInputCatalog.findOne({
-    where: {
-      owningModule: MEED_MODULE,
-      sourceType: MEED_RANKING_SOURCE_TYPE,
-      sourceId: input.sourceId,
-      availability: { [Op.ne]: "withdrawn" },
-    },
-  });
-  if (existing?.availability === "superseded") {
-    return { catalog: existing, created: false };
+  if (!db.sequelize) {
+    throw new Error("Database is not initialized");
   }
-  const registration = existing
-    ? { catalog: existing, created: false }
-    : await registerNativeInput(input);
-  await supersedePreviousVersions(input, String(registration.catalog.id));
-  return registration;
+
+  return db.sequelize.transaction(async (transaction) => {
+    const ranking = await loadRanking(rankingId, transaction);
+    if (!ranking.inventoryId) {
+      throw new Error("MEED rankings require an inventory");
+    }
+    await lockMEEDInventory(transaction, ranking.inventoryId);
+
+    const input = await buildMEEDRankingInput(ranking, transaction);
+    const existing = await models().NativeInputCatalog.findOne({
+      where: {
+        owningModule: MEED_MODULE,
+        sourceType: MEED_RANKING_SOURCE_TYPE,
+        sourceId: input.sourceId,
+        availability: { [Op.ne]: "withdrawn" },
+      },
+      transaction,
+    });
+    if (existing?.availability === "superseded") {
+      return { catalog: existing, created: false };
+    }
+
+    const registration = existing
+      ? { catalog: existing, created: false }
+      : await registerNativeInput(input, transaction);
+    await reconcileMEEDCatalogInTransaction(
+      ranking,
+      input,
+      registration,
+      transaction,
+    );
+    return registration;
+  });
 }
 
 export async function backfillMissingMEEDRankingsPage(

@@ -29,8 +29,14 @@ const inventoryModel = {
 const registerNativeInput = jest.fn();
 const supersedeNativeInput = jest.fn();
 const withdrawNativeInput = jest.fn();
+const transaction = { id: "transaction-1" };
+const sequelize = {
+  transaction: jest.fn(async (callback) => callback(transaction)),
+  query: jest.fn().mockResolvedValue([]),
+};
 
 const mockDb = {
+  sequelize,
   models: {
     NativeInputCatalog: catalogModel,
     MeedRanking: rankingModel,
@@ -72,6 +78,11 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
+  jest.resetAllMocks();
+  sequelize.transaction.mockImplementation(async (callback) =>
+    callback(transaction),
+  );
+  sequelize.query.mockResolvedValue([]);
   inventoryModel.findByPk.mockResolvedValue({
     inventoryId: "inventory-1",
     cityId: "city-1",
@@ -142,6 +153,7 @@ describe("MeedNativeInputCatalogService", () => {
           actionCount: 1,
         }),
       }),
+      transaction,
     );
     expect(registerNativeInput.mock.calls[0][0]).not.toHaveProperty("userId");
 
@@ -180,18 +192,26 @@ describe("MeedNativeInputCatalogService", () => {
   });
 
   it("supersedes the previous active inventory version even when content matches an older run", async () => {
+    const oldCatalog = {
+      id: "catalog-old",
+      sourceId: "ranking-old",
+      availability: "active",
+      update: jest.fn(),
+    };
     catalogModel.findOne.mockResolvedValueOnce(null);
-    catalogModel.findAll.mockResolvedValueOnce([
-      {
-        id: "catalog-old",
-        sourceId: "ranking-old",
-        availability: "active",
-      },
-    ]);
+    catalogModel.findAll.mockResolvedValueOnce([oldCatalog]);
+    rankingModel.findByPk
+      .mockResolvedValueOnce(completedRanking)
+      .mockResolvedValueOnce({
+        ...completedRanking,
+        id: "ranking-old",
+        created: new Date("2026-08-24T11:00:00.000Z"),
+      });
     await registerMEEDRanking("ranking-1");
-    expect(supersedeNativeInput).toHaveBeenCalledWith(
-      "catalog-old",
-      expect.objectContaining({ sourceType: "hiap_meed_ranking" }),
+    expect(supersedeNativeInput).not.toHaveBeenCalled();
+    expect(oldCatalog.update).toHaveBeenCalledWith(
+      { availability: "superseded", supersededById: "catalog-new" },
+      { transaction },
     );
     expect(catalogModel.findAll).toHaveBeenCalledWith({
       where: {
@@ -200,19 +220,169 @@ describe("MeedNativeInputCatalogService", () => {
         inventoryId: "inventory-1",
         availability: "active",
       },
+      transaction,
     });
   });
 
-  it("keeps only the newest source active across an A to B to C history", async () => {
+  it("keeps a newer completed ranking active when an older registration is delayed", async () => {
+    const olderRanking = {
+      ...completedRanking,
+      id: "ranking-a",
+      created: new Date("2026-08-24T12:00:00.000Z"),
+    };
+    const newerRanking = {
+      ...completedRanking,
+      id: "ranking-b",
+      created: new Date("2026-08-24T13:00:00.000Z"),
+    };
+    const olderCatalog = {
+      id: "catalog-a",
+      availability: "active",
+      update: jest.fn(),
+    };
+    const newerCatalog = {
+      id: "catalog-b",
+      sourceId: "ranking-b",
+      availability: "active",
+      update: jest.fn(),
+    };
+
     rankingModel.findByPk
-      .mockResolvedValueOnce({ ...completedRanking, id: "ranking-a" })
-      .mockResolvedValueOnce({ ...completedRanking, id: "ranking-b" })
-      .mockResolvedValueOnce({ ...completedRanking, id: "ranking-c" });
+      .mockResolvedValueOnce(olderRanking)
+      .mockResolvedValueOnce(newerRanking);
+    catalogModel.findOne.mockResolvedValueOnce(null);
+    catalogModel.findAll.mockResolvedValueOnce([newerCatalog]);
+    registerNativeInput.mockResolvedValueOnce({
+      catalog: olderCatalog,
+      created: true,
+    });
+
+    await expect(registerMEEDRanking("ranking-a")).resolves.toEqual({
+      catalog: olderCatalog,
+      created: true,
+    });
+
+    expect(sequelize.transaction).toHaveBeenCalledTimes(1);
+    expect(sequelize.query).toHaveBeenCalledWith(
+      "SELECT pg_advisory_xact_lock(hashtext($1))",
+      expect.objectContaining({
+        replacements: ["citycatalyst:hiap-meed-ranking:inventory-1"],
+        transaction,
+      }),
+    );
+    expect(olderCatalog.update).toHaveBeenCalledWith(
+      { availability: "superseded", supersededById: "catalog-b" },
+      { transaction },
+    );
+    expect(newerCatalog.update).not.toHaveBeenCalled();
+    expect(supersedeNativeInput).not.toHaveBeenCalled();
+  });
+
+  it("serializes overlapping registrations for the same inventory", async () => {
+    const rankings = {
+      "ranking-a": {
+        ...completedRanking,
+        id: "ranking-a",
+        created: new Date("2026-08-24T12:00:00.000Z"),
+      },
+      "ranking-b": {
+        ...completedRanking,
+        id: "ranking-b",
+        created: new Date("2026-08-24T13:00:00.000Z"),
+      },
+    };
+    const catalogA = {
+      id: "catalog-a",
+      sourceId: "ranking-a",
+      availability: "active",
+      update: jest.fn(async (values) => Object.assign(catalogA, values)),
+    };
+    const catalogB = {
+      id: "catalog-b",
+      sourceId: "ranking-b",
+      availability: "active",
+      update: jest.fn(async (values) => Object.assign(catalogB, values)),
+    };
+    const catalogs = [catalogA, catalogB];
+    let lockHeld = false;
+    const lockWaiters: Array<() => void> = [];
+    let criticalSections = 0;
+    let maxCriticalSections = 0;
+
+    rankingModel.findByPk.mockImplementation(
+      async (rankingId) => rankings[rankingId as keyof typeof rankings],
+    );
     catalogModel.findOne.mockResolvedValue(null);
+    catalogModel.findAll.mockImplementation(async () =>
+      catalogs.filter((catalog) => catalog.availability === "active"),
+    );
+    registerNativeInput.mockImplementation(async (input) => {
+      const catalog = input.sourceId === "ranking-a" ? catalogA : catalogB;
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      return { catalog, created: true };
+    });
+    sequelize.query.mockImplementation(async () => {
+      if (lockHeld) {
+        await new Promise<void>((resolve) => lockWaiters.push(resolve));
+      }
+      lockHeld = true;
+    });
+    sequelize.transaction.mockImplementation(async (callback) => {
+      try {
+        return await callback(transaction);
+      } finally {
+        lockHeld = false;
+        lockWaiters.shift()?.();
+      }
+    });
+    catalogModel.findOne.mockImplementation(async () => {
+      criticalSections++;
+      maxCriticalSections = Math.max(maxCriticalSections, criticalSections);
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      criticalSections--;
+      return null;
+    });
+
+    await Promise.all([
+      registerMEEDRanking("ranking-a"),
+      registerMEEDRanking("ranking-b"),
+    ]);
+
+    expect(maxCriticalSections).toBe(1);
+    expect(
+      catalogs.filter((catalog) => catalog.availability === "active"),
+    ).toEqual([catalogB]);
+    expect(catalogA.update).toHaveBeenCalledWith(
+      { availability: "superseded", supersededById: "catalog-b" },
+      { transaction },
+    );
+  });
+
+  it("keeps only the newest source active across an A to B to C history", async () => {
+    rankingModel.findByPk.mockImplementation(async (rankingId) => ({
+      ...completedRanking,
+      id: rankingId,
+      created: new Date(
+        `2026-08-24T${rankingId === "ranking-a" ? "12" : rankingId === "ranking-b" ? "13" : "14"}:00:00.000Z`,
+      ),
+    }));
+    catalogModel.findOne.mockResolvedValue(null);
+    const catalogA = {
+      id: "catalog-a",
+      sourceId: "ranking-a",
+      availability: "active",
+      update: jest.fn(),
+    };
+    const catalogB = {
+      id: "catalog-b",
+      sourceId: "ranking-b",
+      availability: "active",
+      update: jest.fn(),
+    };
     catalogModel.findAll
       .mockResolvedValueOnce([])
-      .mockResolvedValueOnce([{ id: "catalog-a", availability: "active" }])
-      .mockResolvedValueOnce([{ id: "catalog-b", availability: "active" }]);
+      .mockResolvedValueOnce([catalogA])
+      .mockResolvedValueOnce([catalogB]);
     registerNativeInput
       .mockResolvedValueOnce({ catalog: { id: "catalog-a" }, created: true })
       .mockResolvedValueOnce({ catalog: { id: "catalog-b" }, created: true })
@@ -225,9 +395,15 @@ describe("MeedNativeInputCatalogService", () => {
     expect(
       registerNativeInput.mock.calls.map(([input]) => input.sourceId),
     ).toEqual(["ranking-a", "ranking-b", "ranking-c"]);
-    expect(
-      supersedeNativeInput.mock.calls.map(([catalogId]) => catalogId),
-    ).toEqual(["catalog-a", "catalog-b"]);
+    expect(catalogA.update).toHaveBeenCalledWith(
+      { availability: "superseded", supersededById: "catalog-b" },
+      { transaction },
+    );
+    expect(catalogB.update).toHaveBeenCalledWith(
+      { availability: "superseded", supersededById: "catalog-c" },
+      { transaction },
+    );
+    expect(supersedeNativeInput).not.toHaveBeenCalled();
   });
 
   it("does not reactivate a historical source when it is registered again", async () => {
@@ -250,28 +426,37 @@ describe("MeedNativeInputCatalogService", () => {
         sourceId: "ranking-1",
         availability: { [Op.ne]: "withdrawn" },
       },
+      transaction,
     });
   });
 
   it("repairs older active versions when the current registration already exists", async () => {
+    const oldCatalog = {
+      id: "catalog-old",
+      sourceId: "ranking-old",
+      availability: "active",
+      update: jest.fn(),
+    };
     catalogModel.findOne.mockResolvedValueOnce({ id: "catalog-current" });
-    catalogModel.findAll.mockResolvedValueOnce([
-      {
-        id: "catalog-old",
-        sourceId: "ranking-old",
-        availability: "active",
-      },
-    ]);
+    catalogModel.findAll.mockResolvedValueOnce([oldCatalog]);
+    rankingModel.findByPk
+      .mockResolvedValueOnce(completedRanking)
+      .mockResolvedValueOnce({
+        ...completedRanking,
+        id: "ranking-old",
+        created: new Date("2026-08-24T11:00:00.000Z"),
+      });
 
     await expect(registerMEEDRanking("ranking-1")).resolves.toEqual({
       catalog: { id: "catalog-current" },
       created: false,
     });
 
-    expect(supersedeNativeInput).toHaveBeenCalledWith(
-      "catalog-old",
-      expect.objectContaining({ sourceType: "hiap_meed_ranking" }),
+    expect(oldCatalog.update).toHaveBeenCalledWith(
+      { availability: "superseded", supersededById: "catalog-current" },
+      { transaction },
     );
+    expect(supersedeNativeInput).not.toHaveBeenCalled();
   });
 
   it("backfills missing rankings and retries transient catalog failures", async () => {

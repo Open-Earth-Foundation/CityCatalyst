@@ -188,3 +188,5 @@ demo-recording/
 
 # Local load-test evidence generated during runs
 load-test/results/
+
+.worktrees/

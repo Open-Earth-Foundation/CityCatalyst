@@ -178,6 +178,23 @@ async function addScope1ResidentialEmissions(
   await submitActivity(page, addEmissionModal);
 }
 
+async function clearExistingActivities(page: Page, panel: Locator) {
+  // Remove leftover rows from retries so exclusive values cannot block insert.
+  for (let i = 0; i < 10; i++) {
+    const moreButton = panel.getByTestId("activity-more-icon").first();
+    if (!(await moreButton.isVisible({ timeout: 2000 }).catch(() => false))) {
+      return;
+    }
+
+    await moreButton.click();
+    await page.getByTestId("delete-activity-button").click();
+    const deleteModal = page.getByTestId("delete-activity-modal-header");
+    await expect(deleteModal).toBeVisible({ timeout: 10000 });
+    await page.getByTestId("delete-activity-modal-confirm").click();
+    await expect(deleteModal).not.toBeVisible({ timeout: 30000 });
+  }
+}
+
 async function addScope2ResidentialEmissions(
   page: Page,
   cityId: string,
@@ -193,28 +210,22 @@ async function addScope2ResidentialEmissions(
 
   const scopeTwoPanel = openScopePanel(page, 2);
   await expect(scopeTwoPanel).toBeVisible({ timeout: 30000 });
-  const hasExistingActivity = await scopeTwoPanel
-    .getByText(/Electricity|energy-usage-electricity|kWh/i)
-    .isVisible()
-    .catch(() => false);
-  if (hasExistingActivity) {
-    return;
-  }
 
   await ensureMethodologySelected(page, /Energy Consumption/i, scopeTwoPanel);
+  await clearExistingActivities(page, scopeTwoPanel);
 
   await addActivityButton(page, scopeTwoPanel).click();
   const addEmissionModal = page.getByTestId("add-emission-modal");
   await expect(addEmissionModal).toBeVisible();
 
-  // Do not use building-type-all: it is exclusive and conflicts if Scope 1
-  // already recorded an "all" activity (or if this test retries).
-  await addEmissionModal
-    .getByLabel(/Building type/i)
-    .selectOption("building-type-high-rise-residential-buildings");
-  await addEmissionModal
-    .getByLabel(/Energy usage type/i)
-    .selectOption("energy-usage-electricity");
+  const buildingType = addEmissionModal.getByLabel(/Building type/i);
+  await buildingType.selectOption("building-type-single-family-home");
+  await expect(buildingType).toHaveValue("building-type-single-family-home");
+
+  const energyUsage = addEmissionModal.getByLabel(/Energy usage type/i);
+  await energyUsage.selectOption("energy-usage-electricity");
+  await expect(energyUsage).toHaveValue("energy-usage-electricity");
+
   await fillEnergyConsumptionAmount(addEmissionModal);
   const unitSelect = addEmissionModal.getByLabel(/Select Unit/i);
   await unitSelect.selectOption("units-kilowatt-hours");

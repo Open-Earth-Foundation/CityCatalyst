@@ -1,4 +1,4 @@
-"""Selected-only, Core-mediated NativeInputCatalog capability tools."""
+"""Runtime Core-mediated NativeInputCatalog discovery and bounded reads."""
 
 from __future__ import annotations
 
@@ -15,8 +15,8 @@ from app.services.citycatalyst_client import (
 )
 from app.services.native_input_catalog_service import (
     ActiveRequestContext,
+    NativeInputCatalogService,
     NativeInputDiscovery,
-    NativeInputSelection,
 )
 
 logger = logging.getLogger(__name__)
@@ -24,6 +24,8 @@ logger = logging.getLogger(__name__)
 _MAX_TOOL_INPUT_BYTES = 16 * 1024
 _MAX_TOOL_OUTPUT_BYTES = 64 * 1024
 _UNAVAILABLE_MESSAGE = "Requested capability is unavailable."
+_DISCOVER_TOOL_NAME = "native_input_discover"
+_READ_TOOL_NAME = "native_input_read"
 
 _FORBIDDEN_RESULT_KEYS = {
     "access_key_id",
@@ -79,145 +81,234 @@ def _hiap_input(
     return payload
 
 
-_CAPABILITY_DEFINITIONS: dict[str, dict[str, Any]] = {
-    "ghgi.inventory.status_overview": {
-        "name": "native_input_ghgi_inventory_status_overview",
-        "description": "Read the selected bounded CityCatalyst inventory status.",
-        "properties": {},
-        "input_builder": _inventory_input,
+_CAPABILITY_DEFINITIONS: dict[str, InputBuilder] = {
+    "ghgi.inventory.status_overview": _inventory_input,
+    "ghgi.inventory.emissions_context": _inventory_input,
+    "hiap.inventory.context": _hiap_input,
+}
+
+_DISCOVER_SCHEMA = {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": False,
+}
+
+_READ_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "catalogId": {"type": "string", "minLength": 1},
+        "capabilityId": {"type": "string", "minLength": 1},
+        "language": {"type": "string", "maxLength": 16},
     },
-    "ghgi.inventory.emissions_context": {
-        "name": "native_input_ghgi_inventory_emissions_context",
-        "description": "Read the selected bounded CityCatalyst emissions context.",
-        "properties": {},
-        "input_builder": _inventory_input,
-    },
-    "hiap.inventory.context": {
-        "name": "native_input_hiap_inventory_context",
-        "description": "Read the selected bounded CityCatalyst action context.",
-        "properties": {
-            "language": {"type": "string", "maxLength": 16},
-        },
-        "input_builder": _hiap_input,
-    },
+    "required": ["catalogId", "capabilityId"],
+    "additionalProperties": False,
 }
 
 
 def build_native_input_catalog_tools(
     *,
-    selection: NativeInputSelection,
-    discovery: NativeInputDiscovery,
+    service: NativeInputCatalogService,
+    context: ActiveRequestContext,
     token_ref: Dict[str, Optional[str]],
     client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
-) -> Sequence[object]:
-    """Create exactly one Core-backed tool for the current selected capability."""
-    definition = _CAPABILITY_DEFINITIONS.get(selection.capability_id)
-    if definition is None or not _selection_is_current(selection, discovery):
-        return []
+) -> Sequence[FunctionTool]:
+    """Create stable runtime discovery and read tools for one captured context."""
 
-    async def invoke(_context: ToolContext[Any], raw_arguments: str) -> str:
-        """Validate model arguments and execute only the captured selection."""
+    async def discover(
+        _tool_context: ToolContext[Any], raw_arguments: str
+    ) -> str:
+        """Discover current locally supported catalog entries from Core."""
+        # Validate the fixed no-argument contract before reaching Core.
         arguments = _parse_arguments(raw_arguments)
-        if arguments is None:
+        if arguments != {}:
             return _error_payload(
-                selection.capability_id,
+                _DISCOVER_TOOL_NAME,
                 "invalid_arguments",
-                "Selected capability arguments are invalid.",
+                "Discovery arguments are invalid.",
             )
 
-        allowed_arguments = set(definition["properties"])
-        if set(arguments) - allowed_arguments:
-            return _error_payload(
-                selection.capability_id,
-                "invalid_arguments",
-                "Selected capability arguments are invalid.",
-            )
-
-        input_payload = definition["input_builder"](selection.context, arguments)
-        if input_payload is None:
-            return _error_payload(
-                selection.capability_id,
-                "invalid_arguments",
-                "Selected capability arguments are invalid.",
-            )
-
+        # Keep discovery fail-closed when the captured authorization expires.
         token = token_ref.get("value")
         if not token:
             return _error_payload(
-                selection.capability_id,
+                _DISCOVER_TOOL_NAME,
                 "missing_token",
                 "CityCatalyst access token is required.",
             )
 
+        # Fetch a fresh result; compatibility filtering is not authorization.
+        try:
+            discovery = await service.discover(context=context, token=token)
+            _update_token_ref(getattr(service, "core_client", None), token_ref)
+            return _discovery_success_payload(discovery)
+        except Exception:
+            logger.warning("NativeInputCatalog discovery failed")
+            return _error_payload(
+                _DISCOVER_TOOL_NAME,
+                "tool_error",
+                "Native input catalog could not be discovered.",
+            )
+
+    async def read(_tool_context: ToolContext[Any], raw_arguments: str) -> str:
+        """Validate one finite read request and delegate authorization to Core."""
+        # Validate model input against the fixed v1 boundary.
+        arguments = _parse_read_arguments(raw_arguments)
+        if arguments is None:
+            return _error_payload(
+                _READ_TOOL_NAME,
+                "invalid_arguments",
+                "Native input read arguments are invalid.",
+            )
+
+        # Resolve only reviewed capability-specific input builders.
+        catalog_id = arguments["catalogId"]
+        capability_id = arguments["capabilityId"]
+        definition = _CAPABILITY_DEFINITIONS.get(capability_id)
+        if definition is None or (
+            "language" in arguments and capability_id != "hiap.inventory.context"
+        ):
+            return _error_payload(
+                _READ_TOOL_NAME,
+                "invalid_arguments",
+                "Native input read arguments are invalid.",
+            )
+
+        input_payload = definition(context, arguments)
+        if input_payload is None:
+            return _error_payload(
+                _READ_TOOL_NAME,
+                "invalid_arguments",
+                "Native input read arguments are invalid.",
+            )
+
+        # Use the shared rotated token without exposing it to the model.
+        token = token_ref.get("value")
+        if not token:
+            return _error_payload(
+                _READ_TOOL_NAME,
+                "missing_token",
+                "CityCatalyst access token is required.",
+            )
+
+        # Core independently revalidates the submitted catalog/capability pair.
         client = client_factory()
         try:
             response = await client.read_native_input(
-                request_payload=_read_payload(selection, input_payload),
+                request_payload=_read_payload(
+                    context,
+                    catalog_id,
+                    capability_id,
+                    input_payload,
+                ),
                 token=token,
-                user_id=selection.context.user_id,
-                thread_id=selection.context.thread_id,
+                user_id=context.user_id,
+                thread_id=context.thread_id,
             )
             _update_token_ref(client, token_ref)
-            return _success_payload(selection.capability_id, response)
-        except CityCatalystClientError as exc:
-            if exc.status_code == 404:
+            return _success_payload(capability_id, response)
+        except CityCatalystClientError as error:
+            if error.status_code == 404:
                 return _error_payload(
-                    selection.capability_id,
+                    _READ_TOOL_NAME,
                     "capability_unavailable",
                     _UNAVAILABLE_MESSAGE,
                 )
             logger.warning(
-                "Selected NativeInputCatalog read failed capability=%s status=%s",
-                selection.capability_id,
-                exc.status_code,
+                "NativeInputCatalog read failed capability=%s status=%s",
+                capability_id,
+                error.status_code,
             )
             return _error_payload(
-                selection.capability_id,
+                _READ_TOOL_NAME,
                 "tool_error",
-                "Selected capability could not be read.",
+                "Native input capability could not be read.",
             )
         except Exception:
-            logger.error(
-                "Selected NativeInputCatalog tool failed capability=%s",
-                selection.capability_id,
-            )
+            logger.error("NativeInputCatalog read failed capability=%s", capability_id)
             return _error_payload(
-                selection.capability_id,
+                _READ_TOOL_NAME,
                 "tool_error",
-                "Selected capability could not be read.",
+                "Native input capability could not be read.",
             )
         finally:
             await _close_client(client)
 
-    return [
-        FunctionTool(
-            name=definition["name"],
-            description=definition["description"],
-            params_json_schema={
-                "type": "object",
-                "properties": definition["properties"],
-                "additionalProperties": False,
-            },
-            on_invoke_tool=invoke,
+    discover_tool = FunctionTool(
+        name=_DISCOVER_TOOL_NAME,
+        description="Discover currently available bounded CityCatalyst inputs.",
+        params_json_schema=_DISCOVER_SCHEMA,
+        on_invoke_tool=discover,
+    )
+    read_tool = FunctionTool(
+        name=_READ_TOOL_NAME,
+        description="Read one bounded CityCatalyst input capability.",
+        params_json_schema=_READ_SCHEMA,
+        on_invoke_tool=read,
+    )
+
+    # The Agents SDK normalizes omitted fields into `required`; restore v1's
+    # deliberately optional language contract before model registration.
+    discover_tool.params_json_schema = _DISCOVER_SCHEMA
+    read_tool.params_json_schema = _READ_SCHEMA
+    return [discover_tool, read_tool]
+
+
+def _parse_read_arguments(raw_arguments: str) -> Optional[Dict[str, Any]]:
+    """Validate the finite v1 native-input read argument schema."""
+    arguments = _parse_arguments(raw_arguments)
+    if arguments is None or set(arguments) - set(_READ_SCHEMA["properties"]):
+        return None
+    catalog_id = arguments.get("catalogId")
+    capability_id = arguments.get("capabilityId")
+    if not isinstance(catalog_id, str) or not catalog_id:
+        return None
+    if not isinstance(capability_id, str) or not capability_id:
+        return None
+    language = arguments.get("language")
+    if "language" in arguments and (
+        not isinstance(language, str) or len(language) > 16
+    ):
+        return None
+    return arguments
+
+
+def _discovery_success_payload(discovery: NativeInputDiscovery) -> str:
+    """Serialize current safe discovery entries with local compatibility filtering."""
+    entries = []
+    for entry in discovery.entries:
+        capability_ids = [
+            capability_id
+            for capability_id in entry.get("capability_ids", ())
+            if capability_id in _CAPABILITY_DEFINITIONS
+        ]
+        if not capability_ids:
+            continue
+        entries.append(
+            {
+                "catalogId": entry["catalog_id"],
+                "kind": entry["kind"],
+                "owningModule": entry["owning_module"],
+                "sourceType": entry["source_type"],
+                "capabilityIds": capability_ids,
+            }
         )
-    ]
-
-
-def _selection_is_current(
-    selection: NativeInputSelection,
-    discovery: NativeInputDiscovery,
-) -> bool:
-    """Return whether the exact selected pair is in the current discovery."""
-    return any(
-        entry["catalog_id"] == selection.catalog_id
-        and selection.capability_id in entry["capability_ids"]
-        for entry in discovery.entries
+    return json.dumps(
+        {
+            "action": _DISCOVER_TOOL_NAME,
+            "success": True,
+            "data": {"entries": entries},
+        },
+        ensure_ascii=False,
+        allow_nan=False,
     )
 
 
 def _parse_arguments(raw_arguments: str) -> Optional[Dict[str, Any]]:
     """Parse finite JSON object arguments without retaining untrusted payloads."""
-    if not isinstance(raw_arguments, str) or len(raw_arguments.encode("utf-8")) > _MAX_TOOL_INPUT_BYTES:
+    if (
+        not isinstance(raw_arguments, str)
+        or len(raw_arguments.encode("utf-8")) > _MAX_TOOL_INPUT_BYTES
+    ):
         return None
     try:
         arguments = json.loads(raw_arguments or "{}")
@@ -227,16 +318,17 @@ def _parse_arguments(raw_arguments: str) -> Optional[Dict[str, Any]]:
 
 
 def _read_payload(
-    selection: NativeInputSelection,
+    context: ActiveRequestContext,
+    catalog_id: str,
+    capability_id: str,
     input_payload: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Build the Core selected-read payload from captured request state."""
-    context = selection.context
     payload = context.to_discovery_payload()
     payload.update(
         {
-            "catalogId": selection.catalog_id,
-            "capabilityId": selection.capability_id,
+            "catalogId": catalog_id,
+            "capabilityId": capability_id,
             "input": input_payload,
         }
     )
@@ -259,11 +351,7 @@ def _success_payload(capability_id: str, response: Any) -> str:
             "CityCatalyst returned an invalid capability response.",
         )
     try:
-        serialized_data = json.dumps(
-            safe_data,
-            ensure_ascii=False,
-            allow_nan=False,
-        )
+        serialized_data = json.dumps(safe_data, ensure_ascii=False, allow_nan=False)
     except (TypeError, ValueError):
         return _error_payload(
             capability_id,
@@ -277,11 +365,7 @@ def _success_payload(capability_id: str, response: Any) -> str:
             "CityCatalyst returned an invalid capability response.",
         )
     return json.dumps(
-        {
-            "action": capability_id,
-            "success": True,
-            "data": safe_data,
-        },
+        {"action": capability_id, "success": True, "data": safe_data},
         ensure_ascii=False,
         allow_nan=False,
     )
@@ -300,10 +384,7 @@ def _redact_result(value: Any) -> Any:
     }
 
 
-def _update_token_ref(
-    client: object,
-    token_ref: Dict[str, Optional[str]],
-) -> None:
+def _update_token_ref(client: object, token_ref: Dict[str, Optional[str]]) -> None:
     """Copy a refreshed client token without exposing it in tool output."""
     refreshed_token = getattr(client, "last_refreshed_token", None)
     if isinstance(refreshed_token, str) and refreshed_token:
@@ -320,11 +401,11 @@ async def _close_client(client: object) -> None:
         await result
 
 
-def _error_payload(capability_id: str, code: str, message: str) -> str:
+def _error_payload(action: str, code: str, message: str) -> str:
     """Serialize one small safe tool error envelope."""
     return json.dumps(
         {
-            "action": capability_id,
+            "action": action,
             "success": False,
             "error_code": code,
             "error": message,

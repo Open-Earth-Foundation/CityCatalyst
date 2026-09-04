@@ -66,7 +66,8 @@ export default function PasswordInput<
       w={w}
     >
       <ChakraPasswordInput
-        size="lg"
+        h="44px"
+        fontSize="md"
         w="full"
         shadow="2dp"
         placeholder={t("password")}

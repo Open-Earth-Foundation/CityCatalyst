@@ -114,7 +114,6 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
             name={t("current-password")}
             id="currentPassword"
             t={t}
-            inputProps={{ h: "44px", fontSize: "md" }}
           />
           <PasswordInput
             register={register}
@@ -125,7 +124,6 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
             shouldValidate
             liveValidate={false}
             watchPassword={watchPassword}
-            inputProps={{ h: "44px", fontSize: "md" }}
           />
           <PasswordStrengthMeter value={newPasswordStrength} />
           <PasswordInput
@@ -134,7 +132,6 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
             name={t("confirm-password")}
             id="confirmPassword"
             t={t}
-            inputProps={{ h: "44px", fontSize: "md" }}
           />
           {error && <Text color="semantic.danger">{error}</Text>}
           <Box display="flex" w="100%" justifyContent="right" marginTop="12px">

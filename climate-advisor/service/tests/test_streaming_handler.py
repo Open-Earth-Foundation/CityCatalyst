@@ -38,6 +38,7 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             thread_id="thread-1",
             user_id="authenticated-user",
             session_factory=MagicMock(),
+            cc_access_token="trusted-core-token",
             inventory_id="inventory-1",
             request_context={
                 "city_id": "city-1",
@@ -81,6 +82,36 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
                 inventory_id="inventory-1",
             ),
         )
+
+    def test_native_input_catalog_context_requires_current_core_credential(
+        self,
+    ) -> None:
+        """Body identity and scope do not establish catalog authorization."""
+        handler = StreamingHandler(
+            thread_id="thread-1",
+            user_id="authenticated-user",
+            session_factory=MagicMock(),
+            inventory_id="inventory-1",
+            request_context={"city_id": "city-1"},
+            request_options={"project_id": "project-1"},
+        )
+        payload = MessageCreateRequest(
+            user_id="attacker-supplied-user",
+            content="hello",
+            context={
+                "user_id": "attacker-supplied-user",
+                "organization_id": "organization-1",
+                "native_input_selection": {
+                    "catalog_id": "catalog-1",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            },
+            options={"native_input_selection": {"catalog_id": "forged"}},
+        )
+
+        context = handler._native_input_catalog_request(payload)
+
+        self.assertIsNone(context)
 
     async def test_done_event_reflects_persisted_history(self) -> None:
         payload = MessageCreateRequest(
@@ -149,17 +180,7 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         fake_agent_service.close.assert_awaited_once()
         agent_service_kwargs = mock_agent_service.call_args.kwargs
         self.assertNotIn("native_input_selection", agent_service_kwargs)
-        self.assertEqual(
-            agent_service_kwargs["native_input_catalog_context"],
-            ActiveRequestContext(
-                user_id="user-1",
-                thread_id="thread-1",
-                organization_id=None,
-                project_id=None,
-                city_id=None,
-                inventory_id=None,
-            ),
-        )
+        self.assertIsNone(agent_service_kwargs["native_input_catalog_context"])
 
     async def test_persist_refreshed_token_from_agent_service(self) -> None:
         handler = StreamingHandler(

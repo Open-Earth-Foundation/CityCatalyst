@@ -110,6 +110,7 @@ class AgentService:
         if (
             self.native_input_catalog_service is None
             and self.native_input_catalog_context is not None
+            and self._token_ref.get("value")
         ):
             self._native_input_catalog_client = CityCatalystClient()
             self.native_input_catalog_service = NativeInputCatalogService(
@@ -256,10 +257,10 @@ class AgentService:
         )
 
     def _build_native_input_catalog_tools(self) -> Sequence[object]:
-        """Create stable catalog tools from the captured authenticated context."""
+        """Create stable catalog tools from authenticated context and Core credential."""
         service = self.native_input_catalog_service
         context = self.native_input_catalog_context
-        if service is None or context is None:
+        if service is None or context is None or not self._token_ref.get("value"):
             return []
 
         return build_native_input_catalog_tools(

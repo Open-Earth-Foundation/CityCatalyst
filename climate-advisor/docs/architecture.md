@@ -238,12 +238,12 @@ call. Core discovery is limited to its lightweight readiness result; it does
 not load Climate Advisor capabilities or execute full reads for candidates.
 
 `AgentService` registers the stable `native_input_discover` and
-`native_input_read` tools when authenticated catalog context is available.
-Registration makes no Core discovery request and does not accept a
-client-selected catalog/capability pair. `StreamingHandler` supplies the
-authenticated user/thread identity and safe request scope while ignoring
-caller-supplied identity and catalog selections. Missing context leaves the
-existing tool-pack behavior unchanged.
+`native_input_read` tools only when authenticated catalog context and the
+current Core credential are available. Registration makes no Core discovery
+request and does not accept a client-selected catalog/capability pair.
+`StreamingHandler` supplies the authenticated user/thread identity and safe
+request scope while ignoring caller-supplied identity and catalog selections.
+Missing context or credential leaves the existing tool-pack behavior unchanged.
 
 At tool-call time, discovery returns only locally supported safe entries. A
 read accepts a model-selected catalog/capability pair with finite bounded

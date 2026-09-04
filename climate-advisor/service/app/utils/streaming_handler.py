@@ -1245,8 +1245,11 @@ class StreamingHandler:
     def _native_input_catalog_request(
         self,
         payload: MessageCreateRequest,
-    ) -> ActiveRequestContext:
-        """Resolve safe catalog scope from the active request."""
+    ) -> ActiveRequestContext | None:
+        """Resolve catalog scope only when the current request has a Core credential."""
+        if not self.cc_access_token:
+            return None
+
         sources = (
             payload.context,
             payload.options,

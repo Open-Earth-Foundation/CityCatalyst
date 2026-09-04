@@ -508,6 +508,42 @@ class NativeInputCatalogCompositionTests(unittest.IsolatedAsyncioTestCase):
         ]
         self.assertIn("climate_vector_search", tool_names)
 
+    async def test_create_agent_skips_catalog_tools_without_core_credential(
+        self,
+    ) -> None:
+        """Catalog tools require a current Core credential as well as context."""
+        settings = build_mock_settings()
+        context = self._context()
+        catalog_service = MagicMock()
+        catalog_service.discover = AsyncMock()
+
+        with (
+            patch("app.services.agent_service.get_settings", return_value=settings),
+            patch("app.services.agent_service.AsyncOpenAI"),
+            patch(
+                "app.services.agent_service.build_native_input_catalog_tools",
+                create=True,
+            ) as build_tools,
+            patch("app.services.agent_service.Agent") as mock_agent,
+        ):
+            service = AgentService(
+                cc_thread_id="thread-1",
+                cc_user_id="user-1",
+                native_input_catalog_service=catalog_service,
+                native_input_catalog_context=context,
+            )
+
+            await service.create_agent()
+
+        catalog_service.discover.assert_not_awaited()
+        build_tools.assert_not_called()
+        tool_names = [
+            getattr(tool, "name", "")
+            for tool in mock_agent.call_args.kwargs["tools"]
+        ]
+        self.assertNotIn("native_input_discover", tool_names)
+        self.assertNotIn("native_input_read", tool_names)
+
     async def test_create_agent_preserves_existing_tools_when_catalog_service_is_missing(
         self,
     ) -> None:

@@ -34,8 +34,7 @@ export default function ProjectSearchInput({
         borderColor="border.neutral"
         shadow="sm"
         bg="base.light"
-        h="44px"
-        fontSize="md"
+        size="lg"
         w="full"
         value={value}
         onChange={(e) => onChange(e.target.value)}

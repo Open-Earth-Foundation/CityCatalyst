@@ -155,8 +155,7 @@ function DataTableAlt<T extends object>({
                     border="1px solid"
                     borderColor="border.neutral"
                     bg="background.default"
-                    fontSize="md"
-                    h="44px"
+                    size="lg"
                     fontFamily="body"
                     w="365px"
                     _placeholder={{ color: "content.tertiary" }}
@@ -166,15 +165,13 @@ function DataTableAlt<T extends object>({
               )}
 
               {filterProperty && filterOptions.length > 0 && (
-                <NativeSelectRoot w="auto">
+                <NativeSelectRoot w="auto" size="lg">
                   <NativeSelectField
                     placeholder={t("all")}
                     value={filterValue}
                     onChange={(e) => handleFilterChange(e.target.value)}
-                    h="44px"
                     borderRadius="4px"
                     borderColor="border.neutral"
-                    fontSize="md"
                     shadow="sm"
                   >
                     {filterOptions.map((option, idx) => {

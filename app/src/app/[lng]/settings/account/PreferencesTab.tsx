@@ -143,14 +143,13 @@ const PreferencesTab = ({
                     ? "sentiment.negativeOverlay"
                     : "background.default"
                 }
+                size="lg"
               >
                 <NativeSelectField
                   {...register("numberFormat", {
                     required: t("numerical-formats-required"),
                   })}
                   defaultValue={savedNumberFormat}
-                  h="44px"
-                  fontSize="md"
                 >
                   {numberFormatOptions.map((option) => (
                     <option key={option.value} value={option.value}>

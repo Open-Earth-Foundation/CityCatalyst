@@ -52,12 +52,11 @@ export function ProfessionSelect({
         borderRadius="4px"
         border="inputBox"
         background={error ? "sentiment.negativeOverlay" : "background.default"}
+        size="lg"
       >
         <NativeSelectField
           {...register("title")}
           defaultValue={defaultValue ?? ""}
-          h="44px"
-          fontSize="md"
         >
           <option value="">{t("select-a-profession")}</option>
           {options.map((option) => (

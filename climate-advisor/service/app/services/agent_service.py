@@ -27,7 +27,6 @@ from app.services.citycatalyst_client import CityCatalystClient
 from app.services.native_input_catalog_service import (
     ActiveRequestContext,
     NativeInputCatalogService,
-    NativeInputSelectionError,
 )
 from app.tools.cc_inventory_tool import CCInventoryTool
 from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
@@ -68,7 +67,6 @@ class AgentService:
         concept_note_run_id: Optional[Union[str, UUID]] = None,
         native_input_catalog_service: Optional[NativeInputCatalogService] = None,
         native_input_catalog_context: Optional[ActiveRequestContext] = None,
-        native_input_selection: Optional[Dict[str, str]] = None,
     ) -> None:
         """Initialize the agent service with settings and OpenRouter client.
 
@@ -79,11 +77,9 @@ class AgentService:
             inventory_id: Active inventory ID, used by pre-draft Stationary Energy tools
             city_id: Active city ID, used by pre-draft Stationary Energy tools
             native_input_catalog_service: Optional request-scoped Core coordinator
-                used to discover and bind the selected catalog capability
+                used by runtime NativeInputCatalog tools
             native_input_catalog_context: Authenticated active context for catalog
-                discovery; never supplied by the model
-            native_input_selection: Requested catalog/capability pair; it is
-                accepted only after current Core discovery binding
+                tools; never supplied by the model
         """
         self.settings = get_settings()
         configure_agents_tracing(self.settings)
@@ -109,13 +105,11 @@ class AgentService:
         self._inventory_tool: Optional[CCInventoryTool] = None
         self._token_ref: Dict[str, Optional[str]] = {"value": cc_access_token}
         self.native_input_catalog_context = native_input_catalog_context
-        self.native_input_selection = native_input_selection
         self._native_input_catalog_client: Optional[CityCatalystClient] = None
         self.native_input_catalog_service = native_input_catalog_service
         if (
             self.native_input_catalog_service is None
             and self.native_input_catalog_context is not None
-            and self.native_input_selection is not None
         ):
             self._native_input_catalog_client = CityCatalystClient()
             self.native_input_catalog_service = NativeInputCatalogService(
@@ -261,40 +255,16 @@ class AgentService:
             token_ref=self._token_ref,
         )
 
-    async def _build_native_input_catalog_tools(self) -> Sequence[object]:
-        """Discover and compose only the caller's current selected capability."""
+    def _build_native_input_catalog_tools(self) -> Sequence[object]:
+        """Create stable catalog tools from the captured authenticated context."""
         service = self.native_input_catalog_service
         context = self.native_input_catalog_context
-        requested_selection = self.native_input_selection
-        if service is None or context is None or not requested_selection:
-            return []
-
-        catalog_id = requested_selection.get("catalog_id")
-        capability_id = requested_selection.get("capability_id")
-        if not catalog_id or not capability_id:
-            return []
-
-        try:
-            discovery = await service.discover(
-                context=context,
-                token=self._token_ref.get("value"),
-            )
-            if not discovery.entries:
-                return []
-            selection = service.bind_selection(
-                catalog_id=catalog_id,
-                capability_id=capability_id,
-                context=context,
-            )
-        except NativeInputSelectionError:
-            return []
-        except Exception:
-            logger.warning("NativeInputCatalog discovery was unavailable")
+        if service is None or context is None:
             return []
 
         return build_native_input_catalog_tools(
-            selection=selection,
-            discovery=discovery,
+            service=service,
+            context=context,
             token_ref=self._token_ref,
         )
 
@@ -349,10 +319,8 @@ class AgentService:
             )
         tools = []
 
-        # Catalog discovery is request-scoped and must complete before agent
-        # construction. The coordinator binds the exact current selection;
-        # Core remains the read-time authorization authority.
-        tools.extend(await self._build_native_input_catalog_tools())
+        # Stable catalog tools defer current discovery and Core authorization to runtime.
+        tools.extend(self._build_native_input_catalog_tools())
 
         # General chat can query CityCatalyst inventory data directly. Active
         # Stationary Energy review chat uses the persisted draft snapshot and

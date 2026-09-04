@@ -39,8 +39,20 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             user_id="authenticated-user",
             session_factory=MagicMock(),
             inventory_id="inventory-1",
-            request_context={"city_id": "city-1"},
-            request_options={"project_id": "project-1"},
+            request_context={
+                "city_id": "city-1",
+                "native_input_selection": {
+                    "catalog_id": "request-context-catalog",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            },
+            request_options={
+                "project_id": "project-1",
+                "native_input_selection": {
+                    "catalog_id": "request-options-catalog",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            },
         )
         payload = MessageCreateRequest(
             user_id="attacker-supplied-user",
@@ -56,7 +68,7 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             options={"native_input_selection": {"catalog_id": "forged"}},
         )
 
-        context, selection = handler._native_input_catalog_request(payload)
+        context = handler._native_input_catalog_request(payload)
 
         self.assertEqual(
             context,
@@ -69,16 +81,24 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
                 inventory_id="inventory-1",
             ),
         )
-        self.assertEqual(
-            selection,
-            {
-                "catalog_id": "catalog-1",
-                "capability_id": "ghgi.inventory.status_overview",
-            },
-        )
 
     async def test_done_event_reflects_persisted_history(self) -> None:
-        payload = MessageCreateRequest(user_id="user-1", content="hello")
+        payload = MessageCreateRequest(
+            user_id="user-1",
+            content="hello",
+            context={
+                "native_input_selection": {
+                    "catalog_id": "payload-catalog",
+                    "capability_id": "ghgi.inventory.status_overview",
+                }
+            },
+            options={
+                "native_input_selection": {
+                    "catalog_id": "options-catalog",
+                    "capability_id": "ghgi.inventory.status_overview",
+                }
+            },
+        )
         handler = StreamingHandler(
             thread_id="thread-1",
             user_id="user-1",
@@ -103,7 +123,7 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             patch(
                 "app.utils.streaming_handler.AgentService",
                 return_value=fake_agent_service,
-            ),
+            ) as mock_agent_service,
             patch.object(
                 StreamingHandler,
                 "_load_conversation_history",
@@ -127,6 +147,19 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(done_payload["data"]["history_saved"])
         self.assertTrue(handler.history_saved)
         fake_agent_service.close.assert_awaited_once()
+        agent_service_kwargs = mock_agent_service.call_args.kwargs
+        self.assertNotIn("native_input_selection", agent_service_kwargs)
+        self.assertEqual(
+            agent_service_kwargs["native_input_catalog_context"],
+            ActiveRequestContext(
+                user_id="user-1",
+                thread_id="thread-1",
+                organization_id=None,
+                project_id=None,
+                city_id=None,
+                inventory_id=None,
+            ),
+        )
 
     async def test_persist_refreshed_token_from_agent_service(self) -> None:
         handler = StreamingHandler(

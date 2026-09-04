@@ -184,9 +184,7 @@ class StreamingHandler:
                     stationary_energy_surface = True
 
             # Create agent service
-            native_input_catalog_context, native_input_selection = (
-                self._native_input_catalog_request(payload)
-            )
+            native_input_catalog_context = self._native_input_catalog_request(payload)
             self.agent_service = AgentService(
                 cc_access_token=self.cc_access_token,
                 cc_thread_id=self.thread_id,
@@ -198,7 +196,6 @@ class StreamingHandler:
                 stationary_energy_surface=stationary_energy_surface,
                 concept_note_run_id=concept_note_run_id,
                 native_input_catalog_context=native_input_catalog_context,
-                native_input_selection=native_input_selection,
             )
 
             # Get model override from options
@@ -1248,8 +1245,8 @@ class StreamingHandler:
     def _native_input_catalog_request(
         self,
         payload: MessageCreateRequest,
-    ) -> tuple[ActiveRequestContext, Optional[dict[str, str]]]:
-        """Resolve safe catalog scope and selection from the active request."""
+    ) -> ActiveRequestContext:
+        """Resolve safe catalog scope from the active request."""
         sources = (
             payload.context,
             payload.options,
@@ -1266,39 +1263,15 @@ class StreamingHandler:
                     return value.strip()
             return None
 
-        selection: Optional[dict[str, str]] = None
-        for source in sources:
-            if not isinstance(source, dict):
-                continue
-            candidate = source.get("native_input_selection")
-            if not isinstance(candidate, dict):
-                continue
-            catalog_id = candidate.get("catalog_id")
-            capability_id = candidate.get("capability_id")
-            if (
-                isinstance(catalog_id, str)
-                and catalog_id.strip()
-                and isinstance(capability_id, str)
-                and capability_id.strip()
-            ):
-                selection = {
-                    "catalog_id": catalog_id.strip(),
-                    "capability_id": capability_id.strip(),
-                }
-                break
-
-        return (
-            ActiveRequestContext(
-                user_id=self.user_id,
-                thread_id=self.thread_identifier,
-                organization_id=first_value("organization_id"),
-                project_id=first_value("project_id"),
-                city_id=first_value("city_id"),
-                inventory_id=payload.inventory_id or self.inventory_id or first_value(
-                    "inventory_id"
-                ),
+        return ActiveRequestContext(
+            user_id=self.user_id,
+            thread_id=self.thread_identifier,
+            organization_id=first_value("organization_id"),
+            project_id=first_value("project_id"),
+            city_id=first_value("city_id"),
+            inventory_id=payload.inventory_id or self.inventory_id or first_value(
+                "inventory_id"
             ),
-            selection,
         )
 
     @staticmethod

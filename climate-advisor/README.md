@@ -1037,6 +1037,34 @@ These tools:
 - answer inventory/city count questions as "you have access to" summaries using
   totals plus `by_project`
 
+### NativeInputCatalog Runtime Tools
+
+When an authenticated CityCatalyst catalog context is available, Climate
+Advisor registers two fixed tool definitions for the agent:
+`native_input_discover` and `native_input_read`. Discovery calls Core on every
+invocation, so a newly registered authorized entry can appear without
+recreating the agent. Every selected read also goes back through Core, which
+independently revalidates the caller scope, catalog lifecycle, capability
+membership, module readiness, and bounded execution contract.
+
+The v1 model-facing read arguments are limited to camelCase `catalogId`,
+`capabilityId`, and optional `language`; `language` is accepted only for the
+bounded HIAP inventory-context capability. Climate Advisor does not accept an
+arbitrary input object, storage path, credential, signed URL, or raw source
+pointer. CNB producer registration and a bounded CNB capability remain outside
+this integration.
+
+Run the focused runtime catalog regression suite from `climate-advisor/`:
+
+```bash
+uv run --directory service pytest \
+  tests/test_native_input_catalog_service.py \
+  tests/test_native_input_catalog_tools.py \
+  tests/test_agent_service.py \
+  tests/test_streaming_handler.py \
+  tests/test_citycatalyst_client_auth_contract.py -q
+```
+
 ### Stationary Energy Draft Review Boundary
 
 The Stationary Energy review tool pack uses the same scoped CityCatalyst token

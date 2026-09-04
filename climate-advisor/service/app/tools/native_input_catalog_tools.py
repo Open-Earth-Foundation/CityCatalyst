@@ -238,18 +238,15 @@ def build_native_input_catalog_tools(
         description="Discover currently available bounded CityCatalyst inputs.",
         params_json_schema=_DISCOVER_SCHEMA,
         on_invoke_tool=discover,
+        strict_json_schema=False,
     )
     read_tool = FunctionTool(
         name=_READ_TOOL_NAME,
         description="Read one bounded CityCatalyst input capability.",
         params_json_schema=_READ_SCHEMA,
         on_invoke_tool=read,
+        strict_json_schema=False,
     )
-
-    # The Agents SDK normalizes omitted fields into `required`; restore v1's
-    # deliberately optional language contract before model registration.
-    discover_tool.params_json_schema = _DISCOVER_SCHEMA
-    read_tool.params_json_schema = _READ_SCHEMA
     return [discover_tool, read_tool]
 
 

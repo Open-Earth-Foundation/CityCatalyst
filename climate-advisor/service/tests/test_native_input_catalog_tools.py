@@ -161,8 +161,10 @@ def test_tools_expose_only_fixed_discovery_and_finite_read_schemas() -> None:
     """Tool schemas leave no source, scope, storage, or arbitrary-input escape hatch."""
     tools, _, _ = _build(_StubClient())
 
-    discover_schema = getattr(_tool(tools, "native_input_discover"), "params_json_schema")
-    read_schema = getattr(_tool(tools, "native_input_read"), "params_json_schema")
+    discover_tool = _tool(tools, "native_input_discover")
+    read_tool = _tool(tools, "native_input_read")
+    discover_schema = getattr(discover_tool, "params_json_schema")
+    read_schema = getattr(read_tool, "params_json_schema")
 
     assert discover_schema == {
         "type": "object",
@@ -179,6 +181,8 @@ def test_tools_expose_only_fixed_discovery_and_finite_read_schemas() -> None:
         "required": ["catalogId", "capabilityId"],
         "additionalProperties": False,
     }
+    assert getattr(discover_tool, "strict_json_schema") is False
+    assert getattr(read_tool, "strict_json_schema") is False
 
 
 @pytest.mark.asyncio

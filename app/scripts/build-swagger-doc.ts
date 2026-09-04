@@ -162,6 +162,10 @@ function generateOpenAPISpec() {
             description: "Bulk location operations",
           },
           {
+            name: "meed",
+            description: "HIAP MEED module operations",
+          },
+          {
             name: "mock",
             description: "Mock data endpoints",
           },

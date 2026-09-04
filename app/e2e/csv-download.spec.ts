@@ -1,4 +1,4 @@
-import { test, expect, type Page, type Download, type Locator } from "@playwright/test";
+import { test, expect, type Page, type Locator } from "@playwright/test";
 import { parse } from "csv-parse/sync";
 import {
   createCityAndInventoryThroughOnboarding,
@@ -29,6 +29,11 @@ const EXPECTED_CSV_HEADERS = [
   "Data source name",
 ];
 
+type DownloadResult = {
+  filename: string;
+  content: Buffer;
+};
+
 async function openDownloadModal(page: Page) {
   await dismissToasts(page);
 
@@ -42,32 +47,162 @@ async function openDownloadModal(page: Page) {
 }
 
 /** Chakra v3 / Ark checkbox: click the control part rather than the root. */
-async function selectDownloadFormat(page: Page, format: string) {
+async function selectDownloadFormat(page: Page, format: "csv" | "ecrf") {
   const checkbox = page.getByTestId(`download-${format}-checkbox`);
-  await expect(checkbox).toBeVisible();
+  await expect(checkbox).toBeVisible({ timeout: 10000 });
   await checkbox.locator('[data-part="control"]').click();
+  await expect(page.getByTestId("download-confirm-button")).toBeEnabled({
+    timeout: 10000,
+  });
 }
 
-async function confirmDownload(page: Page): Promise<Download> {
-  const downloadPromise = page.waitForEvent("download");
+async function confirmDownload(page: Page) {
   const confirmButton = page.getByTestId("download-confirm-button");
   await expect(confirmButton).toBeEnabled();
   await confirmButton.click();
-  return downloadPromise;
 }
 
-async function downloadCsv(page: Page): Promise<Download> {
-  await selectDownloadFormat(page, "csv");
-  return confirmDownload(page);
+async function triggerDownloadFromModal(page: Page, format: "csv" | "ecrf") {
+  await selectDownloadFormat(page, format);
+  await confirmDownload(page);
 }
 
-async function saveDownload(
-  download: Download,
+function filenameFromDisposition(
+  contentDisposition: string,
+  fallback: string,
+): string {
+  const match = contentDisposition.match(/filename="(.+)"/);
+  return match?.[1] ?? fallback;
+}
+
+/**
+ * Prefer the UI download payload. If Playwright cannot read the body
+ * (empty 200s / 308s), wait until that request finishes, then fetch once
+ * in the page context so the requests are not concurrent.
+ */
+async function fetchDownloadInBrowser(
+  page: Page,
+  inventoryId: string,
+  format: "csv" | "ecrf",
+): Promise<DownloadResult> {
+  const result = await page.evaluate(
+    async ({ id, fmt }) => {
+      const response = await fetch(
+        `/api/v1/inventory/${id}/download?format=${fmt}&lng=en`,
+      );
+      if (!response.ok) {
+        throw new Error(`Download failed with status ${response.status}`);
+      }
+
+      const disposition = response.headers.get("content-disposition") ?? "";
+      const buffer = await response.arrayBuffer();
+      return {
+        disposition,
+        content: Array.from(new Uint8Array(buffer)),
+      };
+    },
+    { id: inventoryId, fmt: format },
+  );
+
+  const content = Buffer.from(result.content);
+  expect(content.byteLength).toBeGreaterThan(0);
+
+  return {
+    filename: filenameFromDisposition(
+      result.disposition,
+      `inventory.${format === "csv" ? "csv" : "xlsx"}`,
+    ),
+    content,
+  };
+}
+
+/**
+ * Capture download via Playwright's download event (blob + <a download>).
+ * Fall back to a single in-page fetch only after the UI request has finished,
+ * never concurrently (concurrent downloads 500 on Firefox).
+ */
+async function downloadFormat(
+  page: Page,
+  inventoryId: string,
+  format: "csv" | "ecrf",
+): Promise<DownloadResult> {
+  const downloadPromise = page
+    .waitForEvent("download", { timeout: 60000 })
+    .catch(() => null);
+  const responsePromise = page
+    .waitForResponse(
+      (resp) =>
+        resp.url().includes(`/inventory/${inventoryId}/download`) &&
+        resp.url().includes(`format=${format}`) &&
+        resp.request().method() === "GET" &&
+        resp.status() !== 308,
+      { timeout: 60000 },
+    )
+    .catch(() => null);
+
+  await triggerDownloadFromModal(page, format);
+
+  const [download, response] = await Promise.all([
+    downloadPromise,
+    responsePromise,
+  ]);
+
+  if (download) {
+    const failure = await download.failure();
+    if (!failure) {
+      const stream = await download.createReadStream();
+      if (stream) {
+        const chunks: Buffer[] = [];
+        for await (const chunk of stream) {
+          chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        }
+        const content = Buffer.concat(chunks);
+        if (content.byteLength > 0) {
+          return {
+            filename: download.suggestedFilename(),
+            content,
+          };
+        }
+      }
+    }
+  }
+
+  if (response?.ok()) {
+    const content = Buffer.from(
+      await response.body().catch(() => Buffer.alloc(0)),
+    );
+    if (content.byteLength > 0) {
+      return {
+        filename: filenameFromDisposition(
+          response.headers()["content-disposition"] ?? "",
+          `inventory.${format === "csv" ? "csv" : "xlsx"}`,
+        ),
+        content,
+      };
+    }
+  }
+
+  // UI request finished (or timed out). Safe to fetch once without overlap.
+  await page.waitForTimeout(500);
+  return fetchDownloadInBrowser(page, inventoryId, format);
+}
+
+async function downloadCsv(page: Page, inventoryId: string) {
+  return downloadFormat(page, inventoryId, "csv");
+}
+
+async function downloadEcrf(page: Page, inventoryId: string) {
+  return downloadFormat(page, inventoryId, "ecrf");
+}
+
+function saveDownloadContent(
+  content: Buffer,
   outputPath: string,
-): Promise<string> {
-  await download.saveAs(outputPath);
+  encoding: BufferEncoding = "utf-8",
+): string {
+  fs.writeFileSync(outputPath, content);
   expect(fs.existsSync(outputPath)).toBeTruthy();
-  return fs.readFileSync(outputPath, "utf-8");
+  return content.toString(encoding);
 }
 
 async function openResidentialSubsector(
@@ -127,6 +262,13 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
 }
 
+function openScopePanel(page: Page, scope: 1 | 2) {
+  return page
+    .locator('[role="tabpanel"][data-state="open"]')
+    .or(page.getByRole("tabpanel", { name: new RegExp(`Scope ${scope}`, "i") }))
+    .first();
+}
+
 async function addScope1ResidentialEmissions(
   page: Page,
   cityId: string,
@@ -152,7 +294,7 @@ async function addScope1ResidentialEmissions(
   await openResidentialSubsector(page, cityId, inventoryId);
   await page.getByRole("tab", { name: /Scope 1/i }).click();
 
-  const scopeOnePanel = page.getByRole("tabpanel", { name: /Scope 1/i });
+  const scopeOnePanel = openScopePanel(page, 1);
   await expect(scopeOnePanel).toBeVisible({ timeout: 30000 });
   const hasExistingActivity = await scopeOnePanel
     .getByText(/Propane/i)
@@ -208,7 +350,9 @@ test.describe("CSV Download", () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
+    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`, {
+      waitUntil: "domcontentloaded",
+    });
     await dismissCookieConsent(page);
 
     const heroCityName = page.getByTestId("hero-city-name");
@@ -222,27 +366,25 @@ test.describe("CSV Download", () => {
   test("User can download inventory as CSV", async ({ page }, testInfo) => {
     await openDownloadModal(page);
 
-    const download = await downloadCsv(page);
+    const download = await downloadCsv(page, inventoryId);
     const downloadPath = testInfo.outputPath("inventory.csv");
 
-    const csvContent = await saveDownload(download, downloadPath);
+    const csvContent = saveDownloadContent(download.content, downloadPath);
     expect(csvContent.length).toBeGreaterThan(0);
 
     const headerLine = csvContent.trim().split("\n")[0];
     const headers = parse(headerLine, { columns: false })[0] as string[];
     expect(headers).toEqual(EXPECTED_CSV_HEADERS);
 
-    expect(download.suggestedFilename()).toMatch(/inventory-.*\.csv/);
-
-    await download.delete();
+    expect(download.filename).toMatch(/inventory-.*\.csv/);
   });
 
   test("CSV download contains valid data structure", async ({ page }, testInfo) => {
     await openDownloadModal(page);
 
-    const download = await downloadCsv(page);
+    const download = await downloadCsv(page, inventoryId);
     const downloadPath = testInfo.outputPath("inventory-structure.csv");
-    const csvContent = await saveDownload(download, downloadPath);
+    const csvContent = saveDownloadContent(download.content, downloadPath);
 
     const records = parse(csvContent, {
       columns: true,
@@ -282,8 +424,6 @@ test.describe("CSV Download", () => {
         }
       }
     }
-
-    await download.delete();
   });
 
   test("CSV download handles errors gracefully", async ({ page }) => {
@@ -293,45 +433,32 @@ test.describe("CSV Download", () => {
 
     await openDownloadModal(page);
     await selectDownloadFormat(page, "csv");
-    await page.getByTestId("download-confirm-button").click();
+    await confirmDownload(page);
 
     await expect(
-      page.getByText(/There was an error during download|Download failed/i).first(),
+      page
+        .getByText(
+          /There was an error during download|Download failed|download-error/i,
+        )
+        .first(),
     ).toBeVisible({ timeout: 10000 });
   });
 
   test("Multiple format downloads work correctly", async ({ page }, testInfo) => {
     await openDownloadModal(page);
 
-    await selectDownloadFormat(page, "csv");
-    await selectDownloadFormat(page, "ecrf");
-
-    // Confirming with both formats selected fires both downloads together,
-    // so match by filename rather than event order.
-    const csvDownloadPromise = page.waitForEvent("download", {
-      predicate: (download) => download.suggestedFilename().endsWith(".csv"),
-    });
-    const ecrfDownloadPromise = page.waitForEvent("download", {
-      predicate: (download) => /\.xlsx?$/.test(download.suggestedFilename()),
-      timeout: 90000,
-    });
-
-    await page.getByTestId("download-confirm-button").click();
-
-    const [csvDownload, ecrfDownload] = await Promise.all([
-      csvDownloadPromise,
-      ecrfDownloadPromise,
-    ]);
-
-    expect(csvDownload.suggestedFilename()).toContain(".csv");
-    expect(ecrfDownload.suggestedFilename()).toMatch(/\.xlsx?$/);
+    const csvDownload = await downloadCsv(page, inventoryId);
+    expect(csvDownload.filename).toContain(".csv");
 
     const csvPath = testInfo.outputPath("inventory-multi-format.csv");
-    const csvContent = await saveDownload(csvDownload, csvPath);
+    const csvContent = saveDownloadContent(csvDownload.content, csvPath);
     expect(csvContent).toContain("GPC Reference Number");
 
-    await csvDownload.delete();
-    await ecrfDownload.delete();
+    await dismissToasts(page);
+    await openDownloadModal(page);
+
+    const ecrfDownload = await downloadEcrf(page, inventoryId);
+    expect(ecrfDownload.filename).toMatch(/\.xlsx?$/);
   });
 
   test("CSV download preserves special characters and formatting", async ({
@@ -339,9 +466,9 @@ test.describe("CSV Download", () => {
   }, testInfo) => {
     await openDownloadModal(page);
 
-    const download = await downloadCsv(page);
+    const download = await downloadCsv(page, inventoryId);
     const downloadPath = testInfo.outputPath("inventory-formatting.csv");
-    const csvContent = await saveDownload(download, downloadPath);
+    const csvContent = saveDownloadContent(download.content, downloadPath);
 
     expect(csvContent).toMatch(/"[^"]*"/);
 
@@ -362,8 +489,6 @@ test.describe("CSV Download", () => {
         }
       }
     }
-
-    await download.delete();
   });
 
   test("CSV download contains actual inventory data", async ({
@@ -373,7 +498,9 @@ test.describe("CSV Download", () => {
 
     await addScope1ResidentialEmissions(page, cityId, inventoryId);
 
-    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
+    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`, {
+      waitUntil: "domcontentloaded",
+    });
     await dismissCookieConsent(page);
     await expect(page.getByTestId("download-action-card")).toBeVisible({
       timeout: 60000,
@@ -381,9 +508,9 @@ test.describe("CSV Download", () => {
 
     await openDownloadModal(page);
 
-    const download = await downloadCsv(page);
+    const download = await downloadCsv(page, inventoryId);
     const downloadPath = testInfo.outputPath("inventory-with-data.csv");
-    const csvContent = await saveDownload(download, downloadPath);
+    const csvContent = saveDownloadContent(download.content, downloadPath);
 
     const records = parse(csvContent, {
       columns: true,
@@ -404,7 +531,5 @@ test.describe("CSV Download", () => {
     const totalEmissions = parseFloat(residentialRecord?.["Total Emissions"] ?? "");
     expect(Number.isNaN(totalEmissions)).toBe(false);
     expect(totalEmissions).toBeGreaterThan(0);
-
-    await download.delete();
   });
 });

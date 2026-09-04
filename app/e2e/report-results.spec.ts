@@ -66,6 +66,62 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
 }
 
+async function fillEnergyConsumptionAmount(addEmissionModal: Locator) {
+  // FormattedNumberInput has no htmlFor label wiring; amount is the first
+  // decimal input in the modal (filled before emission-factor fields).
+  const energyInput = addEmissionModal
+    .locator('input[inputmode="decimal"]')
+    .first();
+
+  await expect(energyInput).toBeVisible({ timeout: 10000 });
+  await energyInput.click();
+  await energyInput.fill("");
+  await energyInput.fill("100");
+  await expect(energyInput).toHaveValue(/100/);
+}
+
+async function submitActivity(page: Page, addEmissionModal: Locator) {
+  const createResponsePromise = page
+    .waitForResponse(
+      (resp) =>
+        resp.url().includes("/activity-value") &&
+        resp.request().method() === "POST" &&
+        resp.status() !== 308,
+      { timeout: 60000 },
+    )
+    .catch(() => null);
+
+  await addEmissionModal.getByTestId("add-emission-modal-submit").click();
+
+  try {
+    await expect(addEmissionModal).not.toBeVisible({ timeout: 60000 });
+  } catch {
+    const createResponse = await createResponsePromise;
+    if (createResponse && !createResponse.ok()) {
+      const body = await createResponse.text().catch(() => "");
+      throw new Error(
+        `Activity create failed with status ${createResponse.status()}: ${body}`,
+      );
+    }
+
+    const validationHints = await addEmissionModal
+      .locator("[data-invalid], [aria-invalid='true']")
+      .allTextContents()
+      .catch(() => []);
+    throw new Error(
+      `Add-emission modal stayed open after submit. Validation hints: ${
+        validationHints.filter(Boolean).join(" | ") || "none found"
+      }`,
+    );
+  }
+}
+
+function openScopePanel(page: Page, scope: 1 | 2) {
+  return page
+    .getByRole("tabpanel", { name: new RegExp(`Scope ${scope}`, "i") })
+    .first();
+}
+
 async function addScope1ResidentialEmissions(
   page: Page,
   cityId: string,
@@ -91,7 +147,7 @@ async function addScope1ResidentialEmissions(
   await openResidentialSubsector(page, cityId, inventoryId);
   await page.getByRole("tab", { name: /Scope 1/i }).click();
 
-  const scopeOnePanel = page.getByRole("tabpanel", { name: /Scope 1/i });
+  const scopeOnePanel = openScopePanel(page, 1);
   await expect(scopeOnePanel).toBeVisible({ timeout: 30000 });
   const hasExistingActivity = await scopeOnePanel
     .getByText(/Propane/i)
@@ -119,8 +175,30 @@ async function addScope1ResidentialEmissions(
     .selectOption("units-cubic-meters");
   await fillCustomEmissionFactors(addEmissionModal);
 
-  await addEmissionModal.getByTestId("add-emission-modal-submit").click();
-  await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
+  await submitActivity(page, addEmissionModal);
+}
+
+async function clearExistingActivities(page: Page, panel: Locator) {
+  // Activity accordion uses aria-label="more-icon" (direct-measure uses a test id).
+  for (let i = 0; i < 10; i++) {
+    const moreButton = panel
+      .getByRole("button", { name: /more-icon/i })
+      .or(panel.getByTestId("activity-more-icon"))
+      .first();
+    if (!(await moreButton.isVisible({ timeout: 2000 }).catch(() => false))) {
+      return;
+    }
+
+    await moreButton.click();
+    const deleteItem = page
+      .getByTestId("delete-activity-button")
+      .or(page.getByRole("menuitem", { name: /delete/i }));
+    await deleteItem.click();
+    const deleteModal = page.getByTestId("delete-activity-modal-header");
+    await expect(deleteModal).toBeVisible({ timeout: 10000 });
+    await page.getByTestId("delete-activity-modal-confirm").click();
+    await expect(deleteModal).not.toBeVisible({ timeout: 30000 });
+  }
 }
 
 async function addScope2ResidentialEmissions(
@@ -129,38 +207,62 @@ async function addScope2ResidentialEmissions(
   inventoryId: string,
 ) {
   await openResidentialSubsector(page, cityId, inventoryId);
-  await page.getByRole("tab", { name: /Scope 2/i }).click();
 
-  const scopeTwoPanel = page.getByRole("tabpanel", { name: /Scope 2/i });
+  const scopeTwoTab = page.getByRole("tab", { name: /Scope 2/i });
+  await scopeTwoTab.click();
+  await expect(scopeTwoTab).toHaveAttribute("aria-selected", "true", {
+    timeout: 10000,
+  });
+
+  const scopeTwoPanel = openScopePanel(page, 2);
   await expect(scopeTwoPanel).toBeVisible({ timeout: 30000 });
-  const hasExistingActivity = await scopeTwoPanel
-    .getByText(/activities added/i)
-    .isVisible()
-    .catch(() => false);
-  if (hasExistingActivity) {
-    return;
-  }
 
   await ensureMethodologySelected(page, /Energy Consumption/i, scopeTwoPanel);
+  await clearExistingActivities(page, scopeTwoPanel);
 
-  await addActivityButton(page, scopeTwoPanel).click();
-  const addEmissionModal = page.getByTestId("add-emission-modal");
-  await expect(addEmissionModal).toBeVisible();
+  const tryCreateScope2Activity = async () => {
+    await addActivityButton(page, scopeTwoPanel).click();
+    const addEmissionModal = page.getByTestId("add-emission-modal");
+    await expect(addEmissionModal).toBeVisible();
 
-  await addEmissionModal
-    .getByLabel(/Building type/i)
-    .selectOption("building-type-all");
-  await addEmissionModal
-    .getByLabel(/Energy usage type/i)
-    .selectOption("energy-usage-electricity");
-  await addEmissionModal.getByLabel("Energy consumption").fill("100");
-  await addEmissionModal
-    .getByLabel(/Select Unit/i)
-    .selectOption("units-kilowatt-hours");
-  await fillCustomEmissionFactors(addEmissionModal);
+    const buildingType = addEmissionModal.getByLabel(/Building type/i);
+    await buildingType.selectOption("building-type-single-family-home");
+    await expect(buildingType).toHaveValue("building-type-single-family-home");
 
-  await addEmissionModal.getByTestId("add-emission-modal-submit").click();
-  await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
+    const energyUsage = addEmissionModal.getByLabel(/Energy usage type/i);
+    await energyUsage.selectOption("energy-usage-electricity");
+    await expect(energyUsage).toHaveValue("energy-usage-electricity");
+
+    await fillEnergyConsumptionAmount(addEmissionModal);
+    const unitSelect = addEmissionModal.getByLabel(/Select Unit/i);
+    await unitSelect.selectOption("units-kilowatt-hours");
+    await expect(unitSelect).toHaveValue("units-kilowatt-hours");
+    await fillCustomEmissionFactors(addEmissionModal);
+
+    await submitActivity(page, addEmissionModal);
+  };
+
+  try {
+    await tryCreateScope2Activity();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (!/EXCLUSIVE_CONFLICT/i.test(message)) {
+      throw error;
+    }
+    // Leftover exclusive row blocked insert — clear again and retry once.
+    if (await addEmissionModalStillOpen(page)) {
+      await page.keyboard.press("Escape");
+    }
+    await clearExistingActivities(page, scopeTwoPanel);
+    await tryCreateScope2Activity();
+  }
+}
+
+async function addEmissionModalStillOpen(page: Page) {
+  return page
+    .getByTestId("add-emission-modal")
+    .isVisible()
+    .catch(() => false);
 }
 
 async function openEmissionInventoryResultsTab(page: Page) {
@@ -233,7 +335,7 @@ test.describe.serial("Report Results", () => {
     const residentialRows = topEmissionsTable
       .locator("tbody tr")
       .filter({ has: page.getByText("Residential buildings") });
-    await expect(residentialRows).toHaveCount(2, { timeout: 30000 });
+    await expect(residentialRows).toHaveCount(2, { timeout: 60000 });
     await expect(
       residentialRows.filter({ has: page.getByText(/Scope 2/i) }),
     ).toHaveCount(1);

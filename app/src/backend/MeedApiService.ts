@@ -513,9 +513,11 @@ export default class MeedApiService {
       },
       debugContextOnly,
     };
-    console.log("DATA", JSON.stringify(data, null, 2));
     const result = await this.makeRequest("reports/output-plan", data);
-    console.log(result);
+    logger.info(
+      { inventoryId, languages, actionId, result, data },
+      "MEED output plan route finished",
+    );
 
     // save result to database
     const report = await db.models.MeedActionReport.create({

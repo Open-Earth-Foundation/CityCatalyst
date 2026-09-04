@@ -104,19 +104,21 @@ def _fixture_catalog_id(
     if not isinstance(entries, list):
         return None
 
-    catalog_ids: list[str] = []
+    marked_entries: list[dict[str, object]] = []
     for entry in entries:
         if not isinstance(entry, dict):
             continue
         labels = entry.get("labels")
-        catalog_id = entry.get("catalog_id")
         if (
             isinstance(labels, dict)
             and labels.get(DYNAMIC_FIXTURE_MARKER_LABEL) == fixture_marker
-            and isinstance(catalog_id, str)
         ):
-            catalog_ids.append(catalog_id)
-    return catalog_ids[0] if len(catalog_ids) == 1 else None
+            marked_entries.append(entry)
+
+    if len(marked_entries) != 1:
+        return None
+    catalog_id = marked_entries[0].get("catalog_id")
+    return catalog_id if isinstance(catalog_id, str) else None
 
 
 def _contract_env() -> dict[str, str]:
@@ -149,6 +151,30 @@ def _dynamic_contract_env() -> dict[str, str]:
     if os.environ.get("CA_AUTH_CONTRACT_ALLOW_CATALOG_MUTATION") != "1":
         pytest.skip("Dynamic catalog mutation requires explicit opt-in")
     return env
+
+
+def test_fixture_catalog_recovery_rejects_ambiguous_marker_with_malformed_id() -> None:
+    fixture_marker = "one-live-execution"
+    discovery: dict[str, object] = {
+        "data": {
+            "entries": [
+                {
+                    "catalog_id": DYNAMIC_CATALOG_ID,
+                    "labels": {
+                        DYNAMIC_FIXTURE_MARKER_LABEL: fixture_marker,
+                    },
+                },
+                {
+                    "catalog_id": None,
+                    "labels": {
+                        DYNAMIC_FIXTURE_MARKER_LABEL: fixture_marker,
+                    },
+                },
+            ]
+        }
+    }
+
+    assert _fixture_catalog_id(discovery, fixture_marker) is None
 
 
 @pytest.mark.parametrize(

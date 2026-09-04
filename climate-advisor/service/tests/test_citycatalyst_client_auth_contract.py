@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from ipaddress import ip_address
 from urllib.parse import urlsplit
+from uuid import uuid4
 
 import httpx
 import pytest
@@ -23,6 +25,7 @@ DYNAMIC_CITY_ID = "22222222-2222-4222-8222-222222222222"
 DYNAMIC_INVENTORY_ID = "33333333-3333-4333-8333-333333333333"
 DYNAMIC_CAPABILITY_ID = "ghgi.inventory.status_overview"
 DYNAMIC_FIXTURE_LABEL = "CC-737 dynamic contract fixture"
+DYNAMIC_FIXTURE_MARKER_LABEL = "cc_737_dynamic_contract_marker"
 SAFE_DISCOVERY_KEYS = frozenset(
     {
         "catalog_id",
@@ -90,13 +93,16 @@ def _assert_safe_discovery_entry(entry: dict[str, object]) -> None:
     )
 
 
-def _fixture_catalog_ids(discovery: dict[str, object]) -> list[str]:
+def _fixture_catalog_id(
+    discovery: dict[str, object],
+    fixture_marker: str,
+) -> str | None:
     data = discovery.get("data")
     if not isinstance(data, dict):
-        return []
+        return None
     entries = data.get("entries")
     if not isinstance(entries, list):
-        return []
+        return None
 
     catalog_ids: list[str] = []
     for entry in entries:
@@ -106,11 +112,11 @@ def _fixture_catalog_ids(discovery: dict[str, object]) -> list[str]:
         catalog_id = entry.get("catalog_id")
         if (
             isinstance(labels, dict)
-            and labels.get("display_name") == DYNAMIC_FIXTURE_LABEL
+            and labels.get(DYNAMIC_FIXTURE_MARKER_LABEL) == fixture_marker
             and isinstance(catalog_id, str)
         ):
             catalog_ids.append(catalog_id)
-    return catalog_ids
+    return catalog_ids[0] if len(catalog_ids) == 1 else None
 
 
 def _contract_env() -> dict[str, str]:
@@ -225,6 +231,7 @@ def _dynamic_registration_payload(
     user_id: str,
     city_id: str,
     inventory_id: str,
+    fixture_marker: str,
 ) -> dict[str, object]:
     return {
         "kind": "inventory_import",
@@ -234,7 +241,10 @@ def _dynamic_registration_payload(
         "userId": user_id,
         "cityId": city_id,
         "inventoryId": inventory_id,
-        "labels": {"display_name": DYNAMIC_FIXTURE_LABEL},
+        "labels": {
+            "display_name": DYNAMIC_FIXTURE_LABEL,
+            DYNAMIC_FIXTURE_MARKER_LABEL: fixture_marker,
+        },
     }
 
 
@@ -332,6 +342,7 @@ async def test_native_input_catalog_dynamic_runtime_sequence_uses_bounded_camel_
                 user_id=DYNAMIC_USER_ID,
                 city_id=DYNAMIC_CITY_ID,
                 inventory_id=DYNAMIC_INVENTORY_ID,
+                fixture_marker="in-process-contract-fixture",
             ),
             token="test-token",
             refresh_user_id=DYNAMIC_USER_ID,
@@ -394,6 +405,84 @@ async def test_native_input_catalog_dynamic_runtime_sequence_uses_bounded_camel_
 
 
 @pytest.mark.asyncio
+async def test_dynamic_live_contract_never_withdraws_idempotent_registration(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    existing_catalog_id = "dddddddd-dddd-4ddd-8ddd-dddddddddddd"
+    withdrawals: list[list[str]] = []
+
+    class IdempotentRegistrationClient:
+        def __init__(self, **_kwargs: object) -> None:
+            self.discovery_calls = 0
+
+        async def __aenter__(self) -> IdempotentRegistrationClient:
+            return self
+
+        async def __aexit__(self, *_args: object) -> None:
+            return None
+
+        async def refresh_token(self, _user_id: str) -> tuple[str, int]:
+            return "test-token", 3600
+
+        async def discover_native_inputs(self, **_kwargs: object) -> dict[str, object]:
+            self.discovery_calls += 1
+            entries: list[dict[str, object]] = []
+            if self.discovery_calls > 1:
+                entries.append(
+                    {
+                        "catalog_id": existing_catalog_id,
+                        "kind": "inventory_import",
+                        "owning_module": "ghgi",
+                        "source_type": "inventory",
+                        "capability_ids": [DYNAMIC_CAPABILITY_ID],
+                    }
+                )
+            return {"data": {"entries": entries}}
+
+        async def post_internal_capability(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+            return {
+                "data": {"id": existing_catalog_id},
+                "created": False,
+            }
+
+        async def read_native_input(self, **_kwargs: object) -> dict[str, object]:
+            return {
+                "action": DYNAMIC_CAPABILITY_ID,
+                "success": True,
+                "data": {"status": "ready"},
+            }
+
+    async def record_withdrawal(*, catalog_ids: list[str], **_kwargs: object) -> None:
+        withdrawals.append(catalog_ids)
+
+    module = sys.modules[__name__]
+    monkeypatch.setattr(
+        module,
+        "_dynamic_contract_env",
+        lambda: {
+            "base_url": "http://localhost:3000",
+            "api_key": "test-service-key",
+            "user_id": DYNAMIC_USER_ID,
+            "other_user_id": "other-user",
+            "city_id": DYNAMIC_CITY_ID,
+            "inventory_id": DYNAMIC_INVENTORY_ID,
+        },
+    )
+    monkeypatch.setattr(module, "CityCatalystClient", IdempotentRegistrationClient)
+    monkeypatch.setattr(module, "_withdraw_live_catalog_entries", record_withdrawal)
+
+    captured_error: AssertionError | None = None
+    try:
+        await test_dynamic_runtime_sequence_against_running_core()
+    except AssertionError as error:
+        captured_error = error
+
+    assert withdrawals == []
+    assert captured_error is not None
+    assert "must create a new catalog entry" in str(captured_error)
+
+
+@pytest.mark.asyncio
 async def test_dynamic_runtime_sequence_against_running_core() -> None:
     env = _dynamic_contract_env()
     discovery_payload = _dynamic_discovery_payload(
@@ -402,7 +491,8 @@ async def test_dynamic_runtime_sequence_against_running_core() -> None:
         inventory_id=env["inventory_id"],
     )
     registered_catalog_id: str | None = None
-    registration_attempted = False
+    registration_created = False
+    fixture_marker = uuid4().hex
 
     async with CityCatalystClient(
         base_url=env["base_url"],
@@ -422,16 +512,20 @@ async def test_dynamic_runtime_sequence_against_running_core() -> None:
                 "fixture scope; reset the configured fixture explicitly"
             )
 
-            registration_attempted = True
             registration = await client.post_internal_capability(
                 "/api/v1/internal/native-input-catalog",
                 json_data=_dynamic_registration_payload(
                     user_id=env["user_id"],
                     city_id=env["city_id"],
                     inventory_id=env["inventory_id"],
+                    fixture_marker=fixture_marker,
                 ),
                 token=token,
                 refresh_user_id=env["user_id"],
+            )
+            registration_created = registration.get("created") is True
+            assert registration_created, (
+                "Dynamic catalog registration must create a new catalog entry"
             )
             registration_data = registration.get("data")
             assert isinstance(registration_data, dict)
@@ -477,22 +571,23 @@ async def test_dynamic_runtime_sequence_against_running_core() -> None:
             assert selected_read["success"] is True
             assert isinstance(selected_read["data"], dict)
         finally:
-            cleanup_ids = (
-                [registered_catalog_id] if registered_catalog_id else []
-            )
-            if registration_attempted and not cleanup_ids:
+            cleanup_catalog_id = registered_catalog_id if registration_created else None
+            if registration_created and cleanup_catalog_id is None:
                 cleanup_discovery = await client.discover_native_inputs(
                     request_payload=discovery_payload,
                     token=token,
                     user_id=env["user_id"],
                     thread_id="dynamic-live-contract-cleanup",
                 )
-                cleanup_ids = _fixture_catalog_ids(cleanup_discovery)
-            if cleanup_ids:
+                cleanup_catalog_id = _fixture_catalog_id(
+                    cleanup_discovery,
+                    fixture_marker,
+                )
+            if cleanup_catalog_id:
                 await _withdraw_live_catalog_entries(
                     base_url=env["base_url"],
                     api_key=env["api_key"],
-                    catalog_ids=cleanup_ids,
+                    catalog_ids=[cleanup_catalog_id],
                 )
 
 

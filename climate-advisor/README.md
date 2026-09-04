@@ -1068,8 +1068,9 @@ uv run --directory service pytest \
 The environment-gated dynamic running-Core case additionally requires a
 loopback `CC_BASE_URL`, an isolated empty local fixture scope, and explicit
 `CA_AUTH_CONTRACT_ALLOW_CATALOG_MUTATION=1` opt-in. It refuses remote hosts or
-pre-existing entries and withdraws only the entry it registered during the
-test.
+pre-existing entries. It fails closed without withdrawal when registration
+reports `created: false`; after a confirmed creation, it withdraws only the
+returned ID or a single entry recovered by that execution's unique marker.
 
 ### Stationary Energy Draft Review Boundary
 

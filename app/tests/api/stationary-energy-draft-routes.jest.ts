@@ -153,16 +153,19 @@ describe("Stationary Energy draft routes", () => {
     gasToCo2EqSpy.mockResolvedValue([
       db.models.GasToCO2Eq.build({
         gas: "CO2",
+        gwpVersion: "ar5",
         co2eqPerKg: 1,
         co2eqYears: 100,
       }),
       db.models.GasToCO2Eq.build({
         gas: "CH4",
+        gwpVersion: "ar5",
         co2eqPerKg: 28,
         co2eqYears: 100,
       }),
       db.models.GasToCO2Eq.build({
         gas: "N2O",
+        gwpVersion: "ar5",
         co2eqPerKg: 265,
         co2eqYears: 100,
       }),

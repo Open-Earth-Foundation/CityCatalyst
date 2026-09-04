@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import os
+from ipaddress import ip_address
+from urllib.parse import urlsplit
 
 import httpx
 import pytest
@@ -20,6 +22,95 @@ DYNAMIC_USER_ID = "11111111-1111-4111-8111-111111111111"
 DYNAMIC_CITY_ID = "22222222-2222-4222-8222-222222222222"
 DYNAMIC_INVENTORY_ID = "33333333-3333-4333-8333-333333333333"
 DYNAMIC_CAPABILITY_ID = "ghgi.inventory.status_overview"
+DYNAMIC_FIXTURE_LABEL = "CC-737 dynamic contract fixture"
+SAFE_DISCOVERY_KEYS = frozenset(
+    {
+        "catalog_id",
+        "kind",
+        "owning_module",
+        "source_type",
+        "capability_ids",
+        "labels",
+    }
+)
+REQUIRED_DISCOVERY_KEYS = SAFE_DISCOVERY_KEYS - {"labels"}
+FORBIDDEN_CONTRACT_KEYS = frozenset(
+    {
+        "accesskeyid",
+        "authorization",
+        "bearertoken",
+        "clientsecret",
+        "credentials",
+        "objectkey",
+        "password",
+        "privatekey",
+        "s3key",
+        "secretaccesskey",
+        "signedurl",
+        "sourceid",
+        "storagepath",
+        "token",
+    }
+)
+FORBIDDEN_DISCOVERY_KEYS = FORBIDDEN_CONTRACT_KEYS | {
+    "cityid",
+    "inventoryid",
+    "organizationid",
+    "projectid",
+    "userid",
+}
+
+
+def _normalized_keys(value: object) -> set[str]:
+    keys: set[str] = set()
+    if isinstance(value, dict):
+        for key, child in value.items():
+            keys.add(str(key).lower().replace("_", "").replace("-", ""))
+            keys.update(_normalized_keys(child))
+    elif isinstance(value, list):
+        for child in value:
+            keys.update(_normalized_keys(child))
+    return keys
+
+
+def _assert_no_forbidden_contract_fields(
+    value: object,
+    *,
+    forbidden: frozenset[str] = FORBIDDEN_CONTRACT_KEYS,
+) -> None:
+    assert _normalized_keys(value).isdisjoint(forbidden)
+
+
+def _assert_safe_discovery_entry(entry: dict[str, object]) -> None:
+    assert REQUIRED_DISCOVERY_KEYS <= entry.keys()
+    assert entry.keys() <= SAFE_DISCOVERY_KEYS
+    _assert_no_forbidden_contract_fields(
+        entry,
+        forbidden=FORBIDDEN_DISCOVERY_KEYS,
+    )
+
+
+def _fixture_catalog_ids(discovery: dict[str, object]) -> list[str]:
+    data = discovery.get("data")
+    if not isinstance(data, dict):
+        return []
+    entries = data.get("entries")
+    if not isinstance(entries, list):
+        return []
+
+    catalog_ids: list[str] = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        labels = entry.get("labels")
+        catalog_id = entry.get("catalog_id")
+        if (
+            isinstance(labels, dict)
+            and labels.get("display_name") == DYNAMIC_FIXTURE_LABEL
+            and isinstance(catalog_id, str)
+        ):
+            catalog_ids.append(catalog_id)
+    return catalog_ids
 
 
 def _contract_env() -> dict[str, str]:
@@ -38,6 +129,58 @@ def _contract_env() -> dict[str, str]:
             + ", ".join(sorted(missing))
         )
     return {name: value for name, value in required.items() if value}
+
+
+def _dynamic_contract_env() -> dict[str, str]:
+    env = _contract_env()
+    hostname = urlsplit(env["base_url"]).hostname
+    try:
+        is_loopback = bool(hostname) and ip_address(hostname).is_loopback
+    except ValueError:
+        is_loopback = hostname == "localhost"
+    if not is_loopback:
+        pytest.skip("Dynamic catalog mutation requires a loopback Core hostname")
+    if os.environ.get("CA_AUTH_CONTRACT_ALLOW_CATALOG_MUTATION") != "1":
+        pytest.skip("Dynamic catalog mutation requires explicit opt-in")
+    return env
+
+
+@pytest.mark.parametrize(
+    ("base_url", "mutation_opt_in", "expected_reason"),
+    [
+        ("https://core.example", "1", "loopback"),
+        ("http://localhost:3000", None, "explicit opt-in"),
+    ],
+)
+def test_dynamic_contract_rejects_unsafe_execution_context(
+    monkeypatch: pytest.MonkeyPatch,
+    base_url: str,
+    mutation_opt_in: str | None,
+    expected_reason: str,
+) -> None:
+    contract_env = {
+        "CC_BASE_URL": base_url,
+        "CC_API_KEY": "test-service-key",
+        "CA_AUTH_CONTRACT_USER_ID": DYNAMIC_USER_ID,
+        "CA_AUTH_CONTRACT_OTHER_USER_ID": "other-user",
+        "CA_AUTH_CONTRACT_CITY_ID": DYNAMIC_CITY_ID,
+        "CA_AUTH_CONTRACT_INVENTORY_ID": DYNAMIC_INVENTORY_ID,
+    }
+    for name, value in contract_env.items():
+        monkeypatch.setenv(name, value)
+    if mutation_opt_in is None:
+        monkeypatch.delenv(
+            "CA_AUTH_CONTRACT_ALLOW_CATALOG_MUTATION",
+            raising=False,
+        )
+    else:
+        monkeypatch.setenv(
+            "CA_AUTH_CONTRACT_ALLOW_CATALOG_MUTATION",
+            mutation_opt_in,
+        )
+
+    with pytest.raises(pytest.skip.Exception, match=expected_reason):
+        _dynamic_contract_env()
 
 
 async def _withdraw_live_catalog_entries(
@@ -91,7 +234,7 @@ def _dynamic_registration_payload(
         "userId": user_id,
         "cityId": city_id,
         "inventoryId": inventory_id,
-        "labels": {"display_name": "CC-737 dynamic contract fixture"},
+        "labels": {"display_name": DYNAMIC_FIXTURE_LABEL},
     }
 
 
@@ -223,6 +366,7 @@ async def test_native_input_catalog_dynamic_runtime_sequence_uses_bounded_camel_
             "capability_ids": [DYNAMIC_CAPABILITY_ID],
         }
     ]
+    _assert_safe_discovery_entry(second_discovery["data"]["entries"][0])
     assert selected_read == {
         "action": DYNAMIC_CAPABILITY_ID,
         "success": True,
@@ -242,57 +386,29 @@ async def test_native_input_catalog_dynamic_runtime_sequence_uses_bounded_camel_
             inventory_id=DYNAMIC_INVENTORY_ID,
         )
     ]
-    serialized_request = json.dumps(read_requests[0]).lower()
-    assert "catalogid" in serialized_request
-    assert "capabilityid" in serialized_request
+    assert "catalogId" in read_requests[0]
+    assert "capabilityId" in read_requests[0]
     assert "catalog_id" not in read_requests[0]
     assert "capability_id" not in read_requests[0]
-    assert all(
-        forbidden not in serialized_request
-        for forbidden in (
-            "credentials",
-            "s3_key",
-            "signed_url",
-            "storage_path",
-            "token",
-        )
-    )
+    _assert_no_forbidden_contract_fields(read_requests[0])
 
 
 @pytest.mark.asyncio
 async def test_dynamic_runtime_sequence_against_running_core() -> None:
-    env = _contract_env()
+    env = _dynamic_contract_env()
     discovery_payload = _dynamic_discovery_payload(
         user_id=env["user_id"],
         city_id=env["city_id"],
         inventory_id=env["inventory_id"],
     )
     registered_catalog_id: str | None = None
+    registration_attempted = False
 
     async with CityCatalystClient(
         base_url=env["base_url"],
         api_key=env["api_key"],
     ) as client:
         token, _expires_in = await client.refresh_token(env["user_id"])
-
-        # Reset only the configured local fixture scope so the first measured
-        # discovery has a deterministic empty baseline.
-        existing = await client.discover_native_inputs(
-            request_payload=discovery_payload,
-            token=token,
-            user_id=env["user_id"],
-            thread_id="dynamic-live-contract-setup",
-        )
-        existing_ids = [
-            entry["catalog_id"]
-            for entry in existing["data"]["entries"]
-            if isinstance(entry.get("catalog_id"), str)
-        ]
-        await _withdraw_live_catalog_entries(
-            base_url=env["base_url"],
-            api_key=env["api_key"],
-            catalog_ids=existing_ids,
-        )
 
         try:
             first_discovery = await client.discover_native_inputs(
@@ -301,8 +417,12 @@ async def test_dynamic_runtime_sequence_against_running_core() -> None:
                 user_id=env["user_id"],
                 thread_id="dynamic-live-contract",
             )
-            assert first_discovery["data"]["entries"] == []
+            assert first_discovery["data"]["entries"] == [], (
+                "Dynamic catalog mutation requires an isolated empty local "
+                "fixture scope; reset the configured fixture explicitly"
+            )
 
+            registration_attempted = True
             registration = await client.post_internal_capability(
                 "/api/v1/internal/native-input-catalog",
                 json_data=_dynamic_registration_payload(
@@ -313,7 +433,10 @@ async def test_dynamic_runtime_sequence_against_running_core() -> None:
                 token=token,
                 refresh_user_id=env["user_id"],
             )
-            registered_catalog_id = registration["data"]["id"]
+            registration_data = registration.get("data")
+            assert isinstance(registration_data, dict)
+            registered_catalog_id = registration_data.get("id")
+            assert isinstance(registered_catalog_id, str)
 
             second_discovery = await client.discover_native_inputs(
                 request_payload=discovery_payload,
@@ -330,17 +453,7 @@ async def test_dynamic_runtime_sequence_against_running_core() -> None:
                 "ghgi.inventory.status_overview",
                 "ghgi.inventory.emissions_context",
             ]
-            assert all(
-                forbidden not in json.dumps(safe_entry).lower()
-                for forbidden in (
-                    "credentials",
-                    "s3_key",
-                    "signed_url",
-                    "source_id",
-                    "storage_path",
-                    "token",
-                )
-            )
+            _assert_safe_discovery_entry(safe_entry)
 
             read_payload = _dynamic_read_payload(
                 catalog_id=registered_catalog_id,
@@ -352,7 +465,7 @@ async def test_dynamic_runtime_sequence_against_running_core() -> None:
             assert "capabilityId" in read_payload
             assert "catalog_id" not in read_payload
             assert "capability_id" not in read_payload
-            assert "storage" not in json.dumps(read_payload).lower()
+            _assert_no_forbidden_contract_fields(read_payload)
 
             selected_read = await client.read_native_input(
                 request_payload=read_payload,
@@ -364,11 +477,22 @@ async def test_dynamic_runtime_sequence_against_running_core() -> None:
             assert selected_read["success"] is True
             assert isinstance(selected_read["data"], dict)
         finally:
-            if registered_catalog_id:
+            cleanup_ids = (
+                [registered_catalog_id] if registered_catalog_id else []
+            )
+            if registration_attempted and not cleanup_ids:
+                cleanup_discovery = await client.discover_native_inputs(
+                    request_payload=discovery_payload,
+                    token=token,
+                    user_id=env["user_id"],
+                    thread_id="dynamic-live-contract-cleanup",
+                )
+                cleanup_ids = _fixture_catalog_ids(cleanup_discovery)
+            if cleanup_ids:
                 await _withdraw_live_catalog_entries(
                     base_url=env["base_url"],
                     api_key=env["api_key"],
-                    catalog_ids=[registered_catalog_id],
+                    catalog_ids=cleanup_ids,
                 )
 
 

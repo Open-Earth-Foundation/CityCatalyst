@@ -1065,6 +1065,12 @@ uv run --directory service pytest \
   tests/test_citycatalyst_client_auth_contract.py -q
 ```
 
+The environment-gated dynamic running-Core case additionally requires a
+loopback `CC_BASE_URL`, an isolated empty local fixture scope, and explicit
+`CA_AUTH_CONTRACT_ALLOW_CATALOG_MUTATION=1` opt-in. It refuses remote hosts or
+pre-existing entries and withdraws only the entry it registered during the
+test.
+
 ### Stationary Energy Draft Review Boundary
 
 The Stationary Energy review tool pack uses the same scoped CityCatalyst token

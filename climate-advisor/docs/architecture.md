@@ -64,6 +64,13 @@ sequenceDiagram
     Thread-->>API: thread
 
     API->>Token: Load token from request or thread context
+    opt CityCatalyst bearer is present
+        API->>CC: Validate bearer at /internal/ca/auth/identity
+        CC-->>API: Canonical user ID
+        alt token invalid or subject differs from body user_id
+            API-->>Client: HTTP 401 (no catalog-enabled agent)
+        end
+    end
     alt token expired
         Token->>CC: Refresh token
         CC-->>Token: New access token
@@ -241,15 +248,21 @@ not load Climate Advisor capabilities or execute full reads for candidates.
 `native_input_read` tools only when authenticated catalog context and the
 current Core credential are available. Registration makes no Core discovery
 request and does not accept a client-selected catalog/capability pair.
-`StreamingHandler` supplies the authenticated user/thread identity and safe
-request scope while ignoring caller-supplied identity and catalog selections.
-Missing context or credential leaves the existing tool-pack behavior unchanged.
+Before constructing `StreamingHandler`, `/v1/messages` validates any supplied
+bearer at Core's `/api/v1/internal/ca/auth/identity` boundary. The request is
+rejected with the same HTTP 401 response when the bearer is invalid or Core's
+canonical subject differs from body `user_id`. `StreamingHandler` accepts that
+canonical identity separately for catalog context, combines it with the safe
+request scope, and ignores caller-supplied identity and catalog selections.
+Missing token or validated catalog identity leaves the catalog tools disabled.
 
 At tool-call time, discovery returns only locally supported safe entries. A
 read accepts a model-selected catalog/capability pair with finite bounded
 arguments, then calls Core for fresh authorization and execution. Core remains
 the final read-time authority; unavailable or invalid reads use the stable
-non-disclosing response.
+non-disclosing response. NativeInputCatalog discovery and reads never exchange
+a 401 for a new user token and never derive refresh identity from request JSON.
+Unrelated legacy inventory tools retain their existing refresh behavior.
 
 - `services/stationary_energy/stationary_energy_review_resolver.py`
   - Resolves selectable sources, notation-key targets, pending review rows, and

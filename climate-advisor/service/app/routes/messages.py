@@ -14,6 +14,10 @@ from app.config import get_settings
 from app.db.session import get_session_factory, get_session_optional
 from app.middleware import get_request_id
 from app.models.requests import MessageCreateRequest
+from app.services.citycatalyst_client import (
+    CityCatalystClient,
+    CityCatalystClientError,
+)
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
 from app.utils.agent_tracing import configure_agents_tracing
@@ -25,6 +29,8 @@ from app.utils.thread_resolver import ThreadResolver
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+_CC_AUTHENTICATION_FAILED = "CityCatalyst authentication failed"
 
 # Configure LangSmith tracing for Agents SDK
 settings = get_settings()
@@ -119,6 +125,30 @@ async def post_message(
             "present" if token_from_payload else "absent",
             "present" if cc_access_token else "absent"
         )
+
+        # Validate the bearer itself before request JSON can establish catalog identity.
+        catalog_user_id: Optional[str] = None
+        if cc_access_token:
+            try:
+                async with CityCatalystClient() as core_client:
+                    catalog_user_id = await core_client.validate_user_identity(
+                        cc_access_token
+                    )
+            except CityCatalystClientError as exc:
+                logger.warning(
+                    "Rejected unvalidated CityCatalyst bearer status=%s",
+                    exc.status_code,
+                )
+                raise HTTPException(
+                    status_code=401,
+                    detail=_CC_AUTHENTICATION_FAILED,
+                ) from exc
+            if catalog_user_id != payload.user_id:
+                logger.warning("Rejected CityCatalyst bearer subject mismatch")
+                raise HTTPException(
+                    status_code=401,
+                    detail=_CC_AUTHENTICATION_FAILED,
+                )
         
         # 3. Persist user message and update token if needed
         if session_factory:
@@ -178,6 +208,7 @@ async def post_message(
             user_id=payload.user_id,
             session_factory=session_factory,
             cc_access_token=cc_access_token,
+            catalog_user_id=catalog_user_id,
             inventory_id=payload.inventory_id,
             request_context=payload.context,
             request_options=payload.options,

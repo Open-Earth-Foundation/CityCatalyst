@@ -729,7 +729,9 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertNotIn("private upstream transport detail", str(captured.exception))
 
-    async def test_discover_native_inputs_refreshes_once_and_reuses_fresh_token(self) -> None:
+    async def test_discover_native_inputs_does_not_refresh_from_claimed_user_on_401(
+        self,
+    ) -> None:
         with patch(
             "app.services.citycatalyst_client.get_settings",
             return_value=SimpleNamespace(
@@ -738,44 +740,72 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
             ),
         ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
             client = CityCatalystClient()
-            fresh_token = _unsigned_jwt(
-                {
-                    "aud": "https://cc.example",
-                    "iss": "climate-advisor-service",
-                    "sub": "user-1",
-                }
-            )
             stub = _StubAsyncClient(
                 [
                     _response(401, json_data={"error": "Unauthorized"}),
-                    _response(
-                        200,
-                        json_data={
-                            "access_token": fresh_token,
-                            "expires_in": 3600,
-                        },
-                    ),
-                    _response(200, json_data={"entries": []}),
                 ]
             )
+            refresh_token = AsyncMock(return_value=("fresh-token", 3600))
 
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                result = await client.discover_native_inputs(
-                    request_payload={"userId": "user-1"},
-                    token="expired-token",
-                    user_id="user-1",
-                    thread_id="thread-1",
-                )
+            with (
+                patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+                patch.object(client, "refresh_token", new=refresh_token),
+            ):
+                with self.assertRaises(CityCatalystClientError) as captured:
+                    await client.discover_native_inputs(
+                        request_payload={"userId": "attacker-claimed-user"},
+                        token="invalid-token",
+                        user_id="attacker-claimed-user",
+                        thread_id="thread-1",
+                    )
 
-        self.assertEqual(result, {"entries": []})
-        self.assertEqual(client.last_refreshed_token, fresh_token)
-        self.assertEqual(len(stub.requests), 3)
+        self.assertEqual(captured.exception.status_code, 401)
+        refresh_token.assert_not_awaited()
+        self.assertIsNone(client.last_refreshed_token)
+        self.assertEqual(len(stub.requests), 1)
         self.assertEqual(
-            stub.requests[0]["headers"]["Authorization"], "Bearer expired-token"
+            stub.requests[0]["headers"]["Authorization"], "Bearer invalid-token"
         )
-        self.assertEqual(
-            stub.requests[2]["headers"]["Authorization"], f"Bearer {fresh_token}"
-        )
+
+    async def test_read_native_input_does_not_refresh_from_claimed_user_on_401(
+        self,
+    ) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(
+                cc_base_url="https://cc.example",
+                cc_api_key="test-api-key",
+            ),
+        ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
+            client = CityCatalystClient()
+            stub = _StubAsyncClient(
+                [
+                    _response(401, json_data={"error": "Unauthorized"}),
+                ]
+            )
+            refresh_token = AsyncMock(return_value=("fresh-token", 3600))
+
+            with (
+                patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+                patch.object(client, "refresh_token", new=refresh_token),
+            ):
+                with self.assertRaises(CityCatalystClientError) as captured:
+                    await client.read_native_input(
+                        request_payload={
+                            "userId": "attacker-claimed-user",
+                            "catalogId": "catalog-1",
+                            "capabilityId": "ghgi.inventory.status_overview",
+                            "input": {},
+                        },
+                        token="invalid-token",
+                        user_id="attacker-claimed-user",
+                        thread_id="thread-1",
+                    )
+
+        self.assertEqual(captured.exception.status_code, 401)
+        refresh_token.assert_not_awaited()
+        self.assertIsNone(client.last_refreshed_token)
+        self.assertEqual(len(stub.requests), 1)
 
     async def test_close_releases_the_client_used_by_catalog_calls(self) -> None:
         with patch(

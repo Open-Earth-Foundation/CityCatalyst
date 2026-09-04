@@ -36,9 +36,10 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
     ) -> None:
         handler = StreamingHandler(
             thread_id="thread-1",
-            user_id="authenticated-user",
+            user_id="body-user",
             session_factory=MagicMock(),
             cc_access_token="trusted-core-token",
+            catalog_user_id="authenticated-user",
             inventory_id="inventory-1",
             request_context={
                 "city_id": "city-1",
@@ -82,6 +83,24 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
                 inventory_id="inventory-1",
             ),
         )
+
+    def test_native_input_catalog_context_requires_validated_core_identity(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id="thread-1",
+            user_id="body-user",
+            session_factory=MagicMock(),
+            cc_access_token="unvalidated-token",
+            request_context={"city_id": "city-1"},
+        )
+        payload = MessageCreateRequest(
+            user_id="body-user",
+            content="hello",
+            context={"organization_id": "organization-1"},
+        )
+
+        self.assertIsNone(handler._native_input_catalog_request(payload))
 
     def test_native_input_catalog_context_requires_current_core_credential(
         self,

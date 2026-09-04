@@ -259,6 +259,13 @@ Content-Type: application/json
 If `thread_id` is omitted, Climate Advisor creates a new thread. If `thread_id`
 is supplied, it must already exist and belong to the requesting user.
 
+When the request or thread supplies a CityCatalyst bearer, Climate Advisor
+validates it through Core's `/api/v1/internal/ca/auth/identity` endpoint before
+persisting the message or constructing the catalog-enabled agent. Core's
+canonical user ID must equal body `user_id`; invalid tokens and subject
+mismatches receive the same HTTP 401 authentication failure. Requests without a
+CityCatalyst bearer can continue, but NativeInputCatalog tools remain disabled.
+
 **Server Response (SSE Stream):**
 
 ```text
@@ -1046,6 +1053,12 @@ invocation, so a newly registered authorized entry can appear without
 recreating the agent. Every selected read also goes back through Core, which
 independently revalidates the caller scope, catalog lifecycle, capability
 membership, module readiness, and bounded execution contract.
+
+The catalog tools use only the already validated bearer. A 401 from discovery
+or read is returned through the existing safe tool failure path without calling
+the user-token refresh endpoint or deriving a refresh identity from request
+JSON. This restriction is catalog-specific: the existing non-catalog inventory
+tools continue to refresh and persist expired tokens as documented above.
 
 The v1 model-facing read arguments are limited to camelCase `catalogId`,
 `capabilityId`, and optional `language`; `language` is accepted only for the

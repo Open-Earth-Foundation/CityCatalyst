@@ -70,6 +70,7 @@ class StreamingHandler:
         user_id: str,
         session_factory: Optional[async_sessionmaker[AsyncSession]],
         cc_access_token: Optional[str] = None,
+        catalog_user_id: Optional[str] = None,
         inventory_id: Optional[str] = None,
         request_context: Optional[Any] = None,
         request_options: Optional[dict] = None,
@@ -79,6 +80,7 @@ class StreamingHandler:
         self.user_id = user_id
         self.session_factory = session_factory
         self.cc_access_token = cc_access_token
+        self.catalog_user_id = catalog_user_id
         self.inventory_id = inventory_id
         self.request_context = request_context
         self.request_options = request_options
@@ -1247,7 +1249,7 @@ class StreamingHandler:
         payload: MessageCreateRequest,
     ) -> ActiveRequestContext | None:
         """Resolve catalog scope only when the current request has a Core credential."""
-        if not self.cc_access_token:
+        if not self.cc_access_token or not self.catalog_user_id:
             return None
 
         sources = (
@@ -1267,7 +1269,7 @@ class StreamingHandler:
             return None
 
         return ActiveRequestContext(
-            user_id=self.user_id,
+            user_id=self.catalog_user_id,
             thread_id=self.thread_identifier,
             organization_id=first_value("organization_id"),
             project_id=first_value("project_id"),

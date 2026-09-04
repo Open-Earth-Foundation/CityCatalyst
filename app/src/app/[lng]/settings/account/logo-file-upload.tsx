@@ -34,9 +34,7 @@ const LogoUploadCard = ({
   };
 
   useEffect(() => {
-    if (files.length > 0) {
-      setFile(files[0]);
-    }
+    setFile(files.length > 0 ? files[0] : null);
   }, [files]);
 
   return (
@@ -47,7 +45,7 @@ const LogoUploadCard = ({
         p={0}
         label={
           <Box
-            rounded="spacing.2"
+            borderRadius="8px"
             w="250px"
             h="80px"
             textAlign="center"
@@ -56,6 +54,9 @@ const LogoUploadCard = ({
             alignItems="center"
             justifyContent="center"
             position="relative"
+            border="1px solid"
+            borderColor="border.neutral"
+            overflow="hidden"
           >
             <Box
               bg="base.dark/60"

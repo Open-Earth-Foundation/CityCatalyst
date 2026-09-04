@@ -125,6 +125,7 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
               disabled={!isDirty}
               py="28px"
               w="auto"
+              minW="175px"
               px="24px"
               letterSpacing="widest"
               textTransform="uppercase"

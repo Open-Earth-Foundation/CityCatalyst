@@ -1,8 +1,6 @@
-import { AssistantStream } from "openai/lib/AssistantStream";
 import { useCallback, useRef } from "react";
 
 import { logger } from "@/services/logger";
-import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 type SSEDataRecord = Record<string, unknown>;
 export type ToolResultPayload = SSEDataRecord;
@@ -19,12 +17,8 @@ export interface SSEStreamOptions {
   onComplete?: () => void;
   onError?: (error: string) => void;
   onWarning?: (warning: string) => void;
+  /** @deprecated No longer needed — streams always use CA SSE format. */
   forceEventStream?: boolean;
-  // Legacy OpenAI Assistant API callbacks
-  onTextCreated?: () => void;
-  onTextDelta?: (delta: unknown) => void;
-  onRequiresAction?: (event: unknown) => void;
-  onRunCompleted?: () => void;
 }
 
 export type SSEStreamController = {
@@ -253,55 +247,6 @@ export function useSSEStream(
     [parseSSEEvent, handleSSEEvent],
   );
 
-  // Handler for legacy OpenAI Assistant API streams
-  const handleAssistantStream = useCallback(
-    (stream: AssistantStream) => {
-      try {
-        // Text creation and delta events
-        if (options.onTextCreated) {
-          stream.on("textCreated", options.onTextCreated);
-        }
-        if (options.onTextDelta) {
-          stream.on("textDelta", options.onTextDelta);
-        }
-
-        // Events without helpers yet (e.g. requires_action and run.done)
-        stream.on("event", (event) => {
-          if (
-            event.event === "thread.run.requires_action" &&
-            options.onRequiresAction
-          ) {
-            options.onRequiresAction(event);
-          }
-          if (
-            event.event === "thread.run.completed" &&
-            options.onRunCompleted
-          ) {
-            options.onRunCompleted();
-          }
-        });
-      } catch (error: unknown) {
-        if (
-          isNamedError(error, "APIUserAbortError") ||
-          getErrorMessage(error, "") === "Request was aborted."
-        ) {
-          logger.info("Assistant stream processing was aborted.");
-        } else {
-          logger.error(
-            { err: error },
-            "An error occurred while processing the assistant stream:",
-          );
-          if (options.onError) {
-            options.onError(
-              getErrorMessage(error, "Assistant stream processing error"),
-            );
-          }
-        }
-      }
-    },
-    [options],
-  );
-
   const startStream = useCallback(
     async (url: string, fetchOptions: RequestInit = {}) => {
       if (abortControllerRef.current) {
@@ -340,30 +285,18 @@ export function useSSEStream(
           throw new Error("HTTP response is null");
         }
 
-        // Use different stream handling based on feature flag
-        if (
-          options.forceEventStream ||
-          hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION)
-        ) {
-          // New CA service SSE format
-          await handleStream(response);
-        } else {
-          // Legacy OpenAI Assistant API format using AssistantStream
-          const stream = AssistantStream.fromReadableStream(response.body);
-          handleAssistantStream(stream);
-        }
+        await handleStream(response);
       } catch (error: unknown) {
         if (!isNamedError(error, "AbortError")) {
           streamErroredRef.current = true;
-          // Call onError callback for non-abort errors
           if (options.onError) {
             options.onError(getErrorMessage(error, "Failed to start stream"));
           }
         }
-        throw error; // Re-throw so calling code can handle it too
+        throw error;
       }
     },
-    [handleStream, handleAssistantStream, options],
+    [handleStream, options],
   );
 
   const stopStream = useCallback(() => {

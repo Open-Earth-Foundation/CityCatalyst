@@ -356,6 +356,70 @@ def test_snapshot_input_includes_defensible_ask_from_action_finance_and_legal() 
     )
 
 
+@pytest.mark.parametrize(
+    ("context_language", "legal_description_fields", "expected_detail"),
+    [
+        (
+            "en",
+            {"ownership_description": "The municipality can lead delivery."},
+            "The municipality can lead delivery.",
+        ),
+        (
+            "es",
+            {
+                "ownership_description_i18n": {
+                    "en": "The municipality can lead delivery.",
+                    "es": "El municipio puede liderar la ejecución.",
+                }
+            },
+            "El municipio puede liderar la ejecución.",
+        ),
+        (
+            "en",
+            {"restrictions_description": "Prior authorization is required."},
+            "Prior authorization is required.",
+        ),
+    ],
+)
+def test_snapshot_signal_uses_localized_legal_description(
+    context_language: str,
+    legal_description_fields: dict[str, object],
+    expected_detail: str,
+) -> None:
+    """Snapshot legal signals should use the localized text selected by legal facts."""
+    context = build_report_context(
+        request=_report_request(language=[context_language]),
+        action=Action(action_id="A_1", action_name="Bus electrification"),
+        city=CityData(
+            city_name="Santiago",
+            locode="CL-SCL",
+            country_code="CL",
+            region_name="Metropolitana",
+            region_code="RM",
+        ),
+        policy_score=None,
+        legal_assessment=LegalAssessmentRecord(
+            action_id="A_1",
+            country_code="CL",
+            verdict_category="enabled",
+            **legal_description_fields,
+        ),
+        mitigation_feasibility=None,
+        financial_feasibility=None,
+        source_metadata={"city": {"source": "test"}},
+    )
+    localized_context = context.model_copy(update={"language": context_language})
+
+    snapshot = next(
+        chapter
+        for chapter in build_chapter_inputs(localized_context)
+        if chapter.key == "snapshot"
+    )
+    legal_signal = snapshot.facts["signals"][3]
+
+    assert legal_signal["detail"] == expected_detail
+
+
 def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
     """City Fit input should not expose taxonomy labels as action names."""
     context = build_report_context(

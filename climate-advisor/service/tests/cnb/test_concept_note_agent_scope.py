@@ -3,6 +3,8 @@ from __future__ import annotations
 from uuid import uuid4
 
 import pytest
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
 from app.config import get_settings
 from app.db import Base
 from app.models.cnb.context_bundle import ConceptNoteContextBundle
@@ -11,7 +13,6 @@ from app.models.db.concept_note import (
 )
 from app.models.db.concept_note import ConceptNoteRun
 from app.services.agent_service import AgentService
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 
 @pytest.mark.asyncio
@@ -74,7 +75,24 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         )
         agent = await service.create_agent()
         assert [tool.name for tool in agent.tools] == ["concept_note_sources_query"]
-        assert service.active_instructions == settings.llm.prompts.compose_prompt("cnb_chat")
+        assert service.active_instructions == settings.llm.prompts.compose_prompt(
+            "cnb_chat"
+        )
+        await service.close()
+
+        async with session_factory() as session, session.begin():
+            run = await session.get(ConceptNoteRun, run_id)
+            assert run is not None
+            run.workflow_step = "editing_document"
+        service = AgentService(
+            cc_access_token="token",
+            cc_thread_id=uuid4(),
+            cc_user_id="owner",
+            session_factory=session_factory,
+            concept_note_run_id=run_id,
+        )
+        agent = await service.create_agent()
+        assert [tool.name for tool in agent.tools] == ["concept_note_sources_query"]
         await service.close()
 
         async with session_factory() as session, session.begin():

@@ -65,10 +65,6 @@ function generateOpenAPISpec() {
             description: "Administrative operations",
           },
           {
-            name: "assistants",
-            description: "AI assistant operations",
-          },
-          {
             name: "auth",
             description: "Authentication and authorization",
           },

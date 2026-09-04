@@ -3,7 +3,7 @@ import { sortGpcReferenceNumbers, toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
 import i18next from "@/i18n/server";
 import { stringify } from "csv-stringify/sync";
-import { db } from "@/models";
+import CalculationService from "@/backend/CalculationService";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import createHttpError from "http-errors";
 import { logger } from "@/services/logger";
@@ -69,7 +69,10 @@ export default class CSVDownloadService {
 
     const sortedKeys = sortGpcReferenceNumbers(Object.keys(dataDictionary));
 
-    const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
+    const gwpVersion = CalculationService.resolveGwpVersion(
+      output.globalWarmingPotentialType,
+    );
+    const gasToCO2Eqs = await CalculationService.loadGasToCO2Eqs(gwpVersion);
     const gwps = gasToCO2Eqs.reduce(
       (acc, curr) => {
         acc[curr.gas] = {

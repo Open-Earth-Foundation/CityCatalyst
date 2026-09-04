@@ -30,10 +30,15 @@ in app/[lng]/layout.tsx)
 
 | Piece | Role |
 |-------|------|
-| `RuntimeEnvScript` | Server Component that serializes allowlisted vars into `window.__ENV` |
+| `RuntimeEnvScript` | Async Server Component that serializes allowlisted vars into `window.__ENV` |
 | `PUBLIC_RUNTIME_ENV_KEYS` / `getPublicRuntimeEnv()` | Allowlist + server-side read of `process.env` |
 | `env(key)` | Client: `window.__ENV`; Server: `process.env` |
 | `global.d.ts` | Types `window.__ENV` |
+
+`RuntimeEnvScript` calls `connection()` from `next/server` before reading
+`process.env`. Without that, Next can statically prerender the layout at
+`npm run build` (when Docker has no public env) and bake `window.__ENV={}`
+into HTML — so k8s runtime flags never reach the browser.
 
 Do **not** add `"use server"` to these files. That directive marks Server
 Actions, not Server Components. `RuntimeEnvScript` is a normal RSC (no
@@ -84,6 +89,16 @@ See `src/lib/runtime-env/keys.ts` for the source of truth. At time of writing:
 With `npm run dev`, `RuntimeEnvScript` still injects from your local `.env` /
 process environment. Client code that uses `env()` will see those values via
 `window.__ENV` after the layout loads.
+
+### Verifying runtime injection (production build)
+
+Dev mode can hide static-prerender bugs. To match k8s:
+
+1. Build **without** allowlisted public env (or with them unset).
+2. Start with the vars set, e.g. `NEXT_PUBLIC_FEATURE_FLAGS=... npm start`.
+3. Open `/en/` and confirm `window.__ENV` is non-empty (not `{}`).
+
+If step 3 is empty, request-time injection is still broken.
 
 ## Related docs
 

@@ -191,16 +191,6 @@ import {
   OrganizationInviteCreationAttributes,
 } from "./OrganizationInvite";
 import type {
-  AssistantMessageAttributes,
-  AssistantMessageCreationAttributes,
-} from "./AssistantMessage";
-import { AssistantMessage as _AssistantMessage } from "./AssistantMessage";
-import type {
-  AssistantThreadAttributes,
-  AssistantThreadCreationAttributes,
-} from "./AssistantThread";
-import { AssistantThread as _AssistantThread } from "./AssistantThread";
-import type {
   OrganizationAttributes,
   OrganizationCreationAttributes,
 } from "./Organization";
@@ -322,8 +312,6 @@ export {
   _Version as Version,
   _UserFile as UserFile,
   _CityInvite as CityInvite,
-  _AssistantMessage as AssistantMessage,
-  _AssistantThread as AssistantThread,
   _OrganizationInvite as OrganizationInvite,
   _OrganizationAdmin as OrganizationAdmin,
   _ProjectAdmin as ProjectAdmin,
@@ -427,10 +415,6 @@ export type {
   UserCreationAttributes,
   VersionAttributes,
   VersionCreationAttributes,
-  AssistantMessageAttributes,
-  AssistantMessageCreationAttributes,
-  AssistantThreadAttributes,
-  AssistantThreadCreationAttributes,
   FormulaInputAttributes,
   FormulaInputCreationAttributes,
   OrganizationAdminAttributes,
@@ -513,8 +497,6 @@ export function initModels(sequelize: Sequelize) {
   const Version = _Version.initModel(sequelize);
   const UserFile = _UserFile.initModel(sequelize);
   const CityInvite = _CityInvite.initModel(sequelize);
-  const AssistantMessage = _AssistantMessage.initModel(sequelize);
-  const AssistantThread = _AssistantThread.initModel(sequelize);
   const OrganizationInvite = _OrganizationInvite.initModel(sequelize);
   const OrganizationAdmin = _OrganizationAdmin.initModel(sequelize);
   const ProjectAdmin = _ProjectAdmin.initModel(sequelize);
@@ -1084,14 +1066,6 @@ export function initModels(sequelize: Sequelize) {
     as: "inventory",
     foreignKey: "inventoryId",
   });
-  AssistantMessage.belongsTo(AssistantThread, {
-    as: "assistantThread",
-    foreignKey: "threadId",
-  });
-  AssistantThread.hasMany(AssistantMessage, {
-    as: "assistantMessages",
-    foreignKey: "threadId",
-  });
   Organization.hasMany(Project, {
     as: "projects",
     foreignKey: "organizationId",
@@ -1338,8 +1312,6 @@ export function initModels(sequelize: Sequelize) {
     UserFile: UserFile,
     CityInvite: CityInvite,
     OrganizationInvite: OrganizationInvite,
-    AssistantMessage: AssistantMessage,
-    AssistantThread: AssistantThread,
     FormulaInput: FormulaInput,
     OrganizationAdmin: OrganizationAdmin,
     ProjectAdmin: ProjectAdmin,

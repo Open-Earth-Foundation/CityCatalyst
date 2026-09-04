@@ -519,14 +519,26 @@ export default class MeedApiService {
       "MEED output plan route finished",
     );
 
-    // save result to database
-    const report = await db.models.MeedActionReport.create({
-      id: randomUUID(),
-      inventoryId,
-      actionId: result.action_id,
-      languages: result.language,
-      chapters: result.chapters,
+    // save result to database, update existing report if it exists
+    let report = await db.models.MeedActionReport.findOne({
+      where: { inventoryId, actionId: result.action_id },
     });
+    if (report) {
+      await report.update({
+        inventoryId,
+        actionId: result.action_id,
+        languages: result.language,
+        chapters: result.chapters,
+      });
+    } else {
+      report = await db.models.MeedActionReport.create({
+        id: randomUUID(),
+        inventoryId,
+        actionId: result.action_id,
+        languages: result.language,
+        chapters: result.chapters,
+      });
+    }
 
     return report;
   }

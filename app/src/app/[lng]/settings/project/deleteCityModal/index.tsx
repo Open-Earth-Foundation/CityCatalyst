@@ -153,6 +153,7 @@ const DeleteCityModal = (props: DeleteCityModalProps) => {
                 <Input
                   value={cityToDelete}
                   onChange={(e) => setCityToDelete(e.target.value)}
+                  size="lg"
                 />
               </Field>
             </Box>

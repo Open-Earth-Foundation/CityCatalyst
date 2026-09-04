@@ -143,6 +143,7 @@ const PreferencesTab = ({
                     ? "sentiment.negativeOverlay"
                     : "background.default"
                 }
+                size="lg"
               >
                 <NativeSelectField
                   {...register("numberFormat", {

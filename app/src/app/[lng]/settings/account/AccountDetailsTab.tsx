@@ -98,6 +98,7 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
             register={register}
             error={errors.name}
             id="name"
+            inputProps={{ size: "lg" }}
           />
           <EmailInput
             defaultValue={userInfo.email}

@@ -30,6 +30,7 @@ export function LanguageSelector({
       borderRadius="4px"
       border="inputBox"
       background={error ? "sentiment.negativeOverlay" : "background.default"}
+      size="lg"
     >
       <NativeSelectField
         {...register("preferredLanguage", {

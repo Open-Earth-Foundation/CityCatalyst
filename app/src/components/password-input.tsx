@@ -1,4 +1,4 @@
-import { Box, Icon, Text } from "@chakra-ui/react";
+import { Box, Icon, InputProps, Text } from "@chakra-ui/react";
 import {
   FieldError,
   FieldValues,
@@ -26,6 +26,7 @@ export default function PasswordInput<
   watchPassword = "",
   isSubmitted = false,
   validate,
+  inputProps,
   liveValidate = true,
 }: {
   children?: React.ReactNode;
@@ -39,6 +40,7 @@ export default function PasswordInput<
   watchPassword?: string;
   isSubmitted?: boolean;
   validate?: (value: string) => string | boolean;
+  inputProps?: InputProps;
   // When false, the pattern hint is driven entirely by the `error` prop
   // (set by the caller on submit) instead of live-checking watchPassword
   // as the user types. Callers that flag validation errors themselves
@@ -84,6 +86,7 @@ export default function PasswordInput<
           required: t("please-enter-password"),
           validate,
         })}
+        {...inputProps}
       />
 
       <Box>{children}</Box>

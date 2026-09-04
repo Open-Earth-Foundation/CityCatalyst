@@ -58,6 +58,7 @@ export function ProfessionSelect({
           background={
             error ? "sentiment.negativeOverlay" : "background.default"
           }
+          size="lg"
         >
           <NativeSelectField
             {...register("title")}

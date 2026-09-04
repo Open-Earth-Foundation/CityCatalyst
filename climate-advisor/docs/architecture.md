@@ -228,6 +228,32 @@ workflow state in PostgreSQL.
   - Orchestrates review staging, notation-key staging, preview, rollback, and
     draft-save flows.
   - Commits staged selection transitions through the repository and draft service.
+
+### NativeInputCatalog Consumption Boundary
+
+`services/native_input_catalog_service.py` provides the request-scoped
+consumer seam for the NativeInputCatalog integration. It accepts the resolved
+authenticated request context, calls the Core discovery capability at most
+once, and retains only the safe catalog/capability projection returned by
+Core. Discovery is limited to Core's lightweight readiness result: it does
+not load Climate Advisor capabilities, execute full reads, or construct
+source-specific tools for candidates.
+
+The same seam binds a selected `catalog_id` and opaque Core-issued
+`capability_id` only when the exact pair belongs to the current discovery and
+the active context is unchanged. This is a consumer-side integrity check, not
+authorization; selected reads remain behind the existing `CityCatalystClient`
+and Core revalidation boundary. Invalid or cross-context selections use the
+stable non-disclosing unavailable error.
+
+`AgentService` invokes this coordinator before constructing the Agents SDK
+agent, then adds only the selected tool to the existing workflow-specific tool
+packs. `StreamingHandler` supplies the authenticated user/thread identity and
+safe request scope; it ignores caller-supplied user identity and forwards only
+the selected catalog/capability pair for current Core binding. Missing context,
+missing selection, empty discovery, or unavailable discovery leaves existing
+tool-pack behavior unchanged.
+
 - `services/stationary_energy/stationary_energy_review_resolver.py`
   - Resolves selectable sources, notation-key targets, pending review rows, and
     save-ready decision inputs for one persisted draft snapshot.
@@ -243,6 +269,12 @@ workflow state in PostgreSQL.
 
 ### Tool Layer
 
+- `tools/native_input_catalog_tools.py`
+  - Exposes only the request-selected, Core-issued NativeInputCatalog
+    capability as a bounded model-facing tool.
+  - Captures active request scope, rejects arbitrary runtime routing/scope or
+    credential arguments, redacts forbidden result fields, and closes the
+    short-lived Core client after each invocation.
 - `tools/climate_vector_sync.py`
   - General climate knowledge retrieval.
 - `tools/cc_inventory_wrappers.py`

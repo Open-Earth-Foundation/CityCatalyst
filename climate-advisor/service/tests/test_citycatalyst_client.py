@@ -60,6 +60,14 @@ class _StubAsyncClient:
         return None
 
 
+class _FailingPostClient:
+    """HTTP double that fails with a transport error carrying a secret."""
+
+    async def post(self, *args: Any, **kwargs: Any) -> httpx.Response:
+        del args, kwargs
+        raise httpx.ReadTimeout("private upstream transport detail")
+
+
 def _response(
     status_code: int,
     *,
@@ -549,3 +557,302 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
                     )
 
         self.assertEqual(captured.exception.status_code, 401)
+
+    async def test_discover_native_inputs_posts_typed_core_request(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(
+                base_url="https://cc.example",
+                api_key="test-api-key",
+            )
+            stub = _StubAsyncClient(
+                [
+                    _response(
+                        200,
+                        json_data={
+                            "entries": [
+                                {
+                                    "catalog_id": "catalog-1",
+                                    "capability_ids": ["capability-1"],
+                                    "kind": "ghgi",
+                                    "owning_module": "ghgi",
+                                    "source_type": "inventory",
+                                }
+                            ]
+                        },
+                    )
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                result = await client.discover_native_inputs(
+                    request_payload={
+                        "userId": "user-1",
+                        "organizationId": "organization-1",
+                        "projectId": "project-1",
+                        "cityId": "city-1",
+                        "inventoryId": "inventory-1",
+                    },
+                    token="jwt-token",
+                    user_id="user-1",
+                    thread_id="thread-1",
+                )
+
+        self.assertEqual(result["entries"][0]["catalog_id"], "catalog-1")
+        recorded = stub.requests[0]
+        self.assertEqual(
+            recorded["url"],
+            "https://cc.example/api/v1/internal/ca/capabilities/native-inputs/discover",
+        )
+        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
+        self.assertEqual(recorded["headers"]["X-Service-Name"], "climate-advisor")
+        self.assertEqual(recorded["json"]["inventoryId"], "inventory-1")
+
+    async def test_read_native_input_posts_exact_selection_and_bounded_input(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(
+                base_url="https://cc.example",
+                api_key="test-api-key",
+            )
+            stub = _StubAsyncClient(
+                [
+                    _response(
+                        200,
+                        json_data={
+                            "success": True,
+                            "data": {"value": 42},
+                        },
+                    )
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                result = await client.read_native_input(
+                    request_payload={
+                        "catalogId": "catalog-1",
+                        "capabilityId": "capability-1",
+                        "context": {"city_id": "city-1", "inventory_id": "inventory-1"},
+                        "input": {"limit": 10},
+                    },
+                    token="jwt-token",
+                    user_id="user-1",
+                    thread_id="thread-1",
+                )
+
+        self.assertTrue(result["success"])
+        recorded = stub.requests[0]
+        self.assertEqual(
+            recorded["url"],
+            "https://cc.example/api/v1/internal/ca/capabilities/native-inputs/read",
+        )
+        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
+        self.assertEqual(recorded["json"]["catalogId"], "catalog-1")
+        self.assertEqual(recorded["json"]["capabilityId"], "capability-1")
+        self.assertEqual(recorded["json"]["input"]["limit"], 10)
+
+    async def test_read_native_input_normalizes_selection_failure_without_upstream_text(
+        self,
+    ) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(
+                base_url="https://cc.example",
+                api_key="test-api-key",
+            )
+            stub = _StubAsyncClient(
+                [
+                    _response(
+                        404,
+                        json_data={
+                            "code": "capability_unavailable",
+                            "message": "Requested capability is unavailable.",
+                            "debug": "private-source-secret",
+                        },
+                    )
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                with self.assertRaises(CityCatalystClientError) as captured:
+                    await client.read_native_input(
+                        request_payload={
+                            "catalogId": "stale-catalog",
+                            "capabilityId": "stale-capability",
+                            "input": {"limit": 10},
+                        },
+                        token="jwt-token",
+                        user_id="user-1",
+                        thread_id="thread-1",
+                    )
+
+        self.assertEqual(captured.exception.status_code, 404)
+        self.assertEqual(
+            str(captured.exception), "Requested capability is unavailable."
+        )
+        self.assertNotIn("private-source-secret", str(captured.exception))
+
+    async def test_read_native_input_normalizes_transport_failure_without_upstream_text(
+        self,
+    ) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(
+                base_url="https://cc.example",
+                api_key="test-api-key",
+            )
+
+            with patch.object(
+                client,
+                "_get_client",
+                new=AsyncMock(return_value=_FailingPostClient()),
+            ):
+                with self.assertRaises(CityCatalystClientError) as captured:
+                    await client.read_native_input(
+                        request_payload={
+                            "catalogId": "catalog-1",
+                            "capabilityId": "capability-1",
+                            "input": {},
+                        },
+                        token="jwt-token",
+                        user_id="user-1",
+                        thread_id="thread-1",
+                    )
+
+        self.assertNotIn("private upstream transport detail", str(captured.exception))
+
+    async def test_discover_native_inputs_refreshes_once_and_reuses_fresh_token(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(
+                cc_base_url="https://cc.example",
+                cc_api_key="test-api-key",
+            ),
+        ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
+            client = CityCatalystClient()
+            fresh_token = _unsigned_jwt(
+                {
+                    "aud": "https://cc.example",
+                    "iss": "climate-advisor-service",
+                    "sub": "user-1",
+                }
+            )
+            stub = _StubAsyncClient(
+                [
+                    _response(401, json_data={"error": "Unauthorized"}),
+                    _response(
+                        200,
+                        json_data={
+                            "access_token": fresh_token,
+                            "expires_in": 3600,
+                        },
+                    ),
+                    _response(200, json_data={"entries": []}),
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                result = await client.discover_native_inputs(
+                    request_payload={"userId": "user-1"},
+                    token="expired-token",
+                    user_id="user-1",
+                    thread_id="thread-1",
+                )
+
+        self.assertEqual(result, {"entries": []})
+        self.assertEqual(client.last_refreshed_token, fresh_token)
+        self.assertEqual(len(stub.requests), 3)
+        self.assertEqual(
+            stub.requests[0]["headers"]["Authorization"], "Bearer expired-token"
+        )
+        self.assertEqual(
+            stub.requests[2]["headers"]["Authorization"], f"Bearer {fresh_token}"
+        )
+
+    async def test_close_releases_the_client_used_by_catalog_calls(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(
+                base_url="https://cc.example",
+                api_key="test-api-key",
+            )
+            stub = _StubAsyncClient([])
+            stub.aclose = AsyncMock()
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                client._client = stub  # type: ignore[assignment]
+                await client.close()
+
+        stub.aclose.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "selection_state",
+    [
+        "stale",
+        "forged",
+        "malformed",
+        "unknown",
+        "mismatched",
+        "unauthorized",
+        "withdrawn",
+        "superseded",
+        "missing",
+        "deleted",
+        "unavailable",
+        "readiness-negative",
+    ],
+)
+async def test_selection_failure_matrix_has_one_stable_non_disclosing_client_error(
+    selection_state: str,
+) -> None:
+    with patch(
+        "app.services.citycatalyst_client.get_settings",
+        return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+    ):
+        client = CityCatalystClient(
+            base_url="https://cc.example",
+            api_key="test-api-key",
+        )
+        stub = _StubAsyncClient(
+            [
+                _response(
+                    404,
+                    json_data={
+                        "code": "capability_unavailable",
+                        "message": "Requested capability is unavailable.",
+                        "selection_state": selection_state,
+                        "catalog_id": "private-catalog-id",
+                        "source_id": "private-source-id",
+                        "debug": "private-upstream-detail",
+                    },
+                )
+            ]
+        )
+
+        with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+            with pytest.raises(CityCatalystClientError) as captured:
+                await client.read_native_input(
+                    request_payload={
+                        "catalogId": f"{selection_state}-catalog",
+                        "capabilityId": f"{selection_state}-capability",
+                        "input": {},
+                    },
+                    token="jwt-token",
+                    user_id="user-1",
+                    thread_id="thread-1",
+                )
+
+    assert captured.value.status_code == 404
+    assert str(captured.value) == "Requested capability is unavailable."
+    assert "private" not in str(captured.value)

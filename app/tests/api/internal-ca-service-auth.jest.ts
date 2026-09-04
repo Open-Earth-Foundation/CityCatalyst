@@ -613,6 +613,8 @@ describe("internal CA service auth contract", () => {
       "ghgi/stationary-energy/commit-notation-keys",
       "ghgi/stationary-energy/list-notation-keys",
       "ghgi/stationary-energy/load-context",
+      "native-inputs/discover",
+      "native-inputs/read",
     ]);
 
     function collectRouteFiles(directory: string): string[] {

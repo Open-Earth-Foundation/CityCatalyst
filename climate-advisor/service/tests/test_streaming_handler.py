@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 from app.models.requests import MessageCreateRequest
+from app.services.native_input_catalog_service import ActiveRequestContext
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.sse import format_sse
 from app.utils.streaming_handler import StreamingHandler
@@ -30,6 +31,52 @@ def _parse_sse_payload(chunk: bytes) -> dict:
 
 
 class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
+    def test_native_input_catalog_context_uses_authenticated_request_identity(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id="thread-1",
+            user_id="authenticated-user",
+            session_factory=MagicMock(),
+            inventory_id="inventory-1",
+            request_context={"city_id": "city-1"},
+            request_options={"project_id": "project-1"},
+        )
+        payload = MessageCreateRequest(
+            user_id="attacker-supplied-user",
+            content="hello",
+            context={
+                "user_id": "attacker-supplied-user",
+                "organization_id": "organization-1",
+                "native_input_selection": {
+                    "catalog_id": "catalog-1",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            },
+            options={"native_input_selection": {"catalog_id": "forged"}},
+        )
+
+        context, selection = handler._native_input_catalog_request(payload)
+
+        self.assertEqual(
+            context,
+            ActiveRequestContext(
+                user_id="authenticated-user",
+                thread_id="thread-1",
+                organization_id="organization-1",
+                project_id="project-1",
+                city_id="city-1",
+                inventory_id="inventory-1",
+            ),
+        )
+        self.assertEqual(
+            selection,
+            {
+                "catalog_id": "catalog-1",
+                "capability_id": "ghgi.inventory.status_overview",
+            },
+        )
+
     async def test_done_event_reflects_persisted_history(self) -> None:
         payload = MessageCreateRequest(user_id="user-1", content="hello")
         handler = StreamingHandler(

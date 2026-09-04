@@ -14,10 +14,11 @@ import NextLink from "next/link";
 import { LuPencil } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
+import { api } from "@/services/api";
 import type { ConceptNoteRun } from "@/util/types";
 
 import { StatusBadge } from "./status-badge";
-import type { RunStatusTone } from "./utils";
+import { getConceptNoteStatusPresentation } from "./utils";
 
 interface RunCardProps {
   activityLabel: string;
@@ -33,8 +34,6 @@ interface RunCardProps {
   resumeHref: string;
   run: ConceptNoteRun;
   scopeLabel: string;
-  statusLabel: string;
-  statusTone: RunStatusTone;
   t: TFunction;
 }
 
@@ -52,10 +51,11 @@ export function RunCard({
   resumeHref,
   run,
   scopeLabel,
-  statusLabel,
-  statusTone,
   t,
 }: RunCardProps) {
+  const { currentData: draft } = api.useGetConceptNoteDraftQuery(run.run_id);
+  const status = getConceptNoteStatusPresentation(run.status, draft);
+
   return (
     <motion.div
       initial={reducedMotion ? false : { opacity: 0, y: 10 }}
@@ -109,7 +109,7 @@ export function RunCard({
               <Icon as={LuPencil} boxSize={3.5} />
             </IconButton>
           </HStack>
-          <StatusBadge label={statusLabel} tone={statusTone} />
+          <StatusBadge label={t(status.translationKey)} tone={status.tone} />
         </Flex>
 
         <Text

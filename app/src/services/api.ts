@@ -66,6 +66,7 @@ import {
   Authz,
   CityDashboardResponse,
   ConceptNoteApplicationContext,
+  ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
   ConceptNoteRun,
   ConceptNoteRunListResponse,
@@ -76,6 +77,7 @@ import {
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
   StartConceptNoteRunRequest,
+  ValidateConceptNoteChapterRequest,
   WebhookSubscriptionResponse,
   WebhookSubscriptionSecretResponse,
   CreateWebhookSubscriptionRequest,
@@ -2232,8 +2234,9 @@ export const api = createApi({
         string
       >({
         query: (organizationId) => `/organizations/${organizationId}/webhooks`,
-        transformResponse: (response: { data: WebhookSubscriptionResponse[] }) =>
-          response.data,
+        transformResponse: (response: {
+          data: WebhookSubscriptionResponse[];
+        }) => response.data,
         providesTags: (result, _err, organizationId) =>
           result
             ? [
@@ -2376,7 +2379,7 @@ export const api = createApi({
       }),
       getConceptNoteRuns: builder.query<ConceptNoteRunListResponse, string>({
         query: (cityId) => ({
-          url: "concept-notes",
+          url: "concept-notes/",
           params: { city_id: cityId },
         }),
         providesTags: (_result, _error, cityId) => [
@@ -2388,7 +2391,7 @@ export const api = createApi({
         { cityId: string; runId: string }
       >({
         query: ({ cityId, runId }) => ({
-          url: `concept-notes/${runId}`,
+          url: `concept-notes/${runId}/`,
           params: { city_id: cityId },
         }),
       }),
@@ -2396,10 +2399,10 @@ export const api = createApi({
         ConceptNoteApplicationContext,
         string
       >({
-        query: (runId) => `concept-notes/${runId}/application-context`,
+        query: (runId) => `concept-notes/${runId}/application-context/`,
       }),
       getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
-        query: (runId) => `concept-notes/${runId}/draft`,
+        query: (runId) => `concept-notes/${runId}/draft/`,
         providesTags: (_result, _error, runId) => [
           { type: "ConceptNoteDraft", id: runId },
         ],
@@ -2417,7 +2420,7 @@ export const api = createApi({
           selectedFundingOpportunityId,
           threadId,
         }) => ({
-          url: "concept-notes/start",
+          url: "concept-notes/start/",
           method: "POST",
           body: {
             city_id: cityId,
@@ -2439,7 +2442,7 @@ export const api = createApi({
         { cityId: string; name: string; runId: string }
       >({
         query: ({ cityId, name, runId }) => ({
-          url: `concept-notes/${runId}`,
+          url: `concept-notes/${runId}/`,
           method: "PATCH",
           body: { name },
           params: { city_id: cityId },
@@ -2453,7 +2456,7 @@ export const api = createApi({
         { cityId: string; idempotencyKey: string; runId: string }
       >({
         query: ({ cityId, idempotencyKey, runId }) => ({
-          url: `concept-notes/${runId}/duplicate`,
+          url: `concept-notes/${runId}/duplicate/`,
           method: "POST",
           headers: { "Idempotency-Key": idempotencyKey },
           params: { city_id: cityId },
@@ -2467,7 +2470,7 @@ export const api = createApi({
         { cityId: string; runId: string }
       >({
         query: ({ cityId, runId }) => ({
-          url: `concept-notes/${runId}`,
+          url: `concept-notes/${runId}/`,
           method: "DELETE",
           params: { city_id: cityId },
         }),
@@ -2480,7 +2483,7 @@ export const api = createApi({
         ConceptNoteUploadRequest
       >({
         query: ({ formData, runId }) => ({
-          url: `concept-notes/${runId}/uploads`,
+          url: `concept-notes/${runId}/uploads/`,
           method: "POST",
           body: formData,
         }),
@@ -2493,7 +2496,7 @@ export const api = createApi({
         ConceptNoteUploadStatusRequest
       >({
         query: ({ runId, uploadId }) =>
-          `concept-notes/${runId}/uploads/${uploadId}`,
+          `concept-notes/${runId}/uploads/${uploadId}/`,
         providesTags: (_result, _error, { uploadId }) => [
           { type: "ConceptNoteUpload", id: uploadId },
         ],
@@ -2503,7 +2506,7 @@ export const api = createApi({
         ConceptNoteUploadStatusRequest
       >({
         query: ({ runId, uploadId }) => ({
-          url: `concept-notes/${runId}/uploads/${uploadId}/retry`,
+          url: `concept-notes/${runId}/uploads/${uploadId}/retry/`,
           method: "POST",
         }),
         invalidatesTags: (_result, _error, { uploadId }) => [
@@ -2515,17 +2518,29 @@ export const api = createApi({
         string
       >({
         query: (runId) => ({
-          url: `concept-notes/${runId}/context-bundle/retry`,
+          url: `concept-notes/${runId}/context-bundle/retry/`,
           method: "POST",
         }),
         invalidatesTags: ["ConceptNoteRuns"],
       }),
       startConceptNoteDraft: builder.mutation<ConceptNoteDraftState, string>({
         query: (runId) => ({
-          url: `concept-notes/${runId}/draft`,
+          url: `concept-notes/${runId}/draft/`,
           method: "POST",
         }),
         invalidatesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteDraft", id: runId },
+        ],
+      }),
+      validateConceptNoteChapter: builder.mutation<
+        ConceptNoteChapterValidationResponse,
+        ValidateConceptNoteChapterRequest
+      >({
+        query: ({ chapterId, runId }) => ({
+          url: `concept-notes/${runId}/chapters/${chapterId}/validation/`,
+          method: "POST",
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
           { type: "ConceptNoteDraft", id: runId },
         ],
       }),
@@ -2703,6 +2718,7 @@ export const {
   useDuplicateConceptNoteRunMutation,
   useDeleteConceptNoteRunMutation,
   useStartConceptNoteDraftMutation,
+  useValidateConceptNoteChapterMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,
   useRetryConceptNoteUploadMutation,

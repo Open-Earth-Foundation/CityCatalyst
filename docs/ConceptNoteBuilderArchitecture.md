@@ -26,12 +26,13 @@ data and configuration, not by rebuilding the workflow.
 
 ## Scope
 
-Implementation baseline (2026-08-18): the repository owns the CNB schema chain,
+Implementation baseline (2026-08-28): the repository owns the CNB schema chain,
 reviewed-reference importer, similar-project reader, and persisted chapter
 workspace. CA owns run, bundle, pointer, and drafting-progress persistence. Its
 draft API materializes the selected template, then runs an independent
 server-side process that saves one immutable chapter revision before generating
-the next. CC accepts authorized PDFs through `PdfOcrJob` and native UTF-8
+the next. Explicit chapter validation runs completeness before document-wide
+consistency and persists one latest result per chapter. CC accepts authorized PDFs through `PdfOcrJob` and native UTF-8
 Markdown through direct artifact storage, then exposes either result through its
 authenticated read boundary. Runs may begin without uploaded document evidence
 and later rebuild with it; all optional CC, funding, matching, and source
@@ -41,7 +42,7 @@ In scope:
 
 - A Climate Advisor workflow for concept-note runs.
 - A document workspace that supports structured chapters, evidence review,
-  revisions, gaps, and export.
+  revisions, gaps, explicit validation, and export.
 - Funding reference tables for funders, funder criteria, templates, and similar
   funded projects in the externally operated CNB database.
 - A curated research ingest pipeline for funder profiles and funded-project
@@ -111,7 +112,7 @@ flowchart TB
     CADB[("CA database<br/>runs + context bundles + uploads")]
 
     subgraph CNBDB["externally operated CNB database"]
-        WorkspaceDB[("Chapters + revisions<br/>gaps + matches + exports")]
+        WorkspaceDB[("Chapters + revisions<br/>gaps + validations<br/>matches + exports")]
         FunderDB[("Funders<br/>criteria + templates")]
         ProjectKB[("Funding opportunities<br/>funded projects + source evidence")]
     end
@@ -185,6 +186,12 @@ The drafting service and document workspace then use that context bundle to:
   document remains consistent without turning drafting into a chat exchange.
 - Ask only for the identified decisions or missing facts.
 - Let the user edit, add, delete, restore, and reorder chapters.
+- Validate one chapter explicitly for completeness, then internal and
+  cross-chapter consistency, without silently truncating the document.
+- During full-document review, validate at most three chapters concurrently.
+  Completeness and consistency remain sequential within each chapter, and every
+  worker evaluates the fingerprinted document snapshot before its result is
+  persisted.
 - Export DOCX and PDF documents plus a reusable context bundle.
 
 ```mermaid
@@ -193,8 +200,11 @@ flowchart LR
     Context --> Interview["Optional manual interview"]
     Context --> Draft["Independent sequential drafting"]
     Draft --> Review["User review + edits"]
-    Review --> Revise["Revise chapters"]
-    Revise --> Export["Generate DOCX/PDF export"]
+    Review --> Validate["Review & export<br/>reuse current results, validate stale chapters"]
+    Validate --> Decision["Missing information<br/>then conflicts & logic"]
+    Decision --> Revise["Add information"]
+    Revise --> Review
+    Decision --> Export["Accept review or export as is<br/>then generate DOCX/PDF"]
 
     Upload["User uploads files<br/>any time"] --> Convert["CC stores Markdown artifact<br/>OCR for PDF, direct for .md"]
     Convert --> Ingest["Deliver verified pointer to CA"]
@@ -219,10 +229,11 @@ flowchart LR
 | CN upload/run associations and Markdown result identity            | Climate Advisor (`CA_DATABASE_URL`) | Owns the run binding, lifecycle, label, and immutable result identity.                               |
 | Uploaded source objects, OCR result objects, and their S3 pointers | CityCatalyst                        | Reuses authenticated CC upload, S3 storage, project/city permissions, and the CC result catalog.     |
 | Document chapters and revisions                                    | `CNB_DATABASE_URL`                  | Draft document state before export; `run_id` is an external CA identifier.                           |
+| Latest chapter validations                                         | `CNB_DATABASE_URL`                  | Actionable findings, validated revision, input fingerprint, and validation timestamp.                |
 | Funder profiles and criteria                                       | `CNB_DATABASE_URL`                  | Shared curated corpus, reusable across cities and agents.                                            |
 | Funding opportunities and funded projects                          | `CNB_DATABASE_URL`                  | Separate programme and awarded-project tables with explicit foreign keys.                            |
 | Exported DOCX/PDF file references                                  | `CNB_DATABASE_URL`                  | Workflow output artifacts.                                                                           |
-| Source-to-Markdown storage | CityCatalyst | Owns PDF OCR and direct native Markdown validation, storage, and result pointers. |
+| Source-to-Markdown storage                                         | CityCatalyst                        | Owns PDF OCR and direct native Markdown validation, storage, and result pointers.                    |
 | Pointer-only Markdown handoff                                      | CityCatalyst to Climate Advisor     | CC sends a stable result key and immutable metadata; CA reads content only through authenticated CC. |
 
 ## Data Infrastructure Boundary
@@ -285,7 +296,7 @@ flowchart LR
     end
 
     subgraph CNBDB["CNB_DATABASE_URL"]
-        Workspace["chapters + revisions<br/>gaps + matches + exports"]
+        Workspace["chapters + revisions<br/>gaps + validations<br/>matches + exports"]
         References["funders + opportunities + funded projects<br/>templates + criteria + evidence"]
     end
 
@@ -421,16 +432,16 @@ flowchart TB
 
 ### Step Scope Table
 
-| Step                   | Main context                                                                 | Enabled tool groups                               |
-| ---------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------- |
-| `selecting_scope`      | user, city, project candidates                                               | workflow control, CC project reads                |
-| `ingesting_user_files` | CC OCR/delivery status, CA Markdown-ingest status, candidate source excerpts | deterministic document ingest operations; no LLM  |
-| `profiling_funder`     | selected funder, template, criteria                                          | CNB reference table tools                         |
-| `matching_examples`    | ingested project-upload fields, funder profile, project KB filters           | internal `ProjectMatchingService`; no agent tools |
-| `assembling_context` | zero or more ready sources, optional GHGI/HIAP, typed empty sections | internal `ContextBundleService`; no agent tools |
-| `interviewing`         | per-document summaries, optional CC context, gaps and known facts            | interview tools plus `concept_note.sources.query` |
-| `drafting_document`    | application context, complete run bundle, current chapter, all earlier chapter Markdown | no tools; one structured chapter call at a time |
-| `editing_document`     | selected chapter/revision and per-document summaries                         | document edit tools plus selected-source query    |
+| Step                   | Main context                                                                            | Enabled tool groups                                                                |
+| ---------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `selecting_scope`      | user, city, project candidates                                                          | workflow control, CC project reads                                                 |
+| `ingesting_user_files` | CC OCR/delivery status, CA Markdown-ingest status, candidate source excerpts            | deterministic document ingest operations; no LLM                                   |
+| `profiling_funder`     | selected funder, template, criteria                                                     | CNB reference table tools                                                          |
+| `matching_examples`    | ingested project-upload fields, funder profile, project KB filters                      | internal `ProjectMatchingService`; no agent tools                                  |
+| `assembling_context`   | zero or more ready sources, optional GHGI/HIAP, typed empty sections                    | internal `ContextBundleService`; no agent tools                                    |
+| `interviewing`         | per-document summaries, optional CC context, gaps and known facts                       | interview tools plus `concept_note.sources.query`                                  |
+| `drafting_document`    | application context, complete run bundle, current chapter, all earlier chapter Markdown | independent structured drafting; document validation stays in the UI               |
+| `editing_document`     | selected chapter/revision and per-document summaries                                    | document edit tools and selected-source query; document validation stays in the UI |
 
 Export is not a workflow step for the LLM. It is a document workspace button
 that calls export preflight and generation routes against the current chapters
@@ -786,6 +797,7 @@ important planning rules are:
 These are the logical workflow/document tables the CNB backend needs to use.
 `concept_note_chapters`, `concept_note_chapter_revisions`,
 `concept_note_evidence_links`, `concept_note_gaps`,
+`concept_note_chapter_validations`,
 `concept_note_matched_projects`, and `concept_note_exports` live under
 `CNB_DATABASE_URL`. Climate Advisor consumes them through typed
 service/repository contracts.
@@ -806,6 +818,7 @@ erDiagram
     concept_note_runs ||--o{ concept_note_exports : "produces"
     concept_note_chapters ||--o{ concept_note_chapter_revisions : "has"
     concept_note_chapters ||--o{ concept_note_evidence_links : "cites"
+    concept_note_chapters ||--o| concept_note_chapter_validations : "has latest"
 
     concept_note_runs {
         uuid run_id
@@ -895,6 +908,16 @@ erDiagram
         text quote_or_summary
     }
 
+    concept_note_chapter_validations {
+        uuid validation_id
+        uuid chapter_id
+        uuid validated_revision_id
+        string validation_input_fingerprint
+        string status
+        jsonb findings
+        timestamp validated_at
+    }
+
     concept_note_matched_projects {
         uuid match_id
         uuid run_id
@@ -936,6 +959,22 @@ before passing the identifier into the workflow.
 `concept_note_chapter_revisions` enforces a unique
 `(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
 revision.
+
+`concept_note_chapter_validations` enforces one latest row per chapter. Its
+nullable validated-revision foreign key uses `ON DELETE SET NULL`; chapter
+deletion cascades the validation. The input fingerprint covers every active
+chapter's identity, template reference, title, order, required flag, and latest
+revision; the target chapter's open gaps and evidence links; and every field of
+the reviewed application template supplied to validation. A change to any of
+those inputs makes the result stale. A stale formerly-ready result is projected
+as effective `needs_review` and presented as “Needs re-validation” while
+retaining its original revision and timestamp. Validation reloads and compares
+the application template after model evaluation, then rechecks the combined
+fingerprint while locking the active chapters and target gap/evidence rows
+before upsert. Changed inputs return `409 chapter_revision_changed` and preserve
+the previous result. Run duplication copies no validation rows and derives
+copied chapter status from body and open gaps rather than carrying
+validation-derived state.
 
 For uploads, the authenticated CityCatalyst upload route generates a new UUID v4
 `upload_id` for each accepted initial request. CA first creates the run-bound
@@ -1388,7 +1427,7 @@ flowchart TB
     Context --> EvidenceLinks["Evidence links<br/>claim -> selected source"]
     Chapters --> EvidenceLinks
     EvidenceLinks --> Workspace
-    Chapters --> Exporter["DOCX/PDF export<br/>chapter text only"]
+    Chapters --> Exporter["DOCX/PDF export<br/>chapter text + heading hierarchy"]
 ```
 
 How it works:
@@ -1399,6 +1438,9 @@ How it works:
   matched project examples, and selected source excerpts.
 - Generated document Markdown reserves H1 for the final document title; every
   template chapter starts at H2 and its subsections start at H3.
+- DOCX and PDF exports preserve that hierarchy with numbered chapter headings.
+  PDF exports also include structure tags plus document title and language
+  metadata for accessible navigation.
 - The workspace shows editable chapters as the main document surface.
 - Every add, delete, restore, reorder, or text edit creates a chapter revision.
   Revisions are an audit/history trail; they do not feed evidence links.
@@ -2119,15 +2161,6 @@ Examples:
 - Funder requires match funding and the user has not confirmed it.
 - Comparable projects are too weak or regionally mismatched.
 
-### `document_mark_chapter_ready`
-
-Marks a chapter ready after required fields and user review are complete.
-
-Rules:
-
-- Cannot mark ready while critical gaps are open.
-- Can mark ready with non-critical caveats if the caveats are persisted.
-
 ## Document Edit Flow
 
 ```mermaid
@@ -2156,6 +2189,67 @@ sequenceDiagram
     Agent-->>CA: Summary of change
     CA-->>UI: SSE document_chapter_updated + assistant message
 ```
+
+## Chapter Validation
+
+Validation is explicit and UI-driven. **Review & export** is available only
+after an application template and at least one draft chapter are loaded. The UI
+shows the missing prerequisite and links template failures back to Application
+context without starting validation. Once available, the action opens a focused
+modal before any export format is shown. It immediately reuses results whose
+validated revision still matches the chapter, validates only missing or stale
+chapters with bounded parallel requests, and offers an explicit full rerun.
+Successful chapter results remain visible if another chapter fails, and retry
+targets only the failed chapters. Chat does not expose a mark-ready tool. Each
+request revalidates current CityCatalyst city access before reading or writing
+the workspace.
+
+The validator always runs two structured calls in order:
+
+1. The completeness pass receives the full target body, resolved template
+   schema and requirements, open target gaps, and target evidence-link metadata.
+   It checks required content, template constraints, unresolved gaps, and
+   evidence support.
+2. The consistency pass receives the complete target again, the first-pass
+   result, and every other active chapter. It checks names, dates, quantities,
+   units, goals, timelines, dependencies, causality, internal logic, and
+   target-involved cross-chapter conflicts. Large documents are split into
+   complete non-target batches; the full target is repeated in every batch and
+   findings are merged and deduplicated. Input is rejected rather than silently
+   truncated.
+
+After the structured passes, deterministic policy guardrails preserve recorded
+gaps and explicit scope contradictions that must not depend on model recall. A
+scope guard applies only when the target makes a strong affirmative claim that
+includes current delivery work and another chapter explicitly excludes
+completed, construction, or commissioning work (or the target states both
+delivery and a late implementation state). Project names, route descriptions,
+sustainability framing, generic references to an investment concept, and an
+omitted future scope are not treated as contradictions.
+
+Open `missing_information`, `critical`, and `blocking` gaps, missing required
+content, template violations, and material contradictions produce
+`incomplete`. Evidence deficiencies and non-blocking ambiguity produce
+`needs_review`. Only a result with no failures or warnings is `ready`. An empty
+required chapter is deterministically persisted as `incomplete`; an empty
+optional chapter remains visible as non-blocking missing information with
+`needs_review`. Model, structured-output, or template-loading failures preserve
+the previous validation and chapter status.
+
+The draft contract nests validation under each chapter with status, stale flag,
+validated revision/time, derived fixed checks, and findings. Findings include phase,
+category, severity, actionable resolution, involved chapter IDs, and optional
+excerpts. The guided modal first presents Missing information with evidence
+warnings, then Conflicts & logic, and finally a decision step. The decision and
+export screens use the same impact summary: validation blockers remain
+unresolved in exported text, unanswered workspace prompts are omitted from the
+file, and warnings stay in the workspace for follow-up. The user can jump from
+a blocking finding to its chapter, review warnings again, or export anyway after
+acknowledging omitted prompts. Symmetric document conflicts are deduplicated for
+presentation while the per-chapter records remain intact. Saved findings also
+remain visible under each chapter's Missing information area, with controls to
+recheck the chapter, dismiss the card in that browser, or prefill an Ask Clima
+request. Returning to fix blockers focuses the exact actionable finding.
 
 ## Chapter Delete Confirmation Flow
 
@@ -2197,14 +2291,15 @@ flowchart TB
 
 Example registry rows:
 
-| Capability id                          | Step                                                    | Operation | Writes             | Confirmation               |
-| -------------------------------------- | ------------------------------------------------------- | --------- | ------------------ | -------------------------- |
-| `concept_note.funder.get_profile`      | `profiling_funder`                                      | query     | no                 | no                         |
-| `concept_note.sources.query`           | `interviewing`, `drafting_document`, `editing_document` | query     | no                 | no                         |
-| `concept_note.document.add_chapter`    | `drafting_document`                                     | command   | CNB document       | sometimes                  |
-| `concept_note.document.delete_chapter` | `editing_document`                                      | command   | CNB document       | yes for non-empty/required |
-| `concept_note.document.edit_text`      | `editing_document`                                      | command   | CNB revision       | sometimes                  |
-| `concept_note.document.link_evidence`  | `drafting_document`                                     | command   | CNB evidence links | no                         |
+| Capability id                              | Step                                                    | Operation | Writes                            | Confirmation               |
+| ------------------------------------------ | ------------------------------------------------------- | --------- | --------------------------------- | -------------------------- |
+| `concept_note.funder.get_profile`          | `profiling_funder`                                      | query     | no                                | no                         |
+| `concept_note.sources.query`               | `interviewing`, `drafting_document`, `editing_document` | query     | no                                | no                         |
+| `concept_note.document.add_chapter`        | `drafting_document`                                     | command   | CNB document                      | sometimes                  |
+| `concept_note.document.delete_chapter`     | `editing_document`                                      | command   | CNB document                      | yes for non-empty/required |
+| `concept_note.document.edit_text`          | `editing_document`                                      | command   | CNB revision                      | sometimes                  |
+| `concept_note.document.link_evidence`      | `drafting_document`                                     | command   | CNB evidence links                | no                         |
+| `concept_note.document.mark_chapter_ready` | `drafting_document`, `editing_document`                 | command   | CNB validation and chapter status | no                         |
 
 Export preflight, DOCX generation, and PDF generation are button-triggered route
 actions. They are not registered in the scoped agent tool registry.
@@ -2226,10 +2321,15 @@ models:
   cnb_source_synthesizer:
     name: openai/gpt-5.6-sol
     reasoning_effort: medium
+  cnb_chapter_validator:
+    name: openai/gpt-5.6-terra
+    reasoning_effort: medium
 prompts:
   cnb_source_document_mapping: "prompts/cnb/source_document_mapping.md"
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
+  cnb_chapter_validation_completeness: "prompts/cnb/chapter_validation_completeness.md"
+  cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 ```
 
 The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-sol`) with explicit
@@ -2237,6 +2337,10 @@ The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-sol`) with explici
 research and similar-project selection use Sol with medium reasoning on the
 existing Responses API path; canonical-funder identity matching uses Luna with
 low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
+
+The validation prompt budget is 50,000 tokens. Completeness and consistency run
+with temperature zero and strict structured contracts; only concise findings
+are persisted, never model reasoning.
 
 Prompt composition should follow the current CA pattern:
 
@@ -2313,10 +2417,14 @@ The UI needs typed events for chat and document state.
 
 ```mermaid
 flowchart LR
-    Preflight["Export preflight"] --> Check["Check required chapters,<br/>gaps,<br/>template order"]
-    Check -->|pass| Render["Render chapter text"]
-    Check -->|warnings| Confirm["User confirms warnings"]
-    Confirm --> Render
+    Gate["Template + draft chapters"] --> Trigger["Review & export"]
+    Trigger --> Complete["1 · Missing information<br/>and evidence"]
+    Complete --> Consistency["2 · Conflicts & logic"]
+    Consistency --> Decide["3 · Decide"]
+    Decide -->|fix blockers| Revise["Return to actionable chapter"]
+    Decide -->|review warnings| Complete
+    Decide -->|export anyway| Preflight["Export impact + acknowledgement"]
+    Preflight --> Render["Render chapter text"]
     Render --> Docx["Generate DOCX"]
     Render --> Pdf["Generate PDF"]
     Docx --> Store["Store file"]
@@ -2333,9 +2441,15 @@ Export preflight should check:
 - Custom chapters are allowed by the export mode.
 - Deleted required chapters are represented in a preflight warning.
 
-Export should include final chapter text only. Evidence links, source labels,
-source locations, inline citations, and endnotes are workspace review features
-only.
+Export should include the final chapter text under a numbered chapter-heading
+hierarchy. Evidence links, source labels, source locations, inline citations,
+and endnotes are workspace review features only.
+
+Validation is a required guided step before format selection, but its status
+does not disable export. After viewing completeness and consistency findings,
+the user can explicitly choose **Export as is**. Existing unresolved-information
+acknowledgement remains authoritative for every validation state, including
+Needs re-validation, `needs_review`, and `incomplete`.
 
 ## Planned Routes
 
@@ -2360,6 +2474,7 @@ POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown
 GET  /v1/concept-notes/{run_id}/uploads/{upload_id}
 POST /v1/concept-notes/{run_id}/matches/refresh
 GET  /v1/concept-notes/{run_id}/document
+POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/validation
 POST /v1/concept-notes/{run_id}/document/chapters
 PATCH /v1/concept-notes/{run_id}/document/chapters/{chapter_id}
 DELETE /v1/concept-notes/{run_id}/document/chapters/{chapter_id}
@@ -2379,6 +2494,7 @@ PATCH /api/v1/concept-notes/{run_id}?city_id={city_id}
 POST /api/v1/concept-notes/{run_id}/duplicate?city_id={city_id}
 DELETE /api/v1/concept-notes/{run_id}?city_id={city_id}
 POST /api/v1/concept-notes/{run_id}/messages
+POST /api/v1/concept-notes/{run_id}/chapters/{chapter_id}/validation
 POST /api/v1/concept-notes/{run_id}/uploads
 GET  /api/v1/concept-notes/{run_id}/uploads/{upload_id}
 POST /api/v1/concept-notes/{run_id}/uploads/{upload_id}/retry
@@ -2400,40 +2516,43 @@ POST /api/v1/internal/ca/capabilities/ccra/summary
 The implementation should stay organized by responsibility, not by a prescribed
 file layout.
 
-| Responsibility                | Owner                            | Boundary                                                                                                                                                                                                                                                       |
-| ----------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Chat thread/message storage   | CityCatalyst                     | Persists durable conversation state and supplies the authorized `thread_id` to the CNB workflow as a cross-database integration identifier.                                                                                                                    |
-| Workflow orchestration        | Climate Advisor                  | Starts/resumes runs, resolves active step, scopes tools, streams responses.                                                                                                                                                                                    |
-| CA workflow foundation        | Climate Advisor                  | The existing Alembic chain provisions and accesses `concept_note_runs`, `concept_note_context_bundles`, and `concept_note_uploads` through `CA_DATABASE_URL`.                                                                                                  |
-| CNB workspace schema/access   | Climate Advisor repository       | The independent CNB chain owns chapters, revisions, gaps, evidence links, matches, and exports; externally operated infrastructure supplies `CNB_DATABASE_URL`.                                                                                                |
-| Funding reference access      | Climate Advisor repository       | The CNB chain owns the funder/reference schema; the importer writes reviewed projects/evidence and runtime matching reads the complete requested funder scope before bounded shortlist ranking. Curated data remains externally managed.                       |
-| Document tools                | Climate Advisor                  | Mutates draft document state through the CNB storage contract only.                                                                                                                                                                                            |
-| Source and OCR result storage | CityCatalyst                     | Authenticates the user, stores source PDFs and authoritative Markdown in CC S3, and owns all source/result objects. CA receives only the stable Markdown key and immutable metadata, never bucket credentials, a source-PDF key, or a presigned URL.           |
-| PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and pointer delivery.                                                                                                   |
-| CNB Markdown ingestion | Climate Advisor | Verifies completed Markdown through CC and registers its key, digest, source locator metadata, and lifecycle status; CA stores no source bytes. |
-| Context-bundle assembly | Climate Advisor | Re-fetches every ready upload, runs source-aware readers, attempts optional GHGI/HIAP, and persists guarded progress plus the typed bundle. |
-| CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, CCRA, and read-only persisted HIAP summaries through internal capabilities; HIAP assembly never starts or repairs prioritization.                                                                                        |
-| CC bridge routes              | CityCatalyst                     | Authenticated browser-facing proxy into CA workflow routes.                                                                                                                                                                                                    |
-| Capability registry           | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag.                                                                                                                                                                                                     |
-| UI workspace                  | CityCatalyst                     | Chat, chapter outline, editor, evidence/gap views, upload status, export controls.                                                                                                                                                                             |
+| Responsibility                | Owner                            | Boundary                                                                                                                                                                                                                                             |
+| ----------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chat thread/message storage   | CityCatalyst                     | Persists durable conversation state and supplies the authorized `thread_id` to the CNB workflow as a cross-database integration identifier.                                                                                                          |
+| Workflow orchestration        | Climate Advisor                  | Starts/resumes runs, resolves active step, scopes tools, streams responses.                                                                                                                                                                          |
+| CA workflow foundation        | Climate Advisor                  | The existing Alembic chain provisions and accesses `concept_note_runs`, `concept_note_context_bundles`, and `concept_note_uploads` through `CA_DATABASE_URL`.                                                                                        |
+| CNB workspace schema/access   | Climate Advisor repository       | The independent CNB chain owns chapters, revisions, gaps, evidence links, latest validations, matches, and exports; externally operated infrastructure supplies `CNB_DATABASE_URL`.                                                                  |
+| Funding reference access      | Climate Advisor repository       | The CNB chain owns the funder/reference schema; the importer writes reviewed projects/evidence and runtime matching reads the complete requested funder scope before bounded shortlist ranking. Curated data remains externally managed.             |
+| Document tools                | Climate Advisor                  | Mutates draft document state through the CNB storage contract only.                                                                                                                                                                                  |
+| Chapter validation            | Climate Advisor                  | Runs completeness before internal/document consistency, verifies the input fingerprint transactionally, and persists one latest result per chapter for the guided UI.                                                                                |
+| Source and OCR result storage | CityCatalyst                     | Authenticates the user, stores source PDFs and authoritative Markdown in CC S3, and owns all source/result objects. CA receives only the stable Markdown key and immutable metadata, never bucket credentials, a source-PDF key, or a presigned URL. |
+| PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and pointer delivery.                                                                                         |
+| CNB Markdown ingestion        | Climate Advisor                  | Verifies completed Markdown through CC and registers its key, digest, source locator metadata, and lifecycle status; CA stores no source bytes.                                                                                                      |
+| Context-bundle assembly       | Climate Advisor                  | Re-fetches every ready upload, runs source-aware readers, attempts optional GHGI/HIAP, and persists guarded progress plus the typed bundle.                                                                                                          |
+| CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, CCRA, and read-only persisted HIAP summaries through internal capabilities; HIAP assembly never starts or repairs prioritization.                                                                              |
+| CC bridge routes              | CityCatalyst                     | Authenticated browser-facing proxy into CA workflow routes.                                                                                                                                                                                          |
+| Capability registry           | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag.                                                                                                                                                                                           |
+| UI workspace                  | CityCatalyst                     | Chat, chapter outline, editor, grouped validation findings, evidence/gap views, upload status, and always-available export controls.                                                                                                                 |
 
 ## Failure Handling
 
-| Failure                      | User-visible behavior                                                     | System behavior                                                                                                                |
-| ---------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| GHGI or HIAP unavailable | Continue with the available context and show an optional-source warning. | Persist the optional status and `null`; do not block bundle readiness. |
-| No ready city source | Start chat with available CityCatalyst context and show `Uploaded evidence: none`. | Complete with `document_grounding: none`, `source_documents` missing, and no selected sources. |
-| Source coverage/digest failure | Show that source analysis must be retried or the upload investigated. | Reject readiness; persist a retryable guarded build failure and never keep partial summaries. |
-| Stale background build       | No user-visible regression.                                               | Ignore the old build ID so it cannot replace a newer ready-upload fingerprint.                                                 |
-| Interrupted background build | Offer the existing context-bundle retry.                                  | A periodic database reconciler marks builds older than one hour failed with `context_bundle_build_interrupted` and `retryable: true`. |
-| Funder profile missing       | Block drafting against a real template.                                   | Mark `profiling_funder` blocked.                                                                                               |
-| `cc_ocr_failed`              | Show that CC could not convert the specific source.                       | CC retains the source and failed OCR state; an explicit retry may enqueue another Mistral attempt. Nothing is delivered to CA. |
-| `ca_markdown_ingest_failed`  | Show that conversion succeeded but CNB could not ingest the Markdown yet. | CC keeps the successful OCR result and retries delivery; CA may retry downstream processing without rerunning Mistral.         |
-| `markdown_identity_conflict` | Show that the immutable upload cannot be replaced.                        | CA returns `409`; CC does not retry as a transient delivery failure or alter the successful OCR artifact.                      |
-| Similar projects weak        | Continue but show caveat.                                                 | Persist match caveats.                                                                                                         |
-| Chapter edit conflict        | Ask user to confirm current text.                                         | Return structured conflict.                                                                                                    |
-| Required chapter deleted     | Warn at export preflight.                                                 | Keep soft-deleted row and gap.                                                                                                 |
-| Export failed                | Show stable export error.                                                 | Persist failed export row with retry.                                                                                          |
+| Failure                        | User-visible behavior                                                              | System behavior                                                                                                                       |
+| ------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| GHGI or HIAP unavailable       | Continue with the available context and show an optional-source warning.           | Persist the optional status and `null`; do not block bundle readiness.                                                                |
+| No ready city source           | Start chat with available CityCatalyst context and show `Uploaded evidence: none`. | Complete with `document_grounding: none`, `source_documents` missing, and no selected sources.                                        |
+| Source coverage/digest failure | Show that source analysis must be retried or the upload investigated.              | Reject readiness; persist a retryable guarded build failure and never keep partial summaries.                                         |
+| Stale background build         | No user-visible regression.                                                        | Ignore the old build ID so it cannot replace a newer ready-upload fingerprint.                                                        |
+| Interrupted background build   | Offer the existing context-bundle retry.                                           | A periodic database reconciler marks builds older than one hour failed with `context_bundle_build_interrupted` and `retryable: true`. |
+| Funder profile missing         | Block drafting against a real template.                                            | Mark `profiling_funder` blocked.                                                                                                      |
+| `cc_ocr_failed`                | Show that CC could not convert the specific source.                                | CC retains the source and failed OCR state; an explicit retry may enqueue another Mistral attempt. Nothing is delivered to CA.        |
+| `ca_markdown_ingest_failed`    | Show that conversion succeeded but CNB could not ingest the Markdown yet.          | CC keeps the successful OCR result and retries delivery; CA may retry downstream processing without rerunning Mistral.                |
+| `markdown_identity_conflict`   | Show that the immutable upload cannot be replaced.                                 | CA returns `409`; CC does not retry as a transient delivery failure or alter the successful OCR artifact.                             |
+| Similar projects weak          | Continue but show caveat.                                                          | Persist match caveats.                                                                                                                |
+| Chapter edit conflict          | Ask user to confirm current text.                                                  | Return structured conflict.                                                                                                           |
+| Validation input changed       | Keep the prior result and ask the user to validate again.                          | Lock and re-fingerprint inputs; return `409 chapter_revision_changed` without an upsert.                                              |
+| Validation model/parse failure | Keep the prior validation and chapter status.                                      | Return a stable validation error and persist no partial pass.                                                                         |
+| Required chapter deleted       | Warn at export preflight.                                                          | Keep soft-deleted row and gap.                                                                                                        |
+| Export failed                  | Show stable export error.                                                          | Persist failed export row with retry.                                                                                                 |
 
 ## Guardrails
 
@@ -2485,7 +2604,12 @@ Minimum test surface:
   repeat successful OCR.
 - Prompt/tool registration tests proving only the active step's tools are
   available.
-- SSE event shape tests for document updates.
+- Strict validation pass-order, batching, aggregation, deduplication, stale
+  projection, race, authorization, duplication, route, and structured-output
+  tests.
+- Rendered UI tests for sequential document validation, both guided review
+  stages, actionable related-chapter findings, accessibility, add-information
+  focus, acceptance, and explicit export-as-is behavior.
 
 ## Open Questions
 

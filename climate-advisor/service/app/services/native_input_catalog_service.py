@@ -1,4 +1,4 @@
-"""Request-scoped NativeInputCatalog discovery and selection binding."""
+"""Fresh request-scoped NativeInputCatalog discovery."""
 
 from __future__ import annotations
 
@@ -17,7 +17,6 @@ _SAFE_ENTRY_FIELDS = (
     "source_type",
     "capability_ids",
 )
-_UNAVAILABLE_MESSAGE = "Requested capability is unavailable."
 
 
 @dataclass(frozen=True)
@@ -49,25 +48,9 @@ class ActiveRequestContext:
 
 @dataclass(frozen=True)
 class NativeInputDiscovery:
-    """Safe, bounded entries retained for one active request."""
+    """Safe, bounded entries from one Core discovery response."""
 
     entries: tuple[dict[str, Any], ...]
-
-
-@dataclass(frozen=True)
-class NativeInputSelection:
-    """A current Core-issued catalog/capability pair bound to request context."""
-
-    catalog_id: str
-    capability_id: str
-    context: ActiveRequestContext
-
-
-class NativeInputSelectionError(Exception):
-    """Stable non-disclosing error for invalid or stale selections."""
-
-    def __init__(self) -> None:
-        super().__init__(_UNAVAILABLE_MESSAGE)
 
 
 class NativeInputCatalogService:
@@ -79,11 +62,9 @@ class NativeInputCatalogService:
         core_client: CityCatalystClient,
         enabled: bool = True,
     ) -> None:
-        """Initialize a request-scoped coordinator over the existing Core client."""
+        """Initialize a fresh-discovery coordinator over the existing Core client."""
         self.core_client = core_client
         self.enabled = enabled
-        self._discovery: Optional[NativeInputDiscovery] = None
-        self._context: Optional[ActiveRequestContext] = None
 
     async def discover(
         self,
@@ -91,16 +72,10 @@ class NativeInputCatalogService:
         context: Optional[ActiveRequestContext],
         token: Optional[str],
     ) -> NativeInputDiscovery:
-        """Discover safe entries once for the active context and fail closed."""
+        """Discover current safe entries for the active context and fail closed."""
         if not self.enabled or context is None:
             return self._empty_discovery()
 
-        if self._discovery is not None:
-            if context != self._context:
-                return self._empty_discovery()
-            return self._discovery
-
-        self._context = context
         try:
             response = await self.core_client.discover_native_inputs(
                 request_payload=context.to_discovery_payload(),
@@ -108,34 +83,9 @@ class NativeInputCatalogService:
                 user_id=context.user_id,
                 thread_id=context.thread_id,
             )
-            self._discovery = self._parse_discovery(response)
         except (CityCatalystClientError, TimeoutError):
-            self._discovery = self._empty_discovery()
-        return self._discovery
-
-    def bind_selection(
-        self,
-        *,
-        catalog_id: str,
-        capability_id: str,
-        context: Optional[ActiveRequestContext] = None,
-    ) -> NativeInputSelection:
-        """Bind an exact current discovery pair to the active request context."""
-        if self._discovery is None or self._context is None:
-            raise NativeInputSelectionError()
-        if context is not None and context != self._context:
-            raise NativeInputSelectionError()
-
-        for entry in self._discovery.entries:
-            if entry["catalog_id"] == catalog_id and capability_id in entry[
-                "capability_ids"
-            ]:
-                return NativeInputSelection(
-                    catalog_id=catalog_id,
-                    capability_id=capability_id,
-                    context=self._context,
-                )
-        raise NativeInputSelectionError()
+            return self._empty_discovery()
+        return self._parse_discovery(response)
 
     @staticmethod
     def _empty_discovery() -> NativeInputDiscovery:

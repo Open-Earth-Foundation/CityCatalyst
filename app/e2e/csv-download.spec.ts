@@ -116,39 +116,58 @@ async function fetchDownloadInBrowser(
   };
 }
 
-function isDownloadPayload(resp: {
-  url: () => string;
-  request: () => { method: () => string };
-  status: () => number;
-  headers: () => Record<string, string>;
-}, inventoryId: string, format: "csv" | "ecrf") {
-  return (
-    resp.url().includes(`/inventory/${inventoryId}/download`) &&
-    resp.url().includes(`format=${format}`) &&
-    resp.request().method() === "GET" &&
-    resp.status() === 200 &&
-    /csv|excel|spreadsheet|octet-stream/i.test(
-      resp.headers()["content-type"] ?? "",
-    )
-  );
-}
-
+/**
+ * Capture download via Playwright's download event (blob + <a download>).
+ * Fall back to a single in-page fetch only after the UI request has finished,
+ * never concurrently (concurrent downloads 500 on Firefox).
+ */
 async function downloadFormat(
   page: Page,
   inventoryId: string,
   format: "csv" | "ecrf",
 ): Promise<DownloadResult> {
+  const downloadPromise = page
+    .waitForEvent("download", { timeout: 60000 })
+    .catch(() => null);
   const responsePromise = page
     .waitForResponse(
-      (resp) => isDownloadPayload(resp, inventoryId, format),
+      (resp) =>
+        resp.url().includes(`/inventory/${inventoryId}/download`) &&
+        resp.url().includes(`format=${format}`) &&
+        resp.request().method() === "GET" &&
+        resp.status() !== 308,
       { timeout: 60000 },
     )
     .catch(() => null);
 
   await triggerDownloadFromModal(page, format);
-  const response = await responsePromise;
 
-  if (response) {
+  const [download, response] = await Promise.all([
+    downloadPromise,
+    responsePromise,
+  ]);
+
+  if (download) {
+    const failure = await download.failure();
+    if (!failure) {
+      const stream = await download.createReadStream();
+      if (stream) {
+        const chunks: Buffer[] = [];
+        for await (const chunk of stream) {
+          chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        }
+        const content = Buffer.concat(chunks);
+        if (content.byteLength > 0) {
+          return {
+            filename: download.suggestedFilename(),
+            content,
+          };
+        }
+      }
+    }
+  }
+
+  if (response?.ok()) {
     const content = Buffer.from(
       await response.body().catch(() => Buffer.alloc(0)),
     );
@@ -163,6 +182,8 @@ async function downloadFormat(
     }
   }
 
+  // UI request finished (or timed out). Safe to fetch once without overlap.
+  await page.waitForTimeout(500);
   return fetchDownloadInBrowser(page, inventoryId, format);
 }
 

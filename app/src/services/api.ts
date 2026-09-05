@@ -66,6 +66,7 @@ import {
   Authz,
   CityDashboardResponse,
   ConceptNoteApplicationContext,
+  ConfirmConceptNoteChapterRequest,
   ConceptNoteDraftState,
   ConceptNoteRun,
   ConceptNoteRunListResponse,
@@ -75,6 +76,7 @@ import {
   ConceptNoteContextBundleRetryResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
+  ResolveConceptNoteGapRequest,
   StartConceptNoteRunRequest,
   WebhookSubscriptionResponse,
   WebhookSubscriptionSecretResponse,
@@ -2529,6 +2531,47 @@ export const api = createApi({
           { type: "ConceptNoteDraft", id: runId },
         ],
       }),
+      resolveConceptNoteGap: builder.mutation<
+        ConceptNoteDraftState,
+        ResolveConceptNoteGapRequest
+      >({
+        query: ({
+          runId,
+          gapId,
+          action,
+          answer,
+          expectedVersion,
+          idempotencyKey,
+        }) => ({
+          url: `concept-notes/${runId}/gaps/${gapId}/resolve`,
+          method: "POST",
+          body: {
+            action,
+            answer,
+            expected_version: expectedVersion,
+            idempotency_key: idempotencyKey,
+          },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteDraft", id: runId },
+        ],
+      }),
+      confirmConceptNoteChapter: builder.mutation<
+        ConceptNoteDraftState,
+        ConfirmConceptNoteChapterRequest
+      >({
+        query: ({ runId, chapterId, expectedRevision, idempotencyKey }) => ({
+          url: `concept-notes/${runId}/chapters/${chapterId}/confirm`,
+          method: "POST",
+          body: {
+            expected_revision: expectedRevision,
+            idempotency_key: idempotencyKey,
+          },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteDraft", id: runId },
+        ],
+      }),
     };
   },
 });
@@ -2703,6 +2746,8 @@ export const {
   useDuplicateConceptNoteRunMutation,
   useDeleteConceptNoteRunMutation,
   useStartConceptNoteDraftMutation,
+  useResolveConceptNoteGapMutation,
+  useConfirmConceptNoteChapterMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,
   useRetryConceptNoteUploadMutation,

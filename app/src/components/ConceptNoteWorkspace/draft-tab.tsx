@@ -13,6 +13,8 @@ import { useRef, useState } from "react";
 import type { IconType } from "react-icons";
 import {
   LuCheck,
+  LuChevronLeft,
+  LuChevronRight,
   LuCircleAlert,
   LuDatabase,
   LuRefreshCw,
@@ -27,9 +29,11 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useTranslation } from "@/i18n/client";
 import type {
   ConceptNoteApplicationContext,
+  ConceptNoteDraftChapter,
   ConceptNoteDraftChapterStatus,
   ConceptNoteDraftRunStatus,
   ConceptNoteDraftState,
+  ConceptNoteGap,
 } from "@/util/types";
 
 import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
@@ -39,6 +43,7 @@ import {
   MISSING_INFORMATION_LINK,
   replaceMissingInformationMarkers,
 } from "./draft-markdown";
+import { getConceptNoteGapForMarker } from "./gap-interview";
 
 interface DraftTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
@@ -49,11 +54,17 @@ interface DraftTabProps {
   draft: ConceptNoteDraftState | null;
   draftError: string | null;
   isDraftRunning: boolean;
+  isConfirmingChapter: boolean;
   isRetrying: boolean;
   isStartingDraft: boolean;
   lng: string;
   noteName: string;
+  onConfirmChapter: (chapter: ConceptNoteDraftChapter) => Promise<void>;
   onOpenContext: () => void;
+  onReviewChapterGaps: (
+    chapter: ConceptNoteDraftChapter,
+    gap?: ConceptNoteGap,
+  ) => void;
   onRetry: () => void;
   onStartDrafting: () => void;
 }
@@ -119,66 +130,72 @@ const baseMarkdownComponents = createChatMarkdownComponents({
   },
 });
 
-const markdownComponents = {
-  ...baseMarkdownComponents,
-  a: ({ children, href, title }: React.ComponentPropsWithoutRef<"a">) => {
-    const missingInformation =
-      href === MISSING_INFORMATION_LINK
-        ? decodeMissingInformationMessage(title)
-        : null;
+function createDraftMarkdownComponents(
+  onMissingInformationClick: (message: string) => void,
+) {
+  return {
+    ...baseMarkdownComponents,
+    a: ({ children, href, title }: React.ComponentPropsWithoutRef<"a">) => {
+      const missingInformation =
+        href === MISSING_INFORMATION_LINK
+          ? decodeMissingInformationMessage(title)
+          : null;
 
-    if (missingInformation) {
-      return (
-        <Tooltip
-          showArrow
-          portalled
-          content={missingInformation}
-          contentProps={{
-            maxW: "360px",
-            px: 3,
-            py: 2,
-            fontSize: "label.sm",
-            lineHeight: "20px",
-          }}
-        >
-          <chakra.button
-            type="button"
-            aria-label={missingInformation}
-            display="inline-flex"
-            alignItems="center"
-            justifyContent="center"
-            boxSize="18px"
-            mx={1}
-            borderRadius="full"
-            bg="sentiment.warningOverlay"
-            color="sentiment.warningDefault"
-            verticalAlign="text-bottom"
-            cursor="help"
-            _focusVisible={{
-              outline: "2px solid",
-              outlineColor: "content.link",
-              outlineOffset: "1px",
+      if (missingInformation) {
+        return (
+          <Tooltip
+            showArrow
+            portalled
+            content={missingInformation}
+            contentProps={{
+              maxW: "360px",
+              px: 3,
+              py: 2,
+              fontSize: "label.sm",
+              lineHeight: "20px",
             }}
           >
-            <Icon as={LuCircleAlert} boxSize="12px" />
-          </chakra.button>
-        </Tooltip>
-      );
-    }
+            <chakra.button
+              type="button"
+              aria-label={missingInformation}
+              display="inline-flex"
+              alignItems="center"
+              justifyContent="center"
+              boxSize="18px"
+              mx={1}
+              borderRadius="full"
+              bg="sentiment.warningOverlay"
+              color="sentiment.warningDefault"
+              verticalAlign="text-bottom"
+              cursor="pointer"
+              onClick={() => onMissingInformationClick(missingInformation)}
+              _hover={{ bg: "sentiment.warningOverlay" }}
+              _focusVisible={{
+                outline: "2px solid",
+                outlineColor: "content.link",
+                outlineOffset: "1px",
+              }}
+            >
+              <Icon as={LuCircleAlert} boxSize="12px" />
+            </chakra.button>
+          </Tooltip>
+        );
+      }
 
-    return (
-      <chakra.a
-        href={href}
-        color="interactive.primary"
-        fontWeight="semibold"
-        textDecoration="underline"
-        display="inline"
-      >
-        {children}
-      </chakra.a>
-    );
-  },
-};
+      return (
+        <chakra.a
+          href={href}
+          color="interactive.primary"
+          fontWeight="semibold"
+          textDecoration="underline"
+          display="inline"
+        >
+          {children}
+        </chakra.a>
+      );
+    },
+  };
+}
 
 function draftStatusKey(status: ConceptNoteDraftRunStatus): string {
   switch (status) {
@@ -249,11 +266,14 @@ export function DraftTab({
   draft,
   draftError,
   isDraftRunning,
+  isConfirmingChapter,
   isRetrying,
   isStartingDraft,
   lng,
   noteName,
+  onConfirmChapter,
   onOpenContext,
+  onReviewChapterGaps,
   onRetry,
   onStartDrafting,
 }: DraftTabProps) {
@@ -261,6 +281,7 @@ export function DraftTab({
   const chapterElements = useRef<Record<string, HTMLDivElement | null>>({});
   const previewElement = useRef<HTMLDivElement | null>(null);
   const [focusedChapterId, setFocusedChapterId] = useState<string | null>(null);
+  const [sectionsCollapsed, setSectionsCollapsed] = useState(false);
   const isReady = bundle.status === "ready";
   const isBuilding = bundle.status === "building";
   const isFailed = bundle.status === "failed";
@@ -275,6 +296,9 @@ export function DraftTab({
     draft?.total_chapters ||
     applicationContext?.template?.chapter_schema.length ||
     0;
+  const sectionsToggleLabel = t(
+    sectionsCollapsed ? "expand-draft-sections" : "collapse-draft-sections",
+  );
   const missingDraftingRequirements = [
     !applicationContext?.funder ? t("drafting-requirement-funder") : null,
     !applicationContext?.opportunity
@@ -291,6 +315,14 @@ export function DraftTab({
       : t("drafting-setup-missing", {
           requirements: missingDraftingRequirements.join(", "),
         });
+
+  function reviewMissingInformationMarker(
+    chapter: ConceptNoteDraftChapter,
+    markerMessage: string,
+  ): void {
+    const gap = getConceptNoteGapForMarker(chapter, markerMessage);
+    onReviewChapterGaps(chapter, gap ?? undefined);
+  }
 
   let status: DraftStatusPresentation = {
     background: "background.neutral",
@@ -560,29 +592,81 @@ export function DraftTab({
           >
             <VStack
               align="stretch"
+              alignSelf={sectionsCollapsed ? "flex-start" : "stretch"}
               flexShrink={0}
               gap={2}
-              w={{ base: "full", xl: "180px" }}
-              maxH={{ base: "190px", xl: "full" }}
+              w={{ base: "full", xl: sectionsCollapsed ? "32px" : "180px" }}
+              h={{
+                base: sectionsCollapsed ? "32px" : "auto",
+                xl: sectionsCollapsed ? "32px" : "full",
+              }}
+              maxH={{
+                base: sectionsCollapsed ? "32px" : "190px",
+                xl: "full",
+              }}
               minH={0}
-              border="1px solid"
+              border={sectionsCollapsed ? "0" : "1px solid"}
               borderColor="border.neutral"
               borderRadius="rounded"
-              bg="base.light"
-              p={3}
+              bg={sectionsCollapsed ? "transparent" : "base.light"}
+              p={sectionsCollapsed ? 0 : 3}
+              overflow={sectionsCollapsed ? "visible" : "hidden"}
+              transition="width 180ms ease, max-height 180ms ease, padding 180ms ease"
             >
-              <Text
+              <Flex
+                align="center"
+                justify={sectionsCollapsed ? "center" : "space-between"}
+                gap={2}
                 flexShrink={0}
-                fontFamily="heading"
-                fontSize="10px"
-                fontWeight="semibold"
-                color="content.tertiary"
-                letterSpacing="1.5px"
-                textTransform="uppercase"
               >
-                {t("draft-sections")}
-              </Text>
+                {!sectionsCollapsed && (
+                  <Text
+                    fontFamily="heading"
+                    fontSize="10px"
+                    fontWeight="semibold"
+                    color="content.tertiary"
+                    letterSpacing="1.5px"
+                    textTransform="uppercase"
+                  >
+                    {t("draft-sections")}
+                  </Text>
+                )}
+                <chakra.button
+                  type="button"
+                  aria-controls="concept-note-sections-list"
+                  aria-expanded={!sectionsCollapsed}
+                  aria-label={sectionsToggleLabel}
+                  title={sectionsToggleLabel}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  boxSize="28px"
+                  flexShrink={0}
+                  border={sectionsCollapsed ? "1px solid" : "0"}
+                  borderColor="border.neutral"
+                  borderRadius="6px"
+                  bg="base.light"
+                  color="content.secondary"
+                  _hover={{ bg: "background.neutral" }}
+                  _focusVisible={{
+                    outline: "2px solid",
+                    outlineColor: "content.link",
+                    outlineOffset: "1px",
+                  }}
+                  onClick={() =>
+                    setSectionsCollapsed((collapsed) => !collapsed)
+                  }
+                >
+                  <Icon
+                    as={sectionsCollapsed ? LuChevronRight : LuChevronLeft}
+                    boxSize={4}
+                  />
+                </chakra.button>
+              </Flex>
               <VStack
+                id="concept-note-sections-list"
+                aria-hidden={sectionsCollapsed}
+                display={sectionsCollapsed ? "none" : "flex"}
                 align="stretch"
                 flex={1}
                 minH={0}
@@ -626,6 +710,9 @@ export function DraftTab({
                       }}
                       onClick={() => {
                         setFocusedChapterId(chapter.chapter_id);
+                        if (chapter.open_gap_count > 0) {
+                          onReviewChapterGaps(chapter);
+                        }
                         const preview = previewElement.current;
                         const chapterElement =
                           chapterElements.current[chapter.chapter_id];
@@ -671,6 +758,7 @@ export function DraftTab({
             <Box
               ref={previewElement}
               data-testid="concept-note-draft-preview"
+              tabIndex={-1}
               flex={1}
               minW={0}
               minH="360px"
@@ -681,6 +769,11 @@ export function DraftTab({
               borderRadius="rounded"
               bg="base.light"
               p={{ base: 4, md: 5 }}
+              _focus={{
+                outline: "2px solid",
+                outlineColor: "content.link",
+                outlineOffset: "2px",
+              }}
             >
               <Box position="sticky" zIndex={1} top={-1} bg="base.light" pb={3}>
                 <Text
@@ -702,22 +795,196 @@ export function DraftTab({
                     }}
                     scrollMarginTop={4}
                   >
-                    <Text
+                    <Flex
+                      align={{ base: "start", md: "center" }}
+                      justify="space-between"
+                      direction={{ base: "column", md: "row" }}
+                      gap={2}
                       mb={3}
                       pb={2}
                       borderBottom="1px solid"
                       borderColor="border.neutral"
-                      fontFamily="heading"
-                      fontSize="18px"
-                      fontWeight="semibold"
-                      lineHeight="28px"
-                      color="content.primary"
                     >
-                      {chapter.position + 1} · {chapter.title}
-                    </Text>
-                    {chapter.body_markdown ? (
+                      <Box>
+                        <Text
+                          fontFamily="heading"
+                          fontSize="18px"
+                          fontWeight="semibold"
+                          lineHeight="28px"
+                          color="content.primary"
+                        >
+                          {chapter.position + 1} · {chapter.title}
+                        </Text>
+                        <HStack mt={1} gap={2} flexWrap="wrap">
+                          <Text fontSize="10px" color="content.tertiary">
+                            {t(
+                              chapter.status === "needs_review"
+                                ? "chapter-status-needs-review"
+                                : chapter.status === "ready"
+                                  ? "chapter-status-ready"
+                                  : "chapter-status-draft",
+                            )}
+                          </Text>
+                          {chapter.open_gap_count > 0 && (
+                            <Text
+                              fontSize="10px"
+                              color="sentiment.warningDefault"
+                            >
+                              {t("chapter-open-gaps", {
+                                count: chapter.open_gap_count,
+                              })}
+                            </Text>
+                          )}
+                          {chapter.caveat_count > 0 && (
+                            <Text fontSize="10px" color="content.tertiary">
+                              {t("chapter-caveats", {
+                                count: chapter.caveat_count,
+                              })}
+                            </Text>
+                          )}
+                          {chapter.proposed_revision_number && (
+                            <Text fontSize="10px" color="content.link">
+                              {t("chapter-proposed-revision")}
+                            </Text>
+                          )}
+                        </HStack>
+                      </Box>
+                      {chapter.status === "draft" &&
+                        chapter.open_gap_count === 0 &&
+                        chapter.regeneration_status === "idle" && (
+                          <Button
+                            size="xs"
+                            variant="solid"
+                            loading={isConfirmingChapter}
+                            onClick={() => void onConfirmChapter(chapter)}
+                          >
+                            <Icon as={LuCheck} />
+                            {t("review-and-confirm")}
+                          </Button>
+                        )}
+                    </Flex>
+                    {chapter.regeneration_status === "processing" && (
+                      <Text mb={3} fontSize="label.sm" color="content.link">
+                        {t("chapter-regenerating")}
+                      </Text>
+                    )}
+                    {chapter.regeneration_status === "failed" && (
+                      <Text
+                        mb={3}
+                        fontSize="label.sm"
+                        color="sentiment.negativeDefault"
+                      >
+                        {t("chapter-regeneration-failed")}
+                      </Text>
+                    )}
+                    {chapter.proposed_revision_number &&
+                    chapter.confirmed_body_markdown &&
+                    chapter.body_markdown ? (
+                      <Box
+                        border="1px solid"
+                        borderColor="content.link"
+                        borderRadius="rounded"
+                        bg="background.neutral"
+                        p={3}
+                      >
+                        <Text
+                          fontSize="body.sm"
+                          fontWeight="semibold"
+                          color="content.primary"
+                        >
+                          {t("chapter-proposed-review-title")}
+                        </Text>
+                        <Text
+                          mt={1}
+                          fontSize="label.sm"
+                          color="content.secondary"
+                        >
+                          {t("chapter-proposed-review-description")}
+                        </Text>
+                        <Flex
+                          direction={{ base: "column", lg: "row" }}
+                          gap={3}
+                          mt={3}
+                        >
+                          <Box
+                            flex={1}
+                            minW={0}
+                            border="1px solid"
+                            borderColor="border.neutral"
+                            borderRadius="rounded"
+                            bg="base.light"
+                            p={3}
+                          >
+                            <Text
+                              mb={2}
+                              fontSize="10px"
+                              fontWeight="semibold"
+                              color="content.tertiary"
+                              textTransform="uppercase"
+                            >
+                              {t("chapter-confirmed-version", {
+                                revision: chapter.confirmed_revision_number,
+                              })}
+                            </Text>
+                            <ReactMarkdown
+                              components={createDraftMarkdownComponents(
+                                (message) =>
+                                  reviewMissingInformationMarker(
+                                    chapter,
+                                    message,
+                                  ),
+                              )}
+                              remarkPlugins={[remarkGfm]}
+                            >
+                              {chapterPreviewMarkdown(
+                                chapter.confirmed_body_markdown,
+                                chapter.title,
+                              )}
+                            </ReactMarkdown>
+                          </Box>
+                          <Box
+                            flex={1}
+                            minW={0}
+                            border="1px solid"
+                            borderColor="content.link"
+                            borderRadius="rounded"
+                            bg="base.light"
+                            p={3}
+                          >
+                            <Text
+                              mb={2}
+                              fontSize="10px"
+                              fontWeight="semibold"
+                              color="content.link"
+                              textTransform="uppercase"
+                            >
+                              {t("chapter-proposed-version", {
+                                revision: chapter.proposed_revision_number,
+                              })}
+                            </Text>
+                            <ReactMarkdown
+                              components={createDraftMarkdownComponents(
+                                (message) =>
+                                  reviewMissingInformationMarker(
+                                    chapter,
+                                    message,
+                                  ),
+                              )}
+                              remarkPlugins={[remarkGfm]}
+                            >
+                              {chapterPreviewMarkdown(
+                                chapter.body_markdown,
+                                chapter.title,
+                              )}
+                            </ReactMarkdown>
+                          </Box>
+                        </Flex>
+                      </Box>
+                    ) : chapter.body_markdown ? (
                       <ReactMarkdown
-                        components={markdownComponents}
+                        components={createDraftMarkdownComponents((message) =>
+                          reviewMissingInformationMarker(chapter, message),
+                        )}
                         remarkPlugins={[remarkGfm]}
                       >
                         {chapterPreviewMarkdown(

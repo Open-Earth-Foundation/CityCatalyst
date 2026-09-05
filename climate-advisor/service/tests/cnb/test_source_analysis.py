@@ -337,8 +337,8 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
     [
         (
             "cnb_source_reader",
-            "openai/gpt-5.6-luna",
-            "low",
+            "openai/gpt-5.6-terra",
+            "medium",
             QuestionReading,
             {"sections": [{"excerpts": [], "caveats": []}]},
         ),
@@ -356,7 +356,7 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
     ],
 )
 @pytest.mark.asyncio
-async def test_source_worker_serializes_sol_luna_requests_without_temperature(
+async def test_source_worker_serializes_sol_terra_requests_without_temperature(
     role,
     model_name,
     effort,

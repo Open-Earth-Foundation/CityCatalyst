@@ -47,6 +47,19 @@ class ConceptNoteChapter(CnbBase):
     user_locked: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False, server_default=false()
     )
+    confirmed_revision_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey(
+            "concept_note_chapter_revisions.revision_id",
+            name="fk_cnb_chapters_confirmed_revision",
+            ondelete="SET NULL",
+            use_alter=True,
+        ),
+    )
+    regeneration_status: Mapped[str] = mapped_column(
+        String(32), nullable=False, default="idle", server_default="idle"
+    )
+    regeneration_error: Mapped[str | None] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
@@ -59,6 +72,10 @@ class ConceptNoteChapter(CnbBase):
         CheckConstraint(
             "status IN ('empty', 'draft', 'needs_review', 'ready', 'deleted')",
             name="status_valid",
+        ),
+        CheckConstraint(
+            "regeneration_status IN ('idle', 'processing', 'failed')",
+            name="regeneration_status_valid",
         ),
         Index(
             "uq_concept_note_chapters_active_position",
@@ -150,19 +167,114 @@ class ConceptNoteGap(CnbBase):
         PGUUID(as_uuid=True),
         ForeignKey("concept_note_chapters.chapter_id", ondelete="SET NULL"),
     )
-    field_key: Mapped[str | None] = mapped_column(String(255))
+    field_key: Mapped[str] = mapped_column(String(255), nullable=False)
     severity: Mapped[str] = mapped_column(String(64), nullable=False)
-    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    question: Mapped[str] = mapped_column(Text, nullable=False)
+    why_asking: Mapped[str] = mapped_column(Text, nullable=False)
+    suggestions: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
+    )
+    source_refs: Mapped[list[str]] = mapped_column(
+        JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
+    )
     status: Mapped[str] = mapped_column(
         String(64), nullable=False, default="open", server_default="open"
     )
+    version: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=1, server_default="1"
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    __table_args__ = (
+        CheckConstraint(
+            "severity IN ('critical', 'noncritical')",
+            name="severity_valid",
+        ),
+        CheckConstraint(
+            "status IN ('open', 'processing', 'resolved', 'dismissed', 'caveat')",
+            name="status_valid",
+        ),
+        CheckConstraint("version > 0", name="version_positive"),
+        Index("ix_concept_note_gaps_run_status", "run_id", "status"),
+        Index("ix_concept_note_gaps_chapter", "chapter_id"),
+    )
+
+
+class ConceptNoteGapResolution(CnbBase):
+    """Append-only user or evidence resolution event for a structured gap."""
+
+    __tablename__ = "concept_note_gap_resolutions"
+
+    resolution_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), primary_key=True, default=uuid4
+    )
+    gap_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("concept_note_gaps.gap_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    action: Mapped[str] = mapped_column(String(64), nullable=False)
+    answer: Mapped[str | None] = mapped_column(Text)
+    actor_user_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    source_refs: Mapped[list[str]] = mapped_column(
+        JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
+    )
+    idempotency_key: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
     __table_args__ = (
-        Index("ix_concept_note_gaps_run_status", "run_id", "status"),
-        Index("ix_concept_note_gaps_chapter", "chapter_id"),
+        CheckConstraint(
+            "action IN ('answer', 'correction', 'not_a_gap', "
+            "'defer_as_caveat', 'evidence_update')",
+            name="action_valid",
+        ),
+        UniqueConstraint(
+            "gap_id",
+            "idempotency_key",
+            name="uq_concept_note_gap_resolutions_idempotency",
+        ),
+        Index("ix_concept_note_gap_resolutions_gap", "gap_id", "created_at"),
+    )
+
+
+class ConceptNoteChapterReview(CnbBase):
+    """Append-only confirmation of one exact immutable chapter revision."""
+
+    __tablename__ = "concept_note_chapter_reviews"
+
+    review_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), primary_key=True, default=uuid4
+    )
+    chapter_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("concept_note_chapters.chapter_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    revision_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("concept_note_chapter_revisions.revision_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    user_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    idempotency_key: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "chapter_id",
+            "idempotency_key",
+            name="uq_concept_note_chapter_reviews_idempotency",
+        ),
+        Index("ix_concept_note_chapter_reviews_chapter", "chapter_id", "created_at"),
     )
 
 

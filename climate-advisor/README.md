@@ -508,16 +508,17 @@ chapter drafter uses GPT-5.6 Terra with medium reasoning.
 Current CA model defaults:
 
 - General chat: `openai/gpt-5.6-luna`, reasoning `none`.
-- CNB and Stationary Energy chat: `openai/gpt-5.6-sol`, reasoning `none`.
+- CNB chat: `openai/gpt-5.6-sol`, reasoning `medium`.
+- Stationary Energy chat: `openai/gpt-5.6-sol`, reasoning `none`.
 - Funding research and similar-project selection: `openai/gpt-5.6-sol`, reasoning `medium`.
-- Funder-identity matching: `openai/gpt-5.6-luna`, reasoning `low`.
-- Document mapping and question-focused source readers: `openai/gpt-5.6-luna`, reasoning `low`.
+- Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `medium`.
+- Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Document-summary synthesis: `openai/gpt-5.6-sol`, reasoning `medium`.
 
-Chat keeps the existing OpenRouter Chat Completions tool loop and explicitly sets
-reasoning to `none`; GPT-5.6 otherwise defaults to medium reasoning. The configured
-chat and source-worker requests omit `temperature`. Research keeps its Responses
-API path and existing reasoning settings. Source partition budgets,
+Chat keeps the existing OpenRouter Chat Completions tool loop. General and
+Stationary Energy chat explicitly set reasoning to `none`; CNB chat and workers
+use medium reasoning. The configured chat and source-worker requests omit
+`temperature`. Research keeps its Responses API path and existing reasoning settings. Source partition budgets,
 concurrency limits, and embedding models are unchanged. Stored summaries are not
 automatically rebuilt by changing the model configuration.
 
@@ -537,7 +538,7 @@ Prompt paths are also configured in `llm_config.yaml`:
   to compact document summaries, and read focused questions for exact evidence
 
 CNB document mapping and question-focused source readers use
-`models.cnb_source_reader`: `openai/gpt-5.6-luna` with low reasoning. Document
+`models.cnb_source_reader`: `openai/gpt-5.6-terra` with medium reasoning. Document
 summary synthesis uses `models.cnb_source_synthesizer`: `openai/gpt-5.6-sol` with
 medium reasoning. These tool-free workers retain the OpenRouter Chat Completions
 route and structured-output schemas, and omit `temperature`. The 50,000-token

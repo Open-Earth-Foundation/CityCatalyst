@@ -31,8 +31,23 @@ export function countUnresolvedExportItems(
     const markerCount = countMissingInformationMarkers(
       chapter.body_markdown ?? "",
     );
-    return total + Math.max(markerCount, chapter.missing_information.length);
+    const openGapCount = chapter.gaps.filter(
+      (gap) => gap.state === "open" || gap.state === "processing",
+    ).length;
+    return total + Math.max(markerCount, openGapCount);
   }, 0);
+}
+
+export function hasCriticalExportBlocker(
+  chapters: ConceptNoteDraftChapter[],
+): boolean {
+  return chapters.some((chapter) =>
+    chapter.gaps.some(
+      (gap) =>
+        gap.severity === "critical" &&
+        (gap.state === "open" || gap.state === "processing"),
+    ),
+  );
 }
 
 export function canExportConceptNote(
@@ -42,7 +57,9 @@ export function canExportConceptNote(
   const hasExportableDraft = exportableChapters(chapters).length > 0;
   const unresolvedCount = countUnresolvedExportItems(chapters);
   return (
-    hasExportableDraft && (unresolvedCount === 0 || acceptedMissingInformation)
+    hasExportableDraft &&
+    !hasCriticalExportBlocker(chapters) &&
+    (unresolvedCount === 0 || acceptedMissingInformation)
   );
 }
 

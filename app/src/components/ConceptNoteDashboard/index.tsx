@@ -463,9 +463,7 @@ export function ConceptNoteDashboard({
       {exportRun && (
         <ExportDialog
           draft={exportDraft ?? null}
-          hasUploadedEvidence={
-            exportBundle?.availableContext.uploadedDocuments ?? false
-          }
+          hasGroundedSources={Boolean(exportBundle?.readySources)}
           lng={lng}
           noteName={exportRun.name}
           open

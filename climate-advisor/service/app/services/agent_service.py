@@ -127,12 +127,15 @@ class AgentService:
 
         orchestrator_model = self.settings.llm.models.orchestrator
         agentic_flow_model = self.settings.llm.models.agentic_flow or orchestrator_model
+        cnb_chat_model = self.settings.llm.models.cnb_chat or agentic_flow_model
         self.raw_default_model = orchestrator_model.name
         self.raw_agentic_flow_model = agentic_flow_model.name
+        self.raw_cnb_chat_model = cnb_chat_model.name
         self.default_model = self._resolve_chat_model_name(self.raw_default_model)
         self.agentic_flow_model = self._resolve_chat_model_name(
             self.raw_agentic_flow_model
         )
+        self.cnb_chat_model = self._resolve_chat_model_name(self.raw_cnb_chat_model)
         self.default_temperature = orchestrator_model.temperature
         self.agentic_flow_temperature = agentic_flow_model.temperature
 
@@ -155,7 +158,9 @@ class AgentService:
         concept_note_run_id: Optional[str] = None,
     ) -> str:
         """Choose the default chat model for the current workflow context."""
-        if stationary_energy_draft_run_id or concept_note_run_id:
+        if concept_note_run_id:
+            return self.cnb_chat_model
+        if stationary_energy_draft_run_id:
             return self.agentic_flow_model
         return self.default_model
 
@@ -179,6 +184,14 @@ class AgentService:
         self, *, raw_model: str, resolved_model: str
     ) -> RoleModelConfig | None:
         """Resolve a configured role without imposing its reasoning on other models."""
+        if self.concept_note_run_id and (
+            raw_model == self.raw_cnb_chat_model
+            or resolved_model == self.cnb_chat_model
+        ):
+            return self.settings.llm.models.cnb_chat or (
+                self.settings.llm.models.agentic_flow
+                or self.settings.llm.models.orchestrator
+            )
         if (
             raw_model == self.raw_agentic_flow_model
             or resolved_model == self.agentic_flow_model

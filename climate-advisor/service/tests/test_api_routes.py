@@ -294,6 +294,56 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
         streaming_handler.assert_called_once()
         self.assertIsNone(streaming_handler.call_args.kwargs["catalog_user_id"])
 
+    async def test_message_does_not_persist_payload_token_when_identity_is_unvalidated(
+        self,
+    ) -> None:
+        """A Core outage must not launder a payload bearer into thread context."""
+        thread_service = AsyncMock()
+        with (
+            patch(
+                "app.routes.messages.ThreadResolver.resolve_thread",
+                new=AsyncMock(return_value="thread-1"),
+            ),
+            patch(
+                "app.services.citycatalyst_client.CityCatalystClient.validate_user_identity",
+                new=AsyncMock(
+                    side_effect=CityCatalystClientError(
+                        "CC identity validation unavailable",
+                        status_code=503,
+                    )
+                ),
+            ),
+            patch(
+                "app.routes.messages.ThreadService",
+                new=MagicMock(return_value=thread_service),
+            ),
+            patch(
+                "app.routes.messages.MessageService",
+                new=MagicMock(return_value=AsyncMock()),
+            ),
+            patch("app.routes.messages.StreamingHandler") as streaming_handler,
+        ):
+            response = await post_message(
+                MessageCreateRequest(
+                    user_id="user-1",
+                    content="Hello assistant",
+                    thread_id="thread-1",
+                    context={"access_token": "unvalidated-token"},
+                ),
+                session=None,
+                session_factory=_stub_session_factory(),
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(streaming_handler.call_args.kwargs["catalog_user_id"])
+        persisted_keys = [
+            key
+            for call in thread_service.update_context.await_args_list
+            for key in call.kwargs.get("context_update", {})
+        ]
+        self.assertNotIn("access_token", persisted_keys)
+        thread_service.update_context.assert_not_awaited()
+
     async def test_message_continues_without_catalog_when_thread_token_is_rejected(
         self,
     ) -> None:

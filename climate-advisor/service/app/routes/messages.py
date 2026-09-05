@@ -169,9 +169,12 @@ async def post_message(
                     thread = await thread_service.get_thread(resolved_thread_id)
                     
                     if thread:
-                        # If token came from payload, persist it to thread context using standard "access_token" key
+                        # Only a bearer Core validated may enter thread context.
+                        # Thread-stored tokens take the lenient path on later
+                        # requests, so persisting an unvalidated one would
+                        # launder it out of the strict request-supplied class.
                         context_update = {}
-                        if token_from_payload:
+                        if token_from_payload and catalog_user_id is not None:
                             context_update["access_token"] = token_from_payload
                             logger.info("Persisted CC token from payload to thread context")
 

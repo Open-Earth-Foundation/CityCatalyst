@@ -234,3 +234,171 @@ Documentation:
 - No full Climate Advisor suite, live Core contract, deployment, or push was
   run. The requested focused security/client/handler evidence, compilation,
   and diff checks are complete.
+
+---
+
+# Task 5 fix: identity-gate over-rejection (review findings I-1 and I-2)
+
+**Brief:** `task-5-fix-brief.md`
+**Branch:** `cc-737-runtime-discovery` (no push)
+**HEAD before fix:** `a961a182e`
+**Fix commit:** `732a79773` — `fix(cc-737): keep chat open when catalog identity is unavailable`
+
+## Findings closed
+
+- **I-1** — `/v1/messages` mapped every `CityCatalystClientError` to HTTP 401,
+  so a Core outage, an unset `CC_BASE_URL`, a transport failure, or a malformed
+  identity response 401'd plain chat.
+- **I-2** — a thread-stored bearer that Core rejects 401'd the whole chat
+  request, making the preserved legacy `post_internal_capability` 401→refresh
+  path unreachable in the expired-token case.
+- **M-4** (folded in) — README and architecture docs re-synced to the amended
+  behavior.
+
+## Policy implemented
+
+`climate-advisor/service/app/routes/messages.py` (identity gate only):
+
+1. Bearer present → `CityCatalystClient.validate_user_identity(token)` with no
+   user-ID refresh (unchanged).
+2. Success and canonical subject `!= payload.user_id` → HTTP 401 with the
+   stable `CityCatalyst authentication failed` detail; `StreamingHandler` is
+   never constructed. Applies to payload and thread tokens alike.
+3. `CityCatalystClientError` with `status_code` in `{401, 403}` **and** the
+   token came from the request payload → HTTP 401, handler not constructed.
+4. `CityCatalystClientError` with `status_code` in `{401, 403}` **and** the
+   token came from thread storage → `catalog_user_id = None`, request continues.
+5. Any other identity error (503, missing `CC_BASE_URL`, transport, malformed
+   response) → `catalog_user_id = None`, request continues. No 401.
+6. No bearer → unchanged.
+
+No token is minted or refreshed from `payload.user_id` in this path, and no
+thread-token refresh was added at the route (`TokenHandler` is still
+constructed with the body-supplied `user_id`).
+
+## TDD evidence
+
+### RED
+
+New tests added to `tests/test_api_routes.py::MessageIdentityGateTests`:
+
+- `test_message_continues_without_catalog_when_core_is_unavailable`
+- `test_message_continues_without_catalog_when_thread_token_is_rejected`
+
+```bash
+cd climate-advisor
+uv run --directory service pytest tests/test_api_routes.py::MessageIdentityGateTests -q
+```
+
+```text
+tests/test_api_routes.py FF...                                           [100%]
+...
+app/routes/messages.py:142: in post_message
+    raise HTTPException(
+E   fastapi.exceptions.HTTPException: 401: CityCatalyst authentication failed
+...
+FAILED tests/test_api_routes.py::MessageIdentityGateTests::test_message_continues_without_catalog_when_core_is_unavailable
+FAILED tests/test_api_routes.py::MessageIdentityGateTests::test_message_continues_without_catalog_when_thread_token_is_rejected
+=================== 2 failed, 3 passed, 6 warnings in 2.30s ====================
+```
+
+Both failed for the intended reason (the old blanket 401), and the three
+pre-existing gate tests stayed green throughout.
+
+### GREEN
+
+```bash
+cd climate-advisor
+uv run --directory service pytest tests/test_api_routes.py::MessageIdentityGateTests -q
+```
+
+```text
+collected 5 items
+
+tests/test_api_routes.py .....                                           [100%]
+
+======================== 5 passed, 6 warnings in 1.96s =========================
+```
+
+### Full covering command from the fix brief (run after the docs pass)
+
+```bash
+cd climate-advisor
+uv run --directory service pytest \
+  tests/test_api_routes.py::MessageIdentityGateTests \
+  tests/test_citycatalyst_client_auth.py::CityCatalystClientAuthTests::test_validate_user_identity_uses_bearer_and_service_headers \
+  tests/test_citycatalyst_client.py::CityCatalystClientTests::test_discover_native_inputs_does_not_refresh_from_claimed_user_on_401 \
+  tests/test_citycatalyst_client.py::CityCatalystClientTests::test_read_native_input_does_not_refresh_from_claimed_user_on_401 \
+  tests/test_streaming_handler.py::StreamingHandlerCompletionTests::test_native_input_catalog_context_uses_authenticated_request_identity \
+  tests/test_streaming_handler.py::StreamingHandlerCompletionTests::test_native_input_catalog_context_requires_validated_core_identity \
+  -q
+```
+
+```text
+collected 10 items
+
+tests/test_api_routes.py .....                                           [ 50%]
+tests/test_citycatalyst_client_auth.py .                                 [ 60%]
+tests/test_citycatalyst_client.py ..                                     [ 80%]
+tests/test_streaming_handler.py ..                                       [100%]
+
+======================== 10 passed, 6 warnings in 2.18s ========================
+```
+
+10/10 passing. The security contract from the original Task 5 still holds: the
+invalid **payload** token case is still 401, subject mismatch is still 401, and
+the catalog no-refresh client/handler tests are unchanged and green.
+
+## Files changed
+
+- `climate-advisor/service/app/routes/messages.py`
+- `climate-advisor/service/tests/test_api_routes.py`
+- `climate-advisor/README.md`
+- `climate-advisor/docs/architecture.md`
+
+## Mandatory post-change skill results (fix pass)
+
+### simplify-after-change
+
+- Kept the change inside the existing gate block; no new helper, wrapper, or
+  branch-dispatch abstraction was added.
+- Expressed the auth-rejection statuses as one module constant
+  (`_CC_AUTH_REJECTION_STATUSES`) instead of repeating literals.
+- Used `try/except/else` so the success-only subject check is not reachable
+  from the error path, avoiding a sentinel flag variable.
+- Kept the explicit `catalog_user_id = None` reset in the error path as a
+  fail-closed guard, so no partially validated identity can survive.
+- Added one shared test helper (`_stub_session_factory`) rather than repeating
+  async session-mock scaffolding; no unused imports or dead code remain.
+
+### docs-after-change
+
+- `climate-advisor/README.md` message-contract section: 401 is now documented
+  as subject mismatch or a rejected **request-supplied** bearer; Core
+  unavailability and a rejected thread-stored bearer keep the chat request
+  succeeding with NativeInputCatalog disabled.
+- `climate-advisor/docs/architecture.md` request-flow diagram: the identity
+  `alt` now has an explicit "continue with catalog identity disabled" branch,
+  which also resolves review M-4 (the diagram no longer implies an expired
+  thread token hard-fails before the refresh branch).
+- `climate-advisor/docs/architecture.md` trust-boundary paragraph: states the
+  exact set of outcomes that 401 versus degrade.
+- Reviewed environment, setup, and deployment docs: no env var, command, or
+  output contract changed, so no edit was required there.
+
+## Concerns and limitations
+
+- Review ⚠️ 1 (identity format parity between Core's canonical `user_id` and
+  the client-sent `payload.user_id`) is unchanged and still a Core-side
+  contract question. It is now less dangerous — a format skew produces 401 only
+  when Core actually returns a subject, which is the mismatch case — but a
+  systematic representation difference would still 401 every bearer-carrying
+  request. Out of scope for this fix brief.
+- The broad DB-backed `test_api_routes.py` suite was still not run (review
+  ⚠️ 4); the new tests remain in the dependency-free `MessageIdentityGateTests`
+  class. The new thread-token test stubs `ThreadService`/`MessageService` and
+  the session factory, so it does not exercise real persistence.
+- Out-of-scope minors M-1 (keyword-only `StreamingHandler` signature), M-2
+  (unused `user_id` catalog parameters), and M-5 (pytest warning hygiene) were
+  deliberately not addressed, per the fix brief.
+- No push, no PR, no Core change, and the parent checkout was not touched.

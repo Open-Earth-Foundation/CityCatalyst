@@ -257,10 +257,27 @@ from body `user_id`, or when Core rejects a bearer that came from the request
 payload. Every other identity outcome — Core unavailable, `CC_BASE_URL` unset,
 a malformed identity response, or a rejected thread-stored bearer — leaves the
 chat request running with catalog identity disabled rather than returning 401.
+On that degraded path the route also skips the thread-context write for a
+request-supplied bearer: a token is persisted only after Core returned a
+canonical identity, so an unvalidated bearer cannot be laundered into the more
+permissive thread-stored class on subsequent requests.
 `StreamingHandler` accepts that canonical identity separately for catalog
 context, combines it with the safe request scope, and ignores caller-supplied
 identity and catalog selections. Missing token or validated catalog identity
 leaves the catalog tools disabled.
+
+Thread-stored bearers are never refreshed for the catalog path, and CA-issued
+tokens expire after one hour. After expiry the catalog tools stay unregistered
+for the thread; recovery is a new request-supplied bearer that Core identity
+validation accepts. Refreshing from the thread record's stored `user_id` is
+deliberately rejected as a recovery mechanism, because `POST /v1/threads` is
+unauthenticated and persists an arbitrary caller-supplied `user_id`.
+
+This boundary is closed for request-supplied bearers and for all
+NativeInputCatalog paths, not for Climate Advisor as a whole. `POST /v1/threads`
+remains unauthenticated, and legacy non-catalog inventory tools may still
+derive a token refresh from the request body `user_id`; that residual is
+outside CC-737 scope.
 
 At tool-call time, discovery returns only locally supported safe entries. A
 read accepts a model-selected catalog/capability pair with finite bounded

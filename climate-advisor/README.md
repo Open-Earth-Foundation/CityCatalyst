@@ -266,8 +266,26 @@ canonical user ID must equal body `user_id`; a subject mismatch, or a bearer
 supplied in the request that Core rejects, receives the same HTTP 401
 authentication failure. When Core is unavailable or misconfigured, or when the
 rejected bearer came from stored thread context, the chat request still
-succeeds and only the NativeInputCatalog tools are disabled. Requests without a
-CityCatalyst bearer can continue, but NativeInputCatalog tools remain disabled.
+succeeds and only the NativeInputCatalog tools are disabled. In that degraded
+case a request-supplied bearer is **not** persisted into thread context, so an
+unvalidated token cannot become a thread-stored token on later requests.
+Requests without a CityCatalyst bearer can continue, but NativeInputCatalog
+tools remain disabled.
+
+CA-issued tokens expire after one hour, and Climate Advisor does not refresh a
+thread-stored bearer for the catalog path. Once the stored token expires, the
+NativeInputCatalog tools stay unregistered for the thread until the client
+sends a new bearer in the request that Core identity validation accepts; plain
+chat is unaffected. Refreshing from the thread record's `user_id` is
+deliberately not done, because `POST /v1/threads` is unauthenticated and
+accepts an arbitrary `user_id`, so that identity is not server-validated.
+
+This boundary closes the claimed-identity escalation for request-supplied
+bearers and for every NativeInputCatalog path. It is not a general Climate
+Advisor authentication redesign: `POST /v1/threads` remains unauthenticated,
+and the legacy non-catalog inventory tools may still refresh a token from the
+request body `user_id`. That residual is outside CC-737 scope and is tracked
+separately.
 
 **Server Response (SSE Stream):**
 
@@ -1062,6 +1080,11 @@ or read is returned through the existing safe tool failure path without calling
 the user-token refresh endpoint or deriving a refresh identity from request
 JSON. This restriction is catalog-specific: the existing non-catalog inventory
 tools continue to refresh and persist expired tokens as documented above.
+
+Because the catalog path never refreshes, an expired thread-stored bearer
+leaves both tools unregistered. Recovery requires a new request-supplied bearer
+that passes Core identity validation; there is no mid-thread refresh from a
+stored or claimed `user_id`.
 
 The v1 model-facing read arguments are limited to camelCase `catalogId`,
 `capabilityId`, and optional `language`; `language` is accepted only for the

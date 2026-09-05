@@ -3,7 +3,12 @@
 ## Outcome
 
 Task 5 closes the request-identity escalation path introduced by runtime
-NativeInputCatalog discovery.
+NativeInputCatalog discovery **for request-supplied bearers and for every
+NativeInputCatalog path**. It does not close the end-to-end claimed-identity
+escalation for Climate Advisor as a whole: `POST /v1/threads` is still
+unauthenticated, and legacy non-catalog inventory tools may still refresh a
+token from the request body `user_id`. See the whole-branch fix section at the
+end of this report.
 
 - `/v1/messages` now validates every supplied or thread-loaded CityCatalyst
   bearer through Core's existing
@@ -402,3 +407,166 @@ the catalog no-refresh client/handler tests are unchanged and green.
   (unused `user_id` catalog parameters), and M-5 (pytest warning hygiene) were
   deliberately not addressed, per the fix brief.
 - No push, no PR, no Core change, and the parent checkout was not touched.
+
+---
+
+# Whole-branch fix: unvalidated bearer persistence (review findings I-1, I-2, I-3)
+
+**Brief:** `whole-branch-fix-brief.md`
+**Review:** `whole-branch-review.md`
+**Branch:** `cc-737-runtime-discovery` (no push)
+**HEAD before fix:** `8bbb817e5`
+
+## Controller rulings applied
+
+- **I-2 — fixed in code.** `/v1/messages` no longer persists
+  `token_from_payload` into thread context unless Core identity validation
+  succeeded (`catalog_user_id is not None`). A Core outage can no longer
+  launder a request-supplied bearer into the lenient thread-token class. The
+  user message itself is persisted exactly as before; only the `access_token`
+  context write is gated.
+- **I-3 — documented, no refresh added.** Refreshing the thread bearer from the
+  thread record's stored `user_id` was rejected: `POST /v1/threads` is
+  unauthenticated and accepts an arbitrary `user_id`, so that identity is not
+  server-validated and refreshing from it would reopen the claimed-identity
+  attack. Catalog recovery is a new request-supplied bearer that passes Core
+  identity validation; until then catalog tools stay unregistered and chat
+  continues.
+- **I-1 — documented, no auth expansion.** Every "escalation closed" claim is
+  now qualified to "closed for request-supplied bearers / NativeInputCatalog
+  paths". `POST /v1/threads` remains unauthenticated and legacy non-catalog
+  tools may still refresh from the request body `user_id`.
+
+## TDD evidence
+
+### RED
+
+New test in `tests/test_api_routes.py::MessageIdentityGateTests`:
+`test_message_does_not_persist_payload_token_when_identity_is_unvalidated` —
+payload `access_token` + identity `status_code=503` + stub session factory and
+`ThreadService`.
+
+```bash
+cd climate-advisor
+uv run --directory service pytest tests/test_api_routes.py::MessageIdentityGateTests -q
+```
+
+```text
+tests/test_api_routes.py ..F...                                          [100%]
+tests/test_api_routes.py:344: in test_message_does_not_persist_payload_token_when_identity_is_unvalidated
+    self.assertNotIn("access_token", persisted_keys)
+E   AssertionError: 'access_token' unexpectedly found in ['access_token']
+=================== 1 failed, 5 passed, 6 warnings in 2.05s ====================
+```
+
+Failed for the intended reason: the degrade path wrote the unvalidated bearer
+to thread context. The five pre-existing gate tests stayed green.
+
+### GREEN
+
+```text
+collected 6 items
+tests/test_api_routes.py ......                                          [100%]
+======================== 6 passed, 6 warnings in 1.94s =========================
+```
+
+## Verification evidence
+
+Covering command from the brief:
+
+```bash
+cd climate-advisor
+uv run --directory service pytest \
+  tests/test_api_routes.py::MessageIdentityGateTests \
+  tests/test_citycatalyst_client.py::CityCatalystClientTests::test_discover_native_inputs_does_not_refresh_from_claimed_user_on_401 \
+  tests/test_citycatalyst_client.py::CityCatalystClientTests::test_read_native_input_does_not_refresh_from_claimed_user_on_401 \
+  tests/test_streaming_handler.py::StreamingHandlerCompletionTests::test_native_input_catalog_context_uses_authenticated_request_identity \
+  tests/test_streaming_handler.py::StreamingHandlerCompletionTests::test_native_input_catalog_context_requires_validated_core_identity \
+  -q
+```
+
+```text
+collected 10 items
+tests/test_api_routes.py ......                                          [ 60%]
+tests/test_citycatalyst_client.py ..                                     [ 80%]
+tests/test_streaming_handler.py ..                                       [100%]
+======================== 10 passed, 6 warnings in 1.92s ========================
+```
+
+Broader regression (the same set the whole-branch review re-ran):
+
+```text
+tests/test_native_input_catalog_service.py, tests/test_native_input_catalog_tools.py,
+tests/test_agent_service.py, tests/test_streaming_handler.py,
+tests/test_citycatalyst_client.py, tests/test_citycatalyst_client_auth.py,
+tests/test_citycatalyst_client_auth_contract.py,
+tests/test_api_routes.py::MessageIdentityGateTests
+================== 129 passed, 5 skipped, 6 warnings in 2.58s ==================
+```
+
+Previously 128 passed; the delta is the new persist-gate test. The five skips
+are the env-gated live-Core contract cases.
+
+Compile and diff checks:
+
+```bash
+uv run --directory service python -m compileall app   # exit 0
+git diff --check                                      # exit 0
+git diff --cached --check                             # exit 0
+```
+
+## Files changed
+
+- `climate-advisor/service/app/routes/messages.py` — persist the payload bearer
+  into thread context only when Core returned a canonical identity.
+- `climate-advisor/service/tests/test_api_routes.py` — persist-on-503 test.
+- `climate-advisor/README.md` — degrade-path non-persistence, expired
+  thread-token recovery contract, qualified closure scope.
+- `climate-advisor/docs/architecture.md` — same three qualifications on the
+  trust-boundary section.
+- `.superpowers/sdd/mirco-runtime-discovery-implementation-plan/task-5-report.md`
+  — qualified the Task 5 closure claim and appended this section.
+
+## Mandatory post-change skill results
+
+### simplify-after-change
+
+- The fix is one added conjunct on the existing `if token_from_payload:`
+  condition; no helper, flag variable, or branch restructuring was introduced.
+- The persistence block stays where it is, so message persistence, workflow
+  context, and `touch_thread` ordering are unchanged.
+- Added a comment at the gate explaining the strict/lenient token-class
+  invariant, since the reason for the condition is not visible locally.
+- No new imports, no dead code, no behavior change on the success path.
+
+### docs-after-change
+
+- `climate-advisor/README.md` message-contract section: the degrade path no
+  longer persists a request-supplied bearer; expired thread tokens disable
+  NativeInputCatalog until a new accepted bearer arrives; closure scope is
+  qualified to request-supplied bearers and catalog paths.
+- `climate-advisor/README.md` NativeInputCatalog section: explicit statement
+  that the catalog path never refreshes and how recovery happens.
+- `climate-advisor/docs/architecture.md` trust-boundary section: same three
+  points, phrased for the request-flow context.
+- Reviewed environment, setup, and deployment docs: no env var, command,
+  output, or storage contract changed, so no edit was required there.
+
+## Concerns and limitations
+
+- The **I-1** chain is documented but still open in code: `POST /v1/threads` is
+  unauthenticated and legacy inventory tools can still refresh from the body
+  `user_id`. A follow-up ticket carrying that exact chain still needs to be
+  filed; it was not created from this worktree.
+- **I-3** is accepted as a documented functional limitation, not fixed. A chat
+  whose thread token expires loses NativeInputCatalog for the rest of the
+  thread unless the client sends a fresh bearer or an unrelated legacy
+  inventory tool happens to refresh and persist one.
+- The new test stubs `ThreadService`, `MessageService`, and the session
+  factory, so it asserts the call contract rather than real persistence. The
+  broad DB-backed `test_api_routes.py` classes were not run (unchanged from the
+  prior fix pass).
+- Review minors M-a through M-e and the six carried-over Task 5 minors were
+  deliberately not addressed; the brief scoped this pass to I-1/I-2/I-3.
+- No push, no PR, no Core change, no `threads.py` change, and the parent
+  checkout was not touched.

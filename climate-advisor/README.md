@@ -262,8 +262,11 @@ is supplied, it must already exist and belong to the requesting user.
 When the request or thread supplies a CityCatalyst bearer, Climate Advisor
 validates it through Core's `/api/v1/internal/ca/auth/identity` endpoint before
 persisting the message or constructing the catalog-enabled agent. Core's
-canonical user ID must equal body `user_id`; invalid tokens and subject
-mismatches receive the same HTTP 401 authentication failure. Requests without a
+canonical user ID must equal body `user_id`; a subject mismatch, or a bearer
+supplied in the request that Core rejects, receives the same HTTP 401
+authentication failure. When Core is unavailable or misconfigured, or when the
+rejected bearer came from stored thread context, the chat request still
+succeeds and only the NativeInputCatalog tools are disabled. Requests without a
 CityCatalyst bearer can continue, but NativeInputCatalog tools remain disabled.
 
 **Server Response (SSE Stream):**

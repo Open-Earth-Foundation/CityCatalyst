@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 _CC_AUTHENTICATION_FAILED = "CityCatalyst authentication failed"
+_CC_AUTH_REJECTION_STATUSES = frozenset({401, 403})
 
 # Configure LangSmith tracing for Agents SDK
 settings = get_settings()
@@ -135,20 +136,30 @@ async def post_message(
                         cc_access_token
                     )
             except CityCatalystClientError as exc:
+                catalog_user_id = None
+                # Only a request-supplied bearer that Core actively rejects is an
+                # authentication failure. Core outages and stale thread-stored
+                # tokens disable the catalog and leave the chat request intact.
+                if exc.status_code in _CC_AUTH_REJECTION_STATUSES and token_from_payload:
+                    logger.warning(
+                        "Rejected unvalidated CityCatalyst bearer status=%s",
+                        exc.status_code,
+                    )
+                    raise HTTPException(
+                        status_code=401,
+                        detail=_CC_AUTHENTICATION_FAILED,
+                    ) from exc
                 logger.warning(
-                    "Rejected unvalidated CityCatalyst bearer status=%s",
+                    "Disabling catalog identity; CityCatalyst validation failed status=%s",
                     exc.status_code,
                 )
-                raise HTTPException(
-                    status_code=401,
-                    detail=_CC_AUTHENTICATION_FAILED,
-                ) from exc
-            if catalog_user_id != payload.user_id:
-                logger.warning("Rejected CityCatalyst bearer subject mismatch")
-                raise HTTPException(
-                    status_code=401,
-                    detail=_CC_AUTHENTICATION_FAILED,
-                )
+            else:
+                if catalog_user_id != payload.user_id:
+                    logger.warning("Rejected CityCatalyst bearer subject mismatch")
+                    raise HTTPException(
+                        status_code=401,
+                        detail=_CC_AUTHENTICATION_FAILED,
+                    )
         
         # 3. Persist user message and update token if needed
         if session_factory:

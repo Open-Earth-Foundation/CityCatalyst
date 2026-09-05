@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import json
 import unittest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 from fastapi import HTTPException
@@ -258,6 +258,101 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
             "CityCatalyst authentication failed",
         )
         streaming_handler.assert_not_called()
+
+    async def test_message_continues_without_catalog_when_core_is_unavailable(
+        self,
+    ) -> None:
+        """A Core outage disables the catalog instead of failing plain chat."""
+        with (
+            patch(
+                "app.routes.messages.ThreadResolver.resolve_thread",
+                new=AsyncMock(return_value="thread-1"),
+            ),
+            patch(
+                "app.services.citycatalyst_client.CityCatalystClient.validate_user_identity",
+                new=AsyncMock(
+                    side_effect=CityCatalystClientError(
+                        "CC identity validation unavailable",
+                        status_code=503,
+                    )
+                ),
+            ),
+            patch("app.routes.messages.StreamingHandler") as streaming_handler,
+        ):
+            response = await post_message(
+                MessageCreateRequest(
+                    user_id="user-1",
+                    content="Hello assistant",
+                    thread_id="thread-1",
+                    context={"access_token": "valid-token"},
+                ),
+                session=None,
+                session_factory=None,
+            )
+
+        self.assertEqual(response.status_code, 200)
+        streaming_handler.assert_called_once()
+        self.assertIsNone(streaming_handler.call_args.kwargs["catalog_user_id"])
+
+    async def test_message_continues_without_catalog_when_thread_token_is_rejected(
+        self,
+    ) -> None:
+        """A stale thread-stored bearer disables the catalog, not the chat."""
+        token_handler = MagicMock(
+            return_value=AsyncMock(
+                load_token_from_thread=AsyncMock(return_value="stale-thread-token")
+            )
+        )
+        refresh_token = AsyncMock()
+        with (
+            patch(
+                "app.routes.messages.ThreadResolver.resolve_thread",
+                new=AsyncMock(return_value="thread-1"),
+            ),
+            patch("app.utils.token_handler.TokenHandler", new=token_handler),
+            patch(
+                "app.services.citycatalyst_client.CityCatalystClient.validate_user_identity",
+                new=AsyncMock(
+                    side_effect=CityCatalystClientError(
+                        "CC bearer token is invalid",
+                        status_code=401,
+                    )
+                ),
+            ),
+            patch(
+                "app.services.citycatalyst_client.CityCatalystClient.refresh_token",
+                new=refresh_token,
+            ),
+            patch("app.routes.messages.ThreadService", new=MagicMock(return_value=AsyncMock())),
+            patch("app.routes.messages.MessageService", new=MagicMock(return_value=AsyncMock())),
+            patch("app.routes.messages.StreamingHandler") as streaming_handler,
+        ):
+            response = await post_message(
+                MessageCreateRequest(
+                    user_id="user-1",
+                    content="Hello assistant",
+                    thread_id="thread-1",
+                ),
+                session=None,
+                session_factory=_stub_session_factory(),
+            )
+
+        self.assertEqual(response.status_code, 200)
+        streaming_handler.assert_called_once()
+        self.assertIsNone(streaming_handler.call_args.kwargs["catalog_user_id"])
+        self.assertEqual(
+            streaming_handler.call_args.kwargs["cc_access_token"],
+            "stale-thread-token",
+        )
+        refresh_token.assert_not_awaited()
+
+
+def _stub_session_factory() -> MagicMock:
+    """Build a session factory whose sessions are inert async mocks."""
+    session_factory = MagicMock()
+    session_factory.return_value.__aenter__ = AsyncMock(return_value=AsyncMock())
+    session_factory.return_value.__aexit__ = AsyncMock(return_value=False)
+    return session_factory
 
 
 class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):

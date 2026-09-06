@@ -63,10 +63,14 @@ jobs:
       CC_BASE_URL: http://localhost:3000
       CA_DATABASE_URL: "sqlite+aiosqlite:///:memory:"
       CNB_TEST_DATABASE_URL: "postgresql://cnb_test:cnb_test@localhost:55432/cnb_test"
+      CNB_EDIT_TEST_DATABASE_URL: "postgresql+asyncpg://cnb_test:cnb_test@127.0.0.1:55432/cc732_test"
+      CNB_EDIT_COVERAGE_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -121,10 +125,29 @@ jobs:
 
       - name: Run CNB database and runtime tests
         working-directory: climate-advisor
+        env:
+          PGPASSWORD: cnb_test
         run: |
+          psql -h 127.0.0.1 -p 55432 -U cnb_test -d cnb_test -v ON_ERROR_STOP=1 -c 'CREATE DATABASE cc732_test'
           uv run --directory service pytest tests/cnb \
                  tests/test_cnb_migrations.py \
                  -v --tb=short --color=yes
+
+      - name: Enforce CNB chat edit full-file coverage
+        working-directory: climate-advisor
+        env:
+          OPENROUTER_API_KEY: cc732-synthetic-no-live-model
+          OPENAI_API_KEY: cc732-synthetic-no-live-embeddings
+          OPENROUTER_SMOKE_TEST: "0"
+          MLFLOW_ENABLED: "false"
+        run: uv run python service/scripts/run_cnb_edit_tests.py --suite all --coverage
+
+      - name: Retain CNB chat edit coverage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cnb-chat-edit-ca-coverage
+          path: climate-advisor/service/coverage/cnb-edits/
 
       - name: Generate test coverage report
         working-directory: climate-advisor

@@ -1,4 +1,4 @@
-"""Focused contracts for Concept Note rename, duplicate, and delete."""
+"""Focused contracts for Concept Note lifecycle actions."""
 
 from __future__ import annotations
 
@@ -25,9 +25,11 @@ from app.models.db.concept_note import (
     ConceptNoteRun,
     ConceptNoteUpload,
 )
+from app.models.db.message import Message, MessageRole
 from app.models.db.thread import Thread
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
+from app.utils.chat_workflow_context import CONCEPT_NOTE_RUN_ID_KEY
 
 
 @asynccontextmanager
@@ -50,6 +52,7 @@ async def _ca_session():
     )
     tables = (
         Thread.__table__,
+        Message.__table__,
         ConceptNoteRun.__table__,
         ConceptNoteContextBundle.__table__,
         ConceptNoteUpload.__table__,
@@ -290,6 +293,59 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
                 )
                 is None
             )
+
+
+async def test_reset_chat_replaces_history_and_preserves_run() -> None:
+    """Reset creates a workflow-bound thread and deletes the old messages."""
+    run_id = uuid4()
+    old_thread_id = uuid4()
+    city_id = uuid4()
+
+    async with _ca_session() as session:
+        run = _run(run_id=run_id, thread_id=old_thread_id, city_id=city_id)
+        session.add_all(
+            [
+                Thread(
+                    thread_id=old_thread_id,
+                    user_id="owner-1",
+                    context={"access_token": "old-token"},
+                    title=run.name,
+                ),
+                run,
+                Message(
+                    message_id=uuid4(),
+                    thread_id=old_thread_id,
+                    user_id="owner-1",
+                    text="Keep this only in the old chat",
+                    role=MessageRole.USER,
+                ),
+            ]
+        )
+        await session.commit()
+
+        service = ConceptNoteLifecycleService(session)
+        service.run_service.get_authorized_run = AsyncMock(return_value=run)
+        response = await service.reset_chat(
+            run_id=run_id,
+            requested_user_id="owner-1",
+            authorization="Bearer refreshed-token",
+        )
+
+        assert response.run_id == run_id
+        assert response.thread_id != old_thread_id
+        assert await session.get(ConceptNoteRun, run_id) is run
+        assert await session.get(Thread, old_thread_id) is None
+        assert (
+            await session.scalar(
+                select(Message).where(Message.thread_id == old_thread_id)
+            )
+            is None
+        )
+        new_thread = await session.get(Thread, response.thread_id)
+        assert new_thread is not None
+        assert new_thread.title == run.name
+        assert new_thread.context["access_token"] == "refreshed-token"
+        assert new_thread.context[CONCEPT_NOTE_RUN_ID_KEY] == str(run_id)
 
 
 @pytest.mark.parametrize("value", ["", "   ", "x" * 121])

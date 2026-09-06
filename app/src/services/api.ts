@@ -2491,6 +2491,19 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
+      resetConceptNoteChat: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}/chat/reset`,
+          method: "POST",
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
       uploadConceptNoteSource: builder.mutation<
         ConceptNoteUploadResponse,
         ConceptNoteUploadRequest
@@ -2760,6 +2773,7 @@ export const {
   useRenameConceptNoteRunMutation,
   useDuplicateConceptNoteRunMutation,
   useDeleteConceptNoteRunMutation,
+  useResetConceptNoteChatMutation,
   useStartConceptNoteDraftMutation,
   useResolveConceptNoteGapMutation,
   useConfirmConceptNoteChapterMutation,

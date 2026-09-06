@@ -1,4 +1,4 @@
-"""Rename, duplicate, and permanently delete Concept Note runs."""
+"""Rename, duplicate, reset chat, and permanently delete Concept Note runs."""
 
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 
 class ConceptNoteLifecycleService:
-    """Apply the three user-facing lifecycle actions with direct persistence."""
+    """Apply user-facing lifecycle actions with direct persistence."""
 
     def __init__(
         self,
@@ -211,6 +211,58 @@ class ConceptNoteLifecycleService:
                 await self.session.delete(thread)
         await self.session.delete(run)
         await self.session.commit()
+
+    async def reset_chat(
+        self,
+        *,
+        run_id: UUID,
+        requested_user_id: str,
+        authorization: str | None,
+    ) -> ConceptNoteRunResponse:
+        """Replace an owned run's dedicated chat without changing its workspace."""
+        token = _require_bearer_token(authorization)
+        run = await self.run_service.get_authorized_run(
+            run_id=run_id,
+            requested_user_id=requested_user_id,
+            authorization=authorization,
+        )
+        _require_idle(run)
+        if not await self._thread_is_dedicated(run):
+            raise HTTPException(
+                status_code=409,
+                detail="The Concept Note chat is shared and cannot be reset",
+            )
+
+        old_thread = None
+        if run.thread_id is not None:
+            old_thread = await self.session.scalar(
+                select(Thread).where(
+                    Thread.thread_id == run.thread_id,
+                    Thread.user_id == run.user_id,
+                )
+            )
+
+        # Point the run at a fresh workflow-bound chat before removing history.
+        new_thread_id = uuid4()
+        new_thread = Thread(
+            thread_id=new_thread_id,
+            user_id=run.user_id,
+            title=run.name,
+            context=bind_workflow_context(
+                create_token_context(token),
+                workflow_key=CONCEPT_NOTE_RUN_ID_KEY,
+                run_id=run.run_id,
+            ),
+        )
+        self.session.add(new_thread)
+        run.thread_id = new_thread_id
+        run.updated_at = datetime.now(UTC)
+        await self.session.flush()
+
+        if old_thread is not None:
+            await self.session.delete(old_thread)
+        await self.session.commit()
+        return _to_response(run, created=False)
 
     async def _build_copy(
         self,

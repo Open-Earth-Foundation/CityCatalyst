@@ -84,6 +84,18 @@ describe("Concept Note gap interview presentation", () => {
     );
   });
 
+  it("ignores missing gap values from a partial runtime draft", () => {
+    const incompleteChapter = {
+      ...chapter("summary", 0, []),
+      gaps: undefined,
+    } as unknown as ConceptNoteDraftChapter;
+
+    expect(getOpenConceptNoteGaps([undefined, null])).toEqual([]);
+    expect(
+      getFocusedConceptNoteGap([incompleteChapter], null, null, null),
+    ).toBeNull();
+  });
+
   it("focuses the first open gap in the chapter selected from the draft", () => {
     const chapters = [
       chapter("summary", 0, [

@@ -203,6 +203,25 @@ async def duplicate_concept_note_run(
     )
 
 
+@router.post(
+    "/concept-notes/{run_id}/chat/reset",
+    response_model=ConceptNoteRunResponse,
+)
+async def reset_concept_note_chat(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunResponse:
+    """Replace one concept note's dedicated chat and remove its history."""
+    service = ConceptNoteLifecycleService(session)
+    return await service.reset_chat(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
 @router.delete(
     "/concept-notes/{run_id}",
     status_code=status.HTTP_204_NO_CONTENT,

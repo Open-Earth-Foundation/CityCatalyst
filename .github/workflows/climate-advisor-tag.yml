@@ -55,6 +55,7 @@ jobs:
       CC_BASE_URL: http://localhost:3000
       CA_DATABASE_URL: "sqlite+aiosqlite:///:memory:"
       CNB_TEST_DATABASE_URL: "postgresql://cnb_test:cnb_test@localhost:55432/cnb_test"
+      CNB_EDIT_TEST_DATABASE_URL: "postgresql+asyncpg://cnb_test:cnb_test@127.0.0.1:55432/cc732_test"
 
     steps:
       - name: Checkout repository
@@ -104,7 +105,10 @@ jobs:
 
       - name: Run CNB database and runtime tests
         working-directory: climate-advisor
+        env:
+          PGPASSWORD: cnb_test
         run: |
+          psql -h 127.0.0.1 -p 55432 -U cnb_test -d cnb_test -v ON_ERROR_STOP=1 -c 'CREATE DATABASE cc732_test'
           uv run --directory service pytest tests/cnb \
                  tests/test_cnb_migrations.py \
                  -v --tb=short --color=yes

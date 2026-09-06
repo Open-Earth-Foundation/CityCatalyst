@@ -14,6 +14,22 @@ All modes share thread persistence, token handling, SSE streaming, and the
 Agents SDK runtime. Workflow-specific context and tools are resolved before the
 single shared stream starts.
 
+Concept Note chat also exposes an authorized proposal-only edit tool. The
+separate edit planner, service, repository, and run-scoped API persist proposals
+in the managed CNB database; only explicit web review actions apply, undo, or
+restore chapter revisions. The current implementation preserves exact revision
+vectors, source/user provenance, gap/Ready invariants, and append-only history.
+The planner runs bounded concurrent chapter workers: every model call receives
+the user instruction and one chapter. An independent semantic review compares
+the actual proposed output with that chapter and the instruction before
+server-side aggregation and whole-document validation produce a single review
+proposal. Meaning-preserving rewrites need no uploaded evidence. Explicit user
+facts authorize proposals, with a non-blocking notice distinguishing them from
+independently verified source facts. Technical stale/anchor/source checks and
+explicit acceptance remain mandatory.
+See [Concept Note chat edits](cnb-chat-edits.md) for the complete boundary,
+including metadata-only CNB telemetry and focused synthetic verification.
+
 ## Current Architecture (As-Implemented)
 
 ### System Architecture
@@ -365,6 +381,13 @@ Stationary Energy chat also has a dedicated prompt budget:
 
 - Token refresh flows through `TokenHandler`.
 - Inventory tools call CityCatalyst APIs with the scoped bearer token.
+- Successful bearer-token identity and city reads use a bounded, process-local
+  30-second cache in `CityCatalystClient`. Keys contain a one-way token
+  fingerprint; concurrent checks share one request, token expiry shortens the
+  TTL, and failures are never retained.
+- The CityCatalyst Concept Note proxy also reuses one successfully issued CA
+  token per user until one minute before expiry. Concurrent issuance is
+  coalesced so polling routes present the same valid token to the CA cache.
 - Stationary Energy draft-save uses the existing CityCatalyst draft-save route
   after CA has assembled a complete reviewed draft state.
 - Inventory commit is not executed directly by CA chat tools; CA returns a

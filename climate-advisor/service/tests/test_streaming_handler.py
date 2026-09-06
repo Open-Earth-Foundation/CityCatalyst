@@ -7,6 +7,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
+from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.requests import MessageCreateRequest
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.sse import format_sse
@@ -100,6 +101,79 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             handler.agent_service,
         )
         self.assertEqual(handler.cc_access_token, "fresh-token")
+
+    def test_recent_edit_messages_are_visible_bounded_and_exclude_current(self) -> None:
+        current = "yes, chapter beginnings only"
+        history = [
+            {"role": "user", "content": "oldest"},
+            {"role": "assistant", "content": "clarify the scope"},
+            {"role": "user", "content": "chapter beginnings"},
+            {
+                "role": "user",
+                "content": 'CONCEPT_NOTE_CONTEXT_BUNDLE_JSON\n{"private":true}',
+            },
+            {"role": "assistant", "content": "one more question"},
+            {"role": "user", "content": current},
+        ]
+
+        self.assertEqual(
+            StreamingHandler._recent_concept_note_edit_messages(
+                history,
+                current_instruction=current,
+            ),
+            [
+                {"role": "assistant", "content": "clarify the scope"},
+                {"role": "user", "content": "chapter beginnings"},
+                {"role": "assistant", "content": "one more question"},
+            ],
+        )
+
+    async def test_persist_message_saves_bound_concept_note_edit_arguments(
+        self,
+    ) -> None:
+        idempotency_key = uuid4()
+        handler = StreamingHandler(
+            thread_id="thread-1",
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.assistant_tokens = ["Review the proposal."]
+        handler.tool_invocations = [
+            {
+                "id": "tool-call-1",
+                "name": "concept_note_edit_propose",
+                "arguments": {},
+                "status": "success",
+            }
+        ]
+        handler.concept_note_edit_request = EditProposalRequest.model_validate(
+            {
+                "instruction": "Change Stage IV to Stage 4.",
+                "scope": {"kind": "auto", "focused_chapter_id": None},
+                "idempotency_key": idempotency_key,
+            }
+        )
+
+        persist = AsyncMock(return_value=True)
+        with patch(
+            "app.utils.streaming_handler.persist_assistant_message",
+            persist,
+        ):
+            saved = await handler.persist_message()
+
+        self.assertTrue(saved)
+        persisted_invocation = persist.await_args.kwargs["tool_invocations"][0]
+        self.assertEqual(persisted_invocation["arguments"], {})
+        self.assertEqual(
+            persisted_invocation["bound_arguments"],
+            {
+                "instruction": "Change Stage IV to Stage 4.",
+                "scope": {"kind": "auto", "focused_chapter_id": None},
+                "idempotency_key": str(idempotency_key),
+                "refines_proposal_id": None,
+            },
+        )
+        self.assertNotIn("bound_arguments", handler.tool_invocations[0])
 
     async def test_resolve_workflow_context_loads_thread_once(self) -> None:
         draft_run_id = str(uuid4())

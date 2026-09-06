@@ -139,6 +139,7 @@ class ModelsConfig(BaseModel):
     cnb_source_synthesizer: ResearchModelConfig
     cnb_chapter_drafter: ResearchModelConfig | None = None
     cnb_gap_impact_reviewer: ResearchModelConfig | None = None
+    cnb_chat_edit_planner: ResearchModelConfig | None = None
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -170,6 +171,13 @@ class CnbGapImpactPromptBudgetConfig(BaseModel):
     max_chapter_slice_tokens: int = Field(default=12000, ge=500)
 
 
+class CnbEditPromptBudgetConfig(BaseModel):
+    """Limits for concurrent, chapter-bounded Concept Note edit planning."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=2000)
+    max_concurrency: int = Field(default=5, ge=1, le=5)
+
+
 class PromptBudgetConfig(BaseModel):
     tokenizer_encoding: str = "o200k_base"
     stationary_energy: StationaryEnergyPromptBudgetConfig = Field(
@@ -180,6 +188,9 @@ class PromptBudgetConfig(BaseModel):
     )
     cnb_gap_impact: CnbGapImpactPromptBudgetConfig = Field(
         default_factory=CnbGapImpactPromptBudgetConfig,
+    )
+    cnb_edits: CnbEditPromptBudgetConfig = Field(
+        default_factory=CnbEditPromptBudgetConfig
     )
 
 
@@ -204,6 +215,8 @@ class PromptsConfig(BaseModel):
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
     cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
     cnb_gap_impact_review: str = "prompts/cnb/gap_impact_review.md"
+    cnb_chat_edit_planner: str = "prompts/cnb/chat_edit_planner.md"
+    cnb_chat_edit_review: str = "prompts/cnb/chat_edit_review.md"
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""

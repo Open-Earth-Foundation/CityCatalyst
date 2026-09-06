@@ -848,6 +848,8 @@ async def _snapshot_chapter(
     proposed_number = (
         latest.revision_number
         if latest is not None
+        # Accepted user edits are current text, not another regeneration proposal.
+        and latest.author_type != "user"
         and confirmed_number is not None
         and latest.revision_number != confirmed_number
         else None

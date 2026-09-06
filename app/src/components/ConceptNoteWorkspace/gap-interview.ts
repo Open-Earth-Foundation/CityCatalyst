@@ -2,6 +2,17 @@ import type { ConceptNoteDraftChapter, ConceptNoteGap } from "@/util/types";
 
 export type GapInterviewPresentation = "hidden" | "summary" | "question";
 
+function isConceptNoteGap(value: unknown): value is ConceptNoteGap {
+  return typeof value === "object" && value !== null;
+}
+
+export function getConceptNoteChapterGaps(
+  chapter: ConceptNoteDraftChapter,
+): ConceptNoteGap[] {
+  const gaps: unknown = chapter.gaps;
+  return Array.isArray(gaps) ? gaps.filter(isConceptNoteGap) : [];
+}
+
 export function getGapInterviewPresentation(
   openGapCount: number,
   interviewActive: boolean,
@@ -14,9 +25,9 @@ export function getGapInterviewPresentation(
 }
 
 export function getOpenConceptNoteGaps(
-  gaps: ConceptNoteGap[],
+  gaps: readonly unknown[],
 ): ConceptNoteGap[] {
-  return gaps.filter((gap) => gap.state === "open");
+  return gaps.filter(isConceptNoteGap).filter((gap) => gap.state === "open");
 }
 
 export function getFocusedConceptNoteGap(
@@ -25,7 +36,7 @@ export function getFocusedConceptNoteGap(
   preferredGapId: string | null | undefined,
   preferredChapterId: string | null | undefined,
 ): ConceptNoteGap | null {
-  const allGaps = chapters.flatMap((chapter) => chapter.gaps);
+  const allGaps = chapters.flatMap(getConceptNoteChapterGaps);
   const preferredGap = allGaps.find(
     (gap) => gap.gap_id === preferredGapId && gap.state === "open",
   );
@@ -33,9 +44,14 @@ export function getFocusedConceptNoteGap(
     return preferredGap;
   }
 
-  const preferredChapterGap = chapters
-    .find((chapter) => chapter.chapter_id === preferredChapterId)
-    ?.gaps.find((gap) => gap.state === "open");
+  const preferredChapter = chapters.find(
+    (chapter) => chapter.chapter_id === preferredChapterId,
+  );
+  const preferredChapterGap = preferredChapter
+    ? getConceptNoteChapterGaps(preferredChapter).find(
+        (gap) => gap.state === "open",
+      )
+    : undefined;
   if (preferredChapterGap) {
     return preferredChapterGap;
   }
@@ -56,7 +72,7 @@ export function getConceptNoteGapForMarker(
     .trim()
     .toLocaleLowerCase();
   return (
-    chapter.gaps.find(
+    getConceptNoteChapterGaps(chapter).find(
       (gap) =>
         gap.state === "open" &&
         gap.question.replace(/\s+/g, " ").trim().toLocaleLowerCase() ===

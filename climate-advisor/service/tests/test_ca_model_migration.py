@@ -27,6 +27,8 @@ def test_all_active_ca_model_defaults_use_the_requested_family():
         "cnb_source_reader": ("openai/gpt-5.6-terra", "medium"),
         "cnb_source_synthesizer": ("openai/gpt-5.6-sol", "medium"),
         "cnb_chapter_drafter": ("openai/gpt-5.6-terra", "medium"),
+        "cnb_gap_impact_reviewer": ("openai/gpt-5.6-sol", "medium"),
+        "cnb_chat_edit_planner": ("openai/gpt-5.6-sol", "medium"),
     }
     for role, (model, effort) in expected.items():
         configured = getattr(models, role)

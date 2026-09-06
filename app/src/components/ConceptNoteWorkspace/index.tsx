@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -27,7 +27,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
-import type { ConceptNoteUploadResponse } from "@/util/types";
+import type { EditProposal, EditScope } from "@/util/concept-note-edit-types";
+import { CONCEPT_NOTE_POLL_INTERVAL_MS } from "@/util/concept-note-polling";
+import type {
+  ConceptNoteDraftChapter,
+  ConceptNoteGap,
+  ConceptNoteUploadResponse,
+} from "@/util/types";
 
 import {
   getConceptNoteBundleProgress,
@@ -37,14 +43,22 @@ import {
 import { StatusBadge } from "../ConceptNoteDashboard/status-badge";
 import {
   conceptNoteSourceLabel,
-  shouldPollConceptNoteUpload,
   validateConceptNoteSourceFile,
 } from "../ConceptNoteWiringHarness/utils";
 import { ConceptNoteChatPanel } from "./chat-panel";
 import { ContextTab } from "./context-tab";
 import { DraftTab } from "./draft-tab";
 import { ExportDialog } from "./export-dialog";
+import { getConceptNoteChapterGaps } from "./gap-interview";
+import { ReviewButton } from "./review-button";
 import { StructureTab } from "./structure-tab";
+import { StartNewChatDialog } from "./start-new-chat-dialog";
+import { useConceptNoteEdits } from "./use-concept-note-edits";
+import {
+  DocumentReviewToolbar,
+  documentReviewChanges,
+} from "./document-review";
+import type { DocumentReview, InlineReviewDecision } from "./inline-review";
 
 type WorkspaceTab = "draft" | "structure" | "context";
 
@@ -65,6 +79,8 @@ const workspaceTabs: Array<{
   { key: "context", translationKey: "context-tab", icon: LuRefreshCw },
 ];
 
+const noReviewDecisions: Record<string, InlineReviewDecision> = {};
+
 export function ConceptNoteWorkspace({
   cityId,
   initialUploadId,
@@ -75,10 +91,40 @@ export function ConceptNoteWorkspace({
   const reducedMotion = useReducedMotion() ?? false;
   const [tab, setTab] = useState<WorkspaceTab>("draft");
   const [exportOpen, setExportOpen] = useState(false);
+  const [startNewChatOpen, setStartNewChatOpen] = useState(false);
+  const [resetThread, setResetThread] = useState<{
+    previousThreadId: string | null;
+    threadId: string;
+  } | null>(null);
+  const [editScope, setEditScope] = useState<EditScope>({
+    kind: "auto",
+  });
+  const [editFocus, setEditFocus] = useState<{
+    chapterId: string;
+    changeId?: string;
+    requestId: string;
+    focus: boolean;
+  } | null>(null);
+  const [requestedReview, setRequestedReview] = useState<DocumentReview | null>(
+    null,
+  );
+  const [reviewDecisionProposalId, setReviewDecisionProposalId] = useState<
+    string | null
+  >(null);
+  const [reviewDecisions, setReviewDecisions] = useState<
+    Record<string, InlineReviewDecision>
+  >({});
+  const [reviewGapChapterId, setReviewGapChapterId] = useState<string | null>(
+    null,
+  );
+  const [reviewGapId, setReviewGapId] = useState<string | null>(null);
   const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
   const [uploadDetails, setUploadDetails] =
     useState<ConceptNoteUploadResponse | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [workspaceMutationError, setWorkspaceMutationError] = useState<
+    string | null
+  >(null);
 
   const {
     data: run,
@@ -88,7 +134,7 @@ export function ConceptNoteWorkspace({
   } = api.useGetConceptNoteRunQuery(
     { cityId, runId },
     {
-      pollingInterval: 5_000,
+      pollingInterval: CONCEPT_NOTE_POLL_INTERVAL_MS,
       skipPollingIfUnfocused: true,
     },
   );
@@ -100,13 +146,148 @@ export function ConceptNoteWorkspace({
   } = api.useGetConceptNoteApplicationContextQuery(runId);
   const { data: draft, refetch: refetchDraft } =
     api.useGetConceptNoteDraftQuery(runId, {
-      pollingInterval: 3_000,
+      pollingInterval: CONCEPT_NOTE_POLL_INTERVAL_MS,
       skipPollingIfUnfocused: true,
     });
+  const edits = useConceptNoteEdits({
+    runId,
+    onApplied: async (chapterIds) => {
+      await refetchDraft();
+      setRequestedReview(null);
+      if (chapterIds[0]) navigateEdit(chapterIds[0]);
+    },
+  });
+  const pendingProposal = edits.proposals.find(
+    (proposal) => proposal.status === "proposed",
+  );
+  const review: DocumentReview | null =
+    requestedReview?.kind === "history" &&
+    requestedReview.entry.run_id === runId
+      ? requestedReview
+      : requestedReview?.kind === "proposal" &&
+          edits.proposals.some(
+            (proposal) =>
+              proposal.proposal_id === requestedReview.proposalId &&
+              proposal.status === "proposed",
+          )
+        ? requestedReview
+        : pendingProposal
+          ? { kind: "proposal", proposalId: pendingProposal.proposal_id }
+          : null;
+  const reviewProposal =
+    review?.kind === "proposal"
+      ? edits.proposals.find(
+          (proposal) => proposal.proposal_id === review.proposalId,
+        )
+      : undefined;
+  const activeReviewDecisions =
+    reviewProposal?.proposal_id === reviewDecisionProposalId
+      ? reviewDecisions
+      : noReviewDecisions;
+  const reviewChanges = documentReviewChanges(
+    review,
+    edits.proposals,
+    draft?.chapters ?? [],
+  );
+  const activeChangeId = reviewChanges.some(
+    (change) => change.change_id === editFocus?.changeId,
+  )
+    ? editFocus?.changeId
+    : reviewChanges[0]?.change_id;
+  const shownReview = useRef<string | null>(null);
+  const reviewIdentity =
+    review?.kind === "proposal"
+      ? review.proposalId
+      : review?.kind === "history"
+        ? `${review.entry.application_id}:${review.operation}`
+        : null;
+  const firstReviewChapterId = reviewChanges[0]?.chapter_id;
+  const firstReviewChangeId = reviewChanges[0]?.change_id;
+  useEffect(() => {
+    if (
+      !reviewIdentity ||
+      !firstReviewChapterId ||
+      shownReview.current === reviewIdentity
+    )
+      return;
+    shownReview.current = reviewIdentity;
+    const frame = window.requestAnimationFrame(() => {
+      setTab("draft");
+      setEditFocus({
+        chapterId: firstReviewChapterId,
+        changeId: firstReviewChangeId,
+        requestId: crypto.randomUUID(),
+        focus: false,
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [reviewIdentity, firstReviewChapterId, firstReviewChangeId]);
+
+  function navigateEdit(chapterId: string, changeId?: string): void {
+    setTab("draft");
+    setEditFocus({
+      chapterId,
+      changeId,
+      requestId: crypto.randomUUID(),
+      focus: true,
+    });
+  }
+
+  async function decideInlineChange(
+    proposal: EditProposal,
+    changeIds: string[],
+    decision: InlineReviewDecision,
+  ): Promise<void> {
+    if (edits.busy || proposal.status !== "proposed") return;
+    const proposalIds = new Set(
+      proposal.changes.map((change) => change.change_id),
+    );
+    const decidedIds = changeIds.filter((id) => proposalIds.has(id));
+    if (!decidedIds.length) return;
+
+    const current =
+      reviewDecisionProposalId === proposal.proposal_id ? reviewDecisions : {};
+    const next = { ...current };
+    for (const id of decidedIds) next[id] = decision;
+    setReviewDecisionProposalId(proposal.proposal_id);
+    setReviewDecisions(next);
+
+    const lastDecidedIndex = Math.max(
+      ...decidedIds.map((id) =>
+        proposal.changes.findIndex((change) => change.change_id === id),
+      ),
+    );
+    const followingChanges = [
+      ...proposal.changes.slice(lastDecidedIndex + 1),
+      ...proposal.changes.slice(0, lastDecidedIndex + 1),
+    ];
+    const unresolved = followingChanges.find(
+      (change) => next[change.change_id] === undefined,
+    );
+    if (unresolved) {
+      navigateEdit(unresolved.chapter_id, unresolved.change_id);
+      return;
+    }
+
+    const acceptedIds = proposal.changes
+      .filter((change) => next[change.change_id] === "accepted")
+      .map((change) => change.change_id);
+    if (acceptedIds.length === 0) await edits.reject(proposal);
+    else
+      await edits.apply(
+        proposal,
+        acceptedIds.length === proposal.changes.length
+          ? undefined
+          : acceptedIds,
+      );
+    setReviewDecisionProposalId(null);
+    setReviewDecisions({});
+  }
   const { data: population } = api.useGetMostRecentCityPopulationQuery({
     cityId,
   });
   const { data: inventory } = api.useGetInventoryByCityIdQuery(cityId);
+  const { data: cityDashboard } = api.useGetCityDashboardQuery({ cityId, lng });
   const { data: cityFiles } = api.useGetUserFilesQuery(cityId);
   const [uploadSourceMutation, uploadState] =
     api.useUploadConceptNoteSourceMutation();
@@ -116,18 +297,16 @@ export function ConceptNoteWorkspace({
     api.useRetryConceptNoteContextBundleMutation();
   const [startDraftMutation, startDraftState] =
     api.useStartConceptNoteDraftMutation();
+  const [resolveGapMutation, resolveGapState] =
+    api.useResolveConceptNoteGapMutation();
+  const [confirmChapterMutation, confirmChapterState] =
+    api.useConfirmConceptNoteChapterMutation();
   const { data: refreshedUpload, isError: uploadRefreshFailed } =
     api.useGetConceptNoteUploadStatusQuery(
       { runId, uploadId: activeUploadId ?? "" },
       {
         skip: !activeUploadId,
-        pollingInterval:
-          activeUploadId &&
-          shouldPollConceptNoteUpload(uploadDetails?.status ?? null)
-            ? 2_000
-            : activeUploadId
-              ? 5_000
-              : 0,
+        pollingInterval: activeUploadId ? CONCEPT_NOTE_POLL_INTERVAL_MS : 0,
         skipPollingIfUnfocused: true,
       },
     );
@@ -218,6 +397,80 @@ export function ConceptNoteWorkspace({
     }
   }
 
+  async function resolveGap(
+    gap: ConceptNoteGap,
+    action: "answer" | "correction" | "not_a_gap" | "defer_as_caveat",
+    answer?: string,
+  ): Promise<void> {
+    setWorkspaceMutationError(null);
+    try {
+      await resolveGapMutation({
+        runId,
+        gapId: gap.gap_id,
+        action,
+        answer,
+        expectedVersion: gap.version,
+        idempotencyKey: crypto.randomUUID(),
+      }).unwrap();
+      await refetchDraft();
+    } catch {
+      setWorkspaceMutationError(t("gap-resolution-error"));
+    }
+  }
+
+  async function confirmChapter(
+    chapter: ConceptNoteDraftChapter,
+  ): Promise<void> {
+    if (!chapter.revision_number) {
+      return;
+    }
+    setWorkspaceMutationError(null);
+    try {
+      await confirmChapterMutation({
+        runId,
+        chapterId: chapter.chapter_id,
+        expectedRevision: chapter.revision_number,
+        idempotencyKey: crypto.randomUUID(),
+      }).unwrap();
+      await refetchDraft();
+    } catch {
+      setWorkspaceMutationError(t("chapter-confirm-error"));
+    }
+  }
+
+  function reviewDraftFirst(): void {
+    setTab("draft");
+    window.requestAnimationFrame(() => {
+      const preview = document.querySelector<HTMLElement>(
+        '[data-testid="concept-note-draft-preview"]',
+      );
+      preview?.scrollIntoView({
+        behavior: reducedMotion ? "auto" : "smooth",
+        block: "nearest",
+      });
+      preview?.focus({ preventScroll: true });
+    });
+  }
+
+  function reviewChapterGaps(
+    chapter: ConceptNoteDraftChapter,
+    selectedGap?: ConceptNoteGap,
+  ): void {
+    const firstOpenGap = getConceptNoteChapterGaps(chapter).find(
+      (gap) => gap.state === "open",
+    );
+    if (!firstOpenGap) {
+      return;
+    }
+    setReviewGapChapterId(chapter.chapter_id);
+    setReviewGapId(selectedGap?.gap_id ?? firstOpenGap.gap_id);
+  }
+
+  function stopGapInterview(): void {
+    setReviewGapChapterId(null);
+    setReviewGapId(null);
+  }
+
   if (runLoading) {
     return (
       <Box
@@ -225,7 +478,7 @@ export function ConceptNoteWorkspace({
         minH={0}
         overflow="hidden"
         bg="background.alternativeLight"
-        px={{ base: 4, md: 10 }}
+        px={{ base: 2, md: 5 }}
         py={8}
       >
         <VStack
@@ -233,14 +486,14 @@ export function ConceptNoteWorkspace({
           gap={5}
           h="full"
           minH={0}
-          maxW="1480px"
+          maxW="1800px"
           mx="auto"
         >
           <Skeleton h="70px" />
           <Grid
             flex={1}
             minH={0}
-            gap={5}
+            gap={2.5}
             gridTemplateColumns={{
               base: "minmax(0, 1fr)",
               md: "440px minmax(0, 1fr)",
@@ -304,6 +557,10 @@ export function ConceptNoteWorkspace({
   const status = getRunStatusPresentation(run.status);
   const statusLabel = t(status.translationKey);
   const workflowLabel = t(getWorkflowStepTranslationKey(run.workflow_step));
+  const activeThreadId =
+    resetThread?.previousThreadId === run.thread_id
+      ? resetThread.threadId
+      : run.thread_id;
 
   return (
     <Box
@@ -323,9 +580,9 @@ export function ConceptNoteWorkspace({
           gap={4}
           h="full"
           minH={0}
-          maxW="1480px"
+          maxW="1800px"
           mx="auto"
-          px={{ base: 4, md: 10 }}
+          px={{ base: 2, md: 5 }}
           py={6}
         >
           <HStack flexShrink={0} gap={2} color="content.tertiary">
@@ -346,50 +603,16 @@ export function ConceptNoteWorkspace({
             </Text>
           </HStack>
 
-          <Flex
-            flexShrink={0}
-            align={{ base: "start", md: "center" }}
-            direction={{ base: "column", md: "row" }}
-            gap={4}
-          >
-            <Box minW={0} flex={1}>
-              <HStack align="center" gap={3} flexWrap="wrap">
-                <Heading
-                  as="h1"
-                  truncate
-                  fontFamily="heading"
-                  fontSize="title.lg"
-                  fontWeight="semibold"
-                  color="content.primary"
-                >
-                  {run.name}
-                </Heading>
-                <StatusBadge label={statusLabel} tone={status.tone} />
-              </HStack>
-              <Text mt={1} fontSize="label.sm" color="content.tertiary">
-                {cityName} · {workflowLabel} · {t("autosaved")}
-              </Text>
-            </Box>
-            <Button
-              size="sm"
-              variant="solid"
-              bg="sentiment.positiveDefault"
-              onClick={() => setExportOpen(true)}
-            >
-              <Icon as={LuDownload} />
-              {t("export")}
-            </Button>
-          </Flex>
-
           <Grid
             flex={1}
+            data-testid="concept-note-workspace-panels"
             minH={0}
             overflow="hidden"
-            gap={5}
+            gap={2.5}
             alignItems="stretch"
             gridTemplateColumns={{
               base: "minmax(0, 1fr)",
-              md: "440px minmax(0, 1fr)",
+              md: "minmax(280px, 31%) minmax(0, 1fr)",
             }}
             gridTemplateRows={{
               base: "repeat(2, minmax(0, 1fr))",
@@ -399,9 +622,22 @@ export function ConceptNoteWorkspace({
             <ConceptNoteChatPanel
               bundleStatus={bundle.status}
               documentGrounding={bundle.documentGrounding}
+              draft={draft ?? null}
+              isConfirmingChapter={confirmChapterState.isLoading}
+              isResolvingGap={resolveGapState.isLoading}
               lng={lng}
+              mutationError={workspaceMutationError}
+              onConfirmChapter={confirmChapter}
               onOpenContext={() => setTab("context")}
-              threadId={run.thread_id}
+              onReviewDraft={reviewDraftFirst}
+              onStartNewChat={() => setStartNewChatOpen(true)}
+              onResolveGap={resolveGap}
+              onStopGapInterview={stopGapInterview}
+              reviewGapChapterId={reviewGapChapterId}
+              reviewGapId={reviewGapId}
+              threadId={activeThreadId}
+              editScope={editScope}
+              edits={edits}
             />
 
             <Tabs.Root
@@ -419,6 +655,84 @@ export function ConceptNoteWorkspace({
               bg="base.light"
               boxShadow="1dp"
             >
+              <Flex
+                data-testid="concept-note-document-header"
+                flexShrink={0}
+                align="center"
+                flexWrap="wrap"
+                gap={3}
+                px={4}
+                py={3}
+                borderBottom="1px solid"
+                borderColor="border.neutral"
+              >
+                <HStack gap={2} flex="1 1 180px" minW={0}>
+                  <Icon
+                    as={LuFileText}
+                    color="content.link"
+                    boxSize={5}
+                    flexShrink={0}
+                  />
+                  <Box minW={0}>
+                    <Heading
+                      as="h1"
+                      fontFamily="heading"
+                      fontSize="body.md"
+                      fontWeight="semibold"
+                      color="content.primary"
+                      overflowWrap="anywhere"
+                    >
+                      {run.name}
+                    </Heading>
+                    <HStack gap={2} flexWrap="wrap">
+                      <Text
+                        fontSize="label.sm"
+                        color="content.secondary"
+                        title={`${cityName} · ${workflowLabel}`}
+                      >
+                        {t("autosaved")}
+                      </Text>
+                      <StatusBadge label={statusLabel} tone={status.tone} />
+                    </HStack>
+                  </Box>
+                </HStack>
+                <Flex align="center" gap={2} flexWrap="wrap" minW={0}>
+                  {review && (
+                    <DocumentReviewToolbar
+                      review={review}
+                      chapters={draft?.chapters ?? []}
+                      edits={edits}
+                      changes={reviewChanges}
+                      activeChangeId={activeChangeId}
+                      lng={lng}
+                      onNavigate={navigateEdit}
+                      onCancel={() => setRequestedReview(null)}
+                      onOpenSources={() => setTab("context")}
+                      isDocumentVisible={tab === "draft"}
+                    />
+                  )}
+                  {review && (
+                    <Box
+                      h="32px"
+                      borderInlineStart="1px solid"
+                      borderColor="border.neutral"
+                      mx={1}
+                    />
+                  )}
+                  <ReviewButton
+                    size="sm"
+                    minH="44px"
+                    variant="outline"
+                    color="content.link"
+                    borderColor="content.link"
+                    data-testid="concept-note-export"
+                    onClick={() => setExportOpen(true)}
+                  >
+                    <Icon as={LuDownload} />
+                    {t("export")}
+                  </ReviewButton>
+                </Flex>
+              </Flex>
               <Tabs.List
                 flexShrink={0}
                 gap={0}
@@ -470,11 +784,49 @@ export function ConceptNoteWorkspace({
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}
+                  isConfirmingChapter={confirmChapterState.isLoading}
                   isRetrying={retryBundleState.isLoading}
                   isStartingDraft={startDraftState.isLoading}
                   lng={lng}
                   noteName={run.name}
+                  editFocus={editFocus}
+                  reviewChanges={reviewChanges}
+                  reviewBefore={
+                    review?.kind === "history" ? review.before : undefined
+                  }
+                  activeChangeId={activeChangeId}
+                  isReviewing={Boolean(review)}
+                  reviewDecisions={activeReviewDecisions}
+                  reviewDecisionBusy={Boolean(edits.busy)}
+                  onAcceptReviewChange={
+                    reviewProposal
+                      ? (changeIds) =>
+                          void decideInlineChange(
+                            reviewProposal,
+                            changeIds,
+                            "accepted",
+                          )
+                      : undefined
+                  }
+                  onRejectReviewChange={
+                    reviewProposal
+                      ? (changeIds) =>
+                          void decideInlineChange(
+                            reviewProposal,
+                            changeIds,
+                            "rejected",
+                          )
+                      : undefined
+                  }
+                  onFocusedChapterChange={(focusedChapterId) =>
+                    setEditScope({
+                      kind: "auto",
+                      focused_chapter_id: focusedChapterId,
+                    })
+                  }
+                  onConfirmChapter={confirmChapter}
                   onOpenContext={() => setTab("context")}
+                  onReviewChapterGaps={reviewChapterGaps}
                   onRetry={() => void retryContextBundle()}
                   onStartDrafting={() => void startDrafting()}
                 />
@@ -502,6 +854,7 @@ export function ConceptNoteWorkspace({
                 <ContextTab
                   applicationContext={applicationContext ?? null}
                   bundle={bundle}
+                  cityDashboard={cityDashboard ?? null}
                   cityFilesCount={files.length}
                   cityName={cityName}
                   country={city?.country ?? null}
@@ -526,12 +879,29 @@ export function ConceptNoteWorkspace({
 
       <ExportDialog
         draft={draft ?? null}
-        hasUploadedEvidence={bundle.availableContext.uploadedDocuments}
+        hasGroundedSources={bundle.readySources > 0}
         lng={lng}
         noteName={run.name}
         open={exportOpen}
         onOpenChange={setExportOpen}
       />
+      {startNewChatOpen && (
+        <StartNewChatDialog
+          cityId={cityId}
+          lng={lng}
+          runId={runId}
+          onClose={() => setStartNewChatOpen(false)}
+          onReset={(updatedRun) => {
+            if (updatedRun.thread_id) {
+              setResetThread({
+                previousThreadId: run.thread_id,
+                threadId: updatedRun.thread_id,
+              });
+            }
+            void refetchRun();
+          }}
+        />
+      )}
     </Box>
   );
 }

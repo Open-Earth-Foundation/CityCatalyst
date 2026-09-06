@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 from app.db.cnb import CnbBase
-from app.models.db import cnb_reference, cnb_workspace  # noqa: F401
+from app.models.db import cnb_edit, cnb_reference, cnb_workspace  # noqa: F401
 from sqlalchemy import create_engine, inspect, text
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
@@ -21,6 +21,8 @@ CNB_TABLES = {
     "concept_note_gaps",
     "concept_note_matched_projects",
     "concept_note_exports",
+    "concept_note_edit_proposals",
+    "concept_note_edit_applications",
     "funders",
     "funding_opportunities",
     "funded_projects",
@@ -109,7 +111,7 @@ def test_cnb_offline_migration_preserves_explicit_constraint_names() -> None:
     assert "CONSTRAINT uq_funder_templates_opportunity UNIQUE" in sql
 
 
-def test_cnb_metadata_contains_only_the_thirteen_owned_tables() -> None:
+def test_cnb_metadata_contains_only_owned_tables() -> None:
     """Keep CA-owned run, context-bundle, and upload tables out of CNB metadata."""
     assert set(CnbBase.metadata.tables) == CNB_TABLES
     assert not {

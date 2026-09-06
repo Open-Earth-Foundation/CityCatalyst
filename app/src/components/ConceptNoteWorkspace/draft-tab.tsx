@@ -9,7 +9,10 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { EditChange } from "@/util/concept-note-edit-types";
+import { InlineDocumentDiff } from "./edit-diff";
+import { snapshotChanges, type InlineReviewDecision } from "./inline-review";
 import type { IconType } from "react-icons";
 import {
   LuCheck,
@@ -24,8 +27,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-components";
-import { Button } from "@/components/ui/button";
-import { Tooltip } from "@/components/ui/tooltip";
+import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import type {
   ConceptNoteApplicationContext,
@@ -38,11 +40,8 @@ import type {
 
 import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
 
-import {
-  decodeMissingInformationMessage,
-  MISSING_INFORMATION_LINK,
-  replaceMissingInformationMarkers,
-} from "./draft-markdown";
+import { remarkMissingInformation } from "./draft-markdown";
+import { missingInformationComponents } from "./missing-information";
 import { getConceptNoteGapForMarker } from "./gap-interview";
 
 interface DraftTabProps {
@@ -67,6 +66,21 @@ interface DraftTabProps {
   ) => void;
   onRetry: () => void;
   onStartDrafting: () => void;
+  editFocus?: {
+    chapterId: string;
+    changeId?: string;
+    requestId: string;
+    focus: boolean;
+  } | null;
+  onFocusedChapterChange?: (chapterId: string) => void;
+  isReviewing?: boolean;
+  reviewChanges?: EditChange[];
+  reviewBefore?: Record<string, string>;
+  activeChangeId?: string;
+  reviewDecisions?: Record<string, InlineReviewDecision>;
+  reviewDecisionBusy?: boolean;
+  onAcceptReviewChange?: (changeIds: string[]) => void;
+  onRejectReviewChange?: (changeIds: string[]) => void;
 }
 
 interface DraftStatusPresentation {
@@ -79,8 +93,8 @@ interface DraftStatusPresentation {
 
 const baseMarkdownComponents = createChatMarkdownComponents({
   paragraph: {
-    fontSize: "body.sm",
-    lineHeight: "22px",
+    fontSize: "16px",
+    lineHeight: "26px",
     color: "content.primary",
   },
   h1: {
@@ -89,17 +103,17 @@ const baseMarkdownComponents = createChatMarkdownComponents({
     color: "content.primary",
   },
   h2: {
-    fontSize: "body.md",
-    lineHeight: "22px",
+    fontSize: "18px",
+    lineHeight: "28px",
     color: "content.primary",
   },
   h3: {
-    fontSize: "body.sm",
-    lineHeight: "22px",
+    fontSize: "16px",
+    lineHeight: "26px",
     color: "content.primary",
   },
   list: {
-    lineHeight: "22px",
+    lineHeight: "26px",
     color: "content.primary",
   },
   inlineColor: "content.primary",
@@ -133,68 +147,10 @@ const baseMarkdownComponents = createChatMarkdownComponents({
 function createDraftMarkdownComponents(
   onMissingInformationClick: (message: string) => void,
 ) {
-  return {
-    ...baseMarkdownComponents,
-    a: ({ children, href, title }: React.ComponentPropsWithoutRef<"a">) => {
-      const missingInformation =
-        href === MISSING_INFORMATION_LINK
-          ? decodeMissingInformationMessage(title)
-          : null;
-
-      if (missingInformation) {
-        return (
-          <Tooltip
-            showArrow
-            portalled
-            content={missingInformation}
-            contentProps={{
-              maxW: "360px",
-              px: 3,
-              py: 2,
-              fontSize: "label.sm",
-              lineHeight: "20px",
-            }}
-          >
-            <chakra.button
-              type="button"
-              aria-label={missingInformation}
-              display="inline-flex"
-              alignItems="center"
-              justifyContent="center"
-              boxSize="18px"
-              mx={1}
-              borderRadius="full"
-              bg="sentiment.warningOverlay"
-              color="sentiment.warningDefault"
-              verticalAlign="text-bottom"
-              cursor="pointer"
-              onClick={() => onMissingInformationClick(missingInformation)}
-              _hover={{ bg: "sentiment.warningOverlay" }}
-              _focusVisible={{
-                outline: "2px solid",
-                outlineColor: "content.link",
-                outlineOffset: "1px",
-              }}
-            >
-              <Icon as={LuCircleAlert} boxSize="12px" />
-            </chakra.button>
-          </Tooltip>
-        );
-      }
-
-      return (
-        <chakra.a
-          href={href}
-          color="interactive.primary"
-          fontWeight="semibold"
-          textDecoration="underline"
-          display="inline"
-        >
-          {children}
-        </chakra.a>
-      );
-    },
-  };
+  return missingInformationComponents(
+    baseMarkdownComponents,
+    onMissingInformationClick,
+  );
 }
 
 function draftStatusKey(status: ConceptNoteDraftRunStatus): string {
@@ -254,7 +210,7 @@ function chapterPreviewMarkdown(markdown: string, title: string): string {
       ? lines.slice(1).join("\n").trimStart()
       : markdown;
 
-  return replaceMissingInformationMarkers(body);
+  return body;
 }
 
 export function DraftTab({
@@ -276,12 +232,54 @@ export function DraftTab({
   onReviewChapterGaps,
   onRetry,
   onStartDrafting,
+  editFocus,
+  onFocusedChapterChange,
+  isReviewing,
+  reviewChanges = [],
+  reviewBefore,
+  activeChangeId,
+  reviewDecisions,
+  reviewDecisionBusy,
+  onAcceptReviewChange,
+  onRejectReviewChange,
 }: DraftTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const chapterElements = useRef<Record<string, HTMLDivElement | null>>({});
   const previewElement = useRef<HTMLDivElement | null>(null);
   const [focusedChapterId, setFocusedChapterId] = useState<string | null>(null);
   const [sectionsCollapsed, setSectionsCollapsed] = useState(false);
+  useEffect(() => {
+    if (!editFocus) return;
+    const frame = window.requestAnimationFrame(() => {
+      const preview = previewElement.current;
+      const chapter = chapterElements.current[editFocus.chapterId];
+      if (!preview || !chapter) return;
+      const target = editFocus.changeId
+        ? ([...chapter.querySelectorAll<HTMLElement>("[data-change-ids]")].find(
+            (element) =>
+              element.dataset.changeIds
+                ?.split(" ")
+                .includes(editFocus.changeId!),
+          ) ?? chapter)
+        : chapter;
+      setFocusedChapterId(editFocus.chapterId);
+      preview.scrollTo({
+        top: Math.max(
+          0,
+          target.getBoundingClientRect().top -
+            preview.getBoundingClientRect().top +
+            preview.scrollTop -
+            48,
+        ),
+        behavior: "auto",
+      });
+      if (editFocus.focus)
+        (target.hasAttribute("data-change-ids") ? target : preview).focus({
+          preventScroll: true,
+        });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [editFocus]);
   const isReady = bundle.status === "ready";
   const isBuilding = bundle.status === "building";
   const isFailed = bundle.status === "failed";
@@ -374,7 +372,7 @@ export function DraftTab({
       gap={4}
       h={draftStarted ? "full" : "auto"}
       minH={0}
-      p={{ base: 4, md: 6 }}
+      p={draftStarted && !showDraftSetup ? 0 : { base: 4, md: 6 }}
     >
       {!draftStarted && (
         <Box>
@@ -583,19 +581,15 @@ export function DraftTab({
             direction={{ base: "column", xl: "row" }}
             flex={1}
             minH={0}
-            gap={3}
-            border="1px solid"
-            borderColor="border.neutral"
-            borderRadius="rounded"
-            bg="background.alternativeLight"
-            p={4}
+            gap={0}
+            bg="base.light"
           >
             <VStack
               align="stretch"
               alignSelf={sectionsCollapsed ? "flex-start" : "stretch"}
               flexShrink={0}
               gap={2}
-              w={{ base: "full", xl: sectionsCollapsed ? "32px" : "180px" }}
+              w={{ base: "full", xl: sectionsCollapsed ? "44px" : "220px" }}
               h={{
                 base: sectionsCollapsed ? "32px" : "auto",
                 xl: sectionsCollapsed ? "32px" : "full",
@@ -605,11 +599,11 @@ export function DraftTab({
                 xl: "full",
               }}
               minH={0}
-              border={sectionsCollapsed ? "0" : "1px solid"}
+              borderInlineEnd={{ base: "0", xl: "1px solid" }}
+              borderBottom={{ base: "1px solid", xl: "0" }}
               borderColor="border.neutral"
-              borderRadius="rounded"
               bg={sectionsCollapsed ? "transparent" : "base.light"}
-              p={sectionsCollapsed ? 0 : 3}
+              p={sectionsCollapsed ? 1 : 4}
               overflow={sectionsCollapsed ? "visible" : "hidden"}
               transition="width 180ms ease, max-height 180ms ease, padding 180ms ease"
             >
@@ -622,10 +616,10 @@ export function DraftTab({
                 {!sectionsCollapsed && (
                   <Text
                     fontFamily="heading"
-                    fontSize="10px"
+                    fontSize="12px"
                     fontWeight="semibold"
                     color="content.tertiary"
-                    letterSpacing="1.5px"
+                    letterSpacing="normal"
                     textTransform="uppercase"
                   >
                     {t("draft-sections")}
@@ -677,6 +671,9 @@ export function DraftTab({
                 {chapters.map((chapter) => {
                   const tone = chapterTone(chapter.status);
                   const isSelected = selectedChapterId === chapter.chapter_id;
+                  const hasChanges = reviewChanges.some(
+                    (change) => change.chapter_id === chapter.chapter_id,
+                  );
 
                   return (
                     <Button
@@ -697,12 +694,18 @@ export function DraftTab({
                       bg={isSelected ? "background.neutral" : "transparent"}
                       px={2}
                       py={1.5}
+                      minH="44px"
+                      height="auto"
+                      color={isSelected ? "content.link" : "content.primary"}
                       fontFamily="body"
                       fontWeight="normal"
                       letterSpacing="normal"
                       textAlign="left"
                       textTransform="none"
-                      _hover={{ bg: "background.neutral" }}
+                      _hover={{
+                        bg: "background.neutral",
+                        color: "content.link",
+                      }}
                       _focusVisible={{
                         outline: "2px solid",
                         outlineColor: "content.link",
@@ -710,6 +713,7 @@ export function DraftTab({
                       }}
                       onClick={() => {
                         setFocusedChapterId(chapter.chapter_id);
+                        onFocusedChapterChange?.(chapter.chapter_id);
                         if (chapter.open_gap_count > 0) {
                           onReviewChapterGaps(chapter);
                         }
@@ -738,17 +742,27 @@ export function DraftTab({
                       />
                       <Text
                         minW={0}
-                        overflow="hidden"
-                        fontSize="11px"
-                        lineHeight="16px"
-                        color="content.secondary"
+                        flex={1}
+                        fontSize="13px"
+                        lineHeight="20px"
+                        color="inherit"
                         letterSpacing="normal"
-                        textOverflow="ellipsis"
                         textTransform="none"
-                        whiteSpace="nowrap"
+                        whiteSpace="normal"
                       >
                         {chapter.position + 1} {chapter.title}
                       </Text>
+                      {hasChanges && (
+                        <Box
+                          data-testid="concept-note-section-has-changes"
+                          role="img"
+                          aria-label={t("edit-section-has-changes")}
+                          flexShrink={0}
+                          boxSize="7px"
+                          borderRadius="full"
+                          bg="content.link"
+                        />
+                      )}
                     </Button>
                   );
                 })}
@@ -764,21 +778,19 @@ export function DraftTab({
               minH="360px"
               overflowY="auto"
               scrollBehavior="smooth"
-              border="1px solid"
-              borderColor="border.neutral"
-              borderRadius="rounded"
               bg="base.light"
-              p={{ base: 4, md: 5 }}
+              p={{ base: 5, md: 8 }}
+              fontSize="16px"
               _focus={{
                 outline: "2px solid",
                 outlineColor: "content.link",
                 outlineOffset: "2px",
               }}
             >
-              <Box position="sticky" zIndex={1} top={-1} bg="base.light" pb={3}>
+              <Box bg="base.light" pb={3}>
                 <Text
                   fontFamily="heading"
-                  fontSize="body.md"
+                  fontSize="22px"
                   fontWeight="semibold"
                   color="content.primary"
                 >
@@ -786,10 +798,11 @@ export function DraftTab({
                 </Text>
               </Box>
 
-              <VStack align="stretch" mt={4} gap={5}>
+              <VStack align="stretch" mt={4} gap={9}>
                 {chapters.map((chapter) => (
                   <Box
                     key={chapter.chapter_id}
+                    data-chapter-id={chapter.chapter_id}
                     ref={(element: HTMLDivElement | null) => {
                       chapterElements.current[chapter.chapter_id] = element;
                     }}
@@ -802,8 +815,6 @@ export function DraftTab({
                       gap={2}
                       mb={3}
                       pb={2}
-                      borderBottom="1px solid"
-                      borderColor="border.neutral"
                     >
                       <Box>
                         <Text
@@ -877,55 +888,62 @@ export function DraftTab({
                         {t("chapter-regeneration-failed")}
                       </Text>
                     )}
-                    {chapter.proposed_revision_number &&
-                    chapter.confirmed_body_markdown &&
-                    chapter.body_markdown ? (
-                      <Box
-                        border="1px solid"
-                        borderColor="content.link"
-                        borderRadius="rounded"
-                        bg="background.neutral"
-                        p={3}
-                      >
-                        <Text
-                          fontSize="body.sm"
-                          fontWeight="semibold"
-                          color="content.primary"
-                        >
-                          {t("chapter-proposed-review-title")}
-                        </Text>
-                        <Text
-                          mt={1}
-                          fontSize="label.sm"
-                          color="content.secondary"
-                        >
-                          {t("chapter-proposed-review-description")}
-                        </Text>
-                        <Flex
-                          direction={{ base: "column", lg: "row" }}
-                          gap={3}
-                          mt={3}
-                        >
+                    {typeof chapter.body_markdown === "string" ? (
+                      (() => {
+                        const changes = reviewChanges.filter(
+                          (change) => change.chapter_id === chapter.chapter_id,
+                        );
+                        const historical = reviewBefore?.[chapter.chapter_id];
+                        const comparingChapter =
+                          !isReviewing &&
+                          Boolean(
+                            chapter.proposed_revision_number &&
+                            chapter.confirmed_body_markdown,
+                          );
+                        if (
+                          changes.length ||
+                          historical !== undefined ||
+                          comparingChapter
+                        ) {
+                          const before =
+                            historical ??
+                            (comparingChapter
+                              ? chapter.confirmed_body_markdown!
+                              : chapter.body_markdown!);
+                          const differences = comparingChapter
+                            ? snapshotChanges(
+                                chapter,
+                                before,
+                                chapter.body_markdown!,
+                              )
+                            : changes;
+                          return (
+                            <Box data-testid="concept-note-chapter-inline-review">
+                              {comparingChapter && (
+                                <Text fontSize="label.sm" mb={2}>
+                                  {t("chapter-proposed-review-title")}
+                                </Text>
+                              )}
+                              <InlineDocumentDiff
+                                markdown={before}
+                                changes={differences}
+                                lng={lng}
+                                activeChangeId={activeChangeId}
+                                components={baseMarkdownComponents}
+                                decisions={reviewDecisions}
+                                disabled={reviewDecisionBusy}
+                                onAcceptChange={onAcceptReviewChange}
+                                onRejectChange={onRejectReviewChange}
+                              />
+                            </Box>
+                          );
+                        }
+                        return (
                           <Box
-                            flex={1}
-                            minW={0}
-                            border="1px solid"
-                            borderColor="border.neutral"
-                            borderRadius="rounded"
-                            bg="base.light"
-                            p={3}
+                            data-testid="concept-note-current-chapter-body"
+                            data-current-chapter-id={chapter.chapter_id}
+                            data-current-revision={chapter.revision_number}
                           >
-                            <Text
-                              mb={2}
-                              fontSize="10px"
-                              fontWeight="semibold"
-                              color="content.tertiary"
-                              textTransform="uppercase"
-                            >
-                              {t("chapter-confirmed-version", {
-                                revision: chapter.confirmed_revision_number,
-                              })}
-                            </Text>
                             <ReactMarkdown
                               components={createDraftMarkdownComponents(
                                 (message) =>
@@ -934,64 +952,19 @@ export function DraftTab({
                                     message,
                                   ),
                               )}
-                              remarkPlugins={[remarkGfm]}
+                              remarkPlugins={[
+                                remarkGfm,
+                                remarkMissingInformation,
+                              ]}
                             >
                               {chapterPreviewMarkdown(
-                                chapter.confirmed_body_markdown,
+                                chapter.body_markdown!,
                                 chapter.title,
                               )}
                             </ReactMarkdown>
                           </Box>
-                          <Box
-                            flex={1}
-                            minW={0}
-                            border="1px solid"
-                            borderColor="content.link"
-                            borderRadius="rounded"
-                            bg="base.light"
-                            p={3}
-                          >
-                            <Text
-                              mb={2}
-                              fontSize="10px"
-                              fontWeight="semibold"
-                              color="content.link"
-                              textTransform="uppercase"
-                            >
-                              {t("chapter-proposed-version", {
-                                revision: chapter.proposed_revision_number,
-                              })}
-                            </Text>
-                            <ReactMarkdown
-                              components={createDraftMarkdownComponents(
-                                (message) =>
-                                  reviewMissingInformationMarker(
-                                    chapter,
-                                    message,
-                                  ),
-                              )}
-                              remarkPlugins={[remarkGfm]}
-                            >
-                              {chapterPreviewMarkdown(
-                                chapter.body_markdown,
-                                chapter.title,
-                              )}
-                            </ReactMarkdown>
-                          </Box>
-                        </Flex>
-                      </Box>
-                    ) : chapter.body_markdown ? (
-                      <ReactMarkdown
-                        components={createDraftMarkdownComponents((message) =>
-                          reviewMissingInformationMarker(chapter, message),
-                        )}
-                        remarkPlugins={[remarkGfm]}
-                      >
-                        {chapterPreviewMarkdown(
-                          chapter.body_markdown,
-                          chapter.title,
-                        )}
-                      </ReactMarkdown>
+                        );
+                      })()
                     ) : (
                       <Text fontSize="body.sm" color="content.tertiary">
                         {t("chapter-awaiting-copy")}

@@ -41,12 +41,24 @@ async function openDownloadModal(page: Page) {
   });
 }
 
-async function downloadCsv(page: Page): Promise<Download> {
+/** Chakra v3 / Ark checkbox: click the control part rather than the root. */
+async function selectDownloadFormat(page: Page, format: string) {
+  const checkbox = page.getByTestId(`download-${format}-checkbox`);
+  await expect(checkbox).toBeVisible();
+  await checkbox.locator('[data-part="control"]').click();
+}
+
+async function confirmDownload(page: Page): Promise<Download> {
   const downloadPromise = page.waitForEvent("download");
-  const csvDownloadButton = page.getByTestId("download-csv-button");
-  await expect(csvDownloadButton).toBeVisible();
-  await csvDownloadButton.click();
+  const confirmButton = page.getByTestId("download-confirm-button");
+  await expect(confirmButton).toBeEnabled();
+  await confirmButton.click();
   return downloadPromise;
+}
+
+async function downloadCsv(page: Page): Promise<Download> {
+  await selectDownloadFormat(page, "csv");
+  return confirmDownload(page);
 }
 
 async function saveDownload(
@@ -280,7 +292,8 @@ test.describe("CSV Download", () => {
     });
 
     await openDownloadModal(page);
-    await page.getByTestId("download-csv-button").click();
+    await selectDownloadFormat(page, "csv");
+    await page.getByTestId("download-confirm-button").click();
 
     await expect(
       page.getByText(/There was an error during download|Download failed/i).first(),
@@ -290,25 +303,32 @@ test.describe("CSV Download", () => {
   test("Multiple format downloads work correctly", async ({ page }, testInfo) => {
     await openDownloadModal(page);
 
-    const csvDownload = await downloadCsv(page);
+    await selectDownloadFormat(page, "csv");
+    await selectDownloadFormat(page, "ecrf");
+
+    // Confirming with both formats selected fires both downloads together,
+    // so match by filename rather than event order.
+    const csvDownloadPromise = page.waitForEvent("download", {
+      predicate: (download) => download.suggestedFilename().endsWith(".csv"),
+    });
+    const ecrfDownloadPromise = page.waitForEvent("download", {
+      predicate: (download) => /\.xlsx?$/.test(download.suggestedFilename()),
+      timeout: 90000,
+    });
+
+    await page.getByTestId("download-confirm-button").click();
+
+    const [csvDownload, ecrfDownload] = await Promise.all([
+      csvDownloadPromise,
+      ecrfDownloadPromise,
+    ]);
+
     expect(csvDownload.suggestedFilename()).toContain(".csv");
+    expect(ecrfDownload.suggestedFilename()).toMatch(/\.xlsx?$/);
 
     const csvPath = testInfo.outputPath("inventory-multi-format.csv");
     const csvContent = await saveDownload(csvDownload, csvPath);
     expect(csvContent).toContain("GPC Reference Number");
-
-    await dismissToasts(page);
-
-    const ecrfDownloadButton = page.getByTestId("download-ecrf-button");
-    await expect(ecrfDownloadButton).toBeVisible();
-
-    const ecrfDownloadPromise = page.waitForEvent("download", {
-      timeout: 90000,
-    });
-    await ecrfDownloadButton.click();
-
-    const ecrfDownload = await ecrfDownloadPromise;
-    expect(ecrfDownload.suggestedFilename()).toMatch(/\.xlsx?$/);
 
     await csvDownload.delete();
     await ecrfDownload.delete();

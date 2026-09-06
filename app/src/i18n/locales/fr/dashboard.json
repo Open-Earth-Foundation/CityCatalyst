@@ -336,5 +336,6 @@
   "no-city-description": "Contactez votre administrateur ou envoyez un message à <emailLink>{{supportEmail}}</emailLink> si vous pensez que c'est une erreur.",
   "all-tools": "Tous les outils",
   "useful-links": "Liens utiles",
-  "learning-hub": "Centre d'apprentissage"
+  "learning-hub": "Centre d'apprentissage",
+  "module-unavailable-for-city": "{{module}} n'est pas disponible pour cette ville. Affichage de l'aperçu de la ville à la place."
 }

@@ -1159,20 +1159,6 @@ export const api = createApi({
           "SectorBreakdown",
         ],
       }),
-      createThreadId: builder.mutation({
-        query: (data: { inventoryId: string; content: string }) => ({
-          url: `/assistants/threads/${data.inventoryId}`,
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            content: data.content,
-          }),
-        }),
-        transformResponse: (response: { threadId: string }) =>
-          response.threadId,
-      }),
       updateInventory: builder.mutation<
         InventoryAttributes,
         InventoryUpdateQuery
@@ -2668,7 +2654,6 @@ export const {
   useCheckUserMutation,
   useMockDataQuery,
   useConnectToCDPMutation,
-  useCreateThreadIdMutation,
   useCreateChatThreadMutation,
   useUpdateActivityValueMutation,
   useDeleteAllActivityValuesMutation,

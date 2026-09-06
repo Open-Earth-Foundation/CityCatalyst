@@ -282,7 +282,7 @@ test.describe("CC-732 persisted first edit slice", () => {
     for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
     const exportedText = strFromU8(
       unzipSync(Buffer.concat(chunks))["word/document.xml"],
-    ).replace(/<[^>]+>/g, "");
+    ).replace(/[<>]/g, "");
     expect(exportedText).toContain(
       "The project will create a park that is resilient to floods.",
     );

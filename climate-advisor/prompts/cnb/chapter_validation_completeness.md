@@ -24,6 +24,11 @@ Rules:
   `evidence_links`; a link label alone is not proof of claim support, but do
   not warn merely because the array is empty when the chapter has no material
   factual claim that requires evidence
+- identify supporting or conflicting source records only through their supplied
+  one-based `position`; include those positions in `evidence_positions` and
+  never copy or invent source metadata
+- when a factual claim has no supporting evidence link, return an empty
+  `evidence_positions` array rather than attaching an unrelated source
 - treat named-project facts, route or location descriptions, quantities,
   dates, costs, progress, financing, attributed statements, and predicted
   impacts as material factual claims even when they appear in a chapter whose
@@ -52,9 +57,9 @@ Input is one JSON object with:
   `output_format`, complete `chapter_schema`, and complete `required_fields`
 - `open_gaps` (array): open target-chapter gaps with `severity`, `reason`, and
   nullable `field_key`
-- `evidence_links` (array): target-chapter evidence metadata with
-  `selected_source_label` and nullable `source_location`, `claim_ref`, and
-  `quote_or_summary`
+- `evidence_links` (array): target-chapter evidence metadata with a one-based
+  `position`, `selected_source_label`, and nullable `source_location`,
+  `claim_ref`, and `quote_or_summary`
 </input>
 
 <output>
@@ -69,6 +74,8 @@ Return only one `ChapterCompletenessValidationOutput` JSON object.
   - `involved_chapter_ids` (array): exactly the target chapter UUID
   - `excerpts` (array of strings): zero to three short verbatim excerpts from
     the target chapter
+  - `evidence_positions` (array of integers): unique one-based positions from
+    `evidence_links` that support or contradict this finding; empty when none
 
 When the same problem is both missing required information and a template
 violation, emit one actionable finding rather than duplicating it under another
@@ -76,5 +83,5 @@ category. Do not emit workflow status, labels, timestamps, or model reasoning.
 </output>
 
 <example_output>
-{"findings":[{"category":"missing_information","severity":"blocking","message":"The chapter does not state when implementation begins or ends.","suggested_action":"Add the confirmed implementation start and end dates.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111"],"excerpts":[]},{"category":"evidence","severity":"warning","message":"The projected emissions reduction is not connected to an evidence link.","suggested_action":"Link the calculation or source supporting the projected reduction.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111"],"excerpts":["The programme will reduce emissions by 30%."]}]}
+{"findings":[{"category":"missing_information","severity":"blocking","message":"The chapter does not state when implementation begins or ends.","suggested_action":"Add the confirmed implementation start and end dates.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111"],"excerpts":[],"evidence_positions":[]},{"category":"evidence","severity":"warning","message":"The stated start date conflicts with the date in the delivery plan.","suggested_action":"Confirm the approved start date and update the chapter.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111"],"excerpts":["Implementation begins in March 2028."],"evidence_positions":[1]}]}
 </example_output>

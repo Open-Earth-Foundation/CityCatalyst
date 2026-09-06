@@ -104,7 +104,61 @@ async def test_runs_completeness_before_document_consistency() -> None:
         str(OTHER_ID),
         str(THIRD_ID),
     }
+    assert calls[0][1]["evidence_links"][0]["position"] == 1
+    assert calls[1][1]["evidence_links"][0]["position"] == 1
     assert decision.status == "ready"
+
+
+async def test_resolves_model_evidence_positions_to_public_source_metadata() -> None:
+    model_result = completeness(
+        findings=[
+            finding(
+                "evidence",
+                "The stated start date conflicts with the delivery plan.",
+                "Confirm the approved start date.",
+                severity="warning",
+                evidence_positions=[1],
+            )
+        ]
+    )
+    validation_request = request()
+    validation_request.evidence_links[0] = validation_request.evidence_links[
+        0
+    ].model_copy(
+        update={
+            "source_location": "page 7",
+            "claim_ref": "implementation start date",
+            "quote_or_summary": "Works begin in March 2027.",
+        }
+    )
+
+    decision = await service(static_passes(completeness_result=model_result)).validate(
+        validation_request
+    )
+
+    assert decision.findings[0].phase == "evidence"
+    assert decision.findings[0].evidence[0].selected_source_label == "City climate plan"
+    assert decision.findings[0].evidence[0].source_location == "page 7"
+    assert decision.findings[0].evidence[0].claim_ref == "implementation start date"
+
+
+async def test_rejects_model_reference_to_unavailable_evidence() -> None:
+    model_result = completeness(
+        findings=[
+            finding(
+                "evidence",
+                "The date conflicts with a source.",
+                "Confirm the date.",
+                severity="warning",
+                evidence_positions=[2],
+            )
+        ]
+    )
+
+    with pytest.raises(ChapterValidationModelOutputError):
+        await service(static_passes(completeness_result=model_result)).validate(
+            request()
+        )
 
 
 async def test_batches_complete_comparison_chapters_without_truncation(

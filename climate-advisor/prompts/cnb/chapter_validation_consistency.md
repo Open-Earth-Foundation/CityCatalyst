@@ -59,7 +59,10 @@ Rules:
   only `target_chapter.chapter_id`
 - every `cross_chapter_conflict` finding must reference the target UUID and at
   least one UUID present in `compared_chapters`
-- use only supplied chapter text; do not resolve conflicts with external facts
+- use only supplied chapter text to identify conflicts; `evidence_links` may
+  locate a source for the user but must not be used to resolve the conflict
+- identify supporting or conflicting source records only through their supplied
+  one-based `position`; never copy or invent source metadata
 - return concise findings and short excerpts, never analysis or chain of
   thought
 
@@ -78,6 +81,8 @@ Input is one JSON object with:
   does not repeat them
 - `compared_chapters` (array): a complete non-truncated batch of other active
   chapters, each with the same fields as `target_chapter`
+- `evidence_links` (array): target-chapter evidence metadata with a one-based
+  `position`, source label, and optional location, claim, and summary
 </input>
 
 <output>
@@ -91,16 +96,18 @@ Return only one `ChapterConsistencyValidationOutput` JSON object.
   - `involved_chapter_ids` (array): valid chapter UUIDs following the task rules
   - `excerpts` (array of strings): zero to three short verbatim excerpts from
     the involved chapters
+  - `evidence_positions` (array of integers): unique one-based positions from
+    `evidence_links` relevant to the finding; empty when none
 
 Do not emit workflow status, labels, timestamps, or model reasoning.
 </output>
 
 <example_output>
-{"findings":[{"category":"cross_chapter_conflict","severity":"blocking","message":"The target chapter states a EUR 4 million total while the budget chapter states EUR 5 million.","suggested_action":"Confirm the approved total and use the same amount in both chapters.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111","22222222-2222-4222-8222-222222222222"],"excerpts":["The total project cost is EUR 4 million.","Total eligible expenditure: EUR 5 million."]}]}
+{"findings":[{"category":"cross_chapter_conflict","severity":"blocking","message":"The target chapter states a EUR 4 million total while the budget chapter states EUR 5 million.","suggested_action":"Confirm the approved total and use the same amount in both chapters.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111","22222222-2222-4222-8222-222222222222"],"excerpts":["The total project cost is EUR 4 million.","Total eligible expenditure: EUR 5 million."],"evidence_positions":[1]}]}
 </example_output>
 
 <example_output>
-{"findings":[{"category":"logic_error","severity":"blocking","message":"The target defines the proposal as delivery of the route while also stating that construction is 97% complete and commissioning is underway.","suggested_action":"Define a genuinely future residual or follow-on measure, schedule, and cost, and distinguish it from current works.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111"],"excerpts":["The proposed measure is delivery of the route.","Construction is 97% complete and commissioning is underway."]},{"category":"cross_chapter_conflict","severity":"blocking","message":"The target includes delivery of the current route while the support chapter excludes ongoing construction and commissioning.","suggested_action":"Use one explicit eligible future scope in both chapters and exclude current works consistently.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111","22222222-2222-4222-8222-222222222222"],"excerpts":["The proposed measure is delivery of the route.","Support will not fund ongoing construction or commissioning."]}]}
+{"findings":[{"category":"logic_error","severity":"blocking","message":"The target defines the proposal as delivery of the route while also stating that construction is 97% complete and commissioning is underway.","suggested_action":"Define a genuinely future residual or follow-on measure, schedule, and cost, and distinguish it from current works.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111"],"excerpts":["The proposed measure is delivery of the route.","Construction is 97% complete and commissioning is underway."],"evidence_positions":[]},{"category":"cross_chapter_conflict","severity":"blocking","message":"The target includes delivery of the current route while the support chapter excludes ongoing construction and commissioning.","suggested_action":"Use one explicit eligible future scope in both chapters and exclude current works consistently.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111","22222222-2222-4222-8222-222222222222"],"excerpts":["The proposed measure is delivery of the route.","Support will not fund ongoing construction or commissioning."],"evidence_positions":[]}]}
 </example_output>
 
 <example_output>

@@ -208,6 +208,11 @@ def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy
     assert "data, not user requests" in composed
     assert "INTERNAL_TOOL_OUTPUT_JSON" in composed
     assert "does not persist" in composed
+    assert "Assume the user has no knowledge of internal run context" in composed
+    assert 'A short or vague request such as "Help me"' in composed
+    assert "available template or document order" in composed
+    assert "automatically" in composed
+    assert 'require the user to say "use only this"' in composed
     assert "inventory_list_accessible" not in composed
     assert "general CityCatalyst climate and inventory chat" not in composed
 
@@ -247,6 +252,13 @@ def test_cnb_chapter_validation_configuration_matches_two_pass_contract() -> Non
     assert config.models.cnb_chapter_validator.name == "openai/gpt-5.6-terra"
     assert config.models.cnb_chapter_validator.reasoning_effort == "medium"
     assert config.generation.prompt_budget.cnb_validation.max_prompt_tokens == 50000
+    for prompt_name in (
+        "cnb_chapter_validation_completeness",
+        "cnb_chapter_validation_consistency",
+    ):
+        prompt = config.prompts.get_prompt(prompt_name)
+        assert "`evidence_positions`" in prompt
+        assert "one-based" in prompt
 
 
 def test_cnb_source_prompts_define_grounding_and_caveat_contracts() -> None:

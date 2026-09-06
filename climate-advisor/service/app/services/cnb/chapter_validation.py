@@ -10,7 +10,6 @@ from typing import Any, Literal, cast
 from uuid import UUID
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
-from app.config import Settings, get_settings
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterCompletenessValidationOutput,
@@ -29,6 +28,8 @@ from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
 from pydantic import BaseModel, ValidationError
+
+from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -185,16 +186,20 @@ class ConceptNoteChapterValidationService:
         if not (target.body_markdown or "").strip():
             return _empty_chapter_decision(request)
 
+        # Attach one-based positions so model output can cite existing evidence
+        # without copying or inventing source metadata.
         target_payload = target.model_dump(mode="json")
+        evidence_payload = [
+            {"position": position, **evidence.model_dump(mode="json")}
+            for position, evidence in enumerate(request.evidence_links, start=1)
+        ]
         completeness_payload = {
             "target_chapter": target_payload,
             "template": (
                 request.template.model_dump(mode="json") if request.template else None
             ),
             "open_gaps": [gap.model_dump(mode="json") for gap in request.open_gaps],
-            "evidence_links": [
-                evidence.model_dump(mode="json") for evidence in request.evidence_links
-            ],
+            "evidence_links": evidence_payload,
         }
         prompts = self._settings.llm.prompts
         budget = self._settings.llm.generation.prompt_budget.cnb_validation
@@ -226,6 +231,7 @@ class ConceptNoteChapterValidationService:
             request=request,
             target_payload=target_payload,
             completeness_payload=completeness_payload,
+            evidence_payload=evidence_payload,
             consistency_prompt=prompts.get_prompt("cnb_chapter_validation_consistency"),
             model_name=model_name,
             fallback_encoding=fallback_encoding,
@@ -261,6 +267,7 @@ class ConceptNoteChapterValidationService:
         request: ChapterValidationRequest,
         target_payload: dict[str, Any],
         completeness_payload: dict[str, Any],
+        evidence_payload: list[dict[str, Any]],
         consistency_prompt: str,
         model_name: str,
         fallback_encoding: str,
@@ -305,6 +312,7 @@ class ConceptNoteChapterValidationService:
             _validate_completeness_findings(
                 completeness,
                 target_chapter_id=request.target_chapter_id,
+                evidence_link_count=len(request.evidence_links),
             )
             batches = _build_consistency_batches(
                 target=target_payload,
@@ -320,6 +328,7 @@ class ConceptNoteChapterValidationService:
                         key=lambda chapter: (chapter.position, str(chapter.chapter_id)),
                     )
                 ],
+                evidence_links=evidence_payload,
                 prompt=consistency_prompt,
                 model=model_name,
                 fallback_encoding=fallback_encoding,
@@ -334,6 +343,7 @@ class ConceptNoteChapterValidationService:
                         "target_chapter": target_payload,
                         "completeness_result": completeness.model_dump(mode="json"),
                         "compared_chapters": batch,
+                        "evidence_links": evidence_payload,
                     },
                     ChapterConsistencyValidationOutput,
                 )
@@ -343,6 +353,7 @@ class ConceptNoteChapterValidationService:
                     compared_chapter_ids={
                         UUID(chapter["chapter_id"]) for chapter in batch
                     },
+                    evidence_link_count=len(request.evidence_links),
                 )
                 outputs.append(output)
             return completeness, outputs, len(batches)
@@ -418,6 +429,7 @@ def _build_consistency_batches(
     target: dict[str, Any],
     completeness: dict[str, Any],
     other_chapters: list[dict[str, Any]],
+    evidence_links: list[dict[str, Any]],
     prompt: str,
     model: str,
     fallback_encoding: str,
@@ -430,6 +442,7 @@ def _build_consistency_batches(
             "target_chapter": target,
             "completeness_result": completeness,
             "compared_chapters": chapters,
+            "evidence_links": evidence_links,
         }
         token_count = count_prompt_tokens(
             [
@@ -498,6 +511,7 @@ def _validate_completeness_findings(
     output: ChapterCompletenessValidationOutput,
     *,
     target_chapter_id: UUID,
+    evidence_link_count: int,
 ) -> None:
     """Reject pass-one findings that reference anything beyond the target."""
     for finding in output.findings:
@@ -508,6 +522,7 @@ def _validate_completeness_findings(
             raise ChapterValidationModelOutputError(
                 "Completeness finding referenced an invalid chapter"
             )
+    _validate_evidence_positions(output, evidence_link_count=evidence_link_count)
 
 
 def _validate_consistency_findings(
@@ -515,6 +530,7 @@ def _validate_consistency_findings(
     *,
     target_chapter_id: UUID,
     compared_chapter_ids: set[UUID],
+    evidence_link_count: int,
 ) -> None:
     """Reject hallucinated references and conflicts unrelated to the target."""
     allowed_ids = {target_chapter_id} | compared_chapter_ids
@@ -536,6 +552,23 @@ def _validate_consistency_findings(
         elif involved_ids != {target_chapter_id}:
             raise ChapterValidationModelOutputError(
                 "Internal consistency finding referenced another chapter"
+            )
+    _validate_evidence_positions(output, evidence_link_count=evidence_link_count)
+
+
+def _validate_evidence_positions(
+    output: ChapterCompletenessValidationOutput | ChapterConsistencyValidationOutput,
+    *,
+    evidence_link_count: int,
+) -> None:
+    """Reject duplicate or unavailable evidence references from model output."""
+    for finding in output.findings:
+        positions = finding.evidence_positions
+        if len(positions) != len(set(positions)) or any(
+            position > evidence_link_count for position in positions
+        ):
+            raise ChapterValidationModelOutputError(
+                "Validation finding referenced unavailable evidence"
             )
 
 
@@ -559,6 +592,7 @@ def _merge_findings(
             finding,
             phase="evidence" if finding.category == "evidence" else "completeness",
             severity=severity,
+            evidence_links=request.evidence_links,
         )
         if not _finding_is_covered_by_open_gaps(public_finding, request.open_gaps):
             merged.append(public_finding)
@@ -566,7 +600,12 @@ def _merge_findings(
     merged.extend(_deterministic_scope_findings(request))
     for output in consistency_outputs:
         merged.extend(
-            _public_finding(finding, phase="consistency") for finding in output.findings
+            _public_finding(
+                finding,
+                phase="consistency",
+                evidence_links=request.evidence_links,
+            )
+            for finding in output.findings
         )
 
     return _deduplicate_findings(merged)
@@ -584,10 +623,7 @@ def _finding_is_covered_by_open_gaps(
     }:
         return False
     finding_text = _normalized_text(f"{finding.message} {finding.suggested_action}")
-    return any(
-        _normalized_text(gap.reason) in finding_text
-        for gap in gaps
-    )
+    return any(_normalized_text(gap.reason) in finding_text for gap in gaps)
 
 
 def _normalized_text(value: str) -> str:
@@ -720,6 +756,7 @@ def _public_finding(
     finding: ChapterValidationFindingDraft,
     *,
     phase: Literal["completeness", "consistency", "evidence"],
+    evidence_links: list[ChapterValidationEvidenceLink],
     severity: Literal["warning", "blocking"] | None = None,
 ) -> ChapterValidationFinding:
     """Attach the service-owned phase and any deterministic severity override."""
@@ -731,6 +768,9 @@ def _public_finding(
         suggested_action=finding.suggested_action,
         involved_chapter_ids=finding.involved_chapter_ids,
         excerpts=finding.excerpts,
+        evidence=[
+            evidence_links[position - 1] for position in finding.evidence_positions
+        ],
     )
 
 

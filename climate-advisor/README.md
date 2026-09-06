@@ -50,6 +50,9 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
    - Composes `prompts.core` with `prompts.cnb_chat`, injects ready-source
      summaries, and exposes the step-scoped read-only source query
    - Uses source evidence for answers; chat suggestions do not persist document edits
+   - Treats vague requests as sufficient intent, uses the already bound run and
+     available chapter order, and asks one focused question when the next step
+     cannot be derived
    - Uses the detailed contract in
      [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
 
@@ -67,7 +70,9 @@ comparisons.
 `llm_config.yaml` configures `cnb_chapter_validator` as GPT-5.6 Terra with
 medium reasoning and a 50,000-token validation prompt budget. The service uses
 temperature zero. Model or parse failures persist nothing. Successful results
-store actionable findings, never reasoning, and are guarded
+store actionable findings, never reasoning, and resolve model-selected evidence
+positions to trusted source labels, locations, claims, and summaries. Invalid or
+invented evidence positions reject the model result. Results are guarded
 by a transactional fingerprint covering active chapter metadata and revisions,
 target gaps and evidence links, and every application-template field. See
 [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#chapter-validation)

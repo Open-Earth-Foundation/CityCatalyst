@@ -22,6 +22,7 @@ ChapterValidationFindingCategory = Literal[
 
 ConciseText = Annotated[str, Field(min_length=1, max_length=1_000)]
 ExcerptText = Annotated[str, Field(min_length=1, max_length=500)]
+EvidencePosition = Annotated[int, Field(ge=1)]
 
 
 class ChapterValidationChapter(BaseModel):
@@ -105,6 +106,9 @@ class ChapterValidationFindingDraft(BaseModel):
     suggested_action: ConciseText
     involved_chapter_ids: list[UUID] = Field(min_length=1, max_length=10)
     excerpts: list[ExcerptText] = Field(default_factory=list, max_length=3)
+    evidence_positions: list[EvidencePosition] = Field(
+        default_factory=list, max_length=10
+    )
 
 
 class _ChapterValidationOutput(BaseModel):
@@ -157,6 +161,10 @@ class ChapterValidationFinding(BaseModel):
     suggested_action: ConciseText
     involved_chapter_ids: list[UUID] = Field(min_length=1, max_length=10)
     excerpts: list[ExcerptText] = Field(default_factory=list, max_length=3)
+    evidence: list[ChapterValidationEvidenceLink] = Field(
+        default_factory=list,
+        max_length=10,
+    )
 
 
 class ChapterValidationDecision(BaseModel):

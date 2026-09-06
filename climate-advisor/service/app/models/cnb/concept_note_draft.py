@@ -6,6 +6,9 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
+from app.models.cnb.concept_note_chapter_validation import (
+    ChapterValidationEvidenceLink,
+)
 from pydantic import BaseModel, ConfigDict, Field
 
 ConceptNoteDraftStatus = Literal["not_started", "running", "failed", "complete"]
@@ -48,6 +51,10 @@ class ConceptNoteValidationFindingResponse(BaseModel):
     suggested_action: str
     involved_chapter_ids: list[UUID] = Field(default_factory=list)
     excerpts: list[str] = Field(default_factory=list)
+    evidence: list[ChapterValidationEvidenceLink] = Field(
+        default_factory=list,
+        max_length=10,
+    )
 
 
 class ConceptNoteChapterValidationResponse(BaseModel):
@@ -61,9 +68,7 @@ class ConceptNoteChapterValidationResponse(BaseModel):
     findings: list[ConceptNoteValidationFindingResponse] = Field(default_factory=list)
 
 
-class ConceptNoteChapterValidationActionResponse(
-    ConceptNoteChapterValidationResponse
-):
+class ConceptNoteChapterValidationActionResponse(ConceptNoteChapterValidationResponse):
     """Explicit mark-ready response identifying the validated chapter."""
 
     chapter_id: UUID

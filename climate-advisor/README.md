@@ -50,6 +50,9 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
    - Composes `prompts.core` with `prompts.cnb_chat`, injects ready-source
      summaries, and exposes the step-scoped read-only source query
    - Uses source evidence for answers; chat suggestions do not persist document edits
+   - Treats vague requests as sufficient intent, uses the already bound run and
+     available chapter order, and asks one focused question when the next step
+     cannot be derived
    - Uses the detailed contract in
      [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
 
@@ -59,15 +62,19 @@ Chapter validation is triggered from CityCatalyst's **Review & export** button,
 not from chat. The guided review calls
 `POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/validation` for every
 active chapter. Each call runs two structured passes in strict order:
-completeness/template/evidence first, then internal and target-involved
-cross-chapter consistency. The second call receives the first result and every
-active chapter; large documents are batched without truncating the target or
-comparisons.
+completeness first, comparing the generated `output` with the template and
+source evidence in `document`, then consistency, comparing the same output with
+the other active chapters in that document. Validation uses only explicit input
+claims and contains no programme-name or programme-specific keyword rules. The
+second pass receives the first result; large documents are batched without
+truncating the output or document chapters.
 
 `llm_config.yaml` configures `cnb_chapter_validator` as GPT-5.6 Terra with
 medium reasoning and a 50,000-token validation prompt budget. The service uses
 temperature zero. Model or parse failures persist nothing. Successful results
-store actionable findings, never reasoning, and are guarded
+store actionable findings, never reasoning, and resolve model-selected evidence
+positions to trusted source labels, locations, claims, and summaries. Invalid or
+invented evidence positions reject the model result. Results are guarded
 by a transactional fingerprint covering active chapter metadata and revisions,
 target gaps and evidence links, and every application-template field. See
 [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#chapter-validation)

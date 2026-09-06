@@ -4,7 +4,6 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 from uuid import UUID
 
-from app.config import get_settings
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterCompletenessValidationOutput,
     ChapterConsistencyValidationOutput,
@@ -18,6 +17,8 @@ from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationTemplate,
 )
 from app.services.cnb.chapter_validation import ConceptNoteChapterValidationService
+
+from app.config import get_settings
 
 TARGET_ID = UUID("11111111-1111-4111-8111-111111111111")
 OTHER_ID = UUID("22222222-2222-4222-8222-222222222222")
@@ -77,6 +78,7 @@ def finding(
     *,
     severity: ChapterValidationSeverity = "blocking",
     chapter_ids: list[UUID] | None = None,
+    evidence_positions: list[int] | None = None,
 ) -> ChapterValidationFindingDraft:
     return ChapterValidationFindingDraft(
         category=category,
@@ -84,6 +86,7 @@ def finding(
         message=message,
         suggested_action=suggested_action,
         involved_chapter_ids=chapter_ids or [TARGET_ID],
+        evidence_positions=evidence_positions or [],
     )
 
 

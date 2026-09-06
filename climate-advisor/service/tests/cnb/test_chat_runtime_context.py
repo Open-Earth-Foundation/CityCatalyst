@@ -7,11 +7,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 import pytest
-from app.config import get_settings
 from app.models.requests import MessageCreateRequest
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.concept_note_context import clean_cnb_history
 from app.utils.streaming_handler import StreamingHandler
+
+from app.config import get_settings
 
 
 @pytest.mark.parametrize("current_already_saved", [False, True])
@@ -125,6 +126,44 @@ async def test_cnb_unavailable_bundle_is_runtime_data() -> None:
         "CONCEPT_NOTE_CONTEXT_BUNDLE_UNAVAILABLE\n"
     )
     assert messages[1] == {"role": "user", "content": payload.content}
+
+
+@pytest.mark.parametrize(
+    "content",
+    ["Help me", "What should I do next?", "Work on my concept note"],
+)
+async def test_vague_cnb_request_uses_the_bound_run_context(content: str) -> None:
+    run_id = uuid4()
+    context_loader = AsyncMock(
+        return_value={
+            "workflow_step": "editing_document",
+            "document_context": {"chapters": ["Summary", "Budget"]},
+        }
+    )
+    handler = StreamingHandler(
+        thread_id=str(uuid4()), user_id="owner", session_factory=MagicMock()
+    )
+    handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(run_id))
+    payload = MessageCreateRequest(user_id="owner", content=content)
+
+    with (
+        patch(
+            "app.utils.streaming_handler.load_conversation_history",
+            new=AsyncMock(return_value=[]),
+        ),
+        patch("app.utils.streaming_handler.load_agent_context", new=context_loader),
+    ):
+        messages = await handler._load_conversation_history(get_settings(), payload)
+
+    context = json.loads(messages[0]["content"].split("\n", 1)[1])
+    assert context["workflow_step"] == "editing_document"
+    assert context["document_context"]["chapters"] == ["Summary", "Budget"]
+    assert messages[-1] == {"role": "user", "content": content}
+    context_loader.assert_awaited_once_with(
+        session_factory=handler.session_factory,
+        user_id="owner",
+        run_id=run_id,
+    )
 
 
 async def test_general_chat_history_roles_are_unchanged() -> None:

@@ -20,6 +20,7 @@ from app.services.cnb.application_context import (
 from app.services.cnb.chapter_validation_workflow import (
     ChapterValidationWorkflowError,
     ConceptNoteChapterValidationWorkflowService,
+    chapter_validation_response,
 )
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -90,6 +91,42 @@ def _workflow(
         application_context=application_context,
     )
     return service, workspace, validator, application_context, context
+
+
+def test_public_response_preserves_validation_source_provenance() -> None:
+    snapshot = WorkspaceValidationSnapshot(
+        validation_id=uuid4(),
+        status="needs_review",
+        is_stale=False,
+        validated_revision_id=uuid4(),
+        validated_revision_number=2,
+        validation_input_fingerprint="a" * 64,
+        validated_at=datetime.now(UTC),
+        findings=[
+            {
+                "phase": "evidence",
+                "category": "evidence",
+                "severity": "warning",
+                "message": "The stated date conflicts with the delivery plan.",
+                "suggested_action": "Confirm the approved date.",
+                "involved_chapter_ids": [str(uuid4())],
+                "excerpts": ["Works begin in March 2028."],
+                "evidence": [
+                    {
+                        "selected_source_label": "Delivery plan",
+                        "source_location": "page 7",
+                        "claim_ref": "implementation start date",
+                        "quote_or_summary": "Works begin in March 2027.",
+                    }
+                ],
+            }
+        ],
+    )
+
+    response = chapter_validation_response(snapshot)
+
+    assert response.findings[0].evidence[0].selected_source_label == "Delivery plan"
+    assert response.findings[0].evidence[0].source_location == "page 7"
 
 
 @pytest.mark.asyncio

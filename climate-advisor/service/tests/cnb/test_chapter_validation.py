@@ -100,29 +100,85 @@ async def test_runs_completeness_before_document_consistency() -> None:
     )
 
     assert [phase for phase, _ in calls] == ["completeness", "consistency"]
-    assert {item["chapter_id"] for item in calls[1][1]["compared_chapters"]} == {
+    assert {item["chapter_id"] for item in calls[1][1]["document"]["chapters"]} == {
         str(OTHER_ID),
         str(THIRD_ID),
     }
+    assert calls[0][1]["output"]["chapter_id"] == str(TARGET_ID)
+    assert calls[1][1]["output"]["chapter_id"] == str(TARGET_ID)
+    assert calls[0][1]["document"]["evidence_links"][0]["position"] == 1
+    assert calls[1][1]["document"]["evidence_links"][0]["position"] == 1
     assert decision.status == "ready"
 
 
-async def test_batches_complete_comparison_chapters_without_truncation(
+async def test_resolves_model_evidence_positions_to_public_source_metadata() -> None:
+    model_result = completeness(
+        findings=[
+            finding(
+                "evidence",
+                "The stated start date conflicts with the delivery plan.",
+                "Confirm the approved start date.",
+                severity="warning",
+                evidence_positions=[1],
+            )
+        ]
+    )
+    validation_request = request()
+    validation_request.evidence_links[0] = validation_request.evidence_links[
+        0
+    ].model_copy(
+        update={
+            "source_location": "page 7",
+            "claim_ref": "implementation start date",
+            "quote_or_summary": "Works begin in March 2027.",
+        }
+    )
+
+    decision = await service(static_passes(completeness_result=model_result)).validate(
+        validation_request
+    )
+
+    assert decision.findings[0].phase == "evidence"
+    assert decision.findings[0].evidence[0].selected_source_label == "City climate plan"
+    assert decision.findings[0].evidence[0].source_location == "page 7"
+    assert decision.findings[0].evidence[0].claim_ref == "implementation start date"
+
+
+async def test_rejects_model_reference_to_unavailable_evidence() -> None:
+    model_result = completeness(
+        findings=[
+            finding(
+                "evidence",
+                "The date conflicts with a source.",
+                "Confirm the date.",
+                severity="warning",
+                evidence_positions=[2],
+            )
+        ]
+    )
+
+    with pytest.raises(ChapterValidationModelOutputError):
+        await service(static_passes(completeness_result=model_result)).validate(
+            request()
+        )
+
+
+async def test_batches_complete_document_chapters_without_truncation(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     batches: list[list[dict[str, Any]]] = []
 
     def fake_count(parts: list[Any], **_: Any) -> TokenCount:
-        compared = parts[1].get("compared_chapters", [])
+        document_chapters = parts[1].get("document", {}).get("chapters", [])
         return TokenCount(
-            tokens=100 + sum(len(item["body_markdown"]) for item in compared),
+            tokens=100 + sum(len(item["body_markdown"]) for item in document_chapters),
             tokenizer="test",
         )
 
     async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
         if phase == "completeness":
             return completeness()
-        batches.append(payload["compared_chapters"])
+        batches.append(payload["document"]["chapters"])
         return consistency()
 
     monkeypatch.setattr(

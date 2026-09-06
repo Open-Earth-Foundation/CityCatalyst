@@ -100,12 +100,14 @@ async def test_runs_completeness_before_document_consistency() -> None:
     )
 
     assert [phase for phase, _ in calls] == ["completeness", "consistency"]
-    assert {item["chapter_id"] for item in calls[1][1]["compared_chapters"]} == {
+    assert {item["chapter_id"] for item in calls[1][1]["document"]["chapters"]} == {
         str(OTHER_ID),
         str(THIRD_ID),
     }
-    assert calls[0][1]["evidence_links"][0]["position"] == 1
-    assert calls[1][1]["evidence_links"][0]["position"] == 1
+    assert calls[0][1]["output"]["chapter_id"] == str(TARGET_ID)
+    assert calls[1][1]["output"]["chapter_id"] == str(TARGET_ID)
+    assert calls[0][1]["document"]["evidence_links"][0]["position"] == 1
+    assert calls[1][1]["document"]["evidence_links"][0]["position"] == 1
     assert decision.status == "ready"
 
 
@@ -161,22 +163,22 @@ async def test_rejects_model_reference_to_unavailable_evidence() -> None:
         )
 
 
-async def test_batches_complete_comparison_chapters_without_truncation(
+async def test_batches_complete_document_chapters_without_truncation(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     batches: list[list[dict[str, Any]]] = []
 
     def fake_count(parts: list[Any], **_: Any) -> TokenCount:
-        compared = parts[1].get("compared_chapters", [])
+        document_chapters = parts[1].get("document", {}).get("chapters", [])
         return TokenCount(
-            tokens=100 + sum(len(item["body_markdown"]) for item in compared),
+            tokens=100 + sum(len(item["body_markdown"]) for item in document_chapters),
             tokenizer="test",
         )
 
     async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
         if phase == "completeness":
             return completeness()
-        batches.append(payload["compared_chapters"])
+        batches.append(payload["document"]["chapters"])
         return consistency()
 
     monkeypatch.setattr(

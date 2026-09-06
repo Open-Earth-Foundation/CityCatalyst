@@ -260,6 +260,17 @@ def test_cnb_chapter_validation_configuration_matches_two_pass_contract() -> Non
         assert "`evidence_positions`" in prompt
         assert "one-based" in prompt
 
+    completeness_prompt = config.prompts.get_prompt(
+        "cnb_chapter_validation_completeness"
+    )
+    consistency_prompt = config.prompts.get_prompt("cnb_chapter_validation_consistency")
+    assert "`document`" in completeness_prompt
+    assert "`output`" in completeness_prompt
+    assert "`document`" in consistency_prompt
+    assert "`output`" in consistency_prompt
+    assert "programme-specific eligibility rules" in consistency_prompt
+    assert "EUCF" not in consistency_prompt
+
 
 def test_cnb_source_prompts_define_grounding_and_caveat_contracts() -> None:
     prompts = _load_llm_config().prompts

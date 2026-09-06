@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import json
 import logging
-import re
 from collections.abc import Awaitable, Callable
 from typing import Any, Literal, cast
 from uuid import UUID
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
+from app.config import Settings, get_settings
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterCompletenessValidationOutput,
@@ -29,8 +29,6 @@ from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
 from pydantic import BaseModel, ValidationError
 
-from app.config import Settings, get_settings
-
 logger = logging.getLogger(__name__)
 
 ValidationPass = Literal["completeness", "consistency"]
@@ -44,47 +42,6 @@ ValidationPassRunner = Callable[
 
 
 _BLOCKING_GAP_SEVERITIES = {"missing_information", "critical", "blocking"}
-_SCOPE_CONFLICT_MESSAGE = (
-    "The target and related chapter define incompatible scope: one includes "
-    "delivery of current works while the other explicitly excludes completed or "
-    "current construction and commissioning works."
-)
-_SCOPE_CONFLICT_ACTION = (
-    "Align both chapters on one explicit future eligible scope and consistently "
-    "separate it from completed, construction, and commissioning works."
-)
-_INTERNAL_SCOPE_CONFLICT_MESSAGE = (
-    "The target defines the proposed measure as delivery of current works while "
-    "also stating that construction or commissioning is already at a late stage."
-)
-_INTERNAL_SCOPE_CONFLICT_ACTION = (
-    "Replace current works with a distinct future residual or follow-on scope, "
-    "schedule, and cost."
-)
-_SCOPE_PATTERNS = {
-    "include": re.compile(
-        r"\b(?:proposed measure|supported scope|funding scope|EUCF support)\b"
-        r".{0,160}\b(?:delivery|includes?|covers?|funds?)\b.{0,200}"
-        r"\b(?:route|construction|works?|infrastructure|building|installation)\b",
-        re.IGNORECASE,
-    ),
-    "exclude": re.compile(
-        r"\b(?:(?:must|will)\s+not\s+fund|exclud(?:e|es|ed|ing)|rather than)\b"
-        r".{0,260}\b(?:works?|construction|commissioning)\b",
-        re.IGNORECASE,
-    ),
-    "late": re.compile(
-        r"\b(?:late(?:-stage)?\s+construction\s+and\s+commissioning|"
-        r"construction\b.{0,120}(?:\d{1,3}\s*%\s+complete|almost complete|"
-        r"nearly complete).{0,160}\bcommissioning\b.{0,80}"
-        r"(?:underway|ongoing|continues?|continued|continuing|in progress))\b",
-        re.IGNORECASE,
-    ),
-}
-_NEGATED_SCOPE = re.compile(
-    r"\b(?:not|never)\s+(?:include|cover|fund)|\brather than\b|\bexclud(?:e|es|ed|ing)\b",
-    re.IGNORECASE,
-)
 
 
 class ChapterValidationError(Exception):
@@ -95,7 +52,7 @@ class ChapterValidationError(Exception):
 
 
 class ChapterValidationInputTooLargeError(ChapterValidationError):
-    """A complete target or comparison chapter cannot fit without truncation."""
+    """A complete output or document chapter cannot fit without truncation."""
 
     code = "chapter_validation_input_too_large"
     status_code = 422
@@ -160,7 +117,7 @@ def build_chapter_validation_request(
 
 
 class ConceptNoteChapterValidationService:
-    """Run completeness first, then target-versus-document consistency checks."""
+    """Run completeness first, then output-versus-document consistency checks."""
 
     def __init__(
         self,
@@ -194,12 +151,16 @@ class ConceptNoteChapterValidationService:
             for position, evidence in enumerate(request.evidence_links, start=1)
         ]
         completeness_payload = {
-            "target_chapter": target_payload,
-            "template": (
-                request.template.model_dump(mode="json") if request.template else None
-            ),
+            "document": {
+                "template": (
+                    request.template.model_dump(mode="json")
+                    if request.template
+                    else None
+                ),
+                "evidence_links": evidence_payload,
+            },
+            "output": target_payload,
             "open_gaps": [gap.model_dump(mode="json") for gap in request.open_gaps],
-            "evidence_links": evidence_payload,
         }
         prompts = self._settings.llm.prompts
         budget = self._settings.llm.generation.prompt_budget.cnb_validation
@@ -214,7 +175,7 @@ class ConceptNoteChapterValidationService:
             model=model_name,
             fallback_encoding=fallback_encoding,
             max_prompt_tokens=budget.max_prompt_tokens,
-            description="target chapter completeness input",
+            description="output completeness input",
         )
 
         logger.info(
@@ -315,9 +276,9 @@ class ConceptNoteChapterValidationService:
                 evidence_link_count=len(request.evidence_links),
             )
             batches = _build_consistency_batches(
-                target=target_payload,
+                output=target_payload,
                 completeness=completeness.model_dump(mode="json"),
-                other_chapters=[
+                document_chapters=[
                     chapter.model_dump(mode="json")
                     for chapter in sorted(
                         (
@@ -340,17 +301,19 @@ class ConceptNoteChapterValidationService:
                     run_pass,
                     "consistency",
                     {
-                        "target_chapter": target_payload,
+                        "document": {
+                            "chapters": batch,
+                            "evidence_links": evidence_payload,
+                        },
+                        "output": target_payload,
                         "completeness_result": completeness.model_dump(mode="json"),
-                        "compared_chapters": batch,
-                        "evidence_links": evidence_payload,
                     },
                     ChapterConsistencyValidationOutput,
                 )
                 _validate_consistency_findings(
                     output,
                     target_chapter_id=request.target_chapter_id,
-                    compared_chapter_ids={
+                    document_chapter_ids={
                         UUID(chapter["chapter_id"]) for chapter in batch
                     },
                     evidence_link_count=len(request.evidence_links),
@@ -426,9 +389,9 @@ async def _invoke_pass(
 
 def _build_consistency_batches(
     *,
-    target: dict[str, Any],
+    output: dict[str, Any],
     completeness: dict[str, Any],
-    other_chapters: list[dict[str, Any]],
+    document_chapters: list[dict[str, Any]],
     evidence_links: list[dict[str, Any]],
     prompt: str,
     model: str,
@@ -439,10 +402,12 @@ def _build_consistency_batches(
 
     def fits(chapters: list[dict[str, Any]]) -> bool:
         payload = {
-            "target_chapter": target,
+            "document": {
+                "chapters": chapters,
+                "evidence_links": evidence_links,
+            },
+            "output": output,
             "completeness_result": completeness,
-            "compared_chapters": chapters,
-            "evidence_links": evidence_links,
         }
         token_count = count_prompt_tokens(
             [
@@ -455,30 +420,30 @@ def _build_consistency_batches(
         )
         return token_count.tokens <= max_prompt_tokens
 
-    # The target and first-pass output must fit even for an empty document.
+    # The generated output and first-pass result must fit without document chapters.
     if not fits([]):
         raise ChapterValidationInputTooLargeError(
-            "Target chapter consistency input exceeds the configured prompt budget"
+            "Output consistency input exceeds the configured prompt budget"
         )
-    if not other_chapters:
+    if not document_chapters:
         return [[]]
 
     batches: list[list[dict[str, Any]]] = []
     current: list[dict[str, Any]] = []
-    for chapter in other_chapters:
+    for chapter in document_chapters:
         candidate = [*current, chapter]
         if fits(candidate):
             current = candidate
             continue
         if not current:
             raise ChapterValidationInputTooLargeError(
-                "A complete comparison chapter exceeds the configured prompt budget"
+                "A complete document chapter exceeds the configured prompt budget"
             )
         batches.append(current)
         current = [chapter]
         if not fits(current):
             raise ChapterValidationInputTooLargeError(
-                "A complete comparison chapter exceeds the configured prompt budget"
+                "A complete document chapter exceeds the configured prompt budget"
             )
     if current:
         batches.append(current)
@@ -529,11 +494,11 @@ def _validate_consistency_findings(
     output: ChapterConsistencyValidationOutput,
     *,
     target_chapter_id: UUID,
-    compared_chapter_ids: set[UUID],
+    document_chapter_ids: set[UUID],
     evidence_link_count: int,
 ) -> None:
-    """Reject hallucinated references and conflicts unrelated to the target."""
-    allowed_ids = {target_chapter_id} | compared_chapter_ids
+    """Reject hallucinated references and conflicts unrelated to the output."""
+    allowed_ids = {target_chapter_id} | document_chapter_ids
     for finding in output.findings:
         involved_ids = set(finding.involved_chapter_ids)
         if len(involved_ids) != len(finding.involved_chapter_ids):
@@ -547,7 +512,7 @@ def _validate_consistency_findings(
         if finding.category == "cross_chapter_conflict":
             if not (involved_ids - {target_chapter_id}):
                 raise ChapterValidationModelOutputError(
-                    "Cross-chapter finding did not reference a compared chapter"
+                    "Cross-chapter finding did not reference a document chapter"
                 )
         elif involved_ids != {target_chapter_id}:
             raise ChapterValidationModelOutputError(
@@ -597,7 +562,6 @@ def _merge_findings(
         if not _finding_is_covered_by_open_gaps(public_finding, request.open_gaps):
             merged.append(public_finding)
 
-    merged.extend(_deterministic_scope_findings(request))
     for output in consistency_outputs:
         merged.extend(
             _public_finding(
@@ -663,95 +627,6 @@ def _deterministic_gap_findings(
     return findings
 
 
-def _deterministic_scope_findings(
-    request: ChapterValidationRequest,
-) -> list[ChapterValidationFinding]:
-    """Find only explicit target-involved current-versus-future scope conflicts."""
-    target = next(
-        chapter
-        for chapter in request.chapters
-        if chapter.chapter_id == request.target_chapter_id
-    )
-    target_inclusion = _scope_excerpt(target.body_markdown, "include")
-    target_exclusion = _scope_excerpt(target.body_markdown, "exclude")
-    findings: list[ChapterValidationFinding] = []
-
-    late_works = _scope_excerpt(target.body_markdown, "late")
-    if target_inclusion is not None and late_works is not None:
-        findings.append(
-            _scope_finding(
-                category="internal_conflict",
-                chapter_ids=[target.chapter_id],
-                excerpts=[target_inclusion, late_works],
-            )
-        )
-
-    for chapter in request.chapters:
-        if chapter.chapter_id == target.chapter_id:
-            continue
-        target_excerpt, related_excerpt = (
-            (target_inclusion, _scope_excerpt(chapter.body_markdown, "exclude"))
-            if target_inclusion
-            else (target_exclusion, _scope_excerpt(chapter.body_markdown, "include"))
-        )
-        if target_excerpt is None or related_excerpt is None:
-            continue
-        findings.append(
-            _scope_finding(
-                category="cross_chapter_conflict",
-                chapter_ids=[target.chapter_id, chapter.chapter_id],
-                excerpts=[target_excerpt, related_excerpt],
-            )
-        )
-    return findings
-
-
-def _scope_excerpt(
-    body_markdown: str | None,
-    kind: Literal["include", "exclude", "late"],
-) -> str | None:
-    for sentence in _chapter_sentences(body_markdown):
-        if kind == "include" and _NEGATED_SCOPE.search(sentence):
-            continue
-        if _SCOPE_PATTERNS[kind].search(sentence):
-            return sentence
-    return None
-
-
-def _scope_finding(
-    *,
-    category: Literal["internal_conflict", "cross_chapter_conflict"],
-    chapter_ids: list[UUID],
-    excerpts: list[str],
-) -> ChapterValidationFinding:
-    internal = category == "internal_conflict"
-    return ChapterValidationFinding(
-        phase="consistency",
-        category=category,
-        severity="blocking",
-        message=(
-            _INTERNAL_SCOPE_CONFLICT_MESSAGE if internal else _SCOPE_CONFLICT_MESSAGE
-        ),
-        suggested_action=(
-            _INTERNAL_SCOPE_CONFLICT_ACTION if internal else _SCOPE_CONFLICT_ACTION
-        ),
-        involved_chapter_ids=chapter_ids,
-        excerpts=excerpts,
-    )
-
-
-def _chapter_sentences(body_markdown: str | None) -> list[str]:
-    """Split Markdown into concise sentence excerpts without altering meaning."""
-    if not body_markdown:
-        return []
-    sentences: list[str] = []
-    for part in re.split(r"(?<=[.!?])\s+|[\r\n]+", body_markdown):
-        sentence = " ".join(part.strip(" \t#>*_-").split())
-        if sentence:
-            sentences.append(sentence[:500])
-    return sentences
-
-
 def _public_finding(
     finding: ChapterValidationFindingDraft,
     *,
@@ -787,39 +662,11 @@ def _deduplicate_findings(
             tuple(sorted(finding.involved_chapter_ids)),
             _normalized_text(finding.message),
         )
-        if key in seen or any(
-            _duplicates_scope_guard(finding, existing) for existing in unique
-        ):
+        if key in seen:
             continue
         seen.add(key)
         unique.append(finding)
     return unique
-
-
-def _duplicates_scope_guard(
-    finding: ChapterValidationFinding,
-    existing: ChapterValidationFinding,
-) -> bool:
-    if set(finding.involved_chapter_ids) != set(existing.involved_chapter_ids):
-        return False
-    expected_categories = {
-        _SCOPE_CONFLICT_MESSAGE: {"cross_chapter_conflict"},
-        _INTERNAL_SCOPE_CONFLICT_MESSAGE: {"internal_conflict", "logic_error"},
-    }.get(existing.message)
-    if expected_categories is None or finding.category not in expected_categories:
-        return False
-
-    terms = set(
-        _normalized_text(f"{finding.message} {finding.suggested_action}").split()
-    )
-    return all(
-        terms & group
-        for group in (
-            {"construction", "commissioning", "works", "route"},
-            {"deliver", "delivery", "include", "includes", "measure", "scope"},
-            {"complete", "completed", "current", "exclude", "future", "ongoing"},
-        )
-    )
 
 
 def _aggregate_status(

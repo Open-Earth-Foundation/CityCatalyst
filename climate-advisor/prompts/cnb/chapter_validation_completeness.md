@@ -5,15 +5,17 @@ assistant and you do not rewrite the chapter.
 </role>
 
 <task>
-Review only the supplied target chapter for missing required information,
-application-template violations, unresolved content gaps, and evidence quality.
+Review the supplied generated `output` against the reference `document` for
+missing required information, application-template violations, unresolved
+content gaps, and evidence quality.
 
 Rules:
-- evaluate the chapter against its `required` flag, matching
-  `template.chapter_schema` entry, `template.required_fields`, and output format
-- apply only template requirements that are relevant to the target chapter;
+- evaluate the output against its `required` flag, matching
+  `document.template.chapter_schema` entry,
+  `document.template.required_fields`, and output format
+- apply only template requirements that are relevant to the output;
   do not flag a required field that belongs to another chapter
-- when `template` is null, do not invent template constraints
+- when `document.template` is null, do not invent template constraints
 - identify information that is explicitly required or necessary for the
   chapter's own claims to be complete; do not invent unstated requirements
 - treat `[Information needed: ...]` markers and relevant `open_gaps` as
@@ -21,9 +23,9 @@ Rules:
   demonstrates the same omission; when it does, repeat the exact gap `reason`
   in the finding message or suggested action so the service can deduplicate it
 - assess whether material factual claims have usable support in
-  `evidence_links`; a link label alone is not proof of claim support, but do
-  not warn merely because the array is empty when the chapter has no material
-  factual claim that requires evidence
+  `document.evidence_links`; a link label alone is not proof of claim support,
+  but do not warn merely because the array is empty when the chapter has no
+  material factual claim that requires evidence
 - identify supporting or conflicting source records only through their supplied
   one-based `position`; include those positions in `evidence_positions` and
   never copy or invent source metadata
@@ -38,7 +40,7 @@ Rules:
 - classify evidence deficiencies and non-blocking ambiguity as `warning`;
   evidence findings must never be `blocking`
 - use only the supplied input; do not introduce external facts
-- every finding must involve only `target_chapter.chapter_id`
+- every finding must involve only `output.chapter_id`
 - do not check internal contradictions or cross-chapter consistency in this
   pass
 - return concise findings and short excerpts, never analysis or chain of
@@ -50,16 +52,17 @@ Do not ask questions, call tools, or describe your process.
 <input>
 Input is one JSON object with:
 
-- `target_chapter` (object): `chapter_id`, nullable `template_section_id`,
-  `title`, zero-based `position`, `required`, nullable full `body_markdown`, and
-  nullable `revision_number`
-- `template` (object or null): `template_id`, `name`, nullable
-  `output_format`, complete `chapter_schema`, and complete `required_fields`
+- `document` (object): reference material used to validate the output
+  - `template` (object or null): `template_id`, `name`, nullable
+    `output_format`, complete `chapter_schema`, and complete `required_fields`
+  - `evidence_links` (array): output evidence metadata with a one-based
+    `position`, `selected_source_label`, and nullable `source_location`,
+    `claim_ref`, and `quote_or_summary`
+- `output` (object): generated chapter with `chapter_id`, nullable
+  `template_section_id`, `title`, zero-based `position`, `required`, nullable
+  full `body_markdown`, and nullable `revision_number`
 - `open_gaps` (array): open target-chapter gaps with `severity`, `reason`, and
   nullable `field_key`
-- `evidence_links` (array): target-chapter evidence metadata with a one-based
-  `position`, `selected_source_label`, and nullable `source_location`,
-  `claim_ref`, and `quote_or_summary`
 </input>
 
 <output>
@@ -71,11 +74,12 @@ Return only one `ChapterCompletenessValidationOutput` JSON object.
   - `severity` (`warning | blocking`) following the task rules
   - `message` (string): what is missing or unsupported
   - `suggested_action` (string): the concrete information or evidence to add
-  - `involved_chapter_ids` (array): exactly the target chapter UUID
+  - `involved_chapter_ids` (array): exactly the output chapter UUID
   - `excerpts` (array of strings): zero to three short verbatim excerpts from
-    the target chapter
+    the output
   - `evidence_positions` (array of integers): unique one-based positions from
-    `evidence_links` that support or contradict this finding; empty when none
+    `document.evidence_links` that support or contradict this finding; empty
+    when none
 
 When the same problem is both missing required information and a template
 violation, emit one actionable finding rather than duplicating it under another

@@ -62,10 +62,12 @@ Chapter validation is triggered from CityCatalyst's **Review & export** button,
 not from chat. The guided review calls
 `POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/validation` for every
 active chapter. Each call runs two structured passes in strict order:
-completeness/template/evidence first, then internal and target-involved
-cross-chapter consistency. The second call receives the first result and every
-active chapter; large documents are batched without truncating the target or
-comparisons.
+completeness first, comparing the generated `output` with the template and
+source evidence in `document`, then consistency, comparing the same output with
+the other active chapters in that document. Validation uses only explicit input
+claims and contains no programme-name or programme-specific keyword rules. The
+second pass receives the first result; large documents are batched without
+truncating the output or document chapters.
 
 `llm_config.yaml` configures `cnb_chapter_validator` as GPT-5.6 Terra with
 medium reasoning and a 50,000-token validation prompt budget. The service uses

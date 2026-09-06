@@ -1411,6 +1411,11 @@ How it works:
   source label, location, claim reference, and summary before findings reach the
   API. This makes provenance available to the workspace UI without allowing the
   model to supply source identity metadata.
+- Both validation passes use an explicit `document` and generated `output`
+  contract. Completeness compares the output with supplied template and evidence
+  material; consistency compares it with the remaining document chapters. The
+  generic service applies no programme-name or programme-specific text matcher,
+  so a conflict must be grounded in the supplied document and output.
 - A five-minute reconciler marks chapter-drafting leases left `running` for more
   than one hour as failed and retryable, without discarding completed chapters.
 

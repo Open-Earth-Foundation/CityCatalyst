@@ -85,6 +85,7 @@ function result(chapterId: string): ConceptNoteChapterValidationResponse {
     findings: [
       {
         category: "missing_information",
+        evidence: [],
         involved_chapter_ids: [chapterId],
         message: "A required amount is missing.",
         phase: "completeness",
@@ -96,6 +97,33 @@ function result(chapterId: string): ConceptNoteChapterValidationResponse {
     status: "incomplete",
     validated_at: "2026-08-28T12:00:00Z",
     validated_revision_number: 1,
+  };
+}
+
+function resultWithEvidence(
+  chapterId: string,
+): ConceptNoteChapterValidationResponse {
+  return {
+    ...result(chapterId),
+    findings: [
+      {
+        category: "evidence",
+        evidence: [
+          {
+            claim_ref: "approved project budget",
+            quote_or_summary: "The approved project budget is EUR 5 million.",
+            selected_source_label: "Budget annex",
+            source_location: "page 4",
+          },
+        ],
+        involved_chapter_ids: [chapterId],
+        message: "The output states a different project budget.",
+        phase: "evidence",
+        severity: "warning",
+        suggested_action: "Confirm and use the approved budget.",
+      },
+    ],
+    status: "needs_review",
   };
 }
 
@@ -277,5 +305,34 @@ describe("guided review before export", () => {
     await click("Continue to conflicts & logic");
     await click("Continue to decision");
     expect(document.body.textContent).toContain("Export anyway");
+  });
+
+  it("shows the source location and excerpt for a conflicting figure", async () => {
+    const savedDraft = draft(1, true);
+    savedDraft.chapters[0] = {
+      ...savedDraft.chapters[0],
+      validation: resultWithEvidence("chapter-1"),
+    };
+
+    await renderDialog({ draft: savedDraft });
+    await settle();
+
+    expect(document.body.textContent).toContain(
+      "Source: Budget annex · page 4",
+    );
+    expect(document.body.textContent).toContain(
+      "The approved project budget is EUR 5 million.",
+    );
+  });
+
+  it("does not render an empty provenance block", async () => {
+    await renderDialog({ draft: draft(1, true) });
+    await settle();
+
+    expect(
+      document.body.querySelector(
+        "[data-testid='validation-finding-evidence']",
+      ),
+    ).toBeNull();
   });
 });

@@ -40,6 +40,7 @@ import {
   type ChapterDisplayStatus,
 } from "./chapter-validation";
 import type { DraftFocusController } from "./use-draft-focus";
+import { ValidationEvidence } from "./validation-evidence";
 
 const baseMarkdownComponents = createChatMarkdownComponents({
   paragraph: {
@@ -479,6 +480,10 @@ export function DraftDocumentPanel({
                         {focus.focusedFinding.finding.excerpts[0]}
                       </Text>
                     )}
+                    <ValidationEvidence
+                      evidence={focus.focusedFinding.finding.evidence}
+                      lng={lng}
+                    />
                     <Text mt={2} fontSize="label.sm" color="content.secondary">
                       <chakra.span fontWeight="semibold">
                         {t("review-action-label")}

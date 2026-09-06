@@ -12,6 +12,7 @@ import type { ConceptNoteChapterValidationStatus } from "@/util/types";
 
 import type { DocumentReviewFinding } from "./chapter-validation";
 import type { FailedChapterReview } from "./use-guided-review";
+import { ValidationEvidence } from "./validation-evidence";
 
 function statusTranslationKey(
   status: ConceptNoteChapterValidationStatus,
@@ -97,6 +98,7 @@ export function ReviewFindingList({
                 })}
               </Text>
             )}
+            <ValidationEvidence evidence={entry.finding.evidence} lng={lng} />
             <Text mt={2} fontSize="label.sm" color="content.secondary">
               <Text as="span" fontWeight="semibold" color="content.primary">
                 {t("review-action-label")}

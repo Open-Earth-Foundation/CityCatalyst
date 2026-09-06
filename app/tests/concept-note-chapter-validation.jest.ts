@@ -14,6 +14,7 @@ import type {
 
 const finding: ConceptNoteChapterValidationFinding = {
   category: "missing_information",
+  evidence: [],
   involved_chapter_ids: ["chapter-1"],
   message: "A required date is missing.",
   phase: "completeness",

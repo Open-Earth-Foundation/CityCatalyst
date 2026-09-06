@@ -1451,8 +1451,9 @@ How it works:
 - Chapter-validation prompts reference evidence by one-based list position.
   Service code validates those positions and resolves them to the persisted
   source label, location, claim reference, and summary before findings reach the
-  API. This makes provenance available to the workspace UI without allowing the
-  model to supply source identity metadata.
+  API. The guided review and focused chapter finding render the trusted source
+  label, location, and a bounded source excerpt without allowing the model to
+  supply source identity metadata.
 - Both validation passes use an explicit `document` and generated `output`
   contract. Completeness compares the output with supplied template and evidence
   material; consistency compares it with the remaining document chapters. The

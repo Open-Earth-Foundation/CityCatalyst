@@ -1139,6 +1139,13 @@ export interface ConceptNoteChapterValidationCheck {
   message?: string | null;
 }
 
+export interface ConceptNoteChapterValidationEvidence {
+  selected_source_label: string;
+  source_location: string | null;
+  claim_ref: string | null;
+  quote_or_summary: string | null;
+}
+
 export interface ConceptNoteChapterValidationFinding {
   phase: ConceptNoteChapterValidationFindingPhase;
   category: string;
@@ -1147,6 +1154,7 @@ export interface ConceptNoteChapterValidationFinding {
   suggested_action: string;
   involved_chapter_ids: string[];
   excerpts?: string[];
+  evidence: ConceptNoteChapterValidationEvidence[];
 }
 
 export interface ConceptNoteChapterValidation {

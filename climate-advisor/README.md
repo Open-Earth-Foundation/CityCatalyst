@@ -539,17 +539,17 @@ chapter drafter uses GPT-5.6 Terra with medium reasoning.
 
 Current CA model defaults:
 
-- General chat: `openai/gpt-5.6-luna`, reasoning `none`.
-- CNB and Stationary Energy chat: `openai/gpt-5.6-sol`, reasoning `none`.
+- General chat: `openai/gpt-5.6-luna`, reasoning `medium`.
+- CNB and Stationary Energy chat: `openai/gpt-5.6-sol`, reasoning `medium`.
 - Funding research and similar-project selection: `openai/gpt-5.6-sol`, reasoning `medium`.
 - Funder-identity matching: `openai/gpt-5.6-luna`, reasoning `low`.
 - Document mapping and question-focused source readers: `openai/gpt-5.6-luna`, reasoning `low`.
 - Document-summary synthesis: `openai/gpt-5.6-sol`, reasoning `medium`.
 
 Chat keeps the existing OpenRouter Chat Completions tool loop and explicitly sets
-reasoning to `none`; GPT-5.6 otherwise defaults to medium reasoning. The configured
-chat and source-worker requests omit `temperature`. Research keeps its Responses
-API path and existing reasoning settings. Source partition budgets,
+reasoning to `medium`. The configured chat and source-worker requests omit
+`temperature`. Research keeps its Responses API path and existing reasoning
+settings. Source partition budgets,
 concurrency limits, and embedding models are unchanged. Stored summaries are not
 automatically rebuilt by changing the model configuration.
 

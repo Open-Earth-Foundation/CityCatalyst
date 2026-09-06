@@ -19,8 +19,8 @@ from openai import AsyncOpenAI
 def test_all_active_ca_model_defaults_use_the_requested_family():
     models = get_settings().llm.models
     expected = {
-        "orchestrator": ("openai/gpt-5.6-luna", "none"),
-        "agentic_flow": ("openai/gpt-5.6-sol", "none"),
+        "orchestrator": ("openai/gpt-5.6-luna", "medium"),
+        "agentic_flow": ("openai/gpt-5.6-sol", "medium"),
         "funding_research": ("openai/gpt-5.6-sol", "medium"),
         "funder_identity": ("openai/gpt-5.6-luna", "low"),
         "cnb_source_reader": ("openai/gpt-5.6-luna", "low"),
@@ -51,7 +51,7 @@ def completion(model, *, content=None, tool_calls=None, finish_reason="stop"):
 
 @pytest.mark.parametrize("mode", ["general", "cnb", "stationary_energy", "custom"])
 @pytest.mark.asyncio
-async def test_chat_modes_round_trip_function_tools_with_explicit_none(
+async def test_chat_modes_round_trip_function_tools_with_medium_reasoning(
     monkeypatch, mode
 ):
     requests = []
@@ -124,7 +124,7 @@ async def test_chat_modes_round_trip_function_tools_with_explicit_none(
         if mode == "custom":
             assert "reasoning_effort" not in body
         else:
-            assert body["reasoning_effort"] == "none"
+            assert body["reasoning_effort"] == "medium"
         assert "temperature" not in body
         assert body["tools"][0]["function"]["name"] == "lookup_evidence"
     assert any(

@@ -2344,7 +2344,7 @@ prompts:
 ```
 
 The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-sol`) with explicit
-`reasoning_effort: none` for its Chat Completions function-tool loop. Funding
+`reasoning_effort: medium` for its Chat Completions function-tool loop. Funding
 research and similar-project selection use Sol with medium reasoning on the
 existing Responses API path; canonical-funder identity matching uses Luna with
 low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.

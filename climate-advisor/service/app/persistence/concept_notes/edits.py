@@ -8,6 +8,11 @@ import logging
 from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
+from pydantic import BaseModel
+from sqlalchemy import func, or_, select, text, update
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.models.cnb.concept_note_edits import (
     EditApplicationResult,
     EditApplyRequest,
@@ -28,10 +33,6 @@ from app.utils.cnb_information_markers import (
     marker_replacement_text,
     removed_information_markers,
 )
-from pydantic import BaseModel
-from sqlalchemy import func, or_, select, text, update
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -430,7 +431,7 @@ async def lock_run(session: AsyncSession, run_id: UUID) -> None:
 def accepted_changes(
     changes: list[EditChange], selected_ids: list[UUID] | None
 ) -> list[EditChange]:
-    """Return the exact non-empty change selection made by the reviewer."""
+    """Return a non-empty selection containing complete consistency groups."""
     selected = (
         set(selected_ids)
         if selected_ids is not None
@@ -440,6 +441,18 @@ def accepted_changes(
         raise EditOperationError(
             "invalid_selection",
             "Select one or more changes from this proposal.",
+            status_code=422,
+        )
+    selected_groups = {
+        change.group_id for change in changes if change.change_id in selected
+    }
+    if any(
+        change.change_id not in selected and change.group_id in selected_groups
+        for change in changes
+    ):
+        raise EditOperationError(
+            "invalid_selection",
+            "Select all changes in each consistency group.",
             status_code=422,
         )
     return [change for change in changes if change.change_id in selected]

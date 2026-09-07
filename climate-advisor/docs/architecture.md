@@ -27,8 +27,6 @@ proposal. Meaning-preserving rewrites need no uploaded evidence. Explicit user
 facts authorize proposals, with a non-blocking notice distinguishing them from
 independently verified source facts. Technical stale/anchor/source checks and
 explicit acceptance remain mandatory.
-See [Concept Note chat edits](cnb-chat-edits.md) for the complete boundary,
-including metadata-only CNB telemetry and focused synthetic verification.
 
 ## Current Architecture (As-Implemented)
 

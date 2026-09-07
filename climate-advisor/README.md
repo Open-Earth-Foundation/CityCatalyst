@@ -768,9 +768,7 @@ results are combined before whole-document validation.
 
 The independent CNB migrations `20260830_120000` and `20260830_130000` add proposal
 and batch-history tables; the latter backfills accepted first-slice history.
-No new provider credentials are required. See [Concept Note chat edits](docs/cnb-chat-edits.md)
-for scope/grounding, authorization, concurrency/Ready rules, all API operations,
-metadata-only telemetry, migrations, and the isolated synthetic browser setup.
+No new provider credentials are required.
 
 ### Concept Note run foundation
 
@@ -1249,8 +1247,7 @@ workflow run identifier when present. CNB chat interactions use the visible
 `workflow_name=concept_note_context_chat`. Full debug artifacts are logged with
 bearer tokens, API keys, JWTs, and secrets redacted.
 CNB chat and chat-edit interactions are metadata-only: no raw instruction,
-document/source text, or tool payload artifacts are recorded. See
-[the CNB privacy boundary](docs/cnb-chat-edits.md#metadata-only-observability).
+document/source text, or tool payload artifacts are recorded.
 
 The shared helper creates runs through `MlflowClient` and keeps the client/run ID
 in a task-local context. Tags, parameters, metrics, artifacts, and termination

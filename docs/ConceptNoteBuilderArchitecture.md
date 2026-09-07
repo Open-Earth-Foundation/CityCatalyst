@@ -203,9 +203,7 @@ routes independently retain current user/run/city authorization.
 
 CNB telemetry uses the CC-751 interaction vocabulary and safe correlation/outcome
 metadata only. Request-local SDK privacy also covers nested source queries,
-without disabling concurrent generic tracing. The implementation and exact
-API/test/migration contracts are in
-[Concept Note chat edits](../climate-advisor/docs/cnb-chat-edits.md).
+without disabling concurrent generic tracing.
 
 The first part of the workflow is context bundle building. The
 `ContextBundleService` assembles the reusable run context by:

@@ -150,9 +150,8 @@ branding/file flows, and return clear preflight/result summaries.
 
 ### Chat and Assistant Layer
 
-- Current: chat threads/messages, assistant threads/files, and CA vs legacy
-assistant routing.
-- APIs: `chat/*`, `assistants*`.
+- Current: Climate Advisor chat threads/messages via `chat/*` only.
+  Legacy OpenAI Assistants routes (`assistants*`) have been removed.
 - Agentic direction: this is a UI and transport layer, not a separate capability
 universe. It should call shared module wrappers.
 

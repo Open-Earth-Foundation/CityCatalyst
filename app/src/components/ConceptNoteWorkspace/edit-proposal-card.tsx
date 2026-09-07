@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Box, chakra, HStack, Icon, Text, Textarea, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  chakra,
+  HStack,
+  Icon,
+  Text,
+  Textarea,
+  VStack,
+} from "@chakra-ui/react";
 import { LuChevronLeft, LuChevronRight, LuEllipsis } from "react-icons/lu";
 
 import { ReviewButton as Button } from "./review-button";
@@ -81,6 +89,11 @@ export function EditProposalCard({
       data-testid="concept-note-document-review"
       data-proposal-id={proposal.proposal_id}
     >
+      {!awaitingReview && (
+        <Text role="status" flexBasis="100%" fontSize="body.sm">
+          {t(`edit-status-${proposal.status}`)}
+        </Text>
+      )}
       {awaitingReview && proposal.changes.length > 0 && (
         <Box
           flexBasis="100%"
@@ -112,7 +125,12 @@ export function EditProposalCard({
         </Box>
       )}
       {proposal.clarification && (
-        <Text fontSize="body.sm" color="content.primary">
+        <Text
+          role="status"
+          flexBasis="100%"
+          fontSize="body.sm"
+          color="content.primary"
+        >
           {proposal.clarification}
         </Text>
       )}

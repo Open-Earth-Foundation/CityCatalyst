@@ -10,6 +10,21 @@ import type { useConceptNoteEdits } from "./use-concept-note-edits";
 
 export type EditController = ReturnType<typeof useConceptNoteEdits>;
 
+/** Keep the latest actionable response visible, including questions and recoverable failures. */
+export function selectReviewProposal(
+  proposals: EditProposal[],
+): EditProposal | undefined {
+  return proposals.find((proposal) =>
+    [
+      "processing",
+      "proposed",
+      "clarification_required",
+      "failed",
+      "stale",
+    ].includes(proposal.status),
+  );
+}
+
 export function documentReviewChanges(
   proposal: EditProposal | undefined,
   chapters: ConceptNoteDraftChapter[],
@@ -66,7 +81,7 @@ export function DocumentReviewToolbar({
         {t("edit-view-changes")}
       </Button>
     );
-  return proposal?.status === "proposed" ? (
+  return (
     <EditProposalCard
       key={proposal.proposal_id}
       proposal={{
@@ -79,9 +94,12 @@ export function DocumentReviewToolbar({
       onReject={edits.reject}
       onNavigate={onNavigate}
       activeChangeId={activeChangeId}
-      canApply={proposalMatchesDraft(proposal, chapters)}
+      canApply={
+        proposal.status !== "proposed" ||
+        proposalMatchesDraft(proposal, chapters)
+      }
       onOpenSources={onOpenSources}
       onRefine={edits.refine}
     />
-  ) : null;
+  );
 }

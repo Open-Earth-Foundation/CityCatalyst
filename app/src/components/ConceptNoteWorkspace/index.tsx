@@ -55,6 +55,7 @@ import { useConceptNoteEdits } from "./use-concept-note-edits";
 import {
   DocumentReviewToolbar,
   documentReviewChanges,
+  selectReviewProposal,
 } from "./document-review";
 import { useInlineReviewDecisions } from "./use-inline-review-decisions";
 
@@ -139,10 +140,7 @@ export function ConceptNoteWorkspace({
       if (chapterIds[0]) navigateEdit(chapterIds[0]);
     },
   });
-  const pendingProposal = edits.proposals.find(
-    (proposal) => proposal.status === "proposed",
-  );
-  const reviewProposal = pendingProposal;
+  const reviewProposal = selectReviewProposal(edits.proposals);
   const { decisions: activeReviewDecisions, decide: decideInlineChange } =
     useInlineReviewDecisions(reviewProposal, edits, navigateEdit);
   const reviewChanges = documentReviewChanges(
@@ -155,7 +153,7 @@ export function ConceptNoteWorkspace({
     ? editFocus?.changeId
     : reviewChanges[0]?.change_id;
   const shownReview = useRef<string | null>(null);
-  const reviewIdentity = pendingProposal?.proposal_id;
+  const reviewIdentity = reviewProposal?.proposal_id;
   const firstReviewChapterId = reviewChanges[0]?.chapter_id;
   const firstReviewChangeId = reviewChanges[0]?.change_id;
   useEffect(() => {

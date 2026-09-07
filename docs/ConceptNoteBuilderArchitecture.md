@@ -169,9 +169,11 @@ there is no separate checkbox-selection interface. The context tab retains sourc
 summaries and upload controls without an expanded details dialog.
 
 The proposal-only CA tool uses authorized evidence and explicit user input.
-Bounded chapter workers plan and independently review changes before deterministic
-whole-document validation checks exact anchors, source identity, repeated facts,
-required headings and unresolved markers. Scope is automatic; chapter focus is
+Bounded chapter workers use an LLM planner and an independent LLM reviewer for
+meaning, factual support, and related occurrences. Python checks exact anchors,
+source identity, user quotes, required headings and unresolved markers. It does
+not infer meaning from numeric/entity tokens, merge groups based on shared values,
+or expand replacements after semantic review. Scope is automatic; chapter focus is
 only a navigation hint. Parsed-Markdown redlines preserve source offsets and fail
 closed on stale or overlapping anchors. No edit is applied before acceptance.
 
@@ -1578,9 +1580,14 @@ ID and loads the authorized single-run detail before continuing.
 
 Duplicate creates a fresh thread, copies current context and chapter content
 into new mutable records, and reuses immutable Markdown artifacts by key. Delete
-removes the managed workspace before deleting the CA run and dedicated thread.
-Shared city/project files and immutable source artifacts remain outside the
-deletion boundary. No archive or restore state is added.
+removes edit proposals/applications and the managed workspace before deleting
+the CA run, upload pointers, context, and dedicated thread/messages. Unreferenced
+uploaded files, all OCR attempts, and OCR job records are removed first through
+the service-authenticated CityCatalyst source-cleanup endpoint. Copies retain
+shared source artifacts until the last referencing note is deleted; shared
+city/project files remain outside this boundary. Cleanup failures keep the run
+available for retry, and active OCR jobs block source cleanup. No archive or
+restore state is added.
 
 The workspace chat header exposes **Start new chat**. After explicit confirmation,
 the reset route creates a fresh workflow-bound thread, points the existing run at

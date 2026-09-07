@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 from copy import deepcopy
 from datetime import UTC, datetime
 from typing import Any
@@ -177,7 +178,7 @@ class ConceptNoteLifecycleService:
         requested_user_id: str,
         authorization: str | None,
     ) -> None:
-        """Delete an owned run, its managed workspace, and dedicated chat."""
+        """Delete an owned run, its private workspace/chat, and unshared sources."""
         run = await self.run_service.get_authorized_run(
             run_id=run_id,
             requested_user_id=requested_user_id,
@@ -192,6 +193,9 @@ class ConceptNoteLifecycleService:
 
         # Remove run-owned document rows before deleting its CA record and chat.
         try:
+            upload_ids = await self._unshared_source_upload_ids(run.run_id)
+            if upload_ids:
+                await self.run_service.cc_client.delete_concept_note_sources(upload_ids)
             await self.workspace.delete_run(run_id=run.run_id)
         except Exception as exc:
             logger.exception("Concept Note workspace deletion failed")
@@ -211,6 +215,38 @@ class ConceptNoteLifecycleService:
                 await self.session.delete(thread)
         await self.session.delete(run)
         await self.session.commit()
+
+    async def _unshared_source_upload_ids(self, run_id: UUID) -> list[str]:
+        """Keep shared copy artifacts until the last referencing note is deleted."""
+        uploads = list(
+            await self.session.scalars(
+                select(ConceptNoteUpload).where(ConceptNoteUpload.run_id == run_id)
+            )
+        )
+        candidates = {str(upload.upload_id) for upload in uploads}
+        # Copies have new upload IDs but retain their original artifact pointer.
+        for upload in uploads:
+            match = re.match(
+                r"^pdf-ocr/results/concept_note_upload/([0-9a-f-]{36})/",
+                upload.markdown_s3_key or "",
+            )
+            if match:
+                candidates.add(str(UUID(match.group(1))))
+        unshared = []
+        for upload_id in sorted(candidates):
+            shared = await self.session.scalar(
+                select(ConceptNoteUpload.upload_id)
+                .where(
+                    ConceptNoteUpload.run_id != run_id,
+                    ConceptNoteUpload.markdown_s3_key.startswith(
+                        f"pdf-ocr/results/concept_note_upload/{upload_id}/"
+                    ),
+                )
+                .limit(1)
+            )
+            if shared is None:
+                unshared.append(upload_id)
+        return unshared
 
     async def reset_chat(
         self,

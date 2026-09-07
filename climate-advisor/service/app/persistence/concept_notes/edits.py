@@ -30,6 +30,7 @@ from app.models.db.cnb_workspace import (
 )
 from app.utils.cnb_information_markers import (
     information_marker_key,
+    information_needed_markers,
     marker_replacement_text,
     removed_information_markers,
 )
@@ -517,7 +518,9 @@ async def append_revision(
     )
     session.add(revision)
     await session.flush()
-    keep_ready = preserve_ready and not has_open_gaps
+    keep_ready = (
+        preserve_ready and not has_open_gaps and not information_needed_markers(body)
+    )
     if keep_ready:
         chapter.confirmed_revision_id = revision.revision_id
         session.add(

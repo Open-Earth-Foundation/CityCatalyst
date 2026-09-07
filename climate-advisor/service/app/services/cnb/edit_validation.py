@@ -16,17 +16,6 @@ from app.models.cnb.concept_note_edits import (
 )
 from app.persistence.concept_notes.edits import EditOperationError, replace_anchors
 from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
-from app.services.cnb.edit_claims import (
-    ClaimDelta,
-    claim_words,
-    fact_tokens,
-)
-from app.services.cnb.edit_expansion import (
-    PROTECTED_EDIT_PATTERN,
-    expand_explicit_global_replacements,
-    expand_project_name_opening_replacements,
-    is_project_name_first_chapter_request,
-)
 from app.utils.cnb_information_markers import (
     information_marker_key,
     information_needed_markers,
@@ -44,7 +33,7 @@ def validate_edit_plan(
     prior_proposal: EditProposalResponse | None = None,
     recent_messages: list[dict[str, str]] | None = None,
 ) -> list[EditChange]:
-    """Return exact reviewed changes after all deterministic checks pass."""
+    """Check identities and document integrity without reinterpreting LLM edits."""
     if plan.intent != "edit":
         raise EditOperationError(
             "not_edit_request",
@@ -65,12 +54,6 @@ def validate_edit_plan(
         *recent_user_inputs(recent_messages),
         *prior_user_inputs(prior_proposal),
     ]
-    plan = expand_explicit_global_replacements(request, chapters, plan)
-    plan = expand_project_name_opening_replacements(
-        chapters,
-        plan,
-        instructions=[request.instruction, *prior_inputs],
-    )
     affected = {change.chapter_id for change in plan.changes}
     if affected - set(current):
         raise EditOperationError(
@@ -89,21 +72,11 @@ def validate_edit_plan(
         )
         for change in plan.changes
     ]
-    after_bodies = apply_validated_changes(current, changes, affected)
-    first_chapter_id = min(
-        current.values(), key=lambda chapter: chapter.position
-    ).chapter_id
-    validate_consistency(
-        changes,
-        after_bodies,
-        instructions=[request.instruction, *prior_inputs],
-        first_chapter_id=first_chapter_id,
-    )
-    ordered = sorted(
+    validate_document_integrity(current, changes, affected)
+    return sorted(
         changes,
         key=lambda change: (current[change.chapter_id].position, change.start),
     )
-    return bind_consistency_groups(ordered)
 
 
 def validated_change(
@@ -140,24 +113,16 @@ def validated_change(
             status_code=422,
         )
 
-    delta = ClaimDelta.between(anchored.before, anchored.after)
     if anchored.semantic_support is None:
         raise EditOperationError(
             "invalid_review",
             "The proposal did not receive a complete semantic review.",
             status_code=422,
         )
-    if anchored.semantic_support == "preserved" and delta.meaning_changed:
-        raise EditOperationError(
-            "unsupported_edit",
-            "The proposal changed a fact, entity, or commitment during a wording edit.",
-            status_code=422,
-        )
     factual = (
         anchored.kind == "factual"
         or anchored.semantic_support in {"user", "source"}
         or fills_information_gap
-        or delta.meaning_changed
     )
     snapshots = validate_provenance(
         anchored,
@@ -165,7 +130,6 @@ def validated_change(
         run_context,
         factual,
         prior_inputs=prior_inputs,
-        delta=delta,
     )
     return EditChange(
         **{
@@ -179,22 +143,18 @@ def validated_change(
     )
 
 
-def apply_validated_changes(
+def validate_document_integrity(
     chapters: dict[UUID, WorkspaceChapterSnapshot],
     changes: list[EditChange],
     affected: set[UUID],
-) -> dict[UUID, str]:
+) -> None:
     """Apply replacements in memory and validate resulting chapter structure."""
-    after_bodies = {
-        chapter_id: chapter.body_markdown or ""
-        for chapter_id, chapter in chapters.items()
-    }
     changes_by_chapter = {
         chapter_id: [change for change in changes if change.chapter_id == chapter_id]
         for chapter_id in affected
     }
     for chapter_id, chapter_changes in changes_by_chapter.items():
-        before = after_bodies[chapter_id]
+        before = chapters[chapter_id].body_markdown or ""
         after = replace_anchors(before, chapter_changes)
         if not valid_information_marker_result(
             chapters[chapter_id], before, after, chapter_changes
@@ -213,8 +173,6 @@ def apply_validated_changes(
                 "Edits must preserve template headings.",
                 status_code=422,
             )
-        after_bodies[chapter_id] = after
-    return after_bodies
 
 
 def is_information_gap_fill(
@@ -261,43 +219,6 @@ def valid_information_marker_result(
         )
         for marker in removed_information_markers(before, after)
     )
-
-
-def bind_consistency_groups(changes: list[EditChange]) -> list[EditChange]:
-    """Join model groups and repeated deterministic factual replacements."""
-    parents = list(range(len(changes)))
-
-    def find(index: int) -> int:
-        while parents[index] != index:
-            parents[index] = parents[parents[index]]
-            index = parents[index]
-        return index
-
-    def union(left: int, right: int) -> None:
-        left_root, right_root = find(left), find(right)
-        if left_root != right_root:
-            parents[right_root] = left_root
-
-    first_by_key: dict[tuple[str, object], int] = {}
-    for index, change in enumerate(changes):
-        keys: list[tuple[str, object]] = [("group", change.group_id)]
-        if change.kind == "factual":
-            delta = ClaimDelta.between(change.before, change.after)
-            keys.extend(("fact", token) for token in delta.removed_facts)
-            keys.append(
-                (
-                    "replacement",
-                    (claim_words(change.before), claim_words(change.after)),
-                )
-            )
-        for key in keys:
-            earlier = first_by_key.setdefault(key, index)
-            union(earlier, index)
-
-    return [
-        change.model_copy(update={"group_id": changes[find(index)].group_id})
-        for index, change in enumerate(changes)
-    ]
 
 
 def anchor_change(change: PlannedTextChange, body: str) -> PlannedTextChange:
@@ -349,13 +270,11 @@ def validate_provenance(
     factual: bool,
     *,
     prior_inputs: list[str] | None = None,
-    delta: ClaimDelta | None = None,
 ) -> list[EditSourceSnapshot]:
-    """Validate source identity and support for newly stated values."""
+    """Verify provenance identities and exact user quotes; the LLM judges support."""
     inputs = [instruction, *(prior_inputs or [])]
     source_index = index_sources(context.get("selected_sources", []))
     snapshots: list[EditSourceSnapshot] = []
-    supported_text: list[str] = []
     for reference in change.source_refs:
         source = source_index.get(str(reference))
         if source is None:
@@ -365,10 +284,6 @@ def validate_provenance(
                 status_code=422,
             )
         snapshots.append(source_snapshot(source))
-        supported_text.append(str(source.get("summary", "")))
-        supported_text.extend(
-            str(excerpt.get("text", "")) for excerpt in source.get("key_excerpts", [])
-        )
 
     if change.user_input_quote is not None:
         if not change.user_input_quote.strip() or not any(
@@ -379,7 +294,6 @@ def validate_provenance(
                 "The proposed factual input was not supplied by the user.",
                 status_code=422,
             )
-        supported_text.append(change.user_input_quote)
     if not factual:
         return snapshots
 
@@ -396,22 +310,10 @@ def validate_provenance(
             status_code=422,
         )
 
-    corpus = " ".join(supported_text)
-    if not corpus:
+    if not (snapshots or change.user_input_quote):
         raise EditOperationError(
             "clarification_required",
             "What source or explicit factual value should support this change?",
-            status_code=422,
-        )
-    delta = delta or ClaimDelta.between(change.before, change.after)
-    evidence_facts = fact_tokens(corpus)
-    if any(
-        not any(facts_equivalent(fact, known) for known in evidence_facts)
-        for fact in delta.added_facts
-    ):
-        raise EditOperationError(
-            "clarification_required",
-            "What evidence supports the new value in this edit?",
             status_code=422,
         )
     return snapshots
@@ -439,79 +341,3 @@ def source_snapshot(source: dict[str, Any]) -> EditSourceSnapshot:
             "The selected source has no verified immutable identity.",
             status_code=422,
         ) from None
-
-
-def facts_equivalent(left: tuple[str, str], right: tuple[str, str]) -> bool:
-    """Treat a currency-less value as compatible with the same typed value."""
-    return left == right or (left[1] == right[1] and "NUMBER" in {left[0], right[0]})
-
-
-def validate_consistency(
-    changes: list[EditChange],
-    after_bodies: dict[UUID, str],
-    *,
-    instructions: list[str],
-    first_chapter_id: UUID,
-) -> None:
-    """Reject omitted occurrences and contradictory factual replacements."""
-    editable_bodies = {
-        chapter_id: PROTECTED_EDIT_PATTERN.sub("", body)
-        for chapter_id, body in after_bodies.items()
-    }
-    keep_first_project_name = is_project_name_first_chapter_request(instructions)
-    fact_replacements: dict[tuple[str, str], set[tuple[str, str] | None]] = {}
-    text_replacements: dict[str, set[str]] = {}
-
-    for change in changes:
-        if change.kind != "factual":
-            continue
-        delta = ClaimDelta.between(change.before, change.after)
-        removed = list(delta.removed_facts.elements())
-        added = list(delta.added_facts.elements())
-        for index, old in enumerate(removed):
-            fact_replacements.setdefault(old, set()).add(
-                added[index] if index < len(added) else None
-            )
-        if not removed:
-            before, after = claim_words(change.before), claim_words(change.after)
-            if before:
-                text_replacements.setdefault(before, set()).add(after)
-            remaining_bodies = editable_bodies.items()
-            if keep_first_project_name and change.start <= 600:
-                remaining_bodies = (
-                    item for item in remaining_bodies if item[0] != first_chapter_id
-                )
-            if change.before.strip() and any(
-                change.before in body for _, body in remaining_bodies
-            ):
-                raise EditOperationError(
-                    "clarification_required",
-                    "The original fact still appears elsewhere. Should those occurrences change too?",
-                    status_code=422,
-                )
-
-    replacement_sets = [
-        *fact_replacements.values(),
-        *text_replacements.values(),
-    ]
-    if any(len(values) > 1 for values in replacement_sets):
-        raise EditOperationError(
-            "inconsistent_fact",
-            "The proposal gives inconsistent replacements for the same fact.",
-            status_code=422,
-        )
-
-    remaining_facts = {
-        token for body in editable_bodies.values() for token in fact_tokens(body)
-    }
-    for old in fact_replacements:
-        equivalent_number = ("NUMBER", old[1])
-        if old in remaining_facts or (
-            old[0] != "NUMBER" and equivalent_number in remaining_facts
-        ):
-            raise EditOperationError(
-                "clarification_required",
-                "The old value also appears elsewhere in the document. Include those "
-                "occurrences or clarify which facts should change.",
-                status_code=422,
-            )

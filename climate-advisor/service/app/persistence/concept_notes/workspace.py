@@ -11,6 +11,7 @@ from uuid import UUID
 from app.models.cnb.concept_note_draft import (
     ConceptNoteDraftGapOutput,
 )
+from app.models.db.cnb_edit import ConceptNoteEditApplication, ConceptNoteEditProposal
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteChapterReview,
@@ -20,6 +21,10 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGap,
     ConceptNoteGapResolution,
     ConceptNoteMatchedProject,
+)
+from app.utils.cnb_information_markers import (
+    information_marker_key,
+    information_needed_markers,
 )
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -154,6 +159,19 @@ class ConceptNoteWorkspaceRepository:
             latest = await _latest_revision(session, chapter.chapter_id)
             if latest is not None:
                 return False
+
+            # Never persist a draft whose visible unknowns disagree with its gap records.
+            marker_keys = {
+                information_marker_key(marker)
+                for marker in information_needed_markers(body_markdown)
+            }
+            gap_keys = {
+                information_marker_key(gap.question) for gap in missing_information
+            }
+            if marker_keys != gap_keys:
+                raise WorkspaceConflictError(
+                    "Missing-information markers must match the generated gaps"
+                )
 
             # Persist the immutable draft and its initial structured gaps.
             session.add(
@@ -516,6 +534,10 @@ class ConceptNoteWorkspaceRepository:
                 raise WorkspaceConflictError("Concept Note chapter revision is stale")
             if await _has_blocking_gaps(session, chapter_id):
                 raise WorkspaceConflictError("Open gaps must be resolved before review")
+            if information_needed_markers(latest.body_markdown):
+                raise WorkspaceConflictError(
+                    "Missing-information markers must be resolved before review"
+                )
 
             session.add(
                 ConceptNoteChapterReview(
@@ -528,6 +550,7 @@ class ConceptNoteWorkspaceRepository:
             chapter.confirmed_revision_id = latest.revision_id
             chapter.status = "ready"
             chapter.updated_at = datetime.now(UTC)
+
 
 async def _require_chapter(
     session: AsyncSession,
@@ -688,6 +711,15 @@ def _suggestion_source_refs(suggestions: list[dict[str, Any]]) -> list[str]:
 
 async def _delete_workspace_rows(session: AsyncSession, run_id: UUID) -> None:
     """Delete one run's workspace in explicit dependency order."""
+    # Applications reference proposals; both retain document text after chapter deletion.
+    await session.execute(
+        delete(ConceptNoteEditApplication).where(
+            ConceptNoteEditApplication.run_id == run_id
+        )
+    )
+    await session.execute(
+        delete(ConceptNoteEditProposal).where(ConceptNoteEditProposal.run_id == run_id)
+    )
     chapter_ids = list(
         (
             await session.scalars(

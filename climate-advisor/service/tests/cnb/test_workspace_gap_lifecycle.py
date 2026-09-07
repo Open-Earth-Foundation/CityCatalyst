@@ -4,6 +4,7 @@ from uuid import UUID, uuid4
 
 import pytest
 from app.db.cnb import CnbBase
+from app.models.cnb.concept_note_draft import ConceptNoteDraftGapOutput
 from app.models.cnb.concept_note_edits import EditChange
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
@@ -20,7 +21,7 @@ from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
     WorkspaceConflictError,
 )
-from sqlalchemy import DefaultClause, select, text
+from sqlalchemy import DefaultClause, delete, select, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 RUN_ID = UUID("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
@@ -183,6 +184,92 @@ async def test_open_gap_still_blocks_confirmation(workspace) -> None:
             idempotency_key=uuid4(),
             user_id="owner",
         )
+
+
+async def test_untracked_marker_blocks_confirmation(workspace) -> None:
+    async with workspace._session_factory() as session, session.begin():
+        await session.execute(delete(ConceptNoteGap))
+    with pytest.raises(WorkspaceConflictError, match="markers must be resolved"):
+        await workspace.confirm_chapter(
+            run_id=RUN_ID,
+            chapter_id=CHAPTER_ID,
+            expected_revision=1,
+            idempotency_key=uuid4(),
+            user_id="owner",
+        )
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.confirmed_revision_number is None
+
+
+@pytest.mark.parametrize("untracked_marker", [True, False])
+async def test_generated_marker_gap_mismatch_is_not_saved(
+    workspace, untracked_marker
+) -> None:
+    async with workspace._session_factory() as session, session.begin():
+        await session.execute(delete(ConceptNoteGap))
+        await session.execute(delete(ConceptNoteChapterRevision))
+    gap = ConceptNoteDraftGapOutput(
+        field_key="budget",
+        question="Confirm the budget.",
+        why_asking="The budget is required.",
+        severity="critical",
+    )
+    with pytest.raises(WorkspaceConflictError, match="must match the generated gaps"):
+        await workspace.save_generated_chapter(
+            chapter_id=CHAPTER_ID,
+            body_markdown="[Information needed: Confirm the budget.]"
+            if untracked_marker
+            else "Complete text.",
+            missing_information=[] if untracked_marker else [gap],
+        )
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.body_markdown is None
+    assert chapter.gaps == []
+
+
+async def test_generated_matching_marker_can_be_saved(workspace) -> None:
+    async with workspace._session_factory() as session, session.begin():
+        await session.execute(delete(ConceptNoteGap))
+        await session.execute(delete(ConceptNoteChapterRevision))
+    assert await workspace.save_generated_chapter(
+        chapter_id=CHAPTER_ID,
+        body_markdown="[Information needed: Confirm the budget.]",
+        missing_information=[
+            ConceptNoteDraftGapOutput(
+                field_key="budget",
+                question="Confirm the budget.",
+                why_asking="The budget is required.",
+                severity="critical",
+            )
+        ],
+    )
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.status == "needs_review"
+    assert len(chapter.gaps) == 1
+
+
+async def test_wording_edit_does_not_preserve_ready_with_an_untracked_marker(
+    workspace,
+) -> None:
+    async with workspace._session_factory() as session, session.begin():
+        await session.execute(delete(ConceptNoteGap))
+        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
+        latest = await session.scalar(select(ConceptNoteChapterRevision))
+        chapter.status = "ready"
+        chapter.confirmed_revision_id = latest.revision_id
+        await append_revision(
+            session,
+            chapter,
+            latest,
+            body=latest.body_markdown + "\n\nUpdated wording.",
+            user_id="owner",
+            idempotency_key=uuid4(),
+            preserve_ready=True,
+            patch_summary={},
+        )
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.status != "ready"
+    assert chapter.confirmed_revision_number != chapter.revision_number
 
 
 async def test_legacy_gap_rationale_is_specific_to_the_missing_fact(

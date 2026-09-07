@@ -722,11 +722,20 @@ remain visible in the draft; users supply facts through chat and explicitly
 accept the resulting edit proposals. Acceptance resolves matching gaps in the
 same transaction, without a separate interview or background regeneration.
 `POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/confirm` confirms an exact
-revision; open critical gaps block confirmation and export.
+revision; open critical gaps and any remaining missing-information markers block
+confirmation. Generated markers must match the structured gap questions before
+the chapter is saved; mismatches fail generation rather than producing a chapter
+that can be incorrectly marked Ready.
 
 Chat creates durable edit proposals; only explicit web review applies changes.
+The LLM planner and independent LLM reviewer determine meaning, factual support,
+and which occurrences belong together. Python verifies exact anchors, source
+identities, user quotes, required headings, and gap markers; it does not compare
+numeric tokens, override semantic judgments, or add replacements after review.
 Review supports inline decisions and Accept all / Reject all, with source links
-and refinement. Public revision-history, undo and restore endpoints are not
+and refinement. Clarification questions, processing, failed, and stale responses
+remain visible in the review area, including after reload; users can refine or
+dismiss the response. Public revision-history, undo and restore endpoints are not
 exposed. Internal revision/application records remain for auditing and safe retries.
 No new provider credentials are required. CNB migration `20260907_120000`
 provisions the gap and edit storage.
@@ -768,9 +777,14 @@ dedicated thread title.
 creates a new run and empty chat. It copies current chapter content, context, and
 ready upload metadata with new mutable IDs while reusing immutable Markdown
 artifacts. Messages, revision history, and exports are not copied. `DELETE` on
-the run route removes its workspace, run data, and dedicated chat; shared files
-and source artifacts remain. A legacy thread referenced by multiple notes cannot
-be deleted. `POST /v1/concept-notes/{run_id}/chat/reset` replaces the dedicated
+the run route removes its workspace (including edit proposals and applications),
+run data, and dedicated chat. It also deletes unreferenced uploaded source files,
+OCR results, and OCR jobs through the service-authenticated CityCatalyst endpoint
+`DELETE /api/v1/internal/ca/concept-note-sources`. Source artifacts still referenced
+by another note are retained until the last note is deleted. City/project files
+remain outside this boundary. Cleanup failures leave the run available for retry;
+active OCR jobs must finish before cleanup can proceed. A legacy thread referenced
+by multiple notes cannot be deleted. `POST /v1/concept-notes/{run_id}/chat/reset` replaces the dedicated
 thread and permanently removes its messages while preserving the run, workspace,
 sources, context, and revision history. Duplicate, reset, and delete return HTTP
 `409` while context or drafting work is active.

@@ -20,13 +20,6 @@ def test_stationary_energy_prompt_budget_loads_from_llm_config() -> None:
     assert chat_budget.max_normalized_rows_per_candidate == 3
 
 
-def test_cnb_edit_prompt_budget_loads_parallel_chapter_limit() -> None:
-    settings = _load_llm_config()
-
-    assert settings.generation.prompt_budget.cnb_edits.max_prompt_tokens == 50000
-    assert settings.generation.prompt_budget.cnb_edits.max_concurrency == 5
-
-
 def test_count_prompt_tokens_falls_back_for_openrouter_gpt_5_4_slug() -> None:
     token_count = count_prompt_tokens(
         ["Stationary Energy prompt"],

@@ -34,11 +34,6 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   testMatch: /.*\.spec.ts/,
-  // This fixture-dependent suite has its own blocking CI job and local config.
-  testIgnore: [
-    "**/concept-note-chat-edits.spec.ts",
-    "**/cnb-edit-auth.setup.ts",
-  ],
 
   /* Configure projects for major browsers */
   projects: [

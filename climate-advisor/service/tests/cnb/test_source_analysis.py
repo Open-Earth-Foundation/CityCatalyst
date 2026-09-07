@@ -47,7 +47,7 @@ class FakeRunner:
         self.covered_pages: list[int] = []
         self.reader_tools: list[list[object]] = []
 
-    async def run(self, agent, input_text: str, **kwargs):
+    async def run(self, agent, input_text: str):
         output_type = agent.output_type
         payload = json.loads(input_text)
         if output_type in (DocumentMappingReading, QuestionReading):
@@ -79,7 +79,7 @@ class FakeRunner:
 class IncompleteCoverageRunner(FakeRunner):
     """Claim the wrong segment identity to exercise fail-closed coverage."""
 
-    async def run(self, agent, input_text: str, **kwargs):
+    async def run(self, agent, input_text: str):
         result = await super().run(agent, input_text)
         if isinstance(result.final_output, DocumentMappingReading):
             result.final_output = result.final_output.model_copy(

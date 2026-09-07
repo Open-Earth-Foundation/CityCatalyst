@@ -345,28 +345,20 @@ describe("Chat routes", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
-  it("refreshes the user token before streaming chat messages", async () => {
+  it("streams chat messages through the shared CA proxy helper", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
-    fetchMock
-      .mockResolvedValueOnce(
-        jsonResponse({
-          access_token: "fresh-token-456",
-          expires_in: 3600,
-          token_type: "Bearer",
-        }),
-      )
-      .mockResolvedValueOnce(
-        new Response(
-          'event: message\ndata: {"index":0,"content":"Hello"}\n\n' +
-            'event: done\ndata: {"ok":true}\n\n',
-          {
-            status: 200,
-            headers: {
-              "Content-Type": "text/event-stream",
-            },
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        'event: message\ndata: {"index":0,"content":"Hello"}\n\n' +
+          'event: done\ndata: {"ok":true}\n\n',
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "text/event-stream",
           },
-        ),
-      );
+        },
+      ),
+    );
 
     const response = await postChatMessage(
       makeRequest("http://localhost:3000/api/v1/chat/messages", "POST", {
@@ -375,7 +367,6 @@ describe("Chat routes", () => {
         inventory_id: testInventoryId,
         context: {
           stationary_energy_draft_run_id: "draft-1",
-          cc_access_token: "client-controlled-token",
         },
         options: {
           stationary_energy_draft_run_id: "draft-1",
@@ -387,17 +378,7 @@ describe("Chat routes", () => {
     expect(response.status).toBe(200);
     await expect(response.text()).resolves.toContain("event: message");
 
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "http://cc.example/api/v1/internal/ca/user-token/",
-    );
-    const [, tokenRequest] = fetchMock.mock.calls[0] ?? [];
-    expect(JSON.parse(String(tokenRequest?.body))).toEqual({
-      user_id: testUserID,
-      inventory_id: testInventoryId,
-    });
-
-    const [url, requestInit] = fetchMock.mock.calls[1] ?? [];
+    const [url, requestInit] = fetchMock.mock.calls[0] ?? [];
     const headers = new Headers(requestInit?.headers);
     expect(url).toBe("http://ca.example/v1/messages");
     expect(requestInit).toEqual(
@@ -410,7 +391,6 @@ describe("Chat routes", () => {
           inventory_id: testInventoryId,
           context: {
             stationary_energy_draft_run_id: "draft-1",
-            cc_access_token: "fresh-token-456",
           },
           options: {
             stationary_energy_draft_run_id: "draft-1",

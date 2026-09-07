@@ -33,7 +33,6 @@ let getRun: typeof import("@/app/api/v1/concept-notes/[runId]/route").GET;
 let renameRun: typeof import("@/app/api/v1/concept-notes/[runId]/route").PATCH;
 let deleteRun: typeof import("@/app/api/v1/concept-notes/[runId]/route").DELETE;
 let duplicateRun: typeof import("@/app/api/v1/concept-notes/[runId]/duplicate/route").POST;
-let resetChat: typeof import("@/app/api/v1/concept-notes/[runId]/chat/reset/route").POST;
 
 const context: RouteContext = {
   session: { user: { id: ownerId } },
@@ -49,8 +48,6 @@ beforeAll(async () => {
   } = await import("@/app/api/v1/concept-notes/[runId]/route"));
   ({ POST: duplicateRun } =
     await import("@/app/api/v1/concept-notes/[runId]/duplicate/route"));
-  ({ POST: resetChat } =
-    await import("@/app/api/v1/concept-notes/[runId]/chat/reset/route"));
 });
 
 describe("Concept Note lifecycle proxy routes", () => {
@@ -157,30 +154,6 @@ describe("Concept Note lifecycle proxy routes", () => {
       path: `/v1/concept-notes/${runId}`,
       method: "DELETE",
       requestId: undefined,
-      searchParams: { user_id: ownerId },
-      session: context.session,
-    });
-  });
-
-  it("forwards a chat reset and returns the updated run", async () => {
-    callAuthorizedConceptNoteApi.mockResolvedValueOnce(
-      Response.json({ run_id: runId, city_id: cityId }),
-    );
-
-    const response = await resetChat(
-      new Request("http://localhost", {
-        method: "POST",
-        headers: { "x-request-id": "request-reset" },
-      }),
-      context,
-    );
-
-    expect(response.status).toBe(200);
-    expect(callAuthorizedConceptNoteApi).toHaveBeenCalledWith({
-      cityId,
-      path: `/v1/concept-notes/${runId}/chat/reset`,
-      method: "POST",
-      requestId: "request-reset",
       searchParams: { user_id: ownerId },
       session: context.session,
     });

@@ -1129,12 +1129,6 @@ for draft-save flows, but the ownership split is:
 
 ## Testing
 
-CC-732's focused package gates each require 80% complete-file executable-line
-coverage, including shared wiring and UI. The CA suite requires an explicitly
-isolated loopback `CNB_EDIT_TEST_DATABASE_URL` named `cc732_*`; see
-[the focused commands and fixture boundary](docs/cnb-chat-edits.md#focused-tests-and-coverage).
-The normal service does not require this test-only environment variable.
-
 ### Run All Tests
 
 ```bash

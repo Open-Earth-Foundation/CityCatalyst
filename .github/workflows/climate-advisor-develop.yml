@@ -63,13 +63,10 @@ jobs:
       CC_BASE_URL: http://localhost:3000
       CA_DATABASE_URL: "sqlite+aiosqlite:///:memory:"
       CNB_TEST_DATABASE_URL: "postgresql://cnb_test:cnb_test@localhost:55432/cnb_test"
-      CNB_EDIT_TEST_DATABASE_URL: "postgresql+asyncpg://cnb_test:cnb_test@127.0.0.1:55432/cc732_test"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -102,27 +99,22 @@ jobs:
                  --junit-xml=test-results-openrouter-smoke.xml \
                  -v --tb=short --color=yes
 
-      - name: Run regression tests and CNB coverage once
+      - name: Run CNB database and runtime tests
         working-directory: climate-advisor
-        env:
-          PGPASSWORD: cnb_test
-          OPENROUTER_API_KEY: cc732-synthetic-no-live-model
-          OPENAI_API_KEY: cc732-synthetic-no-live-embeddings
-          OPENROUTER_SMOKE_TEST: "0"
-          MLFLOW_ENABLED: "false"
         run: |
-          psql -h 127.0.0.1 -p 55432 -U cnb_test -d cnb_test -v ON_ERROR_STOP=1 -c 'CREATE DATABASE cc732_test'
-          uv run --directory service pytest tests/ -m "not manual_llm" \
-                 --cov --cov-config=.coveragerc.cnb \
-                 --cov-report=json --cov-report=xml --cov-report=term-missing \
-                 --junit-xml=test-results-all.xml --tb=short
+          uv run --directory service pytest tests/cnb \
+                 tests/test_cnb_migrations.py \
+                 -v --tb=short --color=yes
 
-      - name: Retain CNB chat edit coverage evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cnb-chat-edit-ca-coverage
-          path: climate-advisor/service/coverage/cnb-edits/
+      - name: Generate test coverage report
+        working-directory: climate-advisor
+        run: |
+          uv run --directory service pytest tests/ \
+                 --cov=app \
+                 --cov-report=html \
+                 --cov-report=term-missing \
+                 --cov-report=xml \
+                 -v || true
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

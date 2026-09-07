@@ -12,7 +12,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import type { EditChange } from "@/util/concept-note-edit-types";
 import { InlineDocumentDiff } from "./edit-diff";
-import { snapshotChanges, type InlineReviewDecision } from "./inline-review";
+import type { InlineReviewDecision } from "./inline-review";
 import type { IconType } from "react-icons";
 import {
   LuCheck,
@@ -35,14 +35,12 @@ import type {
   ConceptNoteDraftChapterStatus,
   ConceptNoteDraftRunStatus,
   ConceptNoteDraftState,
-  ConceptNoteGap,
 } from "@/util/types";
 
 import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
 
 import { remarkMissingInformation } from "./draft-markdown";
 import { missingInformationComponents } from "./missing-information";
-import { getConceptNoteGapForMarker } from "./gap-interview";
 
 interface DraftTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
@@ -52,6 +50,7 @@ interface DraftTabProps {
   canStartDrafting: boolean;
   draft: ConceptNoteDraftState | null;
   draftError: string | null;
+  mutationError: string | null;
   isDraftRunning: boolean;
   isConfirmingChapter: boolean;
   isRetrying: boolean;
@@ -60,10 +59,6 @@ interface DraftTabProps {
   noteName: string;
   onConfirmChapter: (chapter: ConceptNoteDraftChapter) => Promise<void>;
   onOpenContext: () => void;
-  onReviewChapterGaps: (
-    chapter: ConceptNoteDraftChapter,
-    gap?: ConceptNoteGap,
-  ) => void;
   onRetry: () => void;
   onStartDrafting: () => void;
   editFocus?: {
@@ -73,7 +68,6 @@ interface DraftTabProps {
     focus: boolean;
   } | null;
   onFocusedChapterChange?: (chapterId: string) => void;
-  isReviewing?: boolean;
   reviewChanges?: EditChange[];
   activeChangeId?: string;
   reviewDecisions?: Record<string, InlineReviewDecision>;
@@ -143,14 +137,9 @@ const baseMarkdownComponents = createChatMarkdownComponents({
   },
 });
 
-function createDraftMarkdownComponents(
-  onMissingInformationClick: (message: string) => void,
-) {
-  return missingInformationComponents(
-    baseMarkdownComponents,
-    onMissingInformationClick,
-  );
-}
+const draftMarkdownComponents = missingInformationComponents(
+  baseMarkdownComponents,
+);
 
 function draftStatusKey(status: ConceptNoteDraftRunStatus): string {
   switch (status) {
@@ -220,6 +209,7 @@ export function DraftTab({
   canStartDrafting,
   draft,
   draftError,
+  mutationError,
   isDraftRunning,
   isConfirmingChapter,
   isRetrying,
@@ -228,12 +218,10 @@ export function DraftTab({
   noteName,
   onConfirmChapter,
   onOpenContext,
-  onReviewChapterGaps,
   onRetry,
   onStartDrafting,
   editFocus,
   onFocusedChapterChange,
-  isReviewing,
   reviewChanges = [],
   activeChangeId,
   reviewDecisions,
@@ -312,14 +300,6 @@ export function DraftTab({
           requirements: missingDraftingRequirements.join(", "),
         });
 
-  function reviewMissingInformationMarker(
-    chapter: ConceptNoteDraftChapter,
-    markerMessage: string,
-  ): void {
-    const gap = getConceptNoteGapForMarker(chapter, markerMessage);
-    onReviewChapterGaps(chapter, gap ?? undefined);
-  }
-
   let status: DraftStatusPresentation = {
     background: "background.neutral",
     border: "content.link",
@@ -372,6 +352,11 @@ export function DraftTab({
       minH={0}
       p={draftStarted && !showDraftSetup ? 0 : { base: 4, md: 6 }}
     >
+      {mutationError && (
+        <Text role="alert" color="sentiment.negativeDefault">
+          {mutationError}
+        </Text>
+      )}
       {!draftStarted && (
         <Box>
           <Text
@@ -712,9 +697,6 @@ export function DraftTab({
                       onClick={() => {
                         setFocusedChapterId(chapter.chapter_id);
                         onFocusedChapterChange?.(chapter.chapter_id);
-                        if (chapter.open_gap_count > 0) {
-                          onReviewChapterGaps(chapter);
-                        }
                         const preview = previewElement.current;
                         const chapterElement =
                           chapterElements.current[chapter.chapter_id];
@@ -851,16 +833,10 @@ export function DraftTab({
                               })}
                             </Text>
                           )}
-                          {chapter.proposed_revision_number && (
-                            <Text fontSize="10px" color="content.link">
-                              {t("chapter-proposed-revision")}
-                            </Text>
-                          )}
                         </HStack>
                       </Box>
                       {chapter.status === "draft" &&
-                        chapter.open_gap_count === 0 &&
-                        chapter.regeneration_status === "idle" && (
+                        chapter.open_gap_count === 0 && (
                           <Button
                             size="xs"
                             variant="solid"
@@ -872,52 +848,17 @@ export function DraftTab({
                           </Button>
                         )}
                     </Flex>
-                    {chapter.regeneration_status === "processing" && (
-                      <Text mb={3} fontSize="label.sm" color="content.link">
-                        {t("chapter-regenerating")}
-                      </Text>
-                    )}
-                    {chapter.regeneration_status === "failed" && (
-                      <Text
-                        mb={3}
-                        fontSize="label.sm"
-                        color="sentiment.negativeDefault"
-                      >
-                        {t("chapter-regeneration-failed")}
-                      </Text>
-                    )}
                     {typeof chapter.body_markdown === "string" ? (
                       (() => {
                         const changes = reviewChanges.filter(
                           (change) => change.chapter_id === chapter.chapter_id,
                         );
-                        const comparingChapter =
-                          !isReviewing &&
-                          Boolean(
-                            chapter.proposed_revision_number &&
-                            chapter.confirmed_body_markdown,
-                          );
-                        if (changes.length || comparingChapter) {
-                          const before = comparingChapter
-                            ? chapter.confirmed_body_markdown!
-                            : chapter.body_markdown!;
-                          const differences = comparingChapter
-                            ? snapshotChanges(
-                                chapter,
-                                before,
-                                chapter.body_markdown!,
-                              )
-                            : changes;
+                        if (changes.length) {
                           return (
                             <Box data-testid="concept-note-chapter-inline-review">
-                              {comparingChapter && (
-                                <Text fontSize="label.sm" mb={2}>
-                                  {t("chapter-proposed-review-title")}
-                                </Text>
-                              )}
                               <InlineDocumentDiff
-                                markdown={before}
-                                changes={differences}
+                                markdown={chapter.body_markdown!}
+                                changes={changes}
                                 lng={lng}
                                 activeChangeId={activeChangeId}
                                 components={baseMarkdownComponents}
@@ -936,13 +877,7 @@ export function DraftTab({
                             data-current-revision={chapter.revision_number}
                           >
                             <ReactMarkdown
-                              components={createDraftMarkdownComponents(
-                                (message) =>
-                                  reviewMissingInformationMarker(
-                                    chapter,
-                                    message,
-                                  ),
-                              )}
+                              components={draftMarkdownComponents}
                               remarkPlugins={[
                                 remarkGfm,
                                 remarkMissingInformation,

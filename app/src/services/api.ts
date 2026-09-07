@@ -76,7 +76,6 @@ import {
   ConceptNoteContextBundleRetryResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
-  ResolveConceptNoteGapRequest,
   StartConceptNoteRunRequest,
   WebhookSubscriptionResponse,
   WebhookSubscriptionSecretResponse,
@@ -2235,8 +2234,9 @@ export const api = createApi({
         string
       >({
         query: (organizationId) => `/organizations/${organizationId}/webhooks`,
-        transformResponse: (response: { data: WebhookSubscriptionResponse[] }) =>
-          response.data,
+        transformResponse: (response: {
+          data: WebhookSubscriptionResponse[];
+        }) => response.data,
         providesTags: (result, _err, organizationId) =>
           result
             ? [
@@ -2545,31 +2545,6 @@ export const api = createApi({
           { type: "ConceptNoteDraft", id: runId },
         ],
       }),
-      resolveConceptNoteGap: builder.mutation<
-        ConceptNoteDraftState,
-        ResolveConceptNoteGapRequest
-      >({
-        query: ({
-          runId,
-          gapId,
-          action,
-          answer,
-          expectedVersion,
-          idempotencyKey,
-        }) => ({
-          url: `concept-notes/${runId}/gaps/${gapId}/resolve`,
-          method: "POST",
-          body: {
-            action,
-            answer,
-            expected_version: expectedVersion,
-            idempotency_key: idempotencyKey,
-          },
-        }),
-        invalidatesTags: (_result, _error, { runId }) => [
-          { type: "ConceptNoteDraft", id: runId },
-        ],
-      }),
       confirmConceptNoteChapter: builder.mutation<
         ConceptNoteDraftState,
         ConfirmConceptNoteChapterRequest
@@ -2761,7 +2736,6 @@ export const {
   useDeleteConceptNoteRunMutation,
   useResetConceptNoteChatMutation,
   useStartConceptNoteDraftMutation,
-  useResolveConceptNoteGapMutation,
   useConfirmConceptNoteChapterMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,

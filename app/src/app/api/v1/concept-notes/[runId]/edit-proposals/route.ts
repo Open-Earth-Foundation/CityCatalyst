@@ -28,7 +28,7 @@
  *     CnbEditNotFound:
  *       description: "The requested run or proposal is unavailable to this user."
  *     CnbEditConflict:
- *       description: "Stale revision/source, inactive run, locked or regenerating chapter, incompatible proposal state, or conflicting idempotency key. No partial chapter writes."
+ *       description: "Stale revision/source, inactive run, locked chapter, incompatible proposal state, or conflicting idempotency key. No partial chapter writes."
  *     CnbEditUnprocessable:
  *       description: "Invalid scope, unsupported evidence, unknown selection or other semantic validation failure; no draft mutation."
  *     CnbEditUnavailable:

@@ -31,7 +31,6 @@ import type { EditScope } from "@/util/concept-note-edit-types";
 import { CONCEPT_NOTE_POLL_INTERVAL_MS } from "@/util/concept-note-polling";
 import type {
   ConceptNoteDraftChapter,
-  ConceptNoteGap,
   ConceptNoteUploadResponse,
 } from "@/util/types";
 
@@ -49,7 +48,6 @@ import { ConceptNoteChatPanel } from "./chat-panel";
 import { ContextTab } from "./context-tab";
 import { DraftTab } from "./draft-tab";
 import { ExportDialog } from "./export-dialog";
-import { getConceptNoteChapterGaps } from "./gap-interview";
 import { ReviewButton } from "./review-button";
 import { StructureTab } from "./structure-tab";
 import { StartNewChatDialog } from "./start-new-chat-dialog";
@@ -103,10 +101,6 @@ export function ConceptNoteWorkspace({
     requestId: string;
     focus: boolean;
   } | null>(null);
-  const [reviewGapChapterId, setReviewGapChapterId] = useState<string | null>(
-    null,
-  );
-  const [reviewGapId, setReviewGapId] = useState<string | null>(null);
   const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
   const [uploadDetails, setUploadDetails] =
     useState<ConceptNoteUploadResponse | null>(null);
@@ -207,8 +201,6 @@ export function ConceptNoteWorkspace({
     api.useRetryConceptNoteContextBundleMutation();
   const [startDraftMutation, startDraftState] =
     api.useStartConceptNoteDraftMutation();
-  const [resolveGapMutation, resolveGapState] =
-    api.useResolveConceptNoteGapMutation();
   const [confirmChapterMutation, confirmChapterState] =
     api.useConfirmConceptNoteChapterMutation();
   const { data: refreshedUpload, isError: uploadRefreshFailed } =
@@ -307,27 +299,6 @@ export function ConceptNoteWorkspace({
     }
   }
 
-  async function resolveGap(
-    gap: ConceptNoteGap,
-    action: "answer" | "correction" | "not_a_gap" | "defer_as_caveat",
-    answer?: string,
-  ): Promise<void> {
-    setWorkspaceMutationError(null);
-    try {
-      await resolveGapMutation({
-        runId,
-        gapId: gap.gap_id,
-        action,
-        answer,
-        expectedVersion: gap.version,
-        idempotencyKey: crypto.randomUUID(),
-      }).unwrap();
-      await refetchDraft();
-    } catch {
-      setWorkspaceMutationError(t("gap-resolution-error"));
-    }
-  }
-
   async function confirmChapter(
     chapter: ConceptNoteDraftChapter,
   ): Promise<void> {
@@ -346,39 +317,6 @@ export function ConceptNoteWorkspace({
     } catch {
       setWorkspaceMutationError(t("chapter-confirm-error"));
     }
-  }
-
-  function reviewDraftFirst(): void {
-    setTab("draft");
-    window.requestAnimationFrame(() => {
-      const preview = document.querySelector<HTMLElement>(
-        '[data-testid="concept-note-draft-preview"]',
-      );
-      preview?.scrollIntoView({
-        behavior: reducedMotion ? "auto" : "smooth",
-        block: "nearest",
-      });
-      preview?.focus({ preventScroll: true });
-    });
-  }
-
-  function reviewChapterGaps(
-    chapter: ConceptNoteDraftChapter,
-    selectedGap?: ConceptNoteGap,
-  ): void {
-    const firstOpenGap = getConceptNoteChapterGaps(chapter).find(
-      (gap) => gap.state === "open",
-    );
-    if (!firstOpenGap) {
-      return;
-    }
-    setReviewGapChapterId(chapter.chapter_id);
-    setReviewGapId(selectedGap?.gap_id ?? firstOpenGap.gap_id);
-  }
-
-  function stopGapInterview(): void {
-    setReviewGapChapterId(null);
-    setReviewGapId(null);
   }
 
   if (runLoading) {
@@ -532,19 +470,9 @@ export function ConceptNoteWorkspace({
             <ConceptNoteChatPanel
               bundleStatus={bundle.status}
               documentGrounding={bundle.documentGrounding}
-              draft={draft ?? null}
-              isConfirmingChapter={confirmChapterState.isLoading}
-              isResolvingGap={resolveGapState.isLoading}
               lng={lng}
-              mutationError={workspaceMutationError}
-              onConfirmChapter={confirmChapter}
               onOpenContext={() => setTab("context")}
-              onReviewDraft={reviewDraftFirst}
               onStartNewChat={() => setStartNewChatOpen(true)}
-              onResolveGap={resolveGap}
-              onStopGapInterview={stopGapInterview}
-              reviewGapChapterId={reviewGapChapterId}
-              reviewGapId={reviewGapId}
               threadId={activeThreadId}
               editScope={editScope}
               edits={edits}
@@ -701,7 +629,6 @@ export function ConceptNoteWorkspace({
                   editFocus={editFocus}
                   reviewChanges={reviewChanges}
                   activeChangeId={activeChangeId}
-                  isReviewing={Boolean(reviewProposal)}
                   reviewDecisions={activeReviewDecisions}
                   reviewDecisionBusy={Boolean(edits.busy)}
                   onAcceptReviewChange={
@@ -731,8 +658,8 @@ export function ConceptNoteWorkspace({
                     })
                   }
                   onConfirmChapter={confirmChapter}
+                  mutationError={workspaceMutationError}
                   onOpenContext={() => setTab("context")}
-                  onReviewChapterGaps={reviewChapterGaps}
                   onRetry={() => void retryContextBundle()}
                   onStartDrafting={() => void startDrafting()}
                 />

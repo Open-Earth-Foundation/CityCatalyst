@@ -25,9 +25,6 @@ function chapter(
     revision_number: 1,
     confirmed_body_markdown: null,
     confirmed_revision_number: null,
-    proposed_revision_number: null,
-    regeneration_status: "idle",
-    regeneration_error: null,
     ...overrides,
   };
 }

@@ -12,7 +12,6 @@ from app.models.cnb.concept_note_application_context import (
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterConfirmRequest,
     ConceptNoteDraftResponse,
-    ConceptNoteGapResolveRequest,
 )
 from app.models.cnb.concept_note_runs import (
     ConceptNoteRenameRequest,
@@ -28,7 +27,6 @@ from app.services.cnb.chapter_drafting import (
     ConceptNoteChapterDraftService,
     get_chapter_draft_service,
     schedule_chapter_drafting,
-    schedule_gap_regeneration,
 )
 from app.services.cnb.context_bundle import (
     ContextBundleService,
@@ -330,59 +328,6 @@ async def start_concept_note_drafting(
                 run_id=run.run_id,
                 user_id=run.user_id,
                 build_id=build_id,
-            )
-        else:
-            http_response.status_code = status.HTTP_200_OK
-        return draft
-    except ChapterDraftingError as exc:
-        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
-
-
-@router.post(
-    "/concept-notes/{run_id}/gaps/{gap_id}/resolve",
-    response_model=ConceptNoteDraftResponse,
-    status_code=status.HTTP_202_ACCEPTED,
-    responses={200: {"model": ConceptNoteDraftResponse}},
-)
-async def resolve_concept_note_gap(
-    run_id: UUID,
-    gap_id: UUID,
-    payload: ConceptNoteGapResolveRequest,
-    draft_service: Annotated[
-        ConceptNoteChapterDraftService | None,
-        Depends(get_chapter_draft_service),
-    ],
-    http_response: Response,
-    user_id: str = Query(..., min_length=1),
-    authorization: str | None = Header(default=None),
-    session: AsyncSession = Depends(get_session),
-) -> ConceptNoteDraftResponse:
-    """Accept one audited gap disposition and regenerate its chapter."""
-    run_service = ConceptNoteRunService(session)
-    run = await run_service.get_authorized_run(
-        run_id=run_id,
-        requested_user_id=user_id,
-        authorization=authorization,
-    )
-    if draft_service is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Concept Note chapter drafting is unavailable",
-        )
-    try:
-        draft, start = await draft_service.resolve_gap(
-            run=run,
-            gap_id=gap_id,
-            payload=payload,
-        )
-        if start.should_regenerate:
-            schedule_gap_regeneration(
-                service=draft_service,
-                run_id=run.run_id,
-                user_id=run.user_id,
-                chapter_id=start.chapter_id,
-                gap_id=gap_id,
-                resolution_id=start.resolution_id,
             )
         else:
             http_response.status_code = status.HTTP_200_OK

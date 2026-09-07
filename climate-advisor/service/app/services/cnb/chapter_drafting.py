@@ -24,7 +24,6 @@ from app.models.cnb.concept_note_draft import (
     ConceptNoteDraftGapOutput,
     ConceptNoteDraftResponse,
     ConceptNoteGapResolutionResponse,
-    ConceptNoteGapResolveRequest,
     ConceptNoteGapResponse,
 )
 from app.models.db.concept_note import (
@@ -34,7 +33,6 @@ from app.models.db.concept_note import ConceptNoteRun
 from app.persistence.concept_notes.context_bundle import normalize_bundle
 from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
-    GapResolutionStart,
     WorkspaceChapterSnapshot,
     WorkspaceConflictError,
     WorkspaceGapSnapshot,
@@ -45,7 +43,6 @@ from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
     included_sources_from_bundle,
 )
-from app.services.cnb.gap_impact_review import ConceptNoteGapImpactReviewer
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.concept_note_context import omit_context_identifiers
 from openai import AsyncOpenAI
@@ -57,7 +54,6 @@ from app.config import Settings, get_settings
 logger = logging.getLogger(__name__)
 ChapterGenerator = Callable[[dict[str, Any]], Awaitable[ConceptNoteChapterDraftOutput]]
 _BACKGROUND_DRAFTS: set[asyncio.Task[None]] = set()
-_BACKGROUND_GAP_REGENERATIONS: set[asyncio.Task[None]] = set()
 CHAPTER_DRAFT_RECONCILE_INTERVAL_SECONDS = 300
 CHAPTER_DRAFT_STALE_AFTER = timedelta(hours=1)
 
@@ -93,7 +89,6 @@ class ConceptNoteChapterDraftService:
         cnb_session_factory: async_sessionmaker[AsyncSession] | None = None,
         settings: Settings | None = None,
         generate_chapter: ChapterGenerator | None = None,
-        impact_reviewer: ConceptNoteGapImpactReviewer | None = None,
         runner: Any = Runner,
     ) -> None:
         self._ca_session_factory = ca_session_factory
@@ -106,7 +101,6 @@ class ConceptNoteChapterDraftService:
         )
         self._settings = settings or get_settings()
         self._generate_chapter_override = generate_chapter
-        self._impact_reviewer = impact_reviewer
         self._runner = runner
 
     async def load_state(self, run: ConceptNoteRun) -> ConceptNoteDraftResponse:
@@ -225,28 +219,6 @@ class ConceptNoteChapterDraftService:
             )
             await self._fail_draft(run_id, user_id, build_id)
 
-    async def resolve_gap(
-        self,
-        *,
-        run: ConceptNoteRun,
-        gap_id: UUID,
-        payload: ConceptNoteGapResolveRequest,
-    ) -> tuple[ConceptNoteDraftResponse, GapResolutionStart]:
-        """Accept a versioned gap action and return its polling-visible state."""
-        try:
-            start = await self._workspace.prepare_gap_resolution(
-                run_id=run.run_id,
-                gap_id=gap_id,
-                action=payload.action,
-                answer=payload.answer,
-                expected_version=payload.expected_version,
-                idempotency_key=payload.idempotency_key,
-                user_id=run.user_id,
-            )
-        except WorkspaceConflictError as exc:
-            raise ChapterDraftingError(str(exc)) from exc
-        return await self.load_state(run), start
-
     async def confirm_chapter(
         self,
         *,
@@ -266,194 +238,6 @@ class ConceptNoteChapterDraftService:
         except WorkspaceConflictError as exc:
             raise ChapterDraftingError(str(exc)) from exc
         return await self.load_state(run)
-
-    async def regenerate_resolved_gap(
-        self,
-        *,
-        run_id: UUID,
-        user_id: str,
-        chapter_id: UUID,
-        gap_id: UUID,
-        resolution_id: UUID,
-    ) -> None:
-        """Regenerate one affected chapter after an accepted user disposition."""
-        try:
-            # Reload all durable inputs so a background worker never uses request state.
-            run = await self._load_owned_run(run_id, user_id)
-            run_context, included_sources = await self._load_run_context(
-                run_id,
-                user_id,
-            )
-            application_context = await self._application_context.load_for_run(
-                run,
-                included_sources=included_sources,
-            )
-            templates = _require_template(application_context)
-            template_by_ref = {item.chapter_ref: item for item in templates}
-            chapters = await self._workspace.list_chapters(run_id=run_id)
-            current = next(
-                (item for item in chapters if item.chapter_id == chapter_id),
-                None,
-            )
-            if current is None:
-                raise ChapterDraftingError("Concept Note chapter is unavailable")
-            source_gap = next(
-                (item for item in current.gaps if item.gap_id == gap_id),
-                None,
-            )
-            if (
-                source_gap is None
-                or source_gap.resolution is None
-                or source_gap.resolution.resolution_id != resolution_id
-            ):
-                raise ChapterDraftingError("Concept Note gap resolution is unavailable")
-
-            # The accepted resolution is part of the prompt contract and provenance.
-            generated = await self._generate_chapter(
-                _build_chapter_input(
-                    application_context=application_context,
-                    run_context=run_context,
-                    current=current,
-                    template_chapter=template_by_ref.get(current.chapter_ref or ""),
-                    chapters=chapters,
-                )
-            )
-            generated = _sanitize_generated_output(generated, run_context)
-            completed = await self._workspace.complete_gap_regeneration(
-                chapter_id=chapter_id,
-                gap_id=gap_id,
-                resolution_id=resolution_id,
-                generated=generated,
-            )
-        except Exception:
-            logger.exception(
-                "Concept Note gap regeneration failed run_id=%s gap_id=%s",
-                run_id,
-                gap_id,
-            )
-            await self._workspace.fail_gap_regeneration(
-                chapter_id=chapter_id,
-                gap_id=gap_id,
-                resolution_id=resolution_id,
-            )
-            return
-
-        if (
-            completed
-            and source_gap.resolution.action in {"answer", "correction"}
-            and source_gap.resolution.answer
-        ):
-            try:
-                await self._propagate_resolved_information(
-                    run_id=run_id,
-                    user_id=user_id,
-                    source_chapter=current,
-                    source_gap=source_gap,
-                    application_context=application_context,
-                    run_context=run_context,
-                    template_by_ref=template_by_ref,
-                )
-            except Exception:
-                # The originating answer and rewrite are already durable. A review
-                # failure must not roll them back or mark their chapter failed.
-                logger.exception(
-                    "Concept Note gap impact review failed run_id=%s gap_id=%s",
-                    run_id,
-                    gap_id,
-                )
-
-    async def _propagate_resolved_information(
-        self,
-        *,
-        run_id: UUID,
-        user_id: str,
-        source_chapter: WorkspaceChapterSnapshot,
-        source_gap: WorkspaceGapSnapshot,
-        application_context: ConceptNoteApplicationContextResponse,
-        run_context: dict[str, Any],
-        template_by_ref: dict[str, WorkspaceTemplateChapter],
-    ) -> None:
-        """Review all other chapters and rewrite only the selected numbers."""
-        resolution = source_gap.resolution
-        if resolution is None or not resolution.answer:
-            return
-        chapters = await self._workspace.list_chapters(run_id=run_id)
-        candidates = [
-            chapter
-            for chapter in chapters
-            if chapter.chapter_id != source_chapter.chapter_id
-            and chapter.body_markdown is not None
-        ]
-        if not candidates:
-            return
-        new_information = {
-            "source_chapter_number": source_chapter.position + 1,
-            "field_key": source_gap.field_key,
-            "question": source_gap.question,
-            "answer": resolution.answer,
-            "action": resolution.action,
-        }
-        reviewer = self._impact_reviewer or ConceptNoteGapImpactReviewer(
-            self._settings,
-            runner=self._runner,
-        )
-        selected_numbers = await reviewer.select_chapters(
-            chapters=candidates,
-            new_information=new_information,
-        )
-
-        for chapter_number in selected_numbers:
-            refreshed = await self._workspace.list_chapters(run_id=run_id)
-            current = next(
-                (
-                    chapter
-                    for chapter in refreshed
-                    if chapter.position + 1 == chapter_number
-                    and chapter.chapter_id != source_chapter.chapter_id
-                ),
-                None,
-            )
-            if current is None or current.revision_number is None:
-                continue
-            expected_revision = current.revision_number
-            started = await self._workspace.begin_gap_impact_regeneration(
-                chapter_id=current.chapter_id,
-                expected_revision_number=expected_revision,
-            )
-            if not started:
-                continue
-            try:
-                generated = await self._generate_chapter(
-                    _build_chapter_input(
-                        application_context=application_context,
-                        run_context=run_context,
-                        current=current,
-                        template_chapter=template_by_ref.get(current.chapter_ref or ""),
-                        chapters=refreshed,
-                        propagated_information=[new_information],
-                    )
-                )
-                generated = _sanitize_generated_output(generated, run_context)
-                await self._workspace.save_gap_impact_regeneration(
-                    chapter_id=current.chapter_id,
-                    expected_revision_number=expected_revision,
-                    generated=generated,
-                    source_gap_id=source_gap.gap_id,
-                    source_resolution_id=resolution.resolution_id,
-                    actor_user_id=user_id,
-                    answer=resolution.answer,
-                    source_refs=resolution.source_refs,
-                )
-            except Exception:
-                logger.exception(
-                    "Concept Note propagated rewrite failed run_id=%s chapter=%s",
-                    run_id,
-                    chapter_number,
-                )
-                await self._workspace.fail_gap_impact_regeneration(
-                    chapter_id=current.chapter_id,
-                    expected_revision_number=expected_revision,
-                )
 
     async def _generate_chapter(
         self,
@@ -729,37 +513,6 @@ def schedule_chapter_drafting(
     task.add_done_callback(release)
 
 
-def schedule_gap_regeneration(
-    *,
-    service: ConceptNoteChapterDraftService,
-    run_id: UUID,
-    user_id: str,
-    chapter_id: UUID,
-    gap_id: UUID,
-    resolution_id: UUID,
-) -> None:
-    """Retain one accepted gap-regeneration worker until it terminates."""
-    task = asyncio.create_task(
-        service.regenerate_resolved_gap(
-            run_id=run_id,
-            user_id=user_id,
-            chapter_id=chapter_id,
-            gap_id=gap_id,
-            resolution_id=resolution_id,
-        )
-    )
-    _BACKGROUND_GAP_REGENERATIONS.add(task)
-
-    def release(completed: asyncio.Task[None]) -> None:
-        _BACKGROUND_GAP_REGENERATIONS.discard(completed)
-        try:
-            completed.result()
-        except Exception:
-            logger.exception("Concept Note background gap regeneration crashed")
-
-    task.add_done_callback(release)
-
-
 async def recover_stale_drafts(
     *,
     session_factory: async_sessionmaker[AsyncSession],
@@ -875,7 +628,6 @@ def _build_chapter_input(
     current: WorkspaceChapterSnapshot,
     template_chapter: WorkspaceTemplateChapter | None,
     chapters: list[WorkspaceChapterSnapshot],
-    propagated_information: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Build the exact prompt payload, including every earlier chapter body."""
     application_payload = application_context.model_dump(mode="json")
@@ -901,29 +653,6 @@ def _build_chapter_input(
                 "position": current.position,
                 "required": current.required,
             },
-            "resolved_information": [
-                {
-                    "field_key": gap.field_key,
-                    "question": gap.question,
-                    "disposition": gap.state,
-                    "action": gap.resolution.action,
-                    "answer": gap.resolution.answer if gap.resolution else None,
-                }
-                for gap in current.gaps
-                if gap.state in {"resolved", "dismissed", "caveat", "processing"}
-                and gap.resolution is not None
-            ],
-            "propagated_information": propagated_information or [],
-            "existing_open_gaps": [
-                {
-                    "field_key": gap.field_key,
-                    "question": gap.question,
-                    "why_asking": gap.why_asking,
-                    "severity": gap.severity,
-                }
-                for gap in current.gaps
-                if gap.state == "open"
-            ],
             "previous_chapters": [
                 {
                     "chapter_ref": chapter.chapter_ref,
@@ -958,14 +687,12 @@ def _build_state_response(
         status = "complete"
     else:
         status = "not_started"
-    focused_gap_id = _focused_gap_id(chapters)
     return ConceptNoteDraftResponse(
         run_id=run_id,
         status=status,
         completed_chapters=completed,
         total_chapters=len(chapters),
         current_chapter_id=_as_uuid(progress.get("current_chapter_id")),
-        focused_gap_id=focused_gap_id,
         error_code=_as_text(progress.get("error_code")),
         chapters=[
             ConceptNoteDraftChapterResponse(
@@ -985,9 +712,6 @@ def _build_state_response(
                 revision_number=chapter.revision_number,
                 confirmed_body_markdown=chapter.confirmed_body_markdown,
                 confirmed_revision_number=chapter.confirmed_revision_number,
-                proposed_revision_number=chapter.proposed_revision_number,
-                regeneration_status=chapter.regeneration_status,
-                regeneration_error=chapter.regeneration_error,
             )
             for chapter in chapters
         ],
@@ -1028,16 +752,6 @@ def _gap_response(gap: WorkspaceGapSnapshot) -> ConceptNoteGapResponse:
             "updated_at": gap.updated_at,
         }
     )
-
-
-def _focused_gap_id(chapters: list[WorkspaceChapterSnapshot]) -> UUID | None:
-    """Choose one open critical gap first, then the earliest noncritical gap."""
-    open_gaps = [
-        gap for chapter in chapters for gap in chapter.gaps if gap.state == "open"
-    ]
-    critical = next((gap for gap in open_gaps if gap.severity == "critical"), None)
-    focused = critical or next(iter(open_gaps), None)
-    return focused.gap_id if focused is not None else None
 
 
 def _sanitize_generated_output(

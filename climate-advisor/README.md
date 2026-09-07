@@ -539,8 +539,6 @@ Prompt paths are also configured in `llm_config.yaml`:
   source-query guidance and no-fabrication rules
 - the three `prompts.cnb_source_*` entries map document partitions, reduce them
   to compact document summaries, and read focused questions for exact evidence
-- `prompts.cnb_gap_impact_review` is loaded only after a user answer is accepted;
-  its single tool returns the chapter numbers that require propagated rewrites
 - `prompts.cnb_chat_edit_planner` creates bounded, grounded edit proposals from
   actual chapter text; its output cannot apply a revision without user review
 - `prompts.cnb_chat_edit_review` independently compares each proposed chapter edit
@@ -719,10 +717,10 @@ Operationally:
 ### Concept Note draft review and chat editing
 
 `GET` and `POST /v1/concept-notes/{run_id}/draft` expose persisted chapters,
-structured gaps, confirmed/proposed revisions and regeneration state.
-`POST /v1/concept-notes/{run_id}/gaps/{gap_id}/resolve` accepts version-checked,
-idempotent answers, corrections, `not_a_gap`, or non-critical caveats. It
-regenerates the affected chapter and reviews other chapters for answer impact.
+structured gaps and revision confirmation state. Missing-information markers
+remain visible in the draft; users supply facts through chat and explicitly
+accept the resulting edit proposals. Acceptance resolves matching gaps in the
+same transaction, without a separate interview or background regeneration.
 `POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/confirm` confirms an exact
 revision; open critical gaps block confirmation and export.
 
@@ -753,10 +751,6 @@ normalized request returns the original run with HTTP `200` and
 
 `GET /v1/concept-notes?user_id=...&city_id=...` validates the same token identity
 and city access, then returns only that user's runs for the selected city.
-Successful CityCatalyst identity and city responses are reused within the
-Climate Advisor process for at most 30 seconds, never beyond the bearer token's
-JWT expiry. The cache uses only a one-way token fingerprint, coalesces
-concurrent checks, and does not retain failed or denied responses.
 Runs are ordered by `updated_at`, `created_at`, and `run_id`, all descending, so
 the result is stable and most-recently-updated first. Upload registration and
 failed, retry, or ready lifecycle transitions refresh the parent run's
@@ -765,8 +759,7 @@ stored scope identifiers, lifecycle fields, timestamps, and `progress_summary`
 copied from the persisted `context_summary`.
 
 `GET /v1/concept-notes/{run_id}?user_id=...` returns only an owned run and
-requires current city access before responding, using the same short-lived
-successful-authorization cache. It exposes the same persisted status, workflow
+requires current city access before responding. It exposes the same persisted status, workflow
 step, and progress summary as the list contract. `PATCH` on the same route
 accepts a trimmed 1-120 character `name` and updates both the run and its
 dedicated thread title.
@@ -802,11 +795,7 @@ CityCatalyst exposes authenticated proxy routes at
 scoped CA token, forwards the duplicate idempotency key, and preserves Climate
 Advisor response statuses. Climate Advisor remains authoritative for run ownership
 and its stored city binding. The CityCatalyst dashboard consumes these routes; its
-implementation details live in the repository architecture guide. The
-CityCatalyst proxy reuses one successfully issued CA token per user until one
-minute before its reported expiry and coalesces concurrent issuance. This
-process-local token reuse gives Climate Advisor a stable credential to validate
-through its 30-second successful-authorization cache.
+implementation details live in the repository architecture guide.
 
 ### Concept Note city-context baseline
 

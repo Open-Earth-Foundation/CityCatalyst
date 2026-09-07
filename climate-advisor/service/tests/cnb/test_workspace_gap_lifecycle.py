@@ -4,15 +4,17 @@ from uuid import UUID, uuid4
 
 import pytest
 from app.db.cnb import CnbBase
-from app.models.cnb.concept_note_draft import (
-    ConceptNoteChapterDraftOutput,
-)
+from app.models.cnb.concept_note_edits import EditChange
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteChapterReview,
     ConceptNoteChapterRevision,
     ConceptNoteGap,
     ConceptNoteGapResolution,
+)
+from app.persistence.concept_notes.edits import (
+    append_revision,
+    resolve_filled_information_gaps,
 )
 from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
@@ -108,141 +110,79 @@ async def workspace(tmp_path):
         await engine.dispose()
 
 
-async def test_answer_is_idempotent_versioned_and_requires_confirmation(
-    workspace,
-) -> None:
-    """Move one chapter through processing, Draft, and explicit Ready."""
-    key = uuid4()
-    start = await workspace.prepare_gap_resolution(
-        run_id=RUN_ID,
-        gap_id=GAP_ID,
-        action="answer",
-        answer="Lincoln Park Neighborhood Council",
-        expected_version=1,
-        idempotency_key=key,
-        user_id="owner",
+async def test_accepted_chat_edit_resolves_gap_and_can_be_confirmed(workspace) -> None:
+    """Chat acceptance persists the supplied fact without an interview or worker."""
+    [before] = await workspace.list_chapters(run_id=RUN_ID)
+    marker = "[Information needed: Confirm the lead partner.]"
+    answer = "Lincoln Park Neighborhood Council will lead delivery."
+    change = EditChange(
+        chapter_id=CHAPTER_ID,
+        chapter_title="Implementation",
+        change_id=uuid4(),
+        base_revision=1,
+        start=before.body_markdown.index(marker),
+        before=marker,
+        after=answer,
+        kind="factual",
+        group_id="lead_partner",
+        user_input_quote=answer,
     )
-    replay = await workspace.prepare_gap_resolution(
-        run_id=RUN_ID,
-        gap_id=GAP_ID,
-        action="answer",
-        answer="Lincoln Park Neighborhood Council",
-        expected_version=1,
-        idempotency_key=key,
-        user_id="owner",
-    )
-    assert start.should_regenerate is True
-    assert replay.should_regenerate is False
-    assert replay.resolution_id == start.resolution_id
+    body = before.body_markdown.replace(marker, answer)
+    async with workspace._session_factory() as session, session.begin():
+        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
+        latest = await session.scalar(select(ConceptNoteChapterRevision))
+        await resolve_filled_information_gaps(
+            session,
+            chapter=chapter,
+            before=before.body_markdown,
+            after=body,
+            changes=[change],
+            user_id="owner",
+            idempotency_key=uuid4(),
+        )
+        await append_revision(
+            session,
+            chapter,
+            latest,
+            body=body,
+            user_id="owner",
+            idempotency_key=uuid4(),
+            preserve_ready=False,
+            patch_summary={"operation": "apply"},
+        )
+    [after] = await workspace.list_chapters(run_id=RUN_ID)
+    assert after.body_markdown == body
+    assert after.revision_number == 2
+    assert after.status == "draft"
+    assert not any(gap.state == "open" for gap in after.gaps)
+    assert after.gaps[0].state == "resolved"
+    assert after.gaps[0].resolution.answer == answer
 
-    with pytest.raises(WorkspaceConflictError, match="idempotency key"):
-        await workspace.prepare_gap_resolution(
+    key = uuid4()
+    for _ in range(2):
+        await workspace.confirm_chapter(
             run_id=RUN_ID,
-            gap_id=GAP_ID,
-            action="answer",
-            answer="A different organization",
-            expected_version=1,
+            chapter_id=CHAPTER_ID,
+            expected_revision=2,
             idempotency_key=key,
             user_id="owner",
         )
+    [confirmed] = await workspace.list_chapters(run_id=RUN_ID)
+    assert confirmed.status == "ready"
+    assert confirmed.confirmed_revision_number == 2
+    async with workspace._session_factory() as session:
+        assert len(list(await session.scalars(select(ConceptNoteChapterReview)))) == 1
 
-    with pytest.raises(WorkspaceConflictError, match="stale"):
-        await workspace.prepare_gap_resolution(
+
+async def test_open_gap_still_blocks_confirmation(workspace) -> None:
+    with pytest.raises(WorkspaceConflictError, match="Open gaps"):
+        await workspace.confirm_chapter(
             run_id=RUN_ID,
-            gap_id=GAP_ID,
-            action="answer",
-            answer="Different answer",
-            expected_version=1,
+            chapter_id=CHAPTER_ID,
+            expected_revision=1,
             idempotency_key=uuid4(),
             user_id="owner",
         )
-
-    completed = await workspace.complete_gap_regeneration(
-        chapter_id=CHAPTER_ID,
-        gap_id=GAP_ID,
-        resolution_id=start.resolution_id,
-        generated=ConceptNoteChapterDraftOutput(
-            body_markdown=(
-                "## Implementation\n\nLincoln Park Neighborhood Council will lead delivery."
-            ),
-            missing_information=[],
-        ),
-    )
-    assert completed is True
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    assert chapter.status == "draft"
-    assert chapter.revision_number == 2
-    assert chapter.gaps[0].state == "resolved"
-    assert chapter.gaps[0].resolution is not None
-    assert chapter.gaps[0].resolution.answer == "Lincoln Park Neighborhood Council"
-    assert chapter.gaps[0].resolution.source_refs == ["implementation-plan.pdf"]
-
-    await workspace.confirm_chapter(
-        run_id=RUN_ID,
-        chapter_id=CHAPTER_ID,
-        expected_revision=2,
-        idempotency_key=uuid4(),
-        user_id="owner",
-    )
-    [ready] = await workspace.list_chapters(run_id=RUN_ID)
-    assert ready.status == "ready"
-    assert ready.confirmed_revision_number == 2
-    assert ready.proposed_revision_number is None
-
-
-async def test_critical_gap_cannot_be_deferred(workspace) -> None:
-    """Keep critical information blocking until answered or dismissed."""
-    with pytest.raises(WorkspaceConflictError, match="Critical gaps"):
-        await workspace.prepare_gap_resolution(
-            run_id=RUN_ID,
-            gap_id=GAP_ID,
-            action="defer_as_caveat",
-            answer=None,
-            expected_version=1,
-            idempotency_key=uuid4(),
-            user_id="owner",
-        )
-
-
-async def test_gap_impact_rewrite_appends_revision_and_answer_provenance(
-    workspace,
-) -> None:
-    """Turn a reviewer-selected chapter into a proposal without overwriting it."""
-    source_gap_id = uuid4()
-    source_resolution_id = uuid4()
-    started = await workspace.begin_gap_impact_regeneration(
-        chapter_id=CHAPTER_ID,
-        expected_revision_number=1,
-    )
-    assert started is True
-
-    changed = await workspace.save_gap_impact_regeneration(
-        chapter_id=CHAPTER_ID,
-        expected_revision_number=1,
-        generated=ConceptNoteChapterDraftOutput(
-            body_markdown=(
-                "## Implementation\n\nThe municipality confirmed it will lead delivery."
-            ),
-            missing_information=[],
-        ),
-        source_gap_id=source_gap_id,
-        source_resolution_id=source_resolution_id,
-        actor_user_id="owner",
-        answer="The municipality will lead delivery.",
-        source_refs=["project-plan.pdf"],
-    )
-
-    assert changed is True
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    assert chapter.revision_number == 2
-    assert chapter.status == "draft"
-    assert chapter.regeneration_status == "idle"
-    assert chapter.gaps[0].state == "resolved"
-    assert chapter.gaps[0].resolution is not None
-    assert chapter.gaps[0].resolution.action == "answer"
-    assert chapter.gaps[0].resolution.answer == "The municipality will lead delivery."
-    assert chapter.gaps[0].resolution.actor_user_id == "owner"
-    assert chapter.gaps[0].resolution.source_refs == ["project-plan.pdf"]
 
 
 async def test_legacy_gap_rationale_is_specific_to_the_missing_fact(
@@ -261,98 +201,3 @@ async def test_legacy_gap_rationale_is_specific_to_the_missing_fact(
     assert "Implementation chapter" in rationale
     assert "grounded evidence" in rationale
     assert rationale != "This information is required to complete the chapter."
-
-
-async def test_noncritical_gap_can_remain_visible_as_confirmed_caveat(
-    workspace,
-) -> None:
-    """Allow an explicitly acknowledged non-critical caveat to remain visible."""
-    async with workspace._session_factory() as session, session.begin():
-        gap = await session.get(ConceptNoteGap, GAP_ID)
-        assert gap is not None
-        gap.severity = "noncritical"
-
-    start = await workspace.prepare_gap_resolution(
-        run_id=RUN_ID,
-        gap_id=GAP_ID,
-        action="defer_as_caveat",
-        answer=None,
-        expected_version=1,
-        idempotency_key=uuid4(),
-        user_id="owner",
-    )
-    await workspace.complete_gap_regeneration(
-        chapter_id=CHAPTER_ID,
-        gap_id=GAP_ID,
-        resolution_id=start.resolution_id,
-        generated=ConceptNoteChapterDraftOutput(
-            body_markdown=(
-                "## Implementation\n\nThe accountable lead partner remains to be "
-                "confirmed and is retained as a review caveat."
-            ),
-            missing_information=[],
-        ),
-    )
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    assert chapter.status == "draft"
-    assert chapter.gaps[0].state == "caveat"
-
-    await workspace.confirm_chapter(
-        run_id=RUN_ID,
-        chapter_id=CHAPTER_ID,
-        expected_revision=2,
-        idempotency_key=uuid4(),
-        user_id="owner",
-    )
-    [ready] = await workspace.list_chapters(run_id=RUN_ID)
-    assert ready.status == "ready"
-    assert ready.gaps[0].state == "caveat"
-
-
-async def test_failed_regeneration_retains_answer_and_can_append_retry(
-    workspace,
-) -> None:
-    """Keep accepted input auditable and retry through a new correction event."""
-    start = await workspace.prepare_gap_resolution(
-        run_id=RUN_ID,
-        gap_id=GAP_ID,
-        action="answer",
-        answer="Lincoln Park Neighborhood Council",
-        expected_version=1,
-        idempotency_key=uuid4(),
-        user_id="owner",
-    )
-
-    await workspace.fail_gap_regeneration(
-        chapter_id=CHAPTER_ID,
-        gap_id=GAP_ID,
-        resolution_id=start.resolution_id,
-    )
-    [failed] = await workspace.list_chapters(run_id=RUN_ID)
-    assert failed.regeneration_status == "failed"
-    assert failed.gaps[0].state == "processing"
-    assert failed.gaps[0].resolution is not None
-    assert failed.gaps[0].resolution.answer == "Lincoln Park Neighborhood Council"
-
-    retry = await workspace.prepare_gap_resolution(
-        run_id=RUN_ID,
-        gap_id=GAP_ID,
-        action="correction",
-        answer="Lincoln Park Neighborhood Council",
-        expected_version=2,
-        idempotency_key=uuid4(),
-        user_id="owner",
-    )
-    assert retry.should_regenerate is True
-
-    async with workspace._session_factory() as session:
-        resolutions = list(
-            (
-                await session.scalars(
-                    select(ConceptNoteGapResolution).where(
-                        ConceptNoteGapResolution.gap_id == GAP_ID
-                    )
-                )
-            ).all()
-        )
-    assert len(resolutions) == 2

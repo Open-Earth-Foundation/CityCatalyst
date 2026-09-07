@@ -16,13 +16,7 @@ import {
   MISSING_INFORMATION_LINK,
 } from "./draft-markdown";
 
-function MissingInformationMarker({
-  message,
-  onReview,
-}: {
-  message: string;
-  onReview?: (message: string) => void;
-}) {
+function MissingInformationMarker({ message }: { message: string }) {
   const [open, setOpen] = useState(false);
   return (
     <Tooltip
@@ -55,7 +49,7 @@ function MissingInformationMarker({
         color="sentiment.warningDefault"
         verticalAlign="text-bottom"
         cursor="pointer"
-        onClick={() => (onReview ? onReview(message) : setOpen(!open))}
+        onClick={() => setOpen(!open)}
         _hover={{ bg: "sentiment.warningOverlay" }}
         _focusVisible={{
           outline: "2px solid",
@@ -69,10 +63,9 @@ function MissingInformationMarker({
   );
 }
 
-/** Review snapshots omit onReview: their messages are inspectable, never editable. */
+/** Render missing-information markers as inspectable tooltips. */
 export function missingInformationComponents(
   components: Components,
-  onReview?: (message: string) => void,
 ): Components {
   const Link = (components.a ?? "a") as ElementType<
     ComponentPropsWithoutRef<"a"> & ExtraProps
@@ -85,7 +78,7 @@ export function missingInformationComponents(
           ? decodeMissingInformationMessage(title)
           : null;
       return message ? (
-        <MissingInformationMarker message={message} onReview={onReview} />
+        <MissingInformationMarker message={message} />
       ) : (
         <Link {...props} href={href} title={title}>
           {children}

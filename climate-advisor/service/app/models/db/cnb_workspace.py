@@ -56,10 +56,6 @@ class ConceptNoteChapter(CnbBase):
             use_alter=True,
         ),
     )
-    regeneration_status: Mapped[str] = mapped_column(
-        String(32), nullable=False, default="idle", server_default="idle"
-    )
-    regeneration_error: Mapped[str | None] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
@@ -72,10 +68,6 @@ class ConceptNoteChapter(CnbBase):
         CheckConstraint(
             "status IN ('empty', 'draft', 'needs_review', 'ready', 'deleted')",
             name="status_valid",
-        ),
-        CheckConstraint(
-            "regeneration_status IN ('idle', 'processing', 'failed')",
-            name="regeneration_status_valid",
         ),
         Index(
             "uq_concept_note_chapters_active_position",

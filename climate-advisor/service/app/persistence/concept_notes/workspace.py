@@ -6,10 +6,9 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from app.models.cnb.concept_note_draft import (
-    ConceptNoteChapterDraftOutput,
     ConceptNoteDraftGapOutput,
 )
 from app.models.db.cnb_workspace import (
@@ -89,21 +88,9 @@ class WorkspaceChapterSnapshot:
     revision_number: int | None = None
     confirmed_body_markdown: str | None = None
     confirmed_revision_number: int | None = None
-    proposed_revision_number: int | None = None
-    regeneration_status: str = "idle"
-    regeneration_error: str | None = None
     # Retained for consumers introduced on develop while structured gap
     # snapshots remain the canonical CC-730/CC-732 representation.
     missing_information: list[str] = field(default_factory=list)
-
-
-@dataclass(frozen=True)
-class GapResolutionStart:
-    """Result of atomically accepting one idempotent gap mutation."""
-
-    chapter_id: UUID
-    resolution_id: UUID
-    should_regenerate: bool
 
 
 @dataclass(frozen=True)
@@ -354,8 +341,6 @@ class ConceptNoteWorkspaceRepository:
                     status=source_chapter.status,
                     required=source_chapter.required,
                     user_locked=source_chapter.user_locked,
-                    regeneration_status="idle",
-                    regeneration_error=None,
                 )
                 session.add(destination_chapter)
                 await session.flush()
@@ -490,167 +475,6 @@ class ConceptNoteWorkspaceRepository:
         async with self._session_factory() as session, session.begin():
             await _delete_workspace_rows(session, run_id)
 
-    async def prepare_gap_resolution(
-        self,
-        *,
-        run_id: UUID,
-        gap_id: UUID,
-        action: str,
-        answer: str | None,
-        expected_version: int,
-        idempotency_key: UUID,
-        user_id: str,
-    ) -> GapResolutionStart:
-        """Accept one versioned gap action and mark its chapter for regeneration."""
-        async with self._session_factory() as session, session.begin():
-            gap = await session.get(ConceptNoteGap, gap_id, with_for_update=True)
-            if gap is None or gap.run_id != run_id or gap.chapter_id is None:
-                raise WorkspaceConflictError("Concept Note gap is unavailable")
-            chapter = await _require_chapter(session, gap.chapter_id, lock=True)
-
-            # Return a replay without creating another event or worker.
-            existing = await session.scalar(
-                select(ConceptNoteGapResolution).where(
-                    ConceptNoteGapResolution.gap_id == gap_id,
-                    ConceptNoteGapResolution.idempotency_key == idempotency_key,
-                )
-            )
-            if existing is not None:
-                if (
-                    existing.action != action
-                    or existing.answer != answer
-                    or existing.actor_user_id != user_id
-                ):
-                    raise WorkspaceConflictError(
-                        "Concept Note idempotency key was reused with different input"
-                    )
-                return GapResolutionStart(
-                    chapter_id=chapter.chapter_id,
-                    resolution_id=existing.resolution_id,
-                    should_regenerate=False,
-                )
-
-            # Enforce optimistic concurrency and the critical-caveat rule.
-            if gap.version != expected_version:
-                raise WorkspaceConflictError("Concept Note gap version is stale")
-            if chapter.regeneration_status == "processing":
-                raise WorkspaceConflictError(
-                    "Another gap resolution is already being processed"
-                )
-            if action == "defer_as_caveat" and gap.severity == "critical":
-                raise WorkspaceConflictError("Critical gaps cannot be deferred")
-            if action == "correction" and gap.status not in {
-                "resolved",
-                "dismissed",
-                "caveat",
-                "processing",
-            }:
-                raise WorkspaceConflictError(
-                    "Only a previous resolution can be corrected"
-                )
-
-            resolution = ConceptNoteGapResolution(
-                gap_id=gap.gap_id,
-                action=action,
-                answer=answer,
-                actor_user_id=user_id,
-                source_refs=_source_refs_for_answer(gap, answer),
-                idempotency_key=idempotency_key,
-            )
-            session.add(resolution)
-            await session.flush()
-            gap.status = "processing"
-            gap.version += 1
-            gap.updated_at = datetime.now(UTC)
-            chapter.status = "needs_review"
-            chapter.regeneration_status = "processing"
-            chapter.regeneration_error = None
-            chapter.updated_at = datetime.now(UTC)
-            return GapResolutionStart(
-                chapter_id=chapter.chapter_id,
-                resolution_id=resolution.resolution_id,
-                should_regenerate=True,
-            )
-
-    async def complete_gap_regeneration(
-        self,
-        *,
-        chapter_id: UUID,
-        gap_id: UUID,
-        resolution_id: UUID,
-        generated: ConceptNoteChapterDraftOutput,
-    ) -> bool:
-        """Commit a regenerated revision if the initiating resolution is current."""
-        async with self._session_factory() as session, session.begin():
-            chapter = await _require_chapter(session, chapter_id, lock=True)
-            gap = await session.get(ConceptNoteGap, gap_id, with_for_update=True)
-            latest_resolution = await _latest_resolution(session, gap_id)
-            if (
-                gap is None
-                or latest_resolution is None
-                or latest_resolution.resolution_id != resolution_id
-            ):
-                return False
-
-            # Append the regenerated chapter without mutating prior revisions.
-            latest_revision = await _latest_revision(session, chapter_id)
-            next_revision = (
-                latest_revision.revision_number if latest_revision else 0
-            ) + 1
-            session.add(
-                ConceptNoteChapterRevision(
-                    chapter_id=chapter_id,
-                    revision_number=next_revision,
-                    author_type="agent",
-                    change_type="rewrite",
-                    body_markdown=generated.body_markdown,
-                    patch_summary={
-                        "resolved_gap_id": str(gap_id),
-                        "resolution_id": str(resolution_id),
-                    },
-                )
-            )
-
-            # Apply the accepted disposition and merge newly discovered gaps.
-            gap.status = _state_for_resolution(latest_resolution.action)
-            gap.updated_at = datetime.now(UTC)
-            await _merge_generated_gaps(
-                session,
-                chapter,
-                generated.missing_information,
-                protected_gap_id=gap_id,
-            )
-            chapter.status = (
-                "needs_review"
-                if await _has_blocking_gaps(session, chapter_id)
-                else "draft"
-            )
-            chapter.regeneration_status = "idle"
-            chapter.regeneration_error = None
-            chapter.updated_at = datetime.now(UTC)
-            return True
-
-    async def fail_gap_regeneration(
-        self,
-        *,
-        chapter_id: UUID,
-        gap_id: UUID,
-        resolution_id: UUID,
-    ) -> None:
-        """Expose a retryable failure without discarding the accepted resolution."""
-        async with self._session_factory() as session, session.begin():
-            chapter = await _require_chapter(session, chapter_id, lock=True)
-            latest_resolution = await _latest_resolution(session, gap_id)
-            if (
-                latest_resolution is None
-                or latest_resolution.resolution_id != resolution_id
-            ):
-                return
-            chapter.status = "needs_review"
-            chapter.regeneration_status = "failed"
-            chapter.regeneration_error = "chapter_regeneration_failed"
-            chapter.updated_at = datetime.now(UTC)
-
     async def confirm_chapter(
         self,
         *,
@@ -690,8 +514,6 @@ class ConceptNoteWorkspaceRepository:
             latest = await _latest_revision(session, chapter_id)
             if latest is None or latest.revision_number != expected_revision:
                 raise WorkspaceConflictError("Concept Note chapter revision is stale")
-            if chapter.regeneration_status != "idle":
-                raise WorkspaceConflictError("Chapter regeneration is not complete")
             if await _has_blocking_gaps(session, chapter_id):
                 raise WorkspaceConflictError("Open gaps must be resolved before review")
 
@@ -706,118 +528,6 @@ class ConceptNoteWorkspaceRepository:
             chapter.confirmed_revision_id = latest.revision_id
             chapter.status = "ready"
             chapter.updated_at = datetime.now(UTC)
-
-    async def begin_gap_impact_regeneration(
-        self,
-        *,
-        chapter_id: UUID,
-        expected_revision_number: int,
-    ) -> bool:
-        """Mark one reviewer-selected chapter as regenerating if still current."""
-        async with self._session_factory() as session, session.begin():
-            chapter = await _require_chapter(session, chapter_id, lock=True)
-            latest = await _latest_revision(session, chapter_id)
-            if (
-                latest is None
-                or latest.revision_number != expected_revision_number
-                or chapter.regeneration_status == "processing"
-            ):
-                return False
-            chapter.regeneration_status = "processing"
-            chapter.regeneration_error = None
-            chapter.updated_at = datetime.now(UTC)
-            return True
-
-    async def save_gap_impact_regeneration(
-        self,
-        *,
-        chapter_id: UUID,
-        expected_revision_number: int,
-        generated: ConceptNoteChapterDraftOutput,
-        source_gap_id: UUID,
-        source_resolution_id: UUID,
-        actor_user_id: str,
-        answer: str,
-        source_refs: list[str],
-    ) -> bool:
-        """Append a reviewer-selected rewrite with the user's answer provenance."""
-        async with self._session_factory() as session, session.begin():
-            chapter = await _require_chapter(session, chapter_id, lock=True)
-            latest = await _latest_revision(session, chapter_id)
-            if (
-                latest is None
-                or latest.revision_number != expected_revision_number
-                or chapter.regeneration_status != "processing"
-            ):
-                return False
-
-            gaps_changed = await _reconcile_generated_gaps(
-                session,
-                chapter,
-                generated.missing_information,
-                close_action="answer",
-                close_answer=answer,
-                close_actor_user_id=actor_user_id,
-                source_refs=source_refs,
-            )
-            body_changed = (
-                latest.body_markdown.strip() != generated.body_markdown.strip()
-            )
-            if not body_changed and not gaps_changed:
-                chapter.regeneration_status = "idle"
-                chapter.regeneration_error = None
-                chapter.updated_at = datetime.now(UTC)
-                return False
-
-            session.add(
-                ConceptNoteChapterRevision(
-                    chapter_id=chapter_id,
-                    revision_number=latest.revision_number + 1,
-                    author_type="agent",
-                    change_type="rewrite",
-                    body_markdown=generated.body_markdown,
-                    patch_summary={
-                        "gap_impact_review": True,
-                        "source_gap_id": str(source_gap_id),
-                        "source_resolution_id": str(source_resolution_id),
-                        "confirmed_revision_id": (
-                            str(chapter.confirmed_revision_id)
-                            if chapter.confirmed_revision_id
-                            else None
-                        ),
-                    },
-                )
-            )
-            chapter.status = (
-                "needs_review"
-                if await _has_blocking_gaps(session, chapter_id)
-                else "draft"
-            )
-            chapter.regeneration_status = "idle"
-            chapter.regeneration_error = None
-            chapter.updated_at = datetime.now(UTC)
-            return True
-
-    async def fail_gap_impact_regeneration(
-        self,
-        *,
-        chapter_id: UUID,
-        expected_revision_number: int,
-    ) -> None:
-        """Expose a retryable cross-chapter rewrite failure without replacing text."""
-        async with self._session_factory() as session, session.begin():
-            chapter = await _require_chapter(session, chapter_id, lock=True)
-            latest = await _latest_revision(session, chapter_id)
-            if (
-                latest is None
-                or latest.revision_number != expected_revision_number
-                or chapter.regeneration_status != "processing"
-            ):
-                return
-            chapter.regeneration_status = "failed"
-            chapter.regeneration_error = "gap_impact_regeneration_failed"
-            chapter.updated_at = datetime.now(UTC)
-
 
 async def _require_chapter(
     session: AsyncSession,
@@ -845,22 +555,6 @@ async def _latest_revision(
     )
 
 
-async def _latest_resolution(
-    session: AsyncSession,
-    gap_id: UUID,
-) -> ConceptNoteGapResolution | None:
-    """Load the newest append-only resolution event for a gap."""
-    return await session.scalar(
-        select(ConceptNoteGapResolution)
-        .where(ConceptNoteGapResolution.gap_id == gap_id)
-        .order_by(
-            ConceptNoteGapResolution.created_at.desc(),
-            ConceptNoteGapResolution.resolution_id.desc(),
-        )
-        .limit(1)
-    )
-
-
 def _snapshot_chapter(
     chapter: ConceptNoteChapter,
     latest: ConceptNoteChapterRevision | None,
@@ -869,15 +563,6 @@ def _snapshot_chapter(
 ) -> WorkspaceChapterSnapshot:
     """Detach a chapter from its batch-loaded current and confirmed revisions."""
     confirmed_number = confirmed.revision_number if confirmed is not None else None
-    proposed_number = (
-        latest.revision_number
-        if latest is not None
-        # Accepted user edits are current text, not another regeneration proposal.
-        and latest.author_type != "user"
-        and confirmed_number is not None
-        and latest.revision_number != confirmed_number
-        else None
-    )
     return WorkspaceChapterSnapshot(
         chapter_id=chapter.chapter_id,
         chapter_ref=chapter.template_section_id,
@@ -894,9 +579,6 @@ def _snapshot_chapter(
             confirmed.body_markdown if confirmed is not None else None
         ),
         confirmed_revision_number=confirmed_number,
-        proposed_revision_number=proposed_number,
-        regeneration_status=chapter.regeneration_status,
-        regeneration_error=chapter.regeneration_error,
         missing_information=[
             gap.question for gap in gap_snapshots if gap.state == "open"
         ],
@@ -978,143 +660,6 @@ def _gap_from_output(
     )
 
 
-async def _merge_generated_gaps(
-    session: AsyncSession,
-    chapter: ConceptNoteChapter,
-    outputs: list[ConceptNoteDraftGapOutput],
-    *,
-    protected_gap_id: UUID,
-) -> None:
-    """Update still-open gaps and add newly discovered ones after a user answer."""
-    existing = list(
-        (
-            await session.scalars(
-                select(ConceptNoteGap).where(
-                    ConceptNoteGap.chapter_id == chapter.chapter_id
-                )
-            )
-        ).all()
-    )
-    by_key = {gap.field_key: gap for gap in existing}
-    for output in outputs:
-        gap = by_key.get(output.field_key)
-        if gap is None:
-            session.add(_gap_from_output(chapter, output))
-            continue
-        if gap.gap_id == protected_gap_id or gap.status in {
-            "resolved",
-            "dismissed",
-            "caveat",
-        }:
-            continue
-        if _update_gap_from_output(gap, output):
-            gap.version += 1
-
-
-async def _reconcile_generated_gaps(
-    session: AsyncSession,
-    chapter: ConceptNoteChapter,
-    outputs: list[ConceptNoteDraftGapOutput],
-    *,
-    close_action: str,
-    close_answer: str | None,
-    close_actor_user_id: str,
-    source_refs: list[str],
-) -> bool:
-    """Reconcile one generated gap set while retaining append-only provenance."""
-    existing = list(
-        (
-            await session.scalars(
-                select(ConceptNoteGap).where(
-                    ConceptNoteGap.chapter_id == chapter.chapter_id
-                )
-            )
-        ).all()
-    )
-    by_key = {gap.field_key: gap for gap in existing}
-    output_by_key = {output.field_key: output for output in outputs}
-    changed = False
-
-    # Close open or caveat gaps that the new evidence now answers.
-    for gap in existing:
-        output = output_by_key.get(gap.field_key)
-        if output is None and gap.status in {"open", "caveat", "processing"}:
-            gap.status = "resolved"
-            gap.version += 1
-            gap.updated_at = datetime.now(UTC)
-            session.add(
-                ConceptNoteGapResolution(
-                    gap_id=gap.gap_id,
-                    action=close_action,
-                    answer=close_answer,
-                    actor_user_id=close_actor_user_id,
-                    source_refs=source_refs,
-                    idempotency_key=uuid4(),
-                )
-            )
-            changed = True
-
-    # Update current gaps, reopen prior answers, and add newly revealed gaps.
-    for field_key, output in output_by_key.items():
-        gap = by_key.get(field_key)
-        if gap is None:
-            session.add(_gap_from_output(chapter, output))
-            changed = True
-            continue
-        if gap.status == "dismissed":
-            continue
-        presentation_changed = _update_gap_from_output(gap, output)
-        reopened = gap.status == "resolved"
-        if reopened:
-            gap.status = "open"
-            session.add(
-                ConceptNoteGapResolution(
-                    gap_id=gap.gap_id,
-                    action="evidence_update",
-                    answer=None,
-                    actor_user_id="system",
-                    source_refs=source_refs,
-                    idempotency_key=uuid4(),
-                )
-            )
-        if presentation_changed or reopened:
-            gap.version += 1
-            gap.updated_at = datetime.now(UTC)
-            changed = True
-    return changed
-
-
-def _update_gap_from_output(
-    gap: ConceptNoteGap,
-    output: ConceptNoteDraftGapOutput,
-) -> bool:
-    """Refresh mutable gap presentation fields while preserving its identity."""
-    suggestions = [item.model_dump(mode="json") for item in output.suggestions]
-    source_refs = _suggestion_source_refs(suggestions)
-    changed = (
-        gap.question,
-        gap.why_asking,
-        gap.severity,
-        gap.suggestions,
-        gap.source_refs,
-    ) != (
-        output.question,
-        output.why_asking,
-        output.severity,
-        suggestions,
-        source_refs,
-    )
-    if not changed:
-        return False
-    gap.question = output.question
-    gap.why_asking = output.why_asking
-    gap.severity = output.severity
-    gap.suggestions = suggestions
-    gap.source_refs = source_refs
-    gap.updated_at = datetime.now(UTC)
-    return True
-
-
 async def _has_blocking_gaps(session: AsyncSession, chapter_id: UUID) -> bool:
     """Return whether the chapter still has an unresolved or processing gap."""
     return (
@@ -1130,15 +675,6 @@ async def _has_blocking_gaps(session: AsyncSession, chapter_id: UUID) -> bool:
     )
 
 
-def _state_for_resolution(action: str) -> str:
-    """Map an accepted resolution action to its persisted terminal gap state."""
-    if action == "not_a_gap":
-        return "dismissed"
-    if action == "defer_as_caveat":
-        return "caveat"
-    return "resolved"
-
-
 def _suggestion_source_refs(suggestions: list[dict[str, Any]]) -> list[str]:
     """Flatten unique suggestion citations in stable display order."""
     refs: list[str] = []
@@ -1148,20 +684,6 @@ def _suggestion_source_refs(suggestions: list[dict[str, Any]]) -> list[str]:
             if ref and ref not in refs:
                 refs.append(ref)
     return refs
-
-
-def _source_refs_for_answer(
-    gap: ConceptNoteGap,
-    answer: str | None,
-) -> list[str]:
-    """Retain provenance only when the submitted answer matches a suggestion."""
-    if answer is None:
-        return []
-    submitted = answer.strip()
-    for suggestion in gap.suggestions or []:
-        if str(suggestion.get("value") or "").strip() == submitted:
-            return _suggestion_source_refs([suggestion])
-    return []
 
 
 async def _delete_workspace_rows(session: AsyncSession, run_id: UUID) -> None:

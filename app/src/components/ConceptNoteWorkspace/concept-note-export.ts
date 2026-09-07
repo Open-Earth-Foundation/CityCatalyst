@@ -4,7 +4,6 @@ import {
   countMissingInformationMarkers,
   stripMissingInformationMarkers,
 } from "./draft-markdown";
-import { getConceptNoteChapterGaps } from "./gap-interview";
 
 export type ConceptNoteExportFormat = "docx" | "pdf";
 
@@ -32,7 +31,7 @@ export function countUnresolvedExportItems(
     const markerCount = countMissingInformationMarkers(
       chapter.body_markdown ?? "",
     );
-    const openGapCount = getConceptNoteChapterGaps(chapter).filter(
+    const openGapCount = chapter.gaps.filter(
       (gap) => gap.state === "open" || gap.state === "processing",
     ).length;
     return total + Math.max(markerCount, openGapCount);
@@ -43,7 +42,7 @@ export function hasCriticalExportBlocker(
   chapters: ConceptNoteDraftChapter[],
 ): boolean {
   return chapters.some((chapter) =>
-    getConceptNoteChapterGaps(chapter).some(
+    chapter.gaps.some(
       (gap) =>
         gap.severity === "critical" &&
         (gap.state === "open" || gap.state === "processing"),

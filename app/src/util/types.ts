@@ -1015,8 +1015,7 @@ export interface WebhookSubscriptionResponse {
   lastUpdated: string | null;
 }
 
-export interface WebhookSubscriptionSecretResponse
-  extends WebhookSubscriptionResponse {
+export interface WebhookSubscriptionSecretResponse extends WebhookSubscriptionResponse {
   secret: string;
 }
 
@@ -1159,9 +1158,6 @@ export interface ConceptNoteDraftChapter {
   revision_number: number | null;
   confirmed_body_markdown: string | null;
   confirmed_revision_number: number | null;
-  proposed_revision_number: number | null;
-  regeneration_status: "idle" | "processing" | "failed";
-  regeneration_error: string | null;
 }
 
 export interface ConceptNoteDraftState {
@@ -1170,18 +1166,8 @@ export interface ConceptNoteDraftState {
   completed_chapters: number;
   total_chapters: number;
   current_chapter_id: string | null;
-  focused_gap_id: string | null;
   error_code: string | null;
   chapters: ConceptNoteDraftChapter[];
-}
-
-export interface ResolveConceptNoteGapRequest {
-  runId: string;
-  gapId: string;
-  action: "answer" | "correction" | "not_a_gap" | "defer_as_caveat";
-  answer?: string;
-  expectedVersion: number;
-  idempotencyKey: string;
 }
 
 export interface ConfirmConceptNoteChapterRequest {

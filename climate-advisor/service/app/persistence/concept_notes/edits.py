@@ -493,10 +493,10 @@ async def append_revision(
     patch_summary: dict,
 ) -> ConceptNoteChapterRevision:
     """Append an accepted revision and a coherent exact confirmation when justified."""
-    if chapter.user_locked or chapter.regeneration_status != "idle":
+    if chapter.user_locked:
         raise EditOperationError(
             "chapter_unavailable",
-            "The chapter is locked or being regenerated; retry after it is available.",
+            "The chapter is locked; unlock it before applying edits.",
         )
     has_open_gaps = await session.scalar(
         select(ConceptNoteGap.gap_id)

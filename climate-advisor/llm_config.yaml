@@ -30,9 +30,6 @@ models:
   cnb_chapter_drafter:
     name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
-  cnb_gap_impact_reviewer:
-    name: "openai/gpt-5.6-sol"
-    reasoning_effort: "medium"
   cnb_chat_edit_planner:
     name: "openai/gpt-5.6-sol"
     reasoning_effort: "medium"
@@ -54,9 +51,6 @@ generation:
       max_key_excerpts: 8
       max_topics: 12
       max_question_chars: 2000
-    cnb_gap_impact:
-      max_prompt_tokens: 50000
-      max_chapter_slice_tokens: 12000
     cnb_edits:
       max_prompt_tokens: 50000
       max_concurrency: 5
@@ -88,7 +82,6 @@ prompts:
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
   cnb_chapter_drafting: "prompts/cnb/chapter_drafting.md"
-  cnb_gap_impact_review: "prompts/cnb/gap_impact_review.md"
   cnb_chat_edit_planner: "prompts/cnb/chat_edit_planner.md"
   cnb_chat_edit_review: "prompts/cnb/chat_edit_review.md"
 

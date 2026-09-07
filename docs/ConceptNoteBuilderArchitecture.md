@@ -154,16 +154,15 @@ flowchart TB
 
 ## Product Shape
 
-The user experience is not a step-by-step questionnaire. It combines an
-optional manual interview with a live document workspace. Draft generation is
+The user experience combines chat with a live document workspace. Draft generation is
 not driven through chat: starting a draft invokes a dedicated persisted process.
 Afterwards, chat supports user-led questions, clarification, and reviewable edit
 proposals. Only explicit review actions mutate the persisted document.
 
 ### Implemented chat revision boundary (CC-732)
 
-The workspace shows red/green changes at each affected passage, including
-regenerated chapter comparisons. Users review inline with accept/reject controls
+The workspace shows red/green changes at each affected passage.
+Users review inline with accept/reject controls
 or Accept all / Reject all, navigate exact hunks, and access provenance and
 refinement in the options popover. The planner groups related occurrences;
 there is no separate checkbox-selection interface. The context tab retains source
@@ -184,7 +183,7 @@ restore endpoints are not exposed. Inline decisions select the exact applied sub
 
 A grounded marker replacement resolves the matching gap in the same transaction.
 Wording-only edits preserve Ready only when exact confirmation and current gap,
-lock and regeneration checks permit it; factual changes require renewed review.
+and lock checks permit it; factual changes require renewed review.
 Proposals and results survive reload. Web and CA independently enforce current
 user/run/city authorization. CNB telemetry remains metadata-only, including
 nested source queries, without disabling concurrent generic tracing.
@@ -220,7 +219,6 @@ The drafting service and document workspace then use that context bundle to:
 ```mermaid
 flowchart LR
     Context["Assemble context bundle"]
-    Context --> Interview["Optional manual interview"]
     Context --> Draft["Independent sequential drafting"]
     Draft --> Review["User review + edits"]
     Review --> Revise["Revise chapters"]

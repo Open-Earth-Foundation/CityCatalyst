@@ -19,7 +19,7 @@ depends_on: str | Sequence[str] | None = None
 
 def upgrade() -> None:
     """Create the audited gap-resolution and chapter-review workflow."""
-    # Extend chapters with an exact confirmation pointer and regeneration state.
+    # Extend chapters with an exact confirmation pointer.
     op.add_column(
         "concept_note_chapters",
         sa.Column(
@@ -27,19 +27,6 @@ def upgrade() -> None:
             postgresql.UUID(as_uuid=True),
             nullable=True,
         ),
-    )
-    op.add_column(
-        "concept_note_chapters",
-        sa.Column(
-            "regeneration_status",
-            sa.String(length=32),
-            nullable=False,
-            server_default="idle",
-        ),
-    )
-    op.add_column(
-        "concept_note_chapters",
-        sa.Column("regeneration_error", sa.String(length=255), nullable=True),
     )
     op.create_foreign_key(
         "fk_cnb_chapters_confirmed_revision",
@@ -49,12 +36,6 @@ def upgrade() -> None:
         ["revision_id"],
         ondelete="SET NULL",
     )
-    op.create_check_constraint(
-        "ck_concept_note_chapters_regeneration_status_valid",
-        "concept_note_chapters",
-        "regeneration_status IN ('idle', 'processing', 'failed')",
-    )
-
     # Migrate legacy gap strings into the structured contract.
     op.add_column(
         "concept_note_gaps",
@@ -388,15 +369,8 @@ def downgrade() -> None:
     op.execute("UPDATE concept_note_gaps SET severity = 'missing_information'")
 
     op.drop_constraint(
-        "ck_concept_note_chapters_regeneration_status_valid",
-        "concept_note_chapters",
-        type_="check",
-    )
-    op.drop_constraint(
         "fk_cnb_chapters_confirmed_revision",
         "concept_note_chapters",
         type_="foreignkey",
     )
-    op.drop_column("concept_note_chapters", "regeneration_error")
-    op.drop_column("concept_note_chapters", "regeneration_status")
     op.drop_column("concept_note_chapters", "confirmed_revision_id")

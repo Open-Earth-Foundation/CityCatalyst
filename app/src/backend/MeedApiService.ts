@@ -4,6 +4,8 @@ import PopulationService from "./PopulationService";
 import createHttpError from "http-errors";
 import { InventoryService } from "./InventoryService";
 import { randomUUID } from "node:crypto";
+import { Op } from "sequelize";
+import { logger } from "@/services/logger";
 
 const MEED_API_URL = process.env.HIAP_MEED_API_URL + "/v1/";
 
@@ -85,6 +87,15 @@ type MeedResponseActionRemoved = {
     restrictions_description?: Record<string, string>;
     legal_justification?: Record<string, string>;
   };
+};
+
+type ExclusionsPreviewRequest = {
+  cityDataList: {
+    locode: string;
+    excludedSectorTags: string[];
+    excludedCoBenefitKeys: string[];
+    excludedActionsFreeText: string;
+  }[];
 };
 
 export default class MeedApiService {
@@ -195,9 +206,11 @@ export default class MeedApiService {
     });
 
     // make API request to MEED API
+    const requestId = randomUUID(); // to be able to save it to snapshot later
     const result: MeedRankResponse = await this.makeRequest(
       "prioritize",
       fullRequest,
+      requestId,
     );
 
     const rankedActionsRaw: MeedResponseActionRanked[] =
@@ -217,6 +230,26 @@ export default class MeedApiService {
         where: { inventoryId },
         transaction,
       });
+
+      // delete existing rank snapshots so there's only one per inventory
+      await db.models.MeedRankSnapshot.destroy({
+        where: { inventoryId },
+        transaction,
+      });
+
+      // store snapshot of ranking request and response so it can be used to generate a report
+      await db.models.MeedRankSnapshot.create(
+        {
+          id: randomUUID(),
+          inventoryId,
+          request: {
+            meta: { requestId },
+            requestData: fullRequest,
+          },
+          response: result,
+        },
+        { transaction },
+      );
 
       const rankedActions = await db.models.MeedActionRanked.bulkCreate(
         rankedActionsRaw.map((action) => ({
@@ -343,15 +376,202 @@ export default class MeedApiService {
     return result;
   }
 
-  private static async makeRequest(route: string, data: object | null = null) {
+  public static async getExclusionsPreview(data: ExclusionsPreviewRequest) {
+    const result = await this.makeRequest(
+      "prioritize/exclusions/preview",
+      data,
+    );
+    return result.results;
+  }
+
+  public static async getFeasibilityScores(cityId: string) {
+    const city = await db.models.City.findOne({ where: { cityId } });
+    if (!city) {
+      throw new createHttpError.NotFound("City not found");
+    }
+    const cityLocode = city.locode;
+    const countryLocode = city.countryLocode;
+    const result = await this.makeRequest(
+      `cities/${cityLocode}/action-mitigation-feasibility-scores?country_code=${countryLocode}`,
+    );
+    return result;
+  }
+
+  public static async translateExplanations(
+    inventoryId: string,
+    sourceLanguage: string,
+    targetLanguages: string[],
+    rankedActionIds: string[],
+  ) {
+    const actions = await db.models.MeedActionRanked.findAll({
+      where: { inventoryId, actionId: { [Op.in]: rankedActionIds } },
+    });
+    const rankedActions = actions
+      .map((action) => {
+        const canonicalExplanation = action.explanations?.[sourceLanguage];
+        if (!canonicalExplanation) {
+          logger.error(
+            {
+              id: action.id,
+              inventoryId: action.inventoryId,
+              actionId: action.actionId,
+              sourceLanguage,
+            },
+            "MEED: Explanation missing in source language for translation, skipping translation",
+          );
+        }
+        return {
+          actionId: action.actionId,
+          canonicalExplanation,
+        };
+      })
+      .filter((rankedAction) => !!rankedAction.canonicalExplanation);
+
+    if (rankedActions.length === 0) {
+      throw new createHttpError.BadRequest(
+        "Missing action explanations in source language",
+      );
+    }
+
+    const result = await this.makeRequest("explanations/translate", {
+      sourceLanguage,
+      targetLanguages,
+      rankedActions,
+    });
+
+    if (!result.translations) {
+      logger.error(
+        {
+          inventoryId,
+          sourceLanguage,
+          result,
+        },
+        "MEED: Translation failed",
+      );
+      return null;
+    }
+
+    // save to database
+    await db.sequelize?.transaction(async (transaction) => {
+      for (const translation of result.translations) {
+        const action = actions.find(
+          (action) => action.actionId == translation.actionId,
+        );
+        if (!action) {
+          logger.error(
+            {
+              inventoryId,
+              sourceLanguage,
+              result,
+              actionId: translation.actionId,
+            },
+            "MEED: Failed to find action for translation result",
+          );
+          continue;
+        }
+        action.explanations = {
+          ...action.explanations,
+          ...translation.explanations,
+        };
+        await action.save({ transaction });
+      }
+    });
+
+    return actions;
+  }
+
+  public static async generatePlan(
+    inventoryId: string,
+    languages: string[],
+    actionId: string,
+    debugContextOnly: boolean,
+  ) {
+    const inventory = await db.models.Inventory.findOne({
+      where: { inventoryId },
+      include: [{ model: db.models.City, as: "city" }],
+    });
+    if (!inventory) {
+      throw new createHttpError.NotFound("Inventory not found");
+    }
+
+    const rankSnapshot = await db.models.MeedRankSnapshot.findOne({
+      where: { inventoryId },
+    });
+    if (!rankSnapshot) {
+      throw new createHttpError.NotFound(
+        "Rank snapshot not found - run ranking first",
+      );
+    }
+
+    const data = {
+      locode: inventory.city.locode,
+      actionId,
+      language: languages,
+      prioritizationSnapshot: {
+        request: rankSnapshot.request,
+        response: rankSnapshot.response,
+      },
+      debugContextOnly,
+    };
+    const result = await this.makeRequest("reports/output-plan", data);
+    logger.info(
+      { inventoryId, languages, actionId, result, data },
+      "MEED output plan route finished",
+    );
+
+    // save result to database, update existing report if it exists
+    let report = await db.models.MeedActionReport.findOne({
+      where: { inventoryId, actionId: result.action_id },
+    });
+    if (report) {
+      await report.update({
+        inventoryId,
+        actionId: result.action_id,
+        languages: result.language,
+        chapters: result.chapters,
+      });
+    } else {
+      report = await db.models.MeedActionReport.create({
+        id: randomUUID(),
+        inventoryId,
+        actionId: result.action_id,
+        languages: result.language,
+        chapters: result.chapters,
+      });
+    }
+
+    return report;
+  }
+
+  public static async getPlan(inventoryId: string, actionId: string) {
+    const plan = await db.models.MeedActionReport.findOne({
+      where: {
+        inventoryId,
+        actionId,
+      },
+    });
+
+    if (!plan) {
+      throw new createHttpError.NotFound("Plan not found");
+    }
+
+    return plan;
+  }
+
+  private static async makeRequest(
+    route: string,
+    data: object | null = null,
+    requestId: string | undefined = undefined,
+  ) {
     const method = data == null ? "GET" : "POST";
+    requestId = requestId ?? randomUUID();
     const body =
       data == null
         ? undefined
         : JSON.stringify({
             requestData: data,
             meta: {
-              requestId: randomUUID(),
+              requestId,
             },
           });
     const response = await fetch(MEED_API_URL + route, {

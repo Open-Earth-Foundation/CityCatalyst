@@ -46,6 +46,7 @@ import { stageOrder, stageIcons } from "@/config/stages";
 import { getDashboardPath } from "@/util/routes";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { isModuleVisible } from "@/util/module-visibility";
+import { useCitySwitchNavigation } from "@/hooks/useCitySwitchNavigation";
 
 const ProjectFilterSection = ({
   t,
@@ -61,12 +62,20 @@ const ProjectFilterSection = ({
   organizationId?: string;
 }) => {
   const router = useRouter();
+  const navigateToCity = useCitySwitchNavigation(lng);
   const [selectedProject, setSelectedProject] = useState<string>("");
 
   // Check user access status for permission-based UI
   const { data: userAccessStatus } = useGetUserAccessStatusQuery({});
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  // Modules enabled for the currently selected project, used to decide
+  // whether the active module can be preserved when switching cities.
+  const { data: projectModulesForSwitch } = useGetProjectModulesQuery(
+    selectedProject,
+    { skip: !selectedProject },
+  );
 
   // Initialize with current project and city based on currentCityId
   useEffect(() => {
@@ -193,9 +202,10 @@ const ProjectFilterSection = ({
 
   const searchResults = getSearchResults();
 
-  // Handle city selection and navigation
+  // Handle city selection and navigation, preserving the current module
+  // (GHGI/HIAP/MEED/dashboard) for the new city when it's available.
   const handleCitySelection = (cityId: string) => {
-    router.push(`/${lng}/cities/${cityId}`);
+    navigateToCity(cityId, projectModulesForSwitch ?? []);
   };
 
   return (
@@ -458,6 +468,7 @@ const JNDrawer = ({
 }) => {
   const { t } = useTranslation(lng, "dashboard");
   const router = useRouter();
+  const navigateToCity = useCitySwitchNavigation(lng);
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
   const { organization, setOrganization } = useOrganizationContext();
   const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
@@ -473,6 +484,7 @@ const JNDrawer = ({
     [rawOrganizations],
   );
   const [getProjectsForOrganization] = api.useLazyGetProjectsQuery();
+  const [getProjectModulesTrigger] = api.useLazyGetProjectModulesQuery();
   const [isOrgMenuOpen, setOrgMenuOpen] = useState(false);
 
   const [selectedProject, setSelectedProject] = React.useState<string | null>();
@@ -499,12 +511,24 @@ const JNDrawer = ({
     })
       .unwrap()
       .catch(() => []);
-    const cityId = projects
-      .flatMap((project) => project.cities)
-      .sort((a, b) => a.name.localeCompare(b.name))[0]?.cityId;
-    router.push(
-      cityId ? `/${lng}/cities/${cityId}` : `/${lng}/cities/onboarding`,
-    );
+
+    const targetProject = projects
+      .flatMap((project) => project.cities.map((city) => ({ project, city })))
+      .sort((a, b) => a.city.name.localeCompare(b.city.name))[0];
+
+    if (!targetProject) {
+      router.push(`/${lng}/cities/onboarding`);
+      onClose();
+      return;
+    }
+
+    const newProjectModules = await getProjectModulesTrigger(
+      targetProject.project.projectId,
+    )
+      .unwrap()
+      .catch(() => []);
+
+    navigateToCity(targetProject.city.cityId, newProjectModules);
     onClose();
   }
 

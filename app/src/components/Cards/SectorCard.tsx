@@ -87,6 +87,7 @@ export function SectorCard({
     <Box
       backgroundColor="base.light"
       borderRadius="rounded"
+      boxShadow="shadow-lg"
       maxW="full"
       display="flex"
       flexDirection="column"

@@ -33,20 +33,20 @@ export function PlanBadge({ planType, trialDaysRemaining, t }: PlanBadgeProps) {
     planStyles[planType] ?? planStyles[OrganizationPlanType.FULL];
 
   return (
-    <Box position="relative" w="142px" h="155px" flexShrink={0}>
-      <svg viewBox="-4 -4 108 123" width="100%" height="100%" aria-hidden>
+    <Box position="relative" w="165px" h="165px" flexShrink={0}>
+      <svg viewBox="-6 -6 112 127" width="100%" height="100%" aria-hidden>
         <polygon
           points="50,0 100,28.75 100,86.25 50,115 0,86.25 0,28.75"
           fill={background}
           stroke={background}
-          strokeWidth="10"
+          strokeWidth="12"
           strokeLinejoin="round"
         />
       </svg>
       <Box
         position="absolute"
         left="4px"
-        top="40px"
+        top="48px"
         opacity={0.9}
         transform="scale(1.8)"
         transformOrigin="left"
@@ -68,7 +68,7 @@ export function PlanBadge({ planType, trialDaysRemaining, t }: PlanBadgeProps) {
         gap={1}
       >
         <Text
-          fontSize="label.sm"
+          fontSize="label.lg"
           fontWeight="bold"
           letterSpacing="widest"
           textTransform="uppercase"
@@ -78,7 +78,7 @@ export function PlanBadge({ planType, trialDaysRemaining, t }: PlanBadgeProps) {
         </Text>
         {planType === OrganizationPlanType.TRIAL &&
           trialDaysRemaining !== null && (
-            <Text fontSize="label.sm" lineHeight="16px">
+            <Text fontSize="label.lg" lineHeight="16px">
               {t("days-remaining", { count: trialDaysRemaining })}
             </Text>
           )}

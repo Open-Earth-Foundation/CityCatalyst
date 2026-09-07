@@ -28,6 +28,7 @@ from app.modules.prioritizer.internal_models import (
     ActionPathwaysFetchResult,
     ActionPolicyScoresFetchResult,
     CityData,
+    LegalAssessmentRecord,
 )
 from app.modules.prioritizer.report_models import (
     ReportChapterInput,
@@ -63,9 +64,24 @@ class MockLegalDataApiClient:
     """In-memory legal client for output-plan endpoint tests."""
 
     def get_action_legal_assessments(self, country_code: str) -> dict[str, object]:
-        """Return no legal enrichment for sparse-but-valid source behavior."""
-        del country_code
-        return {}
+        """Return localized legal enrichment for the selected report action."""
+        return {
+            "A_1": LegalAssessmentRecord(
+                action_id="A_1",
+                country_code=country_code,
+                verdict_category="enabled",
+                ownership_category="enabled",
+                ownership_description_i18n={
+                    "en": "The municipality can lead delivery.",
+                    "es": "El municipio puede liderar la ejecución.",
+                },
+                restrictions_category="enabled",
+                restrictions_description_i18n={
+                    "en": "No additional authorization is required.",
+                    "es": "No se requiere autorización adicional.",
+                },
+            )
+        }
 
 
 class MockPolicyScoresDataApiClient:

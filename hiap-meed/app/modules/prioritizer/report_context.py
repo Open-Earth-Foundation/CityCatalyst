@@ -637,16 +637,7 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
             "reading": translate_term(
                 "score_labels", legal.get("verdict_category"), context.language
             ),
-            "detail": localized_source_value(
-                language=context.language,
-                localized=ownership_description,
-                fallback=ownership_description.get("en"),
-            )
-            or localized_source_value(
-                language=context.language,
-                localized=restrictions_description,
-                fallback=restrictions_description.get("en"),
-            ),
+            "detail": ownership_description or restrictions_description,
         },
         {
             "what_we_checked": translate_term(

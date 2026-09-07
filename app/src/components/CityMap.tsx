@@ -3,7 +3,7 @@
 import { api } from "@/services/api";
 import { getBoundsZoomLevel } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { Map, GeoJson, GeoJsonFeature } from "pigeon-maps";
 
 export interface CityMapProps {
@@ -16,6 +16,30 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
   const { data, isLoading } = api.useGetCityBoundaryQuery(locode!, {
     skip: !locode,
   });
+
+  // `width`/`height` describe the design's target size (and aspect ratio).
+  // The container is fluid up to that size, so the actual rendered pixels
+  // are re-measured on resize to stay in sync with pigeon-maps' tile sizing.
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [renderSize, setRenderSize] = useState({ width, height });
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const aspectRatio = width / height;
+    const observer = new ResizeObserver((entries) => {
+      const measuredWidth = entries[0]?.contentRect.width;
+      if (measuredWidth) {
+        setRenderSize({
+          width: Math.round(measuredWidth),
+          height: Math.round(measuredWidth / aspectRatio),
+        });
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [width, height]);
 
   const [center, setCenter] = useState<[number, number]>([34.0, -37.0]);
   const [zoom, setZoom] = useState(11);
@@ -34,7 +58,7 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
     if (data?.boundingBox) {
       const boundingBox = data.boundingBox;
       if (boundingBox && !boundingBox.some(isNaN)) {
-        const newZoom = getBoundsZoomLevel(boundingBox, { width, height });
+        const newZoom = getBoundsZoomLevel(boundingBox, renderSize);
         const newCenter: [number, number] = [
           (boundingBox[1] + boundingBox[3]) / 2,
           (boundingBox[0] + boundingBox[2]) / 2,
@@ -43,18 +67,21 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
         setZoom(newZoom);
       }
     }
-  }, [locode, data, height, width]);
+  }, [locode, data, renderSize]);
 
   return (
-    <Box w={width} h={height} position="relative">
+    <Box
+      ref={containerRef}
+      w="full"
+      maxW={`${width}px`}
+      aspectRatio={width / height}
+      position="relative"
+    >
       {isLoading ? (
         <Box
-          w={width}
-          h={height}
+          position="absolute"
+          inset={0}
           style={{
-            position: "relative",
-            top: 0,
-            left: 0,
             zIndex: 1000,
             pointerEvents: "none",
           }}
@@ -65,7 +92,8 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
         </Box>
       ) : (
         <Map
-          height={height}
+          width={renderSize.width}
+          height={renderSize.height}
           center={center}
           zoom={zoom}
           onBoundsChanged={onBoundsChanged}

@@ -2,8 +2,7 @@ import React from "react";
 import { Box, useDisclosure } from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
 import ModalDownloadReport from "./DownloadAndShareModals/ModalDownloadReport";
-import ModalPublish from "./DownloadAndShareModals/ModalPublish";
-import ActionCardSmall from "./ActionCardSmall";
+import ToolbarActionButton from "./ToolbarActionButton";
 import { useTranslation } from "@/i18n/client";
 import type { CityAttributes } from "@/models/City";
 import type { InventoryResponse } from "@/util/types";
@@ -29,12 +28,6 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
     onClose: onDownloadShareClose,
   } = useDisclosure();
 
-  const {
-    open: isPublishOpen,
-    onOpen: onPublishOpen,
-    onClose: onPublishClose,
-  } = useDisclosure();
-
   const { t } = useTranslation(lng, "dashboard");
 
   return (
@@ -44,19 +37,9 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         lng={lng}
         isDownloadShareOpen={isDownloadShareOpen}
         onDownloadShareClose={onDownloadShareClose}
-        onPublishOpen={onPublishOpen}
         inventoryId={inventoryId}
         inventory={inventory}
         cityLocode={city?.locode}
-      />
-      <ModalPublish
-        // Todo: add close state action
-        setModalOpen={() => {}}
-        t={t}
-        isPublishOpen={isPublishOpen}
-        onPublishClose={onPublishClose}
-        inventoryId={inventoryId}
-        inventory={inventory}
       />
       {children ? (
         <Box onClick={onDownloadShareOpen} data-testid="download-button">
@@ -64,10 +47,11 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         </Box>
       ) : (
         <div data-testid="download-action-card">
-          <ActionCardSmall
+          <ToolbarActionButton
             onClick={onDownloadShareOpen}
-            icon={<FiDownload color="white" size={24} />}
-            title={t("download-and-report")}
+            icon={<FiDownload size={24} />}
+            label={t("download-inventory")}
+            dataTestId="download-and-report-button"
           />
         </div>
       )}

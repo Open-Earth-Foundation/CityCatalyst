@@ -11,7 +11,7 @@ The document shows previous text in red and proposed text in green directly at
 each affected passage, with `del`/`ins` semantics and a non-color legend. Chat
 contains only the conversation and never renders proposal, failure, refinement,
 or comparison cards. A pending proposal automatically opens its inline document
-review. Completed proposals are condensed under History. The document header,
+review. Completed proposals remain persisted through the backend API. The document header,
 beside Export, provides
 previous/next arrows, Accept all and Reject all; there is no second toolbar above
 the draft. Each inline replacement also has an X for rejecting that occurrence
@@ -32,19 +32,26 @@ the chapter as Ready is separate from accepting and saving the edit. New or
 restored proposals reveal the first affected passage once; subsequent arrows
 scroll the actual inline hunk, not a chat card or chapter heading. Chat and
 document scrolling remain independent; streaming does not continuously force
-the user's scroll position. Undo/restore freezes the current revision vector
-before reading history, displays each changed passage in the document and
-requires explicit document-header confirmation. Regenerated chapter comparisons
-use this same inline renderer instead of side-by-side columns.
+the user's scroll position. Regenerated chapter comparisons use the same inline
+renderer. This workspace does not expose a History, Undo or Restore control; the
+backend audit and compensating-operation APIs remain available.
 
 Anchors are validated against the original Markdown before presentation;
 Python Unicode code-point offsets are converted to JavaScript UTF-16 positions.
 The renderer transforms parsed Markdown, never raw HTML. Plain text replacements
 stay within the surrounding paragraph/list/table cell. Changes spanning Markdown
 syntax or blocks redline the complete affected enclosing block so the document
-structure remains valid. History uses bounded token alignment, falling back to
+structure remains valid. Snapshot comparison uses bounded token alignment, falling back to
 line alignment for large snapshots and one changed range for exceptionally large
 comparisons. Stale, overlapping or missing anchors disable acceptance.
+
+The existing RTK Query API owns proposal fetching, caching, refresh and polling.
+The review hook retains only explicit mutations and durable acceptance retry keys;
+inline decisions live in their own hook. Chapter polling batch-loads revisions,
+gaps and resolutions in at most four SELECTs, independent of chapter count.
+Planning and semantic review live in `edit_planner.py`; deterministic authorization,
+provenance and exact-anchor expansion live in `edit_validation.py`. Both expansion
+paths use the same protected-text traversal and size limit.
 
 ## Scope, anchors, and grounding
 
@@ -264,31 +271,33 @@ would not protect document text.
 
 Use Node 22 and the locked Python environment. No live model or embedding call is
 needed. Provide a disposable loopback PostgreSQL database named `cc732_*` through
-`CNB_EDIT_TEST_DATABASE_URL`; the runner rejects missing or non-isolated targets
-before executing required PostgreSQL tests.
+`CNB_EDIT_TEST_DATABASE_URL`; the PostgreSQL fixture rejects missing or non-isolated targets.
 
 From `climate-advisor/`:
 
 ```text
 uv sync --locked
-uv run python service/scripts/run_cnb_edit_tests.py --suite all --coverage
+uv run --directory service pytest tests/ -m "not manual_llm" --cov --cov-config=.coveragerc.cnb --cov-report=json --cov-report=term-missing
 ```
 
 From `app/`:
 
 ```text
 npm ci
-node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.cnb-edits.config.ts --runInBand --coverage
-node scripts/verify-cnb-edit-coverage.mjs
+node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.cnb-edits.config.mjs --runInBand --coverage
 ```
 
-Each package independently requires at least 80% executable-line coverage over
-all new/modified runtime files. The manifests include shared wiring, complete UI
-files, literal bracket-named routes, and unexecuted files. The verifier rejects
-missing/duplicate source entries. Existing shared-boundary tests and explicit
-workspace/document/inline-review supplements are included; their selection does not change the
-denominator or replace separate existing regression suites. `CNB_EDIT_COVERAGE_BASE`
-must identify the PR base in CI (local default: HEAD).
+Each package independently requires at least 80% executable-line coverage. Jest
+includes the complete edit, review, chat and draft modules and edit API boundaries;
+coverage.py discovers the CNB service, persistence and model packages plus edit
+routes, tools and observability. Unexecuted modules remain in each denominator.
+These are stable feature boundaries, independent of the Git comparison base;
+shared application wiring is exercised by the full regression run. The CA CI
+executes that run once, with blocking test failures and built-in coverage checks.
+
+The legacy `test_vector_db_insertion.py` is an opt-in inspection of an already
+populated PostgreSQL database. Set `VECTOR_TEST_DATABASE_URL` and run that file
+explicitly when checking uploaded embeddings; it is skipped in synthetic CI.
 
 CA emits `service/coverage/cnb-edits/coverage.json`; web emits
 `coverage/cnb-edits/coverage-final.json`. New regression failures must be repaired,
@@ -334,7 +343,7 @@ test-only `e2e/cnb-edit-test-preload.cjs` with `CNB_EDIT_TEST_DB_PORT` and
 the preload rejects unexpected database targets. DB-integrated Jest also needs
 the preload in `--setupFiles` because it runs a separate module environment.
 
-The dedicated config includes one auth test plus six feature journeys. The
+The dedicated config includes one auth test plus seven feature journeys. The
 legacy Playwright config excludes only these two fixture-specific files; the
 dedicated blocking CI job runs them with their isolated prerequisites. CA-only
 pull requests also trigger that cross-service job. Existing push/deployment

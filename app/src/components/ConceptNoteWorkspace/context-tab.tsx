@@ -50,7 +50,11 @@ interface ContextTabProps {
   uploadError: string | null;
 }
 
-type ContextTone = "positive" | "neutral" | "warning";
+import {
+  ContextStatusBadge,
+  toneColor,
+  type ContextTone,
+} from "./context-status-badge";
 
 interface ContextCardProps {
   details: string[];
@@ -60,43 +64,6 @@ interface ContextCardProps {
   value: string;
   viewLabel?: string;
   onClick?: () => void;
-}
-
-function toneColor(tone: ContextTone): string {
-  if (tone === "positive") {
-    return "sentiment.positiveDefault";
-  }
-  if (tone === "warning") {
-    return "sentiment.warningDefault";
-  }
-  return "content.tertiary";
-}
-
-function ContextStatusBadge({
-  label,
-  tone = "neutral",
-}: {
-  label: string;
-  tone?: ContextTone;
-}) {
-  const color = toneColor(tone);
-
-  return (
-    <HStack
-      alignSelf="flex-start"
-      gap={1.5}
-      border="1px solid"
-      borderColor={color}
-      borderRadius="pill"
-      px={2}
-      py={0.5}
-    >
-      <Box boxSize="6px" borderRadius="full" bg={color} />
-      <Text fontSize="10px" lineHeight="16px" color="content.secondary">
-        {label}
-      </Text>
-    </HStack>
-  );
 }
 
 function ContextSectionLabel({ children }: { children: string }) {

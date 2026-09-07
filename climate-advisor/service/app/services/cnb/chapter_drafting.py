@@ -5,14 +5,12 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import re
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID, uuid4
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
-from app.config import Settings, get_settings
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_application_context import (
@@ -54,11 +52,12 @@ from openai import AsyncOpenAI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from app.config import Settings, get_settings
+
 logger = logging.getLogger(__name__)
 ChapterGenerator = Callable[[dict[str, Any]], Awaitable[ConceptNoteChapterDraftOutput]]
 _BACKGROUND_DRAFTS: set[asyncio.Task[None]] = set()
 _BACKGROUND_GAP_REGENERATIONS: set[asyncio.Task[None]] = set()
-_BACKGROUND_REVALIDATIONS: set[asyncio.Task[None]] = set()
 CHAPTER_DRAFT_RECONCILE_INTERVAL_SECONDS = 300
 CHAPTER_DRAFT_STALE_AFTER = timedelta(hours=1)
 
@@ -456,60 +455,6 @@ class ConceptNoteChapterDraftService:
                     expected_revision_number=expected_revision,
                 )
 
-    async def revalidate_after_new_sources(
-        self,
-        *,
-        run_id: UUID,
-        user_id: str,
-        source_refs: list[str],
-    ) -> None:
-        """Propose revisions only for chapters affected by newly analyzed sources."""
-        try:
-            # Snapshot the rebuilt bundle and select impacted persisted chapters.
-            run = await self._load_owned_run(run_id, user_id)
-            run_context, included_sources = await self._load_run_context(
-                run_id,
-                user_id,
-            )
-            application_context = await self._application_context.load_for_run(
-                run,
-                included_sources=included_sources,
-            )
-            templates = _require_template(application_context)
-            template_by_ref = {item.chapter_ref: item for item in templates}
-            chapters = await self._workspace.list_chapters(run_id=run_id)
-            impacted = _select_impacted_chapters(
-                chapters,
-                run_context=run_context,
-                source_refs=source_refs,
-            )
-
-            # Each proposal appends a revision and leaves confirmed text immutable.
-            for current in impacted:
-                generated = await self._generate_chapter(
-                    _build_chapter_input(
-                        application_context=application_context,
-                        run_context=run_context,
-                        current=current,
-                        template_chapter=template_by_ref.get(current.chapter_ref or ""),
-                        chapters=chapters,
-                    )
-                )
-                generated = _sanitize_generated_output(generated, run_context)
-                if current.revision_number is None:
-                    continue
-                await self._workspace.save_revalidated_chapter(
-                    chapter_id=current.chapter_id,
-                    expected_revision_number=current.revision_number,
-                    generated=generated,
-                    source_refs=source_refs,
-                )
-        except Exception:
-            logger.exception(
-                "Concept Note source revalidation failed run_id=%s",
-                run_id,
-            )
-
     async def _generate_chapter(
         self,
         payload: dict[str, Any],
@@ -815,33 +760,6 @@ def schedule_gap_regeneration(
     task.add_done_callback(release)
 
 
-def schedule_chapter_revalidation(
-    *,
-    service: ConceptNoteChapterDraftService,
-    run_id: UUID,
-    user_id: str,
-    source_refs: list[str],
-) -> None:
-    """Retain one source-impact revalidation worker until it terminates."""
-    task = asyncio.create_task(
-        service.revalidate_after_new_sources(
-            run_id=run_id,
-            user_id=user_id,
-            source_refs=source_refs,
-        )
-    )
-    _BACKGROUND_REVALIDATIONS.add(task)
-
-    def release(completed: asyncio.Task[None]) -> None:
-        _BACKGROUND_REVALIDATIONS.discard(completed)
-        try:
-            completed.result()
-        except Exception:
-            logger.exception("Concept Note background source revalidation crashed")
-
-    task.add_done_callback(release)
-
-
 async def recover_stale_drafts(
     *,
     session_factory: async_sessionmaker[AsyncSession],
@@ -964,55 +882,62 @@ def _build_chapter_input(
     if application_payload.get("template"):
         application_payload["template"].pop("chapter_schema", None)
     semantic_run_context = {
-        key: value for key, value in run_context.items() if key != "context_bundle_status"
+        key: value
+        for key, value in run_context.items()
+        if key != "context_bundle_status"
     }
-    payload = omit_context_identifiers({
-        "application_context": application_payload,
-        "run_context": semantic_run_context,
-        "chapter": {
-            "chapter_ref": current.chapter_ref,
-            "title": current.title,
-            "description": (
-                template_chapter.description if template_chapter is not None else None
-            ),
-            "position": current.position,
-            "required": current.required,
-        },
-        "resolved_information": [
-            {
-                "field_key": gap.field_key,
-                "question": gap.question,
-                "disposition": gap.state,
-                "action": gap.resolution.action,
-                "answer": gap.resolution.answer if gap.resolution else None,
-            }
-            for gap in current.gaps
-            if gap.state in {"resolved", "dismissed", "caveat", "processing"}
-            and gap.resolution is not None
-        ],
-        "propagated_information": propagated_information or [],
-        "existing_open_gaps": [
-            {
-                "field_key": gap.field_key,
-                "question": gap.question,
-                "why_asking": gap.why_asking,
-                "severity": gap.severity,
-            }
-            for gap in current.gaps
-            if gap.state == "open"
-        ],
-        "previous_chapters": [
-            {
-                "chapter_ref": chapter.chapter_ref,
-                "title": chapter.title,
-                "body_markdown": chapter.body_markdown,
-            }
-            for chapter in chapters
-            if chapter.position < current.position and chapter.body_markdown is not None
-        ],
-    })
-    for source in payload["run_context"].get("context_bundle", {}).get(
-        "selected_sources", []
+    payload = omit_context_identifiers(
+        {
+            "application_context": application_payload,
+            "run_context": semantic_run_context,
+            "chapter": {
+                "chapter_ref": current.chapter_ref,
+                "title": current.title,
+                "description": (
+                    template_chapter.description
+                    if template_chapter is not None
+                    else None
+                ),
+                "position": current.position,
+                "required": current.required,
+            },
+            "resolved_information": [
+                {
+                    "field_key": gap.field_key,
+                    "question": gap.question,
+                    "disposition": gap.state,
+                    "action": gap.resolution.action,
+                    "answer": gap.resolution.answer if gap.resolution else None,
+                }
+                for gap in current.gaps
+                if gap.state in {"resolved", "dismissed", "caveat", "processing"}
+                and gap.resolution is not None
+            ],
+            "propagated_information": propagated_information or [],
+            "existing_open_gaps": [
+                {
+                    "field_key": gap.field_key,
+                    "question": gap.question,
+                    "why_asking": gap.why_asking,
+                    "severity": gap.severity,
+                }
+                for gap in current.gaps
+                if gap.state == "open"
+            ],
+            "previous_chapters": [
+                {
+                    "chapter_ref": chapter.chapter_ref,
+                    "title": chapter.title,
+                    "body_markdown": chapter.body_markdown,
+                }
+                for chapter in chapters
+                if chapter.position < current.position
+                and chapter.body_markdown is not None
+            ],
+        }
+    )
+    for source in (
+        payload["run_context"].get("context_bundle", {}).get("selected_sources", [])
     ):
         source.pop("page_count", None)
         source.pop("block_count", None)
@@ -1152,83 +1077,6 @@ def _allowed_source_refs(run_context: dict[str, Any]) -> set[str]:
             if value:
                 refs.add(str(value))
     return refs
-
-
-def _select_impacted_chapters(
-    chapters: list[WorkspaceChapterSnapshot],
-    *,
-    run_context: dict[str, Any],
-    source_refs: list[str],
-) -> list[WorkspaceChapterSnapshot]:
-    """Select chapters whose content or unresolved gaps overlap new source topics."""
-    bundle = run_context.get("context_bundle")
-    selected_sources = (
-        bundle.get("selected_sources", []) if isinstance(bundle, dict) else []
-    )
-    source_text_parts: list[str] = []
-    for source in selected_sources:
-        if not isinstance(source, dict):
-            continue
-        source_identity = {
-            str(source.get("source_label")),
-            str(source.get("upload_id")),
-        }
-        if not source_identity.intersection(source_refs):
-            continue
-        source_text_parts.extend(
-            [str(source.get("summary") or ""), *map(str, source.get("topics") or [])]
-        )
-        source_text_parts.extend(
-            str(excerpt.get("text") or "")
-            for excerpt in source.get("key_excerpts") or []
-            if isinstance(excerpt, dict)
-        )
-    source_terms = _meaningful_terms(" ".join(source_text_parts))
-
-    impacted: list[WorkspaceChapterSnapshot] = []
-    for chapter in chapters:
-        if chapter.body_markdown is None:
-            continue
-        has_unresolved_gap = any(
-            gap.state in {"open", "caveat", "processing"} for gap in chapter.gaps
-        )
-        chapter_terms = _meaningful_terms(
-            " ".join(
-                [
-                    chapter.title,
-                    chapter.body_markdown,
-                    *(gap.question for gap in chapter.gaps),
-                ]
-            )
-        )
-        if has_unresolved_gap or source_terms.intersection(chapter_terms):
-            impacted.append(chapter)
-    return impacted
-
-
-def _meaningful_terms(value: str) -> set[str]:
-    """Tokenize text for a conservative, deterministic source-impact scan."""
-    stop_words = {
-        "about",
-        "after",
-        "before",
-        "chapter",
-        "could",
-        "information",
-        "project",
-        "should",
-        "their",
-        "there",
-        "these",
-        "this",
-        "which",
-        "would",
-    }
-    return {
-        token
-        for token in re.findall(r"[a-z0-9]+", value.lower())
-        if len(token) >= 4 and token not in stop_words
-    }
 
 
 def _draft_progress(summary: Any) -> dict[str, Any]:

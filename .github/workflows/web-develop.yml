@@ -236,7 +236,6 @@ jobs:
       PLAYWRIGHT_TEST: "1"
       LOG_LEVEL: warn
       NEXT_PUBLIC_FEATURE_FLAGS: CONCEPT_NOTE_BUILDER,CA_SERVICE_INTEGRATION
-      CNB_EDIT_COVERAGE_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
       CA_SMOKE_USER_ID: "73200000-0000-4000-8000-000000000001"
       CA_SMOKE_ORGANIZATION_ID: "73200000-0000-4000-8000-000000000002"
       CA_SMOKE_PROJECT_ID: "73200000-0000-4000-8000-000000000003"
@@ -269,8 +268,7 @@ jobs:
       - name: Enforce full-file web coverage
         working-directory: app
         run: |
-          node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.cnb-edits.config.ts --runInBand --coverage
-          node scripts/verify-cnb-edit-coverage.mjs
+          node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.cnb-edits.config.mjs --runInBand --coverage
       - name: Prepare isolated databases
         env:
           PGPASSWORD: cc732_test

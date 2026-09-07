@@ -8,8 +8,6 @@ from time import perf_counter
 from typing import Any, Literal
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.config.settings import get_settings
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.models.cnb.concept_note_edits import (
@@ -25,11 +23,10 @@ from app.persistence.concept_notes.edits import (
     EditOperationError,
 )
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
-from app.services.cnb.edit_planner import (
-    ConceptNoteEditPlanner,
-    validate_edit_plan,
-)
+from app.services.cnb.edit_planner import ConceptNoteEditPlanner
+from app.services.cnb.edit_validation import validate_edit_plan
 from app.utils.cnb_observability import record_edit_outcome
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 

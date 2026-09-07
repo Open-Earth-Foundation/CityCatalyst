@@ -52,11 +52,6 @@ async function openWorkspace(page: Page, fixture: Fixture): Promise<void> {
     "EUR 10 million",
   );
   await expect(page.getByTestId("concept-note-edit-scope")).toHaveCount(0);
-  expect(
-    await page
-      .getByTestId("concept-note-history-toggle")
-      .evaluate((element) => getComputedStyle(element).color),
-  ).not.toBe("rgb(255, 255, 255)");
 }
 
 async function proposeOpening(page: Page): Promise<void> {
@@ -148,12 +143,6 @@ async function reviewedVersions(
   });
 }
 
-async function openHistory(page: Page): Promise<void> {
-  const toggle = page.getByTestId("concept-note-history-toggle");
-  if ((await toggle.getAttribute("aria-expanded")) !== "true")
-    await toggle.click();
-}
-
 async function expectInlineReview(page: Page, count: number): Promise<void> {
   const document = page.getByTestId("concept-note-draft-preview");
   await expect(document.getByTestId("concept-note-inline-change")).toHaveCount(
@@ -231,10 +220,6 @@ test.describe("CC-732 persisted first edit slice", () => {
     await expect(page.getByTestId("concept-note-document-review")).toHaveCount(
       0,
     );
-    await openHistory(page);
-    await expect(page.getByTestId("concept-note-edit-status")).toHaveText(
-      "Edits applied",
-    );
     await expect(page.getByTestId("concept-note-draft-preview")).toContainText(
       "The project will create a flood-resilient park.",
     );
@@ -258,15 +243,7 @@ test.describe("CC-732 persisted first edit slice", () => {
     await expect(page.getByTestId("concept-note-document-review")).toHaveCount(
       0,
     );
-    await openHistory(page);
-    await expect(page.getByTestId("concept-note-edit-status")).toHaveText(
-      "Proposal rejected — draft unchanged",
-    );
     await page.reload();
-    await openHistory(page);
-    await expect(page.getByTestId("concept-note-edit-status")).toHaveText(
-      "Proposal rejected — draft unchanged",
-    );
     const after = await (
       await page.request.get(`/api/v1/concept-notes/${fixture.run_id}/draft`)
     ).json();
@@ -291,7 +268,7 @@ test.describe("CC-732 persisted first edit slice", () => {
     );
   });
 
-  test("multi-edit arrows, linked selection, reload, undo and restore use real persisted batches", async ({
+  test("multi-edit arrows, linked selection and reload use real persisted batches", async ({
     page,
   }) => {
     const fixture = seed();
@@ -344,10 +321,6 @@ test.describe("CC-732 persisted first edit slice", () => {
     ).toHaveText("Apply selected (2)");
     await page.getByTestId("concept-note-edit-apply-selected").click();
     await expect(card).toHaveCount(0);
-    await openHistory(page);
-    await expect(page.getByTestId("concept-note-edit-status")).toHaveText(
-      "Selected edits applied",
-    );
     const applied = await draftState(page, fixture);
     for (let index = 0; index < 2; index++) {
       expect(applied.chapters[index].body_markdown).toBe(
@@ -365,54 +338,13 @@ test.describe("CC-732 persisted first edit slice", () => {
         `/api/v1/concept-notes/${fixture.run_id}/edit-proposals/${proposalId}`,
       )
     ).json();
-    const applicationId = persisted.result.application_id;
+    expect(persisted.status).toBe("partially_applied");
     await page.reload();
-    await openHistory(page);
-    await expect(
-      page.getByTestId("concept-note-edit-status").first(),
-    ).toHaveText("Selected edits applied");
-    await page.getByTestId("concept-note-history-undo").click();
-    await expect(
-      page.getByTestId("concept-note-history-preview"),
-    ).toBeVisible();
-    await expectInlineReview(page, 2);
+    await expect(page.getByTestId("concept-note-draft-preview")).toContainText(
+      "EUR 12 million",
+    );
     expect((await draftState(page, fixture)).chapters).toEqual(
       applied.chapters,
-    );
-    await page.getByTestId("concept-note-history-cancel").click();
-    await expect(page.getByTestId("concept-note-inline-change")).toHaveCount(0);
-    expect((await draftState(page, fixture)).chapters).toEqual(
-      applied.chapters,
-    );
-    await page.getByTestId("concept-note-history-undo").click();
-    await expectInlineReview(page, 2);
-    await page.getByTestId("concept-note-history-next").click();
-    await expect(
-      document.locator('[data-active-change="true"]'),
-    ).toBeInViewport();
-    await page.screenshot({
-      path: test.info().outputPath("undo-inline-review.png"),
-    });
-    await page.getByTestId("concept-note-history-confirm").click();
-    await expect(page.getByTestId("concept-note-history-preview")).toHaveCount(
-      0,
-    );
-    const undone = await draftState(page, fixture);
-    expect(undone.chapters.map((chapter) => chapter.body_markdown)).toEqual(
-      before.chapters.map((chapter) => chapter.body_markdown),
-    );
-    await page
-      .locator(`[data-revision-id="${applicationId}"]`)
-      .getByTestId("concept-note-history-review")
-      .click();
-    await expectInlineReview(page, 2);
-    await page.getByTestId("concept-note-history-confirm").click();
-    await expect(page.getByTestId("concept-note-history-preview")).toHaveCount(
-      0,
-    );
-    const restored = await draftState(page, fixture);
-    expect(restored.chapters.map((chapter) => chapter.body_markdown)).toEqual(
-      applied.chapters.map((chapter) => chapter.body_markdown),
     );
   });
 

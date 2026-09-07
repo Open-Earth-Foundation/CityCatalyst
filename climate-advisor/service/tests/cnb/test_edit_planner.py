@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-from dataclasses import replace
 from datetime import UTC, datetime
 from types import SimpleNamespace
 from uuid import uuid4
@@ -13,13 +12,11 @@ from app.models.cnb.concept_note_edits import (
     ChapterEditPlanOutput,
     ChapterEditReview,
     EditPlanOutput,
-    EditProposalRequest,
     EditScope,
     PlannedTextChange,
 )
 from app.persistence.concept_notes.edits import EditOperationError
 from app.persistence.concept_notes.workspace import (
-    WorkspaceChapterSnapshot,
     WorkspaceGapSnapshot,
 )
 from app.services.cnb.edit_planner import (
@@ -27,48 +24,23 @@ from app.services.cnb.edit_planner import (
     bind_semantic_reviews,
     build_planner_input,
     combine_chapter_plans,
+)
+from app.services.cnb.edit_validation import (
     expand_explicit_global_replacements,
     explicit_global_literal_pair,
     fact_tokens,
     validate_edit_plan,
 )
-from app.services.cnb.edit_planner import (
-    validate_edit_plan as validate_wording_plan,
+from app.services.cnb.edit_validation import validate_edit_plan as validate_wording_plan
+from tests.cnb.edit_helpers import (
+    BODY,
+    CHAPTER_ID,
+    OTHER_CHAPTER_ID,
+    investment_plan,
+    plan,
+    request,
+    snapshot,
 )
-from tests.cnb.edit_helpers import BODY, CHAPTER_ID, OTHER_CHAPTER_ID
-
-
-def snapshot(**overrides) -> WorkspaceChapterSnapshot:
-    base = WorkspaceChapterSnapshot(
-        chapter_id=CHAPTER_ID,
-        chapter_ref="summary",
-        title="Summary",
-        position=0,
-        status="draft",
-        required=True,
-        user_locked=False,
-        body_markdown=BODY,
-        gaps=[],
-        revision_id=uuid4(),
-        revision_number=1,
-        confirmed_body_markdown=None,
-        confirmed_revision_number=None,
-        proposed_revision_number=None,
-        regeneration_status="idle",
-        regeneration_error=None,
-    )
-    return replace(base, **overrides)
-
-
-def request(**overrides) -> EditProposalRequest:
-    return EditProposalRequest(
-        **{
-            "instruction": "Make the parks wording clearer",
-            "idempotency_key": uuid4(),
-            "scope": EditScope(focused_chapter_id=CHAPTER_ID),
-            **overrides,
-        }
-    )
 
 
 def open_gap(question: str) -> WorkspaceGapSnapshot:
@@ -87,20 +59,6 @@ def open_gap(question: str) -> WorkspaceGapSnapshot:
         resolution=None,
         created_at=now,
         updated_at=now,
-    )
-
-
-def plan(**overrides) -> EditPlanOutput:
-    change = {
-        "chapter_id": CHAPTER_ID,
-        "start": BODY.index("builds parks"),
-        "before": "builds parks",
-        "after": "creates greener parks",
-        "kind": "wording",
-        "group_id": "clarity",
-    }
-    return EditPlanOutput(
-        intent="edit", changes=[PlannedTextChange(**{**change, **overrides})]
     )
 
 
@@ -392,37 +350,6 @@ async def test_context_limit_fails_before_client_or_model_call(monkeypatch) -> N
     with pytest.raises(EditOperationError) as error:
         await ConceptNoteEditPlanner(settings).plan(request(), [snapshot()], {})
     assert error.value.code == "context_limit"
-
-
-def investment_plan(
-    chapters,
-    instruction="Change the investment amount to EUR 12 million",
-    *,
-    omit_last=False,
-    source_ref=None,
-    quote=True,
-):
-    changes = []
-    for index, chapter in enumerate(chapters[:-1] if omit_last else chapters):
-        before = (
-            "EUR 10 million"
-            if "EUR 10 million" in chapter.body_markdown
-            else "€10 million"
-        )
-        after = "EUR 12 million" if before.startswith("EUR") else "€12 million"
-        changes.append(
-            PlannedTextChange(
-                chapter_id=chapter.chapter_id,
-                start=chapter.body_markdown.index(before),
-                before=before,
-                after=after,
-                kind="factual",
-                group_id=f"model-group-{index}",
-                source_refs=[source_ref] if source_ref else [],
-                user_input_quote=instruction if quote else None,
-            )
-        )
-    return EditPlanOutput(intent="edit", changes=changes)
 
 
 def test_semantic_fact_edit_uses_whole_document_despite_focus_and_merges_groups() -> (

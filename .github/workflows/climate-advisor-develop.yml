@@ -64,7 +64,6 @@ jobs:
       CA_DATABASE_URL: "sqlite+aiosqlite:///:memory:"
       CNB_TEST_DATABASE_URL: "postgresql://cnb_test:cnb_test@localhost:55432/cnb_test"
       CNB_EDIT_TEST_DATABASE_URL: "postgresql+asyncpg://cnb_test:cnb_test@127.0.0.1:55432/cc732_test"
-      CNB_EDIT_COVERAGE_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
 
     steps:
       - name: Checkout repository
@@ -103,44 +102,20 @@ jobs:
                  --junit-xml=test-results-openrouter-smoke.xml \
                  -v --tb=short --color=yes
 
-      - name: Run unit tests
-        working-directory: climate-advisor
-        run: |
-          uv run --directory service pytest tests/test_cc_inventory_tool.py \
-                 tests/test_citycatalyst_client.py \
-                 tests/test_rag_tool.py \
-                 tests/test_user_identity.py \
-                 tests/test_document_embedding_model.py \
-                 --junit-xml=test-results-unit.xml \
-                 -v --tb=short --color=yes
-
-      - name: Run TIER 1 critical tests
-        working-directory: climate-advisor
-        run: |
-          uv run --directory service pytest tests/test_api_routes.py \
-                 tests/test_agent_service.py \
-                 tests/test_e2e_conversation.py \
-                 --junit-xml=test-results-tier1.xml \
-                 -v --tb=short --color=yes
-
-      - name: Run CNB database and runtime tests
+      - name: Run regression tests and CNB coverage once
         working-directory: climate-advisor
         env:
           PGPASSWORD: cnb_test
-        run: |
-          psql -h 127.0.0.1 -p 55432 -U cnb_test -d cnb_test -v ON_ERROR_STOP=1 -c 'CREATE DATABASE cc732_test'
-          uv run --directory service pytest tests/cnb \
-                 tests/test_cnb_migrations.py \
-                 -v --tb=short --color=yes
-
-      - name: Enforce CNB chat edit full-file coverage
-        working-directory: climate-advisor
-        env:
           OPENROUTER_API_KEY: cc732-synthetic-no-live-model
           OPENAI_API_KEY: cc732-synthetic-no-live-embeddings
           OPENROUTER_SMOKE_TEST: "0"
           MLFLOW_ENABLED: "false"
-        run: uv run python service/scripts/run_cnb_edit_tests.py --suite all --coverage
+        run: |
+          psql -h 127.0.0.1 -p 55432 -U cnb_test -d cnb_test -v ON_ERROR_STOP=1 -c 'CREATE DATABASE cc732_test'
+          uv run --directory service pytest tests/ -m "not manual_llm" \
+                 --cov --cov-config=.coveragerc.cnb \
+                 --cov-report=json --cov-report=xml --cov-report=term-missing \
+                 --junit-xml=test-results-all.xml --tb=short
 
       - name: Retain CNB chat edit coverage evidence
         if: always()
@@ -148,16 +123,6 @@ jobs:
         with:
           name: cnb-chat-edit-ca-coverage
           path: climate-advisor/service/coverage/cnb-edits/
-
-      - name: Generate test coverage report
-        working-directory: climate-advisor
-        run: |
-          uv run --directory service pytest tests/ \
-                 --cov=app \
-                 --cov-report=html \
-                 --cov-report=term-missing \
-                 --cov-report=xml \
-                 -v || true
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

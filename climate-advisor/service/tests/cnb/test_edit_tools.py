@@ -8,12 +8,10 @@ from uuid import uuid4
 import pytest
 from agents import RunConfig
 from agents.tool_context import ToolContext
-from fastapi import HTTPException
-
 from app.tools.concept_note_edit_tools import build_concept_note_edit_tools
-from tests.cnb.edit_helpers import RUN_ID
+from fastapi import HTTPException
+from tests.cnb.edit_helpers import RUN_ID, request
 from tests.cnb.edit_helpers import edit_database as edit_database
-from tests.cnb.test_edit_planner import request
 
 
 def build_tools(sessions, token="synthetic", recent_messages=None):

@@ -7,7 +7,6 @@ from uuid import uuid4
 import pytest
 from app.models.cnb.concept_note_edits import (
     EditApplyRequest,
-    EditChange,
     EditProposalRequest,
     EditScope,
 )
@@ -29,25 +28,11 @@ from tests.cnb.edit_helpers import (
     CHAPTER_ID,
     RUN_ID,
     seed_chapter,
+    wording_change,
 )
 from tests.cnb.edit_helpers import (
     edit_database as edit_database,  # noqa: PLC0414
 )
-
-
-def wording_change(**overrides) -> EditChange:
-    values = {
-        "change_id": uuid4(),
-        "chapter_id": CHAPTER_ID,
-        "chapter_title": "Summary",
-        "base_revision": 1,
-        "start": BODY.index("builds parks"),
-        "before": "builds parks",
-        "after": "creates greener parks",
-        "kind": "wording",
-        "group_id": "clarity",
-    }
-    return EditChange(**{**values, **overrides})
 
 
 async def proposed(repository: ConceptNoteEditRepository, **overrides):
@@ -414,3 +399,32 @@ async def test_reload_does_not_hide_an_older_pending_proposal_behind_recent_hist
         proposal.proposal_id == pending.proposal_id and proposal.status == "proposed"
         for proposal in restored
     )
+
+
+async def test_document_reads_batch_revisions_independently_of_chapter_count(
+    edit_database,
+):
+    """Polling adds no per-chapter SELECTs and preserves confirmed/current text."""
+    from sqlalchemy import event
+
+    workspace = ConceptNoteWorkspaceRepository(edit_database)
+    for position in range(8):
+        await seed_chapter(
+            edit_database, chapter_id=uuid4(), position=position, ready=True
+        )
+    statements = []
+    engine = edit_database.kw["bind"].sync_engine
+
+    def record(_connection, _cursor, statement, _parameters, _context, _many):
+        if statement.lstrip().upper().startswith("SELECT"):
+            statements.append(statement)
+
+    event.listen(engine, "before_cursor_execute", record)
+    try:
+        chapters = await workspace.list_chapters(run_id=RUN_ID)
+    finally:
+        event.remove(engine, "before_cursor_execute", record)
+    assert len(chapters) == 8
+    assert len(statements) == 3  # chapters, latest/confirmed revisions, gaps
+    assert all(chapter.body_markdown == BODY for chapter in chapters)
+    assert all(chapter.confirmed_body_markdown == BODY for chapter in chapters)

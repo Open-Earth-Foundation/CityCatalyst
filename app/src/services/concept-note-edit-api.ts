@@ -1,140 +1,72 @@
+import { api } from "./api";
 import type {
   EditApplyRequest,
-  EditHistoryEntry,
-  EditHistoryRequest,
   EditProposal,
   EditProposalRequest,
 } from "@/util/concept-note-edit-types";
 
-export class ConceptNoteEditError extends Error {
-  constructor(
-    public readonly status: number,
-    public readonly code: string,
-  ) {
-    super("The Concept Note edit request failed");
+type Target = { runId: string; proposalId: string };
+const collection = (runId: string) =>
+  `concept-notes/${encodeURIComponent(runId)}/edit-proposals`;
+const target = ({ runId, proposalId }: Target) =>
+  `${collection(runId)}/${encodeURIComponent(proposalId)}`;
+const tags = (_result: unknown, _error: unknown, { runId }: Target) => [
+  { type: "ConceptNoteEdits" as const, id: runId },
+];
+
+export const editApi = api.injectEndpoints({
+  endpoints: (builder) => ({
+    listEditProposals: builder.query<EditProposal[], string>({
+      query: collection,
+      providesTags: (_result, _error, runId) => [
+        { type: "ConceptNoteEdits", id: runId },
+      ],
+    }),
+    getEditProposal: builder.query<EditProposal, Target>({ query: target }),
+    applyEditProposal: builder.mutation<
+      EditProposal,
+      Target & { body: EditApplyRequest }
+    >({
+      query: (args) => ({
+        url: `${target(args)}/apply`,
+        method: "POST",
+        body: args.body,
+      }),
+      invalidatesTags: tags,
+    }),
+    rejectEditProposal: builder.mutation<EditProposal, Target>({
+      query: (args) => ({
+        url: `${target(args)}/reject`,
+        method: "POST",
+        body: {},
+      }),
+      invalidatesTags: tags,
+    }),
+    refineEditProposal: builder.mutation<
+      EditProposal,
+      Target & { body: EditProposalRequest }
+    >({
+      query: (args) => ({
+        url: `${target(args)}/refine`,
+        method: "POST",
+        body: args.body,
+      }),
+      invalidatesTags: tags,
+    }),
+  }),
+});
+
+/** Preserve safe machine-readable errors returned by the authorized proxy. */
+export function editErrorCode(error: unknown): string {
+  if (error && typeof error === "object" && "data" in error) {
+    const data = error.data;
+    if (
+      data &&
+      typeof data === "object" &&
+      "code" in data &&
+      typeof data.code === "string"
+    )
+      return data.code;
   }
-}
-
-async function editRequest<T>(
-  runId: string,
-  {
-    suffix = "",
-    body,
-    signal,
-    collection = "edit-proposals",
-  }: {
-    suffix?: string;
-    body?: object;
-    signal?: AbortSignal;
-    collection?: "edit-proposals" | "revisions";
-  } = {},
-): Promise<T> {
-  const response = await fetch(
-    `/api/v1/concept-notes/${encodeURIComponent(runId)}/${collection}${suffix}`,
-    {
-      method: body === undefined ? "GET" : "POST",
-      headers:
-        body === undefined ? undefined : { "Content-Type": "application/json" },
-      body: body === undefined ? undefined : JSON.stringify(body),
-      signal,
-    },
-  );
-  const payload: unknown = await response.json();
-  if (!response.ok) {
-    const code =
-      typeof payload === "object" &&
-      payload !== null &&
-      "code" in payload &&
-      typeof payload.code === "string"
-        ? payload.code
-        : "edit_request_failed";
-    throw new ConceptNoteEditError(response.status, code);
-  }
-  return payload as T;
-}
-
-export function listEditProposals(
-  runId: string,
-  signal?: AbortSignal,
-): Promise<EditProposal[]> {
-  return editRequest(runId, { signal });
-}
-
-export function getEditProposal(
-  runId: string,
-  proposalId: string,
-): Promise<EditProposal> {
-  return editRequest(runId, { suffix: `/${encodeURIComponent(proposalId)}` });
-}
-
-export function createEditProposal(
-  runId: string,
-  body: EditProposalRequest,
-): Promise<EditProposal> {
-  return editRequest(runId, { body });
-}
-
-export function applyEditProposal(
-  runId: string,
-  proposalId: string,
-  body: EditApplyRequest,
-): Promise<EditProposal> {
-  return editRequest(runId, {
-    suffix: `/${encodeURIComponent(proposalId)}/apply`,
-    body,
-  });
-}
-
-export function rejectEditProposal(
-  runId: string,
-  proposalId: string,
-): Promise<EditProposal> {
-  return editRequest(runId, {
-    suffix: `/${encodeURIComponent(proposalId)}/reject`,
-    body: {},
-  });
-}
-
-export function refineEditProposal(
-  runId: string,
-  proposalId: string,
-  body: EditProposalRequest,
-): Promise<EditProposal> {
-  return editRequest(runId, {
-    suffix: `/${encodeURIComponent(proposalId)}/refine`,
-    body,
-  });
-}
-
-export function listEditHistory(
-  runId: string,
-  beforeSequence?: number,
-): Promise<EditHistoryEntry[]> {
-  return editRequest(runId, {
-    collection: "revisions",
-    suffix: beforeSequence ? `?before_sequence=${beforeSequence}` : "",
-  });
-}
-
-export function getEditHistory(
-  runId: string,
-  revisionId: string,
-): Promise<EditHistoryEntry> {
-  return editRequest(runId, {
-    collection: "revisions",
-    suffix: `/${encodeURIComponent(revisionId)}`,
-  });
-}
-
-export function restoreEditHistory(
-  runId: string,
-  revisionId: string,
-  operation: "undo" | "restore",
-  body: EditHistoryRequest,
-): Promise<EditHistoryEntry> {
-  return editRequest(runId, {
-    collection: "revisions",
-    suffix: `/${encodeURIComponent(revisionId)}/${operation}`,
-    body,
-  });
+  return "edit_request_failed";
 }

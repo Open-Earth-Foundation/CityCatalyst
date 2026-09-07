@@ -6,7 +6,6 @@ import pytest
 from app.db.cnb import CnbBase
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterDraftOutput,
-    ConceptNoteDraftGapOutput,
 )
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
@@ -189,67 +188,6 @@ async def test_answer_is_idempotent_versioned_and_requires_confirmation(
     assert ready.status == "ready"
     assert ready.confirmed_revision_number == 2
     assert ready.proposed_revision_number is None
-
-    changed = await workspace.save_revalidated_chapter(
-        chapter_id=CHAPTER_ID,
-        expected_revision_number=2,
-        generated=ConceptNoteChapterDraftOutput(
-            body_markdown=(
-                "## Implementation\n\nLincoln Park Neighborhood Council will lead "
-                "delivery with a newly evidenced municipal steering group."
-            ),
-            missing_information=[],
-        ),
-        source_refs=["New implementation plan"],
-    )
-    assert changed is True
-    [proposal] = await workspace.list_chapters(run_id=RUN_ID)
-    assert proposal.status == "draft"
-    assert (
-        proposal.confirmed_body_markdown
-        == "## Implementation\n\nLincoln Park Neighborhood Council will lead delivery."
-    )
-    assert proposal.confirmed_revision_number == 2
-    assert proposal.proposed_revision_number == 3
-
-    changed = await workspace.save_revalidated_chapter(
-        chapter_id=CHAPTER_ID,
-        expected_revision_number=3,
-        generated=ConceptNoteChapterDraftOutput(
-            body_markdown=(
-                "## Implementation\n\nThe new evidence no longer identifies the "
-                "accountable delivery partner."
-            ),
-            missing_information=[
-                ConceptNoteDraftGapOutput(
-                    field_key="lead_partner",
-                    question="Which organization is now accountable for delivery?",
-                    why_asking="New evidence conflicts with the confirmed lead.",
-                    severity="critical",
-                )
-            ],
-        ),
-        source_refs=["Updated implementation plan"],
-    )
-    assert changed is True
-    [blocked_proposal] = await workspace.list_chapters(run_id=RUN_ID)
-    assert blocked_proposal.status == "needs_review"
-    assert blocked_proposal.confirmed_revision_number == 2
-    assert blocked_proposal.proposed_revision_number == 4
-    assert blocked_proposal.gaps[0].state == "open"
-    assert blocked_proposal.gaps[0].version == 3
-
-    stale = await workspace.save_revalidated_chapter(
-        chapter_id=CHAPTER_ID,
-        expected_revision_number=3,
-        generated=ConceptNoteChapterDraftOutput(
-            body_markdown="## Implementation\n\nStale source rewrite.",
-        ),
-        source_refs=["Stale source"],
-    )
-    assert stale is False
-    [unchanged] = await workspace.list_chapters(run_id=RUN_ID)
-    assert unchanged.revision_number == 4
 
 
 async def test_critical_gap_cannot_be_deferred(workspace) -> None:

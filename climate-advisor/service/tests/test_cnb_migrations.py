@@ -15,6 +15,8 @@ from sqlalchemy import create_engine, inspect, text
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 CNB_DATABASE_URL = os.getenv("CNB_TEST_DATABASE_URL")
 CNB_TABLES = {
+    "concept_note_gap_resolutions",
+    "concept_note_chapter_reviews",
     "concept_note_chapters",
     "concept_note_chapter_revisions",
     "concept_note_evidence_links",
@@ -259,8 +261,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         }
 
     opportunity_columns = {
-        item["name"]: item
-        for item in inspector.get_columns("funding_opportunities")
+        item["name"]: item for item in inspector.get_columns("funding_opportunities")
     }
     project_columns = {
         item["name"]: item for item in inspector.get_columns("funded_projects")
@@ -308,7 +309,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         revision = connection.execute(
             text("SELECT version_num FROM cnb_alembic_version")
         ).scalar_one()
-    assert revision == "20260821_120000"
+    assert revision == "20260830_130000"
 
     _run_alembic(
         config="cnb-alembic.ini",

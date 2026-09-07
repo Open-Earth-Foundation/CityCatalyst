@@ -2,22 +2,36 @@
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
 import os
 import re
+from collections.abc import AsyncIterator
+from dataclasses import replace
 from urllib.parse import urlsplit
 from uuid import UUID, uuid4
 
 import pytest
 from app.db.cnb import CnbBase
+from app.models.cnb.concept_note_edits import (
+    EditChange,
+    EditPlanOutput,
+    EditProposalRequest,
+    EditScope,
+    PlannedTextChange,
+)
 from app.models.db.cnb_edit import ConceptNoteEditApplication, ConceptNoteEditProposal
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
-    ConceptNoteChapterRevision,
     ConceptNoteChapterReview,
+    ConceptNoteChapterRevision,
     ConceptNoteGap,
     ConceptNoteGapResolution,
 )
+from app.persistence.concept_notes.edits import ConceptNoteEditRepository
+from app.persistence.concept_notes.workspace import (
+    ConceptNoteWorkspaceRepository,
+    WorkspaceChapterSnapshot,
+)
+from app.services.cnb.edits import ConceptNoteEditService
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
@@ -130,3 +144,119 @@ async def seed_chapter(
                     idempotency_key=uuid4(),
                 )
             )
+
+
+def snapshot(**overrides) -> WorkspaceChapterSnapshot:
+    base = WorkspaceChapterSnapshot(
+        chapter_id=CHAPTER_ID,
+        chapter_ref="summary",
+        title="Summary",
+        position=0,
+        status="draft",
+        required=True,
+        user_locked=False,
+        body_markdown=BODY,
+        gaps=[],
+        revision_id=uuid4(),
+        revision_number=1,
+        confirmed_body_markdown=None,
+        confirmed_revision_number=None,
+        proposed_revision_number=None,
+        regeneration_status="idle",
+        regeneration_error=None,
+    )
+    return replace(base, **overrides)
+
+
+def request(**overrides) -> EditProposalRequest:
+    return EditProposalRequest(
+        **{
+            "instruction": "Make the parks wording clearer",
+            "idempotency_key": uuid4(),
+            "scope": EditScope(focused_chapter_id=CHAPTER_ID),
+            **overrides,
+        }
+    )
+
+
+def plan(**overrides) -> EditPlanOutput:
+    change = {
+        "chapter_id": CHAPTER_ID,
+        "start": BODY.index("builds parks"),
+        "before": "builds parks",
+        "after": "creates greener parks",
+        "kind": "wording",
+        "group_id": "clarity",
+    }
+    return EditPlanOutput(
+        intent="edit", changes=[PlannedTextChange(**{**change, **overrides})]
+    )
+
+
+def investment_plan(
+    chapters,
+    instruction="Change the investment amount to EUR 12 million",
+    *,
+    omit_last=False,
+    source_ref=None,
+    quote=True,
+):
+    changes = []
+    for index, chapter in enumerate(chapters[:-1] if omit_last else chapters):
+        before = (
+            "EUR 10 million"
+            if "EUR 10 million" in chapter.body_markdown
+            else "€10 million"
+        )
+        after = "EUR 12 million" if before.startswith("EUR") else "€12 million"
+        changes.append(
+            PlannedTextChange(
+                chapter_id=chapter.chapter_id,
+                start=chapter.body_markdown.index(before),
+                before=before,
+                after=after,
+                kind="factual",
+                group_id=f"model-group-{index}",
+                source_refs=[source_ref] if source_ref else [],
+                user_input_quote=instruction if quote else None,
+            )
+        )
+    return EditPlanOutput(intent="edit", changes=changes)
+
+
+def wording_change(**overrides) -> EditChange:
+    values = {
+        "change_id": uuid4(),
+        "chapter_id": CHAPTER_ID,
+        "chapter_title": "Summary",
+        "base_revision": 1,
+        "start": BODY.index("builds parks"),
+        "before": "builds parks",
+        "after": "creates greener parks",
+        "kind": "wording",
+        "group_id": "clarity",
+    }
+    return EditChange(**{**values, **overrides})
+
+
+class FakePlanner:
+    def __init__(self, output=None, error=None):
+        self.output = output or plan()
+        self.error = error
+        self.calls = 0
+
+    async def plan(self, *args, **kwargs):
+        self.calls += 1
+        self.prior_proposal = kwargs.get("prior_proposal")
+        self.recent_messages = kwargs.get("recent_messages")
+        if self.error:
+            raise self.error
+        return self.output
+
+
+def service(sessions, planner=None) -> ConceptNoteEditService:
+    return ConceptNoteEditService(
+        ConceptNoteEditRepository(sessions),
+        ConceptNoteWorkspaceRepository(sessions),
+        planner or FakePlanner(),
+    )

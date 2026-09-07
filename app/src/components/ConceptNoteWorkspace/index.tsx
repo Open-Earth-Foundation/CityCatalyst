@@ -27,7 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
-import type { EditProposal, EditScope } from "@/util/concept-note-edit-types";
+import type { EditScope } from "@/util/concept-note-edit-types";
 import { CONCEPT_NOTE_POLL_INTERVAL_MS } from "@/util/concept-note-polling";
 import type {
   ConceptNoteDraftChapter,
@@ -58,7 +58,7 @@ import {
   DocumentReviewToolbar,
   documentReviewChanges,
 } from "./document-review";
-import type { DocumentReview, InlineReviewDecision } from "./inline-review";
+import { useInlineReviewDecisions } from "./use-inline-review-decisions";
 
 type WorkspaceTab = "draft" | "structure" | "context";
 
@@ -78,8 +78,6 @@ const workspaceTabs: Array<{
   { key: "structure", translationKey: "structure-tab", icon: LuLayers3 },
   { key: "context", translationKey: "context-tab", icon: LuRefreshCw },
 ];
-
-const noReviewDecisions: Record<string, InlineReviewDecision> = {};
 
 export function ConceptNoteWorkspace({
   cityId,
@@ -105,15 +103,6 @@ export function ConceptNoteWorkspace({
     requestId: string;
     focus: boolean;
   } | null>(null);
-  const [requestedReview, setRequestedReview] = useState<DocumentReview | null>(
-    null,
-  );
-  const [reviewDecisionProposalId, setReviewDecisionProposalId] = useState<
-    string | null
-  >(null);
-  const [reviewDecisions, setReviewDecisions] = useState<
-    Record<string, InlineReviewDecision>
-  >({});
   const [reviewGapChapterId, setReviewGapChapterId] = useState<string | null>(
     null,
   );
@@ -153,40 +142,17 @@ export function ConceptNoteWorkspace({
     runId,
     onApplied: async (chapterIds) => {
       await refetchDraft();
-      setRequestedReview(null);
       if (chapterIds[0]) navigateEdit(chapterIds[0]);
     },
   });
   const pendingProposal = edits.proposals.find(
     (proposal) => proposal.status === "proposed",
   );
-  const review: DocumentReview | null =
-    requestedReview?.kind === "history" &&
-    requestedReview.entry.run_id === runId
-      ? requestedReview
-      : requestedReview?.kind === "proposal" &&
-          edits.proposals.some(
-            (proposal) =>
-              proposal.proposal_id === requestedReview.proposalId &&
-              proposal.status === "proposed",
-          )
-        ? requestedReview
-        : pendingProposal
-          ? { kind: "proposal", proposalId: pendingProposal.proposal_id }
-          : null;
-  const reviewProposal =
-    review?.kind === "proposal"
-      ? edits.proposals.find(
-          (proposal) => proposal.proposal_id === review.proposalId,
-        )
-      : undefined;
-  const activeReviewDecisions =
-    reviewProposal?.proposal_id === reviewDecisionProposalId
-      ? reviewDecisions
-      : noReviewDecisions;
+  const reviewProposal = pendingProposal;
+  const { decisions: activeReviewDecisions, decide: decideInlineChange } =
+    useInlineReviewDecisions(reviewProposal, edits, navigateEdit);
   const reviewChanges = documentReviewChanges(
-    review,
-    edits.proposals,
+    reviewProposal,
     draft?.chapters ?? [],
   );
   const activeChangeId = reviewChanges.some(
@@ -195,12 +161,7 @@ export function ConceptNoteWorkspace({
     ? editFocus?.changeId
     : reviewChanges[0]?.change_id;
   const shownReview = useRef<string | null>(null);
-  const reviewIdentity =
-    review?.kind === "proposal"
-      ? review.proposalId
-      : review?.kind === "history"
-        ? `${review.entry.application_id}:${review.operation}`
-        : null;
+  const reviewIdentity = pendingProposal?.proposal_id;
   const firstReviewChapterId = reviewChanges[0]?.chapter_id;
   const firstReviewChangeId = reviewChanges[0]?.change_id;
   useEffect(() => {
@@ -233,56 +194,6 @@ export function ConceptNoteWorkspace({
     });
   }
 
-  async function decideInlineChange(
-    proposal: EditProposal,
-    changeIds: string[],
-    decision: InlineReviewDecision,
-  ): Promise<void> {
-    if (edits.busy || proposal.status !== "proposed") return;
-    const proposalIds = new Set(
-      proposal.changes.map((change) => change.change_id),
-    );
-    const decidedIds = changeIds.filter((id) => proposalIds.has(id));
-    if (!decidedIds.length) return;
-
-    const current =
-      reviewDecisionProposalId === proposal.proposal_id ? reviewDecisions : {};
-    const next = { ...current };
-    for (const id of decidedIds) next[id] = decision;
-    setReviewDecisionProposalId(proposal.proposal_id);
-    setReviewDecisions(next);
-
-    const lastDecidedIndex = Math.max(
-      ...decidedIds.map((id) =>
-        proposal.changes.findIndex((change) => change.change_id === id),
-      ),
-    );
-    const followingChanges = [
-      ...proposal.changes.slice(lastDecidedIndex + 1),
-      ...proposal.changes.slice(0, lastDecidedIndex + 1),
-    ];
-    const unresolved = followingChanges.find(
-      (change) => next[change.change_id] === undefined,
-    );
-    if (unresolved) {
-      navigateEdit(unresolved.chapter_id, unresolved.change_id);
-      return;
-    }
-
-    const acceptedIds = proposal.changes
-      .filter((change) => next[change.change_id] === "accepted")
-      .map((change) => change.change_id);
-    if (acceptedIds.length === 0) await edits.reject(proposal);
-    else
-      await edits.apply(
-        proposal,
-        acceptedIds.length === proposal.changes.length
-          ? undefined
-          : acceptedIds,
-      );
-    setReviewDecisionProposalId(null);
-    setReviewDecisions({});
-  }
   const { data: population } = api.useGetMostRecentCityPopulationQuery({
     cityId,
   });
@@ -697,21 +608,20 @@ export function ConceptNoteWorkspace({
                   </Box>
                 </HStack>
                 <Flex align="center" gap={2} flexWrap="wrap" minW={0}>
-                  {review && (
+                  {reviewProposal && (
                     <DocumentReviewToolbar
-                      review={review}
+                      proposal={reviewProposal}
                       chapters={draft?.chapters ?? []}
                       edits={edits}
                       changes={reviewChanges}
                       activeChangeId={activeChangeId}
                       lng={lng}
                       onNavigate={navigateEdit}
-                      onCancel={() => setRequestedReview(null)}
                       onOpenSources={() => setTab("context")}
                       isDocumentVisible={tab === "draft"}
                     />
                   )}
-                  {review && (
+                  {reviewProposal && (
                     <Box
                       h="32px"
                       borderInlineStart="1px solid"
@@ -791,11 +701,8 @@ export function ConceptNoteWorkspace({
                   noteName={run.name}
                   editFocus={editFocus}
                   reviewChanges={reviewChanges}
-                  reviewBefore={
-                    review?.kind === "history" ? review.before : undefined
-                  }
                   activeChangeId={activeChangeId}
-                  isReviewing={Boolean(review)}
+                  isReviewing={Boolean(reviewProposal)}
                   reviewDecisions={activeReviewDecisions}
                   reviewDecisionBusy={Boolean(edits.busy)}
                   onAcceptReviewChange={

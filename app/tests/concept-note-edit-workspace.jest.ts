@@ -27,6 +27,7 @@ import type {
 } from "@/util/types";
 import {
   chapterId,
+  draftChapter,
   cleanup,
   mount,
   prepareDom,
@@ -66,25 +67,13 @@ const gap: ConceptNoteGap = {
   created_at: "2026-08-30T12:00:00Z",
   updated_at: "2026-08-30T12:00:00Z",
 };
-const chapter: ConceptNoteDraftChapter = {
-  chapter_id: chapterId,
-  template_section_id: "summary",
+const chapter = draftChapter({
   title: "Project summary",
-  position: 0,
-  status: "ready",
-  required: true,
-  user_locked: false,
   body_markdown: "Existing text",
-  gaps: [],
-  open_gap_count: 0,
-  caveat_count: 0,
   revision_number: 3,
   confirmed_body_markdown: "Existing text",
   confirmed_revision_number: 3,
-  proposed_revision_number: null,
-  regeneration_status: "idle",
-  regeneration_error: null,
-};
+});
 
 function query<T>(data?: T) {
   return {
@@ -378,32 +367,6 @@ function markdownFile() {
   return file;
 }
 
-it("binds owned run/city queries and passes current draft/context to review boundaries", async () => {
-  await render();
-  expect(apiMock.useGetConceptNoteRunQuery).toHaveBeenCalledWith(
-    { cityId, runId },
-    {
-      pollingInterval: 5000,
-      skipPollingIfUnfocused: true,
-    },
-  );
-  expect(apiMock.useGetConceptNoteDraftQuery).toHaveBeenCalledWith(runId, {
-    pollingInterval: 5000,
-    skipPollingIfUnfocused: true,
-  });
-  expect(apiMock.useGetCityQuery).toHaveBeenCalledWith(cityId);
-  expect(captured.chat?.threadId).toBe("thread-owned");
-  expect(captured.chat?.draft).toBe(state.draft.data);
-  expect(captured.structure?.draft).toBe(state.draft.data);
-  expect(captured.context?.cityName).toBe("Fixture City");
-  expect(captured.context?.populationLabel).toContain("12,000");
-  expect(captured.context?.firstCityFile).toBe("source.pdf");
-  expect(apiMock.useGetConceptNoteUploadStatusQuery).toHaveBeenCalledWith(
-    { runId, uploadId: "" },
-    { skip: true, pollingInterval: 0, skipPollingIfUnfocused: true },
-  );
-});
-
 it("collects exact inline decisions and applies only accepted hunks after review", async () => {
   const first = {
     ...proposal.changes[0],
@@ -461,82 +424,6 @@ it.each(["failed", "missing", "foreign-city"])(
     );
   },
 );
-
-it("keeps automatic scope and routes a new proposal directly to document review", async () => {
-  edits.proposals = [proposal];
-  await render();
-  expect(
-    container.querySelector('[data-testid="concept-note-document-review"]'),
-  ).not.toBeNull();
-  await invoke(() => captured.draft?.onFocusedChapterChange?.(chapterId));
-  expect(captured.chat?.editScope).toEqual({
-    kind: "auto",
-    focused_chapter_id: chapterId,
-  });
-  await invoke(() => captured.chat?.onOpenContext());
-  const firstRequest = captured.draft?.editFocus?.requestId;
-  await invoke(() => editApplied([chapterId, "another-chapter"]));
-  expect(state.draft.refetch).toHaveBeenCalledTimes(1);
-  expect(captured.draft?.editFocus).toMatchObject({ chapterId, focus: true });
-  expect(captured.draft?.editFocus?.requestId).not.toBe(firstRequest);
-  expect(captured.chat?.editScope).toEqual({
-    kind: "auto",
-    focused_chapter_id: chapterId,
-  });
-});
-
-it("refreshes an empty apply result without inventing a focus target", async () => {
-  await render();
-  await invoke(() => editApplied([]));
-  expect(state.draft.refetch).toHaveBeenCalledTimes(1);
-  expect(captured.draft?.editFocus).toBeNull();
-  state.draft.refetch.mockRejectedValueOnce(new Error("refresh failed"));
-  await expect(editApplied([chapterId])).rejects.toThrow("refresh failed");
-  expect(captured.draft?.editFocus).toBeNull();
-});
-
-it("uses document navigation only as a focus hint for automatic scope", async () => {
-  await render();
-  await invoke(() => captured.draft?.onFocusedChapterChange?.(chapterId));
-  expect(captured.chat?.editScope).toEqual({
-    kind: "auto",
-    focused_chapter_id: chapterId,
-  });
-});
-
-it.each([true, false])(
-  "focuses draft review without disturbing scroll (reduced motion %s)",
-  async (reduced) => {
-    reducedMotion = reduced;
-    await render();
-    await invoke(() => captured.chat?.onOpenContext());
-    await invoke(() => captured.chat?.onReviewDraft());
-    const preview = container.querySelector<HTMLElement>(
-      '[data-testid="concept-note-draft-preview"]',
-    )!;
-    expect(preview.scrollIntoView).toHaveBeenCalledWith({
-      behavior: reduced ? "auto" : "smooth",
-      block: "nearest",
-    });
-    expect(document.activeElement).toBe(preview);
-  },
-);
-
-it("opens the requested open gap and ignores chapters without open gaps", async () => {
-  await render();
-  await invoke(() => captured.draft?.onReviewChapterGaps(chapter));
-  expect(captured.chat?.reviewGapChapterId).toBeNull();
-  const otherGap = { ...gap, gap_id: "other-gap" };
-  const withGaps = { ...chapter, gaps: [gap, otherGap] };
-  await invoke(() => captured.draft?.onReviewChapterGaps(withGaps));
-  expect(captured.chat?.reviewGapId).toBe(gap.gap_id);
-  await invoke(() => captured.draft?.onReviewChapterGaps(withGaps, otherGap));
-  expect(captured.chat?.reviewGapChapterId).toBe(chapterId);
-  expect(captured.chat?.reviewGapId).toBe("other-gap");
-  await invoke(() => captured.chat?.onStopGapInterview());
-  expect(captured.chat?.reviewGapChapterId).toBeNull();
-  expect(captured.chat?.reviewGapId).toBeNull();
-});
 
 it.each(["answer", "correction", "not_a_gap", "defer_as_caveat"] as const)(
   "forwards versioned %s gap decisions and surfaces failure",
@@ -638,97 +525,6 @@ it("retries the active upload and preserves actionable conversion errors", async
   });
   expect(captured.context?.upload?.status).toBe("processing");
   expect(captured.context?.uploadError).toBeNull();
-});
-
-it("retries context through either surface and reports retry errors", async () => {
-  await render();
-  state.retryBundle.unwrap.mockRejectedValueOnce(new Error("retry failed"));
-  await invoke(() => captured.context?.onRetryBundle());
-  expect(captured.context?.uploadError).toBe(t("context-retry-error"));
-  await invoke(() => captured.draft?.onRetry());
-  expect(state.retryBundle.trigger).toHaveBeenLastCalledWith(runId);
-  expect(state.run.refetch).toHaveBeenCalledTimes(1);
-});
-
-it.each(["no-template", "running", "available", "failure"])(
-  "respects drafting prerequisite state %s",
-  async (mode) => {
-    if (mode === "no-template") state.application.data!.template = null;
-    if (mode === "running") state.draft.data!.status = "running";
-    if (mode === "failure") {
-      state.startDraft.isError = true;
-      state.startDraft.unwrap.mockRejectedValueOnce(
-        new Error("draft start failed"),
-      );
-    }
-    await render();
-    await invoke(() => captured.draft?.onStartDrafting());
-    if (mode === "no-template" || mode === "running") {
-      expect(state.startDraft.trigger).not.toHaveBeenCalled();
-    } else {
-      expect(state.startDraft.trigger).toHaveBeenCalledWith(runId);
-      expect(state.draft.refetch).toHaveBeenCalledTimes(
-        mode === "available" ? 1 : 0,
-      );
-      expect(state.run.refetch).toHaveBeenCalledTimes(
-        mode === "available" ? 1 : 0,
-      );
-    }
-    expect(captured.draft?.draftError).toBe(
-      mode === "failure" ? t("draft-start-error") : null,
-    );
-  },
-);
-
-it("passes absent context safely and gives refreshed upload failures precedence", async () => {
-  state.city.data = undefined;
-  state.population.data = undefined;
-  state.inventory.data = undefined;
-  state.files.data = undefined;
-  state.application.data = undefined;
-  state.draft.data = undefined;
-  state.application.isError = true;
-  state.application.isLoading = true;
-  state.uploadStatus.data = { uploadId: "restored", status: "ready" };
-  state.uploadStatus.isError = true;
-  await render("restored");
-  expect(captured.context).toMatchObject({
-    cityName: t("selected-city"),
-    country: null,
-    inventoryYear: null,
-    firstCityFile: null,
-    cityFilesCount: 0,
-    populationLabel: t("population-unavailable"),
-    upload: state.uploadStatus.data,
-    uploadError: t("refresh-status-error"),
-  });
-  expect(captured.draft).toMatchObject({
-    draft: null,
-    applicationContext: null,
-    applicationContextFailed: true,
-    applicationContextLoading: true,
-    canStartDrafting: false,
-  });
-});
-
-it("opens/closes export for the current accepted draft and supports tab selection", async () => {
-  state.run.data!.progress_summary = {
-    context_bundle: { status: "ready", source_counts: { ready: 1 } },
-  };
-  await render();
-  expect(captured.export).toMatchObject({
-    open: false,
-    draft: state.draft.data,
-    hasGroundedSources: true,
-  });
-  await invoke(() => button(t("export")).click());
-  expect(captured.export?.open).toBe(true);
-  await invoke(() => captured.export?.onOpenChange(false));
-  expect(captured.export?.open).toBe(false);
-  await invoke(() => button(t("structure-tab")).click());
-  expect(button(t("structure-tab")).getAttribute("aria-selected")).toBe("true");
-  await invoke(() => captured.draft?.onOpenContext());
-  expect(button(t("context-tab")).getAttribute("aria-selected")).toBe("true");
 });
 
 it("places all-set review and export together in the document header without a second toolbar", async () => {

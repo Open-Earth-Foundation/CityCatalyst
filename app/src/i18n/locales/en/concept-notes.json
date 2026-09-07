@@ -488,21 +488,5 @@
   "edit-refine-label": "Update the request with your clarification or changes",
   "edit-refine-submit": "Create refined proposal",
   "edit-refresh": "Reload proposal state",
-  "edit-dismiss": "Dismiss this proposal",
-  "edit-history-title": "Revision history",
-  "edit-history-empty": "Accepted edits will appear here. History is never deleted.",
-  "edit-history-error": "History could not be loaded. Refresh and try again.",
-  "edit-history-entry": "Revision {{sequence}} · {{operation}}",
-  "edit-history-operation-apply": "Applied edits",
-  "edit-history-operation-undo": "Undo",
-  "edit-history-operation-restore": "Restoration",
-  "edit-history-review": "Review this revision",
-  "edit-history-undo": "Undo latest edit",
-  "edit-history-older": "Load older revisions",
-  "edit-history-confirm-undo": "Confirm undo",
-  "edit-history-confirm-restore": "Confirm restore",
-  "edit-history-current": "This historical text is already current.",
-  "edit-history-snapshot": "Review historical text changes",
-  "edit-history-undone": "The edit was undone through a new revision.",
-  "edit-history-restored": "Historical text was restored through a new revision."
+  "edit-dismiss": "Dismiss this proposal"
 }

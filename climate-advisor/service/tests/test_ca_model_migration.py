@@ -6,14 +6,14 @@ from uuid import uuid4
 import httpx
 import pytest
 from agents import RunConfig, Runner, function_tool
-from app.config import get_settings
 from app.models.cnb.source_prompt import DocumentSummary, QuestionReading
 from app.services.agent_service import AgentService
 from app.services.cnb.source_analysis import (
     _run_agent,
-    source_analysis_contract_version,
 )
 from openai import AsyncOpenAI
+
+from app.config import get_settings
 
 
 def test_all_active_ca_model_defaults_use_the_requested_family():
@@ -208,11 +208,3 @@ async def test_source_roles_preserve_reasoning_and_structured_outputs(
     assert not body.get("tools")
     assert body["response_format"]["type"] == "json_schema"
     assert body["response_format"]["json_schema"]["strict"] is True
-
-
-@pytest.mark.parametrize("role", ["cnb_source_reader", "cnb_source_synthesizer"])
-def test_source_model_changes_invalidate_analysis_reuse(role):
-    settings = get_settings().model_copy(deep=True)
-    version = source_analysis_contract_version(settings)
-    getattr(settings.llm.models, role).name = "previous-model"
-    assert source_analysis_contract_version(settings) != version

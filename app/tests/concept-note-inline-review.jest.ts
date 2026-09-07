@@ -1,12 +1,11 @@
 /** @jest-environment jsdom */
 import { afterEach, beforeAll, expect, it, jest } from "@jest/globals";
-import { act, createElement, type ComponentProps } from "react";
+import { act, createElement } from "react";
 import type { Root } from "react-dom/client";
 import {
   chapterId,
   cleanup,
   draftChapter,
-  historyEntry,
   mount,
   prepareDom,
   proposal,
@@ -16,7 +15,6 @@ import {
   locateEdits,
   proposalMatchesDraft,
   snapshotChanges,
-  type DocumentReview,
 } from "@/components/ConceptNoteWorkspace/inline-review";
 
 prepareDom();
@@ -24,14 +22,10 @@ jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t }),
 }));
 let Inline: typeof import("@/components/ConceptNoteWorkspace/edit-diff").InlineDocumentDiff;
-let Toolbar: typeof import("@/components/ConceptNoteWorkspace/document-review").DocumentReviewToolbar;
-let reviewChanges: typeof import("@/components/ConceptNoteWorkspace/document-review").documentReviewChanges;
 let root: Root;
 beforeAll(async () => {
   ({ InlineDocumentDiff: Inline } =
     await import("@/components/ConceptNoteWorkspace/edit-diff"));
-  ({ DocumentReviewToolbar: Toolbar, documentReviewChanges: reviewChanges } =
-    await import("@/components/ConceptNoteWorkspace/document-review"));
 });
 afterEach(async () => cleanup(root));
 
@@ -407,116 +401,4 @@ it("handles insertion/deletion and bounded large snapshot comparisons without lo
   }
   const container = await render("", [edit("", "New text")]);
   expect(container.querySelector("ins")?.textContent).toBe("New text");
-});
-
-function historyReview(): DocumentReview {
-  return {
-    kind: "history",
-    entry: historyEntry,
-    operation: "undo",
-    expected: { [chapterId]: 2 },
-    before: { [chapterId]: historyEntry.chapters[0].after },
-  };
-}
-async function toolbar(
-  review = historyReview(),
-  chapter = draftChapter({
-    revision_number: 2,
-    body_markdown: historyEntry.chapters[0].after,
-  }),
-) {
-  const restore = jest.fn<() => Promise<boolean>>().mockResolvedValue(true);
-  const apply = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
-  const onCancel = jest.fn();
-  const onNavigate = jest.fn();
-  const edits = {
-    proposals: [proposal],
-    busy: null,
-    apply,
-    reject: jest.fn(),
-    restore,
-  } as unknown as ComponentProps<typeof Toolbar>["edits"];
-  const changes = reviewChanges(review, edits.proposals, [chapter]);
-  const result = await mount(
-    createElement(Toolbar, {
-      review,
-      chapters: [chapter],
-      edits,
-      changes,
-      lng: "en",
-      onNavigate,
-      onCancel,
-      onOpenSources: jest.fn(),
-    }),
-    true,
-  );
-  root = result.root;
-  return { ...result, restore, apply, onCancel, onNavigate, changes };
-}
-it("confirms history only from the document toolbar with the frozen expected vector", async () => {
-  const result = await toolbar();
-  await act(async () =>
-    result.container
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-history-confirm"]',
-      )!
-      .click(),
-  );
-  expect(result.restore).toHaveBeenCalledWith(historyEntry, "undo", {
-    [chapterId]: 2,
-  });
-  expect(result.onCancel).toHaveBeenCalledTimes(1);
-  expect(result.container.querySelector("del, ins")).toBeNull();
-});
-it("blocks stale and no-op historical reviews and permits cancellation", async () => {
-  const result = await toolbar(
-    historyReview(),
-    draftChapter({ revision_number: 99, body_markdown: "New current text" }),
-  );
-  expect(
-    result.container.querySelector<HTMLButtonElement>(
-      '[data-testid="concept-note-history-confirm"]',
-    )!.disabled,
-  ).toBe(true);
-  await act(async () =>
-    result.container
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-history-cancel"]',
-      )!
-      .click(),
-  );
-  expect(result.onCancel).toHaveBeenCalledTimes(1);
-  expect(result.restore).not.toHaveBeenCalled();
-});
-it("keeps the proposal toolbar separate from inline differences and blocks stale apply", async () => {
-  const result = await toolbar({
-    kind: "proposal",
-    proposalId: proposal.proposal_id,
-  });
-  expect(
-    result.container.querySelector<HTMLButtonElement>(
-      '[data-testid="concept-note-edit-apply-all"]',
-    )!.disabled,
-  ).toBe(true);
-  expect(result.container.querySelector("del, ins")).toBeNull();
-});
-it("sorts history review hunks by document chapter order", () => {
-  const review = historyReview();
-  if (review.kind !== "history") throw new Error("test fixture");
-  const second = { ...historyEntry.chapters[0], chapter_id: "second" };
-  review.entry = {
-    ...historyEntry,
-    chapters: [second, ...historyEntry.chapters],
-  };
-  review.before.second = second.after;
-  review.expected.second = 2;
-  const changes = reviewChanges(
-    review,
-    [],
-    [
-      draftChapter({ position: 0 }),
-      draftChapter({ chapter_id: "second", position: 1 }),
-    ],
-  );
-  expect(changes[0].chapter_id).toBe(chapterId);
 });

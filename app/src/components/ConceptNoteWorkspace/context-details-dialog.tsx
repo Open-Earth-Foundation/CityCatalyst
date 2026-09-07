@@ -21,7 +21,7 @@ import type {
 } from "@/util/types";
 
 export type ContextDetailKey = "city" | "ghgi" | "ccra" | "hiap" | "funder";
-type ContextTone = "positive" | "neutral" | "warning";
+import { ContextStatusBadge, type ContextTone } from "./context-status-badge";
 
 interface ContextDetailsDialogProps {
   applicationContext: ConceptNoteApplicationContext | null;
@@ -73,42 +73,6 @@ function DetailSection({
       </Text>
       {children}
     </VStack>
-  );
-}
-
-function toneColor(tone: ContextTone): string {
-  if (tone === "positive") {
-    return "sentiment.positiveDefault";
-  }
-  if (tone === "warning") {
-    return "sentiment.warningDefault";
-  }
-  return "content.tertiary";
-}
-
-function DetailStatusBadge({
-  label,
-  tone,
-}: {
-  label: string;
-  tone: ContextTone;
-}) {
-  const color = toneColor(tone);
-  return (
-    <HStack
-      alignSelf="flex-start"
-      gap={1.5}
-      border="1px solid"
-      borderColor={color}
-      borderRadius="pill"
-      px={2}
-      py={0.5}
-    >
-      <Box boxSize="6px" borderRadius="full" bg={color} />
-      <Text fontSize="10px" lineHeight="16px" color="content.secondary">
-        {label}
-      </Text>
-    </HStack>
   );
 }
 
@@ -247,7 +211,7 @@ export function ContextDetailsDialog({
             {detailKey ? titles[detailKey] : ""}
           </DialogTitle>
           <HStack mt={2} gap={2}>
-            <DetailStatusBadge label={status} tone={tone} />
+            <ContextStatusBadge label={status} tone={tone} />
             <Text fontSize="label.sm" color="content.tertiary">
               {t("context-details-read-only")}
             </Text>

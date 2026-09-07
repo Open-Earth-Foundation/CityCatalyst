@@ -7,7 +7,6 @@ import {
   chapterId,
   cleanup,
   draftChapter,
-  historyEntry,
   mount,
   prepareDom,
   proposal,
@@ -19,20 +18,22 @@ prepareDom();
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t }),
 }));
+// Exercise real disclosure/focus behavior; jsdom cannot position an overlay.
+jest.unstable_mockModule("@/components/ui/popover", async () => {
+  const { Popover, Portal } = await import("@chakra-ui/react");
+  return {
+    PopoverRoot: Popover.Root,
+    PopoverTrigger: Popover.Trigger,
+    PopoverBody: Popover.Body,
+    PopoverContent: (props: ComponentProps<typeof Popover.Content>) =>
+      createElement(Portal, null, createElement(Popover.Content, props)),
+  };
+});
 let Card: typeof import("@/components/ConceptNoteWorkspace/edit-proposal-card").EditProposalCard;
 let ChatPanel: typeof import("@/components/ConceptNoteWorkspace/chat-panel").ConceptNoteChatPanel;
-let History: typeof import("@/components/ConceptNoteWorkspace/revision-history").RevisionHistory;
-const getHistory =
-  jest.fn<typeof import("@/services/concept-note-edit-api").getEditHistory>();
 type CardProps = ComponentProps<
   typeof import("@/components/ConceptNoteWorkspace/edit-proposal-card").EditProposalCard
 >;
-type HistoryProps = ComponentProps<
-  typeof import("@/components/ConceptNoteWorkspace/revision-history").RevisionHistory
->;
-jest.unstable_mockModule("@/services/concept-note-edit-api", () => ({
-  getEditHistory: getHistory,
-}));
 const editState = {
   proposals: [proposal],
   busy: null,
@@ -62,8 +63,6 @@ beforeAll(async () => {
     await import("@/components/ConceptNoteWorkspace/edit-proposal-card"));
   ({ ConceptNoteChatPanel: ChatPanel } =
     await import("@/components/ConceptNoteWorkspace/chat-panel"));
-  ({ RevisionHistory: History } =
-    await import("@/components/ConceptNoteWorkspace/revision-history"));
 });
 afterEach(async () => {
   await cleanup(root);
@@ -72,8 +71,10 @@ afterEach(async () => {
 });
 
 async function card(overrides: Record<string, unknown> = {}) {
-  const onApply = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
-  const onReject = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+  const onApply = jest.fn<CardProps["onApply"]>().mockResolvedValue(undefined);
+  const onReject = jest
+    .fn<CardProps["onReject"]>()
+    .mockResolvedValue(undefined);
   const onNavigate = jest.fn();
   const result = await mount(
     createElement(Card, {
@@ -128,52 +129,6 @@ it("labels user-supplied facts without blocking acceptance or claiming source ve
       '[data-testid="concept-note-edit-apply-all"]',
     )!.disabled,
   ).toBe(false);
-});
-
-function cssFor(element: Element): string {
-  const classNames = [...element.classList].filter((name) =>
-    name.startsWith("css-"),
-  );
-  return (
-    [...document.styleSheets]
-      .flatMap((sheet) => [...sheet.cssRules])
-      .map((rule) => rule.cssText)
-      // Unlayered component styles outrank the shared @layer recipes defaults.
-      .filter((text) => !text.startsWith("@layer"))
-      .filter((text) => classNames.some((name) => text.includes(`.${name}`)))
-      .join("\n")
-  );
-}
-
-it("overrides the white ghost recipe including hover/focus and capsule typography in the document header", async () => {
-  const { container } = await card();
-  for (const id of [
-    "concept-note-edit-reject-all",
-    "concept-note-edit-options",
-  ]) {
-    const button = container.querySelector(`[data-testid="${id}"]`)!;
-    const css = cssFor(button);
-    expect(css).toContain("color: var(--chakra-colors-content-secondary)");
-    expect(css).toContain(":hover");
-    expect(css).toContain(":focus-visible");
-    expect(css).not.toContain("color: var(--chakra-colors-base-light)");
-    expect(css).toContain("text-transform: none");
-    expect(css).toContain(
-      "letter-spacing: var(--chakra-letter-spacings-normal)",
-    );
-    expect(css).toMatch(
-      /:hover[^}]+color: var\(--chakra-colors-content-secondary\)/,
-    );
-    expect(css).toMatch(
-      /:focus-visible[^}]+color: var\(--chakra-colors-content-secondary\)/,
-    );
-    expect(css).toContain("border-radius: 6px");
-  }
-  expect(
-    cssFor(
-      container.querySelector('[data-testid="concept-note-edit-apply-all"]')!,
-    ),
-  ).toContain("text-transform: none");
 });
 
 it("disables acceptance during an in-flight operation", async () => {
@@ -356,8 +311,6 @@ it("does not expose revision history in the chat workspace", async () => {
       editScope: proposal.scope,
       edits: {
         ...editState,
-        history: [historyEntry],
-        historyError: "failed",
       } as unknown as ComponentProps<typeof ChatPanel>["edits"],
     }),
     true,
@@ -640,122 +593,6 @@ it("keeps the original instruction editable for refinement and prevents an empty
       .dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })),
   );
   expect(onRefine).toHaveBeenCalledWith(proposal, "Make it concise and formal");
-});
-async function history(overrides: Record<string, unknown> = {}) {
-  getHistory.mockResolvedValue(historyEntry);
-  const onReview = jest.fn<HistoryProps["onReview"]>();
-  const onLoadOlder = jest
-    .fn<HistoryProps["onLoadOlder"]>()
-    .mockResolvedValue(undefined);
-  const props = {
-    runId,
-    entries: [historyEntry],
-    chapters: [
-      draftChapter({
-        chapter_id: chapterId,
-        title: "Summary",
-        revision_number: 2,
-        body_markdown: historyEntry.chapters[0].after,
-      }),
-    ],
-    lng: "en",
-    busy: false,
-    onReview,
-    onLoadOlder,
-    ...overrides,
-  };
-  const rendered = await mount(createElement(History, props), true);
-  root = rendered.root;
-  await act(async () =>
-    rendered.container
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-history-toggle"]',
-      )!
-      .click(),
-  );
-  return { ...rendered, onReview, onLoadOlder, props };
-}
-it("opens undo in the document with exact historical detail and frozen current bases", async () => {
-  const rendered = await history();
-  await act(async () =>
-    rendered.container
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-history-undo"]',
-      )!
-      .click(),
-  );
-  expect(rendered.container.querySelector("del, ins")).toBeNull();
-  expect(
-    rendered.container.querySelector(
-      '[data-testid="concept-note-history-confirm"]',
-    ),
-  ).toBeNull();
-  expect(rendered.onReview).toHaveBeenCalledWith({
-    entry: historyEntry,
-    operation: "undo",
-    expected: { [chapterId]: 2 },
-    before: { [chapterId]: historyEntry.chapters[0].after },
-  });
-});
-it("opens restore review without performing a mutation from chat", async () => {
-  const rendered = await history();
-  await act(async () =>
-    rendered.container
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-history-review"]',
-      )!
-      .click(),
-  );
-  expect(rendered.onReview).toHaveBeenCalledWith(
-    expect.objectContaining({ operation: "restore" }),
-  );
-  expect(rendered.container.querySelector("del, ins")).toBeNull();
-});
-it("fails safely for unavailable or foreign historical snapshots", async () => {
-  const rendered = await history();
-  getHistory.mockResolvedValueOnce({ ...historyEntry, run_id: "foreign" });
-  await act(async () =>
-    rendered.container
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-history-review"]',
-      )!
-      .click(),
-  );
-  expect(
-    rendered.container.querySelector('[role="alert"]')?.textContent,
-  ).toContain("History could not be loaded");
-  expect(rendered.onReview).not.toHaveBeenCalled();
-});
-it("fails safely for missing current chapter body and duplicate historical chapters", async () => {
-  const rendered = await history({ chapters: [] });
-  await act(async () =>
-    rendered.container
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-history-review"]',
-      )!
-      .click(),
-  );
-  expect(rendered.onReview).not.toHaveBeenCalled();
-  expect(rendered.container.querySelector('[role="alert"]')).not.toBeNull();
-});
-it("keeps completed proposals as compact History entries, never pending cards", async () => {
-  const rendered = await history({
-    completedProposals: [{ ...proposal, status: "applied" }],
-  });
-  expect(
-    rendered.container.querySelectorAll(
-      '[data-testid="concept-note-edit-completed"]',
-    ),
-  ).toHaveLength(1);
-  expect(
-    rendered.container.querySelector('[data-testid="concept-note-edit-status"]')
-      ?.textContent,
-  ).toBe("Edits applied");
-  expect(
-    rendered.container.querySelector(
-      '[data-testid="concept-note-edit-proposal"]',
-    ),
-  ).toBeNull();
 });
 
 it("keeps optional controls hidden until the explicit review options action", async () => {

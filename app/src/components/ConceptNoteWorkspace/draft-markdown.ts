@@ -198,16 +198,6 @@ export function countMissingInformationMarkers(markdown: string): number {
   return Array.from(markdown.matchAll(missingInformationPattern())).length;
 }
 
-export function replaceMissingInformationMarkers(markdown: string): string {
-  return markdown.replace(
-    missingInformationPattern(),
-    (_marker, message: string) => {
-      const encodedMessage = encodeURIComponent(message.trim());
-      return `[ⓘ](${MISSING_INFORMATION_LINK} "${encodedMessage}")`;
-    },
-  );
-}
-
 export function decodeMissingInformationMessage(
   encodedMessage?: string,
 ): string | null {

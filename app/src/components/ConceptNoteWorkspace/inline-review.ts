@@ -1,21 +1,6 @@
-import type {
-  EditChange,
-  EditHistoryEntry,
-  EditProposal,
-} from "@/util/concept-note-edit-types";
+import type { EditChange, EditProposal } from "@/util/concept-note-edit-types";
 import type { ConceptNoteDraftChapter } from "@/util/types";
 import { missingInformationRanges } from "./draft-markdown";
-
-export interface HistoryReview {
-  entry: EditHistoryEntry;
-  operation: "undo" | "restore";
-  expected: Record<string, number>;
-  before: Record<string, string>;
-}
-
-export type DocumentReview =
-  | { kind: "proposal"; proposalId: string }
-  | ({ kind: "history" } & HistoryReview);
 
 export type InlineReviewDecision = "accepted" | "rejected";
 

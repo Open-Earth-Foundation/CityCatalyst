@@ -13,10 +13,16 @@ import type {
   SSEStreamController,
   SSEStreamOptions,
 } from "@/hooks/useSSEStream";
-import type { EditProposal } from "@/util/concept-note-edit-types";
+import { configureStore } from "@reduxjs/toolkit";
+import { createApi, type FetchArgs } from "@reduxjs/toolkit/query/react";
+import { Provider } from "react-redux";
+import type {
+  EditApplyRequest,
+  EditProposalRequest,
+  EditProposal,
+} from "@/util/concept-note-edit-types";
 import {
   cleanup,
-  historyEntry,
   mount,
   prepareDom,
   proposal,
@@ -25,32 +31,84 @@ import {
 } from "./cnb-edit-ui-helpers";
 
 prepareDom();
-type EditApi = typeof import("@/services/concept-note-edit-api");
-const list = jest.fn<EditApi["listEditProposals"]>();
-const get = jest.fn<EditApi["getEditProposal"]>();
-const apply = jest.fn<EditApi["applyEditProposal"]>();
-const reject = jest.fn<EditApi["rejectEditProposal"]>();
-const refine = jest.fn<EditApi["refineEditProposal"]>();
-const listHistory = jest.fn<EditApi["listEditHistory"]>();
-const restoreHistory = jest.fn<EditApi["restoreEditHistory"]>();
+// Exercise the real RTK endpoint definitions and cache with a deterministic server.
+const list = jest.fn<() => Promise<EditProposal[]>>();
+const get = jest.fn<() => Promise<EditProposal>>();
+const apply =
+  jest.fn<
+    (run: string, id: string, body: EditApplyRequest) => Promise<EditProposal>
+  >();
+const reject = jest.fn<() => Promise<EditProposal>>();
+const refine =
+  jest.fn<
+    (
+      run: string,
+      id: string,
+      body: EditProposalRequest,
+    ) => Promise<EditProposal>
+  >();
+let persisted: EditProposal[];
 class ApiError extends Error {
   constructor(
     public status: number,
     public code: string,
   ) {
-    super("Edit failed");
+    super(code);
   }
 }
-jest.unstable_mockModule("@/services/concept-note-edit-api", () => ({
-  listEditProposals: list,
-  getEditProposal: get,
-  applyEditProposal: apply,
-  rejectEditProposal: reject,
-  refineEditProposal: refine,
-  listEditHistory: listHistory,
-  restoreEditHistory: restoreHistory,
-  ConceptNoteEditError: ApiError,
-}));
+const requests: FetchArgs[] = [];
+const api = createApi({
+  reducerPath: "api",
+  tagTypes: ["ConceptNoteEdits"],
+  endpoints: () => ({}),
+  baseQuery: async (arg: string | FetchArgs) => {
+    const request = typeof arg === "string" ? { url: arg } : arg;
+    requests.push(request);
+    const parts = request.url.split("/");
+    const [, run, , id, action] = parts;
+    try {
+      if (!id) return { data: await list() };
+      if (!action) return { data: await get() };
+      if (request.method !== "POST")
+        throw new Error("Review operations require POST");
+      const result =
+        action === "apply"
+          ? await apply(run, id, request.body as EditApplyRequest)
+          : action === "refine"
+            ? await refine(run, id, request.body as EditProposalRequest)
+            : await reject();
+      persisted = [
+        result,
+        ...persisted.filter(
+          (item) =>
+            item.proposal_id !== result.proposal_id &&
+            !(
+              action === "refine" &&
+              result.status === "proposed" &&
+              item.proposal_id === id
+            ),
+        ),
+      ];
+      return { data: result };
+    } catch (error) {
+      return {
+        error: {
+          status: error instanceof ApiError ? error.status : 500,
+          data: {
+            code:
+              error instanceof ApiError ? error.code : "edit_request_failed",
+          },
+        },
+      };
+    }
+  },
+});
+const store = configureStore({
+  reducer: { api: api.reducer },
+  middleware: (getDefault) => getDefault().concat(api.middleware),
+  enhancers: (getDefault) => getDefault({ autoBatch: false }),
+});
+jest.unstable_mockModule("@/services/api", () => ({ api }));
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t }),
 }));
@@ -82,7 +140,9 @@ beforeAll(async () => {
 beforeEach(() => {
   jest.clearAllMocks();
   window.sessionStorage.clear();
-  list.mockResolvedValue([proposal]);
+  persisted = [proposal];
+  requests.length = 0;
+  list.mockImplementation(async () => persisted);
   get.mockResolvedValue(proposal);
   apply.mockResolvedValue({
     ...proposal,
@@ -98,12 +158,6 @@ beforeEach(() => {
     ...proposal,
     proposal_id: "88888888-8888-4888-8888-888888888888",
   });
-  listHistory.mockResolvedValue([]);
-  restoreHistory.mockResolvedValue({
-    ...historyEntry,
-    operation: "undo",
-    after_revisions: { [proposal.changes[0].chapter_id]: 3 },
-  });
   onApplied.mockResolvedValue(undefined);
   onProposal.mockResolvedValue(undefined);
   Object.defineProperty(globalThis, "fetch", {
@@ -117,6 +171,7 @@ beforeEach(() => {
 });
 afterEach(async () => {
   await cleanup(root);
+  store.dispatch(api.util.resetApiState());
   jest.useRealTimers();
 });
 
@@ -128,11 +183,14 @@ function Harness({ id = runId }: { id?: string }) {
   return createElement("output", null, current.error);
 }
 async function render() {
-  ({ root } = await mount(createElement(Harness)));
+  ({ root } = await mount(
+    createElement(Provider, { store, children: createElement(Harness) }),
+  ));
 }
 
 it("restores pending proposals on reload without modifying the draft", async () => {
   await render();
+  expect(requests[0]).toEqual({ url: `concept-notes/${runId}/edit-proposals` });
   expect(controller.proposals).toEqual([proposal]);
   expect(apply).not.toHaveBeenCalled();
   expect(controller.isLoading).toBe(false);
@@ -231,7 +289,7 @@ it("sends real UI focus through chat and consumes only typed proposal events", a
   expect(onProposal).toHaveBeenCalledTimes(1);
 });
 
-it("submits only whole selected groups while keeping Apply all independent", async () => {
+it("submits only whole selected groups while keeping Accept all independent", async () => {
   await render();
   await act(async () =>
     controller.apply(proposal, [proposal.changes[0].change_id]),
@@ -303,31 +361,6 @@ it("successful refinement replaces the pending card and keeps a stable retry key
   );
   expect(controller.proposals).toHaveLength(1);
   expect(controller.proposals[0].proposal_id).not.toBe(proposal.proposal_id);
-});
-it("restores history with frozen reviewed bases and idempotent conflict retries", async () => {
-  listHistory.mockResolvedValue([historyEntry]);
-  await render();
-  restoreHistory.mockRejectedValueOnce(new ApiError(409, "stale_base"));
-  const expected = historyEntry.after_revisions;
-  await act(async () => {
-    expect(await controller.restore(historyEntry, "undo", expected)).toBe(
-      false,
-    );
-  });
-  await act(async () => {
-    expect(await controller.restore(historyEntry, "undo", expected)).toBe(true);
-  });
-  expect(restoreHistory.mock.calls[0][3]).toEqual(
-    restoreHistory.mock.calls[1][3],
-  );
-  expect(restoreHistory.mock.calls[1][3].expected_revisions).toEqual(expected);
-  expect(onApplied).toHaveBeenCalledWith([proposal.changes[0].chapter_id]);
-});
-it("loads older history without duplicating a repeated page", async () => {
-  listHistory.mockResolvedValue([historyEntry]);
-  await render();
-  await act(async () => controller.refreshHistory(2));
-  expect(controller.history).toEqual([historyEntry]);
 });
 it("surfaces a durable failed proposal event instead of silently losing its review card", async () => {
   function ChatHarness() {

@@ -1,47 +1,44 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-
-import {
-  applyEditProposal,
-  ConceptNoteEditError,
-  getEditProposal,
-  listEditHistory,
-  listEditProposals,
-  refineEditProposal,
-  rejectEditProposal,
-  restoreEditHistory,
-} from "@/services/concept-note-edit-api";
+import { useEffect, useRef, useState } from "react";
+import { useAppDispatch } from "@/lib/hooks";
+import { editApi, editErrorCode } from "@/services/concept-note-edit-api";
 import {
   editApplyRequestSchema,
   type EditApplyRequest,
-  type EditHistoryEntry,
-  type EditHistoryRequest,
   type EditProposal,
 } from "@/util/concept-note-edit-types";
 import { CONCEPT_NOTE_POLL_INTERVAL_MS } from "@/util/concept-note-polling";
 
-interface EditControllerOptions {
-  runId: string | null;
-  onApplied: (chapterIds: string[]) => Promise<void>;
-}
-
 function revisionKey(revisions: Record<string, number>): string {
   return JSON.stringify(
-    Object.entries(revisions).sort(([left], [right]) =>
-      left.localeCompare(right),
-    ),
+    Object.entries(revisions).sort(([a], [b]) => a.localeCompare(b)),
   );
 }
 
+/** Query state belongs to RTK; this hook owns only explicit review operations. */
 export function useConceptNoteEdits({
   runId,
   onApplied,
-}: EditControllerOptions) {
-  const [proposals, setProposals] = useState<EditProposal[]>([]);
-  const [history, setHistory] = useState<EditHistoryEntry[]>([]);
-  const [historyError, setHistoryError] = useState<string | null>(null);
-  const [loadedRunId, setLoadedRunId] = useState<string | null>(null);
+}: {
+  runId: string | null;
+  onApplied: (chapterIds: string[]) => Promise<void>;
+}) {
+  const dispatch = useAppDispatch();
+  const cached = editApi.endpoints.listEditProposals.useQueryState(runId ?? "");
+  const processing = cached.currentData?.some(
+    (item) => item.status === "processing",
+  );
+  const query = editApi.useListEditProposalsQuery(runId ?? "", {
+    skip: !runId,
+    pollingInterval: processing ? CONCEPT_NOTE_POLL_INTERVAL_MS : 0,
+    skipPollingIfUnfocused: true,
+    refetchOnMountOrArgChange: true,
+  });
+  const [get] = editApi.useLazyGetEditProposalQuery();
+  const [apply] = editApi.useApplyEditProposalMutation();
+  const [reject] = editApi.useRejectEditProposalMutation();
+  const [refineRequest] = editApi.useRefineEditProposalMutation();
   const [busy, setBusy] = useState<{
     runId: string;
     proposalId: string;
@@ -50,302 +47,170 @@ export function useConceptNoteEdits({
     null,
   );
   const activeRun = useRef(runId);
-  const refreshSequence = useRef(0);
-  const historySequence = useRef(0);
-  const operationPending = useRef<string | null>(null);
+  const pending = useRef<typeof busy>(null);
   const applyRequests = useRef(new Map<string, EditApplyRequest>());
-  const operationKeys = useRef(new Map<string, string>());
-
-  const refreshHistory = useCallback(
-    async (beforeSequence?: number) => {
-      if (!runId) return;
-      const sequence = ++historySequence.current;
-      try {
-        const result = await listEditHistory(runId, beforeSequence);
-        if (activeRun.current !== runId || historySequence.current !== sequence)
-          return;
-        setHistory((current) =>
-          beforeSequence
-            ? [
-                ...current,
-                ...result.filter(
-                  (entry) =>
-                    !current.some(
-                      (old) => old.application_id === entry.application_id,
-                    ),
-                ),
-              ]
-            : result,
-        );
-        setHistoryError(null);
-      } catch {
-        if (activeRun.current === runId) setHistoryError("edit_history_failed");
-      }
-    },
-    [runId],
-  );
-
-  const refresh = useCallback(async () => {
-    if (!runId) return;
-    const sequence = ++refreshSequence.current;
-    try {
-      const result = await listEditProposals(runId);
-      if (activeRun.current === runId && refreshSequence.current === sequence) {
-        setProposals(result);
-        setError(null);
-      }
-    } catch {
-      if (activeRun.current === runId && refreshSequence.current === sequence)
-        setError({ runId, code: "edit_refresh_failed" });
-    } finally {
-      if (activeRun.current === runId && refreshSequence.current === sequence)
-        setLoadedRunId(runId);
-    }
-  }, [runId]);
-
+  const refineKeys = useRef(new Map<string, string>());
   useEffect(() => {
     activeRun.current = runId;
-    void Promise.resolve().then(refresh);
-    void Promise.resolve().then(() => refreshHistory());
     return () => {
       activeRun.current = null;
     };
-  }, [runId, refresh, refreshHistory]);
+  }, [runId]);
 
-  const currentProposals = proposals.filter(
-    (proposal) => proposal.run_id === runId,
-  );
-  const isProcessing = currentProposals.some(
-    (proposal) => proposal.status === "processing",
-  );
-  useEffect(() => {
-    if (!isProcessing) return;
-    const timer = window.setInterval(
-      () => void refresh(),
-      CONCEPT_NOTE_POLL_INTERVAL_MS,
+  function remember(result: EditProposal, replacedId?: string): void {
+    if (!runId || activeRun.current !== runId || result.run_id !== runId)
+      return;
+    dispatch(
+      editApi.util.updateQueryData("listEditProposals", runId, (items) => {
+        const retained = items.filter(
+          (item) =>
+            item.proposal_id !== result.proposal_id &&
+            item.proposal_id !== replacedId,
+        );
+        return [result, ...retained];
+      }),
     );
-    return () => window.clearInterval(timer);
-  }, [isProcessing, refresh]);
-
+  }
   async function loadProposal(proposalId: string): Promise<void> {
     if (!runId) return;
     try {
-      const proposal = await getEditProposal(runId, proposalId);
-      if (activeRun.current === runId && proposal.run_id === runId) {
-        ++refreshSequence.current;
-        setProposals((current) => [
-          proposal,
-          ...current.filter((item) => item.proposal_id !== proposalId),
-        ]);
-        setError(null);
-      }
+      const result = await get({ runId, proposalId }).unwrap();
+      await dispatch(
+        editApi.endpoints.listEditProposals.initiate(runId, {
+          subscribe: false,
+        }),
+      ).unwrap();
+      remember(result);
+      if (activeRun.current === runId) setError(null);
     } catch {
       if (activeRun.current === runId)
         setError({ runId, code: "edit_refresh_failed" });
     }
   }
-
-  async function decide(
+  function acceptance(
     proposal: EditProposal,
-    action: "apply" | "reject",
     selectedIds?: string[],
+  ): EditApplyRequest {
+    const selection = selectedIds ? [...selectedIds].sort() : undefined;
+    const cacheKey = `cnb-edit-apply:${runId}:${proposal.proposal_id}:${selection?.join(",") ?? "all"}`;
+    let request = applyRequests.current.get(cacheKey);
+    if (!request) {
+      try {
+        const stored = sessionStorage.getItem(cacheKey);
+        const parsed = stored
+          ? editApplyRequestSchema.safeParse(JSON.parse(stored))
+          : null;
+        if (
+          parsed?.success &&
+          revisionKey(parsed.data.expected_revisions) ===
+            revisionKey(proposal.base_revisions) &&
+          JSON.stringify(parsed.data.selected_change_ids ?? undefined) ===
+            JSON.stringify(selection)
+        )
+          request = parsed.data;
+      } catch {
+        /* Privacy settings may disable storage; retain the in-memory retry. */
+      }
+    }
+    request ??= {
+      idempotency_key: crypto.randomUUID(),
+      expected_revisions: proposal.base_revisions,
+      ...(selection ? { selected_change_ids: selection } : {}),
+    };
+    applyRequests.current.set(cacheKey, request);
+    try {
+      sessionStorage.setItem(cacheKey, JSON.stringify(request));
+    } catch {
+      /* An authorized edit does not depend on storage availability. */
+    }
+    return request;
+  }
+  async function operate(
+    proposal: EditProposal,
+    action: "apply" | "reject" | "refine",
+    options: { selectedIds?: string[]; instruction?: string } = {},
   ): Promise<void> {
-    if (
-      !runId ||
-      proposal.run_id !== runId ||
-      operationPending.current === runId
-    )
+    if (!runId || proposal.run_id !== runId || pending.current?.runId === runId)
       return;
-    operationPending.current = runId;
-    ++refreshSequence.current;
-    setBusy({ runId, proposalId: proposal.proposal_id });
+    const operation = { runId, proposalId: proposal.proposal_id };
+    pending.current = operation;
+    setBusy(operation);
     setError(null);
     try {
       let result: EditProposal;
-      if (action === "apply") {
-        const selection = selectedIds ? [...selectedIds].sort() : undefined;
-        const cacheKey = `cnb-edit-apply:${runId}:${proposal.proposal_id}:${selection?.join(",") ?? "all"}`;
-        let request = applyRequests.current.get(cacheKey);
-        if (!request) {
-          try {
-            const stored = window.sessionStorage.getItem(cacheKey);
-            const parsed = stored
-              ? editApplyRequestSchema.safeParse(JSON.parse(stored))
-              : null;
-            if (
-              parsed?.success &&
-              revisionKey(parsed.data.expected_revisions) ===
-                revisionKey(proposal.base_revisions) &&
-              JSON.stringify(parsed.data.selected_change_ids ?? undefined) ===
-                JSON.stringify(selection)
-            )
-              request = parsed.data;
-          } catch {
-            /* Storage can be unavailable; the in-memory retry key still works. */
-          }
-        }
-        request ??= {
-          idempotency_key: crypto.randomUUID(),
-          expected_revisions: proposal.base_revisions,
-          ...(selection ? { selected_change_ids: selection } : {}),
-        };
-        applyRequests.current.set(cacheKey, request);
-        try {
-          window.sessionStorage.setItem(cacheKey, JSON.stringify(request));
-        } catch {
-          /* Do not block an authorized edit on storage quota/privacy settings. */
-        }
-        result = await applyEditProposal(runId, proposal.proposal_id, request);
+      if (action === "refine") {
+        const instruction = options.instruction!;
+        const identity = `${proposal.proposal_id}:${instruction}`;
+        const key = refineKeys.current.get(identity) ?? crypto.randomUUID();
+        refineKeys.current.set(identity, key);
+        result = await refineRequest({
+          ...operation,
+          body: {
+            instruction,
+            scope: proposal.scope,
+            idempotency_key: key,
+            refines_proposal_id: proposal.proposal_id,
+          },
+        }).unwrap();
+        if (result.status === "failed" || result.status === "stale")
+          refineKeys.current.delete(identity);
       } else {
-        result = await rejectEditProposal(runId, proposal.proposal_id);
+        result = await (
+          action === "apply"
+            ? apply({
+                ...operation,
+                body: acceptance(proposal, options.selectedIds),
+              })
+            : reject(operation)
+        ).unwrap();
       }
       if (activeRun.current !== runId) return;
-      ++refreshSequence.current;
-      setProposals((current) =>
-        current.map((item) =>
-          item.proposal_id === result.proposal_id ? result : item,
-        ),
+      remember(
+        result,
+        action === "refine" && result.status === "proposed"
+          ? proposal.proposal_id
+          : undefined,
       );
       if (action === "apply" && result.result) {
-        await refreshHistory();
         try {
           await onApplied(Object.keys(result.result.revisions));
         } catch {
           setError({ runId, code: "edit_refresh_failed" });
         }
       }
-    } catch (requestError) {
-      if (activeRun.current === runId) {
-        await refresh();
-        setError({
-          runId,
-          code:
-            requestError instanceof ConceptNoteEditError
-              ? requestError.code
-              : "edit_request_failed",
-        });
-      }
-    } finally {
-      if (operationPending.current === runId) operationPending.current = null;
-      setBusy((current) => (current?.runId === runId ? null : current));
-    }
-  }
-
-  async function refine(
-    proposal: EditProposal,
-    instruction: string,
-  ): Promise<void> {
-    if (
-      !runId ||
-      proposal.run_id !== runId ||
-      operationPending.current === runId
-    )
-      return;
-    operationPending.current = runId;
-    ++refreshSequence.current;
-    setBusy({ runId, proposalId: proposal.proposal_id });
-    setError(null);
-    const identity = `refine:${proposal.proposal_id}:${instruction}`;
-    const key = operationKeys.current.get(identity) ?? crypto.randomUUID();
-    operationKeys.current.set(identity, key);
-    try {
-      const result = await refineEditProposal(runId, proposal.proposal_id, {
-        instruction,
-        scope: proposal.scope,
-        idempotency_key: key,
-        refines_proposal_id: proposal.proposal_id,
-      });
-      if (result.status === "failed" || result.status === "stale")
-        operationKeys.current.delete(identity);
-      if (activeRun.current === runId) {
-        ++refreshSequence.current;
-        setProposals((current) => [
-          result,
-          ...current.filter(
-            (item) =>
-              item.proposal_id !== result.proposal_id &&
-              (result.status !== "proposed" ||
-                item.proposal_id !== proposal.proposal_id),
-          ),
-        ]);
-      }
-    } catch (requestError) {
+    } catch (failure) {
       if (activeRun.current === runId)
-        setError({
-          runId,
-          code:
-            requestError instanceof ConceptNoteEditError
-              ? requestError.code
-              : "edit_request_failed",
-        });
+        setError({ runId, code: editErrorCode(failure) });
     } finally {
-      if (operationPending.current === runId) operationPending.current = null;
-      setBusy((current) => (current?.runId === runId ? null : current));
-    }
-  }
-
-  async function restore(
-    entry: EditHistoryEntry,
-    operation: "undo" | "restore",
-    expectedRevisions: Record<string, number>,
-  ): Promise<boolean> {
-    if (!runId || entry.run_id !== runId || operationPending.current === runId)
-      return false;
-    operationPending.current = runId;
-    setBusy({ runId, proposalId: entry.application_id });
-    setError(null);
-    const identity = `${operation}:${entry.application_id}:${revisionKey(expectedRevisions)}`;
-    const key = operationKeys.current.get(identity) ?? crypto.randomUUID();
-    operationKeys.current.set(identity, key);
-    const body: EditHistoryRequest = {
-      idempotency_key: key,
-      expected_revisions: expectedRevisions,
-    };
-    try {
-      const result = await restoreEditHistory(
-        runId,
-        entry.application_id,
-        operation,
-        body,
-      );
-      if (activeRun.current !== runId) return false;
-      await refreshHistory();
-      try {
-        await onApplied(Object.keys(result.after_revisions));
-      } catch {
-        setError({ runId, code: "edit_refresh_failed" });
+      if (pending.current === operation) {
+        pending.current = null;
+        setBusy(null);
       }
-      return true;
-    } catch (requestError) {
-      if (activeRun.current === runId)
-        setError({
-          runId,
-          code:
-            requestError instanceof ConceptNoteEditError
-              ? requestError.code
-              : "edit_request_failed",
-        });
-      return false;
-    } finally {
-      if (operationPending.current === runId) operationPending.current = null;
-      setBusy((current) => (current?.runId === runId ? null : current));
     }
   }
-
   return {
-    proposals: currentProposals,
-    isLoading: Boolean(runId && loadedRunId !== runId),
+    proposals: (query.currentData ?? []).filter(
+      (item) => item.run_id === runId,
+    ),
+    isLoading: Boolean(runId && query.isLoading),
     busy: busy?.runId === runId ? busy.proposalId : null,
-    error: error?.runId === runId ? error.code : null,
-    history: history.filter((entry) => entry.run_id === runId),
-    historyError,
-    refresh,
+    error:
+      error?.runId === runId
+        ? error.code
+        : query.isError
+          ? "edit_refresh_failed"
+          : null,
+    refresh: async () => {
+      if (runId) {
+        setError(null);
+        await query.refetch();
+      }
+    },
     loadProposal,
-    refreshHistory,
-    refine,
-    restore,
     apply: (proposal: EditProposal, selectedIds?: string[]) =>
-      decide(proposal, "apply", selectedIds),
-    reject: (proposal: EditProposal) => decide(proposal, "reject"),
+      operate(proposal, "apply", { selectedIds }),
+    reject: (proposal: EditProposal) => operate(proposal, "reject"),
+    refine: (proposal: EditProposal, instruction: string) =>
+      operate(proposal, "refine", { instruction }),
   };
 }

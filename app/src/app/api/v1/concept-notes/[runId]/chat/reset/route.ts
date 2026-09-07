@@ -6,6 +6,19 @@
  *     summary: Replace a Concept Note's chat with a fresh thread
  *     tags:
  *       - concept-notes
+ *     parameters:
+ *       - in: path
+ *         name: runId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: city_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
  *     responses:
  *       200:
  *         description: Chat reset and updated run returned

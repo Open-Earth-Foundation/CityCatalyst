@@ -64,27 +64,6 @@ export const proposal: EditProposal = {
   updated_at: "2026-08-30T12:00:00Z",
 };
 
-export const historyEntry: EditHistoryEntry = {
-  application_id: "77777777-7777-4777-8777-777777777777",
-  run_id: runId,
-  proposal_id: proposal.proposal_id,
-  restores_application_id: null,
-  sequence: 1,
-  operation: "apply",
-  before_revisions: { [chapterId]: 1 },
-  after_revisions: { [chapterId]: 2 },
-  accepted_change_ids: [proposal.changes[0].change_id],
-  created_at: proposal.created_at,
-  chapters: [
-    {
-      chapter_id: chapterId,
-      chapter_title: "Summary",
-      before: proposal.changes[0].before,
-      after: proposal.changes[0].after,
-    },
-  ],
-};
-
 export function t(key: string, values: Record<string, unknown> = {}): string {
   const pluralKey =
     typeof values.count === "number"

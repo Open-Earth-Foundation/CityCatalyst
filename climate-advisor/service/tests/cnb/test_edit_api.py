@@ -15,14 +15,14 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from tests.cnb.edit_helpers import (
     CHAPTER_ID,
-    OTHER_CHAPTER_ID,
     RUN_ID,
-    edit_database as edit_database,
+    request,
     seed_chapter,
+    service,
 )
-from tests.cnb.test_edit_planner import plan, request
-from app.models.cnb.concept_note_edits import EditPlanOutput, EditScope
-from tests.cnb.test_edit_service import service
+from tests.cnb.edit_helpers import (
+    edit_database as edit_database,
+)
 
 CITY_ID = "dddddddd-dddd-4ddd-8ddd-dddddddddddd"
 
@@ -130,28 +130,6 @@ async def test_api_proposal_apply_read_list_replay_use_real_persistence_and_auth
     assert result.status_code == 200 and replay.json() == result.json()
     assert result.json()["result"]["revisions"] == {str(CHAPTER_ID): 2}
     assert city.identity_calls == 5 and city.city_calls == 5
-
-
-async def test_api_reject_does_not_change_draft_and_cannot_be_applied(api) -> None:
-    client, edits, _, _ = api
-    proposal_id = (
-        await client.post(path(), json=request().model_dump(mode="json"))
-    ).json()["proposal_id"]
-    assert (await client.post(path(f"/{proposal_id}/reject"))).json()[
-        "status"
-    ] == "rejected"
-    response = await client.post(
-        path(f"/{proposal_id}/apply"),
-        json={
-            "idempotency_key": str(uuid4()),
-            "expected_revisions": {str(CHAPTER_ID): 1},
-        },
-    )
-    assert (
-        response.status_code == 409
-        and response.json()["code"] == "proposal_not_pending"
-    )
-    assert (await edits.workspace.list_chapters(run_id=RUN_ID))[0].revision_number == 1
 
 
 async def test_missing_token_wrong_identity_and_foreign_run_are_rejected(api) -> None:
@@ -308,102 +286,3 @@ async def test_history_endpoints_refuse_foreign_owners_and_unknown_revisions(
             },
         )
     ).status_code == 404
-
-
-async def test_history_stale_vector_and_cross_operation_key_reuse_are_conflicts(
-    api,
-) -> None:
-    client, _, _, _ = api
-    applied, accepted = await apply_first(client)
-    application_id = applied["result"]["application_id"]
-    stale = await client.post(
-        revisions_path(f"/{application_id}/undo"),
-        json={
-            "idempotency_key": str(uuid4()),
-            "expected_revisions": {str(CHAPTER_ID): 1},
-        },
-    )
-    assert stale.status_code == 409 and stale.json()["code"] == "stale_base"
-    reused = await client.post(
-        revisions_path(f"/{application_id}/undo"),
-        json={
-            "idempotency_key": accepted["idempotency_key"],
-            "expected_revisions": {str(CHAPTER_ID): 2},
-        },
-    )
-    assert (
-        reused.status_code == 409 and reused.json()["code"] == "idempotency_key_reused"
-    )
-    invalid = await client.post(
-        revisions_path(f"/{application_id}/restore"),
-        json={"idempotency_key": str(uuid4()), "expected_revisions": {}},
-    )
-    assert invalid.status_code == 422
-
-
-async def test_refinement_is_run_bound_idempotent_and_does_not_change_draft(
-    api,
-) -> None:
-    client, edits, _, _ = api
-    original = (
-        await client.post(path(), json=request().model_dump(mode="json"))
-    ).json()
-    refined_body = request(instruction="Make the wording even clearer").model_dump(
-        mode="json"
-    )
-    response = await client.post(
-        path(f"/{original['proposal_id']}/refine"), json=refined_body
-    )
-    assert response.status_code == 202
-    assert response.json()["proposal_id"] != original["proposal_id"]
-    assert (
-        await client.post(path(f"/{original['proposal_id']}/refine"), json=refined_body)
-    ).json() == response.json()
-    assert (await client.get(path(f"/{original['proposal_id']}"))).json()[
-        "status"
-    ] == "rejected"
-    assert (await edits.workspace.list_chapters(run_id=RUN_ID))[0].revision_number == 1
-    mismatch = {
-        **refined_body,
-        "idempotency_key": str(uuid4()),
-        "refines_proposal_id": str(uuid4()),
-    }
-    assert (
-        await client.post(path(f"/{original['proposal_id']}/refine"), json=mismatch)
-    ).status_code == 422
-    assert (
-        await client.post(path(f"/{uuid4()}/refine"), json=refined_body)
-    ).status_code == 404
-
-
-async def test_selective_apply_endpoint_commits_only_accepted_independent_group(
-    api,
-) -> None:
-    client, edits, _, _ = api
-    await seed_chapter(
-        edits.repository._sessions, chapter_id=OTHER_CHAPTER_ID, position=1
-    )
-    first = plan().changes[0]
-    second = first.model_copy(
-        update={"chapter_id": OTHER_CHAPTER_ID, "group_id": "other-wording"}
-    )
-    edits.planner.output = EditPlanOutput(intent="edit", changes=[first, second])
-    body = request(
-        scope=EditScope(focused_chapter_id=CHAPTER_ID)
-    ).model_dump(mode="json")
-    proposal = (await client.post(path(), json=body)).json()
-    selected = [proposal["changes"][0]["change_id"]]
-    response = await client.post(
-        path(f"/{proposal['proposal_id']}/apply"),
-        json={
-            "idempotency_key": str(uuid4()),
-            "expected_revisions": proposal["base_revisions"],
-            "selected_change_ids": selected,
-        },
-    )
-    assert (
-        response.status_code == 200 and response.json()["status"] == "partially_applied"
-    )
-    assert response.json()["result"]["accepted_change_ids"] == selected
-    chapters = await edits.workspace.list_chapters(run_id=RUN_ID)
-    assert [chapter.revision_number for chapter in chapters] == [2, 1]

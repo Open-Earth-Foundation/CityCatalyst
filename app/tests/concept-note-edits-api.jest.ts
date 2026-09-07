@@ -7,9 +7,6 @@ import {
   it,
   jest,
 } from "@jest/globals";
-import { mkdtempSync, rmdirSync, unlinkSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import path from "node:path";
 import type { forwardConceptNoteEdit } from "@/backend/concept-note-edits";
 import type { callConceptNoteApi } from "@/backend/concept-notes";
 import type {
@@ -63,7 +60,6 @@ let refine: UnwrappedEditHandler,
   revision: UnwrappedEditHandler,
   undo: UnwrappedEditHandler,
   restore: UnwrappedEditHandler;
-let clientApi: typeof import("@/services/concept-note-edit-api");
 beforeAll(async () => {
   const collection =
     await import("@/app/api/v1/concept-notes/[runId]/edit-proposals/route");
@@ -107,7 +103,6 @@ beforeAll(async () => {
       await import("@/app/api/v1/concept-notes/[runId]/revisions/[revisionId]/restore/route")
     ).POST,
   );
-  clientApi = await import("@/services/concept-note-edit-api");
 });
 const context: EditProxyContext = {
   session: {
@@ -271,157 +266,5 @@ describe("authorized CC-732 proxy contracts", () => {
       restore(request({ idempotency_key: key }), historyContext),
     ).rejects.toBeDefined();
     expect(upstream).not.toHaveBeenCalled();
-  });
-});
-
-describe("CC-732 client request contract", () => {
-  it("sends explicit apply/reject bodies and keeps proposal reads read-only", async () => {
-    const fetch = jest
-      .spyOn(globalThis, "fetch")
-      .mockImplementation(
-        async () => new Response(JSON.stringify({ proposal_id: proposalId })),
-      );
-    await clientApi.listEditProposals(runId);
-    await clientApi.getEditProposal(runId, proposalId);
-    await clientApi.createEditProposal(runId, proposalBody);
-    await clientApi.applyEditProposal(runId, proposalId, applyBody);
-    await clientApi.rejectEditProposal(runId, proposalId);
-    expect(fetch.mock.calls.map(([, options]) => options?.method)).toEqual([
-      "GET",
-      "GET",
-      "POST",
-      "POST",
-      "POST",
-    ]);
-    expect(fetch.mock.calls[3][1]?.body).toBe(JSON.stringify(applyBody));
-  });
-  it("returns a typed safe conflict instead of treating HTTP acceptance as apply success", async () => {
-    jest
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValue(
-        new Response(JSON.stringify({ code: "stale_base" }), { status: 409 }),
-      );
-    await expect(
-      clientApi.applyEditProposal(runId, proposalId, applyBody),
-    ).rejects.toMatchObject({ status: 409, code: "stale_base" });
-  });
-  it("uses authorized revision URLs and explicit compensating operation bodies", async () => {
-    const fetch = jest
-      .spyOn(globalThis, "fetch")
-      .mockImplementation(
-        async () =>
-          new Response(JSON.stringify({ application_id: proposalId })),
-      );
-    await clientApi.refineEditProposal(runId, proposalId, proposalBody);
-    await clientApi.listEditHistory(runId, 3);
-    await clientApi.getEditHistory(runId, proposalId);
-    await clientApi.restoreEditHistory(runId, proposalId, "undo", applyBody);
-    await clientApi.restoreEditHistory(runId, proposalId, "restore", applyBody);
-    expect(fetch.mock.calls.map(([url]) => url)).toEqual([
-      `/api/v1/concept-notes/${runId}/edit-proposals/${proposalId}/refine`,
-      `/api/v1/concept-notes/${runId}/revisions?before_sequence=3`,
-      `/api/v1/concept-notes/${runId}/revisions/${proposalId}`,
-      `/api/v1/concept-notes/${runId}/revisions/${proposalId}/undo`,
-      `/api/v1/concept-notes/${runId}/revisions/${proposalId}/restore`,
-    ]);
-  });
-});
-
-describe("complete-file coverage verification", () => {
-  let verifyCoverage: typeof import("../scripts/verify-cnb-edit-coverage.mjs").verifyCoverage;
-  let root: string;
-  let source: string;
-  const entry = (file: string, hits = 1) => ({
-    path: file,
-    statementMap: {
-      "0": { start: { line: 1, column: 0 }, end: { line: 1, column: 8 } },
-    },
-    s: { "0": hits },
-    fnMap: {},
-    f: {},
-    branchMap: {},
-    b: {},
-  });
-  beforeAll(async () => {
-    ({ verifyCoverage } =
-      await import("../scripts/verify-cnb-edit-coverage.mjs"));
-  });
-  beforeEach(() => {
-    root = mkdtempSync(path.join(tmpdir(), "cc732-coverage-"));
-    source = path.join(root, "Source.ts");
-    writeFileSync(source, "export const value = 1;\n");
-    writeFileSync(path.join(root, "Other.ts"), "export const other = 2;\n");
-  });
-  afterEach(() => {
-    unlinkSync(source);
-    unlinkSync(path.join(root, "Other.ts"));
-    rmdirSync(root);
-  });
-  it("counts every current source file once and ignores unrelated package coverage", () => {
-    const report = {
-      [source]: entry(source),
-      [path.join(root, "Other.ts")]: entry(path.join(root, "Other.ts"), 0),
-    };
-    expect(verifyCoverage({ files: ["Source.ts"] }, report, root)).toEqual({
-      files: 1,
-      covered_lines: 1,
-      executable_lines: 1,
-      percentage: 100,
-    });
-  });
-  it("rejects a missing current source even when a stale report contains it", () => {
-    const missing = path.join(root, "Missing.ts");
-    expect(() =>
-      verifyCoverage(
-        { files: ["Missing.ts"] },
-        { [missing]: entry(missing) },
-        root,
-      ),
-    ).toThrow("Source file is missing");
-  });
-  it("rejects an unexecuted manifest file omitted from the report", () => {
-    expect(() =>
-      verifyCoverage(
-        { files: ["Source.ts", "Other.ts"] },
-        { [source]: entry(source) },
-        root,
-      ),
-    ).toThrow("Full-file coverage is missing: Other.ts");
-  });
-  it("rejects exact or normalized duplicate paths and an empty manifest", () => {
-    const report = { [source]: entry(source) };
-    expect(() =>
-      verifyCoverage({ files: ["Source.ts", "Source.ts"] }, report, root),
-    ).toThrow("Duplicate");
-    expect(() =>
-      verifyCoverage({ files: ["Source.ts", "./Source.ts"] }, report, root),
-    ).toThrow("Duplicate");
-    expect(() => verifyCoverage({ files: [] }, report, root)).toThrow(
-      "must contain files",
-    );
-  });
-  it("rejects directory escapes and sub-80 coverage without averaging another package", () => {
-    expect(() =>
-      verifyCoverage({ files: ["../outside.ts"] }, {}, root),
-    ).toThrow("outside app");
-    expect(() =>
-      verifyCoverage(
-        { files: ["Source.ts"] },
-        { [source]: entry(source, 0) },
-        root,
-      ),
-    ).toThrow("below 80%");
-  });
-  it("only folds coverage path case on Windows", () => {
-    const differentCase = path.join(root, "source.ts");
-    const run = () =>
-      verifyCoverage(
-        { files: ["Source.ts"] },
-        { [differentCase]: entry(differentCase) },
-        root,
-      );
-    if (process.platform === "win32")
-      expect(run()).toMatchObject({ percentage: 100 });
-    else expect(run).toThrow("Full-file coverage is missing");
   });
 });

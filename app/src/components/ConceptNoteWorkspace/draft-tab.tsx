@@ -75,7 +75,6 @@ interface DraftTabProps {
   onFocusedChapterChange?: (chapterId: string) => void;
   isReviewing?: boolean;
   reviewChanges?: EditChange[];
-  reviewBefore?: Record<string, string>;
   activeChangeId?: string;
   reviewDecisions?: Record<string, InlineReviewDecision>;
   reviewDecisionBusy?: boolean;
@@ -236,7 +235,6 @@ export function DraftTab({
   onFocusedChapterChange,
   isReviewing,
   reviewChanges = [],
-  reviewBefore,
   activeChangeId,
   reviewDecisions,
   reviewDecisionBusy,
@@ -893,23 +891,16 @@ export function DraftTab({
                         const changes = reviewChanges.filter(
                           (change) => change.chapter_id === chapter.chapter_id,
                         );
-                        const historical = reviewBefore?.[chapter.chapter_id];
                         const comparingChapter =
                           !isReviewing &&
                           Boolean(
                             chapter.proposed_revision_number &&
                             chapter.confirmed_body_markdown,
                           );
-                        if (
-                          changes.length ||
-                          historical !== undefined ||
-                          comparingChapter
-                        ) {
-                          const before =
-                            historical ??
-                            (comparingChapter
-                              ? chapter.confirmed_body_markdown!
-                              : chapter.body_markdown!);
+                        if (changes.length || comparingChapter) {
+                          const before = comparingChapter
+                            ? chapter.confirmed_body_markdown!
+                            : chapter.body_markdown!;
                           const differences = comparingChapter
                             ? snapshotChanges(
                                 chapter,

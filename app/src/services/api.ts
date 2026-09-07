@@ -162,6 +162,7 @@ export const api = createApi({
     "ConceptNoteRuns",
     "ConceptNoteUpload",
     "ConceptNoteDraft",
+    "ConceptNoteEdits",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {

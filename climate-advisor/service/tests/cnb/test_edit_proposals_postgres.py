@@ -8,13 +8,13 @@ from uuid import uuid4
 import pytest
 from alembic import command
 from alembic.config import Config
-from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.models.cnb.concept_note_edits import (
     EditApplyRequest,
     EditHistoryRequest,
     EditProposalRequest,
     EditScope,
 )
+from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.models.db.cnb_workspace import ConceptNoteChapterRevision
 from app.persistence.concept_notes.edits import (
     ConceptNoteEditRepository,
@@ -29,10 +29,12 @@ from tests.cnb.edit_helpers import (
     OTHER_CHAPTER_ID,
     RUN_ID,
     database_url,
-    edit_database as edit_database,
     seed_chapter,
+    wording_change,
 )
-from tests.cnb.test_edit_repository import wording_change
+from tests.cnb.edit_helpers import (
+    edit_database as edit_database,
+)
 
 
 def proposal_row(**changes) -> ConceptNoteEditProposal:

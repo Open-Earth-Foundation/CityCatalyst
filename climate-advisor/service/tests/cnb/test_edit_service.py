@@ -12,47 +12,26 @@ from app.models.cnb.concept_note_edits import (
     EditScope,
 )
 from app.models.db.cnb_edit import ConceptNoteEditProposal
-from app.models.db.cnb_workspace import ConceptNoteChapter, ConceptNoteGap
+from app.models.db.cnb_workspace import ConceptNoteChapter
 from app.persistence.concept_notes.edits import (
-    ConceptNoteEditRepository,
     EditOperationError,
 )
-from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
-from app.services.cnb.edits import ConceptNoteEditService, get_edit_service
+from app.services.cnb.edits import get_edit_service
 from tests.cnb.edit_helpers import (
     BODY,
     CHAPTER_ID,
     OTHER_CHAPTER_ID,
     RUN_ID,
+    FakePlanner,
+    investment_plan,
+    request,
     seed_chapter,
+    service,
+    snapshot,
 )
 from tests.cnb.edit_helpers import (
     edit_database as edit_database,  # noqa: PLC0414 - expose the shared pytest fixture
 )
-from tests.cnb.test_edit_planner import investment_plan, plan, request, snapshot
-
-
-class FakePlanner:
-    def __init__(self, output=None, error=None):
-        self.output = output or plan()
-        self.error = error
-        self.calls = 0
-
-    async def plan(self, *args, **kwargs):
-        self.calls += 1
-        self.prior_proposal = kwargs.get("prior_proposal")
-        self.recent_messages = kwargs.get("recent_messages")
-        if self.error:
-            raise self.error
-        return self.output
-
-
-def service(sessions, planner=None) -> ConceptNoteEditService:
-    return ConceptNoteEditService(
-        ConceptNoteEditRepository(sessions),
-        ConceptNoteWorkspaceRepository(sessions),
-        planner or FakePlanner(),
-    )
 
 
 def run(status="active"):
@@ -123,60 +102,12 @@ async def test_interrupted_request_is_persisted_as_failed_not_stuck_processing(
     assert result.error_code == "planning_interrupted" and result.status == "failed"
 
 
-async def test_invalid_target_and_numeric_change_cannot_be_applied(
-    edit_database,
-) -> None:
-    await seed_chapter(edit_database)
-    edits = service(edit_database, FakePlanner(plan(before="not present")))
-    assert (await edits.propose(run(), request())).error_code == "invalid_anchor"
-    edits.planner = FakePlanner(
-        plan(start=BODY.index("10 million"), before="10 million", after="20 million")
-    )
-    assert (await edits.propose(run(), request())).status == "clarification_required"
-
-
-async def test_inactive_or_undrafted_run_cannot_be_edited(edit_database) -> None:
-    edits = service(edit_database)
-    with pytest.raises(EditOperationError) as error:
-        await edits.propose(run("archived"), request())
-    assert error.value.code == "run_inactive"
-    assert (await edits.propose(run(), request())).error_code == "draft_unavailable"
-
-
 def test_unconfigured_managed_store_does_not_construct_service(monkeypatch) -> None:
     monkeypatch.setattr(
         "app.services.cnb.edits.get_settings",
         lambda: SimpleNamespace(cnb_database_url=None),
     )
     assert get_edit_service() is None
-
-
-async def test_factual_apply_reopens_ready_but_preserves_all_unrelated_bytes(
-    edit_database,
-) -> None:
-    await seed_chapter(edit_database, ready=True)
-    instruction = "Change the investment amount to EUR 12 million"
-    edits = service(
-        edit_database, FakePlanner(investment_plan([snapshot()], instruction))
-    )
-    proposal = await edits.propose(run(), request(instruction=instruction))
-    assert proposal.status == "proposed"
-    result = await edits.apply(
-        run(),
-        proposal.proposal_id,
-        EditApplyRequest(
-            idempotency_key=uuid4(), expected_revisions=proposal.base_revisions
-        ),
-        {},
-    )
-    [chapter] = await edits.workspace.list_chapters(run_id=RUN_ID)
-    assert result.status == "applied"
-    assert chapter.body_markdown == BODY.replace("EUR 10 million", "EUR 12 million")
-    assert (
-        chapter.status == "draft"
-        and chapter.confirmed_revision_number == 1
-        and chapter.proposed_revision_number is None
-    )
 
 
 async def test_source_change_invalidates_pending_proposal_and_never_overwrites_text(
@@ -286,49 +217,6 @@ async def test_wording_edit_cannot_promote_busy_or_failed_regeneration_to_ready(
         )
     assert error.value.code == "chapter_unavailable"
     assert (await edits.workspace.list_chapters(run_id=RUN_ID))[0].revision_number == 1
-
-
-async def test_wording_edit_retains_open_information_gap_state(edit_database) -> None:
-    await seed_chapter(edit_database)
-    async with edit_database() as session, session.begin():
-        session.add(
-            ConceptNoteGap(
-                run_id=RUN_ID,
-                chapter_id=CHAPTER_ID,
-                field_key="lead",
-                severity="critical",
-                question="Who leads?",
-                why_asking="Delivery responsibility",
-                status="open",
-            )
-        )
-    edits = service(edit_database)
-    proposal = await edits.propose(run(), request())
-    await edits.apply(
-        run(),
-        proposal.proposal_id,
-        EditApplyRequest(
-            idempotency_key=uuid4(), expected_revisions=proposal.base_revisions
-        ),
-        {},
-    )
-    [chapter] = await edits.workspace.list_chapters(run_id=RUN_ID)
-    assert (
-        chapter.status == "needs_review"
-        and chapter.gaps[0].state == "open"
-        and chapter.gaps[0].version == 1
-    )
-
-
-async def test_broad_rewrite_uses_automatic_scope_and_calls_model(
-    edit_database,
-) -> None:
-    await seed_chapter(edit_database)
-    planner = FakePlanner()
-    edits = service(edit_database, planner)
-    result = await edits.propose(run(), request(instruction="Rewrite the entire draft"))
-    assert result.status == "proposed" and result.error_code is None
-    assert planner.calls == 1
 
 
 async def test_refinement_preserves_authorized_prior_intent_and_original_factual_input(

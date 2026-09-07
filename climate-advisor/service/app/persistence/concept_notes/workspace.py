@@ -22,7 +22,7 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGapResolution,
     ConceptNoteMatchedProject,
 )
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 LEGACY_GENERIC_GAP_RATIONALE = "This information is required to complete the chapter."
@@ -211,7 +211,110 @@ class ConceptNoteWorkspaceRepository:
                     )
                 ).all()
             )
-            return [await _snapshot_chapter(session, chapter) for chapter in chapters]
+            if not chapters:
+                return []
+            chapter_ids = [chapter.chapter_id for chapter in chapters]
+            # Rank per chapter; confirmed revisions may precede the current revision.
+            ranked = (
+                select(
+                    ConceptNoteChapterRevision.revision_id,
+                    func.row_number()
+                    .over(
+                        partition_by=ConceptNoteChapterRevision.chapter_id,
+                        order_by=ConceptNoteChapterRevision.revision_number.desc(),
+                    )
+                    .label("rank"),
+                )
+                .where(ConceptNoteChapterRevision.chapter_id.in_(chapter_ids))
+                .subquery()
+            )
+            revisions = list(
+                await session.scalars(
+                    select(ConceptNoteChapterRevision).where(
+                        or_(
+                            ConceptNoteChapterRevision.revision_id.in_(
+                                select(ranked.c.revision_id).where(ranked.c.rank == 1)
+                            ),
+                            ConceptNoteChapterRevision.revision_id.in_(
+                                [
+                                    c.confirmed_revision_id
+                                    for c in chapters
+                                    if c.confirmed_revision_id
+                                ]
+                            ),
+                        )
+                    )
+                )
+            )
+            by_id = {revision.revision_id: revision for revision in revisions}
+            latest = {}
+            for revision in revisions:
+                current = latest.get(revision.chapter_id)
+                if (
+                    current is None
+                    or revision.revision_number > current.revision_number
+                ):
+                    latest[revision.chapter_id] = revision
+            gaps = list(
+                await session.scalars(
+                    select(ConceptNoteGap)
+                    .where(ConceptNoteGap.chapter_id.in_(chapter_ids))
+                    .order_by(ConceptNoteGap.created_at, ConceptNoteGap.gap_id)
+                )
+            )
+            resolved = (
+                select(
+                    ConceptNoteGapResolution.resolution_id,
+                    func.row_number()
+                    .over(
+                        partition_by=ConceptNoteGapResolution.gap_id,
+                        order_by=(
+                            ConceptNoteGapResolution.created_at.desc(),
+                            ConceptNoteGapResolution.resolution_id.desc(),
+                        ),
+                    )
+                    .label("rank"),
+                )
+                .where(
+                    ConceptNoteGapResolution.gap_id.in_([gap.gap_id for gap in gaps])
+                )
+                .subquery()
+            )
+            resolutions = (
+                {
+                    r.gap_id: r
+                    for r in await session.scalars(
+                        select(ConceptNoteGapResolution).where(
+                            ConceptNoteGapResolution.resolution_id.in_(
+                                select(resolved.c.resolution_id).where(
+                                    resolved.c.rank == 1
+                                )
+                            )
+                        )
+                    )
+                }
+                if gaps
+                else {}
+            )
+            by_chapter: dict[UUID, list[ConceptNoteGap]] = {}
+            for gap in gaps:
+                by_chapter.setdefault(gap.chapter_id, []).append(gap)
+            return [
+                _snapshot_chapter(
+                    chapter,
+                    latest.get(chapter.chapter_id),
+                    by_id.get(chapter.confirmed_revision_id),
+                    [
+                        _snapshot_gap(
+                            gap,
+                            resolutions.get(gap.gap_id),
+                            chapter_title=chapter.title,
+                        )
+                        for gap in by_chapter.get(chapter.chapter_id, [])
+                    ],
+                )
+                for chapter in chapters
+            ]
 
     async def copy_working_copy(
         self,
@@ -604,67 +707,6 @@ class ConceptNoteWorkspaceRepository:
             chapter.status = "ready"
             chapter.updated_at = datetime.now(UTC)
 
-    async def save_revalidated_chapter(
-        self,
-        *,
-        chapter_id: UUID,
-        expected_revision_number: int,
-        generated: ConceptNoteChapterDraftOutput,
-        source_refs: list[str],
-    ) -> bool:
-        """Persist a source-driven proposal while preserving confirmed content."""
-        async with self._session_factory() as session, session.begin():
-            chapter = await _require_chapter(session, chapter_id, lock=True)
-            latest = await _latest_revision(session, chapter_id)
-            if latest is None:
-                return False
-            if (
-                latest.revision_number != expected_revision_number
-                or chapter.regeneration_status == "processing"
-            ):
-                return False
-
-            # Reconcile evidence-filled and newly reopened gaps before status choice.
-            gaps_changed = await _reconcile_evidence_gaps(
-                session,
-                chapter,
-                generated.missing_information,
-                source_refs,
-            )
-            body_changed = (
-                latest.body_markdown.strip() != generated.body_markdown.strip()
-            )
-            if not body_changed and not gaps_changed:
-                return False
-
-            session.add(
-                ConceptNoteChapterRevision(
-                    chapter_id=chapter_id,
-                    revision_number=latest.revision_number + 1,
-                    author_type="agent",
-                    change_type="rewrite",
-                    body_markdown=generated.body_markdown,
-                    patch_summary={
-                        "source_revalidation": True,
-                        "source_refs": source_refs,
-                        "confirmed_revision_id": (
-                            str(chapter.confirmed_revision_id)
-                            if chapter.confirmed_revision_id
-                            else None
-                        ),
-                    },
-                )
-            )
-            chapter.status = (
-                "needs_review"
-                if await _has_blocking_gaps(session, chapter_id)
-                else "draft"
-            )
-            chapter.regeneration_status = "idle"
-            chapter.regeneration_error = None
-            chapter.updated_at = datetime.now(UTC)
-            return True
-
     async def begin_gap_impact_regeneration(
         self,
         *,
@@ -819,32 +861,14 @@ async def _latest_resolution(
     )
 
 
-async def _snapshot_chapter(
-    session: AsyncSession,
+def _snapshot_chapter(
     chapter: ConceptNoteChapter,
+    latest: ConceptNoteChapterRevision | None,
+    confirmed: ConceptNoteChapterRevision | None,
+    gap_snapshots: list[WorkspaceGapSnapshot],
 ) -> WorkspaceChapterSnapshot:
-    """Assemble one detached chapter and its gap provenance."""
-    latest = await _latest_revision(session, chapter.chapter_id)
-    gaps = list(
-        (
-            await session.scalars(
-                select(ConceptNoteGap)
-                .where(ConceptNoteGap.chapter_id == chapter.chapter_id)
-                .order_by(ConceptNoteGap.created_at.asc(), ConceptNoteGap.gap_id.asc())
-            )
-        ).all()
-    )
-    gap_snapshots = [
-        await _snapshot_gap(session, gap, chapter_title=chapter.title) for gap in gaps
-    ]
-    confirmed: ConceptNoteChapterRevision | None = None
-    confirmed_number = None
-    if chapter.confirmed_revision_id is not None:
-        confirmed = await session.get(
-            ConceptNoteChapterRevision,
-            chapter.confirmed_revision_id,
-        )
-        confirmed_number = confirmed.revision_number if confirmed is not None else None
+    """Detach a chapter from its batch-loaded current and confirmed revisions."""
+    confirmed_number = confirmed.revision_number if confirmed is not None else None
     proposed_number = (
         latest.revision_number
         if latest is not None
@@ -879,14 +903,13 @@ async def _snapshot_chapter(
     )
 
 
-async def _snapshot_gap(
-    session: AsyncSession,
+def _snapshot_gap(
     gap: ConceptNoteGap,
+    resolution: ConceptNoteGapResolution | None,
     *,
     chapter_title: str,
 ) -> WorkspaceGapSnapshot:
     """Detach one gap and its latest resolution."""
-    resolution = await _latest_resolution(session, gap.gap_id)
     resolution_snapshot = (
         WorkspaceGapResolutionSnapshot(
             resolution_id=resolution.resolution_id,
@@ -986,24 +1009,6 @@ async def _merge_generated_gaps(
             continue
         if _update_gap_from_output(gap, output):
             gap.version += 1
-
-
-async def _reconcile_evidence_gaps(
-    session: AsyncSession,
-    chapter: ConceptNoteChapter,
-    outputs: list[ConceptNoteDraftGapOutput],
-    source_refs: list[str],
-) -> bool:
-    """Resolve filled gaps and reopen evidence-backed gaps without losing history."""
-    return await _reconcile_generated_gaps(
-        session,
-        chapter,
-        outputs,
-        close_action="evidence_update",
-        close_answer=None,
-        close_actor_user_id="system",
-        source_refs=source_refs,
-    )
 
 
 async def _reconcile_generated_gaps(

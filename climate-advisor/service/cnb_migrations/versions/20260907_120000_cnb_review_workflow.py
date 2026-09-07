@@ -1,8 +1,8 @@
-"""Add structured gap resolution and chapter confirmation lifecycle.
+"""Add the complete Concept Note Builder review workflow.
 
-Revision ID: 20260823_120000
+Revision ID: 20260907_120000
 Revises: 20260821_120000
-Create Date: 2026-08-23 12:00:00
+Create Date: 2026-09-07 12:00:00
 """
 
 from collections.abc import Sequence
@@ -11,14 +11,14 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-revision: str = "20260823_120000"
+revision: str = "20260907_120000"
 down_revision: str | Sequence[str] | None = "20260821_120000"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    """Create the audited gap-resolution and chapter-review lifecycle."""
+    """Create the audited gap-resolution and chapter-review workflow."""
     # Extend chapters with an exact confirmation pointer and regeneration state.
     op.add_column(
         "concept_note_chapters",
@@ -212,9 +212,140 @@ def upgrade() -> None:
         ["chapter_id", "created_at"],
     )
 
+    # Persist review-before-apply edit proposals.
+    op.create_table(
+        "concept_note_edit_proposals",
+        sa.Column("proposal_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("run_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("actor_user_id", sa.String(255), nullable=False),
+        sa.Column("idempotency_key", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("request_fingerprint", sa.String(64), nullable=False),
+        sa.Column("instruction", sa.Text(), nullable=False),
+        sa.Column("scope", postgresql.JSONB(), nullable=False),
+        sa.Column(
+            "base_revisions",
+            postgresql.JSONB(),
+            nullable=False,
+            server_default=sa.text("'{}'::jsonb"),
+        ),
+        sa.Column(
+            "changes",
+            postgresql.JSONB(),
+            nullable=False,
+            server_default=sa.text("'[]'::jsonb"),
+        ),
+        sa.Column("status", sa.String(32), nullable=False, server_default="processing"),
+        sa.Column("clarification", sa.Text()),
+        sa.Column("error_code", sa.String(64)),
+        sa.Column("apply_key", postgresql.UUID(as_uuid=True)),
+        sa.Column("apply_fingerprint", sa.String(64)),
+        sa.Column("applied_result", postgresql.JSONB()),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+        sa.PrimaryKeyConstraint("proposal_id", name="pk_concept_note_edit_proposals"),
+        sa.UniqueConstraint(
+            "run_id",
+            "actor_user_id",
+            "idempotency_key",
+            name="uq_cnb_edit_proposals_idempotency",
+        ),
+        sa.CheckConstraint(
+            "status IN ('processing', 'clarification_required', 'proposed', "
+            "'applied', 'partially_applied', 'rejected', 'failed', 'stale')",
+            name="ck_concept_note_edit_proposals_status_valid",
+        ),
+        sa.CheckConstraint(
+            "length(trim(instruction)) > 0 AND length(instruction) <= 8000",
+            name="ck_concept_note_edit_proposals_instruction_bounded",
+        ),
+    )
+    op.create_index(
+        "ix_cnb_edit_proposals_run_actor_created",
+        "concept_note_edit_proposals",
+        ["run_id", "actor_user_id", "created_at"],
+    )
+
+    # Record atomic edit applications and compensating undo/restore operations.
+    op.create_table(
+        "concept_note_edit_applications",
+        sa.Column("application_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("run_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("actor_user_id", sa.String(255), nullable=False),
+        sa.Column("proposal_id", postgresql.UUID(as_uuid=True)),
+        sa.Column("restores_application_id", postgresql.UUID(as_uuid=True)),
+        sa.Column("sequence", sa.Integer(), nullable=False),
+        sa.Column("operation", sa.String(16), nullable=False),
+        sa.Column("idempotency_key", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("request_fingerprint", sa.String(64), nullable=False),
+        sa.Column("before_revisions", postgresql.JSONB(), nullable=False),
+        sa.Column("after_revisions", postgresql.JSONB(), nullable=False),
+        sa.Column("accepted_change_ids", postgresql.JSONB(), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+        sa.PrimaryKeyConstraint(
+            "application_id", name="pk_concept_note_edit_applications"
+        ),
+        sa.ForeignKeyConstraint(
+            ["proposal_id"],
+            ["concept_note_edit_proposals.proposal_id"],
+            ondelete="RESTRICT",
+        ),
+        sa.ForeignKeyConstraint(
+            ["restores_application_id"],
+            ["concept_note_edit_applications.application_id"],
+            ondelete="RESTRICT",
+        ),
+        sa.UniqueConstraint(
+            "run_id",
+            "actor_user_id",
+            "idempotency_key",
+            name="uq_cnb_edit_applications_idempotency",
+        ),
+        sa.UniqueConstraint(
+            "run_id", "sequence", name="uq_cnb_edit_applications_sequence"
+        ),
+        sa.CheckConstraint(
+            "sequence > 0", name="ck_concept_note_edit_applications_sequence_positive"
+        ),
+        sa.CheckConstraint(
+            "operation IN ('apply', 'undo', 'restore')",
+            name="ck_concept_note_edit_applications_operation_valid",
+        ),
+    )
+    op.create_index(
+        "ix_cnb_edit_applications_run_sequence",
+        "concept_note_edit_applications",
+        ["run_id", "sequence"],
+    )
+
 
 def downgrade() -> None:
-    """Restore the original string-only gap representation."""
+    """Remove the review workflow and restore string-only gaps."""
+    op.drop_index(
+        "ix_cnb_edit_applications_run_sequence",
+        table_name="concept_note_edit_applications",
+    )
+    op.drop_table("concept_note_edit_applications")
+    op.drop_index(
+        "ix_cnb_edit_proposals_run_actor_created",
+        table_name="concept_note_edit_proposals",
+    )
+    op.drop_table("concept_note_edit_proposals")
+
     op.drop_index(
         "ix_concept_note_chapter_reviews_chapter",
         table_name="concept_note_chapter_reviews",

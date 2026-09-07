@@ -747,7 +747,7 @@ lock, or regeneration state blocks it. Open critical gaps prevent confirmation a
 non-critical caveats remain visible and non-blocking. When a newly analyzed
 upload affects an already Ready chapter, the confirmed revision is preserved
 and a separate proposed revision requires renewed review. The CNB Alembic
-revision `20260823_120000` provisions the structured gap, append-only resolution,
+revision `20260907_120000` provisions the structured gap, append-only resolution,
 and exact-revision review contract.
 
 Run the focused contract test with:
@@ -766,8 +766,8 @@ visible before explicit acceptance. Planning isolates every model call to one
 chapter plus the user instruction and authorized run context; bounded parallel
 results are combined before whole-document validation.
 
-The independent CNB migrations `20260830_120000` and `20260830_130000` add proposal
-and batch-history tables; the latter backfills accepted first-slice history.
+The independent CNB migration `20260907_120000` also adds the proposal and
+batch-history tables as part of the same review-workflow schema change.
 No new provider credentials are required.
 
 ### Concept Note run foundation

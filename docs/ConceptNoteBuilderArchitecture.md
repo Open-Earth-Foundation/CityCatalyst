@@ -189,8 +189,8 @@ provenance. Prior proposal text can guide a refinement but is not factual eviden
 No chapter changes before acceptance.
 
 The managed CNB database owns `concept_note_edit_proposals` and immutable
-`concept_note_edit_applications`, provisioned by additive CNB migrations
-`20260830_120000` and `20260830_130000`. Apply serializes each run's history,
+`concept_note_edit_applications`, provisioned with the rest of the review workflow
+by CNB migration `20260907_120000`. Apply serializes each run's history,
 locks chapters in stable order, validates the complete expected revision vector,
 and appends the accepted set atomically. Related changes cannot be partially
 accepted into contradictions. Undo/restore append compensating revisions and

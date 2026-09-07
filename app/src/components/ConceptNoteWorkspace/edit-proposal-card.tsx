@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  chakra,
-  HStack,
-  Icon,
-  Text,
-  Textarea,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, chakra, HStack, Icon, Text, Textarea, VStack } from "@chakra-ui/react";
 import { LuChevronLeft, LuChevronRight, LuEllipsis } from "react-icons/lu";
 
 import { ReviewButton as Button } from "./review-button";
@@ -26,7 +18,7 @@ interface ProposalCardProps {
   proposal: EditProposal;
   lng: string;
   busy: boolean;
-  onApply: (proposal: EditProposal, selectedIds?: string[]) => Promise<void>;
+  onApply: (proposal: EditProposal) => Promise<void>;
   onReject: (proposal: EditProposal) => Promise<void>;
   onNavigate: (chapterId: string, changeId?: string) => void;
   canApply?: boolean;
@@ -49,12 +41,8 @@ export function EditProposalCard({
 }: ProposalCardProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [index, setIndex] = useState(0);
-  const [selecting, setSelecting] = useState(false);
   const [refining, setRefining] = useState(false);
   const [instruction, setInstruction] = useState(proposal.instruction);
-  const [selection, setSelection] = useState<Set<string> | null>(null);
-  const selected =
-    selection ?? new Set(proposal.changes.map((change) => change.change_id));
   const activeIndex = activeChangeId
     ? Math.max(
         0,
@@ -297,94 +285,6 @@ export function EditProposalCard({
                     </Button>
                   )}
                 </Box>
-              )}
-              {awaitingReview && proposal.changes.length > 1 && (
-                <>
-                  <Button
-                    type="button"
-                    size="xs"
-                    variant="ghost"
-                    color="content.link"
-                    minH="36px"
-                    aria-expanded={selecting}
-                    data-testid="concept-note-edit-select-toggle"
-                    onClick={() => setSelecting(!selecting)}
-                  >
-                    {t("edit-select-changes")}
-                  </Button>
-                  {selecting && (
-                    <Box
-                      as="fieldset"
-                      borderTop="1px solid"
-                      borderColor="border.neutral"
-                      pt={3}
-                    >
-                      <chakra.legend fontSize="label.sm">
-                        {t("edit-group-selection-hint")}
-                      </chakra.legend>
-                      {groups.map((group, groupIndex) => {
-                        const changes = proposal.changes.filter(
-                          (item) => item.group_id === group,
-                        );
-                        return (
-                          <chakra.label
-                            key={group}
-                            display="flex"
-                            gap={2}
-                            alignItems="center"
-                            minH="44px"
-                            fontSize="label.sm"
-                          >
-                            <input
-                              type="checkbox"
-                              data-testid="concept-note-edit-group"
-                              data-group-id={group}
-                              disabled={busy}
-                              checked={changes.every((item) =>
-                                selected.has(item.change_id),
-                              )}
-                              onChange={(event) =>
-                                setSelection((current) => {
-                                  const next = new Set(
-                                    current ??
-                                      proposal.changes.map(
-                                        (item) => item.change_id,
-                                      ),
-                                  );
-                                  for (const item of changes) {
-                                    if (event.target.checked)
-                                      next.add(item.change_id);
-                                    else next.delete(item.change_id);
-                                  }
-                                  return next;
-                                })
-                              }
-                            />
-                            {t("edit-group-label", {
-                              group: groupIndex + 1,
-                              count: changes.length,
-                              chapters: [
-                                ...new Set(
-                                  changes.map((item) => item.chapter_title),
-                                ),
-                              ].join(", "),
-                            })}
-                          </chakra.label>
-                        );
-                      })}
-                      <Button
-                        size="sm"
-                        minH="44px"
-                        variant="outline"
-                        disabled={busy || !canApply || selected.size === 0}
-                        data-testid="concept-note-edit-apply-selected"
-                        onClick={() => void onApply(proposal, [...selected])}
-                      >
-                        {t("edit-apply-selected", { count: selected.size })}
-                      </Button>
-                    </Box>
-                  )}
-                </>
               )}
               {canRefine && (
                 <>

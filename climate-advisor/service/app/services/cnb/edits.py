@@ -5,15 +5,13 @@ from __future__ import annotations
 import asyncio
 import logging
 from time import perf_counter
-from typing import Any, Literal
+from typing import Any
 from uuid import UUID
 
 from app.config.settings import get_settings
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.models.cnb.concept_note_edits import (
     EditApplyRequest,
-    EditHistoryEntry,
-    EditHistoryRequest,
     EditProposalRequest,
     EditProposalResponse,
 )
@@ -308,39 +306,6 @@ class ConceptNoteEditService:
             proposal_id=proposal_id,
             operation="reject",
             outcome=result.status,
-        )
-        return result
-
-    async def restore(
-        self,
-        run: ConceptNoteRun,
-        application_id: UUID,
-        request: EditHistoryRequest,
-        operation: Literal["undo", "restore"],
-    ) -> EditHistoryEntry:
-        """Record a metadata-only outcome for a compensating history operation."""
-        try:
-            result = await self.repository.restore(
-                run_id=run.run_id,
-                user_id=run.user_id,
-                application_id=application_id,
-                request=request,
-                operation=operation,
-            )
-        except EditOperationError as error:
-            record_edit_outcome(
-                run_id=run.run_id,
-                revision_id=application_id,
-                operation=operation,
-                outcome="failed",
-                error_code=error.code,
-            )
-            raise
-        record_edit_outcome(
-            run_id=run.run_id,
-            revision_id=result.application_id,
-            operation=operation,
-            outcome="applied",
         )
         return result
 

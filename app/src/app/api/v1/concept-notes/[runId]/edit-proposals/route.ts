@@ -18,14 +18,6 @@
  *       schema:
  *         type: "string"
  *         format: "uuid"
- *     CnbEditRevisionId:
- *       in: "path"
- *       name: "revisionId"
- *       required: true
- *       description: "History application_id (batch UUID), not a chapter revision number."
- *       schema:
- *         type: "string"
- *         format: "uuid"
  *   responses:
  *     CnbEditBadRequest:
  *       description: "Malformed path, query or request payload; no draft mutation."
@@ -34,7 +26,7 @@
  *     CnbEditForbidden:
  *       description: "The authenticated user lacks current access to the run or city."
  *     CnbEditNotFound:
- *       description: "The requested run, proposal or history batch is unavailable to this user."
+ *       description: "The requested run or proposal is unavailable to this user."
  *     CnbEditConflict:
  *       description: "Stale revision/source, inactive run, locked or regenerating chapter, incompatible proposal state, or conflicting idempotency key. No partial chapter writes."
  *     CnbEditUnprocessable:
@@ -63,7 +55,6 @@
  *           type: "string"
  *           format: "uuid"
  *           nullable: true
- *           description: "Navigation hint only; automatic scope still considers related changes across the document."
  *       description: "Scope is always selected automatically from the instruction and complete draft. focused_chapter_id is a non-binding navigation hint, never a restriction."
  *     CnbEditProposalRequest:
  *       type: "object"
@@ -75,7 +66,6 @@
  *           minLength: 1
  *           maxLength: 8000
  *           pattern: "\\S"
- *           description: "Exact nonblank user instruction; a question never authorizes a document mutation."
  *         scope:
  *           $ref: "#/components/schemas/CnbEditScope"
  *         idempotency_key:
@@ -111,21 +101,6 @@
  *           maxItems: 100
  *           uniqueItems: true
  *           description: "Omit or use null to accept all changes. A non-empty subset applies the reviewer's exact per-change decisions."
- *     CnbEditHistoryRequest:
- *       type: "object"
- *       additionalProperties: false
- *       required: ["idempotency_key","expected_revisions"]
- *       properties:
- *         idempotency_key:
- *           type: "string"
- *           format: "uuid"
- *         expected_revisions:
- *           type: "object"
- *           allOf:
- *             - $ref: "#/components/schemas/CnbEditRevisionVector"
- *           description: "Current revision numbers captured when reviewing all chapters affected by the history batch."
- *           minProperties: 1
- *           maxProperties: 100
  *     CnbEditSourceSnapshot:
  *       type: "object"
  *       additionalProperties: false
@@ -243,69 +218,13 @@
  *         updated_at:
  *           type: "string"
  *           format: "date-time"
- *     CnbEditHistoryChapter:
- *       type: "object"
- *       additionalProperties: false
- *       required: ["chapter_id","chapter_title","before","after"]
- *       properties:
- *         chapter_id:
- *           type: "string"
- *           format: "uuid"
- *         chapter_title:
- *           type: "string"
- *         before:
- *           type: "string"
- *         after:
- *           type: "string"
- *     CnbEditHistoryEntry:
- *       type: "object"
- *       additionalProperties: false
- *       required: ["application_id","run_id","proposal_id","restores_application_id","sequence","operation","before_revisions","after_revisions","accepted_change_ids","created_at","chapters"]
- *       properties:
- *         application_id:
- *           type: "string"
- *           format: "uuid"
- *         run_id:
- *           type: "string"
- *           format: "uuid"
- *         proposal_id:
- *           type: "string"
- *           format: "uuid"
- *           nullable: true
- *         restores_application_id:
- *           type: "string"
- *           format: "uuid"
- *           nullable: true
- *         sequence:
- *           type: "integer"
- *           minimum: 1
- *         operation:
- *           type: "string"
- *           enum: ["apply","undo","restore"]
- *         before_revisions:
- *           $ref: "#/components/schemas/CnbEditRevisionVector"
- *         after_revisions:
- *           $ref: "#/components/schemas/CnbEditRevisionVector"
- *         accepted_change_ids:
- *           type: "array"
- *           items:
- *             type: "string"
- *             format: "uuid"
- *         created_at:
- *           type: "string"
- *           format: "date-time"
- *         chapters:
- *           type: "array"
- *           items:
- *             $ref: "#/components/schemas/CnbEditHistoryChapter"
- *           description: "Empty in compact list responses; detail responses include each immutable chapter snapshot."
  * /api/v1/concept-notes/{runId}/edit-proposals:
  *   parameters:
  *     - $ref: "#/components/parameters/CnbEditRunId"
  *   get:
  *     operationId: "listConceptNoteEditProposals"
  *     summary: "Restore authorized edit proposal review state"
- *     description: "Returns the newest 100 proposals plus every older actionable proposal, in newest-first order. Pending reviews and recoverable failures are not hidden by recent history. Draft text is unchanged. Requires the existing CityCatalyst browser session or supported bearer authentication; ownership and city access are checked on every call."
+ *     description: "Returns the newest 100 proposals plus every older actionable proposal, in newest-first order. Pending reviews and recoverable failures are not hidden by recent history. Draft text is unchanged. Ownership and city access are checked on every call."
  *     tags: ["concept-notes"]
  *     security:
  *       - BearerAuth: []
@@ -333,7 +252,7 @@
  *   post:
  *     operationId: "proposeConceptNoteEdit"
  *     summary: "Propose an edit without changing the draft"
- *     description: "Creates or replays a proposal. Inspect status and error_code: HTTP 202 is not acceptance of the edits. The user must separately apply the exact reviewable changes. Reusing a key with different content conflicts. Requires the existing CityCatalyst browser session or supported bearer authentication; ownership and city access are checked on every call."
+ *     description: "Creates or replays a proposal. Inspect status and error_code: HTTP 202 is not acceptance of the edits. The user must separately apply the exact reviewable changes. Reusing a key with different content conflicts. Ownership and city access are checked on every call."
  *     tags: ["concept-notes"]
  *     security:
  *       - BearerAuth: []

@@ -193,36 +193,3 @@ class EditProposalResponse(BaseModel):
     result: EditApplicationResult | None = None
     created_at: datetime
     updated_at: datetime
-
-
-class EditHistoryRequest(BaseModel):
-    """Explicit compensating revision bound to every affected current chapter."""
-
-    model_config = ConfigDict(extra="forbid", frozen=True)
-    idempotency_key: UUID
-    expected_revisions: dict[UUID, PositiveInt] = Field(min_length=1, max_length=100)
-
-
-class EditHistoryChapter(BaseModel):
-    """An inspectable immutable before/after snapshot in one history batch."""
-
-    chapter_id: UUID
-    chapter_title: str
-    before: str
-    after: str
-
-
-class EditHistoryEntry(BaseModel):
-    """Compact ordered history; detail reads include full immutable chapter text."""
-
-    application_id: UUID
-    run_id: UUID
-    proposal_id: UUID | None
-    restores_application_id: UUID | None
-    sequence: PositiveInt
-    operation: Literal["apply", "undo", "restore"]
-    before_revisions: dict[UUID, PositiveInt]
-    after_revisions: dict[UUID, PositiveInt]
-    accepted_change_ids: list[UUID]
-    created_at: datetime
-    chapters: list[EditHistoryChapter] = Field(default_factory=list)

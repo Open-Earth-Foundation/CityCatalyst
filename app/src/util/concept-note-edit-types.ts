@@ -42,18 +42,6 @@ export const editApplyRequestSchema = z
 export type EditScope = z.infer<typeof editScopeSchema>;
 export type EditProposalRequest = z.infer<typeof editProposalRequestSchema>;
 export type EditApplyRequest = z.infer<typeof editApplyRequestSchema>;
-export const editHistoryRequestSchema = z
-  .object({
-    idempotency_key: z.string().uuid(),
-    expected_revisions: z
-      .record(z.string().uuid(), z.number().int().positive())
-      .refine(
-        (value) =>
-          Object.keys(value).length > 0 && Object.keys(value).length <= 100,
-      ),
-  })
-  .strict();
-export type EditHistoryRequest = z.infer<typeof editHistoryRequestSchema>;
 export type EditStatus =
   | "processing"
   | "clarification_required"
@@ -102,23 +90,4 @@ export interface EditProposal {
   result: EditApplicationResult | null;
   created_at: string;
   updated_at: string;
-}
-
-export interface EditHistoryEntry {
-  application_id: string;
-  run_id: string;
-  proposal_id: string | null;
-  restores_application_id: string | null;
-  sequence: number;
-  operation: "apply" | "undo" | "restore";
-  before_revisions: Record<string, number>;
-  after_revisions: Record<string, number>;
-  accepted_change_ids: string[];
-  created_at: string;
-  chapters: Array<{
-    chapter_id: string;
-    chapter_title: string;
-    before: string;
-    after: string;
-  }>;
 }

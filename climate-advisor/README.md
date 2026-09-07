@@ -716,59 +716,26 @@ Operationally:
   template chapter at H2. A separate reconciler marks drafting leases left
   `running` for more than one hour as retryable.
 
-### Concept Note missing-information lifecycle
+### Concept Note draft review and chat editing
 
-`GET` and `POST /v1/concept-notes/{run_id}/draft` expose the persisted chapter
-workspace. Draft responses include structured gaps, open/caveat counts,
-current/confirmed/proposed revision numbers, the confirmed body used for proposal
-comparison, and regeneration state.
+`GET` and `POST /v1/concept-notes/{run_id}/draft` expose persisted chapters,
+structured gaps, confirmed/proposed revisions and regeneration state.
+`POST /v1/concept-notes/{run_id}/gaps/{gap_id}/resolve` accepts version-checked,
+idempotent answers, corrections, `not_a_gap`, or non-critical caveats. It
+regenerates the affected chapter and reviews other chapters for answer impact.
+`POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/confirm` confirms an exact
+revision; open critical gaps block confirmation and export.
 
-`POST /v1/concept-notes/{run_id}/gaps/{gap_id}/resolve` records an idempotent,
-version-checked `answer`, `correction`, `not_a_gap`, or non-critical
-`defer_as_caveat` action and first regenerates the affected chapter. For an
-`answer` or `correction`, a separate review-only agent then inspects every other
-chapter. It receives all chapter bodies in one prompt when they fit; otherwise
-it receives deterministic, token-bounded slices covering the full document.
-Its only tool response is a sorted chapter-number array. Only those chapters
-are regenerated with the confirmed answer, and confirmed revisions remain
-preserved as reviewable proposals. The answer remains audited if any rewrite
-fails. Grounded answer suggestions keep their selected-source references;
-unsupported suggestions are removed.
-Every model-generated gap includes a fact-specific `why_asking` rationale in
-the same structured item as its question. Legacy string-only gaps are displayed
-with a question- and chapter-specific grounded-evidence rationale instead of
-the original generic migration text.
+Chat creates durable edit proposals; only explicit web review applies changes.
+Review supports inline decisions and Accept all / Reject all, with source links
+and refinement. Public revision-history, undo and restore endpoints are not
+exposed. Internal revision/application records remain for auditing and safe retries.
+No new provider credentials are required. CNB migration `20260907_120000`
+provisions the gap and edit storage.
 
-`POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/confirm` confirms one
-exact revision. Regeneration stops at Draft, and only this explicit user action
-sets Ready after generation. Explicitly accepted wording-only chat edits can
-preserve that exact confirmation through a new reviewed revision when no gap,
-lock, or regeneration state blocks it. Open critical gaps prevent confirmation and export, while persisted
-non-critical caveats remain visible and non-blocking. When a newly analyzed
-upload affects an already Ready chapter, the confirmed revision is preserved
-and a separate proposed revision requires renewed review. The CNB Alembic
-revision `20260907_120000` provisions the structured gap, append-only resolution,
-and exact-revision review contract.
-
-Run the focused contract test with:
-
-```bash
-uv run pytest service/tests/cnb/test_context_bundle_service.py -q
-```
-
-### Concept Note chat editing
-
-CC-732 adds durable proposal/diff review, whole-document fact consistency,
-optional linked-group selection, and append-only undo/restore. Ordinary questions
-do not mutate the document. The existing chat tool can propose but cannot apply
-or undo. Red/green differences, non-color labels, and navigation arrows remain
-visible before explicit acceptance. Planning isolates every model call to one
-chapter plus the user instruction and authorized run context; bounded parallel
-results are combined before whole-document validation.
-
-The independent CNB migration `20260907_120000` also adds the proposal and
-batch-history tables as part of the same review-workflow schema change.
-No new provider credentials are required.
+See [the CNB architecture](../docs/ConceptNoteBuilderArchitecture.md#implemented-chat-revision-boundary-cc-732)
+for planner validation, review and persistence rules. Run gap lifecycle tests with
+`uv run pytest service/tests/cnb/test_workspace_gap_lifecycle.py -q`.
 
 ### Concept Note run foundation
 

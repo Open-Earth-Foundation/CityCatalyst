@@ -10,8 +10,6 @@ from app.db.session import get_session
 from app.middleware.request_context import get_request_id
 from app.models.cnb.concept_note_edits import (
     EditApplyRequest,
-    EditHistoryEntry,
-    EditHistoryRequest,
     EditProposalRequest,
     EditProposalResponse,
 )
@@ -190,60 +188,3 @@ async def refine_edit_proposal(
     return await service.propose(
         run, bound, await load_edit_context(session, run.run_id)
     )
-
-
-@router.get("/concept-notes/{run_id}/revisions", response_model=list[EditHistoryEntry])
-async def list_edit_history(
-    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
-    service: Annotated[ConceptNoteEditService, Depends(edit_service)],
-    before_sequence: int | None = Query(default=None, ge=1),
-) -> list[EditHistoryEntry]:
-    """Read ordered compact history with an explicit older-entry cursor."""
-    return await service.repository.history(
-        run_id=run.run_id, user_id=run.user_id, before_sequence=before_sequence
-    )
-
-
-@router.get(
-    "/concept-notes/{run_id}/revisions/{application_id}",
-    response_model=EditHistoryEntry,
-)
-async def read_edit_history(
-    application_id: UUID,
-    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
-    service: Annotated[ConceptNoteEditService, Depends(edit_service)],
-) -> EditHistoryEntry:
-    """Read the exact immutable before/after text for one authorized history batch."""
-    return await service.repository.history_detail(
-        run_id=run.run_id, user_id=run.user_id, application_id=application_id
-    )
-
-
-@router.post(
-    "/concept-notes/{run_id}/revisions/{application_id}/undo",
-    response_model=EditHistoryEntry,
-)
-async def undo_edit_history(
-    application_id: UUID,
-    payload: EditHistoryRequest,
-    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
-    service: Annotated[ConceptNoteEditService, Depends(edit_service)],
-) -> EditHistoryEntry:
-    """Undo the latest batch only if no intervening chapter work would be lost."""
-    require_active_run(run)
-    return await service.restore(run, application_id, payload, "undo")
-
-
-@router.post(
-    "/concept-notes/{run_id}/revisions/{application_id}/restore",
-    response_model=EditHistoryEntry,
-)
-async def restore_edit_history(
-    application_id: UUID,
-    payload: EditHistoryRequest,
-    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
-    service: Annotated[ConceptNoteEditService, Depends(edit_service)],
-) -> EditHistoryEntry:
-    """Restore a reviewed snapshot through new revisions, guarded by current bases."""
-    require_active_run(run)
-    return await service.restore(run, application_id, payload, "restore")

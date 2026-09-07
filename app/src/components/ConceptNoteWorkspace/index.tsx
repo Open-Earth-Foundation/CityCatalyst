@@ -198,7 +198,6 @@ export function ConceptNoteWorkspace({
     cityId,
   });
   const { data: inventory } = api.useGetInventoryByCityIdQuery(cityId);
-  const { data: cityDashboard } = api.useGetCityDashboardQuery({ cityId, lng });
   const { data: cityFiles } = api.useGetUserFilesQuery(cityId);
   const [uploadSourceMutation, uploadState] =
     api.useUploadConceptNoteSourceMutation();
@@ -761,7 +760,6 @@ export function ConceptNoteWorkspace({
                 <ContextTab
                   applicationContext={applicationContext ?? null}
                   bundle={bundle}
-                  cityDashboard={cityDashboard ?? null}
                   cityFilesCount={files.length}
                   cityName={cityName}
                   country={city?.country ?? null}

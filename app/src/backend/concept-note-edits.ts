@@ -11,21 +11,11 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
 import type { AppSession } from "@/lib/auth";
 import {
   editApplyRequestSchema,
-  editHistoryRequestSchema,
   editProposalRequestSchema,
 } from "@/util/concept-note-edit-types";
 
 type EditProxyOperation =
-  | "list"
-  | "propose"
-  | "read"
-  | "apply"
-  | "reject"
-  | "refine"
-  | "history"
-  | "revision"
-  | "undo"
-  | "restore";
+  "list" | "propose" | "read" | "apply" | "reject" | "refine";
 type EditProxyContext = {
   session: AppSession | null;
   params: Record<string, string>;
@@ -41,23 +31,15 @@ export async function forwardConceptNoteEdit(
     throw new createHttpError.Unauthorized("Authentication required");
   }
   const runId = z.string().uuid().parse(params.runId);
-  const history = ["history", "revision", "undo", "restore"].includes(
-    operation,
-  );
-  const needsTarget = !["list", "propose", "history"].includes(operation);
+  const needsTarget = !["list", "propose"].includes(operation);
   const targetId = needsTarget
-    ? z
-        .string()
-        .uuid()
-        .parse(history ? params.revisionId : params.proposalId)
+    ? z.string().uuid().parse(params.proposalId)
     : null;
   const body = ["propose", "refine"].includes(operation)
     ? editProposalRequestSchema.parse(await request.json())
     : operation === "apply"
       ? editApplyRequestSchema.parse(await request.json())
-      : ["undo", "restore"].includes(operation)
-        ? editHistoryRequestSchema.parse(await request.json())
-        : undefined;
+      : undefined;
   const userId = session.user.id;
   const requestId = request.headers.get("x-request-id")?.trim() || undefined;
   const cityId = await loadConceptNoteRunCity({ runId, userId, requestId });
@@ -66,27 +48,12 @@ export async function forwardConceptNoteEdit(
   });
 
   const suffix = targetId
-    ? `/${targetId}${["read", "revision"].includes(operation) ? "" : `/${operation}`}`
+    ? `/${targetId}${operation === "read" ? "" : `/${operation}`}`
     : "";
   const searchParams: Record<string, string> = { user_id: userId };
-  const beforeSequence = new URL(request.url).searchParams.get(
-    "before_sequence",
-  );
-  if (operation === "history" && beforeSequence !== null) {
-    searchParams.before_sequence = String(
-      z.coerce
-        .number()
-        .int()
-        .positive()
-        .max(2_147_483_647)
-        .parse(beforeSequence),
-    );
-  }
   const response = await callConceptNoteApi({
-    path: `/v1/concept-notes/${runId}/${history ? "revisions" : "edit-proposals"}${suffix}`,
-    method: ["list", "read", "history", "revision"].includes(operation)
-      ? "GET"
-      : "POST",
+    path: `/v1/concept-notes/${runId}/edit-proposals${suffix}`,
+    method: ["list", "read"].includes(operation) ? "GET" : "POST",
     body,
     userId,
     requestId,

@@ -5,18 +5,13 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import re
 from datetime import UTC, datetime, timedelta
-from typing import Literal
 from uuid import UUID, uuid4
 
 from app.models.cnb.concept_note_edits import (
     EditApplicationResult,
     EditApplyRequest,
     EditChange,
-    EditHistoryChapter,
-    EditHistoryEntry,
-    EditHistoryRequest,
     EditProposalRequest,
     EditProposalResponse,
 )
@@ -358,168 +353,6 @@ class ConceptNoteEditRepository:
         )
         return response
 
-    async def history(
-        self, *, run_id: UUID, user_id: str, before_sequence: int | None = None
-    ) -> list[EditHistoryEntry]:
-        """Read bounded ordered history; the cursor allows access to older revisions."""
-        async with self._sessions() as session:
-            query = select(ConceptNoteEditApplication).where(
-                ConceptNoteEditApplication.run_id == run_id,
-                ConceptNoteEditApplication.actor_user_id == user_id,
-            )
-            if before_sequence is not None:
-                query = query.where(
-                    ConceptNoteEditApplication.sequence < before_sequence
-                )
-            rows = await session.scalars(
-                query.order_by(ConceptNoteEditApplication.sequence.desc()).limit(50)
-            )
-            return [history_response(row) for row in rows]
-
-    async def history_detail(
-        self, *, run_id: UUID, user_id: str, application_id: UUID
-    ) -> EditHistoryEntry:
-        """Load immutable before/after chapter bodies only for an authorized history entry."""
-        async with self._sessions() as session:
-            row = await require_application(session, run_id, user_id, application_id)
-            chapters = []
-            for chapter_id, number in row.before_revisions.items():
-                chapter = await session.get(ConceptNoteChapter, UUID(chapter_id))
-                if chapter is None or chapter.run_id != run_id:
-                    raise EditOperationError(
-                        "history_unavailable",
-                        "A historical chapter is unavailable.",
-                        status_code=404,
-                    )
-                before = await revision_at(session, chapter.chapter_id, number)
-                after = await revision_at(
-                    session, chapter.chapter_id, row.after_revisions[chapter_id]
-                )
-                chapters.append(
-                    EditHistoryChapter(
-                        chapter_id=chapter.chapter_id,
-                        chapter_title=chapter.title,
-                        before=before.body_markdown,
-                        after=after.body_markdown,
-                    )
-                )
-            return history_response(row).model_copy(update={"chapters": chapters})
-
-    async def restore(
-        self,
-        *,
-        run_id: UUID,
-        user_id: str,
-        application_id: UUID,
-        request: EditHistoryRequest,
-        operation: Literal["undo", "restore"],
-    ) -> EditHistoryEntry:
-        """Append compensating revisions; never erase history or overwrite intervening work."""
-        fingerprint = request_fingerprint(request)
-        async with self._sessions() as session, session.begin():
-            await lock_run(session, run_id)
-            replay = await replay_application(
-                session,
-                run_id,
-                user_id,
-                request.idempotency_key,
-                fingerprint,
-                operation,
-                application_id,
-            )
-            if replay is not None:
-                return history_response(replay)
-            target = await require_application(session, run_id, user_id, application_id)
-            if operation == "undo":
-                newest = await session.scalar(
-                    select(func.max(ConceptNoteEditApplication.sequence)).where(
-                        ConceptNoteEditApplication.run_id == run_id
-                    )
-                )
-                if target.sequence != newest:
-                    raise EditOperationError(
-                        "not_latest_revision",
-                        "Only the latest edit can be undone. Review history to restore an older revision.",
-                    )
-                if request.expected_revisions != {
-                    UUID(key): number for key, number in target.after_revisions.items()
-                }:
-                    raise EditOperationError(
-                        "stale_base",
-                        "Newer chapter work exists. Review it explicitly before restoring an older revision.",
-                    )
-            desired = (
-                target.before_revisions
-                if operation == "undo"
-                else target.after_revisions
-            )
-            if set(request.expected_revisions) != {UUID(key) for key in desired}:
-                raise EditOperationError(
-                    "revision_vector_mismatch",
-                    "Review every affected current chapter before restoring history.",
-                )
-            locked = await locked_revisions(session, run_id, request.expected_revisions)
-            if locked is None:
-                raise EditOperationError(
-                    "stale_base", "The draft changed. Refresh before restoring history."
-                )
-
-            # Historical text is read from immutable revisions, never from client input.
-            before: dict[str, int] = {}
-            after: dict[str, int] = {}
-            for chapter, current in sorted(
-                locked.values(), key=lambda pair: pair[0].position
-            ):
-                source = await revision_at(
-                    session, chapter.chapter_id, desired[str(chapter.chapter_id)]
-                )
-                marker = r"\[Information needed:[^\]]*\]"
-                if re.findall(marker, source.body_markdown) != re.findall(
-                    marker, current.body_markdown
-                ):
-                    raise EditOperationError(
-                        "history_gap_conflict",
-                        "Resolve the changed information gaps before restoring this historical text.",
-                    )
-                reviewed = await session.scalar(
-                    select(ConceptNoteChapterReview.review_id)
-                    .where(
-                        ConceptNoteChapterReview.chapter_id == chapter.chapter_id,
-                        ConceptNoteChapterReview.revision_id == source.revision_id,
-                    )
-                    .limit(1)
-                )
-                revision = await append_revision(
-                    session,
-                    chapter,
-                    current,
-                    body=source.body_markdown,
-                    user_id=user_id,
-                    idempotency_key=request.idempotency_key,
-                    preserve_ready=reviewed is not None,
-                    patch_summary={
-                        "operation": operation,
-                        "history_application_id": str(application_id),
-                        "source_revision_id": str(source.revision_id),
-                    },
-                )
-                before[str(chapter.chapter_id)] = current.revision_number
-                after[str(chapter.chapter_id)] = revision.revision_number
-            history = await save_application(
-                session,
-                run_id=run_id,
-                user_id=user_id,
-                operation=operation,
-                proposal_id=None,
-                target_id=application_id,
-                idempotency_key=request.idempotency_key,
-                fingerprint=fingerprint,
-                before=before,
-                after=after,
-                change_ids=[],
-            )
-            return history_response(history)
-
 
 async def resolve_filled_information_gaps(
     session: AsyncSession,
@@ -665,11 +498,7 @@ async def append_revision(
         chapter_id=chapter.chapter_id,
         revision_number=latest.revision_number + 1,
         author_type="user",
-        change_type=(
-            "restore_chapter"
-            if "history_application_id" in patch_summary
-            else "edit_text"
-        ),
+        change_type="edit_text",
         body_markdown=body,
         patch_summary=patch_summary,
     )
@@ -760,59 +589,6 @@ async def replay_application(
             "This key was already used for another revision operation.",
         )
     return row
-
-
-async def require_application(
-    session: AsyncSession, run_id: UUID, user_id: str, application_id: UUID
-) -> ConceptNoteEditApplication:
-    """Resolve history within the authorized run and actor scope."""
-    row = await session.scalar(
-        select(ConceptNoteEditApplication).where(
-            ConceptNoteEditApplication.application_id == application_id,
-            ConceptNoteEditApplication.run_id == run_id,
-            ConceptNoteEditApplication.actor_user_id == user_id,
-        )
-    )
-    if row is None:
-        raise EditOperationError(
-            "revision_not_found", "Revision history entry not found.", status_code=404
-        )
-    return row
-
-
-async def revision_at(
-    session: AsyncSession, chapter_id: UUID, number: int
-) -> ConceptNoteChapterRevision:
-    """Read a persisted immutable revision by chapter and revision number."""
-    revision = await session.scalar(
-        select(ConceptNoteChapterRevision).where(
-            ConceptNoteChapterRevision.chapter_id == chapter_id,
-            ConceptNoteChapterRevision.revision_number == number,
-        )
-    )
-    if revision is None:
-        raise EditOperationError(
-            "history_unavailable",
-            "The historical revision is unavailable.",
-            status_code=404,
-        )
-    return revision
-
-
-def history_response(row: ConceptNoteEditApplication) -> EditHistoryEntry:
-    """Detach a compact history record without loading private chapter text."""
-    return EditHistoryEntry(
-        application_id=row.application_id,
-        run_id=row.run_id,
-        proposal_id=row.proposal_id,
-        restores_application_id=row.restores_application_id,
-        sequence=row.sequence,
-        operation=row.operation,
-        before_revisions=row.before_revisions,
-        after_revisions=row.after_revisions,
-        accepted_change_ids=row.accepted_change_ids,
-        created_at=row.created_at,
-    )
 
 
 def request_fingerprint(request: BaseModel) -> str:

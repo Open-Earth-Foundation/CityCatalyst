@@ -162,48 +162,32 @@ proposals. Only explicit review actions mutate the persisted document.
 
 ### Implemented chat revision boundary (CC-732)
 
-The existing workspace presents red/green previous/proposed text directly at
-every affected document passage, including history undo/restore and regenerated
-chapter comparisons. Chat contains the conversation only and never renders
-proposal, failure, refinement, or comparison cards. Pending proposals open their
-inline document review automatically. Completed proposals are condensed under
-History. A shared workspace edit controller drives exact-hunk
-arrows and Accept all / Reject all beside Export in the document header, with
-provenance, refinement and linked consistency-group selection in a contextual
-options popover. Inline redlines also provide an X and tick for rejecting or
-accepting one occurrence; the client advances through unresolved hunks and
-commits the complete decision set atomically. No separate document toolbar is
-rendered. Parsed-Markdown redlines retain original source
-offsets (converting Python code points to UTF-16), preserve safe Markdown
-structure, and fail closed on stale/overlapping anchors. Scope is always selected
-automatically from whole-document context. Chapter navigation is a non-binding
-focus hint; users do not choose passage, chapter-set, or full-document modes.
+The workspace shows red/green changes at each affected passage, including
+regenerated chapter comparisons. Users review inline with accept/reject controls
+or Accept all / Reject all, navigate exact hunks, and access provenance and
+refinement in the options popover. The planner groups related occurrences;
+there is no separate checkbox-selection interface. The context tab retains source
+summaries and upload controls without an expanded details dialog.
 
-The CA edit tool is proposal-only. A dedicated planner uses current/confirmed
-chapter text, authorized run evidence, and explicit user input. Deterministic
-validation checks target/revision anchors, factual sources, repeated values,
-required headings, and unresolved markers. A grounded replacement may remove an
-information-needed marker only when it matches an open structured gap; accepting
-that replacement resolves the gap in the same transaction and records its answer
-provenance. Prior proposal text can guide a refinement but is not factual evidence.
-No chapter changes before acceptance.
+The proposal-only CA tool uses authorized evidence and explicit user input.
+Bounded chapter workers plan and independently review changes before deterministic
+whole-document validation checks exact anchors, source identity, repeated facts,
+required headings and unresolved markers. Scope is automatic; chapter focus is
+only a navigation hint. Parsed-Markdown redlines preserve source offsets and fail
+closed on stale or overlapping anchors. No edit is applied before acceptance.
 
-The managed CNB database owns `concept_note_edit_proposals` and immutable
-`concept_note_edit_applications`, provisioned with the rest of the review workflow
-by CNB migration `20260907_120000`. Apply serializes each run's history,
-locks chapters in stable order, validates the complete expected revision vector,
-and appends the accepted set atomically. Related changes cannot be partially
-accepted into contradictions. Undo/restore append compensating revisions and
-protect newer writes; they do not erase history.
+CNB migration `20260907_120000` provisions proposals and
+immutable application records. Apply locks the run and affected chapters, checks
+the expected revision vector, and appends accepted changes atomically. Records
+remain for audit, sequencing and idempotent retries; public history, undo and
+restore endpoints are not exposed. Inline decisions select the exact applied subset.
 
-Ready survives a wording-only edit only through exact confirmation of the new
-revision and current gap/lock/regeneration checks. Factual changes require renewed
-chapter review. Pending operations and results survive reload. Web proxies and CA
-routes independently retain current user/run/city authorization.
-
-CNB telemetry uses the CC-751 interaction vocabulary and safe correlation/outcome
-metadata only. Request-local SDK privacy also covers nested source queries,
-without disabling concurrent generic tracing.
+A grounded marker replacement resolves the matching gap in the same transaction.
+Wording-only edits preserve Ready only when exact confirmation and current gap,
+lock and regeneration checks permit it; factual changes require renewed review.
+Proposals and results survive reload. Web and CA independently enforce current
+user/run/city authorization. CNB telemetry remains metadata-only, including
+nested source queries, without disabling concurrent generic tracing.
 
 The first part of the workflow is context bundle building. The
 `ContextBundleService` assembles the reusable run context by:

@@ -38,11 +38,14 @@ from app.utils.concept_note_context import (
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
+    close_open_tool_observations,
+    finish_tool_observation,
     log_json_artifact,
     log_metrics,
     log_tags,
     log_text_artifact,
     start_run,
+    start_tool_observation,
     start_trace_span,
     update_current_trace_context,
 )
@@ -92,6 +95,8 @@ class StreamingHandler:
         # Response state
         self.assistant_tokens: List[str] = []
         self.tool_invocations: List[dict] = []
+        self._pending_tool_observations: dict[str, Any] = {}
+        self._tool_observation_records: List[dict] = []
         self.token_index = 0
         self.history_saved = False
         self.streaming_error = False
@@ -942,6 +947,19 @@ class StreamingHandler:
             invocation["arguments"] = invocation.get("arguments") or arguments
             invocation["status"] = "executing"
 
+        # Best-effort MLflow evidence must not change the SSE tool_result contract.
+        try:
+            start_tool_observation(
+                self._pending_tool_observations,
+                call_id=str(call_id) if call_id else None,
+                tool_name=str(tool_name),
+                arguments=arguments,
+                request_id=self._request_id(),
+                completed_count=len(self._tool_observation_records),
+            )
+        except Exception:
+            logger.warning("MLflow tool observation start failed tool=%s", tool_name)
+
         yield format_sse(
             {
                 "name": invocation.get("name", "unknown_tool"),
@@ -996,6 +1014,17 @@ class StreamingHandler:
         invocation["result"] = str(output_value) if output_value is not None else ""
         if parsed_output is not None:
             invocation["result_json"] = parsed_output
+
+        # Close the request-local TOOL observation after the model-facing result is stored.
+        try:
+            finish_tool_observation(
+                self._pending_tool_observations,
+                self._tool_observation_records,
+                call_id=str(call_id) if call_id else None,
+                output=output_value,
+            )
+        except Exception:
+            logger.warning("MLflow tool observation finish failed call_id=%s", call_id)
 
         # Handle token refresh and errors
         if parsed_output is not None:
@@ -1317,9 +1346,21 @@ class StreamingHandler:
             }
         )
         log_text_artifact("chat/assistant_response.txt", assistant_content)
+        try:
+            close_open_tool_observations(
+                self._pending_tool_observations,
+                self._tool_observation_records,
+                outcome=(
+                    "cancelled"
+                    if stream_status == "cancelled"
+                    else "error" if stream_status == "error" else "incomplete"
+                ),
+            )
+        except Exception:
+            logger.warning("MLflow tool observation close failed status=%s", stream_status)
         log_json_artifact(
             "chat/tool_invocations.json",
-            {"tool_invocations": self.tool_invocations},
+            {"tool_invocations": self._tool_observation_records},
         )
         log_json_artifact(
             "response/stream_summary.json",

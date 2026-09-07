@@ -680,3 +680,131 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(instruction_text, "Composed Stationary Energy prompt")
         prompts.compose_prompt.assert_called_once_with("stationary_energy_review")
+
+    async def test_catalog_tools_keep_sse_payloads_and_redact_mlflow_records(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.request_identifier = "req-catalog"
+
+        discover_called = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="native_input_discover",
+                call_id="call-discover",
+                arguments="{}",
+            )
+        )
+        read_called = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="native_input_read",
+                call_id="call-read",
+                arguments=json.dumps(
+                    {
+                        "catalogId": "cat-secret-uuid",
+                        "capabilityId": "ghgi.inventory.status_overview",
+                    }
+                ),
+            )
+        )
+        discover_output = SimpleNamespace(
+            raw_item=SimpleNamespace(call_id="call-discover", name="native_input_discover"),
+            output=json.dumps(
+                {
+                    "action": "native_input_discover",
+                    "success": True,
+                    "data": {
+                        "entries": [
+                            {
+                                "catalogId": "cat-secret-uuid",
+                                "capabilityIds": ["ghgi.inventory.status_overview"],
+                            }
+                        ]
+                    },
+                }
+            ),
+        )
+        read_output = SimpleNamespace(
+            raw_item=SimpleNamespace(call_id="call-read", name="native_input_read"),
+            output=json.dumps(
+                {
+                    "action": "ghgi.inventory.status_overview",
+                    "success": False,
+                    "error_code": "capability_unavailable",
+                    "error": "Requested capability is unavailable.",
+                }
+            ),
+        )
+
+        sse_chunks = [
+            chunk async for chunk in handler._handle_tool_called(discover_called)
+        ]
+        sse_chunks.extend(
+            [chunk async for chunk in handler._handle_tool_called(read_called)]
+        )
+        sse_chunks.extend(
+            [chunk async for chunk in handler._handle_tool_output(discover_output)]
+        )
+        sse_chunks.extend(
+            [chunk async for chunk in handler._handle_tool_output(read_output)]
+        )
+        parsed = [_parse_sse_payload(chunk) for chunk in sse_chunks]
+        logged: list[tuple[str, object]] = []
+
+        def fake_log_json_artifact(artifact_file: str, payload: object) -> None:
+            logged.append((artifact_file, payload))
+
+        with patch(
+            "app.utils.streaming_handler.log_json_artifact",
+            side_effect=fake_log_json_artifact,
+        ), patch("app.utils.streaming_handler.log_metrics"), patch(
+            "app.utils.streaming_handler.log_tags"
+        ), patch("app.utils.streaming_handler.log_text_artifact"):
+            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+
+        names = [record["tool_name"] for record in handler._tool_observation_records]
+        outcomes = [record["outcome"] for record in handler._tool_observation_records]
+        dumped = json.dumps(handler._tool_observation_records)
+        artifact = next(
+            payload
+            for artifact_file, payload in logged
+            if artifact_file == "chat/tool_invocations.json"
+        )
+
+        self.assertEqual(names, ["native_input_discover", "native_input_read"])
+        self.assertEqual(outcomes, ["success", "error"])
+        self.assertIn("cat-secret-uuid", json.dumps(parsed))
+        self.assertNotIn("cat-secret-uuid", dumped)
+        self.assertEqual(
+            handler.tool_invocations[1]["arguments"]["catalogId"],
+            "cat-secret-uuid",
+        )
+        self.assertEqual(artifact["tool_invocations"], handler._tool_observation_records)
+
+    async def test_mlflow_tool_logging_failure_does_not_change_sse(self) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        run_item = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="native_input_discover",
+                call_id="call-discover",
+                arguments="{}",
+            )
+        )
+
+        with patch(
+            "app.utils.streaming_handler.start_tool_observation",
+            side_effect=RuntimeError("mlflow down"),
+        ):
+            chunks = [chunk async for chunk in handler._handle_tool_called(run_item)]
+
+        parsed = [_parse_sse_payload(chunk) for chunk in chunks]
+        self.assertEqual(parsed[0]["event"], "tool_result")
+        self.assertEqual(parsed[0]["data"]["name"], "native_input_discover")
+        self.assertEqual(parsed[0]["data"]["status"], "executing")

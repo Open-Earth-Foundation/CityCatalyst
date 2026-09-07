@@ -334,6 +334,12 @@ Unrelated legacy inventory tools retain their existing refresh behavior.
   - Enforces the Stationary Energy chat prompt budget.
   - Emits `tool_result` SSE payloads for normal tools and Stationary Energy UI
     events via `services/stationary_energy/stationary_energy_tool_events.py`.
+  - Records request-local redacted MLflow `TOOL` spans for each agent tool
+    call without changing SSE or persisted chat history.
+- `utils/mlflow_logging.py`
+  - Owns explicit run lifecycle, redaction, sibling per-tool observations,
+    and the local configuration preflight used by
+    `python -m scripts.mlflow_preflight`.
 - `utils/history_manager.py`
   - Prunes older tool metadata for LLM context while keeping full DB audit data.
 - `utils/token_handler.py`
@@ -464,3 +470,9 @@ Each streamed request creates a `RunConfig` with workflow-specific metadata.
 Stationary Energy context chat uses a dedicated workflow name and includes
 `stationary_energy_draft_run_id` in trace metadata so it can be separated from
 general conversations in traces and logs.
+
+MLflow request traces use one root `CHAIN` span. Agent tool calls add sibling
+`TOOL` spans under that chain, correlated by `request_id` and `run_id`. The
+final `chat/tool_invocations.json` artifact stores the same redacted records
+as a summary only. Catalog IDs, credentials, storage pointers, and raw tool
+bodies stay out of MLflow.

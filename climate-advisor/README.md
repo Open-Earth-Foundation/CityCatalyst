@@ -1327,6 +1327,40 @@ Before enabling MLflow in an environment:
 4. If the MLflow server later requires authentication, provide MLflow auth
    variables through Kubernetes secrets rather than configmaps.
 
+Verify a local checkout without printing secrets:
+
+```bash
+uv run --directory service python -m scripts.mlflow_preflight
+```
+
+The command reports presence/absence for credentials, the configured tracking
+URI, environment tag, and whether the `Clima` experiment resolves. It does not
+print usernames, passwords, or create an MLflow run. Use a distinct
+`MLFLOW_ENVIRONMENT` tag for local evidence, for example `local-david`.
+
+Each agent tool call emits a sibling `TOOL` span under the request `CHAIN`
+span, plus a redacted summary artifact at `chat/tool_invocations.json`. The
+artifact is a request summary, not the orchestration proof. The per-tool
+record includes `call_id`, `tool_name`, `sequence`, `state`, `outcome`,
+`duration_ms`, `request_id`, `run_id`, argument key names, and output
+metadata such as `success`, `error_code`, `action`, `entry_count`, and
+`byte_size`. It never includes catalog/capability ID values, user or
+inventory scope, bearer tokens, storage pointers, raw source content, full
+tool arguments, full tool results, or the assistant response.
+
+In the MLflow UI, open experiment `Clima`, filter by `environment` and
+`request_id`, open the request run, then inspect the trace waterfall for
+`native_input_discover` before `native_input_read`.
+
+The MLflow MCP client is an operator tool, not an application runtime
+dependency. Do not add it to `pyproject.toml`. A local MCP session may use:
+
+```bash
+uv run --with 'mlflow[mcp]==3.12.0' mlflow mcp
+```
+
+Keep Climate Advisor pinned by the existing `pyproject.toml` and lockfile.
+
 ### LangSmith Integration
 
 Enable tracing to monitor agent executions, tool usage, and performance:

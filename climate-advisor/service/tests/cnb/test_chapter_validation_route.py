@@ -12,6 +12,7 @@ from app.models.cnb.concept_note_draft import ConceptNoteChapterValidationRespon
 from app.routes.concept_note_chapter_validation import (
     get_chapter_validation_workflow_service,
 )
+from app.services.cnb.chapter_validation import ChapterValidationTemplateError
 from app.services.cnb.chapter_validation_workflow import (
     ChapterValidationWorkflowError,
 )
@@ -95,5 +96,22 @@ def test_validation_route_preserves_error_code_and_sanitizes_detail() -> None:
     assert response.json() == {
         "code": "chapter_revision_changed",
         "detail": "Unable to validate the requested chapter",
+        "status": 409,
+    }
+
+
+def test_invalid_template_returns_actionable_safe_error() -> None:
+    service = SimpleNamespace(
+        validate=AsyncMock(
+            side_effect=ChapterValidationTemplateError("private source data")
+        )
+    )
+
+    response, _, _ = _post_validation(service)
+
+    assert response.status_code == 409
+    assert response.json() == {
+        "code": "chapter_validation_template_invalid",
+        "detail": ChapterValidationTemplateError.public_message,
         "status": 409,
     }

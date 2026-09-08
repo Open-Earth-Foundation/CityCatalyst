@@ -40,7 +40,7 @@ class ChapterValidationChapter(BaseModel):
 
 
 class ChapterValidationTemplate(BaseModel):
-    """Application-template context used by the completeness pass."""
+    """Full template retained in code for deterministic chapter selection."""
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
@@ -49,6 +49,15 @@ class ChapterValidationTemplate(BaseModel):
     output_format: str | None = None
     chapter_schema: list[dict[str, object]] = Field(default_factory=list)
     required_fields: list[str] = Field(default_factory=list)
+
+
+class ChapterValidationProfile(BaseModel):
+    """Only the selected chapter's template requirements sent to the model."""
+
+    name: str
+    output_format: str | None = None
+    chapter_schema: dict[str, object]
+    required_fields: list[str]
 
 
 class ChapterValidationGap(BaseModel):

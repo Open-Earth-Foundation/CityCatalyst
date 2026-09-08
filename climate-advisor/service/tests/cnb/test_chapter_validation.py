@@ -15,6 +15,7 @@ from app.services.cnb.chapter_validation import (
     ChapterValidationError,
     ChapterValidationInputTooLargeError,
     ChapterValidationModelOutputError,
+    ChapterValidationTemplateError,
     build_chapter_validation_request,
 )
 from app.utils.prompt_budget import TokenCount
@@ -70,7 +71,7 @@ def test_builds_request_from_repository_snapshot() -> None:
     template = ApplicationContextTemplate(
         id=UUID("88888888-8888-4888-8888-888888888888"),
         name="Application",
-        chapter_schema=[{"chapter_ref": "chapter-1"}],
+        chapter_schema=[{"chapter_ref": "chapter-1", "required_fields": ["Budget"]}],
         required_fields=["Budget"],
     )
 
@@ -78,6 +79,7 @@ def test_builds_request_from_repository_snapshot() -> None:
 
     assert built.chapters[0].revision_number == 2
     assert built.template and built.template.template_id == template.id
+    assert built.template.chapter_schema[0]["required_fields"] == ["Budget"]
     assert built.open_gaps[0].severity == "critical"
     assert built.evidence_links[0].source_location == "page 4"
 
@@ -109,6 +111,143 @@ async def test_runs_completeness_before_document_consistency() -> None:
     assert calls[0][1]["document"]["evidence_links"][0]["position"] == 1
     assert calls[1][1]["document"]["evidence_links"][0]["position"] == 1
     assert decision.status == "ready"
+
+
+async def test_completeness_receives_only_selected_schema_and_associated_fields() -> (
+    None
+):
+    validation_request = request()
+    template = validation_request.template
+    assert template is not None
+    template.chapter_schema = [
+        {
+            "chapter_ref": "other",
+            "title": "Chapter 1",
+            "required_fields": ["Budget", "Project name"],
+            "description": "Unrelated budget instructions",
+        },
+        {
+            "chapter_ref": "chapter-1",
+            "title": "Timetable",
+            "description": "Explain delivery milestones.",
+            "required": True,
+            "required_fields": ["Implementation timetable", "Project name"],
+            "word_limit": 200,
+        },
+    ]
+    template.required_fields = ["Budget", "Implementation timetable", "Project name"]
+    before = template.model_dump()
+    calls: list[dict[str, Any]] = []
+
+    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
+        if phase == "completeness":
+            calls.append(payload)
+            return completeness()
+        return consistency()
+
+    await service(run_pass).validate(validation_request)
+
+    assert calls[0]["document"]["validation_profile"] == {
+        "name": "Application template",
+        "output_format": None,
+        "chapter_schema": {
+            "title": "Timetable",
+            "description": "Explain delivery milestones.",
+            "required": True,
+            "word_limit": 200,
+        },
+        "required_fields": ["Implementation timetable", "Project name"],
+    }
+    assert "template" not in calls[0]["document"]
+    assert template.model_dump() == before
+
+
+@pytest.mark.parametrize(
+    "schema",
+    [
+        [],
+        [{"chapter_ref": "wrong", "required_fields": ["Implementation timetable"]}],
+        [{"chapter_ref": "chapter-1"}, {"chapter_ref": " chapter-1 "}],
+        [{"chapter_ref": "chapter-1"}],
+        [{"chapter_ref": "chapter-1", "required_fields": []}],
+        [{"chapter_ref": "chapter-1", "required_fields": None}],
+        [{"chapter_ref": "chapter-1", "required_fields": "Implementation timetable"}],
+        [{"chapter_ref": "chapter-1", "required_fields": [123]}],
+        [{"chapter_ref": "chapter-1", "required_fields": [" "]}],
+    ],
+    ids=[
+        "empty",
+        "no-match",
+        "duplicate",
+        "legacy-flat",
+        "unassigned",
+        "null",
+        "string",
+        "number",
+        "blank",
+    ],
+)
+async def test_invalid_template_never_calls_model(schema: list[dict[str, Any]]) -> None:
+    validation_request = request()
+    assert validation_request.template is not None
+    validation_request.template.chapter_schema = schema
+    run_pass = AsyncMock()
+
+    with pytest.raises(ChapterValidationTemplateError) as error:
+        await service(run_pass).validate(validation_request)
+
+    assert error.value.code == "chapter_validation_template_invalid"
+    assert error.value.status_code == 409
+    run_pass.assert_not_awaited()
+
+
+@pytest.mark.parametrize("chapter_ref", [None, " chapter-1 "])
+async def test_selection_uses_the_same_reference_normalization_as_workspace(
+    chapter_ref: str | None,
+) -> None:
+    validation_request = request()
+    assert validation_request.template is not None
+    schema = validation_request.template.chapter_schema[0]
+    if chapter_ref is None:
+        schema.pop("chapter_ref")
+    else:
+        schema["chapter_ref"] = chapter_ref
+
+    assert (
+        await service(static_passes()).validate(validation_request)
+    ).status == "ready"
+
+
+async def test_chapter_without_fields_does_not_inherit_other_chapters_requirements() -> (
+    None
+):
+    validation_request = request()
+    assert validation_request.template is not None
+    validation_request.template.chapter_schema = [
+        {"chapter_ref": "chapter-1", "required_fields": []},
+        {"chapter_ref": "other", "required_fields": ["Implementation timetable"]},
+    ]
+
+    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
+        if phase == "completeness":
+            assert payload["document"]["validation_profile"]["required_fields"] == []
+            return completeness()
+        return consistency()
+
+    await service(run_pass).validate(validation_request)
+
+
+async def test_no_template_preserves_template_free_validation() -> None:
+    validation_request = request()
+    validation_request.template = None
+
+    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
+        if phase == "completeness":
+            assert payload["document"]["validation_profile"] is None
+            return completeness()
+        return consistency()
+
+    await service(run_pass).validate(validation_request)
 
 
 async def test_resolves_model_evidence_positions_to_public_source_metadata() -> None:

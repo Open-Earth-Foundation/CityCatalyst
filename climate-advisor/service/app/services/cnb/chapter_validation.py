@@ -20,14 +20,18 @@ from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationFinding,
     ChapterValidationFindingDraft,
     ChapterValidationGap,
+    ChapterValidationProfile,
     ChapterValidationRequest,
     ChapterValidationTemplate,
 )
-from app.persistence.concept_notes.workspace import WorkspaceValidationContext
+from app.persistence.concept_notes.workspace import (
+    WorkspaceValidationContext,
+    normalize_template_chapters,
+)
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, TypeAdapter, ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +67,80 @@ class ChapterValidationModelOutputError(ChapterValidationError):
 
     code = "chapter_validation_model_output_invalid"
     status_code = 502
+
+
+class ChapterValidationTemplateError(ChapterValidationError):
+    """Template identity or field ownership needs correction before validation."""
+
+    code = "chapter_validation_template_invalid"
+    status_code = 409
+    public_message = (
+        "The application template needs review: ensure unique chapter references "
+        "and assign every required field to its applicable chapters."
+    )
+
+
+def select_chapter_validation_profile(
+    template: ChapterValidationTemplate | None,
+    target: ChapterValidationChapter,
+) -> ChapterValidationProfile | None:
+    """Select one chapter and reject ambiguous or unassigned template requirements.
+
+    Global required_fields remain an inventory, never model input. Every inventory
+    field must occur in at least one chapter's required_fields; shared requirements
+    are explicitly listed on each applicable chapter. No semantic mapping is inferred.
+    """
+    if template is None:
+        return None
+
+    # Reuse workspace normalization so generated chapter references match exactly.
+    try:
+        chapters = normalize_template_chapters(template.chapter_schema)
+    except ValueError as exc:
+        raise ChapterValidationTemplateError(
+            "Duplicate template chapter references"
+        ) from exc
+
+    selected: ChapterValidationProfile | None = None
+    assigned_fields: set[str] = set()
+    field_list = TypeAdapter(list[str])
+    for chapter, schema in zip(chapters, template.chapter_schema, strict=True):
+        try:
+            fields = field_list.validate_python(
+                schema.get("required_fields", []), strict=True
+            )
+        except ValidationError as exc:
+            raise ChapterValidationTemplateError(
+                "Invalid chapter required_fields"
+            ) from exc
+        if any(not field.strip() for field in fields):
+            raise ChapterValidationTemplateError("Empty chapter required field")
+        assigned_fields.update(fields)
+        if chapter.chapter_ref == target.template_section_id:
+            selected = ChapterValidationProfile(
+                name=template.name,
+                output_format=template.output_format,
+                chapter_schema={
+                    **{
+                        key: value
+                        for key, value in schema.items()
+                        if key not in {"chapter_ref", "required_fields"}
+                    },
+                    "title": chapter.title,
+                    "description": chapter.description,
+                    "required": chapter.required,
+                },
+                required_fields=fields,
+            )
+
+    # Older flat inventories must be reviewed rather than silently dropped.
+    if selected is None:
+        raise ChapterValidationTemplateError("No matching template chapter")
+    if set(template.required_fields) - assigned_fields:
+        raise ChapterValidationTemplateError(
+            "Template required fields lack chapter assignments"
+        )
+    return selected
 
 
 def build_chapter_validation_request(
@@ -140,6 +218,7 @@ class ConceptNoteChapterValidationService:
             for chapter in request.chapters
             if chapter.chapter_id == request.target_chapter_id
         )
+        profile = select_chapter_validation_profile(request.template, target)
         if not (target.body_markdown or "").strip():
             return _empty_chapter_decision(request)
 
@@ -152,11 +231,9 @@ class ConceptNoteChapterValidationService:
         ]
         completeness_payload = {
             "document": {
-                "template": (
-                    request.template.model_dump(mode="json")
-                    if request.template
-                    else None
-                ),
+                "validation_profile": profile.model_dump(mode="json")
+                if profile
+                else None,
                 "evidence_links": evidence_payload,
             },
             "output": target_payload,

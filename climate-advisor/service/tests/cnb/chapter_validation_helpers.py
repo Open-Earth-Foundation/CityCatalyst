@@ -4,6 +4,7 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 from uuid import UUID
 
+from app.config import get_settings
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterCompletenessValidationOutput,
     ChapterConsistencyValidationOutput,
@@ -17,8 +18,6 @@ from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationTemplate,
 )
 from app.services.cnb.chapter_validation import ConceptNoteChapterValidationService
-
-from app.config import get_settings
 
 TARGET_ID = UUID("11111111-1111-4111-8111-111111111111")
 OTHER_ID = UUID("22222222-2222-4222-8222-222222222222")
@@ -59,7 +58,13 @@ def request(
         template=ChapterValidationTemplate(
             template_id=UUID("44444444-4444-4444-8444-444444444444"),
             name="Application template",
-            chapter_schema=[{"chapter_ref": "chapter-1", "required": target_required}],
+            chapter_schema=[
+                {
+                    "chapter_ref": "chapter-1",
+                    "required": target_required,
+                    "required_fields": ["Implementation timetable"],
+                }
+            ],
             required_fields=["Implementation timetable"],
         ),
         open_gaps=gaps or [],

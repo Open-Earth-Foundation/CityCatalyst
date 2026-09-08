@@ -266,6 +266,9 @@ def test_cnb_chapter_validation_configuration_matches_two_pass_contract() -> Non
     consistency_prompt = config.prompts.get_prompt("cnb_chapter_validation_consistency")
     assert "`document`" in completeness_prompt
     assert "`output`" in completeness_prompt
+    assert "`document.validation_profile.required_fields`" in completeness_prompt
+    assert "backend has already selected" in completeness_prompt
+    assert "document.template" not in completeness_prompt
     assert "`document`" in consistency_prompt
     assert "`output`" in consistency_prompt
     assert "programme-specific eligibility rules" in consistency_prompt

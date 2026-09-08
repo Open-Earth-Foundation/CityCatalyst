@@ -69,6 +69,21 @@ claims and contains no programme-name or programme-specific keyword rules. The
 second pass receives the first result; large documents are batched without
 truncating the output or document chapters.
 
+Before completeness, code matches the output's `template_section_id` against
+the normalized `chapter_ref` and builds `document.validation_profile` containing
+one chapter schema and its own `required_fields`. The model receives no full
+template collection or global field inventory. Requirements shared by several
+chapters must be listed on each applicable chapter.
+
+Existing templates with a flat `required_fields` inventory need source-reviewed
+assignments in `chapter_schema[*].required_fields` before rollout. Keep each
+inventory field's exact text in at least one chapter; use `[]` for chapters with
+no required fields. Missing/duplicate chapter matches, malformed field lists,
+or unassigned inventory fields return HTTP 409
+(`chapter_validation_template_invalid`) before any model call or result write.
+This changes the JSON content contract, not the database columns. See the
+[template upgrade example](../docs/ConceptNoteBuilderArchitecture.md#chapter-template-requirement-assignments).
+
 `llm_config.yaml` configures `cnb_chapter_validator` as GPT-5.6 Terra with
 medium reasoning and a 50,000-token validation prompt budget. The service uses
 temperature zero. Model or parse failures persist nothing. Successful results

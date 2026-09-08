@@ -343,6 +343,8 @@ CCRA_MODULE, CA_SERVICE_INTEGRATION, HIGHLIGHT_ENABLED
 
 Replaces `next-runtime-env`. Injects allowlisted `NEXT_PUBLIC_*` vars into
 `window.__ENV` at request time so k8s/runtime values are not frozen at build time.
+`RuntimeEnvScript` uses `connection()` so the layout is not statically prerendered
+with an empty env from the Docker build.
 
 - Client/shared: `import { env } from "@/lib/runtime-env"` then `env("NEXT_PUBLIC_…")`
 - Add new browser-facing keys to `PUBLIC_RUNTIME_ENV_KEYS` in `keys.ts`

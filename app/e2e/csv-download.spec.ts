@@ -302,7 +302,6 @@ test.describe("CSV Download", () => {
   });
 
   test("User can download inventory as CSV", async ({ page }, testInfo) => {
-    // Content via API (stable across browsers), then UI smoke for the modal.
     const download = await downloadCsv(page, inventoryId);
     const downloadPath = testInfo.outputPath("inventory.csv");
 
@@ -314,7 +313,9 @@ test.describe("CSV Download", () => {
     expect(headers).toEqual(EXPECTED_CSV_HEADERS);
 
     expect(download.filename).toMatch(/inventory-.*\.csv/);
+  });
 
+  test("Download modal completes CSV download in the UI", async ({ page }) => {
     await openDownloadModal(page);
     await expectUiDownloadSuccess(page, "csv");
   });
@@ -392,9 +393,6 @@ test.describe("CSV Download", () => {
 
     const ecrfDownload = await downloadEcrf(page, inventoryId);
     expect(ecrfDownload.filename).toMatch(/\.xlsx?$/);
-
-    await openDownloadModal(page);
-    await expectUiDownloadSuccess(page, "csv");
   });
 
   test("CSV download preserves special characters and formatting", async ({

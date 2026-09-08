@@ -244,6 +244,10 @@ async function addScope2ResidentialEmissions(
     // Avoid fragile overflow-menu clearing; use another non-exclusive building type.
     await createWithBuildingType("building-type-multi-family-home");
   }
+
+  await expect(scopeTwoPanel.locator("table tbody tr").first()).toBeVisible({
+    timeout: 30000,
+  });
 }
 
 async function addEmissionModalStillOpen(page: Page) {
@@ -309,6 +313,9 @@ test.describe.serial("Report Results", () => {
   });
 
   test("User can navigate to dashboard and verify data", async ({ page }) => {
+    // Force a fresh results fetch after scope 1/2 writes.
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await dismissCookieConsent(page);
     await openEmissionInventoryResultsTab(page);
 
     const topEmissionsTable = page.locator("table").filter({

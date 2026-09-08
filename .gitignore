@@ -184,3 +184,4 @@ demo-recording/
 .codex/
 .venv
 .pytest_cache
+docs/benchmarks/cc-771/.venv/

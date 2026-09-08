@@ -11,10 +11,28 @@ Synthetic English A4 PDF for layout and chart-fact OCR evaluation. Not real city
 | `layout-ground-truth.json` | Expected pages, block roles, reading order, relationships |
 | `chart-ground-truth.md` | Chart data and five chart-only evaluation answers |
 
+## Setup
+
+From `docs/benchmarks/cc-771/`:
+
+```bash
+./setup.sh
+# or:
+# uv venv .venv && uv pip install --python .venv/bin/python -r requirements.txt
+```
+
 ## Regenerate
 
 ```bash
-/home/david/work/projects/open-earth/CityCatalyst-cc-771/.venv/bin/python generate_fixture.py
+./.venv/bin/python fixtures/v2/generate_fixture.py
+# or, from this directory:
+../../.venv/bin/python generate_fixture.py
+```
+
+If using the repo-root venv created by `setup.sh` in this folder, prefer:
+
+```bash
+docs/benchmarks/cc-771/.venv/bin/python docs/benchmarks/cc-771/fixtures/v2/generate_fixture.py
 ```
 
 The script prints SHA-256 and pymupdf page count.

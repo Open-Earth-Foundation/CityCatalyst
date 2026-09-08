@@ -29,14 +29,6 @@ _No structured visual annotation was returned for `img-1.jpeg`._
 <!-- block:p0-b6 type=title order=6 -->
 
 <!-- page: 2 -->
-<!-- footer -->
-SD
-City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
-TABLE OF CONTENTS
-PREVIOUS PAGE ←
-2
-→ NEXT PAGE
 # Table of Contents
 
 Message from the City Planning Department Director
@@ -184,11 +176,16 @@ Appendices
 <!-- block:p1-b51 type=footer order=51 -->
 <!-- block:p1-b52 type=footer order=52 -->
 <!-- block:p1-b53 type=footer order=53 -->
-
-<!-- page: 3 -->
 <!-- footer -->
+SD
 City Planning
 The City of San Diego 2025 Annual Climate Action Plan Report
+TABLE OF CONTENTS
+PREVIOUS PAGE ←
+2
+→ NEXT PAGE
+
+<!-- page: 3 -->
 # Message from the City Planning Department Director
 
 Each year, the City of San Diego reports on progress we are making to reduce climate pollution and build healthier, more sustainable communities. This report shows that we are making meaningful progress in several important areas, while also making clear that more work remains.
@@ -234,13 +231,13 @@ City Planning Department
 <!-- block:p2-b12 type=other order=12 -->
 <!-- block:p2-b13 type=footer order=13 -->
 <!-- block:p2-b14 type=footer order=14 -->
+<!-- footer -->
+City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
 
 <!-- page: 4 -->
 <!-- header -->
 $^{1}$ 2024 is the latest year for which complete data are available to complete an annual greenhouse gas emissions inventory for the city. Key data inputs needed to complete the annual greenhouse gas emissions inventory for 2025, including data related to energy consumption, electricity emissions, and vehicle miles traveled, are provided by agencies and entities external to the City (e.g., California Energy Commission, California Department of Transportation) and are not anticipated to be available to the City until late 2026 or early 2027.
-<!-- footer -->
-$^{2}$ Performance indicators, such as number of trees planted, miles of new bikeways constructed and number of electric vehicle charging stations installed, help measure how effectively the City is carrying out the actions of the Climate Action Plan. These indicators provide valuable data on implementation progress but are not a replacement for annual greenhouse gas emissions inventories. Inventories use the best available data to estimate emissions from all sources and activities across the city, not only those directly influenced by City-led actions.
-50 City Planning
 # Climate Action Plan Reporting
 
 The 2025 Annual Climate Action Plan Report summarizes the best available information on the City of San Diego's progress toward the goals of the Climate Action Plan. The report includes a comprehensive, citywide inventory of climate pollution in 2024$^{1}$ and tracks key indicators$^{2}$ that help us understand why and how emissions are changing over time. For many indicators, the latest available data is from 2024. Where 2025 indicator data is available, it is also provided.
@@ -278,11 +275,11 @@ _No structured visual annotation was returned for `img-5.jpeg`._
 <!-- block:p3-b8 type=image order=8 -->
 <!-- block:p3-b9 type=image order=9 -->
 <!-- block:p3-b10 type=image order=10 -->
+<!-- footer -->
+$^{2}$ Performance indicators, such as number of trees planted, miles of new bikeways constructed and number of electric vehicle charging stations installed, help measure how effectively the City is carrying out the actions of the Climate Action Plan. These indicators provide valuable data on implementation progress but are not a replacement for annual greenhouse gas emissions inventories. Inventories use the best available data to estimate emissions from all sources and activities across the city, not only those directly influenced by City-led actions.
+50 City Planning
 
 <!-- page: 5 -->
-<!-- footer -->
-50
-City Planning
 ![img-6.jpeg](img-6.jpeg)
 
 <!-- visual-annotation:img-6.jpeg missing -->
@@ -319,13 +316,11 @@ _No structured visual annotation was returned for `img-8.jpeg`._
 <!-- block:p4-b7 type=image order=7 -->
 <!-- block:p4-b8 type=footer order=8 -->
 <!-- block:p4-b9 type=footer order=9 -->
-
-<!-- page: 6 -->
 <!-- footer -->
 50
 City Planning
-The City of San Diego 2035 Annual Climate Action Plan Report
-4
+
+<!-- page: 6 -->
 ![img-9.jpeg](img-9.jpeg)
 
 <!-- visual-annotation:img-9.jpeg missing -->
@@ -382,11 +377,13 @@ Estimated Annual Emissions Levels
 <!-- block:p5-b16 type=footer order=16 -->
 <!-- block:p5-b17 type=footer order=17 -->
 <!-- block:p5-b18 type=footer order=18 -->
+<!-- footer -->
+50
+City Planning
+The City of San Diego 2035 Annual Climate Action Plan Report
+4
 
 <!-- page: 7 -->
-<!-- footer -->
-50 City Planning
-The City of San Diego 2025 Annual Climate Action Plan 1
 ![img-11.jpeg](img-11.jpeg)
 
 <!-- visual-annotation:img-11.jpeg missing -->
@@ -481,13 +478,11 @@ _No structured visual annotation was returned for `img-14.jpeg`._
 <!-- block:p6-b25 type=footer order=25 -->
 <!-- block:p6-b26 type=footer order=26 -->
 <!-- block:p6-b27 type=image order=27 -->
+<!-- footer -->
+50 City Planning
+The City of San Diego 2025 Annual Climate Action Plan 1
 
 <!-- page: 8 -->
-<!-- footer -->
-50
-City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
-4
 ![img-15.jpeg](img-15.jpeg)
 
 <!-- visual-annotation:img-15.jpeg missing -->
@@ -541,11 +536,13 @@ Source: adapted from Table 3, Appendix B.
 <!-- block:p7-b12 type=footer order=12 -->
 <!-- block:p7-b13 type=footer order=13 -->
 <!-- block:p7-b14 type=footer order=14 -->
+<!-- footer -->
+50
+City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
+4
 
 <!-- page: 9 -->
-<!-- footer -->
-50 City Planning
-2019-24 | 2024 | Annual Report | Page 3
 # Annual Greenhouse Gas Emissions Levels by Emissions Sector, 2019–2024
 
 Lower emissions from vehicles and driving (down 21 percent from 2019 to 2024) and from electricity and natural gas used in homes and other buildings (down 37 percent and 11 percent, respectively, from 2019 to 2024) are the main reasons for the 23 percent decrease in citywide emissions from 2019 to 2024 (Table 2, Figure 3).
@@ -574,12 +571,11 @@ Table 2. Annual Greenhouse Gas Emissions Levels by Sector, 2019-2024
 <!-- block:p8-b8 type=table order=8 -->
 <!-- block:p8-b9 type=footer order=9 -->
 <!-- block:p8-b10 type=footer order=10 -->
-
-<!-- page: 10 -->
 <!-- footer -->
 50 City Planning
-The City of San Diego 2024 Annual Climate Action Plan Report
-10
+2019-24 | 2024 | Annual Report | Page 3
+
+<!-- page: 10 -->
 **Figure 3. Annual Greenhouse Gas Emissions by Source, 2019–2024**
 
 Annual greenhouse gas emissions from vehicles and driving and natural gas and electricity used in homes and buildings, 2019–2024.
@@ -608,12 +604,12 @@ _No structured visual annotation was returned for `img-18.jpeg`._
 <!-- block:p9-b6 type=footer order=6 -->
 <!-- block:p9-b7 type=footer order=7 -->
 <!-- block:p9-b8 type=footer order=8 -->
-
-<!-- page: 11 -->
 <!-- footer -->
 50 City Planning
 The City of San Diego 2024 Annual Climate Action Plan Report
-11
+10
+
+<!-- page: 11 -->
 # Vehicles and Driving
 
 ![img-19.jpeg](img-19.jpeg)
@@ -654,12 +650,12 @@ Notes: MT CO₂e = metric tons of carbon dioxide equivalent
 <!-- block:p10-b10 type=footer order=10 -->
 <!-- block:p10-b11 type=footer order=11 -->
 <!-- block:p10-b12 type=footer order=12 -->
+<!-- footer -->
+50 City Planning
+The City of San Diego 2024 Annual Climate Action Plan Report
+11
 
 <!-- page: 12 -->
-<!-- footer -->
-SD City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
-CC BY
 Table 3. Pollution from Vehicles in the San Diego Region, 2019-2024
 
 [tbl-1.md](tbl-1.md)
@@ -683,13 +679,12 @@ The City is making it easier to charge electric vehicles by adding public charge
 <!-- block:p11-b7 type=text order=7 -->
 <!-- block:p11-b8 type=footer order=8 -->
 <!-- block:p11-b9 type=footer order=9 -->
+<!-- footer -->
+SD City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
+CC BY
 
 <!-- page: 13 -->
-<!-- footer -->
-$^{3}$ City-specific data on public transit use is not available.
-5D City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
-![Logos of the City of San Diego and the City of San Diego 2025.]()
 **Table 4. Public Transit Use in the San Diego Region (Passenger Boardings and Miles Traveled), 2019-2024**
 
 [tbl-2.md](tbl-2.md)
@@ -717,13 +712,13 @@ these areas, representing about 90 percent of all new permitted homes. During th
 <!-- block:p12-b9 type=footer order=9 -->
 <!-- block:p12-b10 type=footer order=10 -->
 <!-- block:p12-b11 type=footer order=11 -->
+<!-- footer -->
+$^{3}$ City-specific data on public transit use is not available.
+5D City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
+![Logos of the City of San Diego and the City of San Diego 2025.]()
 
 <!-- page: 14 -->
-<!-- footer -->
-$^{4}$ Making Progress Towards Mode Share Goals – General Plan Update (Blueprint SD) overview: www.sandiego.gov/sites/default/files/2024-03/blueprint-sd-memo031424.pdf
-SD City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
-![Social media icons for Twitter, Facebook, Instagram, and YouTube.]()
 # Planning for More Homes and Jobs in Climate Smart Village Areas
 
 The General Plan was updated in 2024 to strengthen its alignment with the Climate Action Plan.$^{4}$ Central to the update is the Village Climate Goal Propensity Map, which establishes a data-driven framework to guide future opportunities for jobs and housing near transit, services, shops, schools, workplaces and parks and public spaces. This strategy was designed to reduce the need for driving, optimize public transit investments, and foster sustainable, equitable and connected communities. Areas designated as Climate Smart Village Areas are identified as having the highest potential to shift commuter behavior away from driving and making it easier for people to walk, roll, bike and ride transit. Planning for more homes and jobs located near transit in these areas is intended to
@@ -739,13 +734,13 @@ While the Climate Smart Village Areas serve as a citywide guide for locating fut
 <!-- block:p13-b5 type=footer order=5 -->
 <!-- block:p13-b6 type=footer order=6 -->
 <!-- block:p13-b7 type=footer order=7 -->
+<!-- footer -->
+$^{4}$ Making Progress Towards Mode Share Goals – General Plan Update (Blueprint SD) overview: www.sandiego.gov/sites/default/files/2024-03/blueprint-sd-memo031424.pdf
+SD City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
+![Social media icons for Twitter, Facebook, Instagram, and YouTube.]()
 
 <!-- page: 15 -->
-<!-- footer -->
-5D
-City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
-35
 # Using Cleaner Vehicles in City Operations
 
 As of 2025, about 8 percent of the City's 5,037 municipal vehicles were zero or near-zero-emission, including 230 fully electric vehicles and 126 plug-in hybrids. The City also has 382 regular hybrids. In 2025, the City replaced 21 gasoline or diesel-powered vehicles with electric vehicles – including one electric fire truck - with 17 being fully electric pickup trucks.
@@ -789,13 +784,13 @@ To support more electric vehicles, the City is focusing on adding additional cha
 <!-- block:p14-b12 type=footer order=12 -->
 <!-- block:p14-b13 type=footer order=13 -->
 <!-- block:p14-b14 type=footer order=14 -->
-
-<!-- page: 16 -->
 <!-- footer -->
 5D
 City Planning
 The City of San Diego 2025 Annual Climate Action Plan Report
-16
+35
+
+<!-- page: 16 -->
 ![img-22.jpeg](img-22.jpeg)
 
 <!-- visual-annotation:img-22.jpeg missing -->
@@ -834,11 +829,13 @@ Notes:
 <!-- block:p15-b9 type=footer order=9 -->
 <!-- block:p15-b10 type=footer order=10 -->
 <!-- block:p15-b11 type=footer order=11 -->
+<!-- footer -->
+5D
+City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
+16
 
 <!-- page: 17 -->
-<!-- footer -->
-50 City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
 ![img-24.jpeg](img-24.jpeg)
 
 <!-- visual-annotation:img-24.jpeg missing -->
@@ -885,12 +882,11 @@ MMBtu = million British thermal units
 <!-- block:p16-b10 type=text order=10 -->
 <!-- block:p16-b11 type=footer order=11 -->
 <!-- block:p16-b12 type=footer order=12 -->
+<!-- footer -->
+50 City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
 
 <!-- page: 18 -->
-<!-- footer -->
-SD
-City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
 ![img-27.jpeg](img-27.jpeg)
 
 <!-- visual-annotation:img-27.jpeg missing -->
@@ -937,11 +933,12 @@ _No structured visual annotation was returned for `img-29.jpeg`._
 <!-- block:p17-b11 type=footer order=11 -->
 <!-- block:p17-b12 type=footer order=12 -->
 <!-- block:p17-b13 type=image order=13 -->
+<!-- footer -->
+SD
+City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
 
 <!-- page: 19 -->
-<!-- footer -->
-SD City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
 ![img-30.jpeg](img-30.jpeg)
 
 <!-- visual-annotation:img-30.jpeg missing -->
@@ -982,12 +979,11 @@ Notes:
 <!-- block:p18-b10 type=other order=10 -->
 <!-- block:p18-b11 type=footer order=11 -->
 <!-- block:p18-b12 type=footer order=12 -->
+<!-- footer -->
+SD City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
 
 <!-- page: 20 -->
-<!-- footer -->
-SD
-City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
 ![img-31.jpeg](img-31.jpeg)
 
 <!-- visual-annotation:img-31.jpeg missing -->
@@ -1018,11 +1014,12 @@ _No structured visual annotation was returned for `img-32.jpeg`._
 <!-- block:p19-b7 type=footer order=7 -->
 <!-- block:p19-b8 type=footer order=8 -->
 <!-- block:p19-b9 type=image order=9 -->
+<!-- footer -->
+SD
+City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
 
 <!-- page: 21 -->
-<!-- footer -->
-SD City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
 ![img-33.jpeg](img-33.jpeg)
 
 <!-- visual-annotation:img-33.jpeg missing -->
@@ -1057,11 +1054,11 @@ In spring 2025 the City released the San Diego Clean Energy Career Map (sdcleane
 <!-- block:p20-b6 type=text order=6 -->
 <!-- block:p20-b7 type=footer order=7 -->
 <!-- block:p20-b8 type=footer order=8 -->
+<!-- footer -->
+SD City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
 
 <!-- page: 22 -->
-<!-- footer -->
-50 City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
 # How You Can Save Energy
 
 ![img-36.jpeg](img-36.jpeg)
@@ -1095,6 +1092,9 @@ _No structured visual annotation was returned for `img-36.jpeg`._
 <!-- block:p21-b5 type=list order=5 -->
 <!-- block:p21-b6 type=footer order=6 -->
 <!-- block:p21-b7 type=footer order=7 -->
+<!-- footer -->
+50 City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
 
 <!-- page: 23 -->
 # Other Emissions Sources and Activities
@@ -1124,10 +1124,6 @@ _No structured visual annotation was returned for `img-39.jpeg`._
 <!-- block:p22-b4 type=image order=4 -->
 
 <!-- page: 24 -->
-<!-- footer -->
-SD
-City Planning
-City 2024 San Diego 2025 Annual Annual 2025 Annual Report
 ![img-40.jpeg](img-40.jpeg)
 
 <!-- visual-annotation:img-40.jpeg missing -->
@@ -1189,10 +1185,12 @@ _No structured visual annotation was returned for `img-45.jpeg`._
 <!-- block:p23-b12 type=footer order=12 -->
 <!-- block:p23-b13 type=footer order=13 -->
 <!-- block:p23-b14 type=image order=14 -->
+<!-- footer -->
+SD
+City Planning
+City 2024 San Diego 2025 Annual Annual 2025 Annual Report
 
 <!-- page: 25 -->
-<!-- footer -->
-SD City Planning
 These organizations redistribute extra food to people in need, which reduces the amount of food sent to the landfill. In 2024, over 24 million pounds of food were received by recovery organizations, a 190 percent increase from the over 8 million pounds in 2022, the first year of the program (Table 10). The amount of food recovered in 2024 was also 21 percent higher than the prior year. This means not only lower climate pollution, but also more people fed and less food wasted.
 
 **Table 10. Food Collected or Sent to Food Collection Services, 2022-2024**
@@ -1208,12 +1206,10 @@ _No structured visual annotation was returned for `img-46.jpeg`._
 <!-- block:p24-b2 type=table order=2 -->
 <!-- block:p24-b3 type=image order=3 -->
 <!-- block:p24-b4 type=footer order=4 -->
-
-<!-- page: 26 -->
 <!-- footer -->
 SD City Planning
-The City of San Diego 2025 Annual Climate Action Plan, May 25
-25
+
+<!-- page: 26 -->
 ![img-47.jpeg](img-47.jpeg)
 
 <!-- visual-annotation:img-47.jpeg missing -->
@@ -1270,13 +1266,12 @@ Totals may not add up to 100 percent due to rounding.
 <!-- block:p25-b13 type=footer order=13 -->
 <!-- block:p25-b14 type=footer order=14 -->
 <!-- block:p25-b15 type=footer order=15 -->
+<!-- footer -->
+SD City Planning
+The City of San Diego 2025 Annual Climate Action Plan, May 25
+25
 
 <!-- page: 27 -->
-<!-- footer -->
-90
-City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
-20
 ![img-50.jpeg](img-50.jpeg)
 
 <!-- visual-annotation:img-50.jpeg missing -->
@@ -1306,11 +1301,13 @@ Emissions from wastewater treatment in 2024 were 12,000 MT CO2e, which is 54 per
 <!-- block:p26-b7 type=footer order=7 -->
 <!-- block:p26-b8 type=footer order=8 -->
 <!-- block:p26-b9 type=footer order=9 -->
+<!-- footer -->
+90
+City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
+20
 
 <!-- page: 28 -->
-<!-- footer -->
-50
-City Planning
 ![img-52.jpeg](img-52.jpeg)
 
 <!-- visual-annotation:img-52.jpeg missing -->
@@ -1345,11 +1342,11 @@ _No structured visual annotation was returned for `img-55.jpeg`._
 <!-- block:p27-b5 type=footer order=5 -->
 <!-- block:p27-b6 type=footer order=6 -->
 <!-- block:p27-b7 type=image order=7 -->
+<!-- footer -->
+50
+City Planning
 
 <!-- page: 29 -->
-<!-- footer -->
-SD City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
 ![img-56.jpeg](img-56.jpeg)
 
 <!-- visual-annotation:img-56.jpeg missing -->
@@ -1393,10 +1390,11 @@ Planting and caring for trees and protecting natural areas like habitat and open
 <!-- block:p28-b9 type=text order=9 -->
 <!-- block:p28-b10 type=footer order=10 -->
 <!-- block:p28-b11 type=footer order=11 -->
+<!-- footer -->
+SD City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
 
 <!-- page: 30 -->
-<!-- footer -->
-50 City Planning
 ## Trees for Communities
 
 The Trees for Communities project has completed its planting phase, which provided about 2,900 trees in vacant areas and installed more than 160 new tree wells in previously paved parkways along City streets within Communities of Concern. The program also includes three years of tree watering, which will conclude by December 2028. The program was created to support the City's goal of expanding the urban tree canopy and improving quality of life.
@@ -1415,12 +1413,10 @@ _No structured visual annotation was returned for `img-59.jpeg`._
 <!-- block:p29-b3 type=text order=3 -->
 <!-- block:p29-b4 type=image order=4 -->
 <!-- block:p29-b5 type=footer order=5 -->
+<!-- footer -->
+50 City Planning
 
 <!-- page: 31 -->
-<!-- footer -->
-SD City Planning
-The City of Salt Lake 2024 Annual Climate Action Plan 4/2024
-ai
 ![img-60.jpeg](img-60.jpeg)
 
 <!-- visual-annotation:img-60.jpeg missing -->
@@ -1460,13 +1456,12 @@ Progress toward the City's land conservation goal within the Multi-Habitat Plann
 <!-- block:p30-b9 type=footer order=9 -->
 <!-- block:p30-b10 type=footer order=10 -->
 <!-- block:p30-b11 type=footer order=11 -->
+<!-- footer -->
+SD City Planning
+The City of Salt Lake 2024 Annual Climate Action Plan 4/2024
+ai
 
 <!-- page: 32 -->
-<!-- footer -->
-30
-City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
-City
 ![img-62.jpeg](img-62.jpeg)
 
 <!-- visual-annotation:img-62.jpeg missing -->
@@ -1507,6 +1502,11 @@ At the same time, this report shows that more progress is needed in some areas t
 <!-- block:p31-b8 type=footer order=8 -->
 <!-- block:p31-b9 type=footer order=9 -->
 <!-- block:p31-b10 type=footer order=10 -->
+<!-- footer -->
+30
+City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
+City
 
 <!-- page: 33 -->
 # Appendices

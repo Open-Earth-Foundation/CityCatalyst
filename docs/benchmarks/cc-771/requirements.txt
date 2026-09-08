@@ -1,0 +1,5 @@
+reportlab>=5.0.0
+pillow>=10.0.0
+pymupdf>=1.24.0
+jsonschema>=4.20.0
+pytest>=8.0.0

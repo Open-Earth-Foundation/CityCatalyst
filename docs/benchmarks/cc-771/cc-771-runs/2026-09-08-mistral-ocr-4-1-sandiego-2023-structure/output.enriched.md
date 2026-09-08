@@ -2,13 +2,6 @@
 <!-- header -->
 The City of
 SAN DIEGO
-<!-- footer -->
-OUR CLIMATE
-OUR FUTURE
-City of San Diego Climate Action Plan
-SD
-Sustainability
-& Mobility
 ![img-0.jpeg](img-0.jpeg)
 
 <!-- visual-annotation:img-0.jpeg missing -->
@@ -31,11 +24,15 @@ ANNUAL REPORT
 <!-- block:p0-b8 type=footer order=8 -->
 <!-- block:p0-b9 type=footer order=9 -->
 <!-- block:p0-b10 type=footer order=10 -->
+<!-- footer -->
+OUR CLIMATE
+OUR FUTURE
+City of San Diego Climate Action Plan
+SD
+Sustainability
+& Mobility
 
 <!-- page: 2 -->
-<!-- footer -->
-2
-2023 Climate Action Plan ANNUAL REPORT
 ## Table of Contents
 
 [tbl-0.md](tbl-0.md)
@@ -49,11 +46,11 @@ _No structured visual annotation was returned for `img-1.jpeg`._
 <!-- block:p1-b2 type=image order=2 -->
 <!-- block:p1-b3 type=footer order=3 -->
 <!-- block:p1-b4 type=footer order=4 -->
+<!-- footer -->
+2
+2023 Climate Action Plan ANNUAL REPORT
 
 <!-- page: 3 -->
-<!-- footer -->
-2023 Climate Action Plan ANNUAL REPORT
-3
 # Letter from the Chief Sustainability Officer
 
 It is with great enthusiasm that I introduce the 2023 Climate Action Plan (CAP) Annual Report. This year marks the first full year of implementing our updated 2022 Climate Action Plan, a strategic framework designed to guide us toward achieving net-zero greenhouse gas (GHG) emissions by 2035. The ambitious goals set forth in our updated CAP underscore our unwavering commitment to creating a sustainable, equitable and resilient future for our city.
@@ -90,13 +87,13 @@ _No structured visual annotation was returned for `img-2.jpeg`._
 <!-- block:p2-b10 type=image order=10 -->
 <!-- block:p2-b11 type=footer order=11 -->
 <!-- block:p2-b12 type=footer order=12 -->
+<!-- footer -->
+2023 Climate Action Plan ANNUAL REPORT
+3
 
 <!-- page: 4 -->
 <!-- header -->
 Sustainability & Mobility Department
-<!-- footer -->
-4
-2023 Climate Action Plan ANNUAL REPORT
 # Introduction
 
 In 2022, the City of San Diego committed to an ambitious goal: **achieving net-zero greenhouse gas (GHG) emissions by 2035**. This report marks the first annual assessment of the City’s progress since the adoption of its updated 2022 Climate Action Plan (CAP) and summarizes City action from Fall 2022 through the end of December 2023. It serves as an overview of the City’s efforts to combat climate change and transition to a sustainable future. Appendix A contains a detailed GHG inventory for the 2022 calendar year (January–December 2022), providing a gauge for evaluating emissions reduction strategies. To follow the most recent CAP progress, please visit the City’s dashboard (**climatedashboard.sandiego.gov**).
@@ -111,13 +108,13 @@ _No structured visual annotation was returned for `img-3.jpeg`._
 <!-- block:p3-b3 type=image order=3 -->
 <!-- block:p3-b4 type=footer order=4 -->
 <!-- block:p3-b5 type=footer order=5 -->
+<!-- footer -->
+4
+2023 Climate Action Plan ANNUAL REPORT
 
 <!-- page: 5 -->
 <!-- header -->
 SDG Sustainability & Mobility Department
-<!-- footer -->
-2023 Climate Action Plan ANNUAL REPORT
-5
 # Key Highlights:
 
 **San Diego’s total GHG emissions in 2022 were approximately 8.6 million metric tons of carbon dioxide equivalent (MMT CO$_{2}$e).** This represents a 2% decrease from 2021 and a 19% decrease from the 2019 baseline. The decrease was primarily due to an increase in renewable energy in the city’s electricity supply, improvements in on-road vehicle efficiency, and the adoption of electric and hybrid vehicles. See Appendix A for detailed information about the GHG inventory.
@@ -132,14 +129,14 @@ _No structured visual annotation was returned for `img-4.jpeg`._
 <!-- block:p4-b3 type=image order=3 -->
 <!-- block:p4-b4 type=footer order=4 -->
 <!-- block:p4-b5 type=footer order=5 -->
+<!-- footer -->
+2023 Climate Action Plan ANNUAL REPORT
+5
 
 <!-- page: 6 -->
 <!-- header -->
 →
 Sustainability & Mobility Department
-<!-- footer -->
-6
-2023 Climate Action Plan Annual REPORT
 # Strategies
 
 ![img-5.jpeg](img-5.jpeg)
@@ -197,14 +194,14 @@ _No structured visual annotation was returned for `img-10.jpeg`._
 <!-- block:p5-b11 type=image order=11 -->
 <!-- block:p5-b12 type=footer order=12 -->
 <!-- block:p5-b13 type=footer order=13 -->
+<!-- footer -->
+6
+2023 Climate Action Plan Annual REPORT
 
 <!-- page: 7 -->
 <!-- header -->
 SD
 Sustainability & Mobility Department
-<!-- footer -->
-2023 Climate Action Plan ANNUAL REPORT
-7
 # Strategy 1
 
 ## DECARBONIZATION OF THE BUILT ENVIRONMENT
@@ -250,13 +247,13 @@ OCTOBER 2023: San Diego came in first out of the 100 largest U.S. cities in Wall
 <!-- block:p6-b11 type=text order=11 -->
 <!-- block:p6-b12 type=footer order=12 -->
 <!-- block:p6-b13 type=footer order=13 -->
+<!-- footer -->
+2023 Climate Action Plan ANNUAL REPORT
+7
 
 <!-- page: 8 -->
 <!-- header -->
 SDS Sustainability & Mobility Department
-<!-- footer -->
-8
-2023 Climate Action Plan ANNUAL REPORT
 # Strategy 2
 
 ## ACCESS TO CLEAN AND RENEWABLE ENERGY
@@ -304,14 +301,14 @@ _No structured visual annotation was returned for `img-16.jpeg`._
 <!-- block:p7-b11 type=text order=11 -->
 <!-- block:p7-b12 type=footer order=12 -->
 <!-- block:p7-b13 type=footer order=13 -->
+<!-- footer -->
+8
+2023 Climate Action Plan ANNUAL REPORT
 
 <!-- page: 9 -->
 <!-- header -->
 SD
 Sustainability & Mobility Department
-<!-- footer -->
-2023 Climate Action Plan ANNUAL REPORT
-9
 the complexity involved, but the City continues to expand its EV fleet in the meantime.
 
 ## Increase Electric Vehicle Adoption
@@ -386,12 +383,13 @@ SEPTEMBER 2023: San Diego's Fleet Operations Division was honored as the fleet w
 <!-- block:p8-b18 type=text order=18 -->
 <!-- block:p8-b19 type=footer order=19 -->
 <!-- block:p8-b20 type=footer order=20 -->
+<!-- footer -->
+2023 Climate Action Plan ANNUAL REPORT
+9
 
 <!-- page: 10 -->
 <!-- header -->
 SDS Sustainability & Mobility Department
-<!-- footer -->
-10 2023 Climate Action Plan ANNUAL REPORT
 ## Strategy 3
 
 ### MOBILITY AND LAND USE
@@ -432,13 +430,12 @@ _No structured visual annotation was returned for `img-24.jpeg`._
 <!-- block:p9-b8 type=image order=8 -->
 <!-- block:p9-b9 type=text order=9 -->
 <!-- block:p9-b10 type=footer order=10 -->
+<!-- footer -->
+10 2023 Climate Action Plan ANNUAL REPORT
 
 <!-- page: 11 -->
 <!-- header -->
 SDS Sustainability & Mobility Department
-<!-- footer -->
-2023 Climate Action Plan ANNUAL REPORT
-11
 In addition to enhancing active transportation infrastructure, the City is also focused on promoting safe, convenient and enjoyable transit use. Initiatives like providing free transit passes to all City employees, supporting the renewal and expansion of the Youth Opportunity Pass transit program, and establishing new community parking districts aim to reduce traffic congestion and improve air quality.
 
 ## Expanding Mobility for All: Flexible Fleets
@@ -475,12 +472,13 @@ _No structured visual annotation was returned for `img-26.jpeg`._
 <!-- block:p10-b9 type=image order=9 -->
 <!-- block:p10-b10 type=footer order=10 -->
 <!-- block:p10-b11 type=footer order=11 -->
+<!-- footer -->
+2023 Climate Action Plan ANNUAL REPORT
+11
 
 <!-- page: 12 -->
 <!-- header -->
 SD Sustainability & Mobility Department
-<!-- footer -->
-12 2023 Climate Action Plan ANNUAL REPORT
 ## City Mobility Loading Prioritization
 
 ![img-27.jpeg](img-27.jpeg)
@@ -508,13 +506,12 @@ Overall, the integration of these various plans and initiatives demonstrates the
 <!-- block:p11-b5 type=text order=5 -->
 <!-- block:p11-b6 type=text order=6 -->
 <!-- block:p11-b7 type=footer order=7 -->
+<!-- footer -->
+12 2023 Climate Action Plan ANNUAL REPORT
 
 <!-- page: 13 -->
 <!-- header -->
 SDS Sustainability & Mobility Department
-<!-- footer -->
-2023 Climate Action Plan ANNUAL REPORT
-13
 ## Biking Infrastructure Expansion
 
 The City of San Diego is committed to enhancing biking infrastructure to promote sustainable transportation options. The Complete Streets Policy (Council Policy 900-23) plays a key role in this effort by requiring new mobility projects to include multimodal infrastructure (such as sidewalks or bike lanes) whenever possible. Additionally, it mandates that repair or reconstruction projects also consider these features. This opportunistic approach allows for a faster expansion of bike lanes. Between 2022 and 2023, the City improved more than 150 miles of existing bicycle lanes and built more than 175 miles of new ones.
@@ -573,14 +570,14 @@ _No structured visual annotation was returned for `img-31.jpeg`._
 <!-- block:p12-b15 type=image order=15 -->
 <!-- block:p12-b16 type=footer order=16 -->
 <!-- block:p12-b17 type=footer order=17 -->
+<!-- footer -->
+2023 Climate Action Plan ANNUAL REPORT
+13
 
 <!-- page: 14 -->
 <!-- header -->
 SD
 Sustainability & Mobility Department
-<!-- footer -->
-14
-2023 Climate Action Plan ANNUAL REPORT
 # Strategy 4
 
 ## CIRCULAR ECONOMY AND CLEAN COMMUNITIES
@@ -630,13 +627,13 @@ DECEMBER 2023: San Diego was granted A-list status by the Carbon Disclosure Proj
 <!-- block:p13-b11 type=text order=11 -->
 <!-- block:p13-b12 type=footer order=12 -->
 <!-- block:p13-b13 type=footer order=13 -->
+<!-- footer -->
+14
+2023 Climate Action Plan ANNUAL REPORT
 
 <!-- page: 15 -->
 <!-- header -->
 SDS Sustainability & Mobility Department
-<!-- footer -->
-2023 Climate Action Plan ANNUAL REPORT
-15
 # Strategy 5
 
 ## RESILIENT INFRASTRUCTURES AND HEALTHY ECOSYSTEMS
@@ -668,12 +665,13 @@ _No structured visual annotation was returned for `img-36.jpeg`._
 <!-- block:p14-b7 type=text order=7 -->
 <!-- block:p14-b8 type=footer order=8 -->
 <!-- block:p14-b9 type=footer order=9 -->
+<!-- footer -->
+2023 Climate Action Plan ANNUAL REPORT
+15
 
 <!-- page: 16 -->
 <!-- header -->
 SDS Sustainability & Mobility Department
-<!-- footer -->
-16 2023 Climate Action Plan ANNUAL REPORT
 ## Advancing Climate Equity
 
 **The Climate Equity Index (CEI)** is a vital tool developed to address disparities in access to opportunities and services within San Diego. Historically, some communities have faced systemic barriers, limiting their access to resources. **To understand these disparities, the City worked with the Equity Stakeholder Working Group to create the CEI.** This tool evaluates social and structural vulnerabilities, environmental pollution, and climate change impacts across different census tracts, and identifies those with *Very Low, Low, and Moderate Access* to Opportunity as Communities of Concern.
@@ -710,13 +708,12 @@ The City has also capitalized on opportunities to enhance mobility and transport
 <!-- block:p15-b8 type=text order=8 -->
 <!-- block:p15-b9 type=text order=9 -->
 <!-- block:p15-b10 type=footer order=10 -->
+<!-- footer -->
+16 2023 Climate Action Plan ANNUAL REPORT
 
 <!-- page: 17 -->
 <!-- header -->
 SDS Sustainability & Mobility Department
-<!-- footer -->
-2023 Climate Action Plan ANNUAL REPORT
-17
 and bicycle improvements, the City was **awarded $2.25 million** from the federal government's Safe Streets and Roads for All program. This money will be used to create an Accessible Pedestrian Connections and Safety Plan and to update San Diego's Bicycle Master Plan. Other grants totaling **more than $300,000** have been secured for pedestrian and bicycle safety programs, contributing to efforts to create safe and enjoyable routes for pedestrians and cyclists across the city.
 
 The green bin rollout for organics recycling and associated educational campaign to bring San Diego into compliance with Senate Bill 1383 was a massive undertaking supported, in part, by a **$1.85 million grant** from the California Department of Resources Recycling and Recovery (CalRecycle).
@@ -745,13 +742,13 @@ In summary, the City of San Diego **has demonstrated a strong track record of se
 <!-- block:p16-b6 type=text order=6 -->
 <!-- block:p16-b7 type=footer order=7 -->
 <!-- block:p16-b8 type=footer order=8 -->
+<!-- footer -->
+2023 Climate Action Plan ANNUAL REPORT
+17
 
 <!-- page: 18 -->
 <!-- header -->
 Sustainability & Mobility Department
-<!-- footer -->
-18
-2035 Climate Action Plan ANNUAL REPORT
 # Conclusion
 
 The City of San Diego's Greenhouse Gas (GHG) inventory indicates that our emissions reductions are currently in line with the initial projections outlined in the CAP. **This is a positive sign that the City is on the right track toward achieving its near-term climate goals.**
@@ -777,13 +774,13 @@ climatedashboard.sandiego.gov
 <!-- block:p17-b6 type=text order=6 -->
 <!-- block:p17-b7 type=footer order=7 -->
 <!-- block:p17-b8 type=footer order=8 -->
+<!-- footer -->
+18
+2035 Climate Action Plan ANNUAL REPORT
 
 <!-- page: 19 -->
 <!-- header -->
 Sustainability & Mobility Department
-<!-- footer -->
-2023 Climate Action Plan GENERAL REPORT
-19
 # Community Partners
 
 The City thanks the following partners for making this work possible:
@@ -837,10 +834,11 @@ _No structured visual annotation was returned for `img-42.jpeg`._
 <!-- block:p18-b4 type=image order=4 -->
 <!-- block:p18-b5 type=footer order=5 -->
 <!-- block:p18-b6 type=footer order=6 -->
+<!-- footer -->
+2023 Climate Action Plan GENERAL REPORT
+19
 
 <!-- page: 20 -->
-<!-- footer -->
-This information is available in alternative formats upon request.
 ![img-43.jpeg](img-43.jpeg)
 
 <!-- visual-annotation:img-43.jpeg missing -->
@@ -861,3 +859,5 @@ Sustainability & Mobility
 <!-- block:p19-b2 type=image order=2 -->
 <!-- block:p19-b3 type=text order=3 -->
 <!-- block:p19-b4 type=footer order=4 -->
+<!-- footer -->
+This information is available in alternative formats upon request.

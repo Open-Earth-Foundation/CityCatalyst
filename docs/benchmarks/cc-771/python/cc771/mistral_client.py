@@ -228,18 +228,33 @@ def run_ocr(
         "timing": {
             "ocr_latency_s": round(ocr_elapsed, 3),
             "total_latency_s": round(total_elapsed, 3),
-            # Annotation is billed inside the OCR call when bbox_annotation_format is set;
-            # keep a separate field for reporting even when provider does not split it.
-            "annotation_latency_s": round(ocr_elapsed, 3) if bbox_format else 0.0,
+            # Provider does not expose a separate annotation timer for bbox calls.
+            "annotation_latency_s": None if bbox_format else 0.0,
+            "annotation_latency_status": (
+                "not_separately_measured"
+                if bbox_format
+                else "not_requested"
+            ),
         },
         "cost": {
             "ocr_cost_usd_estimate": estimate_ocr_cost_usd(pages_processed),
             "annotation_cost_usd_estimate": None,
-            "total_cost_usd_estimate": estimate_ocr_cost_usd(pages_processed),
+            "total_cost_usd_estimate": (
+                None
+                if bbox_format
+                else estimate_ocr_cost_usd(pages_processed)
+            ),
+            "total_cost_status": (
+                "incomplete_annotation_cost_unknown"
+                if bbox_format
+                else "ocr_page_estimate_only"
+            ),
             "notes": (
-                "OCR page cost estimated at US$4 / 1,000 pages. "
-                "BBox annotation uses an internal vision call per image; "
-                "provider does not always expose a separate annotation line item."
+                "OCR page cost estimated at US$4 / 1,000 pages when annotations "
+                "are not requested. When bbox_annotation_format is set, annotation "
+                "latency and annotation cost are provider_unavailable / "
+                "not_separately_measured; total_cost_usd_estimate is left null "
+                "rather than pretending the OCR page rate covers vision calls."
             ),
         },
         "usage_info": usage,

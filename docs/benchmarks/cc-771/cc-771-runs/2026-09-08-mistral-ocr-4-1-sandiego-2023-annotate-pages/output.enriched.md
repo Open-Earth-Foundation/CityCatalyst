@@ -1,9 +1,6 @@
 <!-- page: 5 -->
 <!-- header -->
 SDG Sustainability & Mobility Department
-<!-- footer -->
-2023 Climate Action Plan ANNUAL REPORT
-5
 # Key Highlights:
 
 **San Diego’s total GHG emissions in 2022 were approximately 8.6 million metric tons of carbon dioxide equivalent (MMT CO$_{2}$e).** This represents a 2% decrease from 2021 and a 19% decrease from the 2019 baseline. The decrease was primarily due to an increase in renewable energy in the city’s electricity supply, improvements in on-road vehicle efficiency, and the adoption of electric and hybrid vehicles. See Appendix A for detailed information about the GHG inventory.
@@ -37,14 +34,14 @@ SDG Sustainability & Mobility Department
 <!-- block:p4-b3 type=image order=3 -->
 <!-- block:p4-b4 type=footer order=4 -->
 <!-- block:p4-b5 type=footer order=5 -->
+<!-- footer -->
+2023 Climate Action Plan ANNUAL REPORT
+5
 
 <!-- page: 6 -->
 <!-- header -->
 →
 Sustainability & Mobility Department
-<!-- footer -->
-6
-2023 Climate Action Plan Annual REPORT
 # Strategies
 
 ![img-1.jpeg](img-1.jpeg)
@@ -132,13 +129,13 @@ ero
 <!-- block:p5-b11 type=image order=11 -->
 <!-- block:p5-b12 type=footer order=12 -->
 <!-- block:p5-b13 type=footer order=13 -->
+<!-- footer -->
+6
+2023 Climate Action Plan Annual REPORT
 
 <!-- page: 7 -->
 <!-- header -->
 SDS Sustainability & Mobility Department
-<!-- footer -->
-2023 Climate Action Plan ANNUAL REPORT
-7
 # Strategy 1
 
 ## DECARBONIZATION OF THE BUILT ENVIRONMENT
@@ -199,3 +196,6 @@ Recognizing the importance of leading by example, the City Council adopted the Z
 <!-- block:p6-b10 type=text order=10 -->
 <!-- block:p6-b11 type=footer order=11 -->
 <!-- block:p6-b12 type=footer order=12 -->
+<!-- footer -->
+2023 Climate Action Plan ANNUAL REPORT
+7

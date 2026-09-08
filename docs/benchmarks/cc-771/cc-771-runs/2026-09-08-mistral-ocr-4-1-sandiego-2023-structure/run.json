@@ -41,13 +41,15 @@
   "timing": {
     "ocr_latency_s": 4.333,
     "total_latency_s": 7.73,
-    "annotation_latency_s": 0.0
+    "annotation_latency_s": 0.0,
+    "annotation_latency_status": "not_requested"
   },
   "cost": {
     "ocr_cost_usd_estimate": 0.08,
     "annotation_cost_usd_estimate": null,
     "total_cost_usd_estimate": 0.08,
-    "notes": "OCR page cost estimated at US$4 / 1,000 pages. BBox annotation uses an internal vision call per image; provider does not always expose a separate annotation line item."
+    "notes": "OCR page cost estimated at US$4 / 1,000 pages. No bbox annotation was requested for this run.",
+    "total_cost_status": "ocr_page_estimate_only"
   },
   "mistral_file_id": "0e64733f-b0e6-4fad-883b-a730db41367f",
   "schema_versions": {

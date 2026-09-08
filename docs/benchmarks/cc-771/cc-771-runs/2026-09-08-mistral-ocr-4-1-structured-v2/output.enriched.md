@@ -1,8 +1,6 @@
 <!-- page: 1 -->
 <!-- header -->
 CityCatalyst OCR Benchmark — Synthetic Fixture v2
-<!-- footer -->
-CC-771-STRUCTURED-V2 | Page 1 | Synthetic data only
 # Synthetic Climate Inventory Report
 
 ## Scope and Methodology
@@ -34,12 +32,12 @@ Note: This table exercises title-above, caption-below, and footnote placement. I
 <!-- block:p0-b9 type=caption order=9 -->
 <!-- block:p0-b10 type=text order=10 -->
 <!-- block:p0-b11 type=footer order=11 -->
+<!-- footer -->
+CC-771-STRUCTURED-V2 | Page 1 | Synthetic data only
 
 <!-- page: 2 -->
 <!-- header -->
 CityCatalyst OCR Benchmark — Synthetic Fixture v2
-<!-- footer -->
-CC-771-STRUCTURED-V2 | Page 2 | Synthetic data only
 extrapolated regional transport corridors that lie outside municipal jurisdiction.
 
 Sector trends are summarized visually in the figure below. The surrounding discussion focuses on interpretation habits—such as distinguishing inventory totals from activity drivers—rather than restating numeric values that appear only inside the chart image.
@@ -80,12 +78,12 @@ Analysts reviewing this figure should note how legend placement, axis units, and
 <!-- block:p1-b5 type=caption order=5 -->
 <!-- block:p1-b6 type=text order=6 -->
 <!-- block:p1-b7 type=footer order=7 -->
+<!-- footer -->
+CC-771-STRUCTURED-V2 | Page 2 | Synthetic data only
 
 <!-- page: 3 -->
 <!-- header -->
 CityCatalyst OCR Benchmark — Synthetic Fixture v2
-<!-- footer -->
-CC-771-STRUCTURED-V2 | Page 3 | Synthetic data only
 # Layout and Reading Order Checks
 
 ## Multi-column annex
@@ -105,3 +103,5 @@ End of synthetic fixture. All content is labeled as non-operational test data.
 <!-- block:p2-b5 type=text order=5 -->
 <!-- block:p2-b6 type=text order=6 -->
 <!-- block:p2-b7 type=footer order=7 -->
+<!-- footer -->
+CC-771-STRUCTURED-V2 | Page 3 | Synthetic data only

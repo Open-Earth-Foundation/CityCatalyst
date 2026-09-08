@@ -70,12 +70,24 @@ def normalize_bbox(
         warnings.append("missing_page_dimensions_for_normalization")
         return bbox_px, None, warnings
 
-    bbox_norm = {
-        "x0": _clamp01(bbox_px["top_left_x"] / width),
-        "y0": _clamp01(bbox_px["top_left_y"] / height),
-        "x1": _clamp01(bbox_px["bottom_right_x"] / width),
-        "y1": _clamp01(bbox_px["bottom_right_y"] / height),
+    raw_norm = {
+        "x0": bbox_px["top_left_x"] / width,
+        "y0": bbox_px["top_left_y"] / height,
+        "x1": bbox_px["bottom_right_x"] / width,
+        "y1": bbox_px["bottom_right_y"] / height,
     }
+    # Policy: clamp out-of-bounds provider pixels into 0..1 and warn.
+    # Invalid ordering (x1<x0 / y1<y0) remains a hard failure upstream.
+    bbox_norm = {
+        "x0": _clamp01(raw_norm["x0"]),
+        "y0": _clamp01(raw_norm["y0"]),
+        "x1": _clamp01(raw_norm["x1"]),
+        "y1": _clamp01(raw_norm["y1"]),
+    }
+    if any(
+        raw_norm[key] < 0 or raw_norm[key] > 1 for key in ("x0", "y0", "x1", "y1")
+    ):
+        warnings.append("clamped_out_of_bounds_normalized_coordinates")
     if bbox_norm["x1"] < bbox_norm["x0"] or bbox_norm["y1"] < bbox_norm["y0"]:
         warnings.append("invalid_bbox_ordering")
     return bbox_px, bbox_norm, warnings

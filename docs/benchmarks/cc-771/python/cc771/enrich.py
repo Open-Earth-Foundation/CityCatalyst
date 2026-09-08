@@ -88,9 +88,6 @@ def build_enriched_markdown(document: dict[str, Any]) -> str:
         prefix_bits = [marker]
         if header:
             prefix_bits.append(f"<!-- header -->\n{header}")
-        if footer:
-            # Keep footer labeled separately; body markdown already excludes it when extract_footer=true.
-            prefix_bits.append(f"<!-- footer -->\n{footer}")
 
         # Insert annotations after each image placeholder.
         enriched_body = body
@@ -104,7 +101,6 @@ def build_enriched_markdown(document: dict[str, Any]) -> str:
                 )
             # Prefer markdown image form; fall back to appending at end of page.
             token = f"![{image_id}]({image_id})"
-            alt_token = f"]({image_id})"
             if token in enriched_body:
                 enriched_body = enriched_body.replace(
                     token, token + annotation_block, 1
@@ -125,9 +121,13 @@ def build_enriched_markdown(document: dict[str, Any]) -> str:
                 f"<!-- block:{block['block_id']} type={block['cc_type']} order={block['reading_order_index']} -->"
             )
         anchor_section = "\n".join(anchors)
-        parts.append(
-            "\n".join(prefix_bits + [enriched_body.rstrip(), anchor_section]).rstrip()
-        )
+        # Order: page marker -> header -> body/annotations/anchors -> footer
+        sections = prefix_bits + [enriched_body.rstrip()]
+        if anchor_section:
+            sections.append(anchor_section)
+        if footer:
+            sections.append(f"<!-- footer -->\n{footer}")
+        parts.append("\n".join(sections).rstrip())
 
     return "\n\n".join(parts) + "\n"
 

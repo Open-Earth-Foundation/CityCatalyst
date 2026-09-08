@@ -115,7 +115,7 @@ def test_normalize_bbox_clamps():
     assert bbox_norm is not None
     assert bbox_norm["x0"] == 0.0
     assert bbox_norm["x1"] == 1.0
-    assert warnings == []
+    assert "clamped_out_of_bounds_normalized_coordinates" in warnings
 
 
 def test_nearest_caption_same_page_rule():

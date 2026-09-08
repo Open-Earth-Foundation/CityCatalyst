@@ -21,15 +21,21 @@ The approved follow-up validates pinned `mistral-ocr-4-1` with blocks, headers/f
 ### Required configuration
 
 ```bash
+cd docs/benchmarks/cc-771
+./setup.sh
 export MISTRAL_API_KEY="..."   # never commit; see vault mistral-key-setup.md
+# optional overrides:
+# export CC771_ENV_FILE=/path/to/.env
+# export CC771_REAL_2025_PDF=/path/to/2025.pdf
+# export CC771_REAL_2023_PDF=/path/to/2023.pdf
+# export CC771_SKIP_REAL=1   # fixture-only
 ```
 
 Then:
 
 ```bash
-# from CityCatalyst worktree root
-.venv/bin/python -m pytest docs/benchmarks/cc-771/tests -v
-docs/benchmarks/cc-771/python/run_all.sh
+CC771_PYTHON=./.venv/bin/python ./.venv/bin/python -m pytest tests -v
+CC771_PYTHON=./.venv/bin/python ./python/run_all.sh
 ```
 
 Each run writes:

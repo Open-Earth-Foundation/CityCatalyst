@@ -6,21 +6,21 @@ Downstream model for usefulness tests: `openai/gpt-4o-mini` (temperature 0)
 
 ## Runs
 
-| Run ID | Input | Pages | Annotate | Status | OCR latency (s) | Total latency (s) | OCR cost est. (USD) |
-| --- | --- | ---: | --- | --- | ---: | ---: | ---: |
-| `2026-09-08-mistral-ocr-4-1-structured-v2` | fixture v2 | 3 | yes | ok | 4.919 | 6.120 | 0.012 |
-| `2026-09-08-mistral-ocr-4-1-sandiego-2025-structure` | San Diego 2025 | 33 | no | ok | 4.536 | 7.641 | 0.132 |
-| `2026-09-08-mistral-ocr-4-1-sandiego-2023-structure` | San Diego 2023 | 20 | no | ok | 4.333 | 7.730 | 0.080 |
-| `2026-09-08-mistral-ocr-4-1-sandiego-2025-annotate-pages` | San Diego 2025 pages 5,6,7,9 | 4 | yes | ok | 7.008 | 19.525 | 0.016 |
-| `2026-09-08-mistral-ocr-4-1-sandiego-2023-annotate-pages` | San Diego 2023 pages 4,5,6 | 3 | yes | ok | 7.838 | 11.129 | 0.012 |
+| Run ID | Input | Pages | Annotate | Status | OCR latency (s) | Annotation latency (s) | Total latency (s) | OCR cost est. (USD) | Total cost est. (USD) |
+| --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: |
+| `2026-09-08-mistral-ocr-4-1-structured-v2` | fixture v2 | 3 | yes | ok | 4.919 | null (not separately measured) | 6.120 | 0.012 | null |
+| `2026-09-08-mistral-ocr-4-1-sandiego-2025-structure` | San Diego 2025 | 33 | no | ok | 4.536 | 0 (not requested) | 7.641 | 0.132 | 0.132 |
+| `2026-09-08-mistral-ocr-4-1-sandiego-2023-structure` | San Diego 2023 | 20 | no | ok | 4.333 | 0 (not requested) | 7.730 | 0.080 | 0.080 |
+| `2026-09-08-mistral-ocr-4-1-sandiego-2025-annotate-pages` | San Diego 2025 pages 5,6,7,9 | 4 | yes | ok | 7.008 | null (not separately measured) | 19.525 | 0.016 | null |
+| `2026-09-08-mistral-ocr-4-1-sandiego-2023-annotate-pages` | San Diego 2023 pages 4,5,6 | 3 | yes | ok | 7.838 | null (not separately measured) | 11.129 | 0.012 | null |
+
+Annotation latency/cost are recorded as `null` when the provider does not expose a separate measurement. `total_cost_usd_estimate` is also `null` for annotated runs so the OCR page rate is not presented as a complete bill. Annotated-run wall time remains in `total_latency_s`.
 
 Input hashes:
 
 - fixture v2: `b37febad37c887813ef7b459660a6f3ea7816a292a1693f48a981a9f3a0f4c7d`
 - 2025 PDF: `cc1eca34c15afc0fa6fd9d3ed3ccd96098e3ffd588287082d76abd9fa0a75a6e`
 - 2023 PDF: `3a9281508afff21de1176c18be8f6026e0cd96e4c4db684f57368597f2f06bbd`
-
-Annotation cost: provider did not return a separate annotation line item; total OCR page estimate only. Annotation increases wall time (fixture 6.1 s vs prior Markdown-only ~2 s; selected real pages 11–20 s).
 
 ## Semantic fidelity (fixture v2)
 

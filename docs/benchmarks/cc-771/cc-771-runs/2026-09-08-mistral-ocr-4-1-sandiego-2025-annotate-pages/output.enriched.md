@@ -1,9 +1,4 @@
 <!-- page: 6 -->
-<!-- footer -->
-50
-City Planning
-The City of San Diego 2035 Annual Climate Action Plan Report
-4
 ![img-0.jpeg](img-0.jpeg)
 
 <!-- visual-annotation:img-0.jpeg -->
@@ -78,11 +73,13 @@ Estimated Annual Emissions Levels
 <!-- block:p5-b16 type=footer order=16 -->
 <!-- block:p5-b17 type=footer order=17 -->
 <!-- block:p5-b18 type=footer order=18 -->
+<!-- footer -->
+50
+City Planning
+The City of San Diego 2035 Annual Climate Action Plan Report
+4
 
 <!-- page: 7 -->
-<!-- footer -->
-50 City Planning
-The City of San Diego 2025 Annual Climate Action Plan 1
 ![img-2.jpeg](img-2.jpeg)
 
 <!-- visual-annotation:img-2.jpeg -->
@@ -197,13 +194,11 @@ Difference between estimated emissions levels and the 2024 reference point on a 
 <!-- block:p6-b25 type=footer order=25 -->
 <!-- block:p6-b26 type=footer order=26 -->
 <!-- block:p6-b27 type=image order=27 -->
+<!-- footer -->
+50 City Planning
+The City of San Diego 2025 Annual Climate Action Plan 1
 
 <!-- page: 8 -->
-<!-- footer -->
-50
-City Planning
-The City of San Diego 2025 Annual Climate Action Plan Report
-4
 ![img-6.jpeg](img-6.jpeg)
 
 <!-- visual-annotation:img-6.jpeg -->
@@ -272,12 +267,13 @@ Source: adapted from Table 3, Appendix B.
 <!-- block:p7-b12 type=footer order=12 -->
 <!-- block:p7-b13 type=footer order=13 -->
 <!-- block:p7-b14 type=footer order=14 -->
+<!-- footer -->
+50
+City Planning
+The City of San Diego 2025 Annual Climate Action Plan Report
+4
 
 <!-- page: 10 -->
-<!-- footer -->
-50 City Planning
-The City of San Diego 2024 Annual Climate Action Plan Report
-10
 **Figure 3. Annual Greenhouse Gas Emissions by Source, 2019–2024**
 
 Annual greenhouse gas emissions from vehicles and driving and natural gas and electricity used in homes and buildings, 2019–2024.
@@ -327,3 +323,7 @@ Taken together, 2024 emissions from electricity and natural gas used in homes an
 <!-- block:p9-b6 type=footer order=6 -->
 <!-- block:p9-b7 type=footer order=7 -->
 <!-- block:p9-b8 type=footer order=8 -->
+<!-- footer -->
+50 City Planning
+The City of San Diego 2024 Annual Climate Action Plan Report
+10

@@ -56,13 +56,15 @@
   "timing": {
     "ocr_latency_s": 7.838,
     "total_latency_s": 11.129,
-    "annotation_latency_s": 7.838
+    "annotation_latency_s": null,
+    "annotation_latency_status": "not_separately_measured"
   },
   "cost": {
     "ocr_cost_usd_estimate": 0.012,
     "annotation_cost_usd_estimate": null,
-    "total_cost_usd_estimate": 0.012,
-    "notes": "OCR page cost estimated at US$4 / 1,000 pages. BBox annotation uses an internal vision call per image; provider does not always expose a separate annotation line item."
+    "total_cost_usd_estimate": null,
+    "notes": "OCR page cost estimated at US$4 / 1,000 pages when annotations are not requested. When bbox_annotation_format is set, annotation latency and annotation cost are not_separately_measured / provider_unavailable; total_cost_usd_estimate is left null rather than pretending the OCR page rate covers vision calls.",
+    "total_cost_status": "incomplete_annotation_cost_unknown"
   },
   "mistral_file_id": "0e64733f-b0e6-4fad-883b-a730db41367f",
   "schema_versions": {
@@ -72,9 +74,9 @@
   "schema_errors": [],
   "artifact_sizes_bytes": {
     "response.raw.json": 32140,
-    "document.structured.json": 683,
+    "document.structured.json": 51268,
     "output.md": 2795,
-    "output.enriched.md": 1
+    "output.enriched.md": 9772
   },
   "secret_persisted": false,
   "created_at": "2026-09-08T16:41:41+00:00"

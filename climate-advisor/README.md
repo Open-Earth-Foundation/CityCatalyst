@@ -1202,6 +1202,38 @@ still preserving per-turn trace detail. Every chat mode opens a request root spa
 before starting the model, so trace/run correlation never depends on a fluent
 active run. CNB turns retain the `CNB` root span and `workflow=CNB` tag.
 
+Ordinary CA (`workflow=climate_advisor_conversation`) keeps its root open through
+message persistence and stores one assembled assistant response on that root.
+`streamed`, `stream_status`, `response_chunk_count`, and `history_saved` describe
+the outcome. These are visible trace attributes, not a custom animated MLflow UI
+indicator. Cancelled requests retain partial assistant text and an error status;
+unfinished model spans are closed with a reference to that partial root response.
+Raw `mlflow.chunk.item.*` events are removed before export; other events, model
+outputs, usage, and timing remain available.
+
+Each distinct system/developer message is stored once per ordinary CA request
+under the root's `Inputs > system_prompts`, keyed by SHA-256. Model-call inputs
+contain explicit references to that snapshot and root span ID. MLflow does not
+automatically inherit or expand a root prompt in a child's chat view: open the
+root to read it. Changed prompts receive different snapshots. A subsequent user
+message creates a new request/run, even in the same conversation session. Only
+the logging copies change; provider requests retain their original full prompts.
+
+Ordinary CA function tools record redacted inputs and outputs in execution-level
+`TOOL` spans with call IDs, timing, and exception status. Repeated same-name calls
+are correlated by call ID. Empty tool artifacts are omitted, and JSON tool results
+are logged in one representation without changing the runtime/persisted payload.
+CNB and Stationary Energy context-chat telemetry retain their existing behavior.
+
+This compaction requires MLflow 3.2 or later (the lockfile remains on 3.2.0) and
+uses its [span processing API](https://mlflow.org/docs/latest/api_reference/python_api/mlflow.tracing.html).
+MLflow 3.2 lacks a public event-removal API, so event filtering uses an isolated
+OpenTelemetry event-buffer operation covered by real SDK export/readback tests.
+Run `python -m pytest tests/test_conversation_observability.py` from `service/`
+for offline provider-stream, tool-execution, prompt-reference, and cancellation
+coverage. These changes apply to newly emitted traces; historical traces are not
+rewritten.
+
 The shared MLflow variables match HIAP-MEED where deployment needs explicit
 configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,
 `MLFLOW_TRACKING_USERNAME`, `MLFLOW_TRACKING_PASSWORD`,

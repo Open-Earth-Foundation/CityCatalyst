@@ -1,0 +1,137 @@
+{
+  "$schema": "cc-554-ca-mlflow-storage-example-v1",
+  "example_type": "synthetic_verification",
+  "format_note": "Reviewer-friendly projection of the MLflow trace. The raw traces.json stores inputs and outputs as JSON-encoded mlflow.spanInputs and mlflow.spanOutputs attributes.",
+  "source": {
+    "trace_id": "tr-01be5d5afc5261cbdf8c3fc19573a36e",
+    "trace_url": "https://mlflow-dev.openearth.dev/#/experiments/4/traces?selectedEvaluationId=tr-01be5d5afc5261cbdf8c3fc19573a36e"
+  },
+  "root_span": {
+    "name": "Climate Advisor Conversation",
+    "span_id": "ecfe5b7ffa23360f",
+    "span_type": "CHAIN",
+    "inputs": {
+      "user_message": "Show the Demo City inventory total and its two largest emission categories.",
+      "system_prompts": {
+        "4b94ffd0dbf7154367b4b234e59ae4382fd0a790e84bf17b027bd47f1e2c8a2d": {
+          "role": "system",
+          "content": "You are Climate Advisor. Use the inventory tool to answer the user. Explain totals and categories clearly. All values in this verification are fictional. Do not claim these are real city data."
+        }
+      }
+    },
+    "outputs": {
+      "role": "assistant",
+      "content": "## Demo City inventory — verification example\n\nThe fictional 2025 inventory totals **1,200 tCO₂e**.\n\n| Category | Emissions | Share of total |\n|---|---:|---:|\n| Stationary energy | 720 tCO₂e | 60% |\n| Transport | 360 tCO₂e | 30% |\n\nTogether, these two categories account for **90%** of the total. The remaining categories account for 120 tCO₂e (10%).\n\nThese are deterministic synthetic values for checking MLflow display; they are not a real city inventory."
+    },
+    "attributes": {
+      "workflow": "climate_advisor_conversation",
+      "interaction": "chat",
+      "streamed": true,
+      "streaming": false,
+      "stream_status": "ok",
+      "response_chunk_count": 153,
+      "history_saved": true
+    }
+  },
+  "child_spans": [
+    {
+      "name": "AsyncCompletions_1",
+      "span_type": "CHAT_MODEL",
+      "parent_span_id": "ecfe5b7ffa23360f",
+      "inputs": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "[System prompt reference: 4b94ffd0dbf7154367b4b234e59ae4382fd0a790e84bf17b027bd47f1e2c8a2d. Open root span ecfe5b7ffa23360f > Inputs > system_prompts.]"
+          },
+          {
+            "role": "user",
+            "content": "Show the Demo City inventory total and its two largest emission categories."
+          }
+        ]
+      },
+      "outputs": {
+        "finish_reason": "tool_calls"
+      },
+      "attributes": {
+        "streamed": true,
+        "stream_chunks_omitted": true,
+        "system_prompt_root_span_id": "ecfe5b7ffa23360f"
+      },
+      "events": []
+    },
+    {
+      "name": "read_inventory",
+      "span_type": "TOOL",
+      "parent_span_id": "ecfe5b7ffa23360f",
+      "inputs": {
+        "city": "Demo City"
+      },
+      "outputs": {
+        "city": "Demo City",
+        "year": 2025,
+        "total_tco2e": 1200,
+        "categories": [
+          {
+            "name": "Stationary energy",
+            "tco2e": 720
+          },
+          {
+            "name": "Transport",
+            "tco2e": 360
+          }
+        ],
+        "synthetic_verification": true
+      },
+      "attributes": {
+        "tool_call_id": "call_demo_inventory"
+      },
+      "status": "OK"
+    },
+    {
+      "name": "AsyncCompletions_2",
+      "span_type": "CHAT_MODEL",
+      "parent_span_id": "ecfe5b7ffa23360f",
+      "outputs": {
+        "role": "assistant",
+        "content": "## Demo City inventory — verification example\n\nThe fictional 2025 inventory totals **1,200 tCO₂e**.\n\n| Category | Emissions | Share of total |\n|---|---:|---:|\n| Stationary energy | 720 tCO₂e | 60% |\n| Transport | 360 tCO₂e | 30% |\n\nTogether, these two categories account for **90%** of the total. The remaining categories account for 120 tCO₂e (10%).\n\nThese are deterministic synthetic values for checking MLflow display; they are not a real city inventory."
+      },
+      "attributes": {
+        "streamed": true,
+        "stream_chunks_omitted": true,
+        "system_prompt_root_span_id": "ecfe5b7ffa23360f"
+      },
+      "events": []
+    }
+  ],
+  "run_artifacts": {
+    "chat/tool_invocations.json": {
+      "tool_invocations": [
+        {
+          "id": "call_demo_inventory",
+          "name": "read_inventory",
+          "arguments": {
+            "city": "Demo City"
+          },
+          "status": "success",
+          "result": {
+            "city": "Demo City",
+            "year": 2025,
+            "total_tco2e": 1200,
+            "categories": [
+              {
+                "name": "Stationary energy",
+                "tco2e": 720
+              },
+              {
+                "name": "Transport",
+                "tco2e": 360
+              }
+            ],
+            "synthetic_verification": true
+          }
+        }
+      ]
+    }
+  }
+}

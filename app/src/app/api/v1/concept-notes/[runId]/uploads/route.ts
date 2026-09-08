@@ -36,7 +36,7 @@
  *           application/json:
  *             schema:
  *               type: object
- *               required: [uploadId, status, stage, canRetry]
+ *               required: [uploadId, status, stage, canRetry, filename]
  *               properties:
  *                 uploadId:
  *                   type: string
@@ -49,6 +49,11 @@
  *                   enum: [ocr, delivery, complete]
  *                 canRetry:
  *                   type: boolean
+ *                 filename:
+ *                   type: string
+ *                 sourceLabel:
+ *                   type: string
+ *                   nullable: true
  *                 retryKind:
  *                   type: string
  *                   enum: [ocr, delivery]
@@ -301,6 +306,8 @@ export const POST = apiHandler(async (req, { session, params }) => {
       status: state.status,
       stage: state.stage,
       canRetry: state.canRetry,
+      filename,
+      sourceLabel,
       ...(state.retryKind ? { retryKind: state.retryKind } : {}),
     },
     { status: 202 },

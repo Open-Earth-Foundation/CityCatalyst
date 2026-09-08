@@ -20,6 +20,7 @@ from app.models.db.cnb_reference import (  # noqa: F401
 from app.models.db.cnb_workspace import (  # noqa: F401
     ConceptNoteChapter,
     ConceptNoteChapterRevision,
+    ConceptNoteChapterValidation,
     ConceptNoteEvidenceLink,
     ConceptNoteExport,
     ConceptNoteGap,

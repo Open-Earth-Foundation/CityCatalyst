@@ -27,7 +27,7 @@ def build_mock_settings(
     base_url: str = "https://openrouter.ai/api/v1",
     prompt: str = "You are helpful",
     temperature: float = 0.0,
-    default_model: str = "openai/gpt-5.4-mini",
+    default_model: str = "openai/gpt-5.6-terra",
     agentic_flow_model: str | None = None,
     agentic_flow_temperature: float | None = None,
 ):
@@ -96,7 +96,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
         with patch("app.services.agent_service.AsyncOpenAI"):
             service = AgentService()
             self.assertIsNotNone(service)
-            self.assertEqual(service.default_model, "openai/gpt-5.4-mini")
+            self.assertEqual(service.default_model, "openai/gpt-5.6-terra")
             self.assertEqual(service.default_temperature, 0.0)
 
     @patch("app.services.agent_service.get_settings")
@@ -108,7 +108,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
         mock_settings = build_mock_settings(
             base_url="https://api.openai.com/v1",
             default_model="openai/gpt-4.1",
-            agentic_flow_model="openai/gpt-5.4",
+            agentic_flow_model="openai/gpt-5.6-sol",
         )
         mock_get_settings.return_value = mock_settings
 
@@ -116,7 +116,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
             service = AgentService()
 
         self.assertEqual(service.default_model, "gpt-4.1")
-        self.assertEqual(service.agentic_flow_model, "gpt-5.4")
+        self.assertEqual(service.agentic_flow_model, "gpt-5.6-sol")
 
     @patch("app.services.agent_service.get_settings")
     def test_agent_service_keeps_provider_prefix_for_openrouter_base_url(
@@ -144,7 +144,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
         mock_settings = build_mock_settings(
             base_url="https://api.openai.com/v1",
             default_model="openai/gpt-4.1",
-            agentic_flow_model="openai/gpt-5.4",
+            agentic_flow_model="openai/gpt-5.6-sol",
         )
         mock_get_settings.return_value = mock_settings
 
@@ -154,7 +154,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
             with patch("app.services.agent_service.AsyncOpenAI"):
                 service = AgentService()
 
-        self.assertEqual(service.agentic_flow_model, "gpt-5.4")
+        self.assertEqual(service.agentic_flow_model, "gpt-5.6-sol")
 
     @patch("app.services.agent_service.get_settings")
     def test_agent_service_raises_without_api_key(self, mock_get_settings) -> None:
@@ -321,7 +321,7 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
                     # Verify agent was created
                     mock_agent_class.assert_called_once()
                     call_kwargs = mock_agent_class.call_args[1]
-                    self.assertEqual(call_kwargs["model"].model, "openai/gpt-5.4-mini")
+                    self.assertEqual(call_kwargs["model"].model, "openai/gpt-5.6-terra")
                     self.assertEqual(call_kwargs["model_settings"].temperature, 0.0)
 
     async def test_create_agent_with_model_override(self) -> None:
@@ -361,7 +361,7 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
     async def test_create_agent_uses_agentic_flow_temperature(self) -> None:
         """Test agent creation uses agentic-flow temperature for that configured model."""
         mock_settings = build_mock_settings(
-            agentic_flow_model="openai/gpt-5.4",
+            agentic_flow_model="openai/gpt-5.6-sol",
             agentic_flow_temperature=0.3,
         )
 
@@ -371,10 +371,10 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
             with patch("app.services.agent_service.AsyncOpenAI"):
                 with patch("app.services.agent_service.Agent") as mock_agent_class:
                     service = AgentService()
-                    await service.create_agent(model="openai/gpt-5.4")
+                    await service.create_agent(model="openai/gpt-5.6-sol")
 
                     call_kwargs = mock_agent_class.call_args[1]
-                    self.assertEqual(call_kwargs["model"].model, "openai/gpt-5.4")
+                    self.assertEqual(call_kwargs["model"].model, "openai/gpt-5.6-sol")
                     self.assertEqual(call_kwargs["model_settings"].temperature, 0.3)
 
     async def test_create_agent_includes_system_prompt(self) -> None:

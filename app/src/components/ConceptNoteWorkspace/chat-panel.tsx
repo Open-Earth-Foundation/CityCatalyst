@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Box, Flex, HStack, Icon, Input, Text, VStack } from "@chakra-ui/react";
 import { keyframes } from "@emotion/react";
@@ -25,6 +25,7 @@ import { useConceptNoteChat } from "./use-concept-note-chat";
 
 interface ConceptNoteChatPanelProps {
   bundleStatus: string | null;
+  composerRequest: { content: string; id: string } | null;
   documentGrounding: "none" | "uploaded_evidence" | null;
   lng: string;
   onOpenContext: () => void;
@@ -197,6 +198,7 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
 
 export function ConceptNoteChatPanel({
   bundleStatus,
+  composerRequest,
   documentGrounding,
   lng,
   onOpenContext,
@@ -204,6 +206,7 @@ export function ConceptNoteChatPanel({
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [input, setInput] = useState("");
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const {
     error: chatError,
     historyLoading,
@@ -232,6 +235,17 @@ export function ConceptNoteChatPanel({
         surface: "background.neutral",
         title: t("uploaded-evidence-none"),
       };
+
+  useEffect(() => {
+    if (!composerRequest) {
+      return;
+    }
+    const frame = requestAnimationFrame(() => {
+      setInput(composerRequest.content);
+      inputRef.current?.focus();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [composerRequest]);
 
   async function submitMessage(
     event: FormEvent<HTMLDivElement>,
@@ -380,6 +394,7 @@ export function ConceptNoteChatPanel({
       >
         <HStack gap={2}>
           <Input
+            ref={inputRef}
             value={input}
             disabled={!threadId || historyLoading || isGenerating}
             placeholder={

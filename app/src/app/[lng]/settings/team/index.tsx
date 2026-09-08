@@ -10,12 +10,7 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import {
-  MdLink,
-  MdMoreVert,
-  MdOutlinePerson,
-  MdOutlinePersonAddAlt,
-} from "react-icons/md";
+import { MdLink, MdMoreVert, MdOutlinePersonAddAlt } from "react-icons/md";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
@@ -36,7 +31,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { AccountCircleFilledIcon, DeleteIcon } from "@/components/icons";
 import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
@@ -79,6 +74,9 @@ const TeamSettings = ({
   const { organization: orgContext } = useOrganizationContext();
   const selectedOrganization = orgContext?.organizationId;
   const [selectedProject, setSelectedProject] = React.useState<string[]>(
+    initialProjectId ? [initialProjectId] : [],
+  );
+  const [expandedProjects, setExpandedProjects] = React.useState<string[]>(
     initialProjectId ? [initialProjectId] : [],
   );
   const [selectedCity, setSelectedCity] = React.useState<string | null>(
@@ -145,6 +143,7 @@ const TeamSettings = ({
       selectedProject.length === 0
     ) {
       setSelectedProject([projectsData[0].projectId]);
+      setExpandedProjects([projectsData[0].projectId]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectsData]);
@@ -272,13 +271,15 @@ const TeamSettings = ({
       )}
       <Box
         display="flex"
-        gap="48px"
+        gap="6"
         mt={12}
-        alignItems="flex-start"
+        alignItems="stretch"
         borderWidth="1px"
         borderColor="border.overlay"
         borderRadius="8px"
-        p="16px"
+        bg="white"
+        shadow="1dp"
+        p="24px"
       >
         <Box
           w="271px"
@@ -286,7 +287,6 @@ const TeamSettings = ({
           display="flex"
           flexDirection="column"
           gap="24px"
-          h="500px"
         >
           <Text
             fontSize="title.md"
@@ -302,16 +302,17 @@ const TeamSettings = ({
           />
           <Accordion.Root
             variant="plain"
-            value={selectedProject}
+            collapsible
+            value={expandedProjects}
             onValueChange={(val) => {
-              setSelectedProject(val.value);
-              setSelectedCity(null);
+              setExpandedProjects(val.value);
             }}
             borderWidth="1px"
             borderColor="border.overlay"
             p="12px"
             w="full"
-            h="400px"
+            flex="1"
+            minH="0"
             overflowY="scroll"
           >
             {filteredProjectsData.length === 0 && (
@@ -328,6 +329,7 @@ const TeamSettings = ({
               <Accordion.Item key={item.projectId} value={item.projectId}>
                 <Accordion.ItemTrigger
                   onClick={() => {
+                    setSelectedProject([item.projectId]);
                     setSelectedCity(null);
                   }}
                   w="full"
@@ -345,7 +347,7 @@ const TeamSettings = ({
                     pr={0}
                     alignItems="center"
                     color={
-                      selectedProject.includes(item.projectId)
+                      expandedProjects.includes(item.projectId)
                         ? "interactive.secondary"
                         : "content.secondary"
                     }
@@ -359,7 +361,7 @@ const TeamSettings = ({
                     </Text>
                     <Accordion.ItemIndicator
                       color="currentColor"
-                      rotate={{ base: "-90deg", _open: "-180deg" }}
+                      rotate={{ base: "0deg", _open: "-180deg" }}
                       mr="24px"
                     >
                       <Icon
@@ -457,7 +459,7 @@ const TeamSettings = ({
               ]}
               renderRow={(item, idx) => {
                 const displayName =
-                  item.name?.trim() || item.email.split("@")[0] || "—";
+                  item.name?.trim() || item.email?.split("@")[0] || "—";
 
                 return (
                   <Table.Row key={idx} fontFamily="body">
@@ -549,7 +551,7 @@ const TeamSettings = ({
                                   }}
                                 >
                                   <Icon
-                                    as={MdOutlinePerson}
+                                    as={AccountCircleFilledIcon}
                                     h="24px"
                                     w="24px"
                                     color="content.secondary"
@@ -586,7 +588,7 @@ const TeamSettings = ({
                               >
                                 <Icon
                                   color="sentiment.negativeDefault"
-                                  as={RiDeleteBin6Line}
+                                  as={DeleteIcon}
                                   h="24px"
                                   w="24px"
                                   _groupHover={{

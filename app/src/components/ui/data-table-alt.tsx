@@ -111,7 +111,7 @@ function DataTableAlt<T extends object>({
   };
 
   return (
-    <Box w="full" display="flex" flexDirection="column" gap={4}>
+    <Box w="full" display="flex" flexDirection="column" gap="6">
       <Flex
         alignItems="center"
         justifyContent="space-between"

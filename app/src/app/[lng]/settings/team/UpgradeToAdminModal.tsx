@@ -46,7 +46,7 @@ const UpgradeToAdminModal = (props: UpgradeToAdminModalProps) => {
   const [updateUserRole, { isLoading }] =
     api.useUpdateUserRoleInOrganizationMutation();
 
-  const userName = user?.name?.trim() || user?.email.split("@")[0] || "";
+  const userName = user?.name?.trim() || user?.email?.split("@")[0] || "";
 
   const handleUpgrade = async () => {
     const response = await updateUserRole({

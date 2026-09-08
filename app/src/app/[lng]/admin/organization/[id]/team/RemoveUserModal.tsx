@@ -92,7 +92,7 @@ const RemoveUserModal = (props: RemoveUserModalProps) => {
     return DeleteScenario.PROJECT;
   }, [user, selectedCity, selectedProject]);
 
-  const userName = user?.name?.trim() || user?.email.split("@")[0] || "";
+  const userName = user?.name?.trim() || user?.email?.split("@")[0] || "";
 
   const handleRemoveFunction = async () => {
     let apiPromise;

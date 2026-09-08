@@ -15,7 +15,11 @@ from app.models.cnb.concept_note_runs import (
     ConceptNoteRunResponse,
     ConceptNoteStartRequest,
 )
-from app.models.db.concept_note import ConceptNoteRun
+from app.models.cnb.concept_note_markdown import (
+    ConceptNoteUploadStatusResponse,
+    source_format_from_filename,
+)
+from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.runs import ConceptNoteRunRepository
 from app.services.citycatalyst_client import (
     CityCatalystClient,
@@ -154,7 +158,11 @@ class ConceptNoteRunService:
             requested_user_id=requested_user_id,
             authorization=authorization,
         )
-        return _to_response(run, created=False)
+        uploads = await self.repository.list_uploads_for_run(
+            run_id=run.run_id,
+            user_id=run.user_id,
+        )
+        return _to_response(run, created=False, uploads=uploads)
 
     async def get_authorized_run(
         self,
@@ -334,14 +342,34 @@ def _to_response(
     run: ConceptNoteRun,
     *,
     created: bool,
+    uploads: list[ConceptNoteUpload] | None = None,
 ) -> ConceptNoteRunResponse:
     """Serialize one persisted run into the public API contract."""
     list_item = _to_list_item(run)
     return ConceptNoteRunResponse(
         **list_item.model_dump(),
         user_id=run.user_id,
+        uploads=[_to_upload_response(upload) for upload in uploads or []],
         created=created,
         trace_id=run.trace_id,
+    )
+
+
+def _to_upload_response(
+    upload: ConceptNoteUpload,
+) -> ConceptNoteUploadStatusResponse:
+    """Serialize persisted source metadata for workspace resume."""
+    return ConceptNoteUploadStatusResponse(
+        upload_id=upload.upload_id,
+        run_id=upload.run_id,
+        status=upload.ingest_status,
+        filename=upload.filename,
+        source_label=upload.source_label,
+        source_format=source_format_from_filename(upload.filename),
+        page_count=upload.page_count,
+        error_code=upload.ingest_error_code,
+        received_at=upload.received_at,
+        completed_at=upload.ingest_completed_at,
     )
 
 

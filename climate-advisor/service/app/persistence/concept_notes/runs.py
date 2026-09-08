@@ -6,7 +6,7 @@ from app.models.cnb.context_bundle import ConceptNoteContextBundle
 from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
-from app.models.db.concept_note import ConceptNoteRun
+from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.models.db.thread import Thread
 from app.utils.chat_workflow_context import (
     CONCEPT_NOTE_RUN_ID_KEY,
@@ -146,6 +146,26 @@ class ConceptNoteRunRepository:
             )
         )
         result = await self.session.execute(query)
+        return list(result.scalars().all())
+
+    async def list_uploads_for_run(
+        self,
+        *,
+        run_id: UUID,
+        user_id: str,
+    ) -> list[ConceptNoteUpload]:
+        """Return a run's owned uploads in deterministic newest-first order."""
+        result = await self.session.execute(
+            select(ConceptNoteUpload)
+            .where(
+                ConceptNoteUpload.run_id == run_id,
+                ConceptNoteUpload.uploaded_by_user_id == user_id,
+            )
+            .order_by(
+                ConceptNoteUpload.received_at.desc(),
+                ConceptNoteUpload.upload_id.desc(),
+            )
+        )
         return list(result.scalars().all())
 
     async def bind_thread_context(

@@ -15,11 +15,13 @@ from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_application_context import (
     ApplicationContextIncludedSources,
+    ApplicationContextTemplate,
     ConceptNoteApplicationContextResponse,
 )
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterConfirmRequest,
     ConceptNoteChapterDraftOutput,
+    ConceptNoteChapterValidationResponse,
     ConceptNoteDraftChapterResponse,
     ConceptNoteDraftGapOutput,
     ConceptNoteDraftResponse,
@@ -37,10 +39,12 @@ from app.persistence.concept_notes.workspace import (
     WorkspaceConflictError,
     WorkspaceGapSnapshot,
     WorkspaceTemplateChapter,
+    WorkspaceValidationSnapshot,
     normalize_template_chapters,
 )
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
+    calculate_application_template_fingerprint,
     included_sources_from_bundle,
 )
 from app.services.openrouter_client import build_openrouter_client_options
@@ -105,7 +109,13 @@ class ConceptNoteChapterDraftService:
 
     async def load_state(self, run: ConceptNoteRun) -> ConceptNoteDraftResponse:
         """Return persisted chapter state without starting generation."""
-        chapters = await self._workspace.list_chapters(run_id=run.run_id)
+        template_fingerprint = (
+            await self._application_context.load_template_fingerprint_for_run(run)
+        )
+        chapters = await self._workspace.list_chapters(
+            run_id=run.run_id,
+            template_fingerprint=template_fingerprint,
+        )
         return _build_state_response(
             run_id=run.run_id,
             progress=_draft_progress(run.context_summary),
@@ -122,12 +132,16 @@ class ConceptNoteChapterDraftService:
             run,
             included_sources=included_sources,
         )
-        template_chapters = _require_template(application_context)
+        template, template_chapters = _require_template(application_context)
+        template_fingerprint = calculate_application_template_fingerprint(template)
         await self._workspace.ensure_template_chapters(
             run_id=run.run_id,
             chapters=template_chapters,
         )
-        chapters = await self._workspace.list_chapters(run_id=run.run_id)
+        chapters = await self._workspace.list_chapters(
+            run_id=run.run_id,
+            template_fingerprint=template_fingerprint,
+        )
         build_id = await self._begin_draft(
             run_id=run.run_id,
             user_id=run.user_id,
@@ -161,12 +175,16 @@ class ConceptNoteChapterDraftService:
                 run,
                 included_sources=included_sources,
             )
-            template_chapters = _require_template(application_context)
+            template, template_chapters = _require_template(application_context)
+            template_fingerprint = calculate_application_template_fingerprint(template)
             template_by_ref = {
                 chapter.chapter_ref: chapter for chapter in template_chapters
             }
             while await self._lease_is_active(run_id, user_id, build_id):
-                chapters = await self._workspace.list_chapters(run_id=run_id)
+                chapters = await self._workspace.list_chapters(
+                    run_id=run_id,
+                    template_fingerprint=template_fingerprint,
+                )
                 current = next(
                     (chapter for chapter in chapters if chapter.body_markdown is None),
                     None,
@@ -203,7 +221,10 @@ class ConceptNoteChapterDraftService:
                     body_markdown=generated.body_markdown,
                     missing_information=generated.missing_information,
                 )
-                refreshed = await self._workspace.list_chapters(run_id=run_id)
+                refreshed = await self._workspace.list_chapters(
+                    run_id=run_id,
+                    template_fingerprint=template_fingerprint,
+                )
                 if not await self._record_completed_count(
                     run_id,
                     user_id,
@@ -605,20 +626,19 @@ async def _require_owned_run(
 
 def _require_template(
     application_context: ConceptNoteApplicationContextResponse,
-) -> list[WorkspaceTemplateChapter]:
-    if application_context.template is None:
+) -> tuple[ApplicationContextTemplate, list[WorkspaceTemplateChapter]]:
+    template = application_context.template
+    if template is None:
         raise ChapterDraftingTemplateError(
             "A selected application template is required"
         )
     try:
-        chapters = normalize_template_chapters(
-            application_context.template.chapter_schema
-        )
+        chapters = normalize_template_chapters(template.chapter_schema)
     except ValueError as exc:
         raise ChapterDraftingTemplateError("The selected template is invalid") from exc
     if not chapters:
         raise ChapterDraftingTemplateError("The selected template has no chapters")
-    return chapters
+    return template, chapters
 
 
 def _build_chapter_input(
@@ -712,6 +732,7 @@ def _build_state_response(
                 revision_number=chapter.revision_number,
                 confirmed_body_markdown=chapter.confirmed_body_markdown,
                 confirmed_revision_number=chapter.confirmed_revision_number,
+                validation=_validation_response(chapter.validation),
             )
             for chapter in chapters
         ],
@@ -791,6 +812,21 @@ def _allowed_source_refs(run_context: dict[str, Any]) -> set[str]:
             if value:
                 refs.add(str(value))
     return refs
+
+
+def _validation_response(
+    validation: WorkspaceValidationSnapshot | None,
+) -> ConceptNoteChapterValidationResponse | None:
+    """Convert a detached persistence result into the public draft contract."""
+    if validation is None:
+        return None
+    return ConceptNoteChapterValidationResponse(
+        status=validation.status,
+        is_stale=validation.is_stale,
+        validated_revision_number=validation.validated_revision_number,
+        validated_at=validation.validated_at,
+        findings=validation.findings,
+    )
 
 
 def _draft_progress(summary: Any) -> dict[str, Any]:

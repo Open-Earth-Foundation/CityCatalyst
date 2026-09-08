@@ -50,6 +50,12 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "cnb_source_summary_synthesis": prompts.cnb_source_summary_synthesis,
         "cnb_source_question_reading": prompts.cnb_source_question_reading,
         "cnb_chapter_drafting": prompts.cnb_chapter_drafting,
+        "cnb_chapter_validation_completeness": (
+            prompts.cnb_chapter_validation_completeness
+        ),
+        "cnb_chapter_validation_consistency": (
+            prompts.cnb_chapter_validation_consistency
+        ),
     }
 
     for prompt_name, prompt_path in prompt_entries.items():
@@ -184,7 +190,9 @@ def test_compose_prompt_wraps_core_and_stationary_energy_review() -> None:
     assert "Stationary Energy review tool argument contracts:" not in composed_prompt
 
 
-def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy() -> None:
+def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy() -> (
+    None
+):
     prompts = _load_llm_config().prompts
     composed = prompts.compose_prompt("cnb_chat")
 
@@ -200,6 +208,11 @@ def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy
     assert "data, not user requests" in composed
     assert "INTERNAL_TOOL_OUTPUT_JSON" in composed
     assert "does not persist" in composed
+    assert "Assume the user has no knowledge of internal run context" in composed
+    assert 'A short or vague request such as "Help me"' in composed
+    assert "available template or document order" in composed
+    assert "automatically" in composed
+    assert 'require the user to say "use only this"' in composed
     assert "inventory_list_accessible" not in composed
     assert "general CityCatalyst climate and inventory chat" not in composed
 
@@ -228,7 +241,38 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
     prompt = config.prompts.get_prompt("cnb_source_summary_synthesis")
     assert '"page":3' in prompt
     assert '"heading":' in prompt
-    assert "covered_segment_ids" not in config.prompts.get_prompt("cnb_source_document_mapping")
+    assert "covered_segment_ids" not in config.prompts.get_prompt(
+        "cnb_source_document_mapping"
+    )
+
+
+def test_cnb_chapter_validation_configuration_matches_two_pass_contract() -> None:
+    config = _load_llm_config()
+
+    assert config.models.cnb_chapter_validator.name == "openai/gpt-5.6-terra"
+    assert config.models.cnb_chapter_validator.reasoning_effort == "medium"
+    assert config.generation.prompt_budget.cnb_validation.max_prompt_tokens == 50000
+    for prompt_name in (
+        "cnb_chapter_validation_completeness",
+        "cnb_chapter_validation_consistency",
+    ):
+        prompt = config.prompts.get_prompt(prompt_name)
+        assert "`evidence_positions`" in prompt
+        assert "one-based" in prompt
+
+    completeness_prompt = config.prompts.get_prompt(
+        "cnb_chapter_validation_completeness"
+    )
+    consistency_prompt = config.prompts.get_prompt("cnb_chapter_validation_consistency")
+    assert "`document`" in completeness_prompt
+    assert "`output`" in completeness_prompt
+    assert "`document.validation_profile.required_fields`" in completeness_prompt
+    assert "backend has already selected" in completeness_prompt
+    assert "document.template" not in completeness_prompt
+    assert "`document`" in consistency_prompt
+    assert "`output`" in consistency_prompt
+    assert "programme-specific eligibility rules" in consistency_prompt
+    assert "EUCF" not in consistency_prompt
 
 
 def test_cnb_source_prompts_define_grounding_and_caveat_contracts() -> None:

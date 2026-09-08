@@ -75,7 +75,8 @@ describe("Emission Factor Validation Tests", () => {
       inventoryName: "Test Inventory for EF Validation",
       cityId: testCity.cityId,
       inventoryType: InventoryTypeEnum.GPC_BASIC,
-      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+      // CSV expected CO2e totals were computed with AR5 GWPs (CH4=28, N2O=265).
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar5,
       year: 2023,
     });
 

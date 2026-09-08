@@ -75,14 +75,21 @@ export const GET = apiHandler(
     // ensure inventory belongs to user (read-only access)
     await PermissionService.canAccessInventory(session, inventory);
 
-    const { totalEmissionsBySector, topEmissionsBySubSector, totalEmissions } =
-      await getEmissionResults(inventory);
+    const {
+      totalEmissionsBySector,
+      topEmissionsBySubSector,
+      totalEmissions,
+      grossEmissions,
+      removals,
+    } = await getEmissionResults(inventory);
 
     return NextResponse.json({
       data: {
         totalEmissions: {
           bySector: totalEmissionsBySector || [],
           total: totalEmissions || 0,
+          grossTotal: grossEmissions || 0,
+          removalsTotal: removals || 0,
         },
         topEmissions: { bySubSector: topEmissionsBySubSector || [] },
       },

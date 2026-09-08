@@ -3,7 +3,11 @@ import Decimal from "decimal.js";
 import { Box, Table, useDisclosure, Icon } from "@chakra-ui/react";
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
-import { convertKgToTonnes, formatNumber, toKebabCase } from "@/util/helpers";
+import {
+  formatEmissionsOrRemoval,
+  formatNumber,
+  toKebabCase,
+} from "@/util/helpers";
 import { InventoryTypeEnum, SECTORS } from "@/util/constants";
 import { ButtonSmall } from "@/components/package/Texts/Button";
 import { BodyMedium } from "@/components/package/Texts/Body";
@@ -12,6 +16,8 @@ import { LuChevronDown } from "react-icons/lu";
 
 interface ByScopeViewProps {
   data: ActivityDataByScope[];
+  /** sum of non-negative (emissions-only) totalEmissions across `data` - % denominator, see CC-749 */
+  grossTotalEmissions: Decimal;
   tData: TFunction;
   tDashboard: TFunction;
   sectorName: string;
@@ -22,6 +28,7 @@ interface ByScopeViewProps {
 
 const ByScopeView: React.FC<ByScopeViewProps> = ({
   data,
+  grossTotalEmissions,
   tData,
   tDashboard,
   sectorName,
@@ -54,15 +61,6 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     groupedData[subsector].push(item);
   });
 
-  // Calculate sector total emissions for correct percentage calculation.
-  // Uses Decimal (matching ResultsService.ts's calculatePercentage) instead of
-  // Number, since AFOLU-style negative/offsetting subsectors need the same
-  // precision the backend percentages were computed with.
-  const sectorTotalEmissions = data.reduce(
-    (sum, item) => sum.plus(new Decimal(item.totalEmissions)),
-    new Decimal(0),
-  );
-
   const toggleSubsector = (subsector: string) => {
     const newExpanded = new Set(expandedSubsectors);
     if (newExpanded.has(subsector)) {
@@ -88,16 +86,28 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
       </Table.Cell>
       <Table.Cell>
         <BodyMedium color="content.secondary">
-          {convertKgToTonnes(item.totalEmissions, numberFormat)}
+          {formatEmissionsOrRemoval(
+            item.totalEmissions,
+            numberFormat,
+            tDashboard("removed"),
+          )}
         </BodyMedium>
       </Table.Cell>
       <Table.Cell>
-        <BodyMedium color="content.secondary">{item.percentage}%</BodyMedium>
+        <BodyMedium color="content.secondary">
+          {item.percentage === null
+            ? tDashboard("removal")
+            : `${item.percentage}%`}
+        </BodyMedium>
       </Table.Cell>
       {scopes.map((s) => (
         <Table.Cell key={s}>
           <BodyMedium color="content.secondary">
-            {convertKgToTonnes(item.scopes[s] || 0, numberFormat)}
+            {formatEmissionsOrRemoval(
+              item.scopes[s] || 0,
+              numberFormat,
+              tDashboard("removed"),
+            )}
           </BodyMedium>
         </Table.Cell>
       ))}
@@ -117,7 +127,9 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
             {item.datasource_name}
           </BodyMedium>
         ) : (
-          <BodyMedium color="content.secondary">{tDashboard("n-a")}</BodyMedium>
+          <BodyMedium color="content.secondary">
+            {tDashboard("no-cited-source")}
+          </BodyMedium>
         )}
       </Table.Cell>
       <Table.Cell></Table.Cell>
@@ -139,15 +151,19 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
       (sum, item) => sum.plus(new Decimal(item.totalEmissions)),
       new Decimal(0),
     );
-    // Calculate correct percentage based on subsector total emissions relative
-    // to sector total, matching ResultsService.ts's calculatePercentage
-    const totalPercentage = sectorTotalEmissions.lessThanOrEqualTo(0)
-      ? 0
-      : totalEmissions
-          .times(100)
-          .div(sectorTotalEmissions)
-          .round()
-          .toNumber();
+    // The API only returns a percentage per subsector+datasource group (one entry
+    // per `activities` item here); this re-aggregates across datasources for the
+    // subsector as a whole, so it mirrors ResultsService.ts's calculatePercentage
+    // (gross-emissions denominator, null for removals) rather than duplicating it.
+    const totalPercentage = totalEmissions.isNegative()
+      ? null
+      : grossTotalEmissions.lessThanOrEqualTo(0)
+        ? 0
+        : totalEmissions
+            .times(100)
+            .div(grossTotalEmissions)
+            .round()
+            .toNumber();
     const uniqueSources = [
       ...new Set(activities.map((item) => item.datasource_name)),
     ];
@@ -171,23 +187,30 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           </Table.Cell>
           <Table.Cell>
             <BodyMedium color="content.secondary">
-              {convertKgToTonnes(totalEmissions, numberFormat)}
+              {formatEmissionsOrRemoval(
+                totalEmissions,
+                numberFormat,
+                tDashboard("removed"),
+              )}
             </BodyMedium>
           </Table.Cell>
           <Table.Cell>
             <BodyMedium color="content.secondary">
-              {formatNumber(totalPercentage, numberFormat, 1)}%
+              {totalPercentage === null
+                ? tDashboard("removal")
+                : `${formatNumber(totalPercentage, numberFormat, 1)}%`}
             </BodyMedium>
           </Table.Cell>
           {scopes.map((s) => (
             <Table.Cell key={s}>
               <BodyMedium color="content.secondary">
-                {convertKgToTonnes(
+                {formatEmissionsOrRemoval(
                   activities.reduce(
                     (sum, item) => sum.plus(new Decimal(item.scopes[s] || 0)),
                     new Decimal(0),
                   ),
                   numberFormat,
+                  tDashboard("removed"),
                 )}
               </BodyMedium>
             </Table.Cell>

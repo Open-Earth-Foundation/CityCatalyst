@@ -112,13 +112,18 @@ It is not directly comparable to CC-771: OCRBench v2 evaluates image-level quest
 Among exact or explicitly closest matches, Gemini 2.5 Pro has the strongest official score for an exact match in the English leaderboard (59.3), followed by GPT-5.2 (50.5). This differs from CC-771, where GPT-5.2 was the best quality/cost candidate and Claude Opus 5 produced the strongest visual extraction. The difference is expected because the task mix, input transport, document length, prompting, and scoring criteria differ.
 
 Sources: [official OCRBench v2 leaderboard](https://99franklin.github.io/ocrbench_v2/), [OCRBench v2 paper](https://arxiv.org/abs/2501.00321), and [official OCRBench repository](https://github.com/Yuliang-Liu/MultimodalOCR).
-## Structured Mistral annotation track
+## Structured Mistral OCR 4.1 track
 
-The following structured run is tracked separately from the earlier Markdown-only battery. It should not be treated as a successful annotation result until the schema and artifact blockers are fixed.
+This supplemental track records the Mistral structured-output and BBox annotation runs separately from the earlier Markdown-only model comparison.
 
-| Pipeline | Markdown | Structured blocks | Image/chart annotations | Numeric chart accuracy | Status |
+| Run group | Input coverage | Structured blocks | Visual annotations | Key result | Status |
 | --- | --- | --- | --- | --- | --- |
-| Direct Mistral baseline (`mistral-ocr-latest`) | Yes | Present in the raw response but not consumed by normalized output | No | Chart-only facts were not recovered from Markdown | Baseline limitation confirmed |
-| Mistral OCR 4.1 + BBox annotation attempt | Partial / selected pages | Yes | Not demonstrated; no images were extracted in the run | Not scored | Blocked / incomplete |
+| `2026-09-08-mistral-ocr-4-1-structured-v2` | Controlled fixture, 3 pages | Valid | Yes | Qualitative chart context recovered, but 48 was read as 50, 65 as 60, and -4 as -5 | Partial: not safe for numeric inventory calculations |
+| `2026-09-08-mistral-ocr-4-1-sandiego-2025-structure` | San Diego 2025, 33 pages | Valid | Not requested | Page/block structure, headers/footers, and coordinates preserved | Pass for structure |
+| `2026-09-08-mistral-ocr-4-1-sandiego-2023-structure` | San Diego 2023, 20 pages | Valid | Not requested | Page/block structure, headers/footers, and coordinates preserved | Pass for structure |
+| `2026-09-08-mistral-ocr-4-1-sandiego-2025-annotate-pages` | San Diego 2025, selected chart pages | Valid | Yes | Chart-region annotations produced; numeric readings remain provisional | Conditional |
+| `2026-09-08-mistral-ocr-4-1-sandiego-2023-annotate-pages` | San Diego 2023, selected chart pages | Valid | Yes | Chart-region annotations produced; numeric readings remain provisional | Conditional |
 
-See the [structured comparison table](structured-comparison-table.md) for the expected-versus-observed run details, raw structured artifact, and required follow-up.
+See the [structured comparison table](structured-comparison-table.md) for latency/cost, expected versus observed results, downstream comparison, and artifact links.
+
+Current conclusion: structured Mistral output improves page, block, and figure traceability, but chart numbers remain untrusted until validated. Do not use annotated chart values for inventory calculations.

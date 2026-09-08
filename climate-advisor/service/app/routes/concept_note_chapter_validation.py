@@ -9,7 +9,10 @@ from app.db.session import get_session
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterValidationActionResponse,
 )
-from app.services.cnb.chapter_validation import ChapterValidationError
+from app.services.cnb.chapter_validation import (
+    ChapterValidationError,
+    ChapterValidationTemplateError,
+)
 from app.services.cnb.chapter_validation_workflow import (
     ChapterValidationWorkflowError,
     ConceptNoteChapterValidationWorkflowService,
@@ -70,7 +73,9 @@ async def validate_concept_note_chapter(
         return _problem(
             exc.status_code,
             exc.code,
-            "Unable to validate the requested chapter",
+            ChapterValidationTemplateError.public_message
+            if isinstance(exc, ChapterValidationTemplateError)
+            else "Unable to validate the requested chapter",
         )
 
     return ConceptNoteChapterValidationActionResponse(

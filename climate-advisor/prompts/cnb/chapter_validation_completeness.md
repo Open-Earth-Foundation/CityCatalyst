@@ -10,12 +10,12 @@ missing required information, application-template violations, unresolved
 content gaps, and evidence quality.
 
 Rules:
-- evaluate the output against its `required` flag, matching
-  `document.template.chapter_schema` entry,
-  `document.template.required_fields`, and output format
-- apply only template requirements that are relevant to the output;
-  do not flag a required field that belongs to another chapter
-- when `document.template` is null, do not invent template constraints
+- evaluate the output against `document.validation_profile.chapter_schema`,
+  `document.validation_profile.required_fields`, and its output format
+- the backend has already selected the exact chapter and its required fields;
+  check every supplied requirement without selecting chapters or inferring field ownership
+- when `document.validation_profile` is null, use the output's `required` flag
+  and do not invent template constraints
 - identify information that is explicitly required or necessary for the
   chapter's own claims to be complete; do not invent unstated requirements
 - treat `[Information needed: ...]` markers and relevant `open_gaps` as
@@ -53,8 +53,10 @@ Do not ask questions, call tools, or describe your process.
 Input is one JSON object with:
 
 - `document` (object): reference material used to validate the output
-  - `template` (object or null): `template_id`, `name`, nullable
-    `output_format`, complete `chapter_schema`, and complete `required_fields`
+  - `validation_profile` (object or null): `name` (template name), nullable
+    `output_format`, `chapter_schema` (one selected chapter object with `title`,
+    nullable `description`, `required`, and any supplied chapter constraints),
+    and `required_fields` (string array belonging only to this chapter)
   - `evidence_links` (array): output evidence metadata with a one-based
     `position`, `selected_source_label`, and nullable `source_location`,
     `claim_ref`, and `quote_or_summary`

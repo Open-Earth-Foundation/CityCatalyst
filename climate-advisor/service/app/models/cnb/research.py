@@ -7,9 +7,8 @@ from decimal import Decimal
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, JsonValue, model_validator
-
 from app.models.cnb.similar_projects import CnbSimilarProjectSearchRequest
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, JsonValue, model_validator
 
 
 def _ensure_unique(values: list[str], field_name: str) -> None:
@@ -43,7 +42,7 @@ class FieldEvidence(ResearchModel):
     quote_or_summary: str
 
     @model_validator(mode="after")
-    def validate_exactly_one_parent(self) -> "FieldEvidence":
+    def validate_exactly_one_parent(self) -> FieldEvidence:
         """Require evidence to identify exactly one funding parent."""
         has_opportunity = self.funding_opportunity_ref is not None
         has_project = self.funded_project_ref is not None
@@ -181,6 +180,10 @@ class TemplateChapterDraft(ResearchModel):
     title: str
     description: str | None = None
     required: bool | None = None
+    required_fields: list[str] = Field(
+        default_factory=list,
+        description="Source-backed required fields belonging to this chapter only.",
+    )
 
 
 class FunderTemplateDraft(ResearchModel):
@@ -244,7 +247,7 @@ class FunderProfileResearchResult(ResearchModel):
     derived: list[FunderProfileFact] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def validate_unique_keys(self) -> "FunderProfileResearchResult":
+    def validate_unique_keys(self) -> FunderProfileResearchResult:
         """Prevent dictionary conversion from silently replacing profile facts."""
         _ensure_unique([item.key for item in self.stated], "profile.stated.key")
         _ensure_unique([item.key for item in self.derived], "profile.derived.key")
@@ -320,7 +323,7 @@ class FunderTemplateResearchResult(ResearchModel):
     required_fields: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def validate_unique_chapter_refs(self) -> "FunderTemplateResearchResult":
+    def validate_unique_chapter_refs(self) -> FunderTemplateResearchResult:
         """Keep application-template chapter paths unambiguous for review."""
         _ensure_unique(
             [item.chapter_ref for item in self.chapter_schema],
@@ -365,7 +368,7 @@ class FundingOpportunityResearchResult(ResearchModel):
     conflicts: list[ResearchConflictResult] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def validate_result_references(self) -> "FundingOpportunityResearchResult":
+    def validate_result_references(self) -> FundingOpportunityResearchResult:
         """Require one opportunity and valid project, evidence, and conflict links."""
         reference_lists = (
             (

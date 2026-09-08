@@ -1412,12 +1412,67 @@ How it works:
   API. This makes provenance available to the workspace UI without allowing the
   model to supply source identity metadata.
 - Both validation passes use an explicit `document` and generated `output`
-  contract. Completeness compares the output with supplied template and evidence
-  material; consistency compares it with the remaining document chapters. The
+  contract. Completeness compares the output with a code-selected
+  `document.validation_profile` and evidence material; consistency compares it
+  with the remaining document chapters. The profile contains exactly one
+  chapter schema and its chapter-specific required fields. The
   generic service applies no programme-name or programme-specific text matcher,
   so a conflict must be grounded in the supplied document and output.
 - A five-minute reconciler marks chapter-drafting leases left `running` for more
   than one hour as failed and retryable, without discarding completed chapters.
+
+#### Chapter template requirement assignments
+
+Each `funder_templates.chapter_schema` entry has its own `required_fields` string
+array. The template-level `required_fields` remains the document-wide inventory;
+it is retained in storage and fingerprints but is not sent to completeness.
+For example, after reviewing the original application instructions, a template
+may contain:
+
+```json
+{
+  "chapter_schema": [
+    {
+      "chapter_ref": "summary",
+      "title": "Project summary",
+      "required": true,
+      "required_fields": ["Project name", "Objectives"]
+    },
+    {
+      "chapter_ref": "budget",
+      "title": "Budget",
+      "required": true,
+      "required_fields": ["Project name", "Total cost"]
+    }
+  ],
+  "required_fields": ["Project name", "Objectives", "Total cost"]
+}
+```
+
+Validation uses the same chapter-reference normalization as workspace creation,
+including positional references for entries without an explicit `chapter_ref`.
+It rejects duplicate references and missing target matches. It preserves other
+selected chapter constraints (such as word limits), excludes the internal
+chapter reference from the profile, and sends only that chapter's field list.
+Every field in the global inventory must have an exact-text assignment to at
+least one chapter. A shared requirement must be assigned to every applicable
+chapter; an empty array means that chapter has no required fields.
+
+Before deploying against existing reference data, review the source template,
+add these arrays to its stored chapter entries, and preserve chapter references
+and the global inventory. Ambiguous assignments require source review, not an
+automatic migration based on titles or field names. No database column migration
+is needed because the schema is JSONB. The funded-project import CLI does not
+update managed application templates. Changes to the nested assignments affect
+the existing template fingerprint, invalidating prior chapter-validation results.
+
+Invalid or incomplete assignments return `chapter_validation_template_invalid`
+(HTTP 409) before a model call or result write, with a fixed public message asking
+for template review. The offline research contract carries the nested fields
+through model projection, review artifacts, and serialization, and instructs the
+researcher to retain an explicit gap when source material cannot establish
+ownership. A template-free core validation request still uses a null profile;
+the public workflow continues to require a selected application template.
 
 Chapter fields should support the editable document surface:
 

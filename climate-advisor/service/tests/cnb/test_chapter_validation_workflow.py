@@ -17,6 +17,10 @@ from app.persistence.concept_notes.workspace import (
 from app.services.cnb.application_context import (
     calculate_application_template_fingerprint,
 )
+from app.services.cnb.chapter_validation import (
+    ChapterValidationTemplateError,
+    ConceptNoteChapterValidationService,
+)
 from app.services.cnb.chapter_validation_workflow import (
     ChapterValidationWorkflowError,
     ConceptNoteChapterValidationWorkflowService,
@@ -29,7 +33,13 @@ def _template() -> ApplicationContextTemplate:
     return ApplicationContextTemplate(
         id=uuid4(),
         name="Application template",
-        chapter_schema=[{"chapter_ref": "budget", "required": True}],
+        chapter_schema=[
+            {
+                "chapter_ref": "budget",
+                "required": True,
+                "required_fields": ["Project budget"],
+            }
+        ],
         required_fields=["Project budget"],
     )
 
@@ -187,7 +197,8 @@ async def test_workflow_maps_post_llm_fingerprint_race_to_409() -> None:
 @pytest.mark.asyncio
 async def test_workflow_rejects_template_change_during_validation() -> None:
     original = _template()
-    changed = original.model_copy(update={"required_fields": ["Changed field"]})
+    changed = original.model_copy(deep=True)
+    changed.chapter_schema[0]["required_fields"] = ["Project budget", "Currency"]
     workflow, workspace, *_rest, context = _workflow(
         template_effect=[
             SimpleNamespace(template=original),
@@ -202,6 +213,25 @@ async def test_workflow_rejects_template_change_during_validation() -> None:
         )
 
     assert exc_info.value.code == "chapter_revision_changed"
+    workspace.upsert_validation.assert_not_called()
+
+
+async def test_invalid_assignments_never_persist_a_validation_result() -> None:
+    template = _template()
+    template.chapter_schema[0].pop("required_fields")
+    workflow, workspace, _, _, context = _workflow(
+        template_effect=[SimpleNamespace(template=template)]
+    )
+    run_pass = AsyncMock()
+    workflow._validator = ConceptNoteChapterValidationService(run_pass=run_pass)
+
+    with pytest.raises(ChapterValidationTemplateError):
+        await workflow.validate(
+            run=SimpleNamespace(run_id=uuid4(), workflow_step="editing_document"),
+            chapter_id=context.target.chapter_id,
+        )
+
+    run_pass.assert_not_awaited()
     workspace.upsert_validation.assert_not_called()
 
 

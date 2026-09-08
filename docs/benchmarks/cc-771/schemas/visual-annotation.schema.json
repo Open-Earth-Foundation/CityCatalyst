@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openearth.org/schemas/cc-771/visual-annotation.v1.json",
+  "title": "CC-771 Visual Annotation",
+  "description": "Versioned schema for chart/figure/image region annotations in the CC-771 Mistral OCR PoC.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "title",
+    "short_description",
+    "text_visible",
+    "chart",
+    "uncertainties"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "cc-771.visual.1"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "chart",
+        "diagram",
+        "map",
+        "photo",
+        "logo",
+        "illustration",
+        "other"
+      ]
+    },
+    "title": {
+      "type": ["string", "null"],
+      "description": "Visible title only; null when no title is printed."
+    },
+    "short_description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Grounded description of the visual; do not invent unseen details."
+    },
+    "text_visible": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Important text visibly present in the region."
+    },
+    "chart": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "chart_type",
+            "x_axis",
+            "y_axis",
+            "legend",
+            "series",
+            "trends",
+            "targets",
+            "callouts",
+            "readable_values"
+          ],
+          "properties": {
+            "chart_type": {
+              "type": ["string", "null"]
+            },
+            "x_axis": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["label", "values"],
+              "properties": {
+                "label": { "type": ["string", "null"] },
+                "values": {
+                  "type": "array",
+                  "items": { "type": ["string", "number", "null"] }
+                }
+              }
+            },
+            "y_axis": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["label", "unit", "scale"],
+              "properties": {
+                "label": { "type": ["string", "null"] },
+                "unit": { "type": ["string", "null"] },
+                "scale": { "type": ["string", "null"] }
+              }
+            },
+            "legend": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "series": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name", "points"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "points": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["x", "y", "value_kind"],
+                      "properties": {
+                        "x": { "type": ["string", "number", "null"] },
+                        "y": { "type": ["number", "null"] },
+                        "value_kind": {
+                          "type": "string",
+                          "enum": ["printed", "approximate_visual", "unreadable"]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "trends": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "targets": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["label", "value", "value_kind"],
+                "properties": {
+                  "label": { "type": ["string", "null"] },
+                  "value": { "type": ["number", "string", "null"] },
+                  "value_kind": {
+                    "type": "string",
+                    "enum": ["printed", "approximate_visual", "unreadable"]
+                  }
+                }
+              }
+            },
+            "callouts": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "readable_values": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["label", "value", "value_kind"],
+                "properties": {
+                  "label": { "type": "string" },
+                  "value": { "type": ["string", "number", "null"] },
+                  "value_kind": {
+                    "type": "string",
+                    "enum": ["printed", "approximate_visual", "unreadable"]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Unreadable, approximate, or ambiguous details. Never invent values."
+    }
+  }
+}

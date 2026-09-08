@@ -1,0 +1,1430 @@
+{
+  "schema_version": "cc-771.1",
+  "document": {
+    "source_filename": "2023_CAP_Annual_Report_9-23-24_AM_FINAL.pdf",
+    "source_sha256": "3a9281508afff21de1176c18be8f6026e0cd96e4c4db684f57368597f2f06bbd",
+    "requested_model": "mistral-ocr-4-1",
+    "returned_model": "mistral-ocr-4-1",
+    "page_count": 3,
+    "run_id": "2026-09-08-mistral-ocr-4-1-sandiego-2023-annotate-pages",
+    "created_at": "2026-09-08T16:41:41+00:00"
+  },
+  "pages": [
+    {
+      "page_index": 4,
+      "dimensions": {
+        "width": 791,
+        "height": 1023,
+        "dpi": 93
+      },
+      "header": "SDG Sustainability & Mobility Department",
+      "footer": "2023 Climate Action Plan ANNUAL REPORT\n5",
+      "markdown": "# Key Highlights:\n\n**San Diego’s total GHG emissions in 2022 were approximately 8.6 million metric tons of carbon dioxide equivalent (MMT CO$_{2}$e).** This represents a 2% decrease from 2021 and a 19% decrease from the 2019 baseline. The decrease was primarily due to an increase in renewable energy in the city’s electricity supply, improvements in on-road vehicle efficiency, and the adoption of electric and hybrid vehicles. See Appendix A for detailed information about the GHG inventory.\n\n![img-0.jpeg](img-0.jpeg)",
+      "blocks": [
+        {
+          "block_id": "p4-b0",
+          "page_index": 4,
+          "reading_order_index": 0,
+          "provider_type": "header",
+          "cc_type": "header",
+          "content": "SDG Sustainability & Mobility Department",
+          "bbox_px": {
+            "top_left_x": 566.0,
+            "top_left_y": 22.0,
+            "bottom_right_x": 755.0,
+            "bottom_right_y": 42.0
+          },
+          "bbox_norm": {
+            "x0": 0.7155499367888748,
+            "y0": 0.021505376344086023,
+            "x1": 0.95448798988622,
+            "y1": 0.04105571847507331
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p4-b1",
+          "page_index": 4,
+          "reading_order_index": 1,
+          "provider_type": "title",
+          "cc_type": "title",
+          "content": "# Key Highlights:",
+          "bbox_px": {
+            "top_left_x": 70.0,
+            "top_left_y": 67.0,
+            "bottom_right_x": 342.0,
+            "bottom_right_y": 111.0
+          },
+          "bbox_norm": {
+            "x0": 0.08849557522123894,
+            "y0": 0.06549364613880743,
+            "x1": 0.43236409608091025,
+            "y1": 0.10850439882697947
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p4-b2",
+          "page_index": 4,
+          "reading_order_index": 2,
+          "provider_type": "text",
+          "cc_type": "text",
+          "content": "**San Diego’s total GHG emissions in 2022 were approximately 8.6 million metric tons of carbon dioxide equivalent (MMT CO$_{2}$e).** This represents a 2% decrease from 2021 and a 19% decrease from the 2019 baseline. The decrease was primarily due to an increase in renewable energy in the city’s electricity supply, improvements in on-road vehicle efficiency, and the adoption of electric and hybrid vehicles. See Appendix A for detailed information about the GHG inventory.",
+          "bbox_px": {
+            "top_left_x": 69.0,
+            "top_left_y": 130.0,
+            "bottom_right_x": 702.0,
+            "bottom_right_y": 263.0
+          },
+          "bbox_norm": {
+            "x0": 0.08723135271807839,
+            "y0": 0.1270772238514174,
+            "x1": 0.8874841972187105,
+            "y1": 0.2570869990224829
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p4-b3",
+          "page_index": 4,
+          "reading_order_index": 3,
+          "provider_type": "image",
+          "cc_type": "image",
+          "content": "![img-0.jpeg](img-0.jpeg)",
+          "bbox_px": {
+            "top_left_x": 69.0,
+            "top_left_y": 304.0,
+            "bottom_right_x": 748.0,
+            "bottom_right_y": 765.0
+          },
+          "bbox_norm": {
+            "x0": 0.08723135271807839,
+            "y0": 0.29716520039100686,
+            "x1": 0.9456384323640961,
+            "y1": 0.7478005865102639
+          },
+          "confidence": null,
+          "related_image_id": "img-0.jpeg",
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p4-b4",
+          "page_index": 4,
+          "reading_order_index": 4,
+          "provider_type": "footer",
+          "cc_type": "footer",
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "bbox_px": {
+            "top_left_x": 530.0,
+            "top_left_y": 981.0,
+            "bottom_right_x": 716.0,
+            "bottom_right_y": 995.0
+          },
+          "bbox_norm": {
+            "x0": 0.6700379266750948,
+            "y0": 0.9589442815249267,
+            "x1": 0.9051833122629582,
+            "y1": 0.9726295210166178
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p4-b5",
+          "page_index": 4,
+          "reading_order_index": 5,
+          "provider_type": "footer",
+          "cc_type": "footer",
+          "content": "5",
+          "bbox_px": {
+            "top_left_x": 740.0,
+            "top_left_y": 981.0,
+            "bottom_right_x": 755.0,
+            "bottom_right_y": 998.0
+          },
+          "bbox_norm": {
+            "x0": 0.9355246523388117,
+            "y0": 0.9589442815249267,
+            "x1": 0.95448798988622,
+            "y1": 0.9755620723362659
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        }
+      ],
+      "tables": [],
+      "images": [
+        {
+          "image_id": "img-0.jpeg",
+          "page_index": 4,
+          "bbox_px": {
+            "top_left_x": 69.0,
+            "top_left_y": 304.0,
+            "bottom_right_x": 748.0,
+            "bottom_right_y": 765.0
+          },
+          "bbox_norm": {
+            "x0": 0.08723135271807839,
+            "y0": 0.29716520039100686,
+            "x1": 0.9456384323640961,
+            "y1": 0.7478005865102639
+          },
+          "annotation": {
+            "kind": "chart",
+            "title": "Citywide Greenhouse Gas Emissions Inventory",
+            "short_description": "A line chart showing citywide greenhouse gas emissions from 2019 to 2035, including baseline, projected, and required emissions levels to reach net-zero.",
+            "text_visible": [
+              "Citywide Greenhouse Gas Emissions Inventory",
+              "2019 Baseline 10.6",
+              "2022 Update 8.6"
+            ],
+            "chart": {
+              "chart_type": "line",
+              "x_axis": {
+                "label": "Year",
+                "values": [
+                  2019,
+                  2020,
+                  2021,
+                  2022,
+                  2025,
+                  2030,
+                  2035
+                ]
+              },
+              "y_axis": {
+                "label": "GHG Emissions (MMTCO2e)",
+                "unit": "MMTCO2e",
+                "scale": "linear"
+              },
+              "legend": [
+                "Business As Usual Projection",
+                "2019 Baseline",
+                "Emission Levels projected after CAP Implementation",
+                "Emissions Levels needed to reach net-zero"
+              ],
+              "series": [
+                {
+                  "name": "Business As Usual Projection",
+                  "points": [
+                    {
+                      "x": 2019,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2020,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2021,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2022,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2025,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2030,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2035,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    }
+                  ]
+                },
+                {
+                  "name": "2019 Baseline",
+                  "points": [
+                    {
+                      "x": 2019,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2020,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2021,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2022,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2025,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2030,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2035,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    }
+                  ]
+                },
+                {
+                  "name": "Emission Levels projected after CAP Implementation",
+                  "points": [
+                    {
+                      "x": 2019,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2020,
+                      "y": 8.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2021,
+                      "y": 7.2,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2022,
+                      "y": 6.1,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2025,
+                      "y": 4.5,
+                      "value_kind": "approximate_visual"
+                    },
+                    {
+                      "x": 2030,
+                      "y": 2.8,
+                      "value_kind": "approximate_visual"
+                    },
+                    {
+                      "x": 2035,
+                      "y": 1.2,
+                      "value_kind": "approximate_visual"
+                    }
+                  ]
+                },
+                {
+                  "name": "Emissions Levels needed to reach net-zero",
+                  "points": [
+                    {
+                      "x": 2019,
+                      "y": 10.6,
+                      "value_kind": "printed"
+                    },
+                    {
+                      "x": 2020,
+                      "y": 9.5,
+                      "value_kind": "approximate_visual"
+                    },
+                    {
+                      "x": 2021,
+                      "y": 8.4,
+                      "value_kind": "approximate_visual"
+                    },
+                    {
+                      "x": 2022,
+                      "y": 7.3,
+                      "value_kind": "approximate_visual"
+                    },
+                    {
+                      "x": 2025,
+                      "y": 5.3,
+                      "value_kind": "approximate_visual"
+                    },
+                    {
+                      "x": 2030,
+                      "y": 3.2,
+                      "value_kind": "approximate_visual"
+                    },
+                    {
+                      "x": 2035,
+                      "y": 0,
+                      "value_kind": "printed"
+                    }
+                  ]
+                }
+              ],
+              "trends": [
+                "Emissions are projected to decrease significantly after CAP implementation",
+                "Net-zero emissions are targeted by 2035"
+              ],
+              "targets": [
+                {
+                  "label": "2019 Baseline",
+                  "value": 10.6,
+                  "value_kind": "printed"
+                },
+                {
+                  "label": "2022 Update",
+                  "value": 8.6,
+                  "value_kind": "printed"
+                }
+              ],
+              "callouts": [
+                "2019 Baseline 10.6",
+                "2022 Update 8.6"
+              ],
+              "readable_values": [
+                {
+                  "label": "2019 Baseline",
+                  "value": 10.6,
+                  "value_kind": "printed"
+                },
+                {
+                  "label": "2020 Update",
+                  "value": 8.6,
+                  "value_kind": "printed"
+                },
+                {
+                  "label": "2021 Update",
+                  "value": 7.2,
+                  "value_kind": "printed"
+                },
+                {
+                  "label": "2022 Update",
+                  "value": 6.1,
+                  "value_kind": "printed"
+                }
+              ]
+            },
+            "uncertainties": [
+              "Exact values for 2025, 2030, and 2035 emissions levels are approximate due to visual estimation from the chart"
+            ],
+            "schema_version": "cc-771.visual.1"
+          },
+          "annotation_error": null,
+          "image_sha256": "78923bc60317d900d7b3156cad3a789402411147667a9fccd05f92b6683e50d1"
+        }
+      ]
+    },
+    {
+      "page_index": 5,
+      "dimensions": {
+        "width": 791,
+        "height": 1023,
+        "dpi": 93
+      },
+      "header": "→\nSustainability & Mobility Department",
+      "footer": "6\n2023 Climate Action Plan Annual REPORT",
+      "markdown": "# Strategies\n\n![img-1.jpeg](img-1.jpeg)\n\n![img-2.jpeg](img-2.jpeg)\n\n![img-3.jpeg](img-3.jpeg)\n\n![img-4.jpeg](img-4.jpeg)\n\n![img-5.jpeg](img-5.jpeg)\n\nATL\nCRA\n\nan Di\n\nero\n\n![img-6.jpeg](img-6.jpeg)",
+      "blocks": [
+        {
+          "block_id": "p5-b0",
+          "page_index": 5,
+          "reading_order_index": 0,
+          "provider_type": "header",
+          "cc_type": "header",
+          "content": "→",
+          "bbox_px": {
+            "top_left_x": 42.0,
+            "top_left_y": 19.0,
+            "bottom_right_x": 68.0,
+            "bottom_right_y": 39.0
+          },
+          "bbox_norm": {
+            "x0": 0.05309734513274336,
+            "y0": 0.01857282502443793,
+            "x1": 0.08596713021491782,
+            "y1": 0.03812316715542522
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b1",
+          "page_index": 5,
+          "reading_order_index": 1,
+          "provider_type": "header",
+          "cc_type": "header",
+          "content": "Sustainability & Mobility Department",
+          "bbox_px": {
+            "top_left_x": 74.0,
+            "top_left_y": 26.0,
+            "bottom_right_x": 215.0,
+            "bottom_right_y": 38.0
+          },
+          "bbox_norm": {
+            "x0": 0.09355246523388117,
+            "y0": 0.02541544477028348,
+            "x1": 0.2718078381795196,
+            "y1": 0.03714565004887586
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b2",
+          "page_index": 5,
+          "reading_order_index": 2,
+          "provider_type": "title",
+          "cc_type": "title",
+          "content": "# Strategies",
+          "bbox_px": {
+            "top_left_x": 68.0,
+            "top_left_y": 126.0,
+            "bottom_right_x": 490.0,
+            "bottom_right_y": 218.0
+          },
+          "bbox_norm": {
+            "x0": 0.08596713021491782,
+            "y0": 0.12316715542521994,
+            "x1": 0.6194690265486725,
+            "y1": 0.2130987292277615
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b3",
+          "page_index": 5,
+          "reading_order_index": 3,
+          "provider_type": "image",
+          "cc_type": "image",
+          "content": "![img-1.jpeg](img-1.jpeg)",
+          "bbox_px": {
+            "top_left_x": 134.0,
+            "top_left_y": 221.0,
+            "bottom_right_x": 219.0,
+            "bottom_right_y": 304.0
+          },
+          "bbox_norm": {
+            "x0": 0.16940581542351454,
+            "y0": 0.21603128054740958,
+            "x1": 0.27686472819216185,
+            "y1": 0.29716520039100686
+          },
+          "confidence": null,
+          "related_image_id": "img-1.jpeg",
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b4",
+          "page_index": 5,
+          "reading_order_index": 4,
+          "provider_type": "image",
+          "cc_type": "image",
+          "content": "![img-2.jpeg](img-2.jpeg)",
+          "bbox_px": {
+            "top_left_x": 251.0,
+            "top_left_y": 221.0,
+            "bottom_right_x": 336.0,
+            "bottom_right_y": 304.0
+          },
+          "bbox_norm": {
+            "x0": 0.3173198482932996,
+            "y0": 0.21603128054740958,
+            "x1": 0.4247787610619469,
+            "y1": 0.29716520039100686
+          },
+          "confidence": null,
+          "related_image_id": "img-2.jpeg",
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b5",
+          "page_index": 5,
+          "reading_order_index": 5,
+          "provider_type": "image",
+          "cc_type": "image",
+          "content": "![img-3.jpeg](img-3.jpeg)",
+          "bbox_px": {
+            "top_left_x": 367.0,
+            "top_left_y": 221.0,
+            "bottom_right_x": 451.0,
+            "bottom_right_y": 304.0
+          },
+          "bbox_norm": {
+            "x0": 0.4639696586599241,
+            "y0": 0.21603128054740958,
+            "x1": 0.5701643489254109,
+            "y1": 0.29716520039100686
+          },
+          "confidence": null,
+          "related_image_id": "img-3.jpeg",
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b6",
+          "page_index": 5,
+          "reading_order_index": 6,
+          "provider_type": "image",
+          "cc_type": "image",
+          "content": "![img-4.jpeg](img-4.jpeg)",
+          "bbox_px": {
+            "top_left_x": 487.0,
+            "top_left_y": 221.0,
+            "bottom_right_x": 570.0,
+            "bottom_right_y": 304.0
+          },
+          "bbox_norm": {
+            "x0": 0.6156763590391909,
+            "y0": 0.21603128054740958,
+            "x1": 0.7206068268015171,
+            "y1": 0.29716520039100686
+          },
+          "confidence": null,
+          "related_image_id": "img-4.jpeg",
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b7",
+          "page_index": 5,
+          "reading_order_index": 7,
+          "provider_type": "image",
+          "cc_type": "image",
+          "content": "![img-5.jpeg](img-5.jpeg)",
+          "bbox_px": {
+            "top_left_x": 603.0,
+            "top_left_y": 221.0,
+            "bottom_right_x": 686.0,
+            "bottom_right_y": 304.0
+          },
+          "bbox_norm": {
+            "x0": 0.7623261694058154,
+            "y0": 0.21603128054740958,
+            "x1": 0.8672566371681416,
+            "y1": 0.29716520039100686
+          },
+          "confidence": null,
+          "related_image_id": "img-5.jpeg",
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b8",
+          "page_index": 5,
+          "reading_order_index": 8,
+          "provider_type": "text",
+          "cc_type": "text",
+          "content": "ATL\nCRA",
+          "bbox_px": {
+            "top_left_x": 0.0,
+            "top_left_y": 597.0,
+            "bottom_right_x": 58.0,
+            "bottom_right_y": 666.0
+          },
+          "bbox_norm": {
+            "x0": 0.0,
+            "y0": 0.5835777126099707,
+            "x1": 0.07332490518331226,
+            "y1": 0.6510263929618768
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b9",
+          "page_index": 5,
+          "reading_order_index": 9,
+          "provider_type": "text",
+          "cc_type": "text",
+          "content": "an Di",
+          "bbox_px": {
+            "top_left_x": 0.0,
+            "top_left_y": 668.0,
+            "bottom_right_x": 56.0,
+            "bottom_right_y": 690.0
+          },
+          "bbox_norm": {
+            "x0": 0.0,
+            "y0": 0.6529814271749755,
+            "x1": 0.07079646017699115,
+            "y1": 0.6744868035190615
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b10",
+          "page_index": 5,
+          "reading_order_index": 10,
+          "provider_type": "text",
+          "cc_type": "text",
+          "content": "ero",
+          "bbox_px": {
+            "top_left_x": 0.0,
+            "top_left_y": 727.0,
+            "bottom_right_x": 36.0,
+            "bottom_right_y": 754.0
+          },
+          "bbox_norm": {
+            "x0": 0.0,
+            "y0": 0.7106549364613881,
+            "x1": 0.045512010113780026,
+            "y1": 0.7370478983382209
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b11",
+          "page_index": 5,
+          "reading_order_index": 11,
+          "provider_type": "image",
+          "cc_type": "image",
+          "content": "![img-6.jpeg](img-6.jpeg)",
+          "bbox_px": {
+            "top_left_x": 58.0,
+            "top_left_y": 723.0,
+            "bottom_right_x": 325.0,
+            "bottom_right_y": 958.0
+          },
+          "bbox_norm": {
+            "x0": 0.07332490518331226,
+            "y0": 0.7067448680351907,
+            "x1": 0.4108723135271808,
+            "y1": 0.9364613880742912
+          },
+          "confidence": null,
+          "related_image_id": "img-6.jpeg",
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b12",
+          "page_index": 5,
+          "reading_order_index": 12,
+          "provider_type": "footer",
+          "cc_type": "footer",
+          "content": "6",
+          "bbox_px": {
+            "top_left_x": 44.0,
+            "top_left_y": 984.0,
+            "bottom_right_x": 54.0,
+            "bottom_right_y": 997.0
+          },
+          "bbox_norm": {
+            "x0": 0.05562579013906448,
+            "y0": 0.9618768328445748,
+            "x1": 0.06826801517067003,
+            "y1": 0.9745845552297165
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p5-b13",
+          "page_index": 5,
+          "reading_order_index": 13,
+          "provider_type": "footer",
+          "cc_type": "footer",
+          "content": "2023 Climate Action Plan Annual REPORT",
+          "bbox_px": {
+            "top_left_x": 82.0,
+            "top_left_y": 984.0,
+            "bottom_right_x": 257.0,
+            "bottom_right_y": 995.0
+          },
+          "bbox_norm": {
+            "x0": 0.10366624525916561,
+            "y0": 0.9618768328445748,
+            "x1": 0.324905183312263,
+            "y1": 0.9726295210166178
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        }
+      ],
+      "tables": [],
+      "images": [
+        {
+          "image_id": "img-1.jpeg",
+          "page_index": 5,
+          "bbox_px": {
+            "top_left_x": 134.0,
+            "top_left_y": 221.0,
+            "bottom_right_x": 219.0,
+            "bottom_right_y": 304.0
+          },
+          "bbox_norm": {
+            "x0": 0.16940581542351454,
+            "y0": 0.21603128054740958,
+            "x1": 0.27686472819216185,
+            "y1": 0.29716520039100686
+          },
+          "annotation": {
+            "kind": "logo",
+            "title": null,
+            "short_description": "A yellow circular logo with a white stylized cloud and lightning bolt symbol in the center.",
+            "text_visible": [],
+            "chart": null,
+            "uncertainties": [
+              "The exact meaning or context of the logo is not provided in the image."
+            ],
+            "schema_version": "cc-771.visual.1"
+          },
+          "annotation_error": null,
+          "image_sha256": "e4a5ef1b9535e82d46b10429e5c932492f021614dcf318171b6eb75a604a9f6a"
+        },
+        {
+          "image_id": "img-2.jpeg",
+          "page_index": 5,
+          "bbox_px": {
+            "top_left_x": 251.0,
+            "top_left_y": 221.0,
+            "bottom_right_x": 336.0,
+            "bottom_right_y": 304.0
+          },
+          "bbox_norm": {
+            "x0": 0.3173198482932996,
+            "y0": 0.21603128054740958,
+            "x1": 0.4247787610619469,
+            "y1": 0.29716520039100686
+          },
+          "annotation": {
+            "kind": "logo",
+            "title": null,
+            "short_description": "A circular green logo with a white checkmark inside.",
+            "text_visible": [],
+            "chart": null,
+            "uncertainties": [],
+            "schema_version": "cc-771.visual.1"
+          },
+          "annotation_error": null,
+          "image_sha256": "f0358d6a0a5d04fb37f286d0e0b2b41165b83e607d03b18e57dc5f89d7ca8291"
+        },
+        {
+          "image_id": "img-3.jpeg",
+          "page_index": 5,
+          "bbox_px": {
+            "top_left_x": 367.0,
+            "top_left_y": 221.0,
+            "bottom_right_x": 451.0,
+            "bottom_right_y": 304.0
+          },
+          "bbox_norm": {
+            "x0": 0.4639696586599241,
+            "y0": 0.21603128054740958,
+            "x1": 0.5701643489254109,
+            "y1": 0.29716520039100686
+          },
+          "annotation": {
+            "kind": "logo",
+            "title": null,
+            "short_description": "A circular logo featuring a stylized orange sun with a face, rays extending outward, and a bicycle integrated into the design.",
+            "text_visible": [],
+            "chart": null,
+            "uncertainties": [
+              "No text is visible in the logo",
+              "The exact design details of the bicycle and sun rays are inferred visually"
+            ],
+            "schema_version": "cc-771.visual.1"
+          },
+          "annotation_error": null,
+          "image_sha256": "724e51fee2598de465ef5ce12b7c10da75030ec47649221d6e52242741ffe873"
+        },
+        {
+          "image_id": "img-4.jpeg",
+          "page_index": 5,
+          "bbox_px": {
+            "top_left_x": 487.0,
+            "top_left_y": 221.0,
+            "bottom_right_x": 570.0,
+            "bottom_right_y": 304.0
+          },
+          "bbox_norm": {
+            "x0": 0.6156763590391909,
+            "y0": 0.21603128054740958,
+            "x1": 0.7206068268015171,
+            "y1": 0.29716520039100686
+          },
+          "annotation": {
+            "kind": "logo",
+            "title": null,
+            "short_description": "A circular logo with a stylized white tree at the center on a blue background.",
+            "text_visible": [],
+            "chart": null,
+            "uncertainties": [
+              "The specific text or name associated with the logo is not visible in the image."
+            ],
+            "schema_version": "cc-771.visual.1"
+          },
+          "annotation_error": null,
+          "image_sha256": "7795e832d37680c2672643c3c6f1328b52d3cf59331f8aea0f19802fc1c32447"
+        },
+        {
+          "image_id": "img-5.jpeg",
+          "page_index": 5,
+          "bbox_px": {
+            "top_left_x": 603.0,
+            "top_left_y": 221.0,
+            "bottom_right_x": 686.0,
+            "bottom_right_y": 304.0
+          },
+          "bbox_norm": {
+            "x0": 0.7623261694058154,
+            "y0": 0.21603128054740958,
+            "x1": 0.8672566371681416,
+            "y1": 0.29716520039100686
+          },
+          "annotation": {
+            "kind": "logo",
+            "title": null,
+            "short_description": "A circular logo with a stylized white arrow forming a loop, enclosed in a blue square background.",
+            "text_visible": [],
+            "chart": null,
+            "uncertainties": [
+              "The exact shade of blue in the background is not specified.",
+              "The precise positioning of the arrow within the circle is not detailed."
+            ],
+            "schema_version": "cc-771.visual.1"
+          },
+          "annotation_error": null,
+          "image_sha256": "9bd5e8d72b9bcdf16b806fc3820d286c67258abaefc49f7717416936d1ba5d56"
+        },
+        {
+          "image_id": "img-6.jpeg",
+          "page_index": 5,
+          "bbox_px": {
+            "top_left_x": 58.0,
+            "top_left_y": 723.0,
+            "bottom_right_x": 325.0,
+            "bottom_right_y": 958.0
+          },
+          "bbox_norm": {
+            "x0": 0.07332490518331226,
+            "y0": 0.7067448680351907,
+            "x1": 0.4108723135271808,
+            "y1": 0.9364613880742912
+          },
+          "annotation": {
+            "kind": "logo",
+            "title": null,
+            "short_description": "A logo featuring intertwined text with the words 'Climate Responsive' and 'EcoMAT' along with a stylized leaf and a building illustration.",
+            "text_visible": [
+              "Climate Responsive",
+              "EcoMAT",
+              "San Diego"
+            ],
+            "chart": null,
+            "uncertainties": [
+              "Exact color of the logo elements",
+              "Specific font style of the text"
+            ],
+            "schema_version": "cc-771.visual.1"
+          },
+          "annotation_error": null,
+          "image_sha256": "2a166e4b329d3a83784a4501297ee639ffdcc8036baa271de0eba83ba267925a"
+        }
+      ]
+    },
+    {
+      "page_index": 6,
+      "dimensions": {
+        "width": 791,
+        "height": 1023,
+        "dpi": 93
+      },
+      "header": "SDS Sustainability & Mobility Department",
+      "footer": "2023 Climate Action Plan ANNUAL REPORT\n7",
+      "markdown": "# Strategy 1\n\n## DECARBONIZATION OF THE BUILT ENVIRONMENT\n\n### Decarbonize Existing Buildings\n\nThe City of San Diego has been proactive in decarbonizing existing buildings, recognizing them as a significant source of GHG emissions. Collaborating with the White House's Building Performance Standards Coalition, the City initiated discussions and working groups in 2022 to develop draft standards for release in 2024. These standards prioritize equity and aim to streamline the electrification process. To support these efforts, the City conducted an analysis of the existing building stock completed in August 2023, laying the groundwork for a comprehensive decarbonization framework. Additionally, the City is using federal funding from the Department of Energy to establish a community pilot program for neighborhood-level residential electrification in low to moderate-income communities.\n\n![img-7.jpeg](img-7.jpeg)\n\n### Decarbonize City Facilities\n\nRecognizing the importance of leading by example, the City Council adopted the Zero Emissions Municipal Buildings & Operations Policy (ZEMBOP) to guide the decarbonization of municipal facilities and transition to a zero-emissions fleet by 2035. Electrification assessments were conducted at more than 400 municipal facilities, and the findings are now guiding the next step of ZEMBOP: developing department-specific Fossil Fuel Elimination Plans. These plans are a part of targeted strategies for energy efficiency, renewable energy and microgrid projects, including partnerships with clean energy vendors to implement energy-saving measures across a portfolio of facilities. In 2023, the City also started construction of its first all-electric fire station and all-electric library.\n\n![img-8.jpeg](img-8.jpeg)\n\n![img-9.jpeg](img-9.jpeg)\n\n**OCTOBER 2023:** San Diego came in **first out of the 100 largest U.S. cities in WalletHub's \"Greenest Cities in America\" ranking**, with scores on Environment, Energy Sources, and Lifestyle & Policy propelling it to the top.",
+      "blocks": [
+        {
+          "block_id": "p6-b0",
+          "page_index": 6,
+          "reading_order_index": 0,
+          "provider_type": "header",
+          "cc_type": "header",
+          "content": "SDS Sustainability & Mobility Department",
+          "bbox_px": {
+            "top_left_x": 569.0,
+            "top_left_y": 23.0,
+            "bottom_right_x": 748.0,
+            "bottom_right_y": 39.0
+          },
+          "bbox_norm": {
+            "x0": 0.7193426042983565,
+            "y0": 0.022482893450635387,
+            "x1": 0.9456384323640961,
+            "y1": 0.03812316715542522
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p6-b1",
+          "page_index": 6,
+          "reading_order_index": 1,
+          "provider_type": "title",
+          "cc_type": "title",
+          "content": "# Strategy 1",
+          "bbox_px": {
+            "top_left_x": 69.0,
+            "top_left_y": 69.0,
+            "bottom_right_x": 313.0,
+            "bottom_right_y": 117.0
+          },
+          "bbox_norm": {
+            "x0": 0.08723135271807839,
+            "y0": 0.06744868035190615,
+            "x1": 0.39570164348925413,
+            "y1": 0.11436950146627566
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p6-b2",
+          "page_index": 6,
+          "reading_order_index": 2,
+          "provider_type": "title",
+          "cc_type": "title",
+          "content": "## DECARBONIZATION OF THE BUILT ENVIRONMENT",
+          "bbox_px": {
+            "top_left_x": 69.0,
+            "top_left_y": 125.0,
+            "bottom_right_x": 652.0,
+            "bottom_right_y": 152.0
+          },
+          "bbox_norm": {
+            "x0": 0.08723135271807839,
+            "y0": 0.12218963831867058,
+            "x1": 0.8242730720606827,
+            "y1": 0.14858260019550343
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p6-b3",
+          "page_index": 6,
+          "reading_order_index": 3,
+          "provider_type": "title",
+          "cc_type": "title",
+          "content": "### Decarbonize Existing Buildings",
+          "bbox_px": {
+            "top_left_x": 69.0,
+            "top_left_y": 181.0,
+            "bottom_right_x": 359.0,
+            "bottom_right_y": 207.0
+          },
+          "bbox_norm": {
+            "x0": 0.08723135271807839,
+            "y0": 0.176930596285435,
+            "x1": 0.4538558786346397,
+            "y1": 0.20234604105571846
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p6-b4",
+          "page_index": 6,
+          "reading_order_index": 4,
+          "provider_type": "text",
+          "cc_type": "text",
+          "content": "The City of San Diego has been proactive in decarbonizing existing buildings, recognizing them as a significant source of GHG emissions. Collaborating with the White House's Building Performance Standards Coalition, the City initiated discussions and working groups in 2022 to develop draft standards for release in 2024. These standards prioritize equity and aim to streamline the electrification process. To support these efforts, the City conducted an analysis of the existing building stock completed in August 2023, laying the groundwork for a comprehensive decarbonization framework. Additionally, the City is using federal funding from the Department of Energy to establish a community pilot program for neighborhood-level residential electrification in low to moderate-income communities.",
+          "bbox_px": {
+            "top_left_x": 69.0,
+            "top_left_y": 213.0,
+            "bottom_right_x": 399.0,
+            "bottom_right_y": 501.0
+          },
+          "bbox_norm": {
+            "x0": 0.08723135271807839,
+            "y0": 0.20821114369501467,
+            "x1": 0.504424778761062,
+            "y1": 0.4897360703812317
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p6-b5",
+          "page_index": 6,
+          "reading_order_index": 5,
+          "provider_type": "image",
+          "cc_type": "image",
+          "content": "![img-7.jpeg](img-7.jpeg)",
+          "bbox_px": {
+            "top_left_x": 417.0,
+            "top_left_y": 184.0,
+            "bottom_right_x": 743.0,
+            "bottom_right_y": 506.0
+          },
+          "bbox_norm": {
+            "x0": 0.527180783817952,
+            "y0": 0.1798631476050831,
+            "x1": 0.9393173198482933,
+            "y1": 0.4946236559139785
+          },
+          "confidence": null,
+          "related_image_id": "img-7.jpeg",
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p6-b6",
+          "page_index": 6,
+          "reading_order_index": 6,
+          "provider_type": "title",
+          "cc_type": "title",
+          "content": "### Decarbonize City Facilities",
+          "bbox_px": {
+            "top_left_x": 69.0,
+            "top_left_y": 530.0,
+            "bottom_right_x": 315.0,
+            "bottom_right_y": 555.0
+          },
+          "bbox_norm": {
+            "x0": 0.08723135271807839,
+            "y0": 0.5180840664711632,
+            "x1": 0.39823008849557523,
+            "y1": 0.5425219941348973
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p6-b7",
+          "page_index": 6,
+          "reading_order_index": 7,
+          "provider_type": "text",
+          "cc_type": "text",
+          "content": "Recognizing the importance of leading by example, the City Council adopted the Zero Emissions Municipal Buildings & Operations Policy (ZEMBOP) to guide the decarbonization of municipal facilities and transition to a zero-emissions fleet by 2035. Electrification assessments were conducted at more than 400 municipal facilities, and the findings are now guiding the next step of ZEMBOP: developing department-specific Fossil Fuel Elimination Plans. These plans are a part of targeted strategies for energy efficiency, renewable energy and microgrid projects, including partnerships with clean energy vendors to implement energy-saving measures across a portfolio of facilities. In 2023, the City also started construction of its first all-electric fire station and all-electric library.",
+          "bbox_px": {
+            "top_left_x": 69.0,
+            "top_left_y": 562.0,
+            "bottom_right_x": 394.0,
+            "bottom_right_y": 851.0
+          },
+          "bbox_norm": {
+            "x0": 0.08723135271807839,
+            "y0": 0.5493646138807429,
+            "x1": 0.49810366624525915,
+            "y1": 0.8318670576735093
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p6-b8",
+          "page_index": 6,
+          "reading_order_index": 8,
+          "provider_type": "image",
+          "cc_type": "image",
+          "content": "![img-8.jpeg](img-8.jpeg)",
+          "bbox_px": {
+            "top_left_x": 417.0,
+            "top_left_y": 535.0,
+            "bottom_right_x": 743.0,
+            "bottom_right_y": 851.0
+          },
+          "bbox_norm": {
+            "x0": 0.527180783817952,
+            "y0": 0.52297165200391,
+            "x1": 0.9393173198482933,
+            "y1": 0.8318670576735093
+          },
+          "confidence": null,
+          "related_image_id": "img-8.jpeg",
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p6-b9",
+          "page_index": 6,
+          "reading_order_index": 9,
+          "provider_type": "image",
+          "cc_type": "image",
+          "content": "![img-9.jpeg](img-9.jpeg)",
+          "bbox_px": {
+            "top_left_x": 86.0,
+            "top_left_y": 862.0,
+            "bottom_right_x": 150.0,
+            "bottom_right_y": 944.0
+          },
+          "bbox_norm": {
+            "x0": 0.10872313527180784,
+            "y0": 0.8426197458455523,
+            "x1": 0.18963337547408343,
+            "y1": 0.9227761485826002
+          },
+          "confidence": null,
+          "related_image_id": "img-9.jpeg",
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p6-b10",
+          "page_index": 6,
+          "reading_order_index": 10,
+          "provider_type": "text",
+          "cc_type": "text",
+          "content": "**OCTOBER 2023:** San Diego came in **first out of the 100 largest U.S. cities in WalletHub's \"Greenest Cities in America\" ranking**, with scores on Environment, Energy Sources, and Lifestyle & Policy propelling it to the top.",
+          "bbox_px": {
+            "top_left_x": 164.0,
+            "top_left_y": 881.0,
+            "bottom_right_x": 690.0,
+            "bottom_right_y": 934.0
+          },
+          "bbox_norm": {
+            "x0": 0.20733249051833122,
+            "y0": 0.8611925708699902,
+            "x1": 0.8723135271807838,
+            "y1": 0.9130009775171065
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p6-b11",
+          "page_index": 6,
+          "reading_order_index": 11,
+          "provider_type": "footer",
+          "cc_type": "footer",
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "bbox_px": {
+            "top_left_x": 534.0,
+            "top_left_y": 983.0,
+            "bottom_right_x": 711.0,
+            "bottom_right_y": 995.0
+          },
+          "bbox_norm": {
+            "x0": 0.6750948166877371,
+            "y0": 0.9608993157380255,
+            "x1": 0.8988621997471555,
+            "y1": 0.9726295210166178
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        },
+        {
+          "block_id": "p6-b12",
+          "page_index": 6,
+          "reading_order_index": 12,
+          "provider_type": "footer",
+          "cc_type": "footer",
+          "content": "7",
+          "bbox_px": {
+            "top_left_x": 736.0,
+            "top_left_y": 983.0,
+            "bottom_right_x": 745.0,
+            "bottom_right_y": 997.0
+          },
+          "bbox_norm": {
+            "x0": 0.9304677623261695,
+            "y0": 0.9608993157380255,
+            "x1": 0.9418457648546145,
+            "y1": 0.9745845552297165
+          },
+          "confidence": null,
+          "related_image_id": null,
+          "related_table_id": null,
+          "relationship_provenance": null
+        }
+      ],
+      "tables": [],
+      "images": [
+        {
+          "image_id": "img-7.jpeg",
+          "page_index": 6,
+          "bbox_px": {
+            "top_left_x": 417.0,
+            "top_left_y": 184.0,
+            "bottom_right_x": 743.0,
+            "bottom_right_y": 506.0
+          },
+          "bbox_norm": {
+            "x0": 0.527180783817952,
+            "y0": 0.1798631476050831,
+            "x1": 0.9393173198482933,
+            "y1": 0.4946236559139785
+          },
+          "annotation": {
+            "kind": "photo",
+            "title": null,
+            "short_description": "A well-lit retail store interior with a clean, modern design, featuring a display area with a sign reading 'William Shakespeare' and a counter with promotional materials.",
+            "text_visible": [
+              "William Shakespeare",
+              "SHOP THE GIFT SHOP",
+              "WILLIAM SHAKESPEARE"
+            ],
+            "chart": null,
+            "uncertainties": [
+              "Exact values on promotional materials are unreadable",
+              "Specific product details or prices are not visible"
+            ],
+            "schema_version": "cc-771.visual.1"
+          },
+          "annotation_error": null,
+          "image_sha256": "76e413c5c0ba3790b60f10d1062a36696ce5d79c224c79591e68f00d5e99eae7"
+        },
+        {
+          "image_id": "img-8.jpeg",
+          "page_index": 6,
+          "bbox_px": {
+            "top_left_x": 417.0,
+            "top_left_y": 535.0,
+            "bottom_right_x": 743.0,
+            "bottom_right_y": 851.0
+          },
+          "bbox_norm": {
+            "x0": 0.527180783817952,
+            "y0": 0.52297165200391,
+            "x1": 0.9393173198482933,
+            "y1": 0.8318670576735093
+          },
+          "annotation": {
+            "kind": "photo",
+            "title": null,
+            "short_description": "A white dome-shaped structure with a small entrance, surrounded by a metal framework and parked cars in the background.",
+            "text_visible": [],
+            "chart": null,
+            "uncertainties": [
+              "The exact location or purpose of the dome-shaped structure is unclear.",
+              "The text on the dome is unreadable due to low resolution."
+            ],
+            "schema_version": "cc-771.visual.1"
+          },
+          "annotation_error": null,
+          "image_sha256": "ac767f013fe3d29537e39b086bbdfe4be4f3bac765ce190e3257f12aaddce09d"
+        },
+        {
+          "image_id": "img-9.jpeg",
+          "page_index": 6,
+          "bbox_px": {
+            "top_left_x": 86.0,
+            "top_left_y": 862.0,
+            "bottom_right_x": 150.0,
+            "bottom_right_y": 944.0
+          },
+          "bbox_norm": {
+            "x0": 0.10872313527180784,
+            "y0": 0.8426197458455523,
+            "x1": 0.18963337547408343,
+            "y1": 0.9227761485826002
+          },
+          "annotation": {
+            "kind": "logo",
+            "title": null,
+            "short_description": "A circular logo featuring a stylized green tree with a blue bird perched on a branch, set against a green background with a white border.",
+            "text_visible": [],
+            "chart": null,
+            "uncertainties": [
+              "No text is visible in the logo to confirm its exact meaning or context."
+            ],
+            "schema_version": "cc-771.visual.1"
+          },
+          "annotation_error": null,
+          "image_sha256": "19422591a3c962af3e9315d57f9c1f3871649691b01a651e53b26cb881bad160"
+        }
+      ]
+    }
+  ],
+  "relationships": [],
+  "validation": {
+    "schema_valid": true,
+    "warnings": [
+      "sparse_page_indexes_preserved:4,5,6",
+      "page 4 block 0: missing optional confidence",
+      "page 4 block 1: missing optional confidence",
+      "page 4 block 2: missing optional confidence",
+      "page 4 block 3: missing optional confidence",
+      "page 4 block 4: missing optional confidence",
+      "page 4 block 5: missing optional confidence",
+      "page 5 block 0: missing optional confidence",
+      "page 5 block 1: missing optional confidence",
+      "page 5 block 2: missing optional confidence",
+      "page 5 block 3: missing optional confidence",
+      "page 5 block 4: missing optional confidence",
+      "page 5 block 5: missing optional confidence",
+      "page 5 block 6: missing optional confidence",
+      "page 5 block 7: missing optional confidence",
+      "page 5 block 8: missing optional confidence",
+      "page 5 block 9: missing optional confidence",
+      "page 5 block 10: missing optional confidence",
+      "page 5 block 11: missing optional confidence",
+      "page 5 block 12: missing optional confidence",
+      "page 5 block 13: missing optional confidence",
+      "page 6 block 0: missing optional confidence",
+      "page 6 block 1: missing optional confidence",
+      "page 6 block 2: missing optional confidence",
+      "page 6 block 3: missing optional confidence",
+      "page 6 block 4: missing optional confidence",
+      "page 6 block 5: missing optional confidence",
+      "page 6 block 6: missing optional confidence",
+      "page 6 block 7: missing optional confidence",
+      "page 6 block 8: missing optional confidence",
+      "page 6 block 9: missing optional confidence",
+      "page 6 block 10: missing optional confidence",
+      "page 6 block 11: missing optional confidence",
+      "page 6 block 12: missing optional confidence"
+    ],
+    "missing_fields": [],
+    "unsupported_provider_features": []
+  }
+}

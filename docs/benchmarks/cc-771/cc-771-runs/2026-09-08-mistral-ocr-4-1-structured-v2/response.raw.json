@@ -1,0 +1,457 @@
+{
+  "pages": [
+    {
+      "index": 0,
+      "markdown": "# Synthetic Climate Inventory Report\n\n## Scope and Methodology\n\n### Data boundaries\n\nThis document is a deliberately synthetic fixture for OCR and layout benchmarking. It mimics the shape of a municipal greenhouse-gas inventory without referencing any real city, real policy outcome, or verified emissions total.\n\nThe narrative sections introduce reporting conventions, inventory cycles, and quality-control language typical of climate action planning documents. Readers should treat every numeric example outside the designated chart as illustrative scaffolding.\n\nThis inventory aggregates sector-level estimates using a consistent boundary definition so that year-over-year comparisons remain meaningful when municipal policy shifts the operational scope of reporting agencies, and the resulting totals reflect only activities occurring within the synthetic metropolitan boundary rather than\n\nTable 1. Synthetic municipal activity indicators (illustrative)\n\n[tbl-0.md](tbl-0.md)\n\nTable 1 caption: Illustrative non-emissions indicators used for layout testing only; values are synthetic and must not be confused with sector inventory totals.\n\nNote: This table exercises title-above, caption-below, and footnote placement. It is unrelated to the sector emissions chart on the following page.",
+      "images": [],
+      "tables": [
+        {
+          "id": "tbl-0.md",
+          "content": "|  Indicator | 2020 | 2023 | 2025 | Unit  |\n| --- | --- | --- | --- | --- |\n|  Population served | 1.42 | 1.48 | 1.53 | million  |\n|  Grid carbon intensity | 412 | 368 | 331 | gCO2e/kWh  |\n|  Recycling diversion rate | 58 | 61 | 64 | percent  |\n|  EV fleet share (municipal) | 12 | 24 | 37 | percent  |",
+          "format": "markdown",
+          "word_confidence_scores": null
+        }
+      ],
+      "hyperlinks": [],
+      "header": "CityCatalyst OCR Benchmark — Synthetic Fixture v2",
+      "footer": "CC-771-STRUCTURED-V2 | Page 1 | Synthetic data only",
+      "dimensions": {
+        "dpi": 87,
+        "height": 1018,
+        "width": 720
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9795647605567477,
+        "minimum_page_confidence_score": 0.27256878024879677
+      },
+      "blocks": [
+        {
+          "top_left_x": 229,
+          "top_left_y": 30,
+          "bottom_right_x": 490,
+          "bottom_right_y": 45,
+          "content": "CityCatalyst OCR Benchmark — Synthetic Fixture v2",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9995184509965961,
+            "minimum_content_confidence_score": 0.9968083768406811,
+            "block_type_confidence_score": 0.9999999449803327
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 73,
+          "top_left_y": 85,
+          "bottom_right_x": 440,
+          "bottom_right_y": 110,
+          "content": "# Synthetic Climate Inventory Report",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.973394146456509,
+            "minimum_content_confidence_score": 0.8669845604681462,
+            "block_type_confidence_score": 0.9999995231630692
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 73,
+          "top_left_y": 125,
+          "bottom_right_x": 272,
+          "bottom_right_y": 146,
+          "content": "## Scope and Methodology",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999775308641186,
+            "minimum_content_confidence_score": 0.999914891812595,
+            "block_type_confidence_score": 0.9947794467206231
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 73,
+          "top_left_y": 161,
+          "bottom_right_x": 191,
+          "bottom_right_y": 176,
+          "content": "### Data boundaries",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.98165166628201,
+            "minimum_content_confidence_score": 0.9454977222148155,
+            "block_type_confidence_score": 0.9740223787363161
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 71,
+          "top_left_y": 184,
+          "bottom_right_x": 646,
+          "bottom_right_y": 232,
+          "content": "This document is a deliberately synthetic fixture for OCR and layout benchmarking. It mimics the shape of a municipal greenhouse-gas inventory without referencing any real city, real policy outcome, or verified emissions total.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999931276471762,
+            "minimum_content_confidence_score": 0.9999455243228242,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 71,
+          "top_left_y": 245,
+          "bottom_right_x": 645,
+          "bottom_right_y": 293,
+          "content": "The narrative sections introduce reporting conventions, inventory cycles, and quality-control language typical of climate action planning documents. Readers should treat every numeric example outside the designated chart as illustrative scaffolding.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999947968841328,
+            "minimum_content_confidence_score": 0.9999316357595802,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 71,
+          "top_left_y": 306,
+          "bottom_right_x": 646,
+          "bottom_right_y": 372,
+          "content": "This inventory aggregates sector-level estimates using a consistent boundary definition so that year-over-year comparisons remain meaningful when municipal policy shifts the operational scope of reporting agencies, and the resulting totals reflect only activities occurring within the synthetic metropolitan boundary rather than",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999976479531922,
+            "minimum_content_confidence_score": 0.9999756818971167,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 74,
+          "top_left_y": 388,
+          "bottom_right_x": 486,
+          "bottom_right_y": 406,
+          "content": "Table 1. Synthetic municipal activity indicators (illustrative)",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999896239774301,
+            "minimum_content_confidence_score": 0.9999429841980434,
+            "block_type_confidence_score": 0.9998302747830303
+          },
+          "type": "caption"
+        },
+        {
+          "top_left_x": 107,
+          "top_left_y": 409,
+          "bottom_right_x": 611,
+          "bottom_right_y": 521,
+          "content": "|  Indicator | 2020 | 2023 | 2025 | Unit  |\n| --- | --- | --- | --- | --- |\n|  Population served | 1.42 | 1.48 | 1.53 | million  |\n|  Grid carbon intensity | 412 | 368 | 331 | gCO2e/kWh  |\n|  Recycling diversion rate | 58 | 61 | 64 | percent  |\n|  EV fleet share (municipal) | 12 | 24 | 37 | percent  |",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9995933724077481,
+            "minimum_content_confidence_score": 0.9964469379987673,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "table",
+          "table_id": "tbl-0.md"
+        },
+        {
+          "top_left_x": 71,
+          "top_left_y": 525,
+          "bottom_right_x": 645,
+          "bottom_right_y": 552,
+          "content": "Table 1 caption: Illustrative non-emissions indicators used for layout testing only; values are synthetic and must not be confused with sector inventory totals.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999971396879188,
+            "minimum_content_confidence_score": 0.9999820681104397,
+            "block_type_confidence_score": 0.6387332734819404
+          },
+          "type": "caption"
+        },
+        {
+          "top_left_x": 86,
+          "top_left_y": 562,
+          "bottom_right_x": 598,
+          "bottom_right_y": 593,
+          "content": "Note: This table exercises title-above, caption-below, and footnote placement. It is unrelated to the sector emissions chart on the following page.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999912745136842,
+            "minimum_content_confidence_score": 0.9999106939591768,
+            "block_type_confidence_score": 0.7616934698019715
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 218,
+          "top_left_y": 972,
+          "bottom_right_x": 499,
+          "bottom_right_y": 986,
+          "content": "CC-771-STRUCTURED-V2 | Page 1 | Synthetic data only",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999979944025716,
+            "minimum_content_confidence_score": 0.9998438437341193,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "markdown": "extrapolated regional transport corridors that lie outside municipal jurisdiction.\n\nSector trends are summarized visually in the figure below. The surrounding discussion focuses on interpretation habits—such as distinguishing inventory totals from activity drivers—rather than restating numeric values that appear only inside the chart image.\n\nSynthetic sector emissions trend\n\n![img-0.jpeg](img-0.jpeg)\n\nFigure 1. Synthetic sector emissions (ktCO2e), 2020–2025.\n\nAnalysts reviewing this figure should note how legend placement, axis units, and callout boxes interact with nearby captions. Structured extraction should associate the caption with the image block while keeping explanatory paragraphs separate.",
+      "images": [
+        {
+          "id": "img-0.jpeg",
+          "top_left_x": 91,
+          "top_left_y": 222,
+          "bottom_right_x": 640,
+          "bottom_right_y": 479,
+          "image_sha256": "e66dcef9869f683654f7f3df2daabe7d6ff0bdf3139e4cc4b59fb84b51dc3f2c",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"chart\", \"title\": null, \"short_description\": \"Line chart showing the annual emissions in ktCO2e for Transport, Buildings, and Waste from 2020 to 2025, with a target line at 50 ktCO2e.\", \"text_visible\": [\"Target 50(120)30\", \"Transport falls below 35 ktCO2e\"], \"chart\": {\"chart_type\": \"line\", \"x_axis\": {\"label\": \"Year\", \"values\": [2020, 2021, 2022, 2023, 2024, 2025]}, \"y_axis\": {\"label\": \"ktCO2e\", \"unit\": null, \"scale\": \"linear\"}, \"legend\": [\"Transport\", \"Buildings\", \"Waste\"], \"series\": [{\"name\": \"Transport\", \"points\": [{\"x\": 2020, \"y\": 50, \"value_kind\": \"printed\"}, {\"x\": 2021, \"y\": 45, \"value_kind\": \"printed\"}, {\"x\": 2022, \"y\": 42, \"value_kind\": \"printed\"}, {\"x\": 2023, \"y\": 38, \"value_kind\": \"printed\"}, {\"x\": 2024, \"y\": 35, \"value_kind\": \"printed\"}, {\"x\": 2025, \"y\": 30, \"value_kind\": \"printed\"}]}, {\"name\": \"Buildings\", \"points\": [{\"x\": 2020, \"y\": 25, \"value_kind\": \"printed\"}, {\"x\": 2021, \"y\": 24, \"value_kind\": \"printed\"}, {\"x\": 2022, \"y\": 23, \"value_kind\": \"printed\"}, {\"x\": 2023, \"y\": 22, \"value_kind\": \"printed\"}, {\"x\": 2024, \"y\": 21, \"value_kind\": \"printed\"}, {\"x\": 2025, \"y\": 20, \"value_kind\": \"printed\"}]}, {\"name\": \"Waste\", \"points\": [{\"x\": 2020, \"y\": 15, \"value_kind\": \"printed\"}, {\"x\": 2021, \"y\": 14, \"value_kind\": \"printed\"}, {\"x\": 2022, \"y\": 13, \"value_kind\": \"printed\"}, {\"x\": 2023, \"y\": 12, \"value_kind\": \"printed\"}, {\"x\": 2024, \"y\": 11, \"value_kind\": \"printed\"}, {\"x\": 2025, \"y\": 10, \"value_kind\": \"printed\"}]}], \"trends\": [\"Transport emissions decrease steadily from 50 to 30 ktCO2e\", \"Buildings emissions decrease steadily from 25 to 20 ktCO2e\", \"Waste emissions decrease steadily from 15 to 10 ktCO2e\", \"Transport emissions fall below 35 ktCO2e in 2024\"], \"targets\": [{\"label\": \"Target 50(120)30\", \"value\": 50, \"value_kind\": \"printed\"}], \"callouts\": [\"Transport falls below 35 ktCO2e\"], \"readable_values\": []}, \"uncertainties\": []}"
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "CityCatalyst OCR Benchmark — Synthetic Fixture v2",
+      "footer": "CC-771-STRUCTURED-V2 | Page 2 | Synthetic data only",
+      "dimensions": {
+        "dpi": 87,
+        "height": 1018,
+        "width": 720
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9806241726458531,
+        "minimum_page_confidence_score": 0.22159658514180014
+      },
+      "blocks": [
+        {
+          "top_left_x": 229,
+          "top_left_y": 30,
+          "bottom_right_x": 489,
+          "bottom_right_y": 45,
+          "content": "CityCatalyst OCR Benchmark — Synthetic Fixture v2",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9997363095854535,
+            "minimum_content_confidence_score": 0.9983198309960698,
+            "block_type_confidence_score": 0.999999889960675
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 72,
+          "top_left_y": 84,
+          "bottom_right_x": 490,
+          "bottom_right_y": 99,
+          "content": "extrapolated regional transport corridors that lie outside municipal jurisdiction.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999987395897111,
+            "minimum_content_confidence_score": 0.9999576484988769,
+            "block_type_confidence_score": 0.9999957084838798
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 71,
+          "top_left_y": 130,
+          "bottom_right_x": 646,
+          "bottom_right_y": 181,
+          "content": "Sector trends are summarized visually in the figure below. The surrounding discussion focuses on interpretation habits—such as distinguishing inventory totals from activity drivers—rather than restating numeric values that appear only inside the chart image.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999755082011668,
+            "minimum_content_confidence_score": 0.9997671226036998,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 247,
+          "top_left_y": 199,
+          "bottom_right_x": 450,
+          "bottom_right_y": 214,
+          "content": "Synthetic sector emissions trend",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.99998486085142,
+            "minimum_content_confidence_score": 0.9999711525914191,
+            "block_type_confidence_score": 0.5758190715083448
+          },
+          "type": "caption"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 222,
+          "bottom_right_x": 640,
+          "bottom_right_y": 479,
+          "content": "![img-0.jpeg](img-0.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999747282700929
+          },
+          "type": "image",
+          "image_id": "img-0.jpeg"
+        },
+        {
+          "top_left_x": 72,
+          "top_left_y": 510,
+          "bottom_right_x": 363,
+          "bottom_right_y": 525,
+          "content": "Figure 1. Synthetic sector emissions (ktCO2e), 2020–2025.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998505878601242,
+            "minimum_content_confidence_score": 0.9990343499217481,
+            "block_type_confidence_score": 0.9999936819476216
+          },
+          "type": "caption"
+        },
+        {
+          "top_left_x": 71,
+          "top_left_y": 534,
+          "bottom_right_x": 647,
+          "bottom_right_y": 585,
+          "content": "Analysts reviewing this figure should note how legend placement, axis units, and callout boxes interact with nearby captions. Structured extraction should associate the caption with the image block while keeping explanatory paragraphs separate.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999794813635621,
+            "minimum_content_confidence_score": 0.9995974489122236,
+            "block_type_confidence_score": 0.9999977350285647
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 218,
+          "top_left_y": 972,
+          "bottom_right_x": 499,
+          "bottom_right_y": 987,
+          "content": "CC-771-STRUCTURED-V2 | Page 2 | Synthetic data only",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999767270314079,
+            "minimum_content_confidence_score": 0.9998293133768453,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "markdown": "# Layout and Reading Order Checks\n\n## Multi-column annex\n\nThe final page verifies side-by-side layout handling. No additional chart facts are introduced here; the page exists to test header/footer repetition and column ordering.\n\nColumn A: Primary reading order begins here. This column contains the first block of side-by-side content in the synthetic fixture. Evaluators should confirm that structured OCR preserves left-to-right column order before advancing to the adjacent column.\n\nColumn B: Secondary reading order follows column A. This column contains complementary material about reporting cadence, revision tags, and placeholder annex references used solely to test multi-column layout recovery.\n\nEnd of synthetic fixture. All content is labeled as non-operational test data.",
+      "images": [],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "CityCatalyst OCR Benchmark — Synthetic Fixture v2",
+      "footer": "CC-771-STRUCTURED-V2 | Page 3 | Synthetic data only",
+      "dimensions": {
+        "dpi": 87,
+        "height": 1018,
+        "width": 720
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9699086626692983,
+        "minimum_page_confidence_score": 0.26260220242507576
+      },
+      "blocks": [
+        {
+          "top_left_x": 229,
+          "top_left_y": 30,
+          "bottom_right_x": 489,
+          "bottom_right_y": 44,
+          "content": "CityCatalyst OCR Benchmark — Synthetic Fixture v2",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9996239535702608,
+            "minimum_content_confidence_score": 0.9974786594705319,
+            "block_type_confidence_score": 0.9999999449803327
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 73,
+          "top_left_y": 85,
+          "bottom_right_x": 355,
+          "bottom_right_y": 105,
+          "content": "# Layout and Reading Order Checks",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9591453469547219,
+            "minimum_content_confidence_score": 0.7549148772683416,
+            "block_type_confidence_score": 0.9999831917733143
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 73,
+          "top_left_y": 119,
+          "bottom_right_x": 215,
+          "bottom_right_y": 136,
+          "content": "## Multi-column annex",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9510296457814768,
+            "minimum_content_confidence_score": 0.904605833152154,
+            "block_type_confidence_score": 0.9241217485822332
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 71,
+          "top_left_y": 143,
+          "bottom_right_x": 646,
+          "bottom_right_y": 176,
+          "content": "The final page verifies side-by-side layout handling. No additional chart facts are introduced here; the page exists to test header/footer repetition and column ordering.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999956613592889,
+            "minimum_content_confidence_score": 0.9991647926769045,
+            "block_type_confidence_score": 0.9999979734461775
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 76,
+          "top_left_y": 200,
+          "bottom_right_x": 359,
+          "bottom_right_y": 293,
+          "content": "Column A: Primary reading order begins here. This column contains the first block of side-by-side content in the synthetic fixture. Evaluators should confirm that structured OCR preserves left-to-right column order before advancing to the adjacent column.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999882602744403,
+            "minimum_content_confidence_score": 0.9998427660003867,
+            "block_type_confidence_score": 0.9914136889429513
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 368,
+          "top_left_y": 200,
+          "bottom_right_x": 654,
+          "bottom_right_y": 280,
+          "content": "Column B: Secondary reading order follows column A. This column contains complementary material about reporting cadence, revision tags, and placeholder annex references used solely to test multi-column layout recovery.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999856648282467,
+            "minimum_content_confidence_score": 0.999795359531765,
+            "block_type_confidence_score": 0.999998927117538
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 73,
+          "top_left_y": 302,
+          "bottom_right_x": 474,
+          "bottom_right_y": 318,
+          "content": "End of synthetic fixture. All content is labeled as non-operational test data.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999847816413926,
+            "minimum_content_confidence_score": 0.9998862872718773,
+            "block_type_confidence_score": 0.9999942779868433
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 218,
+          "top_left_y": 972,
+          "bottom_right_x": 499,
+          "bottom_right_y": 987,
+          "content": "CC-771-STRUCTURED-V2 | Page 3 | Synthetic data only",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999841500373664,
+            "minimum_content_confidence_score": 0.9998927505210807,
+            "block_type_confidence_score": 0.999999889960675
+          },
+          "type": "footer"
+        }
+      ]
+    }
+  ],
+  "model": "mistral-ocr-4-1",
+  "document_annotation": null,
+  "usage_info": {
+    "pages_processed": 3,
+    "doc_size_bytes": 30101
+  }
+}

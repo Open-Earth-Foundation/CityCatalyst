@@ -1,0 +1,68 @@
+{
+  "run_id": "2026-09-08-mistral-ocr-4-1-sandiego-2025-structure",
+  "status": "ok",
+  "error": null,
+  "provider": "Mistral",
+  "endpoint": "https://api.mistral.ai/v1/ocr",
+  "model_requested": "mistral-ocr-4-1",
+  "model_returned": "mistral-ocr-4-1",
+  "input_file": "2025_Annual_CAP_Report_FINAL_06-17-26_web.pdf",
+  "input_sha256": "cc1eca34c15afc0fa6fd9d3ed3ccd96098e3ffd588287082d76abd9fa0a75a6e",
+  "input_bytes": 16417512,
+  "source_mode": "Mistral Files API upload plus signed document URL",
+  "request": {
+    "model": "mistral-ocr-4-1",
+    "document": {
+      "type": "document_url",
+      "document_url": "<signed-url-omitted>"
+    },
+    "include_blocks": true,
+    "confidence_scores_granularity": "block",
+    "extract_header": true,
+    "extract_footer": true,
+    "table_format": "markdown",
+    "include_image_base64": true,
+    "bbox_annotation_format": null,
+    "pages": null
+  },
+  "selected_annotation_pages": null,
+  "include_blocks": true,
+  "confidence_scores_granularity": "block",
+  "extract_header": true,
+  "extract_footer": true,
+  "table_format": "markdown",
+  "include_image_base64": true,
+  "http_status": 200,
+  "page_count": 33,
+  "usage_info": {
+    "pages_processed": 33,
+    "doc_size_bytes": 16417512
+  },
+  "timing": {
+    "ocr_latency_s": 4.536,
+    "total_latency_s": 7.641,
+    "annotation_latency_s": 0.0
+  },
+  "cost": {
+    "ocr_cost_usd_estimate": 0.132,
+    "annotation_cost_usd_estimate": null,
+    "total_cost_usd_estimate": 0.132,
+    "notes": "OCR page cost estimated at US$4 / 1,000 pages. BBox annotation uses an internal vision call per image; provider does not always expose a separate annotation line item."
+  },
+  "mistral_file_id": "113f13ed-4c62-4ca3-953f-39447afe9894",
+  "schema_versions": {
+    "document": "cc-771.1",
+    "visual_annotation": "cc-771.visual.1"
+  },
+  "schema_errors": [],
+  "artifact_sizes_bytes": {
+    "response.raw.json": 342094,
+    "document.structured.json": 499488,
+    "output.md": 47422,
+    "output.enriched.md": 77123
+  },
+  "secret_persisted": false,
+  "created_at": "2026-09-08T16:40:18+00:00",
+  "overlays": "omitted_for_full_document_structural_run",
+  "overlay_policy": "fixture_and_annotation_pages_only"
+}

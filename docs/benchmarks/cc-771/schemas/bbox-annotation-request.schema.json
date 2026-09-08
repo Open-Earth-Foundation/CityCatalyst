@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openearth.org/schemas/cc-771/bbox-annotation-request.v1.json",
+  "title": "CC-771 BBox Annotation Request Schema",
+  "description": "JSON Schema embedded in Mistral OCR bbox_annotation_format for the PoC. Field names match visual-annotation.schema.json without schema_version (added during normalization).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "title",
+    "short_description",
+    "text_visible",
+    "chart",
+    "uncertainties"
+  ],
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "chart",
+        "diagram",
+        "map",
+        "photo",
+        "logo",
+        "illustration",
+        "other"
+      ],
+      "description": "Visual kind. Use only what is visibly supported."
+    },
+    "title": {
+      "type": ["string", "null"],
+      "description": "Visible title only. Return null if no title is printed. Never invent a title."
+    },
+    "short_description": {
+      "type": "string",
+      "description": "Grounded short description of the visual content."
+    },
+    "text_visible": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Important text visibly present in the region."
+    },
+    "chart": {
+      "type": ["object", "null"],
+      "description": "Populate only when kind is chart; otherwise null.",
+      "additionalProperties": false,
+      "properties": {
+        "chart_type": { "type": ["string", "null"] },
+        "x_axis": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "label": { "type": ["string", "null"] },
+            "values": {
+              "type": "array",
+              "items": { "type": ["string", "number", "null"] }
+            }
+          }
+        },
+        "y_axis": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "label": { "type": ["string", "null"] },
+            "unit": { "type": ["string", "null"] },
+            "scale": { "type": ["string", "null"] }
+          }
+        },
+        "legend": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string" },
+              "points": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "x": { "type": ["string", "number", "null"] },
+                    "y": { "type": ["number", "null"] },
+                    "value_kind": {
+                      "type": "string",
+                      "enum": ["printed", "approximate_visual", "unreadable"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "trends": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "label": { "type": ["string", "null"] },
+              "value": { "type": ["number", "string", "null"] },
+              "value_kind": {
+                "type": "string",
+                "enum": ["printed", "approximate_visual", "unreadable"]
+              }
+            }
+          }
+        },
+        "callouts": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "readable_values": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "label": { "type": "string" },
+              "value": { "type": ["string", "number", "null"] },
+              "value_kind": {
+                "type": "string",
+                "enum": ["printed", "approximate_visual", "unreadable"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List unreadable or ambiguous details. Do not invent values."
+    }
+  }
+}

@@ -1,0 +1,3787 @@
+{
+  "pages": [
+    {
+      "index": 0,
+      "markdown": "![img-0.jpeg](img-0.jpeg)\n\n# 2023\n\n# Climate Action Plan\n\nANNUAL REPORT",
+      "images": [
+        {
+          "id": "img-0.jpeg",
+          "top_left_x": 0,
+          "top_left_y": 111,
+          "bottom_right_x": 790,
+          "bottom_right_y": 640,
+          "image_sha256": "3a9cc1b574a17d000a02b062c6134d2292094d99b30effec3b2caa915cc2b74a",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "The City of\nSAN DIEGO",
+      "footer": "OUR CLIMATE\nOUR FUTURE\nCity of San Diego Climate Action Plan\nSD\nSustainability\n& Mobility",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9533488163991434,
+        "minimum_page_confidence_score": 0.16684038184180272
+      },
+      "blocks": [
+        {
+          "top_left_x": 70,
+          "top_left_y": 40,
+          "bottom_right_x": 132,
+          "bottom_right_y": 56,
+          "content": "The City of",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999998569492187,
+            "minimum_content_confidence_score": 0.9999967813595916,
+            "block_type_confidence_score": 0.9985333969950829
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 70,
+          "top_left_y": 56,
+          "bottom_right_x": 246,
+          "bottom_right_y": 85,
+          "content": "SAN DIEGO",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999911786360525,
+            "minimum_content_confidence_score": 0.9999858143296146,
+            "block_type_confidence_score": 0.99999955984293
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 0,
+          "top_left_y": 111,
+          "bottom_right_x": 790,
+          "bottom_right_y": 640,
+          "content": "![img-0.jpeg](img-0.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9997981002352355
+          },
+          "type": "image",
+          "image_id": "img-0.jpeg"
+        },
+        {
+          "top_left_x": 241,
+          "top_left_y": 645,
+          "bottom_right_x": 369,
+          "bottom_right_y": 690,
+          "content": "# 2023",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9898035973220654,
+            "minimum_content_confidence_score": 0.9796676467868737,
+            "block_type_confidence_score": 0.8807712437103059
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 243,
+          "top_left_y": 705,
+          "bottom_right_x": 705,
+          "bottom_right_y": 752,
+          "content": "# Climate Action Plan",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9787132902534403,
+            "minimum_content_confidence_score": 0.9149009617112335,
+            "block_type_confidence_score": 0.9999974966112362
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 241,
+          "top_left_y": 763,
+          "bottom_right_x": 512,
+          "bottom_right_y": 790,
+          "content": "ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999918343521313,
+            "minimum_content_confidence_score": 0.9999841455411935,
+            "block_type_confidence_score": 0.8932645407819509
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 56,
+          "top_left_y": 853,
+          "bottom_right_x": 250,
+          "bottom_right_y": 971,
+          "content": "OUR CLIMATE\nOUR FUTURE",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.8119764188014708,
+            "minimum_content_confidence_score": 0.36775443281757986,
+            "block_type_confidence_score": 0.9490416422046306
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 70,
+          "top_left_y": 973,
+          "bottom_right_x": 250,
+          "bottom_right_y": 986,
+          "content": "City of San Diego Climate Action Plan",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999286876418425,
+            "minimum_content_confidence_score": 0.9998419534582696,
+            "block_type_confidence_score": 0.9999917471571188
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 489,
+          "top_left_y": 928,
+          "bottom_right_x": 553,
+          "bottom_right_y": 979,
+          "content": "SD",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9980607756329087,
+            "minimum_content_confidence_score": 0.9980607756329087,
+            "block_type_confidence_score": 0.9986932404787464
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 561,
+          "top_left_y": 930,
+          "bottom_right_x": 712,
+          "bottom_right_y": 956,
+          "content": "Sustainability",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999988104759726,
+            "minimum_content_confidence_score": 0.999988104759726,
+            "block_type_confidence_score": 0.9999930675973957
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 561,
+          "top_left_y": 956,
+          "bottom_right_x": 677,
+          "bottom_right_y": 981,
+          "content": "& Mobility",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999695435898588,
+            "minimum_content_confidence_score": 0.9999443323610593,
+            "block_type_confidence_score": 0.9999996790520561
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "markdown": "## Table of Contents\n\n[tbl-0.md](tbl-0.md)\n\n![img-1.jpeg](img-1.jpeg)",
+      "images": [
+        {
+          "id": "img-1.jpeg",
+          "top_left_x": 2,
+          "top_left_y": 435,
+          "bottom_right_x": 791,
+          "bottom_right_y": 1023,
+          "image_sha256": "6bd0792a28b531f0bae70ce759acaecd6b8c7e949d5e0cc1d56ad37387f7e5da",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [
+        {
+          "id": "tbl-0.md",
+          "content": "|  Letter from the Chief Sustainability Officer | 3  |\n| --- | --- |\n|  Introduction | 4  |\n|  Key Highlights | 5  |\n|  **STRATEGY 1:** Decarbonization of the Built Environment | 7  |\n|  **STRATEGY 2:** Access to Clean and Renewable Energy | 8  |\n|  **STRATEGY 3:** Mobility and Land Use | 10  |\n|  **STRATEGY 4:** Circular Economy and Clean Communities | 14  |\n|  **STRATEGY 5:** Resilient Infrastructures and Healthy Ecosystems | 15  |\n|  Conclusion | 18  |\n|  Community Partners | 19  |",
+          "format": "markdown",
+          "word_confidence_scores": null
+        }
+      ],
+      "hyperlinks": [],
+      "header": null,
+      "footer": "2\n2023 Climate Action Plan ANNUAL REPORT",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9800360575241803,
+        "minimum_page_confidence_score": 0.12714503890948983
+      },
+      "blocks": [
+        {
+          "top_left_x": 90,
+          "top_left_y": 75,
+          "bottom_right_x": 260,
+          "bottom_right_y": 99,
+          "content": "## Table of Contents",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999976456291026,
+            "minimum_content_confidence_score": 0.9999930859092101,
+            "block_type_confidence_score": 0.9998558967428726
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 90,
+          "top_left_y": 108,
+          "bottom_right_x": 553,
+          "bottom_right_y": 310,
+          "content": "|  Letter from the Chief Sustainability Officer | 3  |\n| --- | --- |\n|  Introduction | 4  |\n|  Key Highlights | 5  |\n|  **STRATEGY 1:** Decarbonization of the Built Environment | 7  |\n|  **STRATEGY 2:** Access to Clean and Renewable Energy | 8  |\n|  **STRATEGY 3:** Mobility and Land Use | 10  |\n|  **STRATEGY 4:** Circular Economy and Clean Communities | 14  |\n|  **STRATEGY 5:** Resilient Infrastructures and Healthy Ecosystems | 15  |\n|  Conclusion | 18  |\n|  Community Partners | 19  |",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9996472185003864,
+            "minimum_content_confidence_score": 0.9937021503419008,
+            "block_type_confidence_score": 0.618172614628481
+          },
+          "type": "table",
+          "table_id": "tbl-0.md"
+        },
+        {
+          "top_left_x": 2,
+          "top_left_y": 435,
+          "bottom_right_x": 791,
+          "bottom_right_y": 1023,
+          "content": "![img-1.jpeg](img-1.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999593512842658
+          },
+          "type": "image",
+          "image_id": "img-1.jpeg"
+        },
+        {
+          "top_left_x": 43,
+          "top_left_y": 981,
+          "bottom_right_x": 56,
+          "bottom_right_y": 998,
+          "content": "2",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999721058045592,
+            "minimum_content_confidence_score": 0.9999721058045592,
+            "block_type_confidence_score": 0.9999992847450957
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 80,
+          "top_left_y": 981,
+          "bottom_right_x": 259,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999190913677319,
+            "minimum_content_confidence_score": 0.9997252708972291,
+            "block_type_confidence_score": 0.9999986245112423
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "markdown": "# Letter from the Chief Sustainability Officer\n\nIt is with great enthusiasm that I introduce the 2023 Climate Action Plan (CAP) Annual Report. This year marks the first full year of implementing our updated 2022 Climate Action Plan, a strategic framework designed to guide us toward achieving net-zero greenhouse gas (GHG) emissions by 2035. The ambitious goals set forth in our updated CAP underscore our unwavering commitment to creating a sustainable, equitable and resilient future for our city.\n\nReflecting on the past year, I am proud to highlight our collective efforts and accomplishments. The City of San Diego has seen conservative reductions in GHG emissions in the 2022 calendar year, as detailed in Appendix A of this report. While the reductions represent important progress, they also serve as a reminder of the significant work that lies ahead. Our updated CAP is designed to tackle these challenges head-on, with robust strategies and innovative solutions aimed at accelerating our transition to a low-carbon future.\n\nI am particularly excited about the cross-departmental collaborations and the partnerships with external stakeholders that have been instrumental in our success. The Annual Departmental Work Plans are key tools that ensure transparency, accountability and resource alignment across all City departments. This year, we have also launched the CAP Dashboard (climatedashboard.sandiego.gov). The dashboard will serve as a central platform for data collection and distribution, enabling stakeholders to monitor key metrics and track progress on individual CAP actions sourced from the Annual Department Work Plans.\n\nDespite the challenges posed by the rapid pace of climate change, we remain optimistic and resolute. The strategies detailed in this report, from enhancing biking infrastructure to deploying public electric vehicle (EV) charging stations, demonstrate our holistic approach to creating a more sustainable and equitable San Diego. Our efforts to secure substantial grant funding have further bolstered our capacity to implement critical climate action and sustainability initiatives.\n\nAs we look to the future, we are committed to continuous improvement and innovation. Our goal is not just to meet our targets but to exceed them, ensuring that San Diego serves as a model for other cities worldwide. We have a moral imperative to approach our climate work through an equity lens, striving for a just transition that benefits all residents.\n\nThank you for your continued support and engagement. Together, we will make San Diego a healthier, more sustainable, and more prosperous place for all.\n\nSincerely,\n\n**Shelby Busó**\nChief Sustainability Officer\n\n![img-2.jpeg](img-2.jpeg)",
+      "images": [
+        {
+          "id": "img-2.jpeg",
+          "top_left_x": 90,
+          "top_left_y": 901,
+          "bottom_right_x": 265,
+          "bottom_right_y": 941,
+          "image_sha256": "8d5c9a7c0e48f6f4e5e1941df1e4266b7d633c6a5e883ea350f7e2b6196f1a81",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": null,
+      "footer": "2023 Climate Action Plan ANNUAL REPORT\n3",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9764487299245846,
+        "minimum_page_confidence_score": 0.19103029193676677
+      },
+      "blocks": [
+        {
+          "top_left_x": 89,
+          "top_left_y": 65,
+          "bottom_right_x": 725,
+          "bottom_right_y": 102,
+          "content": "# Letter from the Chief Sustainability Officer",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9996433498705565,
+            "minimum_content_confidence_score": 0.9975274099865513,
+            "block_type_confidence_score": 0.9999939203633587
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 120,
+          "bottom_right_x": 713,
+          "bottom_right_y": 217,
+          "content": "It is with great enthusiasm that I introduce the 2023 Climate Action Plan (CAP) Annual Report. This year marks the first full year of implementing our updated 2022 Climate Action Plan, a strategic framework designed to guide us toward achieving net-zero greenhouse gas (GHG) emissions by 2035. The ambitious goals set forth in our updated CAP underscore our unwavering commitment to creating a sustainable, equitable and resilient future for our city.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999759758886527,
+            "minimum_content_confidence_score": 0.9987792183008779,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 231,
+          "bottom_right_x": 725,
+          "bottom_right_y": 346,
+          "content": "Reflecting on the past year, I am proud to highlight our collective efforts and accomplishments. The City of San Diego has seen conservative reductions in GHG emissions in the 2022 calendar year, as detailed in Appendix A of this report. While the reductions represent important progress, they also serve as a reminder of the significant work that lies ahead. Our updated CAP is designed to tackle these challenges head-on, with robust strategies and innovative solutions aimed at accelerating our transition to a low-carbon future.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999935514144005,
+            "minimum_content_confidence_score": 0.9999296644598622,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 360,
+          "bottom_right_x": 717,
+          "bottom_right_y": 495,
+          "content": "I am particularly excited about the cross-departmental collaborations and the partnerships with external stakeholders that have been instrumental in our success. The Annual Departmental Work Plans are key tools that ensure transparency, accountability and resource alignment across all City departments. This year, we have also launched the CAP Dashboard (climatedashboard.sandiego.gov). The dashboard will serve as a central platform for data collection and distribution, enabling stakeholders to monitor key metrics and track progress on individual CAP actions sourced from the Annual Department Work Plans.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9991733506422529,
+            "minimum_content_confidence_score": 0.9395845441965042,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 511,
+          "bottom_right_x": 699,
+          "bottom_right_y": 626,
+          "content": "Despite the challenges posed by the rapid pace of climate change, we remain optimistic and resolute. The strategies detailed in this report, from enhancing biking infrastructure to deploying public electric vehicle (EV) charging stations, demonstrate our holistic approach to creating a more sustainable and equitable San Diego. Our efforts to secure substantial grant funding have further bolstered our capacity to implement critical climate action and sustainability initiatives.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999387645169756,
+            "minimum_content_confidence_score": 0.9969672686371538,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 640,
+          "bottom_right_x": 701,
+          "bottom_right_y": 717,
+          "content": "As we look to the future, we are committed to continuous improvement and innovation. Our goal is not just to meet our targets but to exceed them, ensuring that San Diego serves as a model for other cities worldwide. We have a moral imperative to approach our climate work through an equity lens, striving for a just transition that benefits all residents.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999862939878228,
+            "minimum_content_confidence_score": 0.9997649745379049,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 732,
+          "bottom_right_x": 693,
+          "bottom_right_y": 770,
+          "content": "Thank you for your continued support and engagement. Together, we will make San Diego a healthier, more sustainable, and more prosperous place for all.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999901040192166,
+            "minimum_content_confidence_score": 0.9999225199684951,
+            "block_type_confidence_score": 0.9999991655356624
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 785,
+          "bottom_right_x": 158,
+          "bottom_right_y": 803,
+          "content": "Sincerely,",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999979257662258,
+            "minimum_content_confidence_score": 0.9999979257662258,
+            "block_type_confidence_score": 0.9999998807907247
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 73,
+          "top_left_y": 805,
+          "bottom_right_x": 316,
+          "bottom_right_y": 847,
+          "content": "",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.999177060820245
+          },
+          "type": "signature"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 851,
+          "bottom_right_x": 272,
+          "bottom_right_y": 889,
+          "content": "**Shelby Busó**\nChief Sustainability Officer",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9485133043983133,
+            "minimum_content_confidence_score": 0.806332682316527,
+            "block_type_confidence_score": 0.9874965020457876
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 90,
+          "top_left_y": 901,
+          "bottom_right_x": 265,
+          "bottom_right_y": 941,
+          "content": "![img-2.jpeg](img-2.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9280288780311774
+          },
+          "type": "image",
+          "image_id": "img-2.jpeg"
+        },
+        {
+          "top_left_x": 532,
+          "top_left_y": 980,
+          "bottom_right_x": 709,
+          "bottom_right_y": 993,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999959866516354,
+            "minimum_content_confidence_score": 0.999992132258313,
+            "block_type_confidence_score": 0.9999999449803327
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 734,
+          "top_left_y": 980,
+          "bottom_right_x": 746,
+          "bottom_right_y": 995,
+          "content": "3",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999998927117538,
+            "minimum_content_confidence_score": 0.999998927117538,
+            "block_type_confidence_score": 0.9999999358103885
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "markdown": "# Introduction\n\nIn 2022, the City of San Diego committed to an ambitious goal: **achieving net-zero greenhouse gas (GHG) emissions by 2035**. This report marks the first annual assessment of the City’s progress since the adoption of its updated 2022 Climate Action Plan (CAP) and summarizes City action from Fall 2022 through the end of December 2023. It serves as an overview of the City’s efforts to combat climate change and transition to a sustainable future. Appendix A contains a detailed GHG inventory for the 2022 calendar year (January–December 2022), providing a gauge for evaluating emissions reduction strategies. To follow the most recent CAP progress, please visit the City’s dashboard (**climatedashboard.sandiego.gov**).\n\n![img-3.jpeg](img-3.jpeg)",
+      "images": [
+        {
+          "id": "img-3.jpeg",
+          "top_left_x": 2,
+          "top_left_y": 423,
+          "bottom_right_x": 791,
+          "bottom_right_y": 1023,
+          "image_sha256": "2c0dcb8d969c515a8db76c3095feccec91c9aad77eebf730b1a077dc50bbdb38",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "Sustainability & Mobility Department",
+      "footer": "4\n2023 Climate Action Plan ANNUAL REPORT",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9668070698421898,
+        "minimum_page_confidence_score": 0.18933424876122268
+      },
+      "blocks": [
+        {
+          "top_left_x": 44,
+          "top_left_y": 19,
+          "bottom_right_x": 222,
+          "bottom_right_y": 40,
+          "content": "Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9854567020858349,
+            "minimum_content_confidence_score": 0.9420905709508415,
+            "block_type_confidence_score": 0.9999930675973957
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 66,
+          "bottom_right_x": 303,
+          "bottom_right_y": 104,
+          "content": "# Introduction",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998264763767286,
+            "minimum_content_confidence_score": 0.9997040909250393,
+            "block_type_confidence_score": 0.9999947548186582
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 148,
+          "bottom_right_x": 750,
+          "bottom_right_y": 350,
+          "content": "In 2022, the City of San Diego committed to an ambitious goal: **achieving net-zero greenhouse gas (GHG) emissions by 2035**. This report marks the first annual assessment of the City’s progress since the adoption of its updated 2022 Climate Action Plan (CAP) and summarizes City action from Fall 2022 through the end of December 2023. It serves as an overview of the City’s efforts to combat climate change and transition to a sustainable future. Appendix A contains a detailed GHG inventory for the 2022 calendar year (January–December 2022), providing a gauge for evaluating emissions reduction strategies. To follow the most recent CAP progress, please visit the City’s dashboard (**climatedashboard.sandiego.gov**).",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9985885761727503,
+            "minimum_content_confidence_score": 0.8611615985199852,
+            "block_type_confidence_score": 0.9999991655356624
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 2,
+          "top_left_y": 423,
+          "bottom_right_x": 791,
+          "bottom_right_y": 1023,
+          "content": "![img-3.jpeg](img-3.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999977350285647
+          },
+          "type": "image",
+          "image_id": "img-3.jpeg"
+        },
+        {
+          "top_left_x": 44,
+          "top_left_y": 982,
+          "bottom_right_x": 56,
+          "bottom_right_y": 998,
+          "content": "4",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998438602162785,
+            "minimum_content_confidence_score": 0.9998438602162785,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 82,
+          "top_left_y": 981,
+          "bottom_right_x": 257,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9994914057257608,
+            "minimum_content_confidence_score": 0.997192063975972,
+            "block_type_confidence_score": 0.999999889960675
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "markdown": "# Key Highlights:\n\n**San Diego’s total GHG emissions in 2022 were approximately 8.6 million metric tons of carbon dioxide equivalent (MMT CO$_{2}$e).** This represents a 2% decrease from 2021 and a 19% decrease from the 2019 baseline. The decrease was primarily due to an increase in renewable energy in the city’s electricity supply, improvements in on-road vehicle efficiency, and the adoption of electric and hybrid vehicles. See Appendix A for detailed information about the GHG inventory.\n\n![img-4.jpeg](img-4.jpeg)",
+      "images": [
+        {
+          "id": "img-4.jpeg",
+          "top_left_x": 68,
+          "top_left_y": 304,
+          "bottom_right_x": 748,
+          "bottom_right_y": 765,
+          "image_sha256": "960ca15b7c1ad267eb4a36127810273cd0fb12e1afeb385407c97814aeebad53",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SDG Sustainability & Mobility Department",
+      "footer": "2023 Climate Action Plan ANNUAL REPORT\n5",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9699105702634128,
+        "minimum_page_confidence_score": 0.24635861946360335
+      },
+      "blocks": [
+        {
+          "top_left_x": 566,
+          "top_left_y": 22,
+          "bottom_right_x": 755,
+          "bottom_right_y": 42,
+          "content": "SDG Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.950049851816075,
+            "minimum_content_confidence_score": 0.7677606679003364,
+            "block_type_confidence_score": 0.9999995048233361
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 70,
+          "top_left_y": 67,
+          "bottom_right_x": 342,
+          "bottom_right_y": 111,
+          "content": "# Key Highlights:",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9980265804551017,
+            "minimum_content_confidence_score": 0.9940888707541228,
+            "block_type_confidence_score": 0.9998973713361717
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 130,
+          "bottom_right_x": 702,
+          "bottom_right_y": 263,
+          "content": "**San Diego’s total GHG emissions in 2022 were approximately 8.6 million metric tons of carbon dioxide equivalent (MMT CO$_{2}$e).** This represents a 2% decrease from 2021 and a 19% decrease from the 2019 baseline. The decrease was primarily due to an increase in renewable energy in the city’s electricity supply, improvements in on-road vehicle efficiency, and the adoption of electric and hybrid vehicles. See Appendix A for detailed information about the GHG inventory.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.998230260151921,
+            "minimum_content_confidence_score": 0.9451926598468811,
+            "block_type_confidence_score": 0.999998927117538
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 304,
+          "bottom_right_x": 748,
+          "bottom_right_y": 765,
+          "content": "![img-4.jpeg](img-4.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999028538701035
+          },
+          "type": "image",
+          "image_id": "img-4.jpeg"
+        },
+        {
+          "top_left_x": 530,
+          "top_left_y": 981,
+          "bottom_right_x": 716,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999879445482355,
+            "minimum_content_confidence_score": 0.9999693641511719,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 740,
+          "top_left_y": 981,
+          "bottom_right_x": 755,
+          "bottom_right_y": 998,
+          "content": "5",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999926090786457,
+            "minimum_content_confidence_score": 0.9999926090786457,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "markdown": "# Strategies\n\n![img-5.jpeg](img-5.jpeg)\n\n![img-6.jpeg](img-6.jpeg)\n\n![img-7.jpeg](img-7.jpeg)\n\n![img-8.jpeg](img-8.jpeg)\n\n![img-9.jpeg](img-9.jpeg)\n\nATL\nCRA\n\nan Di\n\nero\n\n![img-10.jpeg](img-10.jpeg)",
+      "images": [
+        {
+          "id": "img-5.jpeg",
+          "top_left_x": 134,
+          "top_left_y": 221,
+          "bottom_right_x": 219,
+          "bottom_right_y": 304,
+          "image_sha256": "e4a5ef1b9535e82d46b10429e5c932492f021614dcf318171b6eb75a604a9f6a",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-6.jpeg",
+          "top_left_x": 251,
+          "top_left_y": 221,
+          "bottom_right_x": 336,
+          "bottom_right_y": 304,
+          "image_sha256": "f0358d6a0a5d04fb37f286d0e0b2b41165b83e607d03b18e57dc5f89d7ca8291",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-7.jpeg",
+          "top_left_x": 367,
+          "top_left_y": 221,
+          "bottom_right_x": 451,
+          "bottom_right_y": 304,
+          "image_sha256": "724e51fee2598de465ef5ce12b7c10da75030ec47649221d6e52242741ffe873",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-8.jpeg",
+          "top_left_x": 487,
+          "top_left_y": 221,
+          "bottom_right_x": 570,
+          "bottom_right_y": 304,
+          "image_sha256": "7795e832d37680c2672643c3c6f1328b52d3cf59331f8aea0f19802fc1c32447",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-9.jpeg",
+          "top_left_x": 603,
+          "top_left_y": 221,
+          "bottom_right_x": 686,
+          "bottom_right_y": 304,
+          "image_sha256": "9bd5e8d72b9bcdf16b806fc3820d286c67258abaefc49f7717416936d1ba5d56",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-10.jpeg",
+          "top_left_x": 58,
+          "top_left_y": 723,
+          "bottom_right_x": 325,
+          "bottom_right_y": 958,
+          "image_sha256": "2a166e4b329d3a83784a4501297ee639ffdcc8036baa271de0eba83ba267925a",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "→\nSustainability & Mobility Department",
+      "footer": "6\n2023 Climate Action Plan Annual REPORT",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9323550999902847,
+        "minimum_page_confidence_score": 0.09038911313618504
+      },
+      "blocks": [
+        {
+          "top_left_x": 42,
+          "top_left_y": 19,
+          "bottom_right_x": 68,
+          "bottom_right_y": 39,
+          "content": "→",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.5341768016079742,
+            "minimum_content_confidence_score": 0.5341768016079742,
+            "block_type_confidence_score": 0.995763189785161
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 74,
+          "top_left_y": 26,
+          "bottom_right_x": 215,
+          "bottom_right_y": 38,
+          "content": "Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.818698659752849,
+            "minimum_content_confidence_score": 0.3249763288858909,
+            "block_type_confidence_score": 0.9999997799213883
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 126,
+          "bottom_right_x": 490,
+          "bottom_right_y": 218,
+          "content": "# Strategies",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9978203570177814,
+            "minimum_content_confidence_score": 0.9964060475117602,
+            "block_type_confidence_score": 0.9999692449491794
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 134,
+          "top_left_y": 221,
+          "bottom_right_x": 219,
+          "bottom_right_y": 304,
+          "content": "![img-5.jpeg](img-5.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9989891743080447
+          },
+          "type": "image",
+          "image_id": "img-10.jpeg"
+        },
+        {
+          "top_left_x": 251,
+          "top_left_y": 221,
+          "bottom_right_x": 336,
+          "bottom_right_y": 304,
+          "content": "![img-6.jpeg](img-6.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999973774024795
+          },
+          "type": "image",
+          "image_id": "img-6.jpeg"
+        },
+        {
+          "top_left_x": 367,
+          "top_left_y": 221,
+          "bottom_right_x": 451,
+          "bottom_right_y": 304,
+          "content": "![img-7.jpeg](img-7.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999374190384885
+          },
+          "type": "image",
+          "image_id": "img-7.jpeg"
+        },
+        {
+          "top_left_x": 487,
+          "top_left_y": 221,
+          "bottom_right_x": 570,
+          "bottom_right_y": 304,
+          "content": "![img-8.jpeg](img-8.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999990463265931
+          },
+          "type": "image",
+          "image_id": "img-8.jpeg"
+        },
+        {
+          "top_left_x": 603,
+          "top_left_y": 221,
+          "bottom_right_x": 686,
+          "bottom_right_y": 304,
+          "content": "![img-9.jpeg](img-9.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999990463265931
+          },
+          "type": "image",
+          "image_id": "img-9.jpeg"
+        },
+        {
+          "top_left_x": 0,
+          "top_left_y": 597,
+          "bottom_right_x": 58,
+          "bottom_right_y": 666,
+          "content": "ATL\nCRA",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.3558716994255648,
+            "minimum_content_confidence_score": 0.17076965398696,
+            "block_type_confidence_score": 0.7904850932671709
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 0,
+          "top_left_y": 668,
+          "bottom_right_x": 56,
+          "bottom_right_y": 690,
+          "content": "an Di",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.5498139712504699,
+            "minimum_content_confidence_score": 0.4495105780466433,
+            "block_type_confidence_score": 0.9999966621509202
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 0,
+          "top_left_y": 727,
+          "bottom_right_x": 36,
+          "bottom_right_y": 754,
+          "content": "ero",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9795535923287929,
+            "minimum_content_confidence_score": 0.9795535923287929,
+            "block_type_confidence_score": 0.9999871255623688
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 58,
+          "top_left_y": 723,
+          "bottom_right_x": 325,
+          "bottom_right_y": 958,
+          "content": "![img-10.jpeg](img-10.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9035161458574074
+          },
+          "type": "image",
+          "image_id": "img-10.jpeg"
+        },
+        {
+          "top_left_x": 44,
+          "top_left_y": 984,
+          "bottom_right_x": 54,
+          "bottom_right_y": 997,
+          "content": "6",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998635239903881,
+            "minimum_content_confidence_score": 0.9998635239903881,
+            "block_type_confidence_score": 0.9999869055893096
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 82,
+          "top_left_y": 984,
+          "bottom_right_x": 257,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan Annual REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.77325830590182,
+            "minimum_content_confidence_score": 0.1704159999524893,
+            "block_type_confidence_score": 0.999794403408517
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "markdown": "# Strategy 1\n\n## DECARBONIZATION OF THE BUILT ENVIRONMENT\n\n### Decarbonize Existing Buildings\n\nThe City of San Diego has been proactive in decarbonizing existing buildings, recognizing them as a significant source of GHG emissions. Collaborating with the White House's Building Performance Standards Coalition, the City initiated discussions and working groups in 2022 to develop draft standards for release in 2024. These standards prioritize equity and aim to streamline the electrification process. To support these efforts, the City conducted an analysis of the existing building stock completed in August 2023, laying the groundwork for a comprehensive decarbonization framework. Additionally, the City is using federal funding from the Department of Energy to establish a community pilot program for neighborhood-level residential electrification in low to moderate-income communities.\n\n![img-11.jpeg](img-11.jpeg)\n\n### Decarbonize City Facilities\n\nRecognizing the importance of leading by example, the City Council adopted the Zero Emissions Municipal Buildings & Operations Policy (ZEMBOP) to guide the decarbonization of municipal facilities and transition to a zero-emissions fleet by 2035. Electrification assessments were conducted at more than 400 municipal facilities, and the findings are now guiding the next step of ZEMBOP: developing department-specific Fossil Fuel Elimination Plans. These plans are a part of targeted strategies for energy efficiency, renewable energy and microgrid projects, including partnerships with clean energy vendors to implement energy-saving measures across a portfolio of facilities. In 2023, the City also started construction of its first all-electric fire station and all-electric library.\n\n![img-12.jpeg](img-12.jpeg)\n\n![img-13.jpeg](img-13.jpeg)\n\nOCTOBER 2023: San Diego came in first out of the 100 largest U.S. cities in WalletHub's \"Greenest Cities in America\" ranking, with scores on Environment, Energy Sources, and Lifestyle & Policy propelling it to the top.",
+      "images": [
+        {
+          "id": "img-11.jpeg",
+          "top_left_x": 417,
+          "top_left_y": 182,
+          "bottom_right_x": 746,
+          "bottom_right_y": 507,
+          "image_sha256": "b1ed85f7c25e8ada3fecaf177a81d1ec83194af53d3b5d1c93c894f4b8a134ca",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-12.jpeg",
+          "top_left_x": 417,
+          "top_left_y": 534,
+          "bottom_right_x": 746,
+          "bottom_right_y": 851,
+          "image_sha256": "00b28a22c67228c6b21103dbb4df1dc9a4f57a2412a4e32d1bf22f134dffaa02",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-13.jpeg",
+          "top_left_x": 86,
+          "top_left_y": 861,
+          "bottom_right_x": 150,
+          "bottom_right_y": 943,
+          "image_sha256": "a43e16b7302b5a1ca397624d0749943a6c26b1c2f4780fb6e2429bc7f02ac346",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SD\nSustainability & Mobility Department",
+      "footer": "2023 Climate Action Plan ANNUAL REPORT\n7",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.978722515060621,
+        "minimum_page_confidence_score": 0.2098731458962006
+      },
+      "blocks": [
+        {
+          "top_left_x": 569,
+          "top_left_y": 20,
+          "bottom_right_x": 595,
+          "bottom_right_y": 39,
+          "content": "SD",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9756288414753468,
+            "minimum_content_confidence_score": 0.9756288414753468,
+            "block_type_confidence_score": 0.999988115974237
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 600,
+          "top_left_y": 26,
+          "bottom_right_x": 747,
+          "bottom_right_y": 38,
+          "content": "Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999989858878552,
+            "minimum_content_confidence_score": 0.9999755286352772,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 123,
+          "top_left_y": 76,
+          "bottom_right_x": 311,
+          "bottom_right_y": 119,
+          "content": "# Strategy 1",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9841172894990798,
+            "minimum_content_confidence_score": 0.952573608283065,
+            "block_type_confidence_score": 0.9998420726341761
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 126,
+          "bottom_right_x": 651,
+          "bottom_right_y": 154,
+          "content": "## DECARBONIZATION OF THE BUILT ENVIRONMENT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998192496151924,
+            "minimum_content_confidence_score": 0.9994203337314573,
+            "block_type_confidence_score": 0.9906221284579778
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 182,
+          "bottom_right_x": 357,
+          "bottom_right_y": 207,
+          "content": "### Decarbonize Existing Buildings",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.998932026019591,
+            "minimum_content_confidence_score": 0.9964043906129798,
+            "block_type_confidence_score": 0.9998908162107646
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 213,
+          "bottom_right_x": 397,
+          "bottom_right_y": 502,
+          "content": "The City of San Diego has been proactive in decarbonizing existing buildings, recognizing them as a significant source of GHG emissions. Collaborating with the White House's Building Performance Standards Coalition, the City initiated discussions and working groups in 2022 to develop draft standards for release in 2024. These standards prioritize equity and aim to streamline the electrification process. To support these efforts, the City conducted an analysis of the existing building stock completed in August 2023, laying the groundwork for a comprehensive decarbonization framework. Additionally, the City is using federal funding from the Department of Energy to establish a community pilot program for neighborhood-level residential electrification in low to moderate-income communities.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999594271086614,
+            "minimum_content_confidence_score": 0.9959961311934059,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 417,
+          "top_left_y": 182,
+          "bottom_right_x": 746,
+          "bottom_right_y": 507,
+          "content": "![img-11.jpeg](img-11.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9997952403759754
+          },
+          "type": "image",
+          "image_id": "img-11.jpeg"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 530,
+          "bottom_right_x": 314,
+          "bottom_right_y": 555,
+          "content": "### Decarbonize City Facilities",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999851515388756,
+            "minimum_content_confidence_score": 0.9999557753101334,
+            "block_type_confidence_score": 0.9999994039539004
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 66,
+          "top_left_y": 562,
+          "bottom_right_x": 394,
+          "bottom_right_y": 852,
+          "content": "Recognizing the importance of leading by example, the City Council adopted the Zero Emissions Municipal Buildings & Operations Policy (ZEMBOP) to guide the decarbonization of municipal facilities and transition to a zero-emissions fleet by 2035. Electrification assessments were conducted at more than 400 municipal facilities, and the findings are now guiding the next step of ZEMBOP: developing department-specific Fossil Fuel Elimination Plans. These plans are a part of targeted strategies for energy efficiency, renewable energy and microgrid projects, including partnerships with clean energy vendors to implement energy-saving measures across a portfolio of facilities. In 2023, the City also started construction of its first all-electric fire station and all-electric library.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999912072882384,
+            "minimum_content_confidence_score": 0.9998541091101509,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 417,
+          "top_left_y": 534,
+          "bottom_right_x": 746,
+          "bottom_right_y": 851,
+          "content": "![img-12.jpeg](img-12.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999955892755635
+          },
+          "type": "image",
+          "image_id": "img-12.jpeg"
+        },
+        {
+          "top_left_x": 86,
+          "top_left_y": 861,
+          "bottom_right_x": 150,
+          "bottom_right_y": 943,
+          "content": "![img-13.jpeg](img-13.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.985824453288908
+          },
+          "type": "image",
+          "image_id": "img-13.jpeg"
+        },
+        {
+          "top_left_x": 163,
+          "top_left_y": 881,
+          "bottom_right_x": 688,
+          "bottom_right_y": 936,
+          "content": "OCTOBER 2023: San Diego came in first out of the 100 largest U.S. cities in WalletHub's \"Greenest Cities in America\" ranking, with scores on Environment, Energy Sources, and Lifestyle & Policy propelling it to the top.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9987385885279905,
+            "minimum_content_confidence_score": 0.9607440565789546,
+            "block_type_confidence_score": 0.9575307448327187
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 534,
+          "top_left_y": 983,
+          "bottom_right_x": 711,
+          "bottom_right_y": 994,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999981380763946,
+            "minimum_content_confidence_score": 0.9999930007783079,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 736,
+          "top_left_y": 983,
+          "bottom_right_x": 747,
+          "bottom_right_y": 997,
+          "content": "7",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999995112442896,
+            "minimum_content_confidence_score": 0.999995112442896,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "markdown": "# Strategy 2\n\n## ACCESS TO CLEAN AND RENEWABLE ENERGY\n\n### Citywide Renewable Energy Generation\n\nSan Diego has made significant strides in promoting renewable energy generation through various initiatives and partnerships. Notably, the City coordinated implementation of the first year of the San Diego Solar Equity Program, which provides financial assistance to income-qualifying homeowners for solar panel installations.\n\nThe City played a key role in championing San Diego Community Power's 100% renewable \"Power 100' rate, which now serves almost all City facilities. Additionally, the City worked closely with San Diego Community Power on their strategic plan for offering local customer energy programs. These programs aim to promote energy efficiency, electrification and distributed energy resources, furthering the City's transition to clean and renewable energy sources.\n\n![img-14.jpeg](img-14.jpeg)\n\n### Increase Municipal Zero Emission Vehicles\n\nSan Diego is committed to transitioning to zero-emission vehicles, particularly within our municipal fleet. To accelerate this shift, the City deployed four off-grid EV charging units at two fleet yards, as these mobile chargers required no additional infrastructure and were ready for immediate use. Electrification assessments have been conducted at four fleet yards to support a long-term vehicle replacement and electrification plan. Developing the necessary infrastructure for permanent stations will take time due to\n\n![img-15.jpeg](img-15.jpeg)\n\n![img-16.jpeg](img-16.jpeg)\n\n**Solar Mobile Electric Vehicle Chargers:** Purchased four additional standalone electric vehicle chargers using federal grant funding, thereby enhancing accessibility and resilience in charging infrastructure.",
+      "images": [
+        {
+          "id": "img-14.jpeg",
+          "top_left_x": 394,
+          "top_left_y": 185,
+          "bottom_right_x": 743,
+          "bottom_right_y": 510,
+          "image_sha256": "cf9116e19877465be8d4683789d686aeed4244c29e1ab44f16f794d1215be992",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-15.jpeg",
+          "top_left_x": 394,
+          "top_left_y": 571,
+          "bottom_right_x": 743,
+          "bottom_right_y": 839,
+          "image_sha256": "ca0905bda5b77fa7b51bf0a5e5d4878035956cf970ed88552352ad22a88c44c8",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-16.jpeg",
+          "top_left_x": 96,
+          "top_left_y": 884,
+          "bottom_right_x": 190,
+          "bottom_right_y": 941,
+          "image_sha256": "b7dbfd23919f38a6abd3859d8cbde28f139a064a2732e421141e875371223ce4",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SDS Sustainability & Mobility Department",
+      "footer": "8\n2023 Climate Action Plan ANNUAL REPORT",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9695973538705107,
+        "minimum_page_confidence_score": 0.26275454358213585
+      },
+      "blocks": [
+        {
+          "top_left_x": 44,
+          "top_left_y": 23,
+          "bottom_right_x": 222,
+          "bottom_right_y": 40,
+          "content": "SDS Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9480992604705201,
+            "minimum_content_confidence_score": 0.7624859946728467,
+            "block_type_confidence_score": 0.9999955434378984
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 70,
+          "bottom_right_x": 314,
+          "bottom_right_y": 118,
+          "content": "# Strategy 2",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.8252755465810813,
+            "minimum_content_confidence_score": 0.6224374032933561,
+            "block_type_confidence_score": 0.9998269380624382
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 126,
+          "bottom_right_x": 590,
+          "bottom_right_y": 153,
+          "content": "## ACCESS TO CLEAN AND RENEWABLE ENERGY",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9993545057320932,
+            "minimum_content_confidence_score": 0.9959236340344302,
+            "block_type_confidence_score": 0.9887864331669937
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 181,
+          "bottom_right_x": 262,
+          "bottom_right_y": 229,
+          "content": "### Citywide Renewable Energy Generation",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999041085943927,
+            "minimum_content_confidence_score": 0.9957742017671112,
+            "block_type_confidence_score": 0.9999150109971953
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 236,
+          "bottom_right_x": 375,
+          "bottom_right_y": 361,
+          "content": "San Diego has made significant strides in promoting renewable energy generation through various initiatives and partnerships. Notably, the City coordinated implementation of the first year of the San Diego Solar Equity Program, which provides financial assistance to income-qualifying homeowners for solar panel installations.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999911890496122,
+            "minimum_content_confidence_score": 0.9999021132576033,
+            "block_type_confidence_score": 0.9999997615814777
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 380,
+          "bottom_right_x": 375,
+          "bottom_right_y": 561,
+          "content": "The City played a key role in championing San Diego Community Power's 100% renewable \"Power 100' rate, which now serves almost all City facilities. Additionally, the City worked closely with San Diego Community Power on their strategic plan for offering local customer energy programs. These programs aim to promote energy efficiency, electrification and distributed energy resources, furthering the City's transition to clean and renewable energy sources.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9977788940403901,
+            "minimum_content_confidence_score": 0.8773969931805509,
+            "block_type_confidence_score": 0.9999983310727032
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 394,
+          "top_left_y": 185,
+          "bottom_right_x": 743,
+          "bottom_right_y": 510,
+          "content": "![img-14.jpeg](img-14.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "image",
+          "image_id": "img-14.jpeg"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 588,
+          "bottom_right_x": 283,
+          "bottom_right_y": 635,
+          "content": "### Increase Municipal Zero Emission Vehicles",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999686105307465,
+            "minimum_content_confidence_score": 0.9998991591117187,
+            "block_type_confidence_score": 0.9999998807907247
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 643,
+          "bottom_right_x": 371,
+          "bottom_right_y": 842,
+          "content": "San Diego is committed to transitioning to zero-emission vehicles, particularly within our municipal fleet. To accelerate this shift, the City deployed four off-grid EV charging units at two fleet yards, as these mobile chargers required no additional infrastructure and were ready for immediate use. Electrification assessments have been conducted at four fleet yards to support a long-term vehicle replacement and electrification plan. Developing the necessary infrastructure for permanent stations will take time due to",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999761903032383,
+            "minimum_content_confidence_score": 0.9997904053741925,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 394,
+          "top_left_y": 571,
+          "bottom_right_x": 743,
+          "bottom_right_y": 839,
+          "content": "![img-15.jpeg](img-15.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999973774024795
+          },
+          "type": "image",
+          "image_id": "img-15.jpeg"
+        },
+        {
+          "top_left_x": 96,
+          "top_left_y": 884,
+          "bottom_right_x": 190,
+          "bottom_right_y": 941,
+          "content": "![img-16.jpeg](img-16.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9996184374861408
+          },
+          "type": "image",
+          "image_id": "img-16.jpeg"
+        },
+        {
+          "top_left_x": 216,
+          "top_left_y": 883,
+          "bottom_right_x": 724,
+          "bottom_right_y": 942,
+          "content": "**Solar Mobile Electric Vehicle Chargers:** Purchased four additional standalone electric vehicle chargers using federal grant funding, thereby enhancing accessibility and resilience in charging infrastructure.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9890267286561861,
+            "minimum_content_confidence_score": 0.7501478968073438,
+            "block_type_confidence_score": 0.9982847835776469
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 44,
+          "top_left_y": 983,
+          "bottom_right_x": 55,
+          "bottom_right_y": 998,
+          "content": "8",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9996166507289067,
+            "minimum_content_confidence_score": 0.9996166507289067,
+            "block_type_confidence_score": 0.9999998349410235
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 82,
+          "top_left_y": 983,
+          "bottom_right_x": 257,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9997963294598663,
+            "minimum_content_confidence_score": 0.9989380205862018,
+            "block_type_confidence_score": 0.9999995048233361
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "markdown": "the complexity involved, but the City continues to expand its EV fleet in the meantime.\n\n## Increase Electric Vehicle Adoption\n\nThe City has taken proactive steps to increase EV adoption among residents and visitors. This includes plans to deploy public EV charging infrastructure on City-owned properties, with an initial focus on public-facing facilities such as recreation centers and libraries. The City also expanded its off-grid modular charging capacity for both fleet and employee vehicles.\n\n![img-17.jpeg](img-17.jpeg)\n\n# DID YOU KNOW?\n\n## Transitioning to Clean Energy Generation\n\nSan Diego Community Power (SDCP), a community choice energy program, buys clean energy from the open market at competitive rates for residents and businesses. In 2022, 299,754 San Diego residential accounts and 50,992 commercial/industrial accounts switched from San Diego Gas & Electric to SDCP.\n\nBy 2023 these numbers increased to 530,146 residential accounts and 55,038 commercial/industrial accounts.\n\n![img-18.jpeg](img-18.jpeg)\n\nSAN DIEGO COMMUNITY POWER\n\n![img-19.jpeg](img-19.jpeg)\n\nSERVICE DELIVERY\n\n![img-20.jpeg](img-20.jpeg)\n\nSAN DIEGANS\n\nCurrently, 96.4% of eligible residential customers and 97.2% of eligible commercial/industrial customers in the city have transitioned to SDCP, significantly reducing emissions from electricity use by providing 50% renewable energy. The City's next goal is to ensure all customers receive 100% renewable, carbon-free power.\n\n![img-21.jpeg](img-21.jpeg)\n\nSEPTEMBER 2023: San Diego's Fleet Operations Division was honored as the fleet with \"Best Policies and Procedures\" by the National Association of Fleet Administrators for the fifth consecutive year, reflecting reduced emissions and eco-friendly vehicle use.",
+      "images": [
+        {
+          "id": "img-17.jpeg",
+          "top_left_x": 416,
+          "top_left_y": 123,
+          "bottom_right_x": 746,
+          "bottom_right_y": 366,
+          "image_sha256": "f972e6556ca39a5247a7d00956694cafbd7e8f9625ac168858d57ee05fc614a8",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-18.jpeg",
+          "top_left_x": 432,
+          "top_left_y": 482,
+          "bottom_right_x": 507,
+          "bottom_right_y": 556,
+          "image_sha256": "0b43c1a97d5f9a63025fd7f1843ffca2f013dbea39a454d77e0c10f4d04f5a74",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-19.jpeg",
+          "top_left_x": 515,
+          "top_left_y": 489,
+          "bottom_right_x": 641,
+          "bottom_right_y": 558,
+          "image_sha256": "842dbaf5ed554e81558568d278f03c1a899856fe6ea9454b54a0f3faffe5f83b",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-20.jpeg",
+          "top_left_x": 652,
+          "top_left_y": 500,
+          "bottom_right_x": 717,
+          "bottom_right_y": 552,
+          "image_sha256": "ecf821f8204bf3ad4f06b989a43c9e57c07ba38d0a6b2bcaf920b5bf08c49015",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-21.jpeg",
+          "top_left_x": 92,
+          "top_left_y": 863,
+          "bottom_right_x": 158,
+          "bottom_right_y": 943,
+          "image_sha256": "1d2d51d36d9faf1fc66a18faa1849777252f8a70a21bbf03b46660b09191b6e5",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SD\nSustainability & Mobility Department",
+      "footer": "2023 Climate Action Plan ANNUAL REPORT\n9",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9749927729826066,
+        "minimum_page_confidence_score": 0.18368078747673572
+      },
+      "blocks": [
+        {
+          "top_left_x": 569,
+          "top_left_y": 19,
+          "bottom_right_x": 595,
+          "bottom_right_y": 40,
+          "content": "SD",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9727867897733753,
+            "minimum_content_confidence_score": 0.9727867897733753,
+            "block_type_confidence_score": 0.999995873551576
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 600,
+          "top_left_y": 26,
+          "bottom_right_x": 747,
+          "bottom_right_y": 38,
+          "content": "Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999915341726343,
+            "minimum_content_confidence_score": 0.9999766270465488,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 65,
+          "top_left_y": 121,
+          "bottom_right_x": 372,
+          "bottom_right_y": 156,
+          "content": "the complexity involved, but the City continues to expand its EV fleet in the meantime.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9993846211913779,
+            "minimum_content_confidence_score": 0.9908280633662985,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 66,
+          "top_left_y": 185,
+          "bottom_right_x": 384,
+          "bottom_right_y": 210,
+          "content": "## Increase Electric Vehicle Adoption",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9848038927569001,
+            "minimum_content_confidence_score": 0.924034007203784,
+            "block_type_confidence_score": 0.9999909401759619
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 65,
+          "top_left_y": 217,
+          "bottom_right_x": 391,
+          "bottom_right_y": 359,
+          "content": "The City has taken proactive steps to increase EV adoption among residents and visitors. This includes plans to deploy public EV charging infrastructure on City-owned properties, with an initial focus on public-facing facilities such as recreation centers and libraries. The City also expanded its off-grid modular charging capacity for both fleet and employee vehicles.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999973640224822,
+            "minimum_content_confidence_score": 0.9999691257472011,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 416,
+          "top_left_y": 123,
+          "bottom_right_x": 746,
+          "bottom_right_y": 366,
+          "content": "![img-17.jpeg](img-17.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.99996769532457
+          },
+          "type": "image",
+          "image_id": "img-17.jpeg"
+        },
+        {
+          "top_left_x": 100,
+          "top_left_y": 438,
+          "bottom_right_x": 200,
+          "bottom_right_y": 493,
+          "content": "# DID YOU KNOW?",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9433383731977409,
+            "minimum_content_confidence_score": 0.7981868012921127,
+            "block_type_confidence_score": 0.6442555569017752
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 222,
+          "top_left_y": 438,
+          "bottom_right_x": 721,
+          "bottom_right_y": 471,
+          "content": "## Transitioning to Clean Energy Generation",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9822013891890867,
+            "minimum_content_confidence_score": 0.8932598820564808,
+            "block_type_confidence_score": 0.9988817574595339
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 111,
+          "top_left_y": 524,
+          "bottom_right_x": 375,
+          "bottom_right_y": 685,
+          "content": "San Diego Community Power (SDCP), a community choice energy program, buys clean energy from the open market at competitive rates for residents and businesses. In 2022, 299,754 San Diego residential accounts and 50,992 commercial/industrial accounts switched from San Diego Gas & Electric to SDCP.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9981040710180406,
+            "minimum_content_confidence_score": 0.9169763319607943,
+            "block_type_confidence_score": 0.9999847414437658
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 112,
+          "top_left_y": 723,
+          "bottom_right_x": 351,
+          "bottom_right_y": 794,
+          "content": "By 2023 these numbers increased to 530,146 residential accounts and 55,038 commercial/industrial accounts.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9979528265497211,
+            "minimum_content_confidence_score": 0.9734178034766641,
+            "block_type_confidence_score": 0.9999809268774651
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 432,
+          "top_left_y": 482,
+          "bottom_right_x": 507,
+          "bottom_right_y": 556,
+          "content": "![img-18.jpeg](img-18.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9997635446982748
+          },
+          "type": "image",
+          "image_id": "img-18.jpeg"
+        },
+        {
+          "top_left_x": 432,
+          "top_left_y": 562,
+          "bottom_right_x": 518,
+          "bottom_right_y": 580,
+          "content": "SAN DIEGO COMMUNITY POWER",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9887285906039048,
+            "minimum_content_confidence_score": 0.9609224144063886,
+            "block_type_confidence_score": 0.9699215452736819
+          },
+          "type": "caption"
+        },
+        {
+          "top_left_x": 515,
+          "top_left_y": 489,
+          "bottom_right_x": 641,
+          "bottom_right_y": 558,
+          "content": "![img-19.jpeg](img-19.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999864103261001
+          },
+          "type": "image",
+          "image_id": "img-19.jpeg"
+        },
+        {
+          "top_left_x": 541,
+          "top_left_y": 562,
+          "bottom_right_x": 617,
+          "bottom_right_y": 572,
+          "content": "SERVICE DELIVERY",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999681615859132,
+            "minimum_content_confidence_score": 0.9999413696636474,
+            "block_type_confidence_score": 0.9999959469005546
+          },
+          "type": "caption"
+        },
+        {
+          "top_left_x": 652,
+          "top_left_y": 500,
+          "bottom_right_x": 717,
+          "bottom_right_y": 552,
+          "content": "![img-20.jpeg](img-20.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999988079084972
+          },
+          "type": "image",
+          "image_id": "img-20.jpeg"
+        },
+        {
+          "top_left_x": 656,
+          "top_left_y": 562,
+          "bottom_right_x": 714,
+          "bottom_right_y": 572,
+          "content": "SAN DIEGANS",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9997308791762272,
+            "minimum_content_confidence_score": 0.9994761824687791,
+            "block_type_confidence_score": 0.9999994039539004
+          },
+          "type": "caption"
+        },
+        {
+          "top_left_x": 436,
+          "top_left_y": 616,
+          "bottom_right_x": 712,
+          "bottom_right_y": 780,
+          "content": "Currently, 96.4% of eligible residential customers and 97.2% of eligible commercial/industrial customers in the city have transitioned to SDCP, significantly reducing emissions from electricity use by providing 50% renewable energy. The City's next goal is to ensure all customers receive 100% renewable, carbon-free power.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999925883050577,
+            "minimum_content_confidence_score": 0.9975407050120513,
+            "block_type_confidence_score": 0.999912984788169
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 92,
+          "top_left_y": 863,
+          "bottom_right_x": 158,
+          "bottom_right_y": 943,
+          "content": "![img-21.jpeg](img-21.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9994328855961183
+          },
+          "type": "image",
+          "image_id": "img-21.jpeg"
+        },
+        {
+          "top_left_x": 174,
+          "top_left_y": 884,
+          "bottom_right_x": 721,
+          "bottom_right_y": 937,
+          "content": "SEPTEMBER 2023: San Diego's Fleet Operations Division was honored as the fleet with \"Best Policies and Procedures\" by the National Association of Fleet Administrators for the fifth consecutive year, reflecting reduced emissions and eco-friendly vehicle use.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998744713181476,
+            "minimum_content_confidence_score": 0.9958310700039139,
+            "block_type_confidence_score": 0.9896317985466719
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 534,
+          "top_left_y": 983,
+          "bottom_right_x": 712,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999983594655983,
+            "minimum_content_confidence_score": 0.9999926601869373,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 736,
+          "top_left_y": 983,
+          "bottom_right_x": 747,
+          "bottom_right_y": 997,
+          "content": "9",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999990463265931,
+            "minimum_content_confidence_score": 0.9999990463265931,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "markdown": "## Strategy 3\n\n### MOBILITY AND LAND USE\n\nThe City of San Diego has undertaken a comprehensive approach to mobility and land use planning, aligning multiple major initiatives to advance the goals of its Climate Action Plan (CAP). These efforts are interconnected, aiming to create a more sustainable and climate-resilient transportation system while promoting equitable access and reducing greenhouse gas emissions.\n\nOne key component of this strategy is the enhancement of safe and enjoyable routes for pedestrians and cyclists. The City has embarked on a series of updates and projects aimed at improving biking infrastructure and pedestrian safety, including drafting the City's first ever Mobility Master Plan. These efforts are complemented by the expansion of flexible fleets, such as microtransit services, which provide accessible and affordable transportation options to reduce reliance on private vehicles.\n\nMoreover, the City has committed to the expansion of safe and comfortable bike and pedestrian infrastructure with the adoption of its Complete Streets Policy. In 2022 and 2023, the City completed more than 150 miles of improvements to existing bicycle lanes and constructed more than 175 miles of new lanes. Projects like the Market Street Complete Street and the West Mission Bay Drive bridge replacement prioritize active transportation modes and contribute to safer and more sustainable mobility options.\n\n![img-22.jpeg](img-22.jpeg)\n\n![img-23.jpeg](img-23.jpeg)\n\n![img-24.jpeg](img-24.jpeg)\n\n**SEPTEMBER 2023:** *San Diego was recognized with a Platinum Diamond award from SANDAG for promoting sustainable transportation choices to its employees.*",
+      "images": [
+        {
+          "id": "img-22.jpeg",
+          "top_left_x": 394,
+          "top_left_y": 184,
+          "bottom_right_x": 745,
+          "bottom_right_y": 519,
+          "image_sha256": "e4141d2efbc10e7c359eb4c66c02689df39b5a2e5e2a9742078d10511fa979a2",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-23.jpeg",
+          "top_left_x": 394,
+          "top_left_y": 535,
+          "bottom_right_x": 745,
+          "bottom_right_y": 810,
+          "image_sha256": "d48822bcb2823f5e6e5b3e37b026461576334034184b9fdb116a718a299ffa91",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-24.jpeg",
+          "top_left_x": 86,
+          "top_left_y": 840,
+          "bottom_right_x": 150,
+          "bottom_right_y": 922,
+          "image_sha256": "e9217ee41e8a8720d16d39e7750f728c6c9ea368908de8ce439785ca4b583848",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SDS Sustainability & Mobility Department",
+      "footer": "10 2023 Climate Action Plan ANNUAL REPORT",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.965599727549592,
+        "minimum_page_confidence_score": 0.17816348983419578
+      },
+      "blocks": [
+        {
+          "top_left_x": 44,
+          "top_left_y": 23,
+          "bottom_right_x": 222,
+          "bottom_right_y": 40,
+          "content": "SDS Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9487276661166639,
+            "minimum_content_confidence_score": 0.7689251647844801,
+            "block_type_confidence_score": 0.999996588798741
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 122,
+          "top_left_y": 75,
+          "bottom_right_x": 314,
+          "bottom_right_y": 118,
+          "content": "## Strategy 3",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9858637824301338,
+            "minimum_content_confidence_score": 0.9652084143962193,
+            "block_type_confidence_score": 0.9999693641511719
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 126,
+          "bottom_right_x": 371,
+          "bottom_right_y": 153,
+          "content": "### MOBILITY AND LAND USE",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9975729799478372,
+            "minimum_content_confidence_score": 0.9886893551717613,
+            "block_type_confidence_score": 0.9986465439216216
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 181,
+          "bottom_right_x": 375,
+          "bottom_right_y": 326,
+          "content": "The City of San Diego has undertaken a comprehensive approach to mobility and land use planning, aligning multiple major initiatives to advance the goals of its Climate Action Plan (CAP). These efforts are interconnected, aiming to create a more sustainable and climate-resilient transportation system while promoting equitable access and reducing greenhouse gas emissions.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999795514822097,
+            "minimum_content_confidence_score": 0.999652863879262,
+            "block_type_confidence_score": 0.9999997615814777
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 343,
+          "bottom_right_x": 375,
+          "bottom_right_y": 543,
+          "content": "One key component of this strategy is the enhancement of safe and enjoyable routes for pedestrians and cyclists. The City has embarked on a series of updates and projects aimed at improving biking infrastructure and pedestrian safety, including drafting the City's first ever Mobility Master Plan. These efforts are complemented by the expansion of flexible fleets, such as microtransit services, which provide accessible and affordable transportation options to reduce reliance on private vehicles.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9977030986964025,
+            "minimum_content_confidence_score": 0.8346179297079045,
+            "block_type_confidence_score": 0.9999998807907247
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 561,
+          "bottom_right_x": 356,
+          "bottom_right_y": 778,
+          "content": "Moreover, the City has committed to the expansion of safe and comfortable bike and pedestrian infrastructure with the adoption of its Complete Streets Policy. In 2022 and 2023, the City completed more than 150 miles of improvements to existing bicycle lanes and constructed more than 175 miles of new lanes. Projects like the Market Street Complete Street and the West Mission Bay Drive bridge replacement prioritize active transportation modes and contribute to safer and more sustainable mobility options.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999882926614756,
+            "minimum_content_confidence_score": 0.999859865195499,
+            "block_type_confidence_score": 0.9999997615814777
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 394,
+          "top_left_y": 184,
+          "bottom_right_x": 745,
+          "bottom_right_y": 519,
+          "content": "![img-22.jpeg](img-22.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "image",
+          "image_id": "img-22.jpeg"
+        },
+        {
+          "top_left_x": 394,
+          "top_left_y": 535,
+          "bottom_right_x": 745,
+          "bottom_right_y": 810,
+          "content": "![img-23.jpeg](img-23.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999970197767496
+          },
+          "type": "image",
+          "image_id": "img-23.jpeg"
+        },
+        {
+          "top_left_x": 86,
+          "top_left_y": 840,
+          "bottom_right_x": 150,
+          "bottom_right_y": 922,
+          "content": "![img-24.jpeg](img-24.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.996955157483268
+          },
+          "type": "image",
+          "image_id": "img-24.jpeg"
+        },
+        {
+          "top_left_x": 164,
+          "top_left_y": 872,
+          "bottom_right_x": 710,
+          "bottom_right_y": 908,
+          "content": "**SEPTEMBER 2023:** *San Diego was recognized with a Platinum Diamond award from SANDAG for promoting sustainable transportation choices to its employees.*",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9754164714337603,
+            "minimum_content_confidence_score": 0.7542289260017397,
+            "block_type_confidence_score": 0.9942390936631975
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 44,
+          "top_left_y": 982,
+          "bottom_right_x": 258,
+          "bottom_right_y": 998,
+          "content": "10 2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9995643770148391,
+            "minimum_content_confidence_score": 0.99853102236243,
+            "block_type_confidence_score": 0.999999724901756
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "markdown": "In addition to enhancing active transportation infrastructure, the City is also focused on promoting safe, convenient and enjoyable transit use. Initiatives like providing free transit passes to all City employees, supporting the renewal and expansion of the Youth Opportunity Pass transit program, and establishing new community parking districts aim to reduce traffic congestion and improve air quality.\n\n## Expanding Mobility for All: Flexible Fleets\n\nThe City of San Diego is committed to enhancing mobility options for all residents through the implementation of flexible fleets. These innovative, shared, electric on-demand services offer convenient, accessible and affordable transportation solutions. By diversifying transportation choices, flexible fleets aim to reduce reliance on private vehicles, alleviate parking demand and ease traffic congestion.\n\n### HIGHLIGHTED INITIATIVES:\n\n**FRED Service:** Launched in 2016, the FRED electric shuttle service provides a seamless and convenient transportation option in downtown San Diego, contributing to the reduction of driving and parking demand.\n\n**Beach Bug Pilot:** The introduction of the Beach Bug neighborhood electric vehicle pilot in Pacific Beach in 2023 expanded mobility options while supporting the region’s climate goals and providing a direct connection to the Balboa Avenue Transit Station. The pilot, tentatively scheduled to end in October 2024, has provided valuable data on rider usage and needs that will improve the design of future neighborhood services.\n\n**Expansion Efforts:** Building on the success of FRED and the Beach Bug pilot, the North Park and City Heights Community Development Corporations secured funding for a similar on-demand shuttle service in Mid-City. Additionally, planning commenced for the Logan Heights Via Verde service in collaboration with the City in an advisory capacity.\n\n![img-25.jpeg](img-25.jpeg)\n\n![img-26.jpeg](img-26.jpeg)",
+      "images": [
+        {
+          "id": "img-25.jpeg",
+          "top_left_x": 409,
+          "top_left_y": 449,
+          "bottom_right_x": 713,
+          "bottom_right_y": 648,
+          "image_sha256": "e0e2f033af6ec23069971c53c2b1ab0f2716c999a999650b8ff48b08a129022c",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-26.jpeg",
+          "top_left_x": 409,
+          "top_left_y": 686,
+          "bottom_right_x": 713,
+          "bottom_right_y": 886,
+          "image_sha256": "74828e7107d9adc520e1b832f45b93bb3af139d421291c2e410ed8b24c5aa695",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SDS Sustainability & Mobility Department",
+      "footer": "2023 Climate Action Plan ANNUAL REPORT\n11",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9824074183568616,
+        "minimum_page_confidence_score": 0.3068695352915558
+      },
+      "blocks": [
+        {
+          "top_left_x": 566,
+          "top_left_y": 22,
+          "bottom_right_x": 755,
+          "bottom_right_y": 42,
+          "content": "SDS Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9015720291539615,
+            "minimum_content_confidence_score": 0.5444645870907432,
+            "block_type_confidence_score": 0.999999889960675
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 111,
+          "bottom_right_x": 736,
+          "bottom_right_y": 183,
+          "content": "In addition to enhancing active transportation infrastructure, the City is also focused on promoting safe, convenient and enjoyable transit use. Initiatives like providing free transit passes to all City employees, supporting the renewal and expansion of the Youth Opportunity Pass transit program, and establishing new community parking districts aim to reduce traffic congestion and improve air quality.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999908233334176,
+            "minimum_content_confidence_score": 0.9998545858196574,
+            "block_type_confidence_score": 0.9999953508594287
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 253,
+          "bottom_right_x": 595,
+          "bottom_right_y": 284,
+          "content": "## Expanding Mobility for All: Flexible Fleets",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9434515980372706,
+            "minimum_content_confidence_score": 0.6042650954268969,
+            "block_type_confidence_score": 0.9999785427891018
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 297,
+          "bottom_right_x": 698,
+          "bottom_right_y": 387,
+          "content": "The City of San Diego is committed to enhancing mobility options for all residents through the implementation of flexible fleets. These innovative, shared, electric on-demand services offer convenient, accessible and affordable transportation solutions. By diversifying transportation choices, flexible fleets aim to reduce reliance on private vehicles, alleviate parking demand and ease traffic congestion.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999924583857676,
+            "minimum_content_confidence_score": 0.9999070591607262,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 403,
+          "bottom_right_x": 305,
+          "bottom_right_y": 422,
+          "content": "### HIGHLIGHTED INITIATIVES:",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.99888502321356,
+            "minimum_content_confidence_score": 0.9973436479931271,
+            "block_type_confidence_score": 0.9463709008327498
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 434,
+          "bottom_right_x": 368,
+          "bottom_right_y": 524,
+          "content": "**FRED Service:** Launched in 2016, the FRED electric shuttle service provides a seamless and convenient transportation option in downtown San Diego, contributing to the reduction of driving and parking demand.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999080363059906,
+            "minimum_content_confidence_score": 0.9987316007239252,
+            "block_type_confidence_score": 0.9968205772929357
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 543,
+          "bottom_right_x": 388,
+          "bottom_right_y": 723,
+          "content": "**Beach Bug Pilot:** The introduction of the Beach Bug neighborhood electric vehicle pilot in Pacific Beach in 2023 expanded mobility options while supporting the region’s climate goals and providing a direct connection to the Balboa Avenue Transit Station. The pilot, tentatively scheduled to end in October 2024, has provided valuable data on rider usage and needs that will improve the design of future neighborhood services.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9987226327234214,
+            "minimum_content_confidence_score": 0.9176165655363602,
+            "block_type_confidence_score": 0.999998927117538
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 741,
+          "bottom_right_x": 373,
+          "bottom_right_y": 903,
+          "content": "**Expansion Efforts:** Building on the success of FRED and the Beach Bug pilot, the North Park and City Heights Community Development Corporations secured funding for a similar on-demand shuttle service in Mid-City. Additionally, planning commenced for the Logan Heights Via Verde service in collaboration with the City in an advisory capacity.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999649134822246,
+            "minimum_content_confidence_score": 0.9994138254667257,
+            "block_type_confidence_score": 0.9999990463265931
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 409,
+          "top_left_y": 449,
+          "bottom_right_x": 713,
+          "bottom_right_y": 648,
+          "content": "![img-25.jpeg](img-25.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999997615814777
+          },
+          "type": "image",
+          "image_id": "img-25.jpeg"
+        },
+        {
+          "top_left_x": 409,
+          "top_left_y": 686,
+          "bottom_right_x": 713,
+          "bottom_right_y": 886,
+          "content": "![img-26.jpeg](img-26.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999921322487634
+          },
+          "type": "image",
+          "image_id": "img-26.jpeg"
+        },
+        {
+          "top_left_x": 530,
+          "top_left_y": 981,
+          "bottom_right_x": 715,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999791476956865,
+            "minimum_content_confidence_score": 0.9999073829640566,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 730,
+          "top_left_y": 981,
+          "bottom_right_x": 755,
+          "bottom_right_y": 998,
+          "content": "11",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999643576942727,
+            "minimum_content_confidence_score": 0.9999643576942727,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "markdown": "## City Mobility Loading Prioritization\n\n![img-27.jpeg](img-27.jpeg)\n\n![img-28.jpeg](img-28.jpeg)\n\nFurthermore, the City's climate-focused land use initiatives, such as Blueprint SD, aim to create connected multimodal networks that prioritize sustainable modes of transportation. These efforts are complemented by policy updates like Sustainable Development Areas and Housing Action Package 2.0, which encourage the development of homes connected to convenient and affordable transportation options. To help developers build projects that meet the City's CAP goals, the City released the Mobility Evaluation Tool to give developers a simple way to design projects that comply with the Complete Communities: Mobility Choices regulations and implement measures to reduce vehicle miles traveled (VMT).\n\nThe City also leads by example by encouraging municipal employees to commute to work using best practice Transportation Demand Management (TDM) strategies and maintains a strong working relationship with the regional Sustainable Transportation Services program at SANDAG, and has been recognized with a Platinum Diamond award for its efforts.\n\nOverall, the integration of these various plans and initiatives demonstrates the City's commitment to creating a more sustainable, equitable and climate-resilient transportation system that aligns with the goals of its Climate Action Plan. By prioritizing active transportation, promoting public transit use and implementing climate-focused land use policies, the City of San Diego is working toward a greener and more sustainable future for its residents and communities.",
+      "images": [
+        {
+          "id": "img-27.jpeg",
+          "top_left_x": 71,
+          "top_left_y": 133,
+          "bottom_right_x": 340,
+          "bottom_right_y": 433,
+          "image_sha256": "23c494184f09badade78dc3ae085b13e0799d85c98f58280e022c83e6fd2dccf",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-28.jpeg",
+          "top_left_x": 371,
+          "top_left_y": 108,
+          "bottom_right_x": 743,
+          "bottom_right_y": 433,
+          "image_sha256": "470f6ef1add83756b3321726ef224cd1f0c0cdae497c42b7a5719fefdf0ccb9b",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SD Sustainability & Mobility Department",
+      "footer": "12 2023 Climate Action Plan ANNUAL REPORT",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.971717453274732,
+        "minimum_page_confidence_score": 0.2933539259250882
+      },
+      "blocks": [
+        {
+          "top_left_x": 44,
+          "top_left_y": 23,
+          "bottom_right_x": 222,
+          "bottom_right_y": 39,
+          "content": "SD Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.8879574613039125,
+            "minimum_content_confidence_score": 0.4466620964399107,
+            "block_type_confidence_score": 0.9999950482682162
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 71,
+          "top_left_y": 106,
+          "bottom_right_x": 338,
+          "bottom_right_y": 127,
+          "content": "## City Mobility Loading Prioritization",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998439582683307,
+            "minimum_content_confidence_score": 0.9993734711483264,
+            "block_type_confidence_score": 0.9992785893636327
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 71,
+          "top_left_y": 133,
+          "bottom_right_x": 340,
+          "bottom_right_y": 433,
+          "content": "![img-27.jpeg](img-27.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9970070563741078
+          },
+          "type": "image",
+          "image_id": "img-27.jpeg"
+        },
+        {
+          "top_left_x": 371,
+          "top_left_y": 108,
+          "bottom_right_x": 743,
+          "bottom_right_y": 433,
+          "content": "![img-28.jpeg](img-28.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999991655356624
+          },
+          "type": "image",
+          "image_id": "img-28.jpeg"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 468,
+          "bottom_right_x": 743,
+          "bottom_right_y": 595,
+          "content": "Furthermore, the City's climate-focused land use initiatives, such as Blueprint SD, aim to create connected multimodal networks that prioritize sustainable modes of transportation. These efforts are complemented by policy updates like Sustainable Development Areas and Housing Action Package 2.0, which encourage the development of homes connected to convenient and affordable transportation options. To help developers build projects that meet the City's CAP goals, the City released the Mobility Evaluation Tool to give developers a simple way to design projects that comply with the Complete Communities: Mobility Choices regulations and implement measures to reduce vehicle miles traveled (VMT).",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9985215782799247,
+            "minimum_content_confidence_score": 0.8611608065858776,
+            "block_type_confidence_score": 0.9999907017622996
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 613,
+          "bottom_right_x": 732,
+          "bottom_right_y": 684,
+          "content": "The City also leads by example by encouraging municipal employees to commute to work using best practice Transportation Demand Management (TDM) strategies and maintains a strong working relationship with the regional Sustainable Transportation Services program at SANDAG, and has been recognized with a Platinum Diamond award for its efforts.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999082027249755,
+            "minimum_content_confidence_score": 0.9979505902031537,
+            "block_type_confidence_score": 0.9999996423722521
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 704,
+          "bottom_right_x": 747,
+          "bottom_right_y": 793,
+          "content": "Overall, the integration of these various plans and initiatives demonstrates the City's commitment to creating a more sustainable, equitable and climate-resilient transportation system that aligns with the goals of its Climate Action Plan. By prioritizing active transportation, promoting public transit use and implementing climate-focused land use policies, the City of San Diego is working toward a greener and more sustainable future for its residents and communities.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999219114544896,
+            "minimum_content_confidence_score": 0.9978266059928758,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 44,
+          "top_left_y": 982,
+          "bottom_right_x": 258,
+          "bottom_right_y": 998,
+          "content": "12 2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9996350913483223,
+            "minimum_content_confidence_score": 0.9989436115574833,
+            "block_type_confidence_score": 0.99999955984293
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "markdown": "## Biking Infrastructure Expansion\n\nThe City of San Diego is committed to enhancing biking infrastructure to promote sustainable transportation options. The Complete Streets Policy (Council Policy 900-23) plays a key role in this effort by requiring new mobility projects to include multimodal infrastructure (such as sidewalks or bike lanes) whenever possible. Additionally, it mandates that repair or reconstruction projects also consider these features. This opportunistic approach allows for a faster expansion of bike lanes. Between 2022 and 2023, the City improved more than 150 miles of existing bicycle lanes and built more than 175 miles of new ones.\n\n### MARKET STREET COMPLETE STREET\n\nCompleted in 2023, this project in the Encanto neighborhood features more than two miles of Class IV protected bike lanes, on-street Class II bike lanes, wider sidewalks and street trees.\n\n### BALBOA PARK PIPELINE REPLACEMENT\n\nPark Boulevard now boasts a dedicated bus lane and buffered bike lane, enhancing safety and accessibility for cyclists.\n\n### WEST MISSION BAY DRIVE BRIDGE REPLACEMENT\n\nOpened in 2023, this project includes Class I protected bike lanes in both directions, contributing to the city's largest bridge replacement effort.\n\n### CONVOY STREET REPAVING\n\nIn progress since 2023, the repaving of Convoy Street from State Route 52 to Kearny Mesa Road includes separated bike lanes and sidewalk replacement, prioritizing safety and mobility for all transportation modes.\n\n### UNIVERSITY AVENUE COMPLETE STREET\n\nAwarded in 2022, this project aims to improve biking infrastructure with three new roundabouts, Class II bike lanes, and widened sidewalks along University Avenue between Euclid and Fairmont avenues.\n\n![img-29.jpeg](img-29.jpeg)\n\n![img-30.jpeg](img-30.jpeg)\n\n![img-31.jpeg](img-31.jpeg)",
+      "images": [
+        {
+          "id": "img-29.jpeg",
+          "top_left_x": 416,
+          "top_left_y": 293,
+          "bottom_right_x": 721,
+          "bottom_right_y": 493,
+          "image_sha256": "a195dbce9bdd7536f9c009da8ec116dcdfb366a49219ab35bc6491320da8ab89",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-30.jpeg",
+          "top_left_x": 416,
+          "top_left_y": 505,
+          "bottom_right_x": 721,
+          "bottom_right_y": 706,
+          "image_sha256": "fc27d5ac58d6b96541a9fd167dd414037715268d4dba29d5179f06a815e1dae7",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-31.jpeg",
+          "top_left_x": 416,
+          "top_left_y": 719,
+          "bottom_right_x": 721,
+          "bottom_right_y": 915,
+          "image_sha256": "2ea013ba1cb012589edf49992a967424bea8b848e1591d13454690d972deedb5",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SDS Sustainability & Mobility Department",
+      "footer": "2023 Climate Action Plan ANNUAL REPORT\n13",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9822771702618249,
+        "minimum_page_confidence_score": 0.26057756377628866
+      },
+      "blocks": [
+        {
+          "top_left_x": 566,
+          "top_left_y": 22,
+          "bottom_right_x": 755,
+          "bottom_right_y": 42,
+          "content": "SDS Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9214466242833342,
+            "minimum_content_confidence_score": 0.6513118834591686,
+            "block_type_confidence_score": 0.9999996148625269
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 101,
+          "bottom_right_x": 480,
+          "bottom_right_y": 133,
+          "content": "## Biking Infrastructure Expansion",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9663874400153983,
+            "minimum_content_confidence_score": 0.8656117454419271,
+            "block_type_confidence_score": 0.9999985694905718
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 148,
+          "bottom_right_x": 698,
+          "bottom_right_y": 274,
+          "content": "The City of San Diego is committed to enhancing biking infrastructure to promote sustainable transportation options. The Complete Streets Policy (Council Policy 900-23) plays a key role in this effort by requiring new mobility projects to include multimodal infrastructure (such as sidewalks or bike lanes) whenever possible. Additionally, it mandates that repair or reconstruction projects also consider these features. This opportunistic approach allows for a faster expansion of bike lanes. Between 2022 and 2023, the City improved more than 150 miles of existing bicycle lanes and built more than 175 miles of new ones.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999982450599666,
+            "minimum_content_confidence_score": 0.9993946396475565,
+            "block_type_confidence_score": 0.9999996423722521
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 291,
+          "bottom_right_x": 325,
+          "bottom_right_y": 307,
+          "content": "### MARKET STREET COMPLETE STREET",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9319222344457337,
+            "minimum_content_confidence_score": 0.6604614763402015,
+            "block_type_confidence_score": 0.7966524767188411
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 309,
+          "bottom_right_x": 391,
+          "bottom_right_y": 380,
+          "content": "Completed in 2023, this project in the Encanto neighborhood features more than two miles of Class IV protected bike lanes, on-street Class II bike lanes, wider sidewalks and street trees.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999171921266696,
+            "minimum_content_confidence_score": 0.9990811453826183,
+            "block_type_confidence_score": 0.9999896288992495
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 399,
+          "bottom_right_x": 351,
+          "bottom_right_y": 415,
+          "content": "### BALBOA PARK PIPELINE REPLACEMENT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998451402121068,
+            "minimum_content_confidence_score": 0.9993980243937219,
+            "block_type_confidence_score": 0.9999996423722521
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 417,
+          "bottom_right_x": 384,
+          "bottom_right_y": 471,
+          "content": "Park Boulevard now boasts a dedicated bus lane and buffered bike lane, enhancing safety and accessibility for cyclists.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999694637083051,
+            "minimum_content_confidence_score": 0.9997845405059066,
+            "block_type_confidence_score": 0.9999996423722521
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 489,
+          "bottom_right_x": 388,
+          "bottom_right_y": 506,
+          "content": "### WEST MISSION BAY DRIVE BRIDGE REPLACEMENT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999418064898308,
+            "minimum_content_confidence_score": 0.9996990871128117,
+            "block_type_confidence_score": 0.9999998807907247
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 508,
+          "bottom_right_x": 365,
+          "bottom_right_y": 579,
+          "content": "Opened in 2023, this project includes Class I protected bike lanes in both directions, contributing to the city's largest bridge replacement effort.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9930773880811175,
+            "minimum_content_confidence_score": 0.8480287435437796,
+            "block_type_confidence_score": 0.9999986886995842
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 597,
+          "bottom_right_x": 275,
+          "bottom_right_y": 613,
+          "content": "### CONVOY STREET REPAVING",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9992324155656478,
+            "minimum_content_confidence_score": 0.997228397869321,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 615,
+          "bottom_right_x": 388,
+          "bottom_right_y": 706,
+          "content": "In progress since 2023, the repaving of Convoy Street from State Route 52 to Kearny Mesa Road includes separated bike lanes and sidewalk replacement, prioritizing safety and mobility for all transportation modes.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9997923065844114,
+            "minimum_content_confidence_score": 0.9945492330312456,
+            "block_type_confidence_score": 0.9999998807907247
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 724,
+          "bottom_right_x": 357,
+          "bottom_right_y": 740,
+          "content": "### UNIVERSITY AVENUE COMPLETE STREET",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999995210847257,
+            "minimum_content_confidence_score": 0.9999914170043662,
+            "block_type_confidence_score": 0.9999998807907247
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 742,
+          "bottom_right_x": 384,
+          "bottom_right_y": 830,
+          "content": "Awarded in 2022, this project aims to improve biking infrastructure with three new roundabouts, Class II bike lanes, and widened sidewalks along University Avenue between Euclid and Fairmont avenues.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999299809125252,
+            "minimum_content_confidence_score": 0.9985754243759565,
+            "block_type_confidence_score": 0.9999996423722521
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 416,
+          "top_left_y": 293,
+          "bottom_right_x": 721,
+          "bottom_right_y": 493,
+          "content": "![img-29.jpeg](img-29.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999992847447459
+          },
+          "type": "image",
+          "image_id": "img-29.jpeg"
+        },
+        {
+          "top_left_x": 416,
+          "top_left_y": 505,
+          "bottom_right_x": 721,
+          "bottom_right_y": 706,
+          "content": "![img-30.jpeg](img-30.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999783043793048
+          },
+          "type": "image",
+          "image_id": "img-30.jpeg"
+        },
+        {
+          "top_left_x": 416,
+          "top_left_y": 719,
+          "bottom_right_x": 721,
+          "bottom_right_y": 915,
+          "content": "![img-31.jpeg](img-31.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999973774024795
+          },
+          "type": "image",
+          "image_id": "img-31.jpeg"
+        },
+        {
+          "top_left_x": 530,
+          "top_left_y": 981,
+          "bottom_right_x": 715,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999765921553263,
+            "minimum_content_confidence_score": 0.9999417100552707,
+            "block_type_confidence_score": 0.999999889960675
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 729,
+          "top_left_y": 981,
+          "bottom_right_x": 755,
+          "bottom_right_y": 998,
+          "content": "13",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999449283417642,
+            "minimum_content_confidence_score": 0.9999449283417642,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "markdown": "# Strategy 4\n\n## CIRCULAR ECONOMY AND CLEAN COMMUNITIES\n\n### Zero Waste to Landfill\n\nIn alignment with its commitment to achieving zero waste to landfill, the City of San Diego has undertaken significant efforts to enhance recycling practices and reduce organic waste disposal, as mandated by the amended Citywide Recycling Ordinance in 2022 to comply with Senate Bill 1383, a state law requiring organic waste recycling. The City's Environmental Services Department accomplished the following in the course of about a year:\n\n- In order to support the biggest change to trash and recycling in San Diego's history, the City expanded its fleet of trucks, increased staffing, and established new landfill operations.\n- Waste haulers distributed green and blue bins to approximately 200,000 residents.\n- Ongoing checks identified missed properties, ensuring broad participation.\n- A multicultural marketing campaign educated diverse communities about organic waste recycling.\n- Diverse outreach efforts engaged residents through various channels like mailers, billboards and social media.\n\nAdditionally, the City opened a mattress recycling center at the Miramar Landfill, providing residents with a convenient and sustainable way to dispose of mattresses and reduce landfill waste.\n\n![img-32.jpeg](img-32.jpeg)\n\n![img-33.jpeg](img-33.jpeg)\n\n![img-34.jpeg](img-34.jpeg)\n\nDECEMBER 2023: San Diego was granted A-list status by the Carbon Disclosure Project among 119 cities worldwide, marking its third appearance on the list and its first A rating, joining visionary cities like Barcelona, Toronto and Buenos Aires.",
+      "images": [
+        {
+          "id": "img-32.jpeg",
+          "top_left_x": 419,
+          "top_left_y": 182,
+          "bottom_right_x": 748,
+          "bottom_right_y": 472,
+          "image_sha256": "f0f6ff9eb237d95a742846400a7f3578255a005a82071d36ad353cf011a75c6e",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-33.jpeg",
+          "top_left_x": 419,
+          "top_left_y": 502,
+          "bottom_right_x": 746,
+          "bottom_right_y": 773,
+          "image_sha256": "5f32aca739482cecb60c382496f74270c0352c107d804ce1eaea2c01eb0c6465",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-34.jpeg",
+          "top_left_x": 88,
+          "top_left_y": 859,
+          "bottom_right_x": 154,
+          "bottom_right_y": 941,
+          "image_sha256": "160addee66136ccdce244834acf102efa2edfef4704fe3b0cc09a17b17434f27",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SD\nSustainability & Mobility Department",
+      "footer": "14\n2023 Climate Action Plan ANNUAL REPORT",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9692701334572716,
+        "minimum_page_confidence_score": 0.2819035156536901
+      },
+      "blocks": [
+        {
+          "top_left_x": 44,
+          "top_left_y": 20,
+          "bottom_right_x": 68,
+          "bottom_right_y": 40,
+          "content": "SD",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9792017579719302,
+            "minimum_content_confidence_score": 0.9792017579719302,
+            "block_type_confidence_score": 0.9998223364423947
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 73,
+          "top_left_y": 26,
+          "bottom_right_x": 219,
+          "bottom_right_y": 38,
+          "content": "Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999923877454859,
+            "minimum_content_confidence_score": 0.9999807565975936,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 127,
+          "top_left_y": 76,
+          "bottom_right_x": 315,
+          "bottom_right_y": 118,
+          "content": "# Strategy 4",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.8837326686544819,
+            "minimum_content_confidence_score": 0.6513539670140749,
+            "block_type_confidence_score": 0.9999810460826691
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 70,
+          "top_left_y": 125,
+          "bottom_right_x": 643,
+          "bottom_right_y": 152,
+          "content": "## CIRCULAR ECONOMY AND CLEAN COMMUNITIES",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9993112541740907,
+            "minimum_content_confidence_score": 0.9959296639002696,
+            "block_type_confidence_score": 0.9835521386447074
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 69,
+          "top_left_y": 179,
+          "bottom_right_x": 279,
+          "bottom_right_y": 201,
+          "content": "### Zero Waste to Landfill",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9994961668253242,
+            "minimum_content_confidence_score": 0.9975232584379783,
+            "block_type_confidence_score": 0.9989675225958017
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 69,
+          "top_left_y": 210,
+          "bottom_right_x": 398,
+          "bottom_right_y": 371,
+          "content": "In alignment with its commitment to achieving zero waste to landfill, the City of San Diego has undertaken significant efforts to enhance recycling practices and reduce organic waste disposal, as mandated by the amended Citywide Recycling Ordinance in 2022 to comply with Senate Bill 1383, a state law requiring organic waste recycling. The City's Environmental Services Department accomplished the following in the course of about a year:",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999446972900667,
+            "minimum_content_confidence_score": 0.9968465532202158,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 92,
+          "top_left_y": 379,
+          "bottom_right_x": 381,
+          "bottom_right_y": 743,
+          "content": "- In order to support the biggest change to trash and recycling in San Diego's history, the City expanded its fleet of trucks, increased staffing, and established new landfill operations.\n- Waste haulers distributed green and blue bins to approximately 200,000 residents.\n- Ongoing checks identified missed properties, ensuring broad participation.\n- A multicultural marketing campaign educated diverse communities about organic waste recycling.\n- Diverse outreach efforts engaged residents through various channels like mailers, billboards and social media.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999311040888665,
+            "minimum_content_confidence_score": 0.9963920820431625,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "list"
+        },
+        {
+          "top_left_x": 69,
+          "top_left_y": 764,
+          "bottom_right_x": 391,
+          "bottom_right_y": 834,
+          "content": "Additionally, the City opened a mattress recycling center at the Miramar Landfill, providing residents with a convenient and sustainable way to dispose of mattresses and reduce landfill waste.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999882250354071,
+            "minimum_content_confidence_score": 0.9998598295228305,
+            "block_type_confidence_score": 0.9999964237340748
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 419,
+          "top_left_y": 182,
+          "bottom_right_x": 748,
+          "bottom_right_y": 472,
+          "content": "![img-32.jpeg](img-32.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999897481064004
+          },
+          "type": "image",
+          "image_id": "img-32.jpeg"
+        },
+        {
+          "top_left_x": 419,
+          "top_left_y": 502,
+          "bottom_right_x": 746,
+          "bottom_right_y": 773,
+          "content": "![img-33.jpeg](img-33.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9994924262156614
+          },
+          "type": "image",
+          "image_id": "img-33.jpeg"
+        },
+        {
+          "top_left_x": 88,
+          "top_left_y": 859,
+          "bottom_right_x": 154,
+          "bottom_right_y": 941,
+          "content": "![img-34.jpeg](img-34.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9923681441528889
+          },
+          "type": "image",
+          "image_id": "img-34.jpeg"
+        },
+        {
+          "top_left_x": 165,
+          "top_left_y": 884,
+          "bottom_right_x": 688,
+          "bottom_right_y": 937,
+          "content": "DECEMBER 2023: San Diego was granted A-list status by the Carbon Disclosure Project among 119 cities worldwide, marking its third appearance on the list and its first A rating, joining visionary cities like Barcelona, Toronto and Buenos Aires.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999673944642392,
+            "minimum_content_confidence_score": 0.9993818948378184,
+            "block_type_confidence_score": 0.8727939835741874
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 44,
+          "top_left_y": 983,
+          "bottom_right_x": 62,
+          "bottom_right_y": 997,
+          "content": "14",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999756818971167,
+            "minimum_content_confidence_score": 0.9999756818971167,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 81,
+          "top_left_y": 983,
+          "bottom_right_x": 257,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.99999616976425,
+            "minimum_content_confidence_score": 0.9999824425969461,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "markdown": "# Strategy 5\n\n## RESILIENT INFRASTRUCTURES AND HEALTHY ECOSYSTEMS\n\n### Tree Canopy\n\nInvesting in urban forestry is essential for enhancing resilience, improving air quality, and promoting community well-being. The City has secured funding to support its tree-planting efforts: A $10 million grant from the federal government for the “Ready, Set, Grow San Diego” program, and $4.69 million for the “Trees for Communities,” a San Diego County Air Pollution Control District settlement program. Both large-scale planting programs are focused in San Diego’s Communities of Concern, using tools like CalEnviroScreen and the Climate Equity Index to prioritize planting locations. The CAP goal is to plant 40,000 new trees in Communities of Concern by 2030. Ongoing tree operations in 2023 resulted in 1,586 trees planted and 48,754 trees trimmed or otherwise maintained.\n\n![img-35.jpeg](img-35.jpeg)\n\n![img-36.jpeg](img-36.jpeg)\n\n**OCTOBER 2023:** *The San Diego chapter of the Association of Environmental Professionals presented San Diego the Outstanding Innovation in Resilient or Sustainable Planning and Design award for its CAP Implementation Plan.*",
+      "images": [
+        {
+          "id": "img-35.jpeg",
+          "top_left_x": 71,
+          "top_left_y": 371,
+          "bottom_right_x": 732,
+          "bottom_right_y": 824,
+          "image_sha256": "896ae9d33b49cfe99b63b3bae4683c761c331905fef113b90f9f6b449c8d6dfd",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-36.jpeg",
+          "top_left_x": 87,
+          "top_left_y": 855,
+          "bottom_right_x": 154,
+          "bottom_right_y": 937,
+          "image_sha256": "443486000ff05a8aa610dc812bde552f529f3d0d94a01c5c2f65e0c138fd2b44",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SDS Sustainability & Mobility Department",
+      "footer": "2023 Climate Action Plan ANNUAL REPORT\n15",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9773556873971296,
+        "minimum_page_confidence_score": 0.18405518188892303
+      },
+      "blocks": [
+        {
+          "top_left_x": 566,
+          "top_left_y": 22,
+          "bottom_right_x": 755,
+          "bottom_right_y": 42,
+          "content": "SDS Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9440505046585317,
+            "minimum_content_confidence_score": 0.7580116190559706,
+            "block_type_confidence_score": 0.9999996698821269
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 70,
+          "top_left_y": 70,
+          "bottom_right_x": 316,
+          "bottom_right_y": 119,
+          "content": "# Strategy 5",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9133479988705644,
+            "minimum_content_confidence_score": 0.7772828864658753,
+            "block_type_confidence_score": 0.9998085865237403
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 70,
+          "top_left_y": 125,
+          "bottom_right_x": 755,
+          "bottom_right_y": 152,
+          "content": "## RESILIENT INFRASTRUCTURES AND HEALTHY ECOSYSTEMS",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998154349379894,
+            "minimum_content_confidence_score": 0.9993734711483264,
+            "block_type_confidence_score": 0.9993462071478452
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 70,
+          "top_left_y": 178,
+          "bottom_right_x": 190,
+          "bottom_right_y": 204,
+          "content": "### Tree Canopy",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9994366084952113,
+            "minimum_content_confidence_score": 0.9983378903099486,
+            "block_type_confidence_score": 0.9953893604708153
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 70,
+          "top_left_y": 209,
+          "bottom_right_x": 757,
+          "bottom_right_y": 352,
+          "content": "Investing in urban forestry is essential for enhancing resilience, improving air quality, and promoting community well-being. The City has secured funding to support its tree-planting efforts: A $10 million grant from the federal government for the “Ready, Set, Grow San Diego” program, and $4.69 million for the “Trees for Communities,” a San Diego County Air Pollution Control District settlement program. Both large-scale planting programs are focused in San Diego’s Communities of Concern, using tools like CalEnviroScreen and the Climate Equity Index to prioritize planting locations. The CAP goal is to plant 40,000 new trees in Communities of Concern by 2030. Ongoing tree operations in 2023 resulted in 1,586 trees planted and 48,754 trees trimmed or otherwise maintained.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9997545383221691,
+            "minimum_content_confidence_score": 0.9825895937932277,
+            "block_type_confidence_score": 0.999998927117538
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 71,
+          "top_left_y": 371,
+          "bottom_right_x": 732,
+          "bottom_right_y": 824,
+          "content": "![img-35.jpeg](img-35.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999998807907247
+          },
+          "type": "image",
+          "image_id": "img-35.jpeg"
+        },
+        {
+          "top_left_x": 87,
+          "top_left_y": 855,
+          "bottom_right_x": 154,
+          "bottom_right_y": 937,
+          "content": "![img-36.jpeg](img-36.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9932678655026722
+          },
+          "type": "image",
+          "image_id": "img-36.jpeg"
+        },
+        {
+          "top_left_x": 170,
+          "top_left_y": 882,
+          "bottom_right_x": 692,
+          "bottom_right_y": 936,
+          "content": "**OCTOBER 2023:** *The San Diego chapter of the Association of Environmental Professionals presented San Diego the Outstanding Innovation in Resilient or Sustainable Planning and Design award for its CAP Implementation Plan.*",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9878611565520363,
+            "minimum_content_confidence_score": 0.7261873910042641,
+            "block_type_confidence_score": 0.9936690762258352
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 531,
+          "top_left_y": 981,
+          "bottom_right_x": 718,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999083605585745,
+            "minimum_content_confidence_score": 0.9995412547886642,
+            "block_type_confidence_score": 0.9999999449803327
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 732,
+          "top_left_y": 981,
+          "bottom_right_x": 755,
+          "bottom_right_y": 998,
+          "content": "15",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999386109847371,
+            "minimum_content_confidence_score": 0.9999386109847371,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "markdown": "## Advancing Climate Equity\n\n**The Climate Equity Index (CEI)** is a vital tool developed to address disparities in access to opportunities and services within San Diego. Historically, some communities have faced systemic barriers, limiting their access to resources. **To understand these disparities, the City worked with the Equity Stakeholder Working Group to create the CEI.** This tool evaluates social and structural vulnerabilities, environmental pollution, and climate change impacts across different census tracts, and identifies those with *Very Low, Low, and Moderate Access* to Opportunity as Communities of Concern.\n\n**The development of a measureable tool for use across various City departments is a crucial step toward embedding equity into San Diego’s operations.** For instance, the Environmental Services Department utilized the CEI during the planning and implementation of last year’s green bin rollout, prioritizing neighborhoods with the lowest CEI scores to receive the bins first. Additionally, the Mobility Master Plan (MMP) employs the CEI within its prioritization framework to ensure that mobility projects address the most pressing needs and offer the greatest benefits in a sustainable and equitable manner. **Moreover, the City has amended the Capital Improvement Projects process (Council Policy 800-14) to incorporate sustainability and equity scoring factors, utilizing the CEI to guide the prioritization of Capital Improvement Program Projects.** These efforts illustrate the City’s commitment to using the CEI to rectify historic inequities and ensure that all communities benefit from climate action initiatives.\n\n![img-37.jpeg](img-37.jpeg)\n\n## Funding Climate Action\n\n![img-38.jpeg](img-38.jpeg)\n\nThe City of San Diego has demonstrated notable success in securing grant funding to support its climate action and sustainability initiatives. Through proactive efforts and strategic partnerships, the City has been able to access a diverse range of grants aimed at advancing key priorities outlined in its Climate Action Plan.\n\nOne area of success is in the realm of energy efficiency and renewable energy, where the **City secured a federal Energy Efficiency & Conservation Block Grant totaling $1.18 million.** This grant will be instrumental in establishing a community pilot program for residential electrification in low to moderate-income communities, furthering the City’s commitment to equity and environmental sustainability.\n\nThe City has also capitalized on opportunities to enhance mobility and transportation infrastructure through grant funding. In addition to **more than $10 million in funding** earmarked for complete streets projects, traffic calming, disability access and other pedestrian",
+      "images": [
+        {
+          "id": "img-37.jpeg",
+          "top_left_x": 511,
+          "top_left_y": 122,
+          "bottom_right_x": 710,
+          "bottom_right_y": 340,
+          "image_sha256": "3904363d323f615f5774a311578316cac0a886bbb932517f182659c76cfd2378",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-38.jpeg",
+          "top_left_x": 83,
+          "top_left_y": 643,
+          "bottom_right_x": 169,
+          "bottom_right_y": 732,
+          "image_sha256": "da1bc9f662597e1f9261eceda46209e64965a0d2b06376b0a656dbd706090005",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SDS Sustainability & Mobility Department",
+      "footer": "16 2023 Climate Action Plan ANNUAL REPORT",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9787510189423131,
+        "minimum_page_confidence_score": 0.17977082384760343
+      },
+      "blocks": [
+        {
+          "top_left_x": 44,
+          "top_left_y": 22,
+          "bottom_right_x": 222,
+          "bottom_right_y": 40,
+          "content": "SDS Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9612858035314751,
+            "minimum_content_confidence_score": 0.828515275264986,
+            "block_type_confidence_score": 0.9999993947842098
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 98,
+          "bottom_right_x": 405,
+          "bottom_right_y": 130,
+          "content": "## Advancing Climate Equity",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9980003500457363,
+            "minimum_content_confidence_score": 0.9920789996485876,
+            "block_type_confidence_score": 0.9999934435319415
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 151,
+          "bottom_right_x": 506,
+          "bottom_right_y": 333,
+          "content": "**The Climate Equity Index (CEI)** is a vital tool developed to address disparities in access to opportunities and services within San Diego. Historically, some communities have faced systemic barriers, limiting their access to resources. **To understand these disparities, the City worked with the Equity Stakeholder Working Group to create the CEI.** This tool evaluates social and structural vulnerabilities, environmental pollution, and climate change impacts across different census tracts, and identifies those with *Very Low, Low, and Moderate Access* to Opportunity as Communities of Concern.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9970385974213675,
+            "minimum_content_confidence_score": 0.8845899344099951,
+            "block_type_confidence_score": 0.9999997615814777
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 332,
+          "bottom_right_x": 713,
+          "bottom_right_y": 549,
+          "content": "**The development of a measureable tool for use across various City departments is a crucial step toward embedding equity into San Diego’s operations.** For instance, the Environmental Services Department utilized the CEI during the planning and implementation of last year’s green bin rollout, prioritizing neighborhoods with the lowest CEI scores to receive the bins first. Additionally, the Mobility Master Plan (MMP) employs the CEI within its prioritization framework to ensure that mobility projects address the most pressing needs and offer the greatest benefits in a sustainable and equitable manner. **Moreover, the City has amended the Capital Improvement Projects process (Council Policy 800-14) to incorporate sustainability and equity scoring factors, utilizing the CEI to guide the prioritization of Capital Improvement Program Projects.** These efforts illustrate the City’s commitment to using the CEI to rectify historic inequities and ensure that all communities benefit from climate action initiatives.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9986378173961203,
+            "minimum_content_confidence_score": 0.8658962434680002,
+            "block_type_confidence_score": 0.9999954700677164
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 511,
+          "top_left_y": 122,
+          "bottom_right_x": 710,
+          "bottom_right_y": 340,
+          "content": "![img-37.jpeg](img-37.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999990463265931
+          },
+          "type": "image",
+          "image_id": "img-37.jpeg"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 592,
+          "bottom_right_x": 376,
+          "bottom_right_y": 623,
+          "content": "## Funding Climate Action",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999918641216603,
+            "minimum_content_confidence_score": 0.9999756818971167,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 83,
+          "top_left_y": 643,
+          "bottom_right_x": 169,
+          "bottom_right_y": 732,
+          "content": "![img-38.jpeg](img-38.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9995031442529472
+          },
+          "type": "image",
+          "image_id": "img-38.jpeg"
+        },
+        {
+          "top_left_x": 181,
+          "top_left_y": 643,
+          "bottom_right_x": 686,
+          "bottom_right_y": 732,
+          "content": "The City of San Diego has demonstrated notable success in securing grant funding to support its climate action and sustainability initiatives. Through proactive efforts and strategic partnerships, the City has been able to access a diverse range of grants aimed at advancing key priorities outlined in its Climate Action Plan.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999844563343688,
+            "minimum_content_confidence_score": 0.9996222493095851,
+            "block_type_confidence_score": 0.9999707945761903
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 751,
+          "bottom_right_x": 698,
+          "bottom_right_y": 842,
+          "content": "One area of success is in the realm of energy efficiency and renewable energy, where the **City secured a federal Energy Efficiency & Conservation Block Grant totaling $1.18 million.** This grant will be instrumental in establishing a community pilot program for residential electrification in low to moderate-income communities, furthering the City’s commitment to equity and environmental sustainability.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9992976356549685,
+            "minimum_content_confidence_score": 0.9765173214856013,
+            "block_type_confidence_score": 0.9999961853172863
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 89,
+          "top_left_y": 860,
+          "bottom_right_x": 695,
+          "bottom_right_y": 913,
+          "content": "The City has also capitalized on opportunities to enhance mobility and transportation infrastructure through grant funding. In addition to **more than $10 million in funding** earmarked for complete streets projects, traffic calming, disability access and other pedestrian",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999247086560412,
+            "minimum_content_confidence_score": 0.9993178177227032,
+            "block_type_confidence_score": 0.999998927117538
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 44,
+          "top_left_y": 981,
+          "bottom_right_x": 257,
+          "bottom_right_y": 998,
+          "content": "16 2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9997130487219172,
+            "minimum_content_confidence_score": 0.9991450121893619,
+            "block_type_confidence_score": 0.999999889960675
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "markdown": "and bicycle improvements, the City was **awarded $2.25 million** from the federal government's Safe Streets and Roads for All program. This money will be used to create an Accessible Pedestrian Connections and Safety Plan and to update San Diego's Bicycle Master Plan. Other grants totaling **more than $300,000** have been secured for pedestrian and bicycle safety programs, contributing to efforts to create safe and enjoyable routes for pedestrians and cyclists across the city.\n\nThe green bin rollout for organics recycling and associated educational campaign to bring San Diego into compliance with Senate Bill 1383 was a massive undertaking supported, in part, by a **$1.85 million grant** from the California Department of Resources Recycling and Recovery (CalRecycle).\n\n![img-39.jpeg](img-39.jpeg)\n\n![img-40.jpeg](img-40.jpeg)\n\nAnother notable success is in the realm of urban forestry and green infrastructure, where the City was **awarded a $10 million grant** from the federal government for tree planting initiatives under the \"Ready, Set, Grow San Diego\" program. This significant funding injection will enable the city to enhance its tree canopy, improve air quality and promote community well-being. Another $3.1 million, from the California Natural Resources Agency, will go to a stormwater green infrastructure project.\n\nIn summary, the City of San Diego **has demonstrated a strong track record of securing grant funding to support its climate action goals and sustainability priorities**. These grants have been instrumental in financing pivotal initiatives spanning energy, transportation and green infrastructure sectors, thereby bolstering the city's resilience and sustainability. Looking ahead, the City remains steadfast in its commitment to seek out and secure additional funding streams to further propel the implementation of its Climate Action Plan, ensuring continued progress toward a thriving, sustainable future for all residents.",
+      "images": [
+        {
+          "id": "img-39.jpeg",
+          "top_left_x": 479,
+          "top_left_y": 119,
+          "bottom_right_x": 728,
+          "bottom_right_y": 355,
+          "image_sha256": "d57b8273e5c7a17106df9b7cc04dc1f0d877e7a8eceb98ef7ee07b2b5893765c",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-40.jpeg",
+          "top_left_x": 79,
+          "top_left_y": 386,
+          "bottom_right_x": 197,
+          "bottom_right_y": 505,
+          "image_sha256": "1827f59b15d5c1ea70514374eb682f69bb902f232ae6295f677f33b2ed7bc422",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SDS Sustainability & Mobility Department",
+      "footer": "2023 Climate Action Plan ANNUAL REPORT\n17",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9753824581634865,
+        "minimum_page_confidence_score": 0.26954812472685136
+      },
+      "blocks": [
+        {
+          "top_left_x": 569,
+          "top_left_y": 22,
+          "bottom_right_x": 748,
+          "bottom_right_y": 40,
+          "content": "SDS Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9377505430779983,
+            "minimum_content_confidence_score": 0.727664396910344,
+            "block_type_confidence_score": 0.9999991196864734
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 113,
+          "bottom_right_x": 546,
+          "bottom_right_y": 240,
+          "content": "and bicycle improvements, the City was **awarded $2.25 million** from the federal government's Safe Streets and Roads for All program. This money will be used to create an Accessible Pedestrian Connections and Safety Plan and to update San Diego's Bicycle Master Plan. Other grants totaling **more than $300,000** have been secured for pedestrian and bicycle safety programs, contributing to efforts to create safe and enjoyable routes for pedestrians and cyclists across the city.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9973570670611408,
+            "minimum_content_confidence_score": 0.9072555538767075,
+            "block_type_confidence_score": 0.9999965429424904
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 258,
+          "bottom_right_x": 474,
+          "bottom_right_y": 366,
+          "content": "The green bin rollout for organics recycling and associated educational campaign to bring San Diego into compliance with Senate Bill 1383 was a massive undertaking supported, in part, by a **$1.85 million grant** from the California Department of Resources Recycling and Recovery (CalRecycle).",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998706564361114,
+            "minimum_content_confidence_score": 0.9956541718936198,
+            "block_type_confidence_score": 0.9999823573372132
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 479,
+          "top_left_y": 119,
+          "bottom_right_x": 728,
+          "bottom_right_y": 355,
+          "content": "![img-39.jpeg](img-39.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999940395710211
+          },
+          "type": "image",
+          "image_id": "img-39.jpeg"
+        },
+        {
+          "top_left_x": 79,
+          "top_left_y": 386,
+          "bottom_right_x": 197,
+          "bottom_right_y": 505,
+          "content": "![img-40.jpeg](img-40.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999185866873171
+          },
+          "type": "image",
+          "image_id": "img-40.jpeg"
+        },
+        {
+          "top_left_x": 203,
+          "top_left_y": 385,
+          "bottom_right_x": 708,
+          "bottom_right_y": 511,
+          "content": "Another notable success is in the realm of urban forestry and green infrastructure, where the City was **awarded a $10 million grant** from the federal government for tree planting initiatives under the \"Ready, Set, Grow San Diego\" program. This significant funding injection will enable the city to enhance its tree canopy, improve air quality and promote community well-being. Another $3.1 million, from the California Natural Resources Agency, will go to a stormwater green infrastructure project.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9996845646992412,
+            "minimum_content_confidence_score": 0.9797662609646262,
+            "block_type_confidence_score": 0.9999783043793048
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 91,
+          "top_left_y": 529,
+          "bottom_right_x": 715,
+          "bottom_right_y": 656,
+          "content": "In summary, the City of San Diego **has demonstrated a strong track record of securing grant funding to support its climate action goals and sustainability priorities**. These grants have been instrumental in financing pivotal initiatives spanning energy, transportation and green infrastructure sectors, thereby bolstering the city's resilience and sustainability. Looking ahead, the City remains steadfast in its commitment to seek out and secure additional funding streams to further propel the implementation of its Climate Action Plan, ensuring continued progress toward a thriving, sustainable future for all residents.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9985082823415273,
+            "minimum_content_confidence_score": 0.8731368610985928,
+            "block_type_confidence_score": 0.9999990463265931
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 534,
+          "top_left_y": 983,
+          "bottom_right_x": 712,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999544043520796,
+            "minimum_content_confidence_score": 0.9998169280547704,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 727,
+          "top_left_y": 983,
+          "bottom_right_x": 747,
+          "bottom_right_y": 998,
+          "content": "17",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999696025551995,
+            "minimum_content_confidence_score": 0.9999696025551995,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "markdown": "# Conclusion\n\nThe City of San Diego's Greenhouse Gas (GHG) inventory indicates that our emissions reductions are currently in line with the initial projections outlined in the CAP. **This is a positive sign that the City is on the right track toward achieving its near-term climate goals.**\n\nHowever, to meet its 2035 goal of net-zero carbon emissions, we must accelerate the pace of these reductions in the coming years.\n\nIt is important to note that the GHG inventory reflects conditions from two years ago, prior to the implementation of the current CAP. **As this report demonstrates, the City of San Diego has made significant progress in implementing this Climate Action Plan, with initiatives spanning multiple sectors to reduce GHG emissions, promote sustainability and build resilience.** The impact should be reflected in future GHG inventories. Through collaboration with stakeholders and innovative solutions, the City is working toward a more sustainable and equitable future for all residents.\n\n![img-41.jpeg](img-41.jpeg)\n\nFollow our progress at:\nclimatedashboard.sandiego.gov",
+      "images": [
+        {
+          "id": "img-41.jpeg",
+          "top_left_x": 66,
+          "top_left_y": 459,
+          "bottom_right_x": 240,
+          "bottom_right_y": 577,
+          "image_sha256": "4074d7c3d3f680c62afed30010f664fb3e2b613ff7e3ecfa758c1b61e3fd5bbd",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "Sustainability & Mobility Department",
+      "footer": "18\n2035 Climate Action Plan ANNUAL REPORT",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9788487975396705,
+        "minimum_page_confidence_score": 0.36229159631319197
+      },
+      "blocks": [
+        {
+          "top_left_x": 73,
+          "top_left_y": 26,
+          "bottom_right_x": 222,
+          "bottom_right_y": 38,
+          "content": "Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999937777550777,
+            "minimum_content_confidence_score": 0.9999873895195738,
+            "block_type_confidence_score": 0.9999489458717882
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 67,
+          "top_left_y": 67,
+          "bottom_right_x": 269,
+          "bottom_right_y": 102,
+          "content": "# Conclusion",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9976948540271988,
+            "minimum_content_confidence_score": 0.9953904233096519,
+            "block_type_confidence_score": 0.9999998807907247
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 65,
+          "top_left_y": 128,
+          "bottom_right_x": 688,
+          "bottom_right_y": 196,
+          "content": "The City of San Diego's Greenhouse Gas (GHG) inventory indicates that our emissions reductions are currently in line with the initial projections outlined in the CAP. **This is a positive sign that the City is on the right track toward achieving its near-term climate goals.**",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9962127905918005,
+            "minimum_content_confidence_score": 0.8741559891987452,
+            "block_type_confidence_score": 0.9999991655356624
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 65,
+          "top_left_y": 202,
+          "bottom_right_x": 670,
+          "bottom_right_y": 244,
+          "content": "However, to meet its 2035 goal of net-zero carbon emissions, we must accelerate the pace of these reductions in the coming years.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999962510733401,
+            "minimum_content_confidence_score": 0.9999649409098698,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 65,
+          "top_left_y": 274,
+          "bottom_right_x": 694,
+          "bottom_right_y": 440,
+          "content": "It is important to note that the GHG inventory reflects conditions from two years ago, prior to the implementation of the current CAP. **As this report demonstrates, the City of San Diego has made significant progress in implementing this Climate Action Plan, with initiatives spanning multiple sectors to reduce GHG emissions, promote sustainability and build resilience.** The impact should be reflected in future GHG inventories. Through collaboration with stakeholders and innovative solutions, the City is working toward a more sustainable and equitable future for all residents.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999878720306168,
+            "minimum_content_confidence_score": 0.999499486221178,
+            "block_type_confidence_score": 0.9999971389852362
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 66,
+          "top_left_y": 459,
+          "bottom_right_x": 240,
+          "bottom_right_y": 577,
+          "content": "![img-41.jpeg](img-41.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9910871244941108
+          },
+          "type": "image",
+          "image_id": "img-41.jpeg"
+        },
+        {
+          "top_left_x": 276,
+          "top_left_y": 515,
+          "bottom_right_x": 641,
+          "bottom_right_y": 574,
+          "content": "Follow our progress at:\nclimatedashboard.sandiego.gov",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9870942557249407,
+            "minimum_content_confidence_score": 0.9398086553363973,
+            "block_type_confidence_score": 0.9980402327156612
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 44,
+          "top_left_y": 984,
+          "bottom_right_x": 62,
+          "bottom_right_y": 997,
+          "content": "18",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9996471458435132,
+            "minimum_content_confidence_score": 0.9996471458435132,
+            "block_type_confidence_score": 0.999999889960675
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 82,
+          "top_left_y": 984,
+          "bottom_right_x": 257,
+          "bottom_right_y": 995,
+          "content": "2035 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9202208825952624,
+            "minimum_content_confidence_score": 0.5223221756125773,
+            "block_type_confidence_score": 0.9999969739324776
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "markdown": "# Community Partners\n\nThe City thanks the following partners for making this work possible:\n\n- Building Electrification Institute\n- Business for Good San Diego\n- Caltrans: California Department of Transportation\n- Casa Familiar\n- Center for Sustainable Energy\n- Circulate San Diego\n- City Heights Community Development\n- Climate Action Campaign\n- Energy Policy Initiatives Center – University of San Diego\n- Environmental Health Coalition\n- Green Cities California\n- The Greenlining Institute\n- GRID Alternatives\n- Groundwork San Diego-Chollas Creek\n- ICLEI – Local Governments for Sustainability\n- Institute for Local Government\n- New Buildings Institute\n- Port of San Diego\n- Project New Village\n- Rocky Mountain Institute\n- SanDiego350\n- San Diego Association of Governments (SANDAG)\n- San Diego Building Electrification Coalition\n- San Diego Community Power\n- San Diego County Air Pollution Control District\n- San Diego County Bike Coalition\n- San Diego Diplomacy Council\n- San Diego Foundation\n- San Diego Gas & Electric\n- San Diego Green Building Council\n- San Diego Regional Chamber of Commerce\n- San Diego Regional Climate Collaborative – University of San Diego\n- San Diego Regional Economic Development Corporation\n- San Diego Urban Sustainability Coalition\n- University of San Diego\n- Urban Sustainability Directors Network\n- World Economic Forum\n\n![img-42.jpeg](img-42.jpeg)",
+      "images": [
+        {
+          "id": "img-42.jpeg",
+          "top_left_x": 2,
+          "top_left_y": 547,
+          "bottom_right_x": 791,
+          "bottom_right_y": 984,
+          "image_sha256": "2cc06ec71865e4eae771178ba67960d418f402381049e4ea25a79bd72de64119",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "Sustainability & Mobility Department",
+      "footer": "2023 Climate Action Plan GENERAL REPORT\n19",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9795585444198901,
+        "minimum_page_confidence_score": 0.09474759929628135
+      },
+      "blocks": [
+        {
+          "top_left_x": 595,
+          "top_left_y": 25,
+          "bottom_right_x": 755,
+          "bottom_right_y": 40,
+          "content": "Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999809276769718,
+            "minimum_content_confidence_score": 0.9999530358617932,
+            "block_type_confidence_score": 0.9998008365871097
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 66,
+          "bottom_right_x": 454,
+          "bottom_right_y": 110,
+          "content": "# Community Partners",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999894302628037,
+            "minimum_content_confidence_score": 0.9999804500586101,
+            "block_type_confidence_score": 0.9999938011552557
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 128,
+          "bottom_right_x": 538,
+          "bottom_right_y": 146,
+          "content": "The City thanks the following partners for making this work possible:",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.968006833290929,
+            "minimum_content_confidence_score": 0.6481485378346908,
+            "block_type_confidence_score": 0.9859026609827989
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 79,
+          "top_left_y": 157,
+          "bottom_right_x": 683,
+          "bottom_right_y": 588,
+          "content": "- Building Electrification Institute\n- Business for Good San Diego\n- Caltrans: California Department of Transportation\n- Casa Familiar\n- Center for Sustainable Energy\n- Circulate San Diego\n- City Heights Community Development\n- Climate Action Campaign\n- Energy Policy Initiatives Center – University of San Diego\n- Environmental Health Coalition\n- Green Cities California\n- The Greenlining Institute\n- GRID Alternatives\n- Groundwork San Diego-Chollas Creek\n- ICLEI – Local Governments for Sustainability\n- Institute for Local Government\n- New Buildings Institute\n- Port of San Diego\n- Project New Village\n- Rocky Mountain Institute\n- SanDiego350\n- San Diego Association of Governments (SANDAG)\n- San Diego Building Electrification Coalition\n- San Diego Community Power\n- San Diego County Air Pollution Control District\n- San Diego County Bike Coalition\n- San Diego Diplomacy Council\n- San Diego Foundation\n- San Diego Gas & Electric\n- San Diego Green Building Council\n- San Diego Regional Chamber of Commerce\n- San Diego Regional Climate Collaborative – University of San Diego\n- San Diego Regional Economic Development Corporation\n- San Diego Urban Sustainability Coalition\n- University of San Diego\n- Urban Sustainability Directors Network\n- World Economic Forum",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9981126456441548,
+            "minimum_content_confidence_score": 0.6974607532679162,
+            "block_type_confidence_score": 0.9998404042309772
+          },
+          "type": "list"
+        },
+        {
+          "top_left_x": 2,
+          "top_left_y": 547,
+          "bottom_right_x": 791,
+          "bottom_right_y": 984,
+          "content": "![img-42.jpeg](img-42.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999574440950153
+          },
+          "type": "image",
+          "image_id": "img-42.jpeg"
+        },
+        {
+          "top_left_x": 529,
+          "top_left_y": 981,
+          "bottom_right_x": 715,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan GENERAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.7815454585020043,
+            "minimum_content_confidence_score": 0.09474759929628135,
+            "block_type_confidence_score": 0.9999941679687032
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 732,
+          "top_left_y": 981,
+          "bottom_right_x": 755,
+          "bottom_right_y": 997,
+          "content": "19",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.8833514102180133,
+            "minimum_content_confidence_score": 0.8833514102180133,
+            "block_type_confidence_score": 0.9999994498037452
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "markdown": "![img-43.jpeg](img-43.jpeg)\n\nA sustainable city with opportunity and access for people in every community.\n\n![img-44.jpeg](img-44.jpeg)\n\nSustainability & Mobility",
+      "images": [
+        {
+          "id": "img-43.jpeg",
+          "top_left_x": 0,
+          "top_left_y": 0,
+          "bottom_right_x": 790,
+          "bottom_right_y": 729,
+          "image_sha256": "7df4d0ac7ae83f0c9386afa2788d842e2cb07ce899fdd536fbf35a75f67f6770",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        },
+        {
+          "id": "img-44.jpeg",
+          "top_left_x": 516,
+          "top_left_y": 867,
+          "bottom_right_x": 577,
+          "bottom_right_y": 915,
+          "image_sha256": "9989591d76c867b22f3a88d284384aca8cbfeae3d76b53caa5571d825e69ccef",
+          "image_base64_omitted": true,
+          "image_annotation": null
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": null,
+      "footer": "This information is available in alternative formats upon request.",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9472771987619254,
+        "minimum_page_confidence_score": 0.33526796401060527
+      },
+      "blocks": [
+        {
+          "top_left_x": 0,
+          "top_left_y": 0,
+          "bottom_right_x": 790,
+          "bottom_right_y": 729,
+          "content": "![img-43.jpeg](img-43.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9992789464427402
+          },
+          "type": "image",
+          "image_id": "img-43.jpeg"
+        },
+        {
+          "top_left_x": 312,
+          "top_left_y": 758,
+          "bottom_right_x": 740,
+          "bottom_right_y": 855,
+          "content": "A sustainable city with opportunity and access for people in every community.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.973246549546179,
+            "minimum_content_confidence_score": 0.6790118898132066,
+            "block_type_confidence_score": 0.9700699379101841
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 516,
+          "top_left_y": 867,
+          "bottom_right_x": 577,
+          "bottom_right_y": 915,
+          "content": "![img-44.jpeg](img-44.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.8172364034728602
+          },
+          "type": "image",
+          "image_id": "img-44.jpeg"
+        },
+        {
+          "top_left_x": 586,
+          "top_left_y": 866,
+          "bottom_right_x": 736,
+          "bottom_right_y": 917,
+          "content": "Sustainability & Mobility",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9964096995371191,
+            "minimum_content_confidence_score": 0.9900652480965979,
+            "block_type_confidence_score": 0.9910942668626316
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 397,
+          "top_left_y": 944,
+          "bottom_right_x": 746,
+          "bottom_right_y": 960,
+          "content": "This information is available in alternative formats upon request.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9997350840646538,
+            "minimum_content_confidence_score": 0.9984007464471927,
+            "block_type_confidence_score": 0.8200163676823086
+          },
+          "type": "footer"
+        }
+      ]
+    }
+  ],
+  "model": "mistral-ocr-4-1",
+  "document_annotation": null,
+  "usage_info": {
+    "pages_processed": 20,
+    "doc_size_bytes": 17484557
+  }
+}

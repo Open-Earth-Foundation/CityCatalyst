@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openearth.org/schemas/cc-771/document.structured.v1.json",
+  "title": "CC-771 Structured Document",
+  "description": "Normalized page/block document schema for the CC-771 Mistral OCR PoC.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "document", "pages", "relationships", "validation"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "cc-771.1"
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_filename",
+        "source_sha256",
+        "requested_model",
+        "returned_model",
+        "page_count",
+        "run_id",
+        "created_at"
+      ],
+      "properties": {
+        "source_filename": { "type": "string" },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requested_model": { "type": "string" },
+        "returned_model": { "type": ["string", "null"] },
+        "page_count": { "type": "integer", "minimum": 0 },
+        "run_id": { "type": "string", "minLength": 1 },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "page_index",
+          "dimensions",
+          "header",
+          "footer",
+          "markdown",
+          "blocks",
+          "tables",
+          "images"
+        ],
+        "properties": {
+          "page_index": { "type": "integer", "minimum": 0 },
+          "dimensions": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["width", "height", "dpi"],
+            "properties": {
+              "width": { "type": ["number", "null"] },
+              "height": { "type": ["number", "null"] },
+              "dpi": { "type": ["number", "null"] }
+            }
+          },
+          "header": { "type": ["string", "null"] },
+          "footer": { "type": ["string", "null"] },
+          "markdown": { "type": "string" },
+          "blocks": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/block" }
+          },
+          "tables": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/table" }
+          },
+          "images": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/image" }
+          }
+        }
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "from_block_id",
+          "to_block_id",
+          "page_index",
+          "provenance"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": [
+              "caption_of_image",
+              "caption_of_table",
+              "nearest_caption_same_page"
+            ]
+          },
+          "from_block_id": { "type": "string" },
+          "to_block_id": { "type": "string" },
+          "page_index": { "type": "integer", "minimum": 0 },
+          "provenance": {
+            "type": "string",
+            "enum": ["provider", "derived"]
+          },
+          "rule": {
+            "type": ["string", "null"],
+            "enum": ["nearest_caption_same_page", null]
+          },
+          "notes": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_valid", "warnings", "missing_fields", "unsupported_provider_features"],
+      "properties": {
+        "schema_valid": { "type": "boolean" },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "missing_fields": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "unsupported_provider_features": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "bbox_px": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["top_left_x", "top_left_y", "bottom_right_x", "bottom_right_y"],
+      "properties": {
+        "top_left_x": { "type": "number" },
+        "top_left_y": { "type": "number" },
+        "bottom_right_x": { "type": "number" },
+        "bottom_right_y": { "type": "number" }
+      }
+    },
+    "bbox_norm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x0", "y0", "x1", "y1"],
+      "properties": {
+        "x0": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y0": { "type": "number", "minimum": 0, "maximum": 1 },
+        "x1": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y1": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "block_id",
+        "page_index",
+        "reading_order_index",
+        "provider_type",
+        "cc_type",
+        "content",
+        "bbox_px",
+        "bbox_norm",
+        "confidence",
+        "related_image_id",
+        "related_table_id",
+        "relationship_provenance"
+      ],
+      "properties": {
+        "block_id": { "type": "string" },
+        "page_index": { "type": "integer", "minimum": 0 },
+        "reading_order_index": { "type": "integer", "minimum": 0 },
+        "provider_type": { "type": ["string", "null"] },
+        "cc_type": {
+          "type": "string",
+          "enum": [
+            "title",
+            "heading",
+            "text",
+            "list",
+            "table",
+            "image",
+            "caption",
+            "header",
+            "footer",
+            "other"
+          ]
+        },
+        "content": { "type": "string" },
+        "bbox_px": { "$ref": "#/$defs/bbox_px" },
+        "bbox_norm": { "$ref": "#/$defs/bbox_norm" },
+        "confidence": { "type": ["number", "null"] },
+        "related_image_id": { "type": ["string", "null"] },
+        "related_table_id": { "type": ["string", "null"] },
+        "relationship_provenance": {
+          "type": ["string", "null"],
+          "enum": ["provider", "derived", null]
+        }
+      }
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["table_id", "page_index", "content", "bbox_px", "bbox_norm"],
+      "properties": {
+        "table_id": { "type": "string" },
+        "page_index": { "type": "integer", "minimum": 0 },
+        "content": { "type": ["string", "null"] },
+        "bbox_px": {
+          "oneOf": [{ "$ref": "#/$defs/bbox_px" }, { "type": "null" }]
+        },
+        "bbox_norm": {
+          "oneOf": [{ "$ref": "#/$defs/bbox_norm" }, { "type": "null" }]
+        }
+      }
+    },
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "image_id",
+        "page_index",
+        "bbox_px",
+        "bbox_norm",
+        "annotation",
+        "annotation_error",
+        "image_sha256"
+      ],
+      "properties": {
+        "image_id": { "type": "string" },
+        "page_index": { "type": "integer", "minimum": 0 },
+        "bbox_px": { "$ref": "#/$defs/bbox_px" },
+        "bbox_norm": { "$ref": "#/$defs/bbox_norm" },
+        "annotation": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "object" }
+          ],
+          "description": "Must validate against visual-annotation.schema.json when present."
+        },
+        "annotation_error": { "type": ["string", "null"] },
+        "image_sha256": {
+          "type": ["string", "null"],
+          "description": "Hash of image bytes when base64 was present; base64 itself is not stored in structured JSON."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1131 @@
+{
+  "pages": [
+    {
+      "index": 5,
+      "markdown": "![img-0.jpeg](img-0.jpeg)\n\n# Annual Greenhouse Gas Emissions Levels in 2024\n\nAnnual GHG emissions levels were estimated to be 8.16 million metric tons of carbon dioxide equivalent (MMT CO₂e) in 2024.\n\nCitywide emissions in 2024 were down 23 percent from 2019, the reference point for measuring future changes in emissions in the Climate Action Plan. Citywide emissions in 2024 were also down 3 percent from the prior year, when emissions levels were down 20 percent from 2019.\n\nFigure 1. Citywide Greenhouse Gas Emissions and Reduction Targets\n\nEstimated citywide greenhouse gas emissions from 2019-2024 are shown alongside two trajectories through 2035: a Business-as-Usual scenario assuming no Climate Action Plan implementation and a linear trajectory of average emissions reductions each year from 2019 to the Climate Action Plan's 2030 and 2035 targets.\n\nSource: adapted from Table 3, Appendix B and \"City of San Diego Greenhouse Gas Emission Projections and Reductions\" (p.18), City of San Diego Climate Action Plan (2022).\n\nNotes: MMT CO₂e = million metric tons of carbon dioxide equivalent\n\nCitywide Greenhouse Gas Emissions Inventory\n\n![img-1.jpeg](img-1.jpeg)\n\n2019 Baseline in the Climate Action Plan\n\nBusiness as Usual Projection\n\nAnnual Emissions Reductions, 2019-2030 and 2031-2035 (for reference purposes only)\n\nClimate Action Plan Target Emissions Levels\n\nEstimated Annual Emissions Levels",
+      "images": [
+        {
+          "id": "img-0.jpeg",
+          "top_left_x": 0,
+          "top_left_y": 0,
+          "bottom_right_x": 1021,
+          "bottom_right_y": 221,
+          "image_sha256": "891fa509d0c27ebc094c1aa057a836d2e35837cba419d5facb808ee7f7279ae7",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"photo\", \"title\": null, \"short_description\": \"Aerial view of a coastal area featuring a large white building complex with multiple sections, a bridge, a beach with people, and surrounding residential and green areas.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": [\"Exact number of people on the beach is unreadable due to distance and resolution.\", \"Specific details about the white building complex's purpose or name are not visible.\", \"Exact count of vehicles in the parking areas is unreadable.\", \"Some distant structures or features in the background are unclear due to atmospheric haze.\"]}"
+        },
+        {
+          "id": "img-1.jpeg",
+          "top_left_x": 528,
+          "top_left_y": 322,
+          "bottom_right_x": 797,
+          "bottom_right_y": 534,
+          "image_sha256": "0b98b09ed1aad41e37ead200840f7dce1a5734a9a4029d174dc9917e79c7d6d9",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"chart\", \"title\": null, \"short_description\": \"Line chart showing projected animal greenhouse gas (GHG) emissions in million metric tons of carbon dioxide equivalent (MMT CO2e) from 2019 to 2035, with a baseline of 10.5 MMT CO2e in 2019, a target of 4.2 MMT CO2e by 2030, and a further target of 3.7 MMT CO2e by 2035.\", \"text_visible\": [\"2019 Baseline 10.5 MMT CO2e\", \"2021 9.8 MMT CO2e\", \"2022 8.2 MMT CO2e\", \"2030 Target 4.2 MMT CO2e\", \"2035 Target 3.7 MMT CO2e\", \"Year\", \"Animal GHG Emissions (MMT CO2e)\"], \"chart\": {\"chart_type\": \"line\", \"x_axis\": {\"label\": \"Year\", \"values\": [2019, 2021, 2022, 2025, 2030, 2035]}, \"y_axis\": {\"label\": \"Animal GHG Emissions (MMT CO2e)\", \"unit\": \"MMT CO2e\", \"scale\": \"linear\"}, \"legend\": [], \"series\": [{\"name\": \"Projected Emissions\", \"points\": [{\"x\": 2019, \"y\": 10.5, \"value_kind\": \"printed\"}, {\"x\": 2021, \"y\": 9.8, \"value_kind\": \"printed\"}, {\"x\": 2022, \"y\": 8.2, \"value_kind\": \"printed\"}, {\"x\": 2025, \"y\": null, \"value_kind\": \"approximate_visual\"}, {\"x\": 2030, \"y\": 4.2, \"value_kind\": \"printed\"}, {\"x\": 2035, \"y\": 3.7, \"value_kind\": \"printed\"}]}], \"trends\": [\"Steady decline in animal GHG emissions from 2019 to 2035\", \"Sharpest reduction occurs between 2022 and 2030\"], \"targets\": [{\"label\": \"2030 Target\", \"value\": 4.2, \"value_kind\": \"printed\"}, {\"label\": \"2035 Target\", \"value\": 3.7, \"value_kind\": \"printed\"}], \"callouts\": [], \"readable_values\": [{\"label\": \"2019 Baseline\", \"value\": 10.5, \"value_kind\": \"printed\"}, {\"label\": \"2021 Emissions\", \"value\": 9.8, \"value_kind\": \"printed\"}, {\"label\": \"2022 Emissions\", \"value\": 8.2, \"value_kind\": \"printed\"}, {\"label\": \"2030 Target\", \"value\": 4.2, \"value_kind\": \"printed\"}, {\"label\": \"2035 Target\", \"value\": 3.7, \"value_kind\": \"printed\"}]}, \"uncertainties\": [\"Exact emission values for years between 2022 and 2030 are not explicitly labeled and may require interpolation\", \"The chart does not specify the methodology or assumptions behind the projections\"]}"
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": null,
+      "footer": "50\nCity Planning\nThe City of San Diego 2035 Annual Climate Action Plan Report\n4",
+      "dimensions": {
+        "dpi": 73,
+        "height": 621,
+        "width": 1022
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9664717389899243,
+        "minimum_page_confidence_score": 0.18213237404997387
+      },
+      "blocks": [
+        {
+          "top_left_x": 0,
+          "top_left_y": 0,
+          "bottom_right_x": 1021,
+          "bottom_right_y": 221,
+          "content": "![img-0.jpeg](img-0.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9995345852367465
+          },
+          "type": "image",
+          "image_id": "img-0.jpeg"
+        },
+        {
+          "top_left_x": 50,
+          "top_left_y": 254,
+          "bottom_right_x": 320,
+          "bottom_right_y": 341,
+          "content": "# Annual Greenhouse Gas Emissions Levels in 2024",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9716494449291034,
+            "minimum_content_confidence_score": 0.8807970468833343,
+            "block_type_confidence_score": 0.9999986886995842
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 51,
+          "top_left_y": 353,
+          "bottom_right_x": 303,
+          "bottom_right_y": 402,
+          "content": "Annual GHG emissions levels were estimated to be 8.16 million metric tons of carbon dioxide equivalent (MMT CO₂e) in 2024.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998680020857794,
+            "minimum_content_confidence_score": 0.9980607680146252,
+            "block_type_confidence_score": 0.9999988079084972
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 51,
+          "top_left_y": 409,
+          "bottom_right_x": 316,
+          "bottom_right_y": 506,
+          "content": "Citywide emissions in 2024 were down 23 percent from 2019, the reference point for measuring future changes in emissions in the Climate Action Plan. Citywide emissions in 2024 were also down 3 percent from the prior year, when emissions levels were down 20 percent from 2019.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999573099247855,
+            "minimum_content_confidence_score": 0.9984948111727338,
+            "block_type_confidence_score": 0.9999991655356624
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 358,
+          "top_left_y": 264,
+          "bottom_right_x": 741,
+          "bottom_right_y": 278,
+          "content": "Figure 1. Citywide Greenhouse Gas Emissions and Reduction Targets",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999633977358589,
+            "minimum_content_confidence_score": 0.9967517804205612,
+            "block_type_confidence_score": 0.9991799171082788
+          },
+          "type": "caption"
+        },
+        {
+          "top_left_x": 358,
+          "top_left_y": 287,
+          "bottom_right_x": 505,
+          "bottom_right_y": 416,
+          "content": "Estimated citywide greenhouse gas emissions from 2019-2024 are shown alongside two trajectories through 2035: a Business-as-Usual scenario assuming no Climate Action Plan implementation and a linear trajectory of average emissions reductions each year from 2019 to the Climate Action Plan's 2030 and 2035 targets.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999393598523416,
+            "minimum_content_confidence_score": 0.9993072781886866,
+            "block_type_confidence_score": 0.9996679931975306
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 358,
+          "top_left_y": 444,
+          "bottom_right_x": 509,
+          "bottom_right_y": 507,
+          "content": "Source: adapted from Table 3, Appendix B and \"City of San Diego Greenhouse Gas Emission Projections and Reductions\" (p.18), City of San Diego Climate Action Plan (2022).",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9990723952171751,
+            "minimum_content_confidence_score": 0.9769425510204811,
+            "block_type_confidence_score": 0.9578299911187662
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 358,
+          "top_left_y": 510,
+          "bottom_right_x": 505,
+          "bottom_right_y": 535,
+          "content": "Notes: MMT CO₂e = million metric tons of carbon dioxide equivalent",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998609493048991,
+            "minimum_content_confidence_score": 0.9990707563427433,
+            "block_type_confidence_score": 0.9999445707518435
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 544,
+          "top_left_y": 295,
+          "bottom_right_x": 850,
+          "bottom_right_y": 314,
+          "content": "Citywide Greenhouse Gas Emissions Inventory",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999917868583834,
+            "minimum_content_confidence_score": 0.9999639410742339,
+            "block_type_confidence_score": 0.9659034760613194
+          },
+          "type": "caption"
+        },
+        {
+          "top_left_x": 528,
+          "top_left_y": 322,
+          "bottom_right_x": 797,
+          "bottom_right_y": 534,
+          "content": "![img-1.jpeg](img-1.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9994079997212586
+          },
+          "type": "image",
+          "image_id": "img-1.jpeg"
+        },
+        {
+          "top_left_x": 814,
+          "top_left_y": 336,
+          "bottom_right_x": 913,
+          "bottom_right_y": 358,
+          "content": "2019 Baseline in the Climate Action Plan",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9946872887745314,
+            "minimum_content_confidence_score": 0.9651209354945773,
+            "block_type_confidence_score": 0.9413171480698178
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 802,
+          "top_left_y": 369,
+          "bottom_right_x": 897,
+          "bottom_right_y": 392,
+          "content": "Business as Usual Projection",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.954789846970759,
+            "minimum_content_confidence_score": 0.8217107131325124,
+            "block_type_confidence_score": 0.9815064735431216
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 802,
+          "top_left_y": 402,
+          "bottom_right_x": 953,
+          "bottom_right_y": 434,
+          "content": "Annual Emissions Reductions, 2019-2030 and 2031-2035 (for reference purposes only)",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9952765662549539,
+            "minimum_content_confidence_score": 0.9615314850055598,
+            "block_type_confidence_score": 0.9923870454508891
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 814,
+          "top_left_y": 444,
+          "bottom_right_x": 928,
+          "bottom_right_y": 466,
+          "content": "Climate Action Plan Target Emissions Levels",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9974020708066255,
+            "minimum_content_confidence_score": 0.9905561264200888,
+            "block_type_confidence_score": 0.9770096740655904
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 814,
+          "top_left_y": 476,
+          "bottom_right_x": 903,
+          "bottom_right_y": 497,
+          "content": "Estimated Annual Emissions Levels",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9678487020367661,
+            "minimum_content_confidence_score": 0.8714374836913263,
+            "block_type_confidence_score": 0.9890039641369932
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 53,
+          "top_left_y": 582,
+          "bottom_right_x": 70,
+          "bottom_right_y": 594,
+          "content": "50",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.8825626561770696,
+            "minimum_content_confidence_score": 0.8825626561770696,
+            "block_type_confidence_score": 0.9999681452153383
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 72,
+          "top_left_y": 582,
+          "bottom_right_x": 134,
+          "bottom_right_y": 596,
+          "content": "City Planning",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999398029438378,
+            "minimum_content_confidence_score": 0.9999363462880796,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 701,
+          "top_left_y": 582,
+          "bottom_right_x": 865,
+          "bottom_right_y": 592,
+          "content": "The City of San Diego 2035 Annual Climate Action Plan Report",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9562744613872909,
+            "minimum_content_confidence_score": 0.6047107083405804,
+            "block_type_confidence_score": 0.9999873457292663
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 882,
+          "top_left_y": 560,
+          "bottom_right_x": 968,
+          "bottom_right_y": 592,
+          "content": "4",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.4077299712406147,
+            "minimum_content_confidence_score": 0.4077299712406147,
+            "block_type_confidence_score": 0.8364451338742935
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "markdown": "![img-2.jpeg](img-2.jpeg)\n\n## Progress Toward Climate Action Plan Targets\n\nTo track progress toward the Climate Action Plan's 2030 emissions reduction target, the City developed a linear trajectory of average emissions reductions needed each year from 2019 to 2030. The Climate Action Plan does not include this linear trajectory, and it does not call for specific levels of emissions reductions each year; the linear trajectory is provided only for reference purposes to help understand progress toward long-term Climate Action Plan targets.\n\nWhen measured on this linear trajectory, citywide emissions would need to decrease by 0.58 MMT CO$_{2}$e on average each year to achieve the Climate Action Plan's 2030 target (Table 1). On this linear trajectory, annual emissions levels in 2024 would be 7.67 MMT CO$_{2}$e.\n\nThe estimated annual emissions levels of 8.16 MMT CO$_{2}$e for 2024 were approximately 6 percent (0.49 MMT CO$_{2}$e) higher than the levels that align with a linear trajectory toward the 2030 target.\n\n![img-3.jpeg](img-3.jpeg)\n\n![img-4.jpeg](img-4.jpeg)\n\n**Table 1. Progress Toward 2030 Emissions Reduction Target**\n\nProgress toward the Climate Action Plan's 2030 emissions reduction target using a linear trajectory from 2019 to 2030.\n\n**Source:** adapted from Table 3, Appendix B and \"City of San Diego Greenhouse Gas Emission Projections and Reductions\" (p.18), City of San Diego Climate Action Plan (2022).\n\n**Notes:** MMT CO$_{2}$e = million metric tons of carbon dioxide equivalent\n\nGHG emissions are rounded to the nearest ten thousand.\n\nSums may not add up to totals due to rounding.\n\n2019 baseline emissions\n\n2030 emissions reduction target\n\nAverage annual reduction to achieve the 2030 target using a linear trajectory from 2019 to 2030\n\nAnnual emissions levels in 2024 to align with linear trajectory\n\nAnnual emissions levels estimated for 2024\n\nDifference between estimated emissions levels and the 2024 reference point on a linear trajectory\n\n10.54 MMT CO$_{2}$e\n\n4.22 MMT CO$_{2}$e\n\n0.58 MMT CO$_{2}$e\n\n7.67 MMT CO$_{2}$e\n\n8.16 MMT CO$_{2}$e\n\n0.49 MMT CO$_{2}$e (+6%)\n\n![img-5.jpeg](img-5.jpeg)",
+      "images": [
+        {
+          "id": "img-2.jpeg",
+          "top_left_x": 2,
+          "top_left_y": 2,
+          "bottom_right_x": 365,
+          "bottom_right_y": 140,
+          "image_sha256": "16d043dca73892d6d91bba0bacb6fecb1f7c44eae81ad15895d2351e74d0358c",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"photo\", \"title\": null, \"short_description\": \"A cyclist riding on a road with cars and a pedestrian crossing in the background.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": [\"The exact speed or direction of the cyclist is not visible.\", \"The make or model of the cars in the background is unreadable.\", \"The pedestrian crossing's exact location or status (e.g., signal) is unclear.\"]}"
+        },
+        {
+          "id": "img-3.jpeg",
+          "top_left_x": 385,
+          "top_left_y": 2,
+          "bottom_right_x": 596,
+          "bottom_right_y": 288,
+          "image_sha256": "6c0edd25684dd9eec52dad73b249526b4c4345090f0d21f1a9f133b94c2b60cc",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"photo\", \"title\": null, \"short_description\": \"A beach scene with people walking along the shoreline, a dog running on the sand, and a yellow frisbee in the air.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": [\"Exact number of people in the background is unclear due to distance and perspective.\", \"The frisbee's exact color shade may vary slightly from yellow due to lighting conditions.\"]}"
+        },
+        {
+          "id": "img-4.jpeg",
+          "top_left_x": 596,
+          "top_left_y": 2,
+          "bottom_right_x": 1022,
+          "bottom_right_y": 307,
+          "image_sha256": "1cf704cd6030d29e1f52905a94988657f23993dd668b80ee2b4c2188800af09c",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"photo\", \"title\": null, \"short_description\": \"Aerial view of a bridge spanning a calm body of water with sailboats in the background.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": [\"Sailboat details and exact count are unclear due to distance and resolution.\", \"Bridge structure details are not fully visible.\"]}"
+        },
+        {
+          "id": "img-5.jpeg",
+          "top_left_x": 880,
+          "top_left_y": 561,
+          "bottom_right_x": 963,
+          "bottom_right_y": 591,
+          "image_sha256": "20b15b92683029bfccd60b311c4becc3853beb538857d3af464156a20e3acc64",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"other\", \"title\": null, \"short_description\": \"A yellow traffic sign with a black border, featuring a black symbol of a person walking, indicating a pedestrian crossing.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": [\"The sign's condition or any additional text on it is unclear due to the image resolution.\"]}"
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": null,
+      "footer": "50 City Planning\nThe City of San Diego 2025 Annual Climate Action Plan 1",
+      "dimensions": {
+        "dpi": 73,
+        "height": 621,
+        "width": 1022
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9654641696324248,
+        "minimum_page_confidence_score": 0.10637074430718231
+      },
+      "blocks": [
+        {
+          "top_left_x": 2,
+          "top_left_y": 2,
+          "bottom_right_x": 365,
+          "bottom_right_y": 140,
+          "content": "![img-2.jpeg](img-2.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999781851762466
+          },
+          "type": "image",
+          "image_id": "img-4.jpeg"
+        },
+        {
+          "top_left_x": 49,
+          "top_left_y": 175,
+          "bottom_right_x": 372,
+          "bottom_right_y": 234,
+          "content": "## Progress Toward Climate Action Plan Targets",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999108161868613,
+            "minimum_content_confidence_score": 0.9997485316583766,
+            "block_type_confidence_score": 0.9999554177126959
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 49,
+          "top_left_y": 244,
+          "bottom_right_x": 349,
+          "bottom_right_y": 388,
+          "content": "To track progress toward the Climate Action Plan's 2030 emissions reduction target, the City developed a linear trajectory of average emissions reductions needed each year from 2019 to 2030. The Climate Action Plan does not include this linear trajectory, and it does not call for specific levels of emissions reductions each year; the linear trajectory is provided only for reference purposes to help understand progress toward long-term Climate Action Plan targets.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9994824195343739,
+            "minimum_content_confidence_score": 0.9643519847612456,
+            "block_type_confidence_score": 0.9999810460826691
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 49,
+          "top_left_y": 397,
+          "bottom_right_x": 352,
+          "bottom_right_y": 477,
+          "content": "When measured on this linear trajectory, citywide emissions would need to decrease by 0.58 MMT CO$_{2}$e on average each year to achieve the Climate Action Plan's 2030 target (Table 1). On this linear trajectory, annual emissions levels in 2024 would be 7.67 MMT CO$_{2}$e.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9981387112435475,
+            "minimum_content_confidence_score": 0.929945456095571,
+            "block_type_confidence_score": 0.999994397195003
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 49,
+          "top_left_y": 485,
+          "bottom_right_x": 353,
+          "bottom_right_y": 550,
+          "content": "The estimated annual emissions levels of 8.16 MMT CO$_{2}$e for 2024 were approximately 6 percent (0.49 MMT CO$_{2}$e) higher than the levels that align with a linear trajectory toward the 2030 target.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9995200560994768,
+            "minimum_content_confidence_score": 0.9853486971768431,
+            "block_type_confidence_score": 0.9999874831811497
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 385,
+          "top_left_y": 2,
+          "bottom_right_x": 596,
+          "bottom_right_y": 288,
+          "content": "![img-3.jpeg](img-3.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999955892755635
+          },
+          "type": "image",
+          "image_id": "img-5.jpeg"
+        },
+        {
+          "top_left_x": 596,
+          "top_left_y": 2,
+          "bottom_right_x": 1022,
+          "bottom_right_y": 307,
+          "content": "![img-4.jpeg](img-4.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999858142961154
+          },
+          "type": "image",
+          "image_id": "img-4.jpeg"
+        },
+        {
+          "top_left_x": 399,
+          "top_left_y": 315,
+          "bottom_right_x": 728,
+          "bottom_right_y": 330,
+          "content": "**Table 1. Progress Toward 2030 Emissions Reduction Target**",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9963147096797742,
+            "minimum_content_confidence_score": 0.9715283743376331,
+            "block_type_confidence_score": 0.9998908162107646
+          },
+          "type": "caption"
+        },
+        {
+          "top_left_x": 399,
+          "top_left_y": 344,
+          "bottom_right_x": 592,
+          "bottom_right_y": 385,
+          "content": "Progress toward the Climate Action Plan's 2030 emissions reduction target using a linear trajectory from 2019 to 2030.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999045378290004,
+            "minimum_content_confidence_score": 0.9993051353643754,
+            "block_type_confidence_score": 0.9996205816223115
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 399,
+          "top_left_y": 402,
+          "bottom_right_x": 583,
+          "bottom_right_y": 464,
+          "content": "**Source:** adapted from Table 3, Appendix B and \"City of San Diego Greenhouse Gas Emission Projections and Reductions\" (p.18), City of San Diego Climate Action Plan (2022).",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9988445851092955,
+            "minimum_content_confidence_score": 0.9780596125570751,
+            "block_type_confidence_score": 0.9995406592776416
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 399,
+          "top_left_y": 467,
+          "bottom_right_x": 585,
+          "bottom_right_y": 492,
+          "content": "**Notes:** MMT CO$_{2}$e = million metric tons of carbon dioxide equivalent",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998736619757905,
+            "minimum_content_confidence_score": 0.9996478964024037,
+            "block_type_confidence_score": 0.999991059383269
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 399,
+          "top_left_y": 495,
+          "bottom_right_x": 573,
+          "bottom_right_y": 519,
+          "content": "GHG emissions are rounded to the nearest ten thousand.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9997410701073082,
+            "minimum_content_confidence_score": 0.9988154088345067,
+            "block_type_confidence_score": 0.9999922514562126
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 399,
+          "top_left_y": 523,
+          "bottom_right_x": 576,
+          "bottom_right_y": 536,
+          "content": "Sums may not add up to totals due to rounding.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999398800436575,
+            "minimum_content_confidence_score": 0.999482710050234,
+            "block_type_confidence_score": 0.9999972581939645
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 607,
+          "top_left_y": 344,
+          "bottom_right_x": 729,
+          "bottom_right_y": 359,
+          "content": "2019 baseline emissions",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9992527931338019,
+            "minimum_content_confidence_score": 0.9978546930331025,
+            "block_type_confidence_score": 0.9938318882688816
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 607,
+          "top_left_y": 374,
+          "bottom_right_x": 768,
+          "bottom_right_y": 388,
+          "content": "2030 emissions reduction target",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999274683129022,
+            "minimum_content_confidence_score": 0.9981655218403508,
+            "block_type_confidence_score": 0.999993205116773
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 607,
+          "top_left_y": 402,
+          "bottom_right_x": 849,
+          "bottom_right_y": 428,
+          "content": "Average annual reduction to achieve the 2030 target using a linear trajectory from 2019 to 2030",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998934018324018,
+            "minimum_content_confidence_score": 0.9986253825597994,
+            "block_type_confidence_score": 0.9999819997211749
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 607,
+          "top_left_y": 443,
+          "bottom_right_x": 827,
+          "bottom_right_y": 470,
+          "content": "Annual emissions levels in 2024 to align with linear trajectory",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999923833910066,
+            "minimum_content_confidence_score": 0.9995150534829064,
+            "block_type_confidence_score": 0.9999980926550052
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 607,
+          "top_left_y": 483,
+          "bottom_right_x": 820,
+          "bottom_right_y": 498,
+          "content": "Annual emissions levels estimated for 2024",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999704692968564,
+            "minimum_content_confidence_score": 0.9999280027712771,
+            "block_type_confidence_score": 0.9999997615814777
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 607,
+          "top_left_y": 512,
+          "bottom_right_x": 856,
+          "bottom_right_y": 539,
+          "content": "Difference between estimated emissions levels and the 2024 reference point on a linear trajectory",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999852950157456,
+            "minimum_content_confidence_score": 0.9999675761227764,
+            "block_type_confidence_score": 0.9999879600069962
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 872,
+          "top_left_y": 344,
+          "bottom_right_x": 960,
+          "bottom_right_y": 359,
+          "content": "10.54 MMT CO$_{2}$e",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9996273198899642,
+            "minimum_content_confidence_score": 0.9990897587982113,
+            "block_type_confidence_score": 0.9996701375272788
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 872,
+          "top_left_y": 374,
+          "bottom_right_x": 960,
+          "bottom_right_y": 388,
+          "content": "4.22 MMT CO$_{2}$e",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999491815140861,
+            "minimum_content_confidence_score": 0.9998733288654366,
+            "block_type_confidence_score": 0.9999980926550052
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 872,
+          "top_left_y": 402,
+          "bottom_right_x": 960,
+          "bottom_right_y": 421,
+          "content": "0.58 MMT CO$_{2}$e",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999788017227421,
+            "minimum_content_confidence_score": 0.9999513657425606,
+            "block_type_confidence_score": 0.9999980926550052
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 872,
+          "top_left_y": 449,
+          "bottom_right_x": 960,
+          "bottom_right_y": 464,
+          "content": "7.67 MMT CO$_{2}$e",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999881111227276,
+            "minimum_content_confidence_score": 0.999980331082708,
+            "block_type_confidence_score": 0.9999998807907247
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 872,
+          "top_left_y": 483,
+          "bottom_right_x": 960,
+          "bottom_right_y": 498,
+          "content": "8.16 MMT CO$_{2}$e",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999956908690586,
+            "minimum_content_confidence_score": 0.9998901330314837,
+            "block_type_confidence_score": 0.9999996423722521
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 872,
+          "top_left_y": 512,
+          "bottom_right_x": 960,
+          "bottom_right_y": 539,
+          "content": "0.49 MMT CO$_{2}$e (+6%)",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9836749510782254,
+            "minimum_content_confidence_score": 0.934909979870178,
+            "block_type_confidence_score": 0.9999737746439785
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 49,
+          "top_left_y": 579,
+          "bottom_right_x": 136,
+          "bottom_right_y": 595,
+          "content": "50 City Planning",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.973079019180339,
+            "minimum_content_confidence_score": 0.9518102137395948,
+            "block_type_confidence_score": 0.99977180586422
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 699,
+          "top_left_y": 581,
+          "bottom_right_x": 863,
+          "bottom_right_y": 591,
+          "content": "The City of San Diego 2025 Annual Climate Action Plan 1",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9385746012906531,
+            "minimum_content_confidence_score": 0.3589787284116242,
+            "block_type_confidence_score": 0.9994600038133312
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 880,
+          "top_left_y": 561,
+          "bottom_right_x": 963,
+          "bottom_right_y": 591,
+          "content": "![img-5.jpeg](img-5.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.6512927254720966
+          },
+          "type": "image",
+          "image_id": "img-5.jpeg"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "markdown": "![img-6.jpeg](img-6.jpeg)\n\n# Sources of Greenhouse Gas Emissions in 2024\n\nThe vast majority (96%) of citywide emissions in 2024 were the result of fuels used in vehicles that move people and goods around the city (on-road transportation) and energy used to power homes and other buildings (electricity and natural gas) (Figure 2).\n\nThe largest source was gasoline- and diesel-powered cars and trucks, representing more than half (57%, 4.64 MMT CO₂e) of annual emissions in the city. Following that was natural gas and electricity used in homes and other buildings, accounting for 39 percent (3.19 MMT CO₂e) of 2024 emissions.\n\nNatural gas end uses – such as water and space heating, cooking, and clothes drying – represented 21 percent of 2024 emissions (1.71 MMT CO₂e). Electricity from the grid, which is used for air conditioning, lighting, refrigeration, appliances, cooking, electric vehicle charging and more, represented 18 percent of 2024 emissions (1.48 MMT CO₂e).\n\nThe following sources and activities were responsible for the remaining 4 percent (0.34 MMT CO₂e) of emissions in 2024:\n\n- Throwing away organic solid waste like food and yard trimmings (solid waste, 3 percent, 0.22 MMT CO₂e)\n- Using equipment and vehicles for construction projects (construction equipment, less than 1 percent, 0.06 MMT CO₂e)\n- Providing the City with safe drinking water and recycled water (water supply, <1%, 0.05 MMT CO₂e)\n- Making wastewater safe to release or reuse (wastewater treatment, <1%, 0.01 MMT CO₂e)\n\nFigure 2. Citywide Emissions by Emissions Sector\n\n![img-7.jpeg](img-7.jpeg)\n\n57% 4,637,000 - Vehicles and Driving (On-Road Transportation)\n21% 1,710,000 - Homes and Buildings (Natural Gas)\n18% 1,475,000 - Homes and Buildings (Electricity)\n3% 216,000 - Organic Waste in Landfills\n1% 57,000 - Construction Equipment (Off-Road Transportation)\n<1% 51,000 - Water Supply\n<1% 12,000 - Wastewater Treatment\n\nSource: adapted from Table 3, Appendix B.",
+      "images": [
+        {
+          "id": "img-6.jpeg",
+          "top_left_x": 0,
+          "top_left_y": 0,
+          "bottom_right_x": 659,
+          "bottom_right_y": 191,
+          "image_sha256": "55a155668ebe5be073dabce71dc0f46d32686fd9d2fbdb6081b0b8bc8fcf1e02",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"photo\", \"title\": null, \"short_description\": \"Aerial view of a modern cityscape with a waterfront, featuring high-rise buildings, a marina with boats, and a bridge over a river.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": [\"Possible minor details obscured by image resolution or angle, such as specific building names or small text on signs.\"]}"
+        },
+        {
+          "id": "img-7.jpeg",
+          "top_left_x": 699,
+          "top_left_y": 93,
+          "bottom_right_x": 918,
+          "bottom_right_y": 312,
+          "image_sha256": "96d3cf1e899406d382d8e20b16d6824be7c99d27de77464b797d9a22a7e95a9b",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"chart\", \"title\": null, \"short_description\": \"A pie chart divided into two unequal sections, with one section colored in a darker shade of blue and the other in a lighter shade of blue.\", \"text_visible\": [], \"chart\": {\"chart_type\": \"pie\", \"x_axis\": {\"label\": null, \"values\": []}, \"y_axis\": {\"label\": null, \"unit\": null, \"scale\": null}, \"legend\": [\"Dark blue section\", \"Light blue section\"], \"series\": [{\"name\": \"Dark blue section\", \"points\": [{\"x\": null, \"y\": 75, \"value_kind\": \"approximate_visual\"}]}, {\"name\": \"Light blue section\", \"points\": [{\"x\": null, \"y\": 25, \"value_kind\": \"approximate_visual\"}]}], \"trends\": [], \"targets\": [], \"callouts\": [], \"readable_values\": []}, \"uncertainties\": [\"Exact values for the pie chart sections are not printed and can only be approximated visually.\", \"No axis labels or titles are visible.\"]}"
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": null,
+      "footer": "50\nCity Planning\nThe City of San Diego 2025 Annual Climate Action Plan Report\n4",
+      "dimensions": {
+        "dpi": 73,
+        "height": 621,
+        "width": 1022
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9731190862773059,
+        "minimum_page_confidence_score": 0.1717101508024965
+      },
+      "blocks": [
+        {
+          "top_left_x": 0,
+          "top_left_y": 0,
+          "bottom_right_x": 659,
+          "bottom_right_y": 191,
+          "content": "![img-6.jpeg](img-6.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9997983385620595
+          },
+          "type": "image",
+          "image_id": "img-6.jpeg"
+        },
+        {
+          "top_left_x": 50,
+          "top_left_y": 206,
+          "bottom_right_x": 626,
+          "bottom_right_y": 235,
+          "content": "# Sources of Greenhouse Gas Emissions in 2024",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9866607625259504,
+            "minimum_content_confidence_score": 0.8933093456508017,
+            "block_type_confidence_score": 0.9999959469005546
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 50,
+          "top_left_y": 244,
+          "bottom_right_x": 328,
+          "bottom_right_y": 325,
+          "content": "The vast majority (96%) of citywide emissions in 2024 were the result of fuels used in vehicles that move people and goods around the city (on-road transportation) and energy used to power homes and other buildings (electricity and natural gas) (Figure 2).",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999557963017577,
+            "minimum_content_confidence_score": 0.999496283748959,
+            "block_type_confidence_score": 0.9999980926550052
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 50,
+          "top_left_y": 333,
+          "bottom_right_x": 343,
+          "bottom_right_y": 429,
+          "content": "The largest source was gasoline- and diesel-powered cars and trucks, representing more than half (57%, 4.64 MMT CO₂e) of annual emissions in the city. Following that was natural gas and electricity used in homes and other buildings, accounting for 39 percent (3.19 MMT CO₂e) of 2024 emissions.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998679601032002,
+            "minimum_content_confidence_score": 0.9978723965204004,
+            "block_type_confidence_score": 0.9999996423722521
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 50,
+          "top_left_y": 437,
+          "bottom_right_x": 347,
+          "bottom_right_y": 550,
+          "content": "Natural gas end uses – such as water and space heating, cooking, and clothes drying – represented 21 percent of 2024 emissions (1.71 MMT CO₂e). Electricity from the grid, which is used for air conditioning, lighting, refrigeration, appliances, cooking, electric vehicle charging and more, represented 18 percent of 2024 emissions (1.48 MMT CO₂e).",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9996729472085877,
+            "minimum_content_confidence_score": 0.9952341899907305,
+            "block_type_confidence_score": 0.9999629272857378
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 359,
+          "top_left_y": 242,
+          "bottom_right_x": 641,
+          "bottom_right_y": 289,
+          "content": "The following sources and activities were responsible for the remaining 4 percent (0.34 MMT CO₂e) of emissions in 2024:",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.999958330249621,
+            "minimum_content_confidence_score": 0.9993897158788485,
+            "block_type_confidence_score": 0.9999949932351057
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 359,
+          "top_left_y": 298,
+          "bottom_right_x": 635,
+          "bottom_right_y": 498,
+          "content": "- Throwing away organic solid waste like food and yard trimmings (solid waste, 3 percent, 0.22 MMT CO₂e)\n- Using equipment and vehicles for construction projects (construction equipment, less than 1 percent, 0.06 MMT CO₂e)\n- Providing the City with safe drinking water and recycled water (water supply, <1%, 0.05 MMT CO₂e)\n- Making wastewater safe to release or reuse (wastewater treatment, <1%, 0.01 MMT CO₂e)",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9995939500081474,
+            "minimum_content_confidence_score": 0.9770122927934329,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "list"
+        },
+        {
+          "top_left_x": 676,
+          "top_left_y": 62,
+          "bottom_right_x": 949,
+          "bottom_right_y": 78,
+          "content": "Figure 2. Citywide Emissions by Emissions Sector",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999935325164444,
+            "minimum_content_confidence_score": 0.9999847019064467,
+            "block_type_confidence_score": 0.9997386423557733
+          },
+          "type": "caption"
+        },
+        {
+          "top_left_x": 699,
+          "top_left_y": 93,
+          "bottom_right_x": 918,
+          "bottom_right_y": 312,
+          "content": "![img-7.jpeg](img-7.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999570864969811
+          },
+          "type": "image",
+          "image_id": "img-7.jpeg"
+        },
+        {
+          "top_left_x": 676,
+          "top_left_y": 317,
+          "bottom_right_x": 944,
+          "bottom_right_y": 508,
+          "content": "57% 4,637,000 - Vehicles and Driving (On-Road Transportation)\n21% 1,710,000 - Homes and Buildings (Natural Gas)\n18% 1,475,000 - Homes and Buildings (Electricity)\n3% 216,000 - Organic Waste in Landfills\n1% 57,000 - Construction Equipment (Off-Road Transportation)\n<1% 51,000 - Water Supply\n<1% 12,000 - Wastewater Treatment",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9989685131805297,
+            "minimum_content_confidence_score": 0.9568203185331557,
+            "block_type_confidence_score": 0.9357815661620105
+          },
+          "type": "list"
+        },
+        {
+          "top_left_x": 687,
+          "top_left_y": 525,
+          "bottom_right_x": 847,
+          "bottom_right_y": 539,
+          "content": "Source: adapted from Table 3, Appendix B.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999057388866711,
+            "minimum_content_confidence_score": 0.9993730392842775,
+            "block_type_confidence_score": 0.47334948802197196
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 53,
+          "top_left_y": 582,
+          "bottom_right_x": 70,
+          "bottom_right_y": 593,
+          "content": "50",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.8626956963415727,
+            "minimum_content_confidence_score": 0.8626956963415727,
+            "block_type_confidence_score": 0.9999329931470197
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 72,
+          "top_left_y": 582,
+          "bottom_right_x": 134,
+          "bottom_right_y": 595,
+          "content": "City Planning",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998345822211852,
+            "minimum_content_confidence_score": 0.9997028995347474,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 701,
+          "top_left_y": 582,
+          "bottom_right_x": 864,
+          "bottom_right_y": 592,
+          "content": "The City of San Diego 2025 Annual Climate Action Plan Report",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9452364826551253,
+            "minimum_content_confidence_score": 0.710624670107598,
+            "block_type_confidence_score": 0.9999763424269849
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 882,
+          "top_left_y": 560,
+          "bottom_right_x": 968,
+          "bottom_right_y": 591,
+          "content": "4",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.1717101508024965,
+            "minimum_content_confidence_score": 0.1717101508024965,
+            "block_type_confidence_score": 0.766554507429548
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "markdown": "**Figure 3. Annual Greenhouse Gas Emissions by Source, 2019–2024**\n\nAnnual greenhouse gas emissions from vehicles and driving and natural gas and electricity used in homes and buildings, 2019–2024.\n\n![img-8.jpeg](img-8.jpeg)\n\nSource: adapted from Table 3, Appendix B.\nMT CO₂e = metric tons of carbon dioxide equivalent\n\nTaken together, 2024 emissions from electricity and natural gas used in homes and other buildings were down 25 percent since 2019 and were 6 percent lower than the prior year. Similarly, the 3 percent drop in citywide 2024 emissions from the prior year is mostly because of lower emissions from electricity and natural gas used in homes and other buildings (down 7 percent and 5 percent respectively, from 2023 to 2024).\n\n![img-9.jpeg](img-9.jpeg)",
+      "images": [
+        {
+          "id": "img-8.jpeg",
+          "top_left_x": 78,
+          "top_left_y": 137,
+          "bottom_right_x": 520,
+          "bottom_right_y": 482,
+          "image_sha256": "6c7b05e16589efa3a4fe42e12681e97b0c7b842a90e34d32ed30b76d937ef5d9",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"chart\", \"title\": null, \"short_description\": \"A scatter plot showing greenhouse gas (GHG) emissions from 2019 to 2024 across three categories: Vehicles and Driving, Natural Gas, and Electricity.\", \"text_visible\": [\"Vehicles and Driving\", \"Natural Gas\", \"Electricity\", \"GHG Emissions (MT CO2e)\", \"Year\"], \"chart\": {\"chart_type\": \"scatter\", \"x_axis\": {\"label\": \"Year\", \"values\": [2019, 2020, 2021, 2022, 2023, 2024]}, \"y_axis\": {\"label\": \"GHG Emissions (MT CO2e)\", \"unit\": \"MT CO2e\", \"scale\": \"linear\"}, \"legend\": [\"Vehicles and Driving\", \"Natural Gas\", \"Electricity\"], \"series\": [{\"name\": \"Vehicles and Driving\", \"points\": [{\"x\": 2019, \"y\": 5900000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2020, \"y\": 4800000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2021, \"y\": 4600000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2022, \"y\": 4500000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2023, \"y\": 4500000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2024, \"y\": 4500000, \"value_kind\": \"approximate_visual\"}]}, {\"name\": \"Natural Gas\", \"points\": [{\"x\": 2019, \"y\": 2200000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2020, \"y\": 2000000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2021, \"y\": 1900000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2022, \"y\": 1800000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2023, \"y\": 1800000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2024, \"y\": 1800000, \"value_kind\": \"approximate_visual\"}]}, {\"name\": \"Electricity\", \"points\": [{\"x\": 2019, \"y\": 1900000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2020, \"y\": 1800000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2021, \"y\": 1700000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2022, \"y\": 1700000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2023, \"y\": 1700000, \"value_kind\": \"approximate_visual\"}, {\"x\": 2024, \"y\": 1700000, \"value_kind\": \"approximate_visual\"}]}], \"trends\": [\"Vehicles and Driving emissions show a significant drop from 2019 to 2020, then stabilize around 4.5 million MT CO2e.\", \"Natural Gas emissions gradually decrease from 2019 to 2021, then stabilize around 1.8 million MT CO2e.\", \"Electricity emissions show a slight decline from 2019 to 2020, then remain relatively stable around 1.7 million MT CO2e.\"], \"targets\": [], \"callouts\": [], \"readable_values\": []}, \"uncertainties\": [\"Exact GHG emission values are approximate due to visual estimation from the scatter plot.\", \"The precise numerical values for each year are not explicitly labeled on the chart.\"]}"
+        },
+        {
+          "id": "img-9.jpeg",
+          "top_left_x": 576,
+          "top_left_y": 260,
+          "bottom_right_x": 1022,
+          "bottom_right_y": 584,
+          "image_sha256": "762cb69b7e4c7d54f4dec36ebe8c974a9d62c611ed8e36b0e0a167740edb6bde",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"photo\", \"title\": null, \"short_description\": \"A street view of a residential area with two parked cars in front of a house, featuring a white SUV and a green sedan.\", \"text_visible\": [\"523\"], \"chart\": null, \"uncertainties\": [\"The exact make and model of the cars are not clearly visible.\", \"The house number '523' is partially obscured by a tree.\"]}"
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": null,
+      "footer": "50 City Planning\nThe City of San Diego 2024 Annual Climate Action Plan Report\n10",
+      "dimensions": {
+        "dpi": 73,
+        "height": 621,
+        "width": 1022
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9543793563575541,
+        "minimum_page_confidence_score": 0.04009166473556811
+      },
+      "blocks": [
+        {
+          "top_left_x": 65,
+          "top_left_y": 70,
+          "bottom_right_x": 433,
+          "bottom_right_y": 86,
+          "content": "**Figure 3. Annual Greenhouse Gas Emissions by Source, 2019–2024**",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9922411341204891,
+            "minimum_content_confidence_score": 0.931250792941022,
+            "block_type_confidence_score": 0.8805248523000523
+          },
+          "type": "caption"
+        },
+        {
+          "top_left_x": 65,
+          "top_left_y": 96,
+          "bottom_right_x": 558,
+          "bottom_right_y": 110,
+          "content": "Annual greenhouse gas emissions from vehicles and driving and natural gas and electricity used in homes and buildings, 2019–2024.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998986511809145,
+            "minimum_content_confidence_score": 0.9989364741404899,
+            "block_type_confidence_score": 0.9320309993661136
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 78,
+          "top_left_y": 137,
+          "bottom_right_x": 520,
+          "bottom_right_y": 482,
+          "content": "![img-8.jpeg](img-8.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9998053691198049
+          },
+          "type": "image",
+          "image_id": "img-8.jpeg"
+        },
+        {
+          "top_left_x": 65,
+          "top_left_y": 504,
+          "bottom_right_x": 255,
+          "bottom_right_y": 533,
+          "content": "Source: adapted from Table 3, Appendix B.\nMT CO₂e = metric tons of carbon dioxide equivalent",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9868401422102981,
+            "minimum_content_confidence_score": 0.8597023052348995,
+            "block_type_confidence_score": 0.9704438657898763
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 621,
+          "top_left_y": 95,
+          "bottom_right_x": 966,
+          "bottom_right_y": 207,
+          "content": "Taken together, 2024 emissions from electricity and natural gas used in homes and other buildings were down 25 percent since 2019 and were 6 percent lower than the prior year. Similarly, the 3 percent drop in citywide 2024 emissions from the prior year is mostly because of lower emissions from electricity and natural gas used in homes and other buildings (down 7 percent and 5 percent respectively, from 2023 to 2024).",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998242788608042,
+            "minimum_content_confidence_score": 0.9941524056275969,
+            "block_type_confidence_score": 0.9668839732409159
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 576,
+          "top_left_y": 260,
+          "bottom_right_x": 1022,
+          "bottom_right_y": 584,
+          "content": "![img-9.jpeg](img-9.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9998988015563536
+          },
+          "type": "image",
+          "image_id": "img-9.jpeg"
+        },
+        {
+          "top_left_x": 52,
+          "top_left_y": 583,
+          "bottom_right_x": 137,
+          "bottom_right_y": 596,
+          "content": "50 City Planning",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.8937703256337993,
+            "minimum_content_confidence_score": 0.7329185863660237,
+            "block_type_confidence_score": 0.9999120908034104
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 699,
+          "top_left_y": 583,
+          "bottom_right_x": 867,
+          "bottom_right_y": 592,
+          "content": "The City of San Diego 2024 Annual Climate Action Plan Report",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9578538392977872,
+            "minimum_content_confidence_score": 0.7015306583323011,
+            "block_type_confidence_score": 0.9999691354712182
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 880,
+          "top_left_y": 561,
+          "bottom_right_x": 962,
+          "bottom_right_y": 590,
+          "content": "10",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9091117762975119,
+            "minimum_content_confidence_score": 0.9091117762975119,
+            "block_type_confidence_score": 0.999793413701705
+          },
+          "type": "footer"
+        }
+      ]
+    }
+  ],
+  "model": "mistral-ocr-4-1",
+  "document_annotation": null,
+  "usage_info": {
+    "pages_processed": 4,
+    "doc_size_bytes": 16417512
+  }
+}

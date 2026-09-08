@@ -1,0 +1,781 @@
+{
+  "run_dir": "/home/david/work/projects/open-earth/CityCatalyst-cc-771/docs/benchmarks/cc-771/cc-771-runs/2026-09-08-mistral-ocr-4-1-structured-v2",
+  "downstream_model": "openai/gpt-4o-mini",
+  "downstream_base_url": "https://openrouter.ai/api/v1",
+  "temperature": 0,
+  "max_chars": 120000,
+  "questions": [
+    {
+      "id": "q1",
+      "text": "Which sector had the highest emissions in 2020, and what was the value with unit?"
+    },
+    {
+      "id": "q2",
+      "text": "In which year did transport first fall below 35 ktCO2e?"
+    },
+    {
+      "id": "q3",
+      "text": "What is the dashed-line target value?"
+    },
+    {
+      "id": "q4",
+      "text": "What is the combined 2025 emissions value across Transport, Buildings, and Waste?"
+    },
+    {
+      "id": "q5",
+      "text": "Which sector had the smallest absolute reduction from 2020 to 2025, and by how much?"
+    },
+    {
+      "id": "q6",
+      "text": "On which page is the emissions chart located? Reply with a page number only if present."
+    },
+    {
+      "id": "q7",
+      "text": "What caption text is associated with the emissions chart, if any?"
+    },
+    {
+      "id": "q8",
+      "text": "Quote any repeated header or footer text that appears in the provided context."
+    }
+  ],
+  "representations": {
+    "output.md": {
+      "context_chars": 2840,
+      "source_chars": 2840,
+      "answers": [
+        {
+          "id": "q1",
+          "question": "Which sector had the highest emissions in 2020, and what was the value with unit?",
+          "answer": "NOT_FOUND",
+          "elapsed_s": 2.181,
+          "usage": {
+            "prompt_tokens": 592,
+            "completion_tokens": 3,
+            "total_tokens": 595,
+            "cost": 9.06e-05,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 9.06e-05,
+              "upstream_inference_prompt_cost": 8.88e-05,
+              "upstream_inference_completions_cost": 1.8e-06
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q2",
+          "question": "In which year did transport first fall below 35 ktCO2e?",
+          "answer": "NOT_FOUND",
+          "elapsed_s": 1.678,
+          "usage": {
+            "prompt_tokens": 588,
+            "completion_tokens": 3,
+            "total_tokens": 591,
+            "cost": 9e-05,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 9e-05,
+              "upstream_inference_prompt_cost": 8.82e-05,
+              "upstream_inference_completions_cost": 1.8e-06
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q3",
+          "question": "What is the dashed-line target value?",
+          "answer": "NOT_FOUND",
+          "elapsed_s": 2.33,
+          "usage": {
+            "prompt_tokens": 581,
+            "completion_tokens": 3,
+            "total_tokens": 584,
+            "cost": 8.895e-05,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 8.895e-05,
+              "upstream_inference_prompt_cost": 8.715e-05,
+              "upstream_inference_completions_cost": 1.8e-06
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q4",
+          "question": "What is the combined 2025 emissions value across Transport, Buildings, and Waste?",
+          "answer": "NOT_FOUND",
+          "elapsed_s": 1.654,
+          "usage": {
+            "prompt_tokens": 590,
+            "completion_tokens": 3,
+            "total_tokens": 593,
+            "cost": 9.03e-05,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 9.03e-05,
+              "upstream_inference_prompt_cost": 8.85e-05,
+              "upstream_inference_completions_cost": 1.8e-06
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q5",
+          "question": "Which sector had the smallest absolute reduction from 2020 to 2025, and by how much?",
+          "answer": "NOT_FOUND",
+          "elapsed_s": 1.575,
+          "usage": {
+            "prompt_tokens": 594,
+            "completion_tokens": 3,
+            "total_tokens": 597,
+            "cost": 9.09e-05,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 9.09e-05,
+              "upstream_inference_prompt_cost": 8.91e-05,
+              "upstream_inference_completions_cost": 1.8e-06
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q6",
+          "question": "On which page is the emissions chart located? Reply with a page number only if present.",
+          "answer": "page: 2",
+          "elapsed_s": 1.148,
+          "usage": {
+            "prompt_tokens": 591,
+            "completion_tokens": 4,
+            "total_tokens": 595,
+            "cost": 9.105e-05,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 9.105e-05,
+              "upstream_inference_prompt_cost": 8.865e-05,
+              "upstream_inference_completions_cost": 2.4e-06
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q7",
+          "question": "What caption text is associated with the emissions chart, if any?",
+          "answer": "Figure 1. Synthetic sector emissions (ktCO2e), 2020–2025.",
+          "elapsed_s": 1.156,
+          "usage": {
+            "prompt_tokens": 586,
+            "completion_tokens": 20,
+            "total_tokens": 606,
+            "cost": 9.99e-05,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 9.99e-05,
+              "upstream_inference_prompt_cost": 8.79e-05,
+              "upstream_inference_completions_cost": 1.2e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q8",
+          "question": "Quote any repeated header or footer text that appears in the provided context.",
+          "answer": "NOT_FOUND",
+          "elapsed_s": 1.157,
+          "usage": {
+            "prompt_tokens": 587,
+            "completion_tokens": 2,
+            "total_tokens": 589,
+            "cost": 8.925e-05,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 8.925e-05,
+              "upstream_inference_prompt_cost": 8.805e-05,
+              "upstream_inference_completions_cost": 1.2e-06
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        }
+      ]
+    },
+    "output.enriched.md": {
+      "context_chars": 5560,
+      "source_chars": 5560,
+      "answers": [
+        {
+          "id": "q1",
+          "question": "Which sector had the highest emissions in 2020, and what was the value with unit?",
+          "answer": "The sector with the highest emissions in 2020 was Transport, with a value of 50 ktCO2e.",
+          "elapsed_s": 1.267,
+          "usage": {
+            "prompt_tokens": 1439,
+            "completion_tokens": 24,
+            "total_tokens": 1463,
+            "cost": 0.00023025,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00023025,
+              "upstream_inference_prompt_cost": 0.00021585,
+              "upstream_inference_completions_cost": 1.44e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q2",
+          "question": "In which year did transport first fall below 35 ktCO2e?",
+          "answer": "Transport first fell below 35 ktCO2e in the year 2024.",
+          "elapsed_s": 1.917,
+          "usage": {
+            "prompt_tokens": 1435,
+            "completion_tokens": 18,
+            "total_tokens": 1453,
+            "cost": 0.00022605,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00022605,
+              "upstream_inference_prompt_cost": 0.00021525,
+              "upstream_inference_completions_cost": 1.08e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q3",
+          "question": "What is the dashed-line target value?",
+          "answer": "The dashed-line target value is 50 ktCO2e.",
+          "elapsed_s": 1.281,
+          "usage": {
+            "prompt_tokens": 1428,
+            "completion_tokens": 13,
+            "total_tokens": 1441,
+            "cost": 0.000126,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.000126,
+              "upstream_inference_prompt_cost": 0.0001182,
+              "upstream_inference_completions_cost": 7.8e-06
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q4",
+          "question": "What is the combined 2025 emissions value across Transport, Buildings, and Waste?",
+          "answer": "The combined 2025 emissions value across Transport, Buildings, and Waste is 60 ktCO2e (30 ktCO2e for Transport, 20 ktCO2e for Buildings, and 10 ktCO2e for Waste).",
+          "elapsed_s": 1.647,
+          "usage": {
+            "prompt_tokens": 1437,
+            "completion_tokens": 49,
+            "total_tokens": 1486,
+            "cost": 0.00014895,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00014895,
+              "upstream_inference_prompt_cost": 0.00011955,
+              "upstream_inference_completions_cost": 2.94e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q5",
+          "question": "Which sector had the smallest absolute reduction from 2020 to 2025, and by how much?",
+          "answer": "The sector with the smallest absolute reduction from 2020 to 2025 is Waste, which decreased by 5 ktCO2e (from 15 ktCO2e in 2020 to 10 ktCO2e in 2025).",
+          "elapsed_s": 1.88,
+          "usage": {
+            "prompt_tokens": 1441,
+            "completion_tokens": 51,
+            "total_tokens": 1492,
+            "cost": 0.00015075,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00015075,
+              "upstream_inference_prompt_cost": 0.00012015,
+              "upstream_inference_completions_cost": 3.06e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q6",
+          "question": "On which page is the emissions chart located? Reply with a page number only if present.",
+          "answer": "page_index: 2",
+          "elapsed_s": 1.166,
+          "usage": {
+            "prompt_tokens": 1438,
+            "completion_tokens": 5,
+            "total_tokens": 1443,
+            "cost": 0.0001227,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0001227,
+              "upstream_inference_prompt_cost": 0.0001197,
+              "upstream_inference_completions_cost": 3e-06
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q7",
+          "question": "What caption text is associated with the emissions chart, if any?",
+          "answer": "Figure 1. Synthetic sector emissions (ktCO2e), 2020–2025.",
+          "elapsed_s": 1.387,
+          "usage": {
+            "prompt_tokens": 1433,
+            "completion_tokens": 20,
+            "total_tokens": 1453,
+            "cost": 0.00013095,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00013095,
+              "upstream_inference_prompt_cost": 0.00011895,
+              "upstream_inference_completions_cost": 1.2e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q8",
+          "question": "Quote any repeated header or footer text that appears in the provided context.",
+          "answer": "The repeated header text is: \"CityCatalyst OCR Benchmark — Synthetic Fixture v2\"\n\nThe repeated footer text is: \"CC-771-STRUCTURED-V2 | Synthetic data only\"",
+          "elapsed_s": 1.847,
+          "usage": {
+            "prompt_tokens": 1434,
+            "completion_tokens": 38,
+            "total_tokens": 1472,
+            "cost": 0.0001419,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0001419,
+              "upstream_inference_prompt_cost": 0.0001191,
+              "upstream_inference_completions_cost": 2.28e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        }
+      ]
+    },
+    "document.structured.json": {
+      "context_chars": 35918,
+      "source_chars": 35918,
+      "answers": [
+        {
+          "id": "q1",
+          "question": "Which sector had the highest emissions in 2020, and what was the value with unit?",
+          "answer": "The sector with the highest emissions in 2020 was \"Transport,\" with a value of 50 ktCO2e.",
+          "elapsed_s": 1.605,
+          "usage": {
+            "prompt_tokens": 9361,
+            "completion_tokens": 25,
+            "total_tokens": 9386,
+            "cost": 0.00141915,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00141915,
+              "upstream_inference_prompt_cost": 0.00140415,
+              "upstream_inference_completions_cost": 1.5e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q2",
+          "question": "In which year did transport first fall below 35 ktCO2e?",
+          "answer": "Transport first fell below 35 ktCO2e in the year 2024.",
+          "elapsed_s": 3.639,
+          "usage": {
+            "prompt_tokens": 9357,
+            "completion_tokens": 18,
+            "total_tokens": 9375,
+            "cost": 0.00141435,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00141435,
+              "upstream_inference_prompt_cost": 0.00140355,
+              "upstream_inference_completions_cost": 1.08e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q3",
+          "question": "What is the dashed-line target value?",
+          "answer": "NOT_FOUND",
+          "elapsed_s": 1.876,
+          "usage": {
+            "prompt_tokens": 9350,
+            "completion_tokens": 3,
+            "total_tokens": 9353,
+            "cost": 0.0007131,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 9216,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0007131,
+              "upstream_inference_prompt_cost": 0.0007113,
+              "upstream_inference_completions_cost": 1.8e-06
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q4",
+          "question": "What is the combined 2025 emissions value across Transport, Buildings, and Waste?",
+          "answer": "The combined 2025 emissions value across Transport, Buildings, and Waste is 30 ktCO2e (Transport) + 20 ktCO2e (Buildings) + 10 ktCO2e (Waste) = 60 ktCO2e.",
+          "elapsed_s": 3.334,
+          "usage": {
+            "prompt_tokens": 9359,
+            "completion_tokens": 53,
+            "total_tokens": 9412,
+            "cost": 0.00074445,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 9216,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00074445,
+              "upstream_inference_prompt_cost": 0.00071265,
+              "upstream_inference_completions_cost": 3.18e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q5",
+          "question": "Which sector had the smallest absolute reduction from 2020 to 2025, and by how much?",
+          "answer": "The sector with the smallest absolute reduction from 2020 to 2025 is the \"Waste\" sector, which had a reduction of 5 ktCO2e (from 15 ktCO2e in 2020 to 10 ktCO2e in 2025).",
+          "elapsed_s": 3.163,
+          "usage": {
+            "prompt_tokens": 9363,
+            "completion_tokens": 58,
+            "total_tokens": 9421,
+            "cost": 0.00074805,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 9216,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00074805,
+              "upstream_inference_prompt_cost": 0.00071325,
+              "upstream_inference_completions_cost": 3.48e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q6",
+          "question": "On which page is the emissions chart located? Reply with a page number only if present.",
+          "answer": "page_index: 1",
+          "elapsed_s": 2.302,
+          "usage": {
+            "prompt_tokens": 9360,
+            "completion_tokens": 6,
+            "total_tokens": 9366,
+            "cost": 0.0007164,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 9216,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0007164,
+              "upstream_inference_prompt_cost": 0.0007128,
+              "upstream_inference_completions_cost": 3.6e-06
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q7",
+          "question": "What caption text is associated with the emissions chart, if any?",
+          "answer": "The caption text associated with the emissions chart is \"Figure 1. Synthetic sector emissions (ktCO2e), 2020–2025.\"",
+          "elapsed_s": 3.757,
+          "usage": {
+            "prompt_tokens": 9355,
+            "completion_tokens": 31,
+            "total_tokens": 9386,
+            "cost": 0.00073065,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 9216,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00073065,
+              "upstream_inference_prompt_cost": 0.00071205,
+              "upstream_inference_completions_cost": 1.86e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        },
+        {
+          "id": "q8",
+          "question": "Quote any repeated header or footer text that appears in the provided context.",
+          "answer": "The repeated header text is: \"CityCatalyst OCR Benchmark — Synthetic Fixture v2\"\n\nThe repeated footer text is: \"CC-771-STRUCTURED-V2 | Page X | Synthetic data only\" (where X is the page number).",
+          "elapsed_s": 2.866,
+          "usage": {
+            "prompt_tokens": 9356,
+            "completion_tokens": 50,
+            "total_tokens": 9406,
+            "cost": 0.0007422,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 9216,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0007422,
+              "upstream_inference_prompt_cost": 0.0007122,
+              "upstream_inference_completions_cost": 3e-05
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "model_returned": "openai/gpt-4o-mini"
+        }
+      ]
+    }
+  }
+}

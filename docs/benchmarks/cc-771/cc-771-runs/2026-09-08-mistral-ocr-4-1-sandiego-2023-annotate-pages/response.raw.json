@@ -1,0 +1,615 @@
+{
+  "pages": [
+    {
+      "index": 4,
+      "markdown": "# Key Highlights:\n\n**San Diego’s total GHG emissions in 2022 were approximately 8.6 million metric tons of carbon dioxide equivalent (MMT CO$_{2}$e).** This represents a 2% decrease from 2021 and a 19% decrease from the 2019 baseline. The decrease was primarily due to an increase in renewable energy in the city’s electricity supply, improvements in on-road vehicle efficiency, and the adoption of electric and hybrid vehicles. See Appendix A for detailed information about the GHG inventory.\n\n![img-0.jpeg](img-0.jpeg)",
+      "images": [
+        {
+          "id": "img-0.jpeg",
+          "top_left_x": 69,
+          "top_left_y": 304,
+          "bottom_right_x": 748,
+          "bottom_right_y": 765,
+          "image_sha256": "78923bc60317d900d7b3156cad3a789402411147667a9fccd05f92b6683e50d1",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"chart\", \"title\": \"Citywide Greenhouse Gas Emissions Inventory\", \"short_description\": \"A line chart showing citywide greenhouse gas emissions from 2019 to 2035, including baseline, projected, and required emissions levels to reach net-zero.\", \"text_visible\": [\"Citywide Greenhouse Gas Emissions Inventory\", \"2019 Baseline 10.6\", \"2022 Update 8.6\"], \"chart\": {\"chart_type\": \"line\", \"x_axis\": {\"label\": \"Year\", \"values\": [2019, 2020, 2021, 2022, 2025, 2030, 2035]}, \"y_axis\": {\"label\": \"GHG Emissions (MMTCO2e)\", \"unit\": \"MMTCO2e\", \"scale\": \"linear\"}, \"legend\": [\"Business As Usual Projection\", \"2019 Baseline\", \"Emission Levels projected after CAP Implementation\", \"Emissions Levels needed to reach net-zero\"], \"series\": [{\"name\": \"Business As Usual Projection\", \"points\": [{\"x\": 2019, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2020, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2021, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2022, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2025, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2030, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2035, \"y\": 10.6, \"value_kind\": \"printed\"}]}, {\"name\": \"2019 Baseline\", \"points\": [{\"x\": 2019, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2020, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2021, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2022, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2025, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2030, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2035, \"y\": 10.6, \"value_kind\": \"printed\"}]}, {\"name\": \"Emission Levels projected after CAP Implementation\", \"points\": [{\"x\": 2019, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2020, \"y\": 8.6, \"value_kind\": \"printed\"}, {\"x\": 2021, \"y\": 7.2, \"value_kind\": \"printed\"}, {\"x\": 2022, \"y\": 6.1, \"value_kind\": \"printed\"}, {\"x\": 2025, \"y\": 4.5, \"value_kind\": \"approximate_visual\"}, {\"x\": 2030, \"y\": 2.8, \"value_kind\": \"approximate_visual\"}, {\"x\": 2035, \"y\": 1.2, \"value_kind\": \"approximate_visual\"}]}, {\"name\": \"Emissions Levels needed to reach net-zero\", \"points\": [{\"x\": 2019, \"y\": 10.6, \"value_kind\": \"printed\"}, {\"x\": 2020, \"y\": 9.5, \"value_kind\": \"approximate_visual\"}, {\"x\": 2021, \"y\": 8.4, \"value_kind\": \"approximate_visual\"}, {\"x\": 2022, \"y\": 7.3, \"value_kind\": \"approximate_visual\"}, {\"x\": 2025, \"y\": 5.3, \"value_kind\": \"approximate_visual\"}, {\"x\": 2030, \"y\": 3.2, \"value_kind\": \"approximate_visual\"}, {\"x\": 2035, \"y\": 0, \"value_kind\": \"printed\"}]}], \"trends\": [\"Emissions are projected to decrease significantly after CAP implementation\", \"Net-zero emissions are targeted by 2035\"], \"targets\": [{\"label\": \"2019 Baseline\", \"value\": 10.6, \"value_kind\": \"printed\"}, {\"label\": \"2022 Update\", \"value\": 8.6, \"value_kind\": \"printed\"}], \"callouts\": [\"2019 Baseline 10.6\", \"2022 Update 8.6\"], \"readable_values\": [{\"label\": \"2019 Baseline\", \"value\": 10.6, \"value_kind\": \"printed\"}, {\"label\": \"2020 Update\", \"value\": 8.6, \"value_kind\": \"printed\"}, {\"label\": \"2021 Update\", \"value\": 7.2, \"value_kind\": \"printed\"}, {\"label\": \"2022 Update\", \"value\": 6.1, \"value_kind\": \"printed\"}]}, \"uncertainties\": [\"Exact values for 2025, 2030, and 2035 emissions levels are approximate due to visual estimation from the chart\"]}"
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SDG Sustainability & Mobility Department",
+      "footer": "2023 Climate Action Plan ANNUAL REPORT\n5",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9701721954291511,
+        "minimum_page_confidence_score": 0.254777899606666
+      },
+      "blocks": [
+        {
+          "top_left_x": 566,
+          "top_left_y": 22,
+          "bottom_right_x": 755,
+          "bottom_right_y": 42,
+          "content": "SDG Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9503635966995987,
+            "minimum_content_confidence_score": 0.769825227422259,
+            "block_type_confidence_score": 0.9999995048233361
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 70,
+          "top_left_y": 67,
+          "bottom_right_x": 342,
+          "bottom_right_y": 111,
+          "content": "# Key Highlights:",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9982569533272408,
+            "minimum_content_confidence_score": 0.9947798006286183,
+            "block_type_confidence_score": 0.9998971329639152
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 69,
+          "top_left_y": 130,
+          "bottom_right_x": 702,
+          "bottom_right_y": 263,
+          "content": "**San Diego’s total GHG emissions in 2022 were approximately 8.6 million metric tons of carbon dioxide equivalent (MMT CO$_{2}$e).** This represents a 2% decrease from 2021 and a 19% decrease from the 2019 baseline. The decrease was primarily due to an increase in renewable energy in the city’s electricity supply, improvements in on-road vehicle efficiency, and the adoption of electric and hybrid vehicles. See Appendix A for detailed information about the GHG inventory.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9982511432840115,
+            "minimum_content_confidence_score": 0.9451910753739068,
+            "block_type_confidence_score": 0.999998927117538
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 69,
+          "top_left_y": 304,
+          "bottom_right_x": 748,
+          "bottom_right_y": 765,
+          "content": "![img-0.jpeg](img-0.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999175139789379
+          },
+          "type": "image",
+          "image_id": "img-0.jpeg"
+        },
+        {
+          "top_left_x": 530,
+          "top_left_y": 981,
+          "bottom_right_x": 716,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999873109308167,
+            "minimum_content_confidence_score": 0.9999693641511719,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 740,
+          "top_left_y": 981,
+          "bottom_right_x": 755,
+          "bottom_right_y": 998,
+          "content": "5",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999926090786457,
+            "minimum_content_confidence_score": 0.9999926090786457,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "markdown": "# Strategies\n\n![img-1.jpeg](img-1.jpeg)\n\n![img-2.jpeg](img-2.jpeg)\n\n![img-3.jpeg](img-3.jpeg)\n\n![img-4.jpeg](img-4.jpeg)\n\n![img-5.jpeg](img-5.jpeg)\n\nATL\nCRA\n\nan Di\n\nero\n\n![img-6.jpeg](img-6.jpeg)",
+      "images": [
+        {
+          "id": "img-1.jpeg",
+          "top_left_x": 134,
+          "top_left_y": 221,
+          "bottom_right_x": 219,
+          "bottom_right_y": 304,
+          "image_sha256": "e4a5ef1b9535e82d46b10429e5c932492f021614dcf318171b6eb75a604a9f6a",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"logo\", \"title\": null, \"short_description\": \"A yellow circular logo with a white stylized cloud and lightning bolt symbol in the center.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": [\"The exact meaning or context of the logo is not provided in the image.\"]}"
+        },
+        {
+          "id": "img-2.jpeg",
+          "top_left_x": 251,
+          "top_left_y": 221,
+          "bottom_right_x": 336,
+          "bottom_right_y": 304,
+          "image_sha256": "f0358d6a0a5d04fb37f286d0e0b2b41165b83e607d03b18e57dc5f89d7ca8291",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"logo\", \"title\": null, \"short_description\": \"A circular green logo with a white checkmark inside.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": []}"
+        },
+        {
+          "id": "img-3.jpeg",
+          "top_left_x": 367,
+          "top_left_y": 221,
+          "bottom_right_x": 451,
+          "bottom_right_y": 304,
+          "image_sha256": "724e51fee2598de465ef5ce12b7c10da75030ec47649221d6e52242741ffe873",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"logo\", \"title\": null, \"short_description\": \"A circular logo featuring a stylized orange sun with a face, rays extending outward, and a bicycle integrated into the design.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": [\"No text is visible in the logo\", \"The exact design details of the bicycle and sun rays are inferred visually\"]}"
+        },
+        {
+          "id": "img-4.jpeg",
+          "top_left_x": 487,
+          "top_left_y": 221,
+          "bottom_right_x": 570,
+          "bottom_right_y": 304,
+          "image_sha256": "7795e832d37680c2672643c3c6f1328b52d3cf59331f8aea0f19802fc1c32447",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"logo\", \"title\": null, \"short_description\": \"A circular logo with a stylized white tree at the center on a blue background.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": [\"The specific text or name associated with the logo is not visible in the image.\"]}"
+        },
+        {
+          "id": "img-5.jpeg",
+          "top_left_x": 603,
+          "top_left_y": 221,
+          "bottom_right_x": 686,
+          "bottom_right_y": 304,
+          "image_sha256": "9bd5e8d72b9bcdf16b806fc3820d286c67258abaefc49f7717416936d1ba5d56",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"logo\", \"title\": null, \"short_description\": \"A circular logo with a stylized white arrow forming a loop, enclosed in a blue square background.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": [\"The exact shade of blue in the background is not specified.\", \"The precise positioning of the arrow within the circle is not detailed.\"]}"
+        },
+        {
+          "id": "img-6.jpeg",
+          "top_left_x": 58,
+          "top_left_y": 723,
+          "bottom_right_x": 325,
+          "bottom_right_y": 958,
+          "image_sha256": "2a166e4b329d3a83784a4501297ee639ffdcc8036baa271de0eba83ba267925a",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"logo\", \"title\": null, \"short_description\": \"A logo featuring intertwined text with the words 'Climate Responsive' and 'EcoMAT' along with a stylized leaf and a building illustration.\", \"text_visible\": [\"Climate Responsive\", \"EcoMAT\", \"San Diego\"], \"chart\": null, \"uncertainties\": [\"Exact color of the logo elements\", \"Specific font style of the text\"]}"
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "→\nSustainability & Mobility Department",
+      "footer": "6\n2023 Climate Action Plan Annual REPORT",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9324946850699546,
+        "minimum_page_confidence_score": 0.09221322381317422
+      },
+      "blocks": [
+        {
+          "top_left_x": 42,
+          "top_left_y": 19,
+          "bottom_right_x": 68,
+          "bottom_right_y": 39,
+          "content": "→",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.5340096708118265,
+            "minimum_content_confidence_score": 0.5340096708118265,
+            "block_type_confidence_score": 0.9962498501691907
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 74,
+          "top_left_y": 26,
+          "bottom_right_x": 215,
+          "bottom_right_y": 38,
+          "content": "Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.8216660138468213,
+            "minimum_content_confidence_score": 0.336843639328381,
+            "block_type_confidence_score": 0.9999998349410235
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 68,
+          "top_left_y": 126,
+          "bottom_right_x": 490,
+          "bottom_right_y": 218,
+          "content": "# Strategies",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9978083951025822,
+            "minimum_content_confidence_score": 0.9964060475117602,
+            "block_type_confidence_score": 0.9999692449491794
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 134,
+          "top_left_y": 221,
+          "bottom_right_x": 219,
+          "bottom_right_y": 304,
+          "content": "![img-1.jpeg](img-1.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9990397384897606
+          },
+          "type": "image",
+          "image_id": "img-6.jpeg"
+        },
+        {
+          "top_left_x": 251,
+          "top_left_y": 221,
+          "bottom_right_x": 336,
+          "bottom_right_y": 304,
+          "content": "![img-2.jpeg](img-2.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999973774024795
+          },
+          "type": "image",
+          "image_id": "img-6.jpeg"
+        },
+        {
+          "top_left_x": 367,
+          "top_left_y": 221,
+          "bottom_right_x": 451,
+          "bottom_right_y": 304,
+          "content": "![img-3.jpeg](img-3.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999374190384885
+          },
+          "type": "image",
+          "image_id": "img-6.jpeg"
+        },
+        {
+          "top_left_x": 487,
+          "top_left_y": 221,
+          "bottom_right_x": 570,
+          "bottom_right_y": 304,
+          "content": "![img-4.jpeg](img-4.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999990463265931
+          },
+          "type": "image",
+          "image_id": "img-6.jpeg"
+        },
+        {
+          "top_left_x": 603,
+          "top_left_y": 221,
+          "bottom_right_x": 686,
+          "bottom_right_y": 304,
+          "content": "![img-5.jpeg](img-5.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999990463265931
+          },
+          "type": "image",
+          "image_id": "img-6.jpeg"
+        },
+        {
+          "top_left_x": 0,
+          "top_left_y": 597,
+          "bottom_right_x": 58,
+          "bottom_right_y": 666,
+          "content": "ATL\nCRA",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.3542959740821674,
+            "minimum_content_confidence_score": 0.16808731371784186,
+            "block_type_confidence_score": 0.785814544357337
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 0,
+          "top_left_y": 668,
+          "bottom_right_x": 56,
+          "bottom_right_y": 690,
+          "content": "an Di",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.5504508922566669,
+            "minimum_content_confidence_score": 0.4487391224754359,
+            "block_type_confidence_score": 0.9999966621509202
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 0,
+          "top_left_y": 727,
+          "bottom_right_x": 36,
+          "bottom_right_y": 754,
+          "content": "ero",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9796650154674673,
+            "minimum_content_confidence_score": 0.9796650154674673,
+            "block_type_confidence_score": 0.9999871255623688
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 58,
+          "top_left_y": 723,
+          "bottom_right_x": 325,
+          "bottom_right_y": 958,
+          "content": "![img-6.jpeg](img-6.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9035170209814136
+          },
+          "type": "image",
+          "image_id": "img-6.jpeg"
+        },
+        {
+          "top_left_x": 44,
+          "top_left_y": 984,
+          "bottom_right_x": 54,
+          "bottom_right_y": 997,
+          "content": "6",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9998656691760569,
+            "minimum_content_confidence_score": 0.9998656691760569,
+            "block_type_confidence_score": 0.9999869055893096
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 82,
+          "top_left_y": 984,
+          "bottom_right_x": 257,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan Annual REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.7740235478211149,
+            "minimum_content_confidence_score": 0.16497708944471637,
+            "block_type_confidence_score": 0.999794403408517
+          },
+          "type": "footer"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "markdown": "# Strategy 1\n\n## DECARBONIZATION OF THE BUILT ENVIRONMENT\n\n### Decarbonize Existing Buildings\n\nThe City of San Diego has been proactive in decarbonizing existing buildings, recognizing them as a significant source of GHG emissions. Collaborating with the White House's Building Performance Standards Coalition, the City initiated discussions and working groups in 2022 to develop draft standards for release in 2024. These standards prioritize equity and aim to streamline the electrification process. To support these efforts, the City conducted an analysis of the existing building stock completed in August 2023, laying the groundwork for a comprehensive decarbonization framework. Additionally, the City is using federal funding from the Department of Energy to establish a community pilot program for neighborhood-level residential electrification in low to moderate-income communities.\n\n![img-7.jpeg](img-7.jpeg)\n\n### Decarbonize City Facilities\n\nRecognizing the importance of leading by example, the City Council adopted the Zero Emissions Municipal Buildings & Operations Policy (ZEMBOP) to guide the decarbonization of municipal facilities and transition to a zero-emissions fleet by 2035. Electrification assessments were conducted at more than 400 municipal facilities, and the findings are now guiding the next step of ZEMBOP: developing department-specific Fossil Fuel Elimination Plans. These plans are a part of targeted strategies for energy efficiency, renewable energy and microgrid projects, including partnerships with clean energy vendors to implement energy-saving measures across a portfolio of facilities. In 2023, the City also started construction of its first all-electric fire station and all-electric library.\n\n![img-8.jpeg](img-8.jpeg)\n\n![img-9.jpeg](img-9.jpeg)\n\n**OCTOBER 2023:** San Diego came in **first out of the 100 largest U.S. cities in WalletHub's \"Greenest Cities in America\" ranking**, with scores on Environment, Energy Sources, and Lifestyle & Policy propelling it to the top.",
+      "images": [
+        {
+          "id": "img-7.jpeg",
+          "top_left_x": 417,
+          "top_left_y": 184,
+          "bottom_right_x": 743,
+          "bottom_right_y": 506,
+          "image_sha256": "76e413c5c0ba3790b60f10d1062a36696ce5d79c224c79591e68f00d5e99eae7",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"photo\", \"title\": null, \"short_description\": \"A well-lit retail store interior with a clean, modern design, featuring a display area with a sign reading 'William Shakespeare' and a counter with promotional materials.\", \"text_visible\": [\"William Shakespeare\", \"SHOP THE GIFT SHOP\", \"WILLIAM SHAKESPEARE\"], \"chart\": null, \"uncertainties\": [\"Exact values on promotional materials are unreadable\", \"Specific product details or prices are not visible\"]}"
+        },
+        {
+          "id": "img-8.jpeg",
+          "top_left_x": 417,
+          "top_left_y": 535,
+          "bottom_right_x": 743,
+          "bottom_right_y": 851,
+          "image_sha256": "ac767f013fe3d29537e39b086bbdfe4be4f3bac765ce190e3257f12aaddce09d",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"photo\", \"title\": null, \"short_description\": \"A white dome-shaped structure with a small entrance, surrounded by a metal framework and parked cars in the background.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": [\"The exact location or purpose of the dome-shaped structure is unclear.\", \"The text on the dome is unreadable due to low resolution.\"]}"
+        },
+        {
+          "id": "img-9.jpeg",
+          "top_left_x": 86,
+          "top_left_y": 862,
+          "bottom_right_x": 150,
+          "bottom_right_y": 944,
+          "image_sha256": "19422591a3c962af3e9315d57f9c1f3871649691b01a651e53b26cb881bad160",
+          "image_base64_omitted": true,
+          "image_annotation": "{\"kind\": \"logo\", \"title\": null, \"short_description\": \"A circular logo featuring a stylized green tree with a blue bird perched on a branch, set against a green background with a white border.\", \"text_visible\": [], \"chart\": null, \"uncertainties\": [\"No text is visible in the logo to confirm its exact meaning or context.\"]}"
+        }
+      ],
+      "tables": [],
+      "hyperlinks": [],
+      "header": "SDS Sustainability & Mobility Department",
+      "footer": "2023 Climate Action Plan ANNUAL REPORT\n7",
+      "dimensions": {
+        "dpi": 93,
+        "height": 1023,
+        "width": 791
+      },
+      "confidence_scores": {
+        "word_confidence_scores": [],
+        "average_page_confidence_score": 0.9720869156537529,
+        "minimum_page_confidence_score": 0.22402595220542335
+      },
+      "blocks": [
+        {
+          "top_left_x": 569,
+          "top_left_y": 23,
+          "bottom_right_x": 748,
+          "bottom_right_y": 39,
+          "content": "SDS Sustainability & Mobility Department",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9356392413157326,
+            "minimum_content_confidence_score": 0.7099307502914459,
+            "block_type_confidence_score": 0.9999989546279309
+          },
+          "type": "header"
+        },
+        {
+          "top_left_x": 69,
+          "top_left_y": 69,
+          "bottom_right_x": 313,
+          "bottom_right_y": 117,
+          "content": "# Strategy 1",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9620844725182561,
+            "minimum_content_confidence_score": 0.9092365239845144,
+            "block_type_confidence_score": 0.9996508387251318
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 69,
+          "top_left_y": 125,
+          "bottom_right_x": 652,
+          "bottom_right_y": 152,
+          "content": "## DECARBONIZATION OF THE BUILT ENVIRONMENT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9991432325315969,
+            "minimum_content_confidence_score": 0.9958761194808189,
+            "block_type_confidence_score": 0.9983591583172362
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 69,
+          "top_left_y": 181,
+          "bottom_right_x": 359,
+          "bottom_right_y": 207,
+          "content": "### Decarbonize Existing Buildings",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9989264257141552,
+            "minimum_content_confidence_score": 0.996246413724846,
+            "block_type_confidence_score": 0.9998755609865043
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 69,
+          "top_left_y": 213,
+          "bottom_right_x": 399,
+          "bottom_right_y": 501,
+          "content": "The City of San Diego has been proactive in decarbonizing existing buildings, recognizing them as a significant source of GHG emissions. Collaborating with the White House's Building Performance Standards Coalition, the City initiated discussions and working groups in 2022 to develop draft standards for release in 2024. These standards prioritize equity and aim to streamline the electrification process. To support these efforts, the City conducted an analysis of the existing building stock completed in August 2023, laying the groundwork for a comprehensive decarbonization framework. Additionally, the City is using federal funding from the Department of Energy to establish a community pilot program for neighborhood-level residential electrification in low to moderate-income communities.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9990638163393417,
+            "minimum_content_confidence_score": 0.8983521264718011,
+            "block_type_confidence_score": 0.999998927117538
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 417,
+          "top_left_y": 184,
+          "bottom_right_x": 743,
+          "bottom_right_y": 506,
+          "content": "![img-7.jpeg](img-7.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999998807907247
+          },
+          "type": "image",
+          "image_id": "img-7.jpeg"
+        },
+        {
+          "top_left_x": 69,
+          "top_left_y": 530,
+          "bottom_right_x": 315,
+          "bottom_right_y": 555,
+          "content": "### Decarbonize City Facilities",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999797573476945,
+            "minimum_content_confidence_score": 0.9999701985655173,
+            "block_type_confidence_score": 0.9999994039539004
+          },
+          "type": "title"
+        },
+        {
+          "top_left_x": 69,
+          "top_left_y": 562,
+          "bottom_right_x": 394,
+          "bottom_right_y": 851,
+          "content": "Recognizing the importance of leading by example, the City Council adopted the Zero Emissions Municipal Buildings & Operations Policy (ZEMBOP) to guide the decarbonization of municipal facilities and transition to a zero-emissions fleet by 2035. Electrification assessments were conducted at more than 400 municipal facilities, and the findings are now guiding the next step of ZEMBOP: developing department-specific Fossil Fuel Elimination Plans. These plans are a part of targeted strategies for energy efficiency, renewable energy and microgrid projects, including partnerships with clean energy vendors to implement energy-saving measures across a portfolio of facilities. In 2023, the City also started construction of its first all-electric fire station and all-electric library.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999263382020492,
+            "minimum_content_confidence_score": 0.9980615799062871,
+            "block_type_confidence_score": 0.9999980926550052
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 417,
+          "top_left_y": 535,
+          "bottom_right_x": 743,
+          "bottom_right_y": 851,
+          "content": "![img-8.jpeg](img-8.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.9999928474936721
+          },
+          "type": "image",
+          "image_id": "img-8.jpeg"
+        },
+        {
+          "top_left_x": 86,
+          "top_left_y": 862,
+          "bottom_right_x": 150,
+          "bottom_right_y": 944,
+          "content": "![img-9.jpeg](img-9.jpeg)",
+          "confidence_scores": {
+            "average_content_confidence_score": null,
+            "minimum_content_confidence_score": null,
+            "block_type_confidence_score": 0.993895591832961
+          },
+          "type": "image",
+          "image_id": "img-9.jpeg"
+        },
+        {
+          "top_left_x": 164,
+          "top_left_y": 881,
+          "bottom_right_x": 690,
+          "bottom_right_y": 934,
+          "content": "**OCTOBER 2023:** San Diego came in **first out of the 100 largest U.S. cities in WalletHub's \"Greenest Cities in America\" ranking**, with scores on Environment, Energy Sources, and Lifestyle & Policy propelling it to the top.",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9882556710236678,
+            "minimum_content_confidence_score": 0.7964583850062915,
+            "block_type_confidence_score": 0.995431055845085
+          },
+          "type": "text"
+        },
+        {
+          "top_left_x": 534,
+          "top_left_y": 983,
+          "bottom_right_x": 711,
+          "bottom_right_y": 995,
+          "content": "2023 Climate Action Plan ANNUAL REPORT",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999606156905402,
+            "minimum_content_confidence_score": 0.9999133423558813,
+            "block_type_confidence_score": 0.9999998349410235
+          },
+          "type": "footer"
+        },
+        {
+          "top_left_x": 736,
+          "top_left_y": 983,
+          "bottom_right_x": 745,
+          "bottom_right_y": 997,
+          "content": "7",
+          "confidence_scores": {
+            "average_content_confidence_score": 0.9999145342443286,
+            "minimum_content_confidence_score": 0.9999145342443286,
+            "block_type_confidence_score": 1.0
+          },
+          "type": "footer"
+        }
+      ]
+    }
+  ],
+  "model": "mistral-ocr-4-1",
+  "document_annotation": null,
+  "usage_info": {
+    "pages_processed": 3,
+    "doc_size_bytes": 17484557
+  }
+}

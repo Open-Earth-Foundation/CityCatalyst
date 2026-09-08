@@ -1,0 +1,73 @@
+{
+  "run_id": "2026-09-08-mistral-ocr-4-1-structured-v2",
+  "status": "ok",
+  "error": null,
+  "provider": "Mistral",
+  "endpoint": "https://api.mistral.ai/v1/ocr",
+  "model_requested": "mistral-ocr-4-1",
+  "model_returned": "mistral-ocr-4-1",
+  "input_file": "cc-771-structured-benchmark-v2.pdf",
+  "input_sha256": "b37febad37c887813ef7b459660a6f3ea7816a292a1693f48a981a9f3a0f4c7d",
+  "input_bytes": 30101,
+  "source_mode": "Mistral Files API upload plus signed document URL",
+  "request": {
+    "model": "mistral-ocr-4-1",
+    "document": {
+      "type": "document_url",
+      "document_url": "<signed-url-omitted>"
+    },
+    "include_blocks": true,
+    "confidence_scores_granularity": "block",
+    "extract_header": true,
+    "extract_footer": true,
+    "table_format": "markdown",
+    "include_image_base64": true,
+    "bbox_annotation_format": {
+      "type": "json_schema",
+      "json_schema": {
+        "name": "cc771_visual_annotation",
+        "schema_ref": "bbox-annotation-request.schema.json",
+        "strict": true
+      }
+    },
+    "pages": null
+  },
+  "selected_annotation_pages": null,
+  "include_blocks": true,
+  "confidence_scores_granularity": "block",
+  "extract_header": true,
+  "extract_footer": true,
+  "table_format": "markdown",
+  "include_image_base64": true,
+  "http_status": 200,
+  "page_count": 3,
+  "usage_info": {
+    "pages_processed": 3,
+    "doc_size_bytes": 30101
+  },
+  "timing": {
+    "ocr_latency_s": 4.919,
+    "total_latency_s": 6.12,
+    "annotation_latency_s": 4.919
+  },
+  "cost": {
+    "ocr_cost_usd_estimate": 0.012,
+    "annotation_cost_usd_estimate": null,
+    "total_cost_usd_estimate": 0.012,
+    "notes": "OCR page cost estimated at US$4 / 1,000 pages. BBox annotation uses an internal vision call per image; provider does not always expose a separate annotation line item."
+  },
+  "mistral_file_id": "c130fb31-2413-45cf-8c82-50108d419e11",
+  "schema_versions": {
+    "document": "cc-771.1",
+    "visual_annotation": "cc-771.visual.1"
+  },
+  "schema_errors": [],
+  "artifact_sizes_bytes": {
+    "response.raw.json": 23198,
+    "document.structured.json": 35942,
+    "output.md": 2846,
+    "output.enriched.md": 5572
+  },
+  "secret_persisted": false,
+  "created_at": "2026-09-08T16:39:58+00:00"
+}

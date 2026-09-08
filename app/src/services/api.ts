@@ -2554,9 +2554,6 @@ export const api = createApi({
           url: `concept-notes/${runId}/chapters/${chapterId}/validation/`,
           method: "POST",
         }),
-        invalidatesTags: (_result, _error, { runId }) => [
-          { type: "ConceptNoteDraft", id: runId },
-        ],
       }),
     };
   },

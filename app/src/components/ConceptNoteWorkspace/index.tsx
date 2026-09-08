@@ -46,6 +46,8 @@ type WorkspaceTab = "draft" | "structure" | "context";
 
 interface ConceptNoteWorkspaceProps {
   cityId: string;
+  initialReviewChapterId?: string;
+  initialReviewFindingKey?: string;
   initialUploadId?: string;
   lng: string;
   runId: string;
@@ -63,6 +65,8 @@ const workspaceTabs: Array<{
 
 export function ConceptNoteWorkspace({
   cityId,
+  initialReviewChapterId,
+  initialReviewFindingKey,
   initialUploadId,
   lng,
   runId,
@@ -71,8 +75,12 @@ export function ConceptNoteWorkspace({
   const reducedMotion = useReducedMotion() ?? false;
   const [tab, setTab] = useState<WorkspaceTab>("draft");
   const [reviewOpen, setReviewOpen] = useState(false);
-  const [reviewChapterId, setReviewChapterId] = useState<string | null>(null);
-  const [reviewFindingKey, setReviewFindingKey] = useState<string | null>(null);
+  const [reviewChapterId, setReviewChapterId] = useState<string | null>(
+    initialReviewChapterId ?? null,
+  );
+  const [reviewFindingKey, setReviewFindingKey] = useState<string | null>(
+    initialReviewFindingKey ?? null,
+  );
   const {
     applicationContext,
     applicationContextFailed,

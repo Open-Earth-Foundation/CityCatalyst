@@ -483,10 +483,15 @@ export function ConceptNoteDashboard({
           noteName={exportRun.name}
           open
           runId={exportRun.run_id}
-          onAddInformation={() => {
+          onAddInformation={(chapterId, findingKey) => {
             const runId = exportRun.run_id;
             setExportRun(null);
-            router.push(conceptNoteResumeHref(lng, cityId, runId));
+            router.push(
+              conceptNoteResumeHref(lng, cityId, runId, {
+                chapterId,
+                findingKey,
+              }),
+            );
           }}
           onReviewSetup={() => {
             const runId = exportRun.run_id;

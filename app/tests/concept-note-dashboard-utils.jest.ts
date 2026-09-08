@@ -11,6 +11,7 @@ import {
   getRunStatusPresentation,
   getWorkflowStepTranslationKey,
   hasPrioritizedHiapActions,
+  shouldLoadConceptNoteReviewStatus,
 } from "@/components/ConceptNoteDashboard/utils";
 import type {
   ConceptNoteChapterValidation,
@@ -119,6 +120,39 @@ describe("Concept Note dashboard presentation helpers", () => {
     expect(conceptNoteResumeHref("en", "city-1", "run-1")).toBe(
       "/en/cities/city-1/concept-notes/run-1",
     );
+    expect(
+      conceptNoteResumeHref("en", "city-1", "run-1", {
+        chapterId: "chapter/1",
+        findingKey: "missing information:budget",
+      }),
+    ).toBe(
+      "/en/cities/city-1/concept-notes/run-1?chapterId=chapter%2F1&findingKey=missing+information%3Abudget",
+    );
+    expect(
+      conceptNoteResumeHref("en", "city-1", "run-1", {
+        chapterId: null,
+        findingKey: "ignored-without-chapter",
+      }),
+    ).toBe("/en/cities/city-1/concept-notes/run-1");
+  });
+
+  it("loads full drafts only for review-eligible run cards", () => {
+    expect(
+      shouldLoadConceptNoteReviewStatus("active", {
+        draft_document: { status: "complete" },
+      }),
+    ).toBe(true);
+    expect(
+      shouldLoadConceptNoteReviewStatus("active", {
+        draft_document: { status: "running" },
+      }),
+    ).toBe(false);
+    expect(
+      shouldLoadConceptNoteReviewStatus("exported", {
+        draft_document: { status: "complete" },
+      }),
+    ).toBe(false);
+    expect(shouldLoadConceptNoteReviewStatus("active", {})).toBe(false);
   });
 
   it("normalizes persisted context-bundle progress defensively", () => {

@@ -235,6 +235,7 @@ afterEach(async () => {
 describe("guided review before export", () => {
   it("limits validation concurrency to three chapters", async () => {
     const pending: Array<() => void> = [];
+    const onReviewComplete = jest.fn(async () => undefined);
     let active = 0;
     let maximum = 0;
     validateChapter.mockImplementation((request) => ({
@@ -249,7 +250,7 @@ describe("guided review before export", () => {
         }),
     }));
 
-    await renderDialog({ draft: draft(5) });
+    await renderDialog({ draft: draft(5), onReviewComplete });
     await settle();
     await settle();
     expect(validateChapter).toHaveBeenCalledTimes(3);
@@ -260,6 +261,9 @@ describe("guided review before export", () => {
     expect(maximum).toBe(3);
 
     await act(async () => pending.splice(0).forEach((complete) => complete()));
+    await settle();
+
+    expect(onReviewComplete).toHaveBeenCalledTimes(1);
   });
 
   it("reuses current saved results but refreshes a stale chapter", async () => {

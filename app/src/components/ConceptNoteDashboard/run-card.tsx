@@ -18,7 +18,10 @@ import { api } from "@/services/api";
 import type { ConceptNoteRun } from "@/util/types";
 
 import { StatusBadge } from "./status-badge";
-import { getConceptNoteStatusPresentation } from "./utils";
+import {
+  getConceptNoteStatusPresentation,
+  shouldLoadConceptNoteReviewStatus,
+} from "./utils";
 
 interface RunCardProps {
   activityLabel: string;
@@ -53,7 +56,13 @@ export function RunCard({
   scopeLabel,
   t,
 }: RunCardProps) {
-  const { currentData: draft } = api.useGetConceptNoteDraftQuery(run.run_id);
+  const loadReviewStatus = shouldLoadConceptNoteReviewStatus(
+    run.status,
+    run.progress_summary,
+  );
+  const { currentData: draft } = api.useGetConceptNoteDraftQuery(run.run_id, {
+    skip: !loadReviewStatus,
+  });
   const status = getConceptNoteStatusPresentation(run.status, draft);
 
   return (

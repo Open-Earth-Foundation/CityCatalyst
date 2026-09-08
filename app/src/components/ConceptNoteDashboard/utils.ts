@@ -150,6 +150,18 @@ export function getConceptNoteStatusPresentation(
   return getRunStatusPresentation(runStatus);
 }
 
+export function shouldLoadConceptNoteReviewStatus(
+  runStatus: string,
+  progressSummary: Record<string, unknown>,
+): boolean {
+  if (terminalRunStatuses.has(normalizeLifecycleValue(runStatus))) {
+    return false;
+  }
+
+  const draftProgress = recordValue(progressSummary.draft_document);
+  return draftProgress.status === "complete";
+}
+
 export function getWorkflowStepTranslationKey(value: string): string {
   return (
     workflowStepTranslationKeys[normalizeLifecycleValue(value)] ??
@@ -177,8 +189,19 @@ export function conceptNoteResumeHref(
   lng: string,
   cityId: string,
   runId: string,
+  focus?: {
+    chapterId?: string | null;
+    findingKey?: string | null;
+  },
 ): string {
-  return `/${lng}/cities/${cityId}/concept-notes/${runId}`;
+  const href = `/${lng}/cities/${cityId}/concept-notes/${runId}`;
+  if (!focus?.chapterId) return href;
+
+  const searchParams = new URLSearchParams({ chapterId: focus.chapterId });
+  if (focus.findingKey) {
+    searchParams.set("findingKey", focus.findingKey);
+  }
+  return `${href}?${searchParams.toString()}`;
 }
 
 export interface ConceptNoteBundleProgress {

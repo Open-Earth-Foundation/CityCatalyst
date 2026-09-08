@@ -1,0 +1,43 @@
+{
+  "run_id": "2026-09-03-openrouter-gemini-3-1-pro-preview",
+  "provider": "OpenRouter",
+  "model_requested": "google/gemini-3.1-pro-preview",
+  "model_returned": "google/gemini-3.1-pro-preview",
+  "provider_returned": "Google",
+  "input_file": "cc-771-ocr-benchmark-v1.pdf",
+  "input_sha256": "d00d2d6f9161f3def691f7778e39de9acd18005bd569dd9be04ba39a7b3cbf41",
+  "input_bytes": 96348,
+  "source_mode": "OpenRouter chat completions with native file input",
+  "prompt": "Convert the attached PDF into faithful Markdown for a document-ingestion pipeline.\n\nRequirements:\n- Preserve all narrative text and tables accurately.\n- Do not treat charts, figures, or images as decoration.\n- For every chart or figure, add a grounded textual representation including its title, axes, units, series/categories, visible values, trends, targets, and callouts whenever readable.\n- Do not merely insert an image placeholder such as ![image](image.png).\n- Keep the output as the document content in Markdown; do not answer these instructions separately.\n- Do not invent values. If a visual value is unreadable, state that explicitly.\n",
+  "provider_config": {
+    "allow_fallbacks": false,
+    "require_parameters": true
+  },
+  "http_status": 200,
+  "elapsed_ms": 29319,
+  "usage": {
+    "prompt_tokens": 1732,
+    "completion_tokens": 4014,
+    "total_tokens": 5746,
+    "cost": 0.051632,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.051632,
+      "upstream_inference_prompt_cost": 0.003464,
+      "upstream_inference_completions_cost": 0.048168
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 2749,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "openrouter_request_id": "gen-1788406320-4bBp4okIolsePSUuIHsk",
+  "secret_persisted": false
+}

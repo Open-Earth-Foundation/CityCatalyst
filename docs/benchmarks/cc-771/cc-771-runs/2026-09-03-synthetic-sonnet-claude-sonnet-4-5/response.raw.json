@@ -1,0 +1,46 @@
+{
+  "id": "gen-1788437550-PVcJWCyrccVQqD7N2C9h",
+  "object": "chat.completion",
+  "created": 1788437550,
+  "model": "anthropic/claude-sonnet-4.5",
+  "provider": "Amazon Bedrock",
+  "system_fingerprint": null,
+  "service_tier": null,
+  "choices": [
+    {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "end_turn",
+      "message": {
+        "role": "assistant",
+        "content": "# Municipal Climate Action Plan\n\nSynthetic document for comparing PDF-to-Markdown and visual OCR tools\n\n## Executive summary\n\nThe City of Greenfield is preparing a climate action plan for the 2026-2030 period. The plan combines transport, buildings, and waste measures to reduce greenhouse gas emissions while protecting residents from heat and flooding.\n\nBetween 2020 and 2025, estimated citywide emissions decreased from 95 to 65 ktCO2e. The largest reduction came from public transport improvements and a cleaner electricity mix. The next phase focuses on reducing peak summer electricity demand, expanding tree canopy, and improving the reliability of household waste collection.\n\n| Indicator | 2025 baseline | 2030 direction |\n|-----------|---------------|----------------|\n| Total emissions | 65 ktCO2e | Reduce toward 50 ktCO2e |\n| Tree canopy coverage | 22% of urban area | Increase to 30% |\n| Households with weekly recycling | 61% | Increase to 85% |\n| Buildings with heat resilience upgrades | 18% | Increase to 45% |\n\n**Important: some benchmark facts are intentionally presented only in the chart on the next page. A complete extraction should preserve those visual facts in textual form.**\n\n---\n\n## Visual evidence: emissions trend\n\nThe figure below contains information that is not repeated in the surrounding paragraphs. It should be interpreted as part of the document, not treated as decoration.\n\n### Annual emissions by sector\n\n**Chart description:**\n\nThe chart shows annual emissions by sector from 2020 to 2025, measured in ktCO2e (kilotonnes of CO2 equivalent). Three sectors are tracked:\n\n- **Transport** (dark blue line): Started at approximately 48 ktCO2e in 2020, decreased to approximately 47 ktCO2e in 2021, approximately 44 ktCO2e in 2022, approximately 40 ktCO2e in 2023, approximately 35 ktCO2e in 2024, and approximately 30 ktCO2e in 2025.\n\n- **Buildings** (teal/green line): Started at approximately 30 ktCO2e in 2020, remained at approximately 30 ktCO2e in 2021, decreased to approximately 29 ktCO2e in 2022, approximately 27 ktCO2e in 2023, approximately 25 ktCO2e in 2024, and approximately 23 ktCO2e in 2025.\n\n- **Waste** (orange/yellow line): Started at approximately 17 ktCO2e in 2020, remained at approximately 17 ktCO2e in 2021, decreased to approximately 16 ktCO2e in 2022, approximately 15 ktCO2e in 2023, approximately 14 ktCO2e in 2024, and approximately 12 ktCO2e in 2025.\n\n**Key annotations on the chart:**\n- A horizontal dashed line at 50 ktCO2e is labeled \"2030 target: 50 ktCO2e\"\n- An annotation states \"Transport falls below 35 ktCO2e in 2024\"\n\nThe y-axis shows \"Emissions (ktCO2e)\" ranging from 0 to 60. The x-axis shows \"Reporting year\" from 2020 to 2025.\n\n### Questions that a good extraction should answer\n\n- Which sector had the highest emissions in 2020?\n- In which year did transport emissions first fall below 35 ktCO2e?\n- What is the 2030 target shown by the dashed line?\n- What was the combined 2025 emissions value across the three sectors?\n- Which sector shows the smallest absolute reduction between 2020 and 2025?\n\n**Answers based on the chart:**\n- Transport had the highest emissions in 2020 (approximately 48 ktCO2e)\n- Transport emissions first fell below 35 ktCO2e in 2024\n- The 2030 target shown by the dashed line is 50 ktCO2e\n- The combined 2025 emissions value across the three sectors is approximately 65 ktCO2e (30 + 23 + 12)\n- Waste shows the smallest absolute reduction between 2020 and 2025 (approximately 5 ktCO2e, from 17 to 12)\n\n---\n\n## Implementation measures and monitoring\n\nThe city will track progress through quarterly reporting. Departments should report both the activity completed and the measurable outcome. When results differ from the expected direction, the program manager should record the reason and the corrective action.\n\n### Priority measures\n\n| Measure | Owner | 2026 milestone | Evidence |\n|---------|-------|----------------|----------|\n| Bus corridor electrification | Mobility Office | 12 additional electric buses | Fleet register and route data |\n| Cool-roof upgrades | Buildings Unit | 1,200 homes upgraded | Permit records and inspection sample |\n| Food-waste collection | Public Works | Pilot in 4 districts | Collection logs and contamination rate |\n| Urban tree planting | Parks Department | 8,000 trees planted | GIS inventory and survival survey |\n\n## Interpretation notes\n\nThe values in this document are synthetic and are intended only for tool comparison. A benchmark evaluator should check whether the extracted Markdown retains units, years, category names, numerical values, and the direction of change. It should also flag unsupported claims, missing values, and any mismatch between the chart and the extracted narrative.\n\nDocument identifier: CC-771-OCR-BENCHMARK-V1 | Language: English | Data status: synthetic",
+        "refusal": null,
+        "reasoning": null
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 5588,
+    "completion_tokens": 1324,
+    "total_tokens": 6912,
+    "cost": 0.036624,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.036624,
+      "upstream_inference_prompt_cost": 0.016764,
+      "upstream_inference_completions_cost": 0.01986
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  }
+}

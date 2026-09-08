@@ -1,0 +1,12 @@
+{
+  "run_id": "2026-09-03-san-diego-2025-openrouter-claude-opus-5",
+  "provider": "OpenRouter",
+  "model_requested": "anthropic/claude-opus-5",
+  "input_file": "2025_Annual_CAP_Report_FINAL_06-17-26_web.pdf",
+  "input_sha256": "cc1eca34c15afc0fa6fd9d3ed3ccd96098e3ffd588287082d76abd9fa0a75a6e",
+  "source_mode": "OpenRouter chat completions with native file input",
+  "elapsed_ms": 251309,
+  "status": "error",
+  "error": "IncompleteRead(6501 bytes read)",
+  "secret_persisted": false
+}

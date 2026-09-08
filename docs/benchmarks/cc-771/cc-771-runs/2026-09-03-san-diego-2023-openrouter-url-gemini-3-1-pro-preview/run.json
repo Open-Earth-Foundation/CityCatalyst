@@ -1,0 +1,13 @@
+{
+  "run_id": "2026-09-03-san-diego-2023-openrouter-url-gemini-3-1-pro-preview",
+  "provider": "OpenRouter",
+  "model_requested": "google/gemini-3.1-pro-preview",
+  "input_file": "2023_CAP_Annual_Report_9-23-24_AM_FINAL.pdf",
+  "input_sha256": "3a9281508afff21de1176c18be8f6026e0cd96e4c4db684f57368597f2f06bbd",
+  "source_mode": "OpenRouter chat completions with native file input (mistral-files-signed-url)",
+  "mistral_transport_file_id": "07e31000-6822-4d9a-8bb9-041df0ac9f7d",
+  "elapsed_ms": 8898,
+  "status": "error",
+  "error": "HTTP 400: {\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 400,\\n    \\\"message\\\": \\\"The document has no pages.\\\",\\n    \\\"status\\\": \\\"INVALID_ARGUMENT\\\"\\n  }\\n}\\n\",\"provider_name\":\"Google\",\"is_byok\":false,\"provider_error_code\":\"400\"}},\"user_id\":\"user_2zQUXuSqLJvX67sGqUuNYoOsTY3\"}",
+  "secret_persisted": false
+}

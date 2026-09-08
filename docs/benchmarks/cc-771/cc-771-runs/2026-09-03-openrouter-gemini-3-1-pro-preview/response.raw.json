@@ -1,0 +1,54 @@
+{
+  "id": "gen-1788406320-4bBp4okIolsePSUuIHsk",
+  "object": "chat.completion",
+  "created": 1788406320,
+  "model": "google/gemini-3.1-pro-preview",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+    {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "STOP",
+      "message": {
+        "role": "assistant",
+        "content": "Synthetic benchmark document - CC-771 Page 1\n\n# Municipal Climate Action Plan\nSynthetic document for comparing PDF-to-Markdown and visual OCR tools\n\n## Executive summary\nThe City of Greenfield is preparing a climate action plan for the 2026-2030 period. The plan combines transport, buildings, and waste measures to reduce greenhouse gas emissions while protecting residents from heat and flooding.\n\nBetween 2020 and 2025, estimated citywide emissions decreased from 95 to 65 ktCO2e. The largest reduction came from public transport improvements and a cleaner electricity mix. The next phase focuses on reducing peak summer electricity demand, expanding tree canopy, and improving the reliability of household waste collection.\n\n| Indicator | 2025 baseline | 2030 direction |\n| :--- | :--- | :--- |\n| Total emissions | 65 ktCO2e | Reduce toward 50 ktCO2e |\n| Tree canopy coverage | 22% of urban area | Increase to 30% |\n| Households with weekly recycling | 61% | Increase to 85% |\n| Buildings with heat resilience upgrades | 18% | Increase to 45% |\n\n> **Important:** some benchmark facts are intentionally presented only in the chart on the next page. A complete extraction should preserve those visual facts in textual form.\n\n***\n\nSynthetic benchmark document - CC-771 Page 2\n\n## Visual evidence: emissions trend\nThe figure below contains information that is not repeated in the surrounding paragraphs. It should be interpreted as part of the document, not treated as decoration.\n\n**[Figure: Annual emissions by sector]**\n*   **Type:** Line chart\n*   **X-axis:** Reporting year (2020 to 2025)\n*   **Y-axis:** Emissions (ktCO2e), ranging from 0 to 60 in increments of 10.\n*   **Series / Legend:** Transport (dark blue line), Buildings (green line), Waste (yellow line)\n*   **Targets & Callouts:**\n    *   A horizontal dashed red line is plotted at the 50 ktCO2e mark across the entire chart, labeled **\"2030 target: 50 ktCO2e\"**.\n    *   A dashed callout line points to the Transport data series in the year 2024, labeled **\"Transport falls below 35 ktCO2e in 2024\"**.\n*   **Data Values & Trends (Visually Estimated):**\n    *   **Transport:** Had the highest emissions across all years. Started at approximately 48 ktCO2e in 2020, declining to ~46 (2021), ~44 (2022), ~40 (2023), ~34 (2024, crossing below 35), and ending at exactly 30 ktCO2e in 2025.\n    *   **Buildings:** Started at roughly 31 ktCO2e in 2020, with a steady gradual decline to ~30 (2021), ~29 (2022), ~27 (2023), ~25 (2024), and ending at approximately 23 ktCO2e in 2025.\n    *   **Waste:** Had the lowest emissions. Started around 16 ktCO2e in 2020, decreasing very slightly to ~16 (2021), ~15 (2022), ~14 (2023), ~13 (2024), and ending at approximately 12 ktCO2e in 2025.\n    *(Note: Totaling the 2020 estimates [48+31+16 = 95] and 2025 estimates [30+23+12 = 65] matches the citywide emission metrics provided in the executive summary).*\n\n### Questions that a good extraction should answer\n- Which sector had the highest emissions in 2020?\n- In which year did transport emissions first fall below 35 ktCO2e?\n- What is the 2030 target shown by the dashed line?\n- What was the combined 2025 emissions value across the three sectors?\n- Which sector shows the smallest absolute reduction between 2020 and 2025?\n\n***\n\nSynthetic benchmark document - CC-771 Page 3\n\n## Implementation measures and monitoring\nThe city will track progress through quarterly reporting. Departments should report both the activity completed and the measurable outcome. When results differ from the expected direction, the program manager should record the reason and the corrective action.\n\n### Priority measures\n\n| Measure | Owner | 2026 milestone | Evidence |\n| :--- | :--- | :--- | :--- |\n| Bus corridor electrification | Mobility Office | 12 additional electric buses | Fleet register and route data |\n| Cool-roof upgrades | Buildings Unit | 1,200 homes upgraded | Permit records and inspection sample |\n| Food-waste collection | Public Works | Pilot in 4 districts | Collection logs and contamination rate |\n| Urban tree planting | Parks Department | 8,000 trees planted | GIS inventory and survival survey |\n\n### Interpretation notes\nThe values in this document are synthetic and are intended only for tool comparison. A benchmark evaluator should check whether the extracted Markdown retains units, years, category names, numerical values, and the direction of change. It should also flag unsupported claims, missing values, and any mismatch between the chart and the extracted narrative.\n\nDocument identifier: CC-771-OCR-BENCHMARK-V1 | Language: English | Data status: synthetic",
+        "refusal": null,
+        "reasoning": "**Extracting Document Content**\n\nI'm focused on accurately capturing the essence of the PDF, particularly translating complex visual data from charts and figures into descriptive textual representations. This involves detailing titles, axes, and the data trends themselves.\n\n**Processing Page Content**\n\nI'm currently working through the first page, meticulously extracting the narrative text and tabular data. My focus is on ensuring the table's columns—Indicator, 2025 baseline, and 2030 direction—are accurately represented, and I've decided to retain header/footer information as part of the standard document conversion.\n\n**Formatting Table Data**\n\nI am now converting the extracted table data into a Markdown format, ensuring each row and column is precisely represented for clarity. This includes detailing the specific indicators and their corresponding baseline and directional targets.\n\n**Confirming Emission Estimates**\n\nMy visual estimations for the emissions data, particularly for Transport, align perfectly with the provided textual context, confirming the accuracy of my extraction and quantification process. I've cross-referenced the 2025 totals to ensure a robust data representation.\n\n**Answering Chart Questions**\n\nI'm now using the extracted data to answer specific questions derived from the chart. My focus is on providing precise, data-driven responses based on the quantified emission values.\n\n**Extracting Table Structure**\n\nI am now meticulously transcribing the detailed table from page 3, focusing on its four distinct columns: Measure, Owner, 2026 milestone, and Evidence. I'm carefully noting each row's specific content, including the bus corridor electrification and food-waste collection initiatives.\n\n**Refining Document Representation**\n\nI am now consolidating the extracted data, meticulously checking the Markdown table structure and ensuring all chart constraints are met. I am particularly reviewing how to best represent document headers and footers for clarity, deciding on plain text for their inclusion, and using blockquotes for callouts as planned.\n\n**Refining Extracted Content**\n\nI'm now meticulously reviewing and organizing the extracted information. This involves ensuring the Markdown tables are accurately formatted and that chart descriptions precisely capture all visual elements, including axes, data series, targets, and annotations, for a comprehensive representation.\n\n",
+        "reasoning_details": [
+          {
+            "type": "reasoning.text",
+            "text": "**Extracting Document Content**\n\nI'm focused on accurately capturing the essence of the PDF, particularly translating complex visual data from charts and figures into descriptive textual representations. This involves detailing titles, axes, and the data trends themselves.\n\n**Processing Page Content**\n\nI'm currently working through the first page, meticulously extracting the narrative text and tabular data. My focus is on ensuring the table's columns—Indicator, 2025 baseline, and 2030 direction—are accurately represented, and I've decided to retain header/footer information as part of the standard document conversion.\n\n**Formatting Table Data**\n\nI am now converting the extracted table data into a Markdown format, ensuring each row and column is precisely represented for clarity. This includes detailing the specific indicators and their corresponding baseline and directional targets.\n\n**Confirming Emission Estimates**\n\nMy visual estimations for the emissions data, particularly for Transport, align perfectly with the provided textual context, confirming the accuracy of my extraction and quantification process. I've cross-referenced the 2025 totals to ensure a robust data representation.\n\n**Answering Chart Questions**\n\nI'm now using the extracted data to answer specific questions derived from the chart. My focus is on providing precise, data-driven responses based on the quantified emission values.\n\n**Extracting Table Structure**\n\nI am now meticulously transcribing the detailed table from page 3, focusing on its four distinct columns: Measure, Owner, 2026 milestone, and Evidence. I'm carefully noting each row's specific content, including the bus corridor electrification and food-waste collection initiatives.\n\n**Refining Document Representation**\n\nI am now consolidating the extracted data, meticulously checking the Markdown table structure and ensuring all chart constraints are met. I am particularly reviewing how to best represent document headers and footers for clarity, deciding on plain text for their inclusion, and using blockquotes for callouts as planned.\n\n**Refining Extracted Content**\n\nI'm now meticulously reviewing and organizing the extracted information. This involves ensuring the Markdown tables are accurately formatted and that chart descriptions precisely capture all visual elements, including axes, data series, targets, and annotations, for a comprehensive representation.\n\n",
+            "format": "google-gemini-v1",
+            "index": 0
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 1732,
+    "completion_tokens": 4014,
+    "total_tokens": 5746,
+    "cost": 0.051632,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.051632,
+      "upstream_inference_prompt_cost": 0.003464,
+      "upstream_inference_completions_cost": 0.048168
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 2749,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  }
+}

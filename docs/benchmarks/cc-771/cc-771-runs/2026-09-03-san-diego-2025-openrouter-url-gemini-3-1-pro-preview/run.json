@@ -1,0 +1,22 @@
+{
+  "run_id": "2026-09-03-san-diego-2025-openrouter-url-gemini-3-1-pro-preview",
+  "provider": "OpenRouter",
+  "model_requested": "google/gemini-3.1-pro-preview",
+  "model_returned": null,
+  "provider_returned": null,
+  "input_file": "2025_Annual_CAP_Report_FINAL_06-17-26_web.pdf",
+  "input_sha256": "cc1eca34c15afc0fa6fd9d3ed3ccd96098e3ffd588287082d76abd9fa0a75a6e",
+  "input_bytes": 16417512,
+  "source_mode": "OpenRouter chat completions with native file input (mistral-files-signed-url)",
+  "mistral_transport_file_id": "32aa4974-a78a-44d0-b216-d1b8a2222bff",
+  "prompt": "Convert the attached PDF into faithful Markdown for a document-ingestion pipeline.\n\nRequirements:\n- Preserve all narrative text and tables accurately.\n- Do not treat charts, figures, or images as decoration.\n- For every chart or figure, add a grounded textual representation including its title, axes, units, series/categories, visible values, trends, targets, and callouts whenever readable.\n- Do not merely insert an image placeholder such as ![image](image.png).\n- Keep the output as the document content in Markdown; do not answer these instructions separately.\n- Do not invent values. If a visual value is unreadable, state that explicitly.\n",
+  "provider_config": {
+    "allow_fallbacks": false,
+    "require_parameters": true
+  },
+  "http_status": 200,
+  "elapsed_ms": 14882,
+  "usage": {},
+  "openrouter_request_id": "gen-1788408008-yGMZmnNUxCNDaqndhk4W",
+  "secret_persisted": false
+}

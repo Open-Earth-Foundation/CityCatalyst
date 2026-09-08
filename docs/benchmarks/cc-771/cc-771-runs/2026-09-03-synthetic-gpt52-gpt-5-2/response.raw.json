@@ -1,0 +1,61 @@
+{
+  "id": "gen-1788437595-Sg5DErf8bb8zazsCmevK",
+  "object": "chat.completion",
+  "created": 1788437595,
+  "model": "openai/gpt-5.2",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+    {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+        "role": "assistant",
+        "content": "# Municipal Climate Action Plan (2026–2030)\n\n*Synthetic benchmark document – CC-771*  \n*Synthetic document for comparing PDF-to-Markdown and visual OCR tools*\n\n## Executive summary\n\nThe City of Greenfield is preparing a climate action plan for the 2026-2030 period. The plan combines transport, buildings, and waste measures to reduce greenhouse gas emissions while protecting residents from heat and flooding.\n\nBetween 2020 and 2025, estimated citywide emissions decreased from 95 to 65 ktCO2e. The largest reduction came from public transport improvements and a cleaner electricity mix. The next phase focuses on reducing peak summer electricity demand, expanding tree canopy, and improving the reliability of household waste collection.\n\n| Indicator | 2025 baseline | 2030 direction |\n|---|---:|---|\n| Total emissions | 65 ktCO2e | Reduce toward 50 ktCO2e |\n| Tree canopy coverage | 22% of urban area | Increase to 30% |\n| Households with weekly recycling | 61% | Increase to 85% |\n| Buildings with heat resilience upgrades | 18% | Increase to 45% |\n\n**Important:** some benchmark facts are intentionally presented only in the chart on the next page. A complete extraction should preserve those visual facts in textual form.\n\n---\n\n## Visual evidence: emissions trend\n\nThe figure below contains information that is not repeated in the surrounding paragraphs. It should be interpreted as part of the document, not treated as decoration.\n\n### Figure: *Annual emissions by sector*\n\n**Chart type:** Multi-series line chart with markers  \n**X-axis:** Reporting year (2020, 2021, 2022, 2023, 2024, 2025)  \n**Y-axis:** Emissions (ktCO2e)  \n**Legend / series:** Transport, Buildings, Waste  \n**Target line:** A red dashed horizontal line labeled **“2030 target: 50 ktCO2e”**\n\n#### Visible callout / annotation\n- Annotation on the transport series: **“Transport falls below 35 ktCO2e in 2024”** (indicates the first year transport drops below 35 is 2024).\n\n#### Values visible from plotted points (read from marker positions against the y-axis grid)\n*Note: The chart does not print numeric data labels at each point; the values below are read from the plotted marker positions relative to the axis ticks and therefore are approximate where not exactly aligned to a tick.*\n\n| Year | Transport (ktCO2e) | Buildings (ktCO2e) | Waste (ktCO2e) |\n|---:|---:|---:|---:|\n| 2020 | ≈50 | ≈30 | ≈15 |\n| 2021 | ≈46 | ≈29 | ≈15 |\n| 2022 | ≈43 | ≈28–29 | ≈14 |\n| 2023 | ≈39 | ≈26–27 | ≈13 |\n| 2024 | ≈33–34 *(below 35 per callout)* | ≈24–25 | ≈12 |\n| 2025 | ≈30 | ≈22–23 | ≈11–12 |\n\n#### Trends evident in the figure\n- **All three sectors decline from 2020 to 2025.**\n- **Transport** shows the largest decline (steepest downward slope).\n- **Buildings** declines moderately.\n- **Waste** declines slightly (smallest slope / smallest absolute change by visual inspection).\n\n#### Target shown\n- The dashed line explicitly labels the **2030 target as 50 ktCO2e**.\n\n### Questions that a good extraction should answer\n\n- Which sector had the highest emissions in 2020?\n- In which year did transport emissions first fall below 35 ktCO2e?\n- What is the 2030 target shown by the dashed line?\n- What was the combined 2025 emissions value across the three sectors?\n- Which sector shows the smallest absolute reduction between 2020 and 2025?\n\n---\n\n## Implementation measures and monitoring\n\nThe city will track progress through quarterly reporting. Departments should report both the activity completed and the measurable outcome. When results differ from the expected direction, the program manager should record the reason and the corrective action.\n\n### Priority measures\n\n| Measure | Owner | 2026 milestone | Evidence |\n|---|---|---|---|\n| Bus corridor electrification | Mobility Office | 12 additional electric buses | Fleet register and route data |\n| Cool-roof upgrades | Buildings Unit | 1,200 homes upgraded | Permit records and inspection sample |\n| Food-waste collection | Public Works | Pilot in 4 districts | Collection logs and contamination rate |\n| Urban tree planting | Parks Department | 8,000 trees planted | GIS inventory and survival survey |\n\n### Interpretation notes\n\nThe values in this document are synthetic and are intended only for tool comparison. A benchmark evaluator should check whether the extracted Markdown retains units, years, category names, numerical values, and the direction of change. It should also flag unsupported claims, missing values, and any mismatch between the chart and the extracted narrative.\n\n**Document identifier:** CC-771-OCR-BENCHMARK-V1 | **Language:** English | **Data status:** synthetic",
+        "refusal": null,
+        "reasoning": "**Converting emissions data to Markdown**\n\nI need to faithfully convert the parsed text pages and image into a proper Markdown format. The chart shows annual emissions by sector (Transport, Buildings, Waste) with years ranging from 2020 to 2025 on the X-axis and emissions in ktCO2e on the Y-axis. There's a dashed red line indicating the \"2030 target: 50 ktCO2e\" and a callout that \"Transport falls below 35 ktCO2e in 2024.\" I need to accurately read the visible data points without inventing any figures.**Crafting markdown for emissions report**\n\nSince I'm not entirely certain, I can express values as \"approximately\" if the chart suggests it. Still, I want to avoid any form of invention; it should be an interpretation. I’ll state values as read from the plot while acknowledging that if exact labels aren’t present, I may not provide specifics. The chart appears to have markers at gridlines, allowing for better reading. I will include tables from pages 1 and 3, ensure to provide headings, and mention that values are derived from marker positions. Let’s get started!",
+        "reasoning_details": [
+          {
+            "type": "reasoning.summary",
+            "summary": "**Converting emissions data to Markdown**\n\nI need to faithfully convert the parsed text pages and image into a proper Markdown format. The chart shows annual emissions by sector (Transport, Buildings, Waste) with years ranging from 2020 to 2025 on the X-axis and emissions in ktCO2e on the Y-axis. There's a dashed red line indicating the \"2030 target: 50 ktCO2e\" and a callout that \"Transport falls below 35 ktCO2e in 2024.\" I need to accurately read the visible data points without inventing any figures.**Crafting markdown for emissions report**\n\nSince I'm not entirely certain, I can express values as \"approximately\" if the chart suggests it. Still, I want to avoid any form of invention; it should be an interpretation. I’ll state values as read from the plot while acknowledging that if exact labels aren’t present, I may not provide specifics. The chart appears to have markers at gridlines, allowing for better reading. I will include tables from pages 1 and 3, ensure to provide headings, and mention that values are derived from marker positions. Let’s get started!",
+            "format": "openai-responses-v1",
+            "index": 0
+          },
+          {
+            "type": "reasoning.encrypted",
+            "data": "gAAAAABqmWRmhi-XG-X_dFqGFNCeYQFDsUladWcvxE8gX06XOpoxkq0Om1M0EzwLJvVZ8QrKVVgWoHPwS2rSG-b_WSrJ0NJOYuo2nUZiCqkcduYVj9EVxEMKSAfT23-01nxgLXAxx7YxksgACJnV7y9bVOkPrJDIjYcnTT_O5eKLma7KdPVyCFXAUYLOySU82CLne3gkBLGZR6iRUQorTJ1g-eLo3okQkgqqd-Tmid1LjGTB-Zy927-k82H2df95CzEBsTR59Yopfh1zb45Cyo4Cr5iUW9KJBI_Vbc_2XOPbbVyflnqyK0tDJpsDn897SO-4pNB9ValOn1SmkrphUHMxcsmCzHoVOaq0IQVAohuJ1yBQB0KBywmMagrGlpx30yfBHd4Vx2qcbtcru0SswNATlEyI9IkzNG0atzYWMDw1UHoOs0qX8rAwHSx1xLY7k9oULkaX9dV2OkZZQXRu99FWXIsFn765D_8BxX4wKwGZBdypeYmjVVNVjIBOI7L4iggzLW13YF4CXHoaiASSTyCFVt_atXsMGOcMEGP7M0FhXB0uljKZslHNVQN_TgC8gVmFrLDzBzBzBtKBUj59IBYARMdemLKnkuYJvJq3IYLjUltT2Stc3H_KwNsQPy910mpPyuPDBVh-QqzbeQKlPU_4OrX_jt6il9GVrt83hJt_X6ussgq49b2LRdaOU4fVth7p4buDQ41_hKlLweeVpK3rhnP4sKdodXlCRhxZ9iAZ_pHuUfNOT5O780CjJle_pB4zvMDygZDjVQO-gMcSPCVjpaPOV4LPlu2uy4F1ca7CEVwwxOuvN5JRH8zw0vHBw1ceydrw2OmmxY2_gtLKYNhU_SHuQtka_Bu9ws2fzBU0WS3ke7T0NnMevfkrDH3BM6e0LuEPyHPjVOx6JylqIm9Zp37jkigj8nfQiMj87L5RiWIyRvB05tUWStM2TavIyffnMn-zBwf0qYiT1n0lWA9jCtNmRRw-zXlkXiAw2GUI99iGF4MrwJGOreuul75QUUY06wIGBl_2k9ctWFYWg3DSCbyMm80t4rZfrcY7ZeB9o_rzQFQ_8FZ4INUI-OtBmb7o-9kHys9pCP2Ze8C2V5MDcwR7HKaKPxh0C1vFwEAqCaJJT7GQx7dTWTEvislvNQF25fenCL0jDwBEv4OLXHc4XuugfCvhQN_zwBL3LRwTJZie7BIvHV-A4YAqHuODudYzzqQOiBXTt0rn7QNiCIcHqYl8SyoOYf_Q_2wG_qRTYrtFxODS_0cshQqq8fIXdAJ-QJpijUfaXliRzbiTJRs1Mjn3rbjueL6R-92tOwSw5LvIYwJTIKcjA0E5g7Lt2yZ2z4U-sYMPA8ftylssh6YMy0wFREWbOctav21jIIioZai1uEslkkHQsZ4WnvQ-oKAF4qRl8xc-p_doVusvT7hRYkztzDNKp62V77tW-_dPeW9Q0D50drl3exMDyfWdiEvwZLNkoqrmFMv5Xv47JFd3_SYPt4mlEF1WnKI-sEhUrSboTR27jhZzXoLJj0jE40xq7K3GtounQ-UQe_W5TyWA0thlns50kB1vcUWfUBQIFVYh-ExoIyBJfm2lgKnjFLkzD_kziVSEzlTh-pdAplvDTGC9HBjvfGxJguxnDPIzwxzymK6aVG3T2oCQJ4hCmsqeanFYD8MdqCCn7btaa_VCF1Ku8RwCV3l4rUcIXuzmrVYuiAi2VyNUVZ19tnAgVbHYP9bpGP8e-k0S4WJdAX1dNSykkqWdV_uJ9Z7r9LIw3UOmRhaJOusJJPCrP5jRMNFEmfj46dwR_jOJxK1GF0xPp21auKUNki3KcdrpNkaYcct-bV5mdaAR_lhTP88VXOdNNnCMVStDPEvuXij_qrZBsNE-dtlrbGRjoKzPCP1nDVzed8tTBRO4h0Lzk-2ySQNGIP7bUcThc9TM67nkLPslyt4ytrHImvxRHoVRVwoFicCZk05GieKL7KxxJHl2cKABVp0bXDwR1CLJ6ju9ZgJ_nh0m1JengIEhEz_KY6PZIJOJ8f4480VcgUNKGwID9KOk6s_gysZs4G-NHBIBxvzRKdJBuFg9khLrvOfeSTgl0eGA203JJmnCEHVZPOUEBXCfR2nvl569fvVBPmT8AqFgwwh6DFKnUAuflSKeI2AApddbkRHg2cE4CTHFcMoO0ugTXWre5jsmyalnwJgqHLIPoVokU1-h1lDKHGqgCs37Jfa4Lv7wNR80rXs06njkwxvbrqrY3qVNv-jY9NPoCikoslQkI4Ee0d_ylESKntZtOAJSi-Pi6jvEt1DeERdW3-_JUKKCHXc8p8EOtfTT3Pg0vrnXm32bDqKRtFngBVP5cTTav9xCmkL_aAYkLS38EFpgN7Y-0yXzVOwk-IlQe9F7PYptrIs5QnG5nieLCEEe2htjiRvOJnjuFJGz5fcAtWfbaGrvpw-28f0asvetVV18D8Eni4arIKJIQpOXc9Ht73-ivS8K_bCPd-RIT8F95BMMEkrDIEMHCntRz7k9a-bDyZ3JwEQLr5RTsdNH7EJ82JOaXH_KayBwoJmUch5FQ138mbnSLBSwC7vDFPECE77YsQ3RnqBO0x7UJuSThLlnTYcmYfpTMmyqFVDVjM8T730mdEXqqRtgetL48sg-qN-Bxsp9oP69Oky15qLRJOOH13wQmRbESa3ASFqIFUYsY1NqCjyd84k5z2rOu2EDgebVXrpbvhmrQxkIsKTuHnO6fd3RL6_BcIBvTQD3fq_nQO4xojV7VrhslmO9-pSQxHvbNFfKEyxFOm0ShyYvckmHHbraQT5nWpAin1NKHsrVY6j-cVOt5DmZnn8tXEBFQ8W3wKtn4v9y5ds5i7HPosdNRo9ENReS4V2kQJ8oM-kKm7bpMnt1qV2QLPsGT2Skw9e2KTRA1YBgJn0KGO4XJip8HaqHSGK5yZ8BCBMZoJhVaaZFRYdTqX_C3ZmTS0i9OJUX0tvY8TEIrW4iua3ZXajoHzSz4X5c8AI_jgtrRZIxBYMwAsrUydkQZ3fe0Wmdi5HupE1GGW1KSQrUYYi15VoB4SqICoVnk7Z_XCXRvjAZ-wvrH5LD7IV6s-rrqhzSqgFkdcvgwVdV0Mqr2EQtip8KFcSEg3fBipoNFJnDN0RYWakouLcPAwu3eiND6ZCP7HQhDearXoYyVpz9sY9_RV-T4IRH1_cLM79-VNHP-uqCMGBZgZBENDX-n6M_ls1_AzsJvw_O5Zd39hpyB5Do9DCVSTWGUVnU-KqC2EB7BaF4ryy8PB-jiUcXDqr32SrdRGgOZo54R6YRAe3K8ED2UuEgrOr1_DKsYtk43dssVY0c30GO84_RZCrgFsq7QbTYpCOuqYQHpcJIw3Sz0brASmI8crRtn96FPBN_CaOG7w96tUkAdKlIs1KxlC0k_KlM2nl-fzABmtriM3PmYT0nberNRsVjfG1ttHa1XoGeLzU_p_LSB80dI2CFg-z_tUojCrubMxicdcSwou3W5ebGRrUkTGyJtvxd1LFetx8oLBqlGL-Lsqo0PILDX0ftIuL1XjkX_vQE7R0J7nKKIrI33W7MbBG2T0IzNB9l48nFyI2mYB2SeP1nY9U8h_YvltAuF-ffduuYxAsVRxcK3HSEypW8i_041xkTW_fJuWjGuEdvm0KfgjAWiaOoKXBwbuMUAOg6y_njqa9SSFbJXS4xH_wFHxLYBEg0CxTKg6S7Z1Gp1GZqqabnwn32St9V4Uz8fRl_rfnr8wfJhUAytqd6FxVhE2VI4sTGn8gk4xmBw7RV3exO3O7cWRCZEPou4O4i7kEakiAKJdBruAX8y7ZuxOXh37ViCLLqXh8=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LjItMjAyNTEyMTF8b3BlbmFpIn0",
+            "format": "openai-responses-v1",
+            "id": "rs_02013a324d7851ae016a99645d8f4487d1943bd1979f71c72a",
+            "index": 1
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 1731,
+    "completion_tokens": 1575,
+    "total_tokens": 3306,
+    "cost": 0.02507925,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.02507925,
+      "upstream_inference_prompt_cost": 0.00302925,
+      "upstream_inference_completions_cost": 0.02205
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 474,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  }
+}

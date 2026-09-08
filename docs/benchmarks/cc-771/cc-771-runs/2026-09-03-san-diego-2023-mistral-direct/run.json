@@ -1,0 +1,28 @@
+{
+  "run_id": "2026-09-03-san-diego-2023-mistral-direct",
+  "provider": "Mistral",
+  "endpoint": "https://api.mistral.ai/v1/ocr",
+  "model_requested": "mistral-ocr-latest",
+  "model_returned": "mistral-ocr-latest",
+  "input_file": "2023_CAP_Annual_Report_9-23-24_AM_FINAL.pdf",
+  "input_sha256": "3a9281508afff21de1176c18be8f6026e0cd96e4c4db684f57368597f2f06bbd",
+  "input_bytes": 17484557,
+  "source_mode": "Mistral Files API upload plus signed document URL",
+  "cc_request_shape": {
+    "model": "mistral-ocr-latest",
+    "document": {
+      "type": "document_url",
+      "document_url": "<signed-url-omitted>"
+    },
+    "include_image_base64": false
+  },
+  "http_status": 200,
+  "page_count": 20,
+  "usage_info": {
+    "pages_processed": 20,
+    "doc_size_bytes": 17484557
+  },
+  "elapsed_ms": 6484,
+  "mistral_file_id": "07e31000-6822-4d9a-8bb9-041df0ac9f7d",
+  "secret_persisted": false
+}

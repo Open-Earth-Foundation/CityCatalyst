@@ -486,6 +486,7 @@ const TeamSettings = ({
                                 aria-label="more-icon"
                                 variant="ghost"
                                 color="content.tertiary"
+                                ml="auto"
                                 _hover={{ bg: "background.controlHover" }}
                                 _expanded={{ bg: "background.controlHover" }}
                               >

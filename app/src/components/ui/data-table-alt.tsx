@@ -248,12 +248,17 @@ function DataTableAlt<T extends object>({
         borderRadius="8px"
         borderWidth="1px"
         borderColor="border.overlay"
-        bg="background.backgroundLight"
+        bg="white"
         overflow="hidden"
       >
         <Box maxH={maxHeight} overflowY="auto" w="full">
           <Table.Root px={0} w="full" variant="outline">
-            <Table.Header position="sticky" top={0} zIndex={1}>
+            <Table.Header
+              position="sticky"
+              top={0}
+              zIndex={1}
+              bg="background.backgroundLight"
+            >
               <Table.Row>
                 {columns.map((col) => (
                   <Table.ColumnHeader

@@ -502,25 +502,29 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 All non-secret LLM settings are centralized in `llm_config.yaml`, including the
 orchestrator and agentic-flow model settings, provider base URLs, retry and
 timeout settings, Stationary Energy review chat-context prompt budgets, and the
-CNB source reader/synthesizer roles, chapter drafter, and partition limits. The
-chapter drafter uses GPT-5.6 Terra with medium reasoning.
+CNB source reader/synthesizer roles, chapter drafter, gap-impact reviewer,
+chat-edit planner, and partition/prompt/concurrency limits. Chat-edit planning
+runs one model call per unlocked chapter with at most three calls concurrently,
+then combines and validates one review proposal. The chapter drafter uses GPT-5.6
+Terra with medium reasoning; the gap-impact reviewer and chat-edit planner use
+GPT-5.6 Sol with medium reasoning.
 
 Current CA model defaults:
 
 - General chat: `openai/gpt-5.6-luna`, reasoning `none`.
-- CNB and Stationary Energy chat: `openai/gpt-5.6-sol`, reasoning `none`.
+- CNB chat: `openai/gpt-5.6-sol`, reasoning `medium`.
+- Stationary Energy chat: `openai/gpt-5.6-sol`, reasoning `none`.
 - Funding research and similar-project selection: `openai/gpt-5.6-sol`, reasoning `medium`.
-- Funder-identity matching: `openai/gpt-5.6-luna`, reasoning `low`.
-- Document mapping and question-focused source readers: `openai/gpt-5.6-luna`, reasoning `low`.
+- Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `medium`.
+- Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Document-summary synthesis: `openai/gpt-5.6-sol`, reasoning `medium`.
 
-Chat keeps the existing OpenRouter Chat Completions tool loop and explicitly sets
-reasoning to `none`; GPT-5.6 otherwise defaults to medium reasoning. The configured
-chat and source-worker requests omit `temperature`. Research keeps its Responses
-API path and existing reasoning settings. Source partition budgets,
+Chat keeps the existing OpenRouter Chat Completions tool loop. General and
+Stationary Energy chat explicitly set reasoning to `none`; CNB chat and workers
+use medium reasoning. The configured chat and source-worker requests omit
+`temperature`. Research keeps its Responses API path and existing reasoning settings. Source partition budgets,
 concurrency limits, and embedding models are unchanged. Stored summaries are not
 automatically rebuilt by changing the model configuration.
-
 Stationary Energy draft proposals are generated deterministically from bounded
 CityCatalyst context, not by an LLM prompt. The environment is only for secrets
 such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
@@ -535,9 +539,15 @@ Prompt paths are also configured in `llm_config.yaml`:
   source-query guidance and no-fabrication rules
 - the three `prompts.cnb_source_*` entries map document partitions, reduce them
   to compact document summaries, and read focused questions for exact evidence
+- `prompts.cnb_chat_edit_planner` creates bounded, grounded edit proposals from
+  actual chapter text; its output cannot apply a revision without user review
+- `prompts.cnb_chat_edit_review` independently compares each proposed chapter edit
+  with its original text and the user instruction using the edit planner model.
+  Meaning-preserving rewrites need no uploaded evidence; explicit user facts are
+  editing authority, not independent factual verification.
 
 CNB document mapping and question-focused source readers use
-`models.cnb_source_reader`: `openai/gpt-5.6-luna` with low reasoning. Document
+`models.cnb_source_reader`: `openai/gpt-5.6-terra` with medium reasoning. Document
 summary synthesis uses `models.cnb_source_synthesizer`: `openai/gpt-5.6-sol` with
 medium reasoning. These tool-free workers retain the OpenRouter Chat Completions
 route and structured-output schemas, and omit `temperature`. The 50,000-token
@@ -563,7 +573,9 @@ source text as untrusted evidence and directs precise questions to
 `concept_note_sources_query` using the exact source index. The tool maps that
 index to the persisted upload inside the authorized run, so documents with the
 same label and filename remain independently queryable, and omits IDs from its
-model-facing result. Durable chat-driven edits remain a separate workflow.
+model-facing result. An authorized edit request adds the proposal-only edit tool;
+that tool invokes the separate `prompts.cnb_chat_edit_planner` prompt and typed
+output model. Durable chat-driven edits remain a separate workflow.
 
 All CNB model-facing payloads now separate facts from backend identity:
 
@@ -702,11 +714,35 @@ Operationally:
   template chapter at H2. A separate reconciler marks drafting leases left
   `running` for more than one hour as retryable.
 
-Run the focused contract test with:
+### Concept Note draft review and chat editing
 
-```bash
-uv run pytest service/tests/cnb/test_context_bundle_service.py -q
-```
+`GET` and `POST /v1/concept-notes/{run_id}/draft` expose persisted chapters,
+structured gaps and revision confirmation state. Missing-information markers
+remain visible in the draft; users supply facts through chat and explicitly
+accept the resulting edit proposals. Acceptance resolves matching gaps in the
+same transaction, without a separate interview or background regeneration.
+`POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/confirm` confirms an exact
+revision; open critical gaps and any remaining missing-information markers block
+confirmation. Generated markers must match the structured gap questions before
+the chapter is saved; mismatches fail generation rather than producing a chapter
+that can be incorrectly marked Ready.
+
+Chat creates durable edit proposals; only explicit web review applies changes.
+The LLM planner and independent LLM reviewer determine meaning, factual support,
+and which occurrences belong together. Python verifies exact anchors, source
+identities, user quotes, required headings, and gap markers; it does not compare
+numeric tokens, override semantic judgments, or add replacements after review.
+Review supports inline decisions and Accept all / Reject all, with source links
+and refinement. Clarification questions, processing, failed, and stale responses
+remain visible in the review area, including after reload; users can refine or
+dismiss the response. Public revision-history, undo and restore endpoints are not
+exposed. Internal revision/application records remain for auditing and safe retries.
+No new provider credentials are required. CNB migration `20260907_120000`
+provisions the gap and edit storage.
+
+See [the CNB architecture](../docs/ConceptNoteBuilderArchitecture.md#implemented-chat-revision-boundary-cc-732)
+for planner validation, review and persistence rules. Run gap lifecycle tests with
+`uv run pytest service/tests/cnb/test_workspace_gap_lifecycle.py -q`.
 
 ### Concept Note run foundation
 
@@ -723,7 +759,7 @@ normalized request returns the original run with HTTP `200` and
 `created: false`; using that key with different input returns HTTP `409`.
 
 `GET /v1/concept-notes?user_id=...&city_id=...` validates the same token identity
-and live city access, then returns only that user's runs for the selected city.
+and city access, then returns only that user's runs for the selected city.
 Runs are ordered by `updated_at`, `created_at`, and `run_id`, all descending, so
 the result is stable and most-recently-updated first. Upload registration and
 failed, retry, or ready lifecycle transitions refresh the parent run's
@@ -732,19 +768,26 @@ stored scope identifiers, lifecycle fields, timestamps, and `progress_summary`
 copied from the persisted `context_summary`.
 
 `GET /v1/concept-notes/{run_id}?user_id=...` returns only an owned run and
-revalidates current city access before responding. It exposes the same persisted
-status, workflow step, and progress summary as the list contract. `PATCH` on the
-same route accepts a trimmed 1-120 character `name` and updates both the run and
-its dedicated thread title.
+requires current city access before responding. It exposes the same persisted status, workflow
+step, and progress summary as the list contract. `PATCH` on the same route
+accepts a trimmed 1-120 character `name` and updates both the run and its
+dedicated thread title.
 
 `POST /v1/concept-notes/{run_id}/duplicate` requires `Idempotency-Key` and
 creates a new run and empty chat. It copies current chapter content, context, and
 ready upload metadata with new mutable IDs while reusing immutable Markdown
 artifacts. Messages, revision history, and exports are not copied. `DELETE` on
-the run route removes its workspace, run data, and dedicated chat; shared files
-and source artifacts remain. A legacy thread referenced by multiple notes cannot
-be deleted. Duplicate and delete return HTTP `409` while context or drafting work
-is active.
+the run route removes its workspace (including edit proposals and applications),
+run data, and dedicated chat. It also deletes unreferenced uploaded source files,
+OCR results, and OCR jobs through the service-authenticated CityCatalyst endpoint
+`DELETE /api/v1/internal/ca/concept-note-sources`. Source artifacts still referenced
+by another note are retained until the last note is deleted. City/project files
+remain outside this boundary. Cleanup failures leave the run available for retry;
+active OCR jobs must finish before cleanup can proceed. A legacy thread referenced
+by multiple notes cannot be deleted. `POST /v1/concept-notes/{run_id}/chat/reset` replaces the dedicated
+thread and permanently removes its messages while preserving the run, workspace,
+sources, context, and revision history. Duplicate, reset, and delete return HTTP
+`409` while context or drafting work is active.
 
 The Alembic revision `20260729_120000` provisions `concept_note_runs`,
 `concept_note_context_bundles`, and `concept_note_uploads` in `CA_DATABASE_URL`.
@@ -760,7 +803,8 @@ CityCatalyst exposes authenticated proxy routes at
 `POST /api/v1/concept-notes/start`,
 `GET /api/v1/concept-notes?city_id=...`, and
 `GET|PATCH|DELETE /api/v1/concept-notes/{runId}?city_id=...`, plus
-`POST /api/v1/concept-notes/{runId}/duplicate?city_id=...`. The proxy derives
+`POST /api/v1/concept-notes/{runId}/duplicate?city_id=...` and
+`POST /api/v1/concept-notes/{runId}/chat/reset?city_id=...`. The proxy derives
 `user_id` from the session, checks access to the requested city before issuing the
 scoped CA token, forwards the duplicate idempotency key, and preserves Climate
 Advisor response statuses. Climate Advisor remains authoritative for run ownership
@@ -788,7 +832,8 @@ The repository adapter reads and updates the migrated
 `concept_note_runs` and `concept_note_context_bundles` tables. It replaces only
 the GHGI and/or HIAP sections built by the current request, preserving the rest
 of the bundle under the same database lock. Before reusing either cached
-section, the route revalidates live city access and the selected inventory.
+section, the route requires city access and the selected inventory. City access
+may reuse the short-lived successful authorization described above.
 GHGI status and emissions payloads must each contain GPC sectors I-V exactly
 once. Incomplete or noncanonical CityCatalyst capability payloads return
 `503 invalid_cc_context` without being persisted. A valid stored snapshot is
@@ -1171,6 +1216,8 @@ workflow run identifier when present. CNB chat interactions use the visible
 `workflow=CNB` tag and retain the detailed route as
 `workflow_name=concept_note_context_chat`. Full debug artifacts are logged with
 bearer tokens, API keys, JWTs, and secrets redacted.
+CNB chat and chat-edit interactions are metadata-only: no raw instruction,
+document/source text, or tool payload artifacts are recorded.
 
 The shared helper creates runs through `MlflowClient` and keeps the client/run ID
 in a task-local context. Tags, parameters, metrics, artifacts, and termination
@@ -1195,7 +1242,9 @@ The durable CNB run ID is retained as `concept_note_run_id`; it is not appended
 to the run name. Missing-information and chat-edit implementations must use the
 reserved names above at their run-scoped mutation boundaries.
 
-Each streamed `/v1/messages` model turn emits one MLflow trace. Climate Advisor
+Each non-CNB streamed `/v1/messages` model turn emits one MLflow trace. CNB model
+calls suppress raw SDK/agent tracing on their own client instances and record
+allowlisted interaction metadata instead. Climate Advisor
 also assigns the active trace session to the CA `thread_id`, so MLflow's
 session grouping shows all turns from the same UI conversation together while
 still preserving per-turn trace detail. Every chat mode opens a request root span

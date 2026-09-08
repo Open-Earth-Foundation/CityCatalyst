@@ -11,7 +11,6 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
-from app.config import Settings, get_settings
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_application_context import (
@@ -19,9 +18,13 @@ from app.models.cnb.concept_note_application_context import (
     ConceptNoteApplicationContextResponse,
 )
 from app.models.cnb.concept_note_draft import (
+    ConceptNoteChapterConfirmRequest,
     ConceptNoteChapterDraftOutput,
     ConceptNoteDraftChapterResponse,
+    ConceptNoteDraftGapOutput,
     ConceptNoteDraftResponse,
+    ConceptNoteGapResolutionResponse,
+    ConceptNoteGapResponse,
 )
 from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
@@ -31,6 +34,8 @@ from app.persistence.concept_notes.context_bundle import normalize_bundle
 from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
     WorkspaceChapterSnapshot,
+    WorkspaceConflictError,
+    WorkspaceGapSnapshot,
     WorkspaceTemplateChapter,
     normalize_template_chapters,
 )
@@ -44,10 +49,10 @@ from openai import AsyncOpenAI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from app.config import Settings, get_settings
+
 logger = logging.getLogger(__name__)
-ChapterGenerator = Callable[
-    [dict[str, Any]], Awaitable[ConceptNoteChapterDraftOutput]
-]
+ChapterGenerator = Callable[[dict[str, Any]], Awaitable[ConceptNoteChapterDraftOutput]]
 _BACKGROUND_DRAFTS: set[asyncio.Task[None]] = set()
 CHAPTER_DRAFT_RECONCILE_INTERVAL_SECONDS = 300
 CHAPTER_DRAFT_STALE_AFTER = timedelta(hours=1)
@@ -184,12 +189,11 @@ class ConceptNoteChapterDraftService:
                         application_context=application_context,
                         run_context=run_context,
                         current=current,
-                        template_chapter=template_by_ref.get(
-                            current.chapter_ref or ""
-                        ),
+                        template_chapter=template_by_ref.get(current.chapter_ref or ""),
                         chapters=chapters,
                     )
                 )
+                generated = _sanitize_generated_output(generated, run_context)
 
                 # A newer start/resume request supersedes this worker.
                 if not await self._lease_is_active(run_id, user_id, build_id):
@@ -197,11 +201,7 @@ class ConceptNoteChapterDraftService:
                 await self._workspace.save_generated_chapter(
                     chapter_id=current.chapter_id,
                     body_markdown=generated.body_markdown,
-                    missing_information=[
-                        item.strip()
-                        for item in generated.missing_information
-                        if item.strip()
-                    ],
+                    missing_information=generated.missing_information,
                 )
                 refreshed = await self._workspace.list_chapters(run_id=run_id)
                 if not await self._record_completed_count(
@@ -218,6 +218,26 @@ class ConceptNoteChapterDraftService:
                 build_id,
             )
             await self._fail_draft(run_id, user_id, build_id)
+
+    async def confirm_chapter(
+        self,
+        *,
+        run: ConceptNoteRun,
+        chapter_id: UUID,
+        payload: ConceptNoteChapterConfirmRequest,
+    ) -> ConceptNoteDraftResponse:
+        """Mark one exact, gap-free chapter revision Ready after user review."""
+        try:
+            await self._workspace.confirm_chapter(
+                run_id=run.run_id,
+                chapter_id=chapter_id,
+                expected_revision=payload.expected_revision,
+                idempotency_key=payload.idempotency_key,
+                user_id=run.user_id,
+            )
+        except WorkspaceConflictError as exc:
+            raise ChapterDraftingError(str(exc)) from exc
+        return await self.load_state(run)
 
     async def _generate_chapter(
         self,
@@ -242,9 +262,7 @@ class ConceptNoteChapterDraftService:
             client = AsyncOpenAI(**options.kwargs)
             agent = Agent(
                 name="Concept Note chapter drafter",
-                instructions=settings.llm.prompts.get_prompt(
-                    "cnb_chapter_drafting"
-                ),
+                instructions=settings.llm.prompts.get_prompt("cnb_chapter_drafting"),
                 model=OpenAIChatCompletionsModel(
                     model=model_config.name,
                     openai_client=client,
@@ -262,9 +280,7 @@ class ConceptNoteChapterDraftService:
                     agent,
                     json.dumps(payload, ensure_ascii=False),
                 )
-                return ConceptNoteChapterDraftOutput.model_validate(
-                    result.final_output
-                )
+                return ConceptNoteChapterDraftOutput.model_validate(result.final_output)
             finally:
                 await client.close()
         except ChapterDraftingError:
@@ -356,9 +372,9 @@ class ConceptNoteChapterDraftService:
         build_id: UUID,
     ) -> bool:
         progress = await self._load_progress(run_id, user_id)
-        return progress.get("status") == "running" and progress.get(
-            "build_id"
-        ) == str(build_id)
+        return progress.get("status") == "running" and progress.get("build_id") == str(
+            build_id
+        )
 
     async def _mark_current_chapter(
         self,
@@ -407,9 +423,9 @@ class ConceptNoteChapterDraftService:
         async with self._ca_session_factory() as session, session.begin():
             run = await _require_owned_run(session, run_id, user_id, lock=True)
             progress = _draft_progress(run.context_summary)
-            if progress.get("status") != "running" or progress.get(
-                "build_id"
-            ) != str(build_id):
+            if progress.get("status") != "running" or progress.get("build_id") != str(
+                build_id
+            ):
                 return False
             run.context_summary = _replace_draft_progress(
                 run.context_summary,
@@ -627,6 +643,7 @@ def _build_chapter_input(
             "application_context": application_payload,
             "run_context": semantic_run_context,
             "chapter": {
+                "chapter_ref": current.chapter_ref,
                 "title": current.title,
                 "description": (
                     template_chapter.description
@@ -638,6 +655,7 @@ def _build_chapter_input(
             },
             "previous_chapters": [
                 {
+                    "chapter_ref": chapter.chapter_ref,
                     "title": chapter.title,
                     "body_markdown": chapter.body_markdown,
                 }
@@ -647,8 +665,8 @@ def _build_chapter_input(
             ],
         }
     )
-    for source in payload["run_context"].get("context_bundle", {}).get(
-        "selected_sources", []
+    for source in (
+        payload["run_context"].get("context_bundle", {}).get("selected_sources", [])
     ):
         source.pop("page_count", None)
         source.pop("block_count", None)
@@ -686,8 +704,14 @@ def _build_state_response(
                 required=chapter.required,
                 user_locked=chapter.user_locked,
                 body_markdown=chapter.body_markdown,
-                missing_information=chapter.missing_information,
+                gaps=[_gap_response(gap) for gap in chapter.gaps],
+                open_gap_count=sum(
+                    gap.state in {"open", "processing"} for gap in chapter.gaps
+                ),
+                caveat_count=sum(gap.state == "caveat" for gap in chapter.gaps),
                 revision_number=chapter.revision_number,
+                confirmed_body_markdown=chapter.confirmed_body_markdown,
+                confirmed_revision_number=chapter.confirmed_revision_number,
             )
             for chapter in chapters
         ],
@@ -696,6 +720,77 @@ def _build_state_response(
 
 def _completed_count(chapters: list[WorkspaceChapterSnapshot]) -> int:
     return sum(chapter.body_markdown is not None for chapter in chapters)
+
+
+def _gap_response(gap: WorkspaceGapSnapshot) -> ConceptNoteGapResponse:
+    """Convert a detached persistence snapshot into the public gap contract."""
+    resolution = (
+        ConceptNoteGapResolutionResponse(
+            resolution_id=gap.resolution.resolution_id,
+            action=gap.resolution.action,
+            answer=gap.resolution.answer,
+            actor_user_id=gap.resolution.actor_user_id,
+            source_refs=gap.resolution.source_refs,
+            created_at=gap.resolution.created_at,
+        )
+        if gap.resolution is not None
+        else None
+    )
+    return ConceptNoteGapResponse.model_validate(
+        {
+            "gap_id": gap.gap_id,
+            "field_key": gap.field_key,
+            "question": gap.question,
+            "why_asking": gap.why_asking,
+            "severity": gap.severity,
+            "state": gap.state,
+            "suggestions": gap.suggestions,
+            "source_refs": gap.source_refs,
+            "version": gap.version,
+            "resolution": resolution,
+            "created_at": gap.created_at,
+            "updated_at": gap.updated_at,
+        }
+    )
+
+
+def _sanitize_generated_output(
+    generated: ConceptNoteChapterDraftOutput,
+    run_context: dict[str, Any],
+) -> ConceptNoteChapterDraftOutput:
+    """Keep stable gap keys and only suggestions grounded in persisted sources."""
+    allowed_refs = _allowed_source_refs(run_context)
+    gaps: list[ConceptNoteDraftGapOutput] = []
+    seen_keys: set[str] = set()
+    for gap in generated.missing_information:
+        if gap.field_key in seen_keys:
+            continue
+        seen_keys.add(gap.field_key)
+        suggestions = [
+            suggestion
+            for suggestion in gap.suggestions
+            if allowed_refs
+            and all(ref in allowed_refs for ref in suggestion.source_refs)
+        ]
+        gaps.append(gap.model_copy(update={"suggestions": suggestions}))
+    return generated.model_copy(update={"missing_information": gaps})
+
+
+def _allowed_source_refs(run_context: dict[str, Any]) -> set[str]:
+    """Return the source labels and upload identifiers available to the drafter."""
+    bundle = run_context.get("context_bundle")
+    selected_sources = (
+        bundle.get("selected_sources", []) if isinstance(bundle, dict) else []
+    )
+    refs: set[str] = set()
+    for source in selected_sources:
+        if not isinstance(source, dict):
+            continue
+        for key in ("source_label", "upload_id"):
+            value = source.get(key)
+            if value:
+                refs.add(str(value))
+    return refs
 
 
 def _draft_progress(summary: Any) -> dict[str, Any]:

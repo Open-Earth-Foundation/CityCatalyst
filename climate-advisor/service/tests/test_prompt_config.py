@@ -111,8 +111,8 @@ def test_cnb_funder_identity_prompt_matches_runtime_contract() -> None:
     prompt_path = config.prompts.cnb_funder_identity_matching
     prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
 
-    assert config.models.funder_identity.name == "openai/gpt-5.6-luna"
-    assert config.models.funder_identity.reasoning_effort == "low"
+    assert config.models.funder_identity.name == "openai/gpt-5.6-terra"
+    assert config.models.funder_identity.reasoning_effort == "medium"
     assert "`funded_projects`" in prompt_text
     assert "`canonical_funders`" in prompt_text
     assert "`project_name`" in prompt_text
@@ -208,8 +208,8 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
     config = _load_llm_config()
     budget = config.generation.prompt_budget.cnb_sources
 
-    assert config.models.cnb_source_reader.name == "openai/gpt-5.6-luna"
-    assert config.models.cnb_source_reader.reasoning_effort == "low"
+    assert config.models.cnb_source_reader.name == "openai/gpt-5.6-terra"
+    assert config.models.cnb_source_reader.reasoning_effort == "medium"
     assert config.models.cnb_source_synthesizer.name == "openai/gpt-5.6-sol"
     assert config.models.cnb_source_synthesizer.reasoning_effort == "medium"
     assert config.models.cnb_chapter_drafter.name == "openai/gpt-5.6-terra"

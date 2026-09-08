@@ -30,6 +30,8 @@ def build_mock_settings(
     default_model: str = "openai/gpt-5.4-mini",
     agentic_flow_model: str | None = None,
     agentic_flow_temperature: float | None = None,
+    cnb_chat_model: str | None = None,
+    cnb_chat_reasoning_effort: str | None = None,
 ):
     """Create a reusable SimpleNamespace matching AgentService expectations."""
     prompts = MagicMock()
@@ -65,6 +67,16 @@ def build_mock_settings(
                 ),
             )
             if agentic_flow_model is not None or agentic_flow_temperature is not None
+            else None
+        ),
+        cnb_chat=(
+            SimpleNamespace(
+                name=cnb_chat_model or agentic_flow_model or default_model,
+                reasoning_effort=cnb_chat_reasoning_effort,
+                temperature=temperature,
+            )
+            if cnb_chat_model is not None
+            or cnb_chat_reasoning_effort is not None
             else None
         ),
     )

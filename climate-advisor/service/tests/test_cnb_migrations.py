@@ -9,12 +9,16 @@ from pathlib import Path
 
 import pytest
 from app.db.cnb import CnbBase
-from app.models.db import cnb_reference, cnb_workspace  # noqa: F401
+from app.models.db import cnb_edit, cnb_reference, cnb_workspace  # noqa: F401
 from sqlalchemy import create_engine, inspect, text
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 CNB_DATABASE_URL = os.getenv("CNB_TEST_DATABASE_URL")
 CNB_TABLES = {
+    "concept_note_edit_applications",
+    "concept_note_edit_proposals",
+    "concept_note_gap_resolutions",
+    "concept_note_chapter_reviews",
     "concept_note_chapters",
     "concept_note_chapter_revisions",
     "concept_note_evidence_links",
@@ -109,7 +113,7 @@ def test_cnb_offline_migration_preserves_explicit_constraint_names() -> None:
     assert "CONSTRAINT uq_funder_templates_opportunity UNIQUE" in sql
 
 
-def test_cnb_metadata_contains_only_the_thirteen_owned_tables() -> None:
+def test_cnb_metadata_contains_only_owned_tables() -> None:
     """Keep CA-owned run, context-bundle, and upload tables out of CNB metadata."""
     assert set(CnbBase.metadata.tables) == CNB_TABLES
     assert not {
@@ -257,8 +261,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         }
 
     opportunity_columns = {
-        item["name"]: item
-        for item in inspector.get_columns("funding_opportunities")
+        item["name"]: item for item in inspector.get_columns("funding_opportunities")
     }
     project_columns = {
         item["name"]: item for item in inspector.get_columns("funded_projects")
@@ -306,7 +309,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         revision = connection.execute(
             text("SELECT version_num FROM cnb_alembic_version")
         ).scalar_one()
-    assert revision == "20260821_120000"
+    assert revision == "20260907_120000"
 
     _run_alembic(
         config="cnb-alembic.ini",

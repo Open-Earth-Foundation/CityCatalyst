@@ -108,6 +108,20 @@ class CityCatalystClient:
             await self._client.aclose()
             self._client = None
 
+    async def delete_concept_note_sources(self, upload_ids: list[str]) -> None:
+        """Delete unreferenced CC-owned source artifacts; propagate failures for retry."""
+        if not self.base_url or not self.api_key:
+            raise RuntimeError("CityCatalyst source cleanup is not configured")
+        client = await self._get_client()
+        for start in range(0, len(upload_ids), 1000):
+            response = await client.request(
+                "DELETE",
+                f"{self.base_url}/api/v1/internal/ca/concept-note-sources",
+                headers={"X-CA-Service-Key": self.api_key},
+                json={"upload_ids": upload_ids[start : start + 1000]},
+            )
+            response.raise_for_status()
+
     async def __aenter__(self):
         """Async context manager entry."""
         return self

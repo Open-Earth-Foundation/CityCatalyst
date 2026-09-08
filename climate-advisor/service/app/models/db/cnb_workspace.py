@@ -116,6 +116,58 @@ class ConceptNoteChapterRevision(CnbBase):
     )
 
 
+class ConceptNoteChapterValidation(CnbBase):
+    """Latest structured readiness validation for a concept-note chapter."""
+
+    __tablename__ = "concept_note_chapter_validations"
+
+    validation_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), primary_key=True, default=uuid4
+    )
+    chapter_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey(
+            "concept_note_chapters.chapter_id",
+            name="fk_cnb_chapter_validations_chapter",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+    )
+    validated_revision_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey(
+            "concept_note_chapter_revisions.revision_id",
+            name="fk_cnb_chapter_validations_revision",
+            ondelete="SET NULL",
+        ),
+    )
+    validation_input_fingerprint: Mapped[str] = mapped_column(
+        String(64), nullable=False
+    )
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    findings: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
+    )
+    validated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "chapter_id",
+            name="uq_concept_note_chapter_validations_chapter",
+        ),
+        CheckConstraint(
+            "status IN ('ready', 'needs_review', 'incomplete')",
+            name="status_valid",
+        ),
+        CheckConstraint(
+            "length(validation_input_fingerprint) = 64",
+            name="fingerprint_length",
+        ),
+    )
+
+
 class ConceptNoteEvidenceLink(CnbBase):
     """Workspace citation from a chapter claim to selected run context."""
 

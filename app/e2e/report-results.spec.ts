@@ -342,8 +342,22 @@ test.describe.serial("Report Results", () => {
       await page.reload({ waitUntil: "domcontentloaded" });
       await dismissCookieConsent(page);
       await openEmissionInventoryResultsTab(page);
-      await resultsResponsePromise;
+      const resultsResponse = await resultsResponsePromise;
       await expect(topEmissionsTable).toBeVisible({ timeout: 30000 });
+
+      const apiResults = await page.context().request.get(
+        `/api/v1/inventory/${inventoryId}/results`,
+      );
+      const apiJson = await apiResults.json();
+      const top = apiJson?.data?.topEmissions?.bySubSector ?? [];
+      const residentialApi = top.filter((row: { subsectorName?: string }) =>
+        /residential/i.test(row.subsectorName ?? ""),
+      );
+      expect(
+        residentialApi.length,
+        `Expected 2 residential top-emission rows, got: ${JSON.stringify(top)}`,
+      ).toBe(2);
+
       await expect(residentialRows).toHaveCount(2, { timeout: 15000 });
     }).toPass({ timeout: 120000 });
 

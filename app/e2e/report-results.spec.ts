@@ -179,9 +179,11 @@ async function addScope1ResidentialEmissions(
 }
 
 async function clearExistingActivities(page: Page, panel: Locator) {
-  // Activity accordion uses aria-label="more-icon" (direct-measure uses a test id).
+  // Only row overflow menus inside the activity table. The methodology header
+  // also uses aria-label="more-icon" (change methodology) and must be ignored.
   for (let i = 0; i < 10; i++) {
     const moreButton = panel
+      .locator("table tbody tr")
       .getByRole("button", { name: /more-icon/i })
       .or(panel.getByTestId("activity-more-icon"))
       .first();
@@ -192,8 +194,10 @@ async function clearExistingActivities(page: Page, panel: Locator) {
     await moreButton.click();
     const deleteItem = page
       .getByTestId("delete-activity-button")
-      .or(page.getByRole("menuitem", { name: /delete/i }));
-    await deleteItem.click();
+      .or(page.getByRole("menuitem", { name: /delete activity/i }))
+      .or(page.getByText(/^Delete activity$/i));
+    await expect(deleteItem.first()).toBeVisible({ timeout: 10000 });
+    await deleteItem.first().click();
     const deleteModal = page.getByTestId("delete-activity-modal-header");
     await expect(deleteModal).toBeVisible({ timeout: 10000 });
     await page.getByTestId("delete-activity-modal-confirm").click();

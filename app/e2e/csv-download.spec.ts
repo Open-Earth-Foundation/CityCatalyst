@@ -76,115 +76,57 @@ function filenameFromDisposition(
 }
 
 /**
- * Prefer the UI download payload. If Playwright cannot read the body
- * (empty 200s / 308s), wait until that request finishes, then fetch once
- * in the page context so the requests are not concurrent.
- */
-async function fetchDownloadInBrowser(
-  page: Page,
-  inventoryId: string,
-  format: "csv" | "ecrf",
-): Promise<DownloadResult> {
-  const result = await page.evaluate(
-    async ({ id, fmt }) => {
-      const response = await fetch(
-        `/api/v1/inventory/${id}/download?format=${fmt}&lng=en`,
-      );
-      if (!response.ok) {
-        throw new Error(`Download failed with status ${response.status}`);
-      }
-
-      const disposition = response.headers.get("content-disposition") ?? "";
-      const buffer = await response.arrayBuffer();
-      return {
-        disposition,
-        content: Array.from(new Uint8Array(buffer)),
-      };
-    },
-    { id: inventoryId, fmt: format },
-  );
-
-  const content = Buffer.from(result.content);
-  expect(content.byteLength).toBeGreaterThan(0);
-
-  return {
-    filename: filenameFromDisposition(
-      result.disposition,
-      `inventory.${format === "csv" ? "csv" : "xlsx"}`,
-    ),
-    content,
-  };
-}
-
-/**
- * Capture download via Playwright's download event (blob + <a download>).
- * Fall back to a single in-page fetch only after the UI request has finished,
- * never concurrently (concurrent downloads 500 on Firefox).
+ * Capture the inventory download from the single UI request.
+ * Intercepting avoids a second in-page fetch (Firefox returns 500 when the
+ * download endpoint is hit again while/after the UI blob download).
  */
 async function downloadFormat(
   page: Page,
   inventoryId: string,
   format: "csv" | "ecrf",
 ): Promise<DownloadResult> {
-  const downloadPromise = page
-    .waitForEvent("download", { timeout: 60000 })
-    .catch(() => null);
-  const responsePromise = page
-    .waitForResponse(
-      (resp) =>
-        resp.url().includes(`/inventory/${inventoryId}/download`) &&
-        resp.url().includes(`format=${format}`) &&
-        resp.request().method() === "GET" &&
-        resp.status() !== 308,
-      { timeout: 60000 },
-    )
-    .catch(() => null);
+  let captured: DownloadResult | null = null;
+  const routePattern = `**/api/v1/inventory/${inventoryId}/download**`;
 
-  await triggerDownloadFromModal(page, format);
-
-  const [download, response] = await Promise.all([
-    downloadPromise,
-    responsePromise,
-  ]);
-
-  if (download) {
-    const failure = await download.failure();
-    if (!failure) {
-      const stream = await download.createReadStream();
-      if (stream) {
-        const chunks: Buffer[] = [];
-        for await (const chunk of stream) {
-          chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-        }
-        const content = Buffer.concat(chunks);
-        if (content.byteLength > 0) {
-          return {
-            filename: download.suggestedFilename(),
-            content,
-          };
-        }
-      }
+  await page.route(routePattern, async (route) => {
+    const requestUrl = new URL(route.request().url());
+    if (requestUrl.searchParams.get("format") !== format) {
+      await route.continue();
+      return;
     }
-  }
 
-  if (response?.ok()) {
-    const content = Buffer.from(
-      await response.body().catch(() => Buffer.alloc(0)),
-    );
-    if (content.byteLength > 0) {
-      return {
+    const response = await route.fetch();
+    const body = await response.body();
+    const headers = response.headers();
+
+    if (response.ok() && body.byteLength > 0) {
+      captured = {
         filename: filenameFromDisposition(
-          response.headers()["content-disposition"] ?? "",
+          headers["content-disposition"] ?? "",
           `inventory.${format === "csv" ? "csv" : "xlsx"}`,
         ),
-        content,
+        content: Buffer.from(body),
       };
     }
-  }
 
-  // UI request finished (or timed out). Safe to fetch once without overlap.
-  await page.waitForTimeout(500);
-  return fetchDownloadInBrowser(page, inventoryId, format);
+    await route.fulfill({
+      status: response.status(),
+      headers,
+      body,
+    });
+  });
+
+  try {
+    await triggerDownloadFromModal(page, format);
+
+    await expect
+      .poll(() => captured?.content.byteLength ?? 0, { timeout: 60000 })
+      .toBeGreaterThan(0);
+
+    return captured!;
+  } finally {
+    await page.unroute(routePattern).catch(() => undefined);
+  }
 }
 
 async function downloadCsv(page: Page, inventoryId: string) {

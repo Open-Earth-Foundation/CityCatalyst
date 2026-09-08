@@ -91,21 +91,21 @@ export default class CSVDownloadService {
           activityValue?.emission_co2 != null
             ? Decimal.mul(
                 activityValue?.emission_co2 ?? 0,
-                gwps["CO2"].co2eqPerKg ?? 0,
+                gwps["CO2"]?.co2eqPerKg ?? 0,
               ).toNumber()
             : "";
         const ch4Amount =
           activityValue?.emission_ch4 != null
             ? Decimal.mul(
                 activityValue?.emission_ch4 ?? 0,
-                gwps["CH4"].co2eqPerKg ?? 0,
+                gwps["CH4"]?.co2eqPerKg ?? 0,
               ).toNumber()
             : "";
         const n2oAmount =
           activityValue?.emission_n2o != null
             ? Decimal.mul(
                 activityValue?.emission_n2o ?? 0,
-                gwps["N2O"].co2eqPerKg ?? 0,
+                gwps["N2O"]?.co2eqPerKg ?? 0,
               ).toNumber()
             : "";
 
@@ -175,9 +175,10 @@ export default class CSVDownloadService {
       const finalActivityValues: CSVActivityEntry[] = activityValues.map(
         (activityValue) => {
           const activityTitleKey = activityValue.metadata?.activityTitle;
-          const data_quality = activityValue.metadata?.dataQuality.toString();
+          const data_quality =
+            activityValue.metadata?.dataQuality?.toString() ?? "";
           const dataSource =
-            activityValue.activityData?.["data-source"].toString();
+            activityValue.activityData?.["data-source"]?.toString() ?? "";
 
           const activity_type = t(
             (activityValue?.activityData?.[activityTypeKey] ?? "").toString(),

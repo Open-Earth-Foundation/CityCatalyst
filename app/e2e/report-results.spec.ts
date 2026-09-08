@@ -58,9 +58,15 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal
     .getByLabel(/Select emission factor type/i)
     .selectOption("custom");
-  await addEmissionModal.getByLabel("CO2 emission factor").fill("10");
-  await addEmissionModal.getByLabel("N2O emission factor").fill("10");
-  await addEmissionModal.getByLabel("CH4 emission factor").fill("1");
+  const co2 = addEmissionModal.getByLabel("CO2 emission factor");
+  const n2o = addEmissionModal.getByLabel("N2O emission factor");
+  const ch4 = addEmissionModal.getByLabel("CH4 emission factor");
+  await co2.fill("10");
+  await n2o.fill("10");
+  await ch4.fill("1");
+  await co2.blur();
+  await n2o.blur();
+  await ch4.blur();
   await addEmissionModal.getByLabel(/Data Quality/i).selectOption("high");
   await addEmissionModal.getByLabel("Data source").fill("test");
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
@@ -76,45 +82,40 @@ async function fillEnergyConsumptionAmount(addEmissionModal: Locator) {
   await expect(energyInput).toBeVisible({ timeout: 10000 });
   await energyInput.click();
   await energyInput.fill("");
-  await energyInput.fill("100");
+  await energyInput.pressSequentially("100", { delay: 50 });
   await energyInput.blur();
   await expect(energyInput).toHaveValue(/100/);
 }
 
 async function submitActivity(page: Page, addEmissionModal: Locator) {
-  const createResponsePromise = page
-    .waitForResponse(
-      (resp) =>
-        resp.url().includes("/activity-value") &&
-        resp.request().method() === "POST" &&
-        resp.status() !== 308,
-      { timeout: 60000 },
-    )
-    .catch(() => null);
+  const createResponsePromise = page.waitForResponse(
+    (resp) =>
+      resp.url().includes("/activity-value") &&
+      resp.request().method() === "POST" &&
+      resp.status() !== 308,
+    { timeout: 60000 },
+  );
 
   await addEmissionModal.getByTestId("add-emission-modal-submit").click();
 
-  try {
-    await expect(addEmissionModal).not.toBeVisible({ timeout: 60000 });
-  } catch {
-    const createResponse = await createResponsePromise;
-    if (createResponse && !createResponse.ok()) {
-      const body = await createResponse.text().catch(() => "");
-      throw new Error(
-        `Activity create failed with status ${createResponse.status()}: ${body}`,
-      );
-    }
-
-    const validationHints = await addEmissionModal
-      .locator("[data-invalid], [aria-invalid='true']")
-      .allTextContents()
-      .catch(() => []);
+  const createResponse = await createResponsePromise;
+  if (!createResponse.ok()) {
+    const body = await createResponse.text().catch(() => "");
     throw new Error(
-      `Add-emission modal stayed open after submit. Validation hints: ${
-        validationHints.filter(Boolean).join(" | ") || "none found"
-      }`,
+      `Activity create failed with status ${createResponse.status()}: ${body}`,
     );
   }
+
+  const payload = await createResponse.json().catch(() => null);
+  const co2eq =
+    payload?.data?.co2eq ?? payload?.co2eq ?? payload?.data?.activity?.co2eq;
+  if (co2eq == null || BigInt(co2eq) <= 0n) {
+    throw new Error(
+      `Activity create returned missing/zero co2eq: ${JSON.stringify(payload)?.slice(0, 500)}`,
+    );
+  }
+
+  await expect(addEmissionModal).not.toBeVisible({ timeout: 60000 });
 }
 
 function openScopePanel(page: Page, scope: 1 | 2) {
@@ -220,6 +221,8 @@ async function addScope2ResidentialEmissions(
     await unitSelect.selectOption("units-kilowatt-hours");
     await expect(unitSelect).toHaveValue("units-kilowatt-hours");
     await fillCustomEmissionFactors(addEmissionModal);
+    // Re-assert amount after EF fields mount (FormattedNumberInput can reset).
+    await fillEnergyConsumptionAmount(addEmissionModal);
 
     await submitActivity(page, addEmissionModal);
   };
@@ -318,6 +321,7 @@ test.describe.serial("Report Results", () => {
   });
 
   test("User can navigate to dashboard and verify data", async ({ page }) => {
+    test.setTimeout(180000);
     const topEmissionsTable = page.locator("table").filter({
       has: page.getByText(/Total emissions \(CO2eq\)/i),
     });

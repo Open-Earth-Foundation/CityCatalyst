@@ -57,7 +57,14 @@ const ProjectList: React.FC<ProjectListProps> = ({
       flexDirection="column"
       gap="24px"
     >
-      <Text fontSize="title.md" fontWeight="semibold" color="content.secondary">
+      <Text
+        display="flex"
+        alignItems="center"
+        h="48px"
+        fontSize="title.md"
+        fontWeight="semibold"
+        color="content.secondary"
+      >
         {t("projects")}
       </Text>
       <ProjectSearchInput value={searchTerm} onChange={handleSearch} t={t} />

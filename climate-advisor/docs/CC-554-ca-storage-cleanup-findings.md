@@ -97,7 +97,6 @@ The first three steps are the practical cleanup recommendation. Reducing logging
 
 - [Content-free statistics and event-retention evidence](CC-554-ca-payload-statistics-2026-09-08.json).
 - [Original trace map and CSV links](CC-554-ca-mlflow-trace-map.md).
-- [Before/after verification](CC-554-ca-before-after-example.md) and [revamped trace JSON](CC-554-ca-revamped-trace-example.json).
 - `service/app/utils/streaming_handler.py:123`, `:236`, `:988`, and `:1269`: request/history artifacts, duplicated tool-result representation, and final artifacts/metrics.
 - `service/app/utils/mlflow_logging.py:161`, `:449`, and `:555`: autolog initialization, artifact logging, and redaction path.
 - `service/app/utils/tool_handler.py:20`: application persistence of assistant response and tool details.

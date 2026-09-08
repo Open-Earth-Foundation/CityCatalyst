@@ -73,7 +73,6 @@ Total: **192 files / 170,461 bytes**. MLflow separately reports **4,548,861 byte
 
 - [Trace CSV](CC-554-ca-traces-2026-09-08.csv): all 48 traces, exact IDs, source runs, environments, models, timing, token metadata, and application outcomes.
 - [Run CSV](CC-554-ca-runs-2026-09-08.csv): all 38 runs, linked traces, artifact paths/counts/sizes, and outcome metrics.
-- [Before/after verification](CC-554-ca-before-after-example.md) and [revamped trace JSON](CC-554-ca-revamped-trace-example.json): deterministic evidence for the implemented storage shape.
 - Authenticated run/trace searches were paginated to exhaustion. All 48 selected trace payloads were read and all 38 selected run artifact trees were listed. Classification uses explicit run tags rather than prompt guesses.
 - The mapping phase was read-only. The branch now also contains the follow-up
   instrumentation cleanup and two labelled synthetic MLflow verification runs;

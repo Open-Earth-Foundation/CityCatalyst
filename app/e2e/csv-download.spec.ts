@@ -120,8 +120,11 @@ async function expectUiDownloadSuccess(page: Page, format: "csv" | "ecrf") {
   await triggerDownloadFromModal(page, format);
   const response = await responsePromise;
   expect(response.ok()).toBeTruthy();
+  // Toast renders description only ("Downloading your data"), not the title key.
   await expect(
-    page.getByText(/Inventory report download completed/i).first(),
+    page
+      .getByText(/Downloading your data|Inventory report download completed/i)
+      .first(),
   ).toBeVisible({ timeout: 60000 });
 }
 

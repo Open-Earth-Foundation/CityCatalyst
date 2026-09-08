@@ -77,6 +77,7 @@ async function fillEnergyConsumptionAmount(addEmissionModal: Locator) {
   await energyInput.click();
   await energyInput.fill("");
   await energyInput.fill("100");
+  await energyInput.blur();
   await expect(energyInput).toHaveValue(/100/);
 }
 
@@ -247,6 +248,10 @@ async function addScope2ResidentialEmissions(
 
   await expect(scopeTwoPanel.locator("table tbody tr").first()).toBeVisible({
     timeout: 30000,
+  });
+  // Confirm the saved row looks like energy consumption data, not an empty shell.
+  await expect(scopeTwoPanel.getByText(/Electricity|kWh|100/i).first()).toBeVisible({
+    timeout: 15000,
   });
 }
 

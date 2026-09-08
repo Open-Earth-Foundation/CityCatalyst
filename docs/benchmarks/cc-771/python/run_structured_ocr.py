@@ -31,6 +31,84 @@ DEFAULT_DOC_SCHEMA = SCHEMA_DIR / "document.structured.schema.json"
 DEFAULT_VISUAL_SCHEMA = SCHEMA_DIR / "visual-annotation.schema.json"
 
 
+def classify_retryability(error: str | None) -> dict[str, object]:
+    """Record whether a provider failure is worth automatic retry."""
+    if not error:
+        return {"retryable": None, "reason": "no_error"}
+    lower = error.lower()
+    if any(
+        token in lower
+        for token in (
+            "http 401",
+            "http 403",
+            "unauthorized",
+            "invalid api key",
+            "invalid_api_key",
+            "authentication",
+        )
+    ):
+        return {
+            "retryable": False,
+            "reason": "authentication_or_authorization_failure",
+        }
+    if any(
+        token in lower
+        for token in (
+            "http 429",
+            "rate limit",
+            "too many requests",
+            "timeout",
+            "timed out",
+            "temporarily unavailable",
+            "http 500",
+            "http 502",
+            "http 503",
+            "http 504",
+            "connection reset",
+            "connection refused",
+            "network",
+            "incompleteread",
+        )
+    ):
+        return {"retryable": True, "reason": "transient_provider_or_network_failure"}
+    if "http 4" in lower:
+        return {"retryable": False, "reason": "client_or_request_error"}
+    return {"retryable": True, "reason": "unknown_provider_failure_default_retry"}
+
+
+def build_failure_document(
+    *,
+    pdf_path: Path,
+    input_sha: str,
+    run_id: str,
+    created_at: str,
+    raw: dict,
+    error: str | None,
+) -> dict:
+    """Schema-shaped empty document used when OCR/normalization cannot proceed."""
+    warning = error or "provider_or_normalize_failure"
+    return {
+        "schema_version": "cc-771.1",
+        "document": {
+            "source_filename": pdf_path.name,
+            "source_sha256": input_sha,
+            "requested_model": MODEL,
+            "returned_model": raw.get("model"),
+            "page_count": len(raw.get("pages") or []),
+            "run_id": run_id,
+            "created_at": created_at,
+        },
+        "pages": [],
+        "relationships": [],
+        "validation": {
+            "schema_valid": True,
+            "warnings": [warning],
+            "missing_fields": [],
+            "unsupported_provider_features": [],
+        },
+    }
+
+
 def write_evaluation(
     path: Path,
     *,
@@ -39,10 +117,14 @@ def write_evaluation(
     run_meta: dict,
     chart_facts_path: Path | None,
 ) -> None:
+    retry = run_meta.get("retryability") or {}
     lines = [
         f"# Evaluation — {run_id}",
         "",
         f"- Status: `{run_meta.get('status')}`",
+        f"- Error: {run_meta.get('error')}",
+        f"- Retryable: {retry.get('retryable')}",
+        f"- Retryability reason: {retry.get('reason')}",
         f"- Model requested: `{run_meta.get('model_requested')}`",
         f"- Model returned: `{run_meta.get('model_returned')}`",
         f"- Input SHA-256: `{run_meta.get('input_sha256')}`",
@@ -75,6 +157,8 @@ def write_evaluation(
             f"types={type_counts}; header={'yes' if page.get('header') else 'no'}; "
             f"footer={'yes' if page.get('footer') else 'no'}"
         )
+    if not document["pages"]:
+        lines.append("- none (no pages normalized)")
     lines.extend(["", "## Relationships", ""])
     if document["relationships"]:
         for rel in document["relationships"]:
@@ -124,15 +208,33 @@ def write_evaluation(
     else:
         lines.append("No chart ground-truth file attached for this input.")
 
-    lines.extend(
-        [
-            "",
-            "## Verdict",
-            "",
-            "Fill after manual review of overlays and chart facts. A partial or negative result is valid when evidence is complete.",
-            "",
-        ]
-    )
+    if run_meta.get("status") == "failed":
+        lines.extend(
+            [
+                "",
+                "## Provider failure",
+                "",
+                f"- error: {run_meta.get('error')}",
+                f"- retryable: {retry.get('retryable')}",
+                f"- reason: {retry.get('reason')}",
+                "- No pages were normalized because the provider call failed.",
+                "",
+                "## Verdict",
+                "",
+                "Failed run. Artifacts above record the failure for audit; do not treat outputs as usable OCR.",
+                "",
+            ]
+        )
+    else:
+        lines.extend(
+            [
+                "",
+                "## Verdict",
+                "",
+                "Fill after manual review of overlays and chart facts. A partial or negative result is valid when evidence is complete.",
+                "",
+            ]
+        )
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -247,29 +349,34 @@ def process_run(
         except Exception as exc:  # noqa: BLE001
             status = "partial" if status == "ok" else status
             error = f"{error + '; ' if error else ''}normalize_error: {exc}"
-            document = {
-                "schema_version": "cc-771.1",
-                "document": {
-                    "source_filename": pdf_path.name,
-                    "source_sha256": input_sha,
-                    "requested_model": MODEL,
-                    "returned_model": raw.get("model"),
-                    "page_count": len(raw.get("pages") or []),
-                    "run_id": run_id,
-                    "created_at": created_at,
-                },
-                "pages": [],
-                "relationships": [],
-                "validation": {
-                    "schema_valid": False,
-                    "warnings": [str(exc)],
-                    "missing_fields": [],
-                    "unsupported_provider_features": [],
-                },
-            }
+            document = build_failure_document(
+                pdf_path=pdf_path,
+                input_sha=input_sha,
+                run_id=run_id,
+                created_at=created_at,
+                raw=raw,
+                error=error,
+            )
+            document["validation"]["schema_valid"] = False
 
     if document is None:
-        raise RuntimeError("document normalization produced no artifact")
+        # API/network failures never entered normalization; still emit an
+        # auditable structured artifact so the run bundle is complete.
+        document = build_failure_document(
+            pdf_path=pdf_path,
+            input_sha=input_sha,
+            run_id=run_id,
+            created_at=created_at,
+            raw=raw,
+            error=error,
+        )
+        doc_schema = load_schema(DEFAULT_DOC_SCHEMA)
+        ok, schema_errors = validate_structured_document(document, doc_schema)
+        document["validation"]["schema_valid"] = ok
+        if schema_errors:
+            document["validation"]["warnings"].extend(
+                f"schema: {msg}" for msg in schema_errors
+            )
 
     dump_json(run_dir / "document.structured.json", document)
     plain = build_plain_markdown(document["pages"] or [
@@ -306,10 +413,12 @@ def process_run(
         ]
     }
 
+    retryability = classify_retryability(error)
     run_meta = {
         "run_id": run_id,
         "status": status,
         "error": error,
+        "retryability": retryability,
         "provider": "Mistral",
         "endpoint": "https://api.mistral.ai/v1/ocr",
         "model_requested": MODEL,

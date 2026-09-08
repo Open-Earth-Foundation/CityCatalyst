@@ -130,3 +130,64 @@ def test_build_ocr_payload_omits_bbox_unless_requested():
     )
     assert "bbox_annotation_format" not in payload
     assert payload["include_blocks"] is True
+
+
+def test_api_failure_writes_auditable_run_bundle(tmp_path, monkeypatch):
+    """Invalid credentials / API errors must still emit the full audit bundle."""
+    from run_structured_ocr import classify_retryability, process_run
+
+    pdf = ROOT / "fixtures" / "v2" / "cc-771-structured-benchmark-v2.pdf"
+    assert pdf.exists()
+    run_dir = tmp_path / "failed-run"
+
+    monkeypatch.setattr(
+        "run_structured_ocr.require_api_key",
+        lambda: "invalid-test-key",
+    )
+
+    def boom(*_args, **_kwargs):
+        raise RuntimeError("HTTP 401 from https://api.mistral.ai/v1/files: Unauthorized")
+
+    monkeypatch.setattr("run_structured_ocr.run_ocr", boom)
+
+    meta = process_run(
+        pdf_path=pdf,
+        run_dir=run_dir,
+        run_id="test-api-failure",
+        annotate=False,
+        selected_pages=None,
+        copy_input=True,
+        chart_facts_path=None,
+    )
+
+    assert meta["status"] == "failed"
+    assert "401" in (meta["error"] or "")
+    assert meta["retryability"]["retryable"] is False
+    assert (run_dir / "input.pdf").exists()
+    assert (run_dir / "response.raw.json").exists()
+    assert (run_dir / "run.json").exists()
+    assert (run_dir / "document.structured.json").exists()
+    assert (run_dir / "evaluation.md").exists()
+    assert (run_dir / "output.md").exists()
+    assert (run_dir / "output.enriched.md").exists()
+
+    run_meta = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
+    document = json.loads(
+        (run_dir / "document.structured.json").read_text(encoding="utf-8")
+    )
+    evaluation = (run_dir / "evaluation.md").read_text(encoding="utf-8")
+
+    assert run_meta["status"] == "failed"
+    assert run_meta["error"]
+    assert run_meta["retryability"]["retryable"] is False
+    assert document["schema_version"] == "cc-771.1"
+    assert document["pages"] == []
+    assert document["validation"]["warnings"]
+    assert "Provider failure" in evaluation
+    assert "Retryable: False" in evaluation
+    assert "HTTP 401" in evaluation
+
+    auth = classify_retryability("HTTP 401 Unauthorized")
+    assert auth["retryable"] is False
+    transient = classify_retryability("HTTP 429 rate limit")
+    assert transient["retryable"] is True

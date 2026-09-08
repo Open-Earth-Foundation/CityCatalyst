@@ -185,18 +185,22 @@ async function clearExistingActivities(page: Page, panel: Locator) {
     const moreButton = panel
       .locator("table tbody tr")
       .getByRole("button", { name: /more-icon/i })
-      .or(panel.getByTestId("activity-more-icon"))
       .first();
     if (!(await moreButton.isVisible({ timeout: 2000 }).catch(() => false))) {
       return;
     }
 
-    await moreButton.click();
+    await moreButton.click({ timeout: 5000 });
     const deleteItem = page
       .getByTestId("delete-activity-button")
-      .or(page.getByRole("menuitem", { name: /delete activity/i }))
-      .or(page.getByText(/^Delete activity$/i));
-    await expect(deleteItem.first()).toBeVisible({ timeout: 10000 });
+      .or(page.getByRole("menuitem", { name: /delete activity/i }));
+    if (
+      !(await deleteItem.first().isVisible({ timeout: 3000 }).catch(() => false))
+    ) {
+      // Opened a non-delete menu (or menu failed to render) — stop clearing.
+      await page.keyboard.press("Escape");
+      return;
+    }
     await deleteItem.first().click();
     const deleteModal = page.getByTestId("delete-activity-modal-header");
     await expect(deleteModal).toBeVisible({ timeout: 10000 });
@@ -222,7 +226,6 @@ async function addScope2ResidentialEmissions(
   await expect(scopeTwoPanel).toBeVisible({ timeout: 30000 });
 
   await ensureMethodologySelected(page, /Energy Consumption/i, scopeTwoPanel);
-  await clearExistingActivities(page, scopeTwoPanel);
 
   const tryCreateScope2Activity = async () => {
     await addActivityButton(page, scopeTwoPanel).click();

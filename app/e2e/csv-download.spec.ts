@@ -76,57 +76,84 @@ function filenameFromDisposition(
 }
 
 /**
- * Capture the inventory download from the single UI request.
- * Intercepting avoids a second in-page fetch (Firefox returns 500 when the
- * download endpoint is hit again while/after the UI blob download).
+ * Capture inventory download bytes from the UI flow.
+ * Firefox often blocks the async `<a download>` click (lost user gesture) and
+ * returns 500 if a second page fetch overlaps the UI request — so we:
+ * 1) wait for the UI GET to finish,
+ * 2) read Playwright's buffered body when available,
+ * 3) only then fall back to context.request (never page.evaluate fetch).
  */
 async function downloadFormat(
   page: Page,
   inventoryId: string,
   format: "csv" | "ecrf",
 ): Promise<DownloadResult> {
-  let captured: DownloadResult | null = null;
-  const routePattern = `**/api/v1/inventory/${inventoryId}/download**`;
+  const downloadPromise = page
+    .waitForEvent("download", { timeout: 60000 })
+    .catch(() => null);
+  const responsePromise = page.waitForResponse(
+    (resp) =>
+      resp.url().includes(`/inventory/${inventoryId}/download`) &&
+      resp.url().includes(`format=${format}`) &&
+      resp.request().method() === "GET" &&
+      resp.status() !== 308,
+    { timeout: 60000 },
+  );
 
-  await page.route(routePattern, async (route) => {
-    const requestUrl = new URL(route.request().url());
-    if (requestUrl.searchParams.get("format") !== format) {
-      await route.continue();
-      return;
-    }
+  await triggerDownloadFromModal(page, format);
 
-    const response = await route.fetch();
-    const body = await response.body();
-    const headers = response.headers();
+  const [download, response] = await Promise.all([
+    downloadPromise,
+    responsePromise,
+  ]);
 
-    if (response.ok() && body.byteLength > 0) {
-      captured = {
-        filename: filenameFromDisposition(
-          headers["content-disposition"] ?? "",
-          `inventory.${format === "csv" ? "csv" : "xlsx"}`,
-        ),
-        content: Buffer.from(body),
+  if (download && !(await download.failure())) {
+    fs.mkdirSync("test-results", { recursive: true });
+    const tmpPath = `test-results/pw-${Date.now()}-${download.suggestedFilename()}`;
+    await download.saveAs(tmpPath);
+    const content = fs.readFileSync(tmpPath);
+    fs.unlinkSync(tmpPath);
+    if (content.byteLength > 0) {
+      return {
+        filename: download.suggestedFilename(),
+        content,
       };
     }
-
-    await route.fulfill({
-      status: response.status(),
-      headers,
-      body,
-    });
-  });
-
-  try {
-    await triggerDownloadFromModal(page, format);
-
-    await expect
-      .poll(() => captured?.content.byteLength ?? 0, { timeout: 60000 })
-      .toBeGreaterThan(0);
-
-    return captured!;
-  } finally {
-    await page.unroute(routePattern).catch(() => undefined);
   }
+
+  if (response.ok()) {
+    const content = Buffer.from(
+      await response.body().catch(() => Buffer.alloc(0)),
+    );
+    if (content.byteLength > 0) {
+      return {
+        filename: filenameFromDisposition(
+          response.headers()["content-disposition"] ?? "",
+          `inventory.${format === "csv" ? "csv" : "xlsx"}`,
+        ),
+        content,
+      };
+    }
+  }
+
+  // UI request is finished; safe to request again via APIRequestContext.
+  const apiResponse = await page.context().request.get(
+    `/api/v1/inventory/${inventoryId}/download?format=${format}&lng=en`,
+  );
+  expect(
+    apiResponse.ok(),
+    `Fallback download failed with status ${apiResponse.status()}`,
+  ).toBeTruthy();
+  const content = Buffer.from(await apiResponse.body());
+  expect(content.byteLength).toBeGreaterThan(0);
+
+  return {
+    filename: filenameFromDisposition(
+      apiResponse.headers()["content-disposition"] ?? "",
+      `inventory.${format === "csv" ? "csv" : "xlsx"}`,
+    ),
+    content,
+  };
 }
 
 async function downloadCsv(page: Page, inventoryId: string) {

@@ -53,6 +53,7 @@ import { NextResponse } from "next/server";
 import {
   callClimateAdvisorChat,
   extractClimateAdvisorErrorMessage,
+  issueClimateAdvisorUserToken,
   readClimateAdvisorResponsePayload,
 } from "@/backend/chat/climate-advisor";
 import { buildClimateAdvisorMessagePayload } from "@/backend/chat/message-payload";
@@ -89,6 +90,18 @@ export const POST = apiHandler(async (req, { session }) => {
       "Sending message to CA thread",
     );
 
+    // Threads can outlive the short-lived CityCatalyst token stored in CA.
+    // Issue a fresh server-trusted token for every message so tools invoked
+    // later in the streamed response can still reauthorize the current user.
+    const userToken = await issueClimateAdvisorUserToken({
+      userId: session.user.id,
+      inventoryId: inventory_id ?? inventoryId,
+    });
+    const requestContext =
+      context && typeof context === "object" && !Array.isArray(context)
+        ? context
+        : {};
+
     const caResponse = await callClimateAdvisorChat({
       path: "/v1/messages",
       method: "POST",
@@ -97,7 +110,13 @@ export const POST = apiHandler(async (req, { session }) => {
       },
       body: buildClimateAdvisorMessagePayload({
         userId: session.user.id,
-        body,
+        body: {
+          ...body,
+          context: {
+            ...requestContext,
+            cc_access_token: userToken.access_token,
+          },
+        },
       }),
     });
 

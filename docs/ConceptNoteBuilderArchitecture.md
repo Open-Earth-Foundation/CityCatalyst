@@ -154,10 +154,41 @@ flowchart TB
 
 ## Product Shape
 
-The user experience is not a step-by-step questionnaire. It combines an
-optional manual interview with a live document workspace. Draft generation is
-not driven through chat: starting a draft invokes a dedicated persisted process,
-and chat remains available only for user-led questions and clarification.
+The user experience combines chat with a live document workspace. Draft generation is
+not driven through chat: starting a draft invokes a dedicated persisted process.
+Afterwards, chat supports user-led questions, clarification, and reviewable edit
+proposals. Only explicit review actions mutate the persisted document.
+
+### Implemented chat revision boundary (CC-732)
+
+The workspace shows red/green changes at each affected passage.
+Users review inline with accept/reject controls
+or Accept all / Reject all, navigate exact hunks, and access provenance and
+refinement in the options popover. The planner groups related occurrences;
+there is no separate checkbox-selection interface. The context tab retains source
+summaries and upload controls without an expanded details dialog.
+
+The proposal-only CA tool uses authorized evidence and explicit user input.
+Bounded chapter workers use an LLM planner and an independent LLM reviewer for
+meaning, factual support, and related occurrences. Python checks exact anchors,
+source identity, user quotes, required headings and unresolved markers. It does
+not infer meaning from numeric/entity tokens, merge groups based on shared values,
+or expand replacements after semantic review. Scope is automatic; chapter focus is
+only a navigation hint. Parsed-Markdown redlines preserve source offsets and fail
+closed on stale or overlapping anchors. No edit is applied before acceptance.
+
+CNB migration `20260907_120000` provisions proposals and
+immutable application records. Apply locks the run and affected chapters, checks
+the expected revision vector, and appends accepted changes atomically. Records
+remain for audit, sequencing and idempotent retries; public history, undo and
+restore endpoints are not exposed. Inline decisions select the exact applied subset.
+
+A grounded marker replacement resolves the matching gap in the same transaction.
+Wording-only edits preserve Ready only when exact confirmation and current gap,
+and lock checks permit it; factual changes require renewed review.
+Proposals and results survive reload. Web and CA independently enforce current
+user/run/city authorization. CNB telemetry remains metadata-only, including
+nested source queries, without disabling concurrent generic tracing.
 
 The first part of the workflow is context bundle building. The
 `ContextBundleService` assembles the reusable run context by:
@@ -190,7 +221,6 @@ The drafting service and document workspace then use that context bundle to:
 ```mermaid
 flowchart LR
     Context["Assemble context bundle"]
-    Context --> Interview["Optional manual interview"]
     Context --> Draft["Independent sequential drafting"]
     Draft --> Review["User review + edits"]
     Review --> Revise["Revise chapters"]
@@ -222,7 +252,7 @@ flowchart LR
 | Funder profiles and criteria                                       | `CNB_DATABASE_URL`                  | Shared curated corpus, reusable across cities and agents.                                            |
 | Funding opportunities and funded projects                          | `CNB_DATABASE_URL`                  | Separate programme and awarded-project tables with explicit foreign keys.                            |
 | Exported DOCX/PDF file references                                  | `CNB_DATABASE_URL`                  | Workflow output artifacts.                                                                           |
-| Source-to-Markdown storage | CityCatalyst | Owns PDF OCR and direct native Markdown validation, storage, and result pointers. |
+| Source-to-Markdown storage                                         | CityCatalyst                        | Owns PDF OCR and direct native Markdown validation, storage, and result pointers.                    |
 | Pointer-only Markdown handoff                                      | CityCatalyst to Climate Advisor     | CC sends a stable result key and immutable metadata; CA reads content only through authenticated CC. |
 
 ## Data Infrastructure Boundary
@@ -421,16 +451,16 @@ flowchart TB
 
 ### Step Scope Table
 
-| Step                   | Main context                                                                 | Enabled tool groups                               |
-| ---------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------- |
-| `selecting_scope`      | user, city, project candidates                                               | workflow control, CC project reads                |
-| `ingesting_user_files` | CC OCR/delivery status, CA Markdown-ingest status, candidate source excerpts | deterministic document ingest operations; no LLM  |
-| `profiling_funder`     | selected funder, template, criteria                                          | CNB reference table tools                         |
-| `matching_examples`    | ingested project-upload fields, funder profile, project KB filters           | internal `ProjectMatchingService`; no agent tools |
-| `assembling_context` | zero or more ready sources, optional GHGI/HIAP, typed empty sections | internal `ContextBundleService`; no agent tools |
-| `interviewing`         | per-document summaries, optional CC context, gaps and known facts            | interview tools plus `concept_note.sources.query` |
-| `drafting_document`    | application context, complete run bundle, current chapter, all earlier chapter Markdown | no tools; one structured chapter call at a time |
-| `editing_document`     | selected chapter/revision and per-document summaries                         | document edit tools plus selected-source query    |
+| Step                   | Main context                                                                            | Enabled tool groups                               |
+| ---------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `selecting_scope`      | user, city, project candidates                                                          | workflow control, CC project reads                |
+| `ingesting_user_files` | CC OCR/delivery status, CA Markdown-ingest status, candidate source excerpts            | deterministic document ingest operations; no LLM  |
+| `profiling_funder`     | selected funder, template, criteria                                                     | CNB reference table tools                         |
+| `matching_examples`    | ingested project-upload fields, funder profile, project KB filters                      | internal `ProjectMatchingService`; no agent tools |
+| `assembling_context`   | zero or more ready sources, optional GHGI/HIAP, typed empty sections                    | internal `ContextBundleService`; no agent tools   |
+| `interviewing`         | per-document summaries, optional CC context, gaps and known facts                       | interview tools plus `concept_note.sources.query` |
+| `drafting_document`    | application context, complete run bundle, current chapter, all earlier chapter Markdown | no tools; one structured chapter call at a time   |
+| `editing_document`     | selected chapter/revision and per-document summaries                                    | document edit tools plus selected-source query    |
 
 Export is not a workflow step for the LLM. It is a document workspace button
 that calls export preflight and generation routes against the current chapters
@@ -1536,10 +1566,10 @@ object; this contract does not infer percentages or document/upload counts.
 CityCatalyst exposes the same list at
 `GET /api/v1/concept-notes?city_id=...`, deriving the user from the session and
 rejecting malformed or mixed-city successful responses from Climate Advisor.
-Its single-run read, rename, duplicate, and delete routes also require `city_id` so
-CityCatalyst can authorize the requested city before issuing the Climate Advisor
-token. Climate Advisor remains authoritative for run ownership and stored city
-binding.
+Its single-run read, rename, duplicate, chat-reset, and delete routes also require
+`city_id` so CityCatalyst can authorize the requested city before issuing the
+Climate Advisor token. Climate Advisor remains authoritative for run ownership
+and stored city binding.
 The CityCatalyst dashboard consumes this contract at
 `/{lng}/cities/{cityId}/concept-notes`. Each card exposes Resume, Duplicate,
 Export, and Delete, with a compact rename button beside the title. Rename uses
@@ -1550,9 +1580,20 @@ ID and loads the authorized single-run detail before continuing.
 
 Duplicate creates a fresh thread, copies current context and chapter content
 into new mutable records, and reuses immutable Markdown artifacts by key. Delete
-removes the managed workspace before deleting the CA run and dedicated thread.
-Shared city/project files and immutable source artifacts remain outside the
-deletion boundary. No archive or restore state is added.
+removes edit proposals/applications and the managed workspace before deleting
+the CA run, upload pointers, context, and dedicated thread/messages. Unreferenced
+uploaded files, all OCR attempts, and OCR job records are removed first through
+the service-authenticated CityCatalyst source-cleanup endpoint. Copies retain
+shared source artifacts until the last referencing note is deleted; shared
+city/project files remain outside this boundary. Cleanup failures keep the run
+available for retry, and active OCR jobs block source cleanup. No archive or
+restore state is added.
+
+The workspace chat header exposes **Start new chat**. After explicit confirmation,
+the reset route creates a fresh workflow-bound thread, points the existing run at
+it, and deletes the old dedicated thread and messages in one Climate Advisor
+transaction. The Concept Note workspace, draft chapters, sources, context bundle,
+and revision history are unchanged.
 
 The dashboard and wiring pages are hidden unless both
 `CA_SERVICE_INTEGRATION` and `CONCEPT_NOTE_BUILDER` are present in
@@ -2278,12 +2319,12 @@ All user-initiated CNB telemetry uses the `Clima` experiment and the visible
 not be embedded in `mlflow.runName`. The run name identifies the interaction
 boundary with this stable, low-cardinality contract:
 
-| CNB interaction | `mlflow.runName` | Integration boundary |
-| --- | --- | --- |
-| Start or idempotently replay a CNB run | `cnb_start` | `POST /v1/concept-notes/start` |
-| Ask a non-mutating question in the CNB chat | `cnb_chat` | `/v1/messages` with an active `concept_note_run_id` |
+| CNB interaction                                     | `mlflow.runName`          | Integration boundary                                |
+| --------------------------------------------------- | ------------------------- | --------------------------------------------------- |
+| Start or idempotently replay a CNB run              | `cnb_start`               | `POST /v1/concept-notes/start`                      |
+| Ask a non-mutating question in the CNB chat         | `cnb_chat`                | `/v1/messages` with an active `concept_note_run_id` |
 | Answer, correct, skip, or retry missing information | `cnb_missing_information` | The run-scoped gap-resolution operation from CC-730 |
-| Propose or apply a document edit through chat | `cnb_chat_edit` | The dedicated revision operation planned in CC-732 |
+| Propose or apply a document edit through chat       | `cnb_chat_edit`           | The dedicated revision operation planned in CC-732  |
 
 The future CC-732 flow must classify edit intent before opening its MLflow run:
 ordinary questions remain `cnb_chat`, while a durable edit proposal or apply
@@ -2400,40 +2441,40 @@ POST /api/v1/internal/ca/capabilities/ccra/summary
 The implementation should stay organized by responsibility, not by a prescribed
 file layout.
 
-| Responsibility                | Owner                            | Boundary                                                                                                                                                                                                                                                       |
-| ----------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Chat thread/message storage   | CityCatalyst                     | Persists durable conversation state and supplies the authorized `thread_id` to the CNB workflow as a cross-database integration identifier.                                                                                                                    |
-| Workflow orchestration        | Climate Advisor                  | Starts/resumes runs, resolves active step, scopes tools, streams responses.                                                                                                                                                                                    |
-| CA workflow foundation        | Climate Advisor                  | The existing Alembic chain provisions and accesses `concept_note_runs`, `concept_note_context_bundles`, and `concept_note_uploads` through `CA_DATABASE_URL`.                                                                                                  |
-| CNB workspace schema/access   | Climate Advisor repository       | The independent CNB chain owns chapters, revisions, gaps, evidence links, matches, and exports; externally operated infrastructure supplies `CNB_DATABASE_URL`.                                                                                                |
-| Funding reference access      | Climate Advisor repository       | The CNB chain owns the funder/reference schema; the importer writes reviewed projects/evidence and runtime matching reads the complete requested funder scope before bounded shortlist ranking. Curated data remains externally managed.                       |
-| Document tools                | Climate Advisor                  | Mutates draft document state through the CNB storage contract only.                                                                                                                                                                                            |
-| Source and OCR result storage | CityCatalyst                     | Authenticates the user, stores source PDFs and authoritative Markdown in CC S3, and owns all source/result objects. CA receives only the stable Markdown key and immutable metadata, never bucket credentials, a source-PDF key, or a presigned URL.           |
-| PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and pointer delivery.                                                                                                   |
-| CNB Markdown ingestion | Climate Advisor | Verifies completed Markdown through CC and registers its key, digest, source locator metadata, and lifecycle status; CA stores no source bytes. |
-| Context-bundle assembly | Climate Advisor | Re-fetches every ready upload, runs source-aware readers, attempts optional GHGI/HIAP, and persists guarded progress plus the typed bundle. |
-| CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, CCRA, and read-only persisted HIAP summaries through internal capabilities; HIAP assembly never starts or repairs prioritization.                                                                                        |
-| CC bridge routes              | CityCatalyst                     | Authenticated browser-facing proxy into CA workflow routes.                                                                                                                                                                                                    |
-| Capability registry           | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag.                                                                                                                                                                                                     |
-| UI workspace                  | CityCatalyst                     | Chat, chapter outline, editor, evidence/gap views, upload status, export controls.                                                                                                                                                                             |
+| Responsibility                | Owner                            | Boundary                                                                                                                                                                                                                                             |
+| ----------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chat thread/message storage   | CityCatalyst                     | Persists durable conversation state and supplies the authorized `thread_id` to the CNB workflow as a cross-database integration identifier.                                                                                                          |
+| Workflow orchestration        | Climate Advisor                  | Starts/resumes runs, resolves active step, scopes tools, streams responses.                                                                                                                                                                          |
+| CA workflow foundation        | Climate Advisor                  | The existing Alembic chain provisions and accesses `concept_note_runs`, `concept_note_context_bundles`, and `concept_note_uploads` through `CA_DATABASE_URL`.                                                                                        |
+| CNB workspace schema/access   | Climate Advisor repository       | The independent CNB chain owns chapters, revisions, gaps, evidence links, matches, and exports; externally operated infrastructure supplies `CNB_DATABASE_URL`.                                                                                      |
+| Funding reference access      | Climate Advisor repository       | The CNB chain owns the funder/reference schema; the importer writes reviewed projects/evidence and runtime matching reads the complete requested funder scope before bounded shortlist ranking. Curated data remains externally managed.             |
+| Document tools                | Climate Advisor                  | Mutates draft document state through the CNB storage contract only.                                                                                                                                                                                  |
+| Source and OCR result storage | CityCatalyst                     | Authenticates the user, stores source PDFs and authoritative Markdown in CC S3, and owns all source/result objects. CA receives only the stable Markdown key and immutable metadata, never bucket credentials, a source-PDF key, or a presigned URL. |
+| PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and pointer delivery.                                                                                         |
+| CNB Markdown ingestion        | Climate Advisor                  | Verifies completed Markdown through CC and registers its key, digest, source locator metadata, and lifecycle status; CA stores no source bytes.                                                                                                      |
+| Context-bundle assembly       | Climate Advisor                  | Re-fetches every ready upload, runs source-aware readers, attempts optional GHGI/HIAP, and persists guarded progress plus the typed bundle.                                                                                                          |
+| CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, CCRA, and read-only persisted HIAP summaries through internal capabilities; HIAP assembly never starts or repairs prioritization.                                                                              |
+| CC bridge routes              | CityCatalyst                     | Authenticated browser-facing proxy into CA workflow routes.                                                                                                                                                                                          |
+| Capability registry           | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag.                                                                                                                                                                                           |
+| UI workspace                  | CityCatalyst                     | Chat, chapter outline, editor, evidence/gap views, upload status, export controls.                                                                                                                                                                   |
 
 ## Failure Handling
 
-| Failure                      | User-visible behavior                                                     | System behavior                                                                                                                |
-| ---------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| GHGI or HIAP unavailable | Continue with the available context and show an optional-source warning. | Persist the optional status and `null`; do not block bundle readiness. |
-| No ready city source | Start chat with available CityCatalyst context and show `Uploaded evidence: none`. | Complete with `document_grounding: none`, `source_documents` missing, and no selected sources. |
-| Source coverage/digest failure | Show that source analysis must be retried or the upload investigated. | Reject readiness; persist a retryable guarded build failure and never keep partial summaries. |
-| Stale background build       | No user-visible regression.                                               | Ignore the old build ID so it cannot replace a newer ready-upload fingerprint.                                                 |
-| Interrupted background build | Offer the existing context-bundle retry.                                  | A periodic database reconciler marks builds older than one hour failed with `context_bundle_build_interrupted` and `retryable: true`. |
-| Funder profile missing       | Block drafting against a real template.                                   | Mark `profiling_funder` blocked.                                                                                               |
-| `cc_ocr_failed`              | Show that CC could not convert the specific source.                       | CC retains the source and failed OCR state; an explicit retry may enqueue another Mistral attempt. Nothing is delivered to CA. |
-| `ca_markdown_ingest_failed`  | Show that conversion succeeded but CNB could not ingest the Markdown yet. | CC keeps the successful OCR result and retries delivery; CA may retry downstream processing without rerunning Mistral.         |
-| `markdown_identity_conflict` | Show that the immutable upload cannot be replaced.                        | CA returns `409`; CC does not retry as a transient delivery failure or alter the successful OCR artifact.                      |
-| Similar projects weak        | Continue but show caveat.                                                 | Persist match caveats.                                                                                                         |
-| Chapter edit conflict        | Ask user to confirm current text.                                         | Return structured conflict.                                                                                                    |
-| Required chapter deleted     | Warn at export preflight.                                                 | Keep soft-deleted row and gap.                                                                                                 |
-| Export failed                | Show stable export error.                                                 | Persist failed export row with retry.                                                                                          |
+| Failure                        | User-visible behavior                                                              | System behavior                                                                                                                       |
+| ------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| GHGI or HIAP unavailable       | Continue with the available context and show an optional-source warning.           | Persist the optional status and `null`; do not block bundle readiness.                                                                |
+| No ready city source           | Start chat with available CityCatalyst context and show `Uploaded evidence: none`. | Complete with `document_grounding: none`, `source_documents` missing, and no selected sources.                                        |
+| Source coverage/digest failure | Show that source analysis must be retried or the upload investigated.              | Reject readiness; persist a retryable guarded build failure and never keep partial summaries.                                         |
+| Stale background build         | No user-visible regression.                                                        | Ignore the old build ID so it cannot replace a newer ready-upload fingerprint.                                                        |
+| Interrupted background build   | Offer the existing context-bundle retry.                                           | A periodic database reconciler marks builds older than one hour failed with `context_bundle_build_interrupted` and `retryable: true`. |
+| Funder profile missing         | Block drafting against a real template.                                            | Mark `profiling_funder` blocked.                                                                                                      |
+| `cc_ocr_failed`                | Show that CC could not convert the specific source.                                | CC retains the source and failed OCR state; an explicit retry may enqueue another Mistral attempt. Nothing is delivered to CA.        |
+| `ca_markdown_ingest_failed`    | Show that conversion succeeded but CNB could not ingest the Markdown yet.          | CC keeps the successful OCR result and retries delivery; CA may retry downstream processing without rerunning Mistral.                |
+| `markdown_identity_conflict`   | Show that the immutable upload cannot be replaced.                                 | CA returns `409`; CC does not retry as a transient delivery failure or alter the successful OCR artifact.                             |
+| Similar projects weak          | Continue but show caveat.                                                          | Persist match caveats.                                                                                                                |
+| Chapter edit conflict          | Ask user to confirm current text.                                                  | Return structured conflict.                                                                                                           |
+| Required chapter deleted       | Warn at export preflight.                                                          | Keep soft-deleted row and gap.                                                                                                        |
+| Export failed                  | Show stable export error.                                                          | Persist failed export row with retry.                                                                                                 |
 
 ## Guardrails
 

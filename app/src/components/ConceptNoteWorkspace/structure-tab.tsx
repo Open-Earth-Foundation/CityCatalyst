@@ -283,6 +283,20 @@ export function StructureTab({
                   <Text fontSize="label.sm" color="content.tertiary">
                     {t(chapterStatusTranslationKey(runtimeStatus))}
                   </Text>
+                  {draftChapter && draftChapter.open_gap_count > 0 && (
+                    <Text fontSize="label.sm" color="sentiment.warningDefault">
+                      {t("chapter-open-gaps", {
+                        count: draftChapter.open_gap_count,
+                      })}
+                    </Text>
+                  )}
+                  {draftChapter && draftChapter.caveat_count > 0 && (
+                    <Text fontSize="label.sm" color="content.tertiary">
+                      {t("chapter-caveats", {
+                        count: draftChapter.caveat_count,
+                      })}
+                    </Text>
+                  )}
                   {chapter.required && (
                     <HStack gap={1} color="content.tertiary">
                       <Icon as={LuLock} boxSize={3} />

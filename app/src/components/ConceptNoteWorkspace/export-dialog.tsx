@@ -29,12 +29,13 @@ import {
   canExportConceptNote,
   countUnresolvedExportItems,
   exportConceptNote,
+  hasCriticalExportBlocker,
   type ConceptNoteExportFormat,
 } from "./concept-note-export";
 
 interface ExportDialogProps {
   draft: ConceptNoteDraftState | null;
-  hasUploadedEvidence: boolean;
+  hasGroundedSources: boolean;
   lng: string;
   noteName: string;
   onOpenChange: (open: boolean) => void;
@@ -43,7 +44,7 @@ interface ExportDialogProps {
 
 export function ExportDialog({
   draft,
-  hasUploadedEvidence,
+  hasGroundedSources,
   lng,
   noteName,
   onOpenChange,
@@ -63,6 +64,7 @@ export function ExportDialog({
   const hasExportableDraft = chapters.some((chapter) =>
     Boolean(chapter.body_markdown?.trim()),
   );
+  const hasCriticalGap = hasCriticalExportBlocker(chapters);
   const canExport =
     canExportConceptNote(chapters, acceptedMissingInformation) &&
     !exportingFormat;
@@ -147,22 +149,22 @@ export function ExportDialog({
                   gap={3}
                   border="1px solid"
                   borderColor={
-                    hasUploadedEvidence
+                    hasGroundedSources
                       ? "sentiment.positiveDefault"
                       : "sentiment.warningDefault"
                   }
                   borderRadius="rounded"
                   bg={
-                    hasUploadedEvidence
+                    hasGroundedSources
                       ? "sentiment.positiveOverlay"
                       : "sentiment.warningOverlay"
                   }
                   p={3}
                 >
                   <Icon
-                    as={hasUploadedEvidence ? LuCheck : LuCircleAlert}
+                    as={hasGroundedSources ? LuCheck : LuCircleAlert}
                     color={
-                      hasUploadedEvidence
+                      hasGroundedSources
                         ? "sentiment.positiveDefault"
                         : "sentiment.warningDefault"
                     }
@@ -173,12 +175,12 @@ export function ExportDialog({
                       fontWeight="semibold"
                       color="content.primary"
                     >
-                      {hasUploadedEvidence
+                      {hasGroundedSources
                         ? t("source-context-ready")
                         : t("source-context-recommended")}
                     </Text>
                     <Text fontSize="label.sm" color="content.secondary">
-                      {hasUploadedEvidence
+                      {hasGroundedSources
                         ? t("source-context-ready-export")
                         : t("source-context-recommended-export")}
                     </Text>
@@ -222,41 +224,47 @@ export function ExportDialog({
                     >
                       {!hasExportableDraft
                         ? t("draft-preflight-empty")
-                        : unresolvedCount > 0
-                          ? t("draft-preflight-warning")
-                          : t("draft-preflight-ready")}
+                        : hasCriticalGap
+                          ? t("draft-preflight-critical-gap")
+                          : unresolvedCount > 0
+                            ? t("draft-preflight-warning")
+                            : t("draft-preflight-ready")}
                     </Text>
                     <Text fontSize="label.sm" color="content.secondary">
                       {!hasExportableDraft
                         ? t("draft-preflight-empty-description")
-                        : unresolvedCount > 0
-                          ? t("draft-preflight-warning-description", {
-                              count: unresolvedCount,
-                            })
-                          : t("draft-preflight-ready-description")}
+                        : hasCriticalGap
+                          ? t("draft-preflight-critical-gap-description")
+                          : unresolvedCount > 0
+                            ? t("draft-preflight-warning-description", {
+                                count: unresolvedCount,
+                              })
+                            : t("draft-preflight-ready-description")}
                     </Text>
-                    {hasExportableDraft && unresolvedCount > 0 && (
-                      <Checkbox
-                        mt={3}
-                        alignItems="start"
-                        checked={acceptedMissingInformation}
-                        onCheckedChange={(details) =>
-                          setAcceptedMissingInformation(
-                            details.checked === true,
-                          )
-                        }
-                      >
-                        <Text
-                          fontSize="label.sm"
-                          lineHeight="20px"
-                          color="content.primary"
+                    {hasExportableDraft &&
+                      unresolvedCount > 0 &&
+                      !hasCriticalGap && (
+                        <Checkbox
+                          mt={3}
+                          alignItems="start"
+                          checked={acceptedMissingInformation}
+                          onCheckedChange={(details) =>
+                            setAcceptedMissingInformation(
+                              details.checked === true,
+                            )
+                          }
                         >
-                          {t("missing-information-export-confirmation", {
-                            count: unresolvedCount,
-                          })}
-                        </Text>
-                      </Checkbox>
-                    )}
+                          <Text
+                            fontSize="label.sm"
+                            lineHeight="20px"
+                            color="content.primary"
+                          >
+                            {t("missing-information-export-confirmation", {
+                              count: unresolvedCount,
+                            })}
+                          </Text>
+                        </Checkbox>
+                      )}
                   </Box>
                 </HStack>
               </VStack>

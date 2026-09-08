@@ -166,7 +166,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
               p={0}
               w="full"
               backgroundColor="background.backgroundLight"
-              mb="48px"
+              mb="24px"
             >
               <Tabs.Trigger
                 value="account"

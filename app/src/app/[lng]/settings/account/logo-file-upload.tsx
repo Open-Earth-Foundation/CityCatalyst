@@ -24,6 +24,10 @@ const LogoUploadCard = ({
 }) => {
   const { acceptedFiles: files, clearFiles } = useFileUploadContext();
 
+  // Only relevant when there's a saved logo and no new file staged - see the
+  // comment by its usage below for why the icon is scoped to that case.
+  const canClearSavedLogo = files.length === 0 && Boolean(defaultUrl);
+
   const handleDelete = () => {
     clearFiles();
     clearImage();
@@ -84,7 +88,10 @@ const LogoUploadCard = ({
                 borderRadius="2xl"
               />
             )}
-            {(files.length > 0 || defaultUrl) && (
+            {/* Cancelling a newly-picked file is handled by that file's own
+                remove control in the list below; this icon only clears the
+                already-saved logo, so it's hidden while a new file is staged. */}
+            {canClearSavedLogo && (
               <IconButton
                 data-testid="activity-more-icon"
                 aria-label="more-icon"

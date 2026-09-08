@@ -13,7 +13,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AccountSettingsTab from "./account";
 import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
@@ -31,8 +31,16 @@ const PREFERENCES_INFO_DISMISSED_KEY = "settings-preferences-info-dismissed";
 const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "settings");
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") ?? "account";
+  const activeTab = searchParams.get("tab") ?? "account";
+
+  const handleTabChange = (details: { value: string }) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", details.value);
+    router.replace(`${pathname}?${params.toString()}`);
+  };
 
   const { data: userInfo } = api.useGetUserInfoQuery();
   const isAdmin = userInfo?.role === Roles.Admin;
@@ -161,7 +169,11 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
           </HStack>
         )}
         <Box marginTop="48px" borderBottomColor={"border.overlay"}>
-          <Tabs.Root defaultValue={initialTab} variant="enclosed">
+          <Tabs.Root
+            value={activeTab}
+            onValueChange={handleTabChange}
+            variant="enclosed"
+          >
             <Tabs.List
               p={0}
               w="full"

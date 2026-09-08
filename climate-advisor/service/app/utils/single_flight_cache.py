@@ -91,8 +91,7 @@ class SingleFlightTTLCache(Generic[ValueT]):
                     self._values.popitem(last=False)
             return value
         finally:
-            if self._inflight.get(key) is asyncio.current_task():
-                self._inflight.pop(key, None)
+            self._inflight.pop(key, None)
 
     def _discard_expired(self, now: float) -> None:
         """Remove expired values before enforcing the cache size bound."""

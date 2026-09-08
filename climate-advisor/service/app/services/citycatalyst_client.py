@@ -961,9 +961,6 @@ class CityCatalystClient:
         user_id: str,
     ) -> Dict[str, Any]:
         """Fetch one city directly from CityCatalyst."""
-        if not self.base_url:
-            raise CityCatalystClientError("CC_BASE_URL not configured")
-
         url = f"{self.base_url}/api/v1/city/{city_id}"
         response = await self.get_with_auto_refresh(
             url=url,

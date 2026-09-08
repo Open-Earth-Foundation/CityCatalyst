@@ -282,7 +282,8 @@ const TeamSettings = ({
         p="24px"
       >
         <Box
-          w="271px"
+          w="285px"
+          flexShrink={0}
           overflowY="hidden"
           display="flex"
           flexDirection="column"
@@ -310,7 +311,7 @@ const TeamSettings = ({
             borderWidth="1px"
             borderColor="border.overlay"
             borderRadius="8px"
-            p="12px"
+            p="3"
             w="full"
             flex="1"
             minH="0"
@@ -414,6 +415,7 @@ const TeamSettings = ({
                             fontWeight="medium"
                             minH="52px"
                             w="full"
+                            pl="6"
                             _selected={{
                               color: "content.link",
                               fontSize: "body.md",
@@ -426,6 +428,8 @@ const TeamSettings = ({
                             }}
                           >
                             {city.name}
+                            {city.countryLocode ? ", " : ""}
+                            {city.countryLocode}
                           </Tabs.Trigger>
                         ))}
                       </Tabs.List>

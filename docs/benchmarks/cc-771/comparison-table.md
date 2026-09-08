@@ -112,3 +112,13 @@ It is not directly comparable to CC-771: OCRBench v2 evaluates image-level quest
 Among exact or explicitly closest matches, Gemini 2.5 Pro has the strongest official score for an exact match in the English leaderboard (59.3), followed by GPT-5.2 (50.5). This differs from CC-771, where GPT-5.2 was the best quality/cost candidate and Claude Opus 5 produced the strongest visual extraction. The difference is expected because the task mix, input transport, document length, prompting, and scoring criteria differ.
 
 Sources: [official OCRBench v2 leaderboard](https://99franklin.github.io/ocrbench_v2/), [OCRBench v2 paper](https://arxiv.org/abs/2501.00321), and [official OCRBench repository](https://github.com/Yuliang-Liu/MultimodalOCR).
+## Structured Mistral annotation track
+
+The following structured run is tracked separately from the earlier Markdown-only battery. It should not be treated as a successful annotation result until the schema and artifact blockers are fixed.
+
+| Pipeline | Markdown | Structured blocks | Image/chart annotations | Numeric chart accuracy | Status |
+| --- | --- | --- | --- | --- | --- |
+| Direct Mistral baseline (`mistral-ocr-latest`) | Yes | Present in the raw response but not consumed by normalized output | No | Chart-only facts were not recovered from Markdown | Baseline limitation confirmed |
+| Mistral OCR 4.1 + BBox annotation attempt | Partial / selected pages | Yes | Not demonstrated; no images were extracted in the run | Not scored | Blocked / incomplete |
+
+See the [structured comparison table](structured-comparison-table.md) for the expected-versus-observed run details, raw structured artifact, and required follow-up.

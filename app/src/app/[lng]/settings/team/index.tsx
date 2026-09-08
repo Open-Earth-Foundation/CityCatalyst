@@ -309,6 +309,7 @@ const TeamSettings = ({
             }}
             borderWidth="1px"
             borderColor="border.overlay"
+            borderRadius="8px"
             p="12px"
             w="full"
             flex="1"

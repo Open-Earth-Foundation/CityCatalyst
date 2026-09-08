@@ -144,6 +144,7 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
   const { organization: orgContext } = useOrganizationContext();
   const selectedOrganization = orgContext?.organizationId;
   const [selectedProjectId, setSelectedProjectId] = useState<string[]>([]);
+  const [expandedProjectId, setExpandedProjectId] = useState<string[]>([]);
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
 
   const {
@@ -165,6 +166,7 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
   useEffect(() => {
     if (projectsData?.length && selectedProjectId.length === 0) {
       setSelectedProjectId([projectsData[0].projectId]);
+      setExpandedProjectId([projectsData[0].projectId]);
       setSelectedCityId(null);
     }
   }, [projectsData, selectedProjectId.length]);
@@ -198,12 +200,18 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
           {t("no-data")}
         </Text>
       )}
-      <Card.Root boxShadow="shadow-lg">
-        <Card.Body>
+      <Card.Root
+        bg="white"
+        shadow="1dp"
+        borderWidth="1px"
+        borderColor="border.overlay"
+        borderRadius="8px"
+      >
+        <Card.Body p="24px">
           <Box
             display="flex"
-            gap="xxl-2"
-            alignItems="flex-start"
+            gap="6"
+            alignItems="stretch"
             justifyContent="space-between"
           >
             {projectsData && projectsData.length > 0 && (
@@ -211,8 +219,9 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
                 <ProjectList
                   t={t}
                   projects={projectsData}
-                  selectedProjectId={selectedProjectId}
                   setSelectedProject={setSelectedProjectId}
+                  expandedProjectId={expandedProjectId}
+                  setExpandedProjectId={setExpandedProjectId}
                   setSelectedCity={setSelectedCityId}
                   selectedCity={selectedCityId}
                 />

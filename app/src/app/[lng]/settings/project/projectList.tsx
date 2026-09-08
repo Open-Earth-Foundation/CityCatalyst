@@ -14,8 +14,9 @@ import ProjectSearchInput from "../ProjectSearchInput";
 interface ProjectListProps {
   t: TFunction;
   projects: ProjectWithCities[];
-  selectedProjectId: string[];
   setSelectedProject: (value: string[]) => void;
+  expandedProjectId: string[];
+  setExpandedProjectId: (value: string[]) => void;
   selectedCity: string | null;
   setSelectedCity: (value: string | null) => void;
 }
@@ -23,8 +24,9 @@ interface ProjectListProps {
 const ProjectList: React.FC<ProjectListProps> = ({
   t,
   projects,
-  selectedProjectId,
   setSelectedProject,
+  expandedProjectId,
+  setExpandedProjectId,
   setSelectedCity,
   selectedCity,
 }) => {
@@ -48,41 +50,40 @@ const ProjectList: React.FC<ProjectListProps> = ({
   };
 
   return (
-    <Box minW="270px" flex={1}>
+    <Box minW="270px" flex={1} display="flex" flexDirection="column" gap="6">
       <Text
+        display="flex"
+        alignItems="center"
+        h="48px"
         fontSize="title.md"
-        mb={6}
         fontWeight="semibold"
         color="content.secondary"
       >
         {t("projects")}
       </Text>
-      <ProjectSearchInput
-        value={searchTerm}
-        onChange={handleSearch}
-        t={t}
-        mb={6}
-      />
+      <ProjectSearchInput value={searchTerm} onChange={handleSearch} t={t} />
       <Box
         p={3}
-        borderRadius="12px"
+        borderRadius="8px"
         borderWidth="1px"
         borderColor="border.overlay"
-        maxH="500px"
-        overflow="auto"
+        flex="1"
+        minH="0"
+        overflowY="scroll"
       >
         <AccordionRoot
           variant="plain"
-          value={selectedProjectId}
+          collapsible
+          value={expandedProjectId}
           onValueChange={(val) => {
-            setSelectedProject(val.value);
-            setSelectedCity(null);
+            setExpandedProjectId(val.value);
           }}
         >
           {filteredProjects.map((project) => (
             <AccordionItem key={project.projectId} value={project.projectId}>
               <AccordionItemTrigger
                 onClick={() => {
+                  setSelectedProject([project.projectId]);
                   setSelectedCity(null);
                 }}
                 w="full"
@@ -97,7 +98,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
                   pl={4}
                   alignItems="center"
                   color={
-                    selectedProjectId.includes(project.projectId)
+                    expandedProjectId.includes(project.projectId)
                       ? "interactive.secondary"
                       : "content.secondary"
                   }
@@ -112,13 +113,13 @@ const ProjectList: React.FC<ProjectListProps> = ({
                   </Text>
                   <Accordion.ItemIndicator
                     color="currentColor"
-                    rotate={{ base: "-90deg", _open: "-180deg" }}
+                    rotate={{ base: "0deg", _open: "-180deg" }}
                   >
                     <Icon as={LuChevronDown} color="currentColor" boxSize={6} />
                   </Accordion.ItemIndicator>
                 </Box>
               </AccordionItemTrigger>
-              {selectedProjectId[0] === project.projectId && (
+              {expandedProjectId.includes(project.projectId) && (
                 <AccordionItemContent padding="0px" pb={4}>
                   {project.cities.length === 0 ? (
                     <Text

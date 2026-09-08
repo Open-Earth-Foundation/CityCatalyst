@@ -130,7 +130,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
         <DataTableAlt
           data={selectedProjectData?.cities ?? []}
           columns={[
-            { header: t("name"), accessor: "name", width: "50%" },
+            { header: t("city"), accessor: "name", width: "50%" },
             { header: t("inventories"), accessor: null, width: "35%" },
             { header: "", accessor: null, width: "15%" },
           ]}
@@ -170,6 +170,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                       aria-label="more-icon"
                       variant="ghost"
                       color="content.tertiary"
+                      ml="auto"
                       _hover={{ bg: "background.controlHover" }}
                       _expanded={{ bg: "background.controlHover" }}
                     >
@@ -303,6 +304,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                         aria-label="more-icon"
                         variant="ghost"
                         color="content.tertiary"
+                        ml="auto"
                         _hover={{ bg: "background.controlHover" }}
                         _expanded={{ bg: "background.controlHover" }}
                       >

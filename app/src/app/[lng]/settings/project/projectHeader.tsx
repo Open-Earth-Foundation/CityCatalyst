@@ -53,14 +53,19 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
   });
 
   return (
-    <HStack justifyContent="space-between" alignItems="center" mb={6}>
+    <HStack
+      justifyContent="space-between"
+      alignItems="center"
+      minH="48px"
+      mb={6}
+    >
       <Box>
         <Text
           onClick={() => {
             onSetSelectedCity(null);
             setSelectedInventory(null);
           }}
-          mb="6"
+          mb={view === "project-view" ? 0 : "6"}
           fontFamily="heading"
           fontWeight="bold"
           letterSpacing="widest"
@@ -112,7 +117,6 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           variant="outline"
           ml="auto"
           h="48px"
-          mt="auto"
         >
           <Icon as={MdAdd} h={8} w={8} />
           {view === "project-view" ? t("add-city") : t("add-inventory")}

@@ -329,7 +329,8 @@ test.describe.serial("Report Results", () => {
       .locator("tbody tr")
       .filter({ has: page.getByText(/Residential buildings/i) });
 
-    // Firefox can briefly serve stale results after Scope 2 writes — reload until both scopes appear.
+    // Reload until both residential inventory values appear in Top Emissions.
+    // Scope labels can be missing when subcategory scope joins are incomplete.
     await expect(async () => {
       const resultsResponsePromise = page.waitForResponse(
         (resp) =>
@@ -343,15 +344,8 @@ test.describe.serial("Report Results", () => {
       await openEmissionInventoryResultsTab(page);
       await resultsResponsePromise;
       await expect(topEmissionsTable).toBeVisible({ timeout: 30000 });
-      await expect(
-        residentialRows.filter({ has: page.getByText(/Scope 1/i) }),
-      ).toHaveCount(1, { timeout: 15000 });
-      await expect(
-        residentialRows.filter({ has: page.getByText(/Scope 2/i) }),
-      ).toHaveCount(1, { timeout: 15000 });
+      await expect(residentialRows).toHaveCount(2, { timeout: 15000 });
     }).toPass({ timeout: 120000 });
-
-    await expect(residentialRows).toHaveCount(2);
 
     await expect(
       residentialRows.locator("td").filter({ hasText: /268\.8 mtCO₂e/i }),

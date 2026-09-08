@@ -98,16 +98,16 @@ const hiapInventoryAdapter = createNativeInputSourceAdapter({
   },
   async executeSelected({ entry, capabilityId, input }) {
     if (
-      capabilityId !== HIAP_INVENTORY_CONTEXT_CAPABILITY ||
-      !entry.inventoryId
+      capabilityId === HIAP_INVENTORY_CONTEXT_CAPABILITY &&
+      entry.inventoryId
     ) {
-      return null;
+      const parsed = hiapInventoryContextInputSchema.parse(input);
+      return buildHiapInventoryContext(
+        entry.inventoryId,
+        parsed.language ?? LANGUAGES.en,
+      );
     }
-    const parsed = hiapInventoryContextInputSchema.parse(input);
-    return buildHiapInventoryContext(
-      entry.inventoryId,
-      parsed.language ?? LANGUAGES.en,
-    );
+    return null;
   },
 });
 

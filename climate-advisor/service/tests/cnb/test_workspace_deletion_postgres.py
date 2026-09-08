@@ -4,9 +4,6 @@ import os
 from uuid import uuid4
 
 import pytest
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-
 from app.db.cnb import CnbBase
 from app.models.db import cnb_reference  # noqa: F401
 from app.models.db.cnb_edit import ConceptNoteEditApplication, ConceptNoteEditProposal
@@ -20,6 +17,8 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGapResolution,
 )
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 
 @pytest.mark.skipif(
@@ -153,4 +152,6 @@ async def test_delete_removes_private_history_and_cascades_without_touching_anot
     finally:
         for run_id in run_ids:
             await repository.delete_run(run_id=run_id)
+        async with engine.begin() as connection:
+            await connection.run_sync(CnbBase.metadata.drop_all)
         await engine.dispose()

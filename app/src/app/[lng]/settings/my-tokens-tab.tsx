@@ -13,12 +13,12 @@ import {
 import React, { FC, useState } from "react";
 import {
   MdContentCopy,
-  MdDelete,
   MdAdd,
   MdApartment,
   MdOutlineVisibilityOff,
   MdOutlineVisibility,
 } from "react-icons/md";
+import { DeleteIcon } from "@/components/icons";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { useTranslation } from "@/i18n/client";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
@@ -173,12 +173,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
             alignItems="center"
           >
             <Box>
-              {hasTokens ? (
-                <HeadlineSmall text={t("api-tokens")} />
-              ) : (
-                <HeadlineSmall text={t("create-new-token")} />
-              )}
-
+              <HeadlineSmall text={t("api-tokens")} mb="2" />
               <BodyLarge text={t("api-tokens-description")} />
             </Box>
             {showCreateButton && !hasTokens && (
@@ -206,10 +201,12 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
             />
           ) : !hasTokens ? (
             <Box
+              bg="white"
+              shadow="1dp"
               p="48px"
               textAlign="center"
               borderWidth="1px"
-              borderStyle="dashed"
+              borderStyle="solid"
               borderColor="border.neutral"
               borderRadius="12px"
             >
@@ -236,12 +233,12 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
               </Text>
             </Box>
           ) : (
-            <Box bg="white" p={6} borderRadius="8px">
+            <Box bg="white" shadow="1dp" p={6} borderRadius="8px">
               <Box
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
-                mb="16px"
+                mb="4"
               >
                 <Text
                   fontWeight="bold"
@@ -313,7 +310,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                           setIsDeleteModalOpen(true);
                         }}
                       >
-                        <Icon as={MdDelete} boxSize={5} />
+                        <Icon as={DeleteIcon} boxSize={5} />
                       </IconButton>
                     </Table.Cell>
                   </Table.Row>
@@ -527,17 +524,20 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
               variant="outline"
               mr="12px"
               h="48px"
+              color="content.secondary"
+              borderColor="content.secondary"
               onClick={() => setIsDeleteModalOpen(false)}
             >
               {t("cancel")}
             </Button>
             <Button
               h="48px"
-              colorPalette="red"
+              variant="solid"
+              backgroundColor="sentiment.negativeDefault"
               onClick={handleDeleteToken}
               loading={isDeleting}
             >
-              {t("delete")}
+              {t("delete-token")}
             </Button>
           </DialogFooter>
         </DialogContent>

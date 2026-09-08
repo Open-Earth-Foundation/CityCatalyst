@@ -227,7 +227,7 @@
   "your-token": "Tu Token",
   "mcp-usage-example": "Ejemplo de Configuración de Cliente MCP:",
   "done": "Listo",
-  "delete-token": "Eliminar Token",
+  "delete-token": "Eliminar token",
   "delete-token-confirmation": "¿Estás seguro de que deseas eliminar este token? Esta acción no se puede deshacer y cualquier aplicación que use este token perderá acceso.",
   "delete": "Eliminar",
   "token-scope-required": "Se requiere al menos un alcance",

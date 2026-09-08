@@ -227,7 +227,7 @@
   "your-token": "Seu Token",
   "mcp-usage-example": "Exemplo de Configuração do Cliente MCP:",
   "done": "Concluído",
-  "delete-token": "Excluir Token",
+  "delete-token": "Excluir token",
   "delete-token-confirmation": "Tem certeza de que deseja excluir este token? Esta ação não pode ser desfeita e qualquer aplicativo que use este token perderá o acesso.",
   "delete": "Excluir",
   "token-scope-required": "Pelo menos um escopo é necessário",

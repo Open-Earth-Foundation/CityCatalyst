@@ -37,10 +37,11 @@ export default function CreateTokenForm({
       borderWidth="1px"
       borderColor="border.overlay"
       borderRadius="8px"
-      bg="background.backgroundLight"
+      bg="white"
+      shadow="1dp"
       p="24px"
     >
-      <HStack gap="24px" align="flex-start" mb="24px">
+      <HStack gap="24px" align="flex-start" mb="9">
         <Field
           label={t("token-name")}
           required
@@ -82,7 +83,7 @@ export default function CreateTokenForm({
         <Button
           variant="outline"
           h="63px"
-          minW="120px"
+          minW="171px"
           onClick={onCancel}
           textTransform="uppercase"
           letterSpacing="wider"
@@ -94,7 +95,7 @@ export default function CreateTokenForm({
         <Button
           variant="solid"
           h="63px"
-          minW="160px"
+          minW="171px"
           onClick={onSubmit}
           loading={isSubmitting}
           textTransform="uppercase"

@@ -226,7 +226,7 @@
   "your-token": "Votre Jeton",
   "mcp-usage-example": "Exemple de Configuration Client MCP:",
   "done": "Terminé",
-  "delete-token": "Supprimer le Jeton",
+  "delete-token": "Supprimer le jeton",
   "delete-token-confirmation": "Êtes-vous sûr de vouloir supprimer ce jeton? Cette action est irréversible et toutes les applications utilisant ce jeton perdront l'accès.",
   "delete": "Supprimer",
   "token-scope-required": "Au moins une portée est requise",

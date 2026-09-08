@@ -1,7 +1,7 @@
 import { CityResponse, ProjectWithCities, UserRole } from "@/util/types";
 import React, { useMemo } from "react";
 import { Box, Button, HStack, Icon, Link, Text } from "@chakra-ui/react";
-import { MdAdd } from "react-icons/md";
+import { PlusIcon } from "@/components/icons";
 import { CircleFlag } from "react-circle-flags";
 import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
@@ -66,7 +66,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
         ml="auto"
         h="48px"
       >
-        <Icon as={MdAdd} h={8} w={8} />
+        <Icon as={PlusIcon} h={6} w={6} />
         {view === "project-view" ? t("add-city") : t("add-inventory")}
       </Button>
     );

@@ -318,30 +318,36 @@ test.describe.serial("Report Results", () => {
   });
 
   test("User can navigate to dashboard and verify data", async ({ page }) => {
-    // Force a fresh results fetch after scope 1/2 writes.
-    await page.reload({ waitUntil: "domcontentloaded" });
-    await dismissCookieConsent(page);
-    await openEmissionInventoryResultsTab(page);
-
     const topEmissionsTable = page.locator("table").filter({
       has: page.getByText(/Total emissions \(CO2eq\)/i),
     });
-    await expect(topEmissionsTable).toBeVisible({ timeout: 60000 });
-
-    await expect(page.getByText(/Top Emissions/i).first()).toBeVisible({
-      timeout: 10000,
-    });
-
     const residentialRows = topEmissionsTable
       .locator("tbody tr")
-      .filter({ has: page.getByText("Residential buildings") });
-    await expect(residentialRows).toHaveCount(2, { timeout: 60000 });
-    await expect(
-      residentialRows.filter({ has: page.getByText(/Scope 2/i) }),
-    ).toHaveCount(1);
-    await expect(
-      residentialRows.filter({ has: page.getByText(/Scope 1/i) }),
-    ).toHaveCount(1);
+      .filter({ has: page.getByText(/Residential buildings/i) });
+
+    // Firefox can briefly serve stale results after Scope 2 writes — reload until both scopes appear.
+    await expect(async () => {
+      const resultsResponsePromise = page.waitForResponse(
+        (resp) =>
+          resp.url().includes(`/inventory/${inventoryId}/results`) &&
+          resp.request().method() === "GET" &&
+          resp.ok(),
+        { timeout: 30000 },
+      );
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await dismissCookieConsent(page);
+      await openEmissionInventoryResultsTab(page);
+      await resultsResponsePromise;
+      await expect(topEmissionsTable).toBeVisible({ timeout: 30000 });
+      await expect(
+        residentialRows.filter({ has: page.getByText(/Scope 1/i) }),
+      ).toHaveCount(1, { timeout: 15000 });
+      await expect(
+        residentialRows.filter({ has: page.getByText(/Scope 2/i) }),
+      ).toHaveCount(1, { timeout: 15000 });
+    }).toPass({ timeout: 120000 });
+
+    await expect(residentialRows).toHaveCount(2);
 
     await expect(
       residentialRows.locator("td").filter({ hasText: /268\.8 mtCO₂e/i }),

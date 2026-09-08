@@ -15,7 +15,9 @@ from app.models.db.cnb_workspace import (
     ConceptNoteChapterValidation,
     ConceptNoteEvidenceLink,
     ConceptNoteGap,
+    ConceptNoteGapResolution,
 )
+from app.persistence.concept_notes.edits import append_revision
 from app.persistence.concept_notes import workspace as workspace_module
 from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
@@ -38,7 +40,7 @@ async def test_final_fingerprint_locks_target_gap_and_evidence_rows() -> None:
     session.scalars = AsyncMock(return_value=scalar_result)
     chapter_id = uuid4()
 
-    await workspace_module._open_gaps_by_chapter(
+    await workspace_module._gaps_by_chapter(
         session,
         [chapter_id],
         lock=True,
@@ -142,8 +144,9 @@ async def _seed_document(
                     run_id=run_id,
                     chapter_id=target_id,
                     field_key="beneficiaries",
-                    severity="missing_information",
-                    reason="Beneficiary count is missing",
+                    severity="critical",
+                    question="Beneficiary count is missing",
+                    why_asking="The project scope requires a beneficiary count.",
                     status="open",
                 ),
                 ConceptNoteEvidenceLink(
@@ -307,3 +310,112 @@ async def test_copy_omits_validation_and_delete_removes_source_result() -> None:
                 )
                 is None
             )
+
+
+async def test_chat_revision_keeps_confirmed_body_and_invalidates_validation() -> None:
+    """A new edit exposes its current body alongside the older confirmed result."""
+    run_id = uuid4()
+    async with _validation_repository() as (repository, sessions):
+        target_id, _ = await _seed_document(sessions, run_id=run_id)
+        async with sessions() as session, session.begin():
+            await session.execute(update(ConceptNoteGap).values(status="resolved"))
+        await repository.confirm_chapter(
+            run_id=run_id,
+            chapter_id=target_id,
+            expected_revision=1,
+            idempotency_key=uuid4(),
+            user_id="owner",
+        )
+        context = await repository.load_validation_context(
+            run_id=run_id,
+            chapter_id=target_id,
+            template_fingerprint=TEMPLATE_FINGERPRINT,
+        )
+        await repository.upsert_validation(
+            run_id=run_id,
+            chapter_id=target_id,
+            template_fingerprint=TEMPLATE_FINGERPRINT,
+            expected_fingerprint=context.fingerprint,
+            status="ready",
+            findings=[],
+        )
+        async with sessions() as session, session.begin():
+            chapter = await session.get(ConceptNoteChapter, target_id)
+            latest = await session.get(
+                ConceptNoteChapterRevision, context.target.revision_id
+            )
+            await append_revision(
+                session,
+                chapter,
+                latest,
+                body="New factual content",
+                user_id="owner",
+                idempotency_key=uuid4(),
+                preserve_ready=False,
+                patch_summary={"operation": "chat_edit"},
+            )
+        chapter = next(
+            chapter
+            for chapter in await repository.list_chapters(
+                run_id=run_id,
+                template_fingerprint=TEMPLATE_FINGERPRINT,
+            )
+            if chapter.chapter_id == target_id
+        )
+        assert chapter.body_markdown == "New factual content"
+        assert chapter.revision_number == 2
+        assert chapter.confirmed_body_markdown == "Target body"
+        assert chapter.confirmed_revision_number == 1
+        assert chapter.validation.is_stale
+        assert chapter.validation.validated_revision_number == 1
+        assert chapter.status != "ready"
+
+
+async def test_duplicate_preserves_confirmed_revision_and_gap_resolution() -> None:
+    """Duplication copies reviewed state with new IDs and an intact source."""
+    run_id, destination_id = uuid4(), uuid4()
+    async with _validation_repository() as (repository, sessions):
+        target_id, _ = await _seed_document(sessions, run_id=run_id)
+        async with sessions() as session, session.begin():
+            gap = await session.scalar(select(ConceptNoteGap))
+            gap.status = "resolved"
+            gap.version = 2
+            gap.source_refs = ["city-plan"]
+            session.add(
+                ConceptNoteGapResolution(
+                    gap_id=gap.gap_id,
+                    action="answer",
+                    answer="1,000 residents",
+                    actor_user_id="owner",
+                    source_refs=["city-plan"],
+                    idempotency_key=uuid4(),
+                )
+            )
+        await repository.confirm_chapter(
+            run_id=run_id,
+            chapter_id=target_id,
+            expected_revision=1,
+            idempotency_key=uuid4(),
+            user_id="owner",
+        )
+        await repository.copy_working_copy(
+            source_run_id=run_id,
+            destination_run_id=destination_id,
+        )
+        source = (await repository.list_chapters(run_id=run_id))[0]
+        copied = (await repository.list_chapters(run_id=destination_id))[0]
+        assert copied.chapter_id != source.chapter_id
+        assert copied.status == "ready"
+        assert copied.confirmed_body_markdown == source.confirmed_body_markdown
+        assert copied.confirmed_revision_number == copied.revision_number == 1
+        assert copied.gaps[0].gap_id != source.gaps[0].gap_id
+        assert copied.gaps[0].state == "resolved"
+        assert copied.gaps[0].version == 2
+        assert copied.gaps[0].source_refs == ["city-plan"]
+        assert (
+            copied.gaps[0].resolution.resolution_id
+            != source.gaps[0].resolution.resolution_id
+        )
+        assert copied.gaps[0].resolution.answer == "1,000 residents"
+        await repository.delete_run(run_id=destination_id)
+        assert (await repository.list_chapters(run_id=run_id))[0] == source

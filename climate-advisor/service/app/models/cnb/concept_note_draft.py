@@ -21,6 +21,45 @@ ConceptNoteChapterStatus = Literal[
 ConceptNoteValidationStatus = Literal["ready", "needs_review", "incomplete"]
 ConceptNoteValidationCheckStatus = Literal["pass", "warning", "fail"]
 ConceptNoteValidationFindingSeverity = Literal["warning", "blocking"]
+ConceptNoteGapSeverity = Literal["critical", "noncritical"]
+ConceptNoteGapState = Literal[
+    "open",
+    "processing",
+    "resolved",
+    "dismissed",
+    "caveat",
+]
+ConceptNoteGapResolutionAction = Literal[
+    "answer",
+    "correction",
+    "not_a_gap",
+    "defer_as_caveat",
+    "evidence_update",
+]
+
+
+class ConceptNoteGapSuggestion(BaseModel):
+    """One source-grounded answer that the user can review and edit."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    value: str = Field(min_length=1, max_length=2_000)
+    source_refs: list[str] = Field(min_length=1, max_length=10)
+
+
+class ConceptNoteDraftGapOutput(BaseModel):
+    """Structured missing-information item emitted by the chapter drafter."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    field_key: str = Field(pattern=r"^[a-z0-9]+(?:_[a-z0-9]+)*$", max_length=255)
+    question: str = Field(min_length=1, max_length=2_000)
+    why_asking: str = Field(min_length=1, max_length=2_000)
+    severity: ConceptNoteGapSeverity
+    suggestions: list[ConceptNoteGapSuggestion] = Field(
+        default_factory=list,
+        max_length=3,
+    )
 
 
 class ConceptNoteChapterDraftOutput(BaseModel):
@@ -29,7 +68,47 @@ class ConceptNoteChapterDraftOutput(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     body_markdown: str = Field(min_length=1, max_length=50_000)
-    missing_information: list[str] = Field(default_factory=list, max_length=30)
+    missing_information: list[ConceptNoteDraftGapOutput] = Field(
+        default_factory=list,
+        max_length=30,
+    )
+
+
+class ConceptNoteGapResolutionResponse(BaseModel):
+    """Latest append-only resolution event for one gap."""
+
+    resolution_id: UUID
+    action: ConceptNoteGapResolutionAction
+    answer: str | None = None
+    actor_user_id: str
+    source_refs: list[str] = Field(default_factory=list)
+    created_at: datetime
+
+
+class ConceptNoteGapResponse(BaseModel):
+    """One actionable or historical structured information gap."""
+
+    gap_id: UUID
+    field_key: str
+    question: str
+    why_asking: str
+    severity: ConceptNoteGapSeverity
+    state: ConceptNoteGapState
+    suggestions: list[ConceptNoteGapSuggestion] = Field(default_factory=list)
+    source_refs: list[str] = Field(default_factory=list)
+    version: int = Field(ge=1)
+    resolution: ConceptNoteGapResolutionResponse | None = None
+    created_at: datetime
+    updated_at: datetime
+
+
+class ConceptNoteChapterConfirmRequest(BaseModel):
+    """Idempotently confirm one exact chapter revision as Ready."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    expected_revision: int = Field(ge=1)
+    idempotency_key: UUID
 
 
 class ConceptNoteValidationCheckResponse(BaseModel):
@@ -85,8 +164,12 @@ class ConceptNoteDraftChapterResponse(BaseModel):
     required: bool
     user_locked: bool
     body_markdown: str | None = None
-    missing_information: list[str] = Field(default_factory=list)
+    gaps: list[ConceptNoteGapResponse] = Field(default_factory=list)
+    open_gap_count: int = Field(default=0, ge=0)
+    caveat_count: int = Field(default=0, ge=0)
     revision_number: int | None = Field(default=None, ge=1)
+    confirmed_body_markdown: str | None = None
+    confirmed_revision_number: int | None = Field(default=None, ge=1)
     validation: ConceptNoteChapterValidationResponse | None = None
 
 

@@ -2382,8 +2382,8 @@ The configured prompt/model roles are:
 ```yaml
 models:
   cnb_source_reader:
-    name: openai/gpt-5.6-luna
-    reasoning_effort: low
+    name: openai/gpt-5.6-terra
+    reasoning_effort: medium
   cnb_source_synthesizer:
     name: openai/gpt-5.6-sol
     reasoning_effort: medium
@@ -2398,11 +2398,19 @@ prompts:
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 ```
 
-The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-sol`) with explicit
+The main CNB chat uses `models.cnb_chat` (`openai/gpt-5.6-sol`) with explicit
 `reasoning_effort: medium` for its Chat Completions function-tool loop. Funding
 research and similar-project selection use Sol with medium reasoning on the
-existing Responses API path; canonical-funder identity matching uses Luna with
-low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
+existing Responses API path; canonical-funder identity matching uses Terra with
+medium reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
+
+Workspace responses combine current chapter text, exact confirmed revisions,
+structured gaps and their latest resolutions, and validation freshness. An accepted
+chat edit makes a validation of the previous document stale. Duplication preserves
+confirmation only when it refers to the copied latest revision, copies gap
+resolution history with new IDs, and omits stored validation results. CNB migration
+`20260909_120000` joins the validation and review migration heads without rewriting
+either parent migration.
 
 The validation prompt budget is 50,000 tokens. Completeness and consistency run
 with temperature zero and strict structured contracts; only concise findings

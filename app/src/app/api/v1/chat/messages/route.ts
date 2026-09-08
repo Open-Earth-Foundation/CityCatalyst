@@ -53,9 +53,9 @@ import { NextResponse } from "next/server";
 import {
   callClimateAdvisorChat,
   extractClimateAdvisorErrorMessage,
-  issueClimateAdvisorUserToken,
   readClimateAdvisorResponsePayload,
 } from "@/backend/chat/climate-advisor";
+import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 import { buildClimateAdvisorMessagePayload } from "@/backend/chat/message-payload";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";

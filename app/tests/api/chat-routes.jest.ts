@@ -68,6 +68,10 @@ describe("Chat routes", () => {
   });
 
   beforeEach(() => {
+    Reflect.deleteProperty(
+      globalThis,
+      Symbol.for("citycatalyst.ca-user-token-cache.v1"),
+    );
     process.env.CA_BASE_URL = "http://ca.example";
     process.env.CC_SERVICE_API_KEY = "cc-service-key";
     process.env.HOST = "http://cc.example";
@@ -140,7 +144,7 @@ describe("Chat routes", () => {
       inventory_id: testInventoryId,
       context: expect.objectContaining({
         access_token: "token-123",
-        expires_in: 3600,
+        expires_in: expect.any(Number),
         token_type: "Bearer",
         issued_at: expect.any(String),
       }),
@@ -273,7 +277,7 @@ describe("Chat routes", () => {
     }
   });
 
-  it("preserves JSON token-issuance errors when creating a CA thread", async () => {
+  it("preserves token-issuance status with a sanitized message", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
     fetchMock.mockResolvedValueOnce(
       jsonResponse(
@@ -295,15 +299,42 @@ describe("Chat routes", () => {
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toEqual({
       error: {
-        message: "service token rejected",
-        code: undefined,
-        data: {
-          detail: "service token rejected",
-        },
+        message: "Unable to obtain Climate Advisor access token",
       },
     });
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+
+  it.each([502, 503, 504])(
+    "returns exhausted token status %s through apiHandler",
+    async (status) => {
+      jest.useFakeTimers();
+      try {
+        const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+        fetchMock.mockImplementation(async () =>
+          jsonResponse({ detail: "private upstream diagnostics" }, { status }),
+        );
+        const pending = postChatThread(
+          makeRequest("http://localhost:3000/api/v1/chat/threads", "POST", {}),
+          { params: Promise.resolve({}) },
+        );
+        await jest.runAllTimersAsync();
+        const response = await pending;
+        expect(response.status).toBe(status);
+        await expect(response.json()).resolves.toEqual({
+          error: { message: "Unable to obtain Climate Advisor access token" },
+        });
+        expect(fetchMock).toHaveBeenCalledTimes(3);
+        expect(
+          fetchMock.mock.calls.every(([url]) =>
+            String(url).includes("user-token"),
+          ),
+        ).toBe(true);
+      } finally {
+        jest.useRealTimers();
+      }
+    },
+  );
 
   it("preserves JSON CA thread creation errors from the shared backend helper", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;

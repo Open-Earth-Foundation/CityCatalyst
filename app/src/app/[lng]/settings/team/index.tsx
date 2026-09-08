@@ -284,7 +284,6 @@ const TeamSettings = ({
         <Box
           w="285px"
           flexShrink={0}
-          overflowY="hidden"
           display="flex"
           flexDirection="column"
           gap="24px"

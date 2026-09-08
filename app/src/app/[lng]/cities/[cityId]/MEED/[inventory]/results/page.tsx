@@ -33,6 +33,9 @@ import {
 import { PILLAR_WEIGHTS } from "../../scoringWeights";
 import { MeedCardSkeleton } from "../../components/MeedSkeletons";
 import { MeedErrorCard } from "../../components/MeedErrorCard";
+import { useMeedReport } from "./report/useMeedReport";
+import { buildReportPdf } from "./report/meedReportPdf";
+import { actionName as catalogActionName } from "./components/actionCatalog";
 
 export default function Page(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
@@ -131,6 +134,41 @@ export default function Page(props: {
     });
   }, [ranked, index, t, inventory]);
 
+  const { generate, isRunning, progress } = useMeedReport(cityId, inventoryId);
+  const [reportError, setReportError] = useState<string | null>(null);
+
+  const generateReport = useCallback(async () => {
+    setReportError(null);
+    const targets = selectedIds.map((actionId) => ({
+      actionId,
+      actionName: catalogActionName(index, actionId, t),
+    }));
+
+    const result = await generate(targets, lng);
+    if (!result || result.documents.length === 0) {
+      setReportError(t("report-error-none"));
+      return;
+    }
+    // A short report with no explanation is worse than a named omission.
+    if (result.failed.length > 0) {
+      setReportError(
+        t("report-error-partial", {
+          count: result.failed.length,
+          actions: result.failed.join(", "),
+        }),
+      );
+    }
+
+    const { documents } = result;
+    const pdf = buildReportPdf(documents, {
+      title: t("report-title"),
+      cityName: inventory?.city?.name ?? "",
+      subtitle: t("report-subtitle", { count: documents.length }),
+      limitationsLabel: t("report-limitations"),
+    });
+    pdf.save(`meed-action-report-${inventoryId}.pdf`);
+  }, [generate, selectedIds, index, t, lng, inventory, inventoryId]);
+
   const facts = {
     emissionsText,
     inventoryYear: inventory?.year ?? undefined,
@@ -184,8 +222,31 @@ export default function Page(props: {
               excludedCount={excludedCount}
               emissionsText={emissionsText}
               selectedCount={selectedIds.length}
+              isGenerating={isRunning}
+              progress={
+                isRunning
+                  ? t("report-progress", {
+                      done: progress.done + 1,
+                      total: progress.total,
+                    })
+                  : null
+              }
+              onGenerate={generateReport}
               t={t}
             />
+
+            {/*
+              Named, dismissible, and never blocking: a partial failure still
+              produced a report, so this sits beside it rather than replacing it.
+            */}
+            {reportError && (
+              <MeedErrorCard
+                title={t("report-error-title")}
+                body={reportError}
+                retryLabel={t("report-error-dismiss")}
+                onRetry={() => setReportError(null)}
+              />
+            )}
 
             {/*
               One scroll, in the order the user reasons in: what to do, what it

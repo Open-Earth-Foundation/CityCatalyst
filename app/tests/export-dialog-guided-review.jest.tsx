@@ -11,7 +11,11 @@ import {
   jest,
 } from "@jest/globals";
 import { ChakraProvider } from "@chakra-ui/react";
-import { configureStore } from "@reduxjs/toolkit";
+import {
+  configureStore,
+  type Middleware,
+  type Reducer,
+} from "@reduxjs/toolkit";
 import { act, type ComponentProps } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { Provider } from "react-redux";
@@ -33,6 +37,15 @@ const validateChapter = jest.fn(
   }),
 );
 
+const api = {
+  middleware: (() => (next) => (action) => next(action)) as Middleware,
+  reducer: ((state = {}) => state) as Reducer<Record<string, never>>,
+  reducerPath: "testApi",
+  useValidateConceptNoteChapterMutation: () => [validateChapter],
+};
+
+jest.unstable_mockModule("@/services/api", () => ({ api }));
+
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({
     t: (key: string, values: Record<string, string | number> = {}) => {
@@ -50,7 +63,6 @@ jest.unstable_mockModule("@/i18n/client", () => ({
 }));
 
 let ExportDialog: typeof import("@/components/ConceptNoteWorkspace/export-dialog").ExportDialog;
-let api: typeof import("@/services/api").api;
 let root: Root;
 let container: HTMLDivElement;
 let store: ReturnType<typeof createStore>;
@@ -204,10 +216,6 @@ beforeAll(async () => {
     observe() {}
     unobserve() {}
   };
-  ({ api } = await import("@/services/api"));
-  jest
-    .spyOn(api, "useValidateConceptNoteChapterMutation")
-    .mockImplementation(() => [validateChapter] as never);
   ({ ExportDialog } =
     await import("@/components/ConceptNoteWorkspace/export-dialog"));
 });

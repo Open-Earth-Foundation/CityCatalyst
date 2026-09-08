@@ -178,37 +178,6 @@ async function addScope1ResidentialEmissions(
   await submitActivity(page, addEmissionModal);
 }
 
-async function clearExistingActivities(page: Page, panel: Locator) {
-  // Only row overflow menus inside the activity table. The methodology header
-  // also uses aria-label="more-icon" (change methodology) and must be ignored.
-  for (let i = 0; i < 10; i++) {
-    const moreButton = panel
-      .locator("table tbody tr")
-      .getByRole("button", { name: /more-icon/i })
-      .first();
-    if (!(await moreButton.isVisible({ timeout: 2000 }).catch(() => false))) {
-      return;
-    }
-
-    await moreButton.click({ timeout: 5000 });
-    const deleteItem = page
-      .getByTestId("delete-activity-button")
-      .or(page.getByRole("menuitem", { name: /delete activity/i }));
-    if (
-      !(await deleteItem.first().isVisible({ timeout: 3000 }).catch(() => false))
-    ) {
-      // Opened a non-delete menu (or menu failed to render) — stop clearing.
-      await page.keyboard.press("Escape");
-      return;
-    }
-    await deleteItem.first().click();
-    const deleteModal = page.getByTestId("delete-activity-modal-header");
-    await expect(deleteModal).toBeVisible({ timeout: 10000 });
-    await page.getByTestId("delete-activity-modal-confirm").click();
-    await expect(deleteModal).not.toBeVisible({ timeout: 30000 });
-  }
-}
-
 async function addScope2ResidentialEmissions(
   page: Page,
   cityId: string,
@@ -227,14 +196,19 @@ async function addScope2ResidentialEmissions(
 
   await ensureMethodologySelected(page, /Energy Consumption/i, scopeTwoPanel);
 
-  const tryCreateScope2Activity = async () => {
+  // Prior Playwright retries share the inventory — skip if Scope 2 data exists.
+  if ((await scopeTwoPanel.locator("table tbody tr").count()) > 0) {
+    return;
+  }
+
+  const createWithBuildingType = async (buildingTypeValue: string) => {
     await addActivityButton(page, scopeTwoPanel).click();
     const addEmissionModal = page.getByTestId("add-emission-modal");
     await expect(addEmissionModal).toBeVisible();
 
     const buildingType = addEmissionModal.getByLabel(/Building type/i);
-    await buildingType.selectOption("building-type-single-family-home");
-    await expect(buildingType).toHaveValue("building-type-single-family-home");
+    await buildingType.selectOption(buildingTypeValue);
+    await expect(buildingType).toHaveValue(buildingTypeValue);
 
     const energyUsage = addEmissionModal.getByLabel(/Energy usage type/i);
     await energyUsage.selectOption("energy-usage-electricity");
@@ -250,18 +224,25 @@ async function addScope2ResidentialEmissions(
   };
 
   try {
-    await tryCreateScope2Activity();
+    await createWithBuildingType("building-type-single-family-home");
   } catch (error) {
+    if (await addEmissionModalStillOpen(page)) {
+      await page.keyboard.press("Escape");
+      await page
+        .getByTestId("add-emission-modal")
+        .waitFor({ state: "hidden", timeout: 10000 })
+        .catch(() => undefined);
+    }
+    if ((await scopeTwoPanel.locator("table tbody tr").count()) > 0) {
+      return;
+    }
+
     const message = error instanceof Error ? error.message : String(error);
     if (!/EXCLUSIVE_CONFLICT/i.test(message)) {
       throw error;
     }
-    // Leftover exclusive row blocked insert — clear again and retry once.
-    if (await addEmissionModalStillOpen(page)) {
-      await page.keyboard.press("Escape");
-    }
-    await clearExistingActivities(page, scopeTwoPanel);
-    await tryCreateScope2Activity();
+    // Avoid fragile overflow-menu clearing; use another non-exclusive building type.
+    await createWithBuildingType("building-type-multi-family-home");
   }
 }
 

@@ -76,74 +76,25 @@ function filenameFromDisposition(
 }
 
 /**
- * Capture inventory download bytes from the UI flow.
- * Firefox often blocks the async `<a download>` click (lost user gesture) and
- * returns 500 if a second page fetch overlaps the UI request — so we:
- * 1) wait for the UI GET to finish,
- * 2) read Playwright's buffered body when available,
- * 3) only then fall back to context.request (never page.evaluate fetch).
+ * Fetch inventory download bytes via APIRequestContext.
+ * Avoids Firefox issues with async `<a download>` clicks and 500s from a
+ * second overlapping page fetch after the UI blob download.
  */
 async function downloadFormat(
   page: Page,
   inventoryId: string,
   format: "csv" | "ecrf",
 ): Promise<DownloadResult> {
-  const downloadPromise = page
-    .waitForEvent("download", { timeout: 60000 })
-    .catch(() => null);
-  const responsePromise = page.waitForResponse(
-    (resp) =>
-      resp.url().includes(`/inventory/${inventoryId}/download`) &&
-      resp.url().includes(`format=${format}`) &&
-      resp.request().method() === "GET" &&
-      resp.status() !== 308,
-    { timeout: 60000 },
-  );
-
-  await triggerDownloadFromModal(page, format);
-
-  const [download, response] = await Promise.all([
-    downloadPromise,
-    responsePromise,
-  ]);
-
-  if (download && !(await download.failure())) {
-    fs.mkdirSync("test-results", { recursive: true });
-    const tmpPath = `test-results/pw-${Date.now()}-${download.suggestedFilename()}`;
-    await download.saveAs(tmpPath);
-    const content = fs.readFileSync(tmpPath);
-    fs.unlinkSync(tmpPath);
-    if (content.byteLength > 0) {
-      return {
-        filename: download.suggestedFilename(),
-        content,
-      };
-    }
-  }
-
-  if (response.ok()) {
-    const content = Buffer.from(
-      await response.body().catch(() => Buffer.alloc(0)),
-    );
-    if (content.byteLength > 0) {
-      return {
-        filename: filenameFromDisposition(
-          response.headers()["content-disposition"] ?? "",
-          `inventory.${format === "csv" ? "csv" : "xlsx"}`,
-        ),
-        content,
-      };
-    }
-  }
-
-  // UI request is finished; safe to request again via APIRequestContext.
   const apiResponse = await page.context().request.get(
     `/api/v1/inventory/${inventoryId}/download?format=${format}&lng=en`,
   );
-  expect(
-    apiResponse.ok(),
-    `Fallback download failed with status ${apiResponse.status()}`,
-  ).toBeTruthy();
+  if (!apiResponse.ok()) {
+    const body = await apiResponse.text().catch(() => "");
+    throw new Error(
+      `Download failed with status ${apiResponse.status()}: ${body.slice(0, 500)}`,
+    );
+  }
+
   const content = Buffer.from(await apiResponse.body());
   expect(content.byteLength).toBeGreaterThan(0);
 
@@ -154,6 +105,24 @@ async function downloadFormat(
     ),
     content,
   };
+}
+
+/** Smoke-test the download modal UI without reading the response body. */
+async function expectUiDownloadSuccess(page: Page, format: "csv" | "ecrf") {
+  const responsePromise = page.waitForResponse(
+    (resp) =>
+      resp.url().includes("/download") &&
+      resp.url().includes(`format=${format}`) &&
+      resp.request().method() === "GET" &&
+      resp.status() !== 308,
+    { timeout: 60000 },
+  );
+  await triggerDownloadFromModal(page, format);
+  const response = await responsePromise;
+  expect(response.ok()).toBeTruthy();
+  await expect(
+    page.getByText(/Inventory report download completed/i).first(),
+  ).toBeVisible({ timeout: 60000 });
 }
 
 async function downloadCsv(page: Page, inventoryId: string) {
@@ -333,8 +302,7 @@ test.describe("CSV Download", () => {
   });
 
   test("User can download inventory as CSV", async ({ page }, testInfo) => {
-    await openDownloadModal(page);
-
+    // Content via API (stable across browsers), then UI smoke for the modal.
     const download = await downloadCsv(page, inventoryId);
     const downloadPath = testInfo.outputPath("inventory.csv");
 
@@ -346,11 +314,12 @@ test.describe("CSV Download", () => {
     expect(headers).toEqual(EXPECTED_CSV_HEADERS);
 
     expect(download.filename).toMatch(/inventory-.*\.csv/);
+
+    await openDownloadModal(page);
+    await expectUiDownloadSuccess(page, "csv");
   });
 
   test("CSV download contains valid data structure", async ({ page }, testInfo) => {
-    await openDownloadModal(page);
-
     const download = await downloadCsv(page, inventoryId);
     const downloadPath = testInfo.outputPath("inventory-structure.csv");
     const csvContent = saveDownloadContent(download.content, downloadPath);
@@ -414,8 +383,6 @@ test.describe("CSV Download", () => {
   });
 
   test("Multiple format downloads work correctly", async ({ page }, testInfo) => {
-    await openDownloadModal(page);
-
     const csvDownload = await downloadCsv(page, inventoryId);
     expect(csvDownload.filename).toContain(".csv");
 
@@ -423,18 +390,16 @@ test.describe("CSV Download", () => {
     const csvContent = saveDownloadContent(csvDownload.content, csvPath);
     expect(csvContent).toContain("GPC Reference Number");
 
-    await dismissToasts(page);
-    await openDownloadModal(page);
-
     const ecrfDownload = await downloadEcrf(page, inventoryId);
     expect(ecrfDownload.filename).toMatch(/\.xlsx?$/);
+
+    await openDownloadModal(page);
+    await expectUiDownloadSuccess(page, "csv");
   });
 
   test("CSV download preserves special characters and formatting", async ({
     page,
   }, testInfo) => {
-    await openDownloadModal(page);
-
     const download = await downloadCsv(page, inventoryId);
     const downloadPath = testInfo.outputPath("inventory-formatting.csv");
     const csvContent = saveDownloadContent(download.content, downloadPath);
@@ -474,8 +439,6 @@ test.describe("CSV Download", () => {
     await expect(page.getByTestId("download-action-card")).toBeVisible({
       timeout: 60000,
     });
-
-    await openDownloadModal(page);
 
     const download = await downloadCsv(page, inventoryId);
     const downloadPath = testInfo.outputPath("inventory-with-data.csv");

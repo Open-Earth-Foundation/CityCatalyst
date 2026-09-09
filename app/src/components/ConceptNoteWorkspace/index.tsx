@@ -87,6 +87,7 @@ export function ConceptNoteWorkspace({
     applicationContextLoading,
     bundle,
     canStartDrafting,
+    contextStatus,
     city,
     cityName,
     draft,
@@ -289,9 +290,8 @@ export function ConceptNoteWorkspace({
             }}
           >
             <ConceptNoteChatPanel
-              bundleStatus={bundle.status}
+              contextStatus={contextStatus}
               composerRequest={null}
-              documentGrounding={bundle.documentGrounding}
               lng={lng}
               onOpenContext={() => setTab("context")}
               threadId={run.thread_id}
@@ -357,6 +357,7 @@ export function ConceptNoteWorkspace({
                 <DraftTab
                   applicationContext={applicationContext ?? null}
                   bundle={bundle}
+                  contextStatus={contextStatus}
                   canStartDrafting={canStartDrafting}
                   draft={draft ?? null}
                   draftError={draftStartError}
@@ -397,6 +398,7 @@ export function ConceptNoteWorkspace({
                 <ContextTab
                   applicationContext={applicationContext ?? null}
                   bundle={bundle}
+                  contextStatus={contextStatus}
                   cityFilesCount={files.length}
                   cityName={cityName}
                   country={city?.country ?? null}

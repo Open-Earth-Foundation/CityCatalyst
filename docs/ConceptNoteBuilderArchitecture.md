@@ -1733,6 +1733,11 @@ Rules:
 - Requires exactly one ordered result per input section and verifies every
   retained excerpt as an exact substring of that section. Generated segment
   identifiers are attached only by backend code, never included in the prompt.
+  The provider output schema requires exactly the supplied number of sections;
+  the backend independently checks the returned count.
+  A section-count mismatch discards the incomplete response and rereads both
+  halves, up to two split levels under the same concurrency limit. Every
+  recovered group must pass coverage checks before synthesis can proceed.
 - Requires every factual sentence in a synthesized document summary to remain
   self-contained and supported by an exact retained excerpt. Conflicting
   evidence remains explicit instead of being silently reconciled.
@@ -1746,6 +1751,11 @@ Rules:
 - Completes with `document_grounding: none` when no ready upload exists. A
   pointer/digest change, reader partition failure, or incomplete source coverage
   still fails retryably.
+  Failed run progress and correlated logs retain content-free `error_reason`
+  and numeric `error_details` alongside `error_code`. The workspace derives
+  chat and draft notices from one shared upload/context status, including
+  pending uploads that have not yet reached the bundle. Processing and failure
+  block chat; ready document context unlocks it automatically.
 - Reconciles every five minutes and marks builds left in `building` for more
   than one hour as `context_bundle_build_interrupted`, preserving the existing
   retry route without storing a durable access token in a job queue.

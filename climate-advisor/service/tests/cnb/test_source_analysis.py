@@ -48,7 +48,7 @@ class FakeRunner:
         self.reader_tools: list[list[object]] = []
 
     async def run(self, agent, input_text: str):
-        output_type = agent.output_type
+        output_type = agent.output_type.output_type
         payload = json.loads(input_text)
         if output_type in (DocumentMappingReading, QuestionReading):
             self.active += 1
@@ -293,6 +293,8 @@ async def test_incomplete_reader_coverage_fails_the_document(
             runner=IncompleteCoverageRunner(),
         )
     assert failure.value.code == "incomplete_source_coverage"
+    assert failure.value.reason == "reader_section_count_mismatch"
+    assert failure.value.details == {"expected_sections": 1, "returned_sections": 0}
 
 
 @pytest.mark.asyncio
@@ -418,6 +420,7 @@ async def test_source_worker_serializes_sol_luna_requests_without_temperature(
             settings=settings,
             client=client,
             runner=LocalRunner,
+            expected_sections=1 if role == "cnb_source_reader" else None,
         )
 
     assert result == output_type.model_validate(output)
@@ -429,6 +432,9 @@ async def test_source_worker_serializes_sol_luna_requests_without_temperature(
     assert not request.get("tools")
     assert request["response_format"]["type"] == "json_schema"
     assert request["response_format"]["json_schema"]["strict"] is True
+    if role == "cnb_source_reader":
+        sections = request["response_format"]["json_schema"]["schema"]["properties"]["sections"]
+        assert sections["minItems"] == sections["maxItems"] == 1
 
 
 @pytest.mark.parametrize("role", ["cnb_source_reader", "cnb_source_synthesizer"])
@@ -437,3 +443,72 @@ def test_source_model_change_invalidates_analysis_reuse_contract(role) -> None:
     current_contract = source_analysis_contract_version(settings)
     getattr(settings.llm.models, role).name = "previous-model"
     assert source_analysis_contract_version(settings) != current_contract
+
+
+class SmallGroupCoverageRunner(FakeRunner):
+    """Simulate a reader that omits sections in larger groups, including empty ones."""
+
+    async def run(self, agent, input_text: str):
+        result = await super().run(agent, input_text)
+        if isinstance(result.final_output, (DocumentMappingReading, QuestionReading)):
+            if len(result.final_output.sections) > 1:
+                result.final_output = result.final_output.model_copy(
+                    update={"sections": result.final_output.sections[:-1]}
+                )
+        return result
+
+
+@pytest.mark.asyncio
+async def test_incomplete_groups_are_reread_without_losing_pages_or_citations(
+    analysis_dependencies,
+) -> None:
+    settings, client = analysis_dependencies
+    pages = [
+        SourcePage(number=i, text="Drainage upgrades" if i == 4 else "Blank section")
+        for i in range(1, 5)
+    ]
+    runner = SmallGroupCoverageRunner()
+    source = await analyze_document(
+        upload_id=uuid4(),
+        filename="plan.pdf",
+        source_label=None,
+        sha256="a" * 64,
+        pages=pages,
+        settings=settings,
+        client=client,
+        runner=runner,
+    )
+    assert source.page_count == 4
+    assert any(excerpt.page == 4 for excerpt in source.key_excerpts)
+    assert runner.max_active <= 3
+    result = await query_document(
+        upload_id=source.upload_id,
+        source_label="plan.pdf",
+        pages=pages,
+        question="Drainage?",
+        settings=settings,
+        client=client,
+        runner=runner,
+    )
+    assert result.units_processed == 4
+    assert result.found
+    assert any(excerpt.page == 4 for excerpt in result.excerpts)
+
+
+@pytest.mark.asyncio
+async def test_coverage_recovery_has_a_finite_limit(analysis_dependencies) -> None:
+    settings, client = analysis_dependencies
+    runner = IncompleteCoverageRunner()
+    with pytest.raises(SourceAnalysisError) as failure:
+        await analyze_document(
+            upload_id=uuid4(),
+            filename="plan.pdf",
+            source_label=None,
+            sha256="a" * 64,
+            pages=[SourcePage(number=i, text="Drainage upgrades") for i in range(1, 9)],
+            settings=settings,
+            client=client,
+            runner=runner,
+        )
+    assert failure.value.reason == "reader_section_count_mismatch"
+    assert len(runner.reader_tools) <= 7

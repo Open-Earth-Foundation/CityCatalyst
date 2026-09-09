@@ -5,6 +5,10 @@ import { useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import type { ConceptNoteUploadResponse } from "@/util/types";
+import {
+  getConceptNoteContextState,
+  getConceptNoteContextPresentation,
+} from "./context-status";
 
 import {
   getConceptNoteBundleProgress,
@@ -79,7 +83,7 @@ export function useConceptNoteWorkspaceData({
     persistedUpload?.upload_id === selectedUploadId
       ? persistedUpload.status
       : null;
-  const { data: refreshedUpload, isError: uploadRefreshFailed } =
+  const { currentData: refreshedUpload, isError: uploadRefreshFailed } =
     api.useGetConceptNoteUploadStatusQuery(
       { runId, uploadId: selectedUploadId ?? "" },
       {
@@ -112,6 +116,14 @@ export function useConceptNoteWorkspaceData({
       : null;
   const effectiveUpload =
     refreshedUpload ?? uploadDetails ?? persistedUploadDetails;
+  const contextState = getConceptNoteContextState({
+    bundle,
+    uploads: run?.uploads,
+    activeUpload: effectiveUpload,
+    initialUploadId,
+    isUploading: uploadState.isLoading,
+    isRetrying: retryUploadState.isLoading || retryBundleState.isLoading,
+  });
   const effectiveUploadError = uploadRefreshFailed
     ? t("refresh-status-error")
     : uploadError;
@@ -219,6 +231,7 @@ export function useConceptNoteWorkspaceData({
     applicationContextLoading,
     bundle,
     canStartDrafting,
+    contextStatus: getConceptNoteContextPresentation(contextState, bundle, t),
     city,
     cityName,
     draft,

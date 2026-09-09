@@ -12,6 +12,14 @@ import {
 } from "@jest/globals";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
+import type { ConceptNoteRun, ConceptNoteUploadResponse } from "@/util/types";
+
+let contextScenario: Pick<
+  ConceptNoteRun,
+  "progress_summary" | "uploads"
+> | null = null;
+let currentUpload: ConceptNoteUploadResponse | undefined;
+let uploading = false;
 
 const persistedUploadId = "persisted-upload";
 const refetchRun = jest.fn(async () => undefined);
@@ -45,7 +53,7 @@ jest.unstable_mockModule("@/services/api", () => ({
       refetch: jest.fn(async () => undefined),
     }),
     useGetConceptNoteRunQuery: () => ({
-      data: {
+      data: contextScenario ?? {
         progress_summary: {},
         uploads: [
           {
@@ -67,6 +75,7 @@ jest.unstable_mockModule("@/services/api", () => ({
       refetch: refetchRun,
     }),
     useGetConceptNoteUploadStatusQuery: () => ({
+      currentData: currentUpload,
       data: undefined,
       isError: false,
     }),
@@ -85,7 +94,10 @@ jest.unstable_mockModule("@/services/api", () => ({
       jest.fn(),
       { isError: false, isLoading: false },
     ],
-    useUploadConceptNoteSourceMutation: () => [jest.fn(), { isLoading: false }],
+    useUploadConceptNoteSourceMutation: () => [
+      jest.fn(),
+      { isLoading: uploading },
+    ],
   },
 }));
 
@@ -94,13 +106,17 @@ let container: HTMLDivElement;
 let root: Root;
 
 function Harness() {
-  const { retryActiveUpload } = useConceptNoteWorkspaceData({
+  const { retryActiveUpload, contextStatus } = useConceptNoteWorkspaceData({
     cityId: "city-1",
     lng: "en",
     runId: "run-1",
   });
 
-  return <button data-testid="retry" onClick={retryActiveUpload} />;
+  return (
+    <button data-testid="retry" onClick={retryActiveUpload}>
+      {contextStatus.state}
+    </button>
+  );
 }
 
 beforeAll(async () => {
@@ -114,6 +130,9 @@ afterAll(() => {
 });
 
 beforeEach(() => {
+  contextScenario = null;
+  currentUpload = undefined;
+  uploading = false;
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
@@ -125,6 +144,31 @@ afterEach(async () => {
 });
 
 describe("useConceptNoteWorkspaceData", () => {
+  it("blocks chat until upload processing and the context bundle are both ready", async () => {
+    contextScenario = { progress_summary: {}, uploads: [] };
+    currentUpload = { uploadId: "new", status: "processing" };
+    await act(async () => root.render(<Harness />));
+    expect(container.textContent).toBe("processing");
+    currentUpload = { uploadId: "new", status: "ready" };
+    contextScenario.progress_summary = {
+      context_bundle: { status: "building" },
+    };
+    await act(async () => root.render(<Harness />));
+    expect(container.textContent).toBe("processing");
+    contextScenario.progress_summary = {
+      context_bundle: {
+        status: "ready",
+        document_grounding: "uploaded_evidence",
+        source_counts: { ready: 1 },
+      },
+    };
+    await act(async () => root.render(<Harness />));
+    expect(container.textContent).toBe("ready");
+    uploading = true;
+    await act(async () => root.render(<Harness />));
+    expect(container.textContent).toBe("uploading");
+  });
+
   it("retries a failed upload restored from the persisted run", async () => {
     await act(async () => root.render(<Harness />));
 

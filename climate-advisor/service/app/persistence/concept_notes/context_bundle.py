@@ -273,6 +273,8 @@ async def fail_build(
     build_id: UUID,
     error_code: str,
     warning: str,
+    error_reason: str | None = None,
+    error_details: dict[str, int] | None = None,
 ) -> bool:
     """Persist a retryable failure only if this build is still active."""
     try:
@@ -299,6 +301,8 @@ async def fail_build(
                     **progress,
                     "status": "failed",
                     "error_code": error_code,
+                    "error_reason": error_reason,
+                    "error_details": error_details or {},
                     "warnings": [warning],
                     "retryable": True,
                     "completion_event": None,

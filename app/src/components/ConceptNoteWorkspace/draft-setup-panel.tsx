@@ -1,7 +1,6 @@
+import type { ConceptNoteContextPresentation } from "./context-status";
 import { Box, Flex, HStack, Icon, Text } from "@chakra-ui/react";
-import type { IconType } from "react-icons";
 import {
-  LuCheck,
   LuCircleAlert,
   LuDatabase,
   LuRefreshCw,
@@ -20,19 +19,12 @@ import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
 
 import { chapterTone } from "./draft-document-panel";
 
-interface DraftStatusPresentation {
-  background: string;
-  border: string;
-  description: string;
-  icon: IconType;
-  title: string;
-}
-
 interface DraftSetupPanelProps {
   applicationContext: ConceptNoteApplicationContext | null;
   applicationContextFailed: boolean;
   applicationContextLoading: boolean;
   bundle: ConceptNoteBundleProgress;
+  contextStatus: ConceptNoteContextPresentation;
   canStartDrafting: boolean;
   draft: ConceptNoteDraftState | null;
   draftError: string | null;
@@ -58,63 +50,14 @@ function currentChapter(draft: ConceptNoteDraftState | null): string | null {
   );
 }
 
-function sourceStatus(
-  bundle: ConceptNoteBundleProgress,
-  t: ReturnType<typeof useTranslation>["t"],
-): DraftStatusPresentation {
-  if (bundle.status === "building") {
-    return {
-      background: "background.neutral",
-      border: "content.link",
-      description: t("building-source-context-description"),
-      icon: LuSparkles,
-      title: t("building-source-context"),
-    };
-  }
-  if (bundle.status === "failed") {
-    return {
-      background: "sentiment.negativeOverlay",
-      border: "sentiment.negativeDefault",
-      description: t("context-failed-description"),
-      icon: LuCircleAlert,
-      title: t("context-needs-attention"),
-    };
-  }
-  if (bundle.status === "ready" && bundle.documentGrounding === "none") {
-    return {
-      background: "background.neutral",
-      border: "content.link",
-      description: t("no-uploaded-evidence-draft-description"),
-      icon: LuDatabase,
-      title: t("uploaded-evidence-none"),
-    };
-  }
-  if (bundle.status === "ready") {
-    return {
-      background: "sentiment.positiveOverlay",
-      border: "sentiment.positiveDefault",
-      description: t("source-context-count", { count: bundle.readySources }),
-      icon: LuCheck,
-      title: t("source-context-assembled"),
-    };
-  }
-  return {
-    background: "background.neutral",
-    border: "content.link",
-    description: t("context-starting-description"),
-    icon: LuDatabase,
-    title: t("context-starting-title"),
-  };
-}
-
 export function DraftSetupPanel(props: DraftSetupPanelProps) {
   const { t } = useTranslation(props.lng, "concept-notes");
   const { bundle, draft } = props;
   const draftStarted = Boolean(draft && draft.status !== "not_started");
   const showDraftSetup = !draftStarted || draft?.status === "failed";
-  const isBuilding = bundle.status === "building";
-  const isFailed = bundle.status === "failed";
-  const status = sourceStatus(bundle, t);
+  const isBuilding = props.contextStatus.busy;
+  const isFailed = props.contextStatus.state === "failed";
+  const status = props.contextStatus;
   const requirements = [
     !props.applicationContext?.funder ? t("drafting-requirement-funder") : null,
     !props.applicationContext?.opportunity
@@ -146,13 +89,13 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
           direction={{ base: "column", xl: "row" }}
           gap={4}
           border="1px solid"
-          borderColor={status.border}
+          borderColor={status.color}
           borderRadius="rounded"
-          bg={status.background}
+          bg={status.surface}
           p={4}
         >
           <Flex align="start" gap={3} flex={1}>
-            <Icon as={status.icon} mt={0.5} color={status.border} />
+            <Icon as={status.icon} mt={0.5} color={status.color} />
             <Box>
               <Text
                 fontFamily="heading"

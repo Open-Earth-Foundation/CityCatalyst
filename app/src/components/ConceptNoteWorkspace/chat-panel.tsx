@@ -3,17 +3,19 @@
 import type { FormEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 
-import { Box, Flex, HStack, Icon, Input, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  HStack,
+  Icon,
+  Input,
+  Spinner,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { keyframes } from "@emotion/react";
 import type { IconType } from "react-icons";
-import {
-  LuArrowRight,
-  LuBot,
-  LuCircleAlert,
-  LuDatabase,
-  LuFilePlus2,
-  LuSend,
-} from "react-icons/lu";
+import { LuBot, LuCircleAlert, LuSend } from "react-icons/lu";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -22,11 +24,11 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 
 import { useConceptNoteChat } from "./use-concept-note-chat";
+import type { ConceptNoteContextPresentation } from "./context-status";
 
 interface ConceptNoteChatPanelProps {
-  bundleStatus: string | null;
+  contextStatus: ConceptNoteContextPresentation;
   composerRequest: { content: string; id: string } | null;
-  documentGrounding: "none" | "uploaded_evidence" | null;
   lng: string;
   onOpenContext: () => void;
   threadId: string | null;
@@ -34,6 +36,7 @@ interface ConceptNoteChatPanelProps {
 
 interface ContextStatusNoticeProps {
   autoDismissAfterMs?: number;
+  busy?: boolean;
   onOpenContext: () => void;
   status: {
     actionIcon: IconType;
@@ -84,6 +87,7 @@ function TypingIndicator({ label }: { label: string }) {
 
 function ContextStatusNotice({
   autoDismissAfterMs,
+  busy,
   onOpenContext,
   status,
 }: ContextStatusNoticeProps) {
@@ -114,9 +118,13 @@ function ContextStatusNotice({
       borderRadius="rounded"
       bg={status.surface}
       p={4}
-      role={autoDismissAfterMs ? "status" : undefined}
+      role="status"
     >
-      <Icon as={status.icon} mt={0.5} color={status.color} />
+      {busy ? (
+        <Spinner size="sm" mt={0.5} color={status.color} />
+      ) : (
+        <Icon as={status.icon} mt={0.5} color={status.color} />
+      )}
       <Box flex={1}>
         <Text
           fontFamily="heading"
@@ -197,9 +205,8 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
 });
 
 export function ConceptNoteChatPanel({
-  bundleStatus,
+  contextStatus,
   composerRequest,
-  documentGrounding,
   lng,
   onOpenContext,
   threadId,
@@ -214,27 +221,11 @@ export function ConceptNoteChatPanel({
     messages,
     sendMessage: sendChatMessage,
   } = useConceptNoteChat({ lng, threadId });
-  const hasUploadedEvidence =
-    bundleStatus === "ready" && documentGrounding === "uploaded_evidence";
-  const contextStatus = hasUploadedEvidence
-    ? {
-        actionIcon: LuArrowRight,
-        actionLabel: t("review-context"),
-        color: "sentiment.positiveDefault",
-        description: t("clima-context-ready-message"),
-        icon: LuDatabase,
-        surface: "sentiment.positiveOverlay",
-        title: t("source-context-assembled"),
-      }
-    : {
-        actionIcon: LuFilePlus2,
-        actionLabel: t("add-recommended-source"),
-        color: "content.link",
-        description: t("clima-no-uploaded-evidence-message"),
-        icon: LuCircleAlert,
-        surface: "background.neutral",
-        title: t("uploaded-evidence-none"),
-      };
+  const contextState = contextStatus.state;
+  const hasUploadedEvidence = contextState === "ready";
+  const contextBlocked = contextStatus.blocked;
+  const chatDisabled =
+    contextBlocked || !threadId || historyLoading || isGenerating;
 
   useEffect(() => {
     if (!composerRequest) {
@@ -251,7 +242,7 @@ export function ConceptNoteChatPanel({
     event: FormEvent<HTMLDivElement>,
   ): Promise<void> {
     event.preventDefault();
-    if (!input.trim()) {
+    if (chatDisabled || !input.trim()) {
       return;
     }
     const content = input;
@@ -328,9 +319,8 @@ export function ConceptNoteChatPanel({
         p={4}
       >
         <ContextStatusNotice
-          key={
-            hasUploadedEvidence ? "uploaded-evidence" : "no-uploaded-evidence"
-          }
+          key={contextState}
+          busy={contextBlocked && contextState !== "failed"}
           autoDismissAfterMs={
             hasUploadedEvidence ? CONTEXT_READY_NOTICE_DURATION_MS : undefined
           }
@@ -396,9 +386,17 @@ export function ConceptNoteChatPanel({
           <Input
             ref={inputRef}
             value={input}
-            disabled={!threadId || historyLoading || isGenerating}
+            disabled={chatDisabled}
+            aria-label={t("chat-input-placeholder")}
+            aria-describedby={
+              contextBlocked ? "concept-note-chat-blocked" : undefined
+            }
             placeholder={
-              threadId ? t("chat-input-placeholder") : t("chat-unavailable")
+              contextBlocked
+                ? t("chat-waiting-for-context")
+                : threadId
+                  ? t("chat-input-placeholder")
+                  : t("chat-unavailable")
             }
             bg="background.neutral"
             borderColor="border.neutral"
@@ -406,7 +404,7 @@ export function ConceptNoteChatPanel({
           />
           <Button
             type="submit"
-            disabled={!threadId || !input.trim() || historyLoading}
+            disabled={chatDisabled || !input.trim()}
             loading={isGenerating}
             size="sm"
             variant="solid"
@@ -415,6 +413,18 @@ export function ConceptNoteChatPanel({
             <Icon as={LuSend} />
           </Button>
         </HStack>
+        {contextBlocked && (
+          <Text
+            id="concept-note-chat-blocked"
+            mt={2}
+            fontSize="label.sm"
+            color="content.secondary"
+          >
+            {contextState === "failed"
+              ? t("chat-context-failed-help")
+              : t("chat-waiting-for-context-help")}
+          </Text>
+        )}
         {!threadId && (
           <Text mt={2} fontSize="label.sm" color="content.tertiary">
             {t("chat-thread-unavailable")}

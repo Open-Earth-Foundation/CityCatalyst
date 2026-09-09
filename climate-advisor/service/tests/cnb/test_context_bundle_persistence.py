@@ -593,6 +593,8 @@ async def test_failed_build_is_retryable_and_keeps_bundle_unready(tmp_path) -> N
                 run_id=run_id,
                 build_id=snapshot.build_id,
                 error_code="context_bundle_build_failed",
+                error_reason="reader_section_count_mismatch",
+                error_details={"expected_sections": 106, "returned_sections": 4},
                 warning="The context bundle could not be built.",
             )
             is True
@@ -604,6 +606,8 @@ async def test_failed_build_is_retryable_and_keeps_bundle_unready(tmp_path) -> N
         assert run.status == "active"
         assert progress["status"] == "failed"
         assert progress["retryable"] is True
+        assert progress["error_reason"] == "reader_section_count_mismatch"
+        assert progress["error_details"] == {"expected_sections": 106, "returned_sections": 4}
         assert progress["completion_event"] is None
     finally:
         await engine.dispose()

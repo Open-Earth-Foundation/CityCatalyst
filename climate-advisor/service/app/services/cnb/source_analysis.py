@@ -12,7 +12,13 @@ from dataclasses import dataclass
 from itertools import pairwise
 from typing import Any, TypeVar, cast
 
-from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
+from agents import (
+    Agent,
+    AgentOutputSchema,
+    ModelSettings,
+    OpenAIChatCompletionsModel,
+    Runner,
+)
 from app.config import Settings, get_settings
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from app.models.cnb.context_bundle import (
@@ -47,6 +53,7 @@ MARKDOWN_HEADING = re.compile(r"^(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", re.MULTILI
 _GLOBAL_READER_SEMAPHORE = asyncio.Semaphore(3)
 MAX_QUERY_EXCERPTS = 20
 MAX_QUERY_CAVEATS = 10
+MAX_COVERAGE_SPLIT_DEPTH = 2
 OutputModel = TypeVar("OutputModel", bound=BaseModel)
 PartitionOutput = TypeVar("PartitionOutput", SourcePartitionMap, SourceQuestionReading)
 
@@ -54,9 +61,19 @@ PartitionOutput = TypeVar("PartitionOutput", SourcePartitionMap, SourceQuestionR
 class SourceAnalysisError(Exception):
     """Retryable failure to verify or completely analyze a source document."""
 
-    def __init__(self, code: str, message: str) -> None:
+    def __init__(
+        self,
+        code: str,
+        message: str,
+        *,
+        reason: str | None = None,
+        details: dict[str, int] | None = None,
+    ) -> None:
+        """Keep content-free diagnostics separate from potentially private messages."""
         super().__init__(message)
         self.code = code
+        self.reason = reason
+        self.details = details or {}
 
 
 @dataclass(frozen=True)
@@ -198,7 +215,7 @@ async def analyze_document(
             fallback_encoding=tokenizer_encoding,
             source_label=label,
         )
-        readings = await gather_all_or_raise(
+        partition_readings = await gather_all_or_raise(
             *(
                 _read_partition(
                     name="Concept Note source partition reader",
@@ -214,6 +231,8 @@ async def analyze_document(
                 for partition in partitions
             )
         )
+
+        readings = [reading for group in partition_readings for reading in group]
 
         # Revalidate excerpts against exact source units before synthesis.
         unit_text = {source_unit_anchor(unit): unit.text for unit in pages}
@@ -307,7 +326,7 @@ async def query_document(
             fallback_encoding=tokenizer_encoding,
             question=normalized_question,
         )
-        readings = await gather_all_or_raise(
+        partition_readings = await gather_all_or_raise(
             *(
                 _read_partition(
                     name="Concept Note question-focused source reader",
@@ -326,6 +345,8 @@ async def query_document(
                 for partition in partitions
             )
         )
+
+        readings = [reading for group in partition_readings for reading in group]
 
         # Validate and bound all evidence before returning it to the caller.
         unit_text = {source_unit_anchor(unit): unit.text for unit in pages}
@@ -393,8 +414,9 @@ async def _read_partition(
     client: AsyncOpenAI,
     runner: Any,
     reader_limit: asyncio.Semaphore,
-) -> PartitionOutput:
-    """Read ordered sections and restore citation/coverage identity only in code."""
+    split_depth: int = 0,
+) -> list[PartitionOutput]:
+    """Read all sections, bisecting incomplete groups at most twice before failing."""
     async with reader_limit, _GLOBAL_READER_SEMAPHORE:
         result = await _run_agent(
             name=name,
@@ -407,11 +429,50 @@ async def _read_partition(
             settings=settings,
             client=client,
             runner=runner,
+            expected_sections=len(partition),
         )
     if len(result.sections) != len(partition):
+        # Never guess which section was skipped: discard the incomplete response
+        # and reread both halves. Release reader permits before scheduling children.
+        if len(partition) > 1 and split_depth < MAX_COVERAGE_SPLIT_DEPTH:
+            logger.warning(
+                "Retrying incomplete source coverage expected_sections=%s returned_sections=%s split_depth=%s",
+                len(partition),
+                len(result.sections),
+                split_depth,
+            )
+            payload = json.loads(input_text)
+            midpoint = len(partition) // 2
+            groups = await gather_all_or_raise(
+                *(
+                    _read_partition(
+                        name=name,
+                        partition=group,
+                        prompt=prompt,
+                        output_type=output_type,
+                        input_text=render_partition(
+                            group,
+                            source_label=payload.get("source_label"),
+                            question=payload.get("question"),
+                        ),
+                        settings=settings,
+                        client=client,
+                        runner=runner,
+                        reader_limit=reader_limit,
+                        split_depth=split_depth + 1,
+                    )
+                    for group in (partition[:midpoint], partition[midpoint:])
+                )
+            )
+            return [reading for group in groups for reading in group]
         raise SourceAnalysisError(
             "incomplete_source_coverage",
             "Reader must return every supplied section in order",
+            reason="reader_section_count_mismatch",
+            details={
+                "expected_sections": len(partition),
+                "returned_sections": len(result.sections),
+            },
         )
     # Match evidence to the exact section; the model never chooses an internal locator.
     excerpts = []
@@ -431,7 +492,7 @@ async def _read_partition(
         values.update(summary=result.summary, topics=result.topics)
     else:
         values["caveats"] = deduplicate_strings(caveats)[:10]
-    return output_type.model_validate(values)
+    return [output_type.model_validate(values)]
 
 
 def _restore_summary_excerpts(
@@ -474,6 +535,7 @@ async def _run_agent(
     settings: Settings,
     client: AsyncOpenAI,
     runner: Any,
+    expected_sections: int | None = None,
 ) -> OutputModel:
     """Run one tool-free worker with its configured model and reasoning effort."""
     model_config = (
@@ -481,6 +543,15 @@ async def _run_agent(
         if model_name == settings.llm.models.cnb_source_reader.name
         else settings.llm.models.cnb_source_synthesizer
     )
+    # Constrain the provider's array length as well as checking coverage in code.
+    # Local validation keeps the base model so count errors retain our diagnostic
+    # and bounded recovery path even if a provider ignores the schema constraint.
+    output_schema = AgentOutputSchema(output_type)
+    if expected_sections is not None:
+        output_schema.json_schema()["properties"]["sections"].update(
+            minItems=expected_sections,
+            maxItems=expected_sections,
+        )
     agent = Agent(
         name=name,
         instructions=prompt,
@@ -493,7 +564,7 @@ async def _run_agent(
             include_usage=True,
             reasoning={"effort": model_config.reasoning_effort},
         ),
-        output_type=output_type,
+        output_type=output_schema,
         tools=[],
     )
     try:
@@ -563,6 +634,7 @@ def parse_markdown_blocks(markdown: str) -> list[SourceBlock]:
         raise SourceAnalysisError(
             "incomplete_source_coverage",
             "Native Markdown could not be partitioned without loss",
+            reason="markdown_partition_text_loss",
         )
 
     # Build anchors from the active heading path plus an immutable block digest.
@@ -636,6 +708,7 @@ def partition_source_pages(
             raise SourceAnalysisError(
                 "incomplete_source_coverage",
                 f"Source unit {source_unit_anchor(page)} could not be partitioned without loss",
+                reason="source_partition_text_loss",
             )
         segments.extend(page_segments)
 
@@ -803,6 +876,7 @@ def split_exact_text(
             raise SourceAnalysisError(
                 "incomplete_source_coverage",
                 f"Source unit {anchor or page} could not be tokenized without loss",
+                reason="source_tokenization_text_loss",
             )
 
         overflow = 0

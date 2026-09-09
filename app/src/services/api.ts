@@ -100,6 +100,8 @@ import type {
   ProjectBoundary,
 } from "@/util/types";
 import type {
+  MeedGeneratePlanRequest,
+  MeedPlanRouteReport,
   MeedRankRouteResponse,
   MeedReferenceActionsResponse,
   MeedReferenceCityAttributesResponse,
@@ -159,6 +161,7 @@ export const api = createApi({
     "AdminModules",
     "Meed",
     "MeedRanking",
+    "MeedPlan",
     "ConceptNoteRuns",
     "ConceptNoteUpload",
     "ConceptNoteDraft",
@@ -357,6 +360,38 @@ export const api = createApi({
           data: MeedReferenceFinanceProjectsResponse;
         }) => r.data,
         providesTags: ["Meed"],
+      }),
+      /**
+       * One action's report. Reports are stored server-side, so this reads back
+       * an existing one without paying for another generation.
+       */
+      getMeedPlan: builder.query<
+        MeedPlanRouteReport,
+        { cityId: string; inventoryId: string; actionId: string }
+      >({
+        query: ({ cityId, inventoryId, actionId }) =>
+          `city/${cityId}/meed/generate-plan?inventoryId=${encodeURIComponent(
+            inventoryId,
+          )}&actionId=${encodeURIComponent(actionId)}`,
+        transformResponse: (r: { data: MeedPlanRouteReport }) => r.data,
+        providesTags: ["MeedPlan"],
+      }),
+      /**
+       * Generates one action's report. A 10–30 s LLM call upstream, so callers
+       * must show progress rather than a spinner — and it is per action, so a
+       * multi-action report is several of these.
+       */
+      runMeedGeneratePlan: builder.mutation<
+        MeedPlanRouteReport,
+        { cityId: string; body: MeedGeneratePlanRequest }
+      >({
+        query: ({ cityId, body }) => ({
+          url: `city/${cityId}/meed/generate-plan`,
+          method: "POST",
+          body,
+        }),
+        transformResponse: (r: { data: MeedPlanRouteReport }) => r.data,
+        invalidatesTags: ["MeedPlan"],
       }),
       /** Runs the ranking, stores it, and returns the same envelope as the GET. */
       runMeedRanking: builder.mutation<
@@ -2624,6 +2659,9 @@ export const {
   useGetMeedFinanceLinkQuery,
   useGetMeedRankingQuery,
   useRunMeedRankingMutation,
+  useGetMeedPlanQuery,
+  useLazyGetMeedPlanQuery,
+  useRunMeedGeneratePlanMutation,
   useGetMeedReferenceActionsQuery,
   useGetMeedReferenceCityAttributesQuery,
   useGetMeedReferencePolicyScoresQuery,

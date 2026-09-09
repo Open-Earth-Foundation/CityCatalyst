@@ -17,15 +17,17 @@ import { FOCUS_RING } from "../../../focusRing";
  * cards now only open details, and every checkbox — card or table row — feeds
  * this one button.
  *
- * The button stays disabled either way for now: nothing generates a report
- * until the prioritization backend lands, and a button that silently does
- * nothing is worse than one that says why.
+ * The button is enabled only with a selection: reports are generated per
+ * action, so with nothing selected there is nothing to generate.
  */
 export function ResultsHeader({
   rankedCount,
   excludedCount,
   emissionsText,
   selectedCount,
+  isGenerating,
+  progress,
+  onGenerate,
   t,
 }: {
   rankedCount: number;
@@ -34,6 +36,10 @@ export function ResultsHeader({
   /** Formatted total city emissions, e.g. "1.1 MtCO2e". */
   emissionsText?: string;
   selectedCount: number;
+  isGenerating: boolean;
+  /** Live "3 of 8" detail while reports generate, or null when idle. */
+  progress: string | null;
+  onGenerate: () => void;
   t: TFunction;
 }) {
   // Each clause is dropped rather than guessed at when its number is missing.
@@ -61,22 +67,30 @@ export function ResultsHeader({
           variant="filled"
           minW="auto"
           px="l"
-          disabled
+          disabled={selectedCount === 0 || isGenerating}
           leftIcon={<Icon as={LuSparkles} boxSize="16px" />}
+          aria-describedby="meed-report-hint"
+          onClick={onGenerate}
           _focusVisible={FOCUS_RING}
         >
-          {selectedCount > 0
-            ? t("generate-report-count", { count: selectedCount })
-            : t("generate-report")}
+          {isGenerating
+            ? t("generate-report-running")
+            : selectedCount > 0
+              ? t("generate-report-count", { count: selectedCount })
+              : t("generate-report")}
         </MeedButton>
         {/*
-          The unavailability is stated up front. This used to invite the user
-          to "select one or more actions to build a report" and only admit the
-          feature did not exist *after* they had selected some — the promise
-          first and the retraction second.
+          One line, and it always says something true: what is happening while
+          generating, what is missing when nothing is selected, and how long to
+          expect otherwise — these are 10-30 s LLM calls, one per action, so a
+          silent wait would read as a hang.
         */}
-        <Caption color="content.tertiary" textAlign="end">
-          {t("generate-report-pending")}
+        <Caption id="meed-report-hint" color="content.tertiary" textAlign="end">
+          {isGenerating && progress
+            ? progress
+            : selectedCount === 0
+              ? t("generate-report-hint")
+              : t("generate-report-duration", { count: selectedCount })}
         </Caption>
       </VStack>
     </HStack>

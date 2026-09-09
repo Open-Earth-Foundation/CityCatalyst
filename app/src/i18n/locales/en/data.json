@@ -1250,7 +1250,7 @@
   "waste-composition-glass": "Glass",
   "waste-composition-nappies": "Nappies",
   "waste-composition-other": "Other",
-  "no-data": "No data",
+  "no-data": "No results match your criteria.",
   "table-pagination": "{{start}} - {{end}} of {{total}}",
   "search-records": "Search records",
   "enter-custom-values": "I have my own waste composition data.",

@@ -209,10 +209,10 @@ const RemoveUserModal = (props: RemoveUserModalProps) => {
           fontWeight="semibold"
           fontSize="title.lg"
           fontFamily="heading"
-          lineHeight="32px"
+          lineHeight="32"
           color="content.primary"
-          padding="24px"
-          paddingBottom="16px"
+          padding="6"
+          paddingBottom="4"
         >
           {t("remove-member-title")}
         </DialogHeader>
@@ -220,20 +220,20 @@ const RemoveUserModal = (props: RemoveUserModalProps) => {
           mt="2"
           color="interactive.control"
           top="-6px"
-          right="0px"
+          right="0"
         />
-        <DialogBody paddingX="24px" paddingBottom="24px" paddingTop="0">
-          <Text fontSize="body.lg" color="content.tertiary" lineHeight="24px">
+        <DialogBody paddingX="6" paddingBottom="6" paddingTop="0">
+          <Text fontSize="body.lg" color="content.tertiary" lineHeight="24">
             {renderModalText(deleteScenarioData)}
           </Text>
         </DialogBody>
         <DialogFooter
-          paddingX="24px"
-          paddingY="24px"
+          paddingX="6"
+          paddingY="6"
           paddingTop="0"
           display="flex"
           justifyContent="flex-end"
-          gap="16px"
+          gap="4"
         >
           <Button
             variant="ghost"

@@ -116,7 +116,7 @@ const ProjectOverview: React.FC<ProjectOverviewProps> = ({
       fontSize="headline.sm"
       mb={2}
       fontWeight="semibold"
-      lineHeight="32px"
+      lineHeight="32"
       fontStyle="normal"
       textTransform="capitalize"
       color="content.secondary"
@@ -205,9 +205,9 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
         shadow="1dp"
         borderWidth="1px"
         borderColor="border.overlay"
-        borderRadius="8px"
+        borderRadius="rounded"
       >
-        <Card.Body p="24px">
+        <Card.Body p="6">
           <Box
             display="flex"
             gap="6"

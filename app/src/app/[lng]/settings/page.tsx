@@ -96,7 +96,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
         <Button
           display="flex"
           alignItems="center"
-          gap="8px"
+          gap="2"
           color="content.link"
           fontFamily="heading"
           fontSize="button.md"
@@ -106,7 +106,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
           {t("go-back")}
         </Button>
       </Link>
-      <Box w="full" mt="16px">
+      <Box w="full" mt="4">
         <Text
           color="content.primary"
           fontWeight="bold"
@@ -121,13 +121,13 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
           <HStack
             w="full"
             bg="background.info"
-            p="12px"
-            my="40px"
+            p="3"
+            my="10"
             borderRadius="6px"
             justifyContent="space-between"
             alignItems="center"
           >
-            <HStack gap="8px" alignItems="center">
+            <HStack gap="2" alignItems="center">
               <Icon
                 as={BiInfoCircle}
                 color="content.alternative"
@@ -135,12 +135,12 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                 mt="1px"
               />
 
-              <VStack alignItems="flex-start" gap="4px">
+              <VStack alignItems="flex-start" gap="1">
                 <Text
                   fontSize="body.md"
                   fontFamily="body"
                   fontWeight="semibold"
-                  lineHeight="16px"
+                  lineHeight="16"
                 >
                   {t("preferences-info-update-title")}
                 </Text>
@@ -168,7 +168,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
             </IconButton>
           </HStack>
         )}
-        <Box marginTop="48px" borderBottomColor={"border.overlay"}>
+        <Box marginTop="12" borderBottomColor={"border.overlay"}>
           <Tabs.Root
             value={activeTab}
             onValueChange={handleTabChange}
@@ -178,7 +178,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
               p={0}
               w="full"
               backgroundColor="background.backgroundLight"
-              mb="24px"
+              mb="6"
             >
               <Tabs.Trigger
                 value="account"
@@ -192,7 +192,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                   backgroundColor: "background.backgroundLight",
                 }}
               >
-                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24">
                   {t("account")}
                 </Text>
               </Tabs.Trigger>
@@ -208,7 +208,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                   backgroundColor: "background.backgroundLight",
                 }}
               >
-                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24">
                   {t("team")}
                 </Text>
               </Tabs.Trigger>
@@ -224,7 +224,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                   backgroundColor: "background.backgroundLight",
                 }}
               >
-                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24">
                   {t("projects")}
                 </Text>
               </Tabs.Trigger>
@@ -244,7 +244,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                   <Text
                     fontSize="title.md"
                     fontStyle="normal"
-                    lineHeight="24px"
+                    lineHeight="24"
                   >
                     {t("api-tokens")}
                   </Text>
@@ -266,7 +266,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                   <Text
                     fontSize="title.md"
                     fontStyle="normal"
-                    lineHeight="24px"
+                    lineHeight="24"
                   >
                     {t("apps")}
                   </Text>

@@ -177,14 +177,19 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                       <Icon as={MdMoreVert} size="lg" />
                     </IconButton>
                   </MenuTrigger>
-                  <MenuContent w="auto" borderRadius="8px" shadow="2dp" px="0">
+                  <MenuContent
+                    w="auto"
+                    borderRadius="rounded"
+                    shadow="2dp"
+                    px="0"
+                  >
                     <MenuItem
                       value={t("delete-city")}
                       valueText={t("delete-city")}
-                      p="16px"
+                      p="4"
                       display="flex"
                       alignItems="center"
-                      gap="16px"
+                      gap="4"
                       _hover={{ bg: "content.link", cursor: "pointer" }}
                       className="group"
                       onClick={() => {
@@ -202,8 +207,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                       <Icon
                         color="sentiment.negativeDefault"
                         as={RiDeleteBin6Line}
-                        h="24px"
-                        w="24px"
+                        boxSize="6"
                         _groupHover={{
                           color: "white",
                         }}
@@ -236,7 +240,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
             fontSize="body.sm"
             fontStyle="normal"
             fontWeight="bold"
-            lineHeight="16px"
+            lineHeight="16"
             letterSpacing="widest"
             textTransform="uppercase"
           >
@@ -325,17 +329,17 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                       </MenuTrigger>
                       <MenuContent
                         w="auto"
-                        borderRadius="8px"
+                        borderRadius="rounded"
                         shadow="2dp"
                         px="0"
                       >
                         <MenuItem
                           value={t("open-inventory")}
                           valueText={t("open-inventory")}
-                          p="16px"
+                          p="4"
                           display="flex"
                           alignItems="center"
-                          gap="16px"
+                          gap="4"
                           _hover={{ bg: "content.link", cursor: "pointer" }}
                           className="group"
                           onClick={() => {
@@ -348,8 +352,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                           <Icon
                             color="content.secondary"
                             as={FiFolder}
-                            h="24px"
-                            w="24px"
+                            boxSize="6"
                             _groupHover={{
                               color: "white",
                             }}
@@ -366,10 +369,10 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                         <MenuItem
                           value={t("delete-inventory")}
                           valueText={t("delete-inventory")}
-                          p="16px"
+                          p="4"
                           display="flex"
                           alignItems="center"
-                          gap="16px"
+                          gap="4"
                           _hover={{ bg: "content.link", cursor: "pointer" }}
                           className="group"
                           onClick={() => {
@@ -383,8 +386,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                           <Icon
                             color="sentiment.negativeDefault"
                             as={RiDeleteBin6Line}
-                            h="24px"
-                            w="24px"
+                            boxSize="6"
                             _groupHover={{
                               color: "white",
                             }}

@@ -36,12 +36,12 @@ export default function CreateTokenForm({
       w="full"
       borderWidth="1px"
       borderColor="border.overlay"
-      borderRadius="8px"
+      borderRadius="rounded"
       bg="white"
       shadow="1dp"
-      p="24px"
+      p="6"
     >
-      <HStack gap="24px" align="flex-start" mb="9">
+      <HStack gap="6" align="flex-start" mb="9">
         <Field
           label={t("token-name")}
           required
@@ -53,7 +53,7 @@ export default function CreateTokenForm({
             value={tokenName}
             onChange={(e) => onTokenNameChange(e.target.value)}
             size="lg"
-            borderRadius="4px"
+            borderRadius="minimal"
             borderColor="border.default"
             bg="base.light"
             _placeholder={{ color: "content.tertiary" }}
@@ -65,7 +65,7 @@ export default function CreateTokenForm({
             <NativeSelectField
               value={expiresIn}
               onChange={(e) => onExpiresInChange(e.target.value)}
-              borderRadius="4px"
+              borderRadius="minimal"
               borderColor="border.neutral"
               shadow="sm"
               bg="base.light"
@@ -79,7 +79,7 @@ export default function CreateTokenForm({
         </Field>
       </HStack>
 
-      <HStack justifyContent="flex-end" gap="16px">
+      <HStack justifyContent="flex-end" gap="4">
         <Button
           variant="outline"
           h="63px"

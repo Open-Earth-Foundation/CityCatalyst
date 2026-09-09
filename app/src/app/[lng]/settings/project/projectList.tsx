@@ -54,7 +54,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
       flexShrink={0}
       display="flex"
       flexDirection="column"
-      gap="24px"
+      gap="6"
     >
       <Text
         display="flex"
@@ -76,7 +76,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
         }}
         borderWidth="1px"
         borderColor="border.overlay"
-        borderRadius="8px"
+        borderRadius="rounded"
         p="3"
         w="full"
         flex="1"
@@ -101,7 +101,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
                 setSelectedCity(null);
               }}
               w="full"
-              padding="0px"
+              padding="0"
               asChild
             >
               <Button
@@ -130,14 +130,14 @@ const ProjectList: React.FC<ProjectListProps> = ({
                 <Accordion.ItemIndicator
                   color="currentColor"
                   rotate={{ base: "0deg", _open: "-180deg" }}
-                  mr="24px"
+                  mr="6"
                 >
                   <Icon as={LuChevronDown} color="currentColor" boxSize={4} />
                 </Accordion.ItemIndicator>
               </Button>
             </Accordion.ItemTrigger>
             {expandedProjectId.includes(project.projectId) && (
-              <AccordionItemContent padding="0px" pb={4}>
+              <AccordionItemContent padding="0" pb={4}>
                 {project.cities.length === 0 ? (
                   <Text
                     fontSize="body.lg"
@@ -149,11 +149,11 @@ const ProjectList: React.FC<ProjectListProps> = ({
                 ) : (
                   <Tabs.Root
                     display="flex"
-                    mt="12px"
+                    mt="3"
                     flexDirection="row"
                     variant="subtle"
                     w="full"
-                    gap="12px"
+                    gap="3"
                     value={selectedCity}
                     onValueChange={(val) => setSelectedCity(val.value)}
                   >
@@ -161,7 +161,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
                       w="full"
                       display="flex"
                       flexDirection="column"
-                      gap="12px"
+                      gap="3"
                     >
                       {project.cities.map((city) => (
                         <Tabs.Trigger
@@ -171,7 +171,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
                           justifyContent={"left"}
                           letterSpacing={"wide"}
                           color="content.secondary"
-                          lineHeight="20px"
+                          lineHeight="20"
                           fontStyle="normal"
                           fontSize="body.md"
                           fontWeight="medium"
@@ -183,7 +183,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
                             fontSize: "body.md",
                             fontWeight: "medium",
                             backgroundColor: "background.neutral",
-                            borderRadius: "8px",
+                            borderRadius: "rounded",
                             borderWidth: "1px",
                             borderStyle: "solid",
                             borderColor: "content.link",

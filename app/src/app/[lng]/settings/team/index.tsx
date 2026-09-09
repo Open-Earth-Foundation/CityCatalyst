@@ -237,7 +237,7 @@ const TeamSettings = ({
             fontSize="headline.sm"
             mb={2}
             fontWeight="semibold"
-            lineHeight="32px"
+            lineHeight="32"
             fontStyle="normal"
             textTransform="capitalize"
             color="content.secondary"
@@ -276,17 +276,17 @@ const TeamSettings = ({
         alignItems="stretch"
         borderWidth="1px"
         borderColor="border.overlay"
-        borderRadius="8px"
+        borderRadius="rounded"
         bg="white"
         shadow="1dp"
-        p="24px"
+        p="6"
       >
         <Box
           w="285px"
           flexShrink={0}
           display="flex"
           flexDirection="column"
-          gap="24px"
+          gap="6"
         >
           <Text
             fontSize="title.md"
@@ -309,7 +309,7 @@ const TeamSettings = ({
             }}
             borderWidth="1px"
             borderColor="border.overlay"
-            borderRadius="8px"
+            borderRadius="rounded"
             p="3"
             w="full"
             flex="1"
@@ -334,7 +334,7 @@ const TeamSettings = ({
                     setSelectedCity(null);
                   }}
                   w="full"
-                  padding="0px"
+                  padding="0"
                   asChild
                 >
                   <Button
@@ -363,7 +363,7 @@ const TeamSettings = ({
                     <Accordion.ItemIndicator
                       color="currentColor"
                       rotate={{ base: "0deg", _open: "-180deg" }}
-                      mr="24px"
+                      mr="6"
                     >
                       <Icon
                         as={LuChevronDown}
@@ -373,7 +373,7 @@ const TeamSettings = ({
                     </Accordion.ItemIndicator>
                   </Button>
                 </Accordion.ItemTrigger>
-                <AccordionItemContent padding="0px" pb={4}>
+                <AccordionItemContent padding="0" pb={4}>
                   {item.cities.length === 0 && (
                     <Text
                       fontSize="body.lg"
@@ -386,11 +386,11 @@ const TeamSettings = ({
                   {item.cities.length > 0 && (
                     <Tabs.Root
                       display="flex"
-                      mt="12px"
+                      mt="3"
                       flexDirection="row"
                       variant="subtle"
                       w="full"
-                      gap="12px"
+                      gap="3"
                       value={selectedCity}
                       onValueChange={(val) => setSelectedCity(val.value)}
                     >
@@ -398,7 +398,7 @@ const TeamSettings = ({
                         w="full"
                         display="flex"
                         flexDirection="column"
-                        gap="12px"
+                        gap="3"
                       >
                         {item.cities.map((city) => (
                           <Tabs.Trigger
@@ -408,7 +408,7 @@ const TeamSettings = ({
                             justifyContent={"left"}
                             letterSpacing={"wide"}
                             color="content.secondary"
-                            lineHeight="20px"
+                            lineHeight="20"
                             fontStyle="normal"
                             fontSize="body.md"
                             fontWeight="medium"
@@ -420,7 +420,7 @@ const TeamSettings = ({
                               fontSize: "body.md",
                               fontWeight: "medium",
                               backgroundColor: "background.neutral",
-                              borderRadius: "8px",
+                              borderRadius: "rounded",
                               borderWidth: "1px",
                               borderStyle: "solid",
                               borderColor: "content.link",
@@ -499,7 +499,7 @@ const TeamSettings = ({
                             </MenuTrigger>
                             <MenuContent
                               w="auto"
-                              borderRadius="8px"
+                              borderRadius="rounded"
                               shadow="2dp"
                               px="0"
                             >
@@ -507,10 +507,10 @@ const TeamSettings = ({
                                 <MenuItem
                                   value={t("copy-invite-link")}
                                   valueText={t("copy-invite-link")}
-                                  p="16px"
+                                  p="4"
                                   display="flex"
                                   alignItems="center"
-                                  gap="16px"
+                                  gap="4"
                                   _hover={{
                                     bg: "content.link",
                                     cursor: "pointer",
@@ -520,8 +520,7 @@ const TeamSettings = ({
                                 >
                                   <Icon
                                     as={MdLink}
-                                    h="24px"
-                                    w="24px"
+                                    boxSize="6"
                                     color="content.secondary"
                                     _groupHover={{
                                       color: "white",
@@ -541,10 +540,10 @@ const TeamSettings = ({
                                 <MenuItem
                                   value={t("upgrade-to-admin")}
                                   valueText={t("upgrade-to-admin")}
-                                  p="16px"
+                                  p="4"
                                   display="flex"
                                   alignItems="center"
-                                  gap="16px"
+                                  gap="4"
                                   _hover={{
                                     bg: "content.link",
                                     cursor: "pointer",
@@ -557,8 +556,7 @@ const TeamSettings = ({
                                 >
                                   <Icon
                                     as={AccountCircleFilledIcon}
-                                    h="24px"
-                                    w="24px"
+                                    boxSize="6"
                                     color="content.secondary"
                                     _groupHover={{
                                       color: "white",
@@ -577,10 +575,10 @@ const TeamSettings = ({
                               <MenuItem
                                 value={t("remove-user")}
                                 valueText={t("remove-user")}
-                                p="16px"
+                                p="4"
                                 display="flex"
                                 alignItems="center"
-                                gap="16px"
+                                gap="4"
                                 _hover={{
                                   bg: "content.link",
                                   cursor: "pointer",
@@ -594,8 +592,7 @@ const TeamSettings = ({
                                 <Icon
                                   color="sentiment.negativeDefault"
                                   as={DeleteIcon}
-                                  h="24px"
-                                  w="24px"
+                                  boxSize="6"
                                   _groupHover={{
                                     color: "white",
                                   }}
@@ -667,9 +664,9 @@ const CustomTag = ({ role, t }: { role: OrganizationRole; t: TFunction }) => {
   return (
     <Box
       bg="background.neutral"
-      p="4px"
+      p="1"
       w="fit-content"
-      px="16px"
+      px="4"
       borderWidth="1px"
       borderColor="content.alternative"
       display="flex"

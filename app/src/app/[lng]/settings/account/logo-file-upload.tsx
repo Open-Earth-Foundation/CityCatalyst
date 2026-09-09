@@ -45,7 +45,7 @@ const LogoUploadCard = ({
         p={0}
         label={
           <Box
-            borderRadius="8px"
+            borderRadius="rounded"
             w="250px"
             h="80px"
             textAlign="center"

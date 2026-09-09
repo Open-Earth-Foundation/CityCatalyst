@@ -132,7 +132,7 @@ function DataTableAlt<T extends object>({
               w="full"
               flexDir="column"
               alignItems="flex-start"
-              gap="24px"
+              gap="6"
             >
               {title && (
                 <Text
@@ -148,7 +148,7 @@ function DataTableAlt<T extends object>({
                 {searchable && (
                   <InputGroup
                     flex="1"
-                    gap="8px"
+                    gap="2"
                     maxW="420px"
                     startElement={
                       <Icon
@@ -162,7 +162,7 @@ function DataTableAlt<T extends object>({
                       placeholder={searchPlaceholder ?? t("search-records")}
                       value={searchQuery}
                       onChange={(e) => handleSearchChange(e.target.value)}
-                      borderRadius="4px"
+                      borderRadius="minimal"
                       border="1px solid"
                       borderColor="border.neutral"
                       bg="background.default"
@@ -181,7 +181,7 @@ function DataTableAlt<T extends object>({
                       placeholder={t("all")}
                       value={filterValue}
                       onChange={(e) => handleFilterChange(e.target.value)}
-                      borderRadius="4px"
+                      borderRadius="minimal"
                       borderColor="border.neutral"
                       shadow="sm"
                     >
@@ -259,7 +259,7 @@ function DataTableAlt<T extends object>({
 
       <Box
         w="full"
-        borderRadius="8px"
+        borderRadius="rounded"
         borderWidth="1px"
         borderColor="border.overlay"
         bg="white"

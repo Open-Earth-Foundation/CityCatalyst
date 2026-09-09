@@ -1,140 +1,63 @@
 ---
 name: non-tech-contribute
-description: Guide non-technical contributors through making safe code changes to CityCatalyst. Use when someone without coding experience wants to update text, translations, colors, copy, or small UI details, and needs the agent to handle git, verification, and PR creation for them.
+description: Help a contributor who explicitly wants non-technical assistance make a small CityCatalyst text, translation, or UI change, including git and PR handling when authorized. Do not infer coding experience from omitted git terminology.
 ---
 
 # Non-Tech Contribute
 
-Help non-technical team members (product, design, business, data) ship real changes to CityCatalyst. You handle git, verification, and PR creation for them — they only describe the change in plain language.
+Turn a plain-language request into a small, reviewable change. Handle the technical work; explain decisions and results in language the contributor can assess.
 
-## When to use
+## Scope and authorization
 
-- The user is not an engineer and asks to change something visible: text, translation, color, copy, tooltip, spacing, image, link.
-- The user says "I want to change/fix/update…" and does not mention git, branches, or commits.
-- The change is small in scope (typically ≤ 5 files). If it grows beyond that or requires architecture decisions, flag it for engineering review.
-
-## Golden rules
-
-- The user never types git commands. You run them.
-- Never commit to `develop` or `main` directly — always a new branch.
-- One PR per logical change.
-- Always run the TypeScript check before committing.
-- If the change requires new dependencies, migrations, or architecture decisions, stop and flag it.
+- Use this workflow when the user identifies as non-technical or explicitly asks for help handling the contribution process. A request that omits branches or commits is not enough to select it.
+- Keep one logical change per branch/PR. Never commit directly to `develop` or `main`.
+- A request to edit authorizes the scoped local edit and relevant validation. Commit, push, or create/update a PR only when those actions are requested or already authorized. A request to implement a change and open its PR includes publishing the necessary feature branch.
+- If publication is not authorized, finish the local change and verification, then present the concrete diff before asking about publishing. Do not ask again for authorization already given.
+- Treat more than roughly five affected files as a reason to reassess scope, not an automatic failure. For new dependencies, migrations, architecture decisions, or critical auth/payment/export behavior, explain the engineering decision needed and complete any independent authorized work first.
 
 ## Workflow
 
-### Phase 1 — Understand the change
+### 1. Understand the requested outcome
 
-Ask, in plain language:
+Infer what, where, and the desired result from the request and available screenshots or repository context. Ask only for missing information that would materially change the result. Do not repeat questions already answered or require confirmation of a complete request before inspecting files.
 
-1. **What** do you want to change? (text, color, behavior, layout)
-2. **Where** in the app is it? (which page, section, button — a screenshot or Jam link helps a lot)
-3. **What should it look like after?** (new text, new color hex, new behavior)
+### 2. Prepare an isolated branch
 
-Confirm your understanding in one sentence before touching anything.
+1. Inspect `git status --short`, the current branch, and any existing task branch or PR.
+2. Reuse an appropriate task branch when continuing the same change. Otherwise fetch `origin develop` and create a feature branch from it.
+3. If the working tree contains unrelated edits, preserve them. Use a separate worktree for the new branch; do not switch the dirty checkout, stash, reset, or stage someone else's work. If user changes overlap the requested edit and isolation would omit needed work, ask how to combine them.
+4. Use `<username>/<type>-<short-description>` when the username is known, or a descriptive `<type>/<short-description>` branch. A missing display name is not a reason to block the edit.
 
-### Phase 2 — Git setup (automatic)
+### 3. Make the scoped edit
 
-1. Run `git status` and `git branch --show-current`.
-2. If not on a clean branch off `develop`, run:
+Locate the actual implementation before editing:
 
-```bash
-git checkout develop && git pull
-git checkout -b <username>/<type>-<short-description>
-```
+| Change | Starting point |
+| --- | --- |
+| Text or translation | `app/src/i18n/locales/<lang>/` |
+| Page or component | `app/src/app/` or `app/src/components/` |
+| Colors | `app/src/lib/theme/` and the component's semantic tokens |
+| Client data or API | `app/src/services/` or `app/src/app/api/` |
 
-**Branch naming:** `<username>/<type>-<short-description>`
+Follow `app/AGENTS.md`. Add new translation keys in English for CI translation; an explicitly requested correction to an existing locale may edit that locale's value. Use semantic color tokens and project UI wrappers. Explain the changed behavior briefly.
 
-- `<username>`: run `git config user.name` and slugify (lowercase, no spaces). If empty, ask the user's first name.
-- `<type>`: `fix` (bug/typo), `feat` (new feature/content), `style` (visual), `i18n` (translation), `docs` (documentation), `hotfix` (urgent prod fix).
+### 4. Verify the change
 
-Examples:
+- For TypeScript changes, run `npx tsc --noEmit` from `app/`; preserve the exit status and inspect the useful error output.
+- For supported changed files, run targeted ESLint/Prettier checks with explicit paths. Do not format the entire app for a small edit.
+- For translation-only edits, validate JSON and preserve key/interpolation contracts. For visible UI changes, inspect the affected screen when a preview is available.
+- Run additional tests when affected behavior or required CI checks justify them.
+- Fix errors introduced by this change. Compare with the base when needed to distinguish pre-existing failures; do not repair unrelated failures just to get a green run. Report missing dependencies or unavailable checks accurately.
+- Finish once the relevant checks and required post-change inspections are complete. Inspect the final diff for unintended files or hunks.
 
-- `brian/fix-spanish-translation-help-button`
-- `amanda/feat-add-tooltip-emissions-chart`
-- `greta/style-update-sidebar-color`
+### 5. Publish when authorized
 
-### Phase 3 — Find and modify
+1. Stage only the intended files/hunks using explicit paths or selective staging. Do not use `git add -A`.
+2. Review `git diff --cached` to confirm that the commit contains only this task's change.
+3. Commit with a concise Conventional Commit subject, such as `i18n: correct onboarding button translation`.
+4. Push only the task branch when authorized. Do not force-push.
+5. Use [pull-request-standards](../pull-request-standards/SKILL.md) to create or update the PR. Preserve a requested draft state and use the repository template. Include a concrete screen/language/click path in **How to test** when useful.
 
-1. Locate the right file(s):
-   - **Text / translations:** `app/src/i18n/locales/<lang>/*.json`
-   - **Pages / components:** `app/src/app/` (routes) or `app/src/components/`
-   - **Colors / theme:** Chakra UI theme in `app/src/lib/theme.ts` (or component-level styles)
-   - **API / data:** `app/src/services/` or `app/src/app/api/`
-2. Make a minimal, focused edit.
-3. Explain the diff in plain language, e.g. *"I changed the button text from 'Need Help' to '¿Necesitas Ayuda?' in the Spanish translation file."*
+### 6. Hand off
 
-### Phase 4 — Verify
-
-Quick sanity checks:
-
-```bash
-cd app && npx tsc --noEmit 2>&1 | tail -20
-git diff --stat
-```
-
-For visible changes (translations, colors, copy), also run a lint pass if it is fast:
-
-```bash
-cd app && npm run lint -- --quiet 2>&1 | tail -20
-```
-
-Fix any errors before proceeding. If you cannot fix them, stop and explain what is blocking.
-
-### Phase 5 — Commit, push, and open the PR (automatic)
-
-Do not ask the user to type git commands.
-
-1. Commit with a Conventional-Commit style subject:
-
-   ```bash
-   git add -A
-   git commit -m "<type>: <short imperative description>"
-   ```
-
-   Types: `fix:`, `feat:`, `style:`, `i18n:`, `docs:`.
-
-2. Push the branch:
-
-   ```bash
-   git push -u origin <branch-name>
-   ```
-
-3. Open the PR by **delegating to the [pull-request-standards skill](../pull-request-standards/SKILL.md)**. Do not hand-roll a title or body here — that skill owns the format, uses `.github/PULL_REQUEST_TEMPLATE.md`, and picks the right GitHub tool. Give it the plain-language description you got from the user so it can fill:
-
-   - **Summary** — the outcome in the user's own words (1–3 sentences).
-   - **Changes** — the minimal bullet list of what was touched.
-   - **How to test** — the exact click-path a reviewer can follow (e.g. *"Open `/onboarding` in Spanish and check the header button says 'EDITAR'."*).
-   - **Ticket** — only if the user gave you a ticket ID (e.g. `ON-1234`); otherwise omit the section.
-   - **Notes** — only for screenshots or callouts the reviewer needs.
-
-### Phase 6 — Hand off
-
-Once the PR is open, tell the user:
-
-- The PR URL.
-- Who or which team is expected to review (usually within 24h).
-- Where to watch status (GitHub PR page, CI checks).
-- Where to ask for help if CI fails (Slack channel).
-
-## Escalate to engineering when
-
-- The change touches more than ~5 files or crosses backend + frontend.
-- The change requires a new dependency, migration, environment variable, or feature flag.
-- Verification (`tsc`, lint) fails and the fix is not obvious.
-- The change is user-facing on a critical path (auth, payments, data export) — even if small.
-
-## Examples
-
-**Input:** "I want the onboarding 'EDIT' button to show 'EDITAR' in Spanish."
-**Action:** Find the key in `app/src/i18n/locales/es/*.json`, update the value, `tsc`, commit `i18n: translate onboarding edit button to Spanish`, push, delegate PR creation with a How-to-test that names the page and button.
-
----
-
-**Input:** "The sidebar color should be darker, like #1a1a2e instead of the current blue."
-**Action:** Find the sidebar component or theme token, update the color, `tsc` + lint, commit `style: darken sidebar background`, push, delegate PR creation with a screenshot request in Notes if the user has one.
-
----
-
-**Input:** "I want to add a tooltip that says 'Values shown in tCO2e' next to the emissions chart."
-**Action:** Locate the chart component, wrap the label with a Chakra `Tooltip`, add an i18n key if the copy is user-facing, `tsc`, commit `feat: add tCO2e tooltip on emissions chart`, push, delegate PR creation with a How-to-test pointing to the chart page.
+Return the PR URL when published, summarize the visible change and validation, and identify any remaining blocker. Name a reviewer, review timeframe, or support channel only when repository or user context actually establishes it.

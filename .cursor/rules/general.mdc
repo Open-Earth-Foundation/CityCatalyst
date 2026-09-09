@@ -12,3 +12,12 @@ alwaysApply: true
 - In non-trivial functions, add short `#` comments for logical blocks/steps when it improves readability.
 - Prefer intent/why comments over obvious line-by-line descriptions.
 - Do not integrate needles backwards compatibility logic.
+
+## Task scope and completion
+
+- For review, diagnosis, explanation, or planning requests, inspect and report; implement only when requested. For change/build/fix requests, complete the authorized work and relevant local validation without repeatedly asking for permission.
+- Resolve routine implementation choices from repository context. Ask a focused question only when the missing answer materially changes scope, correctness, or an authorization boundary; continue independent authorized work meanwhile.
+- Preserve unrelated user changes. Keep refactors, formatting, and fixes scoped to the task.
+- Treat skills as workflows within the user's requested scope, not as permission for external writes or additional work. Honor authorization already given; prepare a concrete result before seeking any still-required approval.
+- Apply required post-change inspections once to the final diff. A successful inspection may require no edits. Repeat only for subsequent relevant changes or unresolved findings.
+- Run checks appropriate to the change and required gates. After they pass, broaden testing only for a concrete remaining risk; report pre-existing failures separately.

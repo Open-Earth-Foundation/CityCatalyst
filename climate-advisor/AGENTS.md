@@ -16,20 +16,20 @@ This repo includes **project-level Cursor skills** under `../.cursor/skills/` fr
 
 Skills included:
 
-- `simplify-after-change`: **Mandatory** after any code change. Simplifies the changed code, removes unnecessary complexity, and keeps behavior identical.
-- `docs-after-change`: **Mandatory** after any code change. Keeps docstrings, README, and architecture docs accurate.
+- `simplify-after-change`: Reviews changed code for unnecessary complexity while preserving behavior.
+- `docs-after-change`: Checks docstrings, README, and architecture docs for changes to documented contracts.
 - `script-quality-gate`: Use when adding or changing a runnable script or CLI entrypoint.
 - `repo-doc-audit`: One-off full repo documentation audit (**manual** via `/repo-doc-audit`).
 - `prompt-schema-authoring`: Use when creating or updating prompt files under `prompts/`.
 
 ### Mandatory after code changes
 
-After **any code change** (add/edit/delete/rename), you must apply BOTH skills before ending your turn:
+After a task changes code, apply both inspections once to the final diff, in this order:
 
 1. `simplify-after-change`
 2. `docs-after-change`
 
-If you intentionally skip a mandatory skill, leave a one-line justification in your response message.
+Inspections are mandatory; edits are not. Already clear code and accurate documentation may remain unchanged. For runtime-configuration-only changes, apply `docs-after-change`. Revisit only subsequent relevant edits or unresolved findings, not the entire workflow. Combine meaningful results in the task summary. If an inspection cannot be completed, explain the specific limitation in one line.
 
 ---
 
@@ -72,7 +72,7 @@ Every script intended to be executed must include a **top-level docstring** desc
 
 ### Folder placement must follow the existing hierarchy
 
-All directories containing code must include an `__init__.py` file to ensure proper package resolution. These files must be **empty or contain only a module-level docstring** - do not add imports or re-exports. Because the project uses absolute imports exclusively, convenience re-exports in `__init__.py` are unnecessary and risk introducing circular imports.
+Python directories that must be importable packages must include an `__init__.py` file; this does not apply to non-Python code, data, or deployment directories. These files must be **empty or contain only a module-level docstring** - do not add imports or re-exports. Because the project uses absolute imports exclusively, convenience re-exports in `__init__.py` are unnecessary and risk introducing circular imports.
 
 Use the established Climate Advisor layout:
 
@@ -244,6 +244,7 @@ Use `script-quality-gate` when you add or change one.
 - New features should include tests where practical.
 - Bug fixes should include a regression test whenever feasible.
 - If you change prompts, tool outputs, or workflow contracts, update or add tests that exercise those paths.
+- Run tests appropriate to the changed behavior and required gates. Once those pass, broaden or repeat validation only for subsequent changes, failures, or a concrete unresolved risk. Report unrelated pre-existing failures separately.
 
 ---
 
@@ -270,7 +271,7 @@ When making changes:
 ## Quick checklist for contributions
 
 - [ ] Docs updated if setup, prompts, or run behavior changed
-- [ ] `__init__.py` present in all code folders (empty or docstring-only - no imports or re-exports)
+- [ ] Required Python packages have `__init__.py` (empty or docstring-only - no imports or re-exports)
 - [ ] No module-level `__all__` export lists
 - [ ] Prompt files remain aligned with runtime payloads and output parsers
 - [ ] Scripts follow docstring and CLI rules
@@ -278,6 +279,6 @@ When making changes:
 - [ ] Clear separation of concerns (services vs utils vs scripts)
 - [ ] Logging used instead of print
 - [ ] pytest coverage added or updated when feasible
-- [ ] Type hints present in all function signatures
+- [ ] Production signatures typed; test helpers typed where practical
 - [ ] `pyproject.toml` and `uv.lock` stay consistent
 - [ ] Relevant tests run, or inability to run explained

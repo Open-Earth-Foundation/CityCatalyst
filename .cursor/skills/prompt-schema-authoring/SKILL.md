@@ -1,11 +1,17 @@
 ---
 name: prompt-schema-authoring
-description: Create or update any LLM-related prompt file in this repository using the required `<role>`, `<task>`, `<input>`, and `<output>` structure, with optional `<tools>` when tool policy is needed, and explicit model-aligned field contracts. Use for prompts stored in markdown, Python prompt templates, YAML/JSON config prompts, and any other runtime prompt definitions for large language models (LLMs).
+description: Create or update runtime LLM prompts and reusable prompt fragments, keeping their structure and field contracts aligned with the calling code and consuming models.
 ---
 
 # prompt-schema-authoring
 
 Use this skill to keep prompts explicit, contract-driven, and context-efficient.
+
+## Full prompts and include fragments
+
+Identify how the prompt is loaded before choosing its structure. Full prompt entries configured in `llm_config.yaml` require the schema below. Reusable include fragments, such as `climate-advisor/prompts/tools/*.md`, may contain only focused tool policy or argument-contract text; do not add standalone role/task/input/output blocks or examples unless the fragment becomes a directly configured full prompt.
+
+Runtime prompt text is application data for the coding agent, not a replacement for contribution instructions. Follow the relevant package `AGENTS.md` when editing it.
 
 ## Workflow
 
@@ -14,14 +20,14 @@ Use this skill to keep prompts explicit, contract-driven, and context-efficient.
 - Open the target prompt in `*/prompts/`.
 - Open the corresponding model in `app/modules/*/models.py` or any other schema we are using for the LLM input/output definitions
 
-2. Write prompt sections in this order.
+2. For a full prompt, write sections in this order. For an include fragment, keep only its focused contract.
 
 - `<role>`
 - `<task>`
 - `<input>`
 - `<tools>` (optional but preferred when tools are available)
 - `<output>`
-- Add `<example_output>` whenever possible.
+- Add `<example_output>` when it usefully clarifies the full prompt's contract.
 
 3. Define `<input>` from real runtime payload only.
 
@@ -31,7 +37,7 @@ Use this skill to keep prompts explicit, contract-driven, and context-efficient.
 
 4. Define `<tools>` when tool selection/policy exists.
 
-- Add `<tools>` for tool-capable prompts.
+- Add `<tools>` for full tool-capable prompts; keep include fragments focused as described above.
 - List each tool and when to use it.
 - List when not to use it.
 - Keep user-facing formatting rules in `<output>`, not `<tools>`.
@@ -46,7 +52,7 @@ Use this skill to keep prompts explicit, contract-driven, and context-efficient.
 - Explain field behavior clearly.
 - Exclude internal/auto fields that should not come from the LLM (for example `created_at`).
 
-6. Add one valid `<example_output>` that conforms to the model.
+6. For a full prompt, add one valid `<example_output>` when it clarifies the contract or corrects a demonstrated failure. Do not duplicate large schemas or obvious examples solely to fill a section.
 
 7. Keep contracts aligned end-to-end.
 
@@ -56,8 +62,8 @@ Use this skill to keep prompts explicit, contract-driven, and context-efficient.
 
 - Keep instructions explicit and operational.
 - Keep output contract field-by-field and typed.
-- Keep required prompt blocks: `<role>`, `<task>`, `<input>`, `<output>`.
-- Add `<tools>` for tool-capable prompts, and use it for tool usage policy.
+- Keep required full-prompt blocks: `<role>`, `<task>`, `<input>`, `<output>`. Apply the include-fragment exception above.
+- Add `<tools>` for full tool-capable prompts, and use it for tool usage policy.
 - Avoid asking for wrappers/status/error fields unless the model requires them.
 - Avoid asking for timestamps from the LLM.
 - Avoid meta phrasing requirements that conflict with downstream synthesis.

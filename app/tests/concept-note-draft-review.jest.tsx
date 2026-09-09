@@ -22,6 +22,8 @@ let container: HTMLDivElement;
 
 beforeAll(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  // Chakra clones JSON-compatible recipes; jsdom in CI lacks structuredClone.
+  globalThis.structuredClone = (value) => JSON.parse(JSON.stringify(value));
   globalThis.ResizeObserver = class {
     disconnect() {}
     observe() {}

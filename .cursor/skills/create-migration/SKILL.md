@@ -9,6 +9,8 @@ description: Create a Sequelize database migration and model for CityCatalyst. U
 
 ### Step 1: Generate Migration File
 
+Create exactly one migration file per PR by default. Combine the PR's schema changes in that file unless the user explicitly requests otherwise.
+
 ```bash
 cd app && npm run db:gen-migration -- --name add-my-entity
 ```
@@ -115,6 +117,7 @@ cd app && npm run db:migrate        # Re-apply
 
 ## Checklist
 
+- [ ] The PR creates one migration file unless the user explicitly requested otherwise
 - [ ] Migration file is `.cjs` (CommonJS)
 - [ ] `up` and `down` are both implemented (reversible)
 - [ ] UUIDs use `Sequelize.UUIDV4` as default

@@ -18,6 +18,7 @@ import {
 } from "./chapter-validation";
 import {
   canExportConceptNote,
+  hasCriticalExportBlocker,
   countUnresolvedExportItems,
   exportConceptNote,
   type ConceptNoteExportFormat,
@@ -105,10 +106,12 @@ export function useGuidedReview({
     review.blockingCount -
     blockingMissingInformation.length;
   const firstChapterWithMissingInformation =
-    chapters.find((chapter) => chapter.missing_information.length > 0) ?? null;
+    chapters.find((chapter) => countUnresolvedExportItems([chapter]) > 0) ??
+    null;
   const firstMissingInformationFinding = blockingMissingInformation[0] ?? null;
   const requiresExportAcknowledgement =
     blockingIssueCount > 0 || failedChapters.length > 0;
+  const hasCriticalGap = hasCriticalExportBlocker(chapters);
   const canExport =
     canExportConceptNote(chapters, acceptedIncompleteReview) &&
     (!requiresExportAcknowledgement || acceptedIncompleteReview) &&
@@ -315,6 +318,7 @@ export function useGuidedReview({
     blockingIssueCount,
     cancelActiveRequest,
     canExport,
+    hasCriticalGap,
     chapters,
     chapterTitles,
     completedChapterCount,

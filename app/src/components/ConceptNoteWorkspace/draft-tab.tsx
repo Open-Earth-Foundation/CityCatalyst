@@ -11,11 +11,15 @@ import type {
 
 import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
 
-import { DraftDocumentPanel } from "./draft-document-panel";
+import {
+  DraftDocumentPanel,
+  type DraftInlineReviewProps,
+} from "./draft-document-panel";
 import { DraftSetupPanel } from "./draft-setup-panel";
 import { useDraftFocus } from "./use-draft-focus";
 
-interface DraftTabProps {
+interface DraftTabProps extends DraftInlineReviewProps {
+  mutationError: string | null;
   applicationContext: ConceptNoteApplicationContext | null;
   applicationContextFailed: boolean;
   applicationContextLoading: boolean;
@@ -75,10 +79,16 @@ export function DraftTab(props: DraftTabProps) {
         </Box>
       )}
 
+      {props.mutationError && (
+        <Text role="alert" color="sentiment.negativeDefault">
+          {props.mutationError}
+        </Text>
+      )}
       <DraftSetupPanel {...props} />
 
       {draftStarted && chapters.length > 0 && (
         <DraftDocumentPanel
+          {...props}
           chapters={chapters}
           focus={focus}
           focusFindingKey={props.focusFindingKey}

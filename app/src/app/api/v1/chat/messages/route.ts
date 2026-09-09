@@ -50,6 +50,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { requireExistingChatUser } from "@/backend/chat/authorization";
 import {
   callClimateAdvisorChat,
   extractClimateAdvisorErrorMessage,
@@ -77,6 +78,8 @@ export const POST = apiHandler(async (req, { session }) => {
         { status: 400 },
       );
     }
+
+    await requireExistingChatUser(session.user.id);
 
     logger.info(
       {

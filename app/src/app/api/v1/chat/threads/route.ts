@@ -40,6 +40,7 @@
 
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
+import { requireExistingChatUser } from "@/backend/chat/authorization";
 import { createClimateAdvisorThread } from "@/backend/chat/climate-advisor";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
@@ -52,6 +53,7 @@ export const POST = apiHandler(async (req, { session }) => {
 
   const requestBody = await req.json().catch(() => ({}));
   const { title, inventory_id } = createChatThreadRequest.parse(requestBody);
+  await requireExistingChatUser(session.user.id);
 
   logger.info(
     {

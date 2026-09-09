@@ -14,6 +14,8 @@ import { GET as getThreadMessages } from "@/app/api/v1/chat/threads/[threadId]/m
 import { POST as postChatThread } from "@/app/api/v1/chat/threads/route";
 import { Auth, type AppSession } from "@/lib/auth";
 import { db } from "@/models";
+import type { User } from "@/models/User";
+import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 import { Roles } from "@/util/types";
 
 const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
@@ -50,8 +52,10 @@ describe("Chat routes", () => {
   const originalHost = process.env.HOST;
   const originalDbInitialized = db.initialized;
   let sessionSpy: ReturnType<typeof jest.spyOn>;
+  let userLookup: jest.SpiedFunction<typeof db.models.User.findByPk>;
 
   beforeAll(() => {
+    userLookup = jest.spyOn(db.models.User, "findByPk");
     const expires = new Date();
     expires.setDate(expires.getDate() + 1);
 
@@ -76,6 +80,7 @@ describe("Chat routes", () => {
     process.env.CC_SERVICE_API_KEY = "cc-service-key";
     process.env.HOST = "http://cc.example";
     db.initialized = true;
+    userLookup.mockReset().mockResolvedValue({ userId: testUserID } as User);
     global.fetch = jest.fn() as unknown as typeof fetch;
   });
 
@@ -90,6 +95,129 @@ describe("Chat routes", () => {
     process.env.CC_SERVICE_API_KEY = originalServiceKey;
     process.env.HOST = originalHost;
     sessionSpy.mockRestore();
+    userLookup.mockRestore();
+  });
+
+  it.each(["cold", "warm"])(
+    "rejects a deleted user's thread creation with a %s token cache",
+    async (cache) => {
+      const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+      if (cache === "warm") {
+        fetchMock.mockResolvedValueOnce(
+          jsonResponse({
+            access_token: "cached-token",
+            expires_in: 3600,
+            token_type: "Bearer",
+          }),
+        );
+        await issueClimateAdvisorUserToken({ userId: testUserID });
+        fetchMock.mockReset();
+      }
+      userLookup.mockResolvedValue(null);
+      fetchMock.mockImplementation(async (url) =>
+        String(url).includes("user-token")
+          ? jsonResponse({
+              access_token: "token",
+              expires_in: 3600,
+              token_type: "Bearer",
+            })
+          : jsonResponse({ thread_id: "unexpected-thread" }),
+      );
+
+      const response = await postChatThread(
+        makeRequest("http://localhost:3000/api/v1/chat/threads", "POST", {}),
+        { params: Promise.resolve({}) },
+      );
+      expect(response.status).toBe(404);
+      await expect(response.json()).resolves.toEqual({
+        error: { message: "User not found" },
+      });
+      expect(fetchMock).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(["cold", "warm"])(
+    "rejects a deleted user's message with a %s token cache using SSE errors",
+    async (cache) => {
+      const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+      if (cache === "warm") {
+        fetchMock.mockResolvedValueOnce(
+          jsonResponse({
+            access_token: "cached-token",
+            expires_in: 3600,
+            token_type: "Bearer",
+          }),
+        );
+        await issueClimateAdvisorUserToken({ userId: testUserID });
+        fetchMock.mockReset();
+      }
+      userLookup.mockResolvedValue(null);
+      fetchMock.mockImplementation(async (url) =>
+        String(url).includes("user-token")
+          ? jsonResponse({
+              access_token: "token",
+              expires_in: 3600,
+              token_type: "Bearer",
+            })
+          : new Response('event: done\ndata: {"ok":true}\n\n'),
+      );
+
+      const response = await postChatMessage(
+        makeRequest("http://localhost:3000/api/v1/chat/messages", "POST", {
+          threadId: "existing-thread",
+          content: "Hello",
+        }),
+        { params: Promise.resolve({}) },
+      );
+      expect(response.status).toBe(200);
+      expect(response.headers.get("Content-Type")).toBe("text/event-stream");
+      const body = await response.text();
+      expect(body).toContain("event: error");
+      expect(body).toContain('"message":"User not found"');
+      expect(body).toContain('"ok":false');
+      expect(fetchMock).not.toHaveBeenCalled();
+    },
+  );
+
+  it("rechecks the user while sharing a cached token across threads and messages", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock.mockImplementation(async (url) => {
+      if (String(url).includes("user-token")) {
+        return jsonResponse({
+          access_token: "shared-token",
+          expires_in: 3600,
+          token_type: "Bearer",
+        });
+      }
+      return String(url).endsWith("/threads")
+        ? jsonResponse({ thread_id: "thread-1" })
+        : new Response('event: done\ndata: {"ok":true}\n\n');
+    });
+    const createThread = () =>
+      postChatThread(
+        makeRequest("http://localhost:3000/api/v1/chat/threads", "POST", {}),
+        { params: Promise.resolve({}) },
+      );
+    expect((await createThread()).status).toBe(200);
+    expect((await createThread()).status).toBe(200);
+    const response = await postChatMessage(
+      makeRequest("http://localhost:3000/api/v1/chat/messages", "POST", {
+        threadId: "thread-1",
+        content: "Hello",
+      }),
+      { params: Promise.resolve({}) },
+    );
+    await expect(response.text()).resolves.toContain('"ok":true');
+    expect(userLookup).toHaveBeenCalledTimes(3);
+    expect(
+      userLookup.mock.calls.every(([userId]) => userId === testUserID),
+    ).toBe(true);
+    expect(
+      fetchMock.mock.calls.filter(([url]) =>
+        String(url).includes("user-token"),
+      ),
+    ).toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 
   it("creates a CA thread through the shared backend helper", async () => {

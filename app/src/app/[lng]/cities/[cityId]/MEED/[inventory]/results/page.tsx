@@ -211,11 +211,15 @@ export default function Page(props: {
     }
 
     const { documents } = result;
-    const pdf = buildReportPdf(documents, {
+    const pdf = await buildReportPdf(documents, {
       title: t("report-title"),
       cityName: inventory?.city?.name ?? "",
       subtitle: t("report-subtitle", { count: documents.length }),
       limitationsLabel: t("report-limitations"),
+      generatedBy: t("report-footer-generated-by"),
+      generatedOn: `${t("report-footer-generated-on")} ${new Date().toLocaleDateString(lng)}`,
+      pageLabel: t("report-footer-page"),
+      ofLabel: t("report-footer-of"),
     });
     pdf.save(`meed-action-report-${inventoryId}.pdf`);
   }, [generate, selectedIds, index, t, lng, inventory, inventoryId, cityId]);

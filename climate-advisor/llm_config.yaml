@@ -5,12 +5,12 @@
 models:
   orchestrator:
     name: "openai/gpt-5.6-luna"
-    reasoning_effort: "none"
+    reasoning_effort: "medium"
     description: "Default chat model for Climate Advisor conversations."
   agentic_flow:
     name: "openai/gpt-5.6-sol"
     description: "Agentic flow model for high-context review and source selection workflows."
-    reasoning_effort: "none"
+    reasoning_effort: "medium"
   cnb_chat:
     name: "openai/gpt-5.6-sol"
     description: "Concept Note Builder chat model."
@@ -28,6 +28,9 @@ models:
     name: "openai/gpt-5.6-sol"
     reasoning_effort: "medium"
   cnb_chapter_drafter:
+    name: "openai/gpt-5.6-terra"
+    reasoning_effort: "medium"
+  cnb_chapter_validator:
     name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
   cnb_chat_edit_planner:
@@ -54,6 +57,8 @@ generation:
     cnb_edits:
       max_prompt_tokens: 50000
       max_concurrency: 5
+    cnb_validation:
+      max_prompt_tokens: 50000
 
 # System Prompts
 prompts:
@@ -84,6 +89,8 @@ prompts:
   cnb_chapter_drafting: "prompts/cnb/chapter_drafting.md"
   cnb_chat_edit_planner: "prompts/cnb/chat_edit_planner.md"
   cnb_chat_edit_review: "prompts/cnb/chat_edit_review.md"
+  cnb_chapter_validation_completeness: "prompts/cnb/chapter_validation_completeness.md"
+  cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 
 # API Configuration
 api:

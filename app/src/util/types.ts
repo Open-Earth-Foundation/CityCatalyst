@@ -1060,6 +1060,18 @@ export interface ConceptNoteRun {
   status: string;
   workflow_step: string;
   progress_summary: Record<string, unknown>;
+  uploads?: Array<{
+    upload_id: string;
+    run_id: string;
+    status: ConceptNoteUploadStatus;
+    filename: string;
+    source_label?: string | null;
+    source_format: "pdf" | "markdown";
+    page_count?: number | null;
+    error_code?: string | null;
+    received_at: string;
+    completed_at?: string | null;
+  }>;
   created_at: string;
   updated_at: string;
 }
@@ -1143,6 +1155,61 @@ export interface ConceptNoteGap {
   updated_at: string;
 }
 
+export type ConceptNoteChapterValidationStatus =
+  "ready" | "needs_review" | "incomplete";
+
+export type ConceptNoteChapterValidationCheckStatus =
+  "pass" | "warning" | "fail";
+
+export type ConceptNoteChapterValidationFindingPhase =
+  "completeness" | "consistency" | "evidence";
+
+export type ConceptNoteChapterValidationFindingSeverity =
+  "warning" | "blocking";
+
+export interface ConceptNoteChapterValidationCheck {
+  key: string;
+  label?: string | null;
+  status: ConceptNoteChapterValidationCheckStatus;
+  message?: string | null;
+}
+
+export interface ConceptNoteChapterValidationEvidence {
+  selected_source_label: string;
+  source_location: string | null;
+  claim_ref: string | null;
+  quote_or_summary: string | null;
+}
+
+export interface ConceptNoteChapterValidationFinding {
+  phase: ConceptNoteChapterValidationFindingPhase;
+  category: string;
+  severity: ConceptNoteChapterValidationFindingSeverity;
+  message: string;
+  suggested_action: string;
+  involved_chapter_ids: string[];
+  excerpts?: string[];
+  evidence: ConceptNoteChapterValidationEvidence[];
+}
+
+export interface ConceptNoteChapterValidation {
+  status: ConceptNoteChapterValidationStatus;
+  is_stale: boolean;
+  validated_revision_number: number | null;
+  validated_at: string | null;
+  checks: ConceptNoteChapterValidationCheck[];
+  findings: ConceptNoteChapterValidationFinding[];
+}
+
+export interface ConceptNoteChapterValidationResponse extends ConceptNoteChapterValidation {
+  chapter_id: string;
+}
+
+export interface ValidateConceptNoteChapterRequest {
+  chapterId: string;
+  runId: string;
+}
+
 export interface ConceptNoteDraftChapter {
   chapter_id: string;
   template_section_id: string | null;
@@ -1158,6 +1225,7 @@ export interface ConceptNoteDraftChapter {
   revision_number: number | null;
   confirmed_body_markdown: string | null;
   confirmed_revision_number: number | null;
+  validation?: ConceptNoteChapterValidation | null;
 }
 
 export interface ConceptNoteDraftState {

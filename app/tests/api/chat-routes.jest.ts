@@ -350,7 +350,7 @@ describe("Chat routes", () => {
     fetchMock
       .mockResolvedValueOnce(
         jsonResponse({
-          access_token: "token-123",
+          access_token: "fresh-token",
           expires_in: 3600,
           token_type: "Bearer",
         }),
@@ -400,7 +400,7 @@ describe("Chat routes", () => {
           inventory_id: testInventoryId,
           context: {
             stationary_energy_draft_run_id: "draft-1",
-            cc_access_token: "token-123",
+            access_token: "fresh-token",
           },
           options: {
             stationary_energy_draft_run_id: "draft-1",
@@ -410,6 +410,46 @@ describe("Chat routes", () => {
     );
     expect(headers.get("Content-Type")).toBe("application/json");
     expect(headers.get("X-Request-ID")).toMatch(/^cc-/);
+  });
+
+  it("refreshes authorization when sending through a reopened CNB thread", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "current-user-token",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response('event: done\ndata: {"ok":true}\n\n', {
+          status: 200,
+          headers: { "Content-Type": "text/event-stream" },
+        }),
+      );
+
+    const response = await postChatMessage(
+      makeRequest("http://localhost:3000/api/v1/chat/messages", "POST", {
+        threadId: "reopened-thread",
+        content: "Mark the final chapter ready",
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(200);
+    const [, tokenRequest] = fetchMock.mock.calls[0] ?? [];
+    expect(JSON.parse(String(tokenRequest?.body))).toEqual({
+      user_id: testUserID,
+    });
+    const [, messageRequest] = fetchMock.mock.calls[1] ?? [];
+    expect(JSON.parse(String(messageRequest?.body))).toEqual({
+      thread_id: "reopened-thread",
+      user_id: testUserID,
+      content: "Mark the final chapter ready",
+      context: { access_token: "current-user-token" },
+      options: {},
+    });
   });
 
   it("loads thread messages through the shared CA proxy helper", async () => {

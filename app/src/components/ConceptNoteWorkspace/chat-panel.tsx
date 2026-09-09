@@ -27,6 +27,7 @@ import type { EditScope } from "@/util/concept-note-edit-types";
 
 interface ConceptNoteChatPanelProps {
   bundleStatus: string | null;
+  composerRequest: { content: string; id: string } | null;
   documentGrounding: "none" | "uploaded_evidence" | null;
   lng: string;
   onOpenContext: () => void;
@@ -202,6 +203,7 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
 
 export function ConceptNoteChatPanel({
   bundleStatus,
+  composerRequest,
   documentGrounding,
   lng,
   onOpenContext,
@@ -212,6 +214,7 @@ export function ConceptNoteChatPanel({
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [input, setInput] = useState("");
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const {
     error: chatError,
     historyLoading,
@@ -271,6 +274,17 @@ export function ConceptNoteChatPanel({
     });
     return () => window.cancelAnimationFrame(frame);
   }, [historyLoading, messages.length, threadId]);
+
+  useEffect(() => {
+    if (!composerRequest) {
+      return;
+    }
+    const frame = requestAnimationFrame(() => {
+      setInput(composerRequest.content);
+      inputRef.current?.focus();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [composerRequest]);
 
   async function submitMessage(
     event: FormEvent<HTMLDivElement>,
@@ -458,6 +472,7 @@ export function ConceptNoteChatPanel({
           <Input
             data-testid="concept-note-chat-input"
             aria-label={t("chat-input-placeholder")}
+            ref={inputRef}
             value={input}
             disabled={!threadId || historyLoading || isGenerating}
             placeholder={

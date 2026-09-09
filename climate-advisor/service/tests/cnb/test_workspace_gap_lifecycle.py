@@ -10,6 +10,8 @@ from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteChapterReview,
     ConceptNoteChapterRevision,
+    ConceptNoteChapterValidation,
+    ConceptNoteEvidenceLink,
     ConceptNoteGap,
     ConceptNoteGapResolution,
 )
@@ -42,6 +44,8 @@ async def workspace(tmp_path):
         ConceptNoteGap.__table__,
         ConceptNoteGapResolution.__table__,
         ConceptNoteChapterReview.__table__,
+        ConceptNoteChapterValidation.__table__,
+        ConceptNoteEvidenceLink.__table__,
     ]
     postgres_defaults = []
     for table in tables:

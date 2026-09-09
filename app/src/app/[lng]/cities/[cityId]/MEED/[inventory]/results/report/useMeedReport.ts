@@ -4,6 +4,7 @@ import {
   useLazyGetMeedPlanQuery,
   useRunMeedGeneratePlanMutation,
 } from "@/services/api";
+import { isFetchBaseQueryError } from "@/util/helpers";
 import type { MeedPlanRouteReport } from "@/util/types/meed";
 import {
   toReportDocument,
@@ -30,6 +31,19 @@ export interface MeedReportProgress {
   current: string | null;
   /** Actions whose report could not be produced. */
   failed: string[];
+}
+
+/**
+ * True only for the "nothing stored for this action yet" case.
+ *
+ * The route 404s when no report exists, which is the normal first-run path.
+ * Every other status is a real failure: a 401 means the session is gone, a 5xx
+ * means the service is unwell, and neither is fixed by asking for a fresh
+ * report. Treating them as "not generated yet" would fire a 10-30 s LLM call
+ * per selected action against a backend that just told us it cannot serve us.
+ */
+export function isReportNotFound(error: unknown): boolean {
+  return isFetchBaseQueryError(error) && error.status === 404;
 }
 
 const IDLE: MeedReportProgress = {
@@ -77,53 +91,63 @@ export function useMeedReport(cityId: string, inventoryId: string) {
       const collected: MeedReportInput[] = [];
       const failed: string[] = [];
 
-      for (const [index, target] of targets.entries()) {
-        setProgress({
-          done: index,
-          total: targets.length,
-          current: target.actionName,
-          failed: [...failed],
-        });
+      try {
+        for (const [index, target] of targets.entries()) {
+          setProgress({
+            done: index,
+            total: targets.length,
+            current: target.actionName,
+            failed: [...failed],
+          });
 
-        let report: MeedPlanRouteReport | null = null;
-        try {
-          report = await fetchPlan({
-            cityId,
-            inventoryId,
-            actionId: target.actionId,
-          }).unwrap();
-        } catch {
-          // 404 — no report stored for this action yet.
-          report = null;
-        }
-
-        if (!report) {
+          let report: MeedPlanRouteReport | null = null;
           try {
-            report = await generatePlan({
+            report = await fetchPlan({
               cityId,
-              body: {
-                inventoryId,
-                actionId: target.actionId,
-                languages: [language],
-              },
+              inventoryId,
+              actionId: target.actionId,
             }).unwrap();
-          } catch {
-            failed.push(target.actionName);
+          } catch (error) {
+            // Only a 404 means "not generated yet". Anything else is a fetch
+            // failure that affects every remaining action too, so it aborts
+            // the run rather than being recorded as a per-action miss.
+            if (!isReportNotFound(error)) throw error;
             report = null;
           }
+
+          if (!report) {
+            try {
+              report = await generatePlan({
+                cityId,
+                body: {
+                  inventoryId,
+                  actionId: target.actionId,
+                  languages: [language],
+                },
+              }).unwrap();
+            } catch {
+              // A generation that fails is per-action: the next one may well
+              // succeed, so the run continues and names this one at the end.
+              failed.push(target.actionName);
+              report = null;
+            }
+          }
+
+          collected.push({ ...target, report });
         }
 
-        collected.push({ ...target, report });
+        setProgress({
+          done: targets.length,
+          total: targets.length,
+          current: null,
+          failed,
+        });
+      } finally {
+        // Whatever happened, the guard has to open again or the button is
+        // dead for the rest of the session.
+        running.current = false;
+        setIsRunning(false);
       }
-
-      setProgress({
-        done: targets.length,
-        total: targets.length,
-        current: null,
-        failed,
-      });
-      running.current = false;
-      setIsRunning(false);
 
       // Failed actions are dropped from the document but returned alongside
       // it, so the caller names what is missing rather than handing over a

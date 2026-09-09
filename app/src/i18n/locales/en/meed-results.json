@@ -60,6 +60,8 @@
   "report-error-title": "Some reports could not be generated",
   "report-error-dismiss": "Dismiss",
   "report-error-none": "No reports could be generated. This is usually temporary — try again in a moment.",
+  "report-error-fetch-title": "Reports could not be loaded",
+  "report-error-fetch": "Your saved reports could not be loaded, so nothing new was generated. Reload the page and sign in again if the problem persists.",
   "report-error-partial_one": "{{count}} action could not be included: {{actions}}.",
   "report-error-partial_other": "{{count}} actions could not be included: {{actions}}.",
   "tab-results": "Results overview",

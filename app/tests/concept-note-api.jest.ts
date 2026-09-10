@@ -33,6 +33,8 @@ const loggerError = jest.fn();
 
 jest.unstable_mockModule("@/backend/chat/climate-advisor", () => ({
   callClimateAdvisorChat,
+}));
+jest.unstable_mockModule("@/backend/climate-advisor-token", () => ({
   issueClimateAdvisorUserToken,
 }));
 jest.unstable_mockModule("@/backend/permissions/PermissionService", () => ({

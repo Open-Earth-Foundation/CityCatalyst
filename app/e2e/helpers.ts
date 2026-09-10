@@ -160,6 +160,43 @@ export function pickE2EOnboardingInventoryYear(): string {
  *
  * Returns the created city's ID.
  */
+export async function selectCityFromOnboardingSearch(
+  page: Page,
+  cityName: string,
+  regionPath: RegExp = /United States of America > Illinois/,
+) {
+  const cityInput = page.locator('input[name="city"]');
+  await expect(cityInput).toBeVisible({ timeout: 30000 });
+  await cityInput.click();
+  await cityInput.fill(cityName);
+
+  await page
+    .waitForResponse(
+      (resp) =>
+        resp.url().includes("search/city") &&
+        resp.request().method() === "GET" &&
+        resp.ok(),
+      { timeout: 30000 },
+    )
+    .catch(() => {
+      // Search may be served from cache on repeat runs.
+    });
+
+  const cityResult = page
+    .locator(".group")
+    .filter({ has: page.getByText(cityName, { exact: true }) })
+    .filter({ hasText: regionPath })
+    .first();
+
+  await expect(cityResult).toBeVisible({ timeout: 30000 });
+  await cityResult.click();
+
+  await expect(page.getByTestId("selected-city-name")).toHaveText(
+    new RegExp(cityName, "i"),
+    { timeout: 30000 },
+  );
+}
+
 async function walkCitiesOnboardingWizard(
   page: Page,
 ): Promise<{ cityId: string }> {
@@ -185,16 +222,7 @@ async function walkCitiesOnboardingWizard(
   // Step 0: select city
   await page.waitForURL("**/cities/onboarding/setup/");
 
-  const cityName = "Chicago";
-  const cityInput = page.locator('input[name="city"]');
-  await cityInput.click();
-  await page.keyboard.type(cityName, { delay: 100 });
-
-  const citySearchResults = page.getByText(
-    new RegExp(`^${cityName}\\s*United States of America > Illinois$`),
-  );
-  await expect(citySearchResults.first()).toBeVisible({ timeout: 30000 });
-  await citySearchResults.first().click();
+  await selectCityFromOnboardingSearch(page, "Chicago");
 
   // Continue (creates the city, advances to invite collaborators)
   {

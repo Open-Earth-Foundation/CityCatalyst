@@ -14,6 +14,7 @@ const inventoryValueModel = { findAll: jest.fn() };
 const rankingModel = { findOne: jest.fn(), create: jest.fn() };
 const rankedModel = { bulkCreate: jest.fn(), findAll: jest.fn() };
 const removedModel = { bulkCreate: jest.fn(), findAll: jest.fn() };
+const snapshotModel = { destroy: jest.fn(), create: jest.fn() };
 const mockTransaction = {};
 const sequelize = {
   transaction: jest.fn(async (callback: (transaction: unknown) => unknown) =>
@@ -29,6 +30,7 @@ const mockDb = {
     MeedRanking: rankingModel,
     MeedActionRanked: rankedModel,
     MeedActionRemoved: removedModel,
+    MeedRankSnapshot: snapshotModel,
     City: {},
     Population: {},
     ActivityValue: {},
@@ -60,10 +62,10 @@ jest.mock("@/backend/meed/MeedNativeInputCatalogService", () => ({
   registerMEEDRanking: jest.fn(),
 }));
 jest.unstable_mockModule("@/services/logger", () => ({
-  logger: { error: jest.fn() },
+  logger: { error: jest.fn(), info: jest.fn() },
 }));
 jest.mock("@/services/logger", () => ({
-  logger: { error: jest.fn() },
+  logger: { error: jest.fn(), info: jest.fn() },
 }));
 
 const populationService = (await import("@/backend/PopulationService")).default;
@@ -132,6 +134,8 @@ beforeEach(() => {
   removedModel.bulkCreate.mockImplementation(async (rows) => rows);
   rankedModel.findAll.mockResolvedValue([]);
   removedModel.findAll.mockResolvedValue([]);
+  snapshotModel.destroy.mockResolvedValue(1);
+  snapshotModel.create.mockImplementation(async (attributes) => attributes);
   registerMEEDRanking.mockResolvedValue({
     catalog: {},
     created: true,
@@ -160,6 +164,29 @@ describe("MeedApiService versioned persistence", () => {
           rankingId: expect.any(String),
         }),
       ],
+      { transaction: mockTransaction },
+    );
+    expect(snapshotModel.destroy).toHaveBeenCalledWith({
+      where: { inventoryId: "inventory-1" },
+      transaction: mockTransaction,
+    });
+    expect(snapshotModel.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        inventoryId: "inventory-1",
+        request: expect.objectContaining({
+          meta: expect.objectContaining({ requestId: expect.any(String) }),
+          requestData: expect.objectContaining({
+            requestedLanguages: ["en"],
+            cityDataList: [
+              expect.objectContaining({
+                locode: "BR-SAO",
+                countryCode: "BR",
+                populationSize: 100,
+              }),
+            ],
+          }),
+        }),
+      }),
       { transaction: mockTransaction },
     );
     expect(rankingModel.create).toHaveBeenCalledWith(
@@ -205,6 +232,16 @@ describe("MeedApiService versioned persistence", () => {
       rankingModel.create.mock.calls[1][0].id,
     );
     expect(rankingModel.findOne).not.toHaveBeenCalled();
+  });
+
+  it("does not mutate the caller's ranking request", async () => {
+    const originalRequest = structuredClone(request);
+    (global.fetch as jest.Mock).mockResolvedValue(response("action-1"));
+
+    await MeedApiService.runRanking("inventory-1", request, "user-1");
+
+    expect(request).toEqual(originalRequest);
+    expect(request.cityDataList[0]).not.toHaveProperty("locode");
   });
 
   it("reads the latest completed version for the inventory and falls back to legacy rows", async () => {

@@ -79,6 +79,10 @@ describe("Stationary Energy draft routes", () => {
   });
 
   beforeEach(() => {
+    Reflect.deleteProperty(
+      globalThis,
+      Symbol.for("citycatalyst.ca-user-token-cache.v1"),
+    );
     process.env.NEXT_PUBLIC_FEATURE_FLAGS =
       "CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC";
     process.env.CA_BASE_URL = "http://ca.example";
@@ -449,7 +453,7 @@ describe("Stationary Energy draft routes", () => {
     }
   });
 
-  it("preserves JSON token-issuance errors from the shared CA helper", async () => {
+  it("preserves sanitized token-issuance errors from the shared CA helper", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
     fetchMock.mockResolvedValueOnce(
       jsonResponse(
@@ -475,11 +479,7 @@ describe("Stationary Energy draft routes", () => {
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toEqual({
       error: {
-        message: "service token rejected",
-        code: undefined,
-        data: {
-          detail: "service token rejected",
-        },
+        message: "Unable to obtain Climate Advisor access token",
       },
     });
     expect(fetchMock).toHaveBeenCalledTimes(1);

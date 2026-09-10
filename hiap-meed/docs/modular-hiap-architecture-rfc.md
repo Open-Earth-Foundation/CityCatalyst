@@ -14,7 +14,7 @@ The recommended end state is one HIAP microservice with a shared deterministic k
 
 Migration should be incremental. Keep the existing services running, stand up the unified service alongside them, compare outputs with fixtures and regression tests, migrate consumers gradually, and retire the old services only after parity and operational gates pass. Separate deployments are a transitional safety boundary, not the final architecture.
 
-This RFC answers CC-720 using the current source tree and the 2026-09-10 architecture direction discussed with Mirco. It treats `hiap-meed/docs/methodology-variants-and-migration.md` as prior art. That document remains unchanged because it is a draft and contains stale as-built counts and an Anthropic/OpenAI labeling mismatch.
+This RFC answers CC-720 using the current source tree and a team discussion. It treats `hiap-meed/docs/methodology-variants-and-migration.md` as prior art. That document remains unchanged because it is a draft and contains stale as-built counts and an Anthropic/OpenAI labeling mismatch.
 
 ## Investigation scope
 
@@ -35,7 +35,7 @@ The comparison considered:
 
 ## Stakeholder direction
 
-The 2026-09-10 1:1 with Mirco clarified the target architecture. All HIAP variants share a fundamental product surface, including prioritizing climate actions and creating plans, while country implementations may use different inputs, formulas, outputs, and orchestration. The goal is one HIAP microservice to reduce repeated package maintenance and infrastructure overhead.
+The discussion clarified the target architecture. All HIAP variants share a fundamental product surface, including prioritizing climate actions and creating plans, while country implementations may use different inputs, formulas, outputs, and orchestration. The goal is one HIAP microservice to reduce repeated package maintenance and infrastructure overhead.
 
 The preferred routing shape is one shared endpoint with an explicit country/variant flag, for example `/prioritize` with `country=chile` or `country=brazil`, which selects the corresponding adapter. Per-country endpoint paths remain a possible compatibility or migration surface, but are not the preferred long-term contract.
 

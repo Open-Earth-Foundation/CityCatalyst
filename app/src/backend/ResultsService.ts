@@ -241,7 +241,7 @@ async function fetchTopEmissionsBulk(
            JOIN "Sector" s ON iv.sector_id = s.sector_id
            JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
            LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
-           JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
+           LEFT JOIN "Scope" scope ON scope.scope_id = COALESCE(sc.scope_id, ss.scope_id)
     WHERE iv.inventory_id IN (:inventoryIds)
       AND iv.co2eq IS NOT NULL
     ORDER BY iv.inventory_id, iv.co2eq DESC
@@ -372,7 +372,7 @@ const fetchInventoryValuesBySector = async (
            JOIN "Sector" s ON iv.sector_id = s.sector_id
            JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
            LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
-           JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
+           LEFT JOIN "Scope" scope ON scope.scope_id = COALESCE(sc.scope_id, ss.scope_id)
            LEFT JOIN "DataSourceI18n" ds ON iv.datasource_id = ds.datasource_id
     WHERE iv.inventory_id = (:inventoryId)
       and iv.co2eq IS NOT NULL

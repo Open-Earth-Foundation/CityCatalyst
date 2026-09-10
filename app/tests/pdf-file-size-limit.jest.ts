@@ -8,6 +8,7 @@ import {
   INVENTORY_IMPORT_MAX_FILE_SIZE_MB,
 } from "@/backend/inventory-import-file-limits";
 import { getPdfOcrConfig } from "@/backend/pdf-ocr-config";
+import nextConfig from "../next.config.mjs";
 
 describe("PDF source size limit", () => {
   it("shares one 20 MiB boundary across upload validation and OCR processing", () => {
@@ -29,5 +30,14 @@ describe("PDF source size limit", () => {
         size: INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES + 1,
       } as File),
     ).toThrow("Maximum allowed size is 20MB");
+  });
+
+  it("allows multipart framing around a maximum-size source upload", () => {
+    const proxyLimit = nextConfig.experimental?.proxyClientMaxBodySize;
+
+    expect(typeof proxyLimit).toBe("number");
+    expect(proxyLimit as number).toBeGreaterThan(
+      INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES,
+    );
   });
 });

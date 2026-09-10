@@ -540,3 +540,37 @@ export interface MeedReferenceFinanceProject {
 export interface MeedReferenceFinanceProjectsResponse extends MeedReferenceEnvelope {
   projects: MeedReferenceFinanceProject[];
 }
+
+// ─── CityCatalyst generate-plan route ────────────────────────────────────────
+//
+// POST /api/v1/city/{cityId}/meed/generate-plan
+// GET  /api/v1/city/{cityId}/meed/generate-plan?inventoryId={uuid}&actionId={id}
+//
+// The route builds the prioritization snapshot itself from `MeedRankSnapshot`
+// and stores the result in `MeedActionReport`, so a report survives a reload
+// rather than costing another LLM call. Like the ranking route it goes through
+// CityCatalyst models, so the row is camelCase — while `chapters` inside it is
+// hiap-meed's own payload, kept verbatim.
+//
+// One report covers **one action**: `actionId` is singular upstream, so a
+// multi-action report is several calls combined at render time.
+
+export interface MeedGeneratePlanRequest {
+  inventoryId: string;
+  /** Languages to generate, e.g. ["en"]. */
+  languages: string[];
+  actionId: string;
+  /** Deterministic chapters with no LLM call — for wiring and tests. */
+  debugContextOnly?: boolean;
+}
+
+/** A stored report row, as both verbs return it. */
+export interface MeedPlanRouteReport {
+  id?: string;
+  inventoryId?: string;
+  actionId?: string;
+  languages?: string[];
+  chapters?: MeedReportChapter[];
+  created?: string;
+  lastUpdated?: string;
+}

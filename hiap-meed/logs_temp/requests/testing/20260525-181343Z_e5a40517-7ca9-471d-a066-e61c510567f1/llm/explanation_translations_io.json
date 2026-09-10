@@ -1,0 +1,390 @@
+{
+  "status": "completed",
+  "provider": "openai",
+  "model": "gpt-5.4-mini",
+  "request_context": {
+    "source_language": "en",
+    "target_languages": [
+      "es"
+    ],
+    "ranked_action_ids": [
+      "c40_0035",
+      "c40_0042",
+      "icare_0045",
+      "icare_0050",
+      "icare_0069",
+      "icare_0099",
+      "icare_0122",
+      "icare_0131",
+      "icare_0132",
+      "ipcc_0028",
+      "ipcc_0034",
+      "ipcc_0052",
+      "ipcc_0053",
+      "ipcc_0054",
+      "ipcc_0056",
+      "ipcc_0057",
+      "ipcc_0067",
+      "ipcc_0069",
+      "ipcc_0070",
+      "ipcc_0071"
+    ]
+  },
+  "llm_input": {
+    "system_prompt": "<role>\nYou are a faithful translator of canonical ranked-action explanations.\n</role>\n\n<task>\nFollow the user prompt exactly.\n- Do not add or remove factual content.\n- Return JSON only.\n</task>\n\n<input>\nInput will provide the source-language label, requested target languages, and canonical explanation rows.\n</input>\n\n<output>\nReturn exactly the fields requested in the user prompt.\n</output>",
+    "actions_payload": [
+      {
+        "action_id": "c40_0035",
+        "canonical_explanation": "This action has very strong policy support, a very favorable timeline, and very strong mitigation feasibility. It still ranks near the bottom because its expected emissions reduction is very limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "c40_0042",
+        "canonical_explanation": "This action has very strong policy support and strong mitigation feasibility, but that is not enough to lift it higher. It stays low because its expected emissions reduction is very limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "icare_0045",
+        "canonical_explanation": "This action is supported by a very favorable timeline, very strong policy support, and very strong mitigation feasibility. It ranks below the top group because its expected emissions reduction is very limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "icare_0050",
+        "canonical_explanation": "This action has strong policy support and very strong mitigation feasibility, which helps it stay in the ranking. It does not rise higher because its expected emissions reduction is limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "icare_0069",
+        "canonical_explanation": "This action has a very favorable timeline, strong policy support, and very strong mitigation feasibility. It remains lower in the ranking because its expected emissions reduction is very limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "icare_0099",
+        "canonical_explanation": "This action places fourth because it can deliver emissions benefits on a very favorable timeline and also has strong policy support and very strong mitigation feasibility. It does not rank higher because its expected emissions reduction is limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "icare_0122",
+        "canonical_explanation": "This action still benefits from a very favorable timeline, strong policy support, and very strong mitigation feasibility. It sits lower because its expected emissions reduction is very limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "icare_0131",
+        "canonical_explanation": "This action can deliver emissions benefits on a very favorable timeline and has strong policy support. It still ranks low because its expected emissions reduction is very limited in the current city inventory, and there was no legal assessment row available; no mitigation feasibility score row was available either, so that part used a neutral fallback."
+      },
+      {
+        "action_id": "icare_0132",
+        "canonical_explanation": "This action ranks below the earlier options for the same main reasons: a very favorable timeline, strong policy support, and very strong mitigation feasibility. Its expected emissions reduction is very limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "ipcc_0028",
+        "canonical_explanation": "This action has very strong policy support and very strong mitigation feasibility, which keeps it in the list. It ranks low because its expected emissions reduction is very limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "ipcc_0034",
+        "canonical_explanation": "This action has strong policy support, but its overall place is held down by limited expected emissions reduction in the current city inventory. There was also no legal assessment row available, and no mitigation feasibility score row was available, so both of those parts used neutral fallbacks."
+      },
+      {
+        "action_id": "ipcc_0052",
+        "canonical_explanation": "This action is near the top for the same reasons as the first-ranked option: very strong policy support and strong mitigation feasibility. It stays below the top spot because its expected emissions reduction is limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "ipcc_0053",
+        "canonical_explanation": "This action ranks first because it has very strong policy support and strong mitigation feasibility for the city. Its main drawback is that the expected emissions reduction is limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "ipcc_0054",
+        "canonical_explanation": "This action is kept in the lower half because, although it has very strong policy support and strong mitigation feasibility, its expected emissions reduction is limited in the current city inventory. There was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "ipcc_0056",
+        "canonical_explanation": "This action has strong policy support and very strong mitigation feasibility, which keeps it in the ranking. It stays low because its expected emissions reduction is very limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "ipcc_0057",
+        "canonical_explanation": "This action benefits from strong policy support and strong mitigation feasibility. It remains low in the ranking because its expected emissions reduction is limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "ipcc_0067",
+        "canonical_explanation": "This action ranks well because it combines very strong policy support with very strong mitigation feasibility. It is held back by limited expected emissions reduction in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "ipcc_0069",
+        "canonical_explanation": "This action has strong policy support, but its expected emissions reduction is limited in the current city inventory. There was no legal assessment row available, and no mitigation feasibility score row was available, so both of those parts used neutral fallbacks."
+      },
+      {
+        "action_id": "ipcc_0070",
+        "canonical_explanation": "This action has strong policy support and very strong mitigation feasibility, but its expected emissions reduction is very limited in the current city inventory. There was no legal assessment row available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "ipcc_0071",
+        "canonical_explanation": "This action is supported by strong policy context and very strong mitigation feasibility. It stays lower because its expected emissions reduction is limited in the current city inventory, and there was no legal assessment row available, so the legal part used a neutral fallback."
+      }
+    ],
+    "prompt_text_file": "llm/explanation_translations_prompt.txt",
+    "prompt_text_characters": 10181
+  },
+  "llm_output": {
+    "parsed": {
+      "translations": [
+        {
+          "action_id": "c40_0035",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción cuenta con un apoyo político muy fuerte, un plazo muy favorable y una viabilidad de mitigación muy fuerte. Aun así, se sitúa cerca del final porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "c40_0042",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción cuenta con un apoyo político muy fuerte y una viabilidad de mitigación fuerte, pero eso no basta para subirla más. Se mantiene baja porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0045",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción está respaldada por un plazo muy favorable, un apoyo político muy fuerte y una viabilidad de mitigación muy fuerte. Queda por debajo del grupo superior porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0050",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción cuenta con un apoyo político fuerte y una viabilidad de mitigación muy fuerte, lo que ayuda a que se mantenga en la clasificación. No sube más porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0069",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción tiene un plazo muy favorable, un apoyo político fuerte y una viabilidad de mitigación muy fuerte. Permanece más abajo en la clasificación porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0099",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción ocupa el cuarto lugar porque puede aportar beneficios de emisiones en un plazo muy favorable y además cuenta con un apoyo político fuerte y una viabilidad de mitigación muy fuerte. No se clasifica más arriba porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0122",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción sigue beneficiándose de un plazo muy favorable, un apoyo político fuerte y una viabilidad de mitigación muy fuerte. Queda más abajo porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0131",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción puede aportar beneficios de emisiones en un plazo muy favorable y cuenta con un apoyo político fuerte. Sigue clasificándose bajo porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible; tampoco había ninguna fila de puntuación de viabilidad de mitigación, por lo que esa parte usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0132",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se sitúa por debajo de las opciones anteriores por las mismas razones principales: un plazo muy favorable, un apoyo político fuerte y una viabilidad de mitigación muy fuerte. Su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0028",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción cuenta con un apoyo político muy fuerte y una viabilidad de mitigación muy fuerte, lo que la mantiene en la lista. Se clasifica baja porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0034",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción cuenta con un apoyo político fuerte, pero su posición general se ve limitada por una reducción esperada de emisiones reducida en el inventario actual de la ciudad. Tampoco había ninguna fila de evaluación legal disponible, y no había ninguna fila de puntuación de viabilidad de mitigación disponible, por lo que ambas partes usaron valores neutrales de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0052",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción está cerca de la primera por las mismas razones que la opción mejor clasificada: un apoyo político muy fuerte y una viabilidad de mitigación fuerte. Se mantiene por debajo del primer puesto porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0053",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción ocupa el primer lugar porque cuenta con un apoyo político muy fuerte y una viabilidad de mitigación fuerte para la ciudad. Su principal desventaja es que la reducción esperada de emisiones es limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0054",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se mantiene en la mitad inferior porque, aunque cuenta con un apoyo político muy fuerte y una viabilidad de mitigación fuerte, su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. No había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0056",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción cuenta con un apoyo político fuerte y una viabilidad de mitigación muy fuerte, lo que la mantiene en la clasificación. Se mantiene baja porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0057",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se beneficia de un apoyo político fuerte y una viabilidad de mitigación fuerte. Permanece baja en la clasificación porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0067",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se clasifica bien porque combina un apoyo político muy fuerte con una viabilidad de mitigación muy fuerte. Se ve frenada por una reducción esperada de emisiones limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0069",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción cuenta con un apoyo político fuerte, pero su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. No había ninguna fila de evaluación legal disponible, y no había ninguna fila de puntuación de viabilidad de mitigación disponible, por lo que ambas partes usaron valores neutrales de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0070",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción cuenta con un apoyo político fuerte y una viabilidad de mitigación muy fuerte, pero su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad. No había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0071",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción está respaldada por un contexto político fuerte y una viabilidad de mitigación muy fuerte. Se mantiene más abajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        }
+      ]
+    },
+    "translations_by_action_id": {
+      "c40_0035": {
+        "es": "Esta acción cuenta con un apoyo político muy fuerte, un plazo muy favorable y una viabilidad de mitigación muy fuerte. Aun así, se sitúa cerca del final porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "c40_0042": {
+        "es": "Esta acción cuenta con un apoyo político muy fuerte y una viabilidad de mitigación fuerte, pero eso no basta para subirla más. Se mantiene baja porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "icare_0045": {
+        "es": "Esta acción está respaldada por un plazo muy favorable, un apoyo político muy fuerte y una viabilidad de mitigación muy fuerte. Queda por debajo del grupo superior porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "icare_0050": {
+        "es": "Esta acción cuenta con un apoyo político fuerte y una viabilidad de mitigación muy fuerte, lo que ayuda a que se mantenga en la clasificación. No sube más porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "icare_0069": {
+        "es": "Esta acción tiene un plazo muy favorable, un apoyo político fuerte y una viabilidad de mitigación muy fuerte. Permanece más abajo en la clasificación porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "icare_0099": {
+        "es": "Esta acción ocupa el cuarto lugar porque puede aportar beneficios de emisiones en un plazo muy favorable y además cuenta con un apoyo político fuerte y una viabilidad de mitigación muy fuerte. No se clasifica más arriba porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "icare_0122": {
+        "es": "Esta acción sigue beneficiándose de un plazo muy favorable, un apoyo político fuerte y una viabilidad de mitigación muy fuerte. Queda más abajo porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "icare_0131": {
+        "es": "Esta acción puede aportar beneficios de emisiones en un plazo muy favorable y cuenta con un apoyo político fuerte. Sigue clasificándose bajo porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible; tampoco había ninguna fila de puntuación de viabilidad de mitigación, por lo que esa parte usó un valor neutral de respaldo."
+      },
+      "icare_0132": {
+        "es": "Esta acción se sitúa por debajo de las opciones anteriores por las mismas razones principales: un plazo muy favorable, un apoyo político fuerte y una viabilidad de mitigación muy fuerte. Su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "ipcc_0028": {
+        "es": "Esta acción cuenta con un apoyo político muy fuerte y una viabilidad de mitigación muy fuerte, lo que la mantiene en la lista. Se clasifica baja porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "ipcc_0034": {
+        "es": "Esta acción cuenta con un apoyo político fuerte, pero su posición general se ve limitada por una reducción esperada de emisiones reducida en el inventario actual de la ciudad. Tampoco había ninguna fila de evaluación legal disponible, y no había ninguna fila de puntuación de viabilidad de mitigación disponible, por lo que ambas partes usaron valores neutrales de respaldo."
+      },
+      "ipcc_0052": {
+        "es": "Esta acción está cerca de la primera por las mismas razones que la opción mejor clasificada: un apoyo político muy fuerte y una viabilidad de mitigación fuerte. Se mantiene por debajo del primer puesto porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "ipcc_0053": {
+        "es": "Esta acción ocupa el primer lugar porque cuenta con un apoyo político muy fuerte y una viabilidad de mitigación fuerte para la ciudad. Su principal desventaja es que la reducción esperada de emisiones es limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "ipcc_0054": {
+        "es": "Esta acción se mantiene en la mitad inferior porque, aunque cuenta con un apoyo político muy fuerte y una viabilidad de mitigación fuerte, su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. No había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "ipcc_0056": {
+        "es": "Esta acción cuenta con un apoyo político fuerte y una viabilidad de mitigación muy fuerte, lo que la mantiene en la clasificación. Se mantiene baja porque su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "ipcc_0057": {
+        "es": "Esta acción se beneficia de un apoyo político fuerte y una viabilidad de mitigación fuerte. Permanece baja en la clasificación porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "ipcc_0067": {
+        "es": "Esta acción se clasifica bien porque combina un apoyo político muy fuerte con una viabilidad de mitigación muy fuerte. Se ve frenada por una reducción esperada de emisiones limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "ipcc_0069": {
+        "es": "Esta acción cuenta con un apoyo político fuerte, pero su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. No había ninguna fila de evaluación legal disponible, y no había ninguna fila de puntuación de viabilidad de mitigación disponible, por lo que ambas partes usaron valores neutrales de respaldo."
+      },
+      "ipcc_0070": {
+        "es": "Esta acción cuenta con un apoyo político fuerte y una viabilidad de mitigación muy fuerte, pero su reducción esperada de emisiones es muy limitada en el inventario actual de la ciudad. No había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      },
+      "ipcc_0071": {
+        "es": "Esta acción está respaldada por un contexto político fuerte y una viabilidad de mitigación muy fuerte. Se mantiene más abajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad, y no había ninguna fila de evaluación legal disponible, por lo que la parte legal usó un valor neutral de respaldo."
+      }
+    },
+    "warning_action_ids": [],
+    "warnings": []
+  }
+}

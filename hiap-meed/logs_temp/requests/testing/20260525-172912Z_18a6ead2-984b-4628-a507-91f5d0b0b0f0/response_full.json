@@ -1,0 +1,1510 @@
+{
+  "results": [
+    {
+      "locode": "CL PAO",
+      "ranked_action_ids": [
+        "ipcc_0053",
+        "ipcc_0052",
+        "ipcc_0067",
+        "icare_0099",
+        "icare_0045",
+        "icare_0122",
+        "icare_0132",
+        "icare_0069",
+        "ipcc_0054",
+        "icare_0050",
+        "ipcc_0071",
+        "ipcc_0028",
+        "ipcc_0057",
+        "c40_0042",
+        "ipcc_0034",
+        "ipcc_0070",
+        "icare_0131",
+        "ipcc_0069",
+        "ipcc_0056",
+        "c40_0035"
+      ],
+      "ranked_actions": [
+        {
+          "action_id": "ipcc_0053",
+          "rank": 1,
+          "final_score": 0.5737015565342086,
+          "impact_score": 0.49164373915310655,
+          "alignment_score": 0.757625,
+          "feasibility_score": 0.594,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.49164373915310655,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.48955467394138313,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.757625,
+              "policy_component_score": 0.9435,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.594,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.688
+            }
+          },
+          "explanations": {
+            "en": "This action ranks first because it has very strong policy support and strong mitigation feasibility for the city. Its main drawback is that the expected emissions reduction is limited in the current city inventory, and there was no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "ipcc_0052",
+          "rank": 2,
+          "final_score": 0.5661775565342086,
+          "impact_score": 0.49164373915310655,
+          "alignment_score": 0.7234250000000001,
+          "feasibility_score": 0.594,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.49164373915310655,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.48955467394138313,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.7234250000000001,
+              "policy_component_score": 0.8979,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.594,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.688
+            }
+          },
+          "explanations": {
+            "en": "This action is near the top for the same reasons as the first-ranked option: very strong policy support and strong mitigation feasibility. It stays below the top spot because its expected emissions reduction is limited in the current city inventory, and there was no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "ipcc_0067",
+          "rank": 3,
+          "final_score": 0.537460915416642,
+          "impact_score": 0.37164075530298535,
+          "alignment_score": 0.7841750000000001,
+          "feasibility_score": 0.698,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.37164075530298535,
+              "matched_city_subsector_keys_count": 2,
+              "emissions_reduction_component_score": 0.3395509441287316,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.7841750000000001,
+              "policy_component_score": 0.9789,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.698,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.896
+            }
+          },
+          "explanations": {
+            "en": "This action ranks well because it combines very strong policy support with very strong mitigation feasibility. It is held back by limited expected emissions reduction in the current city inventory, and there was no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "icare_0099",
+          "rank": 4,
+          "final_score": 0.524563415416642,
+          "impact_score": 0.4716407553029853,
+          "alignment_score": 0.47555000000000003,
+          "feasibility_score": 0.698,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.4716407553029853,
+              "matched_city_subsector_keys_count": 2,
+              "emissions_reduction_component_score": 0.3395509441287316,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.47555000000000003,
+              "policy_component_score": 0.5674,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.698,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.896
+            }
+          },
+          "explanations": {
+            "en": "This action places fourth because it can deliver emissions benefits on a very favorable timeline and also has strong policy support and very strong mitigation feasibility. It does not rank higher because its expected emissions reduction is limited in the current city inventory, and there was no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "icare_0045",
+          "rank": 5,
+          "final_score": 0.5203120282671043,
+          "impact_score": 0.3958218695765533,
+          "alignment_score": 0.674,
+          "feasibility_score": 0.671,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.3958218695765533,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.24477733697069157,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.674,
+              "policy_component_score": 0.832,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.671,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.842
+            }
+          },
+          "explanations": {
+            "en": "This action ranks in the middle because it can deliver emissions benefits on a very favorable timeline and has very strong policy support and mitigation feasibility. It sits below the top group because its expected emissions reduction is very limited in the current city inventory, and there was no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "icare_0122",
+          "rank": 6,
+          "final_score": 0.4991930282671043,
+          "impact_score": 0.3958218695765533,
+          "alignment_score": 0.54455,
+          "feasibility_score": 0.7030000000000001,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.3958218695765533,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.24477733697069157,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.54455,
+              "policy_component_score": 0.6594,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.7030000000000001,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.906
+            }
+          },
+          "explanations": {
+            "en": "This action is lower in the list because, although it has a very favorable timeline and very strong mitigation feasibility, its expected emissions reduction is very limited in the current city inventory. It also has strong policy support, and there was no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "icare_0132",
+          "rank": 7,
+          "final_score": 0.49649202826710437,
+          "impact_score": 0.3958218695765533,
+          "alignment_score": 0.5375000000000001,
+          "feasibility_score": 0.698,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.3958218695765533,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.24477733697069157,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.5375000000000001,
+              "policy_component_score": 0.65,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.698,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.896
+            }
+          },
+          "explanations": {
+            "en": "This action ranks below the similar higher options because its expected emissions reduction is very limited in the current city inventory. It still benefits from a very favorable timeline, strong policy support, and very strong mitigation feasibility, with no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "icare_0069",
+          "rank": 8,
+          "final_score": 0.49166202826710437,
+          "impact_score": 0.3958218695765533,
+          "alignment_score": 0.5375000000000001,
+          "feasibility_score": 0.677,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.3958218695765533,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.24477733697069157,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.5375000000000001,
+              "policy_component_score": 0.65,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.677,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.854
+            }
+          },
+          "explanations": {
+            "en": "This action is placed lower because its expected emissions reduction is very limited in the current city inventory. It does have a very favorable timeline, strong policy support, and very strong mitigation feasibility, and there was no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "ipcc_0054",
+          "rank": 9,
+          "final_score": 0.4896885424006565,
+          "impact_score": 0.39373280436482994,
+          "alignment_score": 0.6205250000000001,
+          "feasibility_score": 0.594,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.39373280436482994,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.36716600545603734,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.6205250000000001,
+              "policy_component_score": 0.7607,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.594,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.688
+            }
+          },
+          "explanations": {
+            "en": "This action ranks low because its expected emissions reduction is limited in the current city inventory. It still has very strong policy support and strong mitigation feasibility, with no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "icare_0050",
+          "rank": 10,
+          "final_score": 0.4891330424006565,
+          "impact_score": 0.39373280436482994,
+          "alignment_score": 0.5375000000000001,
+          "feasibility_score": 0.671,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.39373280436482994,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.36716600545603734,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.5375000000000001,
+              "policy_component_score": 0.65,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.671,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.842
+            }
+          },
+          "explanations": {
+            "en": "This action stays in the lower half because its expected emissions reduction is limited in the current city inventory. It does have strong policy support and very strong mitigation feasibility, and there was no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "ipcc_0071",
+          "rank": 11,
+          "final_score": 0.4841880424006565,
+          "impact_score": 0.39373280436482994,
+          "alignment_score": 0.5375000000000001,
+          "feasibility_score": 0.6495,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.39373280436482994,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.36716600545603734,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.5375000000000001,
+              "policy_component_score": 0.65,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.6495,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.799
+            }
+          },
+          "explanations": {
+            "en": "This action ranks low because its expected emissions reduction is limited in the current city inventory. It still has strong policy support and very strong mitigation feasibility, and there was no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "ipcc_0028",
+          "rank": 12,
+          "final_score": 0.46969952826710437,
+          "impact_score": 0.29582186957655326,
+          "alignment_score": 0.6923750000000001,
+          "feasibility_score": 0.6725,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.29582186957655326,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.24477733697069157,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.6923750000000001,
+              "policy_component_score": 0.8565,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.6725,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.845
+            }
+          },
+          "explanations": {
+            "en": "This action is lower because its expected emissions reduction is very limited in the current city inventory. It still has very strong policy support and very strong mitigation feasibility, and there was no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "ipcc_0057",
+          "rank": 13,
+          "final_score": 0.4682030424006565,
+          "impact_score": 0.39373280436482994,
+          "alignment_score": 0.5375000000000001,
+          "feasibility_score": 0.5800000000000001,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.39373280436482994,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.36716600545603734,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.5375000000000001,
+              "policy_component_score": 0.65,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.5800000000000001,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.66
+            }
+          },
+          "explanations": {
+            "en": "This action ranks low because its expected emissions reduction is limited in the current city inventory. It still has strong policy support and strong mitigation feasibility, with no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "c40_0042",
+          "rank": 14,
+          "final_score": 0.45872052826710435,
+          "impact_score": 0.29582186957655326,
+          "alignment_score": 0.7391750000000001,
+          "feasibility_score": 0.5800000000000001,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.29582186957655326,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.24477733697069157,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.7391750000000001,
+              "policy_component_score": 0.9189,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.5800000000000001,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.66
+            }
+          },
+          "explanations": {
+            "en": "This action is placed low because its expected emissions reduction is very limited in the current city inventory. It still has very strong policy support and strong mitigation feasibility, and there was no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "ipcc_0034",
+          "rank": 15,
+          "final_score": 0.4498030424006565,
+          "impact_score": 0.39373280436482994,
+          "alignment_score": 0.5375000000000001,
+          "feasibility_score": 0.5,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.39373280436482994,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.36716600545603734,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.5375000000000001,
+              "policy_component_score": 0.65,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.5,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.5
+            }
+          },
+          "explanations": {
+            "en": "This action ranks low because its expected emissions reduction is limited in the current city inventory. It has strong policy support, but there was no legal assessment row available and no mitigation feasibility score row was available."
+          }
+        },
+        {
+          "action_id": "ipcc_0070",
+          "rank": 16,
+          "final_score": 0.4426420282671043,
+          "impact_score": 0.29582186957655326,
+          "alignment_score": 0.5375000000000001,
+          "feasibility_score": 0.7030000000000001,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.29582186957655326,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.24477733697069157,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.5375000000000001,
+              "policy_component_score": 0.65,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.7030000000000001,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.906
+            }
+          },
+          "explanations": {
+            "en": "This action is lower because its expected emissions reduction is very limited in the current city inventory. It still has strong policy support and very strong mitigation feasibility, with no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "icare_0131",
+          "rank": 17,
+          "final_score": 0.44148102826710434,
+          "impact_score": 0.3958218695765533,
+          "alignment_score": 0.49445000000000006,
+          "feasibility_score": 0.5,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.3958218695765533,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.24477733697069157,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.49445000000000006,
+              "policy_component_score": 0.5926,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.5,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.5
+            }
+          },
+          "explanations": {
+            "en": "This action ranks low because its expected emissions reduction is very limited in the current city inventory. It has a very favorable timeline and strong policy support, and there was no legal assessment row available or mitigation feasibility score row available."
+          }
+        },
+        {
+          "action_id": "ipcc_0069",
+          "rank": 18,
+          "final_score": 0.4352995424006565,
+          "impact_score": 0.39373280436482994,
+          "alignment_score": 0.4715750000000001,
+          "feasibility_score": 0.5,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.39373280436482994,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.36716600545603734,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.4715750000000001,
+              "policy_component_score": 0.5621,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.5,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.5
+            }
+          },
+          "explanations": {
+            "en": "This action is placed low because its expected emissions reduction is limited in the current city inventory. It has strong policy support, but there was no legal assessment row available and no mitigation feasibility score row available."
+          }
+        },
+        {
+          "action_id": "ipcc_0056",
+          "rank": 19,
+          "final_score": 0.4352820282671043,
+          "impact_score": 0.29582186957655326,
+          "alignment_score": 0.5375000000000001,
+          "feasibility_score": 0.671,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.29582186957655326,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.24477733697069157,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.5375000000000001,
+              "policy_component_score": 0.65,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.671,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.842
+            }
+          },
+          "explanations": {
+            "en": "This action ranks low because its expected emissions reduction is very limited in the current city inventory. It still has strong policy support and very strong mitigation feasibility, with no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "c40_0035",
+          "rank": 20,
+          "final_score": 0.4347667151962875,
+          "impact_score": 0.20224766399324995,
+          "alignment_score": 0.767525,
+          "feasibility_score": 0.6725,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.20224766399324995,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.0028095799915624302,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.767525,
+              "policy_component_score": 0.9567,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 0.5
+            },
+            "feasibility": {
+              "feasibility_score": 0.6725,
+              "legal_component_score": 0.5,
+              "mitigation_feasibility_component_score": 0.845
+            }
+          },
+          "explanations": {
+            "en": "This action ranks last because its expected emissions reduction is very limited in the current city inventory, even though it has a very favorable timeline. It also has very strong policy support and very strong mitigation feasibility, and there was no legal assessment row available."
+          }
+        }
+      ],
+      "metadata": {
+        "locode": "CL PAO",
+        "internal_request_id": "18a6ead2-984b-4628-a507-91f5d0b0b0f0",
+        "counts": {
+          "total_actions": 102,
+          "valid_actions": 102,
+          "discarded_excluded": 0,
+          "discarded_legal": 0,
+          "ranked_actions": 20
+        },
+        "weights": {
+          "impact": 0.55,
+          "alignment": 0.22,
+          "feasibility": 0.23
+        },
+        "timings": {
+          "fetch_city": 0.3832899583503604,
+          "fetch_actions": 0.7524955002591014,
+          "fetch_legal_assessments": 0.35525258257985115,
+          "fetch_action_policy_scores": 0.8371025417000055,
+          "fetch_action_mitigation_feasibility_scores": 0.8680869583040476,
+          "validate_weights": 2.4541281163692474e-05,
+          "hard_filter": 0.0001836651936173439,
+          "impact": 0.001084042713046074,
+          "alignment": 0.0009686676785349846,
+          "feasibility": 0.002163833938539028,
+          "final_scoring": 0.00032729189842939377,
+          "explanations": 9.940835500136018
+        },
+        "explanations": {
+          "requested": true,
+          "generated": 20,
+          "requested_languages": [
+            "en"
+          ],
+          "canonical_language": "en",
+          "generated_languages": [
+            "en"
+          ],
+          "translation_warnings": []
+        },
+        "hard_filter_evidence_by_action_id": {
+          "icare_0001": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0002": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0006": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0008": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0009": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0010": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0012": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0015": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0016": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0023": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0024": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0025": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0026": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0027": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0028": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0031": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0033": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0034": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0035": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0040": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0045": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0049": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0050": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0053": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0064": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0069": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0071": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0072": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0074": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0076": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0078": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0079": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0082": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0099": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0101": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0104": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0105": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0110": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0111": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0117": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0120": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0121": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0122": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0127": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0128": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0131": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0132": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0137": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0139": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0010": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0012": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0013": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0015": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0016": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0017": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0018": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0023": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0025": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0029": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0034": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0035": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0036": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0037": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0040": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0042": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0071": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0001": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0023": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0024": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0025": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0026": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0028": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0031": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0033": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0034": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0037": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0038": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0039": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0040": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0041": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0042": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0043": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0045": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0049": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0050": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0052": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0053": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0054": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0055": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0056": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0057": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0060": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0062": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0064": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0067": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0068": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0069": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0070": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0071": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0074": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0076": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0105": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          }
+        }
+      },
+      "warnings": []
+    }
+  ]
+}

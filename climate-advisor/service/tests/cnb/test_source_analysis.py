@@ -3,25 +3,27 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
-import re
 from collections.abc import AsyncIterator
 from types import SimpleNamespace
 from uuid import uuid4
 
+import httpx
 import pytest
 import pytest_asyncio
+from agents import RunConfig, Runner
 from app.config import Settings, get_settings
-from app.models.cnb.context_bundle import (
-    SourceDocumentSynthesis,
-    SourceExcerpt,
-    SourcePartitionMap,
-    SourceQuestionReading,
+from app.models.cnb.source_prompt import (
+    DocumentMappingReading,
+    DocumentSummary,
+    QuestionReading,
+    SectionEvidence,
 )
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceBlock,
     SourcePage,
+    _run_agent,
     analyze_document,
     gather_all_or_raise,
     parse_markdown_blocks,
@@ -30,14 +32,10 @@ from app.services.cnb.source_analysis import (
     prompt_token_count,
     query_document,
     render_partition,
+    source_analysis_contract_version,
     verify_source_artifact,
 )
 from openai import AsyncOpenAI
-
-SEGMENT = re.compile(
-    r'<segment id="([^"]+)" (page|anchor)="([^"]+)">\n(.*?)\n</segment>',
-    re.DOTALL,
-)
 
 
 class FakeRunner:
@@ -46,59 +44,32 @@ class FakeRunner:
     def __init__(self) -> None:
         self.active = 0
         self.max_active = 0
-        self.covered_ids: list[str] = []
+        self.covered_pages: list[int] = []
         self.reader_tools: list[list[object]] = []
 
     async def run(self, agent, input_text: str):
         output_type = agent.output_type
-        if output_type in (SourcePartitionMap, SourceQuestionReading):
+        payload = json.loads(input_text)
+        if output_type in (DocumentMappingReading, QuestionReading):
             self.active += 1
             self.max_active = max(self.max_active, self.active)
             self.reader_tools.append(agent.tools)
             await asyncio.sleep(0.001)
-            segments = SEGMENT.findall(input_text)
-            ids = [segment_id for segment_id, _, _, _ in segments]
-            self.covered_ids.extend(ids)
-            excerpt = next(
-                (
-                    SourceExcerpt(
-                        text="Drainage upgrades",
-                        **(
-                            {"page": int(locator)}
-                            if locator_type == "page"
-                            else {"anchor": locator}
-                        ),
-                    )
-                    for _, locator_type, locator, text in segments
-                    if "Drainage upgrades" in text
-                ),
-                None,
-            )
-            self.active -= 1
-            if output_type is SourcePartitionMap:
-                output = SourcePartitionMap(
-                    summary="Mapped source partition.",
-                    topics=["drainage"],
-                    excerpts=[excerpt] if excerpt else [],
-                    covered_segment_ids=ids,
-                )
-            else:
-                output = SourceQuestionReading(
-                    excerpts=[excerpt] if excerpt else [],
-                    caveats=[],
-                    covered_segment_ids=ids,
-                )
-        elif output_type is SourceDocumentSynthesis:
-            payload = json.loads(input_text)
-            excerpts = [
-                excerpt
-                for item in payload["partition_maps"]
-                for excerpt in item["excerpts"]
+            self.covered_pages.extend(section.get("page", 0) for section in payload["sections"])
+            sections = [
+                SectionEvidence(excerpts=["Drainage upgrades"] if "Drainage upgrades" in section["text"] else [], caveats=[])
+                for section in payload["sections"]
             ]
-            output = SourceDocumentSynthesis(
+            self.active -= 1
+            output = (
+                DocumentMappingReading(summary="Mapped source partition.", topics=["drainage"], sections=sections)
+                if output_type is DocumentMappingReading else QuestionReading(sections=sections)
+            )
+        elif output_type is DocumentSummary:
+            output = DocumentSummary(
                 summary="The plan describes city drainage priorities.",
                 topics=["drainage", "Drainage"],
-                key_excerpts=excerpts,
+                key_excerpts=[excerpt for item in payload["partition_maps"] for excerpt in item["excerpts"]],
             )
         else:
             raise AssertionError(f"Unexpected output type: {output_type}")
@@ -110,9 +81,9 @@ class IncompleteCoverageRunner(FakeRunner):
 
     async def run(self, agent, input_text: str):
         result = await super().run(agent, input_text)
-        if isinstance(result.final_output, SourcePartitionMap):
+        if isinstance(result.final_output, DocumentMappingReading):
             result.final_output = result.final_output.model_copy(
-                update={"covered_segment_ids": ["wrong-segment"]}
+                update={"sections": []}
             )
         return result
 
@@ -174,9 +145,7 @@ async def test_analysis_and_query_cover_every_page_with_exact_citations(
     assert result.excerpts[0].text == "Drainage upgrades"
     assert result.units_processed == result.units_total == 6
     assert result.segments_processed == result.segments_total
-    assert {
-        int(identifier.split("-")[0][1:]) for identifier in runner.covered_ids
-    } == set(range(1, 7))
+    assert set(runner.covered_pages) == set(range(1, 7))
     assert runner.max_active <= 4
     assert all(tools == [] for tools in runner.reader_tools)
 
@@ -343,7 +312,7 @@ async def test_query_question_is_bounded_before_reader_fan_out(
             runner=runner,
         )
     assert failure.value.code == "source_question_too_long"
-    assert runner.covered_ids == []
+    assert runner.covered_pages == []
 
 
 @pytest.mark.asyncio
@@ -361,3 +330,110 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
     with pytest.raises(SourceAnalysisError):
         await gather_all_or_raise(fail(), finish())
     assert completed.is_set()
+
+
+@pytest.mark.parametrize(
+    ("role", "model_name", "effort", "output_type", "output"),
+    [
+        (
+            "cnb_source_reader",
+            "openai/gpt-5.6-luna",
+            "low",
+            QuestionReading,
+            {"sections": [{"excerpts": [], "caveats": []}]},
+        ),
+        (
+            "cnb_source_synthesizer",
+            "openai/gpt-5.6-sol",
+            "medium",
+            DocumentSummary,
+            {
+                "summary": "No budget is stated.",
+                "topics": ["budget"],
+                "key_excerpts": [],
+            },
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_source_worker_serializes_sol_luna_requests_without_temperature(
+    role,
+    model_name,
+    effort,
+    output_type,
+    output,
+) -> None:
+    """Exercise the real Agents/OpenAI adapters without sending network requests."""
+    settings = get_settings().model_copy(deep=True)
+    captured = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        assert str(request.url) == "https://openrouter.ai/api/v1/chat/completions"
+        payload = json.loads(request.content)
+        captured.append(payload)
+        return httpx.Response(
+            200,
+            json={
+                "id": "chatcmpl-local-test",
+                "object": "chat.completion",
+                "created": 0,
+                "model": payload["model"],
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {"role": "assistant", "content": json.dumps(output)},
+                        "finish_reason": "stop",
+                    }
+                ],
+                "usage": {
+                    "prompt_tokens": 10,
+                    "completion_tokens": 10,
+                    "total_tokens": 20,
+                },
+            },
+        )
+
+    class LocalRunner:
+        @staticmethod
+        async def run(agent, input_text):
+            return await Runner.run(
+                agent, input_text, run_config=RunConfig(tracing_disabled=True)
+            )
+
+    async with AsyncOpenAI(
+        api_key="local-test-only",
+        base_url="https://openrouter.ai/api/v1",
+        http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
+    ) as client:
+        result = await _run_agent(
+            name="Source model compatibility test",
+            prompt=settings.llm.prompts.get_prompt(
+                "cnb_source_question_reading"
+                if role == "cnb_source_reader"
+                else "cnb_source_summary_synthesis"
+            ),
+            model_name=getattr(settings.llm.models, role).name,
+            output_type=output_type,
+            input_text="No budget is stated.",
+            settings=settings,
+            client=client,
+            runner=LocalRunner,
+        )
+
+    assert result == output_type.model_validate(output)
+    assert len(captured) == 1
+    request = captured[0]
+    assert request["model"] == model_name
+    assert request["reasoning_effort"] == effort
+    assert "temperature" not in request
+    assert not request.get("tools")
+    assert request["response_format"]["type"] == "json_schema"
+    assert request["response_format"]["json_schema"]["strict"] is True
+
+
+@pytest.mark.parametrize("role", ["cnb_source_reader", "cnb_source_synthesizer"])
+def test_source_model_change_invalidates_analysis_reuse_contract(role) -> None:
+    settings = get_settings().model_copy(deep=True)
+    current_contract = source_analysis_contract_version(settings)
+    getattr(settings.llm.models, role).name = "previous-model"
+    assert source_analysis_contract_version(settings) != current_contract

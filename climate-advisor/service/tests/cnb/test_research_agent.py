@@ -14,6 +14,7 @@ from app.services.cnb.research_agent import (
     preserve_evidence_qualified_funded_projects,
     run_agent_loop,
 )
+from app.services.cnb.research_prompt import model_research_state
 from tests.cnb.helpers import build_request, build_result
 
 
@@ -41,7 +42,7 @@ def test_agent_reopens_an_incomplete_structured_checkpoint_for_next_turn() -> No
             return SimpleNamespace(
                 id=f"response-{len(self.calls):03d}",
                 output=[],
-                output_parsed=parsed_result,
+                output_parsed=model_research_state(parsed_result, []),
             )
 
     client = SimpleNamespace(responses=FakeResponses())
@@ -103,7 +104,7 @@ def test_resumed_prior_evidence_cannot_report_coverage_complete() -> None:
             return SimpleNamespace(
                 id=f"response-{len(self.calls):03d}",
                 output=[],
-                output_parsed=covered_result,
+                output_parsed=model_research_state(covered_result, []),
             )
 
     responses = FakeResponses()

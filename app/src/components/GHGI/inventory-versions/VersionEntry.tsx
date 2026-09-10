@@ -48,7 +48,7 @@ interface VersionChangeEntry {
 
 function toEmissionsString(totalEmissions: number, format?: string): string {
   const { value, unit } = formatEmissions(totalEmissions, format);
-  return `${value} ${unit}CO2e`;
+  return `${value} ${unit}`;
 }
 
 function getChangeSign(entry: VersionHistoryEntry): number {

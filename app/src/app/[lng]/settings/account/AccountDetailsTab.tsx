@@ -98,6 +98,7 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
             register={register}
             error={errors.name}
             id="name"
+            inputProps={{ size: "lg" }}
           />
           <EmailInput
             defaultValue={userInfo.email}
@@ -106,6 +107,7 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
             register={register}
             error={errors.email}
             id="email"
+            inputProps={{ shadow: "1dp" }}
           />
           {showTitle && (
             <ProfessionSelect
@@ -123,6 +125,7 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
               disabled={!isDirty}
               py="28px"
               w="auto"
+              minW="175px"
               px="24px"
               letterSpacing="widest"
               textTransform="uppercase"

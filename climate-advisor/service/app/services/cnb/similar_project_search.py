@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
 import logging
+import re
+from dataclasses import dataclass
 from typing import Protocol
 from uuid import UUID
-
-from openai import OpenAI
-from pydantic import JsonValue
 
 from app.config import get_settings
 from app.models.cnb.similar_projects import (
@@ -21,6 +19,7 @@ from app.models.cnb.similar_projects import (
     CnbSimilarProjectSearchRequest,
     CnbSimilarProjectSearchResult,
     CnbSimilarProjectSearchRunResult,
+    SimilarProjectSelections,
 )
 from app.services.cnb.project_tag_normalizer import normalize_project_tags
 from app.services.cnb.reference_data_client import (
@@ -28,6 +27,9 @@ from app.services.cnb.reference_data_client import (
     PostgresCnbReferenceDataClient,
     UnavailableCnbReferenceDataClient,
 )
+from app.utils.concept_note_context import omit_context_identifiers
+from openai import OpenAI
+from pydantic import JsonValue
 
 logger = logging.getLogger(__name__)
 COMPLETION_SIGNAL = "concept_note_context_bundle_ready"
@@ -313,17 +315,13 @@ class ProjectMatchingService:
         """Call the injected Responses API client with a strict decision schema."""
         current_project = request.model_dump(
             mode="json",
-            exclude={"run_id", "limit", "funder_scope"},
+            exclude={"run_id", "funder_id", "limit", "funder_scope"},
         )
-        current_project["project_tags"] = normalize_project_tags(
-            request.project_tags
-        )
+        current_project["project_tags"] = normalize_project_tags(request.project_tags)
         payload = {
             "current_project": current_project,
             "selection_limit": request.limit,
-            "candidates": [
-                self._shortlist_payload(item) for item in shortlist
-            ],
+            "candidates": [self._shortlist_payload(item) for item in shortlist],
         }
         logger.info(
             "Running CNB similar-project selection for run %s with %s shortlist items.",
@@ -335,17 +333,46 @@ class ProjectMatchingService:
             reasoning={"effort": self.reasoning_effort},
             instructions=self.prompt,
             input=json.dumps(payload, ensure_ascii=False),
-            text_format=CnbSimilarProjectLlmDecisionSet,
+            text_format=SimilarProjectSelections,
             store=self.store_responses,
         )
         if response.output_parsed is None:
             raise RuntimeError("Similar-project matcher returned no structured output")
+        selections = response.output_parsed.decisions
+        if len(selections) != len(shortlist):
+            raise ValueError(
+                "LLM decisions must cover every shortlist candidate in input order"
+            )
+        restored = []
+        for item, selection in zip(shortlist, selections, strict=True):
+            candidate = item.candidate
+            if selection.project_name != candidate.name:
+                raise ValueError("LLM changed the candidate name or input order")
+            if any(
+                position < 1 or position > len(candidate.evidence)
+                for position in selection.evidence_positions
+            ):
+                raise ValueError("LLM returned an unsupported evidence position")
+            restored.append(
+                CnbSimilarProjectLlmDecision(
+                    funded_project_id=candidate.funded_project_id,
+                    decision=selection.decision,
+                    fit_rationale=selection.fit_rationale,
+                    matched_tags=selection.matched_tags,
+                    caveats=selection.caveats,
+                    evidence_refs=[
+                        candidate.evidence[position - 1].evidence_ref
+                        for position in selection.evidence_positions
+                    ],
+                )
+            )
+        decision_set = CnbSimilarProjectLlmDecisionSet(decisions=restored)
         self._validate_decision_set(
             request=request,
             shortlist=shortlist,
-            decision_set=response.output_parsed,
+            decision_set=decision_set,
         )
-        return response.output_parsed
+        return decision_set
 
     def _shortlist_payload(
         self,
@@ -359,7 +386,16 @@ class ProjectMatchingService:
         candidate_payload["candidate_caveats"] = list(
             shortlisted_candidate.shortlist_caveats
         )
-        return candidate_payload
+        candidate_payload["evidence"] = [
+            {
+                "field": re.sub(r"^funded_projects\[[^\]]+\]\.?", "", item.target_path)
+                or "project",
+                "source_location": item.source_location,
+                "quote_or_summary": item.quote_or_summary,
+            }
+            for item in shortlisted_candidate.candidate.evidence
+        ]
+        return omit_context_identifiers(candidate_payload)
 
     def _validate_decision_set(
         self,

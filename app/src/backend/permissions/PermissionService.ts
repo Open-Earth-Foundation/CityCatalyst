@@ -54,37 +54,11 @@ export class PermissionService {
     context: PermissionContext,
     options: PermissionOptions = {},
   ): Promise<ResourceAccess> {
-    // Check for public inventory access first, regardless of authentication
-    if (context.inventoryId) {
-      logger.debug(
-        { inventoryId: context.inventoryId },
-        "Checking public inventory access",
-      );
-
-      // Load inventory to check if it's public
-      const inventory = await db.models.Inventory.findByPk(context.inventoryId);
-
-      if (inventory?.isPublic) {
-        logger.debug(
-          { inventoryId: context.inventoryId },
-          "Public inventory access granted",
-        );
-
-        const shouldLoadResource = options.excludeResource
-          ? false
-          : options.includeResource !== false;
-        const resource = shouldLoadResource
-          ? (await ResourceLoader.getResource(context)) ?? undefined
-          : undefined;
-
-        return {
-          hasAccess: true,
-          userRole: UserRole.PUBLIC_READER,
-          organizationId:
-            (await PermissionResolver.resolveOrganizationId(context)) ||
-            "public",
-          resource,
-        };
+    // Check for public inventory access first if not authenticated
+    if (!session?.user && context.inventoryId) {
+      const result = await this.checkPublicAccess(context, options);
+      if (result) {
+        return result;
       }
     }
 
@@ -110,7 +84,7 @@ export class PermissionService {
     if (session.user.role === Roles.Admin) {
       logger.debug({ userId: session.user.id }, "System admin access granted");
       const resource = shouldLoadResource
-        ? (await ResourceLoader.getResource(context)) ?? undefined
+        ? ((await ResourceLoader.getResource(context)) ?? undefined)
         : undefined;
       return {
         hasAccess: true,
@@ -119,6 +93,14 @@ export class PermissionService {
           (await PermissionResolver.resolveOrganizationId(context)) || "system",
         resource,
       };
+    }
+
+    // check public access for authenticated non-admin accounts
+    if (context.inventoryId) {
+      const result = await this.checkPublicAccess(context, options);
+      if (result) {
+        return result;
+      }
     }
 
     return this.checkUserAccess(session.user.id, context, options);
@@ -193,6 +175,41 @@ export class PermissionService {
       organizationId: orgId,
       resource,
     };
+  }
+
+  private static async checkPublicAccess(
+    context: PermissionContext,
+    options: PermissionOptions = {},
+  ) {
+    logger.debug(
+      { inventoryId: context.inventoryId },
+      "Checking public inventory access",
+    );
+
+    // Load inventory to check if it's public
+    const inventory = await db.models.Inventory.findByPk(context.inventoryId);
+
+    if (inventory?.isPublic) {
+      logger.debug(
+        { inventoryId: context.inventoryId },
+        "Public inventory access granted",
+      );
+
+      const shouldLoadResource = options.excludeResource
+        ? false
+        : options.includeResource !== false;
+      const resource = shouldLoadResource
+        ? ((await ResourceLoader.getResource(context)) ?? undefined)
+        : undefined;
+
+      return {
+        hasAccess: true,
+        userRole: UserRole.PUBLIC_READER,
+        organizationId:
+          (await PermissionResolver.resolveOrganizationId(context)) || "public",
+        resource,
+      };
+    }
   }
 
   // =============================================================================

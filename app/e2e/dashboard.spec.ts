@@ -29,7 +29,7 @@ test.describe("Dashboard", () => {
 
       // Verify inventory year title is displayed
       const inventoryYearTitle = page.getByTestId("inventory-year-title");
-      await expect(inventoryYearTitle).toHaveText("Inventory year");
+      await expect(inventoryYearTitle).toHaveText("Inventories");
 
       // Note: Add inventory button is only visible for ORG_ADMIN and PROJECT_ADMIN users
       // Test user is now an admin user, so the button should be visible

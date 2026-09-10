@@ -31,7 +31,11 @@ import {
 } from "react-icons/md";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
-import { api, useGetUserAccessStatusQuery } from "@/services/api";
+import {
+  api,
+  useGetModulesQuery,
+  useGetUserAccessStatusQuery,
+} from "@/services/api";
 import {
   MenuContent,
   MenuItem,
@@ -49,8 +53,10 @@ import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
 import { getCityHomePath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
+import { useCitySwitchNavigation } from "@/hooks/useCitySwitchNavigation";
 import { getParamValue } from "@/util/helpers";
 import { env } from "@/lib/runtime-env";
+import { getActiveModuleSegment } from "@/util/module-navigation";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -92,6 +98,7 @@ export function NavigationBar({
 
   const { data: session, status } = useSession();
   const { data: userInfo } = api.useGetUserInfoQuery();
+  const { data: allModules } = useGetModulesQuery();
   const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
     undefined,
     {
@@ -105,7 +112,9 @@ export function NavigationBar({
     [rawOrganizations],
   );
   const [getProjects] = api.useLazyGetProjectsQuery();
+  const [getProjectModulesTrigger] = api.useLazyGetProjectModulesQuery();
   const router = useRouter();
+  const navigateToCity = useCitySwitchNavigation(lng);
 
   const onChangeLanguage = async (language: string) => {
     Cookies.set("i18next", language, { path: "/", sameSite: "strict" });
@@ -117,14 +126,15 @@ export function NavigationBar({
     router.refresh();
   };
 
-  // Derive the active module name from the current pathname
+  // Derive the active module name from the current pathname, using the
+  // Modules table as the source of truth so new modules work without code
+  // changes here.
   const moduleName = useMemo(() => {
-    if (!pathname) return null;
-    if (pathname.includes("/GHGI")) return t("page-title-ghg-inventories");
-    if (pathname.includes("/HIAP")) return t("page-title-hiap");
-    if (pathname.includes("/dashboard")) return t("page-title-dashboard");
-    return null;
-  }, [pathname, t]);
+    const active = getActiveModuleSegment(pathname, allModules ?? []);
+    if (!active) return null;
+    if (!active.moduleId) return t("page-title-dashboard");
+    return active.name?.[activeLng] || active.name?.en || null;
+  }, [pathname, allModules, activeLng, t]);
 
   // Memoize city to ensure it updates when route changes
   const currentCityId = useMemo(
@@ -157,12 +167,23 @@ export function NavigationBar({
     const projects = await getProjects({ organizationId })
       .unwrap()
       .catch(() => []);
-    const cityId = projects
-      .flatMap((project) => project.cities)
-      .sort((a, b) => a.name.localeCompare(b.name))[0]?.cityId;
-    router.push(
-      cityId ? `/${lng}/cities/${cityId}` : `/${lng}/cities/onboarding`,
-    );
+
+    const targetProject = projects
+      .flatMap((project) => project.cities.map((city) => ({ project, city })))
+      .sort((a, b) => a.city.name.localeCompare(b.city.name))[0];
+
+    if (!targetProject) {
+      router.push(`/${lng}/cities/onboarding`);
+      return;
+    }
+
+    const projectModules = await getProjectModulesTrigger(
+      targetProject.project.projectId,
+    )
+      .unwrap()
+      .catch(() => []);
+
+    navigateToCity(targetProject.city.cityId, projectModules);
   }
 
   function logOut() {

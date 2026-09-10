@@ -272,21 +272,33 @@ function normalizeEmissionsUnitLabel(unit: unknown): string | null {
     return null;
   }
 
-  const normalized = text.replace(/\s+/g, "").toLowerCase();
-  if (normalized === "kgco2e") {
-    return "kg CO2e";
+  const compact = text.replace(/\s+/g, "");
+  const normalized = compact.toLowerCase().replace("₂", "2");
+
+  // Megatonnes use capital M (MtCO₂e); metric tonnes use lowercase mtCO₂e.
+  if (compact.startsWith("Mt") || compact.startsWith("MT")) {
+    return "MtCO₂e";
   }
-  if (normalized === "tco2e") {
-    return "t CO2e";
+  if (normalized === "kgco2e" || normalized === "kg") {
+    return "kgCO₂e";
+  }
+  if (normalized === "tco2e" || normalized === "mtco2e") {
+    return "mtCO₂e";
   }
   if (normalized === "ktco2e") {
-    return "kt CO2e";
-  }
-  if (normalized === "mtco2e") {
-    return "Mt CO2e";
+    return "ktCO₂e";
   }
   if (normalized === "gtco2e") {
-    return "Gt CO2e";
+    return "GtCO₂e";
+  }
+  if (normalized === "ttco2e") {
+    return "TtCO₂e";
+  }
+  if (normalized === "gco2e") {
+    return "gCO₂e";
+  }
+  if (normalized === "mgco2e") {
+    return "mgCO₂e";
   }
 
   return text;

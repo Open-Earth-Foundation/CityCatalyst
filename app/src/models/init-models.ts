@@ -106,6 +106,16 @@ import type {
 } from "./PdfOcrJob";
 import { PdfOcrJob as _PdfOcrJob } from "./PdfOcrJob";
 import type {
+  WebhookSubscriptionAttributes,
+  WebhookSubscriptionCreationAttributes,
+} from "./WebhookSubscription";
+import { WebhookSubscription as _WebhookSubscription } from "./WebhookSubscription";
+import type {
+  WebhookDeliveryAttributes,
+  WebhookDeliveryCreationAttributes,
+} from "./WebhookDelivery";
+import { WebhookDelivery as _WebhookDelivery } from "./WebhookDelivery";
+import type {
   NativeInputCatalogAttributes,
   NativeInputCatalogCreationAttributes,
 } from "./NativeInputCatalog";
@@ -125,6 +135,16 @@ import type {
   MeedActionRemovedAttributes,
   MeedActionRemovedCreationAttributes,
 } from "./MeedActionRemoved";
+import type {
+  MeedActionReportAttributes,
+  MeedActionReportCreationAttributes,
+} from "./MeedActionReport";
+import { MeedActionReport as _MeedActionReport } from "./MeedActionReport";
+import type {
+  MeedRankSnapshotAttributes,
+  MeedRankSnapshotCreationAttributes,
+} from "./MeedRankSnapshot";
+import { MeedRankSnapshot as _MeedRankSnapshot } from "./MeedRankSnapshot";
 import type {
   MethodologyAttributes,
   MethodologyCreationAttributes,
@@ -180,16 +200,6 @@ import {
   OrganizationInviteAttributes,
   OrganizationInviteCreationAttributes,
 } from "./OrganizationInvite";
-import type {
-  AssistantMessageAttributes,
-  AssistantMessageCreationAttributes,
-} from "./AssistantMessage";
-import { AssistantMessage as _AssistantMessage } from "./AssistantMessage";
-import type {
-  AssistantThreadAttributes,
-  AssistantThreadCreationAttributes,
-} from "./AssistantThread";
-import { AssistantThread as _AssistantThread } from "./AssistantThread";
 import type {
   OrganizationAttributes,
   OrganizationCreationAttributes,
@@ -290,10 +300,14 @@ export {
   _Inventory as Inventory,
   _ImportedInventoryFile as ImportedInventoryFile,
   _PdfOcrJob as PdfOcrJob,
+  _WebhookSubscription as WebhookSubscription,
+  _WebhookDelivery as WebhookDelivery,
   _NativeInputCatalog as NativeInputCatalog,
   _ImportMappingFeedback as ImportMappingFeedback,
   _MeedActionRanked as MeedActionRanked,
   _MeedActionRemoved as MeedActionRemoved,
+  _MeedActionReport as MeedActionReport,
+  _MeedRankSnapshot as MeedRankSnapshot,
   _Methodology as Methodology,
   _Organization as Organization,
   _Project as Project,
@@ -310,8 +324,6 @@ export {
   _Version as Version,
   _UserFile as UserFile,
   _CityInvite as CityInvite,
-  _AssistantMessage as AssistantMessage,
-  _AssistantThread as AssistantThread,
   _OrganizationInvite as OrganizationInvite,
   _OrganizationAdmin as OrganizationAdmin,
   _ProjectAdmin as ProjectAdmin,
@@ -373,6 +385,10 @@ export type {
   ImportedInventoryFileCreationAttributes,
   PdfOcrJobAttributes,
   PdfOcrJobCreationAttributes,
+  WebhookSubscriptionAttributes,
+  WebhookSubscriptionCreationAttributes,
+  WebhookDeliveryAttributes,
+  WebhookDeliveryCreationAttributes,
   NativeInputCatalogAttributes,
   NativeInputCatalogCreationAttributes,
   ImportMappingFeedbackAttributes,
@@ -381,6 +397,10 @@ export type {
   MeedActionRankedCreationAttributes,
   MeedActionRemovedAttributes,
   MeedActionRemovedCreationAttributes,
+  MeedActionReportAttributes,
+  MeedActionReportCreationAttributes,
+  MeedRankSnapshotAttributes,
+  MeedRankSnapshotCreationAttributes,
   MethodologyAttributes,
   MethodologyCreationAttributes,
   OrganizationAttributes,
@@ -411,10 +431,6 @@ export type {
   UserCreationAttributes,
   VersionAttributes,
   VersionCreationAttributes,
-  AssistantMessageAttributes,
-  AssistantMessageCreationAttributes,
-  AssistantThreadAttributes,
-  AssistantThreadCreationAttributes,
   FormulaInputAttributes,
   FormulaInputCreationAttributes,
   OrganizationAdminAttributes,
@@ -475,10 +491,14 @@ export function initModels(sequelize: Sequelize) {
   const Inventory = _Inventory.initModel(sequelize);
   const ImportedInventoryFile = _ImportedInventoryFile.initModel(sequelize);
   const PdfOcrJob = _PdfOcrJob.initModel(sequelize);
+  const WebhookSubscription = _WebhookSubscription.initModel(sequelize);
+  const WebhookDelivery = _WebhookDelivery.initModel(sequelize);
   const NativeInputCatalog = _NativeInputCatalog.initModel(sequelize);
   const ImportMappingFeedback = _ImportMappingFeedback.initModel(sequelize);
   const MeedActionRanked = _MeedActionRanked.initModel(sequelize);
   const MeedActionRemoved = _MeedActionRemoved.initModel(sequelize);
+  const MeedActionReport = _MeedActionReport.initModel(sequelize);
+  const MeedRankSnapshot = _MeedRankSnapshot.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
   const Organization = _Organization.initModel(sequelize);
   const Project = _Project.initModel(sequelize);
@@ -495,8 +515,6 @@ export function initModels(sequelize: Sequelize) {
   const Version = _Version.initModel(sequelize);
   const UserFile = _UserFile.initModel(sequelize);
   const CityInvite = _CityInvite.initModel(sequelize);
-  const AssistantMessage = _AssistantMessage.initModel(sequelize);
-  const AssistantThread = _AssistantThread.initModel(sequelize);
   const OrganizationInvite = _OrganizationInvite.initModel(sequelize);
   const OrganizationAdmin = _OrganizationAdmin.initModel(sequelize);
   const ProjectAdmin = _ProjectAdmin.initModel(sequelize);
@@ -1006,6 +1024,42 @@ export function initModels(sequelize: Sequelize) {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   });
+  WebhookSubscription.belongsTo(Organization, {
+    as: "organization",
+    foreignKey: "organizationId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  Organization.hasMany(WebhookSubscription, {
+    as: "webhookSubscriptions",
+    foreignKey: "organizationId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  WebhookSubscription.belongsTo(User, {
+    as: "creator",
+    foreignKey: "createdBy",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(WebhookSubscription, {
+    as: "createdWebhookSubscriptions",
+    foreignKey: "createdBy",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  WebhookDelivery.belongsTo(WebhookSubscription, {
+    as: "subscription",
+    foreignKey: "subscriptionId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  WebhookSubscription.hasMany(WebhookDelivery, {
+    as: "deliveries",
+    foreignKey: "subscriptionId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
   GasValue.belongsTo(InventoryValue, {
     as: "inventoryValue",
     foreignKey: "inventoryValueId",
@@ -1029,14 +1083,6 @@ export function initModels(sequelize: Sequelize) {
   EmissionsFactor.belongsTo(Inventory, {
     as: "inventory",
     foreignKey: "inventoryId",
-  });
-  AssistantMessage.belongsTo(AssistantThread, {
-    as: "assistantThread",
-    foreignKey: "threadId",
-  });
-  AssistantThread.hasMany(AssistantMessage, {
-    as: "assistantMessages",
-    foreignKey: "threadId",
   });
   Organization.hasMany(Project, {
     as: "projects",
@@ -1141,6 +1187,24 @@ export function initModels(sequelize: Sequelize) {
   });
   Inventory.hasMany(MeedActionRemoved, {
     as: "meedActionRemoveds",
+    foreignKey: "inventoryId",
+  });
+
+  // Associations for MeedActionReport and MeedRankSnapshot
+  MeedActionReport.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedActionReport, {
+    as: "meedActionReports",
+    foreignKey: "inventoryId",
+  });
+  MeedRankSnapshot.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedRankSnapshot, {
+    as: "meedRankSnapshots",
     foreignKey: "inventoryId",
   });
 
@@ -1261,10 +1325,14 @@ export function initModels(sequelize: Sequelize) {
     Inventory: Inventory,
     ImportedInventoryFile: ImportedInventoryFile,
     PdfOcrJob: PdfOcrJob,
+    WebhookSubscription: WebhookSubscription,
+    WebhookDelivery: WebhookDelivery,
     NativeInputCatalog: NativeInputCatalog,
     ImportMappingFeedback: ImportMappingFeedback,
     MeedActionRanked: MeedActionRanked,
     MeedActionRemoved: MeedActionRemoved,
+    MeedActionReport: MeedActionReport,
+    MeedRankSnapshot: MeedRankSnapshot,
     Methodology: Methodology,
     Organization: Organization,
     Project: Project,
@@ -1282,8 +1350,6 @@ export function initModels(sequelize: Sequelize) {
     UserFile: UserFile,
     CityInvite: CityInvite,
     OrganizationInvite: OrganizationInvite,
-    AssistantMessage: AssistantMessage,
-    AssistantThread: AssistantThread,
     FormulaInput: FormulaInput,
     OrganizationAdmin: OrganizationAdmin,
     ProjectAdmin: ProjectAdmin,

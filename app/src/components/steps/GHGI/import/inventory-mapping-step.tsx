@@ -75,7 +75,7 @@ export default function InventoryMappingStep({
           tonnes < 0.0001
             ? tonnes.toExponential(2)
             : parseFloat(tonnes.toFixed(4)).toString();
-        return `${formatted} t CO2e`;
+        return `${formatted} mtCO₂e`;
       }
     }
     return col.exampleValue;

@@ -18,6 +18,7 @@ import { NextRequest } from "next/server";
 import { POST as postAllowedCapabilities } from "@/app/api/v1/internal/ca/capabilities/allowed-capabilities/route";
 import { POST as postUserToken } from "@/app/api/v1/internal/ca/user-token/route";
 import { PermissionService } from "@/backend/permissions/PermissionService";
+import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 import { db } from "@/models";
 import { Roles, UserRole } from "@/util/types";
 import { WhereOptions } from "sequelize";
@@ -65,18 +66,14 @@ let postListNotationKeys: typeof import("@/app/api/v1/internal/ca/capabilities/g
 let postCommitNotationKeys: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys/route").POST;
 
 beforeAll(async () => {
-  ({ POST: postLoadContext } = await import(
-    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route"
-  ));
-  ({ POST: postCommitAccepted } = await import(
-    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route"
-  ));
-  ({ POST: postListNotationKeys } = await import(
-    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys/route"
-  ));
-  ({ POST: postCommitNotationKeys } = await import(
-    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys/route"
-  ));
+  ({ POST: postLoadContext } =
+    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route"));
+  ({ POST: postCommitAccepted } =
+    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route"));
+  ({ POST: postListNotationKeys } =
+    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys/route"));
+  ({ POST: postCommitNotationKeys } =
+    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys/route"));
 });
 
 const USER_ID = "11111111-1111-4111-8111-111111111111";
@@ -132,12 +129,15 @@ function serviceToken(
   return jwt.sign(payload, process.env.VERIFICATION_TOKEN_SECRET!, options);
 }
 
-function serviceHeaders(token: string, extra?: HeadersInit): Headers {
+function serviceHeaders(
+  token: string,
+  extra?: Record<string, string>,
+): Headers {
   return jsonHeaders({
     Authorization: `Bearer ${token}`,
     "X-Service-Name": "climate-advisor",
     "X-Service-Key": "ci-shared-service-key",
-    ...Object.fromEntries(new Headers(extra)),
+    ...extra,
   });
 }
 
@@ -230,6 +230,10 @@ describe("internal CA service auth contract", () => {
   });
 
   beforeEach(() => {
+    Reflect.deleteProperty(
+      globalThis,
+      Symbol.for("citycatalyst.ca-user-token-cache.v1"),
+    );
     process.env.CC_SERVICE_API_KEY = "ci-shared-service-key";
     process.env.HOST = "http://localhost:3000";
     process.env.NEXT_PUBLIC_FEATURE_FLAGS =
@@ -288,6 +292,10 @@ describe("internal CA service auth contract", () => {
   });
 
   afterEach(() => {
+    Reflect.deleteProperty(
+      globalThis,
+      Symbol.for("citycatalyst.ca-user-token-cache.v1"),
+    );
     jest.restoreAllMocks();
     mockBuildStationaryEnergyContext.mockReset();
     mockCommitAcceptedStationaryEnergyRows.mockReset();
@@ -323,6 +331,55 @@ describe("internal CA service auth contract", () => {
 
     expect(missingResponse.status).toBe(401);
     expect(wrongResponse.status).toBe(401);
+  });
+
+  it("rechecks live role, permissions, and user existence with a cached token", async () => {
+    jest
+      .mocked(db.models.User.findByPk)
+      .mockResolvedValueOnce(
+        db.models.User.build({
+          userId: USER_ID,
+          email: "user@example.test",
+          role: Roles.Admin,
+        }),
+      );
+    const fetchSpy = jest
+      .spyOn(global, "fetch")
+      .mockImplementation(async (_, init) =>
+        postUserToken(
+          makeRequest(
+            "/api/v1/internal/ca/user-token",
+            JSON.parse(String(init?.body)),
+            init?.headers,
+          ),
+        ),
+      );
+    const token = await issueClimateAdvisorUserToken({ userId: USER_ID });
+    const request = () =>
+      postAllowedCapabilities(
+        makeRequest(
+          "/api/v1/internal/ca/capabilities/allowed-capabilities",
+          allowedBody(),
+          serviceHeaders(token.access_token),
+        ),
+        { params: Promise.resolve({}) },
+      );
+    expect((await request()).status).toBe(200);
+    expect(
+      jest.mocked(PermissionService.canEditInventory).mock.calls.at(-1)?.[0]
+        .user.role,
+    ).toBe(Roles.User);
+
+    jest
+      .mocked(PermissionService.canEditInventory)
+      .mockRejectedValueOnce(new createHttpError.Forbidden("Access revoked"));
+    expect((await request()).status).toBe(403);
+    jest.mocked(db.models.User.findOne).mockResolvedValueOnce(null);
+    expect((await request()).status).toBe(401);
+    expect(
+      (await issueClimateAdvisorUserToken({ userId: USER_ID })).access_token,
+    ).toBe(token.access_token);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
   it("rejects token exchange for nonexistent users", async () => {

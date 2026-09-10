@@ -717,7 +717,11 @@ export const appTheme = createSystem(defaultConfig, {
       },
 
       radii: {
-        full: { value: "50%" },
+        // Chakra's `full` is a stadium/pill radius, not a percentage. Using 50%
+        // here made every wide, short element (progress tracks, sliders, pills)
+        // render as an ellipse. A square element rounds to the same circle
+        // either way, so this is safe for avatars, dots and icon buttons.
+        full: { value: "9999px" },
         minimal: { value: "4px" },
         rounded: { value: "8px" },
         "rounded-xl": { value: "16px" },

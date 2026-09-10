@@ -49,7 +49,7 @@ export default function Onboarding(props: {
       });
   }, [searchParams, acceptOrgInvite, status, pathname, router]);
 
-  const steps = [1, 2, 3];
+  const steps = [1, 2];
   const projectId = searchParams.get("project");
   const setupHref = projectId
     ? `${pathname}/setup?project=${projectId}`

@@ -116,7 +116,10 @@ class RoleModelConfig(BaseModel):
     name: str
     description: Optional[str] = None
     supports_streaming: Optional[bool] = None
-    temperature: float
+    temperature: float | None = None
+    reasoning_effort: (
+        Literal["none", "low", "medium", "high", "xhigh", "max"] | None
+    ) = None
 
 
 class ResearchModelConfig(BaseModel):
@@ -134,6 +137,7 @@ class ModelsConfig(BaseModel):
     cnb_source_reader: ResearchModelConfig
     cnb_source_synthesizer: ResearchModelConfig
     cnb_chapter_drafter: ResearchModelConfig | None = None
+    cnb_chapter_validator: ResearchModelConfig
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -158,6 +162,12 @@ class CnbSourcePromptBudgetConfig(BaseModel):
     max_question_chars: int = Field(default=2000, ge=1, le=10000)
 
 
+class CnbValidationPromptBudgetConfig(BaseModel):
+    """Full-prompt limit for non-truncating chapter validation batches."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=1000)
+
+
 class PromptBudgetConfig(BaseModel):
     tokenizer_encoding: str = "o200k_base"
     stationary_energy: StationaryEnergyPromptBudgetConfig = Field(
@@ -165,6 +175,9 @@ class PromptBudgetConfig(BaseModel):
     )
     cnb_sources: CnbSourcePromptBudgetConfig = Field(
         default_factory=CnbSourcePromptBudgetConfig,
+    )
+    cnb_validation: CnbValidationPromptBudgetConfig = Field(
+        default_factory=CnbValidationPromptBudgetConfig,
     )
 
 
@@ -180,6 +193,7 @@ class PromptsConfig(BaseModel):
     core: str
     chat: str
     stationary_energy_review: Optional[str] = None
+    cnb_chat: str = "prompts/cnb/chat.md"
     cnb_funding_opportunity_research: str
     cnb_funder_identity_matching: str
     cnb_similar_project_matching: str
@@ -187,6 +201,12 @@ class PromptsConfig(BaseModel):
     cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
     cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
+    cnb_chapter_validation_completeness: str = (
+        "prompts/cnb/chapter_validation_completeness.md"
+    )
+    cnb_chapter_validation_consistency: str = (
+        "prompts/cnb/chapter_validation_consistency.md"
+    )
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""
@@ -203,11 +223,11 @@ class PromptsConfig(BaseModel):
         if workflow_prompt_type not in {
             "chat",
             "stationary_energy_review",
-            "concept_note",
+            "cnb_chat",
         }:
             raise ValueError(
                 "Workflow prompt type must be 'chat', 'stationary_energy_review', "
-                "or 'concept_note'"
+                "or 'cnb_chat'"
             )
 
         core_prompt = self.get_prompt("core").strip()

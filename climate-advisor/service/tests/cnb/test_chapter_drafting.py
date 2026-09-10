@@ -5,7 +5,7 @@ from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from typing import Any, cast
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 from uuid import UUID, uuid4
 
 import pytest
@@ -45,8 +45,14 @@ class FakeWorkspace:
     def __init__(self, chapters: list[WorkspaceChapterSnapshot]) -> None:
         self.chapters = chapters
 
-    async def list_chapters(self, *, run_id: UUID) -> list[WorkspaceChapterSnapshot]:
+    async def list_chapters(
+        self,
+        *,
+        run_id: UUID,
+        template_fingerprint: str | None = None,
+    ) -> list[WorkspaceChapterSnapshot]:
         assert run_id == RUN_ID
+        assert template_fingerprint is not None
         return list(self.chapters)
 
     async def save_generated_chapter(
@@ -69,6 +75,36 @@ class FakeWorkspace:
             revision_number=1,
         )
         return True
+
+
+async def test_load_state_uses_lightweight_template_fingerprint_lookup() -> None:
+    """Avoid loading full funder context for the frequently polled draft state."""
+    workspace = MagicMock()
+    workspace.list_chapters = AsyncMock(return_value=[])
+    application_context = MagicMock()
+    application_context.load_template_fingerprint_for_run = AsyncMock(
+        return_value="template-fingerprint"
+    )
+    application_context.load_for_run = AsyncMock()
+    service = cast(
+        ConceptNoteChapterDraftService,
+        object.__new__(ConceptNoteChapterDraftService),
+    )
+    service._workspace = workspace
+    service._application_context = application_context
+    run = cast(
+        ConceptNoteRun,
+        SimpleNamespace(run_id=RUN_ID, context_summary={}),
+    )
+
+    await service.load_state(run)
+
+    application_context.load_template_fingerprint_for_run.assert_awaited_once_with(run)
+    application_context.load_for_run.assert_not_called()
+    workspace.list_chapters.assert_awaited_once_with(
+        run_id=RUN_ID,
+        template_fingerprint="template-fingerprint",
+    )
 
 
 async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
@@ -138,8 +174,15 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         )
     )
     included_sources = ApplicationContextIncludedSources(ghgi=True)
+    source = {
+        "source_label": "Drainage plan",
+        "page_count": 1,
+        "block_count": None,
+        "key_excerpts": [{"text": "Drainage upgrades", "page": 1}],
+    }
+    run_context = {"context_bundle": {"selected_sources": [source]}}
     service._load_run_context = AsyncMock(
-        return_value=({"context_bundle": {}}, included_sources)
+        return_value=(run_context, included_sources)
     )
     service._lease_is_active = AsyncMock(return_value=True)
     service._mark_current_chapter = AsyncMock(return_value=True)
@@ -158,10 +201,18 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         "Chapter 2",
     ]
     assert payloads[0]["previous_chapters"] == []
+    for payload in payloads:
+        assert payload["run_context"]["context_bundle"]["selected_sources"] == [
+            {
+                "source_label": "Drainage plan",
+                "key_excerpts": [{"text": "Drainage upgrades", "page": 1}],
+            }
+        ]
+    assert source["page_count"] == 1
+    assert source["block_count"] is None
     assert payloads[0]["application_context"]["included_sources"]["ghgi"] is True
     assert payloads[1]["previous_chapters"] == [
         {
-            "chapter_ref": "chapter-1",
             "title": "Chapter 1",
             "body_markdown": "Draft for Chapter 1",
         }

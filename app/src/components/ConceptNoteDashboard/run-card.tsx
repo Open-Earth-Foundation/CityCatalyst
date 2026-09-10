@@ -1,38 +1,70 @@
-import { Box, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Heading,
+  HStack,
+  Icon,
+  IconButton,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import type { TFunction } from "i18next";
 import NextLink from "next/link";
+import { LuPencil } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
+import { api } from "@/services/api";
 import type { ConceptNoteRun } from "@/util/types";
 
 import { StatusBadge } from "./status-badge";
-import type { RunStatusTone } from "./utils";
+import {
+  getConceptNoteStatusPresentation,
+  shouldLoadConceptNoteReviewStatus,
+} from "./utils";
 
 interface RunCardProps {
   activityLabel: string;
+  duplicateLoading: boolean;
+  lifecycleDisabled: boolean;
+  onDelete: () => void;
+  onDuplicate: () => void;
+  onExport: () => void;
+  onRename: () => void;
   progress: number;
   progressLabel: string;
   reducedMotion: boolean;
   resumeHref: string;
-  resumeLabel: string;
   run: ConceptNoteRun;
   scopeLabel: string;
-  statusLabel: string;
-  statusTone: RunStatusTone;
+  t: TFunction;
 }
 
 export function RunCard({
   activityLabel,
+  duplicateLoading,
+  lifecycleDisabled,
+  onDelete,
+  onDuplicate,
+  onExport,
+  onRename,
   progress,
   progressLabel,
   reducedMotion,
   resumeHref,
-  resumeLabel,
   run,
   scopeLabel,
-  statusLabel,
-  statusTone,
+  t,
 }: RunCardProps) {
+  const loadReviewStatus = shouldLoadConceptNoteReviewStatus(
+    run.status,
+    run.progress_summary,
+  );
+  const { currentData: draft } = api.useGetConceptNoteDraftQuery(run.run_id, {
+    skip: !loadReviewStatus,
+  });
+  const status = getConceptNoteStatusPresentation(run.status, draft);
+
   return (
     <motion.div
       initial={reducedMotion ? false : { opacity: 0, y: 10 }}
@@ -59,18 +91,34 @@ export function RunCard({
         _motionReduce={{ transition: "none" }}
       >
         <Flex align="start" justify="space-between" gap={3}>
-          <Heading
-            as="h2"
-            minW={0}
-            fontFamily="heading"
-            fontSize="title.sm"
-            fontWeight="semibold"
-            lineHeight="20"
-            color="content.primary"
-          >
-            {run.name}
-          </Heading>
-          <StatusBadge label={statusLabel} tone={statusTone} />
+          <HStack minW={0} gap={1}>
+            <Heading
+              as="h2"
+              minW={0}
+              fontFamily="heading"
+              fontSize="title.sm"
+              fontWeight="semibold"
+              lineHeight="20"
+              color="content.primary"
+            >
+              {run.name}
+            </Heading>
+            <IconButton
+              flexShrink={0}
+              size="xs"
+              variant="ghost"
+              boxSize="24px"
+              minW="24px"
+              color="content.tertiary"
+              onClick={onRename}
+              disabled={lifecycleDisabled}
+              aria-label={`${t("rename")}: ${run.name}`}
+              _hover={{ color: "content.link", bg: "background.neutral" }}
+            >
+              <Icon as={LuPencil} boxSize={3.5} />
+            </IconButton>
+          </HStack>
+          <StatusBadge label={t(status.translationKey)} tone={status.tone} />
         </Flex>
 
         <Text
@@ -96,7 +144,7 @@ export function RunCard({
             </Text>
           </Flex>
           <Box
-            h="4px"
+            h="8px"
             overflow="hidden"
             borderRadius="pill"
             bg="background.neutral"
@@ -105,7 +153,7 @@ export function RunCard({
               h="full"
               w={`${progress}%`}
               borderRadius="pill"
-              bg="content.link"
+              bg="sentiment.positiveDefault"
               transition="width 180ms ease"
               _motionReduce={{ transition: "none" }}
             />
@@ -121,9 +169,53 @@ export function RunCard({
           {activityLabel}
         </Text>
 
-        <HStack mt="auto">
-          <Button asChild size="sm" variant="solid">
-            <NextLink href={resumeHref}>{resumeLabel}</NextLink>
+        <HStack mt="auto" gap={2} flexWrap="wrap">
+          <Button asChild size="sm" variant="solid" h="32px" px="14px" py="8px">
+            <NextLink
+              href={resumeHref}
+              aria-label={`${t("resume")}: ${run.name}`}
+            >
+              {t("resume")}
+            </NextLink>
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            h="32px"
+            px="14px"
+            py="8px"
+            onClick={onDuplicate}
+            loading={duplicateLoading}
+            disabled={lifecycleDisabled}
+            aria-label={`${t("duplicate")}: ${run.name}`}
+          >
+            {t("duplicate")}
+          </Button>
+          <Button
+            size="sm"
+            variant="solid"
+            h="32px"
+            px="14px"
+            py="8px"
+            bg="sentiment.positiveDefault"
+            color="base.light"
+            onClick={onExport}
+            disabled={lifecycleDisabled}
+            aria-label={`${t("export")}: ${run.name}`}
+          >
+            {t("export")}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            h="32px"
+            px="14px"
+            py="8px"
+            onClick={onDelete}
+            disabled={lifecycleDisabled}
+            aria-label={`${t("delete")}: ${run.name}`}
+          >
+            {t("delete")}
           </Button>
         </HStack>
       </VStack>

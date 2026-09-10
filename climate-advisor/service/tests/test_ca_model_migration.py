@@ -6,6 +6,8 @@ from uuid import uuid4
 import httpx
 import pytest
 from agents import RunConfig, Runner, function_tool
+from openai import AsyncOpenAI
+
 from app.config import get_settings
 from app.models.cnb.source_prompt import DocumentSummary, QuestionReading
 from app.services.agent_service import AgentService
@@ -13,19 +15,19 @@ from app.services.cnb.source_analysis import (
     _run_agent,
     source_analysis_contract_version,
 )
-from openai import AsyncOpenAI
 
 
-def test_all_active_ca_model_defaults_use_the_requested_family():
+def test_all_active_ca_model_defaults_use_terra():
     models = get_settings().llm.models
     expected = {
-        "orchestrator": ("openai/gpt-5.6-luna", "medium"),
-        "agentic_flow": ("openai/gpt-5.6-sol", "medium"),
-        "funding_research": ("openai/gpt-5.6-sol", "medium"),
-        "funder_identity": ("openai/gpt-5.6-luna", "low"),
-        "cnb_source_reader": ("openai/gpt-5.6-luna", "low"),
-        "cnb_source_synthesizer": ("openai/gpt-5.6-sol", "medium"),
+        "orchestrator": ("openai/gpt-5.6-terra", "medium"),
+        "agentic_flow": ("openai/gpt-5.6-terra", "medium"),
+        "funding_research": ("openai/gpt-5.6-terra", "medium"),
+        "funder_identity": ("openai/gpt-5.6-terra", "low"),
+        "cnb_source_reader": ("openai/gpt-5.6-terra", "low"),
+        "cnb_source_synthesizer": ("openai/gpt-5.6-terra", "medium"),
         "cnb_chapter_drafter": ("openai/gpt-5.6-terra", "medium"),
+        "cnb_chapter_validator": ("openai/gpt-5.6-terra", "medium"),
     }
     for role, (model, effort) in expected.items():
         configured = getattr(models, role)
@@ -186,10 +188,9 @@ async def test_source_roles_preserve_reasoning_and_structured_outputs(
                 if role == "cnb_source_reader"
                 else "cnb_source_summary_synthesis"
             ),
-            model_name=configured.name,
+            model_config=configured,
             output_type=output_type,
             input_text="No budget is stated.",
-            settings=settings,
             client=client,
             runner=LocalRunner,
         )

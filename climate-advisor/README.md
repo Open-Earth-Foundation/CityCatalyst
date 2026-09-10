@@ -293,7 +293,7 @@ Content-Type: application/json
     "cc_access_token": "jwt_token_from_citycatalyst"
   },
   "options": {
-    "model": "openai/gpt-5.6-luna"
+    "model": "openai/gpt-5.6-terra"
   }
 }
 ```
@@ -554,12 +554,12 @@ chapter drafter uses GPT-5.6 Terra with medium reasoning.
 
 Current CA model defaults:
 
-- General chat: `openai/gpt-5.6-luna`, reasoning `medium`.
-- CNB and Stationary Energy chat: `openai/gpt-5.6-sol`, reasoning `medium`.
-- Funding research and similar-project selection: `openai/gpt-5.6-sol`, reasoning `medium`.
-- Funder-identity matching: `openai/gpt-5.6-luna`, reasoning `low`.
-- Document mapping and question-focused source readers: `openai/gpt-5.6-luna`, reasoning `low`.
-- Document-summary synthesis: `openai/gpt-5.6-sol`, reasoning `medium`.
+- General chat: `openai/gpt-5.6-terra`, reasoning `medium`.
+- CNB and Stationary Energy chat: `openai/gpt-5.6-terra`, reasoning `medium`.
+- Funding research and similar-project selection: `openai/gpt-5.6-terra`, reasoning `medium`.
+- Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `low`.
+- Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `low`.
+- Document-summary synthesis: `openai/gpt-5.6-terra`, reasoning `medium`.
 
 Chat keeps the existing OpenRouter Chat Completions tool loop and explicitly sets
 reasoning to `medium`. The configured chat and source-worker requests omit
@@ -584,8 +584,8 @@ Prompt paths are also configured in `llm_config.yaml`:
   to compact document summaries, and read focused questions for exact evidence
 
 CNB document mapping and question-focused source readers use
-`models.cnb_source_reader`: `openai/gpt-5.6-luna` with low reasoning. Document
-summary synthesis uses `models.cnb_source_synthesizer`: `openai/gpt-5.6-sol` with
+`models.cnb_source_reader`: `openai/gpt-5.6-terra` with low reasoning. Document
+summary synthesis uses `models.cnb_source_synthesizer`: `openai/gpt-5.6-terra` with
 medium reasoning. These tool-free workers retain the OpenRouter Chat Completions
 route and structured-output schemas, and omit `temperature`. The 50,000-token
 partition budget and maximum three concurrent readers are unchanged. Existing
@@ -1042,7 +1042,7 @@ Content-Type: application/json
   "content": "What are climate risks?",
   "thread_id": "550e8400-e29b-41d4-a716-446655440000",
   "inventory_id": "inv-456",
-  "options": { "model": "openai/gpt-5.6-luna" }
+  "options": { "model": "openai/gpt-5.6-terra" }
 }
 ```
 

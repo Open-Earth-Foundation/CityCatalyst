@@ -130,5 +130,20 @@
   "csv-column-impact": "Impacto",
   "csv-column-alignment": "Alineación",
   "csv-column-feasibility": "Factibilidad",
-  "csv-column-final": "Final"
+  "csv-column-final": "Final",
+  "generate-report-running": "Generando informe…",
+  "generate-report-duration_one": "Aproximadamente medio minuto — el informe se redacta para la acción que seleccionaste.",
+  "generate-report-duration_other": "Cerca de medio minuto por acción — se escribirán {{count}} informes.",
+  "report-progress": "Escribiendo informe {{done}} de {{total}}…",
+  "report-title": "Informe de acción climática",
+  "report-subtitle_one": "Una acción priorizada",
+  "report-subtitle_other": "{{count}} acciones prioritarias",
+  "report-limitations": "Limitaciones",
+  "report-error-title": "No se pudieron generar algunos informes",
+  "report-error-dismiss": "Descartar",
+  "report-error-none": "No se pudieron generar informes. Esto suele ser temporal — inténtalo de nuevo en un momento.",
+  "report-error-fetch-title": "No se pudieron cargar los informes",
+  "report-error-fetch": "No se pudieron cargar sus informes guardados, por lo que no se generó nada nuevo. Recargue la página e inicie sesión nuevamente si el problema persiste.",
+  "report-error-partial_one": "{{count}} acción no pudo ser incluida: {{actions}}.",
+  "report-error-partial_other": "{{count}} acciones no pudieron ser incluidas: {{actions}}."
 }

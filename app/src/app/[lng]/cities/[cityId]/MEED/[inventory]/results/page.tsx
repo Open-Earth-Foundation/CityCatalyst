@@ -33,7 +33,11 @@ import {
 import { PILLAR_WEIGHTS } from "../../scoringWeights";
 import { MeedCardSkeleton } from "../../components/MeedSkeletons";
 import { MeedErrorCard } from "../../components/MeedErrorCard";
-import { useMeedReport, type MeedReportResult } from "./report/useMeedReport";
+import {
+  MeedReportBlockedError,
+  useMeedReport,
+  type MeedReportResult,
+} from "./report/useMeedReport";
 import { buildReportPdf } from "./report/meedReportPdf";
 import { actionName as catalogActionName } from "./components/actionCatalog";
 
@@ -140,6 +144,8 @@ export default function Page(props: {
   const [reportError, setReportError] = useState<{
     title: string;
     body: string;
+    /** Present when there is somewhere to go to unblock the run. */
+    action?: { label: string; href: string };
   } | null>(null);
 
   const generateReport = useCallback(async () => {
@@ -152,13 +158,31 @@ export default function Page(props: {
     let result: MeedReportResult | null;
     try {
       result = await generate(targets, lng);
-    } catch {
-      // The reports could not be fetched at all. That is a dead session or an
-      // unwell service, not a failure of any one action, so it is worth saying
-      // differently — "try again in a moment" would be the wrong instruction.
+    } catch (error) {
+      // The run never started, so the instruction is not "try again". A
+      // missing snapshot in particular is fixed by re-running the ranking —
+      // the ranking on screen may predate reports entirely.
+      const blocked =
+        error instanceof MeedReportBlockedError &&
+        error.reason === "no-snapshot"
+          ? "snapshot"
+          : "fetch";
       setReportError({
-        title: t("report-error-fetch-title"),
-        body: t("report-error-fetch"),
+        title: t(`report-error-${blocked}-title`),
+        body: t(`report-error-${blocked}`),
+        action:
+          blocked === "snapshot"
+            ? {
+                label: t("report-error-snapshot-action"),
+                href: stepHref(
+                  lng,
+                  cityId,
+                  inventoryId,
+                  "preflight",
+                  "results",
+                ),
+              }
+            : undefined,
       });
       return;
     }
@@ -187,14 +211,18 @@ export default function Page(props: {
     }
 
     const { documents } = result;
-    const pdf = buildReportPdf(documents, {
+    const pdf = await buildReportPdf(documents, {
       title: t("report-title"),
       cityName: inventory?.city?.name ?? "",
       subtitle: t("report-subtitle", { count: documents.length }),
       limitationsLabel: t("report-limitations"),
+      generatedBy: t("report-footer-generated-by"),
+      generatedOn: `${t("report-footer-generated-on")} ${new Date().toLocaleDateString(lng)}`,
+      pageLabel: t("report-footer-page"),
+      ofLabel: t("report-footer-of"),
     });
     pdf.save(`meed-action-report-${inventoryId}.pdf`);
-  }, [generate, selectedIds, index, t, lng, inventory, inventoryId]);
+  }, [generate, selectedIds, index, t, lng, inventory, inventoryId, cityId]);
 
   const facts = {
     emissionsText,
@@ -272,6 +300,8 @@ export default function Page(props: {
                 body={reportError.body}
                 retryLabel={t("report-error-dismiss")}
                 onRetry={() => setReportError(null)}
+                actionLabel={reportError.action?.label}
+                actionHref={reportError.action?.href}
               />
             )}
 

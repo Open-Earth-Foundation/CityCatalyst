@@ -1,7 +1,7 @@
 # CC-720 — Modular HIAP architecture RFC
 
-- Status: Draft for team review
-- Date: 2026-09-09
+- Status: Revised draft for team review
+- Date: 2026-09-10
 - Linear: [CC-720 — Investigate modular HIAP module setup](https://linear.app/openearth/issue/CC-720/investigate-modular-hiap-module-setup)
 - Scope: architecture investigation and documentation only
 - Product code changed by this RFC: no
@@ -10,9 +10,11 @@
 
 Legacy HIAP, HIAP-MEED, and the planned Brazil v3 variant share a broad product goal, but they do not currently share interchangeable runtime contracts. They differ in API shape, ranking semantics, task lifecycle, data sources, LLM workflows, dependency sets, resource profiles, deployment configuration, and failure domains.
 
-The recommended direction is a small shared deterministic HIAP kernel with explicit adapters for each variant. The first target should be a shared internal package or modular codebase with independently deployable services. A single process or Kubernetes Deployment should be deferred until operational data proves that shared scaling and release coupling are acceptable.
+The recommended end state is one HIAP microservice with a shared deterministic kernel and explicit country/variant adapters. A canonical prioritization endpoint should accept an explicit country or variant flag and route to the correct adapter. Country-specific compatibility routes may exist during migration, but they should not create separate long-term services.
 
-This RFC answers CC-720 using the current source tree. It treats `hiap-meed/docs/methodology-variants-and-migration.md` as prior art. That document remains unchanged because it is a draft and contains stale as-built counts and an Anthropic/OpenAI labeling mismatch.
+Migration should be incremental. Keep the existing services running, stand up the unified service alongside them, compare outputs with fixtures and regression tests, migrate consumers gradually, and retire the old services only after parity and operational gates pass. Separate deployments are a transitional safety boundary, not the final architecture.
+
+This RFC answers CC-720 using the current source tree and the 2026-09-10 architecture direction discussed with Mirco. It treats `hiap-meed/docs/methodology-variants-and-migration.md` as prior art. That document remains unchanged because it is a draft and contains stale as-built counts and an Anthropic/OpenAI labeling mismatch.
 
 ## Investigation scope
 
@@ -30,6 +32,14 @@ The comparison considered:
 - Kubernetes Deployments, Services, resources, probes, secrets, and environment variables;
 - GitHub Actions build, test, image, and deployment workflows;
 - existing methodology documentation and recent repository history.
+
+## Stakeholder direction
+
+The 2026-09-10 1:1 with Mirco clarified the target architecture. All HIAP variants share a fundamental product surface, including prioritizing climate actions and creating plans, while country implementations may use different inputs, formulas, outputs, and orchestration. The goal is one HIAP microservice to reduce repeated package maintenance and infrastructure overhead.
+
+The preferred routing shape is one shared endpoint with an explicit country/variant flag, for example `/prioritize` with `country=chile` or `country=brazil`, which selects the corresponding adapter. Per-country endpoint paths remain a possible compatibility or migration surface, but are not the preferred long-term contract.
+
+This direction does not require a big-bang migration. Existing services can remain live while the unified service is built beside them, with fixtures and regression tests comparing current outputs against adapter-based outputs before traffic moves.
 
 ## Current state
 
@@ -111,7 +121,7 @@ These differences support an adapter boundary. They do not support copying one v
 
 ### What are infrastructure and deployment implications?
 
-Current Kubernetes and CI configuration already separates the services:
+Current Kubernetes and CI configuration separates the services. This is the migration bridge, not the desired final topology:
 
 - different GHCR images;
 - different Deployment and Service names;
@@ -120,15 +130,15 @@ Current Kubernetes and CI configuration already separates the services:
 - different resource requests and limits;
 - different startup, probe, data-source, MLflow, and vector-store behavior.
 
-Legacy production uses materially larger resource limits than MEED. MEED has additional MLflow, S3 legal-data, report-concurrency, upstream retry, and source-selection configuration. A single Deployment would couple secrets, resource sizing, scaling, rollout, observability, and rollback.
+Legacy production uses materially larger resource limits than MEED. MEED has additional MLflow, S3 legal-data, report-concurrency, upstream retry, and source-selection configuration. A final single Deployment will require deliberate consolidation of secrets, resource sizing, scaling, rollout, observability, startup behavior, and rollback. These concerns explain why the unified service should be introduced beside the current services and validated before cutover.
 
 ### Which deployment option is best?
 
 | Option | Assessment |
 |---|---|
-| One process and one Deployment | Defer. Lowest apparent duplication, highest coupling and blast radius. |
-| One modular codebase with separate Deployments | Recommended near-term topology. Shares contracts while preserving operational isolation. |
-| Shared internal library/package with independent services | Recommended long-term form. Start inside the monorepo; version independently only when release boundaries require it. |
+| One HIAP microservice with country adapters | Recommended final target. One canonical endpoint receives an explicit country/variant flag and dispatches to the selected adapter. |
+| Side-by-side unified service and existing Deployments | Recommended migration topology. Keeps current services available for comparison and rollback while consumers move gradually. |
+| Shared internal library/package with separate long-term services | Useful intermediate extraction strategy, but not the desired final operating model if it preserves one microservice per country. Start inside the monorepo and use it to build the unified service. |
 
 ### What is the smallest shared core?
 
@@ -150,20 +160,23 @@ The core must support action, transition-element outcome, shift, intervention, a
 1. Freeze representative legacy and MEED characterization fixtures.
 2. Define shared contracts and conformance tests without changing public APIs.
 3. Extract or wrap the MEED deterministic kernel behind the contracts.
-4. Add a legacy adapter that preserves legacy ranking semantics.
-5. Add explicit one-level and two-level ranking primitives.
-6. Prototype Brazil v3 as an isolated adapter with offline/shadow evaluation.
-7. Reassess process/deployment consolidation only after independent operational metrics exist.
+4. Stand up the unified service beside the current services with explicit country/variant routing.
+5. Add legacy and MEED adapters while preserving their current ranking semantics.
+6. Add explicit one-level and two-level ranking primitives.
+7. Prototype Brazil v3 as a country adapter with offline/shadow evaluation.
+8. Migrate consumers gradually and retire old services only after parity, operational, and rollback gates pass.
 
 ### What are the main trade-offs?
 
-Shared code reduces duplicated kernel logic but introduces package compatibility and release coordination. Independent Deployments retain some infrastructure duplication but preserve scaling, secrets, rollout, failure-domain, and rollback isolation. A single Deployment may reduce image duplication but couples resource profiles, LLM/vector-store startup behavior, and operational incidents.
+One service reduces repeated package maintenance and infrastructure duplication, which is the main stakeholder benefit. It also increases the shared failure domain and couples resource, rollout, and dependency management. Country adapters, explicit routing, source/version metadata, per-variant configuration, fixtures, canarying, and rollback paths are required to control that risk.
+
+Separate deployments retain infrastructure duplication but provide the safe migration bridge and rollback boundary. They should not become the permanent default if the goal is one service to maintain.
 
 ### What does this mean for regions and divergent methodologies?
 
 Regional and partner-owned data should enter through adapters with explicit source versions, provenance, configuration, and ownership. The kernel should model ranking and scoring mechanics, not decide which country taxonomy, risk index, financing model, or policy source is authoritative.
 
-The exact Chile and Brazil pillar attachment rules remain open. Chile may rank outcomes at one level; Brazil may rank shifts and interventions at two levels. The shared orchestration contract must support both without pretending that their scores have identical meaning.
+The exact Chile and Brazil pillar attachment rules remain open. Chile may rank outcomes at one level; Brazil may rank shifts and interventions at two levels. The shared orchestration contract must support both without pretending that their scores have identical meaning. Country-specific formulas and functions remain valid inside adapters/configuration.
 
 ## Validation and rollback gates
 
@@ -186,8 +199,9 @@ These ranges are planning guidance, not an implementation estimate.
 | MEED integration | Medium | Map existing typed models, scoring blocks, clients, and artifacts |
 | Legacy integration | Medium-high | Normalize raw/camelCase data, preserve async/task behavior, and isolate ranking strategy |
 | Brazil v3 | High/uncertain | Define taxonomy, sources, multi-level ranking, adaptation, and financing semantics |
-| Separate deployments | Low-medium | CI/package wiring and compatibility tests; current isolation remains |
-| Single Deployment | High | Merge images, dependencies, resources, secrets, health checks, routing, rollout, and rollback |
+| Unified service with country adapters | Medium-high | New routing boundary, adapter wiring, contract compatibility, and unified operational controls |
+| Side-by-side migration deployments | Low-medium | New service rollout, CI/package wiring, fixtures, traffic migration, and rollback support |
+| Single long-term service plus retired old deployments | Medium after migration | Decommission images, Deployments, workflows, secrets, and compatibility routes only after migration gates |
 
 ## Open decisions
 
@@ -197,7 +211,8 @@ These ranges are planning guidance, not an implementation estimate.
 - What are approved sources and owners for Chile outcomes and Brazil shifts/interventions?
 - What ranking difference budget is acceptable during shadow migration?
 - Should the first shared package remain monorepo-internal or be independently versioned?
-- Which operational metrics justify a future single Deployment?
+- Which operational metrics and migration gates authorize retiring the old country deployments?
+- Should compatibility endpoint paths be retained permanently or only during migration?
 
 ## Source map
 
@@ -214,5 +229,6 @@ These ranges are planning guidance, not an implementation estimate.
 - MEED LLM configuration: `hiap-meed/llm_config.yaml`, `app/config/llm_settings.py`
 - MEED service architecture: `hiap-meed/docs/service-architecture.md`
 - Prior art: `hiap-meed/docs/methodology-variants-and-migration.md`
+- Stakeholder direction: Mirco 1:1, 2026-09-10; transcript supplied in CC-720 work context
 - Deployments: `hiap/k8s/`, `hiap-meed/k8s/`
 - CI workflows: `.github/workflows/hiap-*.yml`, `.github/workflows/hiap-meed-*.yml`

@@ -61,6 +61,8 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     groupedData[subsector].push(item);
   });
 
+  const hasRemoval = data.some((item) => item.percentage === null);
+
   const toggleSubsector = (subsector: string) => {
     const newExpanded = new Set(expandedSubsectors);
     if (newExpanded.has(subsector)) {
@@ -95,9 +97,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
       </Table.Cell>
       <Table.Cell>
         <BodyMedium color="content.secondary">
-          {item.percentage === null
-            ? tDashboard("removal")
-            : `${item.percentage}%`}
+          {item.percentage === null ? "*" : `${item.percentage}%`}
         </BodyMedium>
       </Table.Cell>
       {scopes.map((s) => (
@@ -197,7 +197,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           <Table.Cell>
             <BodyMedium color="content.secondary">
               {totalPercentage === null
-                ? tDashboard("removal")
+                ? "*"
                 : `${formatNumber(totalPercentage, numberFormat, 1)}%`}
             </BodyMedium>
           </Table.Cell>
@@ -269,6 +269,11 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           )}
         </Table.Body>
       </Table.Root>
+      {hasRemoval && (
+        <BodyMedium color="content.tertiary" pt={2}>
+          {tDashboard("removals-not-countable-footnote")}
+        </BodyMedium>
+      )}
       <ByScopeViewSourceDrawer
         sourceId={selectedSourceId}
         sector={{ sectorName }}

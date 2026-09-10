@@ -107,6 +107,7 @@
   "removed": "removed",
   "net-removal": "Net removal",
   "removal": "Removal",
+  "removals-not-countable-footnote": "* Sub-sectors with removals are not countable as emissions",
   "no-cited-source": "No cited source",
   "view-total-emissions-data-by-GPC-required-sectors": "View total emissions data by GPC required sectors",
   "breakdown-of-sub-sector-emissions": "Breakdown of sub-sector emissions ",

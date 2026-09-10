@@ -1,5 +1,5 @@
 ---
-name: script-quality-gate
+name: dev-script-quality-gate
 description: Apply when adding or modifying runnable scripts/entrypoints. Ensures docstring, argparse, __main__, logging, and import/path conventions are correct.
 ---
 

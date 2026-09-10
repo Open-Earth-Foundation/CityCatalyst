@@ -1,5 +1,5 @@
 ---
-name: create-component
+name: impl-create-component
 description: Create a new React component in CityCatalyst using Chakra UI v3, i18n, and project conventions. Use when the user asks to create, add, or build a new UI component, page section, or widget.
 ---
 

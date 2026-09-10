@@ -1,5 +1,5 @@
 ---
-name: pull-request-standards
+name: dev-pull-request-standards
 description: Create or update pull requests with repository-derived context and concise title/body standards. Use when creating, updating, automating, drafting, or polishing PRs, or preparing GitHub PR tool payloads.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: prompt-schema-authoring
+name: ai-prompt-schema-authoring
 description: Create or update any LLM-related prompt file in this repository using the required `<role>`, `<task>`, `<input>`, and `<output>` structure, with optional `<tools>` when tool policy is needed, and explicit model-aligned field contracts. Use for prompts stored in markdown, Python prompt templates, YAML/JSON config prompts, and any other runtime prompt definitions for large language models (LLMs).
 ---
 

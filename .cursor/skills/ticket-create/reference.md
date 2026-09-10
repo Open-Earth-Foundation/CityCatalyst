@@ -1,6 +1,6 @@
 # Ticket Taxonomy & Conventions
 
-Reference material for the `create-ticket` skill. The agent reads this file when it needs taxonomy details, Linear conventions, or estimation guidance.
+Reference material for the `ticket-create` skill. The agent reads this file when it needs taxonomy details, Linear conventions, or estimation guidance.
 
 ## Issue Types
 

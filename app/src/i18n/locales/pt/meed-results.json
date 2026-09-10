@@ -145,5 +145,12 @@
   "report-error-fetch-title": "Não foi possível carregar os relatórios",
   "report-error-fetch": "Os seus relatórios salvos não puderam ser carregados, portanto, nada novo foi gerado. Recarregue a página e faça login novamente se o problema persistir.",
   "report-error-partial_one": "{{count}} ação não pôde ser incluída: {{actions}}.",
-  "report-error-partial_other": "{{count}} ações não puderam ser incluídas: {{actions}}."
+  "report-error-partial_other": "{{count}} ações não puderam ser incluídas: {{actions}}.",
+  "report-footer-generated-by": "Gerado por CityCatalyst",
+  "report-footer-generated-on": "Gerado em",
+  "report-footer-page": "Página",
+  "report-footer-of": "de",
+  "report-error-snapshot-title": "Este ranking ainda não pode produzir relatórios",
+  "report-error-snapshot": "Os relatórios são escritos a partir de uma cópia salva da execução do ranking, e este inventário não tem uma - ele foi classificado antes que os relatórios existissem. Execute novamente o ranking para criá-lo; suas preferências e exclusões permanecem inalteradas.",
+  "report-error-snapshot-action": "Reexecute o ranking"
 }

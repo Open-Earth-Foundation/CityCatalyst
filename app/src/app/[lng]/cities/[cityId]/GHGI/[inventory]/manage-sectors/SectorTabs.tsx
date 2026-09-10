@@ -2,7 +2,6 @@
 import {
   Box,
   CheckboxCard,
-  createListCollection,
   Field,
   Icon,
   Input,
@@ -18,16 +17,9 @@ import { StationaryEnergyIcon } from "@/components/icons";
 import { MdInfoOutline } from "react-icons/md";
 import { RiErrorWarningFill } from "react-icons/ri";
 
-import {
-  SelectContent,
-  SelectItem,
-  SelectLabel,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dropdown, type DropdownOption } from "@/components/ui/dropdown";
 import { api } from "@/services/api";
 import { toaster } from "@/components/ui/toaster";
 import RouteChangeDialog from "./RouteChangeDialog";
@@ -414,27 +406,13 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     });
   };
 
-  // notation keys collection
-  const notationKeys = createListCollection({
-    items: [
-      {
-        label: t("ne"),
-        value: "not-estimated",
-      },
-      {
-        label: t("no"),
-        value: "no-occurrance",
-      },
-      {
-        label: t("c"),
-        value: "confidential-information",
-      },
-      {
-        label: t("ie"),
-        value: "included-elsewhere",
-      },
-    ],
-  });
+  // notation key dropdown options
+  const notationKeyOptions: DropdownOption[] = [
+    { label: t("ne"), value: "not-estimated" },
+    { label: t("no"), value: "no-occurrance" },
+    { label: t("c"), value: "confidential-information" },
+    { label: t("ie"), value: "included-elsewhere" },
+  ];
   // handle undo changes
   const handleUndoChanges = () => {
     resetFormData();
@@ -582,62 +560,35 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
               </Box>
               <Separator borderColor="border.neutral" />
               <Box display="flex" gap="16px" alignItems="end">
-                <Field.Root orientation="vertical" maxW="340px">
-                  <SelectRoot
-                    value={[quickValues.notationKey]}
-                    onValueChange={({ value: newValue }) =>
-                      setQuickActionValues((prev) => ({
-                        ...prev,
-                        [group.sector.sectorId]: {
-                          ...prev[group.sector.sectorId],
-                          notationKey: newValue.toString(),
-                          explanation:
-                            prev[group.sector.sectorId]?.explanation || "",
-                        },
-                      }))
-                    }
-                    variant="outline"
-                    collection={notationKeys}
-                  >
-                    <SelectLabel display="flex" alignItems="center" gap="8px">
-                      <Text fontFamily="heading" color="content.secondary">
-                        {t("notation-key")}
-                      </Text>
-                      <Icon
-                        as={MdInfoOutline}
-                        color="interactive.control"
-                        boxSize={4}
-                      />
-                    </SelectLabel>
-                    <SelectTrigger
-                      borderWidth="1px"
-                      borderColor="border.neutral"
-                      borderRadius="md"
-                    >
-                      <SelectValueText
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                        color="content.tertiary"
-                        fontFamily="body"
-                        fontSize="body.lg"
-                        fontWeight="regular"
-                        lineHeight="24"
-                        letterSpacing="wide"
-                        placeholder={t("notation-key-input-placeholder")}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {notationKeys.items.map((key) => (
-                        <SelectItem item={key} key={key.value}>
-                          {key.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </SelectRoot>
-                </Field.Root>
+                <Dropdown
+                  maxW="340px"
+                  label={t("notation-key")}
+                  labelIcon={MdInfoOutline}
+                  placeholder={t("notation-key-input-placeholder")}
+                  options={notationKeyOptions}
+                  value={quickValues.notationKey}
+                  onValueChange={(newValue) =>
+                    setQuickActionValues((prev) => ({
+                      ...prev,
+                      [group.sector.sectorId]: {
+                        ...prev[group.sector.sectorId],
+                        notationKey: newValue,
+                        explanation:
+                          prev[group.sector.sectorId]?.explanation || "",
+                      },
+                    }))
+                  }
+                />
                 <Field.Root orientation="vertical" flex="1">
                   <Field.Label>
-                    <Text fontFamily="heading" color="content.secondary">
+                    <Text
+                      fontFamily="heading"
+                      color="content.secondary"
+                      fontSize="label.lg"
+                      fontWeight="medium"
+                      lineHeight="20"
+                      letterSpacing="wide"
+                    >
                       {t("explanation")}
                     </Text>
                   </Field.Label>
@@ -645,8 +596,8 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                     placeholder={t("explanation-input-placeholder")}
                     borderWidth="1px"
                     borderColor="border.neutral"
-                    borderRadius="md"
-                    shadow="1dp"
+                    borderRadius="minimal"
+                    bg="background.default"
                     overflow="hidden"
                     textOverflow="ellipsis"
                     color="content.tertiary"
@@ -740,65 +691,28 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                                 gap="16px"
                                 w="full"
                               >
-                                <Field.Root orientation="vertical" w="full">
-                                  <SelectRoot
-                                    variant="outline"
-                                    collection={notationKeys}
-                                    w="full"
-                                    value={[cardValue.notationKey]}
-                                    onValueChange={({ value }) =>
-                                      setCardInputs((prev) => ({
-                                        ...prev,
-                                        [item.subCategoryId]: {
-                                          ...prev[item.subCategoryId],
-                                          notationKey: value.toString(),
-                                          explanation:
-                                            prev[item.subCategoryId]
-                                              ?.explanation || "",
-                                        },
-                                      }))
-                                    }
-                                  >
-                                    <SelectLabel
-                                      display="flex"
-                                      alignItems="center"
-                                      gap="8px"
-                                    >
-                                      <Text
-                                        fontFamily="heading"
-                                        color="content.secondary"
-                                      >
-                                        {t("notation-key")}
-                                      </Text>
-                                      <Icon
-                                        as={MdInfoOutline}
-                                        color="interactive.control"
-                                        boxSize={4}
-                                      />
-                                    </SelectLabel>
-                                    <SelectTrigger
-                                      borderWidth="1px"
-                                      borderColor="border.neutral"
-                                      borderRadius="md"
-                                      shadow="1dp"
-                                    >
-                                      <SelectValueText
-                                        color="content.tertiary"
-                                        fontWeight="medium"
-                                        placeholder={t(
-                                          "notation-key-input-placeholder",
-                                        )}
-                                      />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {notationKeys.items.map((key) => (
-                                        <SelectItem item={key} key={key.value}>
-                                          {key.label}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </SelectRoot>
-                                </Field.Root>
+                                <Dropdown
+                                  width="full"
+                                  label={t("notation-key")}
+                                  labelIcon={MdInfoOutline}
+                                  placeholder={t(
+                                    "notation-key-input-placeholder",
+                                  )}
+                                  options={notationKeyOptions}
+                                  value={cardValue.notationKey}
+                                  onValueChange={(value) =>
+                                    setCardInputs((prev) => ({
+                                      ...prev,
+                                      [item.subCategoryId]: {
+                                        ...prev[item.subCategoryId],
+                                        notationKey: value,
+                                        explanation:
+                                          prev[item.subCategoryId]
+                                            ?.explanation || "",
+                                      },
+                                    }))
+                                  }
+                                />
                                 <Field.Root orientation="vertical">
                                   <Field.Label>
                                     <Text

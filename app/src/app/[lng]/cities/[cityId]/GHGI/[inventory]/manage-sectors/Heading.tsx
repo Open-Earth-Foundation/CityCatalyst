@@ -1,4 +1,3 @@
-import { ManageDataIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Box, Icon, Text } from "@chakra-ui/react";
 import { usePathname, useRouter } from "next/navigation";
@@ -34,10 +33,7 @@ const Heading: FC<HeadingProps> = ({ t }) => {
           w="24px"
         />
       </Box>
-      <Box display="flex" gap="16px">
-        <Box>
-          <Icon as={ManageDataIcon} color="interactive.control" />
-        </Box>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
         <Box>
           <Text
             fontSize="headline.lg"
@@ -47,7 +43,7 @@ const Heading: FC<HeadingProps> = ({ t }) => {
             mb="8px"
             fontFamily="heading"
           >
-            {t("manage-missing-subsectors")}
+            {t("notation-keys")}
           </Text>
           <Text
             fontSize="body.lg"
@@ -59,6 +55,7 @@ const Heading: FC<HeadingProps> = ({ t }) => {
             {t("manage-missing-subsectors-description")}
           </Text>
         </Box>
+        <Button variant="outline">{t("help-button")}</Button>
       </Box>
     </Box>
   );

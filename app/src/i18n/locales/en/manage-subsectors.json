@@ -1,6 +1,8 @@
 {
   "manage-missing-subsectors": "Manage missing sub-sectors",
   "manage-missing-subsectors-description": "Please review the missing sub-sector and add any notation keys that may correspond.",
+  "notation-keys": "Notation keys",
+  "help-button": "Need help?",
   "notation-key-question": "What does \"Notation Key\" mean?",
   "body-question": "What are notation keys?",
   "notation-key-answer": "Notation keys are standardized symbols used in greenhouse gas (GHG) reporting to explain why emissions data for a specific sub-sector is missing or unavailable. These symbols help ensure transparency and consistency in climate reporting.",
@@ -20,6 +22,7 @@
   "learn-more-link": "learn more at global protocol for cities (GPC)",
   "content-description": "Here are the sub-sectors that need to be completed for the stationary energy sector in compliance with the GPC Framework.",
   "quick-actions": "Quick actions",
+  "select-all-subsectors": "Select all sub-sectors",
   "notation-key-input-placeholder": "Select which option suits best",
   "explanation-input-placeholder": "Write in detail why these scope are not included",
   "apply-to-all": "Apply to all",

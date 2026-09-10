@@ -1,6 +1,8 @@
 {
   "manage-missing-subsectors": "Gestionar subsectores faltantes",
   "manage-missing-subsectors-description": "Por favor revise el subsector faltante y agregue cualquier clave de notación que pueda corresponder.",
+  "notation-keys": "Claves de notación",
+  "help-button": "¿Necesitas ayuda?",
   "notation-key-question": "¿Qué significa \"Clave de Notación\"?",
   "body-question": "¿Qué son las claves de notación?",
   "notation-key-answer": "Las claves de notación son símbolos estandarizados utilizados en los informes de gases de efecto invernadero (GEI) para explicar por qué los datos de emisiones para un subsector específico están ausentes o no disponibles. Estos símbolos ayudan a garantizar la transparencia y la consistencia en los informes climáticos.",
@@ -20,6 +22,7 @@
   "learn-more-link": "obtenga más información en el protocolo global para ciudades (GPC)",
   "content-description": "Aquí están los subsectores que necesitan completarse para el sector de energía estacionaria en cumplimiento con el Marco de GPC.",
   "quick-actions": "Acciones rápidas",
+  "select-all-subsectors": "Seleccionar todos los subsectores",
   "notation-key-input-placeholder": "Seleccione la opción que mejor se adapte",
   "explanation-input-placeholder": "Escribe en detalle por qué estos alcances no están incluidos",
   "apply-to-all": "Aplicar a todos",

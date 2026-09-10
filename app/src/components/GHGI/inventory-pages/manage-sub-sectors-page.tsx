@@ -5,7 +5,6 @@ import React from "react";
 import { useParams } from "next/navigation";
 import Heading from "@/app/[lng]/cities/[cityId]/GHGI/[inventory]/manage-sectors/Heading";
 import { useTranslation } from "@/i18n/client";
-import NotationsDefinitionAccordion from "@/app/[lng]/cities/[cityId]/GHGI/[inventory]/manage-sectors/NotationsDefinitionAccordion";
 import SectorTabs from "@/app/[lng]/cities/[cityId]/GHGI/[inventory]/manage-sectors/SectorTabs";
 import { Toaster } from "@/components/ui/toaster";
 import { getParamValueRequired } from "@/util/helpers";
@@ -28,7 +27,6 @@ const ManageSubSectors = () => {
         gap="48px"
       >
         <Heading t={t} />
-        <NotationsDefinitionAccordion t={t} />
         <SectorTabs t={t} inventoryId={inventory} />
       </Box>
       <Toaster />

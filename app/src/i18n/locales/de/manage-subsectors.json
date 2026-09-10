@@ -1,6 +1,8 @@
 {
   "manage-missing-subsectors": "Untersektoren verwalten",
   "manage-missing-subsectors-description": "Please review the missing sub-sector and add any notation keys that may correspond.",
+  "notation-keys": "Notationsschlüssel",
+  "help-button": "Brauchen Sie Hilfe?",
   "notation-key-question": "Was bedeutet \"Notationsschlüssel\"?",
   "body-question": "Was sind Notationsschlüssel?",
   "notation-key-answer": "Notationsschlüssel sind standardisierte Symbole, die in der Berichterstattung über Treibhausgase (THG) verwendet werden, um zu erklären, warum Emissionsdaten für einen bestimmten Teilsektor fehlen oder nicht verfügbar sind. Diese Symbole tragen dazu bei, Transparenz und Konsistenz in der Klimaberichterstattung zu gewährleisten.",
@@ -20,6 +22,7 @@
   "learn-more-link": "Erfahren Sie mehr unter Global Protocol for Cities (GPC)",
   "content-description": "Hier sind die Teilsektoren, die für den stationären Energiesektor in Übereinstimmung mit dem GPC-Framework abgeschlossen werden müssen.",
   "quick-actions": "Schnellaktionen",
+  "select-all-subsectors": "Alle Teilsektoren auswählen",
   "notation-key-input-placeholder": "Wählen Sie die am besten passende Option",
   "explanation-input-placeholder": "Geben Sie detailliert an, warum diese Bereiche nicht einbezogen sind",
   "apply-to-all": "Auf alles anwenden",

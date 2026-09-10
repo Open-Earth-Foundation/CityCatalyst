@@ -1,6 +1,8 @@
 {
   "manage-missing-subsectors": "Gerencie sub-setores ausentes",
   "manage-missing-subsectors-description": "Por favor, revise o sub-setor ausente e adicione quaisquer chaves de notação que possam corresponder.",
+  "notation-keys": "Chaves de notação",
+  "help-button": "Precisa de ajuda?",
   "notation-key-question": "O que significa \"Chave de Notação\"?",
   "body-question": "O que são chaves de notação?",
   "notation-key-answer": "As chaves de notação são símbolos padronizados usados ​​na elaboração de relatórios de gases de efeito estufa (GEE) para explicar por que os dados de emissões para um sub-setor específico estão ausentes ou indisponíveis. Esses símbolos ajudam a garantir transparência e consistência na elaboração de relatórios sobre o clima.",
@@ -20,6 +22,7 @@
   "learn-more-link": "saiba mais em protocolo global para cidades (GPC)",
   "content-description": "Aqui estão os sub-setores que precisam ser concluídos para o setor de energia estacionária em conformidade com a Estrutura GPC.",
   "quick-actions": "Ações rápidas",
+  "select-all-subsectors": "Selecionar todos os sub-setores",
   "notation-key-input-placeholder": "Selecione a opção que melhor se adequa",
   "explanation-input-placeholder": "Escreva em detalhes por que esses escopos não estão incluídos",
   "apply-to-all": "Aplique a todos",

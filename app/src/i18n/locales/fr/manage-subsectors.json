@@ -1,6 +1,8 @@
 {
   "manage-missing-subsectors": "Gérer les sous-secteurs manquants",
   "manage-missing-subsectors-description": "Veuillez examiner le sous-secteur manquant et ajouter toutes les clés de notation qui peuvent correspondre.",
+  "notation-keys": "Clés de notation",
+  "help-button": "Besoin d'aide ?",
   "notation-key-question": "Que signifie \"Clé de Notation\" ?",
   "body-question": "Qu'est-ce que les clés de notation ?",
   "notation-key-answer": "Les clés de notation sont des symboles standardisés utilisés dans les rapports sur les gaz à effet de serre (GES) pour expliquer pourquoi les données d'émissions pour un sous-secteur spécifique sont manquantes ou indisponibles. Ces symboles contribuent à garantir la transparence et la cohérence dans les rapports sur le climat.",
@@ -20,6 +22,7 @@
   "learn-more-link": "en savoir plus sur le protocole mondial pour les villes (GPC)",
   "content-description": "Voici les sous-secteurs qui doivent être complétés pour le secteur de l'énergie stationnaire conformément au Cadre GPC.",
   "quick-actions": "Actions rapides",
+  "select-all-subsectors": "Sélectionner tous les sous-secteurs",
   "notation-key-input-placeholder": "Sélectionnez l'option qui convient le mieux",
   "explanation-input-placeholder": "Écrivez en détail pourquoi ces domaines ne sont pas inclus",
   "apply-to-all": "Appliquer à tous",

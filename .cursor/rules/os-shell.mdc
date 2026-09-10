@@ -1,0 +1,38 @@
+---
+description: Default to POSIX shell commands (macOS / Linux). Document Windows fallbacks only when needed.
+alwaysApply: true
+---
+
+# OS / Shell Defaults
+
+The OEF engineering team and CI run on **macOS** and **Linux**. Default every command you suggest or execute to **POSIX `bash`/`zsh`**.
+
+## Defaults
+
+- Use POSIX commands: `ls`, `cat`, `grep`, `find`, `sed`, `awk`, `cp`, `mv`, `rm`, `chmod`, `export`, `./script.sh`.
+- Use forward-slash paths: `app/src/...`, `~/Desktop/openearth/...`.
+- Use `&&` to chain on success, `||` for fallback, `;` for sequence.
+- Heredocs for multi-line text: `cat <<'EOF' > file …`.
+- Environment vars: `export NAME=value`, `KEY=val command …`.
+
+## Inside `package.json` scripts
+
+Scripts must work on macOS and Linux. Avoid bashisms that break on plain `sh` if not strictly needed. Prefer cross-platform tools (`cross-env`, `rimraf`) when a script must also run on Windows.
+
+## Windows users (the minority case)
+
+Some contributors use Windows. The expected setups, in order:
+
+1. **WSL2 (preferred)** — POSIX commands work as-is, treat as Linux.
+2. **PowerShell** — translate POSIX → PowerShell on demand. Quote Windows paths (`"C:\Users\...\file"`). Replace `&&` with `;` or chain with `if ($?) { … }`.
+3. **Native Windows CMD (`cmd.exe`)** — see `cmd-windows.mdc` for the full POSIX → CMD cheatsheet (apply that rule explicitly when you know the terminal is CMD).
+
+Never silently assume CMD just because the OS is Windows. Most Windows devs run WSL2 or PowerShell.
+
+## Cursor "agent terminal" sessions
+
+When invoking commands through agent tools (Cursor agent, agentic-coder), assume a non-interactive POSIX shell. Avoid commands that require a TTY (`vim`, `less`, `top`). Prefer flags that disable pagers (`--no-pager` for `git log`, `| cat`).
+
+## Output requirements
+
+After running commands, summarise: the command, the relevant output / error, the next step. Do not paste 1000s of lines — head/tail or filter.

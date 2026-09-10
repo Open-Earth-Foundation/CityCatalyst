@@ -33,6 +33,9 @@ import {
 import { PILLAR_WEIGHTS } from "../../scoringWeights";
 import { MeedCardSkeleton } from "../../components/MeedSkeletons";
 import { MeedErrorCard } from "../../components/MeedErrorCard";
+import { useMeedReport, type MeedReportResult } from "./report/useMeedReport";
+import { buildReportPdf } from "./report/meedReportPdf";
+import { actionName as catalogActionName } from "./components/actionCatalog";
 
 export default function Page(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
@@ -131,6 +134,68 @@ export default function Page(props: {
     });
   }, [ranked, index, t, inventory]);
 
+  const { generate, isRunning, progress } = useMeedReport(cityId, inventoryId);
+  // Carries its own title: "some reports could not be generated" is the wrong
+  // heading for a run that never got as far as generating anything.
+  const [reportError, setReportError] = useState<{
+    title: string;
+    body: string;
+  } | null>(null);
+
+  const generateReport = useCallback(async () => {
+    setReportError(null);
+    const targets = selectedIds.map((actionId) => ({
+      actionId,
+      actionName: catalogActionName(index, actionId, t),
+    }));
+
+    let result: MeedReportResult | null;
+    try {
+      result = await generate(targets, lng);
+    } catch {
+      // The reports could not be fetched at all. That is a dead session or an
+      // unwell service, not a failure of any one action, so it is worth saying
+      // differently — "try again in a moment" would be the wrong instruction.
+      setReportError({
+        title: t("report-error-fetch-title"),
+        body: t("report-error-fetch"),
+      });
+      return;
+    }
+
+    // `null` means a run was already in flight. The first run owns the
+    // outcome; overwriting it here would put "no reports" on screen while
+    // that run is still working, and leave it there once it succeeds.
+    if (!result) return;
+
+    if (result.documents.length === 0) {
+      setReportError({
+        title: t("report-error-title"),
+        body: t("report-error-none"),
+      });
+      return;
+    }
+    // A short report with no explanation is worse than a named omission.
+    if (result.failed.length > 0) {
+      setReportError({
+        title: t("report-error-title"),
+        body: t("report-error-partial", {
+          count: result.failed.length,
+          actions: result.failed.join(", "),
+        }),
+      });
+    }
+
+    const { documents } = result;
+    const pdf = buildReportPdf(documents, {
+      title: t("report-title"),
+      cityName: inventory?.city?.name ?? "",
+      subtitle: t("report-subtitle", { count: documents.length }),
+      limitationsLabel: t("report-limitations"),
+    });
+    pdf.save(`meed-action-report-${inventoryId}.pdf`);
+  }, [generate, selectedIds, index, t, lng, inventory, inventoryId]);
+
   const facts = {
     emissionsText,
     inventoryYear: inventory?.year ?? undefined,
@@ -184,8 +249,31 @@ export default function Page(props: {
               excludedCount={excludedCount}
               emissionsText={emissionsText}
               selectedCount={selectedIds.length}
+              isGenerating={isRunning}
+              progress={
+                isRunning
+                  ? t("report-progress", {
+                      done: progress.done + 1,
+                      total: progress.total,
+                    })
+                  : null
+              }
+              onGenerate={generateReport}
               t={t}
             />
+
+            {/*
+              Named, dismissible, and never blocking: a partial failure still
+              produced a report, so this sits beside it rather than replacing it.
+            */}
+            {reportError && (
+              <MeedErrorCard
+                title={reportError.title}
+                body={reportError.body}
+                retryLabel={t("report-error-dismiss")}
+                onRetry={() => setReportError(null)}
+              />
+            )}
 
             {/*
               One scroll, in the order the user reasons in: what to do, what it

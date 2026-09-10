@@ -50,12 +50,13 @@
  */
 
 import { NextResponse } from "next/server";
+import { requireExistingChatUser } from "@/backend/chat/authorization";
 import {
   callClimateAdvisorChat,
   extractClimateAdvisorErrorMessage,
-  issueClimateAdvisorUserToken,
   readClimateAdvisorResponsePayload,
 } from "@/backend/chat/climate-advisor";
+import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 import { buildClimateAdvisorMessagePayload } from "@/backend/chat/message-payload";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
@@ -77,6 +78,8 @@ export const POST = apiHandler(async (req, { session }) => {
         { status: 400 },
       );
     }
+
+    await requireExistingChatUser(session.user.id);
 
     logger.info(
       {

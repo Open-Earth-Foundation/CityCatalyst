@@ -2,7 +2,7 @@ import { Op } from "sequelize";
 
 import { db } from "@/models";
 import type { PdfOcrJob } from "@/models/PdfOcrJob";
-import { issueClimateAdvisorUserToken } from "@/backend/chat/climate-advisor";
+import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 import {
   getConceptNoteSourceFormat,
   type ConceptNoteSourceFormat,

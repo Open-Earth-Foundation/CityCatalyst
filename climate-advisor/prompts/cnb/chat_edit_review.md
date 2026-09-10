@@ -39,7 +39,11 @@ One JSON object:
 - instruction (string): current user instruction.
 - recent_messages (array): previous visible user/assistant messages.
 - chapter (object): title, position, body_markdown, confirmed_body_markdown, gaps.
-- run_context (object): selected_sources and available contextual data.
+- run_context (object): selected_sources and available contextual data, without
+  backend identities or fingerprints. Each source has a one-based source_index,
+  label, filename, format, summary, topics and key_excerpts with text and a PDF
+  page or readable heading. Match source_refs to source_index encoded as a string,
+  never to a label or filename; two documents may have identical names.
 - prior_proposal (object or null): earlier user inputs and unaccepted proposals.
 - is_focused_chapter (boolean): non-binding focus hint.
 - changes (array): indexed by zero-based position; exact start, before, after,

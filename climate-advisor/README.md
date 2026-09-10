@@ -581,8 +581,9 @@ Prompt paths are also configured in `llm_config.yaml`:
 - `prompts.chat` is the workflow prompt for general Climate Advisor chat
 - `prompts.stationary_energy_review` is the workflow prompt for active
   Stationary Energy draft review chat
-- `prompts.cnb_chat` is the read-only Concept Note context-chat prompt, with
-  source-query guidance and no-fabrication rules
+- `prompts.cnb_chat` routes Concept Note questions to source queries and explicit
+  document-change requests to the available proposal tool; applying changes
+  still requires user acceptance in the document review controls
 - the three `prompts.cnb_source_*` entries map document partitions, reduce them
   to compact document summaries, and read focused questions for exact evidence
 - `prompts.cnb_chat_edit_planner` creates bounded, grounded edit proposals from
@@ -622,6 +623,13 @@ same label and filename remain independently queryable, and omits IDs from its
 model-facing result. An authorized edit request adds the proposal-only edit tool;
 that tool invokes the separate `prompts.cnb_chat_edit_planner` prompt and typed
 output model. Durable chat-driven edits remain a separate workflow.
+
+The edit planner and semantic reviewer receive allowlisted source evidence with
+the same one-based `source_index` values. Their `source_refs` contain those indices
+as strings, never filenames or upload IDs. The backend resolves each index to its
+immutable upload/hash snapshot, so duplicate filenames cannot select the wrong
+source. Refinements rebind verified snapshots to current indices without exposing
+identities; changed or removed source versions are not carried forward as references.
 
 All CNB model-facing payloads now separate facts from backend identity:
 

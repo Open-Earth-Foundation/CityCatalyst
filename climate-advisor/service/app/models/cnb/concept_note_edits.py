@@ -54,7 +54,11 @@ class ChapterPlannedTextChange(BaseModel):
     after: str = Field(max_length=50_000)
     kind: Literal["wording", "factual"]
     group_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,80}$")
-    source_refs: list[str] = Field(default_factory=list, max_length=20)
+    source_refs: list[str] = Field(
+        default_factory=list,
+        max_length=20,
+        description="One-based selected-source indices encoded as strings, never labels or IDs.",
+    )
     user_input_quote: str | None = Field(default=None, max_length=8_000)
 
     @model_validator(mode="after")

@@ -22,6 +22,7 @@ from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
 from app.services.cnb.edit_validation import prior_user_inputs
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.cnb_observability import protect_cnb_client
+from app.utils.concept_note_context import omit_context_identifiers
 from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
 
@@ -213,6 +214,43 @@ def build_planner_input(
     recent_messages: list[dict[str, str]] | None = None,
 ) -> dict[str, Any]:
     """Expose one chapter while excluding document-wide and storage metadata."""
+    # Match source-query indices while keeping immutable identities in the backend.
+    sources = run_context.get("selected_sources", [])
+    source_indices = {
+        (str(source.get("upload_id")), source.get("sha256")): str(index)
+        for index, source in enumerate(sources, start=1)
+    }
+    context = {
+        key: run_context[key]
+        for key in (
+            "cc_context",
+            "funder_context",
+            "document_context",
+            "similar_projects",
+        )
+        if key in run_context
+    }
+    context["selected_sources"] = []
+    for index, source in enumerate(sources, start=1):
+        projected = {
+            key: source[key]
+            for key in (
+                "source_label",
+                "filename",
+                "source_format",
+                "summary",
+                "topics",
+            )
+            if key in source
+        }
+        projected["source_index"] = index
+        projected["key_excerpts"] = [
+            {key: excerpt[key] for key in ("text", "page", "anchor") if key in excerpt}
+            for excerpt in source.get("key_excerpts", [])
+        ]
+        context["selected_sources"].append(projected)
+
+    # Project proposal metadata separately so model reference fields are retained.
     return {
         "instruction": request.instruction,
         "recent_messages": [
@@ -232,17 +270,7 @@ def build_planner_input(
                 {"question": gap.question, "state": gap.state} for gap in chapter.gaps
             ],
         },
-        "run_context": {
-            key: run_context[key]
-            for key in (
-                "selected_sources",
-                "cc_context",
-                "funder_context",
-                "document_context",
-                "similar_projects",
-            )
-            if key in run_context
-        },
+        "run_context": omit_context_identifiers(context),
         "prior_proposal": (
             None
             if prior_proposal is None
@@ -252,18 +280,24 @@ def build_planner_input(
                 "clarification": prior_proposal.clarification,
                 "changes": [
                     {
-                        key: value
-                        for key, value in change.model_dump(mode="json").items()
-                        if key
-                        in {
-                            "start",
-                            "before",
-                            "after",
-                            "kind",
-                            "group_id",
-                            "source_refs",
-                            "user_input_quote",
-                        }
+                        **change.model_dump(
+                            mode="json",
+                            include={
+                                "start",
+                                "before",
+                                "after",
+                                "kind",
+                                "group_id",
+                                "user_input_quote",
+                            },
+                        ),
+                        # Rebind verified snapshots after source reordering; never replay IDs.
+                        "source_refs": [
+                            source_indices[(str(snapshot.upload_id), snapshot.sha256)]
+                            for snapshot in change.source_snapshots
+                            if (str(snapshot.upload_id), snapshot.sha256)
+                            in source_indices
+                        ],
                     }
                     for change in prior_proposal.changes
                     if change.chapter_id == chapter.chapter_id

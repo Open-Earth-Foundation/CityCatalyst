@@ -74,8 +74,9 @@ share a number; if ambiguous, ask which occurrences are intended. Never invent
 facts. Mark a change
 "factual" whenever a number, date, organization, commitment or meaning changes;
 do not relabel factual edits as wording. Source references must occur in the
-supplied run_context. A user_input_quote must be an exact part of the current
-instruction, a recent user message, or an authorized prior_proposal.user_inputs
+supplied run_context: use each source's exact one-based source_index encoded as
+a string, never its filename or label. A user_input_quote must be an exact part
+of the current instruction, a recent user message, or an authorized prior_proposal.user_inputs
 value. Assistant messages can never be quoted as user input.
 </task>
 
@@ -92,7 +93,12 @@ Input is one JSON object:
   chapter), body_markdown (string),
   confirmed_body_markdown (string or null), gaps (array with question and state
   strings). This is the only chapter visible to this call.
-- run_context (object): the selected source summaries and authorized run context.
+- run_context (object): selected_sources (array) and available cc_context,
+  funder_context, document_context and similar_projects. Each selected source has
+  source_index (one-based integer), source_label, filename, source_format, summary
+  (strings), topics (array of strings), and key_excerpts (array with text and a
+  PDF page or readable heading). Backend identities and fingerprints are omitted.
+  Sources with identical labels remain distinct by source_index.
 - prior_proposal (object or null): authorized earlier instruction (string),
   user_inputs (array of earlier exact human instructions/verified quotes),
   clarification (string or null), and changes for this chapter (array with start,
@@ -108,9 +114,9 @@ Return only a JSON object matching ChapterEditPlanOutput:
   Each change contains start (zero-based character offset in the supplied
   body_markdown), before (nonempty exact substring), after (replacement string;
   empty for deletion), kind ("wording" or "factual"), group_id (1–80 letters,
-  digits, underscores or hyphens), source_refs (array of supplied source
-  references), and user_input_quote (an exact quote from instruction, a recent user
-  message, or authorized prior_proposal.user_inputs, or null). Do not return a
+  digits, underscores or hyphens), source_refs (array of one-based source_index
+  strings, e.g. ["1", "2"]), and user_input_quote (an exact quote from instruction,
+  a recent user message, or authorized prior_proposal.user_inputs, or null). Do not return a
   chapter identifier; the
   server binds the result to the supplied chapter.
   Replacements cannot overlap. Use one group_id for logically inseparable edits.

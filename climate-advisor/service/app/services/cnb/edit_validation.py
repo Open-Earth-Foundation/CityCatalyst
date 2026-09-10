@@ -285,15 +285,15 @@ def validate_provenance(
             )
         snapshots.append(source_snapshot(source))
 
-    if change.user_input_quote is not None:
-        if not change.user_input_quote.strip() or not any(
-            change.user_input_quote in value for value in inputs
-        ):
-            raise EditOperationError(
-                "invalid_user_input",
-                "The proposed factual input was not supplied by the user.",
-                status_code=422,
-            )
+    if change.user_input_quote is not None and (
+        not change.user_input_quote.strip()
+        or not any(change.user_input_quote in value for value in inputs)
+    ):
+        raise EditOperationError(
+            "invalid_user_input",
+            "The proposed factual input was not supplied by the user.",
+            status_code=422,
+        )
     if not factual:
         return snapshots
 
@@ -320,13 +320,8 @@ def validate_provenance(
 
 
 def index_sources(sources: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    """Index selected sources once by both immutable ID and visible label."""
-    result = {}
-    for source in sources:
-        for key in (source.get("upload_id"), source.get("source_label")):
-            if key is not None:
-                result[str(key)] = source
-    return result
+    """Resolve only one-based model indices; labels and upload IDs are not references."""
+    return {str(index): source for index, source in enumerate(sources, start=1)}
 
 
 def source_snapshot(source: dict[str, Any]) -> EditSourceSnapshot:

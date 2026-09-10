@@ -71,7 +71,7 @@ prompts:
   # Prompt for active Stationary Energy review chat flows
   stationary_energy_review: "prompts/stationary_energy_review.md"
 
-  # Read-only chat grounded in the active Concept Note Builder context
+  # Grounded CNB chat with source queries and available review-only edit proposals
   cnb_chat: "prompts/cnb/chat.md"
 
   # Offline Concept Note Builder funder and program research

@@ -1454,6 +1454,12 @@ How it works:
   API. The guided review and focused chapter finding render the trusted source
   label, location, and a bounded source excerpt without allowing the model to
   supply source identity metadata.
+- Chat edit planning and its semantic review use one-based selected-source
+  indices encoded as strings in `source_refs`. Only allowlisted source evidence
+  reaches the models; backend upload IDs and hashes remain in verified snapshots.
+  Duplicate filenames stay distinct, and refinement rebinds snapshots to the
+  current source order. Explicit edit requests invoke the available proposal
+  tool; the user must accept the proposal before the document changes.
 - Both validation passes use an explicit `document` and generated `output`
   contract. Completeness compares the output with a code-selected
   `document.validation_profile` and evidence material; consistency compares it

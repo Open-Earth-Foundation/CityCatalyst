@@ -145,5 +145,12 @@
   "report-error-fetch-title": "Les rapports n'ont pas pu être chargés",
   "report-error-fetch": "Vos rapports enregistrés n'ont pas pu être chargés, donc rien de nouveau n'a été généré. Rechargez la page et reconnectez-vous si le problème persiste.",
   "report-error-partial_one": "{{count}} action n'a pas pu être incluse : {{actions}}.",
-  "report-error-partial_other": "{{count}} actions n'ont pas pu être incluses : {{actions}}."
+  "report-error-partial_other": "{{count}} actions n'ont pas pu être incluses : {{actions}}.",
+  "report-footer-generated-by": "Généré par CityCatalyst",
+  "report-footer-generated-on": "Généré le",
+  "report-footer-page": "Page",
+  "report-footer-of": "de",
+  "report-error-snapshot-title": "Ce classement ne peut pas encore produire de rapports",
+  "report-error-snapshot": "Les rapports sont rédigés à partir d'une copie sauvegardée de l'exécution du classement, et cet inventaire n'en a pas - il a été classé avant que les rapports n'existent. Relancez le classement pour le créer; vos préférences et exclusions restent inchangées.",
+  "report-error-snapshot-action": "Relancez le classement"
 }

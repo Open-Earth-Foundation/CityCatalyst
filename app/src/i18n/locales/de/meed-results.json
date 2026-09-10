@@ -145,5 +145,12 @@
   "report-error-fetch-title": "Berichte konnten nicht geladen werden",
   "report-error-fetch": "Ihre gespeicherten Berichte konnten nicht geladen werden, daher wurde nichts Neues generiert. Laden Sie die Seite neu und melden Sie sich erneut an, wenn das Problem weiterhin besteht.",
   "report-error-partial_one": "{{count}} Aktion konnte nicht einbezogen werden: {{actions}}.",
-  "report-error-partial_other": "{{count}} Aktionen konnten nicht einbezogen werden: {{actions}}."
+  "report-error-partial_other": "{{count}} Aktionen konnten nicht einbezogen werden: {{actions}}.",
+  "report-footer-generated-by": "Erstellt von CityCatalyst",
+  "report-footer-generated-on": "Erstellt am",
+  "report-footer-page": "Seite",
+  "report-footer-of": "von",
+  "report-error-snapshot-title": "Dieses Ranking kann noch keine Berichte erstellen",
+  "report-error-snapshot": "Berichte werden aus einer gespeicherten Kopie des Ranking-Durchlaufs erstellt, und dieses Inventar hat keine - es wurde eingestuft, bevor Berichte existierten. Führen Sie das Ranking erneut aus, um es zu erstellen; Ihre Präferenzen und Ausschlüsse bleiben unverändert.",
+  "report-error-snapshot-action": "Rangliste neu ausführen"
 }

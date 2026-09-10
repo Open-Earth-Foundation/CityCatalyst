@@ -145,5 +145,12 @@
   "report-error-fetch-title": "No se pudieron cargar los informes",
   "report-error-fetch": "No se pudieron cargar sus informes guardados, por lo que no se generó nada nuevo. Recargue la página e inicie sesión nuevamente si el problema persiste.",
   "report-error-partial_one": "{{count}} acción no pudo ser incluida: {{actions}}.",
-  "report-error-partial_other": "{{count}} acciones no pudieron ser incluidas: {{actions}}."
+  "report-error-partial_other": "{{count}} acciones no pudieron ser incluidas: {{actions}}.",
+  "report-footer-generated-by": "Generado por CityCatalyst",
+  "report-footer-generated-on": "Generado el",
+  "report-footer-page": "Página",
+  "report-footer-of": "de",
+  "report-error-snapshot-title": "Esta clasificación aún no puede producir informes",
+  "report-error-snapshot": "Los informes se escriben a partir de una copia guardada de la clasificación realizada, y este inventario no tiene una, se clasificó antes de que existieran los informes. Vuelva a ejecutar la clasificación para crearlo; sus preferencias y exclusiones no han cambiado.",
+  "report-error-snapshot-action": "Volver a ejecutar la clasificación"
 }

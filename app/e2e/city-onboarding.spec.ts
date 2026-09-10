@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { dismissCookieConsent } from "./helpers";
+import { dismissCookieConsent, selectCityFromOnboardingSearch } from "./helpers";
 
 test("City Onboarding", async ({ page }) => {
   test.setTimeout(120000);
@@ -34,18 +34,8 @@ test("City Onboarding", async ({ page }) => {
   {
     await page.waitForURL("**/cities/onboarding/setup/");
 
-    const cityInput = page.locator('input[name="city"]');
-    await cityInput.click();
-    await page.keyboard.type("Chicago", { delay: 100 });
+    await selectCityFromOnboardingSearch(page, "Chicago");
 
-    const citySearchResults = page.getByText(
-      /^Chicago\s*United States of America > Illinois$/,
-    );
-    await citySearchResults.waitFor();
-    await citySearchResults.click();
-
-    // Selected-city card should show the city name and area (with loader resolving)
-    await expect(page.getByTestId("selected-city-name")).toHaveText(/Chicago/i);
     await expect(page.getByTestId("selected-city-area")).toBeVisible({
       timeout: 30000,
     });

@@ -50,8 +50,50 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
    - Composes `prompts.core` with `prompts.cnb_chat`, injects ready-source
      summaries, and exposes the step-scoped read-only source query
    - Uses source evidence for answers; chat suggestions do not persist document edits
+   - Treats vague requests as sufficient intent, uses the already bound run and
+     available chapter order, and asks one focused question when the next step
+     cannot be derived
    - Uses the detailed contract in
      [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
+
+### Concept Note chapter validation
+
+Chapter validation is triggered from CityCatalyst's **Review & export** button,
+not from chat. The guided review calls
+`POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/validation` for every
+active chapter. Each call runs two structured passes in strict order:
+completeness first, comparing the generated `output` with the template and
+source evidence in `document`, then consistency, comparing the same output with
+the other active chapters in that document. Validation uses only explicit input
+claims and contains no programme-name or programme-specific keyword rules. The
+second pass receives the first result; large documents are batched without
+truncating the output or document chapters.
+
+Before completeness, code matches the output's `template_section_id` against
+the normalized `chapter_ref` and builds `document.validation_profile` containing
+one chapter schema and its own `required_fields`. The model receives no full
+template collection or global field inventory. Requirements shared by several
+chapters must be listed on each applicable chapter.
+
+Existing templates with a flat `required_fields` inventory need source-reviewed
+assignments in `chapter_schema[*].required_fields` before rollout. Keep each
+inventory field's exact text in at least one chapter; use `[]` for chapters with
+no required fields. Missing/duplicate chapter matches, malformed field lists,
+or unassigned inventory fields return HTTP 409
+(`chapter_validation_template_invalid`) before any model call or result write.
+This changes the JSON content contract, not the database columns. See the
+[template upgrade example](../docs/ConceptNoteBuilderArchitecture.md#chapter-template-requirement-assignments).
+
+`llm_config.yaml` configures `cnb_chapter_validator` as GPT-5.6 Terra with
+medium reasoning and a 50,000-token validation prompt budget. The service uses
+temperature zero. Model or parse failures persist nothing. Successful results
+store actionable findings, never reasoning, and resolve model-selected evidence
+positions to trusted source labels, locations, claims, and summaries. Invalid or
+invented evidence positions reject the model result. Results are guarded
+by a transactional fingerprint covering active chapter metadata and revisions,
+target gaps and evidence links, and every application-template field. See
+[`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#chapter-validation)
+for status aggregation, staleness, persistence, API, and the guided export UI.
 
 At runtime:
 
@@ -448,11 +490,9 @@ OPENROUTER_API_KEY=your-openrouter-api-key
 # CityCatalyst Postgres on localhost:5432)
 CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climateadvisor
 
-# Optional unless CNB schema, importer, or matching access is needed.
-CNB_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/cnb
+# Required for the Concept Note Builder workspace and validation flow.
+CNB_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/cnb
 
-# Optional
-CA_PORT=8080
 CA_LOG_LEVEL=info
 CA_CORS_ORIGINS=*
 OPENAI_API_KEY=your-openai-api-key
@@ -472,7 +512,13 @@ docker compose up -d postgres
 ```
 
 Make sure Docker Desktop (or another Docker daemon) is running before invoking
-`docker compose`.
+`docker compose`. A fresh Compose volume creates both the `climateadvisor` and
+`cnb` databases. If the volume predates Concept Note Builder support and does
+not yet contain `cnb`, create it once with:
+
+```bash
+docker compose exec postgres createdb -U climateadvisor cnb
+```
 
 If you use this compose-based PostgreSQL setup and run the CA service on your
 host (not in Docker), use:
@@ -495,6 +541,7 @@ docker run --name ca-postgres \
   -d pgvector/pgvector:pg15
 
 docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "CREATE EXTENSION IF NOT EXISTS vector;"
+docker exec ca-postgres createdb -U climateadvisor cnb
 ```
 
 ### 4. Install Dependencies And Setup Database
@@ -512,16 +559,16 @@ uv run --directory service alembic -c cnb-alembic.ini upgrade head
 
 ```bash
 cd climate-advisor
-uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8081 --reload
 ```
 
 ### 6. Verify Setup
 
-- **API Docs**: http://localhost:8080/docs
-- **ReDoc**: http://localhost:8080/redoc
-- **Playground**: http://localhost:8080/playground
-- **Liveness Check**: http://localhost:8080/health
-- **Database Readiness Check**: http://localhost:8080/ready
+- **API Docs**: http://localhost:8081/docs
+- **ReDoc**: http://localhost:8081/redoc
+- **Playground**: http://localhost:8081/playground
+- **Liveness Check**: http://localhost:8081/health
+- **Database Readiness Check**: http://localhost:8081/ready
 
 ## Configuration
 
@@ -535,17 +582,17 @@ chapter drafter uses GPT-5.6 Terra with medium reasoning.
 
 Current CA model defaults:
 
-- General chat: `openai/gpt-5.6-luna`, reasoning `none`.
-- CNB and Stationary Energy chat: `openai/gpt-5.6-sol`, reasoning `none`.
+- General chat: `openai/gpt-5.6-luna`, reasoning `medium`.
+- CNB and Stationary Energy chat: `openai/gpt-5.6-sol`, reasoning `medium`.
 - Funding research and similar-project selection: `openai/gpt-5.6-sol`, reasoning `medium`.
 - Funder-identity matching: `openai/gpt-5.6-luna`, reasoning `low`.
 - Document mapping and question-focused source readers: `openai/gpt-5.6-luna`, reasoning `low`.
 - Document-summary synthesis: `openai/gpt-5.6-sol`, reasoning `medium`.
 
 Chat keeps the existing OpenRouter Chat Completions tool loop and explicitly sets
-reasoning to `none`; GPT-5.6 otherwise defaults to medium reasoning. The configured
-chat and source-worker requests omit `temperature`. Research keeps its Responses
-API path and existing reasoning settings. Source partition budgets,
+reasoning to `medium`. The configured chat and source-worker requests omit
+`temperature`. Research keeps its Responses API path and existing reasoning
+settings. Source partition budgets,
 concurrency limits, and embedding models are unchanged. Stored summaries are not
 automatically rebuilt by changing the model configuration.
 
@@ -649,12 +696,11 @@ language, or client-side fallback behavior. The boundary is:
 
 - `OPENROUTER_API_KEY` - OpenRouter API key for LLM access
 - `CA_DATABASE_URL` - PostgreSQL connection string
-- `CNB_DATABASE_URL` - separate PostgreSQL connection string for the CNB
-  workspace and funding-reference tables; the repository migrates it through
-  the independent CNB Alembic chain, never the CA chain. The reviewed-reference
-  importer, similar-project reader, and runtime funding-reference validation
-  use it; requests without funding references do not require a runtime lookup
-- `CA_PORT` - Server port (default: `8080`)
+- `CNB_DATABASE_URL` - separate PostgreSQL connection string required by the
+  Concept Note Builder workspace and validation flow and used for its
+  funding-reference tables; the repository migrates it through the independent
+  CNB Alembic chain, never the CA chain. The reviewed-reference importer,
+  similar-project reader, and runtime funding-reference validation also use it
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
 - `OPENAI_API_KEY` - OpenAI API key for embeddings
@@ -751,7 +797,11 @@ normalized request returns the original run with HTTP `200` and
 `created: false`; using that key with different input returns HTTP `409`.
 
 `GET /v1/concept-notes?user_id=...&city_id=...` validates the same token identity
-and live city access, then returns only that user's runs for the selected city.
+and city access, then returns only that user's runs for the selected city.
+Successful CityCatalyst identity and city responses are reused within the
+Climate Advisor process for at most 30 seconds, never beyond the bearer token's
+JWT expiry. The cache uses only a one-way token fingerprint, coalesces
+concurrent checks, and does not retain failed or denied responses.
 Runs are ordered by `updated_at`, `created_at`, and `run_id`, all descending, so
 the result is stable and most-recently-updated first. Upload registration and
 failed, retry, or ready lifecycle transitions refresh the parent run's
@@ -760,10 +810,11 @@ stored scope identifiers, lifecycle fields, timestamps, and `progress_summary`
 copied from the persisted `context_summary`.
 
 `GET /v1/concept-notes/{run_id}?user_id=...` returns only an owned run and
-revalidates current city access before responding. It exposes the same persisted
-status, workflow step, and progress summary as the list contract. `PATCH` on the
-same route accepts a trimmed 1-120 character `name` and updates both the run and
-its dedicated thread title.
+requires current city access before responding, using the same short-lived
+successful-authorization cache. It exposes the same persisted status, workflow
+step, and progress summary as the list contract. `PATCH` on the same route
+accepts a trimmed 1-120 character `name` and updates both the run and its
+dedicated thread title.
 
 `POST /v1/concept-notes/{run_id}/duplicate` requires `Idempotency-Key` and
 creates a new run and empty chat. It copies current chapter content, context, and
@@ -793,7 +844,11 @@ CityCatalyst exposes authenticated proxy routes at
 scoped CA token, forwards the duplicate idempotency key, and preserves Climate
 Advisor response statuses. Climate Advisor remains authoritative for run ownership
 and its stored city binding. The CityCatalyst dashboard consumes these routes; its
-implementation details live in the repository architecture guide.
+implementation details live in the repository architecture guide. The
+CityCatalyst proxy reuses one successfully issued CA token per user until one
+minute before its reported expiry and coalesces concurrent issuance. This
+process-local token reuse gives Climate Advisor a stable credential to validate
+through its 30-second successful-authorization cache.
 
 ### Concept Note city-context baseline
 
@@ -816,7 +871,8 @@ The repository adapter reads and updates the migrated
 `concept_note_runs` and `concept_note_context_bundles` tables. It replaces only
 the GHGI and/or HIAP sections built by the current request, preserving the rest
 of the bundle under the same database lock. Before reusing either cached
-section, the route revalidates live city access and the selected inventory.
+section, the route requires city access and the selected inventory. City access
+may reuse the short-lived successful authorization described above.
 GHGI status and emissions payloads must each contain GPC sectors I-V exactly
 once. Incomplete or noncanonical CityCatalyst capability payloads return
 `503 invalid_cc_context` without being persisted. A valid stored snapshot is
@@ -1163,7 +1219,11 @@ docker build -f service/Dockerfile -t climate-advisor:dev .
 ```bash
 docker run --rm \
   --env-file .env \
-  -p 8080:8080 \
+  --add-host host.docker.internal:host-gateway \
+  -e CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@host.docker.internal:5433/climateadvisor \
+  -e CNB_DATABASE_URL=postgresql://climateadvisor:climateadvisor@host.docker.internal:5433/cnb \
+  -e CC_BASE_URL=http://host.docker.internal:3000 \
+  -p 8081:8080 \
   climate-advisor:dev
 ```
 
@@ -1196,6 +1256,8 @@ Notes:
   conflict with CityCatalyst's local PostgreSQL on `5432`
 - PostgreSQL is published on `localhost:5433` in compose to avoid conflicts
   with CityCatalyst's local PostgreSQL on `5432`
+- Climate Advisor is published on `localhost:8081` so CityCatalyst can keep
+  its local HIAP integration on `8080`
 - Inside the compose network, Climate Advisor still connects to PostgreSQL on
   `postgres:5432`
 - Because of this network difference, compose sets `CA_DATABASE_URL`

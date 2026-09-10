@@ -114,6 +114,44 @@ Source PDFs have one fixed 20 MB product limit
 (`20 * 1024 * 1024` bytes) shared by the upload validator and OCR worker. See
 `env.example` for timeout, lease, concurrency, and model configuration.
 
+To use Concept Note Builder locally, run the sibling `climate-advisor` service
+at `http://localhost:8081`. The copied `env.example` enables
+both `CA_SERVICE_INTEGRATION` and `CONCEPT_NOTE_BUILDER` and sets
+`CA_BASE_URL` to that address. Climate Advisor must also have its independent
+`CNB_DATABASE_URL` configured and migrated.
+
+### CityCatalyst-to-Climate-Advisor user tokens
+
+CNB, chat, PDF OCR delivery, and Stationary Energy use the shared server-side
+`src/backend/climate-advisor-token.ts` client. It caches validated user tokens
+until 60 seconds before expiry and shares one pending issuance (including retries)
+between concurrent calls for the same user. Tokens are user-scoped; inventory IDs
+remain request context. Returned `expires_in` is the remaining lifetime, including
+when a cached token is attached to a new chat thread.
+
+The cache holds at most 1,000 tokens per process, evicts least-recently-used entries,
+and resets when `HOST`, `CC_SERVICE_API_KEY`, or `VERIFICATION_TOKEN_SECRET` changes.
+Expired entries are removed on access or insertion. Tokens are not written to the
+Next.js fetch cache. New processes and different pods start cold independently;
+no sticky sessions or distributed cache are required. Identity and resource
+permissions are still checked by the existing authorization boundaries.
+
+Cold-cache issuance retries transport failures, timeouts, and HTTP 502/503/504 at
+most twice after the initial attempt. Each attempt has a three-second deadline
+covering headers and body reading. Backoff is 200 ms then 400 ms, each with 0–100 ms
+jitter, for a maximum configured budget of 9.8 seconds. Other HTTP failures and
+malformed token responses are not retried or cached. Actual CA operations are
+not replayed by this client; OCR retains its separate durable delivery retries.
+
+Exhausted issuance preserves its final upstream HTTP status; network failures map
+to 502 and timeouts to 504. JSON routes use the existing API error envelope with a
+sanitized message. Chat messages retain their SSE error-event contract. Logs
+include attempt, status, failure category, duration, and whether another retry
+will follow, without tokens, service keys, headers, or upstream response bodies.
+After deployment, compare token issuance volume and exhausted-retry logs during
+workspace refreshes, including after a pod restart. Rollback requires only a code
+revert, with no database migration.
+
 ## Running
 
 ### Development

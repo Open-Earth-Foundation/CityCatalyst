@@ -6,6 +6,10 @@ import { InventoryService } from "./InventoryService";
 import { randomUUID } from "node:crypto";
 import { Op } from "sequelize";
 import { logger } from "@/services/logger";
+import {
+  MeedStateAttributes,
+  MeedStateCreationAttributes,
+} from "@/models/MeedState";
 
 const MEED_API_URL = process.env.HIAP_MEED_API_URL + "/v1/";
 
@@ -556,6 +560,29 @@ export default class MeedApiService {
     }
 
     return plan;
+  }
+
+  public static async getState(inventoryId: string) {
+    const state = await db.models.MeedState.findOne({ where: { inventoryId } });
+    return state;
+  }
+
+  public static async setState(
+    updatedState: Omit<MeedStateCreationAttributes, "id">,
+  ) {
+    let state = await db.models.MeedState.findOne({
+      where: { inventoryId: updatedState.inventoryId },
+    });
+    if (!state) {
+      state = await db.models.MeedState.create({
+        ...updatedState,
+        id: randomUUID(),
+      });
+    } else {
+      await state.update(updatedState);
+    }
+
+    return state;
   }
 
   private static async makeRequest(

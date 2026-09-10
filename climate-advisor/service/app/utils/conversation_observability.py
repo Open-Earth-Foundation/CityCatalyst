@@ -55,7 +55,7 @@ def conversation_trace(content: str) -> Iterator[None]:
         return
 
     with start_trace_span(
-        name="Climate Advisor Conversation",
+        name="Climate Advisor Turn",
         span_type="CHAIN",
         inputs={"user_message": content, "system_prompts": {}},
         attributes={

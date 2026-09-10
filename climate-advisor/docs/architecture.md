@@ -406,9 +406,10 @@ Stationary Energy context chat uses a dedicated workflow name and includes
 `stationary_energy_draft_run_id` in trace metadata so it can be separated from
 general conversations in traces and logs.
 
-Ordinary Climate Advisor requests keep one `Climate Advisor Conversation` root
-open through response persistence. The root stores the user message, one
-hash-keyed copy of each system/developer prompt, the assembled assistant output,
+Ordinary Climate Advisor requests keep one `Climate Advisor Turn` root
+open through response persistence. Each root represents one user turn; MLflow's
+Sessions view groups turns by the shared thread/session ID. The root stores the
+user message, one hash-keyed copy of each system/developer prompt, the assembled assistant output,
 and the final stream/persistence status. Child model spans reference the root
 prompt snapshot and omit raw streaming-chunk events while retaining their final
 outputs and diagnostic events. Function calls are recorded as child `TOOL` spans

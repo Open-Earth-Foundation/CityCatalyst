@@ -1264,8 +1264,9 @@ still preserving per-turn trace detail. Every chat mode opens a request root spa
 before starting the model, so trace/run correlation never depends on a fluent
 active run. CNB turns retain the `CNB` root span and `workflow=CNB` tag.
 
-Ordinary CA (`workflow=climate_advisor_conversation`) keeps its root open through
-message persistence and stores one assembled assistant response on that root.
+Ordinary CA (`workflow=climate_advisor_conversation`) names each request root
+`Climate Advisor Turn`, keeps it open through message persistence, and stores one
+assembled assistant response on that root.
 `streamed`, `stream_status`, `response_chunk_count`, and `history_saved` describe
 the outcome. These are visible trace attributes, not a custom animated MLflow UI
 indicator. Cancelled requests retain partial assistant text and an error status;

@@ -24,6 +24,9 @@ export interface UserAttributes {
   preferredLanguage?: string;
   defaultCityId?: string | null;
   numberFormat?: string;
+  // Two factor auth settings
+  twoFactorEnabled?: boolean;
+  twoFactorSecret?: string;
 }
 
 export type UserPk = "userId";
@@ -40,7 +43,9 @@ export type UserOptionalAttributes =
   | "title"
   | "preferredLanguage"
   | "defaultCityId"
-  | "numberFormat";
+  | "numberFormat"
+  | "twoFactorEnabled"
+  | "twoFactorSecret";
 export type UserCreationAttributes = Optional<
   UserAttributes,
   UserOptionalAttributes
@@ -63,6 +68,8 @@ export class User
   declare preferredLanguage?: LANGUAGES;
   declare defaultCityId?: string | null;
   declare numberFormat?: string;
+  declare twoFactorEnabled?: boolean;
+  declare two?: string;
 
   // User belongsTo Inventory via defaultInventoryId
   declare defaultInventory: Inventory;
@@ -249,6 +256,16 @@ export class User
           type: DataTypes.STRING(255),
           allowNull: true,
           field: "number_format",
+        },
+        twoFactorEnabled: {
+          type: DataTypes.BOOLEAN,
+          allowNull: true,
+          field: "two_factor_enabled",
+        },
+        twoFactorSecret: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+          field: "two_factor_secret",
         },
       },
       {

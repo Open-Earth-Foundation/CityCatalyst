@@ -9,6 +9,8 @@ description: Create a Sequelize database migration and model for CityCatalyst. U
 
 ### Step 1: Generate Migration File
 
+Create exactly one migration file per PR by default. Combine the PR's schema changes in that file unless the user explicitly requests otherwise.
+
 ```bash
 cd app && npm run db:gen-migration -- --name add-my-entity
 ```
@@ -98,11 +100,15 @@ _Inventory.hasMany(_MyEntity, { as: "myEntities", foreignKey: "inventoryId" });
 
 ### Step 5: Run Migration
 
+Before executing a migration, identify the effective database target from the selected environment and Sequelize configuration without printing credentials. Prefer a disposable local/test database. A request to create a migration does not authorize applying it to a shared or production database; use such a target only when that execution is explicitly authorized. If no suitable target is available, finish the migration files and report that execution was not verified.
+
 ```bash
 cd app && npm run db:migrate
 ```
 
 ### Step 6: Verify
+
+Exercise rollback/re-apply only on the disposable test database, confirming the migration being undone is the one introduced by this task. Do not use an unqualified rollback against a shared database or undo a pre-existing migration. If the change includes several migrations, verify each intended migration in order.
 
 ```bash
 cd app && npm run db:migrate:undo   # Test rollback
@@ -111,6 +117,7 @@ cd app && npm run db:migrate        # Re-apply
 
 ## Checklist
 
+- [ ] The PR creates one migration file unless the user explicitly requested otherwise
 - [ ] Migration file is `.cjs` (CommonJS)
 - [ ] `up` and `down` are both implemented (reversible)
 - [ ] UUIDs use `Sequelize.UUIDV4` as default

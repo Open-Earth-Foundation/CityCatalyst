@@ -29,7 +29,7 @@ alwaysApply: false
 - **Vector store**: pgvector (PostgreSQL extension)
 - **Auth**: JWT validation + service-to-service via `X-Service-Name`/`X-Service-Key`
 - **Streaming**: SSE (Server-Sent Events)
-- **Deps**: `climate-advisor/service/requirements.txt`
+- **Deps**: `climate-advisor/pyproject.toml` with `climate-advisor/uv.lock`; use `uv` from `climate-advisor/`.
 
 ## hiap / hiap-meed Conventions
 

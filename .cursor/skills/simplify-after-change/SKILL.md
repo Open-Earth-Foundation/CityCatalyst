@@ -1,17 +1,19 @@
+---
+name: simplify-after-change
+description: Review code changed in the current task for unnecessary complexity and make small behavior-preserving simplifications only where they improve readability.
+---
+
 # simplify-after-change
 
 ## Purpose
 
-After any code change, simplify the changed code so it is boring, readable, and minimal while preserving behavior.
+After code changes, inspect the final diff for unnecessary complexity. The review is required when the package calls for it; edits are not. Leave already clear code unchanged.
 
 ## Default scope
 
-Operate only on:
+Review the code changed by the current task. Inspect nearby code and direct callers only when needed to understand behavior; an open or previously modified file is not automatically in scope.
 
-1. files edited in this change, or
-2. the currently open file(s)
-
-Do not refactor unrelated modules unless requested.
+Do not refactor unrelated code or include pre-existing user changes. Expand edits only when necessary to complete the requested change and explain that dependency.
 
 ## Non-negotiables
 
@@ -65,12 +67,13 @@ Do not refactor unrelated modules unless requested.
 
 ## Process
 
-1. Identify complexity smells in the scoped files.
-2. Simplify in-place with minimal, safe edits.
-3. Ensure no unused imports or dead code remain.
-4. If anything is uncertain, leave a TODO and explain the risk.
+1. Review the final diff once for complexity introduced or directly affected by the task.
+2. Make a small simplification only when its benefit and behavior preservation are clear. No edits is a valid result.
+3. Remove unused imports or dead code introduced by the change.
+4. If behavior preservation is uncertain, leave the code unchanged and report the specific unresolved concern; do not add speculative TODOs.
+5. Validate any simplification with checks appropriate to the affected behavior. Revisit only code changed after this review or a concrete unresolved concern, rather than restarting the whole pass.
 
 ## Output
 
-- Provide a short bullet list of what was simplified and why.
-- Apply edits directly in the files.
+- Include meaningful simplifications in the task's existing change summary. If no edits were needed, a brief statement is sufficient.
+- Report relevant validation or an unresolved concern without adding a separate checklist for each pass.

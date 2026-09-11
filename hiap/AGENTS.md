@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This repository contains a single AI project. All contributions must optimize for:
+This repository subtree contains the HIAP AI project. All contributions must optimize for:
 
 - **Readability**: clear docs, clean structure, no dead or unused code, and a logical separation of concerns.
 - **Maintainability**: reusable utilities, configuration-driven behavior, proper logging, minimal duplication.
@@ -12,15 +12,15 @@ This repository contains a single AI project. All contributions must optimize fo
 
 ## Cursor Agent Skills (project-level)
 
-This repo includes **project-level Cursor skills** under `.cursor/skills/` (version-controlled). These skills are available to anyone who checks out the repository and opens it in Cursor. See [Cursor Skills docs](https://cursor.com/docs/context/skills).
+This monorepo includes **project-level Cursor skills** under `../.cursor/skills/` from this subtree (the repository-root `.cursor/skills/` directory). These skills are available to anyone who checks out the repository and opens it in Cursor. See [Cursor Skills docs](https://cursor.com/docs/context/skills).
 
 ### Mandatory after code changes
 
-After **any code change** (add/edit/delete/rename), you must apply the `docs-after-change` skill before ending your turn.
+After a task changes code or runtime configuration, apply `docs-after-change` once to the final diff. The inspection is mandatory; documentation edits are needed only when the documented contract changed. Revisit only subsequent relevant changes or unresolved findings.
 
 Skills included:
 
-- `docs-after-change`: **Mandatory** after any code change. Keeps docstrings/README/architecture accurate.
+- `docs-after-change`: Checks documentation impact as required above.
 - `script-quality-gate`: Use when adding/changing a runnable script or CLI entrypoint.
 - `repo-doc-audit`: One-off full repo documentation audit (**manual** via `/repo-doc-audit`).
 
@@ -81,7 +81,7 @@ Usage (from project root):
 
 ### Folder placement must follow the hierarchy
 
-All directories containing code must include an `__init__.py` file to ensure proper package resolution.
+Python directories that must be importable packages must include an `__init__.py` file. This does not apply to non-Python code, data, or deployment directories.
 
 Use this structure:
 
@@ -192,13 +192,15 @@ if __name__ == "__main__":
 
 ### Docstrings are required (functions and methods)
 
-- Every Python **function and method** must have a docstring.
+- Every production Python **function and method** must have a docstring.
   - **Trivial** functions/methods: a minimal **one-liner** is enough.
   - **Non-trivial** or side-effecting functions/methods: docstring must describe:
     - inputs/parameters (expected types/shape and any constraints)
     - return value (and what it represents)
     - side effects (filesystem/DB/network, mutations, logging, caching)
     - raised exceptions (when non-obvious)
+
+- Tests should use descriptive names. Add test docstrings only when the setup or intent is not obvious from the name and assertions.
 
 ### Logging is required
 
@@ -235,7 +237,7 @@ __all__ = ["setup_logger"]
 
 ### Type hints
 
-- All function signatures must have Python type hints.
+- All production function signatures must have Python type hints. Type reusable test helpers and fixtures where practical; avoid noisy annotations for decorator-injected mocks.
 - Prefer returning concrete types, avoid `Any` unless you have a good reason.
 
 ### Path handling
@@ -284,6 +286,7 @@ __all__ = ["setup_logger"]
 - Use `pytest` for tests.
 - New features should include tests where practical.
 - Bug fixes should include a regression test whenever feasible.
+- Run tests appropriate to the changed behavior and required gates. Once those pass, broaden or repeat validation only for subsequent changes, failures, or a concrete unresolved risk. Report unrelated pre-existing failures separately.
 
 ---
 
@@ -308,7 +311,7 @@ docker run -it --rm -p 8000:8000 --env-file .env my-great-app
 When making changes:
 
 - Keep changes minimal and scoped to the task.
-- Respect the existing folder structure and move files if they are in the wrong place.
+- Respect the existing folder structure. Move files only when needed for the requested change; report unrelated layout issues instead of reorganizing them.
 - Update `README.md` if setup or run behavior changes.
 - If you add a runnable script, ensure it follows the standalone script rules.
 - If you add dependencies, update `pyproject.toml` accordingly.
@@ -317,11 +320,11 @@ When making changes:
 
 ## Quick checklist for contributions
 
-- [ ] `__init__.py` present in all code folders
+- [ ] `__init__.py` present where Python package imports require it
 - [ ] No duplication (helpers in utils where appropriate)
 - [ ] Clear separation of concerns (services vs utils vs scripts)
 - [ ] Runnable scripts: docstring, argparse, `__main__`
 - [ ] README updated if install, run, or other documentation changed
 - [ ] Logging used instead of print
 - [ ] pytest coverage added or updated when feasible
-- [ ] Type hints present in all function signatures
+- [ ] Production signatures typed; test helpers typed where practical

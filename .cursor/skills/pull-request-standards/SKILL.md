@@ -109,10 +109,11 @@ ON-1234
 - For creation, pass derived `owner`, `repo`, `head`, `base`, `title`, `body`, and draft mode when requested.
 - For updates, first identify the existing PR by branch or user-provided PR number, then update only the requested or generated metadata.
 - Preserve existing PR body sections that are clearly hand-authored and still relevant. Replace stale generated summaries, changes, or commit lists.
-- If the branch is missing remotely, report that clearly and ask whether to push unless the user already requested a push.
+- If the branch is missing remotely, use the authorization rules below. Ask whether to publish only if the request does not already authorize it.
 
 ## Push Policy
 
-- Assume the branch is already pushed when the user only asks to create or update PR metadata.
-- Do not run `git push` or `git push -u` unless the user explicitly asks.
-- When push is explicitly requested, use the minimal push needed and continue the PR operation after push succeeds.
+- For PR-metadata-only requests, use the existing remote branch; do not publish unrelated local commits.
+- A request to implement changes and open a PR (including a draft PR) authorizes committing the scoped changes and publishing the necessary feature branch. An explicit push request or prior authorization also suffices.
+- For a local-edit-only request, prepare and verify the change before asking whether to publish it.
+- Publish only the intended task commits, use a normal non-force push, and continue the PR operation after it succeeds. Preserve the requested draft state.

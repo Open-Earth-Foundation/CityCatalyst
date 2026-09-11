@@ -7,7 +7,7 @@ description: End-to-end feature development workflow for CityCatalyst covering d
 
 ## Overview
 
-A complete feature in CityCatalyst touches up to 7 layers. Follow this order to avoid dependency issues.
+A feature may touch several layers. First identify the layers required by the request and existing code, then follow their dependency order. Skip phases that do not apply; do not create a migration, API endpoint, RTK hook, or UI merely to complete this list.
 
 ## Workflow
 
@@ -16,7 +16,7 @@ A complete feature in CityCatalyst touches up to 7 layers. Follow this order to 
 1. **Migration**: Create migration file in `app/migrations/` (see [create-migration skill](../create-migration/SKILL.md))
 2. **Model**: Create Sequelize model in `app/src/models/`
 3. **Register**: Add to `app/src/models/init-models.ts`
-4. **Run**: `cd app && npm run db:migrate`
+4. **Validate**: Follow the migration skill's database-target checks. Run migrations only against a verified disposable local/test database, or an explicitly authorized target. Creating a migration does not authorize applying it to a shared database.
 
 ### Phase 2: Backend API
 
@@ -44,9 +44,11 @@ A complete feature in CityCatalyst touches up to 7 layers. Follow this order to 
 ### Phase 5: Quality
 
 16. **Types**: Ensure all types are in `app/src/util/types.ts` or co-located
-17. **Lint**: `cd app && npm run lint`
-18. **Format**: `cd app && npm run prettier`
-19. **Test**: `cd app && npm run jest`
+17. **Lint**: From `app/`, run ESLint on the changed supported files. Complete any broader required CI checks when available.
+18. **Format**: From `app/`, run `npx prettier --write <changed-file> ...` with explicit paths. `npm run prettier` formats the entire app; reserve it for an explicitly requested formatting task.
+19. **Test**: Run the relevant Jest tests and add regression coverage for changed behavior where practical. Run broader suites when required by CI or justified by shared-code impact, failures, or an unresolved risk. Once the necessary checks pass, finish; do not repeatedly broaden testing without new evidence.
+
+Distinguish failures introduced by this change from pre-existing failures. Report unrelated blockers rather than expanding the feature to repair them. Apply each required post-change skill once to the final diff, revisiting only later edits.
 
 ## File Mapping
 

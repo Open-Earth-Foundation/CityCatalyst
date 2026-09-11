@@ -10,12 +10,7 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import {
-  MdLink,
-  MdMoreVert,
-  MdOutlinePerson,
-  MdOutlinePersonAddAlt,
-} from "react-icons/md";
+import { MdLink, MdMoreVert, MdOutlinePersonAddAlt } from "react-icons/md";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
@@ -36,7 +31,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { AccountCircleFilledIcon, DeleteIcon } from "@/components/icons";
 import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
@@ -79,6 +74,9 @@ const TeamSettings = ({
   const { organization: orgContext } = useOrganizationContext();
   const selectedOrganization = orgContext?.organizationId;
   const [selectedProject, setSelectedProject] = React.useState<string[]>(
+    initialProjectId ? [initialProjectId] : [],
+  );
+  const [expandedProjects, setExpandedProjects] = React.useState<string[]>(
     initialProjectId ? [initialProjectId] : [],
   );
   const [selectedCity, setSelectedCity] = React.useState<string | null>(
@@ -145,6 +143,7 @@ const TeamSettings = ({
       selectedProject.length === 0
     ) {
       setSelectedProject([projectsData[0].projectId]);
+      setExpandedProjects([projectsData[0].projectId]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectsData]);
@@ -238,7 +237,7 @@ const TeamSettings = ({
             fontSize="headline.sm"
             mb={2}
             fontWeight="semibold"
-            lineHeight="32px"
+            lineHeight="32"
             fontStyle="normal"
             textTransform="capitalize"
             color="content.secondary"
@@ -272,21 +271,22 @@ const TeamSettings = ({
       )}
       <Box
         display="flex"
-        gap="48px"
+        gap="6"
         mt={12}
-        alignItems="flex-start"
+        alignItems="stretch"
         borderWidth="1px"
         borderColor="border.overlay"
-        borderRadius="8px"
-        p="16px"
+        borderRadius="rounded"
+        bg="white"
+        shadow="1dp"
+        p="6"
       >
         <Box
-          w="271px"
-          overflowY="hidden"
+          w="285px"
+          flexShrink={0}
           display="flex"
           flexDirection="column"
-          gap="24px"
-          h="500px"
+          gap="6"
         >
           <Text
             fontSize="title.md"
@@ -302,16 +302,18 @@ const TeamSettings = ({
           />
           <Accordion.Root
             variant="plain"
-            value={selectedProject}
+            collapsible
+            value={expandedProjects}
             onValueChange={(val) => {
-              setSelectedProject(val.value);
-              setSelectedCity(null);
+              setExpandedProjects(val.value);
             }}
             borderWidth="1px"
             borderColor="border.overlay"
-            p="12px"
+            borderRadius="rounded"
+            p="3"
             w="full"
-            h="400px"
+            flex="1"
+            minH="0"
             overflowY="scroll"
           >
             {filteredProjectsData.length === 0 && (
@@ -328,10 +330,11 @@ const TeamSettings = ({
               <Accordion.Item key={item.projectId} value={item.projectId}>
                 <Accordion.ItemTrigger
                   onClick={() => {
+                    setSelectedProject([item.projectId]);
                     setSelectedCity(null);
                   }}
                   w="full"
-                  padding="0px"
+                  padding="0"
                   asChild
                 >
                   <Button
@@ -345,7 +348,7 @@ const TeamSettings = ({
                     pr={0}
                     alignItems="center"
                     color={
-                      selectedProject.includes(item.projectId)
+                      expandedProjects.includes(item.projectId)
                         ? "interactive.secondary"
                         : "content.secondary"
                     }
@@ -359,8 +362,8 @@ const TeamSettings = ({
                     </Text>
                     <Accordion.ItemIndicator
                       color="currentColor"
-                      rotate={{ base: "-90deg", _open: "-180deg" }}
-                      mr="24px"
+                      rotate={{ base: "0deg", _open: "-180deg" }}
+                      mr="6"
                     >
                       <Icon
                         as={LuChevronDown}
@@ -370,7 +373,7 @@ const TeamSettings = ({
                     </Accordion.ItemIndicator>
                   </Button>
                 </Accordion.ItemTrigger>
-                <AccordionItemContent padding="0px" pb={4}>
+                <AccordionItemContent padding="0" pb={4}>
                   {item.cities.length === 0 && (
                     <Text
                       fontSize="body.lg"
@@ -383,11 +386,11 @@ const TeamSettings = ({
                   {item.cities.length > 0 && (
                     <Tabs.Root
                       display="flex"
-                      mt="12px"
+                      mt="3"
                       flexDirection="row"
                       variant="subtle"
                       w="full"
-                      gap="12px"
+                      gap="3"
                       value={selectedCity}
                       onValueChange={(val) => setSelectedCity(val.value)}
                     >
@@ -395,7 +398,7 @@ const TeamSettings = ({
                         w="full"
                         display="flex"
                         flexDirection="column"
-                        gap="12px"
+                        gap="3"
                       >
                         {item.cities.map((city) => (
                           <Tabs.Trigger
@@ -405,24 +408,27 @@ const TeamSettings = ({
                             justifyContent={"left"}
                             letterSpacing={"wide"}
                             color="content.secondary"
-                            lineHeight="20px"
+                            lineHeight="20"
                             fontStyle="normal"
                             fontSize="body.md"
                             fontWeight="medium"
                             minH="52px"
                             w="full"
+                            pl="6"
                             _selected={{
                               color: "content.link",
                               fontSize: "body.md",
                               fontWeight: "medium",
                               backgroundColor: "background.neutral",
-                              borderRadius: "8px",
+                              borderRadius: "rounded",
                               borderWidth: "1px",
                               borderStyle: "solid",
                               borderColor: "content.link",
                             }}
                           >
                             {city.name}
+                            {city.countryLocode ? ", " : ""}
+                            {city.countryLocode}
                           </Tabs.Trigger>
                         ))}
                       </Tabs.List>
@@ -457,7 +463,7 @@ const TeamSettings = ({
               ]}
               renderRow={(item, idx) => {
                 const displayName =
-                  item.name?.trim() || item.email.split("@")[0] || "—";
+                  item.name?.trim() || item.email?.split("@")[0] || "—";
 
                 return (
                   <Table.Row key={idx} fontFamily="body">
@@ -484,6 +490,7 @@ const TeamSettings = ({
                                 aria-label="more-icon"
                                 variant="ghost"
                                 color="content.tertiary"
+                                ml="auto"
                                 _hover={{ bg: "background.controlHover" }}
                                 _expanded={{ bg: "background.controlHover" }}
                               >
@@ -492,7 +499,7 @@ const TeamSettings = ({
                             </MenuTrigger>
                             <MenuContent
                               w="auto"
-                              borderRadius="8px"
+                              borderRadius="rounded"
                               shadow="2dp"
                               px="0"
                             >
@@ -500,10 +507,10 @@ const TeamSettings = ({
                                 <MenuItem
                                   value={t("copy-invite-link")}
                                   valueText={t("copy-invite-link")}
-                                  p="16px"
+                                  p="4"
                                   display="flex"
                                   alignItems="center"
-                                  gap="16px"
+                                  gap="4"
                                   _hover={{
                                     bg: "content.link",
                                     cursor: "pointer",
@@ -513,8 +520,7 @@ const TeamSettings = ({
                                 >
                                   <Icon
                                     as={MdLink}
-                                    h="24px"
-                                    w="24px"
+                                    boxSize="6"
                                     color="content.secondary"
                                     _groupHover={{
                                       color: "white",
@@ -534,10 +540,10 @@ const TeamSettings = ({
                                 <MenuItem
                                   value={t("upgrade-to-admin")}
                                   valueText={t("upgrade-to-admin")}
-                                  p="16px"
+                                  p="4"
                                   display="flex"
                                   alignItems="center"
-                                  gap="16px"
+                                  gap="4"
                                   _hover={{
                                     bg: "content.link",
                                     cursor: "pointer",
@@ -549,9 +555,8 @@ const TeamSettings = ({
                                   }}
                                 >
                                   <Icon
-                                    as={MdOutlinePerson}
-                                    h="24px"
-                                    w="24px"
+                                    as={AccountCircleFilledIcon}
+                                    boxSize="6"
                                     color="content.secondary"
                                     _groupHover={{
                                       color: "white",
@@ -570,10 +575,10 @@ const TeamSettings = ({
                               <MenuItem
                                 value={t("remove-user")}
                                 valueText={t("remove-user")}
-                                p="16px"
+                                p="4"
                                 display="flex"
                                 alignItems="center"
-                                gap="16px"
+                                gap="4"
                                 _hover={{
                                   bg: "content.link",
                                   cursor: "pointer",
@@ -586,9 +591,8 @@ const TeamSettings = ({
                               >
                                 <Icon
                                   color="sentiment.negativeDefault"
-                                  as={RiDeleteBin6Line}
-                                  h="24px"
-                                  w="24px"
+                                  as={DeleteIcon}
+                                  boxSize="6"
                                   _groupHover={{
                                     color: "white",
                                   }}
@@ -660,9 +664,9 @@ const CustomTag = ({ role, t }: { role: OrganizationRole; t: TFunction }) => {
   return (
     <Box
       bg="background.neutral"
-      p="4px"
+      p="1"
       w="fit-content"
-      px="16px"
+      px="4"
       borderWidth="1px"
       borderColor="content.alternative"
       display="flex"

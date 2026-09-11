@@ -13,12 +13,12 @@ import {
 import React, { FC, useState } from "react";
 import {
   MdContentCopy,
-  MdDelete,
   MdAdd,
   MdApartment,
   MdOutlineVisibilityOff,
   MdOutlineVisibility,
 } from "react-icons/md";
+import { DeleteIcon } from "@/components/icons";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { useTranslation } from "@/i18n/client";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
@@ -166,24 +166,19 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
   return (
     <>
       <Tabs.Content value="my-tokens">
-        <Box display="flex" flexDirection="column" gap="48px" marginTop="32px">
+        <Box display="flex" flexDirection="column" gap="12" marginTop="8">
           <Box
             display="flex"
             justifyContent="space-between"
             alignItems="center"
           >
             <Box>
-              {hasTokens ? (
-                <HeadlineSmall text={t("api-tokens")} />
-              ) : (
-                <HeadlineSmall text={t("create-new-token")} />
-              )}
-
+              <HeadlineSmall text={t("api-tokens")} mb="2" />
               <BodyLarge text={t("api-tokens-description")} />
             </Box>
             {showCreateButton && !hasTokens && (
               <Button onClick={() => setIsCreateFormOpen(true)} h="48px">
-                <Icon as={MdAdd} boxSize={5} mr="8px" />
+                <Icon as={MdAdd} boxSize={5} mr="2" />
                 {t("create-token")}
               </Button>
             )}
@@ -206,10 +201,12 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
             />
           ) : !hasTokens ? (
             <Box
-              p="48px"
+              bg="white"
+              shadow="1dp"
+              p="12"
               textAlign="center"
               borderWidth="1px"
-              borderStyle="dashed"
+              borderStyle="solid"
               borderColor="border.neutral"
               borderRadius="12px"
             >
@@ -217,7 +214,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                 as={MdApartment}
                 boxSize={20}
                 color="background.neutral"
-                mb="8px"
+                mb="2"
               />
               <Text
                 fontWeight="bold"
@@ -236,12 +233,12 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
               </Text>
             </Box>
           ) : (
-            <Box bg="white" p={6} borderRadius="8px">
+            <Box bg="white" shadow="1dp" p={6} borderRadius="rounded">
               <Box
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
-                mb="16px"
+                mb="4"
               >
                 <Text
                   fontWeight="bold"
@@ -256,7 +253,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                     variant="outline"
                     h="48px"
                   >
-                    <Icon as={MdAdd} boxSize={5} mr="8px" />
+                    <Icon as={MdAdd} boxSize={5} mr="2" />
                     {t("add")}
                   </Button>
                 )}
@@ -313,7 +310,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                           setIsDeleteModalOpen(true);
                         }}
                       >
-                        <Icon as={MdDelete} boxSize={5} />
+                        <Icon as={DeleteIcon} boxSize={5} />
                       </IconButton>
                     </Table.Cell>
                   </Table.Row>
@@ -336,21 +333,21 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
           setIsTokenDisplayModalOpen(e.open);
         }}
       >
-        <DialogContent minW="779px" minH="764px" px="24px">
+        <DialogContent minW="779px" minH="764px" px="6">
           <DialogHeader>
             <HeadlineSmall text={t("token-created-title")} />
           </DialogHeader>
           <DialogCloseTrigger mt="10px" />
           <DialogBody>
-            <VStack gap="36px" align="stretch">
+            <VStack gap="9" align="stretch">
               <Box
-                p="16px"
+                p="4"
                 borderRadius="6px"
                 bg="sentiment.warningSubtle"
                 borderWidth="1px"
                 borderColor="sentiment.warningMuted"
                 display="flex"
-                gap="12px"
+                gap="3"
               >
                 <Icon
                   as={BiInfoCircle}
@@ -379,8 +376,8 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
               >
                 <Box
                   h="48px"
-                  px="16px"
-                  borderRadius="4px"
+                  px="4"
+                  borderRadius="minimal"
                   borderWidth="1px"
                   borderColor="border.neutral"
                   wordBreak="break-all"
@@ -435,8 +432,8 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                 color="content.tertiary"
               >
                 <Box
-                  p="16px"
-                  borderRadius="8px"
+                  p="4"
+                  borderRadius="rounded"
                   fontFamily="heading"
                   color="content.tertiary"
                   fontSize="body.xs"
@@ -452,8 +449,8 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                     color="interactive.secondary"
                     boxSize={8}
                     position="absolute"
-                    top="8px"
-                    right="8px"
+                    top="2"
+                    right="2"
                     onClick={() =>
                       copyToClipboard(`{
   "mcpServers": {
@@ -525,19 +522,22 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
           <DialogFooter>
             <Button
               variant="outline"
-              mr="12px"
+              mr="3"
               h="48px"
+              color="content.secondary"
+              borderColor="content.secondary"
               onClick={() => setIsDeleteModalOpen(false)}
             >
               {t("cancel")}
             </Button>
             <Button
               h="48px"
-              colorPalette="red"
+              variant="solid"
+              backgroundColor="sentiment.negativeDefault"
               onClick={handleDeleteToken}
               loading={isDeleting}
             >
-              {t("delete")}
+              {t("delete-token")}
             </Button>
           </DialogFooter>
         </DialogContent>

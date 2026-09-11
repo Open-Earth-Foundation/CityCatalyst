@@ -22,7 +22,8 @@ export function useInlineReviewDecisions(
     changeIds: string[],
     decision: InlineReviewDecision,
   ): Promise<void> {
-    if (edits.busy || proposal.status !== "proposed") return;
+    if (edits.busy || edits.needsDraftReload || proposal.status !== "proposed")
+      return;
     const proposalIds = new Set(
       proposal.changes.map((change) => change.change_id),
     );
@@ -53,19 +54,45 @@ export function useInlineReviewDecisions(
       return;
     }
 
+    await finishReview(proposal, next);
+  }
+
+  async function finishReview(
+    proposal: EditProposal,
+    next: Record<string, InlineReviewDecision>,
+  ): Promise<void> {
     const acceptedIds = proposal.changes
       .filter((change) => next[change.change_id] === "accepted")
       .map((change) => change.change_id);
-    if (acceptedIds.length === 0) await edits.reject(proposal);
-    else
-      await edits.apply(
-        proposal,
-        acceptedIds.length === proposal.changes.length
-          ? undefined
-          : acceptedIds,
-      );
+    const succeeded =
+      acceptedIds.length === 0
+        ? await edits.reject(proposal)
+        : await edits.apply(
+            proposal,
+            acceptedIds.length === proposal.changes.length
+              ? undefined
+              : acceptedIds,
+          );
+    if (!succeeded) return;
     setReviewDecisionProposalId(null);
     setReviewDecisions({});
+  }
+
+  async function decideRemaining(
+    proposal: EditProposal,
+    decision: InlineReviewDecision,
+  ): Promise<void> {
+    if (edits.busy || edits.needsDraftReload || proposal.status !== "proposed")
+      return;
+    const current =
+      reviewDecisionProposalId === proposal.proposal_id ? reviewDecisions : {};
+    const next = { ...current };
+    for (const change of proposal.changes) {
+      next[change.change_id] ??= decision;
+    }
+    setReviewDecisionProposalId(proposal.proposal_id);
+    setReviewDecisions(next);
+    await finishReview(proposal, next);
   }
   return {
     decisions:
@@ -73,5 +100,6 @@ export function useInlineReviewDecisions(
         ? reviewDecisions
         : empty,
     decide: decideInlineChange,
+    decideRemaining,
   };
 }

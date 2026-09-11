@@ -44,6 +44,7 @@ import { StartNewChatDialog } from "./start-new-chat-dialog";
 import { useConceptNoteEdits } from "./use-concept-note-edits";
 import {
   DocumentReviewToolbar,
+  DocumentReviewFeedback,
   documentReviewChanges,
   selectReviewProposal,
 } from "./document-review";
@@ -149,13 +150,16 @@ export function ConceptNoteWorkspace({
   const edits = useConceptNoteEdits({
     runId,
     onApplied: async (chapterIds) => {
-      await refetchDraft();
+      await refetchDraft().unwrap();
       if (chapterIds[0]) navigateEdit(chapterIds[0]);
     },
   });
   const reviewProposal = selectReviewProposal(edits.proposals);
-  const { decisions: activeReviewDecisions, decide: decideInlineChange } =
-    useInlineReviewDecisions(reviewProposal, edits, navigateEdit);
+  const {
+    decisions: activeReviewDecisions,
+    decide: decideInlineChange,
+    decideRemaining,
+  } = useInlineReviewDecisions(reviewProposal, edits, navigateEdit);
   const reviewChanges = documentReviewChanges(
     reviewProposal,
     draft?.chapters ?? [],
@@ -385,8 +389,18 @@ export function ConceptNoteWorkspace({
                       onNavigate={navigateEdit}
                       onOpenSources={() => setTab("context")}
                       isDocumentVisible={tab === "draft"}
+                      hasDecisions={
+                        Object.keys(activeReviewDecisions).length > 0
+                      }
+                      onAcceptRemaining={(proposal) =>
+                        decideRemaining(proposal, "accepted")
+                      }
+                      onRejectRemaining={(proposal) =>
+                        decideRemaining(proposal, "rejected")
+                      }
                     />
                   )}
+                  <DocumentReviewFeedback edits={edits} lng={lng} />
                   {reviewProposal && (
                     <Box
                       h="32px"
@@ -510,7 +524,9 @@ export function ConceptNoteWorkspace({
                   reviewChanges={reviewChanges}
                   activeChangeId={activeChangeId}
                   reviewDecisions={activeReviewDecisions}
-                  reviewDecisionBusy={Boolean(edits.busy)}
+                  reviewDecisionBusy={
+                    Boolean(edits.busy) || edits.needsDraftReload
+                  }
                   onAcceptReviewChange={
                     reviewProposal
                       ? (changeIds) =>

@@ -1,5 +1,6 @@
 "use client";
 
+import { HStack, Text } from "@chakra-ui/react";
 import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import type { EditChange, EditProposal } from "@/util/concept-note-edit-types";
@@ -55,6 +56,9 @@ interface Props {
   onNavigate: (chapterId: string, changeId?: string) => void;
   onOpenSources: () => void;
   isDocumentVisible?: boolean;
+  hasDecisions?: boolean;
+  onAcceptRemaining?: (proposal: EditProposal) => Promise<void>;
+  onRejectRemaining?: (proposal: EditProposal) => Promise<void>;
 }
 
 export function DocumentReviewToolbar({
@@ -67,6 +71,9 @@ export function DocumentReviewToolbar({
   onNavigate,
   onOpenSources,
   isDocumentVisible = true,
+  hasDecisions = false,
+  onAcceptRemaining,
+  onRejectRemaining,
 }: Props) {
   const { t } = useTranslation(lng, "concept-notes");
   if (!isDocumentVisible && changes[0])
@@ -89,17 +96,64 @@ export function DocumentReviewToolbar({
         changes: changes.length ? changes : proposal.changes,
       }}
       lng={lng}
-      busy={Boolean(edits.busy)}
-      onApply={edits.apply}
-      onReject={edits.reject}
+      busy={Boolean(edits.busy) || edits.reloadingDraft}
+      hasDecisions={hasDecisions}
+      onApply={onAcceptRemaining ?? edits.apply}
+      onReject={
+        proposal.status === "proposed" && onRejectRemaining
+          ? onRejectRemaining
+          : edits.reject
+      }
       onNavigate={onNavigate}
       activeChangeId={activeChangeId}
       canApply={
-        proposal.status !== "proposed" ||
-        proposalMatchesDraft(proposal, chapters)
+        !edits.needsDraftReload &&
+        (proposal.status !== "proposed" ||
+          proposalMatchesDraft(proposal, chapters))
       }
       onOpenSources={onOpenSources}
       onRefine={edits.refine}
     />
+  );
+}
+
+/** Recovery stays visible even after an applied proposal leaves the toolbar. */
+export function DocumentReviewFeedback({
+  edits,
+  lng,
+}: {
+  edits: EditController;
+  lng: string;
+}) {
+  const { t } = useTranslation(lng, "concept-notes");
+  if (!edits.error && !edits.needsDraftReload) return null;
+  return (
+    <HStack
+      align="start"
+      flexWrap="wrap"
+      data-testid="concept-note-document-edit-error"
+    >
+      <Text role="alert" fontSize="label.sm" color="content.primary">
+        {t(
+          edits.needsDraftReload
+            ? "edit-draft-reload-hint"
+            : edits.error === "stale_base"
+              ? "edit-stale-hint"
+              : "edit-request-error",
+        )}
+      </Text>
+      <Button
+        size="xs"
+        minH="36px"
+        variant="outline"
+        loading={edits.reloadingDraft}
+        disabled={Boolean(edits.busy) || edits.reloadingDraft}
+        onClick={() =>
+          void (edits.needsDraftReload ? edits.reloadDraft() : edits.refresh())
+        }
+      >
+        {t(edits.needsDraftReload ? "edit-reload-draft" : "edit-refresh")}
+      </Button>
+    </HStack>
   );
 }

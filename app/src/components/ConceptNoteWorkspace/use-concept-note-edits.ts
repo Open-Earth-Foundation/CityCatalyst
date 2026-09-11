@@ -47,6 +47,11 @@ export function useConceptNoteEdits({
     null,
   );
   const activeRun = useRef(runId);
+  const [draftReload, setDraftReload] = useState<{
+    runId: string;
+    chapterIds: string[];
+  } | null>(null);
+  const [reloadingRun, setReloadingRun] = useState<string | null>(null);
   const pending = useRef<typeof busy>(null);
   const applyRequests = useRef(new Map<string, EditApplyRequest>());
   const refineKeys = useRef(new Map<string, string>());
@@ -129,9 +134,9 @@ export function useConceptNoteEdits({
     proposal: EditProposal,
     action: "apply" | "reject" | "refine",
     options: { selectedIds?: string[]; instruction?: string } = {},
-  ): Promise<void> {
+  ): Promise<boolean> {
     if (!runId || proposal.run_id !== runId || pending.current?.runId === runId)
-      return;
+      return false;
     const operation = { runId, proposalId: proposal.proposal_id };
     pending.current = operation;
     setBusy(operation);
@@ -164,7 +169,7 @@ export function useConceptNoteEdits({
             : reject(operation)
         ).unwrap();
       }
-      if (activeRun.current !== runId) return;
+      if (activeRun.current !== runId) return false;
       remember(
         result,
         action === "refine" && result.status === "proposed"
@@ -172,15 +177,20 @@ export function useConceptNoteEdits({
           : undefined,
       );
       if (action === "apply" && result.result) {
+        const chapterIds = Object.keys(result.result.revisions);
         try {
-          await onApplied(Object.keys(result.result.revisions));
+          await onApplied(chapterIds);
+          if (activeRun.current === runId) setDraftReload(null);
         } catch {
-          setError({ runId, code: "edit_refresh_failed" });
+          if (activeRun.current === runId)
+            setDraftReload({ runId, chapterIds });
         }
       }
+      return true;
     } catch (failure) {
       if (activeRun.current === runId)
         setError({ runId, code: editErrorCode(failure) });
+      return false;
     } finally {
       if (pending.current === operation) {
         pending.current = null;
@@ -200,10 +210,30 @@ export function useConceptNoteEdits({
         : query.isError
           ? "edit_refresh_failed"
           : null,
+    needsDraftReload: draftReload?.runId === runId && Boolean(draftReload),
+    reloadingDraft: reloadingRun === runId && Boolean(runId),
+    reloadDraft: async () => {
+      if (!draftReload || draftReload.runId !== runId || reloadingRun === runId)
+        return;
+      setReloadingRun(runId);
+      try {
+        await onApplied(draftReload.chapterIds);
+        if (activeRun.current === runId) setDraftReload(null);
+      } catch {
+        // Keep the recovery action until the saved draft is loaded successfully.
+      } finally {
+        setReloadingRun((current) => (current === runId ? null : current));
+      }
+    },
     refresh: async () => {
       if (runId) {
-        setError(null);
-        await query.refetch();
+        try {
+          await query.refetch().unwrap();
+          if (activeRun.current === runId) setError(null);
+        } catch {
+          if (activeRun.current === runId)
+            setError({ runId, code: "edit_refresh_failed" });
+        }
       }
     },
     loadProposal,

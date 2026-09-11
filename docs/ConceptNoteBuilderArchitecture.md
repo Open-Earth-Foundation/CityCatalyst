@@ -169,6 +169,15 @@ refinement in the options popover. The planner groups related occurrences;
 there is no separate checkbox-selection interface. The context tab retains source
 summaries and upload controls without an expanded details dialog.
 
+After an inline decision, bulk actions become Accept remaining / Reject remaining
+and affect only undecided changes. Previously accepted changes are saved and
+previously rejected changes stay excluded. Decisions remain available for retry
+if submission fails. Edit errors appear beside the document toolbar; if saving
+succeeds but loading the updated draft fails, a persistent Reload draft action
+retries the read without resubmitting the edit.
+Confirming a chapter refreshes both its run's draft and edit proposals, so the
+review state updates even when no proposal is processing and polling is stopped.
+
 The proposal-only CA tool uses authorized evidence and explicit user input.
 Bounded chapter workers use an LLM planner and an independent LLM reviewer for
 meaning, factual support, and related occurrences. Python checks exact anchors,

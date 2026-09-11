@@ -20,7 +20,10 @@ export async function deleteConceptNoteSources(
     if (
       jobs.some(
         (job) =>
-          job.status === "running" || job.deliveryStatus === "delivering",
+          job.status === "queued" ||
+          job.status === "running" ||
+          job.deliveryStatus === "pending" ||
+          job.deliveryStatus === "delivering",
       )
     ) {
       throw new createHttpError.Conflict(

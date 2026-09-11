@@ -2596,6 +2596,7 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, { runId }) => [
           { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
         ],
       }),
       validateConceptNoteChapter: builder.mutation<

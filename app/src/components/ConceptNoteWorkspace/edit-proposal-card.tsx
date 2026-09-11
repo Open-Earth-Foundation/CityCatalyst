@@ -26,12 +26,16 @@ interface ProposalCardProps {
   proposal: EditProposal;
   lng: string;
   busy: boolean;
-  onApply: (proposal: EditProposal) => Promise<void>;
-  onReject: (proposal: EditProposal) => Promise<void>;
+  onApply: (proposal: EditProposal) => Promise<void | boolean>;
+  onReject: (proposal: EditProposal) => Promise<void | boolean>;
+  hasDecisions?: boolean;
   onNavigate: (chapterId: string, changeId?: string) => void;
   canApply?: boolean;
   activeChangeId?: string;
-  onRefine?: (proposal: EditProposal, instruction: string) => Promise<void>;
+  onRefine?: (
+    proposal: EditProposal,
+    instruction: string,
+  ) => Promise<void | boolean>;
   onOpenSources?: () => void;
 }
 
@@ -45,6 +49,7 @@ export function EditProposalCard({
   onRefine,
   onOpenSources,
   canApply = true,
+  hasDecisions = false,
   activeChangeId,
 }: ProposalCardProps) {
   const { t } = useTranslation(lng, "concept-notes");
@@ -202,10 +207,10 @@ export function EditProposalCard({
                 size="sm"
                 variant="ghost"
                 data-testid="concept-note-edit-reject-all"
-                disabled={busy}
+                disabled={busy || (hasDecisions && !canApply)}
                 onClick={() => void onReject(proposal)}
               >
-                {t("edit-reject-all")}
+                {t(hasDecisions ? "edit-reject-remaining" : "edit-reject-all")}
               </Button>
               <Button
                 minH="44px"
@@ -215,7 +220,7 @@ export function EditProposalCard({
                 loading={busy}
                 onClick={() => void onApply(proposal)}
               >
-                {t("edit-accept-all")}
+                {t(hasDecisions ? "edit-accept-remaining" : "edit-accept-all")}
               </Button>
             </HStack>
           )}

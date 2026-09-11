@@ -45,7 +45,9 @@ test("removes source artifacts before OCR metadata and scopes to requested CNB i
 });
 
 test.each([
+  { status: "queued" },
   { status: "running" },
+  { status: "succeeded", deliveryStatus: "pending" },
   { status: "succeeded", deliveryStatus: "delivering" },
 ])("does not delete artifacts while a worker owns the job: %j", async (job) => {
   findAll.mockResolvedValue([job]);
@@ -54,6 +56,16 @@ test.each([
   });
   expect(deleteSource).not.toHaveBeenCalled();
   expect(destroy).not.toHaveBeenCalled();
+});
+
+test.each([
+  { status: "succeeded", deliveryStatus: "delivered" },
+  { status: "failed", deliveryStatus: "failed" },
+])("allows deletion after the pipeline stops: %j", async (job) => {
+  findAll.mockResolvedValue([job]);
+  await deleteConceptNoteSources(["upload-1"]);
+  expect(deleteSource).toHaveBeenCalledWith("upload-1");
+  expect(destroy).toHaveBeenCalledTimes(1);
 });
 
 test("keeps retry metadata on storage failure and permits a subsequent retry", async () => {

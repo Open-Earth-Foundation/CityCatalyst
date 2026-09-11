@@ -78,7 +78,26 @@ function chapter(index: number): ConceptNoteDraftChapter {
   return {
     body_markdown: `# Chapter ${index + 1}\n\nDraft body`,
     chapter_id: `chapter-${index + 1}`,
-    missing_information: ["Add required information"],
+    gaps: [
+      {
+        gap_id: "gap-1",
+        field_key: "amount",
+        question: "Add required information",
+        why_asking: "Required",
+        severity: "noncritical",
+        state: "open",
+        suggestions: [],
+        source_refs: [],
+        version: 1,
+        resolution: null,
+        created_at: "2026-09-09T00:00:00Z",
+        updated_at: "2026-09-09T00:00:00Z",
+      },
+    ],
+    open_gap_count: 1,
+    caveat_count: 0,
+    confirmed_body_markdown: null,
+    confirmed_revision_number: null,
     position: index,
     required: true,
     revision_number: 1,
@@ -241,6 +260,25 @@ afterEach(async () => {
 });
 
 describe("guided review before export", () => {
+  it("keeps critical gaps blocked even after choosing export anyway", async () => {
+    const savedDraft = draft(1, true);
+    savedDraft.chapters[0].gaps[0].severity = "critical";
+    await renderDialog({ draft: savedDraft });
+    await settle();
+    await click("Continue to conflicts & logic");
+    await click("Continue to decision");
+    await click("Export anyway");
+    expect(document.body.textContent).toContain(
+      translations["draft-preflight-critical-gap-description"],
+    );
+    const downloads = [...document.body.querySelectorAll("button")].filter(
+      (button) => /Export (DOCX|PDF)/.test(button.textContent ?? ""),
+    );
+    expect(downloads).toHaveLength(2);
+    expect(downloads.every((button) => button.disabled)).toBe(true);
+    expect(document.body.querySelector('input[type="checkbox"]')).toBeNull();
+  });
+
   it("limits validation concurrency to three chapters", async () => {
     const pending: Array<() => void> = [];
     const onReviewComplete = jest.fn(async () => undefined);

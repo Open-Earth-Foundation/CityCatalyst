@@ -4,23 +4,39 @@ from __future__ import annotations
 
 import json
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from hashlib import sha256
 from typing import Any
 from uuid import UUID
 
+from app.models.cnb.concept_note_draft import (
+    ConceptNoteDraftGapOutput,
+)
+from app.models.db.cnb_edit import ConceptNoteEditApplication, ConceptNoteEditProposal
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
+    ConceptNoteChapterReview,
     ConceptNoteChapterRevision,
     ConceptNoteChapterValidation,
     ConceptNoteEvidenceLink,
     ConceptNoteExport,
     ConceptNoteGap,
+    ConceptNoteGapResolution,
     ConceptNoteMatchedProject,
 )
-from sqlalchemy import delete, select
+from app.utils.cnb_information_markers import (
+    information_marker_key,
+    information_needed_markers,
+)
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+LEGACY_GENERIC_GAP_RATIONALE = "This information is required to complete the chapter."
+
+
+class WorkspaceConflictError(Exception):
+    """Raised when a versioned workspace mutation is no longer valid."""
 
 
 @dataclass(frozen=True)
@@ -34,8 +50,38 @@ class WorkspaceTemplateChapter:
 
 
 @dataclass(frozen=True)
+class WorkspaceGapResolutionSnapshot:
+    """Detached latest resolution event for one gap."""
+
+    resolution_id: UUID
+    action: str
+    answer: str | None
+    actor_user_id: str
+    source_refs: list[str]
+    created_at: datetime
+
+
+@dataclass(frozen=True)
+class WorkspaceGapSnapshot:
+    """Detached structured gap with its latest resolution event."""
+
+    gap_id: UUID
+    field_key: str
+    question: str
+    why_asking: str
+    severity: str
+    state: str
+    suggestions: list[dict[str, Any]]
+    source_refs: list[str]
+    version: int
+    resolution: WorkspaceGapResolutionSnapshot | None
+    created_at: datetime
+    updated_at: datetime
+
+
+@dataclass(frozen=True)
 class WorkspaceChapterSnapshot:
-    """Detached chapter metadata plus its latest persisted revision."""
+    """Detached chapter metadata plus its current immutable revision."""
 
     chapter_id: UUID
     chapter_ref: str | None
@@ -45,9 +91,14 @@ class WorkspaceChapterSnapshot:
     required: bool
     user_locked: bool
     body_markdown: str | None
-    missing_information: list[str]
-    revision_number: int | None
+    gaps: list[WorkspaceGapSnapshot] = field(default_factory=list)
     revision_id: UUID | None = None
+    revision_number: int | None = None
+    confirmed_body_markdown: str | None = None
+    confirmed_revision_number: int | None = None
+    # Retained for consumers introduced on develop while structured gap
+    # snapshots remain the canonical CC-730/CC-732 representation.
+    missing_information: list[str] = field(default_factory=list)
     validation: WorkspaceValidationSnapshot | None = None
 
 
@@ -169,22 +220,29 @@ class ConceptNoteWorkspaceRepository:
         *,
         chapter_id: UUID,
         body_markdown: str,
-        missing_information: list[str],
+        missing_information: list[ConceptNoteDraftGapOutput],
     ) -> bool:
         """Persist the first agent revision unless the chapter is already drafted."""
         async with self._session_factory() as session, session.begin():
-            chapter = await session.get(
-                ConceptNoteChapter,
-                chapter_id,
-                with_for_update=True,
-            )
-            if chapter is None or chapter.status == "deleted":
-                raise ValueError(f"Concept Note chapter {chapter_id} was not found")
-
+            chapter = await _require_chapter(session, chapter_id, lock=True)
             latest = await _latest_revision(session, chapter.chapter_id)
             if latest is not None:
                 return False
 
+            # Never persist a draft whose visible unknowns disagree with its gap records.
+            marker_keys = {
+                information_marker_key(marker)
+                for marker in information_needed_markers(body_markdown)
+            }
+            gap_keys = {
+                information_marker_key(gap.question) for gap in missing_information
+            }
+            if marker_keys != gap_keys:
+                raise WorkspaceConflictError(
+                    "Missing-information markers must match the generated gaps"
+                )
+
+            # Persist the immutable draft and its initial structured gaps.
             session.add(
                 ConceptNoteChapterRevision(
                     chapter_id=chapter_id,
@@ -192,26 +250,15 @@ class ConceptNoteWorkspaceRepository:
                     author_type="agent",
                     change_type="draft",
                     body_markdown=body_markdown,
-                    patch_summary={"missing_information": missing_information},
+                    patch_summary={
+                        "gap_field_keys": [
+                            item.field_key for item in missing_information
+                        ]
+                    },
                 )
             )
-            await session.execute(
-                delete(ConceptNoteGap).where(
-                    ConceptNoteGap.chapter_id == chapter_id,
-                    ConceptNoteGap.status == "open",
-                )
-            )
-            for missing_item in missing_information:
-                session.add(
-                    ConceptNoteGap(
-                        run_id=chapter.run_id,
-                        chapter_id=chapter_id,
-                        field_key=None,
-                        severity="missing_information",
-                        reason=missing_item,
-                        status="open",
-                    )
-                )
+            for item in missing_information:
+                session.add(_gap_from_output(chapter, item))
             chapter.status = "needs_review" if missing_information else "draft"
             chapter.updated_at = datetime.now(UTC)
             return True
@@ -326,7 +373,7 @@ class ConceptNoteWorkspaceRepository:
         source_run_id: UUID,
         destination_run_id: UUID,
     ) -> WorkspaceCopyResult:
-        """Replace a destination with an independent copy of current workspace state."""
+        """Replace a destination with an independent current-state copy."""
         async with self._session_factory() as session, session.begin():
             # Step 1: make retries deterministic and load the source in bulk.
             await _delete_workspace_rows(session, destination_run_id)
@@ -348,7 +395,7 @@ class ConceptNoteWorkspaceRepository:
             )
 
             # Step 3: clone run-scoped rows after chapter identities are known.
-            _copy_gaps(session, destination_run_id, gaps, chapter_map)
+            await _copy_gaps(session, destination_run_id, gaps, chapter_map)
             _copy_matches(session, destination_run_id, matches)
 
             return WorkspaceCopyResult(
@@ -360,6 +407,77 @@ class ConceptNoteWorkspaceRepository:
         """Delete every managed workspace row owned by one CA run."""
         async with self._session_factory() as session, session.begin():
             await _delete_workspace_rows(session, run_id)
+
+    async def confirm_chapter(
+        self,
+        *,
+        run_id: UUID,
+        chapter_id: UUID,
+        expected_revision: int,
+        idempotency_key: UUID,
+        user_id: str,
+    ) -> None:
+        """Confirm one exact gap-free revision and append its review record."""
+        async with self._session_factory() as session, session.begin():
+            chapter = await _require_chapter(session, chapter_id, lock=True)
+            if chapter.run_id != run_id:
+                raise WorkspaceConflictError("Concept Note chapter is unavailable")
+            existing = await session.scalar(
+                select(ConceptNoteChapterReview).where(
+                    ConceptNoteChapterReview.chapter_id == chapter_id,
+                    ConceptNoteChapterReview.idempotency_key == idempotency_key,
+                )
+            )
+            if existing is not None:
+                confirmed = await session.get(
+                    ConceptNoteChapterRevision,
+                    existing.revision_id,
+                )
+                if (
+                    existing.user_id != user_id
+                    or confirmed is None
+                    or confirmed.revision_number != expected_revision
+                ):
+                    raise WorkspaceConflictError(
+                        "Concept Note idempotency key was reused with different input"
+                    )
+                return
+
+            # Confirm only the currently visible, successfully generated revision.
+            latest = await _latest_revision(session, chapter_id)
+            if latest is None or latest.revision_number != expected_revision:
+                raise WorkspaceConflictError("Concept Note chapter revision is stale")
+            if await _has_blocking_gaps(session, chapter_id):
+                raise WorkspaceConflictError("Open gaps must be resolved before review")
+            if information_needed_markers(latest.body_markdown):
+                raise WorkspaceConflictError(
+                    "Missing-information markers must be resolved before review"
+                )
+
+            session.add(
+                ConceptNoteChapterReview(
+                    chapter_id=chapter_id,
+                    revision_id=latest.revision_id,
+                    user_id=user_id,
+                    idempotency_key=idempotency_key,
+                )
+            )
+            chapter.confirmed_revision_id = latest.revision_id
+            chapter.status = "ready"
+            chapter.updated_at = datetime.now(UTC)
+
+
+async def _require_chapter(
+    session: AsyncSession,
+    chapter_id: UUID,
+    *,
+    lock: bool,
+) -> ConceptNoteChapter:
+    """Load one active chapter or raise a stable workspace conflict."""
+    chapter = await session.get(ConceptNoteChapter, chapter_id, with_for_update=lock)
+    if chapter is None or chapter.status == "deleted":
+        raise WorkspaceConflictError(f"Concept Note chapter {chapter_id} was not found")
+    return chapter
 
 
 async def _run_gaps(
@@ -406,7 +524,7 @@ async def _copy_chapters(
     chapters_with_open_gaps = {
         gap.chapter_id
         for gap in gaps
-        if gap.chapter_id is not None and gap.status == "open"
+        if gap.chapter_id is not None and gap.status in {"open", "processing"}
     }
     chapter_map: dict[UUID, UUID] = {}
     completed_chapters = 0
@@ -434,18 +552,20 @@ async def _copy_chapters(
         chapter_map[source.chapter_id] = destination.chapter_id
 
         if latest is not None:
-            session.add(
-                ConceptNoteChapterRevision(
-                    chapter_id=destination.chapter_id,
-                    revision_number=1,
-                    author_type="system",
-                    change_type="draft",
-                    body_markdown=latest.body_markdown,
-                    patch_summary={
-                        "duplicated_from_revision_id": str(latest.revision_id)
-                    },
-                )
+            destination_revision = ConceptNoteChapterRevision(
+                chapter_id=destination.chapter_id,
+                revision_number=1,
+                author_type="system",
+                change_type="draft",
+                body_markdown=latest.body_markdown,
+                patch_summary={"duplicated_from_revision_id": str(latest.revision_id)},
             )
+            session.add(destination_revision)
+            await session.flush()
+            if source.confirmed_revision_id == latest.revision_id:
+                destination.confirmed_revision_id = destination_revision.revision_id
+                if status == "draft":
+                    destination.status = "ready"
             completed_chapters += 1
 
         for evidence in evidence_by_chapter[source.chapter_id]:
@@ -462,26 +582,53 @@ async def _copy_chapters(
     return chapter_map, completed_chapters
 
 
-def _copy_gaps(
+async def _copy_gaps(
     session: AsyncSession,
     destination_run_id: UUID,
     gaps: list[ConceptNoteGap],
     chapter_map: dict[UUID, UUID],
 ) -> None:
-    """Clone gaps while remapping optional chapter relationships."""
+    """Clone structured gaps and resolution events with independent identities."""
+    gap_map: dict[UUID, UUID] = {}
     for gap in gaps:
+        if gap.chapter_id is not None and gap.chapter_id not in chapter_map:
+            continue
+        destination = ConceptNoteGap(
+            run_id=destination_run_id,
+            chapter_id=(
+                chapter_map.get(gap.chapter_id) if gap.chapter_id is not None else None
+            ),
+            field_key=gap.field_key,
+            severity=gap.severity,
+            question=gap.question,
+            why_asking=gap.why_asking,
+            suggestions=deepcopy(gap.suggestions),
+            source_refs=list(gap.source_refs),
+            status=gap.status,
+            version=gap.version,
+        )
+        session.add(destination)
+        await session.flush()
+        gap_map[gap.gap_id] = destination.gap_id
+
+    # Copy the resolution history only after all destination gap IDs exist.
+    if not gap_map:
+        return
+    resolutions = await session.scalars(
+        select(ConceptNoteGapResolution).where(
+            ConceptNoteGapResolution.gap_id.in_(gap_map)
+        )
+    )
+    for resolution in resolutions:
         session.add(
-            ConceptNoteGap(
-                run_id=destination_run_id,
-                chapter_id=(
-                    chapter_map.get(gap.chapter_id)
-                    if gap.chapter_id is not None
-                    else None
-                ),
-                field_key=gap.field_key,
-                severity=gap.severity,
-                reason=gap.reason,
-                status=gap.status,
+            ConceptNoteGapResolution(
+                gap_id=gap_map[resolution.gap_id],
+                action=resolution.action,
+                answer=resolution.answer,
+                actor_user_id=resolution.actor_user_id,
+                source_refs=list(resolution.source_refs),
+                idempotency_key=resolution.idempotency_key,
+                created_at=resolution.created_at,
             )
         )
 
@@ -567,13 +714,14 @@ async def _latest_revisions(
     return latest
 
 
-async def _open_gaps_by_chapter(
+async def _gaps_by_chapter(
     session: AsyncSession,
     chapter_ids: list[UUID],
     *,
     lock: bool = False,
+    only_open: bool = True,
 ) -> dict[UUID, list[ConceptNoteGap]]:
-    """Group open gaps for fingerprinting and draft-state presentation."""
+    """Group gaps for validation or the complete review-state presentation."""
     grouped = {chapter_id: [] for chapter_id in chapter_ids}
     if not chapter_ids:
         return grouped
@@ -581,10 +729,11 @@ async def _open_gaps_by_chapter(
         select(ConceptNoteGap)
         .where(
             ConceptNoteGap.chapter_id.in_(chapter_ids),
-            ConceptNoteGap.status == "open",
         )
         .order_by(ConceptNoteGap.created_at.asc(), ConceptNoteGap.gap_id.asc())
     )
+    if only_open:
+        statement = statement.where(ConceptNoteGap.status.in_(["open", "processing"]))
     if lock:
         statement = statement.with_for_update()
     gaps = list((await session.scalars(statement)).all())
@@ -652,7 +801,7 @@ def _validation_gaps(gaps: list[ConceptNoteGap]) -> list[WorkspaceValidationGap]
             gap_id=gap.gap_id,
             field_key=gap.field_key,
             severity=gap.severity,
-            reason=gap.reason,
+            reason=gap.question,
         )
         for gap in gaps
     ]
@@ -753,7 +902,7 @@ async def _load_validation_context(
     # Detach target-specific gaps and evidence alongside every current revision.
     chapter_ids = [chapter.chapter_id for chapter in chapters]
     revisions = await _latest_revisions(session, chapter_ids)
-    gap_rows = await _open_gaps_by_chapter(session, [chapter_id], lock=lock)
+    gap_rows = await _gaps_by_chapter(session, [chapter_id], lock=lock)
     evidence_rows = await _evidence_by_chapter(session, [chapter_id], lock=lock)
     validation_chapters = _validation_chapters(chapters, revisions)
     open_gaps = _validation_gaps(gap_rows[chapter_id])
@@ -790,7 +939,10 @@ async def _snapshot_chapters(
         return []
     chapter_ids = [chapter.chapter_id for chapter in chapters]
     revisions = await _latest_revisions(session, chapter_ids)
-    gaps = await _open_gaps_by_chapter(session, chapter_ids)
+    gaps = await _gaps_by_chapter(session, chapter_ids, only_open=False)
+    gap_resolutions = await _latest_gap_resolutions(
+        session, [gap.gap_id for chapter_gaps in gaps.values() for gap in chapter_gaps]
+    )
     evidence = await _evidence_by_chapter(session, chapter_ids)
     validations = {
         validation.chapter_id: validation
@@ -803,11 +955,16 @@ async def _snapshot_chapters(
         ).all()
     }
     validation_chapters = _validation_chapters(chapters, revisions)
-    validated_revision_numbers = await _validated_revision_numbers(
+    revision_history = await _snapshot_revision_history(
         session,
+        chapters,
         validations,
         revisions,
     )
+    validated_revision_numbers = {
+        revision_id: revision.revision_number
+        for revision_id, revision in revision_history.items()
+    }
 
     # Compute every target's freshness against the same document snapshot.
     return [
@@ -816,6 +973,8 @@ async def _snapshot_chapters(
             detached=detached,
             validation_chapters=validation_chapters,
             gaps=gaps[chapter.chapter_id],
+            gap_resolutions=gap_resolutions,
+            confirmed=revision_history.get(chapter.confirmed_revision_id),
             evidence=evidence[chapter.chapter_id],
             stored_validation=validations.get(chapter.chapter_id),
             validated_revision_numbers=validated_revision_numbers,
@@ -825,33 +984,72 @@ async def _snapshot_chapters(
     ]
 
 
-async def _validated_revision_numbers(
+async def _snapshot_revision_history(
     session: AsyncSession,
+    chapters: list[ConceptNoteChapter],
     validations: dict[UUID, ConceptNoteChapterValidation],
     current_revisions: dict[UUID, ConceptNoteChapterRevision],
-) -> dict[UUID, int]:
-    """Resolve revision numbers referenced by current and historical validations."""
-    revision_numbers = {
-        revision.revision_id: revision.revision_number
-        for revision in current_revisions.values()
+) -> dict[UUID, ConceptNoteChapterRevision]:
+    """Batch-load revisions referenced by validations and exact confirmations."""
+    revision_history = {
+        revision.revision_id: revision for revision in current_revisions.values()
     }
     historical_ids = {
         validation.validated_revision_id
         for validation in validations.values()
         if validation.validated_revision_id is not None
-        and validation.validated_revision_id not in revision_numbers
+        and validation.validated_revision_id not in revision_history
     }
+    historical_ids.update(
+        chapter.confirmed_revision_id
+        for chapter in chapters
+        if chapter.confirmed_revision_id is not None
+        and chapter.confirmed_revision_id not in revision_history
+    )
     if historical_ids:
         historical_revisions = (
-            await session.execute(
-                select(
-                    ConceptNoteChapterRevision.revision_id,
-                    ConceptNoteChapterRevision.revision_number,
-                ).where(ConceptNoteChapterRevision.revision_id.in_(historical_ids))
+            await session.scalars(
+                select(ConceptNoteChapterRevision).where(
+                    ConceptNoteChapterRevision.revision_id.in_(historical_ids)
+                )
             )
         ).all()
-        revision_numbers.update(dict(historical_revisions))
-    return revision_numbers
+        revision_history.update(
+            (revision.revision_id, revision) for revision in historical_revisions
+        )
+    return revision_history
+
+
+async def _latest_gap_resolutions(
+    session: AsyncSession, gap_ids: list[UUID]
+) -> dict[UUID, ConceptNoteGapResolution]:
+    """Load the latest resolution for each visible gap in one query."""
+    if not gap_ids:
+        return {}
+    ranked = (
+        select(
+            ConceptNoteGapResolution.resolution_id,
+            func.row_number()
+            .over(
+                partition_by=ConceptNoteGapResolution.gap_id,
+                order_by=(
+                    ConceptNoteGapResolution.created_at.desc(),
+                    ConceptNoteGapResolution.resolution_id.desc(),
+                ),
+            )
+            .label("rank"),
+        )
+        .where(ConceptNoteGapResolution.gap_id.in_(gap_ids))
+        .subquery()
+    )
+    resolutions = await session.scalars(
+        select(ConceptNoteGapResolution).where(
+            ConceptNoteGapResolution.resolution_id.in_(
+                select(ranked.c.resolution_id).where(ranked.c.rank == 1)
+            )
+        )
+    )
+    return {resolution.gap_id: resolution for resolution in resolutions}
 
 
 def _chapter_snapshot(
@@ -860,6 +1058,8 @@ def _chapter_snapshot(
     detached: WorkspaceValidationChapter,
     validation_chapters: list[WorkspaceValidationChapter],
     gaps: list[ConceptNoteGap],
+    gap_resolutions: dict[UUID, ConceptNoteGapResolution],
+    confirmed: ConceptNoteChapterRevision | None,
     evidence: list[ConceptNoteEvidenceLink],
     stored_validation: ConceptNoteChapterValidation | None,
     validated_revision_numbers: dict[UUID, int],
@@ -870,7 +1070,9 @@ def _chapter_snapshot(
     current_fingerprint = calculate_validation_input_fingerprint(
         chapters=validation_chapters,
         target_chapter_id=chapter.chapter_id,
-        open_gaps=_validation_gaps(gaps),
+        open_gaps=_validation_gaps(
+            [gap for gap in gaps if gap.status in {"open", "processing"}]
+        ),
         evidence_links=_validation_evidence(evidence),
         template_fingerprint=template_fingerprint,
     )
@@ -908,15 +1110,135 @@ def _chapter_snapshot(
         required=chapter.required,
         user_locked=chapter.user_locked,
         body_markdown=detached.body_markdown,
-        missing_information=[gap.reason for gap in gaps],
+        missing_information=[
+            gap.question for gap in gaps if gap.status in {"open", "processing"}
+        ],
+        gaps=[
+            _snapshot_gap(
+                gap, gap_resolutions.get(gap.gap_id), chapter_title=chapter.title
+            )
+            for gap in gaps
+        ],
+        confirmed_body_markdown=(confirmed.body_markdown if confirmed else None),
+        confirmed_revision_number=(confirmed.revision_number if confirmed else None),
         revision_number=detached.revision_number,
         revision_id=detached.revision_id,
         validation=validation_snapshot,
     )
 
 
+def _snapshot_gap(
+    gap: ConceptNoteGap,
+    resolution: ConceptNoteGapResolution | None,
+    *,
+    chapter_title: str,
+) -> WorkspaceGapSnapshot:
+    """Detach one gap and its latest resolution."""
+    resolution_snapshot = (
+        WorkspaceGapResolutionSnapshot(
+            resolution_id=resolution.resolution_id,
+            action=resolution.action,
+            answer=resolution.answer,
+            actor_user_id=resolution.actor_user_id,
+            source_refs=list(resolution.source_refs or []),
+            created_at=resolution.created_at,
+        )
+        if resolution is not None
+        else None
+    )
+    return WorkspaceGapSnapshot(
+        gap_id=gap.gap_id,
+        field_key=gap.field_key,
+        question=gap.question,
+        why_asking=_specific_gap_rationale(
+            question=gap.question,
+            rationale=gap.why_asking,
+            chapter_title=chapter_title,
+        ),
+        severity=gap.severity,
+        state=gap.status,
+        suggestions=list(gap.suggestions or []),
+        source_refs=list(gap.source_refs or []),
+        version=gap.version,
+        resolution=resolution_snapshot,
+        created_at=gap.created_at,
+        updated_at=gap.updated_at,
+    )
+
+
+def _specific_gap_rationale(
+    *,
+    question: str,
+    rationale: str,
+    chapter_title: str,
+) -> str:
+    """Replace the legacy migration sentinel with a gap-specific rationale."""
+    if rationale.strip() != LEGACY_GENERIC_GAP_RATIONALE:
+        return rationale
+    missing_fact = question.strip().rstrip(".")
+    return (
+        "The available context does not provide grounded evidence for "
+        f"“{missing_fact}”. Confirm it so Clima can update the {chapter_title} "
+        "chapter without inventing this detail."
+    )
+
+
+def _gap_from_output(
+    chapter: ConceptNoteChapter,
+    output: ConceptNoteDraftGapOutput,
+) -> ConceptNoteGap:
+    """Create a persisted structured gap from validated model output."""
+    suggestions = [item.model_dump(mode="json") for item in output.suggestions]
+    return ConceptNoteGap(
+        run_id=chapter.run_id,
+        chapter_id=chapter.chapter_id,
+        field_key=output.field_key,
+        severity=output.severity,
+        question=output.question,
+        why_asking=output.why_asking,
+        suggestions=suggestions,
+        source_refs=_suggestion_source_refs(suggestions),
+        status="open",
+    )
+
+
+async def _has_blocking_gaps(session: AsyncSession, chapter_id: UUID) -> bool:
+    """Return whether the chapter still has an unresolved or processing gap."""
+    return (
+        await session.scalar(
+            select(ConceptNoteGap.gap_id)
+            .where(
+                ConceptNoteGap.chapter_id == chapter_id,
+                ConceptNoteGap.status.in_(("open", "processing")),
+            )
+            .limit(1)
+        )
+        is not None
+    )
+
+
+def _suggestion_source_refs(suggestions: list[dict[str, Any]]) -> list[str]:
+    """Flatten unique suggestion citations in stable display order."""
+    refs: list[str] = []
+    for suggestion in suggestions:
+        for value in suggestion.get("source_refs", []):
+            ref = str(value).strip()
+            if ref and ref not in refs:
+                refs.append(ref)
+    return refs
+
+
 async def _delete_workspace_rows(session: AsyncSession, run_id: UUID) -> None:
     """Delete one run's workspace in explicit dependency order."""
+    # Applications reference proposals; both retain document text after chapter deletion.
+    await session.execute(
+        delete(ConceptNoteEditApplication).where(
+            ConceptNoteEditApplication.run_id == run_id
+        )
+    )
+    await session.execute(
+        delete(ConceptNoteEditProposal).where(ConceptNoteEditProposal.run_id == run_id)
+    )
     chapter_ids = list(
         (
             await session.scalars(
@@ -982,6 +1304,7 @@ def normalize_template_chapters(
 
 
 def _normalize_optional_text(value: Any) -> str | None:
+    """Return stripped optional text without placeholder empty strings."""
     if value is None:
         return None
     normalized = str(value).strip()

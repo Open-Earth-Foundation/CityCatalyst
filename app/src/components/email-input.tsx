@@ -48,7 +48,7 @@ export default function EmailInput<TFieldValues extends FieldValues>({
           error
             ? "sentiment.negativeOverlay"
             : disabled
-              ? "background.neutral"
+              ? "background.graySubtle"
               : "background.default"
         }
         {...register(id, {

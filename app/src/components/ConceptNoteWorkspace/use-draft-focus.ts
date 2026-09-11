@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type {
   ConceptNoteChapterValidationFinding,
@@ -52,22 +52,30 @@ export function useDraftFocus(
       : null;
   }, [chapters, focusChapterId, focusFindingKey]);
 
-  const scrollToChapter = (
-    chapterId: string,
-    findingElement?: HTMLDivElement | null,
-  ) => {
-    const preview = previewElement.current;
-    const chapterElement = chapterElements.current[chapterId];
-    if (!preview || !chapterElement) return;
+  const scrollToChapter = useCallback(
+    (chapterId: string, findingElement?: HTMLDivElement | null) => {
+      const preview = previewElement.current;
+      const chapterElement = chapterElements.current[chapterId];
+      if (!preview || !chapterElement) return;
 
-    const targetElement = findingElement ?? chapterElement;
-    const targetTop =
-      targetElement.getBoundingClientRect().top -
-      preview.getBoundingClientRect().top +
-      preview.scrollTop -
-      48;
-    preview.scrollTo({ behavior: "smooth", top: Math.max(0, targetTop) });
-  };
+      const targetElement = findingElement ?? chapterElement;
+      const targetTop =
+        targetElement.getBoundingClientRect().top -
+        preview.getBoundingClientRect().top +
+        preview.scrollTop -
+        48;
+      preview.scrollTo({ behavior: "smooth", top: Math.max(0, targetTop) });
+    },
+    [],
+  );
+
+  const selectChapter = useCallback(
+    (chapterId: string) => {
+      setFocusedChapterId(chapterId);
+      scrollToChapter(chapterId);
+    },
+    [scrollToChapter],
+  );
 
   useEffect(() => {
     if (
@@ -95,7 +103,7 @@ export function useDraftFocus(
       cancelAnimationFrame(frame);
       if (focusFrame !== null) cancelAnimationFrame(focusFrame);
     };
-  }, [chapters, focusChapterId, focusedFinding]);
+  }, [chapters, focusChapterId, focusedFinding, scrollToChapter]);
 
   return {
     chapterElements,
@@ -105,10 +113,7 @@ export function useDraftFocus(
     previewElement,
     selectedChapterId:
       focusedChapterId ?? currentChapterId ?? chapters[0]?.chapter_id,
-    selectChapter: (chapterId) => {
-      setFocusedChapterId(chapterId);
-      scrollToChapter(chapterId);
-    },
+    selectChapter,
     toggleChapterPanel: () => setIsChapterPanelOpen((isOpen) => !isOpen),
   };
 }

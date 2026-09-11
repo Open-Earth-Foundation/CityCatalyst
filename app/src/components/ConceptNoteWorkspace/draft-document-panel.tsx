@@ -1,3 +1,7 @@
+import { useEffect } from "react";
+import type { EditChange } from "@/util/concept-note-edit-types";
+import type { InlineReviewDecision } from "./inline-review";
+import { InlineDocumentDiff } from "./edit-diff";
 import {
   Box,
   chakra,
@@ -8,6 +12,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import {
+  LuCheck,
   LuChevronDown,
   LuChevronLeft,
   LuChevronRight,
@@ -33,7 +38,7 @@ import type { ConceptNoteDraftChapter } from "@/util/types";
 import {
   decodeMissingInformationMessage,
   MISSING_INFORMATION_LINK,
-  replaceMissingInformationMarkers,
+  remarkMissingInformation,
 } from "./draft-markdown";
 import {
   getChapterDisplayStatus,
@@ -193,10 +198,28 @@ function chapterPreviewMarkdown(markdown: string, title: string): string {
     firstLineTitle?.toLocaleLowerCase() === title.trim().toLocaleLowerCase()
       ? lines.slice(1).join("\n").trimStart()
       : markdown;
-  return replaceMissingInformationMarkers(body);
+  return body;
 }
 
-interface DraftDocumentPanelProps {
+export interface DraftInlineReviewProps {
+  isConfirmingChapter: boolean;
+  onConfirmChapter: (chapter: ConceptNoteDraftChapter) => void;
+  editFocus?: {
+    chapterId: string;
+    changeId?: string;
+    requestId: string;
+    focus: boolean;
+  } | null;
+  onFocusedChapterChange?: (chapterId: string) => void;
+  reviewChanges?: EditChange[];
+  activeChangeId?: string;
+  reviewDecisions?: Record<string, InlineReviewDecision>;
+  reviewDecisionBusy?: boolean;
+  onAcceptReviewChange?: (changeIds: string[]) => void;
+  onRejectReviewChange?: (changeIds: string[]) => void;
+}
+
+interface DraftDocumentPanelProps extends DraftInlineReviewProps {
   chapters: ConceptNoteDraftChapter[];
   focus: DraftFocusController;
   focusFindingKey: string | null;
@@ -210,9 +233,57 @@ export function DraftDocumentPanel({
   focusFindingKey,
   lng,
   noteName,
+  editFocus,
+  onFocusedChapterChange,
+  reviewChanges = [],
+  activeChangeId,
+  reviewDecisions,
+  reviewDecisionBusy,
+  onAcceptReviewChange,
+  onRejectReviewChange,
+  isConfirmingChapter,
+  onConfirmChapter,
 }: DraftDocumentPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
-  const { chapterElements, focusedFindingElement, previewElement } = focus;
+  const {
+    chapterElements,
+    focusedFindingElement,
+    previewElement,
+    selectChapter,
+  } = focus;
+
+  useEffect(() => {
+    if (!editFocus) return;
+    const frame = window.requestAnimationFrame(() => {
+      const preview = previewElement.current;
+      const chapter = chapterElements.current[editFocus.chapterId];
+      if (!preview || !chapter) return;
+      const target = editFocus.changeId
+        ? ([...chapter.querySelectorAll<HTMLElement>("[data-change-ids]")].find(
+            (element) =>
+              element.dataset.changeIds
+                ?.split(" ")
+                .includes(editFocus.changeId!),
+          ) ?? chapter)
+        : chapter;
+      selectChapter(editFocus.chapterId);
+      preview.scrollTo({
+        top: Math.max(
+          0,
+          target.getBoundingClientRect().top -
+            preview.getBoundingClientRect().top +
+            preview.scrollTop -
+            48,
+        ),
+        behavior: "auto",
+      });
+      if (editFocus.focus)
+        (target.hasAttribute("data-change-ids") ? target : preview).focus({
+          preventScroll: true,
+        });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [editFocus, chapterElements, previewElement, selectChapter]);
 
   return (
     <VStack align="stretch" flex={1} minH={0} gap={2}>
@@ -355,7 +426,10 @@ export function DraftDocumentPanel({
                     outlineColor: "content.link",
                     outlineOffset: "1px",
                   }}
-                  onClick={() => focus.selectChapter(chapter.chapter_id)}
+                  onClick={() => {
+                    focus.selectChapter(chapter.chapter_id);
+                    onFocusedChapterChange?.(chapter.chapter_id);
+                  }}
                 >
                   <Box
                     flexShrink={0}
@@ -376,6 +450,19 @@ export function DraftDocumentPanel({
                   >
                     {chapter.position + 1} {chapter.title}
                   </Text>
+                  {reviewChanges.some(
+                    (change) => change.chapter_id === chapter.chapter_id,
+                  ) && (
+                    <Box
+                      data-testid="concept-note-section-has-changes"
+                      role="img"
+                      aria-label={t("edit-section-has-changes")}
+                      flexShrink={0}
+                      boxSize="7px"
+                      borderRadius="full"
+                      bg="content.link"
+                    />
+                  )}
                 </Button>
               );
             })}
@@ -385,6 +472,7 @@ export function DraftDocumentPanel({
         <Box
           ref={previewElement}
           data-testid="concept-note-draft-preview"
+          tabIndex={-1}
           flex={1}
           minW={0}
           minH="360px"
@@ -411,24 +499,69 @@ export function DraftDocumentPanel({
             {chapters.map((chapter) => (
               <Box
                 key={chapter.chapter_id}
+                data-chapter-id={chapter.chapter_id}
                 ref={(element: HTMLDivElement | null) => {
                   chapterElements.current[chapter.chapter_id] = element;
                 }}
                 scrollMarginTop={4}
               >
-                <Text
+                <Flex
+                  align={{ base: "start", md: "center" }}
+                  justify="space-between"
+                  direction={{ base: "column", md: "row" }}
+                  gap={2}
                   mb={3}
                   pb={2}
-                  borderBottom="1px solid"
-                  borderColor="border.neutral"
-                  fontFamily="heading"
-                  fontSize="18px"
-                  fontWeight="semibold"
-                  lineHeight="28px"
-                  color="content.primary"
                 >
-                  {chapter.position + 1} · {chapter.title}
-                </Text>
+                  <Box>
+                    <Text
+                      fontFamily="heading"
+                      fontSize="18px"
+                      fontWeight="semibold"
+                      lineHeight="28px"
+                      color="content.primary"
+                    >
+                      {chapter.position + 1} · {chapter.title}
+                    </Text>
+                    <HStack mt={1} gap={2} flexWrap="wrap">
+                      <Text fontSize="10px" color="content.tertiary">
+                        {t(
+                          getChapterDisplayStatus(chapter) === "needs_review"
+                            ? "chapter-status-needs-review"
+                            : getChapterDisplayStatus(chapter) === "ready"
+                              ? "chapter-status-ready"
+                              : "chapter-status-draft",
+                        )}
+                      </Text>
+                      {chapter.open_gap_count > 0 && (
+                        <Text fontSize="10px" color="sentiment.warningDefault">
+                          {t("chapter-open-gaps", {
+                            count: chapter.open_gap_count,
+                          })}
+                        </Text>
+                      )}
+                      {chapter.caveat_count > 0 && (
+                        <Text fontSize="10px" color="content.tertiary">
+                          {t("chapter-caveats", {
+                            count: chapter.caveat_count,
+                          })}
+                        </Text>
+                      )}
+                    </HStack>
+                  </Box>
+                  {chapter.status === "draft" &&
+                    chapter.open_gap_count === 0 && (
+                      <Button
+                        size="xs"
+                        variant="solid"
+                        loading={isConfirmingChapter}
+                        onClick={() => void onConfirmChapter(chapter)}
+                      >
+                        <Icon as={LuCheck} />
+                        {t("review-and-confirm")}
+                      </Button>
+                    )}
+                </Flex>
                 {focus.focusedFinding?.chapterId === chapter.chapter_id && (
                   <Box
                     ref={focusedFindingElement}
@@ -492,16 +625,46 @@ export function DraftDocumentPanel({
                     </Text>
                   </Box>
                 )}
-                {chapter.body_markdown ? (
-                  <ReactMarkdown
-                    components={markdownComponents}
-                    remarkPlugins={[remarkGfm]}
-                  >
-                    {chapterPreviewMarkdown(
-                      chapter.body_markdown,
-                      chapter.title,
-                    )}
-                  </ReactMarkdown>
+                {typeof chapter.body_markdown === "string" ? (
+                  (() => {
+                    const changes = reviewChanges.filter(
+                      (change) => change.chapter_id === chapter.chapter_id,
+                    );
+                    if (changes.length) {
+                      return (
+                        <Box data-testid="concept-note-chapter-inline-review">
+                          <InlineDocumentDiff
+                            markdown={chapter.body_markdown!}
+                            changes={changes}
+                            lng={lng}
+                            activeChangeId={activeChangeId}
+                            components={markdownComponents}
+                            decisions={reviewDecisions}
+                            disabled={reviewDecisionBusy}
+                            onAcceptChange={onAcceptReviewChange}
+                            onRejectChange={onRejectReviewChange}
+                          />
+                        </Box>
+                      );
+                    }
+                    return (
+                      <Box
+                        data-testid="concept-note-current-chapter-body"
+                        data-current-chapter-id={chapter.chapter_id}
+                        data-current-revision={chapter.revision_number}
+                      >
+                        <ReactMarkdown
+                          components={markdownComponents}
+                          remarkPlugins={[remarkGfm, remarkMissingInformation]}
+                        >
+                          {chapterPreviewMarkdown(
+                            chapter.body_markdown!,
+                            chapter.title,
+                          )}
+                        </ReactMarkdown>
+                      </Box>
+                    );
+                  })()
                 ) : (
                   <Text fontSize="body.sm" color="content.tertiary">
                     {t("chapter-awaiting-copy")}

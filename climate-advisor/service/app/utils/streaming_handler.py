@@ -7,12 +7,16 @@ import inspect
 import json
 import logging
 import time
+from contextlib import nullcontext, suppress
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
 from agents import RunConfig, Runner, gen_trace_id
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.config import Settings, get_settings
 from app.middleware import get_request_id
+from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.requests import MessageCreateRequest
 from app.persistence.concept_notes.context_bundle import load_agent_context
 from app.services.agent_service import AgentService
@@ -34,6 +38,11 @@ from app.utils.chat_workflow_context import CNB_WORKFLOW_TAG, ChatWorkflowContex
 from app.utils.concept_note_context import (
     clean_cnb_history,
     extract_concept_note_run_id,
+)
+from app.utils.conversation_observability import (
+    conversation_tool_artifact,
+    conversation_trace,
+    finish_conversation_trace,
 )
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
@@ -59,7 +68,6 @@ from app.utils.sse import format_sse
 from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
 from app.utils.token_handler import TokenHandler
 from app.utils.tool_handler import persist_assistant_message
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +110,7 @@ class StreamingHandler:
         self.streaming_error = False
         self.agent_service: Optional[AgentService] = None
         self.token_handler: Optional[TokenHandler] = None
+        self.concept_note_edit_request: EditProposalRequest | None = None
 
     async def stream_response(
         self,
@@ -127,11 +136,15 @@ class StreamingHandler:
             experiment_name=self._mlflow_experiment_name(payload),
             tags=self._mlflow_tags(payload),
             params=self._mlflow_params(payload),
+        ), (
+            nullcontext()
+            if self.workflow_context.is_agentic
+            else conversation_trace(payload.content)
         ):
-            log_json_artifact(
-                "request/message_payload.json",
-                payload.model_dump(mode="json"),
-            )
+            if not self.workflow_context.concept_note_run_id:
+                log_json_artifact(
+                    "request/message_payload.json", payload.model_dump(mode="json")
+                )
 
             async for event_bytes in self._stream_response_with_mlflow(
                 payload=payload,
@@ -192,6 +205,33 @@ class StreamingHandler:
 
             # Create agent service
             native_input_catalog_context = self._native_input_catalog_request(payload)
+            edit_context = (
+                payload.context.get("concept_note_edit")
+                if isinstance(payload.context, dict)
+                else None
+            )
+            edit_request = (
+                EditProposalRequest.model_validate(
+                    {**edit_context, "instruction": payload.content}
+                )
+                if concept_note_run_id and isinstance(edit_context, dict)
+                else None
+            )
+            self.concept_note_edit_request = edit_request
+
+            # Load the effective chat input before tool registration so the edit
+            # planner can resolve short follow-ups from a bounded visible window.
+            conversation_history = await self._load_conversation_history(
+                settings, payload
+            )
+            concept_note_edit_history = (
+                self._recent_concept_note_edit_messages(
+                    conversation_history,
+                    current_instruction=payload.content,
+                )
+                if edit_request is not None
+                else []
+            )
             self.agent_service = AgentService(
                 cc_access_token=self.cc_access_token,
                 cc_thread_id=self.thread_id,
@@ -203,11 +243,15 @@ class StreamingHandler:
                 stationary_energy_surface=stationary_energy_surface,
                 concept_note_run_id=concept_note_run_id,
                 native_input_catalog_context=native_input_catalog_context,
+                concept_note_edit_request=edit_request,
+                concept_note_edit_history=concept_note_edit_history,
             )
 
             # Get model override from options
             options = payload.options or {}
             model_override = options.get("model")
+            if concept_note_run_id:
+                model_override = None
 
             self.agent_model = (
                 model_override
@@ -239,14 +283,10 @@ class StreamingHandler:
 
             agent = await self.agent_service.create_agent(model=self.agent_model)
 
-            # Load conversation history
-            conversation_history = await self._load_conversation_history(
-                settings, payload
-            )
-            log_json_artifact(
-                "chat/conversation_history.json",
-                {"messages": conversation_history},
-            )
+            if not concept_note_run_id:
+                log_json_artifact(
+                    "chat/conversation_history.json", {"messages": conversation_history}
+                )
 
             logger.info(
                 "Starting Agents SDK streaming - thread_id=%s, user_id=%s, request_id=%s",
@@ -299,11 +339,21 @@ class StreamingHandler:
             raise
 
         except Exception as exc:
-            logger.exception("Unhandled exception in Agents SDK streaming")
+            if self.workflow_context.concept_note_run_id:
+                logger.warning("CNB stream failed thread_id=%s", self.thread_identifier)
+            else:
+                logger.exception("Unhandled exception in Agents SDK streaming")
             self.streaming_error = True
             log_json_artifact(
                 "errors/stream_error.json",
-                {"type": type(exc).__name__, "message": str(exc)},
+                {
+                    "type": type(exc).__name__,
+                    "message": (
+                        "CNB stream failed"
+                        if self.workflow_context.concept_note_run_id
+                        else str(exc)
+                    ),
+                },
             )
             self._log_mlflow_stream_summary(
                 ok=False,
@@ -499,6 +549,37 @@ class StreamingHandler:
             for message in conversation_history[-3:]
         )
 
+    @staticmethod
+    def _recent_concept_note_edit_messages(
+        conversation_history: List[Dict[str, str]],
+        *,
+        current_instruction: str,
+        limit: int = 3,
+    ) -> List[Dict[str, str]]:
+        """Return previous visible chat messages for resolving an edit follow-up."""
+        internal_prefixes = (
+            "CONCEPT_NOTE_CONTEXT_BUNDLE_JSON\n",
+            "CONCEPT_NOTE_CONTEXT_BUNDLE_UNAVAILABLE\n",
+            "INTERNAL_TOOL_OUTPUT_JSON\n",
+        )
+        visible_messages = [
+            {"role": message["role"], "content": message["content"]}
+            for message in conversation_history
+            if message.get("role") in {"user", "assistant"}
+            and isinstance(message.get("content"), str)
+            and message["content"].strip()
+            and not message["content"].startswith(internal_prefixes)
+        ]
+
+        # The current instruction is already a dedicated planner field. Remove
+        # its latest history copy so the window contains only preceding turns.
+        for index in range(len(visible_messages) - 1, -1, -1):
+            message = visible_messages[index]
+            if message["role"] == "user" and message["content"] == current_instruction:
+                visible_messages.pop(index)
+                break
+        return visible_messages[-max(limit, 0) :]
+
     def _stationary_energy_context_message(
         self,
         context_payload: Dict[str, Any],
@@ -693,20 +774,25 @@ class StreamingHandler:
             runner_input = self._enforce_chat_prompt_budget(agent, runner_input)
 
         workflow_metadata = self.workflow_context.telemetry()
-        # Every chat mode needs a root to retain explicit run/trace correlation.
-        with start_trace_span(
-            name=(
-                CNB_WORKFLOW_TAG
-                if self.workflow_context.concept_note_run_id
-                else self.workflow_context.trace_workflow_name
-            ),
-            span_type="CHAIN",
-            attributes={
-                "workflow": workflow_metadata["workflow"],
-                "workflow_name": workflow_metadata["workflow_name"],
-                "interaction": workflow_metadata["interaction"],
-            },
-        ):
+        # Ordinary CA already owns a root through persistence; scoped chats keep theirs.
+        trace_context = (
+            start_trace_span(
+                name=(
+                    CNB_WORKFLOW_TAG
+                    if self.workflow_context.concept_note_run_id
+                    else self.workflow_context.trace_workflow_name
+                ),
+                span_type="CHAIN",
+                attributes={
+                    "workflow": workflow_metadata["workflow"],
+                    "workflow_name": workflow_metadata["workflow_name"],
+                    "interaction": workflow_metadata["interaction"],
+                },
+            )
+            if self.workflow_context.is_agentic
+            else nullcontext()
+        )
+        with trace_context:
             trace_context_updated = self._update_mlflow_trace_context(payload)
             # Prefer the Agents SDK streamed runner and keep the legacy fallback path.
             try:
@@ -811,7 +897,9 @@ class StreamingHandler:
             trace_id=gen_trace_id(),
             group_id=self.thread_identifier,
             trace_metadata=trace_metadata,
-            tracing_disabled=not settings.langsmith_tracing_enabled,
+            tracing_disabled=bool(concept_note_run_id)
+            or not settings.langsmith_tracing_enabled,
+            trace_include_sensitive_data=not bool(concept_note_run_id),
         )
 
     async def _fallback_stream(
@@ -922,15 +1010,16 @@ class StreamingHandler:
 
         arguments: Any = getattr(raw_item, "arguments", None)
         if isinstance(arguments, str):
-            try:
+            with suppress(json.JSONDecodeError):
                 arguments = json.loads(arguments)
-            except json.JSONDecodeError:
-                pass
 
         # Find or create invocation record
         existing = None
         for inv in self.tool_invocations:
-            if (call_id and inv.get("id") == call_id) or inv.get("name") == tool_name:
+            if (call_id and inv.get("id") == call_id) or (
+                inv.get("name") == tool_name
+                and (not call_id or self.workflow_context.is_agentic)
+            ):
                 existing = inv
                 break
 
@@ -996,9 +1085,10 @@ class StreamingHandler:
         # Find invocation record
         invocation = None
         for inv in self.tool_invocations:
-            if (call_id and inv.get("id") == call_id) or inv.get(
-                "status"
-            ) == "executing":
+            if (call_id and inv.get("id") == call_id) or (
+                inv.get("status") == "executing"
+                and (not call_id or self.workflow_context.is_agentic)
+            ):
                 invocation = inv
                 break
 
@@ -1128,9 +1218,27 @@ class StreamingHandler:
             thread_id=self.thread_id,
             user_id=self.user_id,
             assistant_content=assistant_content,
-            tool_invocations=self.tool_invocations or None,
+            tool_invocations=self._tool_invocations_for_persistence(),
         )
         return self.history_saved
+
+    def _tool_invocations_for_persistence(self) -> list[dict] | None:
+        """Add server-bound CNB edit arguments to the database audit record."""
+        if not self.tool_invocations:
+            return None
+        if self.concept_note_edit_request is None:
+            return self.tool_invocations
+
+        bound_arguments = self.concept_note_edit_request.model_dump(mode="json")
+        return [
+            {
+                **invocation,
+                "bound_arguments": bound_arguments,
+            }
+            if invocation.get("name") == "concept_note_edit_propose"
+            else invocation
+            for invocation in self.tool_invocations
+        ]
 
     def _mlflow_experiment_name(self, payload: MessageCreateRequest) -> str:
         """Return the MLflow experiment for the current chat workflow."""
@@ -1163,6 +1271,11 @@ class StreamingHandler:
 
     def _mlflow_params(self, payload: MessageCreateRequest) -> dict[str, object]:
         """Return stable MLflow params for one chat request."""
+        if self.workflow_context.concept_note_run_id:
+            return {
+                "content_length": len(payload.content),
+                "has_context": bool(payload.context),
+            }
         options = payload.options or {}
         context = payload.context if isinstance(payload.context, dict) else {}
         return {
@@ -1317,9 +1430,8 @@ class StreamingHandler:
             return str(UUID(str(value)))
         except ValueError:
             logger.warning(
-                "Ignoring invalid %s before MLflow run: %s",
+                "Ignoring invalid %s before MLflow run",
                 label,
-                value,
             )
             return None
 
@@ -1334,6 +1446,13 @@ class StreamingHandler:
         assistant_content = "".join(self.assistant_tokens)
         duration_ms = (time.perf_counter() - started_at) * 1000
         stream_status = status or ("ok" if ok else "error")
+        if not self.workflow_context.is_agentic:
+            finish_conversation_trace(
+                assistant_content,
+                status=stream_status,
+                history_saved=self.history_saved,
+                chunks=len(self.assistant_tokens),
+            )
         log_tags({"stream_status": stream_status})
         log_metrics(
             {
@@ -1345,23 +1464,30 @@ class StreamingHandler:
                 "ok": int(ok),
             }
         )
-        log_text_artifact("chat/assistant_response.txt", assistant_content)
-        try:
-            close_open_tool_observations(
-                self._pending_tool_observations,
-                self._tool_observation_records,
-                outcome=(
-                    "cancelled"
-                    if stream_status == "cancelled"
-                    else "error" if stream_status == "error" else "incomplete"
-                ),
-            )
-        except Exception:
-            logger.warning("MLflow tool observation close failed status=%s", stream_status)
-        log_json_artifact(
-            "chat/tool_invocations.json",
-            {"tool_invocations": self._tool_observation_records},
-        )
+        if not self.workflow_context.concept_note_run_id:
+            log_text_artifact("chat/assistant_response.txt", assistant_content)
+            try:
+                close_open_tool_observations(
+                    self._pending_tool_observations,
+                    self._tool_observation_records,
+                    outcome=(
+                        "cancelled"
+                        if stream_status == "cancelled"
+                        else "error" if stream_status == "error" else "incomplete"
+                    ),
+                )
+            except Exception:
+                logger.warning(
+                    "MLflow tool observation close failed status=%s",
+                    stream_status,
+                )
+            if self.workflow_context.is_agentic or self.tool_invocations:
+                log_json_artifact(
+                    "chat/tool_invocations.json",
+                    {"tool_invocations": self._tool_observation_records}
+                    if self.workflow_context.is_agentic
+                    else conversation_tool_artifact(self.tool_invocations),
+                )
         log_json_artifact(
             "response/stream_summary.json",
             {

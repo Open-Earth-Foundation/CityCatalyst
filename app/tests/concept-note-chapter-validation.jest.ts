@@ -43,7 +43,11 @@ function chapter(
   return {
     body_markdown: "Draft body",
     chapter_id: id,
-    missing_information: [],
+    gaps: [],
+    open_gap_count: 0,
+    caveat_count: 0,
+    confirmed_body_markdown: null,
+    confirmed_revision_number: null,
     position: 0,
     required: true,
     revision_number: 1,

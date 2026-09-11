@@ -452,7 +452,12 @@ export function GuidedReviewExportPanel({
         status={effectiveReviewStatus}
         warningCount={review.warningCount}
       />
-      {requiresExportAcknowledgement && (
+      {controller.hasCriticalGap && (
+        <Text role="alert" color="sentiment.negativeDefault">
+          {t("draft-preflight-critical-gap-description")}
+        </Text>
+      )}
+      {requiresExportAcknowledgement && !controller.hasCriticalGap && (
         <Checkbox
           alignItems="start"
           checked={acceptedIncompleteReview}

@@ -6,15 +6,20 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 from app.db.cnb import CnbBase
-from app.models.db import cnb_reference, cnb_workspace  # noqa: F401
+from app.models.db import cnb_edit, cnb_reference, cnb_workspace  # noqa: F401
 from sqlalchemy import create_engine, inspect, text
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 CNB_DATABASE_URL = os.getenv("CNB_TEST_DATABASE_URL")
 CNB_TABLES = {
+    "concept_note_edit_applications",
+    "concept_note_edit_proposals",
+    "concept_note_gap_resolutions",
+    "concept_note_chapter_reviews",
     "concept_note_chapters",
     "concept_note_chapter_revisions",
     "concept_note_chapter_validations",
@@ -112,7 +117,7 @@ def test_cnb_offline_migration_preserves_explicit_constraint_names() -> None:
     assert "ck_concept_note_chapter_validations_status_valid" in sql
 
 
-def test_cnb_metadata_contains_only_the_fourteen_owned_tables() -> None:
+def test_cnb_metadata_contains_only_owned_tables() -> None:
     """Keep CA-owned run, context-bundle, and upload tables out of CNB metadata."""
     assert set(CnbBase.metadata.tables) == CNB_TABLES
     assert not {
@@ -120,6 +125,73 @@ def test_cnb_metadata_contains_only_the_fourteen_owned_tables() -> None:
         "concept_note_context_bundles",
         "concept_note_uploads",
     } & set(CnbBase.metadata.tables)
+
+
+@pytest.mark.skipif(
+    not CNB_DATABASE_URL,
+    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
+)
+@pytest.mark.parametrize("parent", ["20260828_120000", "20260907_120000"])
+def test_cnb_merge_upgrades_either_existing_head_without_losing_gaps(
+    parent: str,
+) -> None:
+    """Both previously deployed schemas converge without rewriting their data."""
+    assert CNB_DATABASE_URL is not None
+    engine = create_engine(CNB_DATABASE_URL)
+    run_id, gap_id = uuid4(), uuid4()
+    try:
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["upgrade", parent],
+        )
+        # Seed a real gap using the schema that existed on each branch.
+        if parent == "20260828_120000":
+            insert = """
+                INSERT INTO concept_note_gaps
+                    (gap_id, run_id, field_key, severity, reason, status)
+                VALUES (:gap_id, :run_id, 'budget', 'missing_information',
+                    'Confirm the budget.', 'open')
+            """
+        else:
+            insert = """
+                INSERT INTO concept_note_gaps
+                    (gap_id, run_id, field_key, severity, question, why_asking, status)
+                VALUES (:gap_id, :run_id, 'budget', 'critical',
+                    'Confirm the budget.', 'Required for financing.', 'open')
+            """
+        with engine.begin() as connection:
+            connection.execute(text(insert), {"gap_id": gap_id, "run_id": run_id})
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["upgrade", "head"],
+        )
+        assert set(inspect(engine).get_table_names()) == CNB_TABLES | {
+            "cnb_alembic_version"
+        }
+        with engine.connect() as connection:
+            assert connection.execute(
+                text("SELECT version_num FROM cnb_alembic_version")
+            ).scalars().all() == ["20260909_120000"]
+            assert connection.execute(
+                text(
+                    "SELECT question, status FROM concept_note_gaps WHERE gap_id = :gap_id"
+                ),
+                {"gap_id": gap_id},
+            ).one() == ("Confirm the budget.", "open")
+    finally:
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        engine.dispose()
 
 
 @pytest.mark.skipif(
@@ -213,9 +285,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
     assert "uq_concept_note_matched_projects_run_project" in match_uniques
     validation_uniques = {
         item["name"]
-        for item in inspector.get_unique_constraints(
-            "concept_note_chapter_validations"
-        )
+        for item in inspector.get_unique_constraints("concept_note_chapter_validations")
     }
     assert "uq_concept_note_chapter_validations_chapter" in validation_uniques
     template_uniques = {
@@ -271,8 +341,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         }
 
     opportunity_columns = {
-        item["name"]: item
-        for item in inspector.get_columns("funding_opportunities")
+        item["name"]: item for item in inspector.get_columns("funding_opportunities")
     }
     project_columns = {
         item["name"]: item for item in inspector.get_columns("funded_projects")
@@ -324,7 +393,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         revision = connection.execute(
             text("SELECT version_num FROM cnb_alembic_version")
         ).scalar_one()
-    assert revision == "20260828_120000"
+    assert revision == "20260909_120000"
 
     _run_alembic(
         config="cnb-alembic.ini",

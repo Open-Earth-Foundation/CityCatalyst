@@ -115,7 +115,11 @@ export function getConceptNoteReviewStatusPresentation(
   }
 
   if (
-    draft.chapters.some((chapter) => chapter.missing_information.length > 0) ||
+    draft.chapters.some((chapter) =>
+      chapter.gaps.some(
+        (gap) => gap.state === "open" || gap.state === "processing",
+      ),
+    ) ||
     validations.some(
       (validation) =>
         validation.status === "incomplete" ||

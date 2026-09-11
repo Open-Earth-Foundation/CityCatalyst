@@ -43,6 +43,8 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "chat": prompts.chat,
         "stationary_energy_review": prompts.stationary_energy_review,
         "cnb_chat": prompts.cnb_chat,
+        "cnb_chat_edit_planner": prompts.cnb_chat_edit_planner,
+        "cnb_chat_edit_review": prompts.cnb_chat_edit_review,
         "cnb_funding_opportunity_research": (prompts.cnb_funding_opportunity_research),
         "cnb_funder_identity_matching": prompts.cnb_funder_identity_matching,
         "cnb_similar_project_matching": prompts.cnb_similar_project_matching,
@@ -90,7 +92,7 @@ def test_cnb_research_configuration_matches_runtime_contract() -> None:
     prompt_path = config.prompts.cnb_funding_opportunity_research
     prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
 
-    assert config.models.funding_research.name == "openai/gpt-5.6-sol"
+    assert config.models.funding_research.name == "openai/gpt-5.6-terra"
     assert config.models.funding_research.reasoning_effort == "medium"
     assert "`current_filled_object`" in prompt_text
     assert "`missing_data`" in prompt_text
@@ -117,7 +119,7 @@ def test_cnb_funder_identity_prompt_matches_runtime_contract() -> None:
     prompt_path = config.prompts.cnb_funder_identity_matching
     prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
 
-    assert config.models.funder_identity.name == "openai/gpt-5.6-luna"
+    assert config.models.funder_identity.name == "openai/gpt-5.6-terra"
     assert config.models.funder_identity.reasoning_effort == "low"
     assert "`funded_projects`" in prompt_text
     assert "`canonical_funders`" in prompt_text
@@ -207,7 +209,10 @@ def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy
     assert "application-generated user-role data message" in composed
     assert "data, not user requests" in composed
     assert "INTERNAL_TOOL_OUTPUT_JSON" in composed
-    assert "does not persist" in composed
+    assert "concept_note_edit_propose" in composed
+    assert "takes no arguments" in composed
+    assert "A proposal does not apply changes" in composed
+    assert "If the edit tool is unavailable" in composed
     assert "Assume the user has no knowledge of internal run context" in composed
     assert 'A short or vague request such as "Help me"' in composed
     assert "available template or document order" in composed
@@ -221,9 +226,9 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
     config = _load_llm_config()
     budget = config.generation.prompt_budget.cnb_sources
 
-    assert config.models.cnb_source_reader.name == "openai/gpt-5.6-luna"
+    assert config.models.cnb_source_reader.name == "openai/gpt-5.6-terra"
     assert config.models.cnb_source_reader.reasoning_effort == "low"
-    assert config.models.cnb_source_synthesizer.name == "openai/gpt-5.6-sol"
+    assert config.models.cnb_source_synthesizer.name == "openai/gpt-5.6-terra"
     assert config.models.cnb_source_synthesizer.reasoning_effort == "medium"
     assert config.models.cnb_chapter_drafter.name == "openai/gpt-5.6-terra"
     assert config.models.cnb_chapter_drafter.reasoning_effort == "medium"

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useSSEStream } from "@/hooks/useSSEStream";
 import { useTranslation } from "@/i18n/client";
+import type { EditScope } from "@/util/concept-note-edit-types";
 
 import {
   type ConceptNoteChatMessage,
@@ -13,6 +14,8 @@ import {
 interface UseConceptNoteChatOptions {
   lng: string;
   threadId: string | null;
+  editScope?: EditScope;
+  onProposal?: (proposalId: string) => Promise<void>;
 }
 
 interface ConceptNoteChatController {
@@ -26,16 +29,31 @@ interface ConceptNoteChatController {
 export function useConceptNoteChat({
   lng,
   threadId,
+  editScope,
+  onProposal,
 }: UseConceptNoteChatOptions): ConceptNoteChatController {
   const { t } = useTranslation(lng, "concept-notes");
   const [messages, setMessages] = useState<ConceptNoteChatMessage[]>([]);
-  const [historyLoading, setHistoryLoading] = useState(Boolean(threadId));
+  const [messagesThreadId, setMessagesThreadId] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const assistantMessageIdRef = useRef<string | null>(null);
 
   const { startStream, stopStream } = useSSEStream({
     forceEventStream: true,
+    onToolResult: (result) => {
+      const data = result.data;
+      if (
+        result.action === "concept_note.edit.propose" &&
+        typeof result.success === "boolean" &&
+        typeof data === "object" &&
+        data !== null &&
+        "proposal_id" in data &&
+        typeof data.proposal_id === "string"
+      ) {
+        void onProposal?.(data.proposal_id);
+      }
+    },
     onMessage: (content) => {
       const assistantMessageId = assistantMessageIdRef.current;
       if (!assistantMessageId) {
@@ -89,16 +107,16 @@ export function useConceptNoteChat({
         }
         const payload: unknown = await response.json();
         setMessages(readConceptNoteThreadMessages(payload));
+        setMessagesThreadId(threadId);
+        setError(null);
       } catch (requestError) {
         if (
           !(requestError instanceof Error) ||
           requestError.name !== "AbortError"
         ) {
+          setMessages([]);
+          setMessagesThreadId(threadId);
           setError(t("chat-history-error"));
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setHistoryLoading(false);
         }
       }
     }
@@ -129,7 +147,18 @@ export function useConceptNoteChat({
       await startStream("/api/v1/chat/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ threadId, content: normalizedContent }),
+        body: JSON.stringify({
+          threadId,
+          content: normalizedContent,
+          context: editScope
+            ? {
+                concept_note_edit: {
+                  scope: editScope,
+                  idempotency_key: crypto.randomUUID(),
+                },
+              }
+            : undefined,
+        }),
       });
     } catch (requestError) {
       if (requestError instanceof Error && requestError.name === "AbortError") {
@@ -140,10 +169,10 @@ export function useConceptNoteChat({
   }
 
   return {
-    error,
-    historyLoading,
+    error: messagesThreadId === threadId ? error : null,
+    historyLoading: Boolean(threadId) && messagesThreadId !== threadId,
     isGenerating,
-    messages,
+    messages: messagesThreadId === threadId ? messages : [],
     sendMessage,
   };
 }

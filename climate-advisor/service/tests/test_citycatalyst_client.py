@@ -642,6 +642,45 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(recorded["headers"]["X-Service-Name"], "climate-advisor")
         self.assertEqual(recorded["json"]["inventoryId"], "inventory-1")
 
+    async def test_discover_native_inputs_posts_optional_continuation_cursor(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(
+                base_url="https://cc.example",
+                api_key="test-api-key",
+            )
+            stub = _StubAsyncClient(
+                [
+                    _response(
+                        200,
+                        json_data={
+                            "success": True,
+                            "data": {
+                                "entries": [],
+                                "continuationCursor": "opaque-core-cursor",
+                            },
+                        },
+                    )
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                result = await client.discover_native_inputs(
+                    request_payload={
+                        "userId": "user-1",
+                        "cityId": "city-1",
+                        "cursor": "opaque-core-cursor",
+                    },
+                    token="jwt-token",
+                    user_id="user-1",
+                    thread_id="thread-1",
+                )
+
+        self.assertEqual(result["data"]["continuationCursor"], "opaque-core-cursor")
+        self.assertEqual(stub.requests[0]["json"]["cursor"], "opaque-core-cursor")
+
     async def test_read_native_input_posts_exact_selection_and_bounded_input(self) -> None:
         with patch(
             "app.services.citycatalyst_client.get_settings",

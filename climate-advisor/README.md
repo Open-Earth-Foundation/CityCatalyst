@@ -1183,9 +1183,12 @@ When an authenticated CityCatalyst catalog context is available, Climate
 Advisor registers two fixed tool definitions for the agent:
 `native_input_discover` and `native_input_read`. Discovery calls Core on every
 invocation, so a newly registered authorized entry can appear without
-recreating the agent. Every selected read also goes back through Core, which
-independently revalidates the caller scope, catalog lifecycle, capability
-membership, module readiness, and bounded execution contract.
+recreating the agent. When Core returns more than one authorized page, the
+discover tool exposes an opaque `continuationCursor` and accepts an optional
+`cursor` argument; the cursor is request state only and is not an authorization
+grant. Every selected read also goes back through Core, which independently
+revalidates the caller scope, catalog lifecycle, capability membership, module
+readiness, and bounded execution contract.
 
 The catalog tools use only the already validated bearer. A 401 from discovery
 or read is returned through the existing safe tool failure path without calling

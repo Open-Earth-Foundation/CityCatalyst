@@ -45,6 +45,7 @@ const discoveryRequestSchema = z
     kind: z.string().trim().min(1).max(64).optional(),
     owningModule: z.string().trim().min(1).max(64).optional(),
     capabilityId: z.string().trim().min(1).max(128).optional(),
+    cursor: z.string().trim().min(1).max(4096).optional(),
   })
   .strict();
 
@@ -72,12 +73,18 @@ export const POST = apiHandler(async (req, { session }) => {
             body.capabilityId as NativeInputDiscoveryRequest["capabilityId"],
         }
       : {}),
+    ...(body.cursor ? { cursor: body.cursor } : {}),
   };
 
-  const entries = await discoverNativeInputs(request, session);
+  const page = await discoverNativeInputs(request, session);
   return NextResponse.json({
     action: NATIVE_INPUT_DISCOVERY_CAPABILITY,
     success: true,
-    data: { entries },
+    data: {
+      entries: page.entries,
+      ...(page.continuationCursor
+        ? { continuationCursor: page.continuationCursor }
+        : {}),
+    },
   });
 });

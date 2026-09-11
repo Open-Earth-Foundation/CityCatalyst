@@ -168,7 +168,9 @@ def test_tools_expose_only_fixed_discovery_and_finite_read_schemas() -> None:
 
     assert discover_schema == {
         "type": "object",
-        "properties": {},
+        "properties": {
+            "cursor": {"type": "string", "minLength": 1, "maxLength": 4096},
+        },
         "additionalProperties": False,
     }
     assert read_schema == {
@@ -244,6 +246,82 @@ async def test_discovery_is_fresh_filters_unsupported_capabilities_and_exposes_s
     assert service.discover.await_count == 2
     service.discover.assert_awaited_with(context=_context(), token="jwt-token")
     assert "private" not in json.dumps(payload)
+
+
+@pytest.mark.asyncio
+async def test_discovery_relays_a_continuation_cursor_then_reads_the_later_entry() -> None:
+    """A later-page catalog id remains a Core-revalidated selected read."""
+    first = NativeInputDiscovery(
+        entries=_discovery().entries,
+        continuation_cursor="opaque-core-cursor",
+    )
+    later = _discovery(catalog_id="catalog-101")
+    service = _StubService(first)
+    service.discover.side_effect = [first, later]
+    client = _StubClient()
+    tools, _, _ = _build(client, service=service)
+    discover = _tool(tools, "native_input_discover")
+    read = _tool(tools, "native_input_read")
+
+    first_payload = json.loads(
+        await getattr(discover, "on_invoke_tool")(
+            _tool_context("native_input_discover"), "{}"
+        )
+    )
+    second_payload = json.loads(
+        await getattr(discover, "on_invoke_tool")(
+            _tool_context("native_input_discover"),
+            json.dumps({"cursor": first_payload["data"]["continuationCursor"]}),
+        )
+    )
+    read_payload = json.loads(
+        await getattr(read, "on_invoke_tool")(
+            _tool_context("native_input_read"),
+            json.dumps(
+                {
+                    "catalogId": "catalog-101",
+                    "capabilityId": "ghgi.inventory.status_overview",
+                }
+            ),
+        )
+    )
+
+    assert first_payload["data"]["continuationCursor"] == "opaque-core-cursor"
+    assert second_payload["data"]["entries"][0]["catalogId"] == "catalog-101"
+    assert "continuationCursor" not in second_payload["data"]
+    assert read_payload["success"] is True
+    assert client.requests[0]["request_payload"]["catalogId"] == "catalog-101"
+    service.discover.assert_awaited_with(
+        context=_context(),
+        token="jwt-token",
+        cursor="opaque-core-cursor",
+    )
+
+
+@pytest.mark.asyncio
+async def test_discovery_rejects_unknown_or_invalid_cursor_arguments() -> None:
+    """Discovery stays a finite schema and does not invent catalog state."""
+    service = _StubService(_discovery())
+    tools, _, _ = _build(_StubClient(), service=service)
+    discover = _tool(tools, "native_input_discover")
+
+    unknown = json.loads(
+        await getattr(discover, "on_invoke_tool")(
+            _tool_context("native_input_discover"),
+            json.dumps({"cursor": "opaque-core-cursor", "cityId": "attacker-city"}),
+        )
+    )
+    empty = json.loads(
+        await getattr(discover, "on_invoke_tool")(
+            _tool_context("native_input_discover"),
+            json.dumps({"cursor": ""}),
+        )
+    )
+
+    assert unknown["error_code"] == "invalid_arguments"
+    assert empty["error_code"] == "invalid_arguments"
+    assert "attacker" not in unknown["error"]
+    service.discover.assert_not_awaited()
 
 
 @pytest.mark.asyncio

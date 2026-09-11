@@ -156,3 +156,57 @@ async def test_disabled_discovery_does_not_load_capabilities_or_call_core() -> N
     assert result.entries == ()
     client.discover_native_inputs.assert_not_awaited()
     client.read_native_input.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_discovery_relays_an_opaque_cursor_and_returns_the_next_page() -> None:
+    """A continuation cursor is request state, not an authorization grant."""
+    first_page = {
+        "action": "native_input.discover",
+        "success": True,
+        "data": {
+            "entries": [
+                {
+                    "catalog_id": "catalog-1",
+                    "kind": "inventory_import",
+                    "owning_module": "ghgi",
+                    "source_type": "inventory",
+                    "capability_ids": ["ghgi.inventory.status_overview"],
+                    "source_id": "private-source-id",
+                }
+            ],
+            "continuationCursor": "opaque-core-cursor",
+        },
+    }
+    second_page = _discovery_response(catalog_id="catalog-101")
+    client = _client(first_page)
+    client.discover_native_inputs.side_effect = [first_page, second_page]
+    service = NativeInputCatalogService(core_client=client)
+
+    first = await service.discover(context=_context(), token="jwt-token")
+    second = await service.discover(
+        context=_context(),
+        token="jwt-token",
+        cursor=first.continuation_cursor,
+    )
+
+    assert first.continuation_cursor == "opaque-core-cursor"
+    assert first.entries[0]["catalog_id"] == "catalog-1"
+    assert "source_id" not in first.entries[0]
+    assert second.entries[0]["catalog_id"] == "catalog-101"
+    assert second.continuation_cursor is None
+    assert client.discover_native_inputs.await_count == 2
+    client.discover_native_inputs.assert_awaited_with(
+        request_payload={
+            "userId": "user-1",
+            "organizationId": "organization-1",
+            "projectId": "project-1",
+            "cityId": "city-1",
+            "inventoryId": "inventory-1",
+            "cursor": "opaque-core-cursor",
+        },
+        token="jwt-token",
+        user_id="user-1",
+        thread_id="thread-1",
+    )
+    client.read_native_input.assert_not_awaited()

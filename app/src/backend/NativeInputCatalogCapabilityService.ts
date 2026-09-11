@@ -1,4 +1,11 @@
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  randomBytes,
+} from "node:crypto";
 import createHttpError from "http-errors";
+import { Op } from "sequelize";
 import type { AppSession } from "@/lib/auth";
 import { db } from "@/models";
 import type { NativeInputCatalog } from "@/models/NativeInputCatalog";
@@ -17,6 +24,8 @@ import {
 } from "@/backend/agentic/native-input-catalog/source-adapters";
 
 const DISCOVERY_RESULT_LIMIT = 100;
+const DISCOVERY_CANDIDATE_BATCH_SIZE = 100;
+const DISCOVERY_CURSOR_VERSION = 1;
 const AUTHORIZED_SCOPE_FIELDS = [
   "organizationId",
   "projectId",
@@ -35,6 +44,30 @@ export type NativeInputDiscoveryRequest = {
   kind?: string;
   owningModule?: string;
   capabilityId?: NativeInputCapabilityId;
+  cursor?: string;
+};
+
+export type NativeInputDiscoveryPage = {
+  entries: NativeInputDiscoveryEntry[];
+  continuationCursor?: string;
+};
+
+type NativeInputCatalogKeyset = {
+  created: string;
+  id: string;
+};
+
+type NativeInputCatalogCandidateQuery = {
+  after?: NativeInputCatalogKeyset;
+  limit: number;
+};
+
+type NativeInputDiscoveryCursorPayload = {
+  v: number;
+  created: string;
+  id: string;
+  userId: string;
+  filters: Record<string, string>;
 };
 
 export type NativeInputSelectedReadRequest = NativeInputDiscoveryRequest & {
@@ -56,10 +89,13 @@ export const NATIVE_INPUT_CAPABILITY_UNAVAILABLE_MESSAGE =
 
 type CatalogEntry = NativeInputDiscoveryCatalogEntry & {
   availability?: NativeInputCatalog["availability"];
+  created?: Date | string;
 };
 
 export interface NativeInputCapabilityServiceDependencies {
-  findActiveCatalogEntries: () => Promise<CatalogEntry[]>;
+  findActiveCatalogEntries: (
+    query: NativeInputCatalogCandidateQuery,
+  ) => Promise<CatalogEntry[]>;
   findCatalogEntryById?: (catalogId: string) => Promise<CatalogEntry | null>;
   authorizeCatalogScope: (
     session: AppSession,
@@ -73,9 +109,20 @@ export interface NativeInputCapabilityServiceDependencies {
 }
 
 const defaultDependencies: NativeInputCapabilityServiceDependencies = {
-  async findActiveCatalogEntries() {
+  async findActiveCatalogEntries(query) {
+    const where: Record<string, unknown> = { availability: "active" };
+    if (query.after) {
+      const afterCreated = new Date(query.after.created);
+      where[Op.or] = [
+        { created: { [Op.gt]: afterCreated } },
+        {
+          created: afterCreated,
+          id: { [Op.gt]: query.after.id },
+        },
+      ];
+    }
     const rows = await db.models.NativeInputCatalog.findAll({
-      where: { availability: "active" },
+      where,
       attributes: [
         "id",
         "kind",
@@ -89,12 +136,13 @@ const defaultDependencies: NativeInputCapabilityServiceDependencies = {
         "organizationId",
         "availability",
         "labels",
+        "created",
       ],
       order: [
         ["created", "ASC"],
         ["id", "ASC"],
       ],
-      limit: DISCOVERY_RESULT_LIMIT,
+      limit: query.limit,
     });
     return rows as unknown as CatalogEntry[];
   },
@@ -262,11 +310,114 @@ export async function filterCatalogEntry(
   return projectNativeInputDiscoveryEntry(entry, definition.capabilityIds);
 }
 
+function discoveryFilterBinding(
+  request: NativeInputDiscoveryRequest,
+): Record<string, string> {
+  return {
+    ...(request.userId ? { userId: request.userId } : {}),
+    ...(request.organizationId
+      ? { organizationId: request.organizationId }
+      : {}),
+    ...(request.projectId ? { projectId: request.projectId } : {}),
+    ...(request.cityId ? { cityId: request.cityId } : {}),
+    ...(request.inventoryId ? { inventoryId: request.inventoryId } : {}),
+    ...(request.kind ? { kind: request.kind } : {}),
+    ...(request.owningModule ? { owningModule: request.owningModule } : {}),
+    ...(request.capabilityId ? { capabilityId: request.capabilityId } : {}),
+  };
+}
+
+function discoveryCursorSecret(): Buffer {
+  const secret =
+    process.env.NEXTAUTH_SECRET ||
+    process.env.CC_SERVICE_API_KEY ||
+    "cc-native-input-discovery-cursor";
+  return createHash("sha256").update(secret).digest();
+}
+
+function encodeDiscoveryCursor(payload: NativeInputDiscoveryCursorPayload): string {
+  const iv = randomBytes(12);
+  const cipher = createCipheriv("aes-256-gcm", discoveryCursorSecret(), iv);
+  const encrypted = Buffer.concat([
+    cipher.update(JSON.stringify(payload), "utf8"),
+    cipher.final(),
+  ]);
+  return Buffer.concat([iv, cipher.getAuthTag(), encrypted]).toString(
+    "base64url",
+  );
+}
+
+function decodeDiscoveryCursor(
+  token: string,
+): NativeInputDiscoveryCursorPayload | null {
+  try {
+    const buffer = Buffer.from(token, "base64url");
+    if (buffer.length < 29) return null;
+    const iv = buffer.subarray(0, 12);
+    const tag = buffer.subarray(12, 28);
+    const decipher = createDecipheriv(
+      "aes-256-gcm",
+      discoveryCursorSecret(),
+      iv,
+    );
+    decipher.setAuthTag(tag);
+    const json = Buffer.concat([
+      decipher.update(buffer.subarray(28)),
+      decipher.final(),
+    ]).toString("utf8");
+    const payload = JSON.parse(json) as NativeInputDiscoveryCursorPayload;
+    if (
+      payload?.v !== DISCOVERY_CURSOR_VERSION ||
+      typeof payload.created !== "string" ||
+      typeof payload.id !== "string" ||
+      typeof payload.userId !== "string" ||
+      !payload.filters ||
+      typeof payload.filters !== "object"
+    ) {
+      return null;
+    }
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+function invalidDiscoveryCursor(): never {
+  throw new createHttpError.BadRequest("Invalid discovery cursor.");
+}
+
+function resolvedDiscoveryCursor(
+  request: NativeInputDiscoveryRequest,
+  session: AppSession,
+): NativeInputCatalogKeyset | undefined {
+  if (!request.cursor) return undefined;
+  const payload = decodeDiscoveryCursor(request.cursor);
+  if (!payload || payload.userId !== session.user.id) {
+    invalidDiscoveryCursor();
+  }
+  const expectedFilters = JSON.stringify(discoveryFilterBinding(request));
+  const actualFilters = JSON.stringify(payload.filters);
+  if (expectedFilters !== actualFilters) {
+    invalidDiscoveryCursor();
+  }
+  return { created: payload.created, id: payload.id };
+}
+
+function candidateKeyset(entry: CatalogEntry): NativeInputCatalogKeyset {
+  const created =
+    entry.created instanceof Date
+      ? entry.created.toISOString()
+      : typeof entry.created === "string"
+        ? new Date(entry.created).toISOString()
+        : new Date(0).toISOString();
+  return { created, id: entry.id };
+}
+
 export async function discoverNativeInputs(
   request: NativeInputDiscoveryRequest,
   session: AppSession,
   dependencies: NativeInputCapabilityServiceDependencies = defaultDependencies,
-): Promise<NativeInputDiscoveryEntry[]> {
+): Promise<NativeInputDiscoveryPage> {
   if (!session.user?.id) {
     throw new createHttpError.Unauthorized("Authentication required");
   }
@@ -276,20 +427,54 @@ export async function discoverNativeInputs(
     );
   }
 
-  const entries = await dependencies.findActiveCatalogEntries();
+  const filters = discoveryFilterBinding(request);
+  let after = resolvedDiscoveryCursor(request, session);
   const discovered: NativeInputDiscoveryEntry[] = [];
+  let lastScanned: NativeInputCatalogKeyset | undefined;
+  let exhausted = false;
 
-  for (const entry of entries.slice(0, DISCOVERY_RESULT_LIMIT)) {
-    const projected = await filterCatalogEntry(
-      entry,
-      request,
-      session,
-      dependencies,
-    );
-    if (projected) discovered.push(projected);
+  while (discovered.length < DISCOVERY_RESULT_LIMIT) {
+    const batch = await dependencies.findActiveCatalogEntries({
+      after,
+      limit: DISCOVERY_CANDIDATE_BATCH_SIZE,
+    });
+    if (batch.length === 0) {
+      exhausted = true;
+      break;
+    }
+
+    for (const entry of batch) {
+      lastScanned = candidateKeyset(entry);
+      const projected = await filterCatalogEntry(
+        entry,
+        request,
+        session,
+        dependencies,
+      );
+      if (!projected) continue;
+      discovered.push(projected);
+      if (discovered.length === DISCOVERY_RESULT_LIMIT) break;
+    }
+
+    if (discovered.length === DISCOVERY_RESULT_LIMIT) break;
+    if (batch.length < DISCOVERY_CANDIDATE_BATCH_SIZE) {
+      exhausted = true;
+      break;
+    }
+    after = lastScanned;
   }
 
-  return discovered;
+  const page: NativeInputDiscoveryPage = { entries: discovered };
+  if (!exhausted && lastScanned) {
+    page.continuationCursor = encodeDiscoveryCursor({
+      v: DISCOVERY_CURSOR_VERSION,
+      created: lastScanned.created,
+      id: lastScanned.id,
+      userId: session.user.id,
+      filters,
+    });
+  }
+  return page;
 }
 
 const FORBIDDEN_RESULT_KEYS = new Set([

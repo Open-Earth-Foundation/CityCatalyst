@@ -285,7 +285,9 @@ remains unauthenticated, and legacy non-catalog inventory tools may still
 derive a token refresh from the request body `user_id`; that residual is
 outside CC-737 scope.
 
-At tool-call time, discovery returns only locally supported safe entries. A
+At tool-call time, discovery returns only locally supported safe entries and
+may include an opaque Core continuation cursor so later authorized pages remain
+discoverable. A page or cursor is never cached as an authorization grant. A
 read accepts a model-selected catalog/capability pair with finite bounded
 arguments, then calls Core for fresh authorization and execution. Core remains
 the final read-time authority; unavailable or invalid reads use the stable
@@ -312,9 +314,10 @@ Unrelated legacy inventory tools retain their existing refresh behavior.
   - Exposes the stable `native_input_discover` and `native_input_read` tools
     for bounded Core-mediated catalog access.
   - Captures active request scope, filters discovery to locally supported
-    capabilities, rejects arbitrary runtime routing/scope or credential
-    arguments, redacts forbidden result fields, and closes the short-lived
-    Core client after each read invocation.
+    capabilities, relays an optional opaque continuation cursor, rejects
+    arbitrary runtime routing/scope or credential arguments, redacts forbidden
+    result fields, and closes the short-lived Core client after each read
+    invocation.
 - `tools/climate_vector_sync.py`
   - General climate knowledge retrieval.
 - `tools/cc_inventory_wrappers.py`

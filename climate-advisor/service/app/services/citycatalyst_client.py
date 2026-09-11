@@ -718,8 +718,10 @@ class CityCatalystClient:
     ) -> Dict[str, Any]:
         """Discover safe NativeInputCatalog entries for the active CA request.
 
-        The Core endpoint performs filtering and lightweight readiness checks;
-        this method does not load or execute source capabilities.
+        The Core endpoint performs filtering, lightweight readiness checks, and
+        optional opaque cursor pagination; this method does not load or execute
+        source capabilities. A continuation cursor is request state only and is
+        never treated as an authorization grant.
         """
         del user_id, thread_id
         return await self.post_internal_capability(

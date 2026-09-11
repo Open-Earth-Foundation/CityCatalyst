@@ -89,7 +89,9 @@ _CAPABILITY_DEFINITIONS: dict[str, InputBuilder] = {
 
 _DISCOVER_SCHEMA = {
     "type": "object",
-    "properties": {},
+    "properties": {
+        "cursor": {"type": "string", "minLength": 1, "maxLength": 4096},
+    },
     "additionalProperties": False,
 }
 
@@ -118,9 +120,8 @@ def build_native_input_catalog_tools(
         _tool_context: ToolContext[Any], raw_arguments: str
     ) -> str:
         """Discover current locally supported catalog entries from Core."""
-        # Validate the fixed no-argument contract before reaching Core.
-        arguments = _parse_arguments(raw_arguments)
-        if arguments != {}:
+        arguments = _parse_discover_arguments(raw_arguments)
+        if arguments is None:
             return _error_payload(
                 _DISCOVER_TOOL_NAME,
                 "invalid_arguments",
@@ -136,9 +137,17 @@ def build_native_input_catalog_tools(
                 "CityCatalyst access token is required.",
             )
 
-        # Fetch a fresh result; compatibility filtering is not authorization.
+        # Fetch a fresh result; a continuation cursor is not an authorization grant.
         try:
-            discovery = await service.discover(context=context, token=token)
+            cursor = arguments.get("cursor")
+            if cursor:
+                discovery = await service.discover(
+                    context=context,
+                    token=token,
+                    cursor=cursor,
+                )
+            else:
+                discovery = await service.discover(context=context, token=token)
             _update_token_ref(getattr(service, "core_client", None), token_ref)
             return _discovery_success_payload(discovery)
         except Exception:
@@ -289,15 +298,31 @@ def _discovery_success_payload(discovery: NativeInputDiscovery) -> str:
                 "capabilityIds": capability_ids,
             }
         )
+    data: Dict[str, Any] = {"entries": entries}
+    if discovery.continuation_cursor:
+        data["continuationCursor"] = discovery.continuation_cursor
     return json.dumps(
         {
             "action": _DISCOVER_TOOL_NAME,
             "success": True,
-            "data": {"entries": entries},
+            "data": data,
         },
         ensure_ascii=False,
         allow_nan=False,
     )
+
+
+def _parse_discover_arguments(raw_arguments: str) -> Optional[Dict[str, Any]]:
+    """Validate the finite discovery schema, including an optional opaque cursor."""
+    arguments = _parse_arguments(raw_arguments)
+    if arguments is None or set(arguments) - {"cursor"}:
+        return None
+    cursor = arguments.get("cursor")
+    if "cursor" in arguments and (
+        not isinstance(cursor, str) or not cursor or len(cursor) > 4096
+    ):
+        return None
+    return arguments
 
 
 def _parse_arguments(raw_arguments: str) -> Optional[Dict[str, Any]]:

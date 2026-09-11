@@ -51,6 +51,7 @@ class NativeInputDiscovery:
     """Safe, bounded entries from one Core discovery response."""
 
     entries: tuple[dict[str, Any], ...]
+    continuation_cursor: Optional[str] = None
 
 
 class NativeInputCatalogService:
@@ -71,14 +72,19 @@ class NativeInputCatalogService:
         *,
         context: Optional[ActiveRequestContext],
         token: Optional[str],
+        cursor: Optional[str] = None,
     ) -> NativeInputDiscovery:
         """Discover current safe entries for the active context and fail closed."""
         if not self.enabled or context is None:
             return self._empty_discovery()
 
+        request_payload = context.to_discovery_payload()
+        if cursor:
+            request_payload["cursor"] = cursor
+
         try:
             response = await self.core_client.discover_native_inputs(
-                request_payload=context.to_discovery_payload(),
+                request_payload=request_payload,
                 token=token,
                 user_id=context.user_id,
                 thread_id=context.thread_id,
@@ -106,7 +112,15 @@ class NativeInputCatalogService:
             safe_entry = cls._safe_entry(entry)
             if safe_entry is not None:
                 safe_entries.append(safe_entry)
-        return NativeInputDiscovery(entries=tuple(safe_entries))
+
+        continuation = data.get("continuationCursor")
+        continuation_cursor = (
+            continuation if isinstance(continuation, str) and continuation else None
+        )
+        return NativeInputDiscovery(
+            entries=tuple(safe_entries),
+            continuation_cursor=continuation_cursor,
+        )
 
     @staticmethod
     def _safe_entry(entry: Any) -> Optional[dict[str, Any]]:

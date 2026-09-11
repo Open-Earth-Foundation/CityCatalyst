@@ -59,15 +59,17 @@ describe("internal CA NativeInputCatalog discovery route", () => {
     jest.spyOn(Auth, "getServerSession").mockResolvedValue(session);
     discoverNativeInputs.mockReset();
     readNativeInputCapability.mockReset();
-    discoverNativeInputs.mockResolvedValue([
-      {
-        catalog_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-        kind: "inventory_import",
-        owning_module: "ghgi",
-        source_type: "inventory",
-        capability_ids: ["ghgi.inventory.status_overview"],
-      },
-    ]);
+    discoverNativeInputs.mockResolvedValue({
+      entries: [
+        {
+          catalog_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          kind: "inventory_import",
+          owning_module: "ghgi",
+          source_type: "inventory",
+          capability_ids: ["ghgi.inventory.status_overview"],
+        },
+      ],
+    });
     readNativeInputCapability.mockResolvedValue({
       action: "ghgi.inventory.status_overview",
       success: true,
@@ -104,6 +106,68 @@ describe("internal CA NativeInputCatalog discovery route", () => {
       { userId, cityId },
       session,
     );
+  });
+
+  it("relays an optional opaque cursor and returns a continuation cursor", async () => {
+    discoverNativeInputs.mockResolvedValue({
+      entries: [
+        {
+          catalog_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          kind: "inventory_import",
+          owning_module: "ghgi",
+          source_type: "inventory",
+          capability_ids: ["ghgi.inventory.status_overview"],
+        },
+      ],
+      continuationCursor: "opaque-core-cursor",
+    });
+
+    const response = await discoverRoute(
+      mockRequest(
+        { userId, cityId, cursor: "opaque-core-cursor" },
+        undefined,
+        {
+          "X-Service-Name": "climate-advisor",
+          "X-Service-Key": serviceKey,
+        },
+      ),
+      { params: Promise.resolve({}) },
+    );
+
+    await expectStatusCode(response, 200);
+    await expect(response.json()).resolves.toEqual({
+      action: "native_input.discover",
+      success: true,
+      data: {
+        entries: [
+          {
+            catalog_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            kind: "inventory_import",
+            owning_module: "ghgi",
+            source_type: "inventory",
+            capability_ids: ["ghgi.inventory.status_overview"],
+          },
+        ],
+        continuationCursor: "opaque-core-cursor",
+      },
+    });
+    expect(discoverNativeInputs).toHaveBeenCalledWith(
+      { userId, cityId, cursor: "opaque-core-cursor" },
+      session,
+    );
+  });
+
+  it("rejects a malformed discovery cursor before calling Core", async () => {
+    const response = await discoverRoute(
+      mockRequest({ cursor: "" }, undefined, {
+        "X-Service-Name": "climate-advisor",
+        "X-Service-Key": serviceKey,
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    await expectStatusCode(response, 400);
+    expect(discoverNativeInputs).not.toHaveBeenCalled();
   });
 
   it("requires the Climate Advisor service contract", async () => {

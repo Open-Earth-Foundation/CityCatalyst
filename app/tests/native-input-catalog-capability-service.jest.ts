@@ -66,19 +66,21 @@ describe("NativeInputCatalog capability service", () => {
       deps,
     );
 
-    expect(response).toEqual([
-      {
-        catalog_id: authorizedEntry.id,
-        kind: "inventory_import",
-        owning_module: "ghgi",
-        source_type: "inventory",
-        capability_ids: [
-          "ghgi.inventory.status_overview",
-          "ghgi.inventory.emissions_context",
-        ],
-        labels: { display_name: "2024 inventory" },
-      },
-    ]);
+    expect(response).toEqual({
+      entries: [
+        {
+          catalog_id: authorizedEntry.id,
+          kind: "inventory_import",
+          owning_module: "ghgi",
+          source_type: "inventory",
+          capability_ids: [
+            "ghgi.inventory.status_overview",
+            "ghgi.inventory.emissions_context",
+          ],
+          labels: { display_name: "2024 inventory" },
+        },
+      ],
+    });
     expect(JSON.stringify(response)).not.toContain(authorizedEntry.sourceId);
     expect(JSON.stringify(response)).not.toContain("private_note");
     expect(deps.getSourceAdapter).toHaveBeenCalledTimes(1);
@@ -135,7 +137,7 @@ describe("NativeInputCatalog capability service", () => {
 
     const response = await discoverNativeInputs({}, session, deps);
 
-    expect(response).toEqual([]);
+    expect(response).toEqual({ entries: [] });
     expect(JSON.stringify(response)).not.toContain("withdrawn-source");
     expect(JSON.stringify(response)).not.toContain("unsupported-source");
     expect(JSON.stringify(response)).not.toContain("denied-source");
@@ -154,7 +156,9 @@ describe("NativeInputCatalog capability service", () => {
       })),
     });
 
-    await expect(discoverNativeInputs({}, session, deps)).resolves.toEqual([]);
+    await expect(discoverNativeInputs({}, session, deps)).resolves.toEqual({
+      entries: [],
+    });
   });
 
   it.each(["organizationId", "projectId", "cityId", "inventoryId"] as const)(
@@ -399,4 +403,241 @@ describe("NativeInputCatalog capability service", () => {
       message: "Requested capability is unavailable.",
     });
   });
+
+  it("discovers a later authorized entry hidden behind 100 inaccessible or incompatible rows and still reads it", async () => {
+    const inaccessible = Array.from({ length: 80 }, (_, index) =>
+      orderedEntry(index, {
+        sourceId: `inaccessible-source-${index}`,
+        labels: { display_name: `hidden ${index}` },
+      }),
+    );
+    const incompatible = Array.from({ length: 21 }, (_, index) =>
+      orderedEntry(80 + index, {
+        owningModule: "cnb",
+        kind: "cnb_upload",
+        sourceType: "cnb_upload",
+        sourceId: `incompatible-source-${index}`,
+      }),
+    );
+    const laterAuthorized = orderedEntry(101, {
+      sourceId: "later-authorized-source",
+      labels: { display_name: "later authorized inventory" },
+    });
+    const deniedIds = new Set(inaccessible.map((entry) => entry.id));
+    const catalogById = new Map(
+      [...inaccessible, ...incompatible, laterAuthorized].map((entry) => [
+        entry.id,
+        entry,
+      ]),
+    );
+    const adapter = {
+      probeReadiness: jest.fn(async () => true),
+      executeSelected: jest.fn(async () => ({
+        completion: { filled: 4, required: 12 },
+      })),
+    };
+    const deps = dependencies([...inaccessible, ...incompatible, laterAuthorized], {
+      findActiveCatalogEntries: keysetFind([
+        ...inaccessible,
+        ...incompatible,
+        laterAuthorized,
+      ]),
+      authorizeCatalogScope: jest.fn(
+        async (_session, _request, entry) => !deniedIds.has(entry.id),
+      ),
+      findCatalogEntryById: jest.fn(async (catalogId: string) => {
+        return catalogById.get(catalogId) ?? null;
+      }),
+      getSourceAdapter: jest.fn((entry) =>
+        entry.owningModule === "cnb" ? null : adapter,
+      ),
+    });
+
+    const page = (await discoverNativeInputs({}, session, deps)) as {
+      entries: Array<{ catalog_id: string }>;
+      continuationCursor?: string;
+    };
+
+    expect(page.entries.map((entry) => entry.catalog_id)).toEqual([
+      laterAuthorized.id,
+    ]);
+    expect(page.continuationCursor).toBeUndefined();
+    expect(JSON.stringify(page)).not.toContain("inaccessible-source");
+    expect(JSON.stringify(page)).not.toContain("incompatible-source");
+    for (const hidden of inaccessible) {
+      expect(page.continuationCursor ?? "").not.toContain(hidden.id);
+    }
+
+    await expect(
+      readNativeInputCapability(
+        {
+          catalogId: laterAuthorized.id,
+          capabilityId: "ghgi.inventory.status_overview",
+          cityId: laterAuthorized.cityId,
+          inventoryId: laterAuthorized.inventoryId,
+          input: {
+            city_id: laterAuthorized.cityId,
+            inventory_id: laterAuthorized.inventoryId,
+          },
+        },
+        session,
+        deps,
+      ),
+    ).resolves.toEqual({
+      action: "ghgi.inventory.status_overview",
+      success: true,
+      data: { completion: { filled: 4, required: 12 } },
+    });
+  });
+
+  it("returns the remaining authorized entry on the next page without duplicates or gaps", async () => {
+    const authorized = Array.from({ length: 101 }, (_, index) =>
+      orderedEntry(index, {
+        sourceId: `authorized-source-${index}`,
+        labels: { display_name: `inventory ${index}` },
+      }),
+    );
+    const catalogById = new Map(authorized.map((entry) => [entry.id, entry]));
+    const adapter = {
+      probeReadiness: jest.fn(async () => true),
+      executeSelected: jest.fn(async () => ({ bounded: true })),
+    };
+    const deps = dependencies(authorized, {
+      findActiveCatalogEntries: keysetFind(authorized),
+      findCatalogEntryById: jest.fn(async (catalogId: string) => {
+        return catalogById.get(catalogId) ?? null;
+      }),
+      getSourceAdapter: jest.fn(() => adapter),
+    });
+
+    const firstPage = (await discoverNativeInputs({}, session, deps)) as {
+      entries: Array<{ catalog_id: string }>;
+      continuationCursor?: string;
+    };
+    const secondPage = (await discoverNativeInputs(
+      { cursor: firstPage.continuationCursor } as NativeInputDiscoveryRequest,
+      session,
+      deps,
+    )) as {
+      entries: Array<{ catalog_id: string }>;
+      continuationCursor?: string;
+    };
+
+    expect(firstPage.entries).toHaveLength(100);
+    expect(firstPage.continuationCursor).toEqual(expect.any(String));
+    expect(JSON.stringify(firstPage)).not.toMatch(/authorized-source-/);
+    expect(secondPage.entries.map((entry) => entry.catalog_id)).toEqual([
+      authorized[100].id,
+    ]);
+    expect(secondPage.continuationCursor).toBeUndefined();
+    expect(
+      firstPage.entries
+        .map((entry) => entry.catalog_id)
+        .concat(secondPage.entries.map((entry) => entry.catalog_id)),
+    ).toEqual(authorized.map((entry) => entry.id));
+
+    await expect(
+      readNativeInputCapability(
+        {
+          catalogId: authorized[100].id,
+          capabilityId: "ghgi.inventory.status_overview",
+          cityId: authorized[100].cityId,
+          inventoryId: authorized[100].inventoryId,
+          input: {
+            city_id: authorized[100].cityId,
+            inventory_id: authorized[100].inventoryId,
+          },
+        },
+        session,
+        deps,
+      ),
+    ).resolves.toEqual({
+      action: "ghgi.inventory.status_overview",
+      success: true,
+      data: { bounded: true },
+    });
+  });
+
+  it("rejects a malformed or filter-mismatched cursor without catalog disclosure", async () => {
+    const authorized = Array.from({ length: 101 }, (_, index) =>
+      orderedEntry(index, {
+        sourceId: `cursor-secret-source-${index}`,
+      }),
+    );
+    const deps = dependencies(authorized, {
+      findActiveCatalogEntries: keysetFind(authorized),
+    });
+    const firstPage = (await discoverNativeInputs(
+      { cityId: authorizedEntry.cityId },
+      session,
+      deps,
+    )) as { continuationCursor?: string; entries: Array<{ catalog_id: string }> };
+
+    await expect(
+      discoverNativeInputs({ cursor: "not-a-cursor" }, session, deps),
+    ).rejects.toMatchObject({
+      statusCode: 400,
+      message: "Invalid discovery cursor.",
+    });
+    await expect(
+      discoverNativeInputs(
+        {
+          cityId: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+          cursor: firstPage.continuationCursor,
+        },
+        session,
+        deps,
+      ),
+    ).rejects.toMatchObject({
+      statusCode: 400,
+      message: "Invalid discovery cursor.",
+    });
+    expect(firstPage.continuationCursor).toEqual(expect.any(String));
+    expect(JSON.stringify(firstPage)).not.toContain("cursor-secret-source");
+    expect(firstPage.continuationCursor).not.toContain(authorized[0].id);
+  });
 });
+
+function orderedEntry(
+  index: number,
+  overrides: Partial<typeof authorizedEntry> & { created?: Date } = {},
+) {
+  return {
+    ...authorizedEntry,
+    id: catalogId(index),
+    created: new Date(Date.UTC(2024, 0, 1, 0, 0, index)),
+    inventoryId: `bbbbbbbb-bbbb-4bbb-8bbb-${index.toString(16).padStart(12, "0")}`,
+    ...overrides,
+  };
+}
+
+function catalogId(index: number): string {
+  return `aaaaaaaa-aaaa-4aaa-8aaa-${index.toString(16).padStart(12, "0")}`;
+}
+
+function keysetFind(entries: Array<typeof authorizedEntry & { created: Date }>) {
+  const ordered = [...entries].sort((left, right) => {
+    const createdDiff = left.created.getTime() - right.created.getTime();
+    if (createdDiff !== 0) return createdDiff;
+    return left.id.localeCompare(right.id);
+  });
+
+  return jest.fn(
+    async (query?: { after?: { created: string; id: string }; limit?: number }) => {
+      const limit = query?.limit ?? ordered.length;
+      let start = 0;
+      if (query?.after) {
+        const afterTime = new Date(query.after.created).getTime();
+        start = ordered.findIndex((entry) => {
+          const created = entry.created.getTime();
+          return (
+            created > afterTime ||
+            (created === afterTime && entry.id > query.after!.id)
+          );
+        });
+        if (start < 0) return [];
+      }
+      return ordered.slice(start, start + limit);
+    },
+  );
+}

@@ -1481,10 +1481,15 @@ class StreamingHandler:
                     "MLflow tool observation close failed status=%s",
                     stream_status,
                 )
-            if self.workflow_context.is_agentic or self.tool_invocations:
+            if self._tool_observation_records:
                 log_json_artifact(
                     "chat/tool_invocations.json",
-                    {"tool_invocations": self._tool_observation_records}
+                    {"tool_invocations": self._tool_observation_records},
+                )
+            elif self.workflow_context.is_agentic or self.tool_invocations:
+                log_json_artifact(
+                    "chat/tool_invocations.json",
+                    {"tool_invocations": self.tool_invocations}
                     if self.workflow_context.is_agentic
                     else conversation_tool_artifact(self.tool_invocations),
                 )

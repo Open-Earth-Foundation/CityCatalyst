@@ -349,19 +349,26 @@ export interface TopEmission {
   co2eq: bigint;
   sectorName: string;
   subsectorName: string;
-  percentage: number;
+  /** null when co2eq is a removal - % of emissions isn't meaningful there, see CC-749 */
+  percentage: number | null;
 }
 
 export interface SectorEmission {
   sectorName: string;
+  /** net (emissions + removals) */
   co2eq: bigint;
+  grossCo2eq?: bigint;
+  removalsCo2eq?: bigint;
   percentage: number;
 }
 
 export interface ResultsResponse {
   totalEmissions: {
     bySector: SectorEmission[];
+    /** net (emissions + removals) */
     total: bigint;
+    grossTotal?: bigint;
+    removalsTotal?: bigint;
   };
   topEmissions: { bySubSector: TopEmission[] };
 }
@@ -391,7 +398,7 @@ export interface YearOverYearResultResponse {
   topEmissionsBySubSector: {
     inventoryId: string;
     co2eq: bigint;
-    percentage: number;
+    percentage: number | null;
     scopeName: string;
     sectorName: string;
     subsectorName: string;
@@ -433,7 +440,8 @@ export interface ActivityDataByScope {
   activityTitle: string;
   scopes: { [key: string]: Decimal };
   totalEmissions: Decimal;
-  percentage: number;
+  /** null when totalEmissions is a removal - % of emissions isn't meaningful there, see CC-749 */
+  percentage: number | null;
   datasource_id: string;
   datasource_name: string;
   activities?: ActivityValue[];
@@ -442,6 +450,8 @@ export interface ActivityDataByScope {
 export type SectorBreakdownResponse = BreakdownByActivity & {
   byActivity: BreakdownByActivity;
   byScope: ActivityDataByScope[];
+  /** sum of non-negative (emissions-only) totalEmissions across byScope - % denominator */
+  grossTotalEmissions: Decimal;
 };
 
 export type InventoryValueWithActivityValues = InventoryValue & {

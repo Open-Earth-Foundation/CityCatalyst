@@ -293,7 +293,7 @@ Content-Type: application/json
     "cc_access_token": "jwt_token_from_citycatalyst"
   },
   "options": {
-    "model": "openai/gpt-5.6-luna"
+    "model": "openai/gpt-5.6-terra"
   }
 }
 ```
@@ -558,12 +558,13 @@ chat-edit planner uses GPT-5.6 Sol, both with medium reasoning.
 
 Current CA model defaults:
 
-- General chat: `openai/gpt-5.6-luna`, reasoning `medium`.
-- CNB and Stationary Energy chat: `openai/gpt-5.6-sol`, reasoning `medium`.
-- Funding research and similar-project selection: `openai/gpt-5.6-sol`, reasoning `medium`.
-- Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `medium`.
-- Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `medium`.
-- Document-summary synthesis: `openai/gpt-5.6-sol`, reasoning `medium`.
+- General chat: `openai/gpt-5.6-terra`, reasoning `medium`.
+- CNB chat: `openai/gpt-5.6-sol`, reasoning `medium`.
+- Stationary Energy chat: `openai/gpt-5.6-terra`, reasoning `medium`.
+- Funding research and similar-project selection: `openai/gpt-5.6-terra`, reasoning `medium`.
+- Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `low`.
+- Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `low`.
+- Document-summary synthesis: `openai/gpt-5.6-terra`, reasoning `medium`.
 
 Chat keeps the existing OpenRouter Chat Completions tool loop and explicitly sets
 reasoning to `medium`. The configured chat and source-worker requests omit
@@ -594,8 +595,8 @@ Prompt paths are also configured in `llm_config.yaml`:
   editing authority, not independent factual verification.
 
 CNB document mapping and question-focused source readers use
-`models.cnb_source_reader`: `openai/gpt-5.6-terra` with medium reasoning. Document
-summary synthesis uses `models.cnb_source_synthesizer`: `openai/gpt-5.6-sol` with
+`models.cnb_source_reader`: `openai/gpt-5.6-terra` with low reasoning. Document
+summary synthesis uses `models.cnb_source_synthesizer`: `openai/gpt-5.6-terra` with
 medium reasoning. These tool-free workers retain the OpenRouter Chat Completions
 route and structured-output schemas, and omit `temperature`. The 50,000-token
 partition budget and maximum three concurrent readers are unchanged. Existing
@@ -1097,7 +1098,7 @@ Content-Type: application/json
   "content": "What are climate risks?",
   "thread_id": "550e8400-e29b-41d4-a716-446655440000",
   "inventory_id": "inv-456",
-  "options": { "model": "openai/gpt-5.6-luna" }
+  "options": { "model": "openai/gpt-5.6-terra" }
 }
 ```
 
@@ -1322,6 +1323,39 @@ session grouping shows all turns from the same UI conversation together while
 still preserving per-turn trace detail. Every chat mode opens a request root span
 before starting the model, so trace/run correlation never depends on a fluent
 active run. CNB turns retain the `CNB` root span and `workflow=CNB` tag.
+
+Ordinary CA (`workflow=climate_advisor_conversation`) names each request root
+`Climate Advisor Turn`, keeps it open through message persistence, and stores one
+assembled assistant response on that root.
+`streamed`, `stream_status`, `response_chunk_count`, and `history_saved` describe
+the outcome. These are visible trace attributes, not a custom animated MLflow UI
+indicator. Cancelled requests retain partial assistant text and an error status;
+unfinished model spans are closed with a reference to that partial root response.
+Raw `mlflow.chunk.item.*` events are removed before export; other events, model
+outputs, usage, and timing remain available.
+
+Each distinct system/developer message is stored once per ordinary CA request
+under the root's `Inputs > system_prompts`, keyed by SHA-256. Model-call inputs
+contain explicit references to that snapshot and root span ID. MLflow does not
+automatically inherit or expand a root prompt in a child's chat view: open the
+root to read it. Changed prompts receive different snapshots. A subsequent user
+message creates a new request/run, even in the same conversation session. Only
+the logging copies change; provider requests retain their original full prompts.
+
+Ordinary CA function tools record redacted inputs and outputs in execution-level
+`TOOL` spans with call IDs, timing, and exception status. Repeated same-name calls
+are correlated by call ID. Empty tool artifacts are omitted, and JSON tool results
+are logged in one representation without changing the runtime/persisted payload.
+CNB and Stationary Energy context-chat telemetry retain their existing behavior.
+
+This compaction requires MLflow 3.2 or later (the lockfile remains on 3.2.0) and
+uses its [span processing API](https://mlflow.org/docs/latest/api_reference/python_api/mlflow.tracing.html).
+MLflow 3.2 lacks a public event-removal API, so event filtering uses an isolated
+OpenTelemetry event-buffer operation covered by real SDK export/readback tests.
+Run `python -m pytest tests/test_conversation_observability.py` from `service/`
+for offline provider-stream, tool-execution, prompt-reference, and cancellation
+coverage. These changes apply to newly emitted traces; historical traces are not
+rewritten.
 
 The shared MLflow variables match HIAP-MEED where deployment needs explicit
 configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,

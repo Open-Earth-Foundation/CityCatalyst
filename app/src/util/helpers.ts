@@ -394,6 +394,22 @@ export function toDecimal(
 }
 
 /**
+ * Format kg emissions/removals, showing negative (removal) values as a positive
+ * magnitude with `removedLabel` instead of a negative number - see CC-749.
+ */
+export function formatEmissionsOrRemoval(
+  valueInKg: number | Decimal | bigint,
+  numberFormat: string | undefined,
+  removedLabel: string,
+): string {
+  const kg = toDecimal(valueInKg);
+  if (kg && kg.isNegative()) {
+    return `${convertKgToTonnes(kg.abs(), numberFormat)} ${removedLabel}`;
+  }
+  return convertKgToTonnes(valueInKg, numberFormat);
+}
+
+/**
  * Format kg emissions as a single UI string (e.g. "1.23 mtCO₂e").
  * Prefer this for tables/charts; use formatEmissions when value and unit are styled separately.
  */

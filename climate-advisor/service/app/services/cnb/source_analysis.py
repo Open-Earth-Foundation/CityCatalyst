@@ -13,7 +13,12 @@ from itertools import pairwise
 from typing import Any, TypeVar, cast
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, RunConfig, Runner
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from openai import AsyncOpenAI
+from pydantic import BaseModel
+
 from app.config import Settings, get_settings
+from app.config.settings import ResearchModelConfig
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from app.models.cnb.context_bundle import (
     SelectedSource,
@@ -35,9 +40,6 @@ from app.utils.concept_note_context import (
 )
 from app.utils.prompt_budget import count_prompt_tokens
 from app.utils.cnb_observability import protect_cnb_client
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from openai import AsyncOpenAI
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -227,7 +229,7 @@ async def analyze_document(
         synthesis = await _run_agent(
             name="Concept Note source summary synthesizer",
             prompt=settings.llm.prompts.get_prompt("cnb_source_summary_synthesis"),
-            model_name=synthesizer_model.name,
+            model_config=synthesizer_model,
             output_type=DocumentSummary,
             input_text=json.dumps(
                 {
@@ -245,7 +247,6 @@ async def analyze_document(
                 },
                 ensure_ascii=False,
             ),
-            settings=settings,
             client=client,
             runner=runner,
         )
@@ -402,12 +403,11 @@ async def _read_partition(
         result = await _run_agent(
             name=name,
             prompt=prompt,
-            model_name=settings.llm.models.cnb_source_reader.name,
+            model_config=settings.llm.models.cnb_source_reader,
             output_type=DocumentMappingReading
             if output_type is SourcePartitionMap
             else QuestionReading,
             input_text=input_text,
-            settings=settings,
             client=client,
             runner=runner,
         )
@@ -471,28 +471,23 @@ async def _run_agent(
     *,
     name: str,
     prompt: str,
-    model_name: str,
+    model_config: ResearchModelConfig,
     output_type: type[OutputModel],
     input_text: str,
-    settings: Settings,
     client: AsyncOpenAI,
     runner: Any,
 ) -> OutputModel:
     """Run one tool-free worker with its configured model and reasoning effort."""
-    model_config = (
-        settings.llm.models.cnb_source_reader
-        if model_name == settings.llm.models.cnb_source_reader.name
-        else settings.llm.models.cnb_source_synthesizer
-    )
+    # Select reasoning by worker role even when both roles share one model.
     agent = Agent(
         name=name,
         instructions=prompt,
         model=OpenAIChatCompletionsModel(
-            model=model_name,
+            model=model_config.name,
             openai_client=client,
         ),
         model_settings=ModelSettings(
-            # Sol/Luna reasoning requests omit unsupported sampling controls.
+            # Reasoning requests omit unsupported sampling controls.
             include_usage=True,
             reasoning={"effort": model_config.reasoning_effort},
         ),

@@ -1270,7 +1270,7 @@
   "waste-composition-glass": "Glas",
   "waste-composition-nappies": "Windeln",
   "waste-composition-other": "Andere",
-  "no-data": "Keine Daten",
+  "no-data": "Keine Ergebnisse entsprechen Ihren Kriterien.",
   "table-pagination": "{{start}} - {{end}} von {{total}}",
   "search-records": "Aufzeichnungen suchen",
   "enter-custom-values": "Ich habe meine eigenen Abfallzusammensetzungsdaten.",

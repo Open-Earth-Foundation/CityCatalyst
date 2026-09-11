@@ -1,10 +1,9 @@
 import { ProjectWithCities } from "@/util/types";
 import React, { useState } from "react";
-import { Accordion, Box, Icon, Tabs, Text } from "@chakra-ui/react";
+import { Accordion, Box, Button, Icon, Tabs, Text } from "@chakra-ui/react";
 import {
   AccordionItem,
   AccordionItemContent,
-  AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
 import { LuChevronDown } from "react-icons/lu";
@@ -14,8 +13,9 @@ import ProjectSearchInput from "../ProjectSearchInput";
 interface ProjectListProps {
   t: TFunction;
   projects: ProjectWithCities[];
-  selectedProjectId: string[];
   setSelectedProject: (value: string[]) => void;
+  expandedProjectId: string[];
+  setExpandedProjectId: (value: string[]) => void;
   selectedCity: string | null;
   setSelectedCity: (value: string | null) => void;
 }
@@ -23,8 +23,9 @@ interface ProjectListProps {
 const ProjectList: React.FC<ProjectListProps> = ({
   t,
   projects,
-  selectedProjectId,
   setSelectedProject,
+  expandedProjectId,
+  setExpandedProjectId,
   setSelectedCity,
   selectedCity,
 }) => {
@@ -48,141 +49,159 @@ const ProjectList: React.FC<ProjectListProps> = ({
   };
 
   return (
-    <Box minW="270px" flex={1}>
+    <Box
+      w="285px"
+      flexShrink={0}
+      display="flex"
+      flexDirection="column"
+      gap="6"
+    >
       <Text
+        display="flex"
+        alignItems="center"
+        h="48px"
         fontSize="title.md"
-        mb={6}
         fontWeight="semibold"
         color="content.secondary"
       >
         {t("projects")}
       </Text>
-      <ProjectSearchInput
-        value={searchTerm}
-        onChange={handleSearch}
-        t={t}
-        mb={6}
-      />
-      <Box
-        p={3}
-        borderRadius="12px"
+      <ProjectSearchInput value={searchTerm} onChange={handleSearch} t={t} />
+      <AccordionRoot
+        variant="plain"
+        collapsible
+        value={expandedProjectId}
+        onValueChange={(val) => {
+          setExpandedProjectId(val.value);
+        }}
         borderWidth="1px"
         borderColor="border.overlay"
-        maxH="500px"
-        overflow="auto"
+        borderRadius="rounded"
+        p="3"
+        w="full"
+        flex="1"
+        minH="0"
+        overflowY="scroll"
       >
-        <AccordionRoot
-          variant="plain"
-          value={selectedProjectId}
-          onValueChange={(val) => {
-            setSelectedProject(val.value);
-            setSelectedCity(null);
-          }}
-        >
-          {filteredProjects.map((project) => (
-            <AccordionItem key={project.projectId} value={project.projectId}>
-              <AccordionItemTrigger
-                onClick={() => {
-                  setSelectedCity(null);
-                }}
+        {filteredProjects.length === 0 && (
+          <Text
+            fontSize="body.md"
+            fontWeight="medium"
+            color="content.tertiary"
+            p={4}
+          >
+            {t("no-data")}
+          </Text>
+        )}
+        {filteredProjects.map((project) => (
+          <AccordionItem key={project.projectId} value={project.projectId}>
+            <Accordion.ItemTrigger
+              onClick={() => {
+                setSelectedProject([project.projectId]);
+                setSelectedCity(null);
+              }}
+              w="full"
+              padding="0"
+              asChild
+            >
+              <Button
+                rounded={0}
+                variant="plain"
+                display="flex"
+                justifyContent="space-between"
                 w="full"
-                hideIndicator
-                padding="0px"
+                minH="56px"
+                p={4}
+                pr={0}
+                alignItems="center"
+                color={
+                  expandedProjectId.includes(project.projectId)
+                    ? "interactive.secondary"
+                    : "content.secondary"
+                }
               >
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  w="full"
-                  minH="56px"
-                  pl={4}
-                  alignItems="center"
-                  color={
-                    selectedProjectId.includes(project.projectId)
-                      ? "interactive.secondary"
-                      : "content.secondary"
-                  }
+                <Text
+                  fontSize="label.lg"
+                  fontWeight="semibold"
+                  color="currentcolor"
                 >
+                  {project.name}
+                </Text>
+                <Accordion.ItemIndicator
+                  color="currentColor"
+                  rotate={{ base: "0deg", _open: "-180deg" }}
+                  mr="6"
+                >
+                  <Icon as={LuChevronDown} color="currentColor" boxSize={4} />
+                </Accordion.ItemIndicator>
+              </Button>
+            </Accordion.ItemTrigger>
+            {expandedProjectId.includes(project.projectId) && (
+              <AccordionItemContent padding="0" pb={4}>
+                {project.cities.length === 0 ? (
                   <Text
-                    fontSize="label.lg"
-                    fontWeight="semibold"
-                    color="currentcolor"
-                    textTransform="none"
+                    fontSize="body.lg"
+                    fontWeight={600}
+                    color="content.primary"
                   >
-                    {project.name}
+                    {t("no-cities")}
                   </Text>
-                  <Accordion.ItemIndicator
-                    color="currentColor"
-                    rotate={{ base: "-90deg", _open: "-180deg" }}
+                ) : (
+                  <Tabs.Root
+                    display="flex"
+                    mt="3"
+                    flexDirection="row"
+                    variant="subtle"
+                    w="full"
+                    gap="3"
+                    value={selectedCity}
+                    onValueChange={(val) => setSelectedCity(val.value)}
                   >
-                    <Icon as={LuChevronDown} color="currentColor" boxSize={6} />
-                  </Accordion.ItemIndicator>
-                </Box>
-              </AccordionItemTrigger>
-              {selectedProjectId[0] === project.projectId && (
-                <AccordionItemContent padding="0px" pb={4}>
-                  {project.cities.length === 0 ? (
-                    <Text
-                      fontSize="body.lg"
-                      fontWeight={600}
-                      color="content.primary"
-                    >
-                      {t("no-cities")}
-                    </Text>
-                  ) : (
-                    <Tabs.Root
-                      display="flex"
-                      mt="12px"
-                      flexDirection="row"
-                      variant="subtle"
+                    <Tabs.List
                       w="full"
-                      gap="12px"
-                      value={selectedCity}
-                      onValueChange={(val) => setSelectedCity(val.value)}
+                      display="flex"
+                      flexDirection="column"
+                      gap="3"
                     >
-                      <Tabs.List
-                        w="full"
-                        display="flex"
-                        flexDirection="column"
-                        gap="12px"
-                      >
-                        {project.cities.map((city) => (
-                          <Tabs.Trigger
-                            key={city.cityId}
-                            value={city.cityId}
-                            fontFamily="heading"
-                            justifyContent={"left"}
-                            letterSpacing={"wide"}
-                            color="content.secondary"
-                            lineHeight="20px"
-                            fontStyle="normal"
-                            fontSize="label.lg"
-                            minH="52px"
-                            w="full"
-                            _selected={{
-                              color: "content.link",
-                              fontSize: "label.lg",
-                              fontWeight: "medium",
-                              backgroundColor: "background.neutral",
-                              borderRadius: "8px",
-                              borderWidth: "1px",
-                              borderStyle: "solid",
-                              borderColor: "content.link",
-                            }}
-                          >
-                            {city.name}
-                            {city.countryLocode ? ", " : ""}
-                            {city.countryLocode}
-                          </Tabs.Trigger>
-                        ))}
-                      </Tabs.List>
-                    </Tabs.Root>
-                  )}
-                </AccordionItemContent>
-              )}
-            </AccordionItem>
-          ))}
-        </AccordionRoot>
-      </Box>
+                      {project.cities.map((city) => (
+                        <Tabs.Trigger
+                          key={city.cityId}
+                          value={city.cityId}
+                          fontFamily="body"
+                          justifyContent={"left"}
+                          letterSpacing={"wide"}
+                          color="content.secondary"
+                          lineHeight="20"
+                          fontStyle="normal"
+                          fontSize="body.md"
+                          fontWeight="medium"
+                          minH="52px"
+                          w="full"
+                          pl="6"
+                          _selected={{
+                            color: "content.link",
+                            fontSize: "body.md",
+                            fontWeight: "medium",
+                            backgroundColor: "background.neutral",
+                            borderRadius: "rounded",
+                            borderWidth: "1px",
+                            borderStyle: "solid",
+                            borderColor: "content.link",
+                          }}
+                        >
+                          {city.name}
+                          {city.countryLocode ? ", " : ""}
+                          {city.countryLocode}
+                        </Tabs.Trigger>
+                      ))}
+                    </Tabs.List>
+                  </Tabs.Root>
+                )}
+              </AccordionItemContent>
+            )}
+          </AccordionItem>
+        ))}
+      </AccordionRoot>
     </Box>
   );
 };

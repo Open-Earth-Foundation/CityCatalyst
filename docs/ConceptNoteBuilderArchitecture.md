@@ -1726,8 +1726,8 @@ Rules:
   dropping content. For native Markdown, derives deterministic heading/block
   anchors from the stored UTF-8 bytes and partitions without inventing
   synthetic pagination.
-- Uses configured GPT-5.6 Luna readers with low reasoning and process-wide
-  concurrency no greater than three, then GPT-5.6 Sol with medium reasoning for
+- Uses configured GPT-5.6 Terra readers with low reasoning and process-wide
+  concurrency no greater than three, then GPT-5.6 Terra with medium reasoning for
   final document synthesis. Both retain tool-free structured outputs through
   OpenRouter Chat Completions and omit temperature.
 - Requires exactly one ordered result per input section and verifies every
@@ -1778,7 +1778,7 @@ Generated block fingerprints are replaced with readable document headings, while
 the backend retains exact block anchors for source verification.
 Questions spanning documents require
 separate calls. The function re-fetches and verifies that document, fans out
-tool-free GPT-5.6 Luna readers over every source-preserving partition using
+tool-free GPT-5.6 Terra readers over every source-preserving partition using
 deterministic code-controlled `Runner.run` calls, and returns only after every
 partition succeeds. Its result contains the source label, verified page- or
 block-located excerpts, source-unit/segment coverage counts, and reader caveats for the calling agent
@@ -2382,10 +2382,10 @@ The configured prompt/model roles are:
 ```yaml
 models:
   cnb_source_reader:
-    name: openai/gpt-5.6-luna
+    name: openai/gpt-5.6-terra
     reasoning_effort: low
   cnb_source_synthesizer:
-    name: openai/gpt-5.6-sol
+    name: openai/gpt-5.6-terra
     reasoning_effort: medium
   cnb_chapter_validator:
     name: openai/gpt-5.6-terra
@@ -2398,10 +2398,10 @@ prompts:
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 ```
 
-The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-sol`) with explicit
+The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-terra`) with explicit
 `reasoning_effort: medium` for its Chat Completions function-tool loop. Funding
-research and similar-project selection use Sol with medium reasoning on the
-existing Responses API path; canonical-funder identity matching uses Luna with
+research and similar-project selection use Terra with medium reasoning on the
+existing Responses API path; canonical-funder identity matching uses Terra with
 low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
 
 The validation prompt budget is 50,000 tokens. Completeness and consistency run

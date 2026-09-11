@@ -4,24 +4,24 @@
 # Model Configuration
 models:
   orchestrator:
-    name: "openai/gpt-5.6-luna"
+    name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
     description: "Default chat model for Climate Advisor conversations."
   agentic_flow:
-    name: "openai/gpt-5.6-sol"
+    name: "openai/gpt-5.6-terra"
     description: "Agentic flow model for high-context review and source selection workflows."
     reasoning_effort: "medium"
   funding_research:
-    name: "openai/gpt-5.6-sol"
+    name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
   funder_identity:
-    name: "openai/gpt-5.6-luna"
+    name: "openai/gpt-5.6-terra"
     reasoning_effort: "low"
   cnb_source_reader:
-    name: "openai/gpt-5.6-luna"
+    name: "openai/gpt-5.6-terra"
     reasoning_effort: "low"
   cnb_source_synthesizer:
-    name: "openai/gpt-5.6-sol"
+    name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
   cnb_chapter_drafter:
     name: "openai/gpt-5.6-terra"

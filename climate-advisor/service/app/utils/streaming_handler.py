@@ -7,6 +7,7 @@ import inspect
 import json
 import logging
 import time
+from contextlib import nullcontext, suppress
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
@@ -33,6 +34,11 @@ from app.utils.chat_workflow_context import CNB_WORKFLOW_TAG, ChatWorkflowContex
 from app.utils.concept_note_context import (
     clean_cnb_history,
     extract_concept_note_run_id,
+)
+from app.utils.conversation_observability import (
+    conversation_tool_artifact,
+    conversation_trace,
+    finish_conversation_trace,
 )
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
@@ -119,6 +125,10 @@ class StreamingHandler:
             experiment_name=self._mlflow_experiment_name(payload),
             tags=self._mlflow_tags(payload),
             params=self._mlflow_params(payload),
+        ), (
+            nullcontext()
+            if self.workflow_context.is_agentic
+            else conversation_trace(payload.content)
         ):
             log_json_artifact(
                 "request/message_payload.json",
@@ -683,20 +693,25 @@ class StreamingHandler:
             runner_input = self._enforce_chat_prompt_budget(agent, runner_input)
 
         workflow_metadata = self.workflow_context.telemetry()
-        # Every chat mode needs a root to retain explicit run/trace correlation.
-        with start_trace_span(
-            name=(
-                CNB_WORKFLOW_TAG
-                if self.workflow_context.concept_note_run_id
-                else self.workflow_context.trace_workflow_name
-            ),
-            span_type="CHAIN",
-            attributes={
-                "workflow": workflow_metadata["workflow"],
-                "workflow_name": workflow_metadata["workflow_name"],
-                "interaction": workflow_metadata["interaction"],
-            },
-        ):
+        # Ordinary CA already owns a root through persistence; scoped chats keep theirs.
+        trace_context = (
+            start_trace_span(
+                name=(
+                    CNB_WORKFLOW_TAG
+                    if self.workflow_context.concept_note_run_id
+                    else self.workflow_context.trace_workflow_name
+                ),
+                span_type="CHAIN",
+                attributes={
+                    "workflow": workflow_metadata["workflow"],
+                    "workflow_name": workflow_metadata["workflow_name"],
+                    "interaction": workflow_metadata["interaction"],
+                },
+            )
+            if self.workflow_context.is_agentic
+            else nullcontext()
+        )
+        with trace_context:
             trace_context_updated = self._update_mlflow_trace_context(payload)
             # Prefer the Agents SDK streamed runner and keep the legacy fallback path.
             try:
@@ -912,15 +927,16 @@ class StreamingHandler:
 
         arguments: Any = getattr(raw_item, "arguments", None)
         if isinstance(arguments, str):
-            try:
+            with suppress(json.JSONDecodeError):
                 arguments = json.loads(arguments)
-            except json.JSONDecodeError:
-                pass
 
         # Find or create invocation record
         existing = None
         for inv in self.tool_invocations:
-            if (call_id and inv.get("id") == call_id) or inv.get("name") == tool_name:
+            if (call_id and inv.get("id") == call_id) or (
+                inv.get("name") == tool_name
+                and (not call_id or self.workflow_context.is_agentic)
+            ):
                 existing = inv
                 break
 
@@ -973,9 +989,10 @@ class StreamingHandler:
         # Find invocation record
         invocation = None
         for inv in self.tool_invocations:
-            if (call_id and inv.get("id") == call_id) or inv.get(
-                "status"
-            ) == "executing":
+            if (call_id and inv.get("id") == call_id) or (
+                inv.get("status") == "executing"
+                and (not call_id or self.workflow_context.is_agentic)
+            ):
                 invocation = inv
                 break
 
@@ -1265,6 +1282,13 @@ class StreamingHandler:
         assistant_content = "".join(self.assistant_tokens)
         duration_ms = (time.perf_counter() - started_at) * 1000
         stream_status = status or ("ok" if ok else "error")
+        if not self.workflow_context.is_agentic:
+            finish_conversation_trace(
+                assistant_content,
+                status=stream_status,
+                history_saved=self.history_saved,
+                chunks=len(self.assistant_tokens),
+            )
         log_tags({"stream_status": stream_status})
         log_metrics(
             {
@@ -1277,10 +1301,13 @@ class StreamingHandler:
             }
         )
         log_text_artifact("chat/assistant_response.txt", assistant_content)
-        log_json_artifact(
-            "chat/tool_invocations.json",
-            {"tool_invocations": self.tool_invocations},
-        )
+        if self.workflow_context.is_agentic or self.tool_invocations:
+            log_json_artifact(
+                "chat/tool_invocations.json",
+                {"tool_invocations": self.tool_invocations}
+                if self.workflow_context.is_agentic
+                else conversation_tool_artifact(self.tool_invocations),
+            )
         log_json_artifact(
             "response/stream_summary.json",
             {

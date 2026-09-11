@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 from uuid import UUID
 
 import openai
-from agents import Agent, ModelSettings, OpenAIChatCompletionsModel
+from agents import Agent, FunctionTool, ModelSettings, OpenAIChatCompletionsModel
 from app.config import get_settings
 from app.config.settings import RoleModelConfig
 from app.persistence.concept_notes.context_bundle import (
@@ -35,6 +35,7 @@ from app.tools.stationary_energy_start_draft_tools import (
     build_stationary_energy_start_draft_tools,
 )
 from app.utils.agent_tracing import configure_agents_tracing
+from app.utils.conversation_observability import traced_conversation_tool
 from openai import AsyncOpenAI
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -401,6 +402,12 @@ class AgentService:
             tools.append(climate_vector_search)
 
         self.active_instructions = agent_instructions
+
+        if not self.stationary_energy_draft_run_id and not self._has_concept_note_context:
+            tools = [
+                traced_conversation_tool(tool) if isinstance(tool, FunctionTool) else tool
+                for tool in tools
+            ]
 
         # Build the Agents SDK object with the finalized instructions and tool list.
         agent = Agent(

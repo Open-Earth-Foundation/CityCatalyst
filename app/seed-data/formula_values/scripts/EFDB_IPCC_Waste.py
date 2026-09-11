@@ -64,9 +64,7 @@ if __name__ == "__main__":
     # =================================================================
     methodologies = [
             "methane-commitment-solid-waste-inboundary-methodology",
-            "first-order-of-decay-solid-waste-inboundary-methodology",
             "methane-commitment-solid-waste-outboundary-methodology",
-            "first-order-of-decay-solid-waste-outboundary-methodology",
             "biological-treatment-inboundary-methodology",
             "biological-treatment-outboundary-methodology",
             "incineration-waste-inboundary-methodology",

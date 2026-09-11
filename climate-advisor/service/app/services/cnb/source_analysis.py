@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from itertools import pairwise
 from typing import Any, TypeVar, cast
 
-from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
+from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, RunConfig, Runner
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from openai import AsyncOpenAI
 from pydantic import BaseModel
@@ -39,6 +39,7 @@ from app.utils.concept_note_context import (
     readable_source_heading,
 )
 from app.utils.prompt_budget import count_prompt_tokens
+from app.utils.cnb_observability import protect_cnb_client
 
 logger = logging.getLogger(__name__)
 
@@ -370,7 +371,9 @@ def _resolve_analysis_client(
 ) -> tuple[AsyncOpenAI, bool]:
     """Return an injected client or create one that the caller must close."""
     if client is not None:
-        return client, False
+        return (
+            protect_cnb_client(client) if isinstance(client, AsyncOpenAI) else client
+        ), False
     try:
         options = build_openrouter_client_options(
             settings,
@@ -380,7 +383,7 @@ def _resolve_analysis_client(
         )
     except ValueError as exc:
         raise SourceAnalysisError("source_analysis_unavailable", str(exc)) from exc
-    return AsyncOpenAI(**options.kwargs), True
+    return protect_cnb_client(AsyncOpenAI(**options.kwargs)), True
 
 
 async def _read_partition(
@@ -492,12 +495,26 @@ async def _run_agent(
         tools=[],
     )
     try:
-        run_result = await runner.run(agent, input_text)
+        try:
+            run_result = await runner.run(
+                agent,
+                input_text,
+                run_config=RunConfig(
+                    tracing_disabled=True, trace_include_sensitive_data=False
+                ),
+            )
+        except TypeError as exc:
+            # Test and adapter runners may deliberately expose only the stable
+            # two-argument Runner surface. They remain responsible for their
+            # own tracing policy when they do not accept a RunConfig.
+            if "unexpected keyword argument 'run_config'" not in str(exc):
+                raise
+            run_result = await runner.run(agent, input_text)
         return output_type.model_validate(run_result.final_output)
     except SourceAnalysisError:
         raise
     except Exception as exc:
-        logger.exception("Concept Note source agent failed: %s", name)
+        logger.warning("Concept Note source agent failed: %s", name)
         raise SourceAnalysisError("source_analysis_failed", f"{name} failed") from exc
 
 

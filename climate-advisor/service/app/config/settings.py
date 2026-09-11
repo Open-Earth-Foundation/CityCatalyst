@@ -132,11 +132,13 @@ class ResearchModelConfig(BaseModel):
 class ModelsConfig(BaseModel):
     orchestrator: RoleModelConfig
     agentic_flow: Optional[RoleModelConfig] = None
+    cnb_chat: Optional[RoleModelConfig] = None
     funding_research: ResearchModelConfig
     funder_identity: ResearchModelConfig
     cnb_source_reader: ResearchModelConfig
     cnb_source_synthesizer: ResearchModelConfig
     cnb_chapter_drafter: ResearchModelConfig | None = None
+    cnb_chat_edit_planner: ResearchModelConfig | None = None
     cnb_chapter_validator: ResearchModelConfig
 
 
@@ -162,6 +164,13 @@ class CnbSourcePromptBudgetConfig(BaseModel):
     max_question_chars: int = Field(default=2000, ge=1, le=10000)
 
 
+class CnbEditPromptBudgetConfig(BaseModel):
+    """Limits for concurrent, chapter-bounded Concept Note edit planning."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=2000)
+    max_concurrency: int = Field(default=5, ge=1, le=5)
+
+
 class CnbValidationPromptBudgetConfig(BaseModel):
     """Full-prompt limit for non-truncating chapter validation batches."""
 
@@ -175,6 +184,9 @@ class PromptBudgetConfig(BaseModel):
     )
     cnb_sources: CnbSourcePromptBudgetConfig = Field(
         default_factory=CnbSourcePromptBudgetConfig,
+    )
+    cnb_edits: CnbEditPromptBudgetConfig = Field(
+        default_factory=CnbEditPromptBudgetConfig
     )
     cnb_validation: CnbValidationPromptBudgetConfig = Field(
         default_factory=CnbValidationPromptBudgetConfig,
@@ -201,6 +213,8 @@ class PromptsConfig(BaseModel):
     cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
     cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
+    cnb_chat_edit_planner: str = "prompts/cnb/chat_edit_planner.md"
+    cnb_chat_edit_review: str = "prompts/cnb/chat_edit_review.md"
     cnb_chapter_validation_completeness: str = (
         "prompts/cnb/chapter_validation_completeness.md"
     )

@@ -1454,6 +1454,12 @@ How it works:
   API. The guided review and focused chapter finding render the trusted source
   label, location, and a bounded source excerpt without allowing the model to
   supply source identity metadata.
+- Chat edit planning and its semantic review use one-based selected-source
+  indices encoded as strings in `source_refs`. Only allowlisted source evidence
+  reaches the models; backend upload IDs and hashes remain in verified snapshots.
+  Duplicate filenames stay distinct, and refinement rebinds snapshots to the
+  current source order. Explicit edit requests invoke the available proposal
+  tool; the user must accept the proposal before the document changes.
 - Both validation passes use an explicit `document` and generated `output`
   contract. Completeness compares the output with a code-selected
   `document.validation_profile` and evidence material; consistency compares it
@@ -2398,11 +2404,19 @@ prompts:
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 ```
 
-The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-terra`) with explicit
+The main CNB chat uses `models.cnb_chat` (`openai/gpt-5.6-sol`) with explicit
 `reasoning_effort: medium` for its Chat Completions function-tool loop. Funding
 research and similar-project selection use Terra with medium reasoning on the
 existing Responses API path; canonical-funder identity matching uses Terra with
 low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
+
+Workspace responses combine current chapter text, exact confirmed revisions,
+structured gaps and their latest resolutions, and validation freshness. An accepted
+chat edit makes a validation of the previous document stale. Duplication preserves
+confirmation only when it refers to the copied latest revision, copies gap
+resolution history with new IDs, and omits stored validation results. CNB migration
+`20260909_120000` joins the validation and review migration heads without rewriting
+either parent migration.
 
 The validation prompt budget is 50,000 tokens. Completeness and consistency run
 with temperature zero and strict structured contracts; only concise findings

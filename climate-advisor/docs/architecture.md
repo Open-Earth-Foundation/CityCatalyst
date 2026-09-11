@@ -14,6 +14,12 @@ All modes share thread persistence, token handling, SSE streaming, and the
 Agents SDK runtime. Workflow-specific context and tools are resolved before the
 single shared stream starts.
 
+Concept Note chat exposes a proposal-only edit tool backed by a planner,
+service, repository and authorized API. Explicit web review applies edits;
+internal application records preserve safe retries and the audit trail.
+See the [CNB revision boundary](../../docs/ConceptNoteBuilderArchitecture.md#implemented-chat-revision-boundary-cc-732)
+for validation, inline review and persistence details.
+
 ## Current Architecture (As-Implemented)
 
 ### System Architecture

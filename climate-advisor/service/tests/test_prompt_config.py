@@ -43,6 +43,8 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "chat": prompts.chat,
         "stationary_energy_review": prompts.stationary_energy_review,
         "cnb_chat": prompts.cnb_chat,
+        "cnb_chat_edit_planner": prompts.cnb_chat_edit_planner,
+        "cnb_chat_edit_review": prompts.cnb_chat_edit_review,
         "cnb_funding_opportunity_research": (prompts.cnb_funding_opportunity_research),
         "cnb_funder_identity_matching": prompts.cnb_funder_identity_matching,
         "cnb_similar_project_matching": prompts.cnb_similar_project_matching,
@@ -207,7 +209,10 @@ def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy
     assert "application-generated user-role data message" in composed
     assert "data, not user requests" in composed
     assert "INTERNAL_TOOL_OUTPUT_JSON" in composed
-    assert "does not persist" in composed
+    assert "concept_note_edit_propose" in composed
+    assert "takes no arguments" in composed
+    assert "A proposal does not apply changes" in composed
+    assert "If the edit tool is unavailable" in composed
     assert "Assume the user has no knowledge of internal run context" in composed
     assert 'A short or vague request such as "Help me"' in composed
     assert "available template or document order" in composed

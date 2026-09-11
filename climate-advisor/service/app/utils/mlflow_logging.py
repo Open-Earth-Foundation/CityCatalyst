@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import re
@@ -67,6 +68,23 @@ class _RunContext:
 _RUN_CONTEXT: ContextVar[_RunContext | None] = ContextVar(
     "mlflow_run_context", default=None
 )
+_CATALOG_ID_KEYS = {"catalogid", "catalog_id", "catalogids", "catalog_ids"}
+_CAPABILITY_ID_KEYS = {
+    "capabilityid",
+    "capability_id",
+    "capabilityids",
+    "capability_ids",
+}
+
+
+@dataclass
+class _ToolObservation:
+    """Request-local pending tool span and redacted record."""
+
+    call_id: str
+    started_at: float
+    span: Any | None
+    record: dict[str, Any]
 
 
 def climate_advisor_experiment_name() -> str:
@@ -348,6 +366,294 @@ def set_span_outputs(span: object | None, outputs: object) -> None:
     if span is None:
         return
     _set_span_value(span, "set_outputs", outputs, name="active")
+
+
+def current_run_id() -> str | None:
+    """Return this task's explicit MLflow run id when a run is open."""
+    context = _current_run()
+    return None if context is None else context.run_id
+
+
+def project_tool_input(arguments: object) -> dict[str, Any]:
+    """Return a safe tool-input projection with keys only, never values."""
+    if isinstance(arguments, Mapping):
+        keys = [str(key) for key in arguments]
+    elif arguments is None:
+        keys = []
+    else:
+        keys = ["value"]
+    normalized = {key.lower().replace("-", "_") for key in keys}
+    return {
+        "argument_keys": keys,
+        "argument_count": len(keys),
+        "has_catalog_id": bool(normalized & _CATALOG_ID_KEYS),
+        "has_capability_id": bool(normalized & _CAPABILITY_ID_KEYS),
+    }
+
+
+def project_tool_output(output: object) -> dict[str, Any]:
+    """Return a safe tool-output projection without bodies or identifiers."""
+    parsed: object = output
+    serialized = ""
+    if isinstance(output, str):
+        serialized = output
+        try:
+            parsed = json.loads(output)
+        except json.JSONDecodeError:
+            parsed = output
+    elif output is not None:
+        try:
+            serialized = json.dumps(output, ensure_ascii=False, default=str)
+        except TypeError:
+            serialized = str(output)
+
+    success = None
+    error_code = None
+    action = None
+    entry_count = None
+    if isinstance(parsed, Mapping):
+        if "success" in parsed:
+            success = bool(parsed.get("success"))
+        raw_error = parsed.get("error_code")
+        error_code = raw_error if isinstance(raw_error, str) else None
+        raw_action = parsed.get("action")
+        action = raw_action if isinstance(raw_action, str) else None
+        data = parsed.get("data")
+        if isinstance(data, Mapping) and isinstance(data.get("entries"), list):
+            entry_count = len(data["entries"])
+
+    if output is None:
+        result_kind = "none"
+    elif isinstance(parsed, Mapping | Sequence) and not isinstance(parsed, str | bytes):
+        result_kind = "object"
+    else:
+        result_kind = "string"
+
+    return {
+        "success": success,
+        "error_code": error_code,
+        "action": action,
+        "entry_count": entry_count,
+        "result_kind": result_kind,
+        "byte_size": len(serialized.encode("utf-8")),
+    }
+
+
+def start_tool_observation(
+    pending: dict[str, Any],
+    *,
+    call_id: str | None,
+    tool_name: str,
+    arguments: object = None,
+    request_id: str,
+    completed_count: int = 0,
+) -> dict[str, Any]:
+    """Start a request-local TOOL observation as a sibling of other open tools."""
+    observation_id = call_id or f"tool-{completed_count + len(pending) + 1}"
+    existing = pending.get(observation_id)
+    if existing is not None:
+        return existing.record
+
+    # Keep only key names in the span/input record; values stay off MLflow.
+    input_projection = project_tool_input(arguments)
+    record = {
+        "call_id": observation_id,
+        "tool_name": tool_name,
+        "sequence": completed_count + len(pending) + 1,
+        "state": "started",
+        "outcome": "incomplete",
+        "duration_ms": None,
+        "request_id": request_id,
+        "run_id": current_run_id(),
+        "input": input_projection,
+        "output": None,
+    }
+    span = _start_sibling_tool_span(
+        name=tool_name,
+        inputs=input_projection,
+        attributes={
+            "call_id": observation_id,
+            "sequence": record["sequence"],
+            "request_id": request_id,
+            "run_id": record["run_id"],
+        },
+    )
+    pending[observation_id] = _ToolObservation(
+        call_id=observation_id,
+        started_at=time.perf_counter(),
+        span=span,
+        record=record,
+    )
+    return record
+
+
+def finish_tool_observation(
+    pending: dict[str, Any],
+    completed: list[dict[str, Any]],
+    *,
+    call_id: str | None,
+    output: object = None,
+    outcome: str | None = None,
+) -> dict[str, Any]:
+    """Close one pending TOOL observation and append its redacted record."""
+    observation_id = call_id or next(iter(pending), None)
+    observation = pending.pop(observation_id, None) if observation_id else None
+    output_projection = project_tool_output(output)
+    state, resolved_outcome = _tool_observation_outcome(output_projection, outcome)
+    if observation is None:
+        record = {
+            "call_id": observation_id,
+            "tool_name": "unknown_tool",
+            "sequence": len(completed) + 1,
+            "state": state,
+            "outcome": resolved_outcome,
+            "duration_ms": 0.0,
+            "request_id": "",
+            "run_id": current_run_id(),
+            "input": project_tool_input(None),
+            "output": output_projection,
+        }
+        completed.append(record)
+    else:
+        record = observation.record
+        record["state"] = state
+        record["outcome"] = resolved_outcome
+        record["duration_ms"] = (time.perf_counter() - observation.started_at) * 1000
+        record["output"] = output_projection
+        _end_tool_span(
+            observation.span,
+            output_projection,
+            status="OK" if resolved_outcome == "success" else "ERROR",
+        )
+        completed.append(record)
+    # Keep summary artifact in call order even when tools finish out of order.
+    completed.sort(key=lambda item: item.get("sequence", 0))
+    return record
+
+
+def close_open_tool_observations(
+    pending: dict[str, Any],
+    completed: list[dict[str, Any]],
+    *,
+    outcome: str = "incomplete",
+) -> None:
+    """Close every still-open TOOL observation for this request."""
+    for observation_id in list(pending):
+        finish_tool_observation(
+            pending,
+            completed,
+            call_id=observation_id,
+            outcome=outcome,
+        )
+
+
+def inspect_mlflow_configuration() -> dict[str, Any]:
+    """Return non-sensitive MLflow presence, configuration, and connectivity."""
+    tracking_uri = os.getenv(
+        "MLFLOW_TRACKING_URI", DEFAULT_MLFLOW_TRACKING_URI
+    ).strip() or DEFAULT_MLFLOW_TRACKING_URI
+    experiment_name = climate_advisor_experiment_name()
+    report: dict[str, Any] = {
+        "enabled": is_mlflow_enabled(),
+        "mlflow_installed": mlflow is not None,
+        "tracking_uri": tracking_uri,
+        "tracking_uri_is_default": tracking_uri == DEFAULT_MLFLOW_TRACKING_URI,
+        "username_present": bool(os.getenv("MLFLOW_TRACKING_USERNAME", "").strip()),
+        "password_present": bool(os.getenv("MLFLOW_TRACKING_PASSWORD", "").strip()),
+        "environment": mlflow_environment_tag(),
+        "experiment_name": experiment_name,
+        "experiment_resolved": False,
+        "connection_ok": False,
+    }
+    if not report["enabled"] or mlflow is None:
+        return report
+
+    # Probe connectivity and experiment resolution without creating a run.
+    try:
+        mlflow.set_tracking_uri(tracking_uri)
+        client = mlflow.tracking.MlflowClient()
+        experiment = client.get_experiment_by_name(experiment_name)
+        report["connection_ok"] = True
+        report["experiment_resolved"] = experiment is not None
+    except Exception as error:
+        logger.warning(
+            "MLflow preflight connection failed type=%s",
+            type(error).__name__,
+        )
+    return report
+
+
+def _tool_observation_outcome(
+    output_projection: Mapping[str, Any],
+    outcome: str | None,
+) -> tuple[str, str]:
+    """Map an optional explicit outcome and tool envelope into state fields."""
+    if outcome == "cancelled":
+        return "cancelled", "cancelled"
+    if outcome == "incomplete":
+        return "cancelled", "incomplete"
+    if (
+        outcome == "error"
+        or output_projection.get("success") is False
+        or output_projection.get("error_code")
+    ):
+        return "failed", "error"
+    return "succeeded", "success"
+
+
+def _start_sibling_tool_span(
+    *,
+    name: str,
+    inputs: Mapping[str, Any],
+    attributes: Mapping[str, object],
+) -> Any | None:
+    """Start a TOOL span under the current CHAIN without making it current."""
+    if not _INITIALIZED or mlflow is None:
+        return None
+    span_factory = getattr(mlflow, "start_span_no_context", None)
+    if not callable(span_factory):
+        return None
+
+    parent = None
+    parent_getter = getattr(mlflow, "get_current_active_span", None)
+    if callable(parent_getter):
+        try:
+            parent = parent_getter()
+        except Exception as error:
+            logger.warning("MLflow active span lookup failed error=%s", error)
+            parent = None
+
+    try:
+        return span_factory(
+            name=name,
+            span_type="TOOL",
+            parent_span=parent,
+            inputs=_json_safe(inputs),
+            attributes=_string_map(attributes),
+        )
+    except Exception as error:
+        logger.warning("MLflow tool span start failed name=%s error=%s", name, error)
+        return None
+
+
+def _end_tool_span(span: object | None, outputs: object, *, status: str) -> None:
+    """End a best-effort TOOL span without raising into the chat stream."""
+    if span is None:
+        return
+    end = getattr(span, "end", None)
+    if not callable(end):
+        _set_span_value(span, "set_outputs", outputs, name="tool")
+        return
+    try:
+        end(outputs=_json_safe(outputs), status=status)
+    except TypeError:
+        _set_span_value(span, "set_outputs", outputs, name="tool")
+        try:
+            end()
+        except Exception as error:
+            logger.warning("MLflow tool span close failed error=%s", error)
+    except Exception as error:
+        logger.warning("MLflow tool span close failed error=%s", error)
 
 
 def log_tags(tags: Mapping[str, object]) -> None:

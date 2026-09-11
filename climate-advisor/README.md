@@ -301,6 +301,34 @@ Content-Type: application/json
 If `thread_id` is omitted, Climate Advisor creates a new thread. If `thread_id`
 is supplied, it must already exist and belong to the requesting user.
 
+When the request or thread supplies a CityCatalyst bearer, Climate Advisor
+validates it through Core's `/api/v1/internal/ca/auth/identity` endpoint before
+persisting the message or constructing the catalog-enabled agent. Core's
+canonical user ID must equal body `user_id`; a subject mismatch, or a bearer
+supplied in the request that Core rejects, receives the same HTTP 401
+authentication failure. When Core is unavailable or misconfigured, or when the
+rejected bearer came from stored thread context, the chat request still
+succeeds and only the NativeInputCatalog tools are disabled. In that degraded
+case a request-supplied bearer is **not** persisted into thread context, so an
+unvalidated token cannot become a thread-stored token on later requests.
+Requests without a CityCatalyst bearer can continue, but NativeInputCatalog
+tools remain disabled.
+
+CA-issued tokens expire after one hour, and Climate Advisor does not refresh a
+thread-stored bearer for the catalog path. Once the stored token expires, the
+NativeInputCatalog tools stay unregistered for the thread until the client
+sends a new bearer in the request that Core identity validation accepts; plain
+chat is unaffected. Refreshing from the thread record's `user_id` is
+deliberately not done, because `POST /v1/threads` is unauthenticated and
+accepts an arbitrary `user_id`, so that identity is not server-validated.
+
+This boundary closes the claimed-identity escalation for request-supplied
+bearers and for every NativeInputCatalog path. It is not a general Climate
+Advisor authentication redesign: `POST /v1/threads` remains unauthenticated,
+and the legacy non-catalog inventory tools may still refresh a token from the
+request body `user_id`. That residual is outside CC-737 scope and is tracked
+separately.
+
 **Server Response (SSE Stream):**
 
 ```text
@@ -1093,6 +1121,52 @@ These tools:
 - answer inventory/city count questions as "you have access to" summaries using
   totals plus `by_project`
 
+### NativeInputCatalog Runtime Tools
+
+When an authenticated CityCatalyst catalog context is available, Climate
+Advisor registers two fixed tool definitions for the agent:
+`native_input_discover` and `native_input_read`. Discovery calls Core on every
+invocation, so a newly registered authorized entry can appear without
+recreating the agent. Every selected read also goes back through Core, which
+independently revalidates the caller scope, catalog lifecycle, capability
+membership, module readiness, and bounded execution contract.
+
+The catalog tools use only the already validated bearer. A 401 from discovery
+or read is returned through the existing safe tool failure path without calling
+the user-token refresh endpoint or deriving a refresh identity from request
+JSON. This restriction is catalog-specific: the existing non-catalog inventory
+tools continue to refresh and persist expired tokens as documented above.
+
+Because the catalog path never refreshes, an expired thread-stored bearer
+leaves both tools unregistered. Recovery requires a new request-supplied bearer
+that passes Core identity validation; there is no mid-thread refresh from a
+stored or claimed `user_id`.
+
+The v1 model-facing read arguments are limited to camelCase `catalogId`,
+`capabilityId`, and optional `language`; `language` is accepted only for the
+bounded HIAP inventory-context capability. Climate Advisor does not accept an
+arbitrary input object, storage path, credential, signed URL, or raw source
+pointer. CNB producer registration and a bounded CNB capability remain outside
+this integration.
+
+Run the focused runtime catalog regression suite from `climate-advisor/`:
+
+```bash
+uv run --directory service pytest \
+  tests/test_native_input_catalog_service.py \
+  tests/test_native_input_catalog_tools.py \
+  tests/test_agent_service.py \
+  tests/test_streaming_handler.py \
+  tests/test_citycatalyst_client_auth_contract.py -q
+```
+
+The environment-gated dynamic running-Core case additionally requires a
+loopback `CC_BASE_URL`, an isolated empty local fixture scope, and explicit
+`CA_AUTH_CONTRACT_ALLOW_CATALOG_MUTATION=1` opt-in. It refuses remote hosts or
+pre-existing entries. It fails closed without withdrawal when registration
+reports `created: false`; after a confirmed creation, it withdraws only the
+returned ID or a single entry recovered by that execution's unique marker.
+
 ### Stationary Energy Draft Review Boundary
 
 The Stationary Energy review tool pack uses the same scoped CityCatalyst token
@@ -1314,6 +1388,40 @@ Before enabling MLflow in an environment:
    Kubernetes deployment.
 4. If the MLflow server later requires authentication, provide MLflow auth
    variables through Kubernetes secrets rather than configmaps.
+
+Verify a local checkout without printing secrets:
+
+```bash
+uv run --directory service python -m scripts.mlflow_preflight
+```
+
+The command reports presence/absence for credentials, the configured tracking
+URI, environment tag, and whether the `Clima` experiment resolves. It does not
+print usernames, passwords, or create an MLflow run. Use a distinct
+`MLFLOW_ENVIRONMENT` tag for local evidence, for example `local-david`.
+
+Each agent tool call emits a sibling `TOOL` span under the request `CHAIN`
+span, plus a redacted summary artifact at `chat/tool_invocations.json`. The
+artifact is a request summary, not the orchestration proof. The per-tool
+record includes `call_id`, `tool_name`, `sequence`, `state`, `outcome`,
+`duration_ms`, `request_id`, `run_id`, argument key names, and output
+metadata such as `success`, `error_code`, `action`, `entry_count`, and
+`byte_size`. It never includes catalog/capability ID values, user or
+inventory scope, bearer tokens, storage pointers, raw source content, full
+tool arguments, full tool results, or the assistant response.
+
+In the MLflow UI, open experiment `Clima`, filter by `environment` and
+`request_id`, open the request run, then inspect the trace waterfall for
+`native_input_discover` before `native_input_read`.
+
+The MLflow MCP client is an operator tool, not an application runtime
+dependency. Do not add it to `pyproject.toml`. A local MCP session may use:
+
+```bash
+uv run --with 'mlflow[mcp]==3.12.0' mlflow mcp
+```
+
+Keep Climate Advisor pinned by the existing `pyproject.toml` and lockfile.
 
 ### LangSmith Integration
 

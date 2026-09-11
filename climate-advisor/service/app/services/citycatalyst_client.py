@@ -618,15 +618,20 @@ class CityCatalystClient:
         json_data: Dict[str, Any],
         token: Optional[str] = None,
         request_timeout: Optional[float] = None,
+        refresh_user_id: Optional[str] = None,
+        allow_token_refresh: bool = True,
+        safe_selection_error: bool = False,
     ) -> Dict[str, Any]:
-        """POST to an internal CityCatalyst capability endpoint with auth refresh."""
+        """POST to an internal capability, optionally refreshing legacy callers."""
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 
         url = f"{self.base_url.rstrip('/')}{path}"
         client = await self._get_client()
         request_token = token
-        user_id = self._refresh_user_id(json_data)
+        refresh_identity = None
+        if allow_token_refresh:
+            refresh_identity = refresh_user_id or self._refresh_user_id(json_data)
         self.last_refreshed_token = None
 
         response = await client.post(
@@ -638,10 +643,15 @@ class CityCatalystClient:
         )
 
         # Retry once on 401 with a fresh user token, matching the public POST path.
-        if response.status_code == 401 and request_token and user_id:
+        if (
+            allow_token_refresh
+            and response.status_code == 401
+            and request_token
+            and refresh_identity
+        ):
             logger.debug("Internal capability got 401, attempting token refresh")
             try:
-                request_token, _ = await self.refresh_token(user_id)
+                request_token, _ = await self.refresh_token(refresh_identity)
                 self.last_refreshed_token = request_token
                 response = await client.post(
                     url,
@@ -658,6 +668,11 @@ class CityCatalystClient:
                 ) from e
 
         if not response.is_success:
+            if safe_selection_error and response.status_code == 404:
+                raise CityCatalystClientError(
+                    "Requested capability is unavailable.",
+                    status_code=404,
+                )
             error_text = response.text[:500] if response.text else "Unknown error"
             raise CityCatalystClientError(
                 f"CC capability request failed: {response.status_code} - {error_text}",
@@ -673,11 +688,58 @@ class CityCatalystClient:
 
     def _refresh_user_id(self, payload: Dict[str, Any]) -> Optional[str]:
         """Return the user id available for internal capability token refresh."""
-        user_id = payload.get("user_id")
+        user_id = payload.get("userId") or payload.get("user_id")
         if user_id is None:
             return None
         user_id_text = str(user_id).strip()
         return user_id_text or None
+
+    async def discover_native_inputs(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str],
+        user_id: str,
+        thread_id: str,
+    ) -> Dict[str, Any]:
+        """Discover safe NativeInputCatalog entries for the active CA request.
+
+        The Core endpoint performs filtering and lightweight readiness checks;
+        this method does not load or execute source capabilities.
+        """
+        del user_id, thread_id
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/native-inputs/discover",
+            json_data=request_payload,
+            token=token,
+            request_timeout=self.timeout,
+            allow_token_refresh=False,
+        )
+
+    async def read_native_input(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str],
+        user_id: str,
+        thread_id: str,
+    ) -> Dict[str, Any]:
+        """Read one selected bounded NativeInputCatalog capability through Core."""
+        del user_id, thread_id
+        try:
+            return await self.post_internal_capability(
+                "/api/v1/internal/ca/capabilities/native-inputs/read",
+                json_data=request_payload,
+                token=token,
+                request_timeout=self.timeout,
+                allow_token_refresh=False,
+                safe_selection_error=True,
+            )
+        except httpx.HTTPError as exc:
+            raise CityCatalystClientError(
+                "Selected capability request is unavailable.",
+                status_code=503,
+            ) from exc
 
     async def get_stationary_energy_allowed_capabilities(
         self,

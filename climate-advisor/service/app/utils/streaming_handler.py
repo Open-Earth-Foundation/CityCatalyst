@@ -16,6 +16,7 @@ from app.middleware import get_request_id
 from app.models.requests import MessageCreateRequest
 from app.persistence.concept_notes.context_bundle import load_agent_context
 from app.services.agent_service import AgentService
+from app.services.native_input_catalog_service import ActiveRequestContext
 from app.services.stationary_energy.stationary_energy_chat_context import (
     build_minimal_stationary_energy_context_payload,
     build_stationary_energy_context_payload,
@@ -37,11 +38,14 @@ from app.utils.concept_note_context import (
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
+    close_open_tool_observations,
+    finish_tool_observation,
     log_json_artifact,
     log_metrics,
     log_tags,
     log_text_artifact,
     start_run,
+    start_tool_observation,
     start_trace_span,
     update_current_trace_context,
 )
@@ -69,6 +73,7 @@ class StreamingHandler:
         user_id: str,
         session_factory: Optional[async_sessionmaker[AsyncSession]],
         cc_access_token: Optional[str] = None,
+        catalog_user_id: Optional[str] = None,
         inventory_id: Optional[str] = None,
         request_context: Optional[Any] = None,
         request_options: Optional[dict] = None,
@@ -78,6 +83,7 @@ class StreamingHandler:
         self.user_id = user_id
         self.session_factory = session_factory
         self.cc_access_token = cc_access_token
+        self.catalog_user_id = catalog_user_id
         self.inventory_id = inventory_id
         self.request_context = request_context
         self.request_options = request_options
@@ -89,6 +95,8 @@ class StreamingHandler:
         # Response state
         self.assistant_tokens: List[str] = []
         self.tool_invocations: List[dict] = []
+        self._pending_tool_observations: dict[str, Any] = {}
+        self._tool_observation_records: List[dict] = []
         self.token_index = 0
         self.history_saved = False
         self.streaming_error = False
@@ -183,6 +191,7 @@ class StreamingHandler:
                     stationary_energy_surface = True
 
             # Create agent service
+            native_input_catalog_context = self._native_input_catalog_request(payload)
             self.agent_service = AgentService(
                 cc_access_token=self.cc_access_token,
                 cc_thread_id=self.thread_id,
@@ -193,6 +202,7 @@ class StreamingHandler:
                 stationary_energy_draft_run_id=draft_run_id,
                 stationary_energy_surface=stationary_energy_surface,
                 concept_note_run_id=concept_note_run_id,
+                native_input_catalog_context=native_input_catalog_context,
             )
 
             # Get model override from options
@@ -937,6 +947,19 @@ class StreamingHandler:
             invocation["arguments"] = invocation.get("arguments") or arguments
             invocation["status"] = "executing"
 
+        # Best-effort MLflow evidence must not change the SSE tool_result contract.
+        try:
+            start_tool_observation(
+                self._pending_tool_observations,
+                call_id=str(call_id) if call_id else None,
+                tool_name=str(tool_name),
+                arguments=arguments,
+                request_id=self._request_id(),
+                completed_count=len(self._tool_observation_records),
+            )
+        except Exception:
+            logger.warning("MLflow tool observation start failed tool=%s", tool_name)
+
         yield format_sse(
             {
                 "name": invocation.get("name", "unknown_tool"),
@@ -991,6 +1014,17 @@ class StreamingHandler:
         invocation["result"] = str(output_value) if output_value is not None else ""
         if parsed_output is not None:
             invocation["result_json"] = parsed_output
+
+        # Close the request-local TOOL observation after the model-facing result is stored.
+        try:
+            finish_tool_observation(
+                self._pending_tool_observations,
+                self._tool_observation_records,
+                call_id=str(call_id) if call_id else None,
+                output=output_value,
+            )
+        except Exception:
+            logger.warning("MLflow tool observation finish failed call_id=%s", call_id)
 
         # Handle token refresh and errors
         if parsed_output is not None:
@@ -1239,6 +1273,41 @@ class StreamingHandler:
             ),
         )
 
+    def _native_input_catalog_request(
+        self,
+        payload: MessageCreateRequest,
+    ) -> ActiveRequestContext | None:
+        """Resolve catalog scope only when the current request has a Core credential."""
+        if not self.cc_access_token or not self.catalog_user_id:
+            return None
+
+        sources = (
+            payload.context,
+            payload.options,
+            self.request_context,
+            self.request_options,
+        )
+
+        def first_value(field: str) -> Optional[str]:
+            for source in sources:
+                if not isinstance(source, dict):
+                    continue
+                value = source.get(field)
+                if isinstance(value, str) and value.strip():
+                    return value.strip()
+            return None
+
+        return ActiveRequestContext(
+            user_id=self.catalog_user_id,
+            thread_id=self.thread_identifier,
+            organization_id=first_value("organization_id"),
+            project_id=first_value("project_id"),
+            city_id=first_value("city_id"),
+            inventory_id=payload.inventory_id or self.inventory_id or first_value(
+                "inventory_id"
+            ),
+        )
+
     @staticmethod
     def _normalize_workflow_run_id(value: object, label: str) -> str | None:
         """Return a canonical UUID string, ignoring malformed workflow IDs."""
@@ -1277,9 +1346,21 @@ class StreamingHandler:
             }
         )
         log_text_artifact("chat/assistant_response.txt", assistant_content)
+        try:
+            close_open_tool_observations(
+                self._pending_tool_observations,
+                self._tool_observation_records,
+                outcome=(
+                    "cancelled"
+                    if stream_status == "cancelled"
+                    else "error" if stream_status == "error" else "incomplete"
+                ),
+            )
+        except Exception:
+            logger.warning("MLflow tool observation close failed status=%s", stream_status)
         log_json_artifact(
             "chat/tool_invocations.json",
-            {"tool_invocations": self.tool_invocations},
+            {"tool_invocations": self._tool_observation_records},
         )
         log_json_artifact(
             "response/stream_summary.json",

@@ -23,11 +23,17 @@ from app.persistence.concept_notes.context_bundle import (
     load_agent_context,
 )
 from app.services.openrouter_client import build_openrouter_client_options
+from app.services.citycatalyst_client import CityCatalystClient
+from app.services.native_input_catalog_service import (
+    ActiveRequestContext,
+    NativeInputCatalogService,
+)
 from app.tools.cc_inventory_tool import CCInventoryTool
 from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from app.tools.climate_vector_sync import climate_vector_search
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
 from app.tools.inventory_context_tools import build_inventory_capability_tools
+from app.tools.native_input_catalog_tools import build_native_input_catalog_tools
 from app.tools.stationary_energy_review_tools import (
     build_stationary_energy_review_tools,
 )
@@ -59,6 +65,8 @@ class AgentService:
         stationary_energy_draft_run_id: Optional[Union[str, UUID]] = None,
         stationary_energy_surface: bool = False,
         concept_note_run_id: Optional[Union[str, UUID]] = None,
+        native_input_catalog_service: Optional[NativeInputCatalogService] = None,
+        native_input_catalog_context: Optional[ActiveRequestContext] = None,
     ) -> None:
         """Initialize the agent service with settings and OpenRouter client.
 
@@ -68,6 +76,10 @@ class AgentService:
             cc_user_id: User ID (for token refresh and inventory queries)
             inventory_id: Active inventory ID, used by pre-draft Stationary Energy tools
             city_id: Active city ID, used by pre-draft Stationary Energy tools
+            native_input_catalog_service: Optional request-scoped Core coordinator
+                used by runtime NativeInputCatalog tools
+            native_input_catalog_context: Authenticated active context for catalog
+                tools; never supplied by the model
         """
         self.settings = get_settings()
         configure_agents_tracing(self.settings)
@@ -92,6 +104,18 @@ class AgentService:
         )
         self._inventory_tool: Optional[CCInventoryTool] = None
         self._token_ref: Dict[str, Optional[str]] = {"value": cc_access_token}
+        self.native_input_catalog_context = native_input_catalog_context
+        self._native_input_catalog_client: Optional[CityCatalystClient] = None
+        self.native_input_catalog_service = native_input_catalog_service
+        if (
+            self.native_input_catalog_service is None
+            and self.native_input_catalog_context is not None
+            and self._token_ref.get("value")
+        ):
+            self._native_input_catalog_client = CityCatalystClient()
+            self.native_input_catalog_service = NativeInputCatalogService(
+                core_client=self._native_input_catalog_client
+            )
         self.active_instructions: Optional[str] = None
 
         # Initialize the chat client once and expose it to the Agents SDK.
@@ -232,6 +256,19 @@ class AgentService:
             token_ref=self._token_ref,
         )
 
+    def _build_native_input_catalog_tools(self) -> Sequence[object]:
+        """Create stable catalog tools from authenticated context and Core credential."""
+        service = self.native_input_catalog_service
+        context = self.native_input_catalog_context
+        if service is None or context is None or not self._token_ref.get("value"):
+            return []
+
+        return build_native_input_catalog_tools(
+            service=service,
+            context=context,
+            token_ref=self._token_ref,
+        )
+
     async def create_agent(
         self,
         *,
@@ -282,6 +319,9 @@ class AgentService:
                 or self.settings.llm.prompts.compose_prompt("chat")
             )
         tools = []
+
+        # Stable catalog tools defer current discovery and Core authorization to runtime.
+        tools.extend(self._build_native_input_catalog_tools())
 
         # General chat can query CityCatalyst inventory data directly. Active
         # Stationary Energy review chat uses the persisted draft snapshot and
@@ -437,6 +477,8 @@ class AgentService:
             logger.info("AgentService client closed")
         if self._inventory_tool:
             await self._inventory_tool.close()
+        if self._native_input_catalog_client:
+            await self._native_input_catalog_client.close()
 
     def update_cc_token(self, token: str) -> None:
         """Update the cached CC token used by inventory tools."""

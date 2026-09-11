@@ -69,7 +69,7 @@ export class User
   declare defaultCityId?: string | null;
   declare numberFormat?: string;
   declare twoFactorEnabled?: boolean;
-  declare two?: string;
+  declare twoFactorSecret?: string;
 
   // User belongsTo Inventory via defaultInventoryId
   declare defaultInventory: Inventory;

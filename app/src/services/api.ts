@@ -66,6 +66,7 @@ import {
   Authz,
   CityDashboardResponse,
   ConceptNoteApplicationContext,
+  ConfirmConceptNoteChapterRequest,
   ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
   ConceptNoteRun,
@@ -165,6 +166,7 @@ export const api = createApi({
     "ConceptNoteRuns",
     "ConceptNoteUpload",
     "ConceptNoteDraft",
+    "ConceptNoteEdits",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -2513,6 +2515,19 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
+      resetConceptNoteChat: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}/chat/reset`,
+          method: "POST",
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
       uploadConceptNoteSource: builder.mutation<
         ConceptNoteUploadResponse,
         ConceptNoteUploadRequest
@@ -2565,6 +2580,23 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, runId) => [
           { type: "ConceptNoteDraft", id: runId },
+        ],
+      }),
+      confirmConceptNoteChapter: builder.mutation<
+        ConceptNoteDraftState,
+        ConfirmConceptNoteChapterRequest
+      >({
+        query: ({ runId, chapterId, expectedRevision, idempotencyKey }) => ({
+          url: `concept-notes/${runId}/chapters/${chapterId}/confirm`,
+          method: "POST",
+          body: {
+            expected_revision: expectedRevision,
+            idempotency_key: idempotencyKey,
+          },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
         ],
       }),
       validateConceptNoteChapter: builder.mutation<
@@ -2752,7 +2784,9 @@ export const {
   useRenameConceptNoteRunMutation,
   useDuplicateConceptNoteRunMutation,
   useDeleteConceptNoteRunMutation,
+  useResetConceptNoteChatMutation,
   useStartConceptNoteDraftMutation,
+  useConfirmConceptNoteChapterMutation,
   useValidateConceptNoteChapterMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,

@@ -14,6 +14,12 @@ All modes share thread persistence, token handling, SSE streaming, and the
 Agents SDK runtime. Workflow-specific context and tools are resolved before the
 single shared stream starts.
 
+Concept Note chat exposes a proposal-only edit tool backed by a planner,
+service, repository and authorized API. Explicit web review applies edits;
+internal application records preserve safe retries and the audit trail.
+See the [CNB revision boundary](../../docs/ConceptNoteBuilderArchitecture.md#implemented-chat-revision-boundary-cc-732)
+for validation, inline review and persistence details.
+
 ## Current Architecture (As-Implemented)
 
 ### System Architecture
@@ -405,3 +411,13 @@ Each streamed request creates a `RunConfig` with workflow-specific metadata.
 Stationary Energy context chat uses a dedicated workflow name and includes
 `stationary_energy_draft_run_id` in trace metadata so it can be separated from
 general conversations in traces and logs.
+
+Ordinary Climate Advisor requests keep one `Climate Advisor Turn` root
+open through response persistence. Each root represents one user turn; MLflow's
+Sessions view groups turns by the shared thread/session ID. The root stores the
+user message, one hash-keyed copy of each system/developer prompt, the assembled assistant output,
+and the final stream/persistence status. Child model spans reference the root
+prompt snapshot and omit raw streaming-chunk events while retaining their final
+outputs and diagnostic events. Function calls are recorded as child `TOOL` spans
+with call IDs and redacted inputs/outputs. CNB and Stationary Energy scoped flows
+retain their dedicated tracing paths.

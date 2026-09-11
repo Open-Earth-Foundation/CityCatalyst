@@ -3,22 +3,25 @@ from __future__ import annotations
 from uuid import uuid4
 
 import pytest
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-
-from app.config import get_settings
 from app.db import Base
+from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.cnb.context_bundle import ConceptNoteContextBundle
 from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
 from app.models.db.concept_note import ConceptNoteRun
 from app.services.agent_service import AgentService
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
+from app.config import get_settings
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("edit_enabled", [False, True])
 async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
     tmp_path,
     monkeypatch,
+    edit_enabled,
 ) -> None:
     engine = create_async_engine(
         f"sqlite+aiosqlite:///{(tmp_path / 'agent-scope.db').as_posix()}"
@@ -35,6 +38,16 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         )
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
     run_id = uuid4()
+    edit_request = (
+        EditProposalRequest(
+            instruction="Make the opening shorter.", idempotency_key=uuid4()
+        )
+        if edit_enabled
+        else None
+    )
+    expected_tools = ["concept_note_sources_query"]
+    if edit_enabled:
+        expected_tools.append("concept_note_edit_propose")
     try:
         async with session_factory() as session, session.begin():
             session.add_all(
@@ -72,9 +85,12 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
             cc_user_id="owner",
             session_factory=session_factory,
             concept_note_run_id=run_id,
+            concept_note_edit_request=edit_request,
         )
         agent = await service.create_agent()
-        assert [tool.name for tool in agent.tools] == ["concept_note_sources_query"]
+        assert [tool.name for tool in agent.tools] == expected_tools
+        if edit_enabled:
+            assert agent.tools[-1].params_json_schema["properties"] == {}
         assert service.active_instructions == settings.llm.prompts.compose_prompt(
             "cnb_chat"
         )
@@ -90,9 +106,10 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
             cc_user_id="owner",
             session_factory=session_factory,
             concept_note_run_id=run_id,
+            concept_note_edit_request=edit_request,
         )
         agent = await service.create_agent()
-        assert [tool.name for tool in agent.tools] == ["concept_note_sources_query"]
+        assert [tool.name for tool in agent.tools] == expected_tools
         await service.close()
 
         async with session_factory() as session, session.begin():
@@ -105,6 +122,7 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
             cc_user_id="owner",
             session_factory=session_factory,
             concept_note_run_id=run_id,
+            concept_note_edit_request=edit_request,
         )
         agent = await service.create_agent()
         assert agent.tools == []

@@ -155,10 +155,50 @@ flowchart TB
 
 ## Product Shape
 
-The user experience is not a step-by-step questionnaire. It combines an
-optional manual interview with a live document workspace. Draft generation is
-not driven through chat: starting a draft invokes a dedicated persisted process,
-and chat remains available only for user-led questions and clarification.
+The user experience combines chat with a live document workspace. Draft generation is
+not driven through chat: starting a draft invokes a dedicated persisted process.
+Afterwards, chat supports user-led questions, clarification, and reviewable edit
+proposals. Only explicit review actions mutate the persisted document.
+
+### Implemented chat revision boundary (CC-732)
+
+The workspace shows red/green changes at each affected passage.
+Users review inline with accept/reject controls
+or Accept all / Reject all, navigate exact hunks, and access provenance and
+refinement in the options popover. The planner groups related occurrences;
+there is no separate checkbox-selection interface. The context tab retains source
+summaries and upload controls without an expanded details dialog.
+
+After an inline decision, bulk actions become Accept remaining / Reject remaining
+and affect only undecided changes. Previously accepted changes are saved and
+previously rejected changes stay excluded. Decisions remain available for retry
+if submission fails. Edit errors appear beside the document toolbar; if saving
+succeeds but loading the updated draft fails, a persistent Reload draft action
+retries the read without resubmitting the edit.
+Confirming a chapter refreshes both its run's draft and edit proposals, so the
+review state updates even when no proposal is processing and polling is stopped.
+
+The proposal-only CA tool uses authorized evidence and explicit user input.
+Bounded chapter workers use an LLM planner and an independent LLM reviewer for
+meaning, factual support, and related occurrences. Python checks exact anchors,
+source identity, user quotes, required headings and unresolved markers. It does
+not infer meaning from numeric/entity tokens, merge groups based on shared values,
+or expand replacements after semantic review. Scope is automatic; chapter focus is
+only a navigation hint. Parsed-Markdown redlines preserve source offsets and fail
+closed on stale or overlapping anchors. No edit is applied before acceptance.
+
+CNB migration `20260907_120000` provisions proposals and
+immutable application records. Apply locks the run and affected chapters, checks
+the expected revision vector, and appends accepted changes atomically. Records
+remain for audit, sequencing and idempotent retries; public history, undo and
+restore endpoints are not exposed. Inline decisions select the exact applied subset.
+
+A grounded marker replacement resolves the matching gap in the same transaction.
+Wording-only edits preserve Ready only when exact confirmation and current gap,
+and lock checks permit it; factual changes require renewed review.
+Proposals and results survive reload. Web and CA independently enforce current
+user/run/city authorization. CNB telemetry remains metadata-only, including
+nested source queries, without disabling concurrent generic tracing.
 
 The first part of the workflow is context bundle building. The
 `ContextBundleService` assembles the reusable run context by:
@@ -197,7 +237,6 @@ The drafting service and document workspace then use that context bundle to:
 ```mermaid
 flowchart LR
     Context["Assemble context bundle"]
-    Context --> Interview["Optional manual interview"]
     Context --> Draft["Independent sequential drafting"]
     Draft --> Review["User review + edits"]
     Review --> Validate["Review & export<br/>reuse current results, validate stale chapters"]
@@ -1454,6 +1493,12 @@ How it works:
   API. The guided review and focused chapter finding render the trusted source
   label, location, and a bounded source excerpt without allowing the model to
   supply source identity metadata.
+- Chat edit planning and its semantic review use one-based selected-source
+  indices encoded as strings in `source_refs`. Only allowlisted source evidence
+  reaches the models; backend upload IDs and hashes remain in verified snapshots.
+  Duplicate filenames stay distinct, and refinement rebinds snapshots to the
+  current source order. Explicit edit requests invoke the available proposal
+  tool; the user must accept the proposal before the document changes.
 - Both validation passes use an explicit `document` and generated `output`
   contract. Completeness compares the output with a code-selected
   `document.validation_profile` and evidence material; consistency compares it
@@ -1644,10 +1689,10 @@ object; this contract does not infer percentages or document/upload counts.
 CityCatalyst exposes the same list at
 `GET /api/v1/concept-notes?city_id=...`, deriving the user from the session and
 rejecting malformed or mixed-city successful responses from Climate Advisor.
-Its single-run read, rename, duplicate, and delete routes also require `city_id` so
-CityCatalyst can authorize the requested city before issuing the Climate Advisor
-token. Climate Advisor remains authoritative for run ownership and stored city
-binding.
+Its single-run read, rename, duplicate, chat-reset, and delete routes also require
+`city_id` so CityCatalyst can authorize the requested city before issuing the
+Climate Advisor token. Climate Advisor remains authoritative for run ownership
+and stored city binding.
 The CityCatalyst dashboard consumes this contract at
 `/{lng}/cities/{cityId}/concept-notes`. Each card exposes Resume, Duplicate,
 Export, and Delete, with a compact rename button beside the title. Rename uses
@@ -1658,9 +1703,20 @@ ID and loads the authorized single-run detail before continuing.
 
 Duplicate creates a fresh thread, copies current context and chapter content
 into new mutable records, and reuses immutable Markdown artifacts by key. Delete
-removes the managed workspace before deleting the CA run and dedicated thread.
-Shared city/project files and immutable source artifacts remain outside the
-deletion boundary. No archive or restore state is added.
+removes edit proposals/applications and the managed workspace before deleting
+the CA run, upload pointers, context, and dedicated thread/messages. Unreferenced
+uploaded files, all OCR attempts, and OCR job records are removed first through
+the service-authenticated CityCatalyst source-cleanup endpoint. Copies retain
+shared source artifacts until the last referencing note is deleted; shared
+city/project files remain outside this boundary. Cleanup failures keep the run
+available for retry, and active OCR jobs block source cleanup. No archive or
+restore state is added.
+
+The workspace chat header exposes **Start new chat**. After explicit confirmation,
+the reset route creates a fresh workflow-bound thread, points the existing run at
+it, and deletes the old dedicated thread and messages in one Climate Advisor
+transaction. The Concept Note workspace, draft chapters, sources, context bundle,
+and revision history are unchanged.
 
 The dashboard and wiring pages are hidden unless both
 `CA_SERVICE_INTEGRATION` and `CONCEPT_NOTE_BUILDER` are present in
@@ -1726,8 +1782,8 @@ Rules:
   dropping content. For native Markdown, derives deterministic heading/block
   anchors from the stored UTF-8 bytes and partitions without inventing
   synthetic pagination.
-- Uses configured GPT-5.6 Luna readers with low reasoning and process-wide
-  concurrency no greater than three, then GPT-5.6 Sol with medium reasoning for
+- Uses configured GPT-5.6 Terra readers with low reasoning and process-wide
+  concurrency no greater than three, then GPT-5.6 Terra with medium reasoning for
   final document synthesis. Both retain tool-free structured outputs through
   OpenRouter Chat Completions and omit temperature.
 - Requires exactly one ordered result per input section and verifies every
@@ -1788,7 +1844,7 @@ Generated block fingerprints are replaced with readable document headings, while
 the backend retains exact block anchors for source verification.
 Questions spanning documents require
 separate calls. The function re-fetches and verifies that document, fans out
-tool-free GPT-5.6 Luna readers over every source-preserving partition using
+tool-free GPT-5.6 Terra readers over every source-preserving partition using
 deterministic code-controlled `Runner.run` calls, and returns only after every
 partition succeeds. Its result contains the source label, verified page- or
 block-located excerpts, source-unit/segment coverage counts, and reader caveats for the calling agent
@@ -2392,10 +2448,10 @@ The configured prompt/model roles are:
 ```yaml
 models:
   cnb_source_reader:
-    name: openai/gpt-5.6-luna
+    name: openai/gpt-5.6-terra
     reasoning_effort: low
   cnb_source_synthesizer:
-    name: openai/gpt-5.6-sol
+    name: openai/gpt-5.6-terra
     reasoning_effort: medium
   cnb_chapter_validator:
     name: openai/gpt-5.6-terra
@@ -2408,11 +2464,19 @@ prompts:
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 ```
 
-The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-sol`) with explicit
+The main CNB chat uses `models.cnb_chat` (`openai/gpt-5.6-sol`) with explicit
 `reasoning_effort: medium` for its Chat Completions function-tool loop. Funding
-research and similar-project selection use Sol with medium reasoning on the
-existing Responses API path; canonical-funder identity matching uses Luna with
+research and similar-project selection use Terra with medium reasoning on the
+existing Responses API path; canonical-funder identity matching uses Terra with
 low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
+
+Workspace responses combine current chapter text, exact confirmed revisions,
+structured gaps and their latest resolutions, and validation freshness. An accepted
+chat edit makes a validation of the previous document stale. Duplication preserves
+confirmation only when it refers to the copied latest revision, copies gap
+resolution history with new IDs, and omits stored validation results. CNB migration
+`20260909_120000` joins the validation and review migration heads without rewriting
+either parent migration.
 
 The validation prompt budget is 50,000 tokens. Completeness and consistency run
 with temperature zero and strict structured contracts; only concise findings
@@ -2458,12 +2522,12 @@ All user-initiated CNB telemetry uses the `Clima` experiment and the visible
 not be embedded in `mlflow.runName`. The run name identifies the interaction
 boundary with this stable, low-cardinality contract:
 
-| CNB interaction | `mlflow.runName` | Integration boundary |
-| --- | --- | --- |
-| Start or idempotently replay a CNB run | `cnb_start` | `POST /v1/concept-notes/start` |
-| Ask a non-mutating question in the CNB chat | `cnb_chat` | `/v1/messages` with an active `concept_note_run_id` |
+| CNB interaction                                     | `mlflow.runName`          | Integration boundary                                |
+| --------------------------------------------------- | ------------------------- | --------------------------------------------------- |
+| Start or idempotently replay a CNB run              | `cnb_start`               | `POST /v1/concept-notes/start`                      |
+| Ask a non-mutating question in the CNB chat         | `cnb_chat`                | `/v1/messages` with an active `concept_note_run_id` |
 | Answer, correct, skip, or retry missing information | `cnb_missing_information` | The run-scoped gap-resolution operation from CC-730 |
-| Propose or apply a document edit through chat | `cnb_chat_edit` | The dedicated revision operation planned in CC-732 |
+| Propose or apply a document edit through chat       | `cnb_chat_edit`           | The dedicated revision operation planned in CC-732  |
 
 The future CC-732 flow must classify edit intent before opening its MLflow run:
 ordinary questions remain `cnb_chat`, while a durable edit proposal or apply
@@ -2526,6 +2590,12 @@ does not disable export. After viewing completeness and consistency findings,
 the user can explicitly choose **Export as is**. Existing unresolved-information
 acknowledgement remains authoritative for every validation state, including
 Needs re-validation, `needs_review`, and `incomplete`.
+
+Open or processing critical structured gaps still block both export formats;
+acknowledging validation findings cannot override that gate. Noncritical gaps
+can be acknowledged. The draft panel combines validation-finding navigation
+with inline edit decisions and chapter confirmation. Accepting an edit refreshes
+the current draft and its validation freshness before the next guided review.
 
 ## Planned Routes
 

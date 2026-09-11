@@ -5,16 +5,14 @@ from __future__ import annotations
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.db.session import get_session
 from app.models.cnb.concept_note_application_context import (
     ConceptNoteApplicationContextResponse,
 )
-from app.models.cnb.concept_note_draft import ConceptNoteDraftResponse
+from app.models.cnb.concept_note_draft import (
+    ConceptNoteChapterConfirmRequest,
+    ConceptNoteDraftResponse,
+)
 from app.models.cnb.concept_note_runs import (
     ConceptNoteRenameRequest,
     ConceptNoteRunListResponse,
@@ -34,8 +32,8 @@ from app.services.cnb.context_bundle import (
     ContextBundleService,
     get_context_bundle_service,
 )
-from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
 from app.services.concept_note_runs import ConceptNoteRunService
+from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
 from app.utils.cnb_observability import CNBInteraction
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
@@ -45,6 +43,10 @@ from app.utils.mlflow_logging import (
     start_trace_span,
     update_current_trace_context,
 )
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 
@@ -199,6 +201,25 @@ async def duplicate_concept_note_run(
     )
 
 
+@router.post(
+    "/concept-notes/{run_id}/chat/reset",
+    response_model=ConceptNoteRunResponse,
+)
+async def reset_concept_note_chat(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunResponse:
+    """Replace one concept note's dedicated chat and remove its history."""
+    service = ConceptNoteLifecycleService(session)
+    return await service.reset_chat(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
 @router.delete(
     "/concept-notes/{run_id}",
     status_code=status.HTTP_204_NO_CONTENT,
@@ -311,5 +332,43 @@ async def start_concept_note_drafting(
         else:
             http_response.status_code = status.HTTP_200_OK
         return draft
+    except ChapterDraftingError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+
+
+@router.post(
+    "/concept-notes/{run_id}/chapters/{chapter_id}/confirm",
+    response_model=ConceptNoteDraftResponse,
+)
+async def confirm_concept_note_chapter(
+    run_id: UUID,
+    chapter_id: UUID,
+    payload: ConceptNoteChapterConfirmRequest,
+    draft_service: Annotated[
+        ConceptNoteChapterDraftService | None,
+        Depends(get_chapter_draft_service),
+    ],
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteDraftResponse:
+    """Confirm one exact gap-free chapter revision as Ready."""
+    run_service = ConceptNoteRunService(session)
+    run = await run_service.get_authorized_run(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+    if draft_service is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Concept Note chapter drafting is unavailable",
+        )
+    try:
+        return await draft_service.confirm_chapter(
+            run=run,
+            chapter_id=chapter_id,
+            payload=payload,
+        )
     except ChapterDraftingError as exc:
         raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc

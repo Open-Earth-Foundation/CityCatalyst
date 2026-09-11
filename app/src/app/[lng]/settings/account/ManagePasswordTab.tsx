@@ -101,8 +101,13 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
   const newPasswordStrength = computePasswordStrength(watchPassword);
 
   return (
-    <Box backgroundColor="white" p={6} borderRadius="8px" boxShadow="shadow-lg">
-      <TitleMedium pb="36px">{t("manage-password")}</TitleMedium>
+    <Box
+      backgroundColor="white"
+      p={6}
+      borderRadius="rounded"
+      boxShadow="shadow-lg"
+    >
+      <TitleMedium pb="9">{t("manage-password")}</TitleMedium>
       <Box>
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -134,7 +139,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
             t={t}
           />
           {error && <Text color="semantic.danger">{error}</Text>}
-          <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
+          <Box display="flex" w="100%" justifyContent="right" marginTop="3">
             <Button
               type="submit"
               loading={isSubmitting}

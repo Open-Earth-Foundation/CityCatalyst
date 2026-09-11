@@ -100,8 +100,8 @@ const PreferencesTab = ({
       p={6}
       display="flex"
       flexDirection="column"
-      gap="24px"
-      borderRadius="8px"
+      gap="6"
+      borderRadius="rounded"
       boxShadow="shadow-lg"
     >
       {!userInfo ? (
@@ -136,7 +136,7 @@ const PreferencesTab = ({
             >
               <NativeSelectRoot
                 shadow="2dp"
-                borderRadius="4px"
+                borderRadius="minimal"
                 border="inputBox"
                 background={
                   errors.numberFormat
@@ -160,7 +160,7 @@ const PreferencesTab = ({
               </NativeSelectRoot>
             </Field>
           )}
-          <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
+          <Box display="flex" w="100%" justifyContent="right" marginTop="3">
             <Button
               type="submit"
               loading={isSubmitting}
@@ -168,7 +168,7 @@ const PreferencesTab = ({
               h={16}
               w="auto"
               minW="175px"
-              px="24px"
+              px="6"
               letterSpacing="widest"
               textTransform="uppercase"
               fontWeight="semibold"

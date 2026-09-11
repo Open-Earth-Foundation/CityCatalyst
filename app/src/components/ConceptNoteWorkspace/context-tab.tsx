@@ -42,7 +42,11 @@ interface ContextTabProps {
   uploadError: string | null;
 }
 
-type ContextTone = "positive" | "neutral" | "warning";
+import {
+  ContextStatusBadge,
+  toneColor,
+  type ContextTone,
+} from "./context-status-badge";
 
 interface ContextCardProps {
   details: string[];
@@ -50,43 +54,6 @@ interface ContextCardProps {
   status: string;
   tone?: ContextTone;
   value: string;
-}
-
-function toneColor(tone: ContextTone): string {
-  if (tone === "positive") {
-    return "sentiment.positiveDefault";
-  }
-  if (tone === "warning") {
-    return "sentiment.warningDefault";
-  }
-  return "content.tertiary";
-}
-
-function ContextStatusBadge({
-  label,
-  tone = "neutral",
-}: {
-  label: string;
-  tone?: ContextTone;
-}) {
-  const color = toneColor(tone);
-
-  return (
-    <HStack
-      alignSelf="flex-start"
-      gap={1.5}
-      border="1px solid"
-      borderColor={color}
-      borderRadius="pill"
-      px={2}
-      py={0.5}
-    >
-      <Box boxSize="6px" borderRadius="full" bg={color} />
-      <Text fontSize="10px" lineHeight="16px" color="content.secondary">
-        {label}
-      </Text>
-    </HStack>
-  );
 }
 
 function ContextSectionLabel({ children }: { children: string }) {
@@ -112,9 +79,9 @@ function ContextCard({
   value,
 }: ContextCardProps) {
   return (
-    <VStack
-      align="stretch"
-      gap={2}
+    <Box
+      minW={0}
+      textAlign="start"
       minH="128px"
       border="1px solid"
       borderColor="border.neutral"
@@ -122,29 +89,31 @@ function ContextCard({
       bg="base.light"
       p={3}
     >
-      <ContextSectionLabel>{label}</ContextSectionLabel>
-      <ContextStatusBadge label={status} tone={tone} />
-      <Text
-        fontFamily="heading"
-        fontSize="body.sm"
-        fontWeight="semibold"
-        color="content.primary"
-      >
-        {value}
-      </Text>
-      <VStack align="stretch" gap={0.5}>
-        {details.filter(Boolean).map((detail) => (
-          <Text
-            key={detail}
-            fontSize="10px"
-            lineHeight="16px"
-            color="content.tertiary"
-          >
-            {detail}
-          </Text>
-        ))}
+      <VStack align="stretch" gap={2} h="full">
+        <ContextSectionLabel>{label}</ContextSectionLabel>
+        <ContextStatusBadge label={status} tone={tone} />
+        <Text
+          fontFamily="heading"
+          fontSize="body.sm"
+          fontWeight="semibold"
+          color="content.primary"
+        >
+          {value}
+        </Text>
+        <VStack align="stretch" gap={0.5}>
+          {details.filter(Boolean).map((detail) => (
+            <Text
+              key={detail}
+              fontSize="10px"
+              lineHeight="16px"
+              color="content.tertiary"
+            >
+              {detail}
+            </Text>
+          ))}
+        </VStack>
       </VStack>
-    </VStack>
+    </Box>
   );
 }
 
@@ -191,7 +160,6 @@ export function ContextTab({
       : upload?.status === "failed"
         ? "warning"
         : "neutral";
-
   function onFileChange(event: ChangeEvent<HTMLInputElement>): void {
     const file = event.target.files?.[0];
     if (file) {
@@ -252,54 +220,13 @@ export function ContextTab({
           <ContextCard
             label={t("hiap-context")}
             value={hiapIncluded ? hiapStatusLabel : t("not-available")}
-            details={[
-              t(hiapIncluded ? "hiap-optional" : "hiap-impact-missing-summary"),
-            ]}
+            details={[t("hiap-optional")]}
             status={t(
               hiapIncluded ? "included-in-run" : "bundle-source-missing",
             )}
             tone={hiapIncluded ? "positive" : "warning"}
           />
         </Grid>
-
-        {!hiapIncluded && (
-          <Flex
-            data-testid="hiap-missing-impact"
-            role="status"
-            align="start"
-            gap={3}
-            border="1px solid"
-            borderColor="sentiment.warningDefault"
-            borderRadius="rounded"
-            bg="sentiment.warningOverlay"
-            p={4}
-          >
-            <Icon
-              as={LuCircleAlert}
-              flexShrink={0}
-              mt={0.5}
-              color="sentiment.warningDefault"
-            />
-            <Box>
-              <Text
-                fontFamily="heading"
-                fontSize="body.sm"
-                fontWeight="semibold"
-                color="content.primary"
-              >
-                {t("hiap-impact-missing-title")}
-              </Text>
-              <Text
-                mt={1}
-                fontSize="label.sm"
-                lineHeight="20px"
-                color="content.secondary"
-              >
-                {t("hiap-impact-missing-description")}
-              </Text>
-            </Box>
-          </Flex>
-        )}
       </VStack>
 
       <VStack align="stretch" gap={2}>

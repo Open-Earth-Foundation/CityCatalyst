@@ -1247,7 +1247,7 @@
   "waste-composition-glass": "Verre",
   "waste-composition-nappies": "Couches",
   "waste-composition-other": "Autre",
-  "no-data": "Aucune donnée",
+  "no-data": "Aucun résultat ne correspond à votre recherche.",
   "table-pagination": "{{start}} - {{end}} sur {{total}}",
   "search-records": "Rechercher des enregistrements",
   "enter-custom-values": "J'ai mes propres données de composition des déchets.",

@@ -18,6 +18,38 @@ from app.services.citycatalyst_client import (
 )
 
 
+@pytest.mark.asyncio
+async def test_concept_note_source_deletion_batches_authenticated_requests() -> None:
+    requests = []
+
+    def respond(request):
+        requests.append(request)
+        return httpx.Response(204)
+
+    client = CityCatalystClient(base_url="https://cc.example", api_key="test-service-key")
+    client._client = httpx.AsyncClient(transport=httpx.MockTransport(respond))
+    try:
+        await client.delete_concept_note_sources([str(i) for i in range(1001)])
+    finally:
+        await client.close()
+    assert [len(json.loads(request.content)["upload_ids"]) for request in requests] == [1000, 1]
+    for request in requests:
+        assert request.method == "DELETE"
+        assert request.url.path == "/api/v1/internal/ca/concept-note-sources"
+        assert request.headers["X-CA-Service-Key"] == "test-service-key"
+
+
+@pytest.mark.asyncio
+async def test_concept_note_source_deletion_propagates_failure() -> None:
+    client = CityCatalystClient(base_url="https://cc.example", api_key="test-service-key")
+    client._client = httpx.AsyncClient(transport=httpx.MockTransport(lambda _: httpx.Response(503)))
+    try:
+        with pytest.raises(httpx.HTTPStatusError):
+            await client.delete_concept_note_sources(["upload"])
+    finally:
+        await client.close()
+
+
 class _StubAsyncClient:
     """Minimal stub of httpx.AsyncClient returning canned responses."""
 

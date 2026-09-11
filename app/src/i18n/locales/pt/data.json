@@ -1249,7 +1249,7 @@
   "waste-composition-glass": "Vidro",
   "waste-composition-nappies": "Fraldas",
   "waste-composition-other": "Outro",
-  "no-data": "Sem dados",
+  "no-data": "Nenhum resultado corresponde aos seus critérios.",
   "table-pagination": "{{start}} - {{end}} de {{total}}",
   "search-records": "Pesquisar registros",
   "enter-custom-values": "Tenho meus próprios dados de composição de resíduos.",

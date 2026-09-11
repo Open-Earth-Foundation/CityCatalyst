@@ -1257,7 +1257,7 @@
   "waste-composition-glass": "Vidrio",
   "waste-composition-nappies": "Pañales",
   "waste-composition-other": "Otro",
-  "no-data": "Sin datos",
+  "no-data": "Ningún resultado coincide con tu búsqueda.",
   "table-pagination": "{{start}} - {{end}} de {{total}}",
   "search-records": "Buscar registros",
   "enter-custom-values": "Tengo mis propios datos de composición de residuos.",

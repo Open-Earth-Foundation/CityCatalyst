@@ -1,5 +1,6 @@
 /**
- * Repairs missing HIAP native-input catalog entries in bounded, resumable pages.
+ * Repairs missing HIAP and HIAP-MEED native-input catalog entries in bounded,
+ * resumable pages.
  *
  * Run from `app/` with `npm run hiap-catalog-backfill`. The command reads
  * `HIAP_CATALOG_BACKFILL_BATCH_SIZE`, `HIAP_CATALOG_BACKFILL_MAX_BATCHES`, and

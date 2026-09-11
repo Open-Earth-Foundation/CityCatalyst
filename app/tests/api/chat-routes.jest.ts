@@ -545,6 +545,7 @@ describe("Chat routes", () => {
     expect(response.status).toBe(200);
     await expect(response.text()).resolves.toContain("event: message");
 
+    expect(fetchMock).toHaveBeenCalledTimes(2);
     const [url, requestInit] = fetchMock.mock.calls[1] ?? [];
     const headers = new Headers(requestInit?.headers);
     expect(url).toBe("http://ca.example/v1/messages");

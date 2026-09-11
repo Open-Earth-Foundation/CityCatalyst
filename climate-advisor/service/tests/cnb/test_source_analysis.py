@@ -11,6 +11,8 @@ import httpx
 import pytest
 import pytest_asyncio
 from agents import RunConfig, Runner
+from openai import AsyncOpenAI
+
 from app.config import Settings, get_settings
 from app.models.cnb.source_prompt import (
     DocumentMappingReading,
@@ -35,7 +37,6 @@ from app.services.cnb.source_analysis import (
     source_analysis_contract_version,
     verify_source_artifact,
 )
-from openai import AsyncOpenAI
 
 
 class FakeRunner:
@@ -339,14 +340,14 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
     [
         (
             "cnb_source_reader",
-            "openai/gpt-5.6-luna",
+            "openai/gpt-5.6-terra",
             "low",
             QuestionReading,
             {"sections": [{"excerpts": [], "caveats": []}]},
         ),
         (
             "cnb_source_synthesizer",
-            "openai/gpt-5.6-sol",
+            "openai/gpt-5.6-terra",
             "medium",
             DocumentSummary,
             {
@@ -358,7 +359,7 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
     ],
 )
 @pytest.mark.asyncio
-async def test_source_worker_serializes_sol_luna_requests_without_temperature(
+async def test_source_worker_serializes_terra_requests_without_temperature(
     role,
     model_name,
     effort,
@@ -414,10 +415,9 @@ async def test_source_worker_serializes_sol_luna_requests_without_temperature(
                 if role == "cnb_source_reader"
                 else "cnb_source_summary_synthesis"
             ),
-            model_name=getattr(settings.llm.models, role).name,
+            model_config=getattr(settings.llm.models, role),
             output_type=output_type,
             input_text="No budget is stated.",
-            settings=settings,
             client=client,
             runner=LocalRunner,
             expected_sections=1 if role == "cnb_source_reader" else None,

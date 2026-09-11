@@ -4,6 +4,8 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
+  DeleteObjectsCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Readable } from "node:stream";
@@ -197,6 +199,42 @@ export default class InventoryFileStorageService {
       new DeleteObjectCommand({ Bucket: BUCKET, Key: s3Key }),
     );
     logger.debug({ key: s3Key }, "Inventory file deleted from S3");
+  }
+
+  /** Remove the uploaded file and every OCR attempt under its upload-specific prefixes. */
+  static async deleteConceptNoteSource(uploadId: string): Promise<void> {
+    assertConfigured();
+    if (!/^[0-9a-f-]{36}$/i.test(uploadId)) {
+      throw new Error("Invalid Concept Note upload identity");
+    }
+    const client = getS3Client();
+    for (const kind of ["sources", "results"]) {
+      const prefix = `pdf-ocr/${kind}/concept_note_upload/${uploadId}/`;
+      let continuationToken: string | undefined;
+      do {
+        const page = await client.send(
+          new ListObjectsV2Command({
+            Bucket: BUCKET!,
+            Prefix: prefix,
+            ContinuationToken: continuationToken,
+          }),
+        );
+        const objects = (page.Contents ?? []).flatMap((item) =>
+          item.Key ? [{ Key: item.Key }] : [],
+        );
+        if (objects.length) {
+          const result = await client.send(
+            new DeleteObjectsCommand({
+              Bucket: BUCKET!,
+              Delete: { Objects: objects, Quiet: true },
+            }),
+          );
+          if (result.Errors?.length)
+            throw new Error("Concept Note source cleanup failed");
+        }
+        continuationToken = page.NextContinuationToken;
+      } while (continuationToken);
+    }
   }
 
   /**

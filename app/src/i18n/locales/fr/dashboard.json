@@ -337,5 +337,10 @@
   "all-tools": "Tous les outils",
   "useful-links": "Liens utiles",
   "learning-hub": "Centre d'apprentissage",
-  "module-unavailable-for-city": "{{module}} n'est pas disponible pour cette ville. Affichage de l'aperçu de la ville à la place."
+  "module-unavailable-for-city": "{{module}} n'est pas disponible pour cette ville. Affichage de l'aperçu de la ville à la place.",
+  "removed": "supprimé",
+  "net-removal": "Élimination nette",
+  "removal": "Suppression",
+  "removals-not-countable-footnote": "* Les sous-secteurs avec des suppressions ne sont pas comptabilisés comme des émissions",
+  "no-cited-source": "Aucune source citée"
 }

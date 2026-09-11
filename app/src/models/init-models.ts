@@ -135,6 +135,11 @@ import type {
   MeedActionRemovedAttributes,
   MeedActionRemovedCreationAttributes,
 } from "./MeedActionRemoved";
+import { MeedRanking as _MeedRanking } from "./MeedRanking";
+import type {
+  MeedRankingAttributes,
+  MeedRankingCreationAttributes,
+} from "./MeedRanking";
 import type {
   MeedActionReportAttributes,
   MeedActionReportCreationAttributes,
@@ -311,6 +316,7 @@ export {
   _ImportMappingFeedback as ImportMappingFeedback,
   _MeedActionRanked as MeedActionRanked,
   _MeedActionRemoved as MeedActionRemoved,
+  _MeedRanking as MeedRanking,
   _MeedActionReport as MeedActionReport,
   _MeedRankSnapshot as MeedRankSnapshot,
   _MeedState as MeedState,
@@ -403,6 +409,8 @@ export type {
   MeedActionRankedCreationAttributes,
   MeedActionRemovedAttributes,
   MeedActionRemovedCreationAttributes,
+  MeedRankingAttributes,
+  MeedRankingCreationAttributes,
   MeedActionReportAttributes,
   MeedActionReportCreationAttributes,
   MeedRankSnapshotAttributes,
@@ -505,6 +513,7 @@ export function initModels(sequelize: Sequelize) {
   const ImportMappingFeedback = _ImportMappingFeedback.initModel(sequelize);
   const MeedActionRanked = _MeedActionRanked.initModel(sequelize);
   const MeedActionRemoved = _MeedActionRemoved.initModel(sequelize);
+  const MeedRanking = _MeedRanking.initModel(sequelize);
   const MeedActionReport = _MeedActionReport.initModel(sequelize);
   const MeedRankSnapshot = _MeedRankSnapshot.initModel(sequelize);
   const MeedState = _MeedState.initModel(sequelize);
@@ -1182,6 +1191,32 @@ export function initModels(sequelize: Sequelize) {
   });
 
   // Associations for MeedActionRanked and MeedActionRemoved
+  MeedRanking.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedRanking, {
+    as: "meedRankings",
+    foreignKey: "inventoryId",
+  });
+
+  MeedRanking.hasMany(MeedActionRanked, {
+    as: "meedActionRanked",
+    foreignKey: "rankingId",
+  });
+  MeedRanking.hasMany(MeedActionRemoved, {
+    as: "meedActionRemoved",
+    foreignKey: "rankingId",
+  });
+  MeedActionRanked.belongsTo(MeedRanking, {
+    as: "meedRanking",
+    foreignKey: "rankingId",
+  });
+  MeedActionRemoved.belongsTo(MeedRanking, {
+    as: "meedRanking",
+    foreignKey: "rankingId",
+  });
+
   MeedActionRanked.belongsTo(Inventory, {
     as: "inventory",
     foreignKey: "inventoryId",
@@ -1348,6 +1383,7 @@ export function initModels(sequelize: Sequelize) {
     ImportMappingFeedback: ImportMappingFeedback,
     MeedActionRanked: MeedActionRanked,
     MeedActionRemoved: MeedActionRemoved,
+    MeedRanking: MeedRanking,
     MeedActionReport: MeedActionReport,
     MeedRankSnapshot: MeedRankSnapshot,
     MeedState: MeedState,

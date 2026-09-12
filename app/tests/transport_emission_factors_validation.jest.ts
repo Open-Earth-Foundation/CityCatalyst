@@ -44,7 +44,8 @@ describe("Transport Emission Factor Validation Tests", () => {
       inventoryName: "Test Inventory for Transport EF Validation",
       cityId: testCity.cityId,
       inventoryType: InventoryTypeEnum.GPC_BASIC,
-      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+      // CSV expected CO2e totals were computed with AR5 GWPs (CH4=28, N2O=265).
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar5,
       year: 2023,
     });
 
@@ -221,7 +222,7 @@ async function loadTransportTestData(): Promise<TransportTestData[]> {
           ch4_global_api: parseFloat(row["CH4 Global API"]) || 0,
           n2o_global_api: parseFloat(row["N2O Global API"]) || 0,
           units_in_global_api: row["Units Global API"] || "",
-          // Use IPCC AR6 standard values since they're not in the CSV
+          // AR5 GWP100 values (match inventory GWP used by these fixtures)
           co2_gwp: 1,
           ch4_gwp: 28,
           n2o_gwp: 265,

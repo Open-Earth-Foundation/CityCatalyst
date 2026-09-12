@@ -126,7 +126,7 @@ app/src/
 | `UserService`                | User CRUD, invites, org/project scoping                        |
 | `InventoryService`           | Inventory lookups by city, locode, permissions                 |
 | `ActivityService`            | Activity/gas value CRUD, emissions factors, versioning         |
-| `CalculationService`         | Emissions math using methodology-specific formulas             |
+| `CalculationService`         | Emissions math using methodology-specific formulas; applies inventory GWP (AR5/AR6) via `GasToCO2Eq.gwp_version` |
 | `DataSourceService`          | Data source management per inventory                           |
 | `GPCService`                 | Resolves GPC reference numbers to sector/subsector/subcategory |
 | `PermissionService`          | `canAccessInventory`, `canCreateCity`, role-based checks       |

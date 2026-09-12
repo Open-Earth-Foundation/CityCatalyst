@@ -18,6 +18,7 @@ from app.services.cnb.context_bundle import (
     run_context_bundle_reconciler,
 )
 from app.services.cnb.source_analysis import (
+    SourceAnalysisError,
     SourceBlock,
     SourcePage,
     source_analysis_contract_version,
@@ -401,3 +402,37 @@ async def test_optional_source_errors_do_not_fail_source_readiness(monkeypatch) 
     assert ghgi is None and hiap is None
     assert statuses == {"ghgi": "unavailable", "hiap": "unavailable"}
     assert warnings
+
+
+@pytest.mark.asyncio
+async def test_source_failure_preserves_safe_diagnostics_without_source_text(
+    monkeypatch, caplog,
+) -> None:
+    failure = SourceAnalysisError(
+        "incomplete_source_coverage",
+        "private document text must not be logged",
+        reason="reader_section_count_mismatch",
+        details={"expected_sections": 106, "returned_sections": 4},
+    )
+    snapshot = ContextBundleBuildSnapshot(
+        run_id=uuid4(),
+        city_id=str(uuid4()),
+        build_id=uuid4(),
+        uploads=[SimpleNamespace(upload_id=uuid4())],
+        already_current=False,
+    )
+    client = SimpleNamespace(close=AsyncMock())
+    service = ContextBundleService(object(), cc_client_factory=lambda: client)
+    monkeypatch.setattr(service, "_analyze_upload", AsyncMock(side_effect=failure))
+    persist = AsyncMock(return_value=True)
+    monkeypatch.setattr("app.services.cnb.context_bundle.fail_build", persist)
+    assert not await service.build(
+        user_id="owner", run_id=snapshot.run_id, token="secret", snapshot=snapshot,
+    )
+    assert persist.await_args.kwargs["error_reason"] == failure.reason
+    assert persist.await_args.kwargs["error_details"] == failure.details
+    assert "reader_section_count_mismatch" in caplog.text
+    assert "106" in caplog.text
+    assert "private document text" not in caplog.text
+    assert "secret" not in caplog.text
+    client.close.assert_awaited_once()

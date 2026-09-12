@@ -1,5 +1,7 @@
 "use client";
 
+import type { ConceptNoteContextPresentation } from "./context-status";
+
 import type { ChangeEvent } from "react";
 import { useRef } from "react";
 
@@ -22,6 +24,7 @@ import { uploadStatusTranslationKey } from "../ConceptNoteWiringHarness/utils";
 interface ContextTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
   bundle: ConceptNoteBundleProgress;
+  contextStatus: ConceptNoteContextPresentation;
   cityFilesCount: number;
   cityName: string;
   country: string | null;
@@ -117,6 +120,7 @@ function ContextCard({
 export function ContextTab({
   applicationContext,
   bundle,
+  contextStatus,
   cityFilesCount,
   cityName,
   country,
@@ -365,7 +369,7 @@ export function ContextTab({
         )}
       </VStack>
 
-      {bundle.status === "failed" && bundle.retryable && (
+      {contextStatus.state === "failed" && bundle.retryable && (
         <Flex
           align={{ base: "start", sm: "center" }}
           direction={{ base: "column", sm: "row" }}
@@ -383,10 +387,10 @@ export function ContextTab({
               fontWeight="semibold"
               color="content.primary"
             >
-              {t("context-retry-title")}
+              {contextStatus.title}
             </Text>
             <Text mt={1} fontSize="label.sm" color="content.secondary">
-              {t("context-failed-description")}
+              {contextStatus.description}
             </Text>
           </Box>
           <Button

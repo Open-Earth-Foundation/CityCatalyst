@@ -1,7 +1,7 @@
 import {
   createCipheriv,
   createDecipheriv,
-  createHash,
+  hkdfSync,
   randomBytes,
 } from "node:crypto";
 import createHttpError from "http-errors";
@@ -330,12 +330,27 @@ function discoveryFilterBinding(
   };
 }
 
-function discoveryCursorSecret(): Buffer {
-  const secret =
+const DISCOVERY_CURSOR_HKDF_SALT = "cc-native-input-discovery-cursor-v1";
+const DISCOVERY_CURSOR_HKDF_INFO = "aes-256-gcm";
+
+function discoveryCursorIkm(): string {
+  return (
+    process.env.NATIVE_INPUT_DISCOVERY_CURSOR_SECRET ||
     process.env.NEXTAUTH_SECRET ||
-    process.env.CC_SERVICE_API_KEY ||
-    "cc-native-input-discovery-cursor";
-  return createHash("sha256").update(secret).digest();
+    "cc-native-input-discovery-cursor"
+  );
+}
+
+function discoveryCursorSecret(): Buffer {
+  return Buffer.from(
+    hkdfSync(
+      "sha256",
+      discoveryCursorIkm(),
+      DISCOVERY_CURSOR_HKDF_SALT,
+      DISCOVERY_CURSOR_HKDF_INFO,
+      32,
+    ),
+  );
 }
 
 function encodeDiscoveryCursor(payload: NativeInputDiscoveryCursorPayload): string {

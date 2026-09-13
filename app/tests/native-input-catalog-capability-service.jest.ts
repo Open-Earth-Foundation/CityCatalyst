@@ -646,6 +646,52 @@ describe("NativeInputCatalog capability service", () => {
     });
   });
 
+  it("keeps a minted cursor valid after rotating CC_SERVICE_API_KEY", async () => {
+    const originalServiceKey = process.env.CC_SERVICE_API_KEY;
+    const originalNextAuthSecret = process.env.NEXTAUTH_SECRET;
+    process.env.NEXTAUTH_SECRET = "stable-nextauth-secret";
+    process.env.CC_SERVICE_API_KEY = "service-key-one";
+
+    try {
+      const authorized = Array.from({ length: 101 }, (_, index) =>
+        orderedEntry(index),
+      );
+      const deps = dependencies(authorized, {
+        findActiveCatalogEntries: keysetFind(authorized),
+      });
+      const firstPage = await discoverNativeInputs(
+        { cityId: authorizedEntry.cityId },
+        session,
+        deps,
+      );
+
+      process.env.CC_SERVICE_API_KEY = "service-key-two";
+      await expect(
+        discoverNativeInputs(
+          {
+            cityId: authorizedEntry.cityId,
+            cursor: firstPage.continuationCursor,
+          },
+          session,
+          deps,
+        ),
+      ).resolves.toMatchObject({
+        entries: [{ catalog_id: authorized[100].id }],
+      });
+    } finally {
+      if (originalServiceKey === undefined) {
+        delete process.env.CC_SERVICE_API_KEY;
+      } else {
+        process.env.CC_SERVICE_API_KEY = originalServiceKey;
+      }
+      if (originalNextAuthSecret === undefined) {
+        delete process.env.NEXTAUTH_SECRET;
+      } else {
+        process.env.NEXTAUTH_SECRET = originalNextAuthSecret;
+      }
+    }
+  });
+
   it("rejects a malformed or filter-mismatched cursor without catalog disclosure", async () => {
     const authorized = Array.from({ length: 101 }, (_, index) =>
       orderedEntry(index, {

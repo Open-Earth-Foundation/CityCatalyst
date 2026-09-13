@@ -4,10 +4,8 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import {
-  callClimateAdvisorChat,
-  issueClimateAdvisorUserToken,
-} from "@/backend/chat/climate-advisor";
+import { callClimateAdvisorChat } from "@/backend/chat/climate-advisor";
+import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import type { AppSession } from "@/lib/auth";
 import { logger } from "@/services/logger";

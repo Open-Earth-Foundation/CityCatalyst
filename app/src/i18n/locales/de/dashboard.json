@@ -337,5 +337,10 @@
   "all-tools": "Alle Werkzeuge",
   "useful-links": "Nützliche Links",
   "learning-hub": "Lernzentrum",
-  "module-unavailable-for-city": "{{module}} ist für diese Stadt nicht verfügbar. Stattdessen wird die Stadtübersicht angezeigt."
+  "module-unavailable-for-city": "{{module}} ist für diese Stadt nicht verfügbar. Stattdessen wird die Stadtübersicht angezeigt.",
+  "removed": "entfernt",
+  "net-removal": "Netzentfernung",
+  "removal": "Entfernung",
+  "removals-not-countable-footnote": "* Teilsektoren mit Entfernungen sind nicht als Emissionen zählbar",
+  "no-cited-source": "Keine zitierte Quelle"
 }

@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
 import pytest
+from fastapi import HTTPException
 from pydantic import ValidationError
 from sqlalchemy import DefaultClause, event, select, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -15,6 +16,7 @@ from sqlalchemy.pool import StaticPool
 from app.db.cnb import CnbBase
 from app.models.cnb.concept_note_runs import ConceptNoteRenameRequest
 from app.models.db.cnb_reference import CnbFundedProject, CnbFunder  # noqa: F401
+from app.models.db.cnb_edit import ConceptNoteEditApplication, ConceptNoteEditProposal
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteChapterRevision,
@@ -26,6 +28,7 @@ from app.models.db.concept_note import (
     ConceptNoteUpload,
 )
 from app.models.db.thread import Thread
+from app.models.db.message import Message
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
 
@@ -53,6 +56,7 @@ async def _ca_session():
         ConceptNoteRun.__table__,
         ConceptNoteContextBundle.__table__,
         ConceptNoteUpload.__table__,
+        Message.__table__,
     )
     try:
         async with engine.begin() as connection:
@@ -126,9 +130,12 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
     city_id = uuid4()
     duplicate_key = uuid4()
 
-    async with _ca_session() as session, _workspace_repository() as (
-        workspace,
-        workspace_sessions,
+    async with (
+        _ca_session() as session,
+        _workspace_repository() as (
+            workspace,
+            workspace_sessions,
+        ),
     ):
         source = _run(
             run_id=source_run_id,
@@ -210,6 +217,7 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
             )
 
         service = ConceptNoteLifecycleService(session, workspace=workspace)
+        service.run_service.cc_client.delete_concept_note_sources = AsyncMock()
         service.run_service.get_authorized_run = AsyncMock(return_value=source)
         response, created = await service.duplicate_run(
             run_id=source_run_id,
@@ -240,8 +248,7 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
             )
             copied_revision = await workspace_session.scalar(
                 select(ConceptNoteChapterRevision).where(
-                    ConceptNoteChapterRevision.chapter_id
-                    == copied_chapter.chapter_id
+                    ConceptNoteChapterRevision.chapter_id == copied_chapter.chapter_id
                 )
             )
             copied_export = await workspace_session.scalar(
@@ -273,6 +280,43 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
         destination_thread = await session.get(Thread, destination.thread_id)
         assert destination_thread.title == "Cooling schools"
 
+        async with workspace_sessions() as ws, ws.begin():
+            for run_id in [source_run_id, destination.run_id]:
+                proposal = ConceptNoteEditProposal(
+                    run_id=run_id,
+                    actor_user_id="owner-1",
+                    idempotency_key=uuid4(),
+                    request_fingerprint="c" * 64,
+                    instruction="Private document edits",
+                    scope={"kind": "auto"},
+                )
+                ws.add(proposal)
+                await ws.flush()
+                ws.add(
+                    ConceptNoteEditApplication(
+                        run_id=run_id,
+                        actor_user_id="owner-1",
+                        proposal_id=proposal.proposal_id,
+                        sequence=1,
+                        operation="apply",
+                        idempotency_key=uuid4(),
+                        request_fingerprint="d" * 64,
+                        before_revisions={},
+                        after_revisions={},
+                        accepted_change_ids=[],
+                    )
+                )
+        message_id = uuid4()
+        session.add(
+            Message(
+                message_id=message_id,
+                thread_id=destination.thread_id,
+                user_id="owner-1",
+                text="Private chat",
+            )
+        )
+        await session.commit()
+
         await service.delete_run(
             run_id=destination.run_id,
             requested_user_id="owner-1",
@@ -281,7 +325,42 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
         assert await session.get(ConceptNoteRun, destination.run_id) is None
         assert await session.get(Thread, destination.thread_id) is None
         assert await session.get(ConceptNoteRun, source_run_id) is not None
+        assert (
+            await session.scalar(
+                select(Message).where(Message.message_id == message_id)
+            )
+            is None
+        )
+        assert (
+            await session.scalar(
+                select(ConceptNoteUpload).where(
+                    ConceptNoteUpload.run_id == destination.run_id
+                )
+            )
+            is None
+        )
+        assert (
+            await session.scalar(
+                select(ConceptNoteContextBundle).where(
+                    ConceptNoteContextBundle.run_id == destination.run_id
+                )
+            )
+            is None
+        )
         async with workspace_sessions() as workspace_session:
+            for model in [ConceptNoteEditProposal, ConceptNoteEditApplication]:
+                assert (
+                    await workspace_session.scalar(
+                        select(model).where(model.run_id == destination.run_id)
+                    )
+                    is None
+                )
+                assert (
+                    await workspace_session.scalar(
+                        select(model).where(model.run_id == source_run_id)
+                    )
+                    is not None
+                )
             assert (
                 await workspace_session.scalar(
                     select(ConceptNoteChapter).where(
@@ -290,6 +369,60 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
                 )
                 is None
             )
+
+
+async def test_source_cleanup_preserves_shared_copies_and_cleans_the_last_reference() -> (
+    None
+):
+    async with _ca_session() as session:
+        source_id, copy_id, original_upload, copy_upload = [uuid4() for _ in range(4)]
+        for run_id in [source_id, copy_id]:
+            session.add(_run(run_id=run_id, thread_id=uuid4(), city_id=uuid4()))
+        await session.flush()
+        for run_id, upload_id in [(source_id, original_upload), (copy_id, copy_upload)]:
+            session.add(
+                ConceptNoteUpload(
+                    run_id=run_id,
+                    upload_id=upload_id,
+                    uploaded_by_user_id="owner-1",
+                    filename="plan.pdf",
+                    markdown_s3_key=f"pdf-ocr/results/concept_note_upload/{original_upload}/1/combined_markdown.md",
+                )
+            )
+        await session.commit()
+        service = ConceptNoteLifecycleService(session)
+        assert await service._unshared_source_upload_ids(source_id) == []
+        original = await session.get(ConceptNoteRun, source_id)
+        await session.delete(original)
+        await session.commit()
+        assert set(await service._unshared_source_upload_ids(copy_id)) == {
+            str(original_upload),
+            str(copy_upload),
+        }
+
+
+async def test_failed_source_cleanup_preserves_run_and_workspace_for_retry() -> None:
+    async with _ca_session() as session:
+        run = _run(run_id=uuid4(), thread_id=uuid4(), city_id=uuid4())
+        session.add(Thread(thread_id=run.thread_id, user_id=run.user_id))
+        session.add(run)
+        await session.commit()
+        service = ConceptNoteLifecycleService(session, workspace=AsyncMock())
+        service.run_service.get_authorized_run = AsyncMock(return_value=run)
+        service._unshared_source_upload_ids = AsyncMock(return_value=[str(uuid4())])
+        service.run_service.cc_client.delete_concept_note_sources = AsyncMock(
+            side_effect=RuntimeError("storage unavailable")
+        )
+        with pytest.raises(HTTPException) as error:
+            await service.delete_run(
+                run_id=run.run_id,
+                requested_user_id=run.user_id,
+                authorization="Bearer token",
+            )
+        assert error.value.status_code == 503
+        service.workspace.delete_run.assert_not_called()
+        assert await session.get(ConceptNoteRun, run.run_id) is not None
+        assert await session.get(Thread, run.thread_id) is not None
 
 
 @pytest.mark.parametrize("value", ["", "   ", "x" * 121])

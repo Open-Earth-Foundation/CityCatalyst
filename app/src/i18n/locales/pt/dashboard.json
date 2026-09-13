@@ -338,5 +338,10 @@
   "all-tools": "Todas as ferramentas",
   "useful-links": "Links úteis",
   "learning-hub": "Centro de aprendizado",
-  "module-unavailable-for-city": "{{module}} não está disponível para esta cidade. Mostrando a visão geral da cidade em vez disso."
+  "module-unavailable-for-city": "{{module}} não está disponível para esta cidade. Mostrando a visão geral da cidade em vez disso.",
+  "removed": "removido",
+  "net-removal": "Remoção de rede",
+  "removal": "Remoção",
+  "removals-not-countable-footnote": "* Sub-setores com remoções não são contabilizáveis como emissões",
+  "no-cited-source": "Sem fonte citada"
 }

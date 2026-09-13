@@ -50,6 +50,15 @@ For each sparse project retain evidence at
 its funded relationship to this program. Add field-level evidence for optional
 values. Retain disagreements in `conflicts`; never infer awards, rules, weights,
 hard gates, dates, projects, or statuses.
+
+For application templates, assign each source-backed required field to the
+applicable chapter's `required_fields`. Preserve the exact field text from the
+template-level inventory. Requirements applying to several chapters must appear
+on each applicable chapter; use an empty array when no fields are required there.
+Keep template-level `required_fields` as the complete inventory. If the source
+does not establish field ownership, retain the inventory field and record a gap
+for its chapter assignment rather than guessing. Such a template needs review
+before chapter validation can run.
 </task>
 
 <input>
@@ -108,8 +117,9 @@ Required top-level fields:
   `award_year`, `status`, `summary`, and string arrays `hazards` and
   `interventions`
 - `funder_templates`: rows with `template_name`, nullable `output_format`, a
-  `chapter_schema` of `title`, nullable `description` and
-  `required`, and `required_fields`
+  `chapter_schema` array of objects with `title`, nullable `description` and
+  `required`, and chapter-specific `required_fields` (string array); the template
+  also has `required_fields` (string array inventory across chapters)
 - `funder_criteria`: rows with `criterion_type`, `label`, `requirement_text`,
   nullable `weight`, `hard_gate`, and `normalized_rule`
 - `source_assessments`: rows with captured `source_url`, `source_type`, nullable ISO

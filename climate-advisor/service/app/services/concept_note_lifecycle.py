@@ -1,10 +1,11 @@
-"""Rename, duplicate, and permanently delete Concept Note runs."""
+"""Rename, duplicate, reset chat, and permanently delete Concept Note runs."""
 
 from __future__ import annotations
 
 import hashlib
 import json
 import logging
+import re
 from copy import deepcopy
 from datetime import UTC, datetime
 from typing import Any
@@ -41,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 class ConceptNoteLifecycleService:
-    """Apply the three user-facing lifecycle actions with direct persistence."""
+    """Apply user-facing lifecycle actions with direct persistence."""
 
     def __init__(
         self,
@@ -177,7 +178,7 @@ class ConceptNoteLifecycleService:
         requested_user_id: str,
         authorization: str | None,
     ) -> None:
-        """Delete an owned run, its managed workspace, and dedicated chat."""
+        """Delete an owned run, its private workspace/chat, and unshared sources."""
         run = await self.run_service.get_authorized_run(
             run_id=run_id,
             requested_user_id=requested_user_id,
@@ -192,6 +193,9 @@ class ConceptNoteLifecycleService:
 
         # Remove run-owned document rows before deleting its CA record and chat.
         try:
+            upload_ids = await self._unshared_source_upload_ids(run.run_id)
+            if upload_ids:
+                await self.run_service.cc_client.delete_concept_note_sources(upload_ids)
             await self.workspace.delete_run(run_id=run.run_id)
         except Exception as exc:
             logger.exception("Concept Note workspace deletion failed")
@@ -211,6 +215,90 @@ class ConceptNoteLifecycleService:
                 await self.session.delete(thread)
         await self.session.delete(run)
         await self.session.commit()
+
+    async def _unshared_source_upload_ids(self, run_id: UUID) -> list[str]:
+        """Keep shared copy artifacts until the last referencing note is deleted."""
+        uploads = list(
+            await self.session.scalars(
+                select(ConceptNoteUpload).where(ConceptNoteUpload.run_id == run_id)
+            )
+        )
+        candidates = {str(upload.upload_id) for upload in uploads}
+        # Copies have new upload IDs but retain their original artifact pointer.
+        for upload in uploads:
+            match = re.match(
+                r"^pdf-ocr/results/concept_note_upload/([0-9a-f-]{36})/",
+                upload.markdown_s3_key or "",
+            )
+            if match:
+                candidates.add(str(UUID(match.group(1))))
+        unshared = []
+        for upload_id in sorted(candidates):
+            shared = await self.session.scalar(
+                select(ConceptNoteUpload.upload_id)
+                .where(
+                    ConceptNoteUpload.run_id != run_id,
+                    ConceptNoteUpload.markdown_s3_key.startswith(
+                        f"pdf-ocr/results/concept_note_upload/{upload_id}/"
+                    ),
+                )
+                .limit(1)
+            )
+            if shared is None:
+                unshared.append(upload_id)
+        return unshared
+
+    async def reset_chat(
+        self,
+        *,
+        run_id: UUID,
+        requested_user_id: str,
+        authorization: str | None,
+    ) -> ConceptNoteRunResponse:
+        """Replace an owned run's dedicated chat without changing its workspace."""
+        token = _require_bearer_token(authorization)
+        run = await self.run_service.get_authorized_run(
+            run_id=run_id,
+            requested_user_id=requested_user_id,
+            authorization=authorization,
+        )
+        _require_idle(run)
+        if not await self._thread_is_dedicated(run):
+            raise HTTPException(
+                status_code=409,
+                detail="The Concept Note chat is shared and cannot be reset",
+            )
+
+        old_thread = None
+        if run.thread_id is not None:
+            old_thread = await self.session.scalar(
+                select(Thread).where(
+                    Thread.thread_id == run.thread_id,
+                    Thread.user_id == run.user_id,
+                )
+            )
+
+        # Point the run at a fresh workflow-bound chat before removing history.
+        new_thread_id = uuid4()
+        new_thread = Thread(
+            thread_id=new_thread_id,
+            user_id=run.user_id,
+            title=run.name,
+            context=bind_workflow_context(
+                create_token_context(token),
+                workflow_key=CONCEPT_NOTE_RUN_ID_KEY,
+                run_id=run.run_id,
+            ),
+        )
+        self.session.add(new_thread)
+        run.thread_id = new_thread_id
+        run.updated_at = datetime.now(UTC)
+        await self.session.flush()
+
+        if old_thread is not None:
+            await self.session.delete(old_thread)
+        await self.session.commit()
+        return _to_response(run, created=False)
 
     async def _build_copy(
         self,

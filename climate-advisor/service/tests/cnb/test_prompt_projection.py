@@ -65,7 +65,11 @@ def populated_state():
             template_name="Application",
             chapter_schema=[
                 TemplateChapterDraft(chapter_ref="chapter-private-1", title="Summary"),
-                TemplateChapterDraft(chapter_ref="chapter-private-2", title="Budget"),
+                TemplateChapterDraft(
+                    chapter_ref="chapter-private-2",
+                    title="Budget",
+                    required_fields=["Total cost", "Funding requested"],
+                ),
             ],
         )
     ]
@@ -101,6 +105,10 @@ def test_research_projection_round_trip_keeps_identity_only_in_backend():
     assert "project-private" not in json.dumps(payload)
     assert payload["evidence"][1]["project_position"] == 0
     assert payload["evidence"][1]["field"] == "funded_projects[0].summary"
+    assert payload["funder_templates"][0]["chapter_schema"][1]["required_fields"] == [
+        "Total cost",
+        "Funding requested",
+    ]
     assert payload["conflicts"][0]["evidence_positions"] == [1]
     restored = restore_research_state(public, state, sources)
     assert restored.funded_projects[0].funded_project_ref == "project-private"
@@ -109,6 +117,10 @@ def test_research_projection_round_trip_keeps_identity_only_in_backend():
         == "chapter-private-2"
     )
     assert restored.evidence[1].source_ref == "source-002"
+    assert restored.funder_templates[0].chapter_schema[1].required_fields == [
+        "Total cost",
+        "Funding requested",
+    ]
     assert restored.evidence[1].funded_project_ref == "project-private"
     assert restored.conflicts[0].evidence_refs == [restored.evidence[1].evidence_ref]
     assert state.model_dump(mode="json") == original

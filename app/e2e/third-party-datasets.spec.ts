@@ -1,238 +1,161 @@
-import { expect, test } from "@playwright/test";
-import { navigateToGHGIModule } from "./helpers";
+import { expect, Page, test } from "@playwright/test";
+import {
+  createCityAndInventoryThroughOnboarding,
+  dismissCookieConsent,
+  navigateToDataPage,
+} from "./helpers";
 
 const testIds = {
   addDataStepHeading: "add-data-step-title",
   stationaryEnergySectorCard: "stationary-energy-sector-card",
-  transportationSectorCard: "transportation-sector-card",
-  wasteSectorCard: "waste-sector-card",
   sectorCardButton: "sector-card-button",
   subsectorCard: "subsector-card",
-  searchThirdPartyButton: "search-third-party-button",
-  dataSourceCard: "data-source-card",
-  dataSourceDrawer: "data-source-drawer",
-  connectDataButton: "connect-data-button",
-  disconnectDataButton: "disconnect-data-button",
-  connectedDataIndicator: "connected-data-indicator",
-  dataSourceTitle: "data-source-title",
+  sourceCard: "source-card",
   noDataSourcesMessage: "no-data-sources-message",
-  loadingIndicator: "loading-indicator",
 };
 
+async function openStationaryEnergySectorPage(
+  page: Page,
+  cityId: string,
+  inventoryId: string,
+) {
+  await navigateToDataPage(page, cityId, inventoryId);
+
+  await expect(page.getByTestId(testIds.addDataStepHeading)).toContainText(
+    "Add Data",
+    { timeout: 30000 },
+  );
+
+  const stationaryEnergyCard = page.getByTestId(
+    testIds.stationaryEnergySectorCard,
+  );
+  await expect(stationaryEnergyCard).toBeVisible({ timeout: 30000 });
+
+  const sectorDataUrl = `**/cities/${cityId}/GHGI/${inventoryId}/data/1/`;
+  await Promise.all([
+    page.waitForURL(sectorDataUrl),
+    stationaryEnergyCard.getByTestId(testIds.sectorCardButton).click(),
+  ]);
+
+  await expect(
+    page.getByRole("heading", { name: /Stationary energy/i }),
+  ).toBeVisible({ timeout: 30000 });
+  await expect(page.getByTestId(testIds.subsectorCard).first()).toBeVisible({
+    timeout: 30000,
+  });
+}
+
+async function searchThirdPartyDatasets(page: Page, inventoryId: string) {
+  const searchButton = page.getByRole("button", {
+    name: /Search for available datasets/i,
+  });
+  await searchButton.scrollIntoViewIfNeeded();
+  await expect(searchButton).toBeVisible({ timeout: 30000 });
+
+  const datasourceResponse = page.waitForResponse(
+    (resp) =>
+      resp.url().includes(`/datasource/${inventoryId}`) &&
+      resp.request().method() === "GET" &&
+      resp.ok(),
+    { timeout: 60000 },
+  );
+  await searchButton.click();
+  await datasourceResponse;
+}
+
 test.describe("Third Party Datasets", () => {
-  test("should complete third-party datasets workflow", async ({ page }) => {
-    test.setTimeout(120000);
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(120000);
 
-    // Step 1: Navigate to GHGI module
-    await navigateToGHGIModule(page);
-    // Verify Dashboard
-    await page.waitForLoadState("networkidle");
-    // Verify page title
-    await expect(page).toHaveTitle(/CityCatalyst/i);
+  let cityId: string;
+  let inventoryId: string;
 
-    // Step 2: Navigate to add data page
-    // The dashboard toolbar redesign (CC-657) dropped the "add data" nav
-    // card in favor of per-sector links from the calculation tab, so this
-    // workflow now goes to the data page directly.
-    const dashboardPathname = new URL(page.url()).pathname;
-    await page.goto(`${dashboardPathname.replace(/\/$/, "")}/data/`);
-    await page.waitForURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/$/);
-    await expect(page).toHaveURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/$/);
+  test.beforeAll(async ({ browser }) => {
+    test.setTimeout(180000);
 
-    // Verify page header
-    const pageHeader = page.getByTestId(testIds.addDataStepHeading);
-    await expect(pageHeader).toContainText("Add Data");
+    const context = await browser.newContext({
+      storageState: "playwright/.auth/user.json",
+    });
+    const page = await context.newPage();
 
-    // Verify sector cards are visible
-    await expect(
-      page.getByTestId(testIds.stationaryEnergySectorCard),
-    ).toBeVisible();
-    await expect(
-      page.getByTestId(testIds.transportationSectorCard),
-    ).toBeVisible();
-    await expect(page.getByTestId(testIds.wasteSectorCard)).toBeVisible();
+    const result = await createCityAndInventoryThroughOnboarding(page);
+    cityId = result.cityId;
+    inventoryId = result.inventoryId;
 
-    // Step 3: Navigate to sector page and see third-party data section
-    const stationaryEnergyCard = page.getByTestId(
-      testIds.stationaryEnergySectorCard,
-    );
-    const sectorButton = stationaryEnergyCard.getByTestId(
-      testIds.sectorCardButton,
-    );
-    await sectorButton.click();
+    await context.close();
+  });
 
-    // Wait for navigation to sector page
-    await page.waitForURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/1\/$/);
-    await expect(page).toHaveURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/1\/$/);
+  test.beforeEach(async ({ page }) => {
+    await dismissCookieConsent(page);
+  });
 
-    // Wait for subsectors to load
-    await page.waitForSelector(`[data-testid="${testIds.subsectorCard}"]`);
-    const subsectorCards = page.getByTestId(testIds.subsectorCard);
-    expect(await subsectorCards.count()).toBeGreaterThan(0);
+  test("should search and manage third-party datasets on sector page", async ({
+    page,
+  }) => {
+    await openStationaryEnergySectorPage(page, cityId, inventoryId);
+    await searchThirdPartyDatasets(page, inventoryId);
 
-    // Step 4: Search for third-party data sources
-    // Look for "Search for third-party data" button
-    const searchButton = page
-      .getByRole("button")
-      .filter({
-        hasText: /search.*third|third.*party|external.*data/i,
-      })
-      .first();
+    const sourceCards = page.getByTestId(testIds.sourceCard);
+    const noDataMessage = page.getByTestId(testIds.noDataSourcesMessage);
 
-    if (await searchButton.isVisible()) {
-      await searchButton.click();
+    await expect(sourceCards.first().or(noDataMessage)).toBeVisible({
+      timeout: 30000,
+    });
 
-      // Wait for data sources to load or "no data sources" message
-      await Promise.race([
-        page.waitForSelector('[data-testid*="source-card"]', {
-          timeout: 10000,
-        }),
-        page.waitForSelector('[data-testid="no-data-sources-message"]', {
-          timeout: 10000,
-        }),
-      ]);
-
-      // Check if we have data source cards or a no data message
-      const dataSourceCards = page.locator('[data-testid*="source-card"]');
-      const noDataMessage = page.locator(
-        '[data-testid="no-data-sources-message"]',
-      );
-
-      const hasDataSources = (await dataSourceCards.count()) > 0;
-      const hasNoDataMessage = await noDataMessage.isVisible();
-
-      // Either we should have data sources or a no data message
-      expect(hasDataSources || hasNoDataMessage).toBeTruthy();
-
-      // Step 5: If data sources exist, test interaction and connection
-      if (hasDataSources) {
-        // Click on first data source to open drawer
-        await dataSourceCards.first().click();
-        await page.waitForTimeout(1000);
-
-        // Check if drawer opened (should have a back button)
-        const backButton = page
-          .getByRole("button")
-          .filter({ hasText: /back/i });
-        await expect(backButton).toBeVisible();
-
-        // Check for connect data button in drawer
-        const connectButton = page.getByRole("button").filter({
-          hasText: /connect.*data/i,
-        });
-        await expect(connectButton).toBeVisible();
-
-        // Test connection functionality
-        const firstDataSource = dataSourceCards.first();
-        const connectButtonInCard = firstDataSource.getByRole("button").filter({
-          hasText: /connect.*data/i,
-        });
-
-        if (await connectButtonInCard.isVisible()) {
-          // Click connect button in drawer
-          const connectButtonInDrawer = page
-            .getByRole("button")
-            .filter({ hasText: /connect.*data/i })
-            .last();
-          await connectButtonInDrawer.click();
-
-          // Wait for connection to complete
-          await page.waitForTimeout(3000);
-
-          // Go back to see the updated state
-          if (await backButton.isVisible()) {
-            await backButton.click();
-            await page.waitForTimeout(1000);
-          }
-
-          // Verify the source now shows as connected
-          const connectedIndicator =
-            firstDataSource.getByText(/connected|disconnect/i);
-          const checkIcon = firstDataSource.locator(
-            'svg[data-testid*="check"]',
-          );
-
-          const isConnected =
-            (await connectedIndicator.isVisible().catch(() => false)) ||
-            (await checkIcon.isVisible().catch(() => false));
-
-          if (isConnected) {
-            // Test disconnecting the data source
-            await firstDataSource.hover();
-            await page.waitForTimeout(500);
-
-            // Look for disconnect button
-            const disconnectButton = firstDataSource
-              .getByRole("button")
-              .filter({
-                hasText: /disconnect/i,
-              });
-
-            if (await disconnectButton.isVisible()) {
-              await disconnectButton.click();
-              await page.waitForTimeout(2000);
-
-              // Verify source is disconnected
-              const connectButtonAfterDisconnect = firstDataSource
-                .getByRole("button")
-                .filter({ hasText: /connect.*data/i });
-              await expect(connectButtonAfterDisconnect).toBeVisible();
-            }
-          }
-        } else {
-          // Close the drawer if we can't test connection
-          await backButton.click();
-          await page.waitForTimeout(500);
-        }
-      } else if (hasNoDataMessage) {
-        // Step 6: Test graceful handling of no data sources
-        await expect(noDataMessage).toBeVisible();
-
-        // Navigate to another sector that might not have data sources (Waste)
-        await page.goto("./data/");
-        await page.waitForURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/$/);
-
-        const wasteCard = page.getByTestId(testIds.wasteSectorCard);
-        const wasteSectorButton = wasteCard.getByTestId(
-          testIds.sectorCardButton,
-        );
-        await wasteSectorButton.click();
-        await page.waitForURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/3\/$/);
-
-        // Click on a subsector if available
-        const subsectorCards = page.getByTestId(testIds.subsectorCard);
-        if ((await subsectorCards.count()) > 0) {
-          await subsectorCards.first().click();
-          await page.waitForTimeout(2000);
-
-          // Look for search button in waste sector
-          const wasteSearchButton = page
-            .getByRole("button")
-            .filter({
-              hasText: /search.*third|third.*party|external.*data/i,
-            })
-            .first();
-
-          if (await wasteSearchButton.isVisible()) {
-            await wasteSearchButton.click();
-            await page.waitForTimeout(2000);
-
-            // Check for no data sources message or available data sources
-            const wasteNoDataMessage = page.getByText(
-              /no.*data.*available|no.*third.*party|missing.*third.*party/i,
-            );
-            const wasteDataSourceCards = page.locator(
-              '[data-testid*="source-card"]',
-            );
-
-            // Either we have data sources or a message saying there are none
-            const hasContent =
-              (await wasteNoDataMessage.isVisible()) ||
-              (await wasteDataSourceCards.count()) > 0;
-            expect(hasContent).toBeTruthy();
-          }
-        }
-      }
+    if (await noDataMessage.isVisible()) {
+      await expect(noDataMessage).toBeVisible();
+      return;
     }
+
+    const firstSourceCard = sourceCards.first();
+    const connectButton = firstSourceCard.getByRole("button", {
+      name: /^Connect data$/i,
+    });
+
+    if (
+      (await connectButton.isVisible()) &&
+      (await connectButton.isEnabled())
+    ) {
+      const connectResponse = page.waitForResponse(
+        (resp) =>
+          resp.url().includes(`/datasource/${inventoryId}`) &&
+          resp.request().method() === "POST" &&
+          resp.ok(),
+        { timeout: 60000 },
+      );
+      await connectButton.click();
+      await connectResponse;
+
+      const connectedButton = firstSourceCard.getByRole("button", {
+        name: /data connected/i,
+      });
+      await expect(connectedButton).toBeVisible({ timeout: 30000 });
+
+      await firstSourceCard.hover();
+      const disconnectButton = firstSourceCard.getByRole("button", {
+        name: /disconnect data/i,
+      });
+      await expect(disconnectButton).toBeVisible({ timeout: 10000 });
+
+      const disconnectResponse = page.waitForResponse(
+        (resp) =>
+          resp.url().includes(`/datasource/${inventoryId}/datasource/`) &&
+          resp.request().method() === "DELETE" &&
+          resp.ok(),
+        { timeout: 60000 },
+      );
+      await disconnectButton.click();
+      await disconnectResponse;
+
+      await expect(connectButton).toBeVisible({ timeout: 30000 });
+    }
+
+    await firstSourceCard
+      .getByRole("link", { name: /see more details/i })
+      .click();
+    await expect(
+      page.getByRole("button", { name: /go back/i }),
+    ).toBeVisible({ timeout: 30000 });
+    await page.getByRole("button", { name: /go back/i }).click();
   });
 });

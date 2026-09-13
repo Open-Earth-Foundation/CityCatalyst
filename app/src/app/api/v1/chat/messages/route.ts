@@ -50,11 +50,13 @@
  */
 
 import { NextResponse } from "next/server";
+import { requireExistingChatUser } from "@/backend/chat/authorization";
 import {
   callClimateAdvisorChat,
   extractClimateAdvisorErrorMessage,
   readClimateAdvisorResponsePayload,
 } from "@/backend/chat/climate-advisor";
+import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 import { buildClimateAdvisorMessagePayload } from "@/backend/chat/message-payload";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
@@ -77,6 +79,8 @@ export const POST = apiHandler(async (req, { session }) => {
       );
     }
 
+    await requireExistingChatUser(session.user.id);
+
     logger.info(
       {
         user_id: session.user.id,
@@ -89,6 +93,11 @@ export const POST = apiHandler(async (req, { session }) => {
       "Sending message to CA thread",
     );
 
+    const token = await issueClimateAdvisorUserToken({
+      userId: session.user.id,
+      inventoryId: inventory_id ?? inventoryId,
+    });
+
     const caResponse = await callClimateAdvisorChat({
       path: "/v1/messages",
       method: "POST",
@@ -97,6 +106,7 @@ export const POST = apiHandler(async (req, { session }) => {
       },
       body: buildClimateAdvisorMessagePayload({
         userId: session.user.id,
+        accessToken: token.access_token,
         body,
       }),
     });

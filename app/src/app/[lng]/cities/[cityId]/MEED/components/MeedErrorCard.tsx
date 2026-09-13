@@ -1,5 +1,6 @@
 "use client";
-import { Card, HStack, Icon, VStack } from "@chakra-ui/react";
+import { Card, HStack, Icon, Link, VStack } from "@chakra-ui/react";
+import NextLink from "next/link";
 import { LuRotateCw, LuTriangleAlert } from "react-icons/lu";
 import { MeedButton } from "./MeedButton";
 import { TitleMedium } from "@/components/package/Texts/Title";
@@ -12,6 +13,12 @@ export interface MeedErrorCardProps {
   /** Omit both to render a non-retryable notice. */
   retryLabel?: string;
   onRetry?: () => void;
+  /**
+   * Somewhere to go to unblock the thing that failed. Sits beside the retry:
+   * "try again" is useless advice when the fix is elsewhere in the module.
+   */
+  actionLabel?: string;
+  actionHref?: string;
   /**
    * `inline` sits among other content (default). `panel` fills the space where
    * the content would have been — centred, larger icon.
@@ -33,6 +40,8 @@ export function MeedErrorCard({
   body,
   retryLabel,
   onRetry,
+  actionLabel,
+  actionHref,
   variant = "inline",
 }: MeedErrorCardProps) {
   const isPanel = variant === "panel";
@@ -41,13 +50,33 @@ export function MeedErrorCard({
       variant="outlined"
       minW="auto"
       px="l"
-      mt={isPanel ? "s" : undefined}
       onClick={onRetry}
       leftIcon={isPanel ? <Icon as={LuRotateCw} boxSize="16px" /> : undefined}
       _focusVisible={FOCUS_RING}
     >
       {retryLabel}
     </MeedButton>
+  );
+
+  const action = actionLabel && actionHref && (
+    <Link
+      asChild
+      color="content.link"
+      fontFamily="heading"
+      fontSize="label.md"
+      fontWeight="semibold"
+      textDecoration="underline"
+      _focusVisible={FOCUS_RING}
+    >
+      <NextLink href={actionHref}>{actionLabel}</NextLink>
+    </Link>
+  );
+
+  const footer = (retry || action) && (
+    <HStack gap="m" mt={isPanel ? "s" : undefined}>
+      {retry}
+      {action}
+    </HStack>
   );
 
   if (isPanel) {
@@ -64,7 +93,7 @@ export function MeedErrorCard({
             <BodyMedium color="content.secondary" maxW="480px">
               {body}
             </BodyMedium>
-            {retry}
+            {footer}
           </VStack>
         </Card.Body>
       </Card.Root>
@@ -84,7 +113,7 @@ export function MeedErrorCard({
             <TitleMedium color="content.primary">{title}</TitleMedium>
           </HStack>
           <BodyMedium color="content.secondary">{body}</BodyMedium>
-          {retry}
+          {footer}
         </VStack>
       </Card.Body>
     </Card.Root>

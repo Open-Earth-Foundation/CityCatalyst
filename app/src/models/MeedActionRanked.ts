@@ -5,6 +5,7 @@ import type { Inventory, InventoryId } from "./Inventory";
 export interface MeedActionRankedAttributes {
   id: string;
   inventoryId?: string;
+  rankingId?: string | null;
   actionId?: string;
   rank?: number;
   finalScore?: number;
@@ -33,6 +34,7 @@ export class MeedActionRanked
 {
   declare id: string;
   declare inventoryId?: string;
+  declare rankingId?: string | null;
   declare actionId?: string;
   declare rank?: number;
   declare finalScore?: number;
@@ -70,6 +72,12 @@ export class MeedActionRanked
             key: "inventory_id",
           },
           field: "inventory_id",
+        },
+        rankingId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          field: "ranking_id",
+          references: { model: "MeedRanking", key: "id" },
         },
         actionId: {
           type: DataTypes.TEXT,

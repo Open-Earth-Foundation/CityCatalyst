@@ -28,6 +28,7 @@ module.exports = {
         transaction,
         false,
         true, // insert timestamps on create
+        "is_manually_edited", // skip overwriting rows edited via the admin panel
       );
 
       // Register OEF modules that are available to every project. Feature-gated

@@ -27,9 +27,10 @@ This cron job endpoint checks the status of pending HIAP prioritization jobs and
 - Save results when jobs finish
 - Start the next batch when no PENDING jobs exist
 
-NativeInputCatalog reconciliation is intentionally handled by the isolated
-`hiap-catalog-backfill` command and manual Kubernetes Job. It is not part of
-this polling endpoint.
+NativeInputCatalog reconciliation is handled by the isolated
+`hiap-catalog-backfill` command and manual Kubernetes Job. The runner covers
+legacy HIAP rankings/action plans and completed HIAP-MEED rankings with
+bounded, resumable pages. It is not part of this polling endpoint.
 
 **Critical Constraint:** HIAP API can only handle **1 bulk job at a time, system-wide**. This cron enforces that limit.
 

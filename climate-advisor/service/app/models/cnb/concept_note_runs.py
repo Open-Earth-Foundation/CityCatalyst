@@ -6,6 +6,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from app.models.cnb.concept_note_markdown import ConceptNoteUploadStatusResponse
+
 
 class ConceptNoteStartRequest(BaseModel):
     """Authenticated request to create one Concept Note Builder run."""
@@ -95,6 +97,7 @@ class ConceptNoteRunResponse(ConceptNoteRunListItemResponse):
     """Persisted concept-note run returned by start and detail endpoints."""
 
     user_id: str
+    uploads: list[ConceptNoteUploadStatusResponse] = Field(default_factory=list)
     next_action: Literal["load_context"] = "load_context"
     created: bool
     trace_id: str | None = None

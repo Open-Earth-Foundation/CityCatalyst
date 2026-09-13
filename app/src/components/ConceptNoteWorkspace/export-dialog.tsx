@@ -1,23 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Box, Text } from "@chakra-ui/react";
 
-import { Box, Flex, Grid, HStack, Icon, Text, VStack } from "@chakra-ui/react";
-import {
-  LuCheck,
-  LuCircleAlert,
-  LuDownload,
-  LuFileText,
-  LuInfo,
-} from "react-icons/lu";
-
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DialogBody,
   DialogCloseTrigger,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogRoot,
   DialogTitle,
@@ -26,81 +14,101 @@ import { useTranslation } from "@/i18n/client";
 import type { ConceptNoteDraftState } from "@/util/types";
 
 import {
-  canExportConceptNote,
-  countUnresolvedExportItems,
-  exportConceptNote,
-  type ConceptNoteExportFormat,
-} from "./concept-note-export";
+  chapterValidationFindingKey,
+  type DocumentReviewFinding,
+} from "./chapter-validation";
+import {
+  GuidedReviewDecisionPanel,
+  GuidedReviewExportPanel,
+  GuidedReviewFindingsPanel,
+  GuidedReviewRunningPanel,
+  GuidedReviewStepper,
+  SavedReviewSummary,
+  stageIndex,
+} from "./guided-review-panels";
+import { useGuidedReview } from "./use-guided-review";
 
 interface ExportDialogProps {
   draft: ConceptNoteDraftState | null;
+  draftError: boolean;
+  hasApplicationTemplate: boolean;
   hasUploadedEvidence: boolean;
   lng: string;
   noteName: string;
+  onAddInformation: (
+    chapterId: string | null,
+    findingKey?: string | null,
+  ) => void;
   onOpenChange: (open: boolean) => void;
+  onRetryDraft: () => void | Promise<unknown>;
+  onReviewComplete: () => void | Promise<unknown>;
+  onReviewSetup: () => void;
   open: boolean;
+  runId: string;
 }
 
 export function ExportDialog({
   draft,
+  draftError,
+  hasApplicationTemplate,
   hasUploadedEvidence,
   lng,
   noteName,
+  onAddInformation,
   onOpenChange,
+  onRetryDraft,
+  onReviewComplete,
+  onReviewSetup,
   open,
+  runId,
 }: ExportDialogProps) {
   const { t } = useTranslation(lng, "concept-notes");
-  const [acceptedMissingInformation, setAcceptedMissingInformation] =
-    useState(false);
-  const [exportError, setExportError] = useState(false);
-  const [exportingFormat, setExportingFormat] =
-    useState<ConceptNoteExportFormat | null>(null);
-  const chapters = useMemo(() => draft?.chapters ?? [], [draft?.chapters]);
-  const unresolvedCount = useMemo(
-    () => countUnresolvedExportItems(chapters),
-    [chapters],
-  );
-  const hasExportableDraft = chapters.some((chapter) =>
-    Boolean(chapter.body_markdown?.trim()),
-  );
-  const canExport =
-    canExportConceptNote(chapters, acceptedMissingInformation) &&
-    !exportingFormat;
+  const controller = useGuidedReview({
+    draft,
+    draftError,
+    hasApplicationTemplate,
+    lng,
+    noteName,
+    onReviewComplete,
+    open,
+    runId,
+  });
 
   function handleOpenChange(nextOpen: boolean): void {
-    if (!nextOpen) {
-      setAcceptedMissingInformation(false);
-      setExportError(false);
-      setExportingFormat(null);
-    }
+    if (!nextOpen) controller.cancelActiveRequest();
     onOpenChange(nextOpen);
   }
 
-  async function handleExport(format: ConceptNoteExportFormat): Promise<void> {
-    if (!canExport) {
-      return;
-    }
+  function handleAddInformation(
+    chapterId: string | null,
+    findingKey?: string | null,
+  ): void {
+    handleOpenChange(false);
+    onAddInformation(chapterId, findingKey);
+  }
 
-    setExportError(false);
-    setExportingFormat(format);
-    try {
-      await exportConceptNote(format, noteName, chapters);
-    } catch {
-      setExportError(true);
-    } finally {
-      setExportingFormat(null);
-    }
+  function handleOpenFinding(entry: DocumentReviewFinding): void {
+    handleAddInformation(
+      entry.chapterId,
+      chapterValidationFindingKey(entry.chapterId, entry.finding),
+    );
+  }
+
+  function handleReviewSetup(): void {
+    handleOpenChange(false);
+    onReviewSetup();
   }
 
   return (
     <DialogRoot
       open={open}
       onOpenChange={(details) => handleOpenChange(details.open)}
-      size="lg"
+      size="cover"
     >
       <DialogContent
-        maxW="640px"
-        maxH="calc(100dvh - 32px)"
+        w="calc(100vw - 32px)"
+        maxW="980px"
+        h="min(820px, calc(100dvh - 32px))"
         my={4}
         overflow="hidden"
         borderRadius="rounded"
@@ -109,295 +117,100 @@ export function ExportDialog({
       >
         <DialogHeader
           display="block"
+          flexShrink={0}
           borderBottom="1px solid"
           borderColor="border.neutral"
-          px={6}
+          px={{ base: 5, md: 7 }}
           py={5}
-          pe={12}
+          pe={14}
         >
           <DialogTitle
             fontFamily="heading"
             fontSize="title.lg"
             color="content.primary"
           >
-            {t("export-concept-note")}
+            {t("guided-review-title")}
           </DialogTitle>
           <Text mt={1} fontSize="body.sm" color="content.tertiary">
-            {t("export-description")}
+            {t("guided-review-description")}
           </Text>
         </DialogHeader>
         <DialogCloseTrigger aria-label={t("close")} />
 
-        <DialogBody minH={0} overflowY="auto" px={6} py={5}>
-          <VStack align="stretch" gap={5}>
-            <Box>
-              <Text
-                mb={3}
-                fontFamily="heading"
-                fontSize="overline"
-                fontWeight="semibold"
-                letterSpacing="widest"
-                color="content.tertiary"
-                textTransform="uppercase"
-              >
-                {t("preflight-checks")}
-              </Text>
-              <VStack align="stretch" gap={2}>
-                <HStack
-                  gap={3}
-                  border="1px solid"
-                  borderColor={
-                    hasUploadedEvidence
-                      ? "sentiment.positiveDefault"
-                      : "sentiment.warningDefault"
-                  }
-                  borderRadius="rounded"
-                  bg={
-                    hasUploadedEvidence
-                      ? "sentiment.positiveOverlay"
-                      : "sentiment.warningOverlay"
-                  }
-                  p={3}
-                >
-                  <Icon
-                    as={hasUploadedEvidence ? LuCheck : LuCircleAlert}
-                    color={
-                      hasUploadedEvidence
-                        ? "sentiment.positiveDefault"
-                        : "sentiment.warningDefault"
-                    }
-                  />
-                  <Box flex={1}>
-                    <Text
-                      fontSize="body.sm"
-                      fontWeight="semibold"
-                      color="content.primary"
-                    >
-                      {hasUploadedEvidence
-                        ? t("source-context-ready")
-                        : t("source-context-recommended")}
-                    </Text>
-                    <Text fontSize="label.sm" color="content.secondary">
-                      {hasUploadedEvidence
-                        ? t("source-context-ready-export")
-                        : t("source-context-recommended-export")}
-                    </Text>
-                  </Box>
-                </HStack>
-                <HStack
-                  align="start"
-                  gap={3}
-                  border="1px solid"
-                  borderColor={
-                    hasExportableDraft && unresolvedCount === 0
-                      ? "sentiment.positiveDefault"
-                      : "sentiment.warningDefault"
-                  }
-                  borderRadius="rounded"
-                  bg={
-                    hasExportableDraft && unresolvedCount === 0
-                      ? "sentiment.positiveOverlay"
-                      : "sentiment.warningOverlay"
-                  }
-                  p={3}
-                >
-                  <Icon
-                    as={
-                      hasExportableDraft && unresolvedCount === 0
-                        ? LuCheck
-                        : LuCircleAlert
-                    }
-                    mt={0.5}
-                    color={
-                      hasExportableDraft && unresolvedCount === 0
-                        ? "sentiment.positiveDefault"
-                        : "sentiment.warningDefault"
-                    }
-                  />
-                  <Box flex={1}>
-                    <Text
-                      fontSize="body.sm"
-                      fontWeight="semibold"
-                      color="content.primary"
-                    >
-                      {!hasExportableDraft
-                        ? t("draft-preflight-empty")
-                        : unresolvedCount > 0
-                          ? t("draft-preflight-warning")
-                          : t("draft-preflight-ready")}
-                    </Text>
-                    <Text fontSize="label.sm" color="content.secondary">
-                      {!hasExportableDraft
-                        ? t("draft-preflight-empty-description")
-                        : unresolvedCount > 0
-                          ? t("draft-preflight-warning-description", {
-                              count: unresolvedCount,
-                            })
-                          : t("draft-preflight-ready-description")}
-                    </Text>
-                    {hasExportableDraft && unresolvedCount > 0 && (
-                      <Checkbox
-                        mt={3}
-                        alignItems="start"
-                        checked={acceptedMissingInformation}
-                        onCheckedChange={(details) =>
-                          setAcceptedMissingInformation(
-                            details.checked === true,
-                          )
-                        }
-                      >
-                        <Text
-                          fontSize="label.sm"
-                          lineHeight="20px"
-                          color="content.primary"
-                        >
-                          {t("missing-information-export-confirmation", {
-                            count: unresolvedCount,
-                          })}
-                        </Text>
-                      </Checkbox>
-                    )}
-                  </Box>
-                </HStack>
-              </VStack>
-            </Box>
-
-            <Box>
-              <Text
-                mb={3}
-                fontFamily="heading"
-                fontSize="overline"
-                fontWeight="semibold"
-                letterSpacing="widest"
-                color="content.tertiary"
-                textTransform="uppercase"
-              >
-                {t("export-formats")}
-              </Text>
-              <Grid
-                gap={3}
-                gridTemplateColumns={{
-                  base: "1fr",
-                  sm: "repeat(2, minmax(0, 1fr))",
-                }}
-              >
-                {(
-                  [
-                    {
-                      format: "docx",
-                      label: "DOCX",
-                      description: t("docx-description"),
-                    },
-                    {
-                      format: "pdf",
-                      label: "PDF",
-                      description: t("pdf-description"),
-                    },
-                  ] satisfies Array<{
-                    description: string;
-                    format: ConceptNoteExportFormat;
-                    label: string;
-                  }>
-                ).map((item) => (
-                  <VStack
-                    key={item.format}
-                    align="stretch"
-                    gap={3}
-                    border="1px solid"
-                    borderColor="border.neutral"
-                    borderRadius="rounded"
-                    bg="background.alternativeLight"
-                    p={4}
-                  >
-                    <Flex align="center" gap={3}>
-                      <Flex
-                        boxSize="36px"
-                        align="center"
-                        justify="center"
-                        borderRadius="rounded"
-                        bg="base.light"
-                        color="content.link"
-                      >
-                        <Icon as={LuFileText} />
-                      </Flex>
-                      <Box>
-                        <Text
-                          fontFamily="heading"
-                          fontSize="body.sm"
-                          fontWeight="semibold"
-                          color="content.primary"
-                        >
-                          {item.label}
-                        </Text>
-                        <Text fontSize="label.sm" color="content.tertiary">
-                          {item.description}
-                        </Text>
-                      </Box>
-                    </Flex>
-                    <Button
-                      disabled={!canExport}
-                      loading={exportingFormat === item.format}
-                      size="sm"
-                      variant="outline"
-                      onClick={() => void handleExport(item.format)}
-                    >
-                      <Icon as={LuDownload} />
-                      {t("export-format", { format: item.label })}
-                    </Button>
-                  </VStack>
-                ))}
-              </Grid>
-            </Box>
-
-            {exportError && (
-              <HStack
-                role="alert"
-                align="start"
-                gap={2}
-                color="sentiment.negativeDefault"
-              >
-                <Icon as={LuCircleAlert} mt={0.5} />
-                <Text fontSize="label.sm">{t("export-failed")}</Text>
-              </HStack>
-            )}
-
-            <HStack
-              align="start"
-              gap={2}
-              border="1px solid"
-              borderColor="border.neutral"
-              borderRadius="rounded"
-              bg="background.neutral"
-              p={3}
-            >
-              <Icon as={LuInfo} mt={0.5} color="content.link" />
-              <Text
-                fontSize="label.sm"
-                lineHeight="20px"
-                color="content.secondary"
-              >
-                {t("export-backend-note")}
-              </Text>
-            </HStack>
-          </VStack>
-        </DialogBody>
-
-        <DialogFooter
-          gap={3}
-          borderTop="1px solid"
-          borderColor="border.neutral"
-          px={6}
-          py={4}
-        >
-          <Button
-            variant="ghost"
-            color="content.link"
-            _hover={{ color: "content.link" }}
-            onClick={() => handleOpenChange(false)}
+        <DialogBody display="flex" minH={0} overflow="hidden" p={0}>
+          <GuidedReviewStepper
+            currentStepIndex={stageIndex(controller.stage)}
+            lng={lng}
+          />
+          <Box
+            flex={1}
+            minW={0}
+            overflowY="auto"
+            px={{ base: 5, md: 8 }}
+            py={6}
           >
-            {t("go-back")}
-          </Button>
-        </DialogFooter>
+            {controller.stage !== "running" && (
+              <SavedReviewSummary
+                failedChapters={controller.failedChapters}
+                lastValidatedAt={controller.lastValidatedAt}
+                lng={lng}
+                reviewedCount={controller.reviewedChapters.length}
+                onRerun={controller.rerunReview}
+                onRetryFailed={controller.retryFailedChapters}
+              />
+            )}
+            {controller.stage === "running" && (
+              <GuidedReviewRunningPanel
+                completedChapterCount={controller.completedChapterCount}
+                draftError={draftError}
+                lng={lng}
+                progressPercent={controller.progressPercent}
+                reviewError={controller.reviewError}
+                totalChapters={controller.chapters.length}
+                onCancel={() => handleOpenChange(false)}
+                onRetryDraft={() => void onRetryDraft()}
+                onReturnToDraft={() => handleAddInformation(null)}
+                onReviewSetup={handleReviewSetup}
+                rerunReview={controller.rerunReview}
+              />
+            )}
+            {controller.stage === "missing_information" && (
+              <GuidedReviewFindingsPanel
+                chapterTitles={controller.chapterTitles}
+                lng={lng}
+                mode="missing_information"
+                review={controller.review}
+                onNext={() => controller.setStage("conflicts_logic")}
+                onOpenFinding={handleOpenFinding}
+              />
+            )}
+            {controller.stage === "conflicts_logic" && (
+              <GuidedReviewFindingsPanel
+                chapterTitles={controller.chapterTitles}
+                lng={lng}
+                mode="conflicts_logic"
+                review={controller.review}
+                onBack={() => controller.setStage("missing_information")}
+                onNext={() => controller.setStage("decision")}
+                onOpenFinding={handleOpenFinding}
+              />
+            )}
+            {controller.stage === "decision" && (
+              <GuidedReviewDecisionPanel
+                controller={controller}
+                lng={lng}
+                onAddInformation={handleAddInformation}
+              />
+            )}
+            {controller.stage === "export" && (
+              <GuidedReviewExportPanel
+                controller={controller}
+                hasUploadedEvidence={hasUploadedEvidence}
+                lng={lng}
+              />
+            )}
+          </Box>
+        </DialogBody>
       </DialogContent>
     </DialogRoot>
   );

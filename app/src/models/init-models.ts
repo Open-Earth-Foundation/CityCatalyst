@@ -135,6 +135,26 @@ import type {
   MeedActionRemovedAttributes,
   MeedActionRemovedCreationAttributes,
 } from "./MeedActionRemoved";
+import { MeedRanking as _MeedRanking } from "./MeedRanking";
+import type {
+  MeedRankingAttributes,
+  MeedRankingCreationAttributes,
+} from "./MeedRanking";
+import type {
+  MeedActionReportAttributes,
+  MeedActionReportCreationAttributes,
+} from "./MeedActionReport";
+import { MeedActionReport as _MeedActionReport } from "./MeedActionReport";
+import type {
+  MeedRankSnapshotAttributes,
+  MeedRankSnapshotCreationAttributes,
+} from "./MeedRankSnapshot";
+import { MeedRankSnapshot as _MeedRankSnapshot } from "./MeedRankSnapshot";
+import type {
+  MeedStateAttributes,
+  MeedStateCreationAttributes,
+} from "./MeedState";
+import { MeedState as _MeedState } from "./MeedState";
 import type {
   MethodologyAttributes,
   MethodologyCreationAttributes,
@@ -190,16 +210,6 @@ import {
   OrganizationInviteAttributes,
   OrganizationInviteCreationAttributes,
 } from "./OrganizationInvite";
-import type {
-  AssistantMessageAttributes,
-  AssistantMessageCreationAttributes,
-} from "./AssistantMessage";
-import { AssistantMessage as _AssistantMessage } from "./AssistantMessage";
-import type {
-  AssistantThreadAttributes,
-  AssistantThreadCreationAttributes,
-} from "./AssistantThread";
-import { AssistantThread as _AssistantThread } from "./AssistantThread";
 import type {
   OrganizationAttributes,
   OrganizationCreationAttributes,
@@ -306,6 +316,10 @@ export {
   _ImportMappingFeedback as ImportMappingFeedback,
   _MeedActionRanked as MeedActionRanked,
   _MeedActionRemoved as MeedActionRemoved,
+  _MeedRanking as MeedRanking,
+  _MeedActionReport as MeedActionReport,
+  _MeedRankSnapshot as MeedRankSnapshot,
+  _MeedState as MeedState,
   _Methodology as Methodology,
   _Organization as Organization,
   _Project as Project,
@@ -322,8 +336,6 @@ export {
   _Version as Version,
   _UserFile as UserFile,
   _CityInvite as CityInvite,
-  _AssistantMessage as AssistantMessage,
-  _AssistantThread as AssistantThread,
   _OrganizationInvite as OrganizationInvite,
   _OrganizationAdmin as OrganizationAdmin,
   _ProjectAdmin as ProjectAdmin,
@@ -397,6 +409,14 @@ export type {
   MeedActionRankedCreationAttributes,
   MeedActionRemovedAttributes,
   MeedActionRemovedCreationAttributes,
+  MeedRankingAttributes,
+  MeedRankingCreationAttributes,
+  MeedActionReportAttributes,
+  MeedActionReportCreationAttributes,
+  MeedRankSnapshotAttributes,
+  MeedRankSnapshotCreationAttributes,
+  MeedStateAttributes,
+  MeedStateCreationAttributes,
   MethodologyAttributes,
   MethodologyCreationAttributes,
   OrganizationAttributes,
@@ -427,10 +447,6 @@ export type {
   UserCreationAttributes,
   VersionAttributes,
   VersionCreationAttributes,
-  AssistantMessageAttributes,
-  AssistantMessageCreationAttributes,
-  AssistantThreadAttributes,
-  AssistantThreadCreationAttributes,
   FormulaInputAttributes,
   FormulaInputCreationAttributes,
   OrganizationAdminAttributes,
@@ -497,6 +513,10 @@ export function initModels(sequelize: Sequelize) {
   const ImportMappingFeedback = _ImportMappingFeedback.initModel(sequelize);
   const MeedActionRanked = _MeedActionRanked.initModel(sequelize);
   const MeedActionRemoved = _MeedActionRemoved.initModel(sequelize);
+  const MeedRanking = _MeedRanking.initModel(sequelize);
+  const MeedActionReport = _MeedActionReport.initModel(sequelize);
+  const MeedRankSnapshot = _MeedRankSnapshot.initModel(sequelize);
+  const MeedState = _MeedState.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
   const Organization = _Organization.initModel(sequelize);
   const Project = _Project.initModel(sequelize);
@@ -513,8 +533,6 @@ export function initModels(sequelize: Sequelize) {
   const Version = _Version.initModel(sequelize);
   const UserFile = _UserFile.initModel(sequelize);
   const CityInvite = _CityInvite.initModel(sequelize);
-  const AssistantMessage = _AssistantMessage.initModel(sequelize);
-  const AssistantThread = _AssistantThread.initModel(sequelize);
   const OrganizationInvite = _OrganizationInvite.initModel(sequelize);
   const OrganizationAdmin = _OrganizationAdmin.initModel(sequelize);
   const ProjectAdmin = _ProjectAdmin.initModel(sequelize);
@@ -1084,14 +1102,6 @@ export function initModels(sequelize: Sequelize) {
     as: "inventory",
     foreignKey: "inventoryId",
   });
-  AssistantMessage.belongsTo(AssistantThread, {
-    as: "assistantThread",
-    foreignKey: "threadId",
-  });
-  AssistantThread.hasMany(AssistantMessage, {
-    as: "assistantMessages",
-    foreignKey: "threadId",
-  });
   Organization.hasMany(Project, {
     as: "projects",
     foreignKey: "organizationId",
@@ -1181,6 +1191,32 @@ export function initModels(sequelize: Sequelize) {
   });
 
   // Associations for MeedActionRanked and MeedActionRemoved
+  MeedRanking.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedRanking, {
+    as: "meedRankings",
+    foreignKey: "inventoryId",
+  });
+
+  MeedRanking.hasMany(MeedActionRanked, {
+    as: "meedActionRanked",
+    foreignKey: "rankingId",
+  });
+  MeedRanking.hasMany(MeedActionRemoved, {
+    as: "meedActionRemoved",
+    foreignKey: "rankingId",
+  });
+  MeedActionRanked.belongsTo(MeedRanking, {
+    as: "meedRanking",
+    foreignKey: "rankingId",
+  });
+  MeedActionRemoved.belongsTo(MeedRanking, {
+    as: "meedRanking",
+    foreignKey: "rankingId",
+  });
+
   MeedActionRanked.belongsTo(Inventory, {
     as: "inventory",
     foreignKey: "inventoryId",
@@ -1195,6 +1231,32 @@ export function initModels(sequelize: Sequelize) {
   });
   Inventory.hasMany(MeedActionRemoved, {
     as: "meedActionRemoveds",
+    foreignKey: "inventoryId",
+  });
+
+  // Associations for MeedActionReport, MeedRankSnapshot and MeedState
+  MeedActionReport.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedActionReport, {
+    as: "meedActionReports",
+    foreignKey: "inventoryId",
+  });
+  MeedRankSnapshot.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedRankSnapshot, {
+    as: "meedRankSnapshots",
+    foreignKey: "inventoryId",
+  });
+  MeedState.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedState, {
+    as: "meedStates",
     foreignKey: "inventoryId",
   });
 
@@ -1321,6 +1383,10 @@ export function initModels(sequelize: Sequelize) {
     ImportMappingFeedback: ImportMappingFeedback,
     MeedActionRanked: MeedActionRanked,
     MeedActionRemoved: MeedActionRemoved,
+    MeedRanking: MeedRanking,
+    MeedActionReport: MeedActionReport,
+    MeedRankSnapshot: MeedRankSnapshot,
+    MeedState: MeedState,
     Methodology: Methodology,
     Organization: Organization,
     Project: Project,
@@ -1338,8 +1404,6 @@ export function initModels(sequelize: Sequelize) {
     UserFile: UserFile,
     CityInvite: CityInvite,
     OrganizationInvite: OrganizationInvite,
-    AssistantMessage: AssistantMessage,
-    AssistantThread: AssistantThread,
     FormulaInput: FormulaInput,
     OrganizationAdmin: OrganizationAdmin,
     ProjectAdmin: ProjectAdmin,

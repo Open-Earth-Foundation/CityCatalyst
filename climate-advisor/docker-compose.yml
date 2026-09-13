@@ -11,6 +11,7 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init-cnb.sql:/docker-entrypoint-initdb.d/10-create-cnb.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U climateadvisor -d climateadvisor"]
       interval: 5s
@@ -34,12 +35,16 @@ services:
       CA_DATABASE_URL: postgresql://climateadvisor:climateadvisor@postgres:5432/climateadvisor
       CNB_DATABASE_URL: postgresql://climateadvisor:climateadvisor@postgres:5432/cnb
       CC_BASE_URL: http://host.docker.internal:3000
+      PGPASSWORD: climateadvisor
     command: >
-      sh -c "python -m alembic -c alembic.ini upgrade head &&
+      sh -c "if ! psql -h postgres -U climateadvisor -d postgres -tAc \"SELECT 1 FROM pg_database WHERE datname = 'cnb'\" | grep -q 1; then
+               createdb -h postgres -U climateadvisor cnb;
+             fi &&
+             python -m alembic -c alembic.ini upgrade head &&
              python -m alembic -c cnb-alembic.ini upgrade head &&
              uvicorn app.main:app --host 0.0.0.0 --port 8080"
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       postgres:
         condition: service_healthy

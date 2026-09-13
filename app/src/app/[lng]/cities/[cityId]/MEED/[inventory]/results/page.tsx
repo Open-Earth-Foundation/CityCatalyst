@@ -33,6 +33,13 @@ import {
 import { PILLAR_WEIGHTS } from "../../scoringWeights";
 import { MeedCardSkeleton } from "../../components/MeedSkeletons";
 import { MeedErrorCard } from "../../components/MeedErrorCard";
+import {
+  MeedReportBlockedError,
+  useMeedReport,
+  type MeedReportResult,
+} from "./report/useMeedReport";
+import { buildReportPdf } from "./report/meedReportPdf";
+import { actionName as catalogActionName } from "./components/actionCatalog";
 
 export default function Page(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
@@ -131,6 +138,92 @@ export default function Page(props: {
     });
   }, [ranked, index, t, inventory]);
 
+  const { generate, isRunning, progress } = useMeedReport(cityId, inventoryId);
+  // Carries its own title: "some reports could not be generated" is the wrong
+  // heading for a run that never got as far as generating anything.
+  const [reportError, setReportError] = useState<{
+    title: string;
+    body: string;
+    /** Present when there is somewhere to go to unblock the run. */
+    action?: { label: string; href: string };
+  } | null>(null);
+
+  const generateReport = useCallback(async () => {
+    setReportError(null);
+    const targets = selectedIds.map((actionId) => ({
+      actionId,
+      actionName: catalogActionName(index, actionId, t),
+    }));
+
+    let result: MeedReportResult | null;
+    try {
+      result = await generate(targets, lng);
+    } catch (error) {
+      // The run never started, so the instruction is not "try again". A
+      // missing snapshot in particular is fixed by re-running the ranking —
+      // the ranking on screen may predate reports entirely.
+      const blocked =
+        error instanceof MeedReportBlockedError &&
+        error.reason === "no-snapshot"
+          ? "snapshot"
+          : "fetch";
+      setReportError({
+        title: t(`report-error-${blocked}-title`),
+        body: t(`report-error-${blocked}`),
+        action:
+          blocked === "snapshot"
+            ? {
+                label: t("report-error-snapshot-action"),
+                href: stepHref(
+                  lng,
+                  cityId,
+                  inventoryId,
+                  "preflight",
+                  "results",
+                ),
+              }
+            : undefined,
+      });
+      return;
+    }
+
+    // `null` means a run was already in flight. The first run owns the
+    // outcome; overwriting it here would put "no reports" on screen while
+    // that run is still working, and leave it there once it succeeds.
+    if (!result) return;
+
+    if (result.documents.length === 0) {
+      setReportError({
+        title: t("report-error-title"),
+        body: t("report-error-none"),
+      });
+      return;
+    }
+    // A short report with no explanation is worse than a named omission.
+    if (result.failed.length > 0) {
+      setReportError({
+        title: t("report-error-title"),
+        body: t("report-error-partial", {
+          count: result.failed.length,
+          actions: result.failed.join(", "),
+        }),
+      });
+    }
+
+    const { documents } = result;
+    const pdf = await buildReportPdf(documents, {
+      title: t("report-title"),
+      cityName: inventory?.city?.name ?? "",
+      subtitle: t("report-subtitle", { count: documents.length }),
+      limitationsLabel: t("report-limitations"),
+      generatedBy: t("report-footer-generated-by"),
+      generatedOn: `${t("report-footer-generated-on")} ${new Date().toLocaleDateString(lng)}`,
+      pageLabel: t("report-footer-page"),
+      ofLabel: t("report-footer-of"),
+    });
+    pdf.save(`meed-action-report-${inventoryId}.pdf`);
+  }, [generate, selectedIds, index, t, lng, inventory, inventoryId, cityId]);
+
   const facts = {
     emissionsText,
     inventoryYear: inventory?.year ?? undefined,
@@ -184,8 +277,33 @@ export default function Page(props: {
               excludedCount={excludedCount}
               emissionsText={emissionsText}
               selectedCount={selectedIds.length}
+              isGenerating={isRunning}
+              progress={
+                isRunning
+                  ? t("report-progress", {
+                      done: progress.done + 1,
+                      total: progress.total,
+                    })
+                  : null
+              }
+              onGenerate={generateReport}
               t={t}
             />
+
+            {/*
+              Named, dismissible, and never blocking: a partial failure still
+              produced a report, so this sits beside it rather than replacing it.
+            */}
+            {reportError && (
+              <MeedErrorCard
+                title={reportError.title}
+                body={reportError.body}
+                retryLabel={t("report-error-dismiss")}
+                onRetry={() => setReportError(null)}
+                actionLabel={reportError.action?.label}
+                actionHref={reportError.action?.href}
+              />
+            )}
 
             {/*
               One scroll, in the order the user reasons in: what to do, what it

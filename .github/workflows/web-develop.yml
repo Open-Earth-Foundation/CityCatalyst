@@ -464,7 +464,6 @@ jobs:
             VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_DEV}} \
             MISTRAL_API_KEY=${{secrets.MISTRAL_API_KEY_DEV}} \
-            "OPENAI_ASSISTANT_ID=asst_saoKNCVqCX7adTMoLqPxPHvB" \
             LLM_PROVIDER=openai \
             LLM_MODEL=gpt-4o-mini \
             HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}} \

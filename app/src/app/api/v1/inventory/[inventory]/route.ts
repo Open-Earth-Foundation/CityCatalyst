@@ -82,7 +82,9 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
 import { Inventory } from "@/models/Inventory";
 import { withdrawGHGICatalogForInventory } from "@/backend/GHGINativeInputCatalogService";
 import { withdrawHIAPCatalogForInventory } from "@/backend/hiap/HiapNativeInputCatalogService";
+import { withdrawMEEDCatalogForInventory } from "@/backend/meed/MeedNativeInputCatalogService";
 import WebhookService from "@/backend/webhooks/WebhookService";
+import CalculationService from "@/backend/CalculationService";
 
 function hasIsPublicProperty(
   inventory:
@@ -213,6 +215,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
 
   await withdrawGHGICatalogForInventory(inventory.inventoryId);
   await withdrawHIAPCatalogForInventory(inventory.inventoryId);
+  await withdrawMEEDCatalogForInventory(inventory.inventoryId);
   await inventory.destroy();
   return NextResponse.json({ data: inventory, deleted: true });
 });
@@ -335,6 +338,7 @@ export const PATCH = apiHandler(async (req, context) => {
 
   const inventory = resource as Inventory;
   const wasPublic = Boolean(inventory.isPublic);
+  const previousGwp = inventory.globalWarmingPotentialType;
 
   let updatedInventory = inventory;
 
@@ -350,6 +354,17 @@ export const PATCH = apiHandler(async (req, context) => {
     await inventory.update(publishBody);
   }
   updatedInventory = await inventory.update(body);
+
+  // Recompute stored CO2e when the inventory GWP version changes.
+  if (
+    "globalWarmingPotentialType" in body &&
+    body.globalWarmingPotentialType != null &&
+    body.globalWarmingPotentialType !== previousGwp
+  ) {
+    await CalculationService.recalculateInventoryCO2eq(
+      updatedInventory.inventoryId,
+    );
+  }
 
   if (hasIsPublicProperty(body) && body.isPublic && !wasPublic) {
     await WebhookService.emitForCity(

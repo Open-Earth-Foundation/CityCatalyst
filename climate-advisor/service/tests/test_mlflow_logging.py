@@ -1019,6 +1019,38 @@ def test_failed_tool_observation_records_error_outcome(monkeypatch) -> None:
     assert isinstance(record["duration_ms"], float)
 
 
+def test_redacted_fallback_records_failed_envelope_as_error() -> None:
+    """Fallback records must classify from the tool envelope, not transport status."""
+    records = mlflow_logging.redacted_tool_invocation_records(
+        [
+            {
+                "id": "call-read",
+                "name": "native_input_read",
+                "status": "success",
+                "arguments": {
+                    "catalogId": "cat-fallback-secret-uuid",
+                    "capabilityId": "ghgi.inventory.status_overview",
+                },
+                "result_json": {
+                    "action": "native_input_read",
+                    "success": False,
+                    "error_code": "capability_unavailable",
+                    "error": "Requested capability is unavailable.",
+                    "data": {"catalogId": "cat-fallback-secret-uuid"},
+                },
+            }
+        ],
+        request_id="req-fallback-fail",
+    )
+
+    dumped = json.dumps(records)
+    assert records[0]["state"] == "failed"
+    assert records[0]["outcome"] == "error"
+    assert records[0]["output"]["success"] is False
+    assert records[0]["output"]["error_code"] == "capability_unavailable"
+    assert "cat-fallback-secret-uuid" not in dumped
+
+
 def test_tool_observation_redacts_catalog_storage_and_credentials(
     monkeypatch,
 ) -> None:

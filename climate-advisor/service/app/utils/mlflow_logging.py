@@ -399,20 +399,25 @@ def redacted_tool_invocation_records(
     """Project raw in-memory tool invocations into observation-shaped records.
 
     Used when TOOL span start/finish fails so `chat/tool_invocations.json`
-    still omits catalog IDs, full arguments, and full results.
+    still omits catalog IDs, full arguments, and full results. Outcome follows
+    the same envelope classifier as a completed TOOL observation.
     """
     records: list[dict[str, Any]] = []
     for index, invocation in enumerate(invocations, start=1):
-        status = str(invocation.get("status") or "")
-        if status == "success":
-            state, outcome = "succeeded", "success"
-        elif status in {"error", "failed"}:
-            state, outcome = "failed", "error"
-        else:
-            state, outcome = "started", "incomplete"
+        transport_status = str(invocation.get("status") or "")
         output = invocation.get("result_json")
         if output is None:
             output = invocation.get("result")
+        output_projection = project_tool_output(output)
+        explicit_outcome = None
+        if transport_status in {"error", "failed"}:
+            explicit_outcome = "error"
+        elif transport_status == "cancelled":
+            explicit_outcome = "cancelled"
+        state, outcome = _tool_observation_outcome(
+            output_projection,
+            explicit_outcome,
+        )
         records.append(
             {
                 "call_id": invocation.get("id"),
@@ -424,7 +429,7 @@ def redacted_tool_invocation_records(
                 "request_id": request_id,
                 "run_id": current_run_id(),
                 "input": project_tool_input(invocation.get("arguments")),
-                "output": project_tool_output(output),
+                "output": output_projection,
             }
         )
     return records

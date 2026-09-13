@@ -348,7 +348,8 @@ Unrelated legacy inventory tools retain their existing refresh behavior.
   - Records request-local redacted MLflow `TOOL` spans for each agent tool
     call without changing SSE or persisted chat history. Summary artifacts use
     those records, or an equally redacted projection when span instrumentation
-    fails, including Stationary Energy and other agentic workflows.
+    fails, including Stationary Energy and other agentic workflows. Fallback
+    records reuse the same envelope classifier as completed TOOL observations.
 - `utils/mlflow_logging.py`
   - Owns explicit run lifecycle, redaction, sibling per-tool observations,
     and the local configuration preflight used by

@@ -817,7 +817,9 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             output=json.dumps(
                 {
                     "action": "native_input_read",
-                    "success": True,
+                    "success": False,
+                    "error_code": "capability_unavailable",
+                    "error": "Requested capability is unavailable.",
                     "data": {"catalogId": marker, "bounded": True},
                 }
             ),
@@ -865,9 +867,14 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             if artifact_file == "chat/tool_invocations.json"
         )
         dumped = json.dumps(artifact)
+        record = artifact["tool_invocations"][0]
         self.assertNotIn(marker, dumped)
         self.assertNotIn("bounded", dumped)
-        self.assertTrue(artifact["tool_invocations"])
+        self.assertEqual(handler.tool_invocations[0]["status"], "success")
+        self.assertEqual(record["state"], "failed")
+        self.assertEqual(record["outcome"], "error")
+        self.assertEqual(record["output"]["success"], False)
+        self.assertEqual(record["output"]["error_code"], "capability_unavailable")
 
     async def test_mlflow_tool_logging_failure_does_not_change_sse(self) -> None:
         handler = StreamingHandler(

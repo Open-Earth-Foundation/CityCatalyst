@@ -1507,7 +1507,9 @@ metadata such as `success`, `error_code`, `action`, `entry_count`, and
 inventory scope, bearer tokens, storage pointers, raw source content, full
 tool arguments, full tool results, or the assistant response. If TOOL span
 instrumentation fails, the summary artifact still uses that same redacted
-projection instead of raw tool payloads.
+projection instead of raw tool payloads. Fallback `state` / `outcome` follow
+the tool result envelope (`success: false` is `failed` / `error`), not the
+transport event status.
 
 In the MLflow UI, open experiment `Clima`, filter by `environment` and
 `request_id`, open the request run, then inspect the trace waterfall for

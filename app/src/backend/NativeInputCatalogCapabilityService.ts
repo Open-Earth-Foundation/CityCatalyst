@@ -5,7 +5,7 @@ import {
   randomBytes,
 } from "node:crypto";
 import createHttpError from "http-errors";
-import { Op } from "sequelize";
+import { Op, type WhereOptions } from "sequelize";
 import type { AppSession } from "@/lib/auth";
 import { db } from "@/models";
 import type { NativeInputCatalog } from "@/models/NativeInputCatalog";
@@ -111,16 +111,18 @@ export interface NativeInputCapabilityServiceDependencies {
 
 const defaultDependencies: NativeInputCapabilityServiceDependencies = {
   async findActiveCatalogEntries(query) {
-    const where: Record<string, unknown> = { availability: "active" };
+    const where: WhereOptions = { availability: "active" };
     if (query.after) {
       const afterCreated = new Date(query.after.created);
-      where[Op.or] = [
-        { created: { [Op.gt]: afterCreated } },
-        {
-          created: afterCreated,
-          id: { [Op.gt]: query.after.id },
-        },
-      ];
+      Object.assign(where, {
+        [Op.or]: [
+          { created: { [Op.gt]: afterCreated } },
+          {
+            created: afterCreated,
+            id: { [Op.gt]: query.after.id },
+          },
+        ],
+      });
     }
     const rows = await db.models.NativeInputCatalog.findAll({
       where,

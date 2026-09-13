@@ -364,8 +364,10 @@ test.describe.serial("Report Results", () => {
       await expect(residentialRows).toHaveCount(2, { timeout: 15000 });
     }).toPass({ timeout: 120000 });
 
+    // Onboarding selects AR6 GWP (CH₄=27.9, N₂O=273). Custom EF CO₂=10,
+    // CH₄=1, N₂O=10 × amount 100 → 276790 kgCO₂e → 276.79 mtCO₂e.
     await expect(
-      residentialRows.locator("td").filter({ hasText: /268\.8 mtCO₂e/i }),
+      residentialRows.locator("td").filter({ hasText: /276\.79 mtCO₂e/i }),
     ).toHaveCount(2);
 
     const percentageTexts = await residentialRows

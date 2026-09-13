@@ -1509,7 +1509,8 @@ tool arguments, full tool results, or the assistant response. If TOOL span
 instrumentation fails, the summary artifact still uses that same redacted
 projection instead of raw tool payloads. Fallback `state` / `outcome` follow
 the tool result envelope (`success: false` is `failed` / `error`), not the
-transport event status.
+transport event status. An executing tool with no result stays `incomplete`.
+A later uninstrumented call is merged into the summary instead of omitted.
 
 In the MLflow UI, open experiment `Clima`, filter by `environment` and
 `request_id`, open the request run, then inspect the trace waterfall for

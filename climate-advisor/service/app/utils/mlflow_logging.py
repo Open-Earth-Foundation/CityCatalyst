@@ -400,7 +400,8 @@ def redacted_tool_invocation_records(
 
     Used when TOOL span start/finish fails so `chat/tool_invocations.json`
     still omits catalog IDs, full arguments, and full results. Outcome follows
-    the same envelope classifier as a completed TOOL observation.
+    the same envelope classifier as a completed TOOL observation. Executing or
+    no-result invocations stay incomplete instead of defaulting to success.
     """
     records: list[dict[str, Any]] = []
     for index, invocation in enumerate(invocations, start=1):
@@ -410,10 +411,13 @@ def redacted_tool_invocation_records(
             output = invocation.get("result")
         output_projection = project_tool_output(output)
         explicit_outcome = None
+        has_result = "result_json" in invocation or "result" in invocation
         if transport_status in {"error", "failed"}:
             explicit_outcome = "error"
         elif transport_status == "cancelled":
             explicit_outcome = "cancelled"
+        elif transport_status in {"executing", "started"} or not has_result:
+            explicit_outcome = "incomplete"
         state, outcome = _tool_observation_outcome(
             output_projection,
             explicit_outcome,
@@ -433,6 +437,46 @@ def redacted_tool_invocation_records(
             }
         )
     return records
+
+
+def merge_redacted_tool_records(
+    invocations: list[dict[str, Any]],
+    completed: list[dict[str, Any]],
+    *,
+    request_id: str = "",
+) -> list[dict[str, Any]]:
+    """Keep completed observations and fill missing call IDs from fallbacks.
+
+    Call order follows `invocations`. A later uninstrumented tool is not
+    dropped merely because an earlier observation already exists.
+    """
+    completed_by_id = {
+        str(record.get("call_id")): record
+        for record in completed
+        if record.get("call_id") is not None
+    }
+    fallbacks = redacted_tool_invocation_records(
+        invocations,
+        request_id=request_id,
+    )
+    merged: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for invocation, fallback in zip(invocations, fallbacks, strict=True):
+        call_id = invocation.get("id")
+        if call_id is None:
+            call_id = fallback.get("call_id")
+        key = str(call_id) if call_id is not None else ""
+        record = completed_by_id.get(key, fallback)
+        merged.append({**record, "sequence": len(merged) + 1})
+        if key:
+            seen.add(key)
+    for record in completed:
+        call_id = record.get("call_id")
+        key = str(call_id) if call_id is not None else ""
+        if key and key not in seen:
+            merged.append({**record, "sequence": len(merged) + 1})
+            seen.add(key)
+    return merged
 
 
 def project_tool_output(output: object) -> dict[str, Any]:

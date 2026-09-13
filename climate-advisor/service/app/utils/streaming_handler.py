@@ -52,7 +52,7 @@ from app.utils.mlflow_logging import (
     log_metrics,
     log_tags,
     log_text_artifact,
-    redacted_tool_invocation_records,
+    merge_redacted_tool_records,
     start_run,
     start_tool_observation,
     start_trace_span,
@@ -1481,12 +1481,10 @@ class StreamingHandler:
                     "MLflow tool observation close failed status=%s",
                     stream_status,
                 )
-            records = (
-                self._tool_observation_records
-                or redacted_tool_invocation_records(
-                    self.tool_invocations,
-                    request_id=self._request_id(),
-                )
+            records = merge_redacted_tool_records(
+                self.tool_invocations,
+                self._tool_observation_records,
+                request_id=self._request_id(),
             )
             if records:
                 log_json_artifact(

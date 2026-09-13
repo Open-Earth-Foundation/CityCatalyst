@@ -1051,6 +1051,88 @@ def test_redacted_fallback_records_failed_envelope_as_error() -> None:
     assert "cat-fallback-secret-uuid" not in dumped
 
 
+def test_redacted_fallback_records_executing_invocation_as_incomplete() -> None:
+    """An executing invocation with no result must not be logged as success."""
+    records = mlflow_logging.redacted_tool_invocation_records(
+        [
+            {
+                "id": "call-read",
+                "name": "native_input_read",
+                "status": "executing",
+                "arguments": {
+                    "catalogId": "cat-incomplete-secret-uuid",
+                    "capabilityId": "ghgi.inventory.status_overview",
+                },
+            }
+        ],
+        request_id="req-fallback-incomplete",
+    )
+
+    dumped = json.dumps(records)
+    assert records[0]["state"] == "cancelled"
+    assert records[0]["outcome"] == "incomplete"
+    assert records[0]["output"]["success"] is None
+    assert "cat-incomplete-secret-uuid" not in dumped
+
+
+def test_merge_redacted_tool_records_fills_missing_call_ids() -> None:
+    """Completed observations must not hide later uninstrumented invocations."""
+    completed = mlflow_logging.redacted_tool_invocation_records(
+        [
+            {
+                "id": "call-discover",
+                "name": "native_input_discover",
+                "status": "success",
+                "arguments": {},
+                "result_json": {
+                    "action": "native_input_discover",
+                    "success": True,
+                    "data": {"entries": []},
+                },
+            }
+        ],
+        request_id="req-merge",
+    )
+    records = mlflow_logging.merge_redacted_tool_records(
+        [
+            {
+                "id": "call-discover",
+                "name": "native_input_discover",
+                "status": "success",
+                "arguments": {},
+                "result_json": {
+                    "action": "native_input_discover",
+                    "success": True,
+                    "data": {"entries": []},
+                },
+            },
+            {
+                "id": "call-read",
+                "name": "native_input_read",
+                "status": "success",
+                "arguments": {"catalogId": "cat-merge-secret-uuid"},
+                "result_json": {
+                    "action": "native_input_read",
+                    "success": False,
+                    "error_code": "capability_unavailable",
+                    "data": {"catalogId": "cat-merge-secret-uuid"},
+                },
+            },
+        ],
+        completed,
+        request_id="req-merge",
+    )
+
+    dumped = json.dumps(records)
+    assert [record["tool_name"] for record in records] == [
+        "native_input_discover",
+        "native_input_read",
+    ]
+    assert [record["sequence"] for record in records] == [1, 2]
+    assert records[1]["outcome"] == "error"
+    assert "cat-merge-secret-uuid" not in dumped
+
+
 def test_tool_observation_redacts_catalog_storage_and_credentials(
     monkeypatch,
 ) -> None:

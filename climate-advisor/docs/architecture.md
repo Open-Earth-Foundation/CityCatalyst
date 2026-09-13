@@ -350,6 +350,8 @@ Unrelated legacy inventory tools retain their existing refresh behavior.
     those records, or an equally redacted projection when span instrumentation
     fails, including Stationary Energy and other agentic workflows. Fallback
     records reuse the same envelope classifier as completed TOOL observations.
+    Incomplete invocations stay non-success, and later uninstrumented calls are
+    merged into the summary in call order.
 - `utils/mlflow_logging.py`
   - Owns explicit run lifecycle, redaction, sibling per-tool observations,
     and the local configuration preflight used by

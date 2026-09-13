@@ -1183,10 +1183,11 @@ When an authenticated CityCatalyst catalog context is available, Climate
 Advisor registers two fixed tool definitions for the agent:
 `native_input_discover` and `native_input_read`. Discovery calls Core on every
 invocation, so a newly registered authorized entry can appear without
-recreating the agent. When Core returns more than one authorized page, the
+recreating the agent. When Core returns more than one authorized page, or when
+a candidate-work budget stops the scan before the catalog is exhausted, the
 discover tool exposes an opaque `continuationCursor` and accepts an optional
 `cursor` argument; the cursor is request state only and is not an authorization
-grant. Every selected read also goes back through Core, which independently
+grant. An empty page with a cursor is valid and must be retried. Every selected read also goes back through Core, which independently
 revalidates the caller scope, catalog lifecycle, capability membership, module
 readiness, and bounded execution contract.
 
@@ -1504,7 +1505,9 @@ record includes `call_id`, `tool_name`, `sequence`, `state`, `outcome`,
 metadata such as `success`, `error_code`, `action`, `entry_count`, and
 `byte_size`. It never includes catalog/capability ID values, user or
 inventory scope, bearer tokens, storage pointers, raw source content, full
-tool arguments, full tool results, or the assistant response.
+tool arguments, full tool results, or the assistant response. If TOOL span
+instrumentation fails, the summary artifact still uses that same redacted
+projection instead of raw tool payloads.
 
 In the MLflow UI, open experiment `Clima`, filter by `environment` and
 `request_id`, open the request run, then inspect the trace waterfall for

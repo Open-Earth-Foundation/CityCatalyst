@@ -784,6 +784,91 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(artifact["tool_invocations"], handler._tool_observation_records)
 
+    async def test_agentic_mlflow_fallback_omits_raw_catalog_payloads(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.request_identifier = "req-agentic-fallback"
+        handler.workflow_context = ChatWorkflowContext(
+            stationary_energy_draft_run_id=str(uuid4())
+        )
+        marker = "cat-fallback-secret-uuid"
+        called = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="native_input_read",
+                call_id="call-read-fallback",
+                arguments=json.dumps(
+                    {
+                        "catalogId": marker,
+                        "capabilityId": "ghgi.inventory.status_overview",
+                    }
+                ),
+            )
+        )
+        output = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                call_id="call-read-fallback",
+                name="native_input_read",
+            ),
+            output=json.dumps(
+                {
+                    "action": "native_input_read",
+                    "success": True,
+                    "data": {"catalogId": marker, "bounded": True},
+                }
+            ),
+        )
+
+        with patch(
+            "app.utils.streaming_handler.start_tool_observation",
+            side_effect=RuntimeError("mlflow span start failed"),
+        ), patch(
+            "app.utils.streaming_handler.finish_tool_observation",
+            side_effect=RuntimeError("mlflow span finish failed"),
+        ):
+            sse_chunks = [chunk async for chunk in handler._handle_tool_called(called)]
+            sse_chunks.extend(
+                [chunk async for chunk in handler._handle_tool_output(output)]
+            )
+
+        self.assertEqual(handler._tool_observation_records, [])
+        self.assertEqual(
+            handler.tool_invocations[0]["arguments"]["catalogId"],
+            marker,
+        )
+        self.assertIn(marker, json.dumps(handler.tool_invocations))
+        self.assertIn(marker, b"".join(sse_chunks).decode("utf-8"))
+
+        logged: list[tuple[str, object]] = []
+
+        def fake_log_json_artifact(artifact_file: str, payload: object) -> None:
+            logged.append((artifact_file, payload))
+
+        with patch(
+            "app.utils.streaming_handler.log_json_artifact",
+            side_effect=fake_log_json_artifact,
+        ), patch("app.utils.streaming_handler.log_metrics"), patch(
+            "app.utils.streaming_handler.log_tags"
+        ), patch("app.utils.streaming_handler.log_text_artifact"), patch(
+            "app.utils.streaming_handler.close_open_tool_observations",
+            side_effect=RuntimeError("mlflow close failed"),
+        ):
+            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+
+        artifact = next(
+            payload
+            for artifact_file, payload in logged
+            if artifact_file == "chat/tool_invocations.json"
+        )
+        dumped = json.dumps(artifact)
+        self.assertNotIn(marker, dumped)
+        self.assertNotIn("bounded", dumped)
+        self.assertTrue(artifact["tool_invocations"])
+
     async def test_mlflow_tool_logging_failure_does_not_change_sse(self) -> None:
         handler = StreamingHandler(
             thread_id=str(uuid4()),

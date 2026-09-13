@@ -25,6 +25,7 @@ import {
 
 const DISCOVERY_RESULT_LIMIT = 100;
 const DISCOVERY_CANDIDATE_BATCH_SIZE = 100;
+const DISCOVERY_CANDIDATE_SCAN_LIMIT = 200;
 const DISCOVERY_CURSOR_VERSION = 1;
 const AUTHORIZED_SCOPE_FIELDS = [
   "organizationId",
@@ -418,6 +419,8 @@ export async function discoverNativeInputs(
   session: AppSession,
   dependencies: NativeInputCapabilityServiceDependencies = defaultDependencies,
 ): Promise<NativeInputDiscoveryPage> {
+  // Authorize and project before counting the public page. Stop after a fixed
+  // candidate-work budget and return a cursor even when the safe page is short.
   if (!session.user?.id) {
     throw new createHttpError.Unauthorized("Authentication required");
   }
@@ -432,11 +435,19 @@ export async function discoverNativeInputs(
   const discovered: NativeInputDiscoveryEntry[] = [];
   let lastScanned: NativeInputCatalogKeyset | undefined;
   let exhausted = false;
+  let scanned = 0;
 
-  while (discovered.length < DISCOVERY_RESULT_LIMIT) {
+  while (
+    discovered.length < DISCOVERY_RESULT_LIMIT &&
+    scanned < DISCOVERY_CANDIDATE_SCAN_LIMIT
+  ) {
+    const batchLimit = Math.min(
+      DISCOVERY_CANDIDATE_BATCH_SIZE,
+      DISCOVERY_CANDIDATE_SCAN_LIMIT - scanned,
+    );
     const batch = await dependencies.findActiveCatalogEntries({
       after,
-      limit: DISCOVERY_CANDIDATE_BATCH_SIZE,
+      limit: batchLimit,
     });
     if (batch.length === 0) {
       exhausted = true;
@@ -445,6 +456,7 @@ export async function discoverNativeInputs(
 
     for (const entry of batch) {
       lastScanned = candidateKeyset(entry);
+      scanned += 1;
       const projected = await filterCatalogEntry(
         entry,
         request,
@@ -457,7 +469,7 @@ export async function discoverNativeInputs(
     }
 
     if (discovered.length === DISCOVERY_RESULT_LIMIT) break;
-    if (batch.length < DISCOVERY_CANDIDATE_BATCH_SIZE) {
+    if (batch.length < batchLimit) {
       exhausted = true;
       break;
     }

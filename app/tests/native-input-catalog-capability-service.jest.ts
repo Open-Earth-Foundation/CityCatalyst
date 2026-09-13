@@ -490,6 +490,94 @@ describe("NativeInputCatalog capability service", () => {
     });
   });
 
+  it("bounds each discovery request and still reaches a later authorized entry by cursor", async () => {
+    const inaccessible = Array.from({ length: 250 }, (_, index) =>
+      orderedEntry(index, {
+        sourceId: `budget-hidden-source-${index}`,
+        labels: { display_name: `hidden ${index}` },
+      }),
+    );
+    const laterAuthorized = orderedEntry(250, {
+      sourceId: "budget-later-authorized-source",
+      labels: { display_name: "later authorized after budget" },
+    });
+    const catalogById = new Map(
+      [...inaccessible, laterAuthorized].map((entry) => [entry.id, entry]),
+    );
+    const adapter = {
+      probeReadiness: jest.fn(async () => true),
+      executeSelected: jest.fn(async () => ({ bounded: true })),
+    };
+    const findActiveCatalogEntries = keysetFind([
+      ...inaccessible,
+      laterAuthorized,
+    ]);
+    const deps = dependencies([...inaccessible, laterAuthorized], {
+      findActiveCatalogEntries,
+      authorizeCatalogScope: jest.fn(
+        async (_session, _request, entry) => entry.id === laterAuthorized.id,
+      ),
+      findCatalogEntryById: jest.fn(async (catalogId: string) => {
+        return catalogById.get(catalogId) ?? null;
+      }),
+      getSourceAdapter: jest.fn(() => adapter),
+    });
+
+    const firstPage = (await discoverNativeInputs({}, session, deps)) as {
+      entries: Array<{ catalog_id: string }>;
+      continuationCursor?: string;
+    };
+    const firstScanned = await scannedCandidateCount(findActiveCatalogEntries);
+
+    expect(firstPage.entries).toEqual([]);
+    expect(firstPage.continuationCursor).toEqual(expect.any(String));
+    expect(firstScanned).toBe(200);
+    expect(deps.authorizeCatalogScope).toHaveBeenCalledTimes(200);
+    expect(JSON.stringify(firstPage)).not.toContain("budget-hidden-source");
+    expect(JSON.stringify(firstPage)).not.toContain("budget-later-authorized");
+    expect(firstPage.continuationCursor).not.toContain(laterAuthorized.id);
+
+    findActiveCatalogEntries.mockClear();
+    (deps.authorizeCatalogScope as jest.Mock).mockClear();
+
+    const secondPage = (await discoverNativeInputs(
+      { cursor: firstPage.continuationCursor } as NativeInputDiscoveryRequest,
+      session,
+      deps,
+    )) as {
+      entries: Array<{ catalog_id: string }>;
+      continuationCursor?: string;
+    };
+    const secondScanned = await scannedCandidateCount(findActiveCatalogEntries);
+
+    expect(secondScanned).toBeLessThanOrEqual(200);
+    expect(secondPage.entries.map((entry) => entry.catalog_id)).toEqual([
+      laterAuthorized.id,
+    ]);
+    expect(JSON.stringify(secondPage)).not.toContain("budget-hidden-source");
+
+    await expect(
+      readNativeInputCapability(
+        {
+          catalogId: laterAuthorized.id,
+          capabilityId: "ghgi.inventory.status_overview",
+          cityId: laterAuthorized.cityId,
+          inventoryId: laterAuthorized.inventoryId,
+          input: {
+            city_id: laterAuthorized.cityId,
+            inventory_id: laterAuthorized.inventoryId,
+          },
+        },
+        session,
+        deps,
+      ),
+    ).resolves.toEqual({
+      action: "ghgi.inventory.status_overview",
+      success: true,
+      data: { bounded: true },
+    });
+  });
+
   it("returns the remaining authorized entry on the next page without duplicates or gaps", async () => {
     const authorized = Array.from({ length: 101 }, (_, index) =>
       orderedEntry(index, {
@@ -613,6 +701,15 @@ function orderedEntry(
 
 function catalogId(index: number): string {
   return `aaaaaaaa-aaaa-4aaa-8aaa-${index.toString(16).padStart(12, "0")}`;
+}
+
+async function scannedCandidateCount(
+  findActiveCatalogEntries: ReturnType<typeof keysetFind>,
+) {
+  const batches = await Promise.all(
+    findActiveCatalogEntries.mock.results.map((result) => result.value),
+  );
+  return batches.reduce((total, batch) => total + (batch?.length ?? 0), 0);
 }
 
 function keysetFind(entries: Array<typeof authorizedEntry & { created: Date }>) {

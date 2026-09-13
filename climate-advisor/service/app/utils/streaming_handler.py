@@ -40,7 +40,6 @@ from app.utils.concept_note_context import (
     extract_concept_note_run_id,
 )
 from app.utils.conversation_observability import (
-    conversation_tool_artifact,
     conversation_trace,
     finish_conversation_trace,
 )
@@ -53,6 +52,7 @@ from app.utils.mlflow_logging import (
     log_metrics,
     log_tags,
     log_text_artifact,
+    redacted_tool_invocation_records,
     start_run,
     start_tool_observation,
     start_trace_span,
@@ -1481,17 +1481,17 @@ class StreamingHandler:
                     "MLflow tool observation close failed status=%s",
                     stream_status,
                 )
-            if self._tool_observation_records:
-                log_json_artifact(
-                    "chat/tool_invocations.json",
-                    {"tool_invocations": self._tool_observation_records},
+            records = (
+                self._tool_observation_records
+                or redacted_tool_invocation_records(
+                    self.tool_invocations,
+                    request_id=self._request_id(),
                 )
-            elif self.workflow_context.is_agentic or self.tool_invocations:
+            )
+            if records:
                 log_json_artifact(
                     "chat/tool_invocations.json",
-                    {"tool_invocations": self.tool_invocations}
-                    if self.workflow_context.is_agentic
-                    else conversation_tool_artifact(self.tool_invocations),
+                    {"tool_invocations": records},
                 )
         log_json_artifact(
             "response/stream_summary.json",

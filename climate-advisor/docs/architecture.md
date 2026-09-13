@@ -287,7 +287,9 @@ outside CC-737 scope.
 
 At tool-call time, discovery returns only locally supported safe entries and
 may include an opaque Core continuation cursor so later authorized pages remain
-discoverable. A page or cursor is never cached as an authorization grant. A
+discoverable. Core bounds the number of raw active candidates examined per
+request and emits that cursor even when the authorized page is short or empty.
+A page or cursor is never cached as an authorization grant. A
 read accepts a model-selected catalog/capability pair with finite bounded
 arguments, then calls Core for fresh authorization and execution. Core remains
 the final read-time authority; unavailable or invalid reads use the stable
@@ -344,7 +346,9 @@ Unrelated legacy inventory tools retain their existing refresh behavior.
   - Emits `tool_result` SSE payloads for normal tools and Stationary Energy UI
     events via `services/stationary_energy/stationary_energy_tool_events.py`.
   - Records request-local redacted MLflow `TOOL` spans for each agent tool
-    call without changing SSE or persisted chat history.
+    call without changing SSE or persisted chat history. Summary artifacts use
+    those records, or an equally redacted projection when span instrumentation
+    fails, including Stationary Energy and other agentic workflows.
 - `utils/mlflow_logging.py`
   - Owns explicit run lifecycle, redaction, sibling per-tool observations,
     and the local configuration preflight used by

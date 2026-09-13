@@ -391,6 +391,45 @@ def project_tool_input(arguments: object) -> dict[str, Any]:
     }
 
 
+def redacted_tool_invocation_records(
+    invocations: list[dict[str, Any]],
+    *,
+    request_id: str = "",
+) -> list[dict[str, Any]]:
+    """Project raw in-memory tool invocations into observation-shaped records.
+
+    Used when TOOL span start/finish fails so `chat/tool_invocations.json`
+    still omits catalog IDs, full arguments, and full results.
+    """
+    records: list[dict[str, Any]] = []
+    for index, invocation in enumerate(invocations, start=1):
+        status = str(invocation.get("status") or "")
+        if status == "success":
+            state, outcome = "succeeded", "success"
+        elif status in {"error", "failed"}:
+            state, outcome = "failed", "error"
+        else:
+            state, outcome = "started", "incomplete"
+        output = invocation.get("result_json")
+        if output is None:
+            output = invocation.get("result")
+        records.append(
+            {
+                "call_id": invocation.get("id"),
+                "tool_name": invocation.get("name") or "unknown_tool",
+                "sequence": index,
+                "state": state,
+                "outcome": outcome,
+                "duration_ms": None,
+                "request_id": request_id,
+                "run_id": current_run_id(),
+                "input": project_tool_input(invocation.get("arguments")),
+                "output": project_tool_output(output),
+            }
+        )
+    return records
+
+
 def project_tool_output(output: object) -> dict[str, Any]:
     """Return a safe tool-output projection without bodies or identifiers."""
     parsed: object = output

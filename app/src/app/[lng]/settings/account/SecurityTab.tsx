@@ -76,7 +76,6 @@ const SecurityTab = ({
 
   const setup2FA = async () => {
     const result = await setupSecondFactorAuth();
-    console.log("2FA result", result);
     if (result.data?.success) {
       setIsSetupMode(true);
     }
@@ -84,7 +83,6 @@ const SecurityTab = ({
 
   const verify2FA = async () => {
     const result = await verifySecondFactorAuth({ token });
-    console.log("Verify result", result);
     if (result.data?.success) {
       showSuccessToast();
       setHasTokenError(false);

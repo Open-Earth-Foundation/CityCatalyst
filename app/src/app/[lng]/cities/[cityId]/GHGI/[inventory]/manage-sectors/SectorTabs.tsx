@@ -442,8 +442,8 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   // sector tab content - subsectors
   const renderSectorTabContent = () =>
     groupedSectors.map((group) => {
-      // For each group, use the sector info from group.sector and the scopes from group.items.
-      // Here we consider all items as "unfinished" (adjust filtering if needed)
+      // The API already excludes subsectors that have real emissions data,
+      // so every item returned here is a valid notation-key candidate.
       const unfinishedItems = group.items;
       const selectedForThisSector =
         selectedCardsBySector[group.sector.sectorId] || [];

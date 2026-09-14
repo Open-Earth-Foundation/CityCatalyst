@@ -161,31 +161,32 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
               value.length >= 8 || t("min-length", { length: 8 })
             }
           />
-          <Field
-            label={<LabelLarge>{t("security-code")}</LabelLarge>}
-            invalid={!!errors.securityToken}
-            errorText={errors.securityToken?.message}
-            display={showSecurityToken ? "block" : "none"}
-          >
-            <Input
-              type="text"
-              placeholder={t("security-code-placeholder")}
-              size="lg"
-              shadow="2dp"
-              background={
-                !!errors.securityToken
-                  ? "sentiment.negativeOverlay"
-                  : "background.default"
-              }
-              {...register("securityToken", {
-                required: t("security-code-required"),
-                pattern: {
-                  value: securityCodePattern,
-                  message: t("security-code-invalid"),
-                },
-              })}
-            />
-          </Field>
+          {showSecurityToken && (
+            <Field
+              label={<LabelLarge>{t("security-code")}</LabelLarge>}
+              invalid={!!errors.securityToken}
+              errorText={errors.securityToken?.message}
+            >
+              <Input
+                type="text"
+                placeholder={t("security-code-placeholder")}
+                size="lg"
+                shadow="2dp"
+                background={
+                  !!errors.securityToken
+                    ? "sentiment.negativeOverlay"
+                    : "background.default"
+                }
+                {...register("securityToken", {
+                  required: t("security-code-required"),
+                  pattern: {
+                    value: securityCodePattern,
+                    message: t("security-code-invalid"),
+                  },
+                })}
+              />
+            </Field>
+          )}
           <Text color="semantic.danger">{t(fullError)}</Text>
           <Box w="full" textAlign="right">
             <Link href="/auth/forgot-password" textDecoration="underline">

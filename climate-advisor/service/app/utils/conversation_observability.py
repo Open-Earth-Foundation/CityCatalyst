@@ -234,14 +234,3 @@ def traced_conversation_tool(tool: FunctionTool) -> FunctionTool:
 
     # FunctionTool instances can be shared module globals: never mutate them.
     return replace(tool, on_invoke_tool=invoke)
-
-
-def conversation_tool_artifact(invocations: list[dict]) -> dict[str, object]:
-    """Project existing invocation records into one result representation for logs."""
-    calls = []
-    for invocation in invocations:
-        call = dict(invocation)
-        if "result_json" in call:
-            call["result"] = call.pop("result_json")
-        calls.append(call)
-    return {"tool_invocations": calls}

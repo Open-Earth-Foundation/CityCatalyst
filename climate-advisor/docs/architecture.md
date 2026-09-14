@@ -70,6 +70,15 @@ sequenceDiagram
     Thread-->>API: thread
 
     API->>Token: Load token from request or thread context
+    opt CityCatalyst bearer is present
+        API->>CC: Validate bearer at /internal/ca/auth/identity
+        CC-->>API: Canonical user ID or identity error
+        alt subject differs, or request-supplied bearer rejected
+            API-->>Client: HTTP 401 (no catalog-enabled agent)
+        else Core unavailable or thread-stored bearer rejected
+            API-->>API: Continue with catalog identity disabled
+        end
+    end
     alt token expired
         Token->>CC: Refresh token
         CC-->>Token: New access token
@@ -234,6 +243,60 @@ workflow state in PostgreSQL.
   - Orchestrates review staging, notation-key staging, preview, rollback, and
     draft-save flows.
   - Commits staged selection transitions through the repository and draft service.
+
+### NativeInputCatalog Consumption Boundary
+
+`services/native_input_catalog_service.py` provides the request-scoped
+consumer seam for the NativeInputCatalog integration. It accepts the resolved
+authenticated request context and defers Core discovery to the runtime tool
+call. Core discovery is limited to its lightweight readiness result; it does
+not load Climate Advisor capabilities or execute full reads for candidates.
+
+`AgentService` registers the stable `native_input_discover` and
+`native_input_read` tools only when authenticated catalog context and the
+current Core credential are available. Registration makes no Core discovery
+request and does not accept a client-selected catalog/capability pair.
+Before constructing `StreamingHandler`, `/v1/messages` validates any supplied
+bearer at Core's `/api/v1/internal/ca/auth/identity` boundary. The request is
+rejected with the same HTTP 401 response when Core's canonical subject differs
+from body `user_id`, or when Core rejects a bearer that came from the request
+payload. Every other identity outcome — Core unavailable, `CC_BASE_URL` unset,
+a malformed identity response, or a rejected thread-stored bearer — leaves the
+chat request running with catalog identity disabled rather than returning 401.
+On that degraded path the route also skips the thread-context write for a
+request-supplied bearer: a token is persisted only after Core returned a
+canonical identity, so an unvalidated bearer cannot be laundered into the more
+permissive thread-stored class on subsequent requests.
+`StreamingHandler` accepts that canonical identity separately for catalog
+context, combines it with the safe request scope, and ignores caller-supplied
+identity and catalog selections. Missing token or validated catalog identity
+leaves the catalog tools disabled.
+
+Thread-stored bearers are never refreshed for the catalog path, and CA-issued
+tokens expire after one hour. After expiry the catalog tools stay unregistered
+for the thread; recovery is a new request-supplied bearer that Core identity
+validation accepts. Refreshing from the thread record's stored `user_id` is
+deliberately rejected as a recovery mechanism, because `POST /v1/threads` is
+unauthenticated and persists an arbitrary caller-supplied `user_id`.
+
+This boundary is closed for request-supplied bearers and for all
+NativeInputCatalog paths, not for Climate Advisor as a whole. `POST /v1/threads`
+remains unauthenticated, and legacy non-catalog inventory tools may still
+derive a token refresh from the request body `user_id`; that residual is
+outside CC-737 scope.
+
+At tool-call time, discovery returns only locally supported safe entries and
+may include an opaque Core continuation cursor so later authorized pages remain
+discoverable. Core bounds the number of raw active candidates examined per
+request and emits that cursor even when the authorized page is short or empty.
+A page or cursor is never cached as an authorization grant. A
+read accepts a model-selected catalog/capability pair with finite bounded
+arguments, then calls Core for fresh authorization and execution. Core remains
+the final read-time authority; unavailable or invalid reads use the stable
+non-disclosing response. NativeInputCatalog discovery and reads never exchange
+a 401 for a new user token and never derive refresh identity from request JSON.
+Unrelated legacy inventory tools retain their existing refresh behavior.
+
 - `services/stationary_energy/stationary_energy_review_resolver.py`
   - Resolves selectable sources, notation-key targets, pending review rows, and
     save-ready decision inputs for one persisted draft snapshot.
@@ -249,6 +312,14 @@ workflow state in PostgreSQL.
 
 ### Tool Layer
 
+- `tools/native_input_catalog_tools.py`
+  - Exposes the stable `native_input_discover` and `native_input_read` tools
+    for bounded Core-mediated catalog access.
+  - Captures active request scope, filters discovery to locally supported
+    capabilities, relays an optional opaque continuation cursor, rejects
+    arbitrary runtime routing/scope or credential arguments, redacts forbidden
+    result fields, and closes the short-lived Core client after each read
+    invocation.
 - `tools/climate_vector_sync.py`
   - General climate knowledge retrieval.
 - `tools/cc_inventory_wrappers.py`
@@ -274,6 +345,17 @@ workflow state in PostgreSQL.
   - Enforces the Stationary Energy chat prompt budget.
   - Emits `tool_result` SSE payloads for normal tools and Stationary Energy UI
     events via `services/stationary_energy/stationary_energy_tool_events.py`.
+  - Records request-local redacted MLflow `TOOL` spans for each agent tool
+    call without changing SSE or persisted chat history. Summary artifacts use
+    those records, or an equally redacted projection when span instrumentation
+    fails, including Stationary Energy and other agentic workflows. Fallback
+    records reuse the same envelope classifier as completed TOOL observations.
+    Incomplete invocations stay non-success, and later uninstrumented calls are
+    merged into the summary in call order.
+- `utils/mlflow_logging.py`
+  - Owns explicit run lifecycle, redaction, sibling per-tool observations,
+    and the local configuration preflight used by
+    `python -m scripts.mlflow_preflight`.
 - `utils/history_manager.py`
   - Prunes older tool metadata for LLM context while keeping full DB audit data.
 - `utils/token_handler.py`
@@ -419,5 +501,6 @@ user message, one hash-keyed copy of each system/developer prompt, the assembled
 and the final stream/persistence status. Child model spans reference the root
 prompt snapshot and omit raw streaming-chunk events while retaining their final
 outputs and diagnostic events. Function calls are recorded as child `TOOL` spans
-with call IDs and redacted inputs/outputs. CNB and Stationary Energy scoped flows
-retain their dedicated tracing paths.
+with call IDs and redacted inputs/outputs. Catalog IDs, credentials, storage
+pointers, and raw tool bodies stay out of MLflow. CNB and Stationary Energy
+scoped flows retain their dedicated tracing paths.

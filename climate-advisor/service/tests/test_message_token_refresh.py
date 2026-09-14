@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
+from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
 import pytest
@@ -86,6 +87,11 @@ async def test_reopened_thread_uses_and_persists_current_message_token(
             await session.commit()
 
         monkeypatch.setattr(messages_route, "StreamingHandler", _StreamingHandlerStub)
+        monkeypatch.setattr(
+            messages_route.CityCatalystClient,
+            "validate_user_identity",
+            AsyncMock(return_value="owner-1"),
+        )
 
         async def skip_message_insert(
             _service: object,

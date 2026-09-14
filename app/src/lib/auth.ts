@@ -69,14 +69,12 @@ export const authOptions: NextAuthOptions = {
         email?: string;
         image?: string | null;
         role?: Roles;
-        twoFactorEnabled?: boolean;
       } | null> {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
         let user: User | null = null;
-        let twoFactorEnabled = false;
         try {
           if (!db.initialized) {
             await db.initialize();
@@ -84,9 +82,6 @@ export const authOptions: NextAuthOptions = {
           user = await db.models.User.findOne({
             where: { email: credentials.email.toLowerCase() },
           });
-          if (user) {
-            twoFactorEnabled = user.twoFactorEnabled ?? false;
-          }
         } catch (err: unknown) {
           logger.error({ err: err }, "Failed to login:");
           return null;
@@ -111,13 +106,12 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           image: user.pictureUrl,
           role: user.role,
-          twoFactorEnabled,
         };
       },
     }),
   ],
   callbacks: {
-    jwt: async ({ token, user, trigger, session }) => {
+    jwt: async ({ token, user }) => {
       if (user) {
         // user is what's returned from authorize
         token.sub = user.id; // or token.id = user.id;
@@ -125,13 +119,6 @@ export const authOptions: NextAuthOptions = {
         token.picture = user.image;
         token.name = user.name;
         token.csrfSecret = crypto.randomBytes(32).toString("hex");
-        token.requiresTwoFactor =
-          (user as unknown as User).twoFactorEnabled ?? false;
-      }
-
-      if (trigger === "update" && session?.twoFactorVerified) {
-        // TODO do we need to re-verify the token here for security (so it's not just controlled by the client session)?
-        token.requiresTwoFactor = false;
       }
 
       return token;
@@ -145,7 +132,6 @@ export const authOptions: NextAuthOptions = {
           role: token.role,
         },
         csrfSecret: token.csrfSecret,
-        requiresTwoFactor: token.requiresTwoFactor,
       };
     },
   },

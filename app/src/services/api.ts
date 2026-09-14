@@ -911,6 +911,18 @@ export const api = createApi({
           response.data,
         invalidatesTags: ["UserInfo"],
       }),
+      checkSecondFactorAuth: builder.query<
+        { enabled: boolean },
+        { email: string }
+      >({
+        query: ({ email }) => ({
+          url: `auth/2fa/check?email=${encodeURIComponent(email)}`,
+          method: "GET",
+        }),
+        transformResponse: (response: { data: { enabled: boolean } }) =>
+          response.data,
+        providesTags: ["UserInfo"],
+      }),
       getCities: builder.query({
         query: () => ({
           url: "/city",

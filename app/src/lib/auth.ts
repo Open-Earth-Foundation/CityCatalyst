@@ -94,6 +94,15 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.passwordHash,
+        );
+        if (!isValid) {
+          logger.error("Invalid password!");
+          return null;
+        }
+
         if (user.twoFactorEnabled && user.twoFactorSecret) {
           if (!credentials.securityToken) {
             logger.error("No securityToken passed for user with 2FA enabled");
@@ -109,14 +118,6 @@ export const authOptions: NextAuthOptions = {
           }
         }
 
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.passwordHash,
-        );
-        if (!isValid) {
-          logger.error("Invalid password!");
-          return null;
-        }
         return {
           id: user.userId,
           name: user.name,

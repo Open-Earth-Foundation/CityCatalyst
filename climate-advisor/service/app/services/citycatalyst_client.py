@@ -147,6 +147,7 @@ class CityCatalystClient:
                 f"{self.base_url}/api/v1/internal/ca/concept-note-sources",
                 headers={"X-CA-Service-Key": self.api_key},
                 json={"upload_ids": upload_ids[start : start + 1000]},
+                follow_redirects=True,
             )
             response.raise_for_status()
 

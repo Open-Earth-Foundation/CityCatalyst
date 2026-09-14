@@ -248,5 +248,13 @@
   "confirm-upgrade-to-admin": "Are you sure you want to make <bold>{{userName}}</bold> an Admin of the <bold>{{projectName}}</bold>?",
   "user-upgraded-to-admin": "User upgraded to admin successfully",
   "apps": "Apps",
-  "please-enter-password": "Please enter a password"
+  "please-enter-password": "Please enter a password",
+  "security": "Security",
+  "two-factor-heading": "Two-Factor Authentication",
+  "two-factor-enabled-message": "Two-factor authentication is enabled",
+  "two-factor-setup-button": "Setup two-factor authentication",
+  "two-factor-verify-button": "Verify two-factor secret",
+  "two-factor-scan-message": "Scan this QR code using an authenticator app and enter the displayed code below.",
+  "two-factor-setup-success": "Successfully enabled two-factor authentication",
+  "two-factor-setup-failed": "Failed to enabled two-factor authentication. Please try again."
 }

@@ -900,6 +900,7 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: { success: boolean } }) =>
           response.data,
+        invalidatesTags: ["UserInfo"],
       }),
       getCities: builder.query({
         query: () => ({

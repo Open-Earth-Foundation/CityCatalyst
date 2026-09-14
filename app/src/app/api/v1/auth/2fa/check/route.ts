@@ -22,14 +22,11 @@
  *                       type: boolean
  *       400:
  *         description: Invalid request data
- *       404:
- *         description: User with given email address not found
  *       500:
  *         description: Internal server error
  */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import z from "zod";
 
@@ -42,10 +39,10 @@ export const GET = apiHandler(async (_req, { searchParams }) => {
   const user = await db.models.User.findOne({
     where: { email },
   });
-  if (!user) {
-    throw new createHttpError.NotFound("User not found");
+  let enabled = false;
+  if (user) {
+    enabled = (user.twoFactorEnabled && !!user.twoFactorSecret) ?? false;
   }
 
-  const enabled = user.twoFactorEnabled && !!user.twoFactorSecret;
   return NextResponse.json({ data: { enabled } });
 });

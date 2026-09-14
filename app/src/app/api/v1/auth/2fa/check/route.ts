@@ -46,6 +46,6 @@ export const GET = apiHandler(async (_req, { searchParams }) => {
     throw new createHttpError.NotFound("User not found");
   }
 
-  const enabled = user.twoFactorEnabled && user.twoFactorSecret;
+  const enabled = user.twoFactorEnabled && !!user.twoFactorSecret;
   return NextResponse.json({ data: { enabled } });
 });

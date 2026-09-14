@@ -6,18 +6,7 @@
  *       - auth
  *     operationId: setup2FA
  *     summary: Create a second factor authentication secret
- *     description: Creates a 2FA secret, stores it to the user record and returns a data URL for displaying a QR code to the user.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [userId]
- *             properties:
- *               userId:
- *                 type: string
- *                 format: uuid
+ *     description: Creates a 2FA secret for the currently signed in user, stores it to the user record and returns a data URL for displaying a QR code to the user.
  *     responses:
  *       200:
  *         description: Successfully created 2FA secret and QR code data URL
@@ -46,21 +35,16 @@ import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import z from "zod";
-
-const setup2FARequest = z.object({
-  userId: z.string().uuid(),
-});
 
 export const POST = apiHandler(async (req, { session }) => {
-  const body = setup2FARequest.parse(await req.json());
   if (!session) {
     throw new createHttpError.Unauthorized(
       "Not signed in as the requested user",
     );
   }
-
-  const user = await db.models.User.findOne({ where: { userId: body.userId } });
+  const user = await db.models.User.findOne({
+    where: { userId: session.user.id },
+  });
   if (!user) {
     throw new createHttpError.NotFound("User not found");
   }

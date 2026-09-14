@@ -1,15 +1,5 @@
 "use client";
 
-import { Badge, Box, Button, Icon, Text } from "@chakra-ui/react";
-import { FC, useState } from "react";
-
-import { GrInsecure } from "react-icons/gr";
-import PasswordInput from "../password-input";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { TFunction } from "i18next";
-import { MdInfoOutline, MdErrorOutline } from "react-icons/md";
-import { api } from "@/services/api";
-
 import {
   DialogBody,
   DialogCloseTrigger,
@@ -18,16 +8,24 @@ import {
   DialogHeader,
   DialogRoot,
 } from "@/components/ui/dialog";
-
 import { UseSuccessToast } from "@/hooks/Toasts";
+import { api } from "@/services/api";
+import { Badge, Box, Button, Icon, Text } from "@chakra-ui/react";
+import { TFunction } from "i18next";
+import { FC, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { GrInsecure } from "react-icons/gr";
+import { MdErrorOutline, MdInfoOutline } from "react-icons/md";
+import PasswordInput from "../password-input";
+import { isFetchBaseQueryDetailError } from "@/util/helpers";
 
-interface DeleteCityDialogProps {
+interface Disable2FAModalProps {
   isOpen: boolean;
   onClose: () => void;
   t: TFunction;
 }
 
-const Disable2FAModal: FC<DeleteCityDialogProps> = ({ isOpen, onClose, t }) => {
+const Disable2FAModal: FC<Disable2FAModalProps> = ({ isOpen, onClose, t }) => {
   const {
     handleSubmit,
     register,
@@ -48,14 +46,16 @@ const Disable2FAModal: FC<DeleteCityDialogProps> = ({ isOpen, onClose, t }) => {
   }) => {
     try {
       const result = await disableSecondFactorAuth({ password }).unwrap();
-      console.log("disable result", result);
       if (result.success) {
         onClose();
         showSuccessToast();
         setIsPasswordCorrect(true);
       }
     } catch (error) {
-      if (error.data.error.message === "Invalid password") {
+      if (
+        isFetchBaseQueryDetailError(error) &&
+        error.data?.error?.message === "Invalid password"
+      ) {
         setIsPasswordCorrect(false);
       }
       console.log("Disable 2FA error:", error);

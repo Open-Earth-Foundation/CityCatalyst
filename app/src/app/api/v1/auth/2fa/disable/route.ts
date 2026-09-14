@@ -1,26 +1,15 @@
 /**
  * @swagger
- * /api/v1/auth/2fa/login:
+ * /api/v1/auth/2fa/disable:
  *   post:
  *     tags:
  *       - auth
- *     operationId: login2FA
- *     summary: Verify a second factor code from the authenticator app to sign in user
- *     description: Verifies the 2FA code in the request against the user's stored 2FA secret to log in
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [userId]
- *             properties:
- *               token:
- *                 type: string
- *                 description: 2FA code coming from authenticator app, to be verified to complete sign in
+ *     operationId: disable2FA
+ *     summary: Disable the second factor authentication for the currently signed in user
+ *     description: Removes the 2FA secret and disables it (can be used to reset the secret to use another app)
  *     responses:
  *       200:
- *         description: Successfully authenticated with second factor
+ *         description: Successfully disabled the second factor authentication
  *         content:
  *           application/json:
  *             schema:
@@ -38,19 +27,12 @@
  *       500:
  *         description: Internal server error
  */
-import { verifyToken } from "@/lib/2fa";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import z from "zod";
 
-const login2FARequest = z.object({
-  token: z.string().min(1),
-});
-
-export const POST = apiHandler(async (req, { session }) => {
-  const body = login2FARequest.parse(await req.json());
+export const POST = apiHandler(async (_req, { session }) => {
   if (!session) {
     throw new createHttpError.Unauthorized(
       "Not signed in as the requested user",
@@ -67,12 +49,9 @@ export const POST = apiHandler(async (req, { session }) => {
     throw new createHttpError.BadRequest("2FA is not set up for user");
   }
 
-  const isValid = await verifyToken(body.token, user.twoFactorSecret);
-  if (!isValid) {
-    throw new createHttpError.BadRequest("Invalid 2FA token");
-  }
-
-  // TODO can we update the session from the server side here for more security?
+  user.twoFactorSecret = undefined;
+  user.twoFactorEnabled = false;
+  await user.save();
 
   return NextResponse.json({ data: { success: true } });
 });

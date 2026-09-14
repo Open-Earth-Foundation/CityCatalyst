@@ -902,6 +902,15 @@ export const api = createApi({
           response.data,
         invalidatesTags: ["UserInfo"],
       }),
+      disableSecondFactorAuth: builder.mutation<{ success: boolean }, void>({
+        query: () => ({
+          url: "auth/2fa/disable",
+          method: "POST",
+        }),
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
+        invalidatesTags: ["UserInfo"],
+      }),
       getCities: builder.query({
         query: () => ({
           url: "/city",

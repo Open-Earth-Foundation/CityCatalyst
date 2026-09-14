@@ -30,11 +30,16 @@ export function getConceptNoteContextState({
   if (isUploading) return "uploading";
   if (isRetrying) return "processing";
 
-  // Keep pending persisted uploads authoritative until the run poll catches up.
-  const statuses = uploads.map((upload) => upload.status);
-  if (activeUpload) statuses.push(activeUpload.status);
-  if (statuses.includes("failed") || bundle.status === "failed")
-    return "failed";
+  // Refresh the selected upload in place; an older failure is superseded by
+  // the current upload, but other pending uploads still need to finish.
+  const uploadStatuses = new Map(
+    uploads.map((upload) => [upload.upload_id, upload.status]),
+  );
+  if (activeUpload)
+    uploadStatuses.set(activeUpload.uploadId, activeUpload.status);
+  const statuses = [...uploadStatuses.values()];
+  const currentStatus = activeUpload?.status ?? uploads[0]?.status;
+  if (currentStatus === "failed" || bundle.status === "failed") return "failed";
   if (
     statuses.some((status) => status === "queued" || status === "processing")
   ) {
@@ -49,13 +54,14 @@ export function getConceptNoteContextState({
 
   // OCR readiness alone does not mean the evidence has reached Clima's context.
   const hasUploads = statuses.length > 0;
-  const readyUploadIds = new Set(uploads.map((upload) => upload.upload_id));
-  if (activeUpload) readyUploadIds.add(activeUpload.uploadId);
+  const readyUploadCount = statuses.filter(
+    (status) => status === "ready",
+  ).length;
   if (
     hasUploads &&
     (bundle.status !== "ready" ||
       bundle.documentGrounding !== "uploaded_evidence" ||
-      bundle.readySources < readyUploadIds.size)
+      bundle.readySources < readyUploadCount)
   )
     return "processing";
   if (bundle.status === "building") return "preparing";

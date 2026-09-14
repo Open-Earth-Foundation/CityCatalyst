@@ -774,6 +774,15 @@ Operationally:
   The workspace derives chat and draft status from the same upload/context state;
   chat stays disabled until document context is ready, and failed analysis shows
   an error reference with a context retry action.
+  An older failed upload does not block a newer successful upload or count toward
+  required ready sources. Pending uploads and the latest failed upload still block.
+- `POST /v1/messages` validates persisted CNB context before saving a user message
+  or starting SSE. Pending uploads, a failed latest upload, an unfinished/failed
+  bundle, or missing/mismatched ready-source IDs/digests return HTTP `409` with
+  `detail.code: concept_note_context_not_ready`. The CC proxy preserves the status
+  and exposes `{code, message}` so the workspace can show a specific recovery hint
+  without retaining an unsent message in chat history. Ready city-only runs remain
+  supported; ordinary non-CNB chat is unaffected.
 - Eligible Concept Note chat turns receive compact summaries and the read-only,
   single-document `concept_note.sources.query` capability. Raw Markdown, PDFs,
   storage keys, credentials, and derived chunks are not persisted in the bundle.

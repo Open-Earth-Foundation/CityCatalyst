@@ -1,4 +1,5 @@
 {
+  "chat-context-not-ready": "Your message was not sent because document context is still being prepared or needs attention. Review Context, then try again when it is ready.",
   "context-error-incomplete-sections": "Your file was read, but some sections could not be analyzed. Retry document analysis to make it available to Clima.",
   "context-error-text-loss": "Your file was read, but its text could not be prepared completely for analysis. Retry processing; if this continues, upload another copy of the document.",
   "context-error-code": "Error reference: {{code}}.",

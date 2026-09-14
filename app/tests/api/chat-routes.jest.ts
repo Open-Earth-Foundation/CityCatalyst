@@ -571,6 +571,32 @@ describe("Chat routes", () => {
     expect(headers.get("X-Request-ID")).toMatch(/^cc-/);
   });
 
+  it("preserves the CNB readiness rejection as HTTP 409 with its stable code", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    const detail = {
+      code: "concept_note_context_not_ready",
+      message: "Context is not ready",
+    };
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "fresh-token",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(jsonResponse({ detail }, { status: 409 }));
+    const response = await postChatMessage(
+      makeRequest("http://localhost:3000/api/v1/chat/messages", "POST", {
+        threadId: "thread-1",
+        content: "Hello",
+      }),
+      { params: Promise.resolve({}) },
+    );
+    expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toEqual(detail);
+  });
+
   it("refreshes authorization when sending through a reopened CNB thread", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
     fetchMock

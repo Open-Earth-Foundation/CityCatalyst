@@ -1810,8 +1810,16 @@ Rules:
   Failed run progress and correlated logs retain content-free `error_reason`
   and numeric `error_details` alongside `error_code`. The workspace derives
   chat and draft notices from one shared upload/context status, including
-  pending uploads that have not yet reached the bundle. Processing and failure
-  block chat; ready document context unlocks it automatically.
+  pending uploads that have not yet reached the bundle. Pending uploads, a failed
+  current upload, and bundle preparation/failure block chat. Older failed uploads
+  are superseded by a newer successful upload and excluded from readiness counts.
+  Ready document context unlocks chat automatically, including after reload.
+- `POST /v1/messages` checks the request/thread's owned CNB run before saving a
+  user turn or starting SSE. Its persisted bundle must be ready and contain the
+  current ready uploads with matching IDs/digests, with no pending uploads or
+  failed latest upload. HTTP `409` / `concept_note_context_not_ready` is preserved
+  by the CC proxy and shown as a recoverable context error in the workspace; the
+  rejected optimistic user message is removed. Ready city-only runs remain valid.
 - Reconciles every five minutes and marks builds left in `building` for more
   than one hour as `context_bundle_build_interrupted`, preserving the existing
   retry route without storing a durable access token in a job queue.

@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 from app.db import Base
+from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteRun
 from app.models.db.thread import Thread
 from app.models.requests import MessageCreateRequest
 from app.routes import messages as messages_route
@@ -52,6 +53,26 @@ async def test_reopened_thread_uses_and_persists_current_message_token(
         async with engine.begin() as connection:
             await connection.run_sync(Base.metadata.create_all)
         async with session_factory() as session:
+            session.add_all(
+                [
+                    ConceptNoteRun(
+                        run_id=UUID(run_id),
+                        user_id="owner-1",
+                        name="Ready run",
+                        city_id=str(uuid4()),
+                        idempotency_key=uuid4(),
+                        request_fingerprint="a" * 64,
+                        permission_summary={},
+                        context_summary={
+                            "context_bundle": {
+                                "status": "ready",
+                                "document_grounding": "none",
+                            }
+                        },
+                    ),
+                    ConceptNoteContextBundle(run_id=UUID(run_id), context_bundle={}),
+                ]
+            )
             session.add(
                 Thread(
                     thread_id=thread_id,

@@ -14,6 +14,7 @@ from app.config import get_settings
 from app.db.session import get_session_factory, get_session_optional
 from app.middleware import get_request_id
 from app.models.requests import MessageCreateRequest
+from app.services.cnb.chat_readiness import require_chat_context_ready
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
 from app.utils.agent_tracing import configure_agents_tracing
@@ -46,6 +47,7 @@ async def post_message(
     
     This endpoint handles:
     - Thread resolution/creation
+    - CNB readiness validation (409 concept_note_context_not_ready before saving a turn)
     - User message persistence
     - AI response streaming via SSE
     - Token management for inventory API access
@@ -85,6 +87,15 @@ async def post_message(
         )
         
         logger.info("Thread resolved: thread_id=%s", resolved_thread_id)
+
+        # Reject unready CNB turns before saving a message or starting SSE.
+        await require_chat_context_ready(
+            session_factory=session_factory,
+            thread_id=resolved_thread_id,
+            user_id=payload.user_id,
+            context=payload.context,
+            options=payload.options,
+        )
         
         # 2. Load CC token - check payload first, then thread context
         cc_access_token: Optional[str] = None

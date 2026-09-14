@@ -15,7 +15,7 @@ export interface SSEStreamOptions {
   onMessage?: (content: string, index: number) => void;
   onToolResult?: (tool: ToolResultPayload) => void;
   onComplete?: () => void;
-  onError?: (error: string) => void;
+  onError?: (error: string, code?: string) => void;
   onWarning?: (warning: string) => void;
   /** @deprecated No longer needed — streams always use CA SSE format. */
   forceEventStream?: boolean;
@@ -266,9 +266,11 @@ export function useSSEStream(
         if (!response.ok) {
           // Try to extract error message from response
           let errorMessage = `HTTP error! status: ${response.status}`;
+          let errorCode: string | undefined;
           try {
             const errorData: unknown = await response.json();
             if (isRecord(errorData)) {
+              errorCode = valueAsString(errorData.code);
               errorMessage =
                 valueAsString(errorData.detail) ??
                 valueAsString(errorData.message) ??
@@ -278,7 +280,7 @@ export function useSSEStream(
             // Fallback to status text if JSON parsing fails
             errorMessage = `HTTP ${response.status}: ${response.statusText}`;
           }
-          throw new Error(errorMessage);
+          throw Object.assign(new Error(errorMessage), { code: errorCode });
         }
 
         if (!response.body) {
@@ -290,7 +292,14 @@ export function useSSEStream(
         if (!isNamedError(error, "AbortError")) {
           streamErroredRef.current = true;
           if (options.onError) {
-            options.onError(getErrorMessage(error, "Failed to start stream"));
+            options.onError(
+              getErrorMessage(error, "Failed to start stream"),
+              error instanceof Error &&
+                "code" in error &&
+                typeof error.code === "string"
+                ? error.code
+                : undefined,
+            );
           }
         }
         throw error;

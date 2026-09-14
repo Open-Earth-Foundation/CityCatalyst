@@ -789,6 +789,28 @@ Operationally:
   marks builds older than one hour retryable.
 - `POST /v1/concept-notes/{run_id}/context-bundle/retry` and its CityCatalyst
   proxy rerun bundle assembly without rerunning OCR.
+- Reader requests constrain the structured-output sections array to the exact
+  supplied count; backend coverage checks remain authoritative.
+- When a reader returns fewer or more sections than supplied, source analysis
+  discards that response and rereads both halves, with at most two levels of
+  splitting (seven calls per original partition) under the same concurrency limit.
+  Every subgroup must pass coverage checks; incomplete results never enable chat.
+- Source-analysis failures retain a content-free `error_reason` and numeric
+  `error_details` alongside `error_code` in run progress and correlated service
+  logs. These distinguish reader section-count mismatches from partitioning or
+  tokenization text loss without exposing source text or provider payloads.
+  The workspace derives chat and draft status from the same upload/context state;
+  chat stays disabled until document context is ready, and failed analysis shows
+  an error reference with a context retry action.
+  An older failed upload does not block a newer successful upload or count toward
+  required ready sources. Pending uploads and the latest failed upload still block.
+- `POST /v1/messages` validates persisted CNB context before saving a user message
+  or starting SSE. Pending uploads, a failed latest upload, an unfinished/failed
+  bundle, or missing/mismatched ready-source IDs/digests return HTTP `409` with
+  `detail.code: concept_note_context_not_ready`. The CC proxy preserves the status
+  and exposes `{code, message}` so the workspace can show a specific recovery hint
+  without retaining an unsent message in chat history. Ready city-only runs remain
+  supported; ordinary non-CNB chat is unaffected.
 - Eligible Concept Note chat turns receive compact summaries and the read-only,
   single-document `concept_note.sources.query` capability. Raw Markdown, PDFs,
   storage keys, credentials, and derived chunks are not persisted in the bundle.

@@ -47,6 +47,8 @@
  *         description: Invalid request parameters
  *       401:
  *         description: Unauthorized
+ *       409:
+ *         description: Concept Note document context is not ready (concept_note_context_not_ready)
  */
 
 import { NextResponse } from "next/server";
@@ -113,6 +115,19 @@ export const POST = apiHandler(async (req, { session }) => {
 
     if (!caResponse.ok) {
       const payload = await readClimateAdvisorResponsePayload(caResponse);
+      const detail =
+        payload && typeof payload === "object" && "detail" in payload
+          ? payload.detail
+          : null;
+      if (
+        caResponse.status === 409 &&
+        detail &&
+        typeof detail === "object" &&
+        "code" in detail &&
+        detail.code === "concept_note_context_not_ready"
+      ) {
+        return NextResponse.json(detail, { status: 409 });
+      }
       const errorMessage = extractClimateAdvisorErrorMessage(
         payload,
         `CA service error (${caResponse.status})`,

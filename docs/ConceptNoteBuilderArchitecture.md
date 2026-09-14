@@ -1789,6 +1789,11 @@ Rules:
 - Requires exactly one ordered result per input section and verifies every
   retained excerpt as an exact substring of that section. Generated segment
   identifiers are attached only by backend code, never included in the prompt.
+  The provider output schema requires exactly the supplied number of sections;
+  the backend independently checks the returned count.
+  A section-count mismatch discards the incomplete response and rereads both
+  halves, up to two split levels under the same concurrency limit. Every
+  recovered group must pass coverage checks before synthesis can proceed.
 - Requires every factual sentence in a synthesized document summary to remain
   self-contained and supported by an exact retained excerpt. Conflicting
   evidence remains explicit instead of being silently reconciled.
@@ -1802,6 +1807,19 @@ Rules:
 - Completes with `document_grounding: none` when no ready upload exists. A
   pointer/digest change, reader partition failure, or incomplete source coverage
   still fails retryably.
+  Failed run progress and correlated logs retain content-free `error_reason`
+  and numeric `error_details` alongside `error_code`. The workspace derives
+  chat and draft notices from one shared upload/context status, including
+  pending uploads that have not yet reached the bundle. Pending uploads, a failed
+  current upload, and bundle preparation/failure block chat. Older failed uploads
+  are superseded by a newer successful upload and excluded from readiness counts.
+  Ready document context unlocks chat automatically, including after reload.
+- `POST /v1/messages` checks the request/thread's owned CNB run before saving a
+  user turn or starting SSE. Its persisted bundle must be ready and contain the
+  current ready uploads with matching IDs/digests, with no pending uploads or
+  failed latest upload. HTTP `409` / `concept_note_context_not_ready` is preserved
+  by the CC proxy and shown as a recoverable context error in the workspace; the
+  rejected optimistic user message is removed. Ready city-only runs remain valid.
 - Reconciles every five minutes and marks builds left in `building` for more
   than one hour as `context_bundle_build_interrupted`, preserving the existing
   retry route without storing a durable access token in a job queue.

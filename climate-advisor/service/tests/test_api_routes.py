@@ -314,6 +314,10 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
                 ),
             ),
             patch(
+                "app.routes.messages.require_chat_context_ready",
+                new=AsyncMock(),
+            ),
+            patch(
                 "app.routes.messages.ThreadService",
                 new=MagicMock(return_value=thread_service),
             ),
@@ -372,6 +376,10 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
             patch(
                 "app.services.citycatalyst_client.CityCatalystClient.refresh_token",
                 new=refresh_token,
+            ),
+            patch(
+                "app.routes.messages.require_chat_context_ready",
+                new=AsyncMock(),
             ),
             patch("app.routes.messages.ThreadService", new=MagicMock(return_value=AsyncMock())),
             patch("app.routes.messages.MessageService", new=MagicMock(return_value=AsyncMock())),

@@ -316,6 +316,7 @@ export function ConceptNoteWorkspace({
               lng={lng}
               onOpenContext={() => setTab("context")}
               onStartNewChat={() => setStartNewChatOpen(true)}
+              runId={run.run_id}
               threadId={activeThreadId}
               editScope={editScope}
               edits={edits}

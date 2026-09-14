@@ -1,6 +1,6 @@
 """Message admission checks use persisted CNB state, before any agent or turn."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
 
@@ -29,7 +29,7 @@ async def chat_api(tmp_path, monkeypatch):
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
     run_id, thread_id, upload_id = uuid4(), uuid4(), uuid4()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     async with factory() as session, session.begin():
         session.add_all(
             [
@@ -43,6 +43,7 @@ async def chat_api(tmp_path, monkeypatch):
                     user_id="owner",
                     name="Run",
                     city_id=str(uuid4()),
+                    thread_id=thread_id,
                     idempotency_key=uuid4(),
                     request_fingerprint="a" * 64,
                     permission_summary={},
@@ -218,7 +219,7 @@ async def test_accepts_ready_context_and_supported_non_document_chat(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("scope", ["context", "options"])
 async def test_checks_explicit_request_scope_too(chat_api, scope):
-    client, factory, run_id, thread_id, upload_id, save_message, handler = chat_api
+    client, factory, run_id, thread_id, _upload_id, save_message, handler = chat_api
     async with factory() as session, session.begin():
         thread = await session.get(Thread, thread_id)
         thread.context = {}
@@ -240,7 +241,7 @@ async def test_checks_explicit_request_scope_too(chat_api, scope):
 
 @pytest.mark.asyncio
 async def test_run_ownership_is_checked_before_readiness(chat_api):
-    client, factory, run_id, thread_id, upload_id, save_message, handler = chat_api
+    client, factory, run_id, thread_id, _upload_id, save_message, handler = chat_api
     async with factory() as session, session.begin():
         run = await session.get(ConceptNoteRun, run_id)
         run.user_id = "someone-else"
@@ -253,5 +254,27 @@ async def test_run_ownership_is_checked_before_readiness(chat_api):
         },
     )
     assert response.status_code == 403
+    save_message.assert_not_awaited()
+    handler.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_explicit_run_scope_must_match_the_thread(chat_api):
+    client, factory, run_id, thread_id, _upload_id, save_message, handler = chat_api
+    async with factory() as session, session.begin():
+        run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        run.thread_id = uuid4()
+    response = await client.post(
+        "/v1/messages",
+        json={
+            "thread_id": str(thread_id),
+            "user_id": "owner",
+            "content": "Hello",
+            "context": {"concept_note_run_id": str(run_id)},
+        },
+    )
+    assert response.status_code == 409
+    assert response.json()["detail"]["code"] == "concept_note_thread_mismatch"
     save_message.assert_not_awaited()
     handler.assert_not_called()

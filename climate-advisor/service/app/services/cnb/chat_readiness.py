@@ -33,8 +33,9 @@ async def require_chat_context_ready(
     """Validate the same request/thread CNB scope used by the streaming handler.
 
     Raise 409 with ``concept_note_context_not_ready`` for pending, failed, or
-    stale context. Ready city-only runs are supported. Ownership and storage
-    errors retain distinct statuses; no user message or agent is created here.
+    stale context. Explicit run scope must match the supplied thread. Ready
+    city-only runs are supported. Ownership and storage errors retain distinct
+    statuses; no user message or agent is created here.
     """
     requested_run_id = extract_concept_note_run_id(context, options)
     if session_factory is None:
@@ -64,6 +65,10 @@ async def require_chat_context_ready(
                 raise HTTPException(404, detail={"code": "concept_note_run_not_found"})
             if run.user_id != user_id:
                 raise HTTPException(403, detail={"code": "concept_note_run_forbidden"})
+            if run.thread_id != thread.thread_id:
+                raise HTTPException(
+                    409, detail={"code": "concept_note_thread_mismatch"}
+                )
             uploads = list(
                 (
                     await session.scalars(

@@ -34,6 +34,7 @@ interface ConceptNoteChatPanelProps {
   lng: string;
   onOpenContext: () => void;
   onStartNewChat?: () => void;
+  runId: string;
   threadId: string | null;
   editScope: EditScope;
   edits: EditController;
@@ -215,6 +216,7 @@ export function ConceptNoteChatPanel({
   lng,
   onOpenContext,
   onStartNewChat,
+  runId,
   threadId,
   editScope,
   edits,
@@ -230,6 +232,7 @@ export function ConceptNoteChatPanel({
     sendMessage: sendChatMessage,
   } = useConceptNoteChat({
     lng,
+    runId,
     threadId,
     editScope,
     onProposal: edits.loadProposal,

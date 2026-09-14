@@ -52,6 +52,12 @@ export const POST = apiHandler(async (req, { session }) => {
     throw new createHttpError.BadRequest("User has no email address assigned");
   }
 
+  if (user.twoFactorEnabled && user.twoFactorSecret != null) {
+    throw new createHttpError.BadRequest(
+      "User already has 2FA configured, disable it first before calling this route",
+    );
+  }
+
   const { secret, otpAuthUrl } = generateTwoFactorSecret(user.email);
   const qrCodeDataUrl = await generateQRCode(otpAuthUrl);
 

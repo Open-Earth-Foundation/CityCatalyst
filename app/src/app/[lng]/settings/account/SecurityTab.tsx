@@ -163,7 +163,6 @@ const SecurityTab = ({
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
                       setToken(e.currentTarget.value)
                     }
-                    onSubmit={() => console.log("submit")}
                   />
                   <Field.ErrorText>
                     {t("two-factor-invalid-code")}

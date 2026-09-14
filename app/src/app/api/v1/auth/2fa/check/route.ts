@@ -9,7 +9,7 @@
  *     description: Queries the user record for a given email address and returns if second factor authentication is enabled for it. Does not need an active session so it can be used on the login screen.
  *     responses:
  *       200:
- *         description:
+ *         description: Successfully queried user 2FA status
  *         content:
  *           application/json:
  *             schema:

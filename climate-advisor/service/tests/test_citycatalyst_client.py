@@ -35,7 +35,7 @@ async def test_concept_note_source_deletion_batches_authenticated_requests() -> 
     assert [len(json.loads(request.content)["upload_ids"]) for request in requests] == [1000, 1]
     for request in requests:
         assert request.method == "DELETE"
-        assert request.url.path == "/api/v1/internal/ca/concept-note-sources"
+        assert request.url.path == "/api/v1/internal/ca/concept-note-sources/"
         assert request.headers["X-CA-Service-Key"] == "test-service-key"
 
 
@@ -48,6 +48,33 @@ async def test_concept_note_source_deletion_propagates_failure() -> None:
             await client.delete_concept_note_sources(["upload"])
     finally:
         await client.close()
+
+
+@pytest.mark.asyncio
+async def test_concept_note_source_deletion_uses_canonical_trailing_slash_url() -> None:
+    """Call the canonical URL directly so credentials never cross a redirect."""
+    requests = []
+
+    def respond(request):
+        requests.append(request)
+        if not request.url.path.endswith("/"):
+            return httpx.Response(
+                308,
+                headers={"Location": "https://redirect.example/concept-note-sources/"},
+            )
+        return httpx.Response(204)
+
+    client = CityCatalystClient(base_url="https://cc.example", api_key="test-service-key")
+    client._client = httpx.AsyncClient(transport=httpx.MockTransport(respond))
+    try:
+        await client.delete_concept_note_sources(["upload"])
+    finally:
+        await client.close()
+    assert len(requests) == 1
+    assert requests[0].url.path == "/api/v1/internal/ca/concept-note-sources/"
+    assert requests[0].method == "DELETE"
+    assert requests[0].headers["X-CA-Service-Key"] == "test-service-key"
+    assert json.loads(requests[0].content)["upload_ids"] == ["upload"]
 
 
 class _StubAsyncClient:

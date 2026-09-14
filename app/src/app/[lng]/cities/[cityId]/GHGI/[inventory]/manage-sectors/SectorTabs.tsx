@@ -581,6 +581,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                   maxW="340px"
                   label={t("notation-key")}
                   labelIcon={MdInfoOutline}
+                  labelIconTooltip={t("notation-key-tooltip")}
                   placeholder={t("notation-key-input-placeholder")}
                   options={notationKeyOptions}
                   value={quickValues.notationKey}
@@ -788,7 +789,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                 gap="16px"
               >
                 <Button
-                  height="56px"
+                  height="xxl-2"
                   width="150px"
                   variant="outline"
                   onClick={handleUndoChanges}
@@ -797,12 +798,16 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                   {t("cancel")}
                 </Button>
                 <Button
-                  height="56px"
+                  height="xxl-2"
                   width="150px"
                   variant="solid"
                   onClick={() => handleUpdateNotationKeys()}
                   loading={isLoading}
                   disabled={!isDirty}
+                  _disabled={{
+                    bg: "gray.medium",
+                    _hover: { bg: "gray.medium" },
+                  }}
                 >
                   {t("update")}
                 </Button>

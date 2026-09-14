@@ -24,6 +24,7 @@
   "quick-actions": "Actions rapides",
   "select-all-subsectors": "Sélectionner tous les sous-secteurs",
   "notation-key-input-placeholder": "Sélectionnez l'option qui convient le mieux",
+  "notation-key-tooltip": "Symboles normalisés utilisés dans les rapports sur les gaz à effet de serre (GES) pour expliquer pourquoi les données d'émissions d'un sous-secteur spécifique sont manquantes ou indisponibles",
   "explanation-input-placeholder": "Écrivez en détail pourquoi ces domaines ne sont pas inclus",
   "apply-to-all": "Appliquer à tous",
   "data-heading": "Ajoutez des données pour compléter votre inventaire de GES",

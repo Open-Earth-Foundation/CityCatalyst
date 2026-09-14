@@ -24,6 +24,7 @@
   "quick-actions": "Quick actions",
   "select-all-subsectors": "Select all sub-sectors",
   "notation-key-input-placeholder": "Select which option suits best",
+  "notation-key-tooltip": "Standardized symbols used in greenhouse gas (GHG) reporting to explain why emissions data for a specific sub-sector is missing or unavailable",
   "explanation-input-placeholder": "Write in detail why these scope are not included",
   "apply-to-all": "Apply to all",
   "data-heading": "Add Data to Complete Your GHG Inventory",

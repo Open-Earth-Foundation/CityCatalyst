@@ -24,6 +24,7 @@
   "quick-actions": "Ações rápidas",
   "select-all-subsectors": "Selecionar todos os sub-setores",
   "notation-key-input-placeholder": "Selecione a opção que melhor se adequa",
+  "notation-key-tooltip": "Símbolos padronizados usados em relatórios de gases de efeito estufa (GEE) para explicar por que os dados de emissões de um sub-setor específico estão ausentes ou indisponíveis",
   "explanation-input-placeholder": "Escreva em detalhes por que esses escopos não estão incluídos",
   "apply-to-all": "Aplique a todos",
   "data-heading": "Adicione Dados para Completar o Seu Inventário de GEE",

@@ -24,6 +24,7 @@
   "quick-actions": "Acciones rápidas",
   "select-all-subsectors": "Seleccionar todos los subsectores",
   "notation-key-input-placeholder": "Seleccione la opción que mejor se adapte",
+  "notation-key-tooltip": "Símbolos estandarizados utilizados en los informes de gases de efecto invernadero (GEI) para explicar por qué faltan o no están disponibles los datos de emisiones de un subsector específico",
   "explanation-input-placeholder": "Escribe en detalle por qué estos alcances no están incluidos",
   "apply-to-all": "Aplicar a todos",
   "data-heading": "Agrega Datos para Completar tu Inventario de GEI",

@@ -24,6 +24,7 @@
   "quick-actions": "Schnellaktionen",
   "select-all-subsectors": "Alle Teilsektoren auswählen",
   "notation-key-input-placeholder": "Wählen Sie die am besten passende Option",
+  "notation-key-tooltip": "Standardisierte Symbole, die in der Treibhausgas (THG)-Berichterstattung verwendet werden, um zu erklären, warum Emissionsdaten für einen bestimmten Teilsektor fehlen oder nicht verfügbar sind",
   "explanation-input-placeholder": "Geben Sie detailliert an, warum diese Bereiche nicht einbezogen sind",
   "apply-to-all": "Auf alles anwenden",
   "data-heading": "Fügen Sie Daten hinzu, um Ihr Treibhausgasinventar zu vervollständigen",

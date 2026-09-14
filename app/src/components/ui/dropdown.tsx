@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
+import { Tooltip } from "@/components/ui/tooltip";
 
 export interface DropdownOption {
   label: string;
@@ -23,6 +24,7 @@ export interface DropdownProps {
   onValueChange: (value: string) => void;
   label?: string;
   labelIcon?: React.ElementType;
+  labelIconTooltip?: React.ReactNode;
   required?: boolean;
   placeholder?: string;
   disabled?: boolean;
@@ -39,6 +41,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       onValueChange,
       label,
       labelIcon,
+      labelIconTooltip,
       required,
       placeholder,
       disabled,
@@ -84,9 +87,18 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                 {label}
               </Text>
               <Field.RequiredIndicator />
-              {labelIcon && (
-                <Icon as={labelIcon} color="interactive.control" boxSize={4} />
-              )}
+              {labelIcon &&
+                (labelIconTooltip ? (
+                  <Tooltip content={labelIconTooltip} showArrow openDelay={100}>
+                    <Icon
+                      as={labelIcon}
+                      color="interactive.control"
+                      boxSize={4}
+                    />
+                  </Tooltip>
+                ) : (
+                  <Icon as={labelIcon} color="interactive.control" boxSize={4} />
+                ))}
             </SelectLabel>
           )}
           <SelectTrigger

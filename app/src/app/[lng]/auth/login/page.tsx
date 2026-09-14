@@ -94,7 +94,11 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
   const run2FAStatusCheck = async () => {
     const isValidEmail = emailPattern.test(currentEmail);
     if (isValidEmail) {
-      return await check2FAStatus({ email: currentEmail }).unwrap();
+      return await check2FAStatus({ email: currentEmail })
+        .unwrap()
+        .catch((error) => {
+          console.log("2FA status check error:", error);
+        });
     }
   };
   const showSecurityToken = secondFactorEnabled?.enabled ?? false;

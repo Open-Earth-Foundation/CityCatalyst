@@ -67,7 +67,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
   let callbackUrl = decodeURIComponent(queryParams.callbackUrl || "");
 
   // next-auth's redirect callback throws on anything that isn't a relative
-  // path or same-origin absolutmutatione URL, so discard anything else here
+  // path or same-origin absolute URL, so discard anything else here
   if (callbackUrl && !callbackUrl.startsWith("/")) {
     callbackUrl = "";
   }

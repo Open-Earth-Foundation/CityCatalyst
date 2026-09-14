@@ -4,7 +4,15 @@ import ProgressLoader from "@/components/ProgressLoader";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { api } from "@/services/api";
 import { UserInfoResponse } from "@/util/types";
-import { Box, Button, chakra, Icon, Input, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  chakra,
+  Field,
+  Icon,
+  Input,
+  VStack,
+} from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { ChangeEvent, useState } from "react";
 import { MdCheckCircle } from "react-icons/md";
@@ -22,7 +30,7 @@ const SecurityTab = ({
   });
   const { showErrorToast } = UseErrorToast({
     title: t("two-factor-setup-failed"),
-    duration: 0,
+    duration: 20000,
   });
 
   const [
@@ -31,9 +39,12 @@ const SecurityTab = ({
   ] = api.useSetupSecondFactorAuthMutation();
   const [verifySecondFactorAuth, { isLoading: isVerifyLoading }] =
     api.useVerifySecondFactorAuthMutation();
+  const [disableSecondFactorAuth, { isLoading: isDisableLoading }] =
+    api.useDisableSecondFactorAuthMutation();
 
   const [token, setToken] = useState("");
   const [isSetupMode, setIsSetupMode] = useState(false);
+  const [hasTokenError, setHasTokenError] = useState(false);
 
   const isEnabled = userInfo?.twoFactorEnabled ?? false;
 
@@ -50,8 +61,10 @@ const SecurityTab = ({
     console.log("Verify result", result);
     if (result.data?.success) {
       showSuccessToast();
+      setHasTokenError(false);
     } else {
       showErrorToast();
+      setHasTokenError(true);
     }
   };
 
@@ -73,20 +86,34 @@ const SecurityTab = ({
             <HeadingText title={t("two-factor-heading")} />
             {isEnabled ? (
               /* TODO allow repeating setup */
-              <BodyMedium>
-                {t("two-factor-enabled-message")}
-                <Icon
-                  as={MdCheckCircle}
-                  color="sentiment.positiveDefault"
-                  boxSize={6}
-                  ml={1}
-                  mt={-1}
-                />
-              </BodyMedium>
+              <VStack spaceY={4} alignItems="left">
+                <BodyMedium>
+                  {t("two-factor-enabled-message")}
+                  <Icon
+                    as={MdCheckCircle}
+                    color="sentiment.positiveDefault"
+                    boxSize={6}
+                    ml={1}
+                    mt={-1}
+                  />
+                  <br />
+                  <br />
+                  {t("two-factor-reset-message")}
+                </BodyMedium>
+                <Button
+                  onClick={() => disableSecondFactorAuth()}
+                  loading={isDisableLoading}
+                >
+                  {t("two-factor-reset-button")}
+                </Button>
+              </VStack>
             ) : !isSetupMode ? (
-              <Button onClick={setup2FA} loading={isSetupLoading}>
-                {t("two-factor-setup-button")}
-              </Button>
+              <VStack spaceY={4} alignItems="left">
+                <BodyMedium>{t("two-factor-setup-message")}</BodyMedium>
+                <Button onClick={setup2FA} loading={isSetupLoading}>
+                  {t("two-factor-setup-button")}
+                </Button>
+              </VStack>
             ) : (
               <VStack spaceY={4} alignItems="left">
                 <BodyMedium>{t("two-factor-scan-message")}</BodyMedium>
@@ -97,16 +124,29 @@ const SecurityTab = ({
                     maxW={400}
                   />
                 )}
-                <Input
-                  value={token}
-                  placeholder={t("two-factor-token-placeholder")}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setToken(e.currentTarget.value)
-                  }
-                />
-                <Button onClick={verify2FA} loading={isVerifyLoading}>
-                  {t("two-factor-verify-button")}
-                </Button>
+                <form
+                  onSubmit={(event) => {
+                    verify2FA();
+                    event.preventDefault();
+                  }}
+                >
+                  <Field.Root invalid={hasTokenError} mb={4}>
+                    <Input
+                      value={token}
+                      placeholder={t("two-factor-token-placeholder")}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        setToken(e.currentTarget.value)
+                      }
+                      onSubmit={() => console.log("submit")}
+                    />
+                    <Field.ErrorText>
+                      {t("two-factor-invalid-code")}
+                    </Field.ErrorText>
+                  </Field.Root>
+                  <Button onClick={verify2FA} loading={isVerifyLoading}>
+                    {t("two-factor-verify-button")}
+                  </Button>
+                </form>
               </VStack>
             )}
           </VStack>

@@ -15,7 +15,6 @@ import React, { FC, useEffect, useMemo, useState } from "react";
 import { StationaryEnergyIcon } from "@/components/icons";
 
 import { MdInfoOutline } from "react-icons/md";
-import { RiErrorWarningFill } from "react-icons/ri";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -407,11 +406,29 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   };
 
   // notation key dropdown options
+  // labels follow the "XX (description)" translation convention — extract the
+  // short code to bold in the dropdown and pair it with its full reason text
   const notationKeyOptions: DropdownOption[] = [
-    { label: t("ne"), value: "not-estimated" },
-    { label: t("no"), value: "no-occurrance" },
-    { label: t("c"), value: "confidential-information" },
-    { label: t("ie"), value: "included-elsewhere" },
+    {
+      label: t("ne").split(" (")[0],
+      value: "not-estimated",
+      description: t("reason-NE"),
+    },
+    {
+      label: t("no").split(" (")[0],
+      value: "no-occurrance",
+      description: t("reason-NO"),
+    },
+    {
+      label: t("c").split(" (")[0],
+      value: "confidential-information",
+      description: t("reason-C"),
+    },
+    {
+      label: t("ie").split(" (")[0],
+      value: "included-elsewhere",
+      description: t("reason-IE"),
+    },
   ];
   // handle undo changes
   const handleUndoChanges = () => {
@@ -589,7 +606,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                       lineHeight="20"
                       letterSpacing="wide"
                     >
-                      {t("explanation")}
+                      {t("justification")}
                     </Text>
                   </Field.Label>
                   <Input
@@ -631,7 +648,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
               <Box
                 display="grid"
                 gridTemplateColumns="repeat(auto-fill, minmax(450px, 1fr))"
-                gap="48px"
+                gap="xxl-2"
               >
                 {unfinishedItems.map((item) => {
                   // Use the subCategoryId as the unique key for each card
@@ -641,11 +658,12 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                   };
                   return (
                     <CheckboxCard.Root
-                      width="497px"
+                      width="full"
                       key={item.subCategoryId}
                       height="344px"
                       p={0}
                       borderCollapse="border.neutral"
+                      boxShadow="1dp"
                       checked={selectedForThisSector.includes(
                         item.subCategoryId,
                       )}
@@ -657,15 +675,16 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                       <CheckboxCard.Control>
                         <CheckboxCard.Content>
                           <CheckboxCard.Label my="24px">
-                            <Icon
-                              as={RiErrorWarningFill}
-                              boxSize={5}
-                              color="sentiment.warningDefault"
-                            />
                             <Text
-                              fontSize="title.md"
+                              overflow="hidden"
+                              textOverflow="ellipsis"
+                              color="content.primary"
                               fontFamily="heading"
-                              fontWeight="bold"
+                              fontSize="overline"
+                              fontWeight="semibold"
+                              lineHeight="16"
+                              letterSpacing="widest"
+                              textTransform="uppercase"
                               lineClamp={2}
                             >
                               {t(item.subCategoryReferenceNumber!)}{" "}
@@ -694,7 +713,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                                 <Dropdown
                                   width="full"
                                   label={t("notation-key")}
-                                  labelIcon={MdInfoOutline}
+                                  required
                                   placeholder={t(
                                     "notation-key-input-placeholder",
                                   )}
@@ -713,14 +732,15 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                                     }))
                                   }
                                 />
-                                <Field.Root orientation="vertical">
+                                <Field.Root orientation="vertical" required>
                                   <Field.Label>
                                     <Text
                                       fontFamily="heading"
                                       color="content.secondary"
                                     >
-                                      {t("explanation")}
+                                      {t("justification")}
                                     </Text>
+                                    <Field.RequiredIndicator />
                                   </Field.Label>
                                   <Textarea
                                     placeholder={t(
@@ -760,30 +780,35 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
             ) : (
               <Text>{t("no-unfinished-subsectors")}</Text>
             )}
+            {unfinishedItems.length > 0 && (
+              <Box
+                pt="48px"
+                display="flex"
+                justifyContent="flex-end"
+                gap="16px"
+              >
+                <Button
+                  height="56px"
+                  width="150px"
+                  variant="outline"
+                  onClick={handleUndoChanges}
+                  disabled={!isDirty}
+                >
+                  {t("cancel")}
+                </Button>
+                <Button
+                  height="56px"
+                  width="150px"
+                  variant="solid"
+                  onClick={() => handleUpdateNotationKeys()}
+                  loading={isLoading}
+                  disabled={!isDirty}
+                >
+                  {t("update")}
+                </Button>
+              </Box>
+            )}
           </Box>
-          {unfinishedItems.length > 0 && (
-            <Box py="48px" display="flex" justifyContent="flex-end" gap="16px">
-              <Button
-                height="56px"
-                width="150px"
-                variant="outline"
-                onClick={handleUndoChanges}
-                disabled={!isDirty}
-              >
-                {t("cancel")}
-              </Button>
-              <Button
-                height="56px"
-                width="150px"
-                variant="solid"
-                onClick={() => handleUpdateNotationKeys()}
-                loading={isLoading}
-                disabled={!isDirty}
-              >
-                {t("update")}
-              </Button>
-            </Box>
-          )}
         </Tabs.Content>
       );
     });

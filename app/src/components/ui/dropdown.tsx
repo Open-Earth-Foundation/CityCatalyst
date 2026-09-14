@@ -14,6 +14,7 @@ import {
 export interface DropdownOption {
   label: string;
   value: string;
+  description?: React.ReactNode;
 }
 
 export interface DropdownProps {
@@ -22,6 +23,7 @@ export interface DropdownProps {
   onValueChange: (value: string) => void;
   label?: string;
   labelIcon?: React.ElementType;
+  required?: boolean;
   placeholder?: string;
   disabled?: boolean;
   width?: string;
@@ -37,6 +39,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       onValueChange,
       label,
       labelIcon,
+      required,
       placeholder,
       disabled,
       width,
@@ -51,7 +54,13 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
     );
 
     return (
-      <Field.Root orientation="vertical" width={width} maxW={maxW} flex={flex}>
+      <Field.Root
+        orientation="vertical"
+        width={width}
+        maxW={maxW}
+        flex={flex}
+        required={required}
+      >
         <SelectRoot
           ref={ref}
           variant="outline"
@@ -74,6 +83,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
               >
                 {label}
               </Text>
+              <Field.RequiredIndicator />
               {labelIcon && (
                 <Icon as={labelIcon} color="interactive.control" boxSize={4} />
               )}
@@ -104,7 +114,10 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
           <SelectContent>
             {options.map((option) => (
               <SelectItem item={option} key={option.value}>
-                {option.label}
+                <Text as="span" fontWeight="bold">
+                  {option.label}
+                </Text>
+                {option.description && <>: {option.description}</>}
               </SelectItem>
             ))}
           </SelectContent>

@@ -791,6 +791,7 @@
   "add-emission-data-btn": "Add emission data",
   "reason": "Reason",
   "explanation": "Explanation",
+  "justification": "Justification",
   "notation-key": "Notation key",
   "notation-key-NO": "NO (Not occuring)",
   "notation-key-NE": "NE (Not Estimated)",

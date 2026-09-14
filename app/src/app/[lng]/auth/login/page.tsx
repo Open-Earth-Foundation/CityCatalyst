@@ -87,7 +87,28 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
     description: t("verified-toast-description"),
   });
 
+  // check if account with given email has 2FA enabled when the user exits the email field
+  const currentEmail = watch("email");
+  const [check2FAStatus, { data: secondFactorEnabled }] =
+    api.useLazyCheckSecondFactorAuthQuery();
+  const run2FAStatusCheck = async () => {
+    const isValidEmail = emailPattern.test(currentEmail);
+    if (isValidEmail) {
+      return await check2FAStatus({ email: currentEmail }).unwrap();
+    }
+  };
+  const showSecurityToken = secondFactorEnabled?.enabled ?? false;
+  const fullError =
+    error == "invalid-email-or-password" && showSecurityToken
+      ? "invalid-email-password-or-security-code"
+      : error;
+
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
+    const status = await run2FAStatusCheck();
+    if (status?.enabled && data.securityToken?.length != 6) {
+      return;
+    }
+
     clearError();
     const result = await login(data, callbackUrl || `/${lng}/`);
 
@@ -96,7 +117,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
     }
   };
 
-  // Extract doesInvitedUserExist from callback params\
+  // Extract doesInvitedUserExist from callback params
   // If it is true, redirect to /user/invites page
   // If it is false, redirect to /auth/signup page
   // Check if the callbackUrl contains a query string
@@ -117,23 +138,6 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
     );
   }
 
-  // check if account with given email has 2FA enabled when the user exits the email field
-  const currentEmail = watch("email");
-  const [check2FAStatus, { data: secondFactorEnabled }] =
-    api.useLazyCheckSecondFactorAuthQuery();
-  const onEmailBlur = () => {
-    const isValidEmail = emailPattern.test(currentEmail);
-    if (isValidEmail) {
-      check2FAStatus({ email: currentEmail });
-    }
-  };
-  const showSecurityToken = secondFactorEnabled?.enabled ?? false;
-
-  const fullError =
-    error == "invalid-email-or-password" && showSecurityToken
-      ? "invalid-email-password-or-security-code"
-      : error;
-
   return (
     <Box>
       <Heading size="xl">{t("login-heading")}</Heading>
@@ -151,7 +155,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
             register={register}
             error={errors.email}
             t={t}
-            inputProps={{ onBlur: onEmailBlur }}
+            inputProps={{ onBlur: run2FAStatusCheck }}
           />
           <PasswordInput
             register={register}

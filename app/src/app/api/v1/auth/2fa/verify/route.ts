@@ -13,7 +13,7 @@
  *         application/json:
  *           schema:
  *             type: object
- *             required: [userId]
+ *             required: [token]
  *             properties:
  *               token:
  *                 type: string

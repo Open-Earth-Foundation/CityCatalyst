@@ -259,7 +259,7 @@ export class User
         },
         twoFactorEnabled: {
           type: DataTypes.BOOLEAN,
-          allowNull: true,
+          allowNull: false,
           field: "two_factor_enabled",
         },
         twoFactorSecret: {

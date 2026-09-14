@@ -533,5 +533,20 @@
   "edit-refine-label": "Mettez à jour la demande avec vos éclaircissements ou modifications",
   "edit-refine-submit": "Créer une proposition raffinée",
   "edit-refresh": "Recharger l'état de la proposition",
-  "edit-dismiss": "Rejeter cette proposition"
+  "edit-dismiss": "Rejeter cette proposition",
+  "chat-context-not-ready": "Votre message n'a pas été envoyé car le contexte du document est toujours en préparation ou nécessite de l'attention. Révisez le Contexte, puis réessayez lorsque c'est prêt.",
+  "context-error-incomplete-sections": "Votre fichier a été lu, mais certaines sections n'ont pas pu être analysées. Réessayez l'analyse de document pour le rendre disponible à Clima.",
+  "context-error-text-loss": "Votre fichier a été lu, mais son texte n'a pas pu être entièrement préparé pour l'analyse. Réessayez le traitement ; si cela continue, téléchargez une autre copie du document.",
+  "context-error-code": "Référence d'erreur : {{code}}.",
+  "clima-context-uploading-title": "Téléchargement de votre document",
+  "clima-context-uploading-message": "Votre document est en cours de téléchargement. Le chat sera disponible une fois qu'il aura été traité et sera prêt pour Clima.",
+  "clima-context-processing-title": "Fichier reçu — en cours de traitement",
+  "clima-context-processing-message": "Votre document a été téléchargé. Nous préparons son contenu pour Clima. Le chat sera disponible automatiquement lorsqu'il sera prêt.",
+  "clima-context-preparing-title": "Préparation du contexte",
+  "clima-context-preparing-message": "Nous préparons le contexte pour cette note conceptuelle. Le chat sera automatiquement disponible lorsqu'il sera prêt.",
+  "clima-context-failed-title": "Le contexte du document n'a pas pu être préparé",
+  "clima-context-failed-message": "Clima ne peut pas encore utiliser votre document. Ouvrez le panneau de contexte pour vérifier l'erreur et réessayez le traitement.",
+  "chat-waiting-for-context": "En attente de contexte...",
+  "chat-waiting-for-context-help": "Le chat est en pause jusqu'à la fin du traitement. Vous n'avez pas besoin de télécharger à nouveau le document.",
+  "chat-context-failed-help": "Le chat est en pause. Révisez le contexte et essayez de nouveau le traitement pour continuer."
 }

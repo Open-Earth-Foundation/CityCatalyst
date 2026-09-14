@@ -533,5 +533,20 @@
   "edit-refine-label": "Aktualisieren Sie die Anfrage mit Ihrer Klarstellung oder Änderungen",
   "edit-refine-submit": "Erstellen Sie einen verfeinerten Vorschlag",
   "edit-refresh": "Vorschlagsstatus neu laden",
-  "edit-dismiss": "Diesen Vorschlag ablehnen"
+  "edit-dismiss": "Diesen Vorschlag ablehnen",
+  "chat-context-not-ready": "Ihre Nachricht wurde nicht gesendet, weil der Dokumentenkontext noch vorbereitet wird oder Aufmerksamkeit benötigt. Überprüfen Sie den Kontext und versuchen Sie es erneut, wenn er bereit ist.",
+  "context-error-incomplete-sections": "Ihre Datei wurde gelesen, aber einige Abschnitte konnten nicht analysiert werden. Wiederholen Sie die Dokumentenanalyse, um sie für Clima verfügbar zu machen.",
+  "context-error-text-loss": "Ihre Datei wurde gelesen, aber ihr Text konnte nicht vollständig für die Analyse vorbereitet werden. Versuchen Sie die Verarbeitung erneut; wenn dies weiterhin vorkommt, laden Sie eine andere Kopie des Dokuments hoch.",
+  "context-error-code": "Fehlerreferenz: {{code}}.",
+  "clima-context-uploading-title": "Hochladen Ihres Dokuments",
+  "clima-context-uploading-message": "Ihr Dokument wird hochgeladen. Der Chat wird verfügbar sein, sobald es verarbeitet wurde und für Clima bereit ist.",
+  "clima-context-processing-title": "Datei erhalten — Verarbeitung läuft",
+  "clima-context-processing-message": "Ihr Dokument wurde hochgeladen. Wir bereiten seinen Inhalt für Clima vor. Der Chat wird automatisch verfügbar sein, wenn es fertig ist.",
+  "clima-context-preparing-title": "Kontext vorbereiten",
+  "clima-context-preparing-message": "Wir bereiten den Kontext für diese Konzeptnote vor. Der Chat wird automatisch verfügbar sein, sobald er fertig ist.",
+  "clima-context-failed-title": "Der Kontext des Dokuments konnte nicht vorbereitet werden",
+  "clima-context-failed-message": "Clima kann Ihr Dokument noch nicht verwenden. Öffnen Sie das Kontextmenü, um den Fehler zu überprüfen und die Verarbeitung erneut zu versuchen.",
+  "chat-waiting-for-context": "Warten auf Kontext…",
+  "chat-waiting-for-context-help": "Der Chat ist pausiert, bis die Verarbeitung abgeschlossen ist. Sie müssen das Dokument nicht erneut hochladen.",
+  "chat-context-failed-help": "Der Chat ist angehalten. Überprüfen Sie den Kontext und versuchen Sie die Verarbeitung erneut fortzusetzen."
 }

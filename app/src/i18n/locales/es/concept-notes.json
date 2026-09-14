@@ -533,5 +533,20 @@
   "edit-refine-label": "Actualiza la solicitud con tu aclaración o cambios",
   "edit-refine-submit": "Crea una propuesta refinada",
   "edit-refresh": "Recargar estado de propuesta",
-  "edit-dismiss": "Descartar esta propuesta"
+  "edit-dismiss": "Descartar esta propuesta",
+  "chat-context-not-ready": "Su mensaje no fue enviado porque el contexto del documento aún se está preparando o necesita atención. Revise el contexto, luego intente nuevamente cuando esté listo.",
+  "context-error-incomplete-sections": "Se leyó su archivo, pero no se pudieron analizar algunas secciones. Vuelva a intentar el análisis del documento para ponerlo a disposición de Clima.",
+  "context-error-text-loss": "Se leyó su archivo, pero no se pudo preparar completamente su texto para el análisis. Intente procesarlo nuevamente; si esto continúa, suba otra copia del documento.",
+  "context-error-code": "Referencia de error: {{code}}.",
+  "clima-context-uploading-title": "Subiendo tu documento",
+  "clima-context-uploading-message": "Su documento se está cargando. El chat estará disponible una vez que se haya procesado y esté listo para Clima.",
+  "clima-context-processing-title": "Archivo recibido — procesando",
+  "clima-context-processing-message": "Su documento ha sido subido. Estamos preparando su contenido para Clima. El chat estará disponible automáticamente cuando esté listo.",
+  "clima-context-preparing-title": "Preparando contexto",
+  "clima-context-preparing-message": "Estamos preparando el contexto para esta nota conceptual. El chat estará disponible automáticamente cuando esté listo.",
+  "clima-context-failed-title": "No se pudo preparar el contexto del documento",
+  "clima-context-failed-message": "Clima aún no puede usar tu documento. Abre el panel de contexto para verificar el error e intenta procesarlo de nuevo.",
+  "chat-waiting-for-context": "Esperando por contexto…",
+  "chat-waiting-for-context-help": "El chat está en pausa hasta que finalice el procesamiento. No necesitas volver a subir el documento.",
+  "chat-context-failed-help": "El chat está en pausa. Revisa el contexto y vuelve a intentar el procesamiento para continuar."
 }

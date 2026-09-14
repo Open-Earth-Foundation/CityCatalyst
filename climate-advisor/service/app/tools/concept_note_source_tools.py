@@ -133,11 +133,18 @@ def build_concept_note_source_tools(
             )
         except SourceAnalysisError as exc:
             logger.warning(
-                "Concept Note source analysis failed run_id=%s code=%s",
+                "Concept Note source analysis failed run_id=%s code=%s reason=%s details=%s",
                 run_uuid,
                 exc.code,
+                exc.reason,
+                exc.details,
             )
-            return error_payload(exc.code, str(exc))
+            return error_payload(
+                exc.code,
+                "The selected document could not be completely analyzed. Please retry.",
+                reason=exc.reason,
+                details=exc.details,
+            )
         except Exception:
             logger.exception("Concept Note source tool failed run_id=%s", run_uuid)
             return error_payload(
@@ -148,13 +155,20 @@ def build_concept_note_source_tools(
     return [concept_note_sources_query]
 
 
-def error_payload(code: str, message: str) -> str:
+def error_payload(
+    code: str,
+    message: str,
+    *,
+    reason: str | None = None,
+    details: dict[str, int] | None = None,
+) -> str:
     """Serialize one stable failed capability envelope."""
-    return json.dumps(
-        {
-            "action": CONCEPT_NOTE_SOURCE_QUERY_CAPABILITY,
-            "success": False,
-            "error_code": code,
-            "error": message,
-        }
-    )
+    payload: dict[str, object] = {
+        "action": CONCEPT_NOTE_SOURCE_QUERY_CAPABILITY,
+        "success": False,
+        "error_code": code,
+        "error": message,
+    }
+    if reason:
+        payload.update(error_reason=reason, error_details=details or {})
+    return json.dumps(payload)

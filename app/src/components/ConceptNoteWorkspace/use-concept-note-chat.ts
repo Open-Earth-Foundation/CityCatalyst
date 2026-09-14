@@ -38,6 +38,7 @@ export function useConceptNoteChat({
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const assistantMessageIdRef = useRef<string | null>(null);
+  const pendingUserMessageIdRef = useRef<string | null>(null);
 
   const { startStream, stopStream } = useSSEStream({
     forceEventStream: true,
@@ -69,20 +70,34 @@ export function useConceptNoteChat({
     },
     onComplete: () => {
       assistantMessageIdRef.current = null;
+      pendingUserMessageIdRef.current = null;
       setIsGenerating(false);
     },
-    onError: () => {
+    onError: (_message, code) => {
       const assistantMessageId = assistantMessageIdRef.current;
+      const rejectedUserMessageId =
+        code === "concept_note_context_not_ready"
+          ? pendingUserMessageIdRef.current
+          : null;
       if (assistantMessageId) {
         setMessages((current) =>
           current.filter(
             (message) =>
-              message.id !== assistantMessageId || Boolean(message.text.trim()),
+              message.id !== rejectedUserMessageId &&
+              (message.id !== assistantMessageId ||
+                Boolean(message.text.trim())),
           ),
         );
       }
       assistantMessageIdRef.current = null;
-      setError(t("chat-send-error"));
+      pendingUserMessageIdRef.current = null;
+      setError(
+        t(
+          code === "concept_note_context_not_ready"
+            ? "chat-context-not-ready"
+            : "chat-send-error",
+        ),
+      );
       setIsGenerating(false);
     },
   });
@@ -134,10 +149,12 @@ export function useConceptNoteChat({
     }
 
     const assistantMessageId = crypto.randomUUID();
+    const userMessageId = crypto.randomUUID();
     assistantMessageIdRef.current = assistantMessageId;
+    pendingUserMessageIdRef.current = userMessageId;
     setMessages((current) => [
       ...current,
-      { id: crypto.randomUUID(), role: "user", text: normalizedContent },
+      { id: userMessageId, role: "user", text: normalizedContent },
       { id: assistantMessageId, role: "assistant", text: "" },
     ]);
     setError(null);

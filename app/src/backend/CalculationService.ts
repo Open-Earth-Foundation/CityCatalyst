@@ -18,6 +18,8 @@ import {
 import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 import { GasValueCreationAttributes } from "@/models/GasValue";
 import { Decimal } from "decimal.js";
+import { GlobalWarmingPotentialTypeEnum } from "@/util/enums";
+import { decimalToBigInt } from "@/util/big_int";
 
 export type Gas = {
   gas: string;
@@ -38,13 +40,44 @@ export type GasValue = Omit<GasValueCreationAttributes, "id"> & {
 
 const DEFAULT_CO2EQ_YEARS = 100;
 
+/** Default when inventory.globalWarmingPotentialType is missing. */
+export const DEFAULT_GWP_VERSION = GlobalWarmingPotentialTypeEnum.ar5;
+
 export default class CalculationService {
+  /**
+   * Normalize inventory GWP selection. Unknown / null → AR5.
+   */
+  public static resolveGwpVersion(
+    value?: string | GlobalWarmingPotentialTypeEnum | null,
+  ): GlobalWarmingPotentialTypeEnum {
+    if (value === GlobalWarmingPotentialTypeEnum.ar6 || value === "ar6") {
+      return GlobalWarmingPotentialTypeEnum.ar6;
+    }
+    if (value === GlobalWarmingPotentialTypeEnum.ar5 || value === "ar5") {
+      return GlobalWarmingPotentialTypeEnum.ar5;
+    }
+    if (value) {
+      logger.warn(
+        { gwp: value },
+        "Unknown globalWarmingPotentialType; defaulting to ar5",
+      );
+    }
+    return DEFAULT_GWP_VERSION;
+  }
+
+  public static async loadGasToCO2Eqs(
+    gwpVersion: GlobalWarmingPotentialTypeEnum,
+  ): Promise<GasToCO2Eq[]> {
+    return db.models.GasToCO2Eq.findAll({
+      where: { gwpVersion },
+    });
+  }
+
   private static calculateCO2eq(
     gasToCO2Eqs: GasToCO2Eq[],
     gasName: string,
     amount: Decimal,
   ): { co2eq: Decimal; co2eqYears: number } {
-    // TODO the rest of this could be shared for all formulas?
     const globalWarmingPotential = gasToCO2Eqs.find(
       (entry) => entry.gas === gasName,
     );
@@ -83,15 +116,21 @@ export default class CalculationService {
 
   public static async calculateCO2eqForGases(
     gases: Gas[],
+    gwpVersion?: string | GlobalWarmingPotentialTypeEnum | null,
   ): Promise<{ totalCO2e: Decimal; totalCO2eYears: number }> {
-    const [result] = await this.calculateCO2eqForGasGroups([gases]);
+    const [result] = await this.calculateCO2eqForGasGroups(
+      [gases],
+      gwpVersion,
+    );
     return result;
   }
 
   public static async calculateCO2eqForGasGroups(
     gasGroups: Gas[][],
+    gwpVersion?: string | GlobalWarmingPotentialTypeEnum | null,
   ): Promise<Array<{ totalCO2e: Decimal; totalCO2eYears: number }>> {
-    const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
+    const version = this.resolveGwpVersion(gwpVersion);
+    const gasToCO2Eqs = await this.loadGasToCO2Eqs(version);
     return gasGroups.map((gases) => this.sumGasCO2eq(gasToCO2Eqs, gases));
   }
 
@@ -102,8 +141,6 @@ export default class CalculationService {
 
     const formula = "activity-amount-times-emissions-factor"; // fallback value
 
-    // search manual-input-hierarchy.json for inputMethodology ID
-    // TODO pass refNo from request into this function for faster search
     const methodology = findMethodology(inputMethodology);
     if (!methodology) {
       throw new createHttpError.NotFound(
@@ -123,7 +160,6 @@ export default class CalculationService {
       );
     }
 
-    // TODO map to the right activity object based on the activity value
     return methodology.activities?.[0]?.["formula-mapping"] as Record<
       string,
       string
@@ -138,13 +174,16 @@ export default class CalculationService {
   ): Promise<GasAmountResult> {
     const formula = await CalculationService.getFormula(inputMethodology);
 
-    // TODO cache
-    const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
+    const inventory = await db.models.Inventory.findByPk(
+      inventoryValue.inventoryId,
+    );
+    const gwpVersion = this.resolveGwpVersion(
+      inventory?.globalWarmingPotentialType,
+    );
+    const gasToCO2Eqs = await this.loadGasToCO2Eqs(gwpVersion);
     let gases: Gas[] = [];
 
     switch (formula) {
-      // TODO use Record<string, (activityValue, gasToCO2Eqs) => FormulaResult> for this? To avoid adding new code here for each new formula...
-      // basically like a function pointer table in C++...
       case "direct-measure":
         gases = handleDirectMeasureFormula(activityValue);
         break;
@@ -193,15 +232,11 @@ export default class CalculationService {
       case "wastewater-calculator":
         const activityId = activityValue.metadata?.activityId;
 
-        // TODO handle outside activities as well!
         if (
           activityId === "wastewater-inside-domestic-calculator-activity" ||
           activityId === "wastewater-outside-domestic-calculator-activity"
         ) {
           const prefixKey = activityId.split("-").slice(0, -1).join("-");
-          const inventory = await db.models.Inventory.findByPk(
-            inventoryValue.inventoryId,
-          );
           if (!inventory) {
             throw new createHttpError.NotFound("Inventory not found");
           }
@@ -240,5 +275,153 @@ export default class CalculationService {
       totalCO2eYears,
       gases,
     };
+  }
+
+  /**
+   * Recompute ActivityValue / InventoryValue co2eq from stored GasValue.gasAmount
+   * using the inventory's GWP version (AR5/AR6).
+   */
+  public static async recalculateInventoryCO2eq(
+    inventoryId: string,
+  ): Promise<{ activityValuesUpdated: number; inventoryValuesUpdated: number }> {
+    const inventory = await db.models.Inventory.findByPk(inventoryId);
+    if (!inventory) {
+      throw new createHttpError.NotFound("Inventory not found");
+    }
+
+    const gwpVersion = this.resolveGwpVersion(
+      inventory.globalWarmingPotentialType,
+    );
+    const gasToCO2Eqs = await this.loadGasToCO2Eqs(gwpVersion);
+    const gwpByGas = new Map(
+      gasToCO2Eqs.map((entry) => [entry.gas, entry] as const),
+    );
+
+    const inventoryValues = await db.models.InventoryValue.findAll({
+      where: { inventoryId },
+      include: [
+        {
+          model: db.models.ActivityValue,
+          as: "activityValues",
+          include: [
+            {
+              model: db.models.GasValue,
+              as: "gasValues",
+            },
+          ],
+        },
+        {
+          model: db.models.GasValue,
+          as: "gasValues",
+        },
+      ],
+    });
+
+    let activityValuesUpdated = 0;
+    let inventoryValuesUpdated = 0;
+
+    for (const inventoryValue of inventoryValues) {
+      let inventoryValueCO2e = new Decimal(0);
+      let inventoryValueCO2eYears = 0;
+      let touchedActivity = false;
+
+      const activityValues = inventoryValue.activityValues ?? [];
+      for (const activityValue of activityValues) {
+        const gases = (activityValue.gasValues ?? [])
+          .filter((gv) => gv.gas && gv.gasAmount != null)
+          .map((gv) => ({
+            gas: gv.gas!,
+            amount: new Decimal(gv.gasAmount!.toString()),
+          }));
+
+        if (gases.length === 0) {
+          // Keep existing activity co2eq (e.g. third-party / pre-aggregated).
+          if (activityValue.co2eq != null) {
+            inventoryValueCO2e = Decimal.sum(
+              inventoryValueCO2e,
+              new Decimal(activityValue.co2eq.toString()),
+            );
+            inventoryValueCO2eYears = Math.max(
+              inventoryValueCO2eYears,
+              activityValue.co2eqYears ?? 0,
+            );
+          }
+          continue;
+        }
+
+        const knownGases = gases.filter((gas) => gwpByGas.has(gas.gas));
+        if (knownGases.length === 0) {
+          if (activityValue.co2eq != null) {
+            inventoryValueCO2e = Decimal.sum(
+              inventoryValueCO2e,
+              new Decimal(activityValue.co2eq.toString()),
+            );
+            inventoryValueCO2eYears = Math.max(
+              inventoryValueCO2eYears,
+              activityValue.co2eqYears ?? 0,
+            );
+          }
+          continue;
+        }
+
+        const { totalCO2e, totalCO2eYears } = this.sumGasCO2eq(
+          gasToCO2Eqs,
+          knownGases,
+        );
+        activityValue.co2eq = decimalToBigInt(totalCO2e);
+        activityValue.co2eqYears = totalCO2eYears;
+        await activityValue.save();
+        activityValuesUpdated += 1;
+        touchedActivity = true;
+
+        inventoryValueCO2e = Decimal.sum(inventoryValueCO2e, totalCO2e);
+        inventoryValueCO2eYears = Math.max(
+          inventoryValueCO2eYears,
+          totalCO2eYears,
+        );
+      }
+
+      // Legacy inventory-value-level gas rows (no activity values).
+      if (activityValues.length === 0) {
+        const gases = (inventoryValue.gasValues ?? [])
+          .filter((gv) => gv.gas && gv.gasAmount != null)
+          .map((gv) => ({
+            gas: gv.gas!,
+            amount: new Decimal(gv.gasAmount!.toString()),
+          }))
+          .filter((gas) => gwpByGas.has(gas.gas));
+
+        if (gases.length > 0) {
+          const { totalCO2e, totalCO2eYears } = this.sumGasCO2eq(
+            gasToCO2Eqs,
+            gases,
+          );
+          inventoryValue.co2eq = decimalToBigInt(totalCO2e);
+          inventoryValue.co2eqYears = totalCO2eYears;
+          await inventoryValue.save();
+          inventoryValuesUpdated += 1;
+        }
+        continue;
+      }
+
+      if (touchedActivity) {
+        inventoryValue.co2eq = decimalToBigInt(inventoryValueCO2e);
+        inventoryValue.co2eqYears = inventoryValueCO2eYears || undefined;
+        await inventoryValue.save();
+        inventoryValuesUpdated += 1;
+      }
+    }
+
+    logger.info(
+      {
+        inventoryId,
+        gwpVersion,
+        activityValuesUpdated,
+        inventoryValuesUpdated,
+      },
+      "Recalculated inventory CO2e with inventory GWP version",
+    );
+
+    return { activityValuesUpdated, inventoryValuesUpdated };
   }
 }

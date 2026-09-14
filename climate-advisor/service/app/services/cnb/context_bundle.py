@@ -175,11 +175,22 @@ class ContextBundleService:
                 warnings=warnings,
             )
         except SourceAnalysisError as exc:
+            # Record only safe diagnostics, never document text or provider payloads.
+            logger.warning(
+                "Concept Note source analysis failed run_id=%s build_id=%s code=%s reason=%s details=%s",
+                run_id,
+                active.build_id,
+                exc.code,
+                exc.reason,
+                exc.details,
+            )
             await self._record_failure(
                 user_id=user_id,
                 snapshot=active,
                 error_code=exc.code,
                 warning="A ready city source could not be fully analyzed.",
+                error_reason=exc.reason,
+                error_details=exc.details,
             )
             return False
         except Exception:
@@ -370,6 +381,8 @@ class ContextBundleService:
         snapshot: ContextBundleBuildSnapshot,
         error_code: str,
         warning: str,
+        error_reason: str | None = None,
+        error_details: dict[str, int] | None = None,
     ) -> None:
         """Persist one guarded retryable failure without masking its cause."""
         await fail_build(
@@ -379,6 +392,8 @@ class ContextBundleService:
             build_id=snapshot.build_id,
             error_code=error_code,
             warning=warning,
+            error_reason=error_reason,
+            error_details=error_details,
         )
 
 

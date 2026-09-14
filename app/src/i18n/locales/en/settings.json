@@ -261,5 +261,10 @@
   "two-factor-token-placeholder": "Enter the 6 digit code from your authenticator app here",
   "two-factor-setup-success": "Successfully enabled two-factor authentication",
   "two-factor-setup-failed": "Failed to enable two-factor authentication. Please try again.",
-  "two-factor-invalid-code": "Invalid code. Please try again."
+  "two-factor-invalid-code": "Invalid code. Please try again.",
+  "two-factor-disable-title": "Disable two-factor authentication",
+  "two-factor-disable-button": "Disable",
+  "two-factor-disable-confirm-message": "After disabling two-factor authentication you can configure another app or device",
+  "two-factor-disable-password-message": "Confirm your password to disable two-factor authentication for your account",
+  "two-factor-disabled": "Successfully disabled two-factor authentication"
 }

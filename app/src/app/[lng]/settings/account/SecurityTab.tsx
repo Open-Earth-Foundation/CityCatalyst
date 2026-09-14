@@ -1,4 +1,5 @@
 import { BodyMedium, TitleMedium } from "@/components";
+import Disable2FAModal from "@/components/Modals/disable-2fa-modal";
 import ProgressLoader from "@/components/ProgressLoader";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { api } from "@/services/api";
@@ -65,12 +66,11 @@ const SecurityTab = ({
   ] = api.useSetupSecondFactorAuthMutation();
   const [verifySecondFactorAuth, { isLoading: isVerifyLoading }] =
     api.useVerifySecondFactorAuthMutation();
-  const [disableSecondFactorAuth, { isLoading: isDisableLoading }] =
-    api.useDisableSecondFactorAuthMutation();
 
   const [token, setToken] = useState("");
   const [isSetupMode, setIsSetupMode] = useState(false);
   const [hasTokenError, setHasTokenError] = useState(false);
+  const [isDisableModalOpen, setIsDisableModalOpen] = useState(false);
 
   const isEnabled = userInfo?.twoFactorEnabled ?? false;
 
@@ -108,7 +108,6 @@ const SecurityTab = ({
         <VStack spaceY={4} alignItems="left">
           <TitleMedium>{t("two-factor-heading")}</TitleMedium>
           {isEnabled ? (
-            /* TODO allow repeating setup */
             <VStack spaceY={4} alignItems="left">
               <BodyMedium>
                 {t("two-factor-enabled-message")}
@@ -119,14 +118,11 @@ const SecurityTab = ({
                   ml={1}
                   mt={-1}
                 />
-                <br />
-                <br />
-                {t("two-factor-reset-message")}
               </BodyMedium>
+              <BodyMedium>{t("two-factor-reset-message")}</BodyMedium>
               <SubmitButton
                 text={t("two-factor-reset-button")}
-                onClick={() => disableSecondFactorAuth()}
-                loading={isDisableLoading}
+                onClick={() => setIsDisableModalOpen(true)}
               />
             </VStack>
           ) : !isSetupMode ? (
@@ -176,6 +172,11 @@ const SecurityTab = ({
           )}
         </VStack>
       )}
+      <Disable2FAModal
+        t={t}
+        isOpen={isDisableModalOpen}
+        onClose={() => setIsDisableModalOpen(false)}
+      />
     </Box>
   );
 };

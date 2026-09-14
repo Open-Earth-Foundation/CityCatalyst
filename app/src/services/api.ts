@@ -902,10 +902,14 @@ export const api = createApi({
           response.data,
         invalidatesTags: ["UserInfo"],
       }),
-      disableSecondFactorAuth: builder.mutation<{ success: boolean }, void>({
-        query: () => ({
+      disableSecondFactorAuth: builder.mutation<
+        { success: boolean },
+        { password: string }
+      >({
+        query: ({ password }) => ({
           url: "auth/2fa/disable",
           method: "POST",
+          body: { password },
         }),
         transformResponse: (response: { data: { success: boolean } }) =>
           response.data,

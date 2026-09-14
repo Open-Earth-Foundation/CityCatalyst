@@ -260,6 +260,6 @@
   "two-factor-scan-message": "Scan this QR code using an authenticator app on your phone and enter the displayed code below.",
   "two-factor-token-placeholder": "Enter the 6 digit code from your authenticator app here",
   "two-factor-setup-success": "Successfully enabled two-factor authentication",
-  "two-factor-setup-failed": "Failed to enabled two-factor authentication. Please try again.",
+  "two-factor-setup-failed": "Failed to enable two-factor authentication. Please try again.",
   "two-factor-invalid-code": "Invalid code. Please try again."
 }

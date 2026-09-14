@@ -877,6 +877,30 @@ export const api = createApi({
           body: { password, token },
         }),
       }),
+      setupSecondFactorAuth: builder.mutation<
+        { success: boolean; qrCodeDataUrl: string },
+        void
+      >({
+        query: () => ({
+          url: "auth/2fa/setup",
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: { success: boolean; qrCodeDataUrl: string };
+        }) => response.data,
+      }),
+      verifySecondFactorAuth: builder.mutation<
+        { success: boolean },
+        { token: string }
+      >({
+        query: ({ token }) => ({
+          url: "auth/2fa/verify",
+          method: "POST",
+          body: { token },
+        }),
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
+      }),
       getCities: builder.query({
         query: () => ({
           url: "/city",

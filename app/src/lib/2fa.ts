@@ -26,9 +26,10 @@ export const generateQRCode = async (otpAuthUrl: string) => {
 };
 
 // Verify OTP code
-export const verifyToken = (token: string, secret: string) => {
+export const verifyToken = async (token: string, secret: string) => {
   try {
-    return verify({ token, secret });
+    const result = await verify({ token, secret });
+    return result.valid;
   } catch (error) {
     logger.error({ error }, "Failed to verify 2FA token");
     return false;

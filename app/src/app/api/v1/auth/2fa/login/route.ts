@@ -67,7 +67,7 @@ export const POST = apiHandler(async (req, { session }) => {
     throw new createHttpError.BadRequest("2FA is not set up for user");
   }
 
-  const isValid = verifyToken(body.token, user.twoFactorSecret);
+  const isValid = await verifyToken(body.token, user.twoFactorSecret);
   if (!isValid) {
     throw new createHttpError.BadRequest("Invalid 2FA token");
   }

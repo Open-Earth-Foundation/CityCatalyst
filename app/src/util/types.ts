@@ -128,6 +128,7 @@ export interface UserInfoResponse {
   email?: string;
   preferredLanguage?: string;
   numberFormat?: string;
+  twoFactorEnabled?: boolean;
 }
 
 export type DataSource = DataSourceAttributes & {

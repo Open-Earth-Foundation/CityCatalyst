@@ -7,6 +7,7 @@ import { trackEvent, identifyUser } from "@/lib/analytics";
 export type LoginData = {
   email: string;
   password: string;
+  securityToken?: string;
 };
 
 export type UseLoginReturn = {
@@ -37,6 +38,7 @@ export const useLogin = (): UseLoginReturn => {
         redirect: false,
         email: data.email,
         password: data.password,
+        securityToken: data.securityToken,
         callbackUrl: callbackUrl || `/${lng}/cities`,
       });
 

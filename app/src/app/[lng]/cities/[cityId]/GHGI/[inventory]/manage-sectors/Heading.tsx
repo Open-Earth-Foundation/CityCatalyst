@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { HelpDrawer, HelpDrawerItem } from "@/components/ui/help-drawer";
 import { Box, Icon, Text } from "@chakra-ui/react";
 import { usePathname, useRouter } from "next/navigation";
 import { MdArrowBack } from "react-icons/md";
@@ -8,6 +9,73 @@ import type { TFunction } from "i18next";
 interface HeadingProps {
   t: TFunction;
 }
+
+const getNotationKeysHelpItems = (t: TFunction): HelpDrawerItem[] => {
+  const notationKeyDefinitionSuggestions = [
+    {
+      preview: t("chat-suggestion-notation-keys-1"),
+      message: t("chat-suggestion-notation-keys-1-message"),
+    },
+    {
+      preview: t("chat-suggestion-notation-keys-2"),
+      message: t("chat-suggestion-notation-keys-2-message"),
+    },
+    {
+      preview: t("chat-suggestion-notation-keys-3"),
+      message: t("chat-suggestion-notation-keys-3-message"),
+    },
+  ];
+
+  const commonNotationKeysSuggestions = [
+    {
+      preview: t("chat-suggestion-common-notation-keys-1"),
+      message: t("chat-suggestion-common-notation-keys-1-message"),
+    },
+    {
+      preview: t("chat-suggestion-common-notation-keys-2"),
+      message: t("chat-suggestion-common-notation-keys-2-message"),
+    },
+  ];
+
+  const howToUseNotationKeysSuggestions = [
+    {
+      preview: t("chat-suggestion-how-to-use-notation-keys-1"),
+      message: t("chat-suggestion-how-to-use-notation-keys-1-message"),
+    },
+    {
+      preview: t("chat-suggestion-how-to-use-notation-keys-2"),
+      message: t("chat-suggestion-how-to-use-notation-keys-2-message"),
+    },
+  ];
+
+  return [
+    {
+      value: "notation_key_definition",
+      title: t("notation-key-question"),
+      itemDescription: t("notation-key-answer"),
+      suggestions: notationKeyDefinitionSuggestions,
+    },
+    {
+      value: "common_notation_keys",
+      title: t("common-notation-keys"),
+      bulletPoints: [
+        `${t("ne")} - ${t("ne-description")}`,
+        `${t("no")} - ${t("no-description")}`,
+        `${t("ie")} - ${t("ie-description")}`,
+        `${t("c")} - ${t("c-description")}`,
+      ],
+      suggestions: commonNotationKeysSuggestions,
+    },
+    {
+      value: "how_to_use_notation_keys",
+      title: t("how-to-use-notation-keys"),
+      itemDescription: t("how-to-use-notation-keys-description"),
+      learnMoreLink:
+        "https://unfccc.int/resource/tet/bg/bg2-02_Overview_Notation_Keys.pdf",
+      suggestions: howToUseNotationKeysSuggestions,
+    },
+  ];
+};
 
 const Heading: FC<HeadingProps> = ({ t }) => {
   const router = useRouter();
@@ -55,7 +123,14 @@ const Heading: FC<HeadingProps> = ({ t }) => {
             {t("manage-missing-subsectors-description")}
           </Text>
         </Box>
-        <Button variant="outline">{t("help-button")}</Button>
+        <HelpDrawer
+          triggerLabel={t("help-button")}
+          title={t("drawer-help-section-title")}
+          description={t("drawer-help-section-description")}
+          items={getNotationKeysHelpItems(t)}
+          askAiLabel={t("ask-ai")}
+          learnMoreLabel={t("learn-more")}
+        />
       </Box>
     </Box>
   );

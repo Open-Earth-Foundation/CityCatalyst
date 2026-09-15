@@ -488,7 +488,10 @@ def test_concept_note_start_uses_dedicated_mlflow_run_name(monkeypatch) -> None:
             "result": "created",
         }
     ]
-    assert recorded["trace_context"]["session_id"] == concept_note_run_id
+    assert "session_id" not in recorded["trace_context"]
+    assert recorded["trace_context"]["metadata"]["concept_note_run_id"] == str(
+        concept_note_run_id
+    )
     assert recorded["span_outputs"] == (
         "start-span",
         {

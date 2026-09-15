@@ -77,7 +77,8 @@ def workflow_trace(
     """Correlate workflow work with chat, sharing prompt storage and redaction.
 
     Inline tools stay in their conversation trace. Standalone/background work
-    owns a run and a compact trace linked by the durable session/workflow IDs.
+    owns a run and a compact trace linked by thread/workflow metadata, without
+    a chat-session ID that would make MLflow display the job as a chat turn.
     """
     # Do not overwrite an enclosing conversation's sourceRun or session metadata.
     try:
@@ -107,11 +108,12 @@ def workflow_trace(
         )
         with span_scope as span:
             if parent is None:
+                # Only real chat turns belong in MLflow's Sessions view.
+                correlation = {**attributes, "thread_id": session_id}
                 update_current_trace_context(
-                    session_id=session_id,
                     user_id=user_id,
-                    tags=attributes,
-                    metadata=attributes,
+                    tags=correlation,
+                    metadata=correlation,
                 )
             yield span
 

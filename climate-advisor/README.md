@@ -1426,6 +1426,9 @@ agent creation, stays open through persistence, and stores the user message and
 assembled assistant response. `mlflow.trace.session` is the CA `thread_id`, so
 Sessions groups all turns from the same conversation. Workflow tags and durable
 `concept_note_run_id` / `stationary_energy_draft_run_id` retain the flow identity.
+Standalone preparation and workflow jobs omit `mlflow.trace.session` so they
+do not appear as extra chat turns. Find them in Traces using `thread_id` and
+the workflow IDs; inline tool calls remain children of the actual chat turn.
 
 `streamed`, `stream_status`, `response_chunk_count`, and `history_saved` describe
 the outcome. These are visible trace attributes, not a custom animated MLflow UI

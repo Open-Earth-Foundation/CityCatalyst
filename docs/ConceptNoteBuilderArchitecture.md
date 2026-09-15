@@ -2528,7 +2528,9 @@ not MLflow's thread-local fluent active-run stack. All shared logging helpers an
 run termination target that ID. Failed starts mask the enclosing target, queued
 writes drain before closure, and exceptions/cancellation terminate only the
 affected request. Trace metadata explicitly links to the source run through
-`mlflow.sourceRun` and records session/user using MLflow 3.2 metadata keys.
+`mlflow.sourceRun` and records user identity using MLflow 3.2 metadata keys.
+Only chat turns set `mlflow.trace.session`. Standalone CNB preparation and
+workflow traces retain thread/workflow IDs without becoming extra chat turns.
 CNB chat carries `prompt_name=cnb_chat` for the composed CNB workflow prompt.
 
 All user-initiated CNB telemetry uses the `Clima` experiment and the visible

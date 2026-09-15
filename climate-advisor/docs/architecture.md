@@ -507,3 +507,5 @@ The existing catalog summary projection remains available in tool artifacts.
 CNB source analysis/drafting/validation and Stationary Energy generation/review/save share
 workflow tracing and prompt compaction. Inline operations stay under the chat;
 background tasks own independent traces linked by thread and workflow IDs.
+Standalone jobs omit `mlflow.trace.session`; only conversation turns appear in
+the Sessions view. Workflow traces remain searchable by `thread_id` metadata.

@@ -187,8 +187,9 @@ async def test_all_chat_modes_export_complete_or_partial_turns(
 
 
 @pytest.mark.asyncio
-async def test_parallel_tools_and_detached_work_keep_session_and_run_identity(tracking):
-    """Nested workflow runs must not steal the chat trace; detached jobs outlive it."""
+@pytest.mark.parametrize("job_name", ["cnb_source_analysis", "stationary_energy_draft_generation"])
+async def test_parallel_tools_keep_session_but_detached_work_stays_out_of_chat(tracking, job_name):
+    """Only chat roots appear in Sessions; background jobs retain thread correlation."""
     client, experiment = tracking
     ready = asyncio.Event()
     release = asyncio.Event()
@@ -223,7 +224,7 @@ async def test_parallel_tools_and_detached_work_keep_session_and_run_identity(tr
 
     async def background():
         with workflow_trace(
-            name="stationary_energy_draft_generation",
+            name=job_name,
             inputs={"rows": [1]},
             session_id="chat-1",
             user_id="user-1",
@@ -262,7 +263,14 @@ async def test_parallel_tools_and_detached_work_keep_session_and_run_identity(tr
     job = client.get_trace(captured["background"])
     assert chat.info.trace_metadata["mlflow.sourceRun"] == run.info.run_id
     assert job.info.trace_metadata["mlflow.sourceRun"] != run.info.run_id
-    assert job.info.trace_metadata["mlflow.trace.session"] == "chat-1"
+    assert "mlflow.trace.session" not in job.info.trace_metadata
+    assert job.info.trace_metadata["thread_id"] == "chat-1"
+    assert job.info.tags["thread_id"] == "chat-1"
+    session_traces = client.search_traces(
+        experiment_ids=[experiment],
+        filter_string="metadata.`mlflow.trace.session` = 'chat-1'",
+    )
+    assert [trace.info.trace_id for trace in session_traces] == [captured["chat"]]
     assert {
         span.attributes["tool_call_id"]
         for span in chat.data.spans

@@ -890,7 +890,6 @@ class StationaryEnergyDraftService:
                 status_code=403, detail="Draft run does not belong to user"
             )
         update_current_trace_context(
-            session_id=draft_run.thread_id or draft_run_id,
             link_run=False,
             metadata={
                 "thread_id": draft_run.thread_id,
@@ -1038,7 +1037,6 @@ class StationaryEnergyDraftService:
                 status_code=403, detail="Draft run does not belong to user"
             )
         update_current_trace_context(
-            session_id=draft_run.thread_id or draft_run_id,
             link_run=False,
             metadata={
                 "thread_id": draft_run.thread_id,

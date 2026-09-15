@@ -7,7 +7,9 @@ import json
 import logging
 from typing import Any, Literal
 
-from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, RunConfig, Runner
+from agents import Agent, OpenAIChatCompletionsModel, RunConfig, Runner
+from openai import AsyncOpenAI
+
 from app.config.settings import Settings
 from app.models.cnb.concept_note_edits import (
     ChapterEditPlanOutput,
@@ -21,11 +23,11 @@ from app.persistence.concept_notes.edits import EditOperationError
 from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
 from app.services.cnb.edit_validation import prior_user_inputs
 from app.services.openrouter_client import build_openrouter_client_options
+from app.utils.cnb_model_settings import cnb_model_settings
 from app.utils.cnb_observability import protect_cnb_client
 from app.utils.cnb_progress import emit_cnb_progress, run_with_cnb_reasoning
 from app.utils.concept_note_context import omit_context_identifiers
 from app.utils.prompt_budget import count_prompt_tokens
-from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
 
@@ -111,17 +113,8 @@ class ConceptNoteEditPlanner:
                 model=OpenAIChatCompletionsModel(
                     model=model.name, openai_client=client
                 ),
-                model_settings=ModelSettings(
-                    temperature=0.0,
-                    include_usage=True,
-                    reasoning={"effort": model.reasoning_effort},
-                    extra_body={
-                        "reasoning": {
-                            "effort": model.reasoning_effort,
-                            "exclude": False,
-                            "summary": "auto",
-                        }
-                    },
+                model_settings=cnb_model_settings(
+                    model.reasoning_effort, responses=False, temperature=0.0,
                 ),
                 output_type=ChapterEditPlanOutput,
             )

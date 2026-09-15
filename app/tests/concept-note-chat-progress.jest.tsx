@@ -129,6 +129,20 @@ it("groups live summaries and clears them on completion and failure", async () =
     "Checking the amount.",
   ]);
   expect(chat.messages.at(-1)?.text).toBe("");
+  await act(async () => {
+    streamOptions.onReasoning?.({
+      id: "source",
+      stage: "reading",
+      delta: "Partial",
+    });
+    streamOptions.onReasoning?.({
+      id: "source",
+      stage: "reading",
+      delta: "Complete source summary",
+      replace: true,
+    });
+  });
+  expect(chat.reasoning.at(-1)?.text).toBe("Complete source summary");
   await act(async () => streamOptions.onError?.("Failed"));
   expect(chat.isGenerating).toBe(false);
   expect(chat.reasoning).toEqual([]);

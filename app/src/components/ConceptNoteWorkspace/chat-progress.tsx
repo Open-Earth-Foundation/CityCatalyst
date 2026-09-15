@@ -28,6 +28,8 @@ export function ChatProgress({
       <Text
         as="span"
         minW={0}
+        fontSize="12px"
+        fontStyle="italic"
         overflowWrap="anywhere"
         lineClamp={2}
         data-testid="concept-note-reasoning-preview"

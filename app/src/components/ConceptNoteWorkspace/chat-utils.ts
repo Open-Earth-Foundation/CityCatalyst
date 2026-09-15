@@ -6,7 +6,8 @@ export interface ConceptNoteChatMessage {
 
 export interface ConceptNoteReasoning {
   id: string;
-  stage: "chat" | "planning" | "reviewing";
+  stage: "chat" | "planning" | "reviewing" | "reading";
+  replace?: boolean;
   chapterTitle?: string;
   text: string;
 }
@@ -35,7 +36,8 @@ export function readConceptNoteReasoning(
     !value.delta ||
     (value.stage !== "chat" &&
       value.stage !== "planning" &&
-      value.stage !== "reviewing")
+      value.stage !== "reviewing" &&
+      value.stage !== "reading")
   )
     return null;
   return {
@@ -44,6 +46,7 @@ export function readConceptNoteReasoning(
     chapterTitle:
       typeof value.chapter_title === "string" ? value.chapter_title : undefined,
     text: value.delta,
+    replace: value.replace === true,
   };
 }
 

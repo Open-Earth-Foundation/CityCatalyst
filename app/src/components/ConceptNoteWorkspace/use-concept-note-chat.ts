@@ -59,7 +59,12 @@ export function useConceptNoteChat({
         const previous = current.find((item) => item.id === update.id);
         return [
           ...current.filter((item) => item.id !== update.id),
-          { ...update, text: (previous?.text || "") + update.text },
+          {
+            ...update,
+            text: update.replace
+              ? update.text
+              : (previous?.text || "") + update.text,
+          },
         ];
       });
     },

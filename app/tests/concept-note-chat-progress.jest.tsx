@@ -1,29 +1,40 @@
 /** @jest-environment jsdom */
 
-import { act } from "react";
+import { act, useEffect } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, jest } from "@jest/globals";
 import type { SSEStreamOptions } from "@/hooks/useSSEStream";
-import { useConceptNoteChat } from "@/components/ConceptNoteWorkspace/use-concept-note-chat";
 import { readConceptNoteProgress } from "@/components/ConceptNoteWorkspace/chat-utils";
 
 let streamOptions: SSEStreamOptions;
 const startStream = jest.fn(async () => {});
 const stopStream = jest.fn();
 const t = (key: string) => key;
-jest.mock("@/i18n/client", () => ({ useTranslation: () => ({ t }) }));
-jest.mock("@/hooks/useSSEStream", () => ({
+jest.unstable_mockModule("@/i18n/client", () => ({
+  useTranslation: () => ({ t }),
+}));
+jest.unstable_mockModule("@/hooks/useSSEStream", () => ({
   useSSEStream: (options: SSEStreamOptions) => {
     streamOptions = options;
     return { startStream, stopStream };
   },
 }));
 
+const { useConceptNoteChat } =
+  await import("@/components/ConceptNoteWorkspace/use-concept-note-chat");
+
 let chat: ReturnType<typeof useConceptNoteChat>;
 let root: Root;
 const originalFetch = globalThis.fetch;
 function Harness() {
-  chat = useConceptNoteChat({ lng: "en", runId: "run", threadId: "thread" });
+  const current = useConceptNoteChat({
+    lng: "en",
+    runId: "run",
+    threadId: "thread",
+  });
+  useEffect(() => {
+    chat = current;
+  });
   return null;
 }
 beforeEach(async () => {
@@ -114,8 +125,8 @@ it("groups live summaries and clears them on completion and failure", async () =
     });
   });
   expect(chat.reasoning.map((item) => item.text)).toEqual([
-    "Checking the amount.",
     "Reviewing dates.",
+    "Checking the amount.",
   ]);
   expect(chat.messages.at(-1)?.text).toBe("");
   await act(async () => streamOptions.onError?.("Failed"));

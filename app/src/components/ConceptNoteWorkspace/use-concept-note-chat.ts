@@ -55,15 +55,13 @@ export function useConceptNoteChat({
       const update = readConceptNoteReasoning(value);
       const assistantId = assistantMessageIdRef.current;
       if (!assistantId || !update) return;
-      setReasoning((current) =>
-        current.some((item) => item.id === update.id)
-          ? current.map((item) =>
-              item.id === update.id
-                ? { ...item, text: item.text + update.text }
-                : item,
-            )
-          : [...current, update],
-      );
+      setReasoning((current) => {
+        const previous = current.find((item) => item.id === update.id);
+        return [
+          ...current.filter((item) => item.id !== update.id),
+          { ...update, text: (previous?.text || "") + update.text },
+        ];
+      });
     },
     onProgress: (value) => {
       const update = readConceptNoteProgress(value);

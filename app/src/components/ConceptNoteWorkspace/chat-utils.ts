@@ -11,6 +11,15 @@ export interface ConceptNoteReasoning {
   text: string;
 }
 
+/** Only display complete model-authored headings, never half-written Markdown. */
+export function readReasoningHeading(text: string): string | null {
+  const headings = [
+    ...text.matchAll(/^(?:\*\*([^\n]+?)\*\*|#{1,6}\s+([^\n]+)\n)/gm),
+  ];
+  const latest = headings.at(-1);
+  return latest ? (latest[1] || latest[2]).trim() : null;
+}
+
 export function readConceptNoteReasoning(
   value: unknown,
 ): ConceptNoteReasoning | null {

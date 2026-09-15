@@ -346,7 +346,8 @@ model reasoning arrives. `reasoning` events carry an `id` identifying the model
 call, a `stage` (`chat`, `planning`, `reviewing`), optional `chapter_title`, and a
 text `delta`. Both the main chat and chapter planner/reviewer stream their model
 calls. The configured OpenAI model returns reasoning summaries through OpenRouter.
-CNB requests explicitly allow their inclusion. Providers may omit readable
+CNB requests explicitly request `reasoning.summary: auto` and allow inclusion
+with `exclude: false`. Providers may still omit readable
 summaries for individual calls; the UI does not synthesize substitute reasoning.
 The adapter accepts the SDK's readable reasoning/summary delta events and excludes
 opaque or encrypted items. No additional model calls generate these summaries.
@@ -354,7 +355,11 @@ opaque or encrypted items. No additional model calls generate these summaries.
 A request-local sink uses the same bounded stream queue, so concurrent chats
 cannot receive each other's events. The UI shows reasoning only while a response is generating. It clears the text
 on completion, failure, or cancellation; completed messages contain only the
-answer. Summaries are not persisted or replayed after reload. Progress
+answer. The live UI uses a compact, expandable activity row with the latest
+complete model-authored heading. Expanded summaries have bounded height and
+remain separate from the answer bubble. Chat math uses KaTeX, buffering unfinished
+formulas during streaming instead of flashing raw LaTeX.
+Summaries are not persisted or replayed after reload. Progress
 and reasoning remain separate from the final answer and edit proposal data.
 
 ```text

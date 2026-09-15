@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -16,8 +16,7 @@ import {
 import type { IconType } from "react-icons";
 import { LuArrowUp, LuCircleAlert, LuMessageSquarePlus } from "react-icons/lu";
 import { BsStars } from "react-icons/bs";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { ChatMarkdown } from "./chat-markdown";
 
 import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-components";
 import { ReviewButton as Button } from "./review-button";
@@ -362,46 +361,52 @@ export function ConceptNoteChatPanel({
         />
 
         {messages.map((message) => (
-          <Box
-            key={message.id}
-            alignSelf={message.role === "user" ? "end" : "start"}
-            maxW="92%"
-            border="1px solid"
-            borderColor="border.neutral"
-            borderRadius="rounded"
-            bg={message.role === "user" ? "background.neutral" : "base.light"}
-            px={3}
-            py={2.5}
-          >
-            {message.role === "assistant" && (
-              <ChatProgress
-                lng={lng}
-                progress={message.id === messages.at(-1)?.id ? progress : []}
-                reasoning={message.id === messages.at(-1)?.id ? reasoning : []}
-                markdownComponents={assistantMarkdownComponents}
-                isGenerating={
-                  isGenerating && message.id === messages.at(-1)?.id
+          <Fragment key={message.id}>
+            {message.role === "assistant" &&
+              message.id === messages.at(-1)?.id && (
+                <ChatProgress
+                  lng={lng}
+                  progress={progress}
+                  reasoning={reasoning}
+                  markdownComponents={assistantMarkdownComponents}
+                  isGenerating={isGenerating}
+                />
+              )}
+            {(message.text || message.role === "user") && (
+              <Box
+                alignSelf={message.role === "user" ? "end" : "start"}
+                maxW="92%"
+                border="1px solid"
+                borderColor="border.neutral"
+                borderRadius="rounded"
+                bg={
+                  message.role === "user" ? "background.neutral" : "base.light"
                 }
-              />
+                px={3}
+                py={2.5}
+              >
+                {message.role === "assistant" && message.text ? (
+                  <ChatMarkdown
+                    components={assistantMarkdownComponents}
+                    isStreaming={
+                      isGenerating && message.id === messages.at(-1)?.id
+                    }
+                  >
+                    {message.text}
+                  </ChatMarkdown>
+                ) : message.role === "user" ? (
+                  <Text
+                    fontSize="body.sm"
+                    lineHeight="22px"
+                    color="content.primary"
+                    whiteSpace="pre-wrap"
+                  >
+                    {message.text}
+                  </Text>
+                ) : null}
+              </Box>
             )}
-            {message.role === "assistant" && message.text ? (
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={assistantMarkdownComponents}
-              >
-                {message.text}
-              </ReactMarkdown>
-            ) : message.role === "user" ? (
-              <Text
-                fontSize="body.sm"
-                lineHeight="22px"
-                color="content.primary"
-                whiteSpace="pre-wrap"
-              >
-                {message.text}
-              </Text>
-            ) : null}
-          </Box>
+          </Fragment>
         ))}
 
         {edits.error && (

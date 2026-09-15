@@ -1,9 +1,15 @@
 "use client";
 
-import { Box, HStack, Spinner, Text, VStack } from "@chakra-ui/react";
-import ReactMarkdown, { type Components } from "react-markdown";
+import { Box, HStack, Icon, Spinner, Text } from "@chakra-ui/react";
+import { LuChevronRight } from "react-icons/lu";
+import type { Components } from "react-markdown";
 import { useTranslation } from "@/i18n/client";
-import type { ConceptNoteProgress, ConceptNoteReasoning } from "./chat-utils";
+import { ChatMarkdown } from "./chat-markdown";
+import {
+  readReasoningHeading,
+  type ConceptNoteProgress,
+  type ConceptNoteReasoning,
+} from "./chat-utils";
 
 export function ChatProgress({
   lng,
@@ -21,51 +27,97 @@ export function ChatProgress({
   const { t } = useTranslation(lng, "concept-notes");
   if (!isGenerating) return null;
   const latest = progress.at(-1);
-  if (!reasoning.length) {
-    return isGenerating ? (
+  const thought = reasoning.at(-1);
+  const title =
+    (thought && readReasoningHeading(thought.text)) ||
+    (latest
+      ? t(`chat-progress-${latest.stage}`, {
+          chapter: latest.chapterTitle || t("chat-progress-chapter"),
+        })
+      : t("chat-progress-title"));
+  const label = (
+    <>
+      <Spinner size="xs" flexShrink={0} aria-hidden="true" />
+      <Text as="span" minW={0} overflowWrap="anywhere" aria-live="polite">
+        {title}
+      </Text>
+    </>
+  );
+
+  if (!thought)
+    return (
       <HStack
         role="status"
         gap={2}
         py={2}
+        color="content.secondary"
+        fontSize="13px"
         data-testid="concept-note-chat-progress"
       >
-        <Spinner size="xs" aria-hidden="true" />
-        <Text fontSize="body.sm" color="content.secondary">
-          {latest
-            ? t(`chat-progress-${latest.stage}`, {
-                chapter: latest.chapterTitle || t("chat-progress-chapter"),
-              })
-            : t("chat-progress-title")}
-        </Text>
+        {label}
       </HStack>
-    ) : null;
-  }
+    );
+
   return (
     <Box
-      mb={3}
-      fontSize="body.sm"
+      as="details"
+      w="full"
       color="content.secondary"
+      fontSize="13px"
       data-testid="concept-note-reasoning"
+      css={{ "&[open] .reasoning-chevron": { transform: "rotate(90deg)" } }}
     >
-      <HStack py={2} fontWeight="semibold">
-        <Spinner size="xs" aria-hidden="true" />
-        {t("chat-reasoning-title")}
-      </HStack>
-      <VStack align="stretch" gap={4} pt={2}>
+      <Box
+        as="summary"
+        display="flex"
+        alignItems="center"
+        gap={2}
+        py={2}
+        cursor="pointer"
+        listStyleType="none"
+        borderRadius="sm"
+        _hover={{ color: "content.primary" }}
+        _focusVisible={{
+          outline: "2px solid",
+          outlineColor: "interactive.primary",
+          outlineOffset: "2px",
+        }}
+        css={{ "&::-webkit-details-marker": { display: "none" } }}
+      >
+        {label}
+        <Icon
+          as={LuChevronRight}
+          className="reasoning-chevron"
+          boxSize={3.5}
+          flexShrink={0}
+          aria-hidden="true"
+        />
+      </Box>
+      <Box
+        maxH="240px"
+        overflowY="auto"
+        overscrollBehavior="contain"
+        borderLeftWidth="1px"
+        borderColor="border.neutral"
+        pl={3}
+        ml="6px"
+        mt={1}
+        mb={2}
+        data-testid="concept-note-reasoning-content"
+      >
         {reasoning.map((item) => (
-          <Box key={item.id}>
-            <Text fontSize="label.sm" fontWeight="semibold" mb={1}>
-              {t(`chat-reasoning-${item.stage}`)}
-              {item.chapterTitle ? ` / ${item.chapterTitle}` : ""}
-            </Text>
-            <Box overflowWrap="anywhere" lineHeight="22px">
-              <ReactMarkdown components={markdownComponents}>
-                {item.text}
-              </ReactMarkdown>
-            </Box>
+          <Box key={item.id} mb={3} _last={{ mb: 0 }}>
+            {item.chapterTitle && (
+              <Text fontSize="12px" mb={1}>
+                {item.chapterTitle}
+              </Text>
+            )}
+            <ChatMarkdown components={markdownComponents} isStreaming>
+              {item.text}
+            </ChatMarkdown>
           </Box>
         ))}
-      </VStack>
+      </Box>
     </Box>
   );
 }

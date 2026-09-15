@@ -119,6 +119,7 @@ class ConceptNoteEditPlanner:
                         "reasoning": {
                             "effort": model.reasoning_effort,
                             "exclude": False,
+                            "summary": "auto",
                         }
                     },
                 ),

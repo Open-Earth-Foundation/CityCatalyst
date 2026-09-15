@@ -894,6 +894,10 @@ class InventoryToolIntegrationTests(unittest.TestCase):
             assert agent_class.call_args.kwargs["instructions"] == "Core + cnb_chat"
             assert agent_class.call_args.kwargs["tools"] == []
 
+            assert agent_class.call_args.kwargs["model_settings"].extra_body == {
+                "reasoning": {"exclude": False, "summary": "auto"}
+            }
+
             # Rebuilding an agent must not fall back to general chat instructions.
             service.system_prompt = None
             asyncio.run(service.create_agent())

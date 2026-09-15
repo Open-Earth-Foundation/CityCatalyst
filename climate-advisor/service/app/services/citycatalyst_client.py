@@ -144,7 +144,7 @@ class CityCatalystClient:
         for start in range(0, len(upload_ids), 1000):
             response = await client.request(
                 "DELETE",
-                f"{self.base_url}/api/v1/internal/ca/concept-note-sources",
+                f"{self.base_url}/api/v1/internal/ca/concept-note-sources/",
                 headers={"X-CA-Service-Key": self.api_key},
                 json={"upload_ids": upload_ids[start : start + 1000]},
             )

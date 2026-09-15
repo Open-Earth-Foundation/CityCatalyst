@@ -2,10 +2,10 @@
 import {
   Box,
   CheckboxCard,
-  createListCollection,
   Field,
   Icon,
   Input,
+  Separator,
   Tabs,
   Text,
   Textarea,
@@ -13,21 +13,12 @@ import {
 import { TFunction } from "i18next";
 import React, { FC, useEffect, useMemo, useState } from "react";
 import { StationaryEnergyIcon } from "@/components/icons";
-import { BiSelectMultiple } from "react-icons/bi";
 
 import { MdInfoOutline } from "react-icons/md";
-import { RiErrorWarningFill } from "react-icons/ri";
-import { CgRemoveR } from "react-icons/cg";
 
-import {
-  SelectContent,
-  SelectItem,
-  SelectLabel,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dropdown, type DropdownOption } from "@/components/ui/dropdown";
 import { api } from "@/services/api";
 import { toaster } from "@/components/ui/toaster";
 import RouteChangeDialog from "./RouteChangeDialog";
@@ -392,41 +383,51 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
           key={group.sectorRef}
           value={group.sectorRef}
           maxW="1/4"
+          height="auto"
+          alignItems="flex-end"
+          pb="s"
+          color="content.secondary"
+          fontSize="body.lg"
+          lineHeight="24"
+          letterSpacing="wide"
+          fontWeight="regular"
+          fontFamily="body"
+          textAlign="center"
           _selected={{
             color: "content.link",
             fontWeight: "bold",
             fontFamily: "heading",
           }}
         >
-          <Text fontSize="title.md" lineClamp="2">
-            {getGPCSectorName(group.sectorRef, t)}
-          </Text>
+          <Text lineClamp="2">{getGPCSectorName(group.sectorRef, t)}</Text>
         </Tabs.Trigger>
       );
     });
   };
 
-  // notation keys collection
-  const notationKeys = createListCollection({
-    items: [
-      {
-        label: t("ne"),
-        value: "not-estimated",
-      },
-      {
-        label: t("no"),
-        value: "no-occurrance",
-      },
-      {
-        label: t("c"),
-        value: "confidential-information",
-      },
-      {
-        label: t("ie"),
-        value: "included-elsewhere",
-      },
-    ],
-  });
+  // notation key dropdown options
+  const notationKeyOptions: DropdownOption[] = [
+    {
+      label: t("notation-key-short-ne"),
+      value: "not-estimated",
+      description: t("reason-NE"),
+    },
+    {
+      label: t("notation-key-short-no"),
+      value: "no-occurrance",
+      description: t("reason-NO"),
+    },
+    {
+      label: t("notation-key-short-c"),
+      value: "confidential-information",
+      description: t("reason-C"),
+    },
+    {
+      label: t("notation-key-short-ie"),
+      value: "included-elsewhere",
+      description: t("reason-IE"),
+    },
+  ];
   // handle undo changes
   const handleUndoChanges = () => {
     resetFormData();
@@ -439,8 +440,8 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   // sector tab content - subsectors
   const renderSectorTabContent = () =>
     groupedSectors.map((group) => {
-      // For each group, use the sector info from group.sector and the scopes from group.items.
-      // Here we consider all items as "unfinished" (adjust filtering if needed)
+      // The API already excludes subsectors that have real emissions data,
+      // so every item returned here is a valid notation-key candidate.
       const unfinishedItems = group.items;
       const selectedForThisSector =
         selectedCardsBySector[group.sector.sectorId] || [];
@@ -512,133 +513,141 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
           }}
           inset="0"
         >
-          {/* Heading */}
-          <Box mb="48px" display="flex" flexDirection="column" gap="16px">
-            <Box display="flex" alignItems="center" gap="16px">
-              <Icon as={StationaryEnergyIcon} color="interactive.control" />
-              <Text fontSize="title.lg" fontFamily="heading" fontWeight="bold">
-                {getGPCSectorName(group.sectorRef, t)}
+          {/* Card wrapping heading, quick actions and sub-sector cards */}
+          <Box
+            bg="base.light"
+            borderRadius="rounded"
+            boxShadow="1dp"
+            p="l"
+            display="flex"
+            flexDirection="column"
+          >
+            {/* Heading */}
+            <Box mb="48px" display="flex" flexDirection="column" gap="16px">
+              <Box display="flex" alignItems="center" gap="16px">
+                <Icon as={StationaryEnergyIcon} color="interactive.control" />
+                <Text
+                  fontSize="title.lg"
+                  fontFamily="heading"
+                  fontWeight="bold"
+                >
+                  {getGPCSectorName(group.sectorRef, t)}
+                </Text>
+              </Box>
+              <Text
+                fontSize="body.lg"
+                fontFamily="body"
+                color="content.tertiary"
+              >
+                {t("content-description")}
               </Text>
             </Box>
-            <Text fontSize="body.lg" fontFamily="body" color="content.tertiary">
-              {t("content-description")}
-            </Text>
-          </Box>
-          {/* Quick Action Form */}
-          <Box mb="48px" display="flex" flexDirection="column" gap="32px">
-            <Box display="flex" alignItems="center" gap="8px">
-              <Button variant="ghost" onClick={handleSelectAll}>
-                {selectedForThisSector.length === unfinishedItems.length ? (
-                  <Icon as={CgRemoveR} color="content.link" boxSize={6} />
-                ) : (
-                  <Icon
-                    as={BiSelectMultiple}
-                    color="content.link"
-                    boxSize={6}
-                  />
-                )}
-                <Text
-                  fontWeight="bold"
-                  fontFamily="heading"
-                  color="content.link"
+            {/* Quick Action Form */}
+            <Box
+              mb="48px"
+              display="flex"
+              flexDirection="column"
+              gap="16px"
+              bg="background.alternativeLight"
+              borderWidth="1px"
+              borderColor="border.neutral"
+              borderRadius="rounded"
+              p="16px"
+            >
+              <Box display="flex" alignItems="center" gap="8px">
+                <Checkbox
+                  checked={
+                    unfinishedItems.length > 0 &&
+                    selectedForThisSector.length === unfinishedItems.length
+                  }
+                  onCheckedChange={handleSelectAll}
                 >
-                  {selectedForThisSector.length === unfinishedItems.length
-                    ? t("deselect-all")
-                    : t("quick-actions")}
-                </Text>
-              </Button>
-            </Box>
-            <Box display="flex" gap="16px" alignItems="end">
-              <Field.Root orientation="vertical">
-                <SelectRoot
-                  value={[quickValues.notationKey]}
-                  onValueChange={({ value: newValue }) =>
+                  <Text
+                    color="content.primary"
+                    fontFamily="body"
+                    fontSize="body.md"
+                    fontWeight="medium"
+                    lineHeight="20"
+                  >
+                    {t("select-all-subsectors")}
+                  </Text>
+                </Checkbox>
+              </Box>
+              <Separator borderColor="border.neutral" />
+              <Box display="flex" gap="16px" alignItems="end">
+                <Dropdown
+                  maxW="340px"
+                  label={t("notation-key")}
+                  labelIcon={MdInfoOutline}
+                  labelIconTooltip={t("notation-key-tooltip")}
+                  placeholder={t("notation-key-input-placeholder")}
+                  options={notationKeyOptions}
+                  value={quickValues.notationKey}
+                  onValueChange={(newValue) =>
                     setQuickActionValues((prev) => ({
                       ...prev,
                       [group.sector.sectorId]: {
                         ...prev[group.sector.sectorId],
-                        notationKey: newValue.toString(),
+                        notationKey: newValue,
                         explanation:
                           prev[group.sector.sectorId]?.explanation || "",
                       },
                     }))
                   }
-                  variant="outline"
-                  collection={notationKeys}
-                >
-                  <SelectLabel display="flex" alignItems="center" gap="8px">
-                    <Text fontFamily="heading" color="content.secondary">
-                      {t("notation-key")}
+                />
+                <Field.Root orientation="vertical" flex="1">
+                  <Field.Label>
+                    <Text
+                      fontFamily="heading"
+                      color="content.secondary"
+                      fontSize="label.lg"
+                      fontWeight="medium"
+                      lineHeight="20"
+                      letterSpacing="wide"
+                    >
+                      {t("justification")}
                     </Text>
-                    <Icon
-                      as={MdInfoOutline}
-                      color="interactive.control"
-                      boxSize={4}
-                    />
-                  </SelectLabel>
-                  <SelectTrigger
+                  </Field.Label>
+                  <Input
+                    placeholder={t("explanation-input-placeholder")}
                     borderWidth="1px"
                     borderColor="border.neutral"
-                    borderRadius="md"
-                  >
-                    <SelectValueText
-                      color="content.tertiary"
-                      fontWeight="medium"
-                      placeholder={t("notation-key-input-placeholder")}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {notationKeys.items.map((key) => (
-                      <SelectItem item={key} key={key.value}>
-                        {key.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </SelectRoot>
-              </Field.Root>
-              <Field.Root orientation="vertical">
-                <Field.Label>
-                  <Text fontFamily="heading" color="content.secondary">
-                    {t("explanation")}
-                  </Text>
-                </Field.Label>
-                <Input
-                  placeholder={t("explanation-input-placeholder")}
-                  borderWidth="1px"
-                  borderColor="border.neutral"
-                  borderRadius="md"
-                  shadow="1dp"
-                  value={quickValues.explanation}
-                  onChange={(e) =>
-                    setQuickActionValues((prev) => ({
-                      ...prev,
-                      [group.sector.sectorId]: {
-                        ...prev[group.sector.sectorId],
-                        explanation: e.target.value,
-                        notationKey:
-                          prev[group.sector.sectorId]?.notationKey || "",
-                      },
-                    }))
-                  }
-                />
-                <Field.ErrorText></Field.ErrorText>
-              </Field.Root>
-              <Button
-                variant="ghost"
-                color="content.link"
-                onClick={handleApplyToAll}
-              >
-                {t("apply-to-all")}
-              </Button>
+                    borderRadius="minimal"
+                    bg="background.default"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                    color="content.tertiary"
+                    fontFamily="body"
+                    fontSize="body.lg"
+                    fontWeight="regular"
+                    lineHeight="24"
+                    letterSpacing="wide"
+                    value={quickValues.explanation}
+                    onChange={(e) =>
+                      setQuickActionValues((prev) => ({
+                        ...prev,
+                        [group.sector.sectorId]: {
+                          ...prev[group.sector.sectorId],
+                          explanation: e.target.value,
+                          notationKey:
+                            prev[group.sector.sectorId]?.notationKey || "",
+                        },
+                      }))
+                    }
+                  />
+                  <Field.ErrorText></Field.ErrorText>
+                </Field.Root>
+                <Button variant="outline" onClick={handleApplyToAll}>
+                  {t("apply-to-all")}
+                </Button>
+              </Box>
             </Box>
-          </Box>
-          {/* Checkbox Cards for each item */}
-          {unfinishedItems.length > 0 ? (
-            <>
+            {/* Checkbox Cards for each item */}
+            {unfinishedItems.length > 0 ? (
               <Box
                 display="grid"
                 gridTemplateColumns="repeat(auto-fill, minmax(450px, 1fr))"
-                gap="48px"
+                gap="xxl-2"
               >
                 {unfinishedItems.map((item) => {
                   // Use the subCategoryId as the unique key for each card
@@ -648,11 +657,12 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                   };
                   return (
                     <CheckboxCard.Root
-                      width="497px"
+                      width="full"
                       key={item.subCategoryId}
                       height="344px"
                       p={0}
                       borderCollapse="border.neutral"
+                      boxShadow="1dp"
                       checked={selectedForThisSector.includes(
                         item.subCategoryId,
                       )}
@@ -664,15 +674,16 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                       <CheckboxCard.Control>
                         <CheckboxCard.Content>
                           <CheckboxCard.Label my="24px">
-                            <Icon
-                              as={RiErrorWarningFill}
-                              boxSize={5}
-                              color="sentiment.warningDefault"
-                            />
                             <Text
-                              fontSize="title.md"
+                              overflow="hidden"
+                              textOverflow="ellipsis"
+                              color="content.primary"
                               fontFamily="heading"
-                              fontWeight="bold"
+                              fontSize="overline"
+                              fontWeight="semibold"
+                              lineHeight="16"
+                              letterSpacing="widest"
+                              textTransform="uppercase"
                               lineClamp={2}
                             >
                               {t(item.subCategoryReferenceNumber!)}{" "}
@@ -698,73 +709,37 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                                 gap="16px"
                                 w="full"
                               >
-                                <Field.Root orientation="vertical" w="full">
-                                  <SelectRoot
-                                    variant="outline"
-                                    collection={notationKeys}
-                                    w="full"
-                                    value={[cardValue.notationKey]}
-                                    onValueChange={({ value }) =>
-                                      setCardInputs((prev) => ({
-                                        ...prev,
-                                        [item.subCategoryId]: {
-                                          ...prev[item.subCategoryId],
-                                          notationKey: value.toString(),
-                                          explanation:
-                                            prev[item.subCategoryId]
-                                              ?.explanation || "",
-                                        },
-                                      }))
-                                    }
-                                  >
-                                    <SelectLabel
-                                      display="flex"
-                                      alignItems="center"
-                                      gap="8px"
-                                    >
-                                      <Text
-                                        fontFamily="heading"
-                                        color="content.secondary"
-                                      >
-                                        {t("notation-key")}
-                                      </Text>
-                                      <Icon
-                                        as={MdInfoOutline}
-                                        color="interactive.control"
-                                        boxSize={4}
-                                      />
-                                    </SelectLabel>
-                                    <SelectTrigger
-                                      borderWidth="1px"
-                                      borderColor="border.neutral"
-                                      borderRadius="md"
-                                      shadow="1dp"
-                                    >
-                                      <SelectValueText
-                                        color="content.tertiary"
-                                        fontWeight="medium"
-                                        placeholder={t(
-                                          "notation-key-input-placeholder",
-                                        )}
-                                      />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {notationKeys.items.map((key) => (
-                                        <SelectItem item={key} key={key.value}>
-                                          {key.label}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </SelectRoot>
-                                </Field.Root>
-                                <Field.Root orientation="vertical">
+                                <Dropdown
+                                  width="full"
+                                  label={t("notation-key")}
+                                  required
+                                  placeholder={t(
+                                    "notation-key-input-placeholder",
+                                  )}
+                                  options={notationKeyOptions}
+                                  value={cardValue.notationKey}
+                                  onValueChange={(value) =>
+                                    setCardInputs((prev) => ({
+                                      ...prev,
+                                      [item.subCategoryId]: {
+                                        ...prev[item.subCategoryId],
+                                        notationKey: value,
+                                        explanation:
+                                          prev[item.subCategoryId]
+                                            ?.explanation || "",
+                                      },
+                                    }))
+                                  }
+                                />
+                                <Field.Root orientation="vertical" required>
                                   <Field.Label>
                                     <Text
                                       fontFamily="heading"
                                       color="content.secondary"
                                     >
-                                      {t("explanation")}
+                                      {t("justification")}
                                     </Text>
+                                    <Field.RequiredIndicator />
                                   </Field.Label>
                                   <Textarea
                                     placeholder={t(
@@ -801,14 +776,18 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                   );
                 })}
               </Box>
+            ) : (
+              <Text>{t("no-unfinished-subsectors")}</Text>
+            )}
+            {unfinishedItems.length > 0 && (
               <Box
-                py="48px"
+                pt="48px"
                 display="flex"
                 justifyContent="flex-end"
                 gap="16px"
               >
                 <Button
-                  height="56px"
+                  height="xxl-2"
                   width="150px"
                   variant="outline"
                   onClick={handleUndoChanges}
@@ -817,20 +796,22 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                   {t("cancel")}
                 </Button>
                 <Button
-                  height="56px"
+                  height="xxl-2"
                   width="150px"
                   variant="solid"
                   onClick={() => handleUpdateNotationKeys()}
                   loading={isLoading}
                   disabled={!isDirty}
+                  _disabled={{
+                    bg: "gray.medium",
+                    _hover: { bg: "gray.medium" },
+                  }}
                 >
                   {t("update")}
                 </Button>
               </Box>
-            </>
-          ) : (
-            <Text>{t("no-unfinished-subsectors")}</Text>
-          )}
+            )}
+          </Box>
         </Tabs.Content>
       );
     });

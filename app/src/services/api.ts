@@ -879,6 +879,56 @@ export const api = createApi({
           body: { password, token },
         }),
       }),
+      setupSecondFactorAuth: builder.mutation<
+        { success: boolean; qrCodeDataUrl: string },
+        void
+      >({
+        query: () => ({
+          url: "auth/2fa/setup",
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: { success: boolean; qrCodeDataUrl: string };
+        }) => response.data,
+      }),
+      verifySecondFactorAuth: builder.mutation<
+        { success: boolean },
+        { token: string }
+      >({
+        query: ({ token }) => ({
+          url: "auth/2fa/verify",
+          method: "POST",
+          body: { token },
+        }),
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
+        invalidatesTags: ["UserInfo"],
+      }),
+      disableSecondFactorAuth: builder.mutation<
+        { success: boolean },
+        { password: string }
+      >({
+        query: ({ password }) => ({
+          url: "auth/2fa/disable",
+          method: "POST",
+          body: { password },
+        }),
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
+        invalidatesTags: ["UserInfo"],
+      }),
+      checkSecondFactorAuth: builder.query<
+        { enabled: boolean },
+        { email: string }
+      >({
+        query: ({ email }) => ({
+          url: `auth/2fa/check?email=${encodeURIComponent(email)}`,
+          method: "GET",
+        }),
+        transformResponse: (response: { data: { enabled: boolean } }) =>
+          response.data,
+        providesTags: ["UserInfo"],
+      }),
       getCities: builder.query({
         query: () => ({
           url: "/city",

@@ -1,0 +1,146 @@
+<role>
+You translate canonical English explanations for ranked climate actions.
+</role>
+
+<task>
+Translate each canonical explanation into the requested target languages.
+
+Apply these rules:
+- Treat the provided canonical explanation as the source text to translate.
+- Preserve meaning closely. Do not add new claims, evidence, or caveats.
+- Keep action IDs exactly as provided.
+- Keep each translation concise and natural for the target language.
+- Assess whether the provided canonical explanation actually appears to be English.
+- If the source text appears non-English or mixed-language, still translate it and set the warning flag for that action.
+- Return valid JSON only.
+</task>
+
+<input>
+Input is a rendered prompt context with:
+- `source_language` (string): Expected source language label. This will be `en`.
+- `target_languages` (list[string]): Languages to produce for each action.
+- `actions_json` (list[object]): Canonical explanation rows.
+  - `action_id` (string): Stable action identifier.
+  - `canonical_explanation` (string): Canonical explanation text provided by the caller.
+
+Runtime values:
+- `source_language`: en
+- `target_languages`: ["es"]
+- `actions_json`:
+[
+  {
+    "action_id": "c40_0042",
+    "canonical_explanation": "This action is similar to the other lower-ranked options because it has very strong policy support and strong mitigation feasibility. It remains low because its expected emissions reduction is limited in the current city inventory."
+  },
+  {
+    "action_id": "icare_0045",
+    "canonical_explanation": "This action ranks well because it can deliver emissions benefits on a very favorable timeline and also has very strong policy support and mitigation feasibility. It does not rank higher because its expected emissions reduction is limited in the current city inventory."
+  },
+  {
+    "action_id": "icare_0050",
+    "canonical_explanation": "This action stays in the middle of the list because it has strong policy support and very strong mitigation feasibility. Its rank is held back because its expected emissions reduction is limited in the current city inventory."
+  },
+  {
+    "action_id": "icare_0069",
+    "canonical_explanation": "This action has a very favorable timeline, strong policy support, and very strong mitigation feasibility. It stays below higher-ranked actions because its expected emissions reduction is limited in the current city inventory."
+  },
+  {
+    "action_id": "icare_0099",
+    "canonical_explanation": "This action has the advantage of a very favorable timeline, strong policy support, and very strong mitigation feasibility. It ranks lower because its expected emissions reduction is limited in the current city inventory."
+  },
+  {
+    "action_id": "icare_0122",
+    "canonical_explanation": "This action is supported by a very favorable timeline, strong policy context, and very strong mitigation feasibility. It remains below the top tier because its expected emissions reduction is limited in the current city inventory."
+  },
+  {
+    "action_id": "icare_0131",
+    "canonical_explanation": "This action has a very favorable timeline and strong policy support, but it still ranks low because its expected emissions reduction is limited in the current city inventory. No legal assessment row was available, and no mitigation feasibility score row was available, so both used neutral fallbacks."
+  },
+  {
+    "action_id": "icare_0132",
+    "canonical_explanation": "This action is placed here because it can deliver emissions benefits on a very favorable timeline and has strong policy support and very strong mitigation feasibility. Its lower rank reflects the limited expected emissions reduction in the current city inventory."
+  },
+  {
+    "action_id": "ipcc_0028",
+    "canonical_explanation": "This action ranks low because its expected emissions reduction is limited in the current city inventory. Its very strong policy context and very strong mitigation feasibility help it stay above the weakest options."
+  },
+  {
+    "action_id": "ipcc_0034",
+    "canonical_explanation": "This action ranks low because its expected emissions reduction is limited in the current city inventory. It has some policy support, but the feasibility evidence is weaker here and no mitigation feasibility score row was available, so that part used a neutral fallback."
+  },
+  {
+    "action_id": "ipcc_0052",
+    "canonical_explanation": "This action is placed near the top for the same main reasons: strong expected emissions reduction, very strong policy support, and strong mitigation feasibility. It stays just below the first-ranked action because the evidence does not add anything stronger than that overall profile."
+  },
+  {
+    "action_id": "ipcc_0053",
+    "canonical_explanation": "This action ranks first because it is expected to cut emissions strongly, has very strong supportive policy context, and looks feasible for the city to carry out. The only limitation noted is that no legal assessment row was available, so the legal part used a neutral fallback."
+  },
+  {
+    "action_id": "ipcc_0054",
+    "canonical_explanation": "This action ranks here because it has very strong policy support and strong mitigation feasibility. It does not move higher because its expected emissions reduction is limited in the current city inventory."
+  },
+  {
+    "action_id": "ipcc_0056",
+    "canonical_explanation": "This action ranks near the bottom because its expected emissions reduction is limited in the current city inventory. Strong policy support and very strong mitigation feasibility keep it from dropping further."
+  },
+  {
+    "action_id": "ipcc_0057",
+    "canonical_explanation": "This action is held down by its limited expected emissions reduction in the current city inventory. It still has strong policy support and strong mitigation feasibility, which keeps it from falling further."
+  },
+  {
+    "action_id": "ipcc_0067",
+    "canonical_explanation": "This action is kept in the upper group because it has very strong policy support and very strong mitigation feasibility. It ranks below the top actions because its expected emissions reduction is limited in the current city inventory."
+  },
+  {
+    "action_id": "ipcc_0068",
+    "canonical_explanation": "This action is pulled down by its slow timeline for emissions benefits and weaker mitigation feasibility. Even so, it still has strong expected emissions reduction and strong policy support."
+  },
+  {
+    "action_id": "ipcc_0069",
+    "canonical_explanation": "This action ranks low because its expected emissions reduction is limited in the current city inventory. It has strong policy support, but the alignment is weaker overall and no legal assessment row was available, so the legal part used a neutral fallback."
+  },
+  {
+    "action_id": "ipcc_0070",
+    "canonical_explanation": "This action stays low because its expected emissions reduction is limited in the current city inventory. Strong policy support and very strong mitigation feasibility help, but not enough to lift it much higher."
+  },
+  {
+    "action_id": "ipcc_0071",
+    "canonical_explanation": "This action ranks in the lower half because it has strong policy support and strong mitigation feasibility, but its expected emissions reduction is limited in the current city inventory. That keeps it below actions with stronger overall impact or timing advantages."
+  }
+]
+</input>
+
+<output>
+Return one JSON object only with exactly this schema:
+- `translations` (list[object]): One row per input action.
+  - `action_id` (string, required): Copy the input `action_id` exactly.
+  - `translations` (list[object], required): One row per requested target language.
+    - `language` (string, required): Copy one requested target language code exactly.
+    - `text` (string, required): Translated explanation text for that language.
+  - `source_language_warning` (boolean, required): Internal per-action warning flag. Set to `true` when the canonical explanation appears non-English or mixed-language.
+
+Output rules:
+- Include exactly one row for every action in `actions_json`.
+- Include exactly the requested target languages in each action row's `translations` list.
+- Do not add extra top-level keys.
+- Do not add extra fields inside translation rows.
+- This warning flag is used by the backend to build aggregated top-level API warnings. It is not returned directly to frontend clients.
+</output>
+
+<example_output>
+{
+  "translations": [
+    {
+      "action_id": "c40_0010",
+      "translations": [
+        {
+          "language": "pt",
+          "text": "Esta acao tem classificacao elevada porque a evidencia indica forte impacto esperado e alinhamento claro com as prioridades da cidade."
+        }
+      ],
+      "source_language_warning": false
+    }
+  ]
+}
+</example_output>

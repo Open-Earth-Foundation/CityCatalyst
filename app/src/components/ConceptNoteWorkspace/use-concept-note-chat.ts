@@ -5,8 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { useSSEStream } from "@/hooks/useSSEStream";
 import { useTranslation } from "@/i18n/client";
 import type { EditScope } from "@/util/concept-note-edit-types";
-
 import {
+  readConceptNoteProgress,
+  readConceptNoteReasoning,
+  type ConceptNoteProgress,
+  type ConceptNoteReasoning,
   type ConceptNoteChatMessage,
   readConceptNoteThreadMessages,
 } from "./chat-utils";
@@ -23,6 +26,8 @@ interface ConceptNoteChatController {
   error: string | null;
   historyLoading: boolean;
   isGenerating: boolean;
+  progress: ConceptNoteProgress[];
+  reasoning: ConceptNoteReasoning[];
   messages: ConceptNoteChatMessage[];
   sendMessage: (content: string) => Promise<void>;
 }
@@ -38,12 +43,47 @@ export function useConceptNoteChat({
   const [messages, setMessages] = useState<ConceptNoteChatMessage[]>([]);
   const [messagesThreadId, setMessagesThreadId] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [reasoning, setReasoning] = useState<ConceptNoteReasoning[]>([]);
+  const [progress, setProgress] = useState<ConceptNoteProgress[]>([]);
   const [error, setError] = useState<string | null>(null);
   const assistantMessageIdRef = useRef<string | null>(null);
   const pendingUserMessageIdRef = useRef<string | null>(null);
 
   const { startStream, stopStream } = useSSEStream({
     forceEventStream: true,
+    onReasoning: (value) => {
+      const update = readConceptNoteReasoning(value);
+      const assistantId = assistantMessageIdRef.current;
+      if (!assistantId || !update) return;
+      setReasoning((current) => {
+        const previous = current.find((item) => item.id === update.id);
+        return [
+          ...current.filter((item) => item.id !== update.id),
+          {
+            ...update,
+            text: update.replace
+              ? update.text
+              : (previous?.text || "") + update.text,
+          },
+        ];
+      });
+    },
+    onProgress: (value) => {
+      const update = readConceptNoteProgress(value);
+      if (assistantMessageIdRef.current && update) {
+        setProgress((current) => {
+          const previous = current.at(-1);
+          if (
+            previous?.stage === update.stage &&
+            previous.chapterTitle === update.chapterTitle &&
+            previous.completed === update.completed &&
+            previous.total === update.total
+          )
+            return current;
+          return [...current.slice(-3), update];
+        });
+      }
+    },
     onToolResult: (result) => {
       const data = result.data;
       if (
@@ -62,6 +102,11 @@ export function useConceptNoteChat({
       if (!assistantMessageId) {
         return;
       }
+      setProgress((current) =>
+        current.at(-1)?.stage === "responding"
+          ? current
+          : [...current.slice(-3), { stage: "responding" }],
+      );
       setMessages((current) =>
         current.map((message) =>
           message.id === assistantMessageId
@@ -71,11 +116,13 @@ export function useConceptNoteChat({
       );
     },
     onComplete: () => {
+      setReasoning([]);
       assistantMessageIdRef.current = null;
       pendingUserMessageIdRef.current = null;
       setIsGenerating(false);
     },
     onError: (_message, code) => {
+      setReasoning([]);
       const assistantMessageId = assistantMessageIdRef.current;
       const rejectedUserMessageId =
         code === "concept_note_context_not_ready"
@@ -161,6 +208,8 @@ export function useConceptNoteChat({
     ]);
     setError(null);
     setIsGenerating(true);
+    setReasoning([]);
+    setProgress([{ stage: "preparing" }]);
 
     try {
       await startStream("/api/v1/chat/messages", {
@@ -186,6 +235,7 @@ export function useConceptNoteChat({
       if (requestError instanceof Error && requestError.name === "AbortError") {
         assistantMessageIdRef.current = null;
         setIsGenerating(false);
+        setReasoning([]);
       }
     }
   }
@@ -194,6 +244,8 @@ export function useConceptNoteChat({
     error: messagesThreadId === threadId ? error : null,
     historyLoading: Boolean(threadId) && messagesThreadId !== threadId,
     isGenerating,
+    progress,
+    reasoning,
     messages: messagesThreadId === threadId ? messages : [],
     sendMessage,
   };

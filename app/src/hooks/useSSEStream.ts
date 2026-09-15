@@ -14,6 +14,8 @@ export interface SSEEvent {
 export interface SSEStreamOptions {
   onMessage?: (content: string, index: number) => void;
   onToolResult?: (tool: ToolResultPayload) => void;
+  onProgress?: (progress: unknown) => void;
+  onReasoning?: (reasoning: unknown) => void;
   onComplete?: () => void;
   onError?: (error: string, code?: string) => void;
   onWarning?: (warning: string) => void;
@@ -144,6 +146,14 @@ export function useSSEStream(
             }
             break;
 
+          case "progress":
+            options.onProgress?.(event.data);
+            break;
+
+          case "reasoning":
+            options.onReasoning?.(event.data);
+            break;
+
           case "done":
             if (
               isRecord(event.data) &&
@@ -234,6 +244,8 @@ export function useSSEStream(
 
             try {
               const event = parseSSEEvent(eventText);
+              // SSE comments keep the transport alive without an application event.
+              if (!event.type && event.data === undefined) continue;
               await handleSSEEvent(event);
             } catch (error) {
               logger.error({ error, eventText }, "Failed to parse SSE event");

@@ -3,16 +3,28 @@
 import { afterEach, beforeEach, expect, it, jest } from "@jest/globals";
 import { act, useEffect } from "react";
 import { createRoot, type Root } from "react-dom/client";
+import { TextDecoder, TextEncoder } from "node:util";
 import { useSSEStream, type SSEStreamController } from "@/hooks/useSSEStream";
+import { logger } from "@/services/logger";
 
 const originalFetch = globalThis.fetch;
 const onError = jest.fn();
+const onMessage = jest.fn();
+const onComplete = jest.fn();
+const onProgress = jest.fn();
+const onReasoning = jest.fn();
 let controller: SSEStreamController;
 let root: Root;
 let container: HTMLDivElement;
 
 function Harness() {
-  const stream = useSSEStream({ onError });
+  const stream = useSSEStream({
+    onError,
+    onMessage,
+    onComplete,
+    onProgress,
+    onReasoning,
+  });
   useEffect(() => {
     controller = stream;
   }, [stream]);
@@ -30,6 +42,71 @@ afterEach(async () => {
   await act(async () => root.unmount());
   globalThis.fetch = originalFetch;
   globalThis.IS_REACT_ACT_ENVIRONMENT = false;
+  jest.restoreAllMocks();
+});
+
+it("ignores split heartbeat comments while delivering messages and completion", async () => {
+  const warn = jest.spyOn(logger, "warn").mockImplementation(() => {});
+  const decoderDescriptor = Object.getOwnPropertyDescriptor(
+    globalThis,
+    "TextDecoder",
+  );
+  Object.defineProperty(globalThis, "TextDecoder", {
+    configurable: true,
+    value: TextDecoder,
+  });
+  const encoder = new TextEncoder();
+  const chunks = [
+    'event: reasoning\ndata: {"id":"one","stage":"chat","delta":"Checking the draft."}\n\n',
+    ": keep-",
+    'alive\n\nevent: progress\ndata: {"stage":"planning","chapter_title":"Budget","completed":0,"total":12}\n',
+    "\n: keep-",
+    'alive\n\n: keep-alive\n\nevent: message\ndata: {"content":"Review ready","index":0}\n\n',
+    ': keep-alive\n\nevent: done\ndata: {"ok":true}\n\n',
+  ];
+  const releaseLock = jest.fn();
+  globalThis.fetch = jest.fn(async () => ({
+    ok: true,
+    body: {
+      getReader: () => ({
+        read: async () => {
+          const chunk = chunks.shift();
+          return chunk === undefined
+            ? { done: true }
+            : { done: false, value: encoder.encode(chunk) };
+        },
+        releaseLock,
+      }),
+    },
+  })) as unknown as typeof fetch;
+  try {
+    await controller.startStream("/api/v1/chat/messages", { method: "POST" });
+    expect(onMessage).toHaveBeenCalledTimes(1);
+    expect(onReasoning).toHaveBeenCalledWith({
+      id: "one",
+      stage: "chat",
+      delta: "Checking the draft.",
+    });
+    expect(onProgress).toHaveBeenCalledWith({
+      stage: "planning",
+      chapter_title: "Budget",
+      completed: 0,
+      total: 12,
+    });
+    expect(onProgress).toHaveBeenCalledTimes(1);
+    expect(onMessage).toHaveBeenCalledWith("Review ready", 0);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onError).not.toHaveBeenCalled();
+    expect(warn).not.toHaveBeenCalled();
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+    expect(releaseLock).toHaveBeenCalledTimes(1);
+  } finally {
+    if (decoderDescriptor) {
+      Object.defineProperty(globalThis, "TextDecoder", decoderDescriptor);
+    } else {
+      Reflect.deleteProperty(globalThis, "TextDecoder");
+    }
+  }
 });
 
 it("passes the HTTP readiness code to the chat error handler exactly once", async () => {

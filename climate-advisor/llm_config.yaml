@@ -14,7 +14,7 @@ models:
   cnb_chat:
     name: "openai/gpt-5.6-sol"
     description: "Concept Note Builder chat model."
-    reasoning_effort: "medium"
+    reasoning_effort: "high"
   funding_research:
     name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"

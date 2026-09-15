@@ -1658,3 +1658,52 @@ uv run --directory service pytest tests/ -v
 ## License
 
 See `LICENSE.md` for details.
+
+## CNB reasoning summary streaming (CC-907)
+
+Concept Note chats also emit `progress` events with an explicit workflow `stage`:
+`preparing`, `planning`, `reviewing`, `chapter_completed`, or `validating`.
+Chapter events include `chapter_title`, `completed`, and `total` for the unlocked
+chapters being checked. These operational updates remain stream metadata;
+the chat activity display uses model text. `reasoning` events carry an `id` identifying
+a model call's reasoning item and summary part, a `stage` (`chat`, `planning`,
+`reviewing`, `reading`), optional `chapter_title`, and a text `delta`.
+The main chat, document workers, and chapter planner/reviewer stream their model
+calls through the same request-local channel. Document workers outside a live
+chat retain their non-streaming execution. CNB chat and document workers use
+OpenRouter's Responses API with `reasoning.summary: detailed`,
+`store: false`, and the `cnb_chat.reasoning_effort` setting (default `high`).
+This requests native summary events, including across tool calls. Higher effort
+can increase latency and token use. Chapter planner/reviewer calls continue to use
+Chat Completions with `reasoning.summary: detailed` and `exclude: false`.
+These settings are centralized in `app/utils/cnb_model_settings.py`; each role
+retains its configured effort.
+Providers may still omit readable
+summaries for individual calls; the UI does not synthesize substitute reasoning.
+The adapter reconciles readable deltas with text/part `.done` events,
+`response.output_item.done`, and final `response.completed` summary arrays.
+It deduplicates by model stream, item ID, and summary index, emitting only missing
+text (or `replace: true` for a corrected complete snapshot). Opaque/encrypted
+items are excluded. Completed events recover available text; they cannot create
+summaries omitted by the provider. No additional model calls generate summaries.
+Both CNB API clients bypass raw-payload autologging; summary text stays in the
+request-local stream and is not added to telemetry or message history.
+The frontend clears summaries on completion, failure, and the next request;
+there is no saved or collapsed summary attached to the finished answer.
+
+See [summary-delivery validation](docs/cnb-reasoning-validation.md) for the
+provider/browser comparison, remaining omissions, and local reproduction steps.
+
+The handler merges worker events and answer bytes through a bounded request-local
+queue independently of transport heartbeats (CC-827). This branch adds no idle
+keep-alive comments or durable reconnect/restart recovery. A request-local sink
+uses that queue, so concurrent chats
+cannot receive each other's events. The UI shows reasoning only while a response is generating. It clears the text
+on completion, failure, or cancellation; completed messages contain only the
+answer. Before readable model text arrives, the UI shows only a neutral
+"ThinkingÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦" indicator. The compact, expandable activity row previews the latest
+model paragraph immediately, including partial text; it does not substitute
+scripted workflow labels or wait for Markdown headings. Expanded summaries have bounded height and
+remain separate from the answer bubble.
+Summaries are not persisted or replayed after reload. Progress
+and reasoning remain separate from the final answer and edit proposal data.

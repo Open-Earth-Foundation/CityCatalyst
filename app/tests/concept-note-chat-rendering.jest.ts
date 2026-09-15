@@ -1,19 +1,20 @@
 import { expect, it } from "@jest/globals";
 import { prepareChatMarkdown } from "@/components/ConceptNoteWorkspace/chat-markdown-utils";
-import { readReasoningHeading } from "@/components/ConceptNoteWorkspace/chat-utils";
+import { readReasoningPreview } from "@/components/ConceptNoteWorkspace/chat-utils";
 
-it("keeps the last complete reasoning heading while the next one streams", () => {
-  expect(readReasoningHeading("**Calculating")).toBeNull();
+it("shows actual partial model prose without waiting for a complete heading", () => {
+  expect(readReasoningPreview("I need to compare the")).toBe(
+    "I need to compare the",
+  );
+  expect(readReasoningPreview("**Calculating")).toBe("Calculating");
   expect(
-    readReasoningHeading(
+    readReasoningPreview(
       "**Calculating payments**\n\nChecking values.\n\n**Comparing",
     ),
-  ).toBe("Calculating payments");
-  expect(
-    readReasoningHeading(
-      "**Calculating payments**\n\n## Comparing costs\nDetails",
-    ),
-  ).toBe("Comparing costs");
+  ).toBe("Comparing");
+  expect(readReasoningPreview("**Heading**\n\nThe annual payment is")).toBe(
+    "The annual payment is",
+  );
 });
 
 it("renders model math delimiters without changing code or currency", () => {

@@ -192,7 +192,6 @@ export function ConceptNoteChatPanel({
     error: chatError,
     historyLoading,
     isGenerating,
-    progress,
     reasoning,
     messages,
     sendMessage: sendChatMessage,
@@ -235,7 +234,7 @@ export function ConceptNoteChatPanel({
       initiallyScrolledThreadRef.current = threadId;
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [historyLoading, messages, progress, reasoning, threadId]);
+  }, [historyLoading, messages, reasoning, threadId]);
 
   useEffect(() => {
     if (!composerRequest) {
@@ -366,7 +365,6 @@ export function ConceptNoteChatPanel({
               message.id === messages.at(-1)?.id && (
                 <ChatProgress
                   lng={lng}
-                  progress={progress}
                   reasoning={reasoning}
                   markdownComponents={assistantMarkdownComponents}
                   isGenerating={isGenerating}

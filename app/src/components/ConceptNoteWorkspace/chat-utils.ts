@@ -11,13 +11,17 @@ export interface ConceptNoteReasoning {
   text: string;
 }
 
-/** Only display complete model-authored headings, never half-written Markdown. */
-export function readReasoningHeading(text: string): string | null {
-  const headings = [
-    ...text.matchAll(/^(?:\*\*([^\n]+?)\*\*|#{1,6}\s+([^\n]+)\n)/gm),
-  ];
-  const latest = headings.at(-1);
-  return latest ? (latest[1] || latest[2]).trim() : null;
+/** Preview the latest provider text immediately; only strip heading delimiters. */
+export function readReasoningPreview(text: string): string {
+  const latest =
+    text
+      .split(/\n\s*\n/)
+      .filter((part) => part.trim())
+      .at(-1) || "";
+  return latest
+    .trim()
+    .replace(/^#{1,6}\s+|^\*{1,2}/, "")
+    .replace(/\*{1,2}$/, "");
 }
 
 export function readConceptNoteReasoning(

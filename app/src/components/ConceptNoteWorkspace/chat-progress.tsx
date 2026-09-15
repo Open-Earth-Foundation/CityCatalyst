@@ -5,41 +5,34 @@ import { LuChevronRight } from "react-icons/lu";
 import type { Components } from "react-markdown";
 import { useTranslation } from "@/i18n/client";
 import { ChatMarkdown } from "./chat-markdown";
-import {
-  readReasoningHeading,
-  type ConceptNoteProgress,
-  type ConceptNoteReasoning,
-} from "./chat-utils";
+import { readReasoningPreview, type ConceptNoteReasoning } from "./chat-utils";
 
 export function ChatProgress({
   lng,
-  progress,
   reasoning = [],
   isGenerating,
   markdownComponents,
 }: {
   lng: string;
-  progress: ConceptNoteProgress[];
   reasoning?: ConceptNoteReasoning[];
   isGenerating: boolean;
   markdownComponents: Components;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   if (!isGenerating) return null;
-  const latest = progress.at(-1);
   const thought = reasoning.at(-1);
-  const title =
-    (thought && readReasoningHeading(thought.text)) ||
-    (latest
-      ? t(`chat-progress-${latest.stage}`, {
-          chapter: latest.chapterTitle || t("chat-progress-chapter"),
-        })
-      : t("chat-progress-title"));
+  const preview = thought ? readReasoningPreview(thought.text) : "";
   const label = (
     <>
       <Spinner size="xs" flexShrink={0} aria-hidden="true" />
-      <Text as="span" minW={0} overflowWrap="anywhere" aria-live="polite">
-        {title}
+      <Text
+        as="span"
+        minW={0}
+        overflowWrap="anywhere"
+        lineClamp={2}
+        data-testid="concept-note-reasoning-preview"
+      >
+        {preview || t("chat-thinking")}
       </Text>
     </>
   );

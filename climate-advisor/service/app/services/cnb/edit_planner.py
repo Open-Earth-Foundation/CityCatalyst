@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from typing import Any
+from typing import Any, Literal
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, RunConfig, Runner
 from app.config.settings import Settings
@@ -22,6 +22,7 @@ from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
 from app.services.cnb.edit_validation import prior_user_inputs
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.cnb_observability import protect_cnb_client
+from app.utils.cnb_progress import emit_cnb_progress, run_with_cnb_reasoning
 from app.utils.concept_note_context import omit_context_identifiers
 from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
@@ -114,6 +115,12 @@ class ConceptNoteEditPlanner:
                     temperature=0.0,
                     include_usage=True,
                     reasoning={"effort": model.reasoning_effort},
+                    extra_body={
+                        "reasoning": {
+                            "effort": model.reasoning_effort,
+                            "exclude": False,
+                        }
+                    },
                 ),
                 output_type=ChapterEditPlanOutput,
             )
@@ -128,16 +135,33 @@ class ConceptNoteEditPlanner:
                 output_type=ChapterEditReview,
             )
             limit = asyncio.Semaphore(budget.cnb_edits.max_concurrency)
+            completed = 0
+
+            async def report(
+                stage: Literal["planning", "reviewing", "chapter_completed"],
+                payload: dict[str, Any],
+            ) -> None:
+                await emit_cnb_progress(
+                    stage,
+                    chapter_title=payload["chapter"]["title"],
+                    completed=completed,
+                    total=len(chapter_payloads),
+                )
 
             async def plan_chapter(
                 payload: dict[str, Any],
             ) -> tuple[ChapterEditPlanOutput, ChapterEditReview | None]:
                 """Plan and independently review meaning under one concurrency limit."""
+                nonlocal completed
                 async with limit:
-                    result = await self._runner.run(
+                    await report("planning", payload)
+                    result = await run_with_cnb_reasoning(
+                        self._runner,
                         agent,
                         json.dumps(payload, ensure_ascii=False),
                         run_config=run_config,
+                        stage="planning",
+                        chapter_title=payload["chapter"]["title"],
                     )
                     raw = result.final_output
                     plan = (
@@ -146,6 +170,8 @@ class ConceptNoteEditPlanner:
                         else ChapterEditPlanOutput.model_validate(raw)
                     )
                     if not plan.changes:
+                        completed += 1
+                        await report("chapter_completed", payload)
                         return plan, None
 
                     # Review the actual output, not the planner's own safety claim.
@@ -166,10 +192,14 @@ class ConceptNoteEditPlanner:
                             "The edit review exceeds the chapter context limit.",
                             status_code=422,
                         )
-                    reviewed = await self._runner.run(
+                    await report("reviewing", payload)
+                    reviewed = await run_with_cnb_reasoning(
+                        self._runner,
                         reviewer,
                         json.dumps(review_payload, ensure_ascii=False),
                         run_config=run_config,
+                        stage="reviewing",
+                        chapter_title=payload["chapter"]["title"],
                     )
                     raw_review = reviewed.final_output
                     review = (
@@ -177,6 +207,8 @@ class ConceptNoteEditPlanner:
                         if isinstance(raw_review, str)
                         else ChapterEditReview.model_validate(raw_review)
                     )
+                    completed += 1
+                    await report("chapter_completed", payload)
                     return plan, review
 
             # Await every worker before closing the shared client or surfacing an error.

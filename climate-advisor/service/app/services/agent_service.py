@@ -497,6 +497,9 @@ class AgentService:
                 reasoning={"effort": reasoning_effort}
                 if reasoning_effort is not None
                 else None,
+                extra_body={"reasoning": {"exclude": False}}
+                if self._has_concept_note_context
+                else None,
             ),
             tools=tools,
         )

@@ -1,6 +1,5 @@
 {
-  "manage-missing-subsectors": "Gérer les sous-secteurs manquants",
-  "manage-missing-subsectors-description": "Veuillez examiner le sous-secteur manquant et ajouter toutes les clés de notation qui peuvent correspondre.",
+  "notation-keys-description": "Veuillez examiner le sous-secteur manquant et ajouter toutes les clés de notation qui peuvent correspondre.",
   "notation-keys": "Clés de notation",
   "help-button": "Besoin d'aide ?",
   "notation-key-question": "Que signifie \"Clé de Notation\" ?",

@@ -1,6 +1,5 @@
 {
-  "manage-missing-subsectors": "Manage missing sub-sectors",
-  "manage-missing-subsectors-description": "Please review the missing sub-sector and add any notation keys that may correspond.",
+  "notation-keys-description": "Please review the missing sub-sector and add any notation keys that may correspond.",
   "notation-keys": "Notation keys",
   "help-button": "Need help?",
   "notation-key-question": "What does \"Notation Key\" mean?",

@@ -120,7 +120,7 @@ const Heading: FC<HeadingProps> = ({ t }) => {
             mb="8px"
             fontFamily="body"
           >
-            {t("manage-missing-subsectors-description")}
+            {t("notation-keys-description")}
           </Text>
         </Box>
         <HelpDrawer

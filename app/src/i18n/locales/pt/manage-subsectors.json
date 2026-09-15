@@ -1,6 +1,5 @@
 {
-  "manage-missing-subsectors": "Gerencie sub-setores ausentes",
-  "manage-missing-subsectors-description": "Por favor, revise o sub-setor ausente e adicione quaisquer chaves de notação que possam corresponder.",
+  "notation-keys-description": "Por favor, revise o sub-setor ausente e adicione quaisquer chaves de notação que possam corresponder.",
   "notation-keys": "Chaves de notação",
   "help-button": "Precisa de ajuda?",
   "notation-key-question": "O que significa \"Chave de Notação\"?",

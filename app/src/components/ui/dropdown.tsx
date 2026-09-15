@@ -56,6 +56,16 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       [options],
     );
 
+    const renderOption = (option: DropdownOption) => (
+      <>
+        <Text as="span" fontWeight="bold">
+          {option.label}
+          {option.description && ":"}
+        </Text>
+        {option.description && <> {option.description}</>}
+      </>
+    );
+
     return (
       <Field.Root
         orientation="vertical"
@@ -121,15 +131,18 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
               lineHeight="24"
               letterSpacing="wide"
               placeholder={placeholder}
-            />
+            >
+              {(items) => renderOption(items[0] as DropdownOption)}
+            </SelectValueText>
           </SelectTrigger>
           <SelectContent>
             {options.map((option) => (
-              <SelectItem item={option} key={option.value}>
-                <Text as="span" fontWeight="bold">
-                  {option.label}
-                </Text>
-                {option.description && <>: {option.description}</>}
+              <SelectItem
+                item={option}
+                key={option.value}
+                _highlighted={{ bg: "background.neutral" }}
+              >
+                {renderOption(option)}
               </SelectItem>
             ))}
           </SelectContent>

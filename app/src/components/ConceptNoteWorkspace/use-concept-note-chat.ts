@@ -13,6 +13,7 @@ import {
 
 interface UseConceptNoteChatOptions {
   lng: string;
+  runId: string;
   threadId: string | null;
   editScope?: EditScope;
   onProposal?: (proposalId: string) => Promise<void>;
@@ -28,6 +29,7 @@ interface ConceptNoteChatController {
 
 export function useConceptNoteChat({
   lng,
+  runId,
   threadId,
   editScope,
   onProposal,
@@ -167,14 +169,17 @@ export function useConceptNoteChat({
         body: JSON.stringify({
           threadId,
           content: normalizedContent,
-          context: editScope
-            ? {
-                concept_note_edit: {
-                  scope: editScope,
-                  idempotency_key: crypto.randomUUID(),
-                },
-              }
-            : undefined,
+          context: {
+            concept_note_run_id: runId,
+            ...(editScope
+              ? {
+                  concept_note_edit: {
+                    scope: editScope,
+                    idempotency_key: crypto.randomUUID(),
+                  },
+                }
+              : {}),
+          },
         }),
       });
     } catch (requestError) {

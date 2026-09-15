@@ -807,10 +807,12 @@ Operationally:
 - `POST /v1/messages` validates persisted CNB context before saving a user message
   or starting SSE. Pending uploads, a failed latest upload, an unfinished/failed
   bundle, or missing/mismatched ready-source IDs/digests return HTTP `409` with
-  `detail.code: concept_note_context_not_ready`. The CC proxy preserves the status
-  and exposes `{code, message}` so the workspace can show a specific recovery hint
-  without retaining an unsent message in chat history. Ready city-only runs remain
-  supported; ordinary non-CNB chat is unaffected.
+  `detail.code: concept_note_context_not_ready`. The workspace supplies its run ID
+  explicitly, and the service verifies that the run is bound to the supplied
+  thread. Before SSE starts, the CC proxy preserves non-success HTTP statuses and
+  exposes `{code, message}` for the readiness rejection so the workspace can show
+  a specific recovery hint without retaining an unsent message in chat history.
+  Ready city-only runs remain supported; ordinary non-CNB chat is unaffected.
 - Eligible Concept Note chat turns receive compact summaries and the read-only,
   single-document `concept_note.sources.query` capability. Raw Markdown, PDFs,
   storage keys, credentials, and derived chunks are not persisted in the bundle.

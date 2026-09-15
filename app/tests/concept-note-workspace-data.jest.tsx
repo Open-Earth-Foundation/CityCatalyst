@@ -132,6 +132,7 @@ function ChatHarness() {
         composerRequest={composerRequest}
         lng="en"
         onOpenContext={() => {}}
+        runId="run-1"
         threadId="thread-1"
         editScope={{ kind: "auto" }}
         edits={{ loadProposal: async () => {} } as never}
@@ -236,6 +237,17 @@ describe("useConceptNoteWorkspaceData", () => {
     expect(send.disabled).toBe(false);
     await act(async () => send.click());
     expect(startStream).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(String(startStream.mock.calls[0]?.[1]?.body))).toEqual({
+      threadId: "thread-1",
+      content: composerRequest.content,
+      context: {
+        concept_note_run_id: "run-1",
+        concept_note_edit: {
+          scope: { kind: "auto" },
+          idempotency_key: expect.any(String),
+        },
+      },
+    });
 
     // A backend readiness rejection must not leave a phantom accepted turn.
     await act(async () =>

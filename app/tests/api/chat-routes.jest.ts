@@ -137,7 +137,7 @@ describe("Chat routes", () => {
   );
 
   it.each(["cold", "warm"])(
-    "rejects a deleted user's message with a %s token cache using SSE errors",
+    "rejects a deleted user's message with a %s token cache before streaming",
     async (cache) => {
       const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
       if (cache === "warm") {
@@ -169,12 +169,10 @@ describe("Chat routes", () => {
         }),
         { params: Promise.resolve({}) },
       );
-      expect(response.status).toBe(200);
-      expect(response.headers.get("Content-Type")).toBe("text/event-stream");
-      const body = await response.text();
-      expect(body).toContain("event: error");
-      expect(body).toContain('"message":"User not found"');
-      expect(body).toContain('"ok":false');
+      expect(response.status).toBe(404);
+      await expect(response.json()).resolves.toEqual({
+        error: { message: "User not found" },
+      });
       expect(fetchMock).not.toHaveBeenCalled();
     },
   );
@@ -595,6 +593,61 @@ describe("Chat routes", () => {
     );
     expect(response.status).toBe(409);
     await expect(response.json()).resolves.toEqual(detail);
+  });
+
+  it("preserves a CA storage failure instead of reporting a successful stream", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "fresh-token",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(
+          { detail: { code: "cnb_storage_unavailable" } },
+          { status: 503 },
+        ),
+      );
+    const response = await postChatMessage(
+      makeRequest("http://localhost:3000/api/v1/chat/messages", "POST", {
+        threadId: "thread-1",
+        content: "Hello",
+        context: { concept_note_run_id: "run-1" },
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("Content-Type")).toContain("application/json");
+    await expect(response.json()).resolves.toEqual({
+      message: "CA service error (503)",
+    });
+  });
+
+  it("preserves a token failure instead of reporting a successful stream", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({ detail: "service token rejected" }, { status: 403 }),
+    );
+
+    const response = await postChatMessage(
+      makeRequest("http://localhost:3000/api/v1/chat/messages", "POST", {
+        threadId: "thread-1",
+        content: "Hello",
+        context: { concept_note_run_id: "run-1" },
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(403);
+    expect(response.headers.get("Content-Type")).toContain("application/json");
+    await expect(response.json()).resolves.toEqual({
+      message: "Unable to obtain Climate Advisor access token",
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it("refreshes authorization when sending through a reopened CNB thread", async () => {

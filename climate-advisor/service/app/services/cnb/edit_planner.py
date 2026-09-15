@@ -21,7 +21,6 @@ from app.persistence.concept_notes.edits import EditOperationError
 from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
 from app.services.cnb.edit_validation import prior_user_inputs
 from app.services.openrouter_client import build_openrouter_client_options
-from app.utils.cnb_observability import protect_cnb_client
 from app.utils.concept_note_context import omit_context_identifiers
 from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
@@ -102,7 +101,7 @@ class ConceptNoteEditPlanner:
             missing_api_key_message="The configured edit model is unavailable",
             error_cls=RuntimeError,
         )
-        client = protect_cnb_client(AsyncOpenAI(**options.kwargs))
+        client = AsyncOpenAI(**options.kwargs)
         try:
             agent = Agent(
                 name="Concept Note chapter edit planner",

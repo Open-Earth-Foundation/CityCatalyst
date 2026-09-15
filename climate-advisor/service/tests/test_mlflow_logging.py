@@ -16,6 +16,7 @@ from app.routes import concept_note_runs
 from app.utils import mlflow_logging
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.cnb_observability import CNBInteraction
+from app.utils.conversation_observability import conversation_trace
 from app.utils.streaming_handler import StreamingHandler
 
 
@@ -487,7 +488,10 @@ def test_concept_note_start_uses_dedicated_mlflow_run_name(monkeypatch) -> None:
             "result": "created",
         }
     ]
-    assert recorded["trace_context"]["session_id"] == concept_note_run_id
+    assert "session_id" not in recorded["trace_context"]
+    assert recorded["trace_context"]["metadata"]["concept_note_run_id"] == str(
+        concept_note_run_id
+    )
     assert recorded["span_outputs"] == (
         "start-span",
         {
@@ -542,7 +546,7 @@ def test_cnb_interaction_uses_visible_workflow_tag_on_run_and_trace(
     payload = MessageCreateRequest(user_id="user-1", content="Review this chapter")
 
     monkeypatch.setattr(
-        "app.utils.streaming_handler.start_trace_span",
+        "app.utils.conversation_observability.start_trace_span",
         fake_start_trace_span,
     )
     monkeypatch.setattr(
@@ -555,14 +559,17 @@ def test_cnb_interaction_uses_visible_workflow_tag_on_run_and_trace(
     )
 
     async def collect() -> list[bytes]:
-        return [
-            chunk
-            async for chunk in handler._stream_agent_events(
-                object(),
-                payload,
-                [],
-            )
-        ]
+        with conversation_trace(
+            payload.content, attributes=handler.workflow_context.telemetry()
+        ):
+            return [
+                chunk
+                async for chunk in handler._stream_agent_events(
+                    object(),
+                    payload,
+                    [],
+                )
+            ]
 
     chunks = asyncio.run(collect())
 
@@ -571,15 +578,12 @@ def test_cnb_interaction_uses_visible_workflow_tag_on_run_and_trace(
     assert run_tags["workflow"] == "CNB"
     assert run_tags["workflow_name"] == "concept_note_context_chat"
     assert run_tags["interaction"] == "chat"
-    assert recorded["span"] == {
-        "name": "CNB",
-        "span_type": "CHAIN",
-        "attributes": {
-            "workflow": "CNB",
-            "workflow_name": "concept_note_context_chat",
-            "interaction": "chat",
-        },
-    }
+    assert recorded["span"]["name"] == "Climate Advisor Turn"
+    assert recorded["span"]["inputs"]["user_message"] == payload.content
+    assert recorded["span"]["attributes"]["workflow"] == "CNB"
+    assert (
+        recorded["span"]["attributes"]["workflow_name"] == "concept_note_context_chat"
+    )
     assert len(trace_updates) == 1
     assert trace_updates[0]["tags"]["workflow"] == "CNB"
     assert trace_updates[0]["tags"]["workflow_name"] == "concept_note_context_chat"

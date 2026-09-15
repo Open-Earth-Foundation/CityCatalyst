@@ -2,16 +2,13 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import hashlib
 import logging
-from pathlib import Path
 import time
+from datetime import datetime, timezone
+from pathlib import Path
 from uuid import uuid4
 
-from openai import OpenAI
-
-from app.config import Settings, get_settings
 from app.models.cnb.research import (
     AgentTurn,
     FundingOpportunityResearchBundle,
@@ -19,8 +16,11 @@ from app.models.cnb.research import (
     ResearchGap,
     ResearchRunMetadata,
 )
-from app.services.cnb.research_agent import AgentLoopOutcome, run_agent_loop
-from app.services.cnb.research_agent import scrape_seed_sources
+from app.services.cnb.research_agent import (
+    AgentLoopOutcome,
+    run_agent_loop,
+    scrape_seed_sources,
+)
 from app.services.cnb.research_artifacts import (
     render_review,
     write_research_artifacts,
@@ -28,6 +28,7 @@ from app.services.cnb.research_artifacts import (
 from app.services.cnb.research_bundle import build_research_bundle
 from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.firecrawl import FirecrawlClient
+from app.utils.conversation_observability import workflow_trace
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
     log_directory_artifacts,
@@ -36,9 +37,11 @@ from app.utils.mlflow_logging import (
     log_text_artifact,
     set_span_outputs,
     start_run,
-    start_trace_span,
     update_current_trace_context,
 )
+from openai import OpenAI
+
+from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 PIPELINE_VERSION = "3.0"
@@ -100,9 +103,14 @@ def run_funding_opportunity_research(
                 "program_name": request.program_name,
             },
         ) as mlflow_run:
-            with start_trace_span(
+            with workflow_trace(
                 name="cnb_funding_opportunity_research",
-                span_type="CHAIN",
+                session_id=run_id,
+                user_id="climate-advisor",
+                attributes={
+                    "workflow": "cnb_funding_opportunity_research",
+                    "run_id": run_id,
+                },
                 inputs={
                     "run_id": run_id,
                     "funder_name": request.funder_name,

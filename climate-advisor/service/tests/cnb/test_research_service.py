@@ -138,7 +138,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
 
     monkeypatch.setattr(
         research_service,
-        "start_trace_span",
+        "workflow_trace",
         fake_start_trace_span,
     )
     monkeypatch.setattr(

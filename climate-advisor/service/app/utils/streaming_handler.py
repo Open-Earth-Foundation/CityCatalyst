@@ -8,7 +8,7 @@ import json
 import logging
 import time
 from contextlib import nullcontext, suppress
-from typing import Any, AsyncIterator, Dict, List, Optional, Union
+from typing import Any, AsyncGenerator, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
 from agents import RunConfig, Runner, gen_trace_id
@@ -116,7 +116,7 @@ class StreamingHandler:
         self,
         payload: MessageCreateRequest,
         history_warning: Optional[str] = None,
-    ) -> AsyncIterator[bytes]:
+    ) -> AsyncGenerator[bytes, None]:
         """Stream AI responses using OpenAI Agents SDK.
 
         Args:

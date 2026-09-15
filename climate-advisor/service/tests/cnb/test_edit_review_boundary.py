@@ -25,6 +25,85 @@ from app.services.cnb.edit_planner import (
 from app.services.cnb.edit_validation import validate_edit_plan
 
 from app.config import get_settings
+from app.utils.cnb_progress import bind_cnb_progress
+
+
+class StreamingTestRunner:
+    @classmethod
+    def run_streamed(cls, agent, payload, **kwargs):
+        class Result:
+            is_complete = False
+
+            async def stream_events(self):
+                result = await cls.run(agent, payload, **kwargs)
+                self.final_output = result.final_output
+                self.is_complete = True
+                if False:
+                    yield
+
+            def cancel(self):
+                self.is_complete = True
+
+        return Result()
+
+
+@pytest.mark.asyncio
+async def test_planner_reports_real_model_stages_and_excludes_locked_chapters():
+    events = []
+
+    async def capture(chunk):
+        events.append(json.loads(chunk.decode().split("data: ")[1]))
+
+    class ProgressRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            if agent.output_type is ChapterEditPlanOutput:
+                assert events[-1]["stage"] == "planning"
+                output = ChapterEditPlanOutput(
+                    intent="edit",
+                    changes=[
+                        {
+                            "start": 0,
+                            "before": "ten",
+                            "after": "10",
+                            "kind": "wording",
+                            "group_id": "digits",
+                        }
+                    ],
+                )
+            else:
+                assert events[-1]["stage"] == "reviewing"
+                output = ChapterEditReview(
+                    decisions=[
+                        {
+                            "change_index": 0,
+                            "support": "preserved",
+                            "explanation": "Same number",
+                        }
+                    ]
+                )
+            return SimpleNamespace(final_output=output)
+
+    settings = get_settings().model_copy(deep=True)
+    settings.openrouter_api_key = "test-key"
+    current = chapter("ten schools")
+    with bind_cnb_progress(capture):
+        await ConceptNoteEditPlanner(settings, runner=ProgressRunner).plan(
+            EditProposalRequest(instruction="Use digits.", idempotency_key=uuid4()),
+            [current, replace(chapter("locked"), user_locked=True)],
+            {},
+        )
+    assert [event["stage"] for event in events] == [
+        "planning",
+        "reviewing",
+        "chapter_completed",
+    ]
+    assert [event["completed"] for event in events] == [0, 0, 1]
+    assert all(event["total"] == 1 for event in events)
+    assert all(
+        set(event) == {"stage", "chapter_title", "completed", "total"}
+        for event in events
+    )
 
 
 def chapter(body: str) -> WorkspaceChapterSnapshot:
@@ -353,7 +432,7 @@ async def test_planner_and_reviewer_receive_evidence_without_backend_metadata(
     original = json.dumps(context, sort_keys=True)
     calls = []
 
-    class CapturingRunner:
+    class CapturingRunner(StreamingTestRunner):
         @staticmethod
         async def run(agent, payload, **kwargs):
             calls.append(json.loads(payload))

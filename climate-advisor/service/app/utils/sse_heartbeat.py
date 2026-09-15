@@ -8,6 +8,8 @@ from contextlib import aclosing
 
 from anyio import CancelScope
 
+from app.utils.cnb_progress import bind_cnb_progress
+
 SSE_HEARTBEAT_INTERVAL_SECONDS = 15.0
 SSE_HEARTBEAT = b": keep-alive\n\n"
 
@@ -30,9 +32,10 @@ async def with_sse_heartbeats(
 
     async def produce() -> None:
         # Close the generator in its owning task, including on disconnection.
-        async with aclosing(source):
-            async for chunk in source:
-                await queue.put(chunk)
+        with bind_cnb_progress(queue.put):
+            async with aclosing(source):
+                async for chunk in source:
+                    await queue.put(chunk)
 
     producer = asyncio.create_task(produce())
     next_chunk = asyncio.create_task(queue.get())

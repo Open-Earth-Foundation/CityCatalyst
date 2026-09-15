@@ -23,6 +23,7 @@ from app.persistence.concept_notes.edits import (
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.cnb.edit_planner import ConceptNoteEditPlanner
 from app.services.cnb.edit_validation import validate_edit_plan
+from app.utils.cnb_progress import emit_cnb_progress
 from app.utils.cnb_observability import record_edit_outcome
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -143,6 +144,7 @@ class ConceptNoteEditService:
                     changes=[],
                     clarification=plan.clarification,
                 )
+            await emit_cnb_progress("validating")
             changes = validate_edit_plan(
                 request,
                 chapters,

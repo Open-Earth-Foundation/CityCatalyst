@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from collections.abc import AsyncGenerator
 from contextvars import ContextVar
 from unittest.mock import AsyncMock
@@ -11,6 +12,47 @@ import pytest
 from anyio import CancelScope
 
 from app.utils.sse_heartbeat import SSE_HEARTBEAT, with_sse_heartbeats
+from app.utils.cnb_progress import emit_cnb_progress
+
+
+@pytest.mark.asyncio
+async def test_child_task_progress_arrives_before_tool_finishes_and_is_request_local():
+    release = asyncio.Event()
+
+    async def source(title):
+        async def tool():
+            await emit_cnb_progress(
+                "planning", chapter_title=title, completed=0, total=1
+            )
+            await release.wait()
+
+        await asyncio.create_task(tool())
+        yield b'event: done\ndata: {"ok":true}\n\n'
+
+    streams = [with_sse_heartbeats(source(title)) for title in ("Budget", "Timeline")]
+    try:
+        for stream in streams:
+            assert await anext(stream) == SSE_HEARTBEAT
+        chunks = await asyncio.wait_for(asyncio.gather(*(anext(s) for s in streams)), 1)
+        for chunk, title in zip(chunks, ("Budget", "Timeline"), strict=True):
+            assert b"event: progress" in chunk
+            data = json.loads(chunk.decode().split("data: ")[1])
+            assert data == {
+                "stage": "planning",
+                "chapter_title": title,
+                "completed": 0,
+                "total": 1,
+            }
+        assert not release.is_set()
+        # A caller outside either producer has no sink.
+        await emit_cnb_progress("validating")
+        release.set()
+        for stream in streams:
+            assert [chunk async for chunk in stream] == [
+                b'event: done\ndata: {"ok":true}\n\n'
+            ]
+    finally:
+        await asyncio.gather(*(s.aclose() for s in streams))
 
 
 @pytest.mark.asyncio

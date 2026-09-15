@@ -23,8 +23,9 @@ from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
 from app.utils.agent_tracing import configure_agents_tracing
 from app.utils.chat_workflow_context import STATIONARY_ENERGY_DRAFT_RUN_ID_KEY
-from app.utils.streaming_handler import StreamingHandler
+from app.utils.sse_heartbeat import with_sse_heartbeats
 from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
+from app.utils.streaming_handler import StreamingHandler
 from app.utils.thread_resolver import ThreadResolver
 
 logger = logging.getLogger(__name__)
@@ -246,7 +247,7 @@ async def post_message(
         }
         
         return StreamingResponse(
-            handler.stream_response(payload, history_warning),
+            with_sse_heartbeats(handler.stream_response(payload, history_warning)),
             media_type="text/event-stream",
             headers=headers,
         )

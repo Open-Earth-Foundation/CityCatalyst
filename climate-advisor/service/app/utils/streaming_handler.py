@@ -7,14 +7,11 @@ import inspect
 import json
 import logging
 import time
-from contextlib import nullcontext, suppress
+from contextlib import suppress
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
 from agents import RunConfig, Runner, gen_trace_id
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from app.config import Settings, get_settings
 from app.middleware import get_request_id
 from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.requests import MessageCreateRequest
@@ -34,7 +31,7 @@ from app.services.stationary_energy.stationary_energy_tool_events import (
     build_stationary_energy_tool_result_payload,
 )
 from app.services.thread_service import ThreadService
-from app.utils.chat_workflow_context import CNB_WORKFLOW_TAG, ChatWorkflowContext
+from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.concept_note_context import (
     clean_cnb_history,
     extract_concept_note_run_id,
@@ -55,7 +52,6 @@ from app.utils.mlflow_logging import (
     merge_redacted_tool_records,
     start_run,
     start_tool_observation,
-    start_trace_span,
     update_current_trace_context,
 )
 from app.utils.prompt_budget import (
@@ -68,6 +64,9 @@ from app.utils.sse import format_sse
 from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
 from app.utils.token_handler import TokenHandler
 from app.utils.tool_handler import persist_assistant_message
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -131,20 +130,21 @@ class StreamingHandler:
         started_at = time.perf_counter()
         await self._resolve_workflow_context(payload)
 
-        with start_run(
-            run_name=self.workflow_context.mlflow_run_name,
-            experiment_name=self._mlflow_experiment_name(payload),
-            tags=self._mlflow_tags(payload),
-            params=self._mlflow_params(payload),
-        ), (
-            nullcontext()
-            if self.workflow_context.is_agentic
-            else conversation_trace(payload.content)
+        with (
+            start_run(
+                run_name=self.workflow_context.mlflow_run_name,
+                experiment_name=self._mlflow_experiment_name(payload),
+                tags=self._mlflow_tags(payload),
+                params=self._mlflow_params(payload),
+            ),
+            conversation_trace(
+                payload.content, attributes=self.workflow_context.telemetry()
+            ),
         ):
-            if not self.workflow_context.concept_note_run_id:
-                log_json_artifact(
-                    "request/message_payload.json", payload.model_dump(mode="json")
-                )
+            self._update_mlflow_trace_context(payload)
+            log_json_artifact(
+                "request/message_payload.json", payload.model_dump(mode="json")
+            )
 
             async for event_bytes in self._stream_response_with_mlflow(
                 payload=payload,
@@ -283,10 +283,9 @@ class StreamingHandler:
 
             agent = await self.agent_service.create_agent(model=self.agent_model)
 
-            if not concept_note_run_id:
-                log_json_artifact(
-                    "chat/conversation_history.json", {"messages": conversation_history}
-                )
+            log_json_artifact(
+                "chat/conversation_history.json", {"messages": conversation_history}
+            )
 
             logger.info(
                 "Starting Agents SDK streaming - thread_id=%s, user_id=%s, request_id=%s",
@@ -773,64 +772,41 @@ class StreamingHandler:
                 self._clear_agent_instructions(agent)
             runner_input = self._enforce_chat_prompt_budget(agent, runner_input)
 
-        workflow_metadata = self.workflow_context.telemetry()
-        # Ordinary CA already owns a root through persistence; scoped chats keep theirs.
-        trace_context = (
-            start_trace_span(
-                name=(
-                    CNB_WORKFLOW_TAG
-                    if self.workflow_context.concept_note_run_id
-                    else self.workflow_context.trace_workflow_name
-                ),
-                span_type="CHAIN",
-                attributes={
-                    "workflow": workflow_metadata["workflow"],
-                    "workflow_name": workflow_metadata["workflow_name"],
-                    "interaction": workflow_metadata["interaction"],
-                },
+        trace_context_updated = self._update_mlflow_trace_context(payload)
+        # Prefer the Agents SDK streamed runner and keep the legacy fallback path.
+        try:
+            result = Runner.run_streamed(
+                agent,
+                runner_input,
+                run_config=self._run_config(payload),
             )
-            if self.workflow_context.is_agentic
-            else nullcontext()
-        )
-        with trace_context:
-            trace_context_updated = self._update_mlflow_trace_context(payload)
-            # Prefer the Agents SDK streamed runner and keep the legacy fallback path.
-            try:
-                result = Runner.run_streamed(
-                    agent,
-                    runner_input,
-                    run_config=self._run_config(payload),
-                )
-            except Exception as runner_exc:
-                logger.warning(
-                    "Agents Runner streaming failed (%s); falling back to agent.messages.run_stream",
-                    runner_exc,
-                )
-                # The fallback only sends raw user content, so restore the scoped prompt.
-                if restore_agent_instructions:
-                    try:
-                        setattr(agent, "instructions", original_agent_instructions)
-                    except Exception as exc:
-                        logger.debug(
-                            "Could not restore embedded agent instructions before fallback: %s",
-                            exc,
-                        )
-                async for event_bytes in self._fallback_stream(agent, payload):
-                    yield event_bytes
-                return
+        except Exception as runner_exc:
+            logger.warning(
+                "Agents Runner streaming failed (%s); falling back to agent.messages.run_stream",
+                runner_exc,
+            )
+            # The fallback only sends raw user content, so restore the scoped prompt.
+            if restore_agent_instructions:
+                try:
+                    setattr(agent, "instructions", original_agent_instructions)
+                except Exception as exc:
+                    logger.debug(
+                        "Could not restore embedded agent instructions before fallback: %s",
+                        exc,
+                    )
+            async for event_bytes in self._fallback_stream(agent, payload):
+                yield event_bytes
+            return
 
-            trace_context_attempted_after_start = False
+        trace_context_attempted_after_start = False
 
-            # Convert SDK stream events into the app's SSE event contract.
-            async for chunk in result.stream_events():
-                if (
-                    not trace_context_updated
-                    and not trace_context_attempted_after_start
-                ):
-                    trace_context_attempted_after_start = True
-                    trace_context_updated = self._update_mlflow_trace_context(payload)
-                async for event_bytes in self._process_chunk(chunk):
-                    yield event_bytes
+        # Convert SDK stream events into the app's SSE event contract.
+        async for chunk in result.stream_events():
+            if not trace_context_updated and not trace_context_attempted_after_start:
+                trace_context_attempted_after_start = True
+                trace_context_updated = self._update_mlflow_trace_context(payload)
+            async for event_bytes in self._process_chunk(chunk):
+                yield event_bytes
 
     @staticmethod
     def _has_embedded_stationary_energy_system_context(
@@ -1017,8 +993,7 @@ class StreamingHandler:
         existing = None
         for inv in self.tool_invocations:
             if (call_id and inv.get("id") == call_id) or (
-                inv.get("name") == tool_name
-                and (not call_id or self.workflow_context.is_agentic)
+                inv.get("name") == tool_name and not call_id
             ):
                 existing = inv
                 break
@@ -1086,8 +1061,7 @@ class StreamingHandler:
         invocation = None
         for inv in self.tool_invocations:
             if (call_id and inv.get("id") == call_id) or (
-                inv.get("status") == "executing"
-                and (not call_id or self.workflow_context.is_agentic)
+                inv.get("status") == "executing" and not call_id
             ):
                 invocation = inv
                 break
@@ -1446,13 +1420,12 @@ class StreamingHandler:
         assistant_content = "".join(self.assistant_tokens)
         duration_ms = (time.perf_counter() - started_at) * 1000
         stream_status = status or ("ok" if ok else "error")
-        if not self.workflow_context.is_agentic:
-            finish_conversation_trace(
-                assistant_content,
-                status=stream_status,
-                history_saved=self.history_saved,
-                chunks=len(self.assistant_tokens),
-            )
+        finish_conversation_trace(
+            assistant_content,
+            status=stream_status,
+            history_saved=self.history_saved,
+            chunks=len(self.assistant_tokens),
+        )
         log_tags({"stream_status": stream_status})
         log_metrics(
             {
@@ -1464,33 +1437,34 @@ class StreamingHandler:
                 "ok": int(ok),
             }
         )
-        if not self.workflow_context.concept_note_run_id:
-            log_text_artifact("chat/assistant_response.txt", assistant_content)
-            try:
-                close_open_tool_observations(
-                    self._pending_tool_observations,
-                    self._tool_observation_records,
-                    outcome=(
-                        "cancelled"
-                        if stream_status == "cancelled"
-                        else "error" if stream_status == "error" else "incomplete"
-                    ),
-                )
-            except Exception:
-                logger.warning(
-                    "MLflow tool observation close failed status=%s",
-                    stream_status,
-                )
-            records = merge_redacted_tool_records(
-                self.tool_invocations,
+        log_text_artifact("chat/assistant_response.txt", assistant_content)
+        try:
+            close_open_tool_observations(
+                self._pending_tool_observations,
                 self._tool_observation_records,
-                request_id=self._request_id(),
+                outcome=(
+                    "cancelled"
+                    if stream_status == "cancelled"
+                    else "error"
+                    if stream_status == "error"
+                    else "incomplete"
+                ),
             )
-            if records:
-                log_json_artifact(
-                    "chat/tool_invocations.json",
-                    {"tool_invocations": records},
-                )
+        except Exception:
+            logger.warning(
+                "MLflow tool observation close failed status=%s",
+                stream_status,
+            )
+        records = merge_redacted_tool_records(
+            self.tool_invocations,
+            self._tool_observation_records,
+            request_id=self._request_id(),
+        )
+        if records:
+            log_json_artifact(
+                "chat/tool_invocations.json",
+                {"tool_invocations": records},
+            )
         log_json_artifact(
             "response/stream_summary.json",
             {

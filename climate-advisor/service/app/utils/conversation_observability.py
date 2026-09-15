@@ -1,21 +1,26 @@
-"""Compact ordinary CA traces without changing model inputs or scoped workflows."""
+"""Shared Clima turn traces with compact prompts and redacted model/tool payloads."""
 
 from __future__ import annotations
 
 import json
 import logging
-from collections.abc import Iterator
-from contextlib import contextmanager
+from collections.abc import Iterator, Mapping
+from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
 from dataclasses import dataclass, field, replace
 from hashlib import sha256
 from typing import Any
 
+import mlflow
 from agents import FunctionTool
 from app.utils.mlflow_logging import (
+    climate_advisor_experiment_name,
+    current_run_id,
     redact_payload,
     set_span_outputs,
+    start_run,
     start_trace_span,
+    update_current_trace_context,
 )
 from mlflow.entities import LiveSpan
 from mlflow.tracing import configure
@@ -31,7 +36,7 @@ class _ConversationTrace:
     """Hold prompt snapshots on one request root, shared by its async children."""
 
     root: LiveSpan
-    content: str
+    inputs: dict[str, Any]
     prompts: dict[str, dict[str, Any]] = field(default_factory=dict)
     closed: bool = False
 
@@ -42,36 +47,103 @@ _CONVERSATION_TRACE: ContextVar[_ConversationTrace | None] = ContextVar(
 
 
 @contextmanager
-def conversation_trace(content: str) -> Iterator[None]:
-    """Keep an ordinary CA root alive through streaming and message persistence."""
+def conversation_trace(
+    content: str, *, attributes: Mapping[str, object] | None = None
+) -> Iterator[None]:
+    """Keep every Clima chat root alive through streaming and persistence."""
+    with _trace_scope(
+        name="Climate Advisor Turn",
+        inputs={"user_message": content},
+        attributes={
+            "workflow": "climate_advisor_conversation",
+            "interaction": "chat",
+            **dict(attributes or {}),
+            "streaming": True,
+            "stream_status": "in_progress",
+        },
+    ):
+        yield
+
+
+@contextmanager
+def workflow_trace(
+    *,
+    name: str,
+    inputs: dict[str, Any],
+    session_id: object,
+    user_id: object,
+    attributes: Mapping[str, object],
+) -> Iterator[LiveSpan | None]:
+    """Correlate workflow work with chat, sharing prompt storage and redaction.
+
+    Inline tools stay in their conversation trace. Standalone/background work
+    owns a run and a compact trace linked by the durable session/workflow IDs.
+    """
+    # Do not overwrite an enclosing conversation's sourceRun or session metadata.
+    try:
+        parent = mlflow.get_current_active_span()
+    except Exception:
+        parent = None
+    run_scope = (
+        nullcontext()
+        if parent is not None or current_run_id() is not None
+        else start_run(
+            run_name=name,
+            experiment_name=climate_advisor_experiment_name(),
+            tags={**attributes, "thread_id": session_id, "user_id": user_id},
+        )
+    )
+    with run_scope:
+        span_scope = (
+            start_trace_span(
+                name=name,
+                span_type="CHAIN",
+                inputs=inputs,
+                attributes=attributes,
+                link_run=False,
+            )
+            if parent is not None
+            else _trace_scope(name=name, inputs=inputs, attributes=attributes)
+        )
+        with span_scope as span:
+            if parent is None:
+                update_current_trace_context(
+                    session_id=session_id,
+                    user_id=user_id,
+                    tags=attributes,
+                    metadata=attributes,
+                )
+            yield span
+
+
+@contextmanager
+def _trace_scope(
+    *, name: str, inputs: dict[str, Any], attributes: Mapping[str, object]
+) -> Iterator[LiveSpan | None]:
+    """Store one prompt library for a chat turn or standalone workflow trace."""
     # The global hook is inert outside this request's context and trace ID.
     try:
         processors = get_config().span_processors
         if process_conversation_span not in processors:
             configure(span_processors=[*processors, process_conversation_span])
     except Exception:
-        logger.warning("Could not configure ordinary CA telemetry", exc_info=True)
+        logger.warning("Could not configure Clima telemetry", exc_info=True)
         yield
         return
 
     with start_trace_span(
-        name="Climate Advisor Turn",
+        name=name,
         span_type="CHAIN",
-        inputs={"user_message": content, "system_prompts": {}},
-        attributes={
-            "workflow": "climate_advisor_conversation",
-            "interaction": "chat",
-            "streaming": True,
-            "stream_status": "in_progress",
-        },
+        inputs={**inputs, "system_prompts": {}},
+        attributes=attributes,
     ) as root:
         if root is None:
-            yield
+            yield None
             return
-        state = _ConversationTrace(root=root, content=content)
+        state = _ConversationTrace(root=root, inputs=inputs)
         token = _CONVERSATION_TRACE.set(state)
         try:
-            yield
+            yield root
         finally:
             # Autolog's async-stream hook does not end a model span on disconnect.
             # Finalize those spans before exporting the root, keeping partial text
@@ -128,11 +200,11 @@ def finish_conversation_trace(
         if status != "ok":
             state.root.set_status("ERROR")
     except Exception:
-        logger.warning("Could not finalize ordinary CA trace", exc_info=True)
+        logger.warning("Could not finalize Clima trace", exc_info=True)
 
 
 def process_conversation_span(span: LiveSpan) -> None:
-    """Compact model telemetry before export, only inside an ordinary CA trace.
+    """Compact model telemetry before export, only inside an Clima trace.
 
     MLflow 3.2 has no public event-removal API. The one OpenTelemetry event-buffer
     assignment below is covered by a real SDK export test; non-chunk events survive.
@@ -152,26 +224,26 @@ def process_conversation_span(span: LiveSpan) -> None:
     if isinstance(inputs, (dict, list)):
         # SDK generation spans use a message list; OpenAI autolog uses a dict.
         messages = (
-            (inputs.get("messages") or []) if isinstance(inputs, dict) else inputs
+            (inputs.get("messages") or inputs.get("input") or [])
+            if isinstance(inputs, dict)
+            else inputs
         )
+        if not isinstance(messages, list):
+            messages = []
+        # Responses API workers provide their system prompt separately.
+        if isinstance(inputs, dict) and isinstance(inputs.get("instructions"), str):
+            inputs["instructions"] = _prompt_reference(
+                state, {"role": "system", "content": inputs["instructions"]}
+            )
         for message in messages:
             if not isinstance(message, dict) or message.get("role") not in {
                 "system",
                 "developer",
             }:
                 continue
-            fingerprint = sha256(
-                json.dumps(message, sort_keys=True, ensure_ascii=False).encode()
-            ).hexdigest()
-            state.prompts.setdefault(fingerprint, dict(message))
-            message["content"] = (
-                f"[System prompt reference: {fingerprint}. "
-                f"Open root span {state.root.span_id} > Inputs > system_prompts.]"
-            )
+            message["content"] = _prompt_reference(state, message)
         state.root.set_inputs(
-            redact_payload(
-                {"user_message": state.content, "system_prompts": state.prompts}
-            )
+            redact_payload({**state.inputs, "system_prompts": state.prompts})
         )
         span.set_inputs(inputs)
         span.set_attribute("system_prompt_root_span_id", state.root.span_id)
@@ -187,6 +259,18 @@ def process_conversation_span(span: LiveSpan) -> None:
     if removed:
         span.set_attribute("stream_chunks_omitted", True)
         span._span._events = BoundedList.from_seq(None, retained)
+
+
+def _prompt_reference(state: _ConversationTrace, message: dict[str, Any]) -> str:
+    """Store one redacted prompt snapshot and return its readable reference."""
+    fingerprint = sha256(
+        json.dumps(message, sort_keys=True, ensure_ascii=False).encode()
+    ).hexdigest()
+    state.prompts.setdefault(fingerprint, dict(message))
+    return (
+        f"[System prompt reference: {fingerprint}. "
+        f"Open root span {state.root.span_id} > Inputs > system_prompts.]"
+    )
 
 
 def traced_conversation_tool(tool: FunctionTool) -> FunctionTool:
@@ -234,3 +318,15 @@ def traced_conversation_tool(tool: FunctionTool) -> FunctionTool:
 
     # FunctionTool instances can be shared module globals: never mutate them.
     return replace(tool, on_invoke_tool=invoke)
+
+
+def finish_workflow_trace(
+    span: LiveSpan | None, output: object, *, ok: bool = True
+) -> None:
+    """Record a workflow result without propagating telemetry failures."""
+    set_span_outputs(span, output)
+    if span is not None and not ok:
+        try:
+            span.set_status("ERROR")
+        except Exception:
+            logger.warning("Could not record workflow trace failure", exc_info=True)

@@ -3,17 +3,14 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
+from contextvars import Context
 from typing import Any
 from uuid import UUID
-
-from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_session_factory
 from app.middleware import get_request_id
 from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftRun,
-    StationaryEnergyReviewDecision,
 )
 from app.models.stationary_energy_drafts import (
     DraftStalenessResponse,
@@ -52,8 +49,8 @@ from app.services.stationary_energy.stationary_energy_draft_repository import (
 )
 from app.services.stationary_energy.stationary_energy_draft_review import (
     apply_commit_results_to_decisions,
-    build_review_decisions,
     build_commit_rows,
+    build_review_decisions,
     commit_result_key,
     latest_review_decisions,
     save_status_after_commit,
@@ -70,14 +67,17 @@ from app.services.stationary_energy.stationary_energy_proposal_builder import (
     build_deterministic_proposals,
 )
 from app.services.thread_service import ThreadService
+from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
     log_json_artifact,
     log_metrics,
     log_tags,
     start_run,
+    update_current_trace_context,
 )
-
+from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +94,7 @@ _BACKGROUND_TASKS: set[asyncio.Task[Any]] = set()
 
 def _schedule_background_task(coro: Any) -> asyncio.Task[Any]:
     """Schedule a generation coroutine and retain it until completion."""
-    task = asyncio.create_task(coro)
+    task = asyncio.create_task(coro, context=Context())
     _BACKGROUND_TASKS.add(task)
     task.add_done_callback(_BACKGROUND_TASKS.discard)
     return task
@@ -219,30 +219,44 @@ class StationaryEnergyDraftService:
     ) -> StartStationaryEnergyDraftResponse:
         """Run Stationary Energy draft generation inside an MLflow request run."""
         started_at = time.perf_counter()
-        with start_run(
-            run_name=f"stationary_energy_draft_{operation}_request",
-            experiment_name=climate_advisor_experiment_name(),
-            tags=self._mlflow_tags(
-                request_kind=f"stationary_energy_draft_{operation}",
-                endpoint=(
-                    "/v1/stationary-energy-drafts/start"
-                    if operation == "start"
-                    else f"/v1/stationary-energy-drafts/{draft_run.draft_run_id}/retry"
+        with (
+            start_run(
+                run_name=f"stationary_energy_draft_{operation}_request",
+                experiment_name=climate_advisor_experiment_name(),
+                tags=self._mlflow_tags(
+                    request_kind=f"stationary_energy_draft_{operation}",
+                    endpoint=(
+                        "/v1/stationary-energy-drafts/start"
+                        if operation == "start"
+                        else f"/v1/stationary-energy-drafts/{draft_run.draft_run_id}/retry"
+                    ),
+                    draft_run_id=draft_run.draft_run_id,
+                    user_id=user_id,
+                    city_id=city_id,
+                    inventory_id=inventory_id,
+                    thread_id=thread_id,
+                    workflow="stationary_energy_draft",
                 ),
-                draft_run_id=draft_run.draft_run_id,
-                user_id=user_id,
-                city_id=city_id,
-                inventory_id=inventory_id,
-                thread_id=thread_id,
-                workflow="stationary_energy_draft",
+                params={
+                    "operation": operation,
+                    "locale": locale,
+                    "allowed_capabilities_count": (
+                        len(allowed_capabilities)
+                        if allowed_capabilities is not None
+                        else 0
+                    ),
+                },
             ),
-            params={
-                "operation": operation,
-                "locale": locale,
-                "allowed_capabilities_count": (
-                    len(allowed_capabilities) if allowed_capabilities is not None else 0
-                ),
-            },
+            workflow_trace(
+                name=f"stationary_energy_draft_{operation}",
+                inputs={"operation": operation},
+                session_id=thread_id or draft_run.draft_run_id,
+                user_id=user_id,
+                attributes={
+                    "workflow": "stationary_energy",
+                    "stationary_energy_draft_run_id": str(draft_run.draft_run_id),
+                },
+            ) as span,
         ):
             log_json_artifact(
                 "request/stationary_energy_draft_generation.json",
@@ -279,6 +293,7 @@ class StationaryEnergyDraftService:
                     ok=True,
                     extra={"operation": operation},
                 )
+                finish_workflow_trace(span, response)
                 return response
             except Exception as exc:
                 self._log_mlflow_error(
@@ -469,25 +484,40 @@ class StationaryEnergyDraftService:
     ) -> None:
         """Run background proposal generation inside its own MLflow run."""
         started_at = time.perf_counter()
-        with start_run(
-            run_name="stationary_energy_draft_generation_background",
-            experiment_name=climate_advisor_experiment_name(),
-            tags=self._mlflow_tags(
-                request_kind="stationary_energy_draft_background_generation",
-                endpoint="background:stationary_energy_draft_generation",
-                draft_run_id=draft_run_id,
-                user_id=user_id,
-                city_id=None,
-                inventory_id=None,
-                thread_id=thread_id,
-                workflow="stationary_energy_draft",
+        with (
+            start_run(
+                run_name="stationary_energy_draft_generation_background",
+                experiment_name=climate_advisor_experiment_name(),
+                tags=self._mlflow_tags(
+                    request_kind="stationary_energy_draft_background_generation",
+                    endpoint="background:stationary_energy_draft_generation",
+                    draft_run_id=draft_run_id,
+                    user_id=user_id,
+                    city_id=None,
+                    inventory_id=None,
+                    thread_id=thread_id,
+                    workflow="stationary_energy_draft",
+                ),
+                params={
+                    "source_candidates_count": source_candidates_count,
+                    "applicable_source_candidates_count": applicable_source_candidates_count,
+                    "allowed_capabilities_count": len(allowed_capabilities),
+                },
+                nested=True,
             ),
-            params={
-                "source_candidates_count": source_candidates_count,
-                "applicable_source_candidates_count": applicable_source_candidates_count,
-                "allowed_capabilities_count": len(allowed_capabilities),
-            },
-            nested=True,
+            workflow_trace(
+                name="stationary_energy_draft_generation",
+                inputs={
+                    "context": context,
+                    "source_candidates": applicable_source_candidates,
+                },
+                session_id=thread_id or draft_run_id,
+                user_id=user_id,
+                attributes={
+                    "workflow": "stationary_energy",
+                    "stationary_energy_draft_run_id": str(draft_run_id),
+                },
+            ) as span,
         ):
             log_json_artifact(
                 "generation/background_input.json",
@@ -506,7 +536,7 @@ class StationaryEnergyDraftService:
                     "trace_id": trace_id,
                 },
             )
-            await self._generate_rows_background_impl(
+            result = await self._generate_rows_background_impl(
                 draft_run_id=draft_run_id,
                 context=context,
                 stored_source_candidates=stored_source_candidates,
@@ -518,6 +548,10 @@ class StationaryEnergyDraftService:
                 user_id=user_id,
                 trace_id=trace_id,
                 started_at=started_at,
+            )
+
+            finish_workflow_trace(
+                span, result, ok=result is not None and result.get("status") == "ready"
             )
 
     async def _generate_rows_background_impl(
@@ -534,7 +568,7 @@ class StationaryEnergyDraftService:
         user_id: str,
         trace_id: str | None,
         started_at: float,
-    ) -> None:
+    ) -> dict[str, Any] | None:
         """Generate deterministic proposals in a fresh DB session."""
         factory = get_session_factory()
         rows = list(context.taxonomy)
@@ -633,6 +667,11 @@ class StationaryEnergyDraftService:
                         "taxonomy_rows": len(rows),
                     },
                 )
+                return {
+                    "status": "ready",
+                    "proposal_count": total,
+                    "proposals": proposals,
+                }
         except Exception as exc:
             logger.exception(
                 "Stationary Energy deterministic generation failed run=%s: %s",
@@ -670,6 +709,8 @@ class StationaryEnergyDraftService:
                     "Failed to mark Stationary Energy draft failed run=%s",
                     draft_run_id,
                 )
+
+        return None
 
     async def get_draft_status(
         self,
@@ -767,20 +808,32 @@ class StationaryEnergyDraftService:
     ) -> ReviewStationaryEnergyDraftResponse:
         """Persist review decisions inside an MLflow Climate Advisor run."""
         started_at = time.perf_counter()
-        with start_run(
-            run_name="stationary_energy_review_request",
-            experiment_name=climate_advisor_experiment_name(),
-            tags=self._mlflow_tags(
-                request_kind="stationary_energy_review",
-                endpoint=f"/v1/stationary-energy-drafts/{draft_run_id}/review",
-                draft_run_id=draft_run_id,
-                user_id=payload.user_id,
-                city_id=None,
-                inventory_id=None,
-                thread_id=None,
-                workflow="stationary_energy_review",
+        with (
+            start_run(
+                run_name="stationary_energy_review_request",
+                experiment_name=climate_advisor_experiment_name(),
+                tags=self._mlflow_tags(
+                    request_kind="stationary_energy_review",
+                    endpoint=f"/v1/stationary-energy-drafts/{draft_run_id}/review",
+                    draft_run_id=draft_run_id,
+                    user_id=payload.user_id,
+                    city_id=None,
+                    inventory_id=None,
+                    thread_id=None,
+                    workflow="stationary_energy_review",
+                ),
+                params={"decision_count": len(payload.decisions)},
             ),
-            params={"decision_count": len(payload.decisions)},
+            workflow_trace(
+                name="stationary_energy_review",
+                inputs={"request": payload},
+                session_id=draft_run_id,
+                user_id=payload.user_id,
+                attributes={
+                    "workflow": "stationary_energy",
+                    "stationary_energy_draft_run_id": str(draft_run_id),
+                },
+            ) as span,
         ):
             log_json_artifact("request/stationary_energy_review_payload.json", payload)
             try:
@@ -798,6 +851,7 @@ class StationaryEnergyDraftService:
                     ok=True,
                     extra={"decision_count": len(payload.decisions)},
                 )
+                finish_workflow_trace(span, response)
                 return response
             except Exception as exc:
                 self._log_mlflow_error(
@@ -832,7 +886,17 @@ class StationaryEnergyDraftService:
             authorization=authorization,
         )
         if draft_run.user_id != payload.user_id:
-            raise HTTPException(status_code=403, detail="Draft run does not belong to user")
+            raise HTTPException(
+                status_code=403, detail="Draft run does not belong to user"
+            )
+        update_current_trace_context(
+            session_id=draft_run.thread_id or draft_run_id,
+            link_run=False,
+            metadata={
+                "thread_id": draft_run.thread_id,
+                "stationary_energy_draft_run_id": str(draft_run_id),
+            },
+        )
         self._require_generation_complete(draft_run)
 
         proposal_by_id = {
@@ -885,9 +949,7 @@ class StationaryEnergyDraftService:
             draft_run_id=draft_run.draft_run_id,
             user_id=payload.user_id,
             status="reviewed",
-            decisions=[
-                to_review_decision_response(decision) for decision in decisions
-            ],
+            decisions=[to_review_decision_response(decision) for decision in decisions],
         )
 
     async def save_draft(
@@ -899,20 +961,32 @@ class StationaryEnergyDraftService:
     ) -> SaveStationaryEnergyDraftResponse:
         """Commit reviewed rows inside an MLflow Climate Advisor run."""
         started_at = time.perf_counter()
-        with start_run(
-            run_name="stationary_energy_save_request",
-            experiment_name=climate_advisor_experiment_name(),
-            tags=self._mlflow_tags(
-                request_kind="stationary_energy_save",
-                endpoint=f"/v1/stationary-energy-drafts/{draft_run_id}/save",
-                draft_run_id=draft_run_id,
-                user_id=payload.user_id,
-                city_id=None,
-                inventory_id=None,
-                thread_id=None,
-                workflow="stationary_energy_save",
+        with (
+            start_run(
+                run_name="stationary_energy_save_request",
+                experiment_name=climate_advisor_experiment_name(),
+                tags=self._mlflow_tags(
+                    request_kind="stationary_energy_save",
+                    endpoint=f"/v1/stationary-energy-drafts/{draft_run_id}/save",
+                    draft_run_id=draft_run_id,
+                    user_id=payload.user_id,
+                    city_id=None,
+                    inventory_id=None,
+                    thread_id=None,
+                    workflow="stationary_energy_save",
+                ),
+                params={"has_authorization": bool(authorization)},
             ),
-            params={"has_authorization": bool(authorization)},
+            workflow_trace(
+                name="stationary_energy_save",
+                inputs={"request": payload},
+                session_id=draft_run_id,
+                user_id=payload.user_id,
+                attributes={
+                    "workflow": "stationary_energy",
+                    "stationary_energy_draft_run_id": str(draft_run_id),
+                },
+            ) as span,
         ):
             log_json_artifact("request/stationary_energy_save_payload.json", payload)
             try:
@@ -926,6 +1000,7 @@ class StationaryEnergyDraftService:
                     response,
                 )
                 self._log_mlflow_duration(started_at=started_at, ok=True)
+                finish_workflow_trace(span, response)
                 return response
             except Exception as exc:
                 self._log_mlflow_error(
@@ -959,7 +1034,17 @@ class StationaryEnergyDraftService:
             authorization=authorization,
         )
         if draft_run.user_id != payload.user_id:
-            raise HTTPException(status_code=403, detail="Draft run does not belong to user")
+            raise HTTPException(
+                status_code=403, detail="Draft run does not belong to user"
+            )
+        update_current_trace_context(
+            session_id=draft_run.thread_id or draft_run_id,
+            link_run=False,
+            metadata={
+                "thread_id": draft_run.thread_id,
+                "stationary_energy_draft_run_id": str(draft_run_id),
+            },
+        )
         self._require_generation_complete(draft_run)
         if not draft_run.review_decisions:
             raise HTTPException(
@@ -1006,7 +1091,10 @@ class StationaryEnergyDraftService:
             pending_decisions=pending_decisions,
             proposal_by_id=proposal_by_id,
         )
-        if notation_rows and COMMIT_NOTATION_KEYS_CAPABILITY not in allowed_capabilities:
+        if (
+            notation_rows
+            and COMMIT_NOTATION_KEYS_CAPABILITY not in allowed_capabilities
+        ):
             raise HTTPException(
                 status_code=403,
                 detail="Stationary Energy notation-key save is not allowed for this draft",

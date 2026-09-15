@@ -406,26 +406,24 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   };
 
   // notation key dropdown options
-  // labels follow the "XX (description)" translation convention — extract the
-  // short code to bold in the dropdown and pair it with its full reason text
   const notationKeyOptions: DropdownOption[] = [
     {
-      label: t("ne").split(" (")[0],
+      label: t("notation-key-short-ne"),
       value: "not-estimated",
       description: t("reason-NE"),
     },
     {
-      label: t("no").split(" (")[0],
+      label: t("notation-key-short-no"),
       value: "no-occurrance",
       description: t("reason-NO"),
     },
     {
-      label: t("c").split(" (")[0],
+      label: t("notation-key-short-c"),
       value: "confidential-information",
       description: t("reason-C"),
     },
     {
-      label: t("ie").split(" (")[0],
+      label: t("notation-key-short-ie"),
       value: "included-elsewhere",
       description: t("reason-IE"),
     },

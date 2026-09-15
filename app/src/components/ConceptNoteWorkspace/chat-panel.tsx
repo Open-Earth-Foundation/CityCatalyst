@@ -1,29 +1,28 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 import {
   Box,
   Flex,
   HStack,
   Icon,
-  Input,
+  Textarea,
   Spinner,
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { keyframes } from "@emotion/react";
 import type { IconType } from "react-icons";
 import { LuArrowUp, LuCircleAlert, LuMessageSquarePlus } from "react-icons/lu";
 import { BsStars } from "react-icons/bs";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { ChatMarkdown } from "./chat-markdown";
 
 import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-components";
 import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import { useConceptNoteChat } from "./use-concept-note-chat";
+import { ChatProgress } from "./chat-progress";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import type { EditController } from "./document-review";
 import type { EditScope } from "@/util/concept-note-edit-types";
@@ -56,41 +55,6 @@ interface ContextStatusNoticeProps {
 }
 
 const CONTEXT_READY_NOTICE_DURATION_MS = 30_000;
-const typingDotBounce = keyframes`
-  0%, 60%, 100% {
-    transform: translateY(0);
-  }
-  30% {
-    transform: translateY(-4px);
-  }
-`;
-
-function TypingIndicator({ label }: { label: string }) {
-  return (
-    <HStack
-      role="status"
-      aria-label={label}
-      data-testid="concept-note-typing-indicator"
-      gap={1}
-      minH="22px"
-    >
-      {[0, 1, 2].map((index) => (
-        <Box
-          as="span"
-          key={index}
-          aria-hidden="true"
-          data-testid="concept-note-typing-dot"
-          boxSize="6px"
-          borderRadius="full"
-          bg="content.secondary"
-          animation={`${typingDotBounce} 900ms ease-in-out ${index * 120}ms infinite`}
-          _motionReduce={{ animation: "none" }}
-        />
-      ))}
-    </HStack>
-  );
-}
-
 function ContextStatusNotice({
   autoDismissAfterMs,
   busy,
@@ -223,11 +187,12 @@ export function ConceptNoteChatPanel({
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [input, setInput] = useState("");
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const {
     error: chatError,
     historyLoading,
     isGenerating,
+    reasoning,
     messages,
     sendMessage: sendChatMessage,
   } = useConceptNoteChat({
@@ -238,6 +203,7 @@ export function ConceptNoteChatPanel({
     onProposal: edits.loadProposal,
   });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
+  const followLatestRef = useRef(true);
   const initiallyScrolledThreadRef = useRef<string | null>(null);
   const contextState = contextStatus.state;
   const hasUploadedEvidence = contextState === "ready";
@@ -250,7 +216,8 @@ export function ConceptNoteChatPanel({
       !threadId ||
       historyLoading ||
       messages.length === 0 ||
-      initiallyScrolledThreadRef.current === threadId
+      (initiallyScrolledThreadRef.current === threadId &&
+        !followLatestRef.current)
     ) {
       return;
     }
@@ -267,7 +234,7 @@ export function ConceptNoteChatPanel({
       initiallyScrolledThreadRef.current = threadId;
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [historyLoading, messages.length, threadId]);
+  }, [historyLoading, messages, reasoning, threadId]);
 
   useEffect(() => {
     if (!composerRequest) {
@@ -289,6 +256,7 @@ export function ConceptNoteChatPanel({
       return;
     }
     setInput("");
+    followLatestRef.current = true;
     await sendChatMessage(content);
   }
 
@@ -367,6 +335,11 @@ export function ConceptNoteChatPanel({
 
       <VStack
         ref={chatScrollRef}
+        onScroll={(event) => {
+          const scroll = event.currentTarget;
+          followLatestRef.current =
+            scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 48;
+        }}
         data-testid="concept-note-chat-scroll"
         align="stretch"
         gap={4}
@@ -387,37 +360,51 @@ export function ConceptNoteChatPanel({
         />
 
         {messages.map((message) => (
-          <Box
-            key={message.id}
-            alignSelf={message.role === "user" ? "end" : "start"}
-            maxW="92%"
-            border="1px solid"
-            borderColor="border.neutral"
-            borderRadius="rounded"
-            bg={message.role === "user" ? "background.neutral" : "base.light"}
-            px={3}
-            py={2.5}
-          >
-            {message.role === "assistant" && message.text ? (
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={assistantMarkdownComponents}
+          <Fragment key={message.id}>
+            {message.role === "assistant" &&
+              message.id === messages.at(-1)?.id && (
+                <ChatProgress
+                  lng={lng}
+                  reasoning={reasoning}
+                  markdownComponents={assistantMarkdownComponents}
+                  isGenerating={isGenerating}
+                />
+              )}
+            {(message.text || message.role === "user") && (
+              <Box
+                alignSelf={message.role === "user" ? "end" : "start"}
+                maxW="92%"
+                border="1px solid"
+                borderColor="border.neutral"
+                borderRadius="rounded"
+                bg={
+                  message.role === "user" ? "background.neutral" : "base.light"
+                }
+                px={3}
+                py={2.5}
               >
-                {message.text}
-              </ReactMarkdown>
-            ) : message.role === "assistant" ? (
-              <TypingIndicator label={t("chat-generating")} />
-            ) : (
-              <Text
-                fontSize="body.sm"
-                lineHeight="22px"
-                color="content.primary"
-                whiteSpace="pre-wrap"
-              >
-                {message.text}
-              </Text>
+                {message.role === "assistant" && message.text ? (
+                  <ChatMarkdown
+                    components={assistantMarkdownComponents}
+                    isStreaming={
+                      isGenerating && message.id === messages.at(-1)?.id
+                    }
+                  >
+                    {message.text}
+                  </ChatMarkdown>
+                ) : message.role === "user" ? (
+                  <Text
+                    fontSize="body.sm"
+                    lineHeight="22px"
+                    color="content.primary"
+                    whiteSpace="pre-wrap"
+                  >
+                    {message.text}
+                  </Text>
+                ) : null}
+              </Box>
             )}
-          </Box>
+          </Fragment>
         ))}
 
         {edits.error && (
@@ -461,8 +448,10 @@ export function ConceptNoteChatPanel({
         flexShrink={0}
         onSubmit={submitMessage}
       >
-        <Flex align="center" gap={3}>
-          <Input
+        <Flex align="end" gap={3}>
+          <Textarea
+            autoresize
+            rows={1}
             data-testid="concept-note-chat-input"
             aria-label={t("chat-input-placeholder")}
             ref={inputRef}
@@ -481,11 +470,26 @@ export function ConceptNoteChatPanel({
             bg="base.light"
             borderColor="border.neutral"
             minH="52px"
+            py={3}
+            lineHeight="22px"
+            overflowWrap="anywhere"
             minW={0}
             flex={1}
             fontSize="14px"
             borderRadius="rounded"
             onChange={(event) => setInput(event.target.value)}
+            onKeyDown={(event) => {
+              if (
+                event.key === "Enter" &&
+                !event.shiftKey &&
+                !event.nativeEvent.isComposing
+              ) {
+                event.preventDefault();
+                if (!event.repeat && !chatDisabled && input.trim()) {
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }
+            }}
           />
           <Button
             type="submit"

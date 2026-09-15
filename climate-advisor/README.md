@@ -331,6 +331,39 @@ separately.
 
 **Server Response (SSE Stream):**
 
+The message stream sends an initial SSE comment and comment heartbeats every
+15 seconds while the agent is silent, including during chapter planning and
+semantic review. These bytes pass through the CityCatalyst chat proxy on the
+existing response; they add no HTTP requests or model calls. Generation remains
+request-bound: a browser disconnect still cancels it. Heartbeats prevent idle
+timeouts but do not provide reconnect or worker-restart recovery.
+
+Concept Note chats also emit `progress` events with an explicit workflow `stage`:
+`preparing`, `planning`, `reviewing`, `chapter_completed`, or `validating`.
+Chapter events include `chapter_title`, `completed`, and `total` for the unlocked
+chapters being checked. These operational updates remain stream metadata;
+the chat activity display uses model text. `reasoning` events carry an `id` identifying the model
+call, a `stage` (`chat`, `planning`, `reviewing`), optional `chapter_title`, and a
+text `delta`. Both the main chat and chapter planner/reviewer stream their model
+calls. The configured OpenAI model returns reasoning summaries through OpenRouter.
+CNB requests explicitly request `reasoning.summary: auto` and allow inclusion
+with `exclude: false`. Providers may still omit readable
+summaries for individual calls; the UI does not synthesize substitute reasoning.
+The adapter accepts the SDK's readable reasoning/summary delta events and excludes
+opaque or encrypted items. No additional model calls generate these summaries.
+
+A request-local sink uses the same bounded stream queue, so concurrent chats
+cannot receive each other's events. The UI shows reasoning only while a response is generating. It clears the text
+on completion, failure, or cancellation; completed messages contain only the
+answer. Before readable model text arrives, the UI shows only a neutral
+"Thinking…" indicator. The compact, expandable activity row previews the latest
+model paragraph immediately, including partial text; it does not substitute
+scripted workflow labels or wait for Markdown headings. Expanded summaries have bounded height and
+remain separate from the answer bubble. Chat math uses KaTeX, buffering unfinished
+formulas during streaming instead of flashing raw LaTeX.
+Summaries are not persisted or replayed after reload. Progress
+and reasoning remain separate from the final answer and edit proposal data.
+
 ```text
 event: message
 data: {"content": "The top climate risks..."}

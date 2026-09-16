@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+from datetime import UTC, datetime
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -10,10 +11,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.middleware.request_context import get_request_id
 from app.models.cnb.concept_note_runs import (
+    ConceptNotePopulationRequest,
     ConceptNoteRunListItemResponse,
     ConceptNoteRunListResponse,
     ConceptNoteRunResponse,
     ConceptNoteStartRequest,
+    ManualConceptNotePopulation,
 )
 from app.models.cnb.concept_note_markdown import (
     ConceptNoteUploadStatusResponse,
@@ -163,6 +166,32 @@ class ConceptNoteRunService:
             user_id=run.user_id,
         )
         return _to_response(run, created=False, uploads=uploads)
+
+    async def update_manual_population(
+        self,
+        *,
+        run_id: UUID,
+        payload: ConceptNotePopulationRequest,
+        requested_user_id: str,
+        authorization: str | None,
+    ) -> ConceptNoteRunResponse:
+        """Persist a user-entered population on this CNB run, never on the city."""
+        run = await self.get_authorized_run(
+            run_id=run_id,
+            requested_user_id=requested_user_id,
+            authorization=authorization,
+        )
+        # Lock and refresh so a concurrent context build cannot overwrite this edit.
+        await self.session.refresh(run, with_for_update=True)
+        summary = dict(run.context_summary or {})
+        if payload.manual_population is None:
+            summary.pop("manual_population", None)
+        else:
+            summary["manual_population"] = payload.manual_population.model_dump()
+        run.context_summary = summary
+        run.updated_at = datetime.now(UTC)
+        await self.session.commit()
+        return _to_response(run, created=False)
 
     async def get_authorized_run(
         self,
@@ -346,9 +375,15 @@ def _to_response(
 ) -> ConceptNoteRunResponse:
     """Serialize one persisted run into the public API contract."""
     list_item = _to_list_item(run)
+    population = (run.context_summary or {}).get("manual_population")
     return ConceptNoteRunResponse(
         **list_item.model_dump(),
         user_id=run.user_id,
+        manual_population=(
+            ManualConceptNotePopulation.model_validate(population)
+            if population is not None
+            else None
+        ),
         uploads=[_to_upload_response(upload) for upload in uploads or []],
         created=created,
         trace_id=run.trace_id,

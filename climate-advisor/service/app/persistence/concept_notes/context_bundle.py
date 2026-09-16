@@ -492,6 +492,11 @@ async def load_agent_context(
                         )
                     ],
                     "cc_context": bundle.cc_context.model_dump(mode="json"),
+                    "manual_population": (
+                        {**run.context_summary["manual_population"], "source": "user_entered"}
+                        if (run.context_summary or {}).get("manual_population")
+                        else None
+                    ),
                     "funder_context": bundle.funder_context,
                     "similar_projects": bundle.similar_projects,
                     "document_context": bundle.document_context,

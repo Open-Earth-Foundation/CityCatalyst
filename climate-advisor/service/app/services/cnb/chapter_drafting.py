@@ -383,6 +383,11 @@ class ConceptNoteChapterDraftService:
                     else {}
                 ),
                 "context_bundle": bundle.model_dump(mode="json"),
+                "manual_population": (
+                    {**run.context_summary["manual_population"], "source": "user_entered"}
+                    if (run.context_summary or {}).get("manual_population")
+                    else None
+                ),
             }
             return run_context, included_sources_from_bundle(bundle)
 

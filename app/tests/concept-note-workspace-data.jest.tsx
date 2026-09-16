@@ -17,11 +17,16 @@ import type { ConceptNoteRun, ConceptNoteUploadResponse } from "@/util/types";
 
 let contextScenario: Pick<
   ConceptNoteRun,
-  "progress_summary" | "uploads"
+  "progress_summary" | "uploads" | "manual_population"
 > | null = null;
+let cityPopulation:
+  { cityId: string; population?: number; year?: number } | undefined;
 let currentUpload: ConceptNoteUploadResponse | undefined;
 let uploading = false;
-const t = (key: string) => key;
+const t = (key: string, values?: { population: string; year: number }) =>
+  key === "population" && values
+    ? `${values.population} residents · ${values.year}`
+    : key;
 const originalFetch = globalThis.fetch;
 const stopStream = jest.fn();
 const startStream = jest.fn(async () => undefined);
@@ -35,6 +40,9 @@ jest.unstable_mockModule("@/hooks/useSSEStream", () => ({
 
 const persistedUploadId = "persisted-upload";
 const refetchRun = jest.fn(async () => undefined);
+const updateManualPopulation = jest.fn(() => ({
+  unwrap: async () => undefined,
+}));
 const retryUpload = jest.fn(() => ({
   unwrap: async () => ({
     filename: "evidence.pdf",
@@ -92,7 +100,15 @@ jest.unstable_mockModule("@/services/api", () => ({
       isError: false,
     }),
     useGetInventoryByCityIdQuery: () => ({ data: undefined }),
-    useGetMostRecentCityPopulationQuery: () => ({ data: undefined }),
+    useGetMostRecentCityPopulationQuery: () => ({
+      data: cityPopulation,
+      isError: false,
+      isLoading: false,
+    }),
+    useUpdateConceptNotePopulationMutation: () => [
+      updateManualPopulation,
+      { isLoading: false },
+    ],
     useGetUserFilesQuery: () => ({ data: [] }),
     useRetryConceptNoteContextBundleMutation: () => [
       jest.fn(),
@@ -169,6 +185,25 @@ function Harness() {
   );
 }
 
+function PopulationHarness() {
+  const { populationLabel, saveManualPopulation } = useConceptNoteWorkspaceData(
+    {
+      cityId: "city-1",
+      lng: "en",
+      runId: "run-1",
+    },
+  );
+  return (
+    <button
+      onClick={() =>
+        void saveManualPopulation({ population: 123456, year: 2024 })
+      }
+    >
+      {populationLabel}
+    </button>
+  );
+}
+
 beforeAll(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   // Chakra recipes are JSON-compatible; jsdom does not provide structuredClone.
@@ -187,6 +222,8 @@ afterAll(() => {
 
 beforeEach(() => {
   contextScenario = null;
+  cityPopulation = undefined;
+  updateManualPopulation.mockClear();
   currentUpload = undefined;
   uploading = false;
   globalThis.fetch = jest.fn(async () => ({
@@ -204,6 +241,30 @@ afterEach(async () => {
 });
 
 describe("useConceptNoteWorkspaceData", () => {
+  it("shows a run-scoped manual population when the city source has no value", async () => {
+    cityPopulation = { cityId: "city-1" };
+    contextScenario = {
+      progress_summary: {},
+      uploads: [],
+      manual_population: null,
+    };
+    await act(async () => root.render(<PopulationHarness />));
+    expect(container.textContent).toBe("population-unavailable");
+
+    contextScenario.manual_population = { population: 123456, year: 2024 };
+    await act(async () => root.render(<PopulationHarness />));
+    expect(container.textContent).toBe("123,456 residents · 2024");
+
+    await act(async () => {
+      container.querySelector("button")!.click();
+    });
+    expect(updateManualPopulation).toHaveBeenCalledWith({
+      cityId: "city-1",
+      runId: "run-1",
+      manualPopulation: { population: 123456, year: 2024 },
+    });
+  });
+
   it("enables the real chat composer after failed A is superseded by ready B, including reload", async () => {
     contextScenario = {
       progress_summary: {},

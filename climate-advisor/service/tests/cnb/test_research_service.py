@@ -138,7 +138,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
 
     monkeypatch.setattr(
         research_service,
-        "start_trace_span",
+        "workflow_trace",
         fake_start_trace_span,
     )
     monkeypatch.setattr(
@@ -223,4 +223,6 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     assert started_run_kwargs[0]["tags"]["module"] == "concept_note_builder"
     assert workflow_span_calls[0]["name"] == "cnb_funding_opportunity_research"
     assert workflow_span_calls[0]["span"].outputs["turns_used"] == 1
-    assert trace_context_updates[0]["session_id"] == bundle.run_id
+    assert "session_id" not in trace_context_updates[0]
+    assert trace_context_updates[0]["client_request_id"] == bundle.run_id
+    assert trace_context_updates[0]["metadata"]["run_id"] == bundle.run_id

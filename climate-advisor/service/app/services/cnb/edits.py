@@ -24,6 +24,7 @@ from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceReposito
 from app.services.cnb.edit_planner import ConceptNoteEditPlanner
 from app.services.cnb.edit_validation import validate_edit_plan
 from app.utils.cnb_observability import record_edit_outcome
+from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
@@ -51,33 +52,45 @@ class ConceptNoteEditService:
         *,
         recent_messages: list[dict[str, str]] | None = None,
     ) -> EditProposalResponse:
-        """Record a metadata-only outcome for an explicit proposal operation."""
-        started = perf_counter()
-        try:
-            result = await self._propose(
-                run,
-                request,
-                run_context,
-                recent_messages=recent_messages,
-            )
-        except EditOperationError as error:
-            record_edit_outcome(
-                run_id=run.run_id,
-                operation="propose",
-                outcome="failed",
-                error_code=error.code,
-            )
-            raise
-        if result.status != "rejected" or result.changes:
-            record_edit_outcome(
-                run_id=run.run_id,
-                proposal_id=result.proposal_id,
-                operation="propose",
-                outcome=result.status,
-                error_code=result.error_code,
-                duration_ms=(perf_counter() - started) * 1000,
-            )
-        return result
+        """Trace proposal inputs, model calls and the resulting proposed changes."""
+        with workflow_trace(
+            name="cnb_chat_edit",
+            inputs={"request": request, "recent_messages": recent_messages},
+            session_id=getattr(run, "thread_id", None) or run.run_id,
+            user_id=run.user_id,
+            attributes={
+                "workflow": "CNB",
+                "interaction": "chat_edit",
+                "concept_note_run_id": str(run.run_id),
+            },
+        ) as span:
+            started = perf_counter()
+            try:
+                result = await self._propose(
+                    run,
+                    request,
+                    run_context,
+                    recent_messages=recent_messages,
+                )
+            except EditOperationError as error:
+                record_edit_outcome(
+                    run_id=run.run_id,
+                    operation="propose",
+                    outcome="failed",
+                    error_code=error.code,
+                )
+                raise
+            if result.status != "rejected" or result.changes:
+                record_edit_outcome(
+                    run_id=run.run_id,
+                    proposal_id=result.proposal_id,
+                    operation="propose",
+                    outcome=result.status,
+                    error_code=result.error_code,
+                    duration_ms=(perf_counter() - started) * 1000,
+                )
+            finish_workflow_trace(span, result, ok=not bool(result.error_code))
+            return result
 
     async def _propose(
         self,

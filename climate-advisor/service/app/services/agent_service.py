@@ -15,10 +15,6 @@ from uuid import UUID
 
 import openai
 from agents import Agent, FunctionTool, ModelSettings, OpenAIChatCompletionsModel
-from openai import AsyncOpenAI
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from app.config import get_settings
 from app.config.settings import RoleModelConfig
 from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.persistence.concept_notes.context_bundle import (
@@ -26,12 +22,12 @@ from app.persistence.concept_notes.context_bundle import (
     ContextBundlePersistenceError,
     load_agent_context,
 )
-from app.services.openrouter_client import build_openrouter_client_options
 from app.services.citycatalyst_client import CityCatalystClient
 from app.services.native_input_catalog_service import (
     ActiveRequestContext,
     NativeInputCatalogService,
 )
+from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.cc_inventory_tool import CCInventoryTool
 from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from app.tools.climate_vector_sync import climate_vector_search
@@ -46,8 +42,11 @@ from app.tools.stationary_energy_start_draft_tools import (
     build_stationary_energy_start_draft_tools,
 )
 from app.utils.agent_tracing import configure_agents_tracing
-from app.utils.cnb_observability import protect_cnb_client
 from app.utils.conversation_observability import traced_conversation_tool
+from openai import AsyncOpenAI
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -131,8 +130,6 @@ class AgentService:
 
         # Initialize the chat client once and expose it to the Agents SDK.
         self.client = self._create_openrouter_client()
-        if self.concept_note_run_id:
-            protect_cnb_client(self.client)
         openai.api_key = self.client.api_key
         openai.base_url = self.client.base_url
         openai.default_headers = self.client.default_headers
@@ -477,11 +474,10 @@ class AgentService:
 
         self.active_instructions = agent_instructions
 
-        if not self.stationary_energy_draft_run_id and not self._has_concept_note_context:
-            tools = [
-                traced_conversation_tool(tool) if isinstance(tool, FunctionTool) else tool
-                for tool in tools
-            ]
+        tools = [
+            traced_conversation_tool(tool) if isinstance(tool, FunctionTool) else tool
+            for tool in tools
+        ]
 
         # Build the Agents SDK object with the finalized instructions and tool list.
         agent = Agent(

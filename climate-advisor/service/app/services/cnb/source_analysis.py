@@ -20,11 +20,6 @@ from agents import (
     RunConfig,
     Runner,
 )
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from openai import AsyncOpenAI
-from pydantic import BaseModel
-
-from app.config import Settings, get_settings
 from app.config.settings import ResearchModelConfig
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from app.models.cnb.context_bundle import (
@@ -46,7 +41,11 @@ from app.utils.concept_note_context import (
     readable_source_heading,
 )
 from app.utils.prompt_budget import count_prompt_tokens
-from app.utils.cnb_observability import protect_cnb_client
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from openai import AsyncOpenAI
+from pydantic import BaseModel
+
+from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -393,9 +392,7 @@ def _resolve_analysis_client(
 ) -> tuple[AsyncOpenAI, bool]:
     """Return an injected client or create one that the caller must close."""
     if client is not None:
-        return (
-            protect_cnb_client(client) if isinstance(client, AsyncOpenAI) else client
-        ), False
+        return client, False
     try:
         options = build_openrouter_client_options(
             settings,
@@ -405,7 +402,7 @@ def _resolve_analysis_client(
         )
     except ValueError as exc:
         raise SourceAnalysisError("source_analysis_unavailable", str(exc)) from exc
-    return protect_cnb_client(AsyncOpenAI(**options.kwargs)), True
+    return AsyncOpenAI(**options.kwargs), True
 
 
 async def _read_partition(

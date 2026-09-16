@@ -31,6 +31,7 @@
   "population-save": "Save",
   "population-invalid": "Enter a whole-number population and a year from 1800 to 2100.",
   "population-save-error": "Population could not be saved. Try again.",
+  "population-draft-running": "Wait for chapter drafting to finish before changing this value.",
   "ghg-inventory": "GHG inventory",
   "not-available": "Not available",
   "inventory-year": "Inventory {{year}}",

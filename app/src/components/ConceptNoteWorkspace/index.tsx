@@ -597,6 +597,7 @@ export function ConceptNoteWorkspace({
                   country={city?.country ?? null}
                   firstCityFile={files[0]?.fileName ?? null}
                   inventoryYear={inventory?.year ?? null}
+                  isDraftRunning={isDraftRunning}
                   isRetryingBundle={retryBundleState.isLoading}
                   isRetryingUpload={retryUploadState.isLoading}
                   isUploading={uploadState.isLoading}

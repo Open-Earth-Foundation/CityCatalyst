@@ -39,6 +39,7 @@ interface ContextTabProps {
   country: string | null;
   firstCityFile: string | null;
   inventoryYear: number | null;
+  isDraftRunning: boolean;
   isRetryingBundle: boolean;
   isRetryingUpload: boolean;
   isUploading: boolean;
@@ -146,6 +147,7 @@ export function ContextTab({
   country,
   firstCityFile,
   inventoryYear,
+  isDraftRunning,
   isRetryingBundle,
   isRetryingUpload,
   isUploading,
@@ -287,6 +289,11 @@ export function ContextTab({
                   <Text fontSize="xs" color="content.tertiary">
                     {t("population-cnb-only")}
                   </Text>
+                  {isDraftRunning && (
+                    <Text fontSize="xs" color="content.tertiary">
+                      {t("population-draft-running")}
+                    </Text>
+                  )}
                   {editingPopulation ? (
                     <form onSubmit={(event) => void savePopulation(event)}>
                       <VStack align="stretch" gap={2}>
@@ -324,6 +331,7 @@ export function ContextTab({
                           <Button
                             type="submit"
                             size="xs"
+                            disabled={isDraftRunning}
                             loading={manualPopulationSaving}
                           >
                             {t("population-save")}
@@ -344,6 +352,7 @@ export function ContextTab({
                       <Button
                         size="xs"
                         variant="outline"
+                        disabled={isDraftRunning}
                         onClick={beginPopulationEdit}
                       >
                         {t(
@@ -356,6 +365,7 @@ export function ContextTab({
                         <Button
                           size="xs"
                           variant="ghost"
+                          disabled={isDraftRunning}
                           loading={manualPopulationSaving}
                           onClick={() => void clearPopulation()}
                         >

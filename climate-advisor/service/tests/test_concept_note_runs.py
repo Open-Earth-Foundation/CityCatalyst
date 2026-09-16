@@ -258,6 +258,48 @@ async def test_manual_population_is_scoped_to_one_run_and_can_be_cleared() -> No
 
 
 @pytest.mark.parametrize(
+    "manual_population",
+    [{"population": 123456, "year": 2024}, None],
+)
+async def test_manual_population_rejects_edits_during_drafting_after_lock(
+    manual_population: dict[str, int] | None,
+) -> None:
+    """Reject edits when drafting starts before the run lock is acquired."""
+    payload = _start_request()
+    run = _persisted_run(
+        payload,
+        request_fingerprint=_request_fingerprint(payload),
+        context_summary={"manual_population": {"population": 100, "year": 2020}},
+    )
+    service, _, _, _ = _run_service()
+    service.get_authorized_run = AsyncMock(return_value=run)
+
+    async def refresh_with_running_draft(*_args: object, **_kwargs: object) -> None:
+        run.context_summary = {
+            **run.context_summary,
+            "draft_document": {"status": "running"},
+        }
+
+    service.session.refresh.side_effect = refresh_with_running_draft
+
+    with pytest.raises(HTTPException) as exc_info:
+        await service.update_manual_population(
+            run_id=run.run_id,
+            payload=ConceptNotePopulationRequest(manual_population=manual_population),
+            requested_user_id=run.user_id,
+            authorization="Bearer token",
+        )
+
+    assert exc_info.value.status_code == 409
+    assert run.context_summary["manual_population"] == {
+        "population": 100,
+        "year": 2020,
+    }
+    service.session.refresh.assert_awaited_once_with(run, with_for_update=True)
+    service.session.commit.assert_not_awaited()
+
+
+@pytest.mark.parametrize(
     "value",
     [
         {"population": -1, "year": 2024},

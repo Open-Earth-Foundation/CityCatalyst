@@ -30,6 +30,8 @@
  *         description: City access denied
  *       404:
  *         description: Run not found
+ *       409:
+ *         description: Chapter drafting is in progress
  */
 import createHttpError from "http-errors";
 import { z } from "zod";

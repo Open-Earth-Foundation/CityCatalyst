@@ -175,15 +175,21 @@ class ConceptNoteRunService:
         requested_user_id: str,
         authorization: str | None,
     ) -> ConceptNoteRunResponse:
-        """Persist a user-entered population on this CNB run, never on the city."""
+        """Persist run-only population unless chapter drafting is active."""
         run = await self.get_authorized_run(
             run_id=run_id,
             requested_user_id=requested_user_id,
             authorization=authorization,
         )
-        # Lock and refresh so a concurrent context build cannot overwrite this edit.
+        # Lock and refresh before checking draft state or updating run metadata.
         await self.session.refresh(run, with_for_update=True)
         summary = dict(run.context_summary or {})
+        draft = summary.get("draft_document")
+        if isinstance(draft, dict) and draft.get("status") == "running":
+            raise HTTPException(
+                status_code=409,
+                detail="Wait for chapter drafting to finish before changing population",
+            )
         if payload.manual_population is None:
             summary.pop("manual_population", None)
         else:

@@ -901,6 +901,8 @@ stored in the run's `context_summary`, returned by the run detail API, and
 provided to chat and chapter drafting as `user_entered` data. It stays separate
 from the CityCatalyst population record and `cc_context`; the CityCatalyst
 proxy is `PATCH /api/v1/concept-notes/{runId}/population?city_id=...`.
+Updates return `409` while chapter drafting is running so every generated
+chapter uses the same population snapshot.
 
 `POST /v1/concept-notes/{run_id}/duplicate` requires `Idempotency-Key` and
 creates a new run and empty chat. It copies current chapter content, context, and

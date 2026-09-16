@@ -96,7 +96,22 @@ function ContextCard({
       p={3}
     >
       <VStack align="stretch" gap={2} h="full">
-        <ContextSectionLabel>{label}</ContextSectionLabel>
+        <HStack justify="space-between" align="start" gap={2}>
+          <ContextSectionLabel>{label}</ContextSectionLabel>
+          {action && (
+            <Button
+              size="xs"
+              variant="outline"
+              flexShrink={0}
+              textTransform="none"
+              letterSpacing="normal"
+              disabled={action.disabled}
+              onClick={action.onClick}
+            >
+              {action.label}
+            </Button>
+          )}
+        </HStack>
         <ContextStatusBadge label={status} tone={tone} />
         <Text
           fontFamily="heading"
@@ -118,18 +133,6 @@ function ContextCard({
             </Text>
           ))}
         </VStack>
-        {action && (
-          <Button
-            alignSelf="start"
-            mt="auto"
-            size="sm"
-            variant="outline"
-            disabled={action.disabled}
-            onClick={action.onClick}
-          >
-            {action.label}
-          </Button>
-        )}
       </VStack>
     </Box>
   );

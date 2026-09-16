@@ -245,7 +245,7 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
     page.getByText("European Climate Fund", { exact: true }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "View or change funding", exact: true })
+    .getByRole("button", { name: "Change", exact: true })
     .click();
   await dialog
     .getByRole("button", { name: /Global Adaptation Foundation/ })
@@ -266,7 +266,7 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
     expected_funding_opportunity_id: opportunityId,
   });
   await page
-    .getByRole("button", { name: "View or change funding", exact: true })
+    .getByRole("button", { name: "Change", exact: true })
     .click();
   await dialog
     .getByRole("button", { name: "Clear selection", exact: true })

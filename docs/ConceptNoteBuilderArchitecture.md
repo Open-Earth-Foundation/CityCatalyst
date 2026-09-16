@@ -1748,7 +1748,7 @@ workflow is in before deciding what to do next.
 
 ### Funding selection in the workspace
 
-The Context tab's **Browse funders** / **View or change funding** action opens a
+The Context tab's **Browse funders** / **Change** action in the funder card's upper-right corner opens a
 searchable catalogue of every managed funder, including profiles without programmes
 or templates. The inspector shows stated and derived profile facts, programme
 eligibility and award information, and the associated template's ordered chapters

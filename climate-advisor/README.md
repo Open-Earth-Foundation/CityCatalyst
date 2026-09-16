@@ -331,6 +331,13 @@ separately.
 
 **Server Response (SSE Stream):**
 
+The message stream sends an initial SSE comment and comment heartbeats every
+15 seconds while the agent is silent, including during chapter planning and
+semantic review. These bytes pass through the CityCatalyst chat proxy on the
+existing response; they add no HTTP requests or model calls. Generation remains
+request-bound: a browser disconnect still cancels it. Heartbeats prevent idle
+timeouts but do not provide reconnect or worker-restart recovery.
+
 ```text
 event: message
 data: {"content": "The top climate risks..."}

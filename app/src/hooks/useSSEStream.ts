@@ -234,6 +234,8 @@ export function useSSEStream(
 
             try {
               const event = parseSSEEvent(eventText);
+              // SSE comments keep the connection alive without an application event.
+              if (!event.type && event.data === undefined) continue;
               await handleSSEEvent(event);
             } catch (error) {
               logger.error({ error, eventText }, "Failed to parse SSE event");

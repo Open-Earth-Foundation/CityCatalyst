@@ -1746,6 +1746,46 @@ Always-on context should include:
 This is crucial because the agent should never need to ask a tool what state the
 workflow is in before deciding what to do next.
 
+### Funding selection in the workspace
+
+The Context tab's **Browse funders** / **View or change funding** action opens a
+searchable catalogue of every managed funder, including profiles without programmes
+or templates. The inspector shows stated and derived profile facts, programme
+eligibility and award information, and the associated template's ordered chapters
+and required fields. The managed schema has one template per programme; selecting
+a programme selects that compatible template. Changing the funder clears the
+pending programme and template before saving.
+
+`GET /v1/concept-notes/{run_id}/funding-catalogue` reads the shared CNB reference
+database after run ownership and current city-access checks. It returns the complete
+curated catalogue for client-side search, without ranking or omitting incomplete
+profiles. `PATCH /v1/concept-notes/{run_id}/application-context` validates the full
+selection and expected previous identifiers, then persists the IDs on the CA run
+and replaces the bundle's funding context. City and uploaded-source context remain
+available. The corresponding CityCatalyst proxy routes and RTK cache invalidation
+refresh the selection, draft review state, and pending proposals.
+
+Funding changes are rejected during active context assembly, drafting, or edit
+planning. For an existing draft, the user must acknowledge another review: chapter
+text and revision history are retained, confirmations and prior validation results
+are cleared, pending edit proposals become stale, and previous project matches are
+removed. Chapter structure is retained and must be checked against the new template.
+Reference-store review invalidation commits before the CA selection; a failed CA
+commit keeps the old choice but conservatively requires another draft review.
+
+Focused verification:
+
+```bash
+# From climate-advisor/service
+python -m pytest tests/cnb/test_funding_selection.py tests/cnb/test_application_context.py
+# From app, against a running local app and authenticated test-user storage state
+CNB_TEST_URL=http://localhost:3000 CNB_AUTH_STATE=playwright/.auth/user.json npx playwright test --config e2e/funding.playwright.config.ts
+```
+
+The browser test exercises the real workspace with controlled API responses;
+the Python tests exercise catalogue joins, persistence, and invalidation in test
+databases. Neither test starts an LLM request.
+
 ### Context Bundle Build Responsibilities
 
 Context bundle building is not an agent tool group. `ContextBundleService`

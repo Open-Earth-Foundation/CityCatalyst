@@ -1,0 +1,355 @@
+"""Database-backed funding browsing, persistence, and review invalidation contracts."""
+
+from uuid import UUID, uuid4
+from types import SimpleNamespace
+from unittest.mock import AsyncMock
+
+import pytest
+from fastapi import HTTPException
+from pydantic import ValidationError
+from sqlalchemy import select
+
+from app.models.cnb.funding_catalogue import FundingSelectionRequest
+from app.models.db.cnb_reference import (
+    CnbFunder,
+    CnbFundingOpportunity,
+    CnbFunderTemplate,
+)
+from app.models.db.cnb_workspace import (
+    ConceptNoteChapter,
+    ConceptNoteChapterRevision,
+    ConceptNoteChapterValidation,
+)
+from app.models.db.cnb_edit import ConceptNoteEditProposal
+from app.services.cnb.application_context import ConceptNoteApplicationContextService
+from app.services.cnb.chapter_drafting import ConceptNoteChapterDraftService
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from app.models.db.concept_note import ConceptNoteRun, ConceptNoteContextBundle
+from app.services.cnb.funding_catalogue import load_funding_catalogue
+from app.services.cnb.funding_selection import save_funding_selection
+from tests.test_concept_note_lifecycle import _ca_session, _workspace_repository
+
+
+async def _seed(factory: async_sessionmaker[AsyncSession]) -> tuple[UUID, UUID, UUID]:
+    """Create two funders, including a funder with no programme or template."""
+    first, second, opportunity_id, template_id = (uuid4() for _ in range(4))
+    async with factory() as session, session.begin():
+        session.add_all(
+            [
+                CnbFunder(
+                    funder_id=first,
+                    name="Alpha Climate Fund",
+                    country="Poland",
+                    profile={"stated": {"priority": "Clean transport"}},
+                ),
+                CnbFunder(funder_id=second, name="Beta Foundation", profile={}),
+            ]
+        )
+        await session.flush()
+        session.add(
+            CnbFundingOpportunity(
+                funding_opportunity_id=opportunity_id,
+                funder_id=first,
+                name="Urban grants",
+                source_run_id="review-1",
+                source_record_ref="programme-1",
+                min_award=10000,
+                currency="EUR",
+                summary="Grants for cities",
+            )
+        )
+        await session.flush()
+        session.add(
+            CnbFunderTemplate(
+                template_id=template_id,
+                funding_opportunity_id=opportunity_id,
+                template_name="Urban grant application",
+                chapter_schema=[
+                    {
+                        "chapter_ref": "summary",
+                        "title": "Project summary",
+                        "required": True,
+                    }
+                ],
+                required_fields=["budget"],
+            )
+        )
+    return first, second, opportunity_id
+
+
+async def _run(session: AsyncSession) -> ConceptNoteRun:
+    """Persist an unconfigured run with a ready source bundle."""
+    run = ConceptNoteRun(
+        run_id=uuid4(),
+        user_id="owner",
+        name="Krakow transport",
+        city_id=str(uuid4()),
+        status="active",
+        workflow_step="assembling_context",
+        context_summary={"context_bundle": {"status": "ready"}},
+        permission_summary={},
+        idempotency_key=uuid4(),
+        request_fingerprint="a" * 64,
+    )
+    session.add(run)
+    await session.flush()
+    session.add(
+        ConceptNoteContextBundle(
+            run_id=run.run_id,
+            context_bundle={
+                "cc_context": {"city": {"name": "Krakow"}},
+                "similar_projects": [{"name": "Old match"}],
+            },
+        )
+    )
+    await session.commit()
+    return run
+
+
+def _selection(
+    funder=None,
+    opportunity=None,
+    previous_funder=None,
+    previous_opportunity=None,
+    acknowledge=False,
+):
+    return FundingSelectionRequest(
+        funder_id=funder,
+        selected_funding_opportunity_id=opportunity,
+        expected_funder_id=previous_funder,
+        expected_funding_opportunity_id=previous_opportunity,
+        acknowledge_draft_review=acknowledge,
+    )
+
+
+async def test_catalogue_includes_all_funders_and_nested_template():
+    async with _workspace_repository() as (_, factory):
+        first, second, opportunity_id = await _seed(factory)
+        result = await load_funding_catalogue(factory)
+        assert [item.id for item in result.funders] == [first, second]
+        assert result.funders[0].profile["stated"]["priority"] == "Clean transport"
+        opportunity = result.funders[0].opportunities[0]
+        assert opportunity.id == opportunity_id
+        assert opportunity.template.required_fields == ["budget"]
+        assert opportunity.template.chapter_schema[0]["title"] == "Project summary"
+        assert result.funders[1].opportunities == []
+
+
+async def test_selection_persists_on_reload_switches_and_clears_context():
+    async with _workspace_repository() as (_, factory), _ca_session() as session:
+        first, second, opportunity_id = await _seed(factory)
+        run = await _run(session)
+        result = await save_funding_selection(
+            session, run, _selection(first, opportunity_id), reference_factory=factory
+        )
+        assert result.funder.id == first
+        assert result.template.name == "Urban grant application"
+        session.expire_all()
+        await session.refresh(run)
+        assert run.funder_id == first
+        assert run.selected_funding_opportunity_id == opportunity_id
+        bundle = await session.get(ConceptNoteContextBundle, run.run_id)
+        assert (
+            bundle.context_bundle["funder_context"]["funder"]["name"]
+            == "Alpha Climate Fund"
+        )
+        assert bundle.context_bundle["similar_projects"] == []
+        assert bundle.context_bundle["cc_context"]["city"]["name"] == "Krakow"
+        result = await save_funding_selection(
+            session,
+            run,
+            _selection(
+                second, previous_funder=first, previous_opportunity=opportunity_id
+            ),
+            reference_factory=factory,
+        )
+        assert result.funder.id == second
+        assert result.opportunity is None and result.template is None
+        result = await save_funding_selection(
+            session, run, _selection(previous_funder=second), reference_factory=factory
+        )
+        assert result.funder is None
+        assert bundle.context_bundle["funder_context"] is None
+
+
+async def test_rejects_incompatible_programme_and_stale_selection_without_saving():
+    async with _workspace_repository() as (_, factory), _ca_session() as session:
+        first, second, opportunity_id = await _seed(factory)
+        run = await _run(session)
+        with pytest.raises(HTTPException) as invalid:
+            await save_funding_selection(
+                session,
+                run,
+                _selection(second, opportunity_id),
+                reference_factory=factory,
+            )
+        assert invalid.value.status_code == 422
+        assert run.funder_id is None
+        with pytest.raises(HTTPException) as stale:
+            await save_funding_selection(
+                session,
+                run,
+                _selection(first, opportunity_id, previous_funder=second),
+                reference_factory=factory,
+            )
+        assert stale.value.status_code == 409
+        assert run.funder_id is None
+
+
+async def test_existing_draft_requires_acknowledgement_and_preserves_text():
+    async with _workspace_repository() as (_, factory), _ca_session() as session:
+        first, _, opportunity_id = await _seed(factory)
+        run = await _run(session)
+        chapter_id, revision_id = uuid4(), uuid4()
+        async with factory() as reference, reference.begin():
+            reference.add(
+                ConceptNoteChapter(
+                    chapter_id=chapter_id,
+                    run_id=run.run_id,
+                    title="Project summary",
+                    position=0,
+                    status="ready",
+                    user_locked=True,
+                )
+            )
+            await reference.flush()
+            reference.add(
+                ConceptNoteChapterRevision(
+                    revision_id=revision_id,
+                    chapter_id=chapter_id,
+                    revision_number=1,
+                    author_type="user",
+                    change_type="draft",
+                    body_markdown="Keep this project text.",
+                )
+            )
+            await reference.flush()
+            chapter = await reference.get(ConceptNoteChapter, chapter_id)
+            chapter.confirmed_revision_id = revision_id
+            reference.add(
+                ConceptNoteChapterValidation(
+                    chapter_id=chapter_id,
+                    validated_revision_id=revision_id,
+                    validation_input_fingerprint="a" * 64,
+                    status="ready",
+                    findings=[],
+                )
+            )
+            proposal_id = uuid4()
+            reference.add(
+                ConceptNoteEditProposal(
+                    proposal_id=proposal_id,
+                    run_id=run.run_id,
+                    actor_user_id="owner",
+                    idempotency_key=uuid4(),
+                    request_fingerprint="b" * 64,
+                    instruction="Use the former funder's priorities",
+                    scope={},
+                    base_revisions={},
+                    changes=[],
+                    status="proposed",
+                )
+            )
+        with pytest.raises(HTTPException) as unconfirmed:
+            await save_funding_selection(
+                session,
+                run,
+                _selection(first, opportunity_id),
+                reference_factory=factory,
+            )
+        assert unconfirmed.value.status_code == 409
+        await save_funding_selection(
+            session,
+            run,
+            _selection(first, opportunity_id, acknowledge=True),
+            reference_factory=factory,
+        )
+        async with factory() as reference:
+            chapter = await reference.get(ConceptNoteChapter, chapter_id)
+            revision = await reference.get(ConceptNoteChapterRevision, revision_id)
+            assert chapter.status == "needs_review"
+            assert chapter.user_locked is False
+            assert chapter.confirmed_revision_id is None
+            assert revision.body_markdown == "Keep this project text."
+
+            assert (
+                await reference.scalar(
+                    select(ConceptNoteChapterValidation).where(
+                        ConceptNoteChapterValidation.chapter_id == chapter_id
+                    )
+                )
+                is None
+            )
+            assert (
+                await reference.get(ConceptNoteEditProposal, proposal_id)
+            ).status == "stale"
+
+
+@pytest.mark.parametrize(
+    "section,status", [("context_bundle", "building"), ("draft_document", "running")]
+)
+async def test_selection_is_blocked_during_generation(section, status):
+    async with _workspace_repository() as (_, factory), _ca_session() as session:
+        first, _, opportunity_id = await _seed(factory)
+        run = await _run(session)
+        run.context_summary = {section: {"status": status}}
+        await session.commit()
+        with pytest.raises(HTTPException) as busy:
+            await save_funding_selection(
+                session,
+                run,
+                _selection(first, opportunity_id),
+                reference_factory=factory,
+            )
+        assert busy.value.status_code == 409
+        assert run.funder_id is None
+
+
+def test_opportunity_requires_funder():
+    with pytest.raises(ValidationError):
+        _selection(opportunity=uuid4())
+
+
+async def test_catalogue_empty_and_database_unavailable():
+    async with _workspace_repository() as (_, factory):
+        assert (await load_funding_catalogue(factory)).funders == []
+
+    def unavailable():
+        raise RuntimeError("Database unavailable")
+
+    with pytest.raises(HTTPException) as failure:
+        await load_funding_catalogue(unavailable)
+    assert failure.value.status_code == 503
+
+
+async def test_drafting_reloads_current_funding_before_seeding_chapters():
+    async with _workspace_repository() as (_, factory), _ca_session() as session:
+        first, second, opportunity_id = await _seed(factory)
+        run = await _run(session)
+        await save_funding_selection(
+            session, run, _selection(first, opportunity_id), reference_factory=factory
+        )
+        service = object.__new__(ConceptNoteChapterDraftService)
+        service._ca_session_factory = async_sessionmaker(
+            session.bind, expire_on_commit=False
+        )
+        service._application_context = ConceptNoteApplicationContextService(
+            session_factory=factory
+        )
+        service._workspace = SimpleNamespace(
+            ensure_template_chapters=AsyncMock(),
+            list_chapters=AsyncMock(return_value=[]),
+        )
+        stale_run = SimpleNamespace(
+            run_id=run.run_id,
+            user_id=run.user_id,
+            funder_id=second,
+            selected_funding_opportunity_id=None,
+        )
+        result, build_id = await service.start(stale_run)
+        assert result.status == "running"
+        assert build_id is not None
+        chapters = service._workspace.ensure_template_chapters.await_args.kwargs[
+            "chapters"
+        ]
+        assert chapters[0].title == "Project summary"

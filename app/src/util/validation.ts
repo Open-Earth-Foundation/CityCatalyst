@@ -449,3 +449,18 @@ export const nativeInputCatalogReconciliationRequest = z.object({
 export type NativeInputCatalogReconciliationRequest = z.infer<
   typeof nativeInputCatalogReconciliationRequest
 >;
+export const conceptNoteFundingSelectionRequest = z
+  .object({
+    funder_id: z.string().uuid().nullable(),
+    selected_funding_opportunity_id: z.string().uuid().nullable(),
+    expected_funder_id: z.string().uuid().nullable(),
+    expected_funding_opportunity_id: z.string().uuid().nullable(),
+    acknowledge_draft_review: z.boolean().default(false),
+  })
+  .strict()
+  .refine(
+    (value) =>
+      value.funder_id !== null ||
+      value.selected_funding_opportunity_id === null,
+    { message: "A funding opportunity requires a funder" },
+  );

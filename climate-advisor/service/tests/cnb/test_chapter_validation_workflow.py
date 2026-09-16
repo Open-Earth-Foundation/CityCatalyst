@@ -160,7 +160,9 @@ async def test_workflow_persists_the_validated_fingerprint() -> None:
         validated_at=datetime.now(UTC),
         findings=[],
     )
-    run = SimpleNamespace(run_id=uuid4(), workflow_step="editing_document")
+    run = SimpleNamespace(
+        run_id=uuid4(), user_id="user-1", workflow_step="editing_document"
+    )
 
     response = await workflow.validate(run=run, chapter_id=context.target.chapter_id)
 
@@ -184,7 +186,9 @@ async def test_workflow_maps_post_llm_fingerprint_race_to_409() -> None:
 
     with pytest.raises(ChapterValidationWorkflowError) as exc_info:
         await workflow.validate(
-            run=SimpleNamespace(run_id=uuid4(), workflow_step="editing_document"),
+            run=SimpleNamespace(
+                run_id=uuid4(), user_id="user-1", workflow_step="editing_document"
+            ),
             chapter_id=context.target.chapter_id,
         )
 
@@ -208,7 +212,9 @@ async def test_workflow_rejects_template_change_during_validation() -> None:
 
     with pytest.raises(ChapterValidationWorkflowError) as exc_info:
         await workflow.validate(
-            run=SimpleNamespace(run_id=uuid4(), workflow_step="editing_document"),
+            run=SimpleNamespace(
+                run_id=uuid4(), user_id="user-1", workflow_step="editing_document"
+            ),
             chapter_id=context.target.chapter_id,
         )
 
@@ -227,7 +233,9 @@ async def test_invalid_assignments_never_persist_a_validation_result() -> None:
 
     with pytest.raises(ChapterValidationTemplateError):
         await workflow.validate(
-            run=SimpleNamespace(run_id=uuid4(), workflow_step="editing_document"),
+            run=SimpleNamespace(
+                run_id=uuid4(), user_id="user-1", workflow_step="editing_document"
+            ),
             chapter_id=context.target.chapter_id,
         )
 
@@ -241,7 +249,9 @@ async def test_workflow_rejects_disallowed_state() -> None:
 
     with pytest.raises(ChapterValidationWorkflowError) as exc_info:
         await workflow.validate(
-            run=SimpleNamespace(run_id=uuid4(), workflow_step="interviewing"),
+            run=SimpleNamespace(
+                run_id=uuid4(), user_id="user-1", workflow_step="interviewing"
+            ),
             chapter_id=uuid4(),
         )
 
@@ -257,7 +267,9 @@ async def test_workflow_requires_application_template() -> None:
 
     with pytest.raises(ChapterValidationWorkflowError) as exc_info:
         await workflow.validate(
-            run=SimpleNamespace(run_id=uuid4(), workflow_step="editing_document"),
+            run=SimpleNamespace(
+                run_id=uuid4(), user_id="user-1", workflow_step="editing_document"
+            ),
             chapter_id=uuid4(),
         )
 
@@ -281,7 +293,9 @@ async def test_workflow_maps_template_storage_failures_to_503(
 
     with pytest.raises(ChapterValidationWorkflowError) as exc_info:
         await workflow.validate(
-            run=SimpleNamespace(run_id=uuid4(), workflow_step="editing_document"),
+            run=SimpleNamespace(
+                run_id=uuid4(), user_id="user-1", workflow_step="editing_document"
+            ),
             chapter_id=uuid4(),
         )
 

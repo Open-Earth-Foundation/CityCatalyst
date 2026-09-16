@@ -119,7 +119,6 @@ async def start_concept_note_run(
         }
         log_tags(correlation_tags)
         update_current_trace_context(
-            session_id=response.run_id,
             tags={
                 "workflow": "CNB",
                 "interaction": interaction.value,

@@ -312,8 +312,13 @@ def start_trace_span(
     span_type: str,
     inputs: object | None = None,
     attributes: Mapping[str, object] | None = None,
+    link_run: bool = True,
 ) -> Iterator[Any | None]:
-    """Start one best-effort MLflow span inside the active trace context."""
+    """Start a best-effort span, optionally preserving the enclosing run link.
+
+    Nested workflow operations use link_run=False so their run does not replace
+    the conversation root's mlflow.sourceRun metadata.
+    """
     if not _INITIALIZED or mlflow is None:
         yield None
         return
@@ -337,7 +342,7 @@ def start_trace_span(
 
     if inputs is not None:
         _set_span_value(span, "set_inputs", inputs, name=name)
-    if _current_run() is not None:
+    if link_run and _current_run() is not None:
         update_current_trace_context()
 
     exit_exception_type = None
@@ -756,8 +761,12 @@ def update_current_trace_context(
     client_request_id: object | None = None,
     tags: Mapping[str, object] | None = None,
     metadata: Mapping[str, object] | None = None,
+    link_run: bool = True,
 ) -> bool:
-    """Attach session and request context to the current active MLflow trace."""
+    """Attach session/request context, optionally preserving the trace's run link.
+
+    Use link_run=False when enriching a conversation from a nested operation.
+    """
     if not _INITIALIZED or mlflow is None:
         return False
 
@@ -781,7 +790,7 @@ def update_current_trace_context(
         trace_metadata["mlflow.trace.session"] = str(session_id)
     if user_id is not None:
         trace_metadata["mlflow.trace.user"] = str(user_id)
-    if context := _current_run():
+    if link_run and (context := _current_run()):
         trace_metadata["mlflow.sourceRun"] = context.run_id
     try:
         update_trace(

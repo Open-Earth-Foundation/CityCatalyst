@@ -31,6 +31,7 @@ from app.services.cnb.chapter_validation import (
     ConceptNoteChapterValidationService,
     build_chapter_validation_request,
 )
+from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -132,32 +133,45 @@ class ConceptNoteChapterValidationWorkflowService:
             template_fingerprint=template_fingerprint,
         )
 
-        # Step 3: run both LLM passes against the fingerprinted snapshot.
-        decision = await self._validator.validate(
-            build_chapter_validation_request(context, template=template)
-        )
-
-        # Step 4: recheck the independently stored template before publishing.
-        latest_template = await self._load_template(run=run, chapter_id=chapter_id)
-        if (
-            latest_template is None
-            or calculate_application_template_fingerprint(latest_template)
-            != template_fingerprint
-        ):
-            raise ChapterValidationWorkflowError(
-                "chapter_revision_changed",
-                409,
-                REVISION_CHANGED_MESSAGE,
+        with workflow_trace(
+            name="cnb_chapter_validation",
+            inputs={"chapter_id": str(chapter_id)},
+            session_id=getattr(run, "thread_id", None) or run.run_id,
+            user_id=run.user_id,
+            attributes={
+                "workflow": "CNB",
+                "interaction": "chapter_validation",
+                "concept_note_run_id": str(run.run_id),
+            },
+        ) as span:
+            # Step 3: run both LLM passes against the fingerprinted snapshot.
+            decision = await self._validator.validate(
+                build_chapter_validation_request(context, template=template)
             )
 
-        # Step 5: recheck workspace inputs and publish result/status together.
-        stored = await self._persist_decision(
-            run=run,
-            chapter_id=chapter_id,
-            template_fingerprint=template_fingerprint,
-            decision=decision,
-        )
-        return chapter_validation_response(stored)
+            # Step 4: recheck the independently stored template before publishing.
+            latest_template = await self._load_template(run=run, chapter_id=chapter_id)
+            if (
+                latest_template is None
+                or calculate_application_template_fingerprint(latest_template)
+                != template_fingerprint
+            ):
+                raise ChapterValidationWorkflowError(
+                    "chapter_revision_changed",
+                    409,
+                    REVISION_CHANGED_MESSAGE,
+                )
+
+            # Step 5: recheck workspace inputs and publish result/status together.
+            stored = await self._persist_decision(
+                run=run,
+                chapter_id=chapter_id,
+                template_fingerprint=template_fingerprint,
+                decision=decision,
+            )
+            response = chapter_validation_response(stored)
+            finish_workflow_trace(span, response)
+            return response
 
     async def _load_validation_context(
         self,

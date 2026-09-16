@@ -48,6 +48,7 @@ class ContextBundleBuildSnapshot:
     uploads: list[ConceptNoteUploadSnapshot]
     already_current: bool
     previous_sources: list[SelectedSource] = field(default_factory=list)
+    thread_id: UUID | None = None
 
 
 @dataclass(frozen=True)
@@ -152,6 +153,7 @@ async def begin_build(
                 uploads=ready_uploads,
                 already_current=already_current,
                 previous_sources=previous_sources,
+                thread_id=run.thread_id,
             )
     except ContextBundlePersistenceError:
         raise

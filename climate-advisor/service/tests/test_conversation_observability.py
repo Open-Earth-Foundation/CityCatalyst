@@ -299,6 +299,11 @@ def test_workflow_compacts_responses_prompts_and_records_handled_failure(trackin
         attributes={"workflow": "CNB"},
     ) as root:
         trace_id = root.trace_id
+        mlflow_logging.update_current_trace_context(
+            client_request_id="research-1",
+            tags={"workflow": "cnb_funding_opportunity_research"},
+            metadata={"run_id": "research-1"},
+        )
         for _ in range(2):
             with mlflow.start_span(name="Responses", span_type="CHAT_MODEL") as model:
                 model.set_inputs(provider_input)
@@ -310,6 +315,13 @@ def test_workflow_compacts_responses_prompts_and_records_handled_failure(trackin
         )
     mlflow.flush_trace_async_logging()
     trace = client.get_trace(trace_id)
+    assert "mlflow.trace.session" not in trace.info.trace_metadata
+    assert trace.info.trace_metadata["run_id"] == "research-1"
+    assert trace.info.tags["workflow"] == "cnb_funding_opportunity_research"
+    assert client.search_traces(
+        experiment_ids=[trace.info.experiment_id],
+        filter_string="metadata.`mlflow.trace.session` = 'research-1'",
+    ) == []
     root = next(span for span in trace.data.spans if span.parent_id is None)
     assert len(root.inputs["system_prompts"]) == 1
     assert root.inputs["program"] == "Example"

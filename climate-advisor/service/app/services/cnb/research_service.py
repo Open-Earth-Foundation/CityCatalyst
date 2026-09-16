@@ -119,7 +119,6 @@ def run_funding_opportunity_research(
                 },
             ) as workflow_span:
                 update_current_trace_context(
-                    session_id=run_id,
                     client_request_id=run_id,
                     tags={
                         "workflow": "cnb_funding_opportunity_research",

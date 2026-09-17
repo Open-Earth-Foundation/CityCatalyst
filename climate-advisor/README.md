@@ -579,8 +579,13 @@ orchestrator and agentic-flow model settings, provider base URLs, retry and
 timeout settings, Stationary Energy review chat-context prompt budgets, and the
 CNB source reader/synthesizer roles, chapter drafter, gap-impact reviewer,
 chat-edit planner, and partition/prompt/concurrency limits. Chat-edit planning
-runs one model call per unlocked chapter with at most five calls concurrently,
-then combines and validates one review proposal. The chapter drafter uses GPT-5.6
+uses one document agent with `search_draft`, `read_chapter`, and `propose_edits`.
+The tools resolve exact occurrences and validate replacements immediately so the
+agent can correct a failed selection. Independent semantic review then checks
+only affected chapters, with at most five reviews concurrently. The loop is
+limited to 12 model turns and the complete operation to 180 seconds by
+`generation.prompt_budget.cnb_edits.max_agent_turns` and `timeout_seconds`.
+The chapter drafter uses GPT-5.6
 Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra and the
 chat-edit planner uses GPT-5.6 Sol, both with medium reasoning.
 
@@ -834,10 +839,16 @@ the chapter is saved; mismatches fail generation rather than producing a chapter
 that can be incorrectly marked Ready.
 
 Chat creates durable edit proposals; only explicit web review applies changes.
-The LLM planner and independent LLM reviewer determine meaning, factual support,
-and which occurrences belong together. Python verifies exact anchors, source
-identities, user quotes, required headings, and gap markers; it does not compare
-numeric tokens, override semantic judgments, or add replacements after review.
+The LLM planner selects contextual matches or an explicit all-match replacement;
+Python owns occurrence IDs, revision-bound offsets, and the minimal displayed
+diff. Ambiguous selections and structural failures return to the agent for
+correction before independent LLM review of meaning and factual support. Python
+verifies exact anchors, source identities, user quotes, required headings, and
+gap markers; it does not compare numeric tokens, override semantic judgments,
+or add replacements after review. All-match operations exclude locked chapters,
+template headings, and protected information markers and persist visible counts
+with the proposal. Filling a complete, matching information gap still uses the
+existing provenance and gap-resolution rules.
 Review supports inline decisions and Accept all / Reject all, with source links
 and refinement. Clarification questions, processing, failed, and stale responses
 remain visible in the review area, including after reload; users can refine or
@@ -846,7 +857,8 @@ exposed. Internal revision/application records remain for auditing and safe retr
 No new provider credentials are required. CNB migration `20260907_120000`
 provisions the gap and edit storage.
 Merge revision `20260909_120000` joins that migration with chapter validation
-revision `20260828_120000`. Run `alembic -c cnb-alembic.ini upgrade head` from
+revision `20260828_120000`. Revision `20260917_120000` adds the proposal's
+persisted exclusion notices. Run `alembic -c cnb-alembic.ini upgrade head` from
 `service/` to apply both branches from either existing head or a fresh database.
 The original migrations remain unchanged.
 

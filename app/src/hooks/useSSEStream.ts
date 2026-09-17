@@ -228,6 +228,7 @@ export function useSSEStream(
 
       const decoder = new TextDecoder();
       let buffer = "";
+      let terminalSeen = false;
 
       try {
         while (true) {
@@ -246,12 +247,16 @@ export function useSSEStream(
               const event = parseSSEEvent(eventText);
               // SSE comments keep the transport alive without an application event.
               if (!event.type && event.data === undefined) continue;
+              if (event.type === "done" || event.type === "error")
+                terminalSeen = true;
               await handleSSEEvent(event);
             } catch (error) {
               logger.error({ error, eventText }, "Failed to parse SSE event");
             }
           }
         }
+        if (!terminalSeen)
+          throw new Error("The response stream ended before completion");
       } finally {
         reader.releaseLock();
       }

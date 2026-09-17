@@ -6,16 +6,22 @@ import type { Components } from "react-markdown";
 import { useTranslation } from "@/i18n/client";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { readReasoningPreview, type ConceptNoteReasoning } from "./chat-utils";
+import {
+  readReasoningPreview,
+  type ConceptNoteReasoning,
+  type ConceptNoteProgress,
+} from "./chat-utils";
 
 export function ChatProgress({
   lng,
   reasoning = [],
+  progress = [],
   isGenerating,
   markdownComponents,
 }: {
   lng: string;
   reasoning?: ConceptNoteReasoning[];
+  progress?: ConceptNoteProgress[];
   isGenerating: boolean;
   markdownComponents: Components;
 }) {
@@ -23,20 +29,46 @@ export function ChatProgress({
   if (!isGenerating) return null;
   const thought = reasoning.at(-1);
   const preview = thought ? readReasoningPreview(thought.text) : "";
+  const activity = progress.at(-1);
   const label = (
     <>
       <Spinner size="xs" flexShrink={0} aria-hidden="true" />
-      <Text
-        as="span"
-        minW={0}
-        fontSize="12px"
-        fontStyle="italic"
-        overflowWrap="anywhere"
-        lineClamp={2}
-        data-testid="concept-note-reasoning-preview"
-      >
-        {preview || t("chat-thinking")}
-      </Text>
+      <Box minW={0}>
+        <Text
+          as="span"
+          minW={0}
+          fontSize="12px"
+          fontStyle="italic"
+          overflowWrap="anywhere"
+          lineClamp={2}
+          data-testid="concept-note-reasoning-preview"
+        >
+          {preview || t("chat-thinking")}
+        </Text>
+        {activity && (
+          <Text fontSize="12px" data-testid="concept-note-workflow-progress">
+            {t(
+              activity.stage === "planning" && !activity.chapterTitle
+                ? "chat-progress-searching"
+                : `chat-progress-${activity.stage}`,
+              {
+                chapter: activity.chapterTitle || t("chat-progress-chapter"),
+              },
+            )}
+            {activity.completed !== undefined &&
+              activity.total !== undefined && (
+                <>
+                  {" "}
+                  ·{" "}
+                  {t("chat-progress-count", {
+                    completed: activity.completed,
+                    total: activity.total,
+                  })}
+                </>
+              )}
+          </Text>
+        )}
+      </Box>
     </>
   );
 

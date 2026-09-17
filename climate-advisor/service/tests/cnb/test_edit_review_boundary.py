@@ -1,15 +1,20 @@
 """LLM decisions own meaning; Python checks exact changes and their identities."""
 
+import asyncio
 import json
 from dataclasses import replace
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
+from agents.tool_context import ToolContext
+
+from app.config import get_settings
 from app.models.cnb.concept_note_edits import (
     ChapterEditPlanOutput,
     ChapterEditReview,
+    EditAgentOutput,
     EditProposalRequest,
     EditProposalResponse,
     EditScope,
@@ -23,8 +28,6 @@ from app.services.cnb.edit_planner import (
     combine_chapter_plans,
 )
 from app.services.cnb.edit_validation import validate_edit_plan
-
-from app.config import get_settings
 from app.utils.cnb_progress import bind_cnb_progress
 
 
@@ -47,6 +50,45 @@ class StreamingTestRunner:
         return Result()
 
 
+async def propose_with_tools(agent, before, after, *, source_refs=None, kind="wording"):
+    tools = {tool.name: tool for tool in agent.tools}
+    context = ToolContext(
+        context=None,
+        tool_name="search_draft",
+        tool_call_id="search",
+        tool_arguments="{}",
+    )
+    found = await tools["search_draft"].on_invoke_tool(
+        context, json.dumps({"text": before, "chapter_positions": None})
+    )
+    context = ToolContext(
+        context=None,
+        tool_name="propose_edits",
+        tool_call_id="propose",
+        tool_arguments="{}",
+    )
+    proposed = await tools["propose_edits"].on_invoke_tool(
+        context,
+        json.dumps(
+            {
+                "replacements": [
+                    {
+                        "search_id": found["search_id"],
+                        "replacement": after,
+                        "replace_all": False,
+                        "match_ids": [],
+                        "kind": kind,
+                        "group_id": "edit",
+                        "source_refs": source_refs or [],
+                        "user_input_quote": None,
+                    }
+                ]
+            }
+        ),
+    )
+    assert proposed["ok"], proposed
+
+
 @pytest.mark.asyncio
 async def test_planner_reports_real_model_stages_and_excludes_locked_chapters():
     events = []
@@ -57,20 +99,10 @@ async def test_planner_reports_real_model_stages_and_excludes_locked_chapters():
     class ProgressRunner(StreamingTestRunner):
         @staticmethod
         async def run(agent, payload, **kwargs):
-            if agent.output_type is ChapterEditPlanOutput:
+            if agent.output_type is EditAgentOutput:
                 assert events[-1]["stage"] == "planning"
-                output = ChapterEditPlanOutput(
-                    intent="edit",
-                    changes=[
-                        {
-                            "start": 0,
-                            "before": "ten",
-                            "after": "10",
-                            "kind": "wording",
-                            "group_id": "digits",
-                        }
-                    ],
-                )
+                await propose_with_tools(agent, "ten", "10")
+                output = EditAgentOutput(intent="edit")
             else:
                 assert events[-1]["stage"] == "reviewing"
                 output = ChapterEditReview(
@@ -90,20 +122,68 @@ async def test_planner_reports_real_model_stages_and_excludes_locked_chapters():
     with bind_cnb_progress(capture):
         await ConceptNoteEditPlanner(settings, runner=ProgressRunner).plan(
             EditProposalRequest(instruction="Use digits.", idempotency_key=uuid4()),
-            [current, replace(chapter("locked"), user_locked=True)],
+            [current, replace(chapter("locked"), position=1, user_locked=True)],
             {},
         )
     assert [event["stage"] for event in events] == [
         "planning",
+        "planning",
+        "validating",
         "reviewing",
         "chapter_completed",
     ]
-    assert [event["completed"] for event in events] == [0, 0, 1]
-    assert all(event["total"] == 1 for event in events)
+    assert [event["completed"] for event in events] == [None, None, None, 0, 1]
+    assert all(event["total"] == 1 for event in events[-2:])
     assert all(
         set(event) == {"stage", "chapter_title", "completed", "total"}
         for event in events
     )
+
+
+@pytest.mark.asyncio
+async def test_agent_cannot_finalize_an_edit_without_a_validated_tool_proposal():
+    class EmptyRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
+
+    settings = get_settings().model_copy(deep=True)
+    settings.openrouter_api_key = "test-key"
+    with pytest.raises(EditOperationError) as error:
+        await ConceptNoteEditPlanner(settings, runner=EmptyRunner).plan(
+            EditProposalRequest(instruction="Use digits.", idempotency_key=uuid4()),
+            [chapter("ten schools")],
+            {},
+        )
+    assert error.value.code == "invalid_plan"
+
+
+@pytest.mark.asyncio
+async def test_operation_deadline_cancels_pending_work_and_returns_retryable_error():
+    cancelled = asyncio.Event()
+
+    class SlowPlanner(ConceptNoteEditPlanner):
+        async def _plan(self, *args):
+            try:
+                await asyncio.Event().wait()
+            finally:
+                cancelled.set()
+
+    settings = get_settings().model_copy(deep=True)
+    # Shorten only the test deadline without weakening production configuration bounds.
+    settings.llm.generation.prompt_budget.cnb_edits = (
+        settings.llm.generation.prompt_budget.cnb_edits.model_copy(
+            update={"timeout_seconds": 0.01}
+        )
+    )
+    with pytest.raises(EditOperationError) as error:
+        await SlowPlanner(settings).plan(
+            EditProposalRequest(instruction="Use digits.", idempotency_key=uuid4()),
+            [chapter("ten schools")],
+            {},
+        )
+    assert error.value.code == "planning_timeout"
+    assert cancelled.is_set()
 
 
 def chapter(body: str) -> WorkspaceChapterSnapshot:
@@ -436,16 +516,11 @@ async def test_planner_and_reviewer_receive_evidence_without_backend_metadata(
         @staticmethod
         async def run(agent, payload, **kwargs):
             calls.append(json.loads(payload))
-            if agent.output_type is ChapterEditPlanOutput:
-                output = ChapterEditPlanOutput(
-                    intent="edit",
-                    changes=[
-                        {
-                            **factual("10 schools", "14 schools", None),
-                            "source_refs": ["2"],
-                        }
-                    ],
+            if agent.output_type is EditAgentOutput:
+                await propose_with_tools(
+                    agent, "10 schools", "14 schools", source_refs=["2"], kind="factual"
                 )
+                output = EditAgentOutput(intent="edit")
             else:
                 output = ChapterEditReview(
                     decisions=[
@@ -516,7 +591,7 @@ def test_refinement_rebinds_snapshots_without_replaying_private_source_refs(
     changes[0] = changes[0].model_copy(
         update={"source_refs": [duplicate_sources[0]["upload_id"]]}
     )
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     prior = EditProposalResponse(
         proposal_id=uuid4(),
         run_id=uuid4(),

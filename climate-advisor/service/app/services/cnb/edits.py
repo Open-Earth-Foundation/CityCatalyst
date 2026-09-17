@@ -23,8 +23,8 @@ from app.persistence.concept_notes.edits import (
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.cnb.edit_planner import ConceptNoteEditPlanner
 from app.services.cnb.edit_validation import validate_edit_plan
-from app.utils.cnb_progress import emit_cnb_progress
 from app.utils.cnb_observability import record_edit_outcome
+from app.utils.cnb_progress import emit_cnb_progress
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
@@ -158,7 +158,10 @@ class ConceptNoteEditService:
                 chapter.chapter_id: chapter.revision_number for chapter in chapters
             }
             result = await self.repository.finish(
-                **identity, base_revisions=base_revisions, changes=changes
+                **identity,
+                base_revisions=base_revisions,
+                changes=changes,
+                notices=plan.notices,
             )
             if (
                 prior is not None

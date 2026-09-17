@@ -179,19 +179,29 @@ Confirming a chapter refreshes both its run's draft and edit proposals, so the
 review state updates even when no proposal is processing and polling is stopped.
 
 The proposal-only CA tool uses authorized evidence and explicit user input.
-Bounded chapter workers use an LLM planner and an independent LLM reviewer for
-meaning, factual support, and related occurrences. Python checks exact anchors,
+One bounded document agent searches exact text and reads chapters on demand.
+It proposes contextual matches, selected server-issued match IDs, or explicit
+all-match replacements. Python resolves offsets from the captured revisions and
+returns structural errors to the agent for correction. An independent LLM
+reviewer checks meaning and factual support for each affected chapter. Python checks exact anchors,
 source identity, user quotes, required headings and unresolved markers. It does
 not infer meaning from numeric/entity tokens, merge groups based on shared values,
 or expand replacements after semantic review. Scope is automatic; chapter focus is
 only a navigation hint. Parsed-Markdown redlines preserve source offsets and fail
 closed on stale or overlapping anchors. No edit is applied before acceptance.
+Unchanged matching context is trimmed from the displayed diff. All-match edits
+exclude protected markers, template headings, and locked chapters; server-counted
+exclusions appear in the proposal and chat response. Complete, grounded gap fills
+retain the existing marker-resolution contract. The agent has a 12-turn limit;
+planning plus review has a 180-second deadline, configurable in `llm_config.yaml`.
 
 CNB migration `20260907_120000` provisions proposals and
 immutable application records. Apply locks the run and affected chapters, checks
 the expected revision vector, and appends accepted changes atomically. Records
 remain for audit, sequencing and idempotent retries; public history, undo and
 restore endpoints are not exposed. Inline decisions select the exact applied subset.
+Migration `20260917_120000` adds persisted proposal exclusion notices after the
+`20260909_120000` merge revision.
 
 A grounded marker replacement resolves the matching gap in the same transaction.
 Wording-only edits preserve Ready only when exact confirmation and current gap,

@@ -157,9 +157,12 @@ async def run_with_cnb_reasoning(
     run_config: RunConfig,
     stage: Literal["planning", "reviewing", "reading"],
     chapter_title: str | None = None,
+    max_turns: int = 10,
 ) -> RunResultStreaming:
     """Consume a worker stream while retaining its typed final result."""
-    result = runner.run_streamed(agent, payload, run_config=run_config)
+    result = runner.run_streamed(
+        agent, payload, run_config=run_config, max_turns=max_turns
+    )
     stream_id = str(uuid4())
     try:
         async for event in result.stream_events():

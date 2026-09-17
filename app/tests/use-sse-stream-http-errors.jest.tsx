@@ -127,3 +127,38 @@ it("passes the HTTP readiness code to the chat error handler exactly once", asyn
     "concept_note_context_not_ready",
   );
 });
+
+it("reports a stream that closes without a terminal event so chat can recover", async () => {
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, "TextDecoder");
+  Object.defineProperty(globalThis, "TextDecoder", {
+    configurable: true,
+    value: TextDecoder,
+  });
+  const chunks = ['event: progress\ndata: {"stage":"planning"}\n\n'];
+  const encoder = new TextEncoder();
+  globalThis.fetch = jest.fn(async () => ({
+    ok: true,
+    body: {
+      getReader: () => ({
+        read: async () => {
+          const chunk = chunks.shift();
+          return chunk === undefined
+            ? { done: true }
+            : { done: false, value: encoder.encode(chunk) };
+        },
+        releaseLock: jest.fn(),
+      }),
+    },
+  })) as unknown as typeof fetch;
+  try {
+    await expect(
+      controller.startStream("/api/v1/chat/messages"),
+    ).rejects.toThrow("ended before completion");
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onComplete).not.toHaveBeenCalled();
+  } finally {
+    if (descriptor)
+      Object.defineProperty(globalThis, "TextDecoder", descriptor);
+    else Reflect.deleteProperty(globalThis, "TextDecoder");
+  }
+});

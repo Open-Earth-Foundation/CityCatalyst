@@ -3,6 +3,8 @@
 import { act, useEffect } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, jest } from "@jest/globals";
+import { ChakraProvider } from "@chakra-ui/react";
+import { appTheme } from "@/lib/theme/recipes/app-theme";
 import type { SSEStreamOptions } from "@/hooks/useSSEStream";
 import { readConceptNoteProgress } from "@/components/ConceptNoteWorkspace/chat-utils";
 
@@ -22,6 +24,8 @@ jest.unstable_mockModule("@/hooks/useSSEStream", () => ({
 
 const { useConceptNoteChat } =
   await import("@/components/ConceptNoteWorkspace/use-concept-note-chat");
+const { ChatProgress } =
+  await import("@/components/ConceptNoteWorkspace/chat-progress");
 
 let chat: ReturnType<typeof useConceptNoteChat>;
 let root: Root;
@@ -39,12 +43,54 @@ function Harness() {
 }
 beforeEach(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  globalThis.structuredClone = (value) => JSON.parse(JSON.stringify(value));
   globalThis.fetch = jest.fn(async () => ({
     ok: true,
     json: async () => ({ messages: [] }),
   })) as unknown as typeof fetch;
   root = createRoot(document.createElement("div"));
   await act(async () => root.render(<Harness />));
+});
+
+it("renders verified workflow activity even when the reasoning summary has not changed", async () => {
+  const container = document.createElement("div");
+  await act(async () => root.unmount());
+  root = createRoot(container);
+  const renderProgress = (isGenerating: boolean) => (
+    <ChakraProvider value={appTheme}>
+      <ChatProgress
+        lng="en"
+        isGenerating={isGenerating}
+        markdownComponents={{}}
+        reasoning={[
+          {
+            id: "plan",
+            stage: "planning",
+            text: "Checking the requested rename.",
+          },
+        ]}
+        progress={[
+          {
+            stage: "reviewing",
+            chapterTitle: "Budget",
+            completed: 3,
+            total: 12,
+          },
+        ]}
+      />
+    </ChakraProvider>
+  );
+  await act(async () => root.render(renderProgress(true)));
+  expect(
+    container.querySelector('[data-testid="concept-note-workflow-progress"]')
+      ?.textContent,
+  ).toContain("chat-progress-reviewing");
+  expect(
+    container.querySelector('[data-testid="concept-note-reasoning-preview"]')
+      ?.textContent,
+  ).toContain("Checking the requested rename.");
+  await act(async () => root.render(renderProgress(false)));
+  expect(container.textContent).toBe("");
 });
 afterEach(async () => {
   await act(async () => root.unmount());

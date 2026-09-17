@@ -165,10 +165,12 @@ class CnbSourcePromptBudgetConfig(BaseModel):
 
 
 class CnbEditPromptBudgetConfig(BaseModel):
-    """Limits for concurrent, chapter-bounded Concept Note edit planning."""
+    """Limits for the edit tool loop and concurrent chapter semantic reviews."""
 
     max_prompt_tokens: int = Field(default=50000, ge=2000)
     max_concurrency: int = Field(default=5, ge=1, le=5)
+    max_agent_turns: int = Field(default=12, ge=3, le=30)
+    timeout_seconds: int = Field(default=180, ge=30, le=600)
 
 
 class CnbValidationPromptBudgetConfig(BaseModel):

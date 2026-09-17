@@ -194,6 +194,7 @@ export function ConceptNoteChatPanel({
     historyLoading,
     isGenerating,
     reasoning,
+    progress,
     messages,
     sendMessage: sendChatMessage,
   } = useConceptNoteChat({
@@ -367,6 +368,7 @@ export function ConceptNoteChatPanel({
                 <ChatProgress
                   lng={lng}
                   reasoning={reasoning}
+                  progress={progress}
                   markdownComponents={assistantMarkdownComponents}
                   isGenerating={isGenerating}
                 />

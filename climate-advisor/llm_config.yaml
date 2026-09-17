@@ -57,6 +57,8 @@ generation:
     cnb_edits:
       max_prompt_tokens: 50000
       max_concurrency: 5
+      max_agent_turns: 12
+      timeout_seconds: 180
     cnb_validation:
       max_prompt_tokens: 50000
 

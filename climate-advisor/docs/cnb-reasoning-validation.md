@@ -1,11 +1,12 @@
 # CNB summary delivery: diagnosis and validation
 
-Investigated locally on 16 September 2026 for CC-907. This documents summary
-delivery, the provider comparison, and the unresolved full-document workflow.
+Investigated locally on 16-17 September 2026 for CC-907. This documents summary
+delivery, the provider comparison, the original full-document failure, and its
+agentic-edit follow-up below. Earlier observations are retained as historical evidence.
 CC-827 separately covers transport heartbeats. Both PRs target develop directly;
 neither branch depends on the other.
 
-## Scope and current outcome
+## Scope and original outcome (16 September)
 
 Readable summaries now reach the browser when the provider supplies them.
 This does **not** establish that full-document requests work end to end. In
@@ -171,7 +172,7 @@ user's requested edit still failed. The rejected raw plans were not retained,
 so these records do not identify the exact offending passage. Refreshing the
 browser is not an established remedy. No rename changes were applied.
 
-## Remaining work and acceptance evidence
+## Remaining work recorded on 16 September
 
 - Fix reliable anchoring of repeated text while preserving revision checks and
   explicit proposal acceptance; never silently choose an ambiguous occurrence.
@@ -185,3 +186,80 @@ browser is not an established remedy. No rename changes were applied.
 - Rerun the exact document-wide rename through proposal, acceptance, and reload,
   proving every intended occurrence changed and unrelated content was preserved.
   Until that succeeds, full-document editing remains an open problem.
+
+## Agentic editing follow-up (17 September)
+
+The instrumented original planner completed 24 provider calls in 253.453 seconds,
+but 63 of its 93 proposed replacements had invalid anchors. A correct-anchor
+replacement inside an information-needed marker also failed marker validation.
+The model was calculating offsets for repeated text, and structural rejection
+arrived after the expensive planning/review fan-out.
+
+The replacement implementation uses one document agent with exact search,
+chapter reading, and proposal tools. Search returns server-issued occurrence IDs;
+the model selects context, occurrences, or an explicit all-match operation.
+Python computes offsets, trims unchanged matching context for review, and returns
+selection or structural errors immediately for correction. Independent semantic
+review remains mandatory for affected chapters. A 12-turn limit and a 180-second
+operation deadline bound planning and review. Operational progress now renders
+alongside the provider summary, and an SSE EOF without a terminal event restores
+the chat controls through the error path. This is not durable reconnect/resume.
+
+Protected markers are excluded and counted visibly; this is explicitly a rename
+of editable draft text. The fixture has 93 exact matches: 38 editable and 55
+inside protected markers. All 55 markers remain byte-for-byte intact. Complete,
+grounded gap fills retain their existing separate validation contract.
+
+### Verification
+
+- Direct real-provider probe: 24.344 seconds, 38 valid changes and 55 exclusions.
+  The edit agent made three model requests; 12 independent chapter reviews
+  brought the total to 15. These are individual local samples, not a benchmark.
+- Real authenticated browser flow: proposal ready in 38.854 seconds. Before
+  acceptance, every chapter body and revision matched its original snapshot.
+  Proposal and exclusion counts survived reload. Acceptance replaced all 38
+  editable occurrences across 12 chapters, with exactly one revision per chapter.
+  Replaying the same acceptance created no extra revisions. Final reload matched
+  the saved expected text and preserved all protected markers.
+- Desktop 1280x720 and phone 390x844 were inspected. The phone document width
+  remained 390px and the exclusion notice and acceptance controls were visible.
+- Focused backend tests cover ambiguous-match correction, Unicode anchors,
+  contextual minimal diffs, protection rules, overlaps, provenance, semantic
+  review, and operation timeout. Frontend tests cover persisted notices,
+  independent progress rendering, proposal decisions, and interrupted streams.
+- Full TypeScript checking remains blocked by the unchanged
+  `app/src/lib/analytics.ts:146` call to `posthog.identify(undefined, properties)`.
+
+Evidence is in the ignored local directory
+`output/browser-demo-recording/pr3148-investigation-20260917/`:
+`agentic/result.json`, the traced plans and reviews, and
+`browser-final/agentic-rename.mp4`, `evidence.json`, before/proposal/after snapshots,
+and the recorded audit report. The verified video is 58.44 seconds. Earlier
+blocked takes remain separate: one stopped at local sign-in; one recorder check
+mistook Next.js's HTTP 308 redirect for the terminal acceptance response. The
+final scenario waits for that terminal response and passed on a fresh fixture.
+
+This verifies the local editable-text rename, acceptance, retry, and persistence.
+It does not establish deployed ALB behavior, durable disconnect recovery,
+arbitrary editorial quality, or a complete PR-wide regression pass. Deployments
+must apply CNB migration `20260917_120000` for persisted exclusion notices.
+
+### Additional Kraków audit (17 September)
+
+The local authenticated audit verified Stage IV/KST IV to Stage V/KST V:
+28 accepted changes across all 12 chapters survived reload, while 42 matches
+inside protected information-needed markers remained unchanged and were disclosed.
+A summary-only date correction persisted without changing the other 11 chapters.
+A smaller wording proposal was rejected and the saved draft remained unchanged.
+Pending proposals survived reload; offline submission recovered with a visible
+error, and a subsequent absent-phrase request produced no fabricated edits.
+
+The focused suites passed 47 backend and 17 frontend assertions. The frontend
+subset originally returned a nonzero exit because of global coverage thresholds.
+Evidence and reproducible saved-text checks are in the ignored local directory
+`output/browser-demo-recording/cc907-audit-20260917/` (`AUDIT.md`,
+`verification.json`, and the two verified recordings). This does not establish
+production behavior, worker restart recovery, or requests exceeding 120 seconds.
+
+Review/export feedback and remaining proposal presentation issues are tracked
+separately in [CC-933](https://linear.app/openearth/issue/CC-933), outside CC-907.

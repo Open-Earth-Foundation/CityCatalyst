@@ -12,20 +12,20 @@ from agents.tool_context import ToolContext
 
 from app.config import get_settings
 from app.models.cnb.concept_note_edits import (
-    ChapterEditPlanOutput,
     ChapterEditReview,
     EditAgentOutput,
+    EditPlanOutput,
     EditProposalRequest,
     EditProposalResponse,
     EditScope,
+    PlannedTextChange,
 )
 from app.persistence.concept_notes.edits import EditOperationError, replace_anchors
 from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
 from app.services.cnb.edit_planner import (
     ConceptNoteEditPlanner,
-    bind_semantic_reviews,
+    bind_semantic_review,
     build_planner_input,
-    combine_chapter_plans,
 )
 from app.services.cnb.edit_validation import validate_edit_plan
 from app.utils.cnb_progress import bind_cnb_progress
@@ -50,7 +50,9 @@ class StreamingTestRunner:
         return Result()
 
 
-async def propose_with_tools(agent, before, after, *, source_refs=None, kind="wording"):
+async def propose_with_tools(
+    agent, before, after, *, source_refs=None, kind="wording", replace_all=False
+):
     tools = {tool.name: tool for tool in agent.tools}
     context = ToolContext(
         context=None,
@@ -75,7 +77,7 @@ async def propose_with_tools(agent, before, after, *, source_refs=None, kind="wo
                     {
                         "search_id": found["search_id"],
                         "replacement": after,
-                        "replace_all": False,
+                        "replace_all": replace_all,
                         "match_ids": [],
                         "kind": kind,
                         "group_id": "edit",
@@ -101,10 +103,14 @@ async def test_planner_reports_real_model_stages_and_excludes_locked_chapters():
         async def run(agent, payload, **kwargs):
             if agent.output_type is EditAgentOutput:
                 assert events[-1]["stage"] == "planning"
-                await propose_with_tools(agent, "ten", "10")
+                await propose_with_tools(agent, "ten", "10", replace_all=True)
                 output = EditAgentOutput(intent="edit")
             else:
                 assert events[-1]["stage"] == "reviewing"
+                assert all(
+                    "chapter_id" not in change
+                    for change in json.loads(payload)["changes"]
+                )
                 output = ChapterEditReview(
                     decisions=[
                         {
@@ -119,25 +125,33 @@ async def test_planner_reports_real_model_stages_and_excludes_locked_chapters():
     settings = get_settings().model_copy(deep=True)
     settings.openrouter_api_key = "test-key"
     current = chapter("ten schools")
+    second = replace(chapter("ten hospitals"), position=1)
     with bind_cnb_progress(capture):
-        await ConceptNoteEditPlanner(settings, runner=ProgressRunner).plan(
+        plan = await ConceptNoteEditPlanner(settings, runner=ProgressRunner).plan(
             EditProposalRequest(instruction="Use digits.", idempotency_key=uuid4()),
-            [current, replace(chapter("locked"), position=1, user_locked=True)],
+            [
+                current,
+                second,
+                replace(chapter("ten locked"), position=2, user_locked=True),
+            ],
             {},
         )
-    assert [event["stage"] for event in events] == [
-        "planning",
-        "planning",
-        "validating",
-        "reviewing",
-        "chapter_completed",
+    assert {event["stage"] for event in events} == {
+        "planning", "validating", "reviewing", "chapter_completed"
+    }
+    completed = [event for event in events if event["stage"] == "chapter_completed"]
+    assert [event["completed"] for event in completed] == [1, 2]
+    assert all(event["total"] == 2 for event in completed)
+    assert [change.chapter_id for change in plan.changes] == [
+        current.chapter_id, second.chapter_id
     ]
-    assert [event["completed"] for event in events] == [None, None, None, 0, 1]
-    assert all(event["total"] == 1 for event in events[-2:])
-    assert all(
-        set(event) == {"stage", "chapter_title", "completed", "total"}
-        for event in events
-    )
+    assert [change.group_id for change in plan.changes] == [
+        "chapter-0-group-1", "chapter-1-group-1"
+    ]
+    assert all(change.semantic_support == "preserved" for change in plan.changes)
+    assert [notice.model_dump() for notice in plan.notices] == [
+        {"code": "locked_chapters", "count": 1}
+    ]
 
 
 @pytest.mark.asyncio
@@ -201,7 +215,9 @@ def chapter(body: str) -> WorkspaceChapterSnapshot:
 
 
 def reviewed_plan(current, changes, supports):
-    plan = ChapterEditPlanOutput(intent="edit", changes=changes)
+    resolved = [
+        PlannedTextChange(**change, chapter_id=current.chapter_id) for change in changes
+    ]
     review = ChapterEditReview(
         decisions=[
             {
@@ -212,9 +228,7 @@ def reviewed_plan(current, changes, supports):
             for index, support in enumerate(supports)
         ]
     )
-    return bind_semantic_reviews(
-        combine_chapter_plans([current], [plan]), [plan], [review]
-    )
+    return EditPlanOutput(intent="edit", changes=bind_semantic_review(resolved, review))
 
 
 def factual(before, after, instruction, group="schools"):

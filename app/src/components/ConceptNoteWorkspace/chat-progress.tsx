@@ -15,13 +15,13 @@ import {
 export function ChatProgress({
   lng,
   reasoning = [],
-  progress = [],
+  progress = null,
   isGenerating,
   markdownComponents,
 }: {
   lng: string;
   reasoning?: ConceptNoteReasoning[];
-  progress?: ConceptNoteProgress[];
+  progress?: ConceptNoteProgress | null;
   isGenerating: boolean;
   markdownComponents: Components;
 }) {
@@ -29,7 +29,7 @@ export function ChatProgress({
   if (!isGenerating) return null;
   const thought = reasoning.at(-1);
   const preview = thought ? readReasoningPreview(thought.text) : "";
-  const activity = progress.at(-1);
+  const activity = progress;
   const label = (
     <>
       <Spinner size="xs" flexShrink={0} aria-hidden="true" />

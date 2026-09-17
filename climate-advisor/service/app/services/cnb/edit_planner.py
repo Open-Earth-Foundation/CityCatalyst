@@ -13,7 +13,6 @@ from openai import AsyncOpenAI
 
 from app.config.settings import Settings
 from app.models.cnb.concept_note_edits import (
-    ChapterEditPlanOutput,
     ChapterEditReview,
     EditAgentOutput,
     EditPlanOutput,
@@ -205,29 +204,18 @@ class ConceptNoteEditPlanner:
                     status_code=422,
                 )
 
-            # Exact anchors and structural guards have already passed in the tool loop.
-            affected = [
-                chapter
-                for chapter in chapters
-                if any(
-                    change.chapter_id == chapter.chapter_id
+            # Review the already resolved changes, grouped in document order.
+            chapter_changes = {
+                chapter.chapter_id: [
+                    change
                     for change in session.plan.changes
-                )
+                    if change.chapter_id == chapter.chapter_id
+                ]
+                for chapter in chapters
+            }
+            affected = [
+                chapter for chapter in chapters if chapter_changes[chapter.chapter_id]
             ]
-            plans = [
-                ChapterEditPlanOutput(
-                    intent="edit",
-                    changes=[
-                        change.model_dump(exclude={"chapter_id"})
-                        for change in session.plan.changes
-                        if change.chapter_id == chapter.chapter_id
-                    ],
-                )
-                for chapter in affected
-            ]
-            combined = combine_chapter_plans(affected, plans).model_copy(
-                update={"notices": session.plan.notices}
-            )
             reviewer = Agent(
                 name="Concept Note edit semantic reviewer",
                 instructions=self._settings.llm.prompts.get_prompt(
@@ -241,14 +229,17 @@ class ConceptNoteEditPlanner:
             completed = 0
 
             async def review_chapter(
-                chapter: WorkspaceChapterSnapshot, plan: ChapterEditPlanOutput
-            ) -> ChapterEditReview:
+                chapter: WorkspaceChapterSnapshot,
+            ) -> list[PlannedTextChange]:
                 """Review the actual resolved text, without any edit tools."""
                 nonlocal completed
                 async with limit:
+                    changes = chapter_changes[chapter.chapter_id]
                     review_payload = {
                         **chapter_inputs[chapter.position],
-                        "changes": [change.model_dump() for change in plan.changes],
+                        "changes": [
+                            change.model_dump(exclude={"chapter_id"}) for change in changes
+                        ],
                     }
                     if (
                         count_prompt_tokens(
@@ -284,9 +275,17 @@ class ConceptNoteEditPlanner:
                         else ChapterEditReview.model_validate(raw_review)
                     )
                     # Reject a failed semantic decision before marking this chapter complete.
-                    bind_semantic_reviews(
-                        combine_chapter_plans([chapter], [plan]), [plan], [review]
-                    )
+                    changes = bind_semantic_review(changes, review)
+                    # Preserve chapter-local groups in the persisted proposal.
+                    group_ids: dict[str, str] = {}
+                    for index, change in enumerate(changes):
+                        group_ids.setdefault(
+                            change.group_id,
+                            f"chapter-{chapter.position}-group-{len(group_ids) + 1}",
+                        )
+                        changes[index] = change.model_copy(
+                            update={"group_id": group_ids[change.group_id]}
+                        )
                     completed += 1
                     await emit_cnb_progress(
                         "chapter_completed",
@@ -294,18 +293,17 @@ class ConceptNoteEditPlanner:
                         completed=completed,
                         total=len(affected),
                     )
-                    return review
+                    return changes
 
             logger.info(
                 "Reviewing agent-proposed Concept Note edits",
                 extra={
                     "chapter_count": len(affected),
-                    "change_count": len(combined.changes),
+                    "change_count": len(session.plan.changes),
                 },
             )
             tasks = [
-                asyncio.create_task(review_chapter(chapter, plan))
-                for chapter, plan in zip(affected, plans, strict=True)
+                asyncio.create_task(review_chapter(chapter)) for chapter in affected
             ]
             try:
                 reviews = await asyncio.gather(*tasks)
@@ -314,7 +312,9 @@ class ConceptNoteEditPlanner:
                     if not task.done():
                         task.cancel()
                 await asyncio.gather(*tasks, return_exceptions=True)
-            return bind_semantic_reviews(combined, plans, reviews)
+            return session.plan.model_copy(
+                update={"changes": [change for changes in reviews for change in changes]}
+            )
         finally:
             await client.close()
 
@@ -422,83 +422,26 @@ def build_planner_input(
     }
 
 
-def bind_semantic_reviews(
-    combined: EditPlanOutput,
-    plans: list[ChapterEditPlanOutput],
-    reviews: list[ChapterEditReview | None],
-) -> EditPlanOutput:
+def bind_semantic_review(
+    changes: list[PlannedTextChange],
+    review: ChapterEditReview,
+) -> list[PlannedTextChange]:
     """Bind complete independent decisions to exact changes, never to model IDs."""
-    if combined.intent != "edit":
-        return combined
-    changes = []
-    for plan, review in zip(plans, reviews, strict=True):
-        if not plan.changes:
-            continue
-        if review is None or sorted(d.change_index for d in review.decisions) != list(
-            range(len(plan.changes))
-        ):
-            raise EditOperationError(
-                "invalid_review",
-                "The proposal did not receive a complete semantic review.",
-                status_code=422,
-            )
-        for decision in sorted(review.decisions, key=lambda d: d.change_index):
-            if decision.support == "unsupported":
-                raise EditOperationError(
-                    "unsupported_edit",
-                    "The proposal changed meaning beyond the instruction. Please retry the edit.",
-                    status_code=422,
-                )
-            change = combined.changes[len(changes)]
-            changes.append(
-                change.model_copy(update={"semantic_support": decision.support})
-            )
-    return combined.model_copy(update={"changes": changes})
-
-
-def combine_chapter_plans(
-    chapters: list[WorkspaceChapterSnapshot],
-    plans: list[ChapterEditPlanOutput],
-) -> EditPlanOutput:
-    """Bind isolated model outputs to chapters and assemble one bounded plan."""
-    if len(chapters) != len(plans):
-        raise ValueError("each chapter must have exactly one planner result")
-
-    # A clarification blocks partial edits so the request is never silently narrowed.
-    for plan in plans:
-        if plan.intent == "clarification":
-            return EditPlanOutput(
-                intent="clarification", clarification=plan.clarification
-            )
-
-    # Bind server-owned chapter identity and isolate model group labels per chapter.
-    changes: list[PlannedTextChange] = []
-    for chapter, plan in zip(chapters, plans, strict=True):
-        group_ids: dict[str, str] = {}
-        for change in plan.changes:
-            group_ids.setdefault(
-                change.group_id,
-                f"chapter-{chapter.position}-group-{len(group_ids) + 1}",
-            )
-            changes.append(
-                PlannedTextChange(
-                    **change.model_dump(exclude={"group_id"}),
-                    chapter_id=chapter.chapter_id,
-                    group_id=group_ids[change.group_id],
-                )
-            )
-    if len(changes) > 100:
+    # Require one decision per change before binding any semantic support.
+    decisions = sorted(review.decisions, key=lambda decision: decision.change_index)
+    if [decision.change_index for decision in decisions] != list(range(len(changes))):
         raise EditOperationError(
-            "context_limit",
-            "This request affects more than 100 exact passages. "
-            "Split it into smaller edits.",
+            "invalid_review",
+            "The proposal did not receive a complete semantic review.",
             status_code=422,
         )
-    if changes:
-        return EditPlanOutput(intent="edit", changes=changes)
-    if any(plan.intent == "question" for plan in plans):
-        return EditPlanOutput(intent="question")
-    return EditPlanOutput(
-        intent="clarification",
-        clarification="No matching editable passage was found. What should change?",
-    )
+    if any(decision.support == "unsupported" for decision in decisions):
+        raise EditOperationError(
+            "unsupported_edit",
+            "The proposal changed meaning beyond the instruction. Please retry the edit.",
+            status_code=422,
+        )
+    return [
+        change.model_copy(update={"semantic_support": decision.support})
+        for change, decision in zip(changes, decisions, strict=True)
+    ]

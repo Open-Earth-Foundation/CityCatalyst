@@ -96,30 +96,6 @@ async def test_producer_failure_is_propagated_without_waiting_for_more_events(
 
 
 @pytest.mark.asyncio
-async def test_disconnect_closes_source_even_inside_cancelled_starlette_scope() -> None:
-    started = asyncio.Event()
-    closed = asyncio.Event()
-
-    async def source() -> AsyncGenerator[bytes, None]:
-        started.set()
-        try:
-            yield b"data: started\n\n"
-            await asyncio.Event().wait()
-            yield b"unreachable"
-        finally:
-            await asyncio.sleep(0)
-            closed.set()
-
-    stream = stream_cnb_events(source())
-    assert await anext(stream) == b"data: started\n\n"
-    await asyncio.wait_for(started.wait(), timeout=1)
-    with CancelScope() as scope:
-        scope.cancel()
-        await stream.aclose()
-    assert closed.is_set()
-
-
-@pytest.mark.asyncio
 async def test_handler_forwards_worker_progress_without_heartbeat_wrapper(monkeypatch):
     from app.models.requests import MessageCreateRequest
     from app.utils.streaming_handler import StreamingHandler
@@ -133,6 +109,8 @@ async def test_handler_forwards_worker_progress_without_heartbeat_wrapper(monkey
             await release.wait()
             yield b"event: done\ndata: {}\n\n"
         finally:
+            # Async cleanup must finish even inside Starlette's cancelled scope.
+            await asyncio.sleep(0)
             closed.set()
 
     monkeypatch.setattr(StreamingHandler, "_stream_response", source)

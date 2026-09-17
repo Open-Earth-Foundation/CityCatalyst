@@ -5,6 +5,7 @@ import hashlib
 import json
 from collections.abc import AsyncIterator
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import httpx
@@ -41,50 +42,28 @@ from app.utils.cnb_progress import bind_cnb_progress
 
 
 @pytest.mark.asyncio
-async def test_source_worker_streams_summary_before_typed_result(analysis_dependencies):
+async def test_source_worker_uses_live_stream_and_validates_result(
+    analysis_dependencies, monkeypatch
+):
     settings, client = analysis_dependencies
-    arrived = asyncio.Event()
-    release = asyncio.Event()
-    chunks = []
-
-    async def capture(chunk):
-        chunks.append(json.loads(chunk.decode().split("data: ")[1]))
-        arrived.set()
-
-    class Stream:
-        is_complete = False
-        final_output = None
-
-        async def stream_events(self):
-            yield SimpleNamespace(type="raw_response_event", data=SimpleNamespace(
-                type="response.reasoning_summary_text.delta", item_id="source", summary_index=0,
-                delta="Checking the selected document.",
-            ))
-            await release.wait()
-            self.final_output = {"sections": [{"excerpts": ["Drainage upgrades"], "caveats": []}]}
-            self.is_complete = True
-
-        def cancel(self):
-            self.is_complete = True
-
-    class StreamingRunner:
-        @staticmethod
-        def run_streamed(agent, payload, *, run_config):
-            assert agent.model_settings.reasoning.summary == "detailed"
-            assert run_config.tracing_disabled
-            return Stream()
-
-    with bind_cnb_progress(capture):
-        task = asyncio.create_task(_run_agent(
-            name="Source reader", prompt="Read source", model_config=settings.llm.models.cnb_source_reader,
-            output_type=QuestionReading, input_text="Drainage upgrades", client=client,
-            runner=StreamingRunner, expected_sections=1,
-        ))
-        await asyncio.wait_for(arrived.wait(), 1)
-        assert not task.done()
-        assert chunks[0]["stage"] == "reading"
-        release.set()
-        result = await task
+    stream = AsyncMock(return_value=SimpleNamespace(final_output={
+        "sections": [{"excerpts": ["Drainage upgrades"], "caveats": []}],
+    }))
+    monkeypatch.setattr("app.services.cnb.source_analysis.run_with_cnb_reasoning", stream)
+    with bind_cnb_progress(AsyncMock()):
+        result = await _run_agent(
+            name="Source reader",
+            prompt="Read source",
+            model_config=settings.llm.models.cnb_source_reader,
+            output_type=QuestionReading,
+            input_text="Drainage upgrades",
+            client=client,
+            runner=Runner,
+            expected_sections=1,
+        )
+    stream.assert_awaited_once()
+    assert stream.call_args.kwargs["stage"] == "reading"
+    assert stream.call_args.kwargs["run_config"].tracing_disabled
     assert result.sections[0].excerpts == ["Drainage upgrades"]
 
 

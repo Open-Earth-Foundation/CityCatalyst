@@ -97,26 +97,6 @@ class ChapterEditReview(BaseModel):
     decisions: list[EditSemanticDecision] = Field(min_length=1, max_length=100)
 
 
-class ChapterEditPlanOutput(BaseModel):
-    """Resolved changes for one chapter's independent semantic review."""
-
-    model_config = ConfigDict(extra="forbid", frozen=True)
-    intent: Literal["edit", "question", "clarification", "no_change"]
-    changes: list[ChapterPlannedTextChange] = Field(
-        default_factory=list, max_length=100
-    )
-    clarification: str | None = Field(default=None, min_length=1, max_length=2_000)
-
-    @model_validator(mode="after")
-    def validate_intent(self) -> ChapterEditPlanOutput:
-        """Keep edits, questions, clarifications, and unaffected chapters distinct."""
-        if (self.intent == "edit") != bool(self.changes):
-            raise ValueError("only edit intent may contain changes, and requires them")
-        if (self.intent == "clarification") != (self.clarification is not None):
-            raise ValueError("clarification intent requires exactly one question")
-        return self
-
-
 class EditNotice(BaseModel):
     """Server-counted exclusions retained with the reviewable proposal."""
 

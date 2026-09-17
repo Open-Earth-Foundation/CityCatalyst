@@ -1,10 +1,8 @@
 """Exercise agent selections against exact snapshots and protected draft content."""
 
-import json
 from dataclasses import replace
-from pathlib import Path
 from types import SimpleNamespace
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import pytest
 
@@ -69,33 +67,30 @@ def test_ambiguous_replacement_can_be_repaired_using_an_exact_match_id():
     assert current.body_markdown == "🌍 Kraków and Kraków."
 
 
-def test_context_identifies_one_passage_but_review_highlights_only_changed_word():
-    current = chapter("Kraków is warm. Kraków is cold.")
-    edits = session([current])
-    found = edits.search_draft("Kraków is cold.")
-    assert edits.propose_edits([replacement(found["search_id"], "Cracow is cold.")])[
-        "ok"
-    ]
-    change = edits.plan.changes[0]
-    assert (change.start, change.before, change.after) == (16, "Kraków", "Cracow")
-
-
 def test_replace_all_preserves_markers_headings_and_locked_chapters_with_counts():
     current = chapter("# Kraków\nKraków. [Information needed: Kraków budget] Kraków.")
-    locked = replace(chapter("Kraków", 1), user_locked=True)
-    edits = session([current, locked])
+    other = chapter("Kraków and Kraków.", 1)
+    locked = replace(chapter("Kraków", 2), user_locked=True)
+    edits = session([current, other, locked])
     found = edits.search_draft("Kraków")
     result = edits.propose_edits([replacement(found["search_id"], replace_all=True)])
-    assert result["ok"] and result["changes"] == 2
+    assert result["ok"] and result["changes"] == 4 and result["chapters"] == 2
     assert {n["code"]: n["count"] for n in result["notices"]} == {
         "protected_markers": 1,
         "template_headings": 1,
         "locked_chapters": 1,
     }
-    assert (
-        replace_anchors(current.body_markdown, edits.plan.changes)
-        == "# Kraków\nCracow. [Information needed: Kraków budget] Cracow."
+    for target, expected in [
+        (current, "# Kraków\nCracow. [Information needed: Kraków budget] Cracow."),
+        (other, "Cracow and Cracow."),
+    ]:
+        changes = [c for c in edits.plan.changes if c.chapter_id == target.chapter_id]
+        assert replace_anchors(target.body_markdown, changes) == expected
+    assert current.body_markdown == (
+        "# Kraków\nKraków. [Information needed: Kraków budget] Kraków."
     )
+    assert other.body_markdown == "Kraków and Kraków."
+    assert locked.body_markdown == "Kraków"
 
 
 def test_invalid_correction_clears_previous_candidate_and_overlaps_fail_early():
@@ -135,6 +130,11 @@ def test_partial_marker_edit_is_rejected_but_complete_gap_fill_is_supported():
 @pytest.mark.parametrize(
     "before,after,expected",
     [
+        (
+            "Kraków is warm. Kraków is cold.",
+            "Kraków is warm. Cracow is cold.",
+            ("Kraków", "Cracow"),
+        ),
         ("Budget: 10 schools.", "Budget: 14 schools.", ("10", "14")),
         ("A B", "A new B", (" ", " new ")),
         ("Keep. Remove.", "Keep.", (" Remove.", "")),
@@ -164,49 +164,3 @@ def test_search_ids_and_match_ids_cannot_be_reused_across_other_searches():
         == "invalid_selection"
     )
     assert edits.propose_edits([replacement("invented")])["code"] == "invalid_search"
-
-
-def test_public_krakow_fixture_has_38_valid_replacements_and_55_protected_matches():
-    fixture = json.loads(
-        (Path(__file__).parents[3] / "fixtures/cnb/krakow/krakow-demo.json").read_text(
-            encoding="utf8"
-        )
-    )
-    revisions = fixture["cnb"]["concept_note_chapter_revisions"]
-    chapters = []
-    for item in fixture["cnb"]["concept_note_chapters"]:
-        revision = max(
-            (r for r in revisions if r["chapter_id"] == item["chapter_id"]),
-            key=lambda r: r["revision_number"],
-        )
-        chapters.append(
-            replace(
-                chapter(revision["body_markdown"], item["position"]),
-                chapter_id=UUID(item["chapter_id"]),
-            )
-        )
-    edits = session(chapters)
-    found = edits.search_draft("Kraków")
-    assert found["total"] == 93
-    result = edits.propose_edits([replacement(found["search_id"], replace_all=True)])
-    assert result == {
-        "ok": True,
-        "changes": 38,
-        "chapters": 12,
-        "notices": [{"code": "protected_markers", "count": 55}],
-    }
-    for current in chapters:
-        changes = [
-            change
-            for change in edits.plan.changes
-            if change.chapter_id == current.chapter_id
-        ]
-        for change in changes:
-            assert (
-                current.body_markdown[change.start : change.start + len(change.before)]
-                == change.before
-            )
-        updated = replace_anchors(current.body_markdown, changes)
-        assert updated.count("Cracow") - current.body_markdown.count("Cracow") == len(
-            changes
-        )

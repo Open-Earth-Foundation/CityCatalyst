@@ -26,7 +26,7 @@ interface ConceptNoteChatController {
   error: string | null;
   historyLoading: boolean;
   isGenerating: boolean;
-  progress: ConceptNoteProgress[];
+  progress: ConceptNoteProgress | null;
   reasoning: ConceptNoteReasoning[];
   messages: ConceptNoteChatMessage[];
   sendMessage: (content: string) => Promise<void>;
@@ -44,7 +44,7 @@ export function useConceptNoteChat({
   const [messagesThreadId, setMessagesThreadId] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [reasoning, setReasoning] = useState<ConceptNoteReasoning[]>([]);
-  const [progress, setProgress] = useState<ConceptNoteProgress[]>([]);
+  const [progress, setProgress] = useState<ConceptNoteProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
   const assistantMessageIdRef = useRef<string | null>(null);
   const pendingUserMessageIdRef = useRef<string | null>(null);
@@ -71,17 +71,7 @@ export function useConceptNoteChat({
     onProgress: (value) => {
       const update = readConceptNoteProgress(value);
       if (assistantMessageIdRef.current && update) {
-        setProgress((current) => {
-          const previous = current.at(-1);
-          if (
-            previous?.stage === update.stage &&
-            previous.chapterTitle === update.chapterTitle &&
-            previous.completed === update.completed &&
-            previous.total === update.total
-          )
-            return current;
-          return [...current.slice(-3), update];
-        });
+        setProgress(update);
       }
     },
     onToolResult: (result) => {
@@ -103,9 +93,7 @@ export function useConceptNoteChat({
         return;
       }
       setProgress((current) =>
-        current.at(-1)?.stage === "responding"
-          ? current
-          : [...current.slice(-3), { stage: "responding" }],
+        current?.stage === "responding" ? current : { stage: "responding" },
       );
       setMessages((current) =>
         current.map((message) =>
@@ -209,7 +197,7 @@ export function useConceptNoteChat({
     setError(null);
     setIsGenerating(true);
     setReasoning([]);
-    setProgress([{ stage: "preparing" }]);
+    setProgress({ stage: "preparing" });
 
     try {
       await startStream("/api/v1/chat/messages", {

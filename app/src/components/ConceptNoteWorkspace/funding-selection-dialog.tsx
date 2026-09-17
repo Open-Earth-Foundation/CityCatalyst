@@ -506,7 +506,13 @@ export function FundingSelectionDialog({
               </Text>
             </Box>
             <Button
-              variant="ghostLink"
+              variant="ghost"
+              color="content.link"
+              textDecoration="underline"
+              _hover={{
+                bg: "background.transparentGrey",
+                color: "content.link",
+              }}
               size="sm"
               disabled={!funderId || saveState.isLoading || isError}
               onClick={() => {

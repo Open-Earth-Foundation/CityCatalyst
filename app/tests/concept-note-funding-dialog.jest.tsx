@@ -56,9 +56,13 @@ let FundingSelectionDialog: typeof import("@/components/ConceptNoteWorkspace/fun
 let root: Root;
 let container: HTMLDivElement;
 const originalResizeObserver = globalThis.ResizeObserver;
+const originalStructuredClone = globalThis.structuredClone;
 
 beforeAll(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  // Chakra clones JSON-compatible recipes; jsdom does not provide structuredClone.
+  globalThis.structuredClone = (value) =>
+    value === undefined ? value : JSON.parse(JSON.stringify(value));
   globalThis.ResizeObserver = class {
     disconnect() {}
     observe() {}
@@ -70,6 +74,7 @@ beforeAll(async () => {
 afterAll(() => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = false;
   globalThis.ResizeObserver = originalResizeObserver;
+  globalThis.structuredClone = originalStructuredClone;
 });
 beforeEach(() => {
   container = document.createElement("div");

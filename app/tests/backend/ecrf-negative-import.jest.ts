@@ -9,7 +9,7 @@ import {
   it,
 } from "@jest/globals";
 import { randomUUID } from "node:crypto";
-import { loadEnvConfig } from "@next/env";
+import env from "@next/env";
 import InventoryImportService from "@/backend/InventoryImportService";
 import { getEmissionResults } from "@/backend/ResultsService";
 import { db } from "@/models";
@@ -37,7 +37,7 @@ describe("InventoryImportService negative totalCO2e", () => {
   let scope: Scope;
 
   beforeAll(async () => {
-    loadEnvConfig(process.cwd());
+    env.loadEnvConfig(process.cwd());
     await db.initialize();
 
     city = await db.models.City.create({

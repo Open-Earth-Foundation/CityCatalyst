@@ -3,7 +3,7 @@
  * from Global API.
  */
 import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
-import { loadEnvConfig } from "@next/env";
+import env from "@next/env";
 import { db } from "@/models";
 import { Roles } from "@/util/types";
 import { BulkInventoryImportItemStatus } from "@/util/enums";
@@ -29,7 +29,7 @@ describe("Bulk inventory import Chile INE cities", () => {
   const jobIds: string[] = [];
 
   beforeAll(async () => {
-    loadEnvConfig(process.cwd());
+    env.loadEnvConfig(process.cwd());
     await db.initialize();
     await db.models.User.upsert({
       userId: testUserID,

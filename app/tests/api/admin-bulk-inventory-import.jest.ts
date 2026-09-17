@@ -4,7 +4,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { randomUUID } from "node:crypto";
-import { loadEnvConfig } from "@next/env";
+import env from "@next/env";
 import { NextResponse } from "next/server";
 import createHttpError from "http-errors";
 import { db } from "@/models";
@@ -76,7 +76,7 @@ describe("Admin bulk inventory import job API", () => {
   const PREFIX = `XX_IMP005_${randomUUID().slice(0, 8)}_`;
 
   beforeAll(async () => {
-    loadEnvConfig(process.cwd());
+    env.loadEnvConfig(process.cwd());
     await db.initialize();
     await db.models.User.upsert({
       userId: testUserID,

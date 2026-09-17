@@ -63,7 +63,7 @@ export interface FindOrCreateCityAndInventoryProps {
   year: number;
   cityName?: string | null;
   locode?: string | null;
-  inventoryType: "gpc_basic" | "gpc_basic_plus";
+  inventoryType: GhgiInventoryTypeEnum;
   gwp: GlobalWarmingPotentialTypeEnum;
   userId?: string | null;
 }
@@ -430,7 +430,7 @@ export default class AdminService {
     cityId: string;
     cityName: string;
     year: number;
-    inventoryType: "gpc_basic" | "gpc_basic_plus";
+    inventoryType: GhgiInventoryTypeEnum;
     gwp: GlobalWarmingPotentialTypeEnum;
   }): Promise<{ inventoryId: string; created: boolean }> {
     const existing = await db.models.Inventory.findOne({

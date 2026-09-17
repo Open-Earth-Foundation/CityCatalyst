@@ -59,7 +59,9 @@ export function parseNumericCell(value: unknown): number | undefined {
 }
 
 /** True when the cell is a non-zero finite emission / activity amount (negatives count). */
-export function hasSignedNumericValue(value: number | undefined): boolean {
+export function hasSignedNumericValue(
+  value: number | undefined,
+): value is number {
   return value != null && Number.isFinite(value) && value !== 0;
 }
 

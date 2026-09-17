@@ -112,7 +112,7 @@ const BulkInventoryFileImportTabContent: FC<
 
   const [zipFile, setZipFile] = useState<File | null>(null);
   const [submittedJobId, setSubmittedJobId] = useState<string | null>(null);
-  const [inventoryGoalValue, setInventoryGoalValue] = useState(
+  const [inventoryGoalValue, setInventoryGoalValue] = useState<string>(
     InventoryTypeEnum.GPC_BASIC,
   );
   const [gwpValue, setGwpValue] = useState("AR6");

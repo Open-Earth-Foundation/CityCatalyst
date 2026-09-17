@@ -1,5 +1,9 @@
 import { db } from "@/models";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
+import {
+  hasSignedNumericValue,
+  parseNumericCell,
+} from "@/util/parse-numeric-cell";
 import { type ParsedFileData } from "./FileParserService";
 
 export interface ECRFRowData {
@@ -320,16 +324,10 @@ export default class ECRFImportService {
               "activity value",
               "activity_value",
             ]);
-      // Extract activity amount value (convert to number like extractGasValue does)
+      // Extract activity amount (signed: AFOLU removals can be negative)
       let activityAmount: number | undefined = undefined;
       if (activityAmountHeader) {
-        const value = row[activityAmountHeader];
-        if (value !== null && value !== undefined && value !== "") {
-          const numValue = typeof value === "number" ? value : Number(value);
-          if (!isNaN(numValue)) {
-            activityAmount = numValue;
-          }
-        }
+        activityAmount = parseNumericCell(row[activityAmountHeader]);
       }
 
       // Get activity unit header (using detectedColumns index or findHeader)
@@ -491,8 +489,14 @@ export default class ECRFImportService {
           ? this.extractGasValue(row, headers, emissionFactorTotalCO2eIdx)
           : undefined;
 
-      // Validate that at least one gas value is present
-      if (!co2 && !ch4 && !n2o && !totalCO2e && !notationKey) {
+      // 0 is empty (notation-key behaviour); negatives are real removals
+      if (
+        !hasSignedNumericValue(co2) &&
+        !hasSignedNumericValue(ch4) &&
+        !hasSignedNumericValue(n2o) &&
+        !hasSignedNumericValue(totalCO2e) &&
+        !notationKey
+      ) {
         rowWarnings.push("No gas values or notation key found");
       }
 
@@ -650,18 +654,7 @@ export default class ECRFImportService {
     const header = headers[columnIndex];
     const value = row[header];
 
-    if (value === null || value === undefined || value === "") {
-      return undefined;
-    }
-
-    // Try to convert to number
-    const numValue = typeof value === "number" ? value : Number(value);
-
-    if (isNaN(numValue)) {
-      return undefined;
-    }
-
-    return numValue;
+    return parseNumericCell(value);
   }
 
   /**

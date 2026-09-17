@@ -20,6 +20,7 @@ import {
   resolveGpcRefNo,
   splitSectorSubsectorLabels,
 } from "@/util/GHGI/gpc-ref-resolver";
+import { parseNumericCell } from "@/util/parse-numeric-cell";
 
 // ─── Public types ────────────────────────────────────────────────────────────
 
@@ -776,11 +777,11 @@ export default class FormatAdapterService {
     return FileParserService.detectColumn(headers, terms);
   }
 
-  /** Parse numeric value, handling locale commas and sentinel dashes. */
+  /** Parse numeric value, keeping signed removals (unicode minus, accounting, locale). */
   private static numVal(v: unknown): number | null {
-    if (v == null || v === "" || v === "-") return null;
-    const n = Number(String(v).replace(/,/g, "").trim());
-    return Number.isFinite(n) ? n : null;
+    if (v === "-") return null;
+    const n = parseNumericCell(v);
+    return n == null ? null : n;
   }
 
   /** Parse string value, returning null for empty/whitespace. */

@@ -48,7 +48,7 @@ flowchart LR
 
     subgraph "Data stores"
         OP[(App DB<br/>PostgreSQL)]
-        DW[(ccglobal DWH<br/>PostgreSQL + PostGIS)]
+        DW[(ccglobal DWH<br/>PostgreSQL · PostGIS functions)]
         VDB[(pgvector<br/>knowledge embeddings)]
         S3[(AWS S3<br/>files & documents)]
     end
@@ -73,7 +73,7 @@ The services:
 | Service | What it does | Stack | Code |
 |---|---|---|---|
 | **app** | Web platform: UI, REST API (`/api/v1`), OAuth 2.0 authorization server, MCP server, GHGI calculation engine, RBAC | Next.js / TypeScript | [`/app`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/app) |
-| **global-api** | Global emissions, risk & action data API over the analytical warehouse | Python / FastAPI / PostGIS | [`/global-api`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/global-api) |
+| **global-api** | Global emissions, risk & action data API over the analytical warehouse | Python / FastAPI / PostgreSQL (PostGIS functions in boundary queries) | [`/global-api`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/global-api) |
 | **climate-advisor** | Conversational AI advisor (RAG + tool-calling agents) | Python / FastAPI / pgvector | [`/climate-advisor`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/climate-advisor) |
 | **hiap** | High-Impact Actions & Plans: ML action ranking + plan generation | Python / FastAPI | [`/hiap`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/hiap) |
 | **hiap-meed** | MEED energy-model variant of the prioritizer | Python / FastAPI | [`/hiap-meed`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/hiap-meed) |
@@ -121,7 +121,7 @@ flowchart TB
     subgraph "Four doors into the platform"
         D1["REST API /api/v1<br/>OpenAPI generated from code"]
         D2["OAuth 2.0 server<br/>RFC 8414 · PKCE · refresh tokens"]
-        D3["SDKs<br/>TypeScript + Python, CI-generated"]
+        D3["SDKs<br/>5 languages, CI-generated"]
         D4["MCP server<br/>tools for AI agents"]
     end
 
@@ -146,7 +146,7 @@ flowchart TB
 
 **Door 2 — OAuth 2.0 authorization server.** External applications obtain tokens via the authorization-code flow with PKCE and refresh tokens, and act on a user's behalf under that user's exact permissions. Discovery follows RFC 8414: [`oauth/metadata/route.ts`](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/develop/app/src/app/api/v1/oauth/metadata/route.ts). A working example client ships in the repo: [`api-demo`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/api-demo).
 
-**Door 3 — Generated SDKs.** TypeScript and Python client SDKs are generated from the OpenAPI spec by CI on every API change: [`sdk-generator.yml`](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/develop/.github/workflows/sdk-generator.yml). Publication to the public npm/PyPI registries is on the current sprint.
+**Door 3 — Generated SDKs.** Client SDKs in five languages (TypeScript, Python, Ruby, Swift, Kotlin) are generated from the OpenAPI spec and packaged by CI on every API change: [`sdk-generator.yml`](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/develop/.github/workflows/sdk-generator.yml). They are built and stored as CI artifacts today; publication to the public registries (npm, PyPI) is planned but not yet wired into the pipeline.
 
 **Door 4 — MCP server.** CityCatalyst ships a [Model Context Protocol](https://modelcontextprotocol.io) server, making the platform directly usable by AI assistants and agent frameworks: tools for cities, inventories, emissions, city profiles, risk assessments and action plans, behind the same authentication. Code: [`app/src/lib/mcp`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/app/src/lib/mcp), with agent discovery at [`.well-known/mcp-server`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/app/src/app/api/v1/.well-known/mcp-server).
 
@@ -203,7 +203,7 @@ flowchart LR
     end
 
     subgraph Storage
-        DW[("ccglobal DWH<br/>PostgreSQL + PostGIS")]
+        DW[("ccglobal DWH<br/>PostgreSQL · PostGIS functions")]
         OP[("App DB<br/>PostgreSQL")]
         S3B[("AWS S3<br/>documents")]
     end
@@ -222,7 +222,7 @@ flowchart LR
     APP --> CDP
 ```
 
-- **Analytical warehouse (`ccglobal`)** — PostgreSQL + **PostGIS**, organized in medallion layers (raw → modelled → reporting). Real geospatial capability: city boundaries, spatial joins, map-based search. Served read-only through [`global-api/routes`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/global-api/routes) (city boundaries, citywide emissions, risk assessments, emission-factor catalogs, climate actions, and more).
+- **Analytical warehouse (`ccglobal`)** — PostgreSQL, organized in medallion layers (raw → modelled → reporting). Geospatial today, precisely stated: boundary routes query with PostGIS functions (`ST_AsText`, `ST_Area`, `ST_Transform` — see [`city_boundaries_endpoint.py`](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/develop/global-api/routes/legacy/city_boundaries_endpoint.py)) against a PostGIS-provisioned database, and the service depends on geopandas/shapely/geojson; the extension is provisioned on the database rather than enabled by an in-repo migration, and the `modelled` schema currently stores geometry as text (PostGIS-native storage is planned). Served read-only through [`global-api/routes`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/global-api/routes) (city boundaries, citywide emissions, risk assessments, emission-factor catalogs, climate actions, and more).
 - **ETL** — ingestion runs as versioned, reviewable [Mage.ai](https://www.mage.ai) pipeline code in a dedicated repository: [CityCatalyst-global-data](https://github.com/Open-Earth-Foundation/CityCatalyst-global-data).
 - **Clean separation of concerns** — operational database (user data, drafts, app state) vs. analytical warehouse (curated global datasets) vs. object storage (unstructured files).
 - **Multi-path city data ingestion** — deterministic format adapters for standard files, AI interpretation for non-standard tables, and OCR for PDFs — all feeding one review-then-approve workflow. See the ingestion services in [`app/src/backend`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/app/src/backend).
@@ -315,7 +315,7 @@ Everything referenced above, in one place:
 
 | Resource | Link |
 |---|---|
-| Global data API (PostGIS-backed) | [`/global-api`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/global-api) · [routes](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/global-api/routes) |
+| Global data API (PostgreSQL; PostGIS functions in boundary routes) | [`/global-api`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/global-api) · [routes](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/global-api/routes) |
 | ETL pipelines (Mage.ai) | [CityCatalyst-global-data](https://github.com/Open-Earth-Foundation/CityCatalyst-global-data) |
 | Climate Advisor (RAG assistant) | [`/climate-advisor`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/climate-advisor) |
 | LLM provider configuration | [`llm_config.yaml`](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/develop/climate-advisor/llm_config.yaml) |

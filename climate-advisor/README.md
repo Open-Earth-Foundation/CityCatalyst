@@ -731,7 +731,8 @@ language, or client-side fallback behavior. The boundary is:
   searchable funder/programme/template catalogue also use it. Funding selection
   does not run research or call an LLM. See the
   [workspace funding-selection contract](../docs/ConceptNoteBuilderArchitecture.md#funding-selection-in-the-workspace)
-  for persistence, draft review invalidation, and focused tests
+  for compatible-template checks, draft review invalidation, serialized edit
+  registration/application, and focused tests
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
 - `OPENAI_API_KEY` - OpenAI API key for embeddings

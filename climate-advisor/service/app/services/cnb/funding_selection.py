@@ -17,7 +17,8 @@ from app.models.db.cnb_workspace import (
     ConceptNoteChapterValidation,
     ConceptNoteMatchedProject,
 )
-from app.models.db.concept_note import ConceptNoteRun, ConceptNoteContextBundle
+from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteRun
+from app.persistence.concept_notes.workspace import normalize_template_chapters
 from app.services.cnb.application_context import ConceptNoteApplicationContextService
 from app.services.cnb.funding_catalogue import load_funding_catalogue
 from fastapi import HTTPException
@@ -101,6 +102,7 @@ async def save_funding_selection(
                         ConceptNoteChapter.run_id == run.run_id,
                         ConceptNoteChapter.status != "deleted",
                     )
+                    .order_by(ConceptNoteChapter.position)
                     .with_for_update()
                 )
             ).all()
@@ -134,7 +136,31 @@ async def save_funding_selection(
                 status_code=409,
                 detail="Confirm that the existing draft will need review for the new funding setup.",
             )
-        for chapter in chapters:
+        # A populated workspace cannot migrate unrelated sections without a
+        # separate user decision about where each existing revision belongs.
+        template_chapters = None
+        if chapters and opportunity and opportunity.template:
+            try:
+                template_chapters = normalize_template_chapters(
+                    opportunity.template.chapter_schema
+                )
+            except ValueError:
+                template_chapters = []
+            if [chapter.template_section_id for chapter in chapters] != [
+                chapter.chapter_ref for chapter in template_chapters
+            ]:
+                raise HTTPException(
+                    status_code=409,
+                    detail={
+                        "code": "funding_template_incompatible",
+                        "message": "This template has a different chapter structure. "
+                        "Start a new concept note to use it without changing this draft.",
+                    },
+                )
+        for index, chapter in enumerate(chapters):
+            if template_chapters is not None:
+                chapter.title = template_chapters[index].title
+                chapter.required = template_chapters[index].required
             chapter.status = "needs_review"
             chapter.user_locked = False
             chapter.confirmed_revision_id = None

@@ -126,15 +126,27 @@ export function FundingSelectionDialog({
       onClose();
     } catch (cause) {
       const status = isFetchBaseQueryError(cause) ? cause.status : null;
+      const data = isFetchBaseQueryError(cause) ? cause.data : null;
+      const detail =
+        data && typeof data === "object" && "detail" in data
+          ? data.detail
+          : null;
+      const incompatibleTemplate =
+        detail &&
+        typeof detail === "object" &&
+        "code" in detail &&
+        detail.code === "funding_template_incompatible";
       setError(
         t(
-          status === 409
-            ? "funding-save-conflict"
-            : status === 403
-              ? "funding-permission-error"
-              : status === 422
-                ? "funding-selection-unavailable"
-                : "funding-save-error",
+          incompatibleTemplate
+            ? "funding-template-incompatible"
+            : status === 409
+              ? "funding-save-conflict"
+              : status === 403
+                ? "funding-permission-error"
+                : status === 422
+                  ? "funding-selection-unavailable"
+                  : "funding-save-error",
         ),
       );
     }

@@ -7,12 +7,11 @@ import logging
 from uuid import UUID
 
 from agents import function_tool
+from app.models.cnb.concept_note_edits import EditProposalRequest
+from app.services.cnb.edits import get_edit_service
+from app.services.concept_note_runs import ConceptNoteRunService
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from app.models.cnb.concept_note_edits import EditProposalRequest
-from app.services.cnb.edits import get_edit_service, load_edit_context
-from app.services.concept_note_runs import ConceptNoteRunService
 
 logger = logging.getLogger(__name__)
 CONCEPT_NOTE_EDIT_PROPOSE_CAPABILITY = "concept_note.edit.propose"
@@ -61,11 +60,9 @@ def build_concept_note_edit_tools(
                         requested_user_id=user_id,
                         authorization=f"Bearer {token}",
                     )
-                    context = await load_edit_context(session, run_uuid)
                     proposal = await service.propose(
                         run,
                         request,
-                        context,
                         recent_messages=recent_messages,
                     )
                 finally:

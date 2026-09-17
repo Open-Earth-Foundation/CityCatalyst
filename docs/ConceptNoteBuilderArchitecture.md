@@ -1769,7 +1769,19 @@ Funding changes are rejected during active context assembly, drafting, or edit
 planning. For an existing draft, the user must acknowledge another review: chapter
 text and revision history are retained, confirmations and prior validation results
 are cleared, pending edit proposals become stale, and previous project matches are
-removed. Chapter structure is retained and must be checked against the new template.
+removed. An existing draft can switch to a template only when its ordered chapter
+references match the draft. Incompatible switches are rejected without changing
+the selected funding or draft; the user is directed to start a new note for that
+template. Compatible switches update chapter titles and required flags while
+preserving revision history. Clearing funding, or selecting a funder without a
+template, preserves the draft for a later compatible selection.
+
+Edit registration snapshots context while holding the same CA run-row lock as
+funding selection, and commits its processing proposal before releasing that
+lock. Funding changes reject processing proposals; completed proposals are
+invalidated on a switch. Edit application also takes the CA lock before CNB
+proposal/chapter locks, so acceptance cannot race funding invalidation. HTTP and
+chat callers cannot supply an earlier context snapshot to the edit service.
 Reference-store review invalidation commits before the CA selection; a failed CA
 commit keeps the old choice but conservatively requires another draft review.
 
@@ -1778,6 +1790,8 @@ Focused verification:
 ```bash
 # From climate-advisor/service
 python -m pytest tests/cnb/test_funding_selection.py tests/cnb/test_application_context.py
+# With a disposable PostgreSQL test database, also exercise real row-lock ordering
+CNB_TEST_DATABASE_URL=postgresql://localhost/cnb_test python -m pytest tests/cnb/test_funding_selection_postgres.py
 # From app, against a running local app and authenticated test-user storage state
 CNB_TEST_URL=http://localhost:3000 CNB_AUTH_STATE=playwright/.auth/user.json npx playwright test --config e2e/funding.playwright.config.ts
 ```

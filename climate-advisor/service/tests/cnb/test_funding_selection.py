@@ -1,32 +1,44 @@
 """Database-backed funding browsing, persistence, and review invalidation contracts."""
 
-from uuid import UUID, uuid4
+import asyncio
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
+from uuid import UUID, uuid4
 
 import pytest
-from fastapi import HTTPException
-from pydantic import ValidationError
-from sqlalchemy import select
-
+from app.models.cnb.concept_note_edits import (
+    EditApplyRequest,
+    EditPlanOutput,
+    EditProposalRequest,
+    PlannedTextChange,
+)
 from app.models.cnb.funding_catalogue import FundingSelectionRequest
+from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.models.db.cnb_reference import (
     CnbFunder,
-    CnbFundingOpportunity,
     CnbFunderTemplate,
+    CnbFundingOpportunity,
 )
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteChapterRevision,
     ConceptNoteChapterValidation,
 )
-from app.models.db.cnb_edit import ConceptNoteEditProposal
+from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteRun
+from app.persistence.concept_notes.edits import (
+    ConceptNoteEditRepository,
+    EditOperationError,
+)
+from app.persistence.concept_notes.workspace import normalize_template_chapters
 from app.services.cnb.application_context import ConceptNoteApplicationContextService
 from app.services.cnb.chapter_drafting import ConceptNoteChapterDraftService
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from app.models.db.concept_note import ConceptNoteRun, ConceptNoteContextBundle
+from app.services.cnb.edits import ConceptNoteEditService
 from app.services.cnb.funding_catalogue import load_funding_catalogue
 from app.services.cnb.funding_selection import save_funding_selection
+from fastapi import HTTPException
+from pydantic import ValidationError
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from tests.test_concept_note_lifecycle import _ca_session, _workspace_repository
 
 
@@ -69,6 +81,7 @@ async def _seed(factory: async_sessionmaker[AsyncSession]) -> tuple[UUID, UUID, 
                         "chapter_ref": "summary",
                         "title": "Project summary",
                         "required": True,
+                        "required_fields": ["budget"],
                     }
                 ],
                 required_fields=["budget"],
@@ -207,6 +220,7 @@ async def test_existing_draft_requires_acknowledgement_and_preserves_text():
                     chapter_id=chapter_id,
                     run_id=run.run_id,
                     title="Project summary",
+                    template_section_id="summary",
                     position=0,
                     status="ready",
                     user_locked=True,
@@ -353,3 +367,238 @@ async def test_drafting_reloads_current_funding_before_seeding_chapters():
             "chapters"
         ]
         assert chapters[0].title == "Project summary"
+
+
+@pytest.mark.parametrize("new_refs", [["budget"], ["summary", "budget"], []])
+async def test_incompatible_template_switch_preserves_selection_and_draft(new_refs):
+    async with (
+        _workspace_repository() as (workspace, factory),
+        _ca_session() as session,
+    ):
+        first, second, opportunity_id = await _seed(factory)
+        run = await _run(session)
+        original = await save_funding_selection(
+            session, run, _selection(first, opportunity_id), reference_factory=factory
+        )
+        await workspace.ensure_template_chapters(
+            run_id=run.run_id,
+            chapters=normalize_template_chapters(original.template.chapter_schema),
+        )
+        chapter = (await workspace.list_chapters(run_id=run.run_id))[0]
+        await workspace.save_generated_chapter(
+            chapter_id=chapter.chapter_id,
+            body_markdown="Keep the original draft.",
+            missing_information=[],
+        )
+        new_opportunity = uuid4()
+        async with factory() as reference, reference.begin():
+            reference.add(
+                CnbFundingOpportunity(
+                    funding_opportunity_id=new_opportunity,
+                    funder_id=second,
+                    name="Replacement programme",
+                    source_run_id="review-2",
+                    source_record_ref="programme-2",
+                )
+            )
+            await reference.flush()
+            reference.add(
+                CnbFunderTemplate(
+                    funding_opportunity_id=new_opportunity,
+                    template_name="Replacement",
+                    chapter_schema=[
+                        {"chapter_ref": ref, "title": ref} for ref in new_refs
+                    ],
+                    required_fields=[],
+                )
+            )
+        with pytest.raises(HTTPException) as error:
+            await save_funding_selection(
+                session,
+                run,
+                _selection(second, new_opportunity, first, opportunity_id, True),
+                reference_factory=factory,
+            )
+        assert error.value.status_code == 409
+        assert error.value.detail["code"] == "funding_template_incompatible"
+        await session.rollback()
+        await session.refresh(run)
+        assert (run.funder_id, run.selected_funding_opportunity_id) == (
+            first,
+            opportunity_id,
+        )
+        after = (await workspace.list_chapters(run_id=run.run_id))[0]
+        assert after.chapter_id == chapter.chapter_id
+        assert after.chapter_ref == "summary"
+        assert after.body_markdown == "Keep the original draft."
+        assert after.status == "draft"
+
+
+async def test_compatible_switch_updates_chapter_metadata_without_replacing_text():
+    async with (
+        _workspace_repository() as (workspace, factory),
+        _ca_session() as session,
+    ):
+        first, second, opportunity_id = await _seed(factory)
+        run = await _run(session)
+        original = await save_funding_selection(
+            session, run, _selection(first, opportunity_id), reference_factory=factory
+        )
+        await workspace.ensure_template_chapters(
+            run_id=run.run_id,
+            chapters=normalize_template_chapters(original.template.chapter_schema),
+        )
+        chapter = (await workspace.list_chapters(run_id=run.run_id))[0]
+        await workspace.save_generated_chapter(
+            chapter_id=chapter.chapter_id,
+            body_markdown="Keep this text.",
+            missing_information=[],
+        )
+        new_opportunity = uuid4()
+        async with factory() as reference, reference.begin():
+            reference.add(
+                CnbFundingOpportunity(
+                    funding_opportunity_id=new_opportunity,
+                    funder_id=second,
+                    name="Compatible programme",
+                    source_run_id="review-2",
+                    source_record_ref="programme-2",
+                )
+            )
+            await reference.flush()
+            reference.add(
+                CnbFunderTemplate(
+                    funding_opportunity_id=new_opportunity,
+                    template_name="Compatible",
+                    chapter_schema=[
+                        {
+                            "chapter_ref": "summary",
+                            "title": "Executive overview",
+                            "required": False,
+                        }
+                    ],
+                    required_fields=[],
+                )
+            )
+        await save_funding_selection(
+            session,
+            run,
+            _selection(second, new_opportunity, first, opportunity_id, True),
+            reference_factory=factory,
+        )
+        after = (await workspace.list_chapters(run_id=run.run_id))[0]
+        assert after.title == "Executive overview" and after.required is False
+        assert after.chapter_id == chapter.chapter_id
+        assert after.body_markdown == "Keep this text."
+        assert after.status == "needs_review"
+
+
+async def test_edit_registration_reloads_funding_and_blocks_switch_until_finished(
+    monkeypatch,
+):
+    async with (
+        _workspace_repository() as (workspace, factory),
+        _ca_session() as session,
+    ):
+        first, second, opportunity_id = await _seed(factory)
+        run = await _run(session)
+        original = await save_funding_selection(
+            session, run, _selection(first, opportunity_id), reference_factory=factory
+        )
+        await workspace.ensure_template_chapters(
+            run_id=run.run_id,
+            chapters=normalize_template_chapters(original.template.chapter_schema),
+        )
+        chapter = (await workspace.list_chapters(run_id=run.run_id))[0]
+        await workspace.save_generated_chapter(
+            chapter_id=chapter.chapter_id,
+            body_markdown="Improve the city.",
+            missing_information=[],
+        )
+        # Simulate a request authorized before another tab changes the funding.
+        stale_run = SimpleNamespace(
+            run_id=run.run_id,
+            user_id=run.user_id,
+            status="active",
+            funder_id=first,
+            selected_funding_opportunity_id=opportunity_id,
+        )
+        await save_funding_selection(
+            session,
+            run,
+            _selection(second, None, first, opportunity_id, True),
+            reference_factory=factory,
+        )
+        planning = asyncio.Event()
+        finish_planning = asyncio.Event()
+
+        async def plan(request, chapters, context, **kwargs):
+            assert context["funder_context"]["funder"]["id"] == str(second)
+            planning.set()
+            await finish_planning.wait()
+            return EditPlanOutput(
+                intent="edit",
+                changes=[
+                    PlannedTextChange(
+                        chapter_id=chapter.chapter_id,
+                        start=0,
+                        before="Improve the city.",
+                        after="Make the city better.",
+                        kind="wording",
+                        group_id="wording",
+                        semantic_support="preserved",
+                    )
+                ],
+            )
+
+        service = ConceptNoteEditService(
+            ConceptNoteEditRepository(factory),
+            workspace,
+            SimpleNamespace(plan=plan),
+            workflow_sessions=async_sessionmaker(session.bind, expire_on_commit=False),
+        )
+        task = asyncio.create_task(
+            service._propose(
+                stale_run,
+                EditProposalRequest(
+                    instruction="Improve the wording.", idempotency_key=uuid4()
+                ),
+                recent_messages=None,
+            )
+        )
+        try:
+            await asyncio.wait_for(planning.wait(), timeout=5)
+            with pytest.raises(HTTPException) as busy:
+                await save_funding_selection(
+                    session,
+                    run,
+                    _selection(first, opportunity_id, second, None, True),
+                    reference_factory=factory,
+                )
+            assert busy.value.status_code == 409
+            await session.rollback()
+            await session.refresh(run)
+        finally:
+            finish_planning.set()
+        proposal = await asyncio.wait_for(task, timeout=5)
+        assert proposal.status == "proposed"
+        await save_funding_selection(
+            session,
+            run,
+            _selection(first, opportunity_id, second, None, True),
+            reference_factory=factory,
+        )
+        # SQLite has no advisory locks; exercise the real status/revision checks.
+        monkeypatch.setattr("app.persistence.concept_notes.edits.lock_run", AsyncMock())
+        with pytest.raises(EditOperationError) as stale:
+            await service.apply(
+                run,
+                proposal.proposal_id,
+                EditApplyRequest(
+                    idempotency_key=uuid4(),
+                    expected_revisions={chapter.chapter_id: 1},
+                ),
+            )
+        assert stale.value.code == "proposal_not_pending"
+        after = (await workspace.list_chapters(run_id=run.run_id))[0]
+        assert after.body_markdown == "Improve the city." and after.revision_number == 1

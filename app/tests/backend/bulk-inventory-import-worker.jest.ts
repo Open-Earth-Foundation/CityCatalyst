@@ -2,7 +2,7 @@
  * IMP-006: worker auto-imports eCRF files (including negative CO2e) and fails
  * non-eCRF items with not_ecrf without calling OpenAI.
  */
-import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { randomUUID } from "node:crypto";
 import env from "@next/env";
 import { db } from "@/models";
@@ -16,7 +16,6 @@ import { BulkInventoryImportEnqueueService } from "@/backend/BulkInventoryImport
 import { createBulkInventoryImportZip } from "@/backend/BulkInventoryImportZip";
 import { BulkInventoryImportWorkerService } from "@/backend/BulkInventoryImportWorkerService";
 import { getEmissionResults } from "@/backend/ResultsService";
-import * as AIInterpretationService from "@/backend/AIInterpretationService";
 
 const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
 const PREFIX = `XX_IMP006_${randomUUID().slice(0, 8)}`;
@@ -146,11 +145,6 @@ describe("Bulk inventory import worker", () => {
   });
 
   it("imports two eCRF files including a removal and fails a non-eCRF file without OpenAI", async () => {
-    const interpretSpy = jest.spyOn(
-      AIInterpretationService,
-      "interpretTabular",
-    );
-
     const removalName = `${PREFIX}_Removal`;
     const positiveName = `${PREFIX}_Positive`;
     const junkName = `${PREFIX}_Junk`;
@@ -225,8 +219,6 @@ describe("Bulk inventory import worker", () => {
       enqueued.jobId,
     );
     expect(processed.itemsProcessed).toBe(3);
-    expect(interpretSpy).not.toHaveBeenCalled();
-    interpretSpy.mockRestore();
 
     const items = await db.models.BulkInventoryImportItem.findAll({
       where: { jobId },

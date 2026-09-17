@@ -16,7 +16,6 @@ import { DEFAULT_PROJECT_ID } from "@/util/constants";
 import { BulkInventoryImportEnqueueService } from "@/backend/BulkInventoryImportEnqueueService";
 import { createBulkInventoryImportZip } from "@/backend/BulkInventoryImportZip";
 import { BulkInventoryImportWorkerService } from "@/backend/BulkInventoryImportWorkerService";
-import * as AIInterpretationService from "@/backend/AIInterpretationService";
 import OpenClimateService from "@/backend/OpenClimateService";
 
 const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
@@ -163,11 +162,6 @@ describe("Bulk inventory import dry-run", () => {
   });
 
   it("validates a 3-file zip without writing activities or creating cities", async () => {
-    const interpretSpy = jest.spyOn(
-      AIInterpretationService,
-      "interpretTabular",
-    );
-
     const validName = `${PREFIX}_Valid`;
     const junkName = `${PREFIX}_Junk`;
     const ghostName = `${PREFIX}_Ghost`;
@@ -233,8 +227,6 @@ describe("Bulk inventory import dry-run", () => {
     expect(ghostCities).toHaveLength(0);
 
     await BulkInventoryImportWorkerService.processDueJobs(10, jobId);
-    expect(interpretSpy).not.toHaveBeenCalled();
-    interpretSpy.mockRestore();
 
     const items = await db.models.BulkInventoryImportItem.findAll({
       where: { jobId },

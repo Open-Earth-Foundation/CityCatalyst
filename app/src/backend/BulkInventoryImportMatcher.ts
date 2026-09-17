@@ -1,10 +1,18 @@
 import { parse } from "csv-parse/sync";
 import { INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES } from "@/backend/inventory-import-file-limits";
 import { BulkInventoryImportMatchError } from "@/util/enums";
+import {
+  formatIneCode,
+  iso2FromInventoryCountry,
+  lookupChileMeedCityByIne,
+} from "@/backend/chile-meed-city-catalog";
 
 const ALLOWED_EXTENSIONS = new Set(["xlsx", "csv"]);
 
 const CRF_FORMAT_STEM = /^(.+)_CRFFormat_(\d{4})_(\d{8})$/i;
+/** MEED Chile: inventory-CHL-13112-La-Pintana-2022 */
+const CHILE_INVENTORY_STEM =
+  /^inventory[-_]([A-Za-z]{2,3})[-_](\d{4,6})[-_](.+)[-_](\d{4})$/i;
 const INE_STEM = /^([A-Za-z]{2}\d{4,6})[-_](\d{4})$/;
 const LOCODE_STEM = /^([A-Za-z]{2})[-_\s]?([A-Za-z]{3})[-_](\d{4})$/;
 
@@ -108,8 +116,36 @@ export function locodeLookupValues(locode: string): string[] {
   return [...new Set([formatted, compact, locode.trim()].filter(Boolean))];
 }
 
+/** True UN/LOCODE (`CL IQQ`), not an INE key (`CL13112`). */
+export function isUnLocode(locode: string): boolean {
+  return /^[A-Z]{2} [A-Z]{3}$/.test(formatStoredLocode(locode));
+}
+
+export function isIneLocode(locode: string): boolean {
+  return /^[A-Z]{2}\d{4,6}$/.test(normalizeLocode(locode));
+}
+
+/** ISO-2 country from UN/LOCODE or INE (`CL IQQ` / `CL13112` → `CL`). */
+export function countryCodeFromLocode(locode: string): string | null {
+  const compact = normalizeLocode(locode);
+  if (compact.length < 2) return null;
+  return compact.slice(0, 2);
+}
+
 export function normalizeFilenameKey(filename: string): string {
   return normalizeCityName(basename(filename));
+}
+
+function enrichWithChileCatalog(parsed: ParsedFilename): ParsedFilename {
+  if (!parsed.ineCode) return parsed;
+  const city = lookupChileMeedCityByIne(parsed.ineCode);
+  if (!city) return parsed;
+  const unLocode = city.locode ? formatStoredLocode(city.locode) : null;
+  return {
+    ...parsed,
+    cityName: city.name,
+    locode: unLocode ?? parsed.ineCode,
+  };
 }
 
 export function parseFilename(originalFileName: string): ParsedFilename {
@@ -125,13 +161,27 @@ export function parseFilename(originalFileName: string): ParsedFilename {
     };
   }
 
+  const chile = stem.match(CHILE_INVENTORY_STEM);
+  if (chile) {
+    const country = iso2FromInventoryCountry(chile[1]);
+    const ineCode = formatIneCode(chile[2], country);
+    const fromName = chile[3].replace(/[-_]+/g, " ").trim();
+    return enrichWithChileCatalog({
+      cityName: fromName || undefined,
+      ineCode: ineCode ?? undefined,
+      locode: ineCode ?? undefined,
+      year: Number(chile[4]),
+    });
+  }
+
   const ine = stem.match(INE_STEM);
   if (ine) {
-    return {
-      ineCode: ine[1].toUpperCase(),
-      locode: ine[1].toUpperCase(),
+    const ineCode = ine[1].toUpperCase();
+    return enrichWithChileCatalog({
+      ineCode,
+      locode: ineCode,
       year: Number(ine[2]),
-    };
+    });
   }
 
   const locode = stem.match(LOCODE_STEM);
@@ -220,20 +270,34 @@ function resolveCity(
   cities: MatchableCity[],
   parsed: ParsedFilename,
 ): { matches: MatchableCity[]; locode: string | null } {
-  if (parsed.locode) {
-    const matches = findCitiesByLocode(cities, parsed.locode);
-    return { matches, locode: parsed.locode };
-  }
-  if (parsed.ineCode) {
-    const matches = findCitiesByLocode(cities, parsed.ineCode);
-    return { matches, locode: parsed.ineCode };
+  const tried = new Set<string>();
+  const lookup = (code?: string | null): MatchableCity[] => {
+    if (!code) return [];
+    const key = normalizeLocode(code);
+    if (tried.has(key)) return [];
+    tried.add(key);
+    return findCitiesByLocode(cities, code);
+  };
+
+  let matches = lookup(parsed.locode);
+  if (matches.length === 0) matches = lookup(parsed.ineCode);
+  if (matches.length > 0) {
+    return {
+      matches,
+      locode: matches.length === 1
+        ? (matches[0].locode ?? parsed.locode ?? parsed.ineCode ?? null)
+        : (parsed.locode ?? parsed.ineCode ?? null),
+    };
   }
   if (parsed.cityName) {
-    const matches = findCitiesByName(cities, parsed.cityName);
-    const locode = matches.length === 1 ? (matches[0].locode ?? null) : null;
-    return { matches, locode };
+    const nameMatches = findCitiesByName(cities, parsed.cityName);
+    const locode =
+      nameMatches.length === 1
+        ? (nameMatches[0].locode ?? parsed.locode ?? parsed.ineCode ?? null)
+        : (parsed.locode ?? parsed.ineCode ?? null);
+    return { matches: nameMatches, locode };
   }
-  return { matches: [], locode: null };
+  return { matches: [], locode: parsed.locode ?? parsed.ineCode ?? null };
 }
 
 /**
@@ -288,8 +352,8 @@ export function matchFile(
     ...(manifest?.locode ? { locode: manifest.locode } : {}),
     ...(manifest?.ineCode
       ? {
-          ineCode: manifest.ineCode,
-          locode: manifest.locode ?? manifest.ineCode,
+          ineCode: formatIneCode(manifest.ineCode) ?? manifest.ineCode,
+          locode: manifest.locode ?? parsedFromName.locode ?? manifest.ineCode,
         }
       : {}),
     ...(manifest?.year != null ? { year: manifest.year } : {}),
@@ -297,6 +361,11 @@ export function matchFile(
   // Manifest locode/INE wins over a name parsed from the filename.
   if (manifest?.locode || manifest?.ineCode) {
     parsed.cityName = manifest.cityName ?? parsed.cityName;
+  }
+  if (parsed.ineCode && !manifest?.locode) {
+    const catalogued = enrichWithChileCatalog(parsed);
+    parsed.locode = catalogued.locode;
+    if (!manifest?.cityName) parsed.cityName = catalogued.cityName;
   }
 
   const fileInferredYear = manifest?.year ?? parsedFromName.year ?? null;
@@ -408,4 +477,7 @@ export class BulkInventoryImportMatcher {
   static normalizeLocode = normalizeLocode;
   static formatStoredLocode = formatStoredLocode;
   static locodeLookupValues = locodeLookupValues;
+  static isUnLocode = isUnLocode;
+  static isIneLocode = isIneLocode;
+  static countryCodeFromLocode = countryCodeFromLocode;
 }

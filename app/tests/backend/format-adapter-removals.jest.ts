@@ -77,4 +77,39 @@ describe("FormatAdapterService Adapter D removals", () => {
     const rows = FormatAdapterService.toExtractedRows(nearEcrfFile(0));
     expect(rows[0]?.totalCO2e).toBe(0);
   });
+
+  it("detects Chile MEED CSVs (GPC ref + totals, no notation) as near-ecrf", () => {
+    const headers = [
+      "Inventory Reference",
+      "GPC Reference Number",
+      "Subsector name",
+      "Total Emissions",
+      "Total Emission Units",
+    ];
+    const sheet = {
+      name: "Sheet1",
+      headers,
+      rows: [
+        {
+          "Inventory Reference": "x",
+          "GPC Reference Number": "I.1.1",
+          "Subsector name": "Residential buildings",
+          "Total Emissions": -12.5,
+          "Total Emission Units": "tCO2e",
+        },
+      ],
+      rowCount: 2,
+      columnCount: headers.length,
+    };
+    const parsed: ParsedFileData = {
+      sheets: [sheet],
+      primarySheet: sheet,
+      fileType: "csv",
+    };
+    expect(FormatAdapterService.detect(parsed).adapterType).toBe("near-ecrf");
+    const rows = FormatAdapterService.toExtractedRows(parsed, 2022);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].gpcRefNo).toBe("I.1.1");
+    expect(rows[0].totalCO2e).toBe(-12.5);
+  });
 });

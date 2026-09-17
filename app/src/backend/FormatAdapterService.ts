@@ -77,7 +77,7 @@ export default class FormatAdapterService {
       );
     }
 
-    // ── Adapter D (near-ecrf): already has GPC ref + notation columns ─────
+    // ── Adapter D (near-ecrf): GPC ref + totals (notation optional; Chile MEED CSVs omit it)
     if (this.isNearECRF(headersLower)) {
       return { adapterType: "near-ecrf", isMultiCity, warnings };
     }
@@ -306,14 +306,13 @@ export default class FormatAdapterService {
 
   // ── Private: detection helpers ─────────────────────────────────────────────
 
-  /** Adapter D: has GPC ref + emissions + notation columns. */
+  /** Adapter D: GPC reference + total emissions. Notation is optional. */
   private static isNearECRF(headersLower: string[]): boolean {
     const hasGpcRef = headersLower.some((h) => /gpc.*(ref|reference)/i.test(h));
     const hasEmissions = headersLower.some((h) =>
       /total.*emission|total.*co2e|ghg.*emission/i.test(h),
     );
-    const hasNotation = headersLower.some((h) => /notation/i.test(h));
-    return hasGpcRef && hasEmissions && hasNotation;
+    return hasGpcRef && hasEmissions;
   }
 
   /** Adapter B: 3+ headers contain a 4-digit calendar year. */

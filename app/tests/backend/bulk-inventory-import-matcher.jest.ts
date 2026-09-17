@@ -38,9 +38,30 @@ describe("parseFilename", () => {
 
   it("parses INE code filenames", () => {
     expect(parseFilename("CL13112_2023.csv")).toEqual({
+      cityName: "La Pintana",
       ineCode: "CL13112",
       locode: "CL13112",
       year: 2023,
+    });
+  });
+
+  it("parses Chile MEED inventory filenames by INE, not the zip city name", () => {
+    expect(
+      parseFilename("inventory-CHL-13112-Penalolen-2022.csv"),
+    ).toEqual({
+      cityName: "La Pintana",
+      ineCode: "CL13112",
+      locode: "CL13112",
+      year: 2022,
+    });
+  });
+
+  it("prefers MEED UN/LOCODE when the comuna has one", () => {
+    expect(parseFilename("inventory-CHL-13101-Santiago-2022.csv")).toEqual({
+      cityName: "Santiago",
+      ineCode: "CL13101",
+      locode: "CL SCL",
+      year: 2022,
     });
   });
 });
@@ -65,6 +86,22 @@ describe("BulkInventoryImportMatcher", () => {
     expect(result.error).toBeUndefined();
     expect(result.cityId).toBe(ineCity.cityId);
     expect(result.year).toBe(2023);
+  });
+
+  it("matches a Chile MEED file to a city stored under UN/LOCODE", () => {
+    const santiago = {
+      cityId: "city-scl",
+      name: "Santiago",
+      locode: "CL SCL",
+    };
+    const result = matchFile(
+      { originalFileName: "inventory-CHL-13101-Anything-2022.csv" },
+      { cities: [...cities, santiago], jobDefaultYear: 2022 },
+    );
+    expect(result.error).toBeUndefined();
+    expect(result.cityId).toBe(santiago.cityId);
+    expect(result.locode).toBe("CL SCL");
+    expect(result.parsed.ineCode).toBe("CL13101");
   });
 
   it("matches accented CRFFormat names via NFKD", () => {

@@ -146,6 +146,10 @@ async function applyOpenClimateFallback(
   if (result.error !== BulkInventoryImportMatchError.UNMATCHED_CITY) {
     return undefined;
   }
+  // INE / locode identity is enough; do not require OpenClimate for Chile.
+  if (result.parsed.ineCode || result.parsed.locode) {
+    return undefined;
+  }
   const cityName = result.parsed.cityName;
   if (!cityName) return undefined;
 

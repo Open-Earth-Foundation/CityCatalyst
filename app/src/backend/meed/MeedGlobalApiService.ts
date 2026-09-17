@@ -46,6 +46,15 @@ export class MeedGlobalApiService {
     );
   }
 
+  /** Census / estimate series keyed by actor id (UN/LOCODE or INE). */
+  public static async fetchPopulationHistory(
+    actorId: string,
+  ): Promise<unknown | null> {
+    return this.fetchJson(
+      `/api/v1/population/${encodeURIComponent(actorId)}`,
+    );
+  }
+
   /** Policy-alignment scores per action, with top evidence rows. */
   public static async fetchPolicyScores(
     locode: string,

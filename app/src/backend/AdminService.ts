@@ -17,9 +17,13 @@ import CityBoundaryService from "./CityBoundaryService";
 import UserService from "./UserService";
 import {
   formatStoredLocode,
+  isUnLocode,
   locodeLookupValues,
   normalizeCityName,
+  countryCodeFromLocode,
 } from "@/backend/BulkInventoryImportMatcher";
+import { lookupChileMeedCityByIne } from "@/backend/chile-meed-city-catalog";
+import { fetchGlobalApiCityPopulation } from "@/backend/global-api-city-population";
 export interface BulkInventoryCreateProps {
   cityLocodes: string[]; // List of city locodes
   emails: string[]; // Comma separated list of emails to invite to the all of the created inventories
@@ -383,12 +387,23 @@ export default class AdminService {
       );
     }
 
+    const chile = input.locode
+      ? lookupChileMeedCityByIne(input.locode)
+      : undefined;
+    const countryLocode = input.locode
+      ? countryCodeFromLocode(input.locode)
+      : null;
+
     try {
       const record = await db.models.City.create({
         cityId: randomUUID(),
         name,
         locode: input.locode ?? undefined,
         projectId: input.projectId,
+        countryLocode: countryLocode ?? undefined,
+        country: countryLocode === "CL" ? "Chile" : undefined,
+        region: chile?.regionName,
+        regionLocode: chile?.regionCode,
       });
       return { record, created: true };
     } catch (err) {
@@ -457,7 +472,7 @@ export default class AdminService {
     locode: string | null,
     fallbackName: string | null,
   ): Promise<string | null> {
-    if (locode) {
+    if (locode && isUnLocode(locode)) {
       try {
         const ocName = await OpenClimateService.getCityName(locode);
         if (ocName) return ocName;
@@ -468,12 +483,17 @@ export default class AdminService {
         );
       }
     }
+    if (locode) {
+      const chile = lookupChileMeedCityByIne(locode);
+      if (chile?.name) return chile.name;
+    }
     return fallbackName || locode;
   }
 
   /**
-   * Pull OpenClimate population nearest to `year` (10-year window, same as
-   * onboarding) and Global API boundary. Never throws to the caller.
+   * Pull population nearest to `year` (10-year window, same as onboarding)
+   * and Global API boundary. Never throws to the caller.
+   * UN/LOCODE uses OpenClimate; INE-only Chile uses Global API / census.
    */
   public static async enrichCityBestEffort(
     locode: string,
@@ -482,7 +502,22 @@ export default class AdminService {
     projectId: string,
   ): Promise<void> {
     try {
-      const errors = await this.createPopulationEntries(
+      if (isUnLocode(locode)) {
+        const errors = await this.createPopulationEntries(
+          locode,
+          year,
+          cityId,
+          projectId,
+        );
+        if (errors.length) {
+          logger.warn(
+            { locode, cityId, errors },
+            "OpenClimate population/boundary enrichment failed (best-effort)",
+          );
+        }
+        return;
+      }
+      const errors = await this.enrichIneCityBestEffort(
         locode,
         year,
         cityId,
@@ -491,7 +526,7 @@ export default class AdminService {
       if (errors.length) {
         logger.warn(
           { locode, cityId, errors },
-          "OpenClimate population/boundary enrichment failed (best-effort)",
+          "INE city population enrichment failed (best-effort)",
         );
       }
     } catch (err) {
@@ -500,6 +535,68 @@ export default class AdminService {
         "OpenClimate enrichment threw (best-effort)",
       );
     }
+  }
+
+  /**
+   * INE-only comunas: city population from Global API, country from OpenClimate
+   * `CL`. Missing numbers must not fail the import.
+   */
+  private static async enrichIneCityBestEffort(
+    locode: string,
+    inventoryYear: number,
+    cityId: string,
+    projectId?: string,
+  ): Promise<{ locode: string; error: string }[]> {
+    const errors: { locode: string; error: string }[] = [];
+    const chile = lookupChileMeedCityByIne(locode);
+    const countryLocode = countryCodeFromLocode(locode) ?? "CL";
+    const actorIds = [
+      locode,
+      chile?.ineCode,
+      chile?.locode ? formatStoredLocode(chile.locode) : null,
+    ].filter((id): id is string => Boolean(id));
+
+    const cityPop = await fetchGlobalApiCityPopulation(
+      actorIds,
+      inventoryYear,
+    );
+    if (cityPop) {
+      await db.models.Population.upsert({
+        population: cityPop.population,
+        cityId,
+        year: cityPop.year,
+      });
+    } else {
+      errors.push({
+        locode,
+        error: `No Global API city population near inventory year ${inventoryYear} for ${locode}`,
+      });
+    }
+
+    const countryPop = await OpenClimateService.getActorPopulation(
+      countryLocode,
+      inventoryYear,
+    );
+    if (countryPop) {
+      await db.models.Population.upsert({
+        countryPopulation: countryPop.population,
+        cityId,
+        year: countryPop.year,
+      });
+    }
+
+    await db.models.City.update(
+      {
+        region: chile?.regionName,
+        regionLocode: chile?.regionCode,
+        country: countryPop?.name ?? (countryLocode === "CL" ? "Chile" : undefined),
+        countryLocode,
+        projectId: projectId ?? undefined,
+      },
+      { where: { cityId } },
+    );
+
+    return errors;
   }
 
   private static async createPopulationEntries(

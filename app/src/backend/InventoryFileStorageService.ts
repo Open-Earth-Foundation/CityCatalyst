@@ -103,6 +103,39 @@ export default class InventoryFileStorageService {
     return key;
   }
 
+  /** Object key family for a bulk inventory-file import job. */
+  static bulkImportObjectKey(jobId: string, relativePath: string): string {
+    const safeJobId = jobId.replace(/[^0-9a-f-]/gi, "");
+    const safeRelative = relativePath
+      .replace(/\\/g, "/")
+      .split("/")
+      .filter((part) => part && part !== "." && part !== "..")
+      .join("/");
+    return `bulk-import/${safeJobId}/${safeRelative}`;
+  }
+
+  /**
+   * Store a bulk-import zip or inner file. Returns null when S3 is not
+   * configured (local/dev fallback — items are still inserted).
+   */
+  static async uploadBulkImportFile(
+    jobId: string,
+    relativePath: string,
+    buffer: Buffer,
+    contentType: string,
+  ): Promise<string | null> {
+    if (!isS3Configured()) {
+      logger.warn(
+        { jobId, relativePath },
+        "AWS_FILE_UPLOAD_S3_BUCKET_ID not set — skipping S3 store for bulk import file",
+      );
+      return null;
+    }
+    const key = this.bulkImportObjectKey(jobId, relativePath);
+    await this.putFile(key, buffer, contentType);
+    return key;
+  }
+
   /**
    * Load an imported file from S3 or the legacy BYTEA column on ImportedInventoryFile.
    */

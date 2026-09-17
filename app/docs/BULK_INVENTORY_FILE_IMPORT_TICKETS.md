@@ -317,6 +317,11 @@ Single `ImportedInventoryFile` rows have no batch. Admin cannot answer “where 
 
 A job and items can be created in tests and listed by an admin session without uploading files yet.
 
+**Implementation notes (2026-09-17)**
+
+- Tables `BulkInventoryImportJob` / `BulkInventoryImportItem`; GET `/api/v1/admin/bulk-inventory-import?projectId=` (latest job + counts) and `GET /{jobId}` (items, optional `status=`).
+- `replaceExisting` is stored on the job. Policy for IMP-006: new file wins; mark the previous `ImportedInventoryFile` failed/superseded. `Inventory.hasOne(ImportedInventoryFile)` is unchanged here.
+
 ---
 
 ## IMP-004 — Match file → city + year
@@ -346,6 +351,10 @@ The worker must not guess. Matching is a pure function.
 **Done when**
 
 Unit tests cover: locode filename, INE filename, manifest override, unknown city, wrong extension, year mismatch warning.
+
+**Implementation notes (2026-09-17)**
+
+- `BulkInventoryImportMatcher` is a pure function: CRFFormat `{City}_CRFFormat_{year}_{yyyymmdd}`, UN/LOCODE, and INE filenames; manifest CSV wins per field; NFKD name match; year is manifest → filename → job default (file year is kept; `year_mismatch` warning if it differs). `pickLatestExports` keeps the newest CRFFormat export date for the same city+year.
 
 ---
 
@@ -379,6 +388,12 @@ Browser folder-picker of 380 loose files without zip (nice-to-have later). Multi
 
 Admin can POST a small zip (3 fixtures) and GET the job with 3 items, no activity rows written yet.
 
+**Implementation notes (2026-09-17)**
+
+- `POST /api/v1/admin/bulk-inventory-import` (multipart: `projectId`, `year`, `file`, optional flags). Returns **202** `{ jobId, itemCount, unmatchedCount }`. Matching runs in-process; import does not.
+- Zip limits: `.zip` only, 500 inner files, 2 GiB archive, 20 MiB per inner file, reject `../` / absolute paths. Skip `__MACOSX` / `.DS_Store`. Optional root `manifest.csv`.
+- S3 keys: `bulk-import/{jobId}/archive.zip` and `bulk-import/{jobId}/files/{name}`. When S3 is unset, items are still inserted (`s3Key` null) so local tests can enqueue.
+
 ---
 
 ## IMP-006 — Worker: reuse eCRF pipeline and auto-approve
@@ -410,6 +425,12 @@ For each `pending` item, run the same path as `POST .../import` + `POST .../impo
 
 A 3-file eCRF zip completes with `ActivityValue` rows on the right inventories, including a negative-CO2e (removal) row whose `co2eq` stays negative. A non-eCRF fixture fails the item with `not_ecrf` and does not call OpenAI.
 
+**Implementation notes (2026-09-17)**
+
+- Worker accepts Path A eCRF **and** Adapter D (`near-ecrf`) — Chile CRFFormat packs are near-ecrf. CIRIS / BIOMATEC / PDF / other adapters fail `not_ecrf` with no OpenAI.
+- `POST /api/v1/cron/process-bulk-inventory-import` (Bearer `CC_CRON_JOB_API_KEY`), batch of 8, one file at a time. Inner file bytes live on S3 or item `data` (dev fallback).
+- Same `contentDigest` + completed inventory → skip. `replaceExisting` supersedes the previous `ImportedInventoryFile` and replaces inventory values.
+
 ---
 
 ## IMP-007 — Create missing city + inventory shells during the job
@@ -435,6 +456,12 @@ Today bulk create and file import are two admin steps. For 380 cities, the job s
 **Done when**
 
 A zip for a locode that is not yet in the project creates the city + inventory, then imports. A second run does not duplicate the city.
+
+**Implementation notes (2026-09-17)**
+
+- `AdminService.findOrCreateCityAndInventory` creates/reuses a city in the project by locode (UN/LOCODE or INE in `City.locode`) or NFKD name. OpenClimate name/population/boundary is best-effort and never fails the item.
+- Enqueue with `createMissingCities` turns `unmatched_city` into a pending item after creating the shell. Matched cities still get a missing inventory year created. Job stores `inventoryType` / `globalWarmingPotentialType` (defaults `gpc_basic` / `ar6`). The uploading admin is added as `CityUser`.
+- Locode already in another project fails the item (`city_in_other_project`). Missing name+locode stays `unmatched` (`missing_city_identity`).
 
 ---
 

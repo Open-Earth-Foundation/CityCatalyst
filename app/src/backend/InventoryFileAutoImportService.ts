@@ -108,8 +108,8 @@ async function buildImportResult(args: {
 export interface AutoImportInventoryFileInput {
   buffer: Buffer;
   originalFileName: string;
-  cityId: string;
-  inventoryId: string;
+  cityId?: string;
+  inventoryId?: string;
   userId: string;
   replaceExisting?: boolean;
   dryRun?: boolean;
@@ -182,10 +182,19 @@ export class InventoryFileAutoImportService {
       );
     }
 
-    const inventory = await db.models.Inventory.findByPk(input.inventoryId, {
-      attributes: ["inventoryId", "year"],
-    });
-    if (!inventory) {
+    if (!input.dryRun && (!input.cityId || !input.inventoryId)) {
+      throw new BulkInventoryImportAutoImportError(
+        "missing_inventory",
+        "Item is not matched to a city and inventory",
+      );
+    }
+
+    const inventory = input.inventoryId
+      ? await db.models.Inventory.findByPk(input.inventoryId, {
+          attributes: ["inventoryId", "year"],
+        })
+      : null;
+    if (input.inventoryId && !inventory) {
       throw new BulkInventoryImportAutoImportError(
         "missing_inventory",
         "Matched inventory was not found",
@@ -197,13 +206,13 @@ export class InventoryFileAutoImportService {
       buffer: input.buffer,
       fileType,
       validation,
-      inventoryYear: inventory.year,
+      inventoryYear: inventory?.year,
     });
 
     const warnings = [...(validation.warnings || []), ...importResult.warnings];
     if (
       importResult.inferredYearFromFile != null &&
-      inventory.year != null &&
+      inventory?.year != null &&
       importResult.inferredYearFromFile !== inventory.year
     ) {
       warnings.push("year_mismatch");
@@ -220,13 +229,15 @@ export class InventoryFileAutoImportService {
       .update(input.buffer)
       .digest("hex");
 
-    const already = await db.models.ImportedInventoryFile.findOne({
-      where: {
-        inventoryId: input.inventoryId,
-        contentDigest,
-        importStatus: ImportStatusEnum.COMPLETED,
-      },
-    });
+    const already = input.inventoryId
+      ? await db.models.ImportedInventoryFile.findOne({
+          where: {
+            inventoryId: input.inventoryId,
+            contentDigest,
+            importStatus: ImportStatusEnum.COMPLETED,
+          },
+        })
+      : null;
     if (already) {
       return {
         importedFileId: already.id,
@@ -251,9 +262,18 @@ export class InventoryFileAutoImportService {
       };
     }
 
+    const cityId = input.cityId;
+    const inventoryId = input.inventoryId;
+    if (!cityId || !inventoryId) {
+      throw new BulkInventoryImportAutoImportError(
+        "missing_inventory",
+        "Item is not matched to a city and inventory",
+      );
+    }
+
     const existingForInventory = await db.models.ImportedInventoryFile.findOne({
       where: {
-        inventoryId: input.inventoryId,
+        inventoryId,
         importStatus: ImportStatusEnum.COMPLETED,
       },
     });
@@ -264,7 +284,7 @@ export class InventoryFileAutoImportService {
       );
     }
     if (existingForInventory && input.replaceExisting) {
-      await clearInventoryEmissions(input.inventoryId);
+      await clearInventoryEmissions(inventoryId);
       await existingForInventory.update({
         importStatus: ImportStatusEnum.FAILED,
         errorLog: "Superseded by a later bulk inventory import",
@@ -279,8 +299,8 @@ export class InventoryFileAutoImportService {
     if (isS3Configured()) {
       s3Key = await InventoryFileStorageService.uploadFile(
         input.buffer,
-        input.cityId,
-        input.inventoryId,
+        cityId,
+        inventoryId,
         storedName,
         mimeType,
       );
@@ -291,8 +311,8 @@ export class InventoryFileAutoImportService {
     const importedFile = await db.models.ImportedInventoryFile.create({
       id: randomUUID(),
       userId: input.userId,
-      cityId: input.cityId,
-      inventoryId: input.inventoryId,
+      cityId,
+      inventoryId,
       fileName: storedName,
       fileType,
       fileSize: input.buffer.length,
@@ -314,7 +334,7 @@ export class InventoryFileAutoImportService {
     await syncGHGIImportedInventorySource(importedFile, contentDigest);
 
     const summary = await InventoryImportService.importECRFData(
-      input.inventoryId,
+      inventoryId,
       importResult,
       { defaultActivityDataSource: originalFileName },
     );

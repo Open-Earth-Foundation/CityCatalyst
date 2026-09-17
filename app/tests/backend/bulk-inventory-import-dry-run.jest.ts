@@ -1,6 +1,6 @@
 /**
- * IMP-006: worker auto-imports eCRF files (including negative CO2e) and fails
- * non-eCRF items with not_ecrf without calling OpenAI.
+ * IMP-009: dry-run validates and matches without writing ActivityValue rows
+ * or creating city/inventory shells.
  */
 import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import { randomUUID } from "node:crypto";
@@ -8,6 +8,7 @@ import { loadEnvConfig } from "@next/env";
 import { db } from "@/models";
 import { Roles } from "@/util/types";
 import {
+  BulkInventoryImportItemStatus,
   GlobalWarmingPotentialTypeEnum,
   InventoryTypeEnum,
 } from "@/util/enums";
@@ -15,11 +16,10 @@ import { DEFAULT_PROJECT_ID } from "@/util/constants";
 import { BulkInventoryImportEnqueueService } from "@/backend/BulkInventoryImportEnqueueService";
 import { createBulkInventoryImportZip } from "@/backend/BulkInventoryImportZip";
 import { BulkInventoryImportWorkerService } from "@/backend/BulkInventoryImportWorkerService";
-import { getEmissionResults } from "@/backend/ResultsService";
 import * as AIInterpretationService from "@/backend/AIInterpretationService";
 
 const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
-const PREFIX = `XX_IMP006_${randomUUID().slice(0, 8)}`;
+const PREFIX = `XX_IMP009_${randomUUID().slice(0, 8)}`;
 const GPC_REF = `${PREFIX}.1.1`;
 
 function ecrfCsv(totalCO2e: number): string {
@@ -34,11 +34,25 @@ function longTidyCsv(): string {
   return "Year,Sector,GHG Emissions\n2023,Stationary Energy,100\n";
 }
 
-describe("Bulk inventory import worker", () => {
+async function activityCountForInventories(
+  inventoryIds: string[],
+): Promise<number> {
+  if (!inventoryIds.length) return 0;
+  const values = await db.models.InventoryValue.findAll({
+    where: { inventoryId: inventoryIds },
+    attributes: ["id"],
+  });
+  if (!values.length) return 0;
+  return db.models.ActivityValue.count({
+    where: { inventoryValueId: values.map((value) => value.id) },
+  });
+}
+
+describe("Bulk inventory import dry-run", () => {
   const createdCityIds: string[] = [];
   let jobId: string;
-  let removalInventoryId: string;
-  let positiveInventoryId: string;
+  let validInventoryId: string;
+  let junkInventoryId: string;
   let sectorId: string;
   let subsectorId: string;
   let subcategoryId: string;
@@ -126,12 +140,11 @@ describe("Bulk inventory import worker", () => {
           where: { inventoryId: inventoryIds },
         });
       }
+      await db.models.CityUser.destroy({ where: { cityId: createdCityIds } });
       await db.models.City.destroy({ where: { cityId: createdCityIds } });
     }
     if (subcategoryId) {
-      await db.models.SubCategory.destroy({
-        where: { subcategoryId },
-      });
+      await db.models.SubCategory.destroy({ where: { subcategoryId } });
     }
     if (subsectorId) {
       await db.models.SubSector.destroy({ where: { subsectorId } });
@@ -145,24 +158,19 @@ describe("Bulk inventory import worker", () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
-  it("imports two eCRF files including a removal and fails a non-eCRF file without OpenAI", async () => {
+  it("validates a 3-file zip without writing activities or creating cities", async () => {
     const interpretSpy = jest.spyOn(
       AIInterpretationService,
       "interpretTabular",
     );
 
-    const removalName = `${PREFIX}_Removal`;
-    const positiveName = `${PREFIX}_Positive`;
+    const validName = `${PREFIX}_Valid`;
     const junkName = `${PREFIX}_Junk`;
+    const ghostName = `${PREFIX}_Ghost`;
 
-    const removalCity = await db.models.City.create({
+    const validCity = await db.models.City.create({
       cityId: randomUUID(),
-      name: removalName,
-      projectId: DEFAULT_PROJECT_ID,
-    });
-    const positiveCity = await db.models.City.create({
-      cityId: randomUUID(),
-      name: positiveName,
+      name: validName,
       projectId: DEFAULT_PROJECT_ID,
     });
     const junkCity = await db.models.City.create({
@@ -170,29 +178,17 @@ describe("Bulk inventory import worker", () => {
       name: junkName,
       projectId: DEFAULT_PROJECT_ID,
     });
-    createdCityIds.push(
-      removalCity.cityId,
-      positiveCity.cityId,
-      junkCity.cityId,
-    );
+    createdCityIds.push(validCity.cityId, junkCity.cityId);
 
-    const removalInventory = await db.models.Inventory.create({
+    const validInventory = await db.models.Inventory.create({
       inventoryId: randomUUID(),
-      cityId: removalCity.cityId,
-      inventoryName: `${removalName} 2023`,
+      cityId: validCity.cityId,
+      inventoryName: `${validName} 2023`,
       year: 2023,
       inventoryType: InventoryTypeEnum.GPC_BASIC,
       globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
     });
-    const positiveInventory = await db.models.Inventory.create({
-      inventoryId: randomUUID(),
-      cityId: positiveCity.cityId,
-      inventoryName: `${positiveName} 2023`,
-      year: 2023,
-      inventoryType: InventoryTypeEnum.GPC_BASIC,
-      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
-    });
-    await db.models.Inventory.create({
+    const junkInventory = await db.models.Inventory.create({
       inventoryId: randomUUID(),
       cityId: junkCity.cityId,
       inventoryName: `${junkName} 2023`,
@@ -200,31 +196,39 @@ describe("Bulk inventory import worker", () => {
       inventoryType: InventoryTypeEnum.GPC_BASIC,
       globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
     });
-    removalInventoryId = removalInventory.inventoryId;
-    positiveInventoryId = positiveInventory.inventoryId;
+    validInventoryId = validInventory.inventoryId;
+    junkInventoryId = junkInventory.inventoryId;
+
+    const beforeCount = await activityCountForInventories([
+      validInventoryId,
+      junkInventoryId,
+    ]);
 
     const zip = await createBulkInventoryImportZip({
-      [`${removalName}_CRFFormat_2023_20260917.csv`]: ecrfCsv(-239.5),
-      [`${positiveName}_CRFFormat_2023_20260917.csv`]: ecrfCsv(10),
+      [`${validName}_CRFFormat_2023_20260917.csv`]: ecrfCsv(-239.5),
       [`${junkName}_CRFFormat_2023_20260917.csv`]: longTidyCsv(),
+      [`${ghostName}_CRFFormat_2023_20260917.csv`]: ecrfCsv(10),
     });
 
     const enqueued = await BulkInventoryImportEnqueueService.enqueue({
       projectId: DEFAULT_PROJECT_ID,
       year: 2023,
       zipBuffer: zip,
-      zipFileName: "imp006.zip",
+      zipFileName: "imp009.zip",
       userId: testUserID,
+      dryRun: true,
+      createMissingCities: true,
     });
     jobId = enqueued.jobId;
     expect(enqueued.itemCount).toBe(3);
-    expect(enqueued.unmatchedCount).toBe(0);
+    expect(enqueued.unmatchedCount).toBe(1);
 
-    const processed = await BulkInventoryImportWorkerService.processDueJobs(
-      10,
-      enqueued.jobId,
-    );
-    expect(processed.itemsProcessed).toBe(3);
+    const ghostCities = await db.models.City.findAll({
+      where: { name: ghostName, projectId: DEFAULT_PROJECT_ID },
+    });
+    expect(ghostCities).toHaveLength(0);
+
+    await BulkInventoryImportWorkerService.processDueJobs(10, jobId);
     expect(interpretSpy).not.toHaveBeenCalled();
     interpretSpy.mockRestore();
 
@@ -232,46 +236,32 @@ describe("Bulk inventory import worker", () => {
       where: { jobId },
     });
     const byCity = new Map(items.map((item) => [item.cityId, item]));
+    const unmatched = items.filter(
+      (item) => item.status === BulkInventoryImportItemStatus.UNMATCHED,
+    );
 
-    const removalItem = byCity.get(removalCity.cityId);
-    const positiveItem = byCity.get(positiveCity.cityId);
+    const validItem = byCity.get(validCity.cityId);
     const junkItem = byCity.get(junkCity.cityId);
-    expect(removalItem?.status).toBe("completed");
-    expect(positiveItem?.status).toBe("completed");
-    expect(junkItem?.status).toBe("failed");
+    expect(validItem?.status).toBe(BulkInventoryImportItemStatus.SKIPPED);
+    expect(validItem?.errorCode).toBe("dry_run");
+    expect(junkItem?.status).toBe(BulkInventoryImportItemStatus.FAILED);
     expect(junkItem?.errorCode).toBe("not_ecrf");
-    expect(junkItem?.errorLog).toMatch(/not_ecrf/);
+    expect(unmatched).toHaveLength(1);
+    expect(unmatched[0].originalFileName).toMatch(/Ghost/);
 
-    const removalValue = await db.models.InventoryValue.findOne({
-      where: {
-        inventoryId: removalInventoryId,
-        gpcReferenceNumber: GPC_REF,
-      },
+    const afterCount = await activityCountForInventories([
+      validInventoryId,
+      junkInventoryId,
+    ]);
+    expect(afterCount).toBe(beforeCount);
+
+    const importedFiles = await db.models.ImportedInventoryFile.count({
+      where: { inventoryId: [validInventoryId, junkInventoryId] },
     });
-    expect(removalValue).not.toBeNull();
-    expect(BigInt(removalValue!.co2eq as unknown as string)).toBe(-239500n);
-
-    const removalActivity = await db.models.ActivityValue.findOne({
-      where: { inventoryValueId: removalValue!.id },
-    });
-    expect(removalActivity).not.toBeNull();
-    expect(BigInt(removalActivity!.co2eq as unknown as string)).toBe(-239500n);
-
-    const results = await getEmissionResults(removalInventoryId);
-    expect(results.removals?.toNumber()).toBe(-239500);
-
-    const positiveValue = await db.models.InventoryValue.findOne({
-      where: {
-        inventoryId: positiveInventoryId,
-        gpcReferenceNumber: GPC_REF,
-      },
-    });
-    expect(positiveValue).not.toBeNull();
-    expect(BigInt(positiveValue!.co2eq as unknown as string)).toBe(10000n);
+    expect(importedFiles).toBe(0);
 
     const job = await db.models.BulkInventoryImportJob.findByPk(jobId);
+    expect(job?.dryRun).toBe(true);
     expect(job?.status).toBe("completed");
-    expect(job?.importedCount).toBe(2);
-    expect(job?.failedCount).toBe(1);
   });
 });

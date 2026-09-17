@@ -47,6 +47,7 @@
  *                 format: binary
  *               dryRun:
  *                 type: boolean
+ *                 description: Validate and match only. Does not write ActivityValue rows or create city/inventory shells.
  *               createMissingCities:
  *                 type: boolean
  *               replaceExisting:

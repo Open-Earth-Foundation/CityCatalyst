@@ -224,7 +224,10 @@ describe("Bulk inventory import createMissingCities", () => {
     });
     expect(cityUser).not.toBeNull();
 
-    const processed = await BulkInventoryImportWorkerService.processDueJobs(10);
+    const processed = await BulkInventoryImportWorkerService.processDueJobs(
+      10,
+      first.jobId,
+    );
     expect(processed.itemsProcessed).toBeGreaterThanOrEqual(1);
 
     const importedItem = await db.models.BulkInventoryImportItem.findByPk(

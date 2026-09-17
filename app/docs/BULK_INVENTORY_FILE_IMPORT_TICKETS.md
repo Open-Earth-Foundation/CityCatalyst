@@ -462,6 +462,7 @@ A zip for a locode that is not yet in the project creates the city + inventory, 
 - `AdminService.findOrCreateCityAndInventory` creates/reuses a city in the project by locode (UN/LOCODE or INE in `City.locode`) or NFKD name. OpenClimate name/population/boundary is best-effort and never fails the item.
 - Enqueue with `createMissingCities` turns `unmatched_city` into a pending item after creating the shell. Matched cities still get a missing inventory year created. Job stores `inventoryType` / `globalWarmingPotentialType` (defaults `gpc_basic` / `ar6`). The uploading admin is added as `CityUser`.
 - Locode already in another project fails the item (`city_in_other_project`). Missing name+locode stays `unmatched` (`missing_city_identity`).
+- Dry-run (IMP-009) ignores `createMissingCities` and does not create inventory years.
 
 ---
 
@@ -510,6 +511,11 @@ Chile’s first 380-file drop will have naming and eCRF-sheet surprises. Dry-run
 **Done when**
 
 `dryRun: true` leaves `ActivityValue` counts unchanged and still produces unmatched/invalid item errors.
+
+**Implementation notes (2026-09-17)**
+
+- Dry-run unpacks, matches, and validates eCRF / near-ecrf the same as a real run. Valid files are `skipped` with `errorCode: dry_run`. Invalid files still fail (`not_ecrf`, `multi_city`, …). Unmatched filenames stay `unmatched`.
+- No `ActivityValue` / `ImportedInventoryFile` writes. `createMissingCities` and missing-year inventory shells are not written even if the flags are set. API form field `dryRun`; the admin checkbox lands with IMP-008.
 
 ---
 

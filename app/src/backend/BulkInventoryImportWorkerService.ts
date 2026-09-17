@@ -67,7 +67,11 @@ async function processItem(
     lastUpdated: new Date(),
   });
 
-  if (!item.cityId || !item.inventoryId || !job.userId) {
+  if (!job.userId) {
+    await failItem(item, "missing_inventory", "Job has no user");
+    return "failed";
+  }
+  if (!job.dryRun && (!item.cityId || !item.inventoryId)) {
     await failItem(
       item,
       "missing_inventory",
@@ -90,8 +94,8 @@ async function processItem(
     const result = await InventoryFileAutoImportService.importFile({
       buffer,
       originalFileName: item.originalFileName,
-      cityId: item.cityId,
-      inventoryId: item.inventoryId,
+      cityId: item.cityId ?? undefined,
+      inventoryId: item.inventoryId ?? undefined,
       userId: job.userId,
       replaceExisting: job.replaceExisting,
       dryRun: job.dryRun,
@@ -149,6 +153,7 @@ async function processItem(
 export class BulkInventoryImportWorkerService {
   static async processDueJobs(
     batchSize = BULK_INVENTORY_IMPORT_WORKER_BATCH_SIZE,
+    jobId?: string,
   ): Promise<BulkInventoryImportWorkerResult> {
     const result: BulkInventoryImportWorkerResult = {
       jobsTouched: 0,
@@ -159,7 +164,9 @@ export class BulkInventoryImportWorkerService {
     };
 
     const items = await db.models.BulkInventoryImportItem.findAll({
-      where: { status: BulkInventoryImportItemStatus.PENDING },
+      where: jobId
+        ? { status: BulkInventoryImportItemStatus.PENDING, jobId }
+        : { status: BulkInventoryImportItemStatus.PENDING },
       include: [{ model: db.models.BulkInventoryImportJob, as: "job" }],
       order: [["created", "ASC"]],
       limit: batchSize,

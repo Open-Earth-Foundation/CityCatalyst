@@ -174,7 +174,16 @@ export class BulkInventoryImportEnqueueService {
 
     const inventoryType = input.inventoryType ?? InventoryTypeEnum.GPC_BASIC;
     const gwp = input.gwp ?? GlobalWarmingPotentialTypeEnum.ar6;
+    const dryRun = input.dryRun ?? false;
+    // Dry-run must not create city/inventory shells (IMP-009); keep the
+    // requested flag on the job for the UI but skip the writes.
     const createMissingCities = input.createMissingCities ?? false;
+    if (dryRun && createMissingCities) {
+      logger.info(
+        { projectId: input.projectId },
+        "Dry-run ignores createMissingCities; no city or inventory shells will be written",
+      );
+    }
 
     const jobId = randomUUID();
     const zipS3Key = await InventoryFileStorageService.uploadBulkImportFile(
@@ -191,7 +200,7 @@ export class BulkInventoryImportEnqueueService {
       userId: input.userId,
       status: BulkInventoryImportJobStatus.PENDING,
       s3Key: zipS3Key,
-      dryRun: input.dryRun ?? false,
+      dryRun,
       createMissingCities,
       inventoryType,
       globalWarmingPotentialType: gwp,
@@ -248,10 +257,14 @@ export class BulkInventoryImportEnqueueService {
 
       if (!superseded) {
         const needsCity =
+          !dryRun &&
           result.error === BulkInventoryImportMatchError.UNMATCHED_CITY &&
           createMissingCities;
         const needsInventory =
-          cityId != null && result.year != null && resolvedInventoryId == null;
+          !dryRun &&
+          cityId != null &&
+          result.year != null &&
+          resolvedInventoryId == null;
 
         if (needsCity || needsInventory) {
           try {

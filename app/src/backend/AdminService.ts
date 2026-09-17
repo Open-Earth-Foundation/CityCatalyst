@@ -289,7 +289,7 @@ export default class AdminService {
       await this.ensureCityUser(city.record.cityId, props.userId);
     }
 
-    if (createdCity && storedLocode) {
+    if (storedLocode) {
       await this.enrichCityBestEffort(
         storedLocode,
         props.year,
@@ -471,7 +471,11 @@ export default class AdminService {
     return fallbackName || locode;
   }
 
-  private static async enrichCityBestEffort(
+  /**
+   * Pull OpenClimate population nearest to `year` (10-year window, same as
+   * onboarding) and Global API boundary. Never throws to the caller.
+   */
+  public static async enrichCityBestEffort(
     locode: string,
     year: number,
     cityId: string,
@@ -514,49 +518,64 @@ export default class AdminService {
     if (populationData.error) {
       errors.push({ locode: cityLocode, error: populationData.error });
     }
+
+    // Persist whatever OC has nearest to the inventory year. City / region /
+    // country series often use different years; missing one must not drop the rest.
     if (
-      !populationData.cityPopulation ||
-      !populationData.cityPopulationYear ||
-      !populationData.countryPopulation ||
-      !populationData.countryPopulationYear ||
-      !populationData.regionPopulation ||
-      !populationData.regionPopulationYear
+      populationData.cityPopulation != null &&
+      populationData.cityPopulationYear != null
     ) {
+      await db.models.Population.upsert({
+        population: populationData.cityPopulation,
+        cityId,
+        year: populationData.cityPopulationYear,
+      });
+    } else {
       errors.push({
         locode: cityLocode,
-        error: `Population data incomplete for city ${cityLocode} and inventory year ${inventoryYear}`,
+        error: `No city population near inventory year ${inventoryYear} for ${cityLocode}`,
       });
-      return errors;
+    }
+    if (
+      populationData.countryPopulation != null &&
+      populationData.countryPopulationYear != null
+    ) {
+      await db.models.Population.upsert({
+        countryPopulation: populationData.countryPopulation,
+        cityId,
+        year: populationData.countryPopulationYear,
+      });
+    }
+    if (
+      populationData.regionPopulation != null &&
+      populationData.regionPopulationYear != null
+    ) {
+      await db.models.Population.upsert({
+        regionPopulation: populationData.regionPopulation,
+        cityId,
+        year: populationData.regionPopulationYear,
+      });
     }
 
-    // they might be for the same year, but that is not guaranteed (because of data availability)
-    await db.models.Population.upsert({
-      population: populationData.cityPopulation,
-      cityId,
-      year: populationData.cityPopulationYear,
-    });
-    await db.models.Population.upsert({
-      countryPopulation: populationData.countryPopulation,
-      cityId,
-      year: populationData.countryPopulationYear,
-    });
-    await db.models.Population.upsert({
-      regionPopulation: populationData.regionPopulation,
-      cityId,
-      year: populationData.regionPopulationYear,
-    });
+    let area: number | undefined;
+    try {
+      const boundaryData =
+        await CityBoundaryService.getCityBoundary(cityLocode);
+      area = boundaryData.area;
+    } catch (err) {
+      logger.warn(
+        { err, locode: cityLocode },
+        "City boundary lookup failed (best-effort)",
+      );
+    }
 
-    const boundaryData = await CityBoundaryService.getCityBoundary(cityLocode);
-    const area = boundaryData.area;
-
-    // save context data to City table
     const { region, regionLocode, country, countryLocode } = populationData;
     await db.models.City.update(
       {
-        region,
-        regionLocode,
-        country,
-        countryLocode,
+        region: region ?? undefined,
+        regionLocode: regionLocode ?? undefined,
+        country: country ?? undefined,
+        countryLocode: countryLocode ?? undefined,
         area: area ? Math.round(area) : undefined,
         projectId: projectId ?? undefined,
       },

@@ -8,7 +8,9 @@ const CRF_FORMAT_STEM = /^(.+)_CRFFormat_(\d{4})_(\d{8})$/i;
 const INE_STEM = /^([A-Za-z]{2}\d{4,6})[-_](\d{4})$/;
 const LOCODE_STEM = /^([A-Za-z]{2})[-_\s]?([A-Za-z]{3})[-_](\d{4})$/;
 
-export type BulkInventoryImportMatchWarning = "year_mismatch";
+export type BulkInventoryImportMatchWarning =
+  | "year_mismatch"
+  | "openclimate_match";
 
 export interface MatchableCity {
   cityId: string;

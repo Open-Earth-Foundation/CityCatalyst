@@ -4,15 +4,24 @@ import createHttpError from "http-errors";
 import { db } from "@/models";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import AdminService, { CityInventoryShellError } from "@/backend/AdminService";
+import OpenClimateService from "@/backend/OpenClimateService";
 import {
   matchFile,
+  normalizeCityName,
+  normalizeLocode,
   pickLatestExports,
+  type BulkInventoryImportMatchResult,
+  type MatchableCity,
 } from "@/backend/BulkInventoryImportMatcher";
 import {
   BulkInventoryImportZipError,
   unpackBulkInventoryImportZip,
   type BulkInventoryImportZipEntry,
 } from "@/backend/BulkInventoryImportZip";
+import {
+  normalizeCountryLocode,
+  type OpenClimateCityResolveResult,
+} from "@/backend/openclimate-city-search";
 import { logger } from "@/services/logger";
 import {
   BulkInventoryImportItemStatus,
@@ -34,6 +43,8 @@ export interface EnqueueBulkInventoryImportInput {
   replaceExisting?: boolean;
   inventoryType?: InventoryTypeEnum;
   gwp?: GlobalWarmingPotentialTypeEnum;
+  /** Optional ISO-2 country to scope OpenClimate name search (`BR`, `CL`). */
+  countryLocode?: string | null;
 }
 
 export interface EnqueueBulkInventoryImportResult {
@@ -92,6 +103,84 @@ function exportKey(originalFileName: string, exportDate?: string): string {
   return `${originalFileName}|${exportDate ?? ""}`;
 }
 
+function findCitiesByLocode(
+  cities: MatchableCity[],
+  locode: string,
+): MatchableCity[] {
+  const key = normalizeLocode(locode);
+  return cities.filter(
+    (city) => city.locode != null && normalizeLocode(city.locode) === key,
+  );
+}
+
+function matchErrorLog(
+  error: BulkInventoryImportMatchError,
+  openClimate?: OpenClimateCityResolveResult,
+): string {
+  if (
+    error === BulkInventoryImportMatchError.UNMATCHED_CITY &&
+    openClimate?.kind === "unique"
+  ) {
+    return `No city in this project matched the file. OpenClimate matched ${openClimate.actorId} (${openClimate.name}). Enable create missing cities to add it.`;
+  }
+  if (
+    error === BulkInventoryImportMatchError.AMBIGUOUS_CITY &&
+    openClimate?.kind === "ambiguous"
+  ) {
+    const locodes = openClimate.candidates.map((c) => c.actorId).join(", ");
+    return `More than one OpenClimate city matched the file: ${locodes}`;
+  }
+  return MATCH_ERROR_LOG[error];
+}
+
+/**
+ * When the project has no city for this filename, search OpenClimate the same
+ * way onboarding does. Unique exact name (+ optional country) attaches a locode.
+ */
+async function applyOpenClimateFallback(
+  result: BulkInventoryImportMatchResult,
+  cities: MatchableCity[],
+  countryLocode: string | null,
+  cache: Map<string, OpenClimateCityResolveResult>,
+): Promise<OpenClimateCityResolveResult | undefined> {
+  if (result.error !== BulkInventoryImportMatchError.UNMATCHED_CITY) {
+    return undefined;
+  }
+  const cityName = result.parsed.cityName;
+  if (!cityName) return undefined;
+
+  const cacheKey = `${normalizeCityName(cityName)}|${countryLocode ?? ""}`;
+  let resolved = cache.get(cacheKey);
+  if (!resolved) {
+    resolved = await OpenClimateService.resolveCityByName(
+      cityName,
+      countryLocode,
+    );
+    cache.set(cacheKey, resolved);
+  }
+
+  if (resolved.kind === "none") return resolved;
+
+  if (resolved.kind === "ambiguous") {
+    result.error = BulkInventoryImportMatchError.AMBIGUOUS_CITY;
+    return resolved;
+  }
+
+  result.parsed.locode = resolved.actorId;
+  result.locode = resolved.actorId;
+  result.warnings = [...result.warnings, "openclimate_match"];
+
+  const locodeHits = findCitiesByLocode(cities, resolved.actorId);
+  if (locodeHits.length === 1) {
+    result.cityId = locodeHits[0].cityId;
+    result.locode = locodeHits[0].locode ?? resolved.actorId;
+    result.error = undefined;
+  } else if (locodeHits.length > 1) {
+    result.error = BulkInventoryImportMatchError.AMBIGUOUS_CITY;
+  }
+  return resolved;
+}
+
 export class BulkInventoryImportEnqueueService {
   static async enqueue(
     input: EnqueueBulkInventoryImportInput,
@@ -126,17 +215,30 @@ export class BulkInventoryImportEnqueueService {
       jobDefaultYear: input.year,
       manifestCsv: unpacked.manifestCsv,
     };
+    const countryLocode = normalizeCountryLocode(input.countryLocode);
+    const ocCache = new Map<string, OpenClimateCityResolveResult>();
 
-    const matched = unpacked.entries.map((entry) => ({
-      entry,
-      result: matchFile(
+    const matched: Array<{
+      entry: BulkInventoryImportZipEntry;
+      result: BulkInventoryImportMatchResult;
+      openClimate?: OpenClimateCityResolveResult;
+    }> = [];
+    for (const entry of unpacked.entries) {
+      const result = matchFile(
         {
           originalFileName: entry.basename,
           fileSizeBytes: entry.buffer.length,
         },
         matchOptions,
-      ),
-    }));
+      );
+      const openClimate = await applyOpenClimateFallback(
+        result,
+        matchOptions.cities,
+        countryLocode,
+        ocCache,
+      );
+      matched.push({ entry, result, openClimate });
+    }
 
     const latestKeys = new Set(
       pickLatestExports(matched.map((row) => row.result)).map((result) =>
@@ -208,8 +310,9 @@ export class BulkInventoryImportEnqueueService {
     });
 
     const itemRows = [];
+    const enrichedKeys = new Set<string>();
     for (const row of matched) {
-      const { entry, result } = row;
+      const { entry, result, openClimate } = row;
       const superseded =
         result.parsed.exportDate != null &&
         !latestKeys.has(
@@ -251,9 +354,10 @@ export class BulkInventoryImportEnqueueService {
       let errorLog: string | null = superseded
         ? "A newer CRFFormat export for this city and year replaced this file"
         : result.error
-          ? MATCH_ERROR_LOG[result.error]
+          ? matchErrorLog(result.error, openClimate)
           : null;
       const warnings: string[] = [...result.warnings];
+      let didShell = false;
 
       if (!superseded) {
         const needsCity =
@@ -268,9 +372,10 @@ export class BulkInventoryImportEnqueueService {
 
         if (needsCity || needsInventory) {
           try {
+            const inventoryYear = result.year ?? input.year;
             const shell = await AdminService.findOrCreateCityAndInventory({
               projectId: input.projectId,
-              year: result.year ?? input.year,
+              year: inventoryYear,
               cityName: result.parsed.cityName ?? null,
               locode: result.parsed.locode ?? result.parsed.ineCode ?? locode,
               inventoryType,
@@ -281,7 +386,7 @@ export class BulkInventoryImportEnqueueService {
             resolvedInventoryId = shell.inventoryId;
             locode = shell.locode;
             inventoryByCityYear.set(
-              `${shell.cityId}:${result.year ?? input.year}`,
+              `${shell.cityId}:${inventoryYear}`,
               shell.inventoryId,
             );
             if (shell.createdCity) warnings.push("created_city");
@@ -289,6 +394,10 @@ export class BulkInventoryImportEnqueueService {
             status = BulkInventoryImportItemStatus.PENDING;
             errorCode = null;
             errorLog = null;
+            didShell = true;
+            if (shell.locode) {
+              enrichedKeys.add(`${shell.locode}|${inventoryYear}|${shell.cityId}`);
+            }
           } catch (err) {
             if (err instanceof CityInventoryShellError) {
               status =
@@ -301,6 +410,27 @@ export class BulkInventoryImportEnqueueService {
               throw err;
             }
           }
+        }
+      }
+
+      const inventoryYear = result.year ?? input.year;
+      if (
+        !dryRun &&
+        !didShell &&
+        cityId &&
+        locode &&
+        inventoryYear != null &&
+        status === BulkInventoryImportItemStatus.PENDING
+      ) {
+        const enrichKey = `${locode}|${inventoryYear}|${cityId}`;
+        if (!enrichedKeys.has(enrichKey)) {
+          enrichedKeys.add(enrichKey);
+          await AdminService.enrichCityBestEffort(
+            locode,
+            inventoryYear,
+            cityId,
+            input.projectId,
+          );
         }
       }
 

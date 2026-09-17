@@ -17,6 +17,7 @@ import { BulkInventoryImportEnqueueService } from "@/backend/BulkInventoryImport
 import { createBulkInventoryImportZip } from "@/backend/BulkInventoryImportZip";
 import { BulkInventoryImportWorkerService } from "@/backend/BulkInventoryImportWorkerService";
 import * as AIInterpretationService from "@/backend/AIInterpretationService";
+import OpenClimateService from "@/backend/OpenClimateService";
 
 const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
 const PREFIX = `XX_IMP009_${randomUUID().slice(0, 8)}`;
@@ -67,6 +68,8 @@ describe("Bulk inventory import dry-run", () => {
       email: "test@example.com",
       role: Roles.Admin,
     });
+
+    jest.spyOn(OpenClimateService, "searchCities").mockResolvedValue([] as never);
 
     let scope = await db.models.Scope.findOne({ where: { scopeName: "1" } });
     if (!scope) {
@@ -155,6 +158,7 @@ describe("Bulk inventory import dry-run", () => {
     if (createdScopeId) {
       await db.models.Scope.destroy({ where: { scopeId: createdScopeId } });
     }
+    jest.restoreAllMocks();
     if (db.sequelize) await db.sequelize.close();
   });
 

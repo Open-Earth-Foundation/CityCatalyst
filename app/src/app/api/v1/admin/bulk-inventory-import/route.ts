@@ -58,6 +58,10 @@
  *               gwp:
  *                 type: string
  *                 enum: [AR5, AR6, ar5, ar6]
+ *               countryLocode:
+ *                 type: string
+ *                 description: Optional ISO-2 country to scope OpenClimate city name search (e.g. BR, CL)
+
  *     responses:
  *       202:
  *         description: Job enqueued
@@ -75,14 +79,16 @@ import {
   serializeJob,
 } from "@/backend/BulkInventoryImportJobService";
 import { BulkInventoryImportEnqueueService } from "@/backend/BulkInventoryImportEnqueueService";
+import { BulkInventoryImportWorkerService } from "@/backend/BulkInventoryImportWorkerService";
 import { db } from "@/models";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import createHttpError from "http-errors";
 import { z } from "zod";
 import {
   GlobalWarmingPotentialTypeEnum,
   InventoryTypeEnum,
 } from "@/util/enums";
+import { logger } from "@/services/logger";
 
 /** Unpacking a Chile-sized zip of eCRF files can exceed the default 30s. */
 export const maxDuration = 120;
@@ -106,6 +112,14 @@ const enqueueFieldsSchema = z.object({
         ? (value.toLowerCase() as GlobalWarmingPotentialTypeEnum)
         : undefined,
     ),
+  countryLocode: z
+    .string()
+    .optional()
+    .transform((value) => {
+      const text = (value ?? "").trim().toUpperCase().replace(/[^A-Z]/g, "");
+      if (text.length < 2) return undefined;
+      return text.slice(0, 2);
+    }),
 });
 
 function parseFlag(value: FormDataEntryValue | null): boolean {
@@ -156,6 +170,7 @@ export const POST = apiHandler(async (req, { session }) => {
     replaceExisting: parseFlag(form.get("replaceExisting")),
     inventoryType: form.get("inventoryType") || undefined,
     gwp: form.get("gwp") || undefined,
+    countryLocode: form.get("countryLocode") || undefined,
   });
   if (!parsed.success) {
     throw new createHttpError.BadRequest("projectId and year are required");
@@ -173,6 +188,23 @@ export const POST = apiHandler(async (req, { session }) => {
     replaceExisting: parsed.data.replaceExisting,
     inventoryType: parsed.data.inventoryType,
     gwp: parsed.data.gwp,
+    countryLocode: parsed.data.countryLocode,
+  });
+
+  // k8s cron is every minute; local `next dev` has no cron. Start the first
+  // batch after the 202 so pending files do not sit idle.
+  after(async () => {
+    try {
+      await BulkInventoryImportWorkerService.processDueJobs(
+        undefined,
+        result.jobId,
+      );
+    } catch (err) {
+      logger.error(
+        { err, jobId: result.jobId },
+        "Failed to start bulk inventory import worker after enqueue",
+      );
+    }
   });
 
   return NextResponse.json({ data: result }, { status: 202 });

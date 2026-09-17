@@ -1,6 +1,11 @@
 import { logger } from "@/services/logger";
 import { findClosestYear, PopulationEntry } from "@/util/helpers";
 import * as dotenv from "dotenv";
+import {
+  pickUniqueOpenClimateCity,
+  type OpenClimateCityResolveResult,
+  type OpenClimateCitySearchHit,
+} from "@/backend/openclimate-city-search";
 
 const numberOfYearsDisplayed = 10;
 
@@ -48,6 +53,49 @@ export default class OpenClimateService {
     const data = await request.json();
 
     return data.data.name;
+  }
+
+  /**
+   * Same search onboarding uses (`GET /api/v1/search/city?q=`), city-type only.
+   * Network failures return [] so bulk matching can continue without OC.
+   */
+  public static async searchCities(
+    query: string,
+  ): Promise<OpenClimateCitySearchHit[]> {
+    const q = query.trim();
+    if (q.length < 2) return [];
+    const url = `${OPENCLIMATE_BASE_URL}/api/v1/search/city?q=${encodeURIComponent(q)}`;
+    try {
+      const request = await fetch(url);
+      if (!request.ok) {
+        logger.warn(
+          { status: request.status, query: q },
+          "OpenClimate city search returned a non-OK status",
+        );
+        return [];
+      }
+      const body = (await request.json()) as {
+        data?: Array<OpenClimateCitySearchHit & { type?: string }>;
+      };
+      const rows = Array.isArray(body?.data) ? body.data : [];
+      return rows.filter(
+        (item) =>
+          item?.type === "city" &&
+          typeof item.actor_id === "string" &&
+          typeof item.name === "string",
+      );
+    } catch (err) {
+      logger.warn({ err, query: q }, "OpenClimate city search failed");
+      return [];
+    }
+  }
+
+  public static async resolveCityByName(
+    name: string,
+    countryLocode?: string | null,
+  ): Promise<OpenClimateCityResolveResult> {
+    const hits = await this.searchCities(name);
+    return pickUniqueOpenClimateCity(hits, name, countryLocode);
   }
 
   public static async getPopulationData(

@@ -492,6 +492,10 @@ Admin tab to upload a zip and watch bulk inventory file import
 
 An OEF admin can complete a 3-file happy path from the UI without using curl.
 
+**Implementation notes (2026-09-17)**
+
+- Tab `bulk-inventory-file-import` on admin bulk-actions (beside creation). Form: project, year, GPC type, GWP, zip dropzone, create-missing / replace / dry-run. Polls `GET /{jobId}` every 5s while pending/importing and shows counts plus a per-file table.
+
 ---
 
 ## IMP-009 — Dry-run (validate + match, do not write activities)

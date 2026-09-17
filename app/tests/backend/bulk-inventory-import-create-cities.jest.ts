@@ -17,6 +17,7 @@ import { BulkInventoryImportEnqueueService } from "@/backend/BulkInventoryImport
 import { createBulkInventoryImportZip } from "@/backend/BulkInventoryImportZip";
 import { BulkInventoryImportWorkerService } from "@/backend/BulkInventoryImportWorkerService";
 import OpenClimateService from "@/backend/OpenClimateService";
+import CityBoundaryService from "@/backend/CityBoundaryService";
 import { formatStoredLocode } from "@/backend/BulkInventoryImportMatcher";
 
 const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
@@ -68,6 +69,10 @@ describe("Bulk inventory import createMissingCities", () => {
     jest
       .spyOn(OpenClimateService, "getPopulationData")
       .mockResolvedValue({ error: "skip" } as never);
+    jest.spyOn(OpenClimateService, "searchCities").mockResolvedValue([] as never);
+    jest
+      .spyOn(CityBoundaryService, "getCityBoundary")
+      .mockRejectedValue(new Error("skip") as never);
 
     let scope = await db.models.Scope.findOne({ where: { scopeName: "1" } });
     if (!scope) {
@@ -107,6 +112,9 @@ describe("Bulk inventory import createMissingCities", () => {
       });
     }
     if (createdCityIds.length) {
+      await db.models.Population.destroy({
+        where: { cityId: createdCityIds },
+      });
       await db.models.CityUser.destroy({
         where: { cityId: createdCityIds },
       });

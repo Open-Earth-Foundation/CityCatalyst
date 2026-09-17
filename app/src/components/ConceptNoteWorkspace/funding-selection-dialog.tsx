@@ -44,6 +44,18 @@ interface FundingSelectionDialogProps {
   onClose: () => void;
 }
 
+const selectionButtonProps = {
+  borderRadius: "rounded",
+  textTransform: "none",
+  letterSpacing: "normal",
+  _hover: { bg: "background.overlay", opacity: 1 },
+  justifyContent: "start",
+  textAlign: "start",
+  h: "auto",
+  p: 3,
+  whiteSpace: "normal",
+} as const;
+
 /** Search every stored profile and programme; do not hide records without templates. */
 function matchesFundingSearch(
   funder: ConceptNoteFunder,
@@ -283,19 +295,11 @@ export function FundingSelectionDialog({
                 >
                   {visibleFunders.map((item) => (
                     <Button
+                      {...selectionButtonProps}
                       key={item.id}
                       variant="ghost"
-                      borderRadius="rounded"
-                      textTransform="none"
-                      letterSpacing="normal"
-                      _hover={{ bg: "background.overlay", opacity: 1 }}
-                      justifyContent="start"
-                      textAlign="start"
-                      h="auto"
                       minH="76px"
-                      p={3}
                       gap={3}
-                      whiteSpace="normal"
                       aria-pressed={item.id === funderId}
                       disabled={saveState.isLoading}
                       bg={item.id === funderId ? "base.light" : "transparent"}
@@ -388,17 +392,9 @@ export function FundingSelectionDialog({
                         <VStack align="stretch" gap={2}>
                           {funder.opportunities.map((item) => (
                             <Button
+                              {...selectionButtonProps}
                               key={item.id}
                               variant="outline"
-                              borderRadius="rounded"
-                              textTransform="none"
-                              letterSpacing="normal"
-                              _hover={{ bg: "background.overlay", opacity: 1 }}
-                              h="auto"
-                              p={3}
-                              justifyContent="start"
-                              textAlign="start"
-                              whiteSpace="normal"
                               aria-pressed={item.id === opportunityId}
                               borderColor={
                                 item.id === opportunityId

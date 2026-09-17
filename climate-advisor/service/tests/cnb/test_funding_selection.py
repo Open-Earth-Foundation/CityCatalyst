@@ -1,6 +1,8 @@
 """Database-backed funding browsing, persistence, and review invalidation contracts."""
 
 import asyncio
+from contextlib import asynccontextmanager
+from functools import partial
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
@@ -42,9 +44,49 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from tests.test_concept_note_lifecycle import _ca_session, _workspace_repository
 
 
+async def _programme(factory, funder_id, chapter_schema, **facts):
+    """Persist a programme and its template with optional catalogue facts."""
+    opportunity_id = uuid4()
+    async with factory() as session, session.begin():
+        session.add(
+            CnbFundingOpportunity(
+                funding_opportunity_id=opportunity_id,
+                funder_id=funder_id,
+                name="Urban grants",
+                source_run_id="review-1",
+                source_record_ref=str(opportunity_id),
+                **facts,
+            )
+        )
+        await session.flush()
+        session.add(
+            CnbFunderTemplate(
+                funding_opportunity_id=opportunity_id,
+                template_name="Urban grant application",
+                chapter_schema=chapter_schema,
+                required_fields=["budget"],
+            )
+        )
+    return opportunity_id
+
+
+async def _draft(workspace, run_id, chapter_schema, body_markdown):
+    """Seed template chapters and return the first chapter with its draft revision."""
+    await workspace.ensure_template_chapters(
+        run_id=run_id, chapters=normalize_template_chapters(chapter_schema)
+    )
+    chapter = (await workspace.list_chapters(run_id=run_id))[0]
+    await workspace.save_generated_chapter(
+        chapter_id=chapter.chapter_id,
+        body_markdown=body_markdown,
+        missing_information=[],
+    )
+    return (await workspace.list_chapters(run_id=run_id))[0]
+
+
 async def _seed(factory: async_sessionmaker[AsyncSession]) -> tuple[UUID, UUID, UUID]:
     """Create two funders, including a funder with no programme or template."""
-    first, second, opportunity_id, template_id = (uuid4() for _ in range(4))
+    first, second = uuid4(), uuid4()
     async with factory() as session, session.begin():
         session.add_all(
             [
@@ -57,36 +99,21 @@ async def _seed(factory: async_sessionmaker[AsyncSession]) -> tuple[UUID, UUID, 
                 CnbFunder(funder_id=second, name="Beta Foundation", profile={}),
             ]
         )
-        await session.flush()
-        session.add(
-            CnbFundingOpportunity(
-                funding_opportunity_id=opportunity_id,
-                funder_id=first,
-                name="Urban grants",
-                source_run_id="review-1",
-                source_record_ref="programme-1",
-                min_award=10000,
-                currency="EUR",
-                summary="Grants for cities",
-            )
-        )
-        await session.flush()
-        session.add(
-            CnbFunderTemplate(
-                template_id=template_id,
-                funding_opportunity_id=opportunity_id,
-                template_name="Urban grant application",
-                chapter_schema=[
-                    {
-                        "chapter_ref": "summary",
-                        "title": "Project summary",
-                        "required": True,
-                        "required_fields": ["budget"],
-                    }
-                ],
-                required_fields=["budget"],
-            )
-        )
+    opportunity_id = await _programme(
+        factory,
+        first,
+        [
+            {
+                "chapter_ref": "summary",
+                "title": "Project summary",
+                "required": True,
+                "required_fields": ["budget"],
+            }
+        ],
+        min_award=10000,
+        currency="EUR",
+        summary="Grants for cities",
+    )
     return first, second, opportunity_id
 
 
@@ -135,6 +162,24 @@ def _selection(
     )
 
 
+@asynccontextmanager
+async def _funded_draft(body_markdown):
+    """Provide an independently stored run and a draft for its selected template."""
+    async with (
+        _workspace_repository() as (workspace, factory),
+        _ca_session() as session,
+    ):
+        first, second, opportunity_id = await _seed(factory)
+        run = await _run(session)
+        context = await save_funding_selection(
+            session, run, _selection(first, opportunity_id), reference_factory=factory
+        )
+        chapter = await _draft(
+            workspace, run.run_id, context.template.chapter_schema, body_markdown
+        )
+        yield workspace, factory, session, run, first, second, opportunity_id, chapter
+
+
 async def test_catalogue_includes_all_funders_and_nested_template():
     async with _workspace_repository() as (_, factory):
         first, second, opportunity_id = await _seed(factory)
@@ -152,9 +197,8 @@ async def test_selection_persists_on_reload_switches_and_clears_context():
     async with _workspace_repository() as (_, factory), _ca_session() as session:
         first, second, opportunity_id = await _seed(factory)
         run = await _run(session)
-        result = await save_funding_selection(
-            session, run, _selection(first, opportunity_id), reference_factory=factory
-        )
+        save = partial(save_funding_selection, session, run, reference_factory=factory)
+        result = await save(_selection(first, opportunity_id))
         assert result.funder.id == first
         assert result.template.name == "Urban grant application"
         session.expire_all()
@@ -168,19 +212,14 @@ async def test_selection_persists_on_reload_switches_and_clears_context():
         )
         assert bundle.context_bundle["similar_projects"] == []
         assert bundle.context_bundle["cc_context"]["city"]["name"] == "Krakow"
-        result = await save_funding_selection(
-            session,
-            run,
+        result = await save(
             _selection(
                 second, previous_funder=first, previous_opportunity=opportunity_id
-            ),
-            reference_factory=factory,
+            )
         )
         assert result.funder.id == second
         assert result.opportunity is None and result.template is None
-        result = await save_funding_selection(
-            session, run, _selection(previous_funder=second), reference_factory=factory
-        )
+        result = await save(_selection(previous_funder=second))
         assert result.funder is None
         assert bundle.context_bundle["funder_context"] is None
 
@@ -189,56 +228,38 @@ async def test_rejects_incompatible_programme_and_stale_selection_without_saving
     async with _workspace_repository() as (_, factory), _ca_session() as session:
         first, second, opportunity_id = await _seed(factory)
         run = await _run(session)
+        save = partial(save_funding_selection, session, run, reference_factory=factory)
         with pytest.raises(HTTPException) as invalid:
-            await save_funding_selection(
-                session,
-                run,
-                _selection(second, opportunity_id),
-                reference_factory=factory,
-            )
+            await save(_selection(second, opportunity_id))
         assert invalid.value.status_code == 422
         assert run.funder_id is None
         with pytest.raises(HTTPException) as stale:
-            await save_funding_selection(
-                session,
-                run,
-                _selection(first, opportunity_id, previous_funder=second),
-                reference_factory=factory,
-            )
+            await save(_selection(first, opportunity_id, previous_funder=second))
         assert stale.value.status_code == 409
         assert run.funder_id is None
 
 
 async def test_existing_draft_requires_acknowledgement_and_preserves_text():
-    async with _workspace_repository() as (_, factory), _ca_session() as session:
+    async with (
+        _workspace_repository() as (workspace, factory),
+        _ca_session() as session,
+    ):
         first, _, opportunity_id = await _seed(factory)
         run = await _run(session)
-        chapter_id, revision_id = uuid4(), uuid4()
+        save = partial(save_funding_selection, session, run, reference_factory=factory)
+        draft = await _draft(
+            workspace,
+            run.run_id,
+            [{"chapter_ref": "summary", "title": "Project summary"}],
+            "Keep this project text.",
+        )
+        chapter_id, revision_id = draft.chapter_id, draft.revision_id
         async with factory() as reference, reference.begin():
-            reference.add(
-                ConceptNoteChapter(
-                    chapter_id=chapter_id,
-                    run_id=run.run_id,
-                    title="Project summary",
-                    template_section_id="summary",
-                    position=0,
-                    status="ready",
-                    user_locked=True,
-                )
-            )
-            await reference.flush()
-            reference.add(
-                ConceptNoteChapterRevision(
-                    revision_id=revision_id,
-                    chapter_id=chapter_id,
-                    revision_number=1,
-                    author_type="user",
-                    change_type="draft",
-                    body_markdown="Keep this project text.",
-                )
-            )
-            await reference.flush()
+            revision = await reference.get(ConceptNoteChapterRevision, revision_id)
+            revision.author_type = "user"
             chapter = await reference.get(ConceptNoteChapter, chapter_id)
+            chapter.status = "ready"
+            chapter.user_locked = True
             chapter.confirmed_revision_id = revision_id
             reference.add(
                 ConceptNoteChapterValidation(
@@ -265,19 +286,9 @@ async def test_existing_draft_requires_acknowledgement_and_preserves_text():
                 )
             )
         with pytest.raises(HTTPException) as unconfirmed:
-            await save_funding_selection(
-                session,
-                run,
-                _selection(first, opportunity_id),
-                reference_factory=factory,
-            )
+            await save(_selection(first, opportunity_id))
         assert unconfirmed.value.status_code == 409
-        await save_funding_selection(
-            session,
-            run,
-            _selection(first, opportunity_id, acknowledge=True),
-            reference_factory=factory,
-        )
+        await save(_selection(first, opportunity_id, acknowledge=True))
         async with factory() as reference:
             chapter = await reference.get(ConceptNoteChapter, chapter_id)
             revision = await reference.get(ConceptNoteChapterRevision, revision_id)
@@ -371,47 +382,13 @@ async def test_drafting_reloads_current_funding_before_seeding_chapters():
 
 @pytest.mark.parametrize("new_refs", [["budget"], ["summary", "budget"], []])
 async def test_incompatible_template_switch_preserves_selection_and_draft(new_refs):
-    async with (
-        _workspace_repository() as (workspace, factory),
-        _ca_session() as session,
-    ):
-        first, second, opportunity_id = await _seed(factory)
-        run = await _run(session)
-        original = await save_funding_selection(
-            session, run, _selection(first, opportunity_id), reference_factory=factory
+    async with _funded_draft("Keep the original draft.") as fixture:
+        workspace, factory, session, run, first, second, opportunity_id, chapter = (
+            fixture
         )
-        await workspace.ensure_template_chapters(
-            run_id=run.run_id,
-            chapters=normalize_template_chapters(original.template.chapter_schema),
+        new_opportunity = await _programme(
+            factory, second, [{"chapter_ref": ref, "title": ref} for ref in new_refs]
         )
-        chapter = (await workspace.list_chapters(run_id=run.run_id))[0]
-        await workspace.save_generated_chapter(
-            chapter_id=chapter.chapter_id,
-            body_markdown="Keep the original draft.",
-            missing_information=[],
-        )
-        new_opportunity = uuid4()
-        async with factory() as reference, reference.begin():
-            reference.add(
-                CnbFundingOpportunity(
-                    funding_opportunity_id=new_opportunity,
-                    funder_id=second,
-                    name="Replacement programme",
-                    source_run_id="review-2",
-                    source_record_ref="programme-2",
-                )
-            )
-            await reference.flush()
-            reference.add(
-                CnbFunderTemplate(
-                    funding_opportunity_id=new_opportunity,
-                    template_name="Replacement",
-                    chapter_schema=[
-                        {"chapter_ref": ref, "title": ref} for ref in new_refs
-                    ],
-                    required_fields=[],
-                )
-            )
         with pytest.raises(HTTPException) as error:
             await save_funding_selection(
                 session,
@@ -435,51 +412,21 @@ async def test_incompatible_template_switch_preserves_selection_and_draft(new_re
 
 
 async def test_compatible_switch_updates_chapter_metadata_without_replacing_text():
-    async with (
-        _workspace_repository() as (workspace, factory),
-        _ca_session() as session,
-    ):
-        first, second, opportunity_id = await _seed(factory)
-        run = await _run(session)
-        original = await save_funding_selection(
-            session, run, _selection(first, opportunity_id), reference_factory=factory
+    async with _funded_draft("Keep this text.") as fixture:
+        workspace, factory, session, run, first, second, opportunity_id, chapter = (
+            fixture
         )
-        await workspace.ensure_template_chapters(
-            run_id=run.run_id,
-            chapters=normalize_template_chapters(original.template.chapter_schema),
+        new_opportunity = await _programme(
+            factory,
+            second,
+            [
+                {
+                    "chapter_ref": "summary",
+                    "title": "Executive overview",
+                    "required": False,
+                }
+            ],
         )
-        chapter = (await workspace.list_chapters(run_id=run.run_id))[0]
-        await workspace.save_generated_chapter(
-            chapter_id=chapter.chapter_id,
-            body_markdown="Keep this text.",
-            missing_information=[],
-        )
-        new_opportunity = uuid4()
-        async with factory() as reference, reference.begin():
-            reference.add(
-                CnbFundingOpportunity(
-                    funding_opportunity_id=new_opportunity,
-                    funder_id=second,
-                    name="Compatible programme",
-                    source_run_id="review-2",
-                    source_record_ref="programme-2",
-                )
-            )
-            await reference.flush()
-            reference.add(
-                CnbFunderTemplate(
-                    funding_opportunity_id=new_opportunity,
-                    template_name="Compatible",
-                    chapter_schema=[
-                        {
-                            "chapter_ref": "summary",
-                            "title": "Executive overview",
-                            "required": False,
-                        }
-                    ],
-                    required_fields=[],
-                )
-            )
         await save_funding_selection(
             session,
             run,
@@ -496,25 +443,11 @@ async def test_compatible_switch_updates_chapter_metadata_without_replacing_text
 async def test_edit_registration_reloads_funding_and_blocks_switch_until_finished(
     monkeypatch,
 ):
-    async with (
-        _workspace_repository() as (workspace, factory),
-        _ca_session() as session,
-    ):
-        first, second, opportunity_id = await _seed(factory)
-        run = await _run(session)
-        original = await save_funding_selection(
-            session, run, _selection(first, opportunity_id), reference_factory=factory
+    async with _funded_draft("Improve the city.") as fixture:
+        workspace, factory, session, run, first, second, opportunity_id, chapter = (
+            fixture
         )
-        await workspace.ensure_template_chapters(
-            run_id=run.run_id,
-            chapters=normalize_template_chapters(original.template.chapter_schema),
-        )
-        chapter = (await workspace.list_chapters(run_id=run.run_id))[0]
-        await workspace.save_generated_chapter(
-            chapter_id=chapter.chapter_id,
-            body_markdown="Improve the city.",
-            missing_information=[],
-        )
+        save = partial(save_funding_selection, session, run, reference_factory=factory)
         # Simulate a request authorized before another tab changes the funding.
         stale_run = SimpleNamespace(
             run_id=run.run_id,
@@ -523,12 +456,7 @@ async def test_edit_registration_reloads_funding_and_blocks_switch_until_finishe
             funder_id=first,
             selected_funding_opportunity_id=opportunity_id,
         )
-        await save_funding_selection(
-            session,
-            run,
-            _selection(second, None, first, opportunity_id, True),
-            reference_factory=factory,
-        )
+        await save(_selection(second, None, first, opportunity_id, True))
         planning = asyncio.Event()
         finish_planning = asyncio.Event()
 
@@ -569,12 +497,7 @@ async def test_edit_registration_reloads_funding_and_blocks_switch_until_finishe
         try:
             await asyncio.wait_for(planning.wait(), timeout=5)
             with pytest.raises(HTTPException) as busy:
-                await save_funding_selection(
-                    session,
-                    run,
-                    _selection(first, opportunity_id, second, None, True),
-                    reference_factory=factory,
-                )
+                await save(_selection(first, opportunity_id, second, None, True))
             assert busy.value.status_code == 409
             await session.rollback()
             await session.refresh(run)
@@ -582,12 +505,7 @@ async def test_edit_registration_reloads_funding_and_blocks_switch_until_finishe
             finish_planning.set()
         proposal = await asyncio.wait_for(task, timeout=5)
         assert proposal.status == "proposed"
-        await save_funding_selection(
-            session,
-            run,
-            _selection(first, opportunity_id, second, None, True),
-            reference_factory=factory,
-        )
+        await save(_selection(first, opportunity_id, second, None, True))
         # SQLite has no advisory locks; exercise the real status/revision checks.
         monkeypatch.setattr("app.persistence.concept_notes.edits.lock_run", AsyncMock())
         with pytest.raises(EditOperationError) as stale:

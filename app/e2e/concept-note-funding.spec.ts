@@ -62,15 +62,7 @@ const funders = [
       },
       derived: { typical_projects: "Urban infrastructure" },
     },
-    opportunities: [
-      opportunity,
-      {
-        ...opportunity,
-        id: "20000000-0000-4000-8000-000000000002",
-        name: "Early-stage preparation",
-        template: null,
-      },
-    ],
+    opportunities: [opportunity],
   },
   {
     id: otherFunderId,
@@ -85,7 +77,7 @@ const funders = [
 
 test("browse, inspect, select, reload, switch and clear funding", async ({
   page,
-}, testInfo) => {
+}) => {
   let selectedFunder: (typeof funders)[number] | undefined;
   let selectedOpportunity: typeof opportunity | undefined;
   const saved: unknown[] = [];
@@ -193,6 +185,8 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
     .getByRole("button", { name: "Browse funders", exact: true })
     .click();
   const dialog = page.getByRole("dialog");
+  const clickDialogButton = (name: string | RegExp) =>
+    dialog.getByRole("button", { name, exact: true }).click();
   const search = dialog.getByLabel("Search all funders", { exact: true });
   await expect(search).toBeFocused();
   await expect(dialog.getByText("2 of 2 funders")).toBeVisible();
@@ -202,13 +196,13 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
   ).toBeVisible();
   await search.fill("transport");
   await expect(dialog.getByText("1 of 2 funders")).toBeVisible();
-  await dialog.getByRole("button", { name: /European Climate Fund/ }).click();
+  await clickDialogButton(/European Climate Fund/);
   await expect(
     dialog.getByText("Climate resilience and low-carbon transport", {
       exact: true,
     }),
   ).toBeVisible();
-  await dialog.getByRole("button", { name: /Green Cities Programme/ }).click();
+  await clickDialogButton(/Green Cities Programme/);
   await expect(
     dialog.getByText("Project summary", { exact: true }),
   ).toBeVisible();
@@ -216,20 +210,7 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
   await expect(
     dialog.getByText("Municipal governments", { exact: true }),
   ).toBeVisible();
-  await page.screenshot({
-    path: testInfo.outputPath("funding-preview-desktop.png"),
-    fullPage: true,
-  });
-  await dialog
-    .getByText("Total budget", { exact: true })
-    .scrollIntoViewIfNeeded();
-  await page.screenshot({
-    path: testInfo.outputPath("template-preview-desktop.png"),
-    fullPage: true,
-  });
-  await dialog
-    .getByRole("button", { name: "Save selection", exact: true })
-    .click();
+  await clickDialogButton("Save selection");
   await expect(dialog).not.toBeVisible();
   await expect(
     page.getByText("European Climate Fund", { exact: true }),
@@ -244,36 +225,24 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
   await expect(
     page.getByText("European Climate Fund", { exact: true }),
   ).toBeVisible();
-  await page
-    .getByRole("button", { name: "Change", exact: true })
-    .click();
-  await dialog
-    .getByRole("button", { name: /Global Adaptation Foundation/ })
-    .click();
+  await page.getByRole("button", { name: "Change", exact: true }).click();
+  await clickDialogButton(/Global Adaptation Foundation/);
   await expect(
     dialog.getByText("No programmes are available", { exact: false }),
   ).toBeVisible();
   await expect(
     dialog.getByText("Budget and financing", { exact: true }),
   ).not.toBeVisible();
-  await dialog
-    .getByRole("button", { name: "Save selection", exact: true })
-    .click();
+  await clickDialogButton("Save selection");
   expect(saved[1]).toMatchObject({
     funder_id: otherFunderId,
     selected_funding_opportunity_id: null,
     expected_funder_id: funderId,
     expected_funding_opportunity_id: opportunityId,
   });
-  await page
-    .getByRole("button", { name: "Change", exact: true })
-    .click();
-  await dialog
-    .getByRole("button", { name: "Clear selection", exact: true })
-    .click();
-  await dialog
-    .getByRole("button", { name: "Save selection", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Change", exact: true }).click();
+  await clickDialogButton("Clear selection");
+  await clickDialogButton("Save selection");
   await expect(
     page.getByText("No funder selected", { exact: true }),
   ).toBeVisible();
@@ -282,8 +251,8 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
   await page
     .getByRole("button", { name: "Browse funders", exact: true })
     .click();
-  await dialog.getByRole("button", { name: /European Climate Fund/ }).click();
-  await dialog.getByRole("button", { name: /Green Cities Programme/ }).click();
+  await clickDialogButton(/European Climate Fund/);
+  await clickDialogButton(/Green Cities Programme/);
   await expect(
     dialog.getByRole("button", { name: "Save selection", exact: true }),
   ).toBeVisible();
@@ -292,13 +261,6 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
       (element) => element.scrollWidth <= element.clientWidth,
     ),
   ).toBe(true);
-  await dialog
-    .getByText("Total budget", { exact: true })
-    .scrollIntoViewIfNeeded();
-  await page.screenshot({
-    path: testInfo.outputPath("funding-preview-mobile.png"),
-    fullPage: true,
-  });
   await page.keyboard.press("Escape");
   await expect(dialog).not.toBeVisible();
 });

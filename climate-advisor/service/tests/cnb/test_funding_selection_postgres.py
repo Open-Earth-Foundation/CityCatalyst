@@ -12,16 +12,13 @@ from app.models.cnb.concept_note_edits import EditPlanOutput, EditProposalReques
 from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteRun
 from app.models.db.thread import Thread
 from app.persistence.concept_notes.edits import ConceptNoteEditRepository
-from app.persistence.concept_notes.workspace import (
-    ConceptNoteWorkspaceRepository,
-    normalize_template_chapters,
-)
+from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.cnb.edits import ConceptNoteEditService
 from app.services.cnb.funding_selection import save_funding_selection
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.schema import CreateSchema, DropSchema
-from tests.cnb.test_funding_selection import _run, _seed, _selection
+from tests.cnb.test_funding_selection import _draft, _run, _seed, _selection
 
 pytestmark = pytest.mark.skipif(
     not os.getenv("CNB_TEST_DATABASE_URL"),
@@ -59,15 +56,8 @@ async def funding_workspace():
             selected = await save_funding_selection(
                 session, run, _selection(first, opportunity), reference_factory=sessions
             )
-        await workspace.ensure_template_chapters(
-            run_id=run.run_id,
-            chapters=normalize_template_chapters(selected.template.chapter_schema),
-        )
-        chapter = (await workspace.list_chapters(run_id=run.run_id))[0]
-        await workspace.save_generated_chapter(
-            chapter_id=chapter.chapter_id,
-            body_markdown="Keep this draft.",
-            missing_information=[],
+        await _draft(
+            workspace, run.run_id, selected.template.chapter_schema, "Keep this draft."
         )
         yield sessions, workspace, run, first, second, opportunity
     finally:

@@ -210,9 +210,12 @@ export default function OnboardingSetup(props: {
     return <ProgressLoader />;
   }
 
+  const contentWidth =
+    activeStep === inviteCollaboratorsStepIndex ? "4xl" : "1090px";
+
   return (
     <>
-      <Box pt={16} pb={16} maxW="full" mx="auto" w="1090px">
+      <Box pt={16} pb={16} maxW="full" mx="auto" w={contentWidth}>
         <Button
           variant="ghost"
           onClick={() => {
@@ -236,7 +239,7 @@ export default function OnboardingSetup(props: {
           alignItems="flex-start"
           mt={{ base: 8, md: 16 }}
           mb={48}
-          w={"1090px"}
+          w={contentWidth}
           mx="auto"
         >
           {activeStep === 0 && (

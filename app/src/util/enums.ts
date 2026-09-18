@@ -34,3 +34,30 @@ export enum NumberFormatEnum {
   SPACE_AND_COMMA = "space_and_comma",
   APOSTROPHE_AND_DOT = "apostrophe_and_dot",
 }
+
+export enum BulkInventoryImportJobStatus {
+  PENDING = "pending",
+  MATCHING = "matching",
+  IMPORTING = "importing",
+  COMPLETED = "completed",
+  FAILED = "failed",
+  CANCELLED = "cancelled",
+}
+
+export enum BulkInventoryImportItemStatus {
+  PENDING = "pending",
+  MATCHED = "matched",
+  UNMATCHED = "unmatched",
+  IMPORTING = "importing",
+  COMPLETED = "completed",
+  FAILED = "failed",
+  SKIPPED = "skipped",
+}
+
+export enum BulkInventoryImportMatchError {
+  UNMATCHED_CITY = "unmatched_city",
+  AMBIGUOUS_CITY = "ambiguous_city",
+  MISSING_YEAR = "missing_year",
+  UNSUPPORTED_EXTENSION = "unsupported_extension",
+  FILE_TOO_LARGE = "file_too_large",
+}

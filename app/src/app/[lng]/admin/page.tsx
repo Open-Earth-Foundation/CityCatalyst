@@ -37,6 +37,7 @@ import {
 import { useRouter } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
 import BulkInventoryCreationTabContent from "./bulk-inventory-actions/BulkInventoryCreationTabContent";
+import BulkInventoryFileImportTabContent from "./bulk-inventory-actions/BulkInventoryFileImportTabContent";
 import BulkDownloadTabContent from "./bulk-inventory-actions/BulkDownloadTabContent";
 import BulkHiapPrioritizationTabContent from "./bulk-inventory-actions/BulkHiapPrioritizationTabContent";
 import { OrganizationRole } from "@/util/types";
@@ -106,8 +107,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
       </Tabs.Trigger>
     );
   };
-  const [createOrganizationInvite] =
-    api.useCreateOrganizationInviteMutation();
+  const [createOrganizationInvite] = api.useCreateOrganizationInviteMutation();
 
   const [updateOrganizationActiveStatus] =
     api.useUpdateOrganizationActiveStatusMutation();
@@ -532,6 +532,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
             >
               <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
                 <BulkActionsTabTrigger title="bulk-inventory-creation" />
+                <BulkActionsTabTrigger title="bulk-inventory-file-import" />
                 <BulkActionsTabTrigger title="bulk-data-download" />
                 <BulkActionsTabTrigger title="bulk-data-connection" disabled />
                 <BulkActionsTabTrigger title="bulk-user-creation" disabled />
@@ -546,6 +547,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                 t={t}
                 onTabReset={() => setBulkActionsTab("bulk-inventory-creation")}
               />
+              <BulkInventoryFileImportTabContent t={t} />
               <BulkDownloadTabContent t={t} />
               <Tabs.Content value="bulk-hiap-prioritization">
                 <BulkHiapPrioritizationTabContent t={t} lng={lng} />

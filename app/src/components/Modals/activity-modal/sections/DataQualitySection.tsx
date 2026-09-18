@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/native-select";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import { Inputs } from "../activity-modal-body";
+import { GlobalWarmingPotentialTypeEnum } from "@/util/enums";
 
 interface DataQualitySectionProps {
   t: TFunction;
@@ -28,7 +29,17 @@ interface DataQualitySectionProps {
   errors: FieldErrors<FieldValues>;
   setValue: UseFormSetValue<Inputs>;
   fields: ExtraField[];
+  gwpVersion?: GlobalWarmingPotentialTypeEnum | string | null;
 }
+
+// GWP100 values per GHG Protocol / IPCC, matching seed-data/gwp/gwp.csv
+const GWP_VALUES_BY_VERSION: Record<
+  GlobalWarmingPotentialTypeEnum,
+  { ch4: number; n2o: number }
+> = {
+  [GlobalWarmingPotentialTypeEnum.ar5]: { ch4: 28, n2o: 265 },
+  [GlobalWarmingPotentialTypeEnum.ar6]: { ch4: 27.9, n2o: 273 },
+};
 
 export const DataQualitySection = ({
   t,
@@ -37,8 +48,15 @@ export const DataQualitySection = ({
   errors,
   setValue,
   fields,
+  gwpVersion,
 }: DataQualitySectionProps) => {
   const prefix = "";
+
+  const resolvedGwpVersion =
+    gwpVersion === GlobalWarmingPotentialTypeEnum.ar6
+      ? GlobalWarmingPotentialTypeEnum.ar6
+      : GlobalWarmingPotentialTypeEnum.ar5;
+  const gwpValues = GWP_VALUES_BY_VERSION[resolvedGwpVersion];
 
   const sourceField = fields.find(
     (f) => f.id.includes("-source") && f.type === "text",
@@ -198,7 +216,11 @@ export const DataQualitySection = ({
         <Text color="content.tertiary">
           {t("gwp-info-prefix")}{" "}
           <Text as="span" fontWeight="bold">
-            {t("gwp-info")}
+            {t("gwp-info", {
+              ch4: gwpValues.ch4,
+              n2o: gwpValues.n2o,
+              version: resolvedGwpVersion.toUpperCase(),
+            })}
           </Text>
         </Text>
       </HStack>

@@ -1,16 +1,12 @@
 """Visible reasoning streams without answer, encrypted item, or request leakage."""
 
 import asyncio
-import inspect
 import json
-from functools import wraps
 from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
-from openai import AsyncOpenAI
 
-from app.utils.cnb_observability import protect_cnb_client
 from app.utils.cnb_progress import (
     bind_cnb_progress,
     emit_cnb_reasoning,
@@ -205,32 +201,3 @@ async def test_chapter_reasoning_arrives_before_final_result_and_cancellation_st
             assert await task is result
             assert result.final_output == {"intent": "question"}
             result.cancel.assert_not_called()
-
-
-@pytest.mark.asyncio
-async def test_cnb_client_removes_payload_logging_from_both_api_surfaces():
-    client = AsyncOpenAI(api_key="test-only")
-    originals = []
-    try:
-        for resource in (client.chat.completions, client.responses):
-            for name in ("create", "parse"):
-                original = getattr(resource, name)
-                unwrapped = inspect.unwrap(original)
-                expected = (
-                    unwrapped.__func__ if inspect.ismethod(unwrapped) else unwrapped
-                )
-                originals.append((resource, name, expected))
-
-                @wraps(original)
-                async def payload_logging_wrapper(*args, **kwargs):
-                    raise AssertionError("Raw-payload logger must not run")
-
-                setattr(resource, name, payload_logging_wrapper)
-
-        assert protect_cnb_client(client) is client
-        for resource, name, original in originals:
-            restored = getattr(resource, name)
-            assert restored.__func__ is original
-            assert restored.__self__ is resource
-    finally:
-        await client.close()

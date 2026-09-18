@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "1.26.0-dev.0",
+  "version": "1.27.0-dev.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -124,7 +124,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^30.2.0",
-    "@playwright/test": "^1.61.1",
+    "@playwright/test": "^1.63.0",
     "@stoplight/spectral-cli": "^6.16.3",
     "@types/bcrypt": "^6.0.0",
     "@types/geojson": "^7946.0.16",

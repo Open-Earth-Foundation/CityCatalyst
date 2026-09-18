@@ -331,6 +331,13 @@ separately.
 
 **Server Response (SSE Stream):**
 
+The message stream sends an initial SSE comment and comment heartbeats every
+15 seconds while the agent is silent, including during chapter planning and
+semantic review. These bytes pass through the CityCatalyst chat proxy on the
+existing response; they add no HTTP requests or model calls. Generation remains
+request-bound: a browser disconnect still cancels it. Heartbeats prevent idle
+timeouts but do not provide reconnect or worker-restart recovery.
+
 ```text
 event: message
 data: {"content": "The top climate risks..."}
@@ -1409,8 +1416,11 @@ workflow run identifier when present. CNB chat interactions use the visible
 `workflow=CNB` tag and retain the detailed route as
 `workflow_name=concept_note_context_chat`. Full debug artifacts are logged with
 bearer tokens, API keys, JWTs, and secrets redacted.
-CNB chat and chat-edit interactions are metadata-only: no raw instruction,
-document/source text, or tool payload artifacts are recorded.
+General chat, CNB chat/edits, and Stationary Energy share the same content-logging
+contract: user messages, assistant responses, prompts, source context, and tool
+inputs/outputs are recorded with credential redaction. CNB no longer suppresses
+OpenAI autologging on its clients. `MLFLOW_ENABLED` controls MLflow for every flow;
+the existing LangSmith/Agents SDK export policy remains separate and unchanged.
 
 The shared helper creates runs through `MlflowClient` and keeps the client/run ID
 in a task-local context. Tags, parameters, metrics, artifacts, and termination
@@ -1429,24 +1439,22 @@ CNB user interactions use stable, non-dynamic `mlflow.runName` values:
 | Start or idempotently replay a CNB run | `cnb_start` |
 | Non-mutating CNB chat | `cnb_chat` |
 | Resolve missing information (CC-730) | `cnb_missing_information` |
-| Future chat-driven document edit (CC-732) | `cnb_chat_edit` |
+| Chat-driven document edit (CC-732) | `cnb_chat_edit` |
 
 The durable CNB run ID is retained as `concept_note_run_id`; it is not appended
 to the run name. Missing-information and chat-edit implementations must use the
 reserved names above at their run-scoped mutation boundaries.
 
-Each non-CNB streamed `/v1/messages` model turn emits one MLflow trace. CNB model
-calls suppress raw SDK/agent tracing on their own client instances and record
-allowlisted interaction metadata instead. Climate Advisor
-also assigns the active trace session to the CA `thread_id`, so MLflow's
-session grouping shows all turns from the same UI conversation together while
-still preserving per-turn trace detail. Every chat mode opens a request root span
-before starting the model, so trace/run correlation never depends on a fluent
-active run. CNB turns retain the `CNB` root span and `workflow=CNB` tag.
+Every streamed `/v1/messages` turn uses the shared `conversation_trace` handler,
+including CNB and Stationary Energy. Each `Climate Advisor Turn` root opens before
+agent creation, stays open through persistence, and stores the user message and
+assembled assistant response. `mlflow.trace.session` is the CA `thread_id`, so
+Sessions groups all turns from the same conversation. Workflow tags and durable
+`concept_note_run_id` / `stationary_energy_draft_run_id` retain the flow identity.
+Standalone preparation and workflow jobs omit `mlflow.trace.session` so they
+do not appear as extra chat turns. Find them in Traces using `thread_id` and
+the workflow IDs; inline tool calls remain children of the actual chat turn.
 
-Ordinary CA (`workflow=climate_advisor_conversation`) names each request root
-`Climate Advisor Turn`, keeps it open through message persistence, and stores one
-assembled assistant response on that root.
 `streamed`, `stream_status`, `response_chunk_count`, and `history_saved` describe
 the outcome. These are visible trace attributes, not a custom animated MLflow UI
 indicator. Cancelled requests retain partial assistant text and an error status;
@@ -1454,7 +1462,7 @@ unfinished model spans are closed with a reference to that partial root response
 Raw `mlflow.chunk.item.*` events are removed before export; other events, model
 outputs, usage, and timing remain available.
 
-Each distinct system/developer message is stored once per ordinary CA request
+Each distinct system/developer message is stored once per chat request
 under the root's `Inputs > system_prompts`, keyed by SHA-256. Model-call inputs
 contain explicit references to that snapshot and root span ID. MLflow does not
 automatically inherit or expand a root prompt in a child's chat view: open the
@@ -1462,11 +1470,17 @@ root to read it. Changed prompts receive different snapshots. A subsequent user
 message creates a new request/run, even in the same conversation session. Only
 the logging copies change; provider requests retain their original full prompts.
 
-Ordinary CA function tools record redacted inputs and outputs in execution-level
+All Clima chat function tools record redacted inputs and outputs in execution-level
 `TOOL` spans with call IDs, timing, and exception status. Repeated same-name calls
 are correlated by call ID. Empty tool artifacts are omitted, and JSON tool results
 are logged in one representation without changing the runtime/persisted payload.
-CNB and Stationary Energy context-chat telemetry retain their existing behavior.
+CNB edit planning, source analysis, chapter drafting/validation, funding research, and Stationary Energy
+start/retry, generation, review and save also use the shared workflow trace helper.
+Inline operations remain children of the chat turn. Background jobs start with
+an independent async context and trace, correlated to the durable thread ID
+(or workflow run ID when no thread exists), so they can finish after the chat.
+Standalone workflow roots retain structured inputs/outputs and the same prompt
+library and redaction. Workflow results are not presented as invented chat replies.
 
 This compaction requires MLflow 3.2 or later (the lockfile remains on 3.2.0) and
 uses its [span processing API](https://mlflow.org/docs/latest/api_reference/python_api/mlflow.tracing.html).
@@ -1694,7 +1708,9 @@ A bounded request-local queue delivers worker events before tools finish,
 independently of transport heartbeats (CC-827). The adapter reconciles deltas and
 completed snapshots without duplicates. Providers may omit readable summaries;
 the app never generates substitutes. Encrypted content is excluded, and summary
-text is not added to telemetry, message history, or reload responses.
+text is not added to message history or reload responses. Provider calls follow
+the shared Clima telemetry and credential-redaction contract described above;
+the SSE adapter does not create separate summary artifacts.
 
 The expandable Reasoning section opens during generation and shows current
 workflow progress separately, with a progress bar when chapter counts are available.

@@ -207,8 +207,11 @@ A grounded marker replacement resolves the matching gap in the same transaction.
 Wording-only edits preserve Ready only when exact confirmation and current gap,
 and lock checks permit it; factual changes require renewed review.
 Proposals and results survive reload. Web and CA independently enforce current
-user/run/city authorization. CNB telemetry remains metadata-only, including
-nested source queries, without disabling concurrent generic tracing.
+user/run/city authorization. CNB uses the shared Clima MLflow content-logging
+contract: chat turns store user messages and complete assistant responses, while
+nested source queries and edit planning record credential-redacted model/tool
+inputs and outputs. Standalone source analysis, drafting, validation, and edit proposals use
+correlated workflow traces with the same prompt snapshot storage.
 
 The first part of the workflow is context bundle building. The
 `ContextBundleService` assembles the reusable run context by:
@@ -2535,7 +2538,9 @@ not MLflow's thread-local fluent active-run stack. All shared logging helpers an
 run termination target that ID. Failed starts mask the enclosing target, queued
 writes drain before closure, and exceptions/cancellation terminate only the
 affected request. Trace metadata explicitly links to the source run through
-`mlflow.sourceRun` and records session/user using MLflow 3.2 metadata keys.
+`mlflow.sourceRun` and records user identity using MLflow 3.2 metadata keys.
+Only chat turns set `mlflow.trace.session`. Standalone CNB preparation and
+workflow traces retain thread/workflow IDs without becoming extra chat turns.
 CNB chat carries `prompt_name=cnb_chat` for the composed CNB workflow prompt.
 
 All user-initiated CNB telemetry uses the `Clima` experiment and the visible

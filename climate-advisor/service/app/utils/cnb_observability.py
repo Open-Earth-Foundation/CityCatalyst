@@ -1,12 +1,8 @@
-"""Stable CNB vocabulary and metadata-only telemetry boundaries."""
+"""Stable CNB interaction names and operational outcome logging."""
 
-import inspect
 import logging
 from enum import Enum
-from types import MethodType
 from uuid import UUID
-
-from openai import AsyncOpenAI
 
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
@@ -35,17 +31,6 @@ class CNBInteraction(str, Enum):
             CNBInteraction.MISSING_INFORMATION: "cnb_missing_information",
             CNBInteraction.CHAT_EDIT: "cnb_chat_edit",
         }[self]
-
-
-def protect_cnb_client(client: AsyncOpenAI) -> AsyncOpenAI:
-    """Disable raw-payload autologging for one request-local CNB client."""
-    for resource in (client.chat.completions, client.responses):
-        for name in ("create", "parse"):
-            original = inspect.unwrap(getattr(resource, name))
-            if inspect.ismethod(original):
-                original = original.__func__
-            setattr(resource, name, MethodType(original, resource))
-    return client
 
 
 def record_edit_outcome(

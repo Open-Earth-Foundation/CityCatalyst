@@ -27,7 +27,6 @@ from app.services.cnb.edit_validation import prior_user_inputs, recent_user_inpu
 from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.concept_note_draft_tools import build_draft_tools
 from app.utils.cnb_model_settings import cnb_model_settings
-from app.utils.cnb_observability import protect_cnb_client
 from app.utils.cnb_progress import emit_cnb_progress, run_with_cnb_reasoning
 from app.utils.concept_note_context import omit_context_identifiers
 from app.utils.prompt_budget import count_prompt_tokens
@@ -142,7 +141,7 @@ class ConceptNoteEditPlanner:
             missing_api_key_message="The configured edit model is unavailable",
             error_cls=RuntimeError,
         )
-        client = protect_cnb_client(AsyncOpenAI(**options.kwargs))
+        client = AsyncOpenAI(**options.kwargs)
         try:
             sdk_model = OpenAIChatCompletionsModel(
                 model=model.name, openai_client=client

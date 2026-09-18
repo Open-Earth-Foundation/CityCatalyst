@@ -53,7 +53,6 @@ from app.tools.stationary_energy_start_draft_tools import (
 )
 from app.utils.agent_tracing import configure_agents_tracing
 from app.utils.cnb_model_settings import cnb_model_settings
-from app.utils.cnb_observability import protect_cnb_client
 from app.utils.conversation_observability import traced_conversation_tool
 
 logger = logging.getLogger(__name__)
@@ -138,8 +137,6 @@ class AgentService:
 
         # Initialize the chat client once and expose it to the Agents SDK.
         self.client = self._create_openrouter_client()
-        if self.concept_note_run_id:
-            protect_cnb_client(self.client)
         openai.api_key = self.client.api_key
         openai.base_url = self.client.base_url
         openai.default_headers = self.client.default_headers
@@ -484,11 +481,10 @@ class AgentService:
 
         self.active_instructions = agent_instructions
 
-        if not self.stationary_energy_draft_run_id and not self._has_concept_note_context:
-            tools = [
-                traced_conversation_tool(tool) if isinstance(tool, FunctionTool) else tool
-                for tool in tools
-            ]
+        tools = [
+            traced_conversation_tool(tool) if isinstance(tool, FunctionTool) else tool
+            for tool in tools
+        ]
 
         # Build the Agents SDK object with the finalized instructions and tool list.
         model_class = (

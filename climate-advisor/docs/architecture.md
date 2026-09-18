@@ -501,13 +501,18 @@ Stationary Energy context chat uses a dedicated workflow name and includes
 `stationary_energy_draft_run_id` in trace metadata so it can be separated from
 general conversations in traces and logs.
 
-Ordinary Climate Advisor requests keep one `Climate Advisor Turn` root
+All Climate Advisor chat modes share one handler and keep one `Climate Advisor Turn` root
 open through response persistence. Each root represents one user turn; MLflow's
 Sessions view groups turns by the shared thread/session ID. The root stores the
 user message, one hash-keyed copy of each system/developer prompt, the assembled assistant output,
 and the final stream/persistence status. Child model spans reference the root
 prompt snapshot and omit raw streaming-chunk events while retaining their final
 outputs and diagnostic events. Function calls are recorded as child `TOOL` spans
-with call IDs and redacted inputs/outputs. Catalog IDs, credentials, storage
-pointers, and raw tool bodies stay out of MLflow. CNB and Stationary Energy
-scoped flows retain their dedicated tracing paths.
+with call IDs and credential-redacted inputs/outputs. CNB chat and edits now
+record conversation and model/tool content under the same MLflow settings.
+The existing catalog summary projection remains available in tool artifacts.
+CNB source analysis/drafting/validation and Stationary Energy generation/review/save share
+workflow tracing and prompt compaction. Inline operations stay under the chat;
+background tasks own independent traces linked by thread and workflow IDs.
+Standalone jobs omit `mlflow.trace.session`; only conversation turns appear in
+the Sessions view. Workflow traces remain searchable by `thread_id` metadata.

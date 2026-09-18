@@ -73,6 +73,8 @@ export const verifyRecoveryCode = async (user: User, recoveryCode: string) => {
     // delete recovery code from user record so it can only be used one time
     userHashes.splice(codeIndex, 1);
     user.twoFactorRecoveryHashes = userHashes;
+    // force sequelize to update the column
+    user.changed("twoFactorRecoveryHashes", true);
     await user.save();
     return true;
   }

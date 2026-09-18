@@ -24,7 +24,8 @@ export type LoginInputs = {
   securityToken: string;
 };
 
-const securityCodePattern = /^[0-9]{6}$/;
+// allow either 6-digit numerical codes or 10-digit hex codes separated by an optional - in the middle
+const securityCodePattern = /^[0-9]{6}|[0-9a-f]{5}-?[0-9a-f]{5}$/;
 
 function VerifiedNotification({ t }: { t: TFunction }) {
   const searchParams = useSearchParams();

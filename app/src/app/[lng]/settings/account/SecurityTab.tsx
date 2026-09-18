@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { ChangeEvent, useState } from "react";
-import { MdCheckCircle } from "react-icons/md";
+import { MdCheckCircle, MdWarning } from "react-icons/md";
 
 const SubmitButton = ({
   text,
@@ -71,6 +71,7 @@ const SecurityTab = ({
   const [isSetupMode, setIsSetupMode] = useState(false);
   const [hasTokenError, setHasTokenError] = useState(false);
   const [isDisableModalOpen, setIsDisableModalOpen] = useState(false);
+  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
 
   const isEnabled = userInfo?.twoFactorEnabled ?? false;
 
@@ -86,6 +87,7 @@ const SecurityTab = ({
     if (result.data?.success) {
       showSuccessToast();
       setHasTokenError(false);
+      setRecoveryCodes(result.data?.recoveryCodes);
     } else {
       showErrorToast();
       setHasTokenError(true);
@@ -108,7 +110,7 @@ const SecurityTab = ({
         <VStack spaceY={4} alignItems="left">
           <TitleMedium>{t("two-factor-heading")}</TitleMedium>
           {isEnabled ? (
-            <VStack spaceY={4} alignItems="left">
+            <>
               <BodyMedium>
                 {t("two-factor-enabled-message")}
                 <Icon
@@ -119,23 +121,38 @@ const SecurityTab = ({
                   mt={-1}
                 />
               </BodyMedium>
+              {recoveryCodes.length > 0 && (
+                <>
+                  <BodyMedium color="sentiment.negativeDefault">
+                    <Icon
+                      as={MdWarning}
+                      color="sentiment.negativeDefault"
+                      boxSize={6}
+                      mr={1}
+                      mt={-1}
+                    />
+                    {t("two-factor-recovery-codes-message")}
+                  </BodyMedium>
+                  <pre>{recoveryCodes.join("\n")}</pre>
+                </>
+              )}
               <BodyMedium>{t("two-factor-reset-message")}</BodyMedium>
               <SubmitButton
                 text={t("two-factor-reset-button")}
                 onClick={() => setIsDisableModalOpen(true)}
               />
-            </VStack>
+            </>
           ) : !isSetupMode ? (
-            <VStack spaceY={4} alignItems="left">
+            <>
               <BodyMedium>{t("two-factor-setup-message")}</BodyMedium>
               <SubmitButton
                 onClick={setup2FA}
                 loading={isSetupLoading}
                 text={t("two-factor-setup-button")}
               />
-            </VStack>
+            </>
           ) : (
-            <VStack spaceY={4} alignItems="left">
+            <>
               <BodyMedium>{t("two-factor-scan-message")}</BodyMedium>
               {setupResult?.qrCodeDataUrl && (
                 <chakra.img
@@ -168,7 +185,7 @@ const SecurityTab = ({
                   loading={isVerifyLoading}
                 />
               </form>
-            </VStack>
+            </>
           )}
         </VStack>
       )}

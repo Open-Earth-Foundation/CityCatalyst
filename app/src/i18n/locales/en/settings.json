@@ -266,5 +266,6 @@
   "two-factor-disable-button": "Disable",
   "two-factor-disable-confirm-message": "After disabling two-factor authentication you can configure another app or device",
   "two-factor-disable-password-message": "Confirm your password to disable two-factor authentication for your account",
-  "two-factor-disabled": "Successfully disabled two-factor authentication"
+  "two-factor-disabled": "Successfully disabled two-factor authentication",
+  "two-factor-recovery-codes-message": "These are your single-use recovery codes. Please write them down or save them to your password manager as they will not be displayed again. Use these in case you lose access to your authenticator app or device."
 }

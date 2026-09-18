@@ -1,7 +1,9 @@
 import { BodyMedium, TitleMedium } from "@/components";
 import Disable2FAModal from "@/components/Modals/disable-2fa-modal";
 import ProgressLoader from "@/components/ProgressLoader";
+import { Tooltip } from "@/components/ui/tooltip";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { api } from "@/services/api";
 import { UserInfoResponse } from "@/util/types";
 import {
@@ -9,13 +11,16 @@ import {
   Button,
   chakra,
   Field,
+  HStack,
   Icon,
+  IconButton,
   Input,
   VStack,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { ChangeEvent, useState } from "react";
-import { MdCheckCircle, MdWarning } from "react-icons/md";
+import { Trans } from "react-i18next";
+import { MdCheckCircle, MdContentCopy, MdWarning } from "react-icons/md";
 
 const SubmitButton = ({
   text,
@@ -59,6 +64,7 @@ const SecurityTab = ({
     title: t("two-factor-setup-failed"),
     duration: 20000,
   });
+  const { copyToClipboard, isCopied } = useCopyToClipboard({});
 
   const [
     setupSecondFactorAuth,
@@ -131,9 +137,34 @@ const SecurityTab = ({
                       mr={1}
                       mt={-1}
                     />
-                    {t("two-factor-recovery-codes-message")}
+                    <Trans t={t} i18nKey="two-factor-recovery-codes-message">
+                      Text<u>Important</u>Text
+                    </Trans>
                   </BodyMedium>
-                  <pre>{recoveryCodes.join("\n")}</pre>
+                  <HStack spaceX={4} align="top">
+                    <pre>{recoveryCodes.join("\n")}</pre>
+                    <Tooltip
+                      content={t("two-factor-copy-recovery-codes-label")}
+                    >
+                      <IconButton
+                        onClick={() =>
+                          copyToClipboard(recoveryCodes.join("\n"))
+                        }
+                        variant="ghost"
+                        aria-label={t("two-factor-copy-recovery-codes-label")}
+                        color={
+                          isCopied
+                            ? "sentiment.positiveDefault"
+                            : "content.tertiary"
+                        }
+                      >
+                        <Icon
+                          as={isCopied ? MdCheckCircle : MdContentCopy}
+                          boxSize={5}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  </HStack>
                 </>
               )}
               <BodyMedium>{t("two-factor-reset-message")}</BodyMedium>

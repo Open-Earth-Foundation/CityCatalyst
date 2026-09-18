@@ -81,7 +81,7 @@ class ConceptNoteEditPlanner:
         prior_proposal: EditProposalResponse | None,
         recent_messages: list[dict[str, str]] | None,
     ) -> EditPlanOutput:
-        """Search and propose once per document, then review only affected chapters."""
+        """Repair rejected candidates within one deadline, reviewing each independently."""
         prompt = self._settings.llm.prompts.get_prompt("cnb_chat_edit_planner")
         model = (
             self._settings.llm.models.cnb_chat_edit_planner
@@ -131,23 +131,6 @@ class ConceptNoteEditPlanner:
                 "user_inputs": prior_user_inputs(prior_proposal),
             },
         }
-        if (
-            count_prompt_tokens(
-                [
-                    prompt,
-                    payload,
-                    [item["chapter"] for item in chapter_inputs.values()],
-                ],
-                model=model.name,
-                fallback_encoding=budget.tokenizer_encoding,
-            ).tokens
-            > budget.cnb_edits.max_prompt_tokens
-        ):
-            raise EditOperationError(
-                "context_limit",
-                "The draft exceeds the automatic edit context limit.",
-                status_code=422,
-            )
         session = DraftEditSession(
             request,
             chapters,
@@ -167,154 +150,213 @@ class ConceptNoteEditPlanner:
             settings = cnb_model_settings(
                 model.reasoning_effort, responses=False, temperature=0.0
             )
-            agent = Agent(
-                name="Concept Note edit agent",
-                instructions=prompt,
-                model=sdk_model,
-                model_settings=settings,
-                tools=build_draft_tools(session, chapter_inputs),
-                output_type=EditAgentOutput,
-            )
-            run_config = RunConfig(
-                tracing_disabled=True, trace_include_sensitive_data=False
-            )
-            await emit_cnb_progress("planning")
-            result = await run_with_cnb_reasoning(
-                self._runner,
-                agent,
-                json.dumps(payload, ensure_ascii=False),
-                run_config=run_config,
-                stage="planning",
-                max_turns=budget.cnb_edits.max_agent_turns,
-            )
-            raw = result.final_output
-            outcome = (
-                EditAgentOutput.model_validate_json(raw)
-                if isinstance(raw, str)
-                else EditAgentOutput.model_validate(raw)
-            )
-            if outcome.intent != "edit":
-                return EditPlanOutput(
-                    intent=outcome.intent, clarification=outcome.clarification
+            for attempt in range(budget.cnb_edits.max_review_repairs + 1):
+                session.plan = None
+                if (
+                    count_prompt_tokens(
+                        [
+                            prompt,
+                            payload,
+                            [item["chapter"] for item in chapter_inputs.values()],
+                        ],
+                        model=model.name,
+                        fallback_encoding=budget.tokenizer_encoding,
+                    ).tokens
+                    > budget.cnb_edits.max_prompt_tokens
+                ):
+                    raise EditOperationError(
+                        "context_limit",
+                        "The draft and review feedback exceed the automatic edit context limit.",
+                        status_code=422,
+                    )
+                agent = Agent(
+                    name="Concept Note edit agent",
+                    instructions=prompt,
+                    model=sdk_model,
+                    model_settings=settings,
+                    tools=build_draft_tools(session, chapter_inputs),
+                    output_type=EditAgentOutput,
                 )
-            if session.plan is None:
-                raise EditOperationError(
-                    "invalid_plan",
-                    "The edit agent did not submit a valid replacement proposal.",
-                    status_code=422,
+                run_config = RunConfig(
+                    tracing_disabled=True, trace_include_sensitive_data=False
                 )
+                await emit_cnb_progress("planning")
+                result = await run_with_cnb_reasoning(
+                    self._runner,
+                    agent,
+                    json.dumps(payload, ensure_ascii=False),
+                    run_config=run_config,
+                    stage="planning",
+                    max_turns=budget.cnb_edits.max_agent_turns,
+                )
+                raw = result.final_output
+                outcome = (
+                    EditAgentOutput.model_validate_json(raw)
+                    if isinstance(raw, str)
+                    else EditAgentOutput.model_validate(raw)
+                )
+                if outcome.intent != "edit":
+                    return EditPlanOutput(
+                        intent=outcome.intent, clarification=outcome.clarification
+                    )
+                if session.plan is None:
+                    raise EditOperationError(
+                        "invalid_plan",
+                        "The edit agent did not submit a valid replacement proposal.",
+                        status_code=422,
+                    )
 
-            # Review the already resolved changes, grouped in document order.
-            chapter_changes = {
-                chapter.chapter_id: [
-                    change
-                    for change in session.plan.changes
-                    if change.chapter_id == chapter.chapter_id
+                # Review the already resolved changes, grouped in document order.
+                chapter_changes = {
+                    chapter.chapter_id: [
+                        change
+                        for change in session.plan.changes
+                        if change.chapter_id == chapter.chapter_id
+                    ]
+                    for chapter in chapters
+                }
+                affected = [
+                    chapter for chapter in chapters if chapter_changes[chapter.chapter_id]
                 ]
-                for chapter in chapters
-            }
-            affected = [
-                chapter for chapter in chapters if chapter_changes[chapter.chapter_id]
-            ]
-            reviewer = Agent(
-                name="Concept Note edit semantic reviewer",
-                instructions=self._settings.llm.prompts.get_prompt(
-                    "cnb_chat_edit_review"
-                ),
-                model=sdk_model,
-                model_settings=settings,
-                output_type=ChapterEditReview,
-            )
-            limit = asyncio.Semaphore(budget.cnb_edits.max_concurrency)
-            completed = 0
+                reviewer = Agent(
+                    name="Concept Note edit semantic reviewer",
+                    instructions=self._settings.llm.prompts.get_prompt(
+                        "cnb_chat_edit_review"
+                    ),
+                    model=sdk_model,
+                    model_settings=settings,
+                    output_type=ChapterEditReview,
+                )
+                limit = asyncio.Semaphore(budget.cnb_edits.max_concurrency)
+                completed = 0
 
-            async def review_chapter(
-                chapter: WorkspaceChapterSnapshot,
-            ) -> list[PlannedTextChange]:
-                """Review the actual resolved text, without any edit tools."""
-                nonlocal completed
-                async with limit:
-                    changes = chapter_changes[chapter.chapter_id]
-                    review_payload = {
-                        **chapter_inputs[chapter.position],
+                async def review_chapter(
+                    chapter: WorkspaceChapterSnapshot,
+                ) -> tuple[list[PlannedTextChange], ChapterEditReview]:
+                    """Review the actual resolved text, without any edit tools."""
+                    nonlocal completed
+                    async with limit:
+                        changes = chapter_changes[chapter.chapter_id]
+                        review_payload = {
+                            **chapter_inputs[chapter.position],
+                            "changes": [
+                                change.model_dump(exclude={"chapter_id"})
+                                for change in changes
+                            ],
+                        }
+                        if (
+                            count_prompt_tokens(
+                                [reviewer.instructions, review_payload],
+                                model=model.name,
+                                fallback_encoding=budget.tokenizer_encoding,
+                            ).tokens
+                            > budget.cnb_edits.max_prompt_tokens
+                        ):
+                            raise EditOperationError(
+                                "context_limit",
+                                "The edit review exceeds the chapter context limit.",
+                                status_code=422,
+                            )
+                        await emit_cnb_progress(
+                            "reviewing",
+                            chapter_title=chapter.title,
+                            completed=completed,
+                            total=len(affected),
+                        )
+                        reviewed = await run_with_cnb_reasoning(
+                            self._runner,
+                            reviewer,
+                            json.dumps(review_payload, ensure_ascii=False),
+                            run_config=run_config,
+                            stage="reviewing",
+                            chapter_title=chapter.title,
+                        )
+                        raw_review = reviewed.final_output
+                        review = (
+                            ChapterEditReview.model_validate_json(raw_review)
+                            if isinstance(raw_review, str)
+                            else ChapterEditReview.model_validate(raw_review)
+                        )
+                        # Collect semantic objections, but never retry incomplete reviews.
+                        try:
+                            changes = bind_semantic_review(changes, review)
+                        except EditOperationError as error:
+                            if error.code != "unsupported_edit":
+                                raise
+                            return changes, review
+                        # Preserve chapter-local groups in the persisted proposal.
+                        group_ids: dict[str, str] = {}
+                        for index, change in enumerate(changes):
+                            group_ids.setdefault(
+                                change.group_id,
+                                f"chapter-{chapter.position}-group-{len(group_ids) + 1}",
+                            )
+                            changes[index] = change.model_copy(
+                                update={"group_id": group_ids[change.group_id]}
+                            )
+                        completed += 1
+                        await emit_cnb_progress(
+                            "chapter_completed",
+                            chapter_title=chapter.title,
+                            completed=completed,
+                            total=len(affected),
+                        )
+                        return changes, review
+
+                logger.info(
+                    "Reviewing agent-proposed Concept Note edits",
+                    extra={
+                        "chapter_count": len(affected),
+                        "change_count": len(session.plan.changes),
+                    },
+                )
+                tasks = [
+                    asyncio.create_task(review_chapter(chapter)) for chapter in affected
+                ]
+                try:
+                    reviews = await asyncio.gather(*tasks)
+                finally:
+                    for task in tasks:
+                        if not task.done():
+                            task.cancel()
+                    await asyncio.gather(*tasks, return_exceptions=True)
+                rejected_count = sum(
+                    decision.support == "unsupported"
+                    for _, review in reviews
+                    for decision in review.decisions
+                )
+                if not rejected_count:
+                    return session.plan.model_copy(
+                        update={
+                            "changes": [
+                                change for changes, _ in reviews for change in changes
+                            ]
+                        }
+                    )
+
+                # Keep feedback request-local; logs contain counts, never draft text.
+                logger.info(
+                    "Concept Note semantic review requested repair",
+                    extra={"attempt": attempt + 1, "rejected_count": rejected_count},
+                )
+                if attempt == budget.cnb_edits.max_review_repairs:
+                    raise EditOperationError(
+                        "unsupported_edit",
+                        "The proposal could not pass semantic review after the "
+                        "allowed repair attempts. The draft is unchanged.",
+                        status_code=422,
+                    )
+                payload["review_feedback"] = [
+                    {
+                        "chapter_position": chapter.position,
+                        "chapter_title": chapter.title,
                         "changes": [
                             change.model_dump(exclude={"chapter_id"}) for change in changes
                         ],
+                        "decisions": review.model_dump()["decisions"],
                     }
-                    if (
-                        count_prompt_tokens(
-                            [reviewer.instructions, review_payload],
-                            model=model.name,
-                            fallback_encoding=budget.tokenizer_encoding,
-                        ).tokens
-                        > budget.cnb_edits.max_prompt_tokens
-                    ):
-                        raise EditOperationError(
-                            "context_limit",
-                            "The edit review exceeds the chapter context limit.",
-                            status_code=422,
-                        )
-                    await emit_cnb_progress(
-                        "reviewing",
-                        chapter_title=chapter.title,
-                        completed=completed,
-                        total=len(affected),
-                    )
-                    reviewed = await run_with_cnb_reasoning(
-                        self._runner,
-                        reviewer,
-                        json.dumps(review_payload, ensure_ascii=False),
-                        run_config=run_config,
-                        stage="reviewing",
-                        chapter_title=chapter.title,
-                    )
-                    raw_review = reviewed.final_output
-                    review = (
-                        ChapterEditReview.model_validate_json(raw_review)
-                        if isinstance(raw_review, str)
-                        else ChapterEditReview.model_validate(raw_review)
-                    )
-                    # Reject a failed semantic decision before marking this chapter complete.
-                    changes = bind_semantic_review(changes, review)
-                    # Preserve chapter-local groups in the persisted proposal.
-                    group_ids: dict[str, str] = {}
-                    for index, change in enumerate(changes):
-                        group_ids.setdefault(
-                            change.group_id,
-                            f"chapter-{chapter.position}-group-{len(group_ids) + 1}",
-                        )
-                        changes[index] = change.model_copy(
-                            update={"group_id": group_ids[change.group_id]}
-                        )
-                    completed += 1
-                    await emit_cnb_progress(
-                        "chapter_completed",
-                        chapter_title=chapter.title,
-                        completed=completed,
-                        total=len(affected),
-                    )
-                    return changes
-
-            logger.info(
-                "Reviewing agent-proposed Concept Note edits",
-                extra={
-                    "chapter_count": len(affected),
-                    "change_count": len(session.plan.changes),
-                },
-            )
-            tasks = [
-                asyncio.create_task(review_chapter(chapter)) for chapter in affected
-            ]
-            try:
-                reviews = await asyncio.gather(*tasks)
-            finally:
-                for task in tasks:
-                    if not task.done():
-                        task.cancel()
-                await asyncio.gather(*tasks, return_exceptions=True)
-            return session.plan.model_copy(
-                update={"changes": [change for changes in reviews for change in changes]}
-            )
+                    for chapter, (changes, review) in zip(affected, reviews, strict=True)
+                ]
         finally:
             await client.close()
 

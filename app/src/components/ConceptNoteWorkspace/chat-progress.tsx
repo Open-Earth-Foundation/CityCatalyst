@@ -1,13 +1,11 @@
 "use client";
 
-import { Box, HStack, Icon, Spinner, Text } from "@chakra-ui/react";
+import { Box, HStack, Icon, Spinner, Text, chakra } from "@chakra-ui/react";
 import { LuChevronRight } from "react-icons/lu";
-import type { Components } from "react-markdown";
 import { useTranslation } from "@/i18n/client";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
-  readReasoningPreview,
   type ConceptNoteReasoning,
   type ConceptNoteProgress,
 } from "./chat-utils";
@@ -17,36 +15,45 @@ export function ChatProgress({
   reasoning = [],
   progress = null,
   isGenerating,
-  markdownComponents,
 }: {
   lng: string;
   reasoning?: ConceptNoteReasoning[];
   progress?: ConceptNoteProgress | null;
   isGenerating: boolean;
-  markdownComponents: Components;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   if (!isGenerating) return null;
   const thought = reasoning.at(-1);
-  const preview = thought ? readReasoningPreview(thought.text) : "";
   const activity = progress;
+  const total = activity?.total ?? 0;
+  const hasCount = activity?.completed !== undefined && total > 0;
+  const completed = Math.min(Math.max(activity?.completed ?? 0, 0), total);
   const label = (
     <>
-      <Spinner size="xs" flexShrink={0} aria-hidden="true" />
-      <Box minW={0}>
+      <Spinner
+        size="sm"
+        flexShrink={0}
+        color="interactive.primary/70"
+        aria-hidden="true"
+      />
+      <Box minW={0} flex={1}>
         <Text
           as="span"
           minW={0}
-          fontSize="12px"
+          fontSize="13px"
           fontStyle="italic"
           overflowWrap="anywhere"
           lineClamp={2}
           data-testid="concept-note-reasoning-preview"
         >
-          {preview || t("chat-thinking")}
+          {thought ? t("chat-reasoning") : t("chat-thinking")}
         </Text>
         {activity && (
-          <Text fontSize="12px" data-testid="concept-note-workflow-progress">
+          <Text
+            fontSize="12px"
+            mt={1}
+            data-testid="concept-note-workflow-progress"
+          >
             {t(
               activity.stage === "planning" && !activity.chapterTitle
                 ? "chat-progress-searching"
@@ -68,6 +75,27 @@ export function ChatProgress({
               )}
           </Text>
         )}
+        {hasCount && (
+          <Box
+            role="progressbar"
+            aria-label={t("chat-progress-title")}
+            aria-valuemin={0}
+            aria-valuemax={total}
+            aria-valuenow={completed}
+            h="4px"
+            mt={3}
+            bg="background.neutral"
+            borderRadius="full"
+            overflow="hidden"
+          >
+            <Box
+              h="full"
+              w={`${(completed / total) * 100}%`}
+              bg="interactive.primary/60"
+              borderRadius="full"
+            />
+          </Box>
+        )}
       </Box>
     </>
   );
@@ -76,10 +104,11 @@ export function ChatProgress({
     return (
       <HStack
         role="status"
-        gap={2}
+        gap={3}
         py={2}
-        color="content.secondary"
+        color="content.primary/65"
         fontSize="13px"
+        fontStyle="italic"
         data-testid="concept-note-chat-progress"
       >
         {label}
@@ -87,11 +116,13 @@ export function ChatProgress({
     );
 
   return (
-    <Box
-      as="details"
+    <chakra.details
+      open
       w="full"
-      color="content.secondary"
+      color="content.primary/65"
       fontSize="13px"
+      fontStyle="italic"
+      lineHeight="1.7"
       data-testid="concept-note-reasoning"
       css={{ "&[open] .reasoning-chevron": { transform: "rotate(90deg)" } }}
     >
@@ -99,12 +130,12 @@ export function ChatProgress({
         as="summary"
         display="flex"
         alignItems="center"
-        gap={2}
+        gap={3}
         py={2}
         cursor="pointer"
         listStyleType="none"
         borderRadius="sm"
-        _hover={{ color: "content.primary" }}
+        _hover={{ bg: "background.neutral/30" }}
         _focusVisible={{
           outline: "2px solid",
           outlineColor: "interactive.primary",
@@ -125,12 +156,28 @@ export function ChatProgress({
         maxH="240px"
         overflowY="auto"
         overscrollBehavior="contain"
-        borderLeftWidth="1px"
-        borderColor="border.neutral"
-        pl={3}
-        ml="6px"
-        mt={1}
+        borderLeftWidth="2px"
+        borderColor="interactive.primary/30"
+        pl={4}
+        ml="7px"
+        mt={3}
         mb={2}
+        overflowWrap="anywhere"
+        css={{
+          "& :is(p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre, table)": {
+            marginBottom: "0.75rem",
+          },
+          "& :is(h1, h2, h3, h4, h5, h6, strong, b, th)": {
+            fontSize: "inherit",
+            fontWeight: "inherit",
+          },
+          "& :is(code, pre)": { fontFamily: "inherit", whiteSpace: "pre-wrap" },
+          "& :is(ul, ol)": { paddingInlineStart: "1.25rem" },
+          "& ul": { listStyleType: "disc" },
+          "& ol": { listStyleType: "decimal" },
+          "& a": { textDecoration: "underline" },
+          "& > :last-child > :last-child": { marginBottom: 0 },
+        }}
         data-testid="concept-note-reasoning-content"
       >
         {reasoning.map((item) => (
@@ -140,15 +187,12 @@ export function ChatProgress({
                 {item.chapterTitle}
               </Text>
             )}
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={markdownComponents}
-            >
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {item.text}
             </ReactMarkdown>
           </Box>
         ))}
       </Box>
-    </Box>
+    </chakra.details>
   );
 }

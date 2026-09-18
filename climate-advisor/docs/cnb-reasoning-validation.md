@@ -56,6 +56,16 @@ and desktop/mobile rendering. The historical investigation and local recordings
 are referenced in [PR #3148](https://github.com/Open-Earth-Foundation/CityCatalyst/pull/3148).
 Those audits are not a fresh browser verification of subsequent cleanup changes.
 
+On 18 September 2026, a real-provider browser recording verified the updated
+green, muted italic reasoning presentation and semantic-review repair loop. The
+initial candidate was rejected, automatically repaired once, and independently
+reviewed again. The resulting 38 replacements covered all 12 chapters; 55 matches
+inside protected markers were excluded. Acceptance and reload preserved the exact
+approved changes on a disposable copy, while the original note stayed unchanged.
+The recording replaces the earlier demo in PR #3148. The CNB and progress test
+suites passed with 239 tests and five opt-in skips, including repair exhaustion,
+fresh-candidate requirements, incomplete reviews, and the shared deadline.
+
 This does not establish a full regression pass, deployed proxy behavior, durable
 reconnect/resume, or worker-restart recovery. CC-827 tracks transport separately;
 review/export and remaining proposal presentation feedback are tracked in CC-933.

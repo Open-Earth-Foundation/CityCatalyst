@@ -582,8 +582,14 @@ chat-edit planner, and partition/prompt/concurrency limits. Chat-edit planning
 uses one document agent with `search_draft`, `read_chapter`, and `propose_edits`.
 The tools resolve exact occurrences and validate replacements immediately so the
 agent can correct a failed selection. Independent semantic review then checks
-only affected chapters, with at most five reviews concurrently. The loop is
-limited to 12 model turns and the complete operation to 180 seconds by
+only affected chapters, with at most five reviews concurrently. Rejections feed
+the indexed review explanations and complete candidate back to the editor for
+up to two repair attempts (`generation.prompt_budget.cnb_edits.max_review_repairs`).
+Each attempt must submit a complete proposal against the unchanged snapshot;
+every revised candidate receives a fresh independent review. Unsupported edits
+still fail after exhaustion, and no draft changes are applied before acceptance.
+Each editor attempt is limited to 12 model turns, while the complete operation,
+including repairs and reviews, shares one 180-second deadline configured by
 `generation.prompt_budget.cnb_edits.max_agent_turns` and `timeout_seconds`.
 The chapter drafter uses GPT-5.6
 Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra and the
@@ -1690,8 +1696,11 @@ completed snapshots without duplicates. Providers may omit readable summaries;
 the app never generates substitutes. Encrypted content is excluded, and summary
 text is not added to telemetry, message history, or reload responses.
 
-The compact, expandable activity row previews the latest summary paragraph and
-shows current workflow progress separately. Before a summary arrives, it shows
+The expandable Reasoning section opens during generation and shows current
+workflow progress separately, with a progress bar when chapter counts are available.
+Summaries use consistent muted italic typography and a subtle vertical divider;
+Markdown headings and emphasis retain this styling instead of looking like final
+answers. The section can be collapsed using its disclosure row. Before a summary arrives, it shows
 a neutral thinking indicator. Summaries clear on completion, failure, or
 cancellation. Interrupted streams without a terminal event restore controls
 through the error path. This does not provide durable reconnect/restart recovery.

@@ -369,7 +369,6 @@ export function ConceptNoteChatPanel({
                   lng={lng}
                   reasoning={reasoning}
                   progress={progress}
-                  markdownComponents={assistantMarkdownComponents}
                   isGenerating={isGenerating}
                 />
               )}

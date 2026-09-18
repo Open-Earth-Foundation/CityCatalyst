@@ -43,6 +43,10 @@ def build_concept_note_edit_tools(
         clarification directly in chat. Never refer to a proposal or clarification
         card.
         Report any returned exclusions: those protected matches remain unchanged.
+        An unsupported_edit error means independent semantic review still rejected
+        the candidate after the configured repair attempts. Explain that the
+        proposal could not pass review and the draft is unchanged; it does not
+        mean bulk edits are unavailable. Do not invent the reviewer's objections.
         This tool NEVER applies, undoes or restores text, even if asked to do so.
         Do not promise that the draft changed. Do not fabricate proposal IDs.
         """

@@ -60,7 +60,6 @@ it("renders verified workflow activity even when the reasoning summary has not c
       <ChatProgress
         lng="en"
         isGenerating={isGenerating}
-        markdownComponents={{}}
         reasoning={[
           {
             id: "plan",
@@ -85,7 +84,7 @@ it("renders verified workflow activity even when the reasoning summary has not c
   expect(
     container.querySelector('[data-testid="concept-note-reasoning-preview"]')
       ?.textContent,
-  ).toContain("Checking the requested rename.");
+  ).toContain("chat-reasoning");
   await act(async () => root.render(renderProgress(false)));
   expect(container.textContent).toBe("");
 });

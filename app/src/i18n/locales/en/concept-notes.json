@@ -232,6 +232,7 @@
   "edit-error-planning_limit": "The edit could not be resolved within the attempt limit. Try a more specific instruction.",
   "edit-error-planning_interrupted": "The edit was interrupted. Send your request again; no changes were applied.",
   "chat-thinking": "Thinking…",
+  "chat-reasoning": "Reasoning",
   "chat-progress-preparing": "Reading your request and concept note context",
   "chat-progress-planning": "Checking edits for {{chapter}}",
   "chat-progress-reviewing": "Reviewing proposed changes for {{chapter}}",

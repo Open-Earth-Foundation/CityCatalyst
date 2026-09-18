@@ -66,8 +66,12 @@ const InviteCollaboratorsStep = forwardRef<
     lng: string;
     onValidityChange?: (canSubmit: boolean) => void;
     createdProjectId?: string | null;
+    // "modal" drops the page heading and the card around the form fields,
+    // since the dialog supplies its own title and container.
+    variant?: "page" | "modal";
   }
->(({ lng, onValidityChange, createdProjectId }, ref) => {
+>(({ lng, onValidityChange, createdProjectId, variant = "page" }, ref) => {
+  const isModal = variant === "modal";
   const { t } = useTranslation(lng, "onboarding");
   const { t: tSettings } = useTranslation(lng, "settings");
   const [emailInput, setEmailInput] = useState("");
@@ -202,18 +206,20 @@ const InviteCollaboratorsStep = forwardRef<
       data-testid="invite-collaborators-step"
     >
       <Box display="flex" flexDirection="column" gap={6}>
-        <Heading
-          as="h1"
-          color="content.secondary"
-          fontFamily="heading"
-          fontSize="headline.lg"
-          fontStyle="normal"
-          fontWeight="semibold"
-          lineHeight="40"
-          data-testid="invite-collaborators-heading"
-        >
-          {t("invite-collaborators-title")}
-        </Heading>
+        {!isModal && (
+          <Heading
+            as="h1"
+            color="content.secondary"
+            fontFamily="heading"
+            fontSize="headline.lg"
+            fontStyle="normal"
+            fontWeight="semibold"
+            lineHeight="40"
+            data-testid="invite-collaborators-heading"
+          >
+            {t("invite-collaborators-title")}
+          </Heading>
+        )}
         <Text color="content.tertiary">
           {t("invite-collaborators-description")}
         </Text>
@@ -222,10 +228,12 @@ const InviteCollaboratorsStep = forwardRef<
       <Flex
         direction="column"
         gap={8}
-        bg="background.default"
-        borderRadius="rounded"
-        p={6}
-        boxShadow="1dp"
+        {...(!isModal && {
+          bg: "background.default",
+          borderRadius: "rounded",
+          p: 6,
+          boxShadow: "1dp",
+        })}
         data-testid="invite-collaborators-form-card"
       >
         <Box>
@@ -293,14 +301,14 @@ const InviteCollaboratorsStep = forwardRef<
             fontWeight="medium"
             lineHeight="20px"
             letterSpacing="0.5px"
-            mb={2}
+            mb={1.5}
           >
             {t("email")}
             <Text as="span" color="sentiment.negativeDefault">
               {" *"}
             </Text>
           </Text>
-          <HStack w="full" align="flex-start">
+          <HStack w="full" align="flex-start" gap={3}>
             {/* Input with role selector inlined on the right */}
             <Box
               flex={1}
@@ -406,14 +414,14 @@ const InviteCollaboratorsStep = forwardRef<
             </Button>
           </HStack>
           {emailError ? (
-            <HStack mt={2}>
+            <HStack mt={1.5} gap={1.5}>
               <Icon as={MdInfoOutline} color="sentiment.negativeDefault" />
               <Text color="sentiment.negativeDefault" fontSize="body.sm">
                 {t(emailError)}
               </Text>
             </HStack>
           ) : (
-            <HStack mt={2} gap={1.5}>
+            <HStack mt={1.5} gap={1.5}>
               <InfoOutlineIcon boxSize={4} color="semantic.info" />
               <Text fontSize="body.sm" color="content.tertiary">
                 {t("invite-collaborators-info")}
@@ -421,7 +429,7 @@ const InviteCollaboratorsStep = forwardRef<
             </HStack>
           )}
           {invitedMembers.length > 0 && (
-            <Flex mt={3} flexWrap="wrap" gap={2}>
+            <Flex mt={4} flexWrap="wrap" gap={4}>
               {invitedMembers.map((member) => (
                 <Box
                   key={member.email}
@@ -430,7 +438,7 @@ const InviteCollaboratorsStep = forwardRef<
                   bg="background.neutral"
                   borderRadius="full"
                   py={1}
-                  px={3}
+                  px={4}
                   gap={2}
                   fontSize="body.lg"
                 >
@@ -467,13 +475,15 @@ const InviteCollaboratorsStep = forwardRef<
 
       {hasCollaboratorInvite && selectedProject.length > 0 && (
         <Box
-          bg="background.default"
-          borderRadius="rounded"
-          p={6}
-          boxShadow="1dp"
+          {...(!isModal && {
+            bg: "background.default",
+            borderRadius: "rounded",
+            p: 6,
+            boxShadow: "1dp",
+          })}
           data-testid="invite-collaborators-cities-card"
         >
-          <Flex direction="column" gap={2} mb={6}>
+          <Flex direction="column" gap={2} mb={isModal ? 4 : 6}>
             <Text
               fontFamily="heading"
               fontWeight="bold"
@@ -498,7 +508,8 @@ const InviteCollaboratorsStep = forwardRef<
                     e.checked === true ? cityData.map((c) => c.cityId) : [],
                   )
                 }
-                mb={4}
+                py={3}
+                mb={2}
               >
                 <Text
                   color="content.secondary"
@@ -511,7 +522,7 @@ const InviteCollaboratorsStep = forwardRef<
                   {t("invite-collaborators-all-cities")}
                 </Text>
               </Checkbox>
-              <Separator borderColor="border.overlay" mb={4} />
+              <Separator borderColor="border.overlay" mb={2} />
               <CheckboxGroup
                 value={selectedCities}
                 onValueChange={setSelectedCities}
@@ -523,10 +534,10 @@ const InviteCollaboratorsStep = forwardRef<
                     sm: "repeat(2, 1fr)",
                     md: "repeat(3, 1fr)",
                   }}
-                  gap={4}
+                  columnGap={3}
                 >
                   {cityData.map(({ cityId, name }) => (
-                    <ChakraCheckbox.Root key={cityId} value={cityId}>
+                    <ChakraCheckbox.Root key={cityId} value={cityId} py={3}>
                       <ChakraCheckbox.HiddenInput />
                       <ChakraCheckbox.Control>
                         <ChakraCheckbox.Indicator cursor="pointer" />

@@ -892,7 +892,7 @@ export const api = createApi({
         }) => response.data,
       }),
       verifySecondFactorAuth: builder.mutation<
-        { success: boolean },
+        { success: boolean; recoveryCodes: string[] },
         { token: string }
       >({
         query: ({ token }) => ({
@@ -900,8 +900,9 @@ export const api = createApi({
           method: "POST",
           body: { token },
         }),
-        transformResponse: (response: { data: { success: boolean } }) =>
-          response.data,
+        transformResponse: (response: {
+          data: { success: boolean; recoveryCodes: string[] };
+        }) => response.data,
         invalidatesTags: ["UserInfo"],
       }),
       disableSecondFactorAuth: builder.mutation<

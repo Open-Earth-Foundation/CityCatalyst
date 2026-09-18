@@ -13,10 +13,12 @@ Tests cover:
 from __future__ import annotations
 
 import asyncio
+import unittest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
-import unittest
 from uuid import uuid4
+
+from agents import OpenAIResponsesModel
 
 from app.services.agent_service import AgentService
 from app.services.native_input_catalog_service import (
@@ -893,6 +895,12 @@ class InventoryToolIntegrationTests(unittest.TestCase):
             asyncio.run(service.create_agent())
             assert agent_class.call_args.kwargs["instructions"] == "Core + cnb_chat"
             assert agent_class.call_args.kwargs["tools"] == []
+
+            assert isinstance(agent_class.call_args.kwargs["model"], OpenAIResponsesModel)
+            model_settings = agent_class.call_args.kwargs["model_settings"]
+            assert model_settings.reasoning.summary == "detailed"
+            assert model_settings.store is False
+            assert model_settings.extra_body is None
 
             # Rebuilding an agent must not fall back to general chat instructions.
             service.system_prompt = None

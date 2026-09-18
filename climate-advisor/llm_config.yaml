@@ -14,7 +14,7 @@ models:
   cnb_chat:
     name: "openai/gpt-5.6-sol"
     description: "Concept Note Builder chat model."
-    reasoning_effort: "medium"
+    reasoning_effort: "high"
   funding_research:
     name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
@@ -57,6 +57,9 @@ generation:
     cnb_edits:
       max_prompt_tokens: 50000
       max_concurrency: 5
+      max_agent_turns: 12
+      max_review_repairs: 2
+      timeout_seconds: 180
     cnb_validation:
       max_prompt_tokens: 50000
 

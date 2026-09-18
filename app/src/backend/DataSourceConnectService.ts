@@ -282,7 +282,7 @@ export default class DataSourceConnectService {
             sectorId,
             subSectorId,
             subCategoryId,
-            "reason-NE",
+            "not-estimated",
           );
         }
       } else if (addNotationKeysForEmptyRefnos) {
@@ -292,7 +292,7 @@ export default class DataSourceConnectService {
           sectorId,
           subSectorId,
           subCategoryId,
-          "reason-NE",
+          "not-estimated",
         );
       }
     }

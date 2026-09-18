@@ -279,7 +279,8 @@ def test_city_attributes_route_returns_complete_stable_projection(
             }
         ],
     }
-    assert payload["meta"]["api_context"]["locode"] == "CL IQQ"
+    assert payload["meta"]["totalRecords"] == 1
+    assert payload["meta"]["requestId"]
     assert "source_metadata" not in payload
 
 
@@ -356,7 +357,7 @@ def test_action_pathways_route_projects_repeated_languages(client: TestClient) -
         "Cleaner urban air"
     )
     assert action["emissions"]["gpc_reference_number"] == ["I.1.1"]
-    assert response.json()["meta"]["api_context"]["missing_action_type_count"] == 1
+    assert response.json()["meta"]["totalRecords"] == 1
     assert response.json()["warnings"] == [
         "1 upstream action pathway(s) were excluded because action_type was missing."
     ]
@@ -562,7 +563,7 @@ def test_opportunities_route_returns_backend_selected_categories(
         }
     ]
     assert payload["monitor"][0]["recurrence"] == "annual"
-    assert payload["meta"]["total_records"] == 2
+    assert payload["meta"]["totalRecords"] == 2
 
 
 @pytest.mark.integration

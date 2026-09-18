@@ -9,6 +9,7 @@ import {
 import { Roles } from "@/util/types";
 import { logger } from "@/services/logger";
 import crypto from "node:crypto";
+import { verifyToken } from "./2fa";
 
 // extracted from next-auth/providers/credentials
 // added here since the node test runner/ tsx wouldn't properly import ESM modules
@@ -62,6 +63,7 @@ export const authOptions: NextAuthOptions = {
           placeholder: "yourname@city.example",
         },
         password: { label: "Password", type: "password" },
+        securityToken: { label: "Security token", type: "securityToken" },
       },
       async authorize(credentials): Promise<{
         id: string;
@@ -100,6 +102,22 @@ export const authOptions: NextAuthOptions = {
           logger.error("Invalid password!");
           return null;
         }
+
+        if (user.twoFactorEnabled && user.twoFactorSecret) {
+          if (!credentials.securityToken) {
+            logger.error("No securityToken passed for user with 2FA enabled");
+            return null;
+          }
+          const isValid = await verifyToken(
+            credentials.securityToken,
+            user.twoFactorSecret,
+          );
+          if (!isValid) {
+            logger.error("Invalid securityToken for 2FA");
+            return null;
+          }
+        }
+
         return {
           id: user.userId,
           name: user.name,
@@ -118,8 +136,9 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as unknown as User).role;
         token.picture = user.image;
         token.name = user.name;
-        token.csrfSecret = crypto.randomBytes(32).toString('hex');
+        token.csrfSecret = crypto.randomBytes(32).toString("hex");
       }
+
       return token;
     },
     session: ({ session, token }) => {
@@ -130,7 +149,7 @@ export const authOptions: NextAuthOptions = {
           id: token.sub,
           role: token.role,
         },
-        csrfSecret: token.csrfSecret
+        csrfSecret: token.csrfSecret,
       };
     },
   },

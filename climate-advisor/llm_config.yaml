@@ -4,30 +4,43 @@
 # Model Configuration
 models:
   orchestrator:
-    name: "openai/gpt-5.4-mini"
-    temperature: 0.0
+    name: "openai/gpt-5.6-terra"
+    reasoning_effort: "medium"
     description: "Default chat model for Climate Advisor conversations."
   agentic_flow:
-    name: "openai/gpt-5.4"
+    name: "openai/gpt-5.6-terra"
     description: "Agentic flow model for high-context review and source selection workflows."
-    temperature: 0.0
+    reasoning_effort: "medium"
+  cnb_chat:
+    name: "openai/gpt-5.6-sol"
+    description: "Concept Note Builder chat model."
+    reasoning_effort: "medium"
   funding_research:
-    name: "openai/gpt-5.4"
+    name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
   funder_identity:
-    name: "openai/gpt-5.4-mini"
+    name: "openai/gpt-5.6-terra"
     reasoning_effort: "low"
   cnb_source_reader:
-    name: "openai/gpt-5.4-mini"
+    name: "openai/gpt-5.6-terra"
     reasoning_effort: "low"
   cnb_source_synthesizer:
-    name: "openai/gpt-5.4"
+    name: "openai/gpt-5.6-terra"
+    reasoning_effort: "medium"
+  cnb_chapter_drafter:
+    name: "openai/gpt-5.6-terra"
+    reasoning_effort: "medium"
+  cnb_chapter_validator:
+    name: "openai/gpt-5.6-terra"
+    reasoning_effort: "medium"
+  cnb_chat_edit_planner:
+    name: "openai/gpt-5.6-sol"
     reasoning_effort: "medium"
 
 # Generation Parameters
 generation:
-  # Prompt-size guardrails. The OpenRouter GPT-5.4-family route used here is
-  # counted with o200k_base unless tiktoken can resolve the concrete model.
+  # Prompt-size guardrails. OpenRouter model names fall back to o200k_base
+  # unless tiktoken can resolve the concrete model.
   prompt_budget:
     tokenizer_encoding: "o200k_base"
     stationary_energy:
@@ -41,6 +54,11 @@ generation:
       max_key_excerpts: 8
       max_topics: 12
       max_question_chars: 2000
+    cnb_edits:
+      max_prompt_tokens: 50000
+      max_concurrency: 5
+    cnb_validation:
+      max_prompt_tokens: 50000
 
 # System Prompts
 prompts:
@@ -53,6 +71,9 @@ prompts:
   # Prompt for active Stationary Energy review chat flows
   stationary_energy_review: "prompts/stationary_energy_review.md"
 
+  # Grounded CNB chat with source queries and available review-only edit proposals
+  cnb_chat: "prompts/cnb/chat.md"
+
   # Offline Concept Note Builder funder and program research
   cnb_funding_opportunity_research: "prompts/cnb/funding_opportunity_research.md"
 
@@ -61,11 +82,15 @@ prompts:
 
   # Internal Concept Note Builder funded-project selection
   cnb_similar_project_matching: "prompts/cnb/similar_project_matching.md"
-
   # Internal Concept Note Builder source-analysis agents
   cnb_source_document_mapping: "prompts/cnb/source_document_mapping.md"
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
+  cnb_chapter_drafting: "prompts/cnb/chapter_drafting.md"
+  cnb_chat_edit_planner: "prompts/cnb/chat_edit_planner.md"
+  cnb_chat_edit_review: "prompts/cnb/chat_edit_review.md"
+  cnb_chapter_validation_completeness: "prompts/cnb/chapter_validation_completeness.md"
+  cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 
 # API Configuration
 api:

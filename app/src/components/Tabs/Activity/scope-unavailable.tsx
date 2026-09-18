@@ -14,6 +14,10 @@ import { useController, useForm } from "react-hook-form";
 import { api } from "@/services/api";
 import { Radio, RadioGroup } from "@/components/ui/radio";
 import { MdWarning } from "react-icons/md";
+import {
+  toCanonical,
+  type NotationKeyCanonical,
+} from "@/util/notation-keys";
 
 interface ScopeUnavailableProps {
   t: TFunction;
@@ -45,7 +49,7 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
     justification: string;
   }>({
     defaultValues: {
-      reason: reason,
+      reason: reason ? (toCanonical(reason) ?? reason) : reason,
       justification: justification,
     },
   });
@@ -64,8 +68,9 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
 
   useEffect(() => {
     if (reason) {
-      setSelectedReason(reason);
-      setValue("reason", reason);
+      const canonical = toCanonical(reason) ?? reason;
+      setSelectedReason(canonical);
+      setValue("reason", canonical);
     }
   }, [reason, setSelectedReason, setValue]);
 
@@ -78,11 +83,13 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
     reason: string;
     justification: string;
   }) => {
+    const unavailableReason =
+      toCanonical(data.reason) ?? (data.reason as NotationKeyCanonical);
     await markAsUnavailable({
       inventoryId: inventoryId,
       subSectorId: subSectorId,
       data: {
-        unavailableReason: data.reason,
+        unavailableReason,
         unavailableExplanation: data.justification,
         gpcReferenceNumber: gpcReferenceNumber,
       },
@@ -124,34 +131,22 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
             colorPalette="interactive.secondary"
           >
             <Stack direction="column">
-              <Radio
-                value="reason-NO"
-                key={"reason-NO"}
-                color="content.secondary"
-              >
-                {t("reason-NO")}
-              </Radio>
-              <Radio
-                value="reason-NE"
-                key={"reason-NE"}
-                color="content.secondary"
-              >
-                {t("reason-NE")}
-              </Radio>
-              <Radio
-                value="reason-C"
-                key={"reason-C"}
-                color="content.secondary"
-              >
-                {t("reason-C")}
-              </Radio>
-              <Radio
-                value="reason-IE"
-                key={"reason-IE"}
-                color="content.secondary"
-              >
-                {t("reason-IE")}
-              </Radio>
+              {(
+                [
+                  ["no-occurrance", "reason-NO"],
+                  ["not-estimated", "reason-NE"],
+                  ["confidential-information", "reason-C"],
+                  ["included-elsewhere", "reason-IE"],
+                ] as const
+              ).map(([value, labelKey]) => (
+                <Radio
+                  value={value}
+                  key={value}
+                  color="content.secondary"
+                >
+                  {t(labelKey)}
+                </Radio>
+              ))}
 
               {errors?.reason ? (
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">

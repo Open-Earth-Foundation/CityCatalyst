@@ -13,7 +13,7 @@ from app.models.cnb.context_bundle import SelectedSource, SourceQueryResult
 from app.persistence.concept_notes.context_bundle import ContextBundleQuerySource
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
-from app.services.cnb.source_analysis import SourcePage
+from app.services.cnb.source_analysis import SourceAnalysisError, SourcePage
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
 
 TOOL_CONTEXT = ToolContext(
@@ -38,13 +38,15 @@ async def fake_query_document(**kwargs) -> SourceQueryResult:
     """Return deterministic no-support evidence for the selected source."""
     assert kwargs["pages"] == fake_verify_source_artifact()
     assert kwargs["question"] == "What evidence is stated?"
+    assert kwargs["source_format"] == "pdf"
     return SourceQueryResult(
         found=False,
         upload_id=kwargs["upload_id"],
         source_label=kwargs["source_label"],
+        source_format="pdf",
         excerpts=[],
-        pages_processed=1,
-        pages_total=1,
+        units_processed=1,
+        units_total=1,
         segments_processed=1,
         segments_total=1,
         caveats=["No direct support was found."],
@@ -52,7 +54,10 @@ async def fake_query_document(**kwargs) -> SourceQueryResult:
 
 
 @pytest.mark.asyncio
-async def test_source_tool_refetches_one_selected_document_in_captured_run() -> None:
+@pytest.mark.parametrize("analysis_fails", [False, True])
+async def test_source_tool_refetches_one_selected_document_in_captured_run(
+    analysis_fails, caplog,
+) -> None:
     run_id = uuid4()
     upload_id = uuid4()
     markdown = "<!-- page: 1 -->\nEvidence"
@@ -104,7 +109,11 @@ async def test_source_tool_refetches_one_selected_document_in_captured_run() -> 
         token_ref={"value": "token"},
         client_factory=lambda: client,
         load_query_source_fn=load_query_source,
-        query_document_fn=fake_query_document,
+        query_document_fn=AsyncMock(side_effect=SourceAnalysisError(
+            "incomplete_source_coverage", "private provider payload",
+            reason="reader_section_count_mismatch",
+            details={"expected_sections": 69, "returned_sections": 68},
+        )) if analysis_fails else fake_query_document,
         verify_source_artifact_fn=fake_verify_source_artifact,
     )
     tool = tools[0]
@@ -112,20 +121,38 @@ async def test_source_tool_refetches_one_selected_document_in_captured_run() -> 
         TOOL_CONTEXT,
         json.dumps(
             {
-                "upload_id": str(upload_id),
+                "source_index": 1,
                 "question": "What evidence is stated?",
             }
         ),
     )
     payload = json.loads(output)
     assert payload["action"] == "concept_note.sources.query"
+    if analysis_fails:
+        assert payload["success"] is False
+        assert payload["error_reason"] == "reader_section_count_mismatch"
+        assert payload["error_details"] == {"expected_sections": 69, "returned_sections": 68}
+        assert "private provider payload" not in output + caplog.text
+        assert "reader_section_count_mismatch" in caplog.text
+        client.close.assert_awaited_once_with()
+        return
     assert payload["success"] is True
     assert payload["data"]["found"] is False
+    assert payload["data"]["source_index"] == 1
+    assert "upload_id" not in payload["data"]
+    assert str(upload_id) not in output
+    assert set(tool.params_json_schema["properties"]) == {
+        "source_index",
+        "question",
+    }
     load_query_source.assert_awaited_once_with(
         session_factory=None,
         user_id="owner",
         run_id=run_id,
-        upload_id=upload_id,
+        source_index=1,
+    )
+    client.get_concept_note_markdown.assert_awaited_once_with(
+        upload_id=str(upload_id), token="token"
     )
     client.close.assert_awaited_once_with()
 
@@ -143,7 +170,12 @@ async def test_source_tool_rejects_missing_token_before_loading_run() -> None:
     )[0]
     output = await tool.on_invoke_tool(  # type: ignore[attr-defined]
         TOOL_CONTEXT,
-        json.dumps({"upload_id": str(uuid4()), "question": "Question"}),
+        json.dumps(
+            {
+                "source_index": 1,
+                "question": "Question",
+            }
+        ),
     )
     assert json.loads(output)["error_code"] == "missing_token"
     load_query_source.assert_not_awaited()

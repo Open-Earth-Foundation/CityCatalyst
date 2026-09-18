@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 
 import pytest
 from app.main import get_app
-from app.models.concept_note_city_context import HiapContext
+from app.models.cnb.concept_note_city_context import HiapContext
 from app.persistence.concept_notes.city_context import (
     ConceptNoteCityContextRepository,
     ConceptNoteCityContextRepositoryError,

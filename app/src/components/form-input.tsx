@@ -1,6 +1,6 @@
 "use client";
 
-import { Input, Text } from "@chakra-ui/react";
+import { Input, InputProps, Text } from "@chakra-ui/react";
 import {
   FieldError,
   FieldValues,
@@ -17,6 +17,7 @@ interface FormInputProps<TFieldValues extends FieldValues> {
   register: UseFormRegister<TFieldValues>;
   id: Path<TFieldValues>;
   required?: boolean;
+  inputProps?: InputProps;
 }
 
 function FormInput<TFieldValues extends FieldValues>({
@@ -26,6 +27,7 @@ function FormInput<TFieldValues extends FieldValues>({
   register,
   id,
   required = true,
+  inputProps,
 }: FormInputProps<TFieldValues>) {
   const { t } = useTranslation("inputs");
   return (
@@ -60,6 +62,7 @@ function FormInput<TFieldValues extends FieldValues>({
             : {},
         )}
         placeholder={label}
+        {...inputProps}
       />
       {error && (
         <Text

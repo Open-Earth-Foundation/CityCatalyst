@@ -6,6 +6,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.models import ApiResponseMeta
 from app.modules.prioritizer.localization import supported_languages
 
 
@@ -107,16 +108,6 @@ class ClimateFinanceProjectsQuery(CountryQuery):
         return value.strip()
 
 
-class ReferenceDataMeta(ReferenceDataContract):
-    """Common metadata returned by every successful reference-data response."""
-
-    generated_at_utc: str
-    backend_consumer: str = "hiap-meed"
-    upstream_provider: str = "global-api"
-    api_context: dict[str, str | int]
-    total_records: int = Field(ge=0)
-
-
 class CityIndicatorResponse(ReferenceDataContract):
     """One city indicator with its source value, unit, and display category."""
 
@@ -143,7 +134,7 @@ class CityAttributesResponse(ReferenceDataContract):
     """Successful city-attributes response."""
 
     city: CityResponse
-    meta: ReferenceDataMeta
+    meta: ApiResponseMeta
     warnings: list[str]
 
 
@@ -187,7 +178,7 @@ class ActionPathwaysResponse(ReferenceDataContract):
     """Successful action-pathways response."""
 
     actions: list[ActionPathwayResponse]
-    meta: ReferenceDataMeta
+    meta: ApiResponseMeta
     warnings: list[str]
 
 
@@ -240,7 +231,7 @@ class ActionPolicyScoresResponse(ReferenceDataContract):
     locode: str
     scores: list[ActionPolicyScoreResponse]
     aggregates: PolicyAggregatesResponse
-    meta: ReferenceDataMeta
+    meta: ApiResponseMeta
     warnings: list[str]
 
 
@@ -259,7 +250,7 @@ class ActionMitigationScoresResponse(ReferenceDataContract):
     locode: str
     country_code: str
     scores: list[ActionMitigationScoreResponse]
-    meta: ReferenceDataMeta
+    meta: ApiResponseMeta
     warnings: list[str]
 
 
@@ -316,7 +307,7 @@ class ActionFinancialScoresResponse(ReferenceDataContract):
     locode: str
     country_code: str
     data: list[ActionFinancialScoreResponse]
-    meta: ReferenceDataMeta
+    meta: ApiResponseMeta
     warnings: list[str]
 
 
@@ -341,7 +332,7 @@ class ClimateFinanceOpportunitiesResponse(ReferenceDataContract):
 
     current: list[CurrentFinanceOpportunityResponse]
     monitor: list[MonitoringFinanceOpportunityResponse]
-    meta: ReferenceDataMeta
+    meta: ApiResponseMeta
     warnings: list[str]
 
 
@@ -380,5 +371,5 @@ class ClimateFinanceProjectsResponse(ReferenceDataContract):
     """Successful comparable-projects response."""
 
     projects: list[ClimateFinanceProjectResponse]
-    meta: ReferenceDataMeta
+    meta: ApiResponseMeta
     warnings: list[str]

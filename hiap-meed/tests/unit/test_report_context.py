@@ -73,12 +73,7 @@ def _report_request(
     return CityActionReportApiRequest.model_validate(
         {
             "meta": {
-                "requestId": "report-req-1",
-                "generatedAtUtc": "2026-07-14T00:00:00Z",
-                "backendConsumer": "hiap-meed",
-                "upstreamProvider": "test",
-                "apiContext": {"endpoint": "POST /v1/reports/output-plan"},
-                "totalRecords": 1,
+              "requestId": "report-req-1"
             },
             "requestData": {
                 "locode": locode,
@@ -88,15 +83,7 @@ def _report_request(
                 "prioritizationSnapshot": {
                     "request": {
                         "meta": {
-                            "requestId": "prioritize-req-1",
-                            "generatedAtUtc": "2026-07-14T00:00:00Z",
-                            "backendConsumer": "hiap-meed",
-                            "upstreamProvider": "test",
-                            "apiContext": {
-                                "endpoint": "POST /v1/prioritize",
-                                "locodes": ["CL-SCL"],
-                            },
-                            "totalRecords": 1,
+                          "requestId": "prioritize-req-1"
                         },
                         "requestData": {
                             "requestedLanguages": ["en"],
@@ -112,6 +99,11 @@ def _report_request(
                         },
                     },
                     "response": {
+                        "meta": {
+                            "requestId": "prioritize-req-1",
+                            "generatedAtUtc": "2026-07-14T00:00:01Z",
+                            "totalRecords": len(response_results),
+                        },
                         "results": response_results,
                     },
                     "storedAtUtc": "2026-07-14T00:00:01Z",
@@ -362,6 +354,70 @@ def test_snapshot_input_includes_defensible_ask_from_action_finance_and_legal() 
     assert finance_legal["additional_approval"] == (
         "The legal review identifies no additional decision-making approval."
     )
+
+
+@pytest.mark.parametrize(
+    ("context_language", "legal_description_fields", "expected_detail"),
+    [
+        (
+            "en",
+            {"ownership_description": "The municipality can lead delivery."},
+            "The municipality can lead delivery.",
+        ),
+        (
+            "es",
+            {
+                "ownership_description_i18n": {
+                    "en": "The municipality can lead delivery.",
+                    "es": "El municipio puede liderar la ejecución.",
+                }
+            },
+            "El municipio puede liderar la ejecución.",
+        ),
+        (
+            "en",
+            {"restrictions_description": "Prior authorization is required."},
+            "Prior authorization is required.",
+        ),
+    ],
+)
+def test_snapshot_signal_uses_localized_legal_description(
+    context_language: str,
+    legal_description_fields: dict[str, object],
+    expected_detail: str,
+) -> None:
+    """Snapshot legal signals should use the localized text selected by legal facts."""
+    context = build_report_context(
+        request=_report_request(language=[context_language]),
+        action=Action(action_id="A_1", action_name="Bus electrification"),
+        city=CityData(
+            city_name="Santiago",
+            locode="CL-SCL",
+            country_code="CL",
+            region_name="Metropolitana",
+            region_code="RM",
+        ),
+        policy_score=None,
+        legal_assessment=LegalAssessmentRecord(
+            action_id="A_1",
+            country_code="CL",
+            verdict_category="enabled",
+            **legal_description_fields,
+        ),
+        mitigation_feasibility=None,
+        financial_feasibility=None,
+        source_metadata={"city": {"source": "test"}},
+    )
+    localized_context = context.model_copy(update={"language": context_language})
+
+    snapshot = next(
+        chapter
+        for chapter in build_chapter_inputs(localized_context)
+        if chapter.key == "snapshot"
+    )
+    legal_signal = snapshot.facts["signals"][3]
+
+    assert legal_signal["detail"] == expected_detail
 
 
 def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:

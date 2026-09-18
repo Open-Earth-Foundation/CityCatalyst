@@ -65,10 +65,6 @@ function generateOpenAPISpec() {
             description: "Administrative operations",
           },
           {
-            name: "assistants",
-            description: "AI assistant operations",
-          },
-          {
             name: "auth",
             description: "Authentication and authorization",
           },
@@ -160,6 +156,10 @@ function generateOpenAPISpec() {
           {
             name: "locations",
             description: "Bulk location operations",
+          },
+          {
+            name: "meed",
+            description: "HIAP MEED module operations",
           },
           {
             name: "mock",

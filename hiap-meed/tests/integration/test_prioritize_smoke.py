@@ -1,4 +1,4 @@
-﻿"""
+"""
 Integration smoke tests for the `/v1/prioritize` endpoint.
 """
 
@@ -276,15 +276,7 @@ def test_prioritize_rejects_invalid_weights_override(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-weights",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-weights"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -338,15 +330,7 @@ def test_prioritize_returns_404_when_upstream_city_is_missing() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-city-404",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-city-404"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -399,15 +383,7 @@ def test_prioritize_returns_503_for_retryable_upstream_city_failure() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-city-503",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-city-503"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -486,15 +462,7 @@ def test_prioritize_returns_502_for_upstream_city_schema_drift(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-city-schema-drift",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize",
-                            "locodes": ["CL SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-city-schema-drift"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -553,15 +521,7 @@ def test_prioritize_rejects_negative_non_afolu_total_emissions() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-non-afolu-negative",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-non-afolu-negative"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -659,15 +619,7 @@ def test_prioritize_smoke() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "1234567890",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "1234567890"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -694,6 +646,8 @@ def test_prioritize_smoke() -> None:
 
         assert "results" in body
         assert len(body["results"]) == 1
+        assert body["meta"]["requestId"] == "1234567890"
+        assert body["meta"]["totalRecords"] == 1
         result = body["results"][0]
         assert result["locode"] == "CL-SCL"
         assert result["ranked_action_ids"] == ["c40_0010", "c40_0020"]
@@ -753,15 +707,7 @@ def test_exclusion_preview_returns_deterministic_proposals(
                 "/v1/prioritize/exclusions/preview",
                 json={
                     "meta": {
-                        "requestId": "req-exclusion-preview",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize/exclusions/preview",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-exclusion-preview"
                     },
                     "requestData": {
                         "cityDataList": [
@@ -811,15 +757,7 @@ def test_exclusion_preview_rejects_invalid_sector_tag() -> None:
                 "/v1/prioritize/exclusions/preview",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-sector-tag",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize/exclusions/preview",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-sector-tag"
                     },
                     "requestData": {
                         "cityDataList": [
@@ -847,15 +785,7 @@ def test_exclusion_preview_rejects_invalid_co_benefit_key() -> None:
                 "/v1/prioritize/exclusions/preview",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-co-benefit",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize/exclusions/preview",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-co-benefit"
                     },
                     "requestData": {
                         "cityDataList": [
@@ -906,15 +836,7 @@ def test_prioritize_honors_confirmed_excluded_action_ids() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-confirmed-exclusions",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-confirmed-exclusions"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -977,15 +899,7 @@ def test_prioritize_rejects_no_preference_with_other_timeframes() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-timeframes",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-timeframes"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1043,15 +957,7 @@ def test_prioritize_rejects_invalid_city_preference_sector_tag() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-sector-tag",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-sector-tag"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1106,15 +1012,7 @@ def test_prioritize_rejects_invalid_city_preference_co_benefit_key() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-co-benefit-key",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-co-benefit-key"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1182,15 +1080,7 @@ def test_prioritize_alignment_timeframe_multi_select_uses_best_match() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-timeframe-best-match",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-timeframe-best-match"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1275,15 +1165,7 @@ def test_prioritize_discards_hard_legal_mismatch() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-legal-discard",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-legal-discard"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1354,15 +1236,7 @@ def test_prioritize_keeps_missing_legal_category_and_uses_score() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-legal-no-evidence",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-legal-no-evidence"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1423,15 +1297,7 @@ def test_prioritize_rejects_country_code_mismatch_with_locode_prefix() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-country-mismatch",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-country-mismatch"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1485,15 +1351,7 @@ def test_prioritize_returns_502_for_city_country_code_mismatch() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-city-country-mismatch",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-city-country-mismatch"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1556,15 +1414,7 @@ def test_prioritize_skips_explanations_when_flag_false(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-explanations-skipped",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-explanations-skipped"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1630,15 +1480,7 @@ def test_prioritize_generates_explanations_for_returned_top_n_only(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-topn-explanations",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-topn-explanations"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1702,15 +1544,7 @@ def test_prioritize_fails_open_when_explanation_generation_errors(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-explanation-failure",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-explanation-failure"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1799,15 +1633,7 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-explanation-timing",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-explanation-timing"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1886,15 +1712,7 @@ def test_prioritize_generates_every_requested_explanation_language(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-explanation-language",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-explanation-language"
                     },
                     "requestData": {
                         "requestedLanguages": ["es", "en"],
@@ -1975,15 +1793,7 @@ def test_prioritize_reports_only_successfully_generated_languages(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-translation-failure-languages",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-translation-failure-languages"
                     },
                     "requestData": {
                         "requestedLanguages": ["es", "en"],
@@ -2037,15 +1847,7 @@ def test_translate_endpoint_returns_requested_translations_only(
             "/v1/explanations/translate",
             json={
                 "meta": {
-                    "requestId": "req-translate-endpoint",
-                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/explanations/translate",
-                        "locodes": [],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-translate-endpoint"
                 },
                 "requestData": {
                     "sourceLanguage": "en",
@@ -2089,15 +1891,7 @@ def test_translate_endpoint_warns_when_source_text_is_likely_not_english(
             "/v1/explanations/translate",
             json={
                 "meta": {
-                    "requestId": "req-translate-warning",
-                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/explanations/translate",
-                        "locodes": [],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-translate-warning"
                 },
                 "requestData": {
                     "sourceLanguage": "en",
@@ -2128,15 +1922,7 @@ def test_translate_endpoint_rejects_non_english_source_language() -> None:
             "/v1/explanations/translate",
             json={
                 "meta": {
-                    "requestId": "req-translate-invalid-source",
-                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/explanations/translate",
-                        "locodes": [],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-translate-invalid-source"
                 },
                 "requestData": {
                     "sourceLanguage": "es",
@@ -2162,15 +1948,7 @@ def test_translate_endpoint_rejects_language_missing_from_catalogue() -> None:
             "/v1/explanations/translate",
             json={
                 "meta": {
-                    "requestId": "req-translate-unsupported-target",
-                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/explanations/translate",
-                        "locodes": [],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-translate-unsupported-target"
                 },
                 "requestData": {
                     "sourceLanguage": "en",
@@ -2196,15 +1974,7 @@ def test_translate_endpoint_rejects_duplicate_action_ids() -> None:
             "/v1/explanations/translate",
             json={
                 "meta": {
-                    "requestId": "req-translate-duplicate-action-id",
-                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/explanations/translate",
-                        "locodes": [],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-translate-duplicate-action-id"
                 },
                 "requestData": {
                     "sourceLanguage": "en",

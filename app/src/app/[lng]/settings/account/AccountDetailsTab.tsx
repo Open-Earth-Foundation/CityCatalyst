@@ -77,8 +77,8 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
       p={6}
       display="flex"
       flexDirection="column"
-      gap="24px"
-      borderRadius="8px"
+      gap="6"
+      borderRadius="rounded"
       boxShadow="shadow-lg"
       backgroundColor="white"
     >
@@ -98,6 +98,7 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
             register={register}
             error={errors.name}
             id="name"
+            inputProps={{ size: "lg" }}
           />
           <EmailInput
             defaultValue={userInfo.email}
@@ -106,6 +107,7 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
             register={register}
             error={errors.email}
             id="email"
+            inputProps={{ shadow: "1dp" }}
           />
           {showTitle && (
             <ProfessionSelect
@@ -116,14 +118,15 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
               showOefAdminOption={userInfo.role === Roles.Admin}
             />
           )}
-          <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
+          <Box display="flex" w="100%" justifyContent="right" marginTop="3">
             <Button
               type="submit"
               loading={isSubmitting}
               disabled={!isDirty}
-              py="28px"
+              py="7"
               w="auto"
-              px="24px"
+              minW="175px"
+              px="6"
               letterSpacing="widest"
               textTransform="uppercase"
               fontWeight="semibold"

@@ -10,6 +10,7 @@ import { createHash } from "node:crypto";
 
 const requireServiceRequest = jest.fn();
 const getJob = jest.fn<() => Promise<Record<string, unknown> | null>>();
+const getSourceFormat = jest.fn<() => "pdf" | "markdown">();
 const getFileBuffer = jest.fn<() => Promise<Buffer>>();
 
 jest.unstable_mockModule(
@@ -20,6 +21,7 @@ jest.unstable_mockModule(
 );
 jest.unstable_mockModule("@/backend/PdfOcrService", () => ({
   getConceptNotePdfOcrJob: getJob,
+  getConceptNoteSourceFormat: getSourceFormat,
 }));
 jest.unstable_mockModule("@/backend/InventoryFileStorageService", () => ({
   default: { getFileBuffer },
@@ -30,13 +32,12 @@ jest.unstable_mockModule("@/util/api", () => ({
 
 let readHandler: typeof import("@/app/api/v1/internal/ca/concept-note-uploads/[uploadId]/markdown/route").GET;
 const uploadId = "22222222-2222-4222-8222-222222222222";
-const markdown = Buffer.from("<!-- page: 1 -->\n# Plan", "utf8");
+const markdown = Buffer.from("# Plan", "utf8");
 const sha256 = createHash("sha256").update(markdown).digest("hex");
 
 beforeAll(async () => {
-  ({ GET: readHandler } = await import(
-    "@/app/api/v1/internal/ca/concept-note-uploads/[uploadId]/markdown/route"
-  ));
+  ({ GET: readHandler } =
+    await import("@/app/api/v1/internal/ca/concept-note-uploads/[uploadId]/markdown/route"));
 });
 
 describe("authenticated Concept Note Markdown read", () => {
@@ -48,10 +49,11 @@ describe("authenticated Concept Note Markdown read", () => {
       resultSha256: sha256,
       pageCount: 1,
     });
+    getSourceFormat.mockReturnValue("pdf");
     getFileBuffer.mockResolvedValue(markdown);
   });
 
-  it("streams only a successful artifact with immutable metadata headers", async () => {
+  it("streams PDF-derived Markdown with immutable metadata headers", async () => {
     const request = new Request("http://localhost");
     const response = await readHandler(request, {
       session: { user: { id: "owner-user" } },
@@ -61,8 +63,28 @@ describe("authenticated Concept Note Markdown read", () => {
     expect(requireServiceRequest).toHaveBeenCalledWith(request);
     expect(response.headers.get("X-Markdown-S3-Key")).toBe("result.md");
     expect(response.headers.get("X-Markdown-SHA256")).toBe(sha256);
+    expect(response.headers.get("X-Source-Format")).toBe("pdf");
     expect(response.headers.get("X-Page-Count")).toBe("1");
     expect(await response.text()).toContain("# Plan");
+  });
+
+  it("streams direct Markdown without a page-count header", async () => {
+    getJob.mockResolvedValueOnce({
+      status: "succeeded",
+      resultS3Key: "result.md",
+      resultSha256: sha256,
+      pageCount: null,
+    });
+    getSourceFormat.mockReturnValueOnce("markdown");
+
+    const response = await readHandler(new Request("http://localhost"), {
+      session: { user: { id: "owner-user" } },
+      params: { uploadId },
+    });
+
+    expect(response.headers.get("X-Source-Format")).toBe("markdown");
+    expect(response.headers.get("X-Page-Count")).toBeNull();
+    expect(await response.text()).toBe("# Plan");
   });
 
   it("rejects missing user auth and a changed stored digest", async () => {

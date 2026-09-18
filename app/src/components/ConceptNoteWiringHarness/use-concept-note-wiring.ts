@@ -13,7 +13,7 @@ import type {
 import {
   requireConceptNoteUploadIdentity,
   shouldPollConceptNoteUpload,
-  validateConceptNotePdf,
+  validateConceptNoteSourceFile,
 } from "./utils";
 
 export type ConceptNoteWiringScreen = "home" | "scope";
@@ -96,13 +96,16 @@ export function useConceptNoteWiring({
     data: resumedRun,
     isError: resumeFailed,
     isFetching: resumeLoading,
-  } = api.useGetConceptNoteRunQuery(resumeRunId ?? "", {
-    skip: !resumeRunId,
-  });
+  } = api.useGetConceptNoteRunQuery(
+    { cityId, runId: resumeRunId ?? "" },
+    {
+      skip: !resumeRunId,
+    },
+  );
   const [startConceptNoteRun, startState] =
     api.useStartConceptNoteRunMutation();
-  const [uploadConceptNotePdf, uploadState] =
-    api.useUploadConceptNotePdfMutation();
+  const [uploadConceptNoteSource, uploadState] =
+    api.useUploadConceptNoteSourceMutation();
   const [retryConceptNoteUpload, retryState] =
     api.useRetryConceptNoteUploadMutation();
 
@@ -117,50 +120,41 @@ export function useConceptNoteWiring({
         skipPollingIfUnfocused: true,
       },
     );
-
-  useEffect(() => {
-    if (!resumedRun) {
-      return;
-    }
-    if (
-      resumedRun.run_id !== resumeRunId ||
+  const resumedRunIsInvalid = Boolean(
+    resumedRun &&
+    (resumedRun.run_id !== resumeRunId ||
       resumedRun.city_id !== cityId ||
-      !resumedRun.name
-    ) {
-      setError(t("resume-error"));
+      !resumedRun.name),
+  );
+  const refreshedUploadIsInvalid = Boolean(
+    refreshedUpload &&
+    runId &&
+    uploadId &&
+    (refreshedUpload.uploadId !== uploadId || refreshedUpload.runId !== runId),
+  );
+  const queryError =
+    resumeFailed || resumedRunIsInvalid
+      ? t("resume-error")
+      : refreshFailed || refreshedUploadIsInvalid
+        ? t("refresh-status-error")
+        : null;
+
+  /* eslint-disable react-hooks/set-state-in-effect -- Validated RTK Query results hydrate local editable state and advance polling. */
+  useEffect(() => {
+    if (!resumedRun || resumedRunIsInvalid) {
       return;
     }
-    setError(null);
     setRunId(resumedRun.run_id);
     setNoteName(resumedRun.name);
-  }, [cityId, resumeRunId, resumedRun, t]);
+  }, [resumedRun, resumedRunIsInvalid]);
 
   useEffect(() => {
-    if (resumeFailed) {
-      setError(t("resume-error"));
-    }
-  }, [resumeFailed, t]);
-
-  useEffect(() => {
-    if (!refreshedUpload || !runId || !uploadId) {
+    if (!refreshedUpload || !runId || !uploadId || refreshedUploadIsInvalid) {
       return;
     }
-    if (
-      refreshedUpload.uploadId !== uploadId ||
-      refreshedUpload.runId !== runId
-    ) {
-      setError(t("refresh-status-error"));
-      return;
-    }
-    setError(null);
     setUploadDetails(refreshedUpload);
-  }, [refreshedUpload, runId, t, uploadId]);
-
-  useEffect(() => {
-    if (refreshFailed) {
-      setError(t("refresh-status-error"));
-    }
-  }, [refreshFailed, t]);
+  }, [refreshedUpload, refreshedUploadIsInvalid, runId, uploadId]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   function resetHarness(): void {
     setNoteName(createDefaultName(lng, t("default-note-name")));
@@ -188,7 +182,7 @@ export function useConceptNoteWiring({
       setSelectedFile(null);
       return;
     }
-    const validationError = await validateConceptNotePdf(file);
+    const validationError = await validateConceptNoteSourceFile(file);
     if (validationError) {
       setSelectedFile(null);
       setError(t(validationError));
@@ -226,16 +220,16 @@ export function useConceptNoteWiring({
     return run.run_id;
   }
 
-  async function uploadPdf(targetRunId: string): Promise<void> {
+  async function uploadSource(targetRunId: string): Promise<void> {
     if (!selectedFile) {
-      throw new Error("A PDF is required before upload");
+      throw new Error("A source file is required before upload");
     }
     const formData = new FormData();
     formData.set("file", selectedFile);
     if (sourceLabel.trim()) {
       formData.set("sourceLabel", sourceLabel.trim());
     }
-    const upload = await uploadConceptNotePdf({
+    const upload = await uploadConceptNoteSource({
       cityId,
       formData,
       runId: targetRunId,
@@ -261,7 +255,7 @@ export function useConceptNoteWiring({
 
     try {
       const targetRunId = await startRun();
-      await uploadPdf(targetRunId);
+      await uploadSource(targetRunId);
     } catch {
       setError(t("wiring-request-failed"));
     }
@@ -301,7 +295,7 @@ export function useConceptNoteWiring({
   return {
     cityCountry: city?.country || null,
     cityName: city?.name || t("selected-city"),
-    error,
+    error: error ?? queryError,
     isBusy:
       resumeLoading ||
       startState.isLoading ||

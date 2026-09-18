@@ -3,7 +3,7 @@ import { MdPersonAdd } from "react-icons/md";
 import AddCollaboratorsModal from "./AddCollaboratorModal/AddCollaboratorsModal";
 import { useDisclosure } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
-import ActionCardSmall from "./ActionCardSmall";
+import ToolbarActionButton from "./ToolbarActionButton";
 
 export function AddCollaboratorButton({
   lng,
@@ -27,10 +27,11 @@ export function AddCollaboratorButton({
         onOpen={onModalOpen}
         organizationId={organizationId}
       />
-      <ActionCardSmall
+      <ToolbarActionButton
         onClick={onModalOpen}
-        icon={<MdPersonAdd color="white" size={24} />}
-        title={t("invite-collaborators")}
+        icon={<MdPersonAdd size={24} />}
+        label={t("invite-members")}
+        dataTestId="invite-collaborators-button"
       />
     </>
   );

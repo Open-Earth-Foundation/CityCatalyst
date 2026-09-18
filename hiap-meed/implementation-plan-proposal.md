@@ -184,7 +184,8 @@ Do not introduce a second API style for these GET routes. Use the current FastAP
 - let Pydantic/FastAPI reject malformed or unsupported query values consistently with existing request models
 - translate `UpstreamApiError` through the existing request-trace error helpers rather than defining a new error envelope
 - retain current source-specific missing-data behavior, including `200` plus warnings where the existing client treats a missing release as empty data
-- use one shared reference-data metadata model across the seven endpoints where possible, based on existing fields: `generated_at_utc`, `backend_consumer`, `upstream_provider`, `api_context`, and `total_records`
+- use the shared business-response metadata model across the seven endpoints:
+  server-owned `requestId`, `generatedAtUtc`, and `totalRecords`
 - keep warnings in the same response position and naming style chosen for the shared reference-data contracts
 - keep raw payloads and diagnostic source details in existing logs/artifacts; expose only source/provenance fields already considered part of a public contract
 
@@ -377,7 +378,8 @@ The work is complete when all of the following are true:
 
 - Public field subsets are encoded as strict models in `app/modules/reference_data/models.py`; internal `raw`, score-input, finance diagnostic-link maps, and upstream request details are not serialized. The selected opportunity `source_url` remains an agreed user-facing field.
 - Action localization uses repeated `language` query parameters. Omitting the parameter returns all available localizations; one or more values project exactly the requested supported languages.
-- All successful routes use `ReferenceDataMeta` with `generated_at_utc`, `backend_consumer`, `upstream_provider`, `api_context`, and `total_records`, plus a top-level `warnings` list.
+- All successful routes use `ApiResponseMeta` with server-owned `requestId`,
+  `generatedAtUtc`, and `totalRecords`, plus a top-level `warnings` list.
 
 ## Explicitly out of scope
 

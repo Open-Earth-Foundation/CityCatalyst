@@ -2482,6 +2482,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             options={"stationary_energy_pending_decision_review_count": 1},
         )
 
+        await handler._resolve_workflow_context(payload)
         history = await handler._load_conversation_history(None, payload)
 
         self.assertGreaterEqual(len(history), 2)

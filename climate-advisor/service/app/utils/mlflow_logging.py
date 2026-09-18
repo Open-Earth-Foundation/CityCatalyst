@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-import io
+import json
 import logging
 import os
 import re
 import time
 from collections.abc import Mapping, Sequence
-from contextlib import contextmanager, redirect_stdout
+from contextlib import contextmanager
+from contextvars import ContextVar
+from dataclasses import dataclass, field
 from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
@@ -18,6 +20,7 @@ from uuid import UUID
 
 try:
     import mlflow
+    from mlflow.entities import Metric, Param, RunTag
 except ImportError:
     mlflow = None
 
@@ -52,6 +55,38 @@ _LAST_INITIALIZATION_FAILURE_AT: float | None = None
 _EXPERIMENT_IDS: dict[str, str] = {}
 
 
+@dataclass
+class _RunContext:
+    """Task-local logging target, shared only with work spawned by that task."""
+
+    client: Any
+    run_id: str
+    pending_operations: list[Any] = field(default_factory=list)
+    closed: bool = False
+
+
+_RUN_CONTEXT: ContextVar[_RunContext | None] = ContextVar(
+    "mlflow_run_context", default=None
+)
+_CATALOG_ID_KEYS = {"catalogid", "catalog_id", "catalogids", "catalog_ids"}
+_CAPABILITY_ID_KEYS = {
+    "capabilityid",
+    "capability_id",
+    "capabilityids",
+    "capability_ids",
+}
+
+
+@dataclass
+class _ToolObservation:
+    """Request-local pending tool span and redacted record."""
+
+    call_id: str
+    started_at: float
+    span: Any | None
+    record: dict[str, Any]
+
+
 def climate_advisor_experiment_name() -> str:
     """Return the configured MLflow experiment for all Climate Advisor runs."""
     return (
@@ -70,7 +105,10 @@ def mlflow_environment_tag() -> str:
 
 def mlflow_run_user() -> str:
     """Return the service identity shown in MLflow's Created by field."""
-    return os.getenv("MLFLOW_RUN_USER", DEFAULT_MLFLOW_RUN_USER).strip() or DEFAULT_MLFLOW_RUN_USER
+    return (
+        os.getenv("MLFLOW_RUN_USER", DEFAULT_MLFLOW_RUN_USER).strip()
+        or DEFAULT_MLFLOW_RUN_USER
+    )
 
 
 def is_async_logging_enabled() -> bool:
@@ -83,14 +121,10 @@ def is_mlflow_enabled() -> bool:
     return os.getenv("MLFLOW_ENABLED", "false").strip().lower() == "true"
 
 
-def _has_active_run() -> bool:
-    """Return whether MLflow currently has one explicit active run."""
-    if not _INITIALIZED or mlflow is None:
-        return False
-    try:
-        return mlflow.active_run() is not None
-    except Exception:
-        return False
+def _current_run() -> _RunContext | None:
+    """Return this task's open logging target, never another task's fluent run."""
+    context = _RUN_CONTEXT.get()
+    return context if context is not None and not context.closed else None
 
 
 def _install_live_span_set_tag_compatibility() -> None:
@@ -130,16 +164,16 @@ def initialize_mlflow() -> bool:
     now = time.monotonic()
     if (
         _LAST_INITIALIZATION_FAILURE_AT is not None
-        and now - _LAST_INITIALIZATION_FAILURE_AT
-        < MLFLOW_INIT_RETRY_COOLDOWN_SECONDS
+        and now - _LAST_INITIALIZATION_FAILURE_AT < MLFLOW_INIT_RETRY_COOLDOWN_SECONDS
     ):
         return False
 
-    tracking_uri = os.getenv(
-        "MLFLOW_TRACKING_URI", DEFAULT_MLFLOW_TRACKING_URI
-    ).strip()
+    tracking_uri = os.getenv("MLFLOW_TRACKING_URI", DEFAULT_MLFLOW_TRACKING_URI).strip()
     try:
         mlflow.set_tracking_uri(tracking_uri)
+        # All CA traces share one configured experiment; never switch it per request.
+        experiment = mlflow.set_experiment(climate_advisor_experiment_name())
+        _EXPERIMENT_IDS[experiment.name] = str(experiment.experiment_id)
         mlflow.config.enable_async_logging(is_async_logging_enabled())
         _install_live_span_set_tag_compatibility()
         mlflow.openai.autolog()
@@ -196,70 +230,79 @@ def start_run(
     params: Mapping[str, object] | None = None,
     nested: bool = False,
 ) -> Iterator[Any | None]:
-    """Start one MLflow run if available, otherwise yield a no-op context."""
-    if not initialize_mlflow() or mlflow is None:
-        yield None
-        return
+    """Create an explicit run isolated across awaits; failures disable only this scope.
 
-    experiment_id = _experiment_id(experiment_name)
-    if experiment_id is None:
-        yield None
-        return
-
+    Child tasks may log to the request while it is open. Nested runs get an
+    explicit parent tag; independent requests never use MLflow's fluent stack.
+    Pending writes are drained and the run is terminated on exit, including
+    cancellation, before restoring the enclosing task's logging target.
+    """
+    parent = _current_run()
+    token = _RUN_CONTEXT.set(None)
+    context = None
+    status = "FINISHED"
     try:
-        run_context = mlflow.start_run(
-            run_name=run_name,
-            experiment_id=experiment_id,
-            nested=nested,
-        )
-        run = run_context.__enter__()
-    except Exception as error:
-        logger.warning(
-            "MLflow not running or unavailable while starting run run_name=%s experiment=%s nested=%s error=%s",
-            run_name,
-            experiment_name,
-            nested,
-            error,
-        )
-        yield None
-        return
+        # Mask an inherited target even if initialization or run creation fails.
+        if not initialize_mlflow() or mlflow is None:
+            yield None
+            return
+        experiment_id = _experiment_id(experiment_name)
+        if experiment_id is None:
+            yield None
+            return
+        try:
+            client = mlflow.tracking.MlflowClient()
+            run_tags = {
+                "mlflow.user": mlflow_run_user(),
+                "service": "climate-advisor",
+                "environment": mlflow_environment_tag(),
+                **dict(tags or {}),
+            }
+            if nested and parent is not None:
+                run_tags["mlflow.parentRunId"] = parent.run_id
+            run = client.create_run(
+                experiment_id=experiment_id,
+                run_name=run_name,
+                tags=_string_map(run_tags),
+            )
+        except Exception as error:
+            logger.warning(
+                "MLflow run start failed run_name=%s experiment=%s error=%s",
+                run_name,
+                experiment_name,
+                error,
+            )
+            yield None
+            return
 
-    exit_exception_type = None
-    exit_exception = None
-    exit_traceback = None
-    try:
-        baseline_tags = {
-            "mlflow.user": mlflow_run_user(),
-            "service": "climate-advisor",
-            "environment": mlflow_environment_tag(),
-        }
-        log_tags({**baseline_tags, **dict(tags or {})})
+        context = _RunContext(client=client, run_id=run.info.run_id)
+        _RUN_CONTEXT.set(context)
         if params:
             log_params(params)
         yield run
-    except Exception as error:
-        exit_exception_type = type(error)
-        exit_exception = error
-        exit_traceback = error.__traceback__
+    except BaseException:
+        status = "FAILED"
         raise
     finally:
-        try:
-            # MLflow prints emoji links while closing. Redirect only that library
-            # output so Windows cp1250 consoles cannot leave completed runs open.
-            with redirect_stdout(io.StringIO()):
-                run_context.__exit__(
-                    exit_exception_type,
-                    exit_exception,
-                    exit_traceback,
+        # Inherited child contexts must not write to a request after it closes.
+        if context is not None:
+            context.closed = True
+            for operation in context.pending_operations:
+                try:
+                    operation.wait()
+                except Exception as error:
+                    logger.warning(
+                        "MLflow pending write failed run_id=%s error=%s",
+                        context.run_id,
+                        error,
+                    )
+            try:
+                context.client.set_terminated(context.run_id, status=status)
+            except Exception as error:
+                logger.warning(
+                    "MLflow run close failed run_id=%s error=%s", context.run_id, error
                 )
-        except Exception as error:
-            logger.warning(
-                "MLflow not running or unavailable while closing run run_name=%s experiment=%s nested=%s error=%s",
-                run_name,
-                experiment_name,
-                nested,
-                error,
-            )
+        _RUN_CONTEXT.reset(token)
 
 
 @contextmanager
@@ -269,8 +312,13 @@ def start_trace_span(
     span_type: str,
     inputs: object | None = None,
     attributes: Mapping[str, object] | None = None,
+    link_run: bool = True,
 ) -> Iterator[Any | None]:
-    """Start one best-effort MLflow span inside the active trace context."""
+    """Start a best-effort span, optionally preserving the enclosing run link.
+
+    Nested workflow operations use link_run=False so their run does not replace
+    the conversation root's mlflow.sourceRun metadata.
+    """
     if not _INITIALIZED or mlflow is None:
         yield None
         return
@@ -294,13 +342,15 @@ def start_trace_span(
 
     if inputs is not None:
         _set_span_value(span, "set_inputs", inputs, name=name)
+    if link_run and _current_run() is not None:
+        update_current_trace_context()
 
     exit_exception_type = None
     exit_exception = None
     exit_traceback = None
     try:
         yield span
-    except Exception as error:
+    except BaseException as error:
         exit_exception_type = type(error)
         exit_exception = error
         exit_traceback = error.__traceback__
@@ -323,14 +373,385 @@ def set_span_outputs(span: object | None, outputs: object) -> None:
     _set_span_value(span, "set_outputs", outputs, name="active")
 
 
-def log_tags(tags: Mapping[str, object]) -> None:
-    """Best-effort log run tags for the active MLflow run."""
-    if not _has_active_run() or not tags:
+def current_run_id() -> str | None:
+    """Return this task's explicit MLflow run id when a run is open."""
+    context = _current_run()
+    return None if context is None else context.run_id
+
+
+def project_tool_input(arguments: object) -> dict[str, Any]:
+    """Return a safe tool-input projection with keys only, never values."""
+    if isinstance(arguments, Mapping):
+        keys = [str(key) for key in arguments]
+    elif arguments is None:
+        keys = []
+    else:
+        keys = ["value"]
+    normalized = {key.lower().replace("-", "_") for key in keys}
+    return {
+        "argument_keys": keys,
+        "argument_count": len(keys),
+        "has_catalog_id": bool(normalized & _CATALOG_ID_KEYS),
+        "has_capability_id": bool(normalized & _CAPABILITY_ID_KEYS),
+    }
+
+
+def redacted_tool_invocation_records(
+    invocations: list[dict[str, Any]],
+    *,
+    request_id: str = "",
+) -> list[dict[str, Any]]:
+    """Project raw in-memory tool invocations into observation-shaped records.
+
+    Used when TOOL span start/finish fails so `chat/tool_invocations.json`
+    still omits catalog IDs, full arguments, and full results. Outcome follows
+    the same envelope classifier as a completed TOOL observation. Executing or
+    no-result invocations stay incomplete instead of defaulting to success.
+    """
+    records: list[dict[str, Any]] = []
+    for index, invocation in enumerate(invocations, start=1):
+        transport_status = str(invocation.get("status") or "")
+        output = invocation.get("result_json")
+        if output is None:
+            output = invocation.get("result")
+        output_projection = project_tool_output(output)
+        explicit_outcome = None
+        has_result = "result_json" in invocation or "result" in invocation
+        if transport_status in {"error", "failed"}:
+            explicit_outcome = "error"
+        elif transport_status == "cancelled":
+            explicit_outcome = "cancelled"
+        elif transport_status in {"executing", "started"} or not has_result:
+            explicit_outcome = "incomplete"
+        state, outcome = _tool_observation_outcome(
+            output_projection,
+            explicit_outcome,
+        )
+        records.append(
+            {
+                "call_id": invocation.get("id"),
+                "tool_name": invocation.get("name") or "unknown_tool",
+                "sequence": index,
+                "state": state,
+                "outcome": outcome,
+                "duration_ms": None,
+                "request_id": request_id,
+                "run_id": current_run_id(),
+                "input": project_tool_input(invocation.get("arguments")),
+                "output": output_projection,
+            }
+        )
+    return records
+
+
+def merge_redacted_tool_records(
+    invocations: list[dict[str, Any]],
+    completed: list[dict[str, Any]],
+    *,
+    request_id: str = "",
+) -> list[dict[str, Any]]:
+    """Keep completed observations and fill missing call IDs from fallbacks.
+
+    Call order follows `invocations`. A later uninstrumented tool is not
+    dropped merely because an earlier observation already exists.
+    """
+    completed_by_id = {
+        str(record.get("call_id")): record
+        for record in completed
+        if record.get("call_id") is not None
+    }
+    fallbacks = redacted_tool_invocation_records(
+        invocations,
+        request_id=request_id,
+    )
+    merged: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for invocation, fallback in zip(invocations, fallbacks, strict=True):
+        call_id = invocation.get("id")
+        if call_id is None:
+            call_id = fallback.get("call_id")
+        key = str(call_id) if call_id is not None else ""
+        record = completed_by_id.get(key, fallback)
+        merged.append({**record, "sequence": len(merged) + 1})
+        if key:
+            seen.add(key)
+    for record in completed:
+        call_id = record.get("call_id")
+        key = str(call_id) if call_id is not None else ""
+        if key and key not in seen:
+            merged.append({**record, "sequence": len(merged) + 1})
+            seen.add(key)
+    return merged
+
+
+def project_tool_output(output: object) -> dict[str, Any]:
+    """Return a safe tool-output projection without bodies or identifiers."""
+    parsed: object = output
+    serialized = ""
+    if isinstance(output, str):
+        serialized = output
+        try:
+            parsed = json.loads(output)
+        except json.JSONDecodeError:
+            parsed = output
+    elif output is not None:
+        try:
+            serialized = json.dumps(output, ensure_ascii=False, default=str)
+        except TypeError:
+            serialized = str(output)
+
+    success = None
+    error_code = None
+    action = None
+    entry_count = None
+    if isinstance(parsed, Mapping):
+        if "success" in parsed:
+            success = bool(parsed.get("success"))
+        raw_error = parsed.get("error_code")
+        error_code = raw_error if isinstance(raw_error, str) else None
+        raw_action = parsed.get("action")
+        action = raw_action if isinstance(raw_action, str) else None
+        data = parsed.get("data")
+        if isinstance(data, Mapping) and isinstance(data.get("entries"), list):
+            entry_count = len(data["entries"])
+
+    if output is None:
+        result_kind = "none"
+    elif isinstance(parsed, Mapping | Sequence) and not isinstance(parsed, str | bytes):
+        result_kind = "object"
+    else:
+        result_kind = "string"
+
+    return {
+        "success": success,
+        "error_code": error_code,
+        "action": action,
+        "entry_count": entry_count,
+        "result_kind": result_kind,
+        "byte_size": len(serialized.encode("utf-8")),
+    }
+
+
+def start_tool_observation(
+    pending: dict[str, Any],
+    *,
+    call_id: str | None,
+    tool_name: str,
+    arguments: object = None,
+    request_id: str,
+    completed_count: int = 0,
+) -> dict[str, Any]:
+    """Start a request-local TOOL observation as a sibling of other open tools."""
+    observation_id = call_id or f"tool-{completed_count + len(pending) + 1}"
+    existing = pending.get(observation_id)
+    if existing is not None:
+        return existing.record
+
+    # Keep only key names in the span/input record; values stay off MLflow.
+    input_projection = project_tool_input(arguments)
+    record = {
+        "call_id": observation_id,
+        "tool_name": tool_name,
+        "sequence": completed_count + len(pending) + 1,
+        "state": "started",
+        "outcome": "incomplete",
+        "duration_ms": None,
+        "request_id": request_id,
+        "run_id": current_run_id(),
+        "input": input_projection,
+        "output": None,
+    }
+    span = _start_sibling_tool_span(
+        name=tool_name,
+        inputs=input_projection,
+        attributes={
+            "call_id": observation_id,
+            "sequence": record["sequence"],
+            "request_id": request_id,
+            "run_id": record["run_id"],
+        },
+    )
+    pending[observation_id] = _ToolObservation(
+        call_id=observation_id,
+        started_at=time.perf_counter(),
+        span=span,
+        record=record,
+    )
+    return record
+
+
+def finish_tool_observation(
+    pending: dict[str, Any],
+    completed: list[dict[str, Any]],
+    *,
+    call_id: str | None,
+    output: object = None,
+    outcome: str | None = None,
+) -> dict[str, Any]:
+    """Close one pending TOOL observation and append its redacted record."""
+    observation_id = call_id or next(iter(pending), None)
+    observation = pending.pop(observation_id, None) if observation_id else None
+    output_projection = project_tool_output(output)
+    state, resolved_outcome = _tool_observation_outcome(output_projection, outcome)
+    if observation is None:
+        record = {
+            "call_id": observation_id,
+            "tool_name": "unknown_tool",
+            "sequence": len(completed) + 1,
+            "state": state,
+            "outcome": resolved_outcome,
+            "duration_ms": 0.0,
+            "request_id": "",
+            "run_id": current_run_id(),
+            "input": project_tool_input(None),
+            "output": output_projection,
+        }
+        completed.append(record)
+    else:
+        record = observation.record
+        record["state"] = state
+        record["outcome"] = resolved_outcome
+        record["duration_ms"] = (time.perf_counter() - observation.started_at) * 1000
+        record["output"] = output_projection
+        _end_tool_span(
+            observation.span,
+            output_projection,
+            status="OK" if resolved_outcome == "success" else "ERROR",
+        )
+        completed.append(record)
+    # Keep summary artifact in call order even when tools finish out of order.
+    completed.sort(key=lambda item: item.get("sequence", 0))
+    return record
+
+
+def close_open_tool_observations(
+    pending: dict[str, Any],
+    completed: list[dict[str, Any]],
+    *,
+    outcome: str = "incomplete",
+) -> None:
+    """Close every still-open TOOL observation for this request."""
+    for observation_id in list(pending):
+        finish_tool_observation(
+            pending,
+            completed,
+            call_id=observation_id,
+            outcome=outcome,
+        )
+
+
+def inspect_mlflow_configuration() -> dict[str, Any]:
+    """Return non-sensitive MLflow presence, configuration, and connectivity."""
+    tracking_uri = os.getenv(
+        "MLFLOW_TRACKING_URI", DEFAULT_MLFLOW_TRACKING_URI
+    ).strip() or DEFAULT_MLFLOW_TRACKING_URI
+    experiment_name = climate_advisor_experiment_name()
+    report: dict[str, Any] = {
+        "enabled": is_mlflow_enabled(),
+        "mlflow_installed": mlflow is not None,
+        "tracking_uri": tracking_uri,
+        "tracking_uri_is_default": tracking_uri == DEFAULT_MLFLOW_TRACKING_URI,
+        "username_present": bool(os.getenv("MLFLOW_TRACKING_USERNAME", "").strip()),
+        "password_present": bool(os.getenv("MLFLOW_TRACKING_PASSWORD", "").strip()),
+        "environment": mlflow_environment_tag(),
+        "experiment_name": experiment_name,
+        "experiment_resolved": False,
+        "connection_ok": False,
+    }
+    if not report["enabled"] or mlflow is None:
+        return report
+
+    # Probe connectivity and experiment resolution without creating a run.
+    try:
+        mlflow.set_tracking_uri(tracking_uri)
+        client = mlflow.tracking.MlflowClient()
+        experiment = client.get_experiment_by_name(experiment_name)
+        report["connection_ok"] = True
+        report["experiment_resolved"] = experiment is not None
+    except Exception as error:
+        logger.warning(
+            "MLflow preflight connection failed type=%s",
+            type(error).__name__,
+        )
+    return report
+
+
+def _tool_observation_outcome(
+    output_projection: Mapping[str, Any],
+    outcome: str | None,
+) -> tuple[str, str]:
+    """Map an optional explicit outcome and tool envelope into state fields."""
+    if outcome == "cancelled":
+        return "cancelled", "cancelled"
+    if outcome == "incomplete":
+        return "cancelled", "incomplete"
+    if (
+        outcome == "error"
+        or output_projection.get("success") is False
+        or output_projection.get("error_code")
+    ):
+        return "failed", "error"
+    return "succeeded", "success"
+
+
+def _start_sibling_tool_span(
+    *,
+    name: str,
+    inputs: Mapping[str, Any],
+    attributes: Mapping[str, object],
+) -> Any | None:
+    """Start a TOOL span under the current CHAIN without making it current."""
+    if not _INITIALIZED or mlflow is None:
+        return None
+    span_factory = getattr(mlflow, "start_span_no_context", None)
+    if not callable(span_factory):
+        return None
+
+    parent = None
+    parent_getter = getattr(mlflow, "get_current_active_span", None)
+    if callable(parent_getter):
+        try:
+            parent = parent_getter()
+        except Exception as error:
+            logger.warning("MLflow active span lookup failed error=%s", error)
+            parent = None
+
+    try:
+        return span_factory(
+            name=name,
+            span_type="TOOL",
+            parent_span=parent,
+            inputs=_json_safe(inputs),
+            attributes=_string_map(attributes),
+        )
+    except Exception as error:
+        logger.warning("MLflow tool span start failed name=%s error=%s", name, error)
+        return None
+
+
+def _end_tool_span(span: object | None, outputs: object, *, status: str) -> None:
+    """End a best-effort TOOL span without raising into the chat stream."""
+    if span is None:
+        return
+    end = getattr(span, "end", None)
+    if not callable(end):
+        _set_span_value(span, "set_outputs", outputs, name="tool")
         return
     try:
-        mlflow.set_tags(_string_map(tags), synchronous=not is_async_logging_enabled())
+        end(outputs=_json_safe(outputs), status=status)
+    except TypeError:
+        _set_span_value(span, "set_outputs", outputs, name="tool")
+        try:
+            end()
+        except Exception as error:
+            logger.warning("MLflow tool span close failed error=%s", error)
     except Exception as error:
-        logger.warning("MLflow tag logging failed error=%s", error)
+        logger.warning("MLflow tool span close failed error=%s", error)
+
+
+def log_tags(tags: Mapping[str, object]) -> None:
+    """Best-effort log tags to this task's explicit run."""
+    _log_batch(tags=tags)
 
 
 def update_current_trace_context(
@@ -340,8 +761,12 @@ def update_current_trace_context(
     client_request_id: object | None = None,
     tags: Mapping[str, object] | None = None,
     metadata: Mapping[str, object] | None = None,
+    link_run: bool = True,
 ) -> bool:
-    """Attach session and request context to the current active MLflow trace."""
+    """Attach session/request context, optionally preserving the trace's run link.
+
+    Use link_run=False when enriching a conversation from a nested operation.
+    """
     if not _INITIALIZED or mlflow is None:
         return False
 
@@ -359,13 +784,19 @@ def update_current_trace_context(
     if not callable(update_trace):
         return False
 
+    # Use the metadata contract supported by the pinned MLflow 3.2 runtime.
+    trace_metadata = _string_map(metadata or {})
+    if session_id is not None:
+        trace_metadata["mlflow.trace.session"] = str(session_id)
+    if user_id is not None:
+        trace_metadata["mlflow.trace.user"] = str(user_id)
+    if link_run and (context := _current_run()):
+        trace_metadata["mlflow.sourceRun"] = context.run_id
     try:
         update_trace(
             tags=_string_map(tags or {}) or None,
-            metadata=_string_map(metadata or {}) or None,
+            metadata=trace_metadata or None,
             client_request_id=_optional_string(client_request_id),
-            session_id=_optional_string(session_id),
-            user=_optional_string(user_id),
         )
         return True
     except Exception as error:
@@ -374,45 +805,57 @@ def update_current_trace_context(
 
 
 def log_params(params: Mapping[str, object]) -> None:
-    """Best-effort log MLflow params for the active run."""
-    if not _has_active_run() or not params:
-        return
-    try:
-        mlflow.log_params(
-            {
-                key: _param_value(value)
-                for key, value in params.items()
-                if value is not None and str(value).strip()
-            },
-            synchronous=not is_async_logging_enabled(),
-        )
-    except Exception as error:
-        logger.warning("MLflow param logging failed error=%s", error)
+    """Best-effort log parameters to this task's explicit run."""
+    _log_batch(params=params)
 
 
 def log_metrics(metrics: Mapping[str, float | int]) -> None:
-    """Best-effort log numeric metrics for the active MLflow run."""
-    if not _has_active_run() or not metrics:
+    """Best-effort log numeric metrics to this task's explicit run."""
+    _log_batch(metrics=metrics)
+
+
+def _log_batch(
+    *,
+    tags: Mapping[str, object] | None = None,
+    params: Mapping[str, object] | None = None,
+    metrics: Mapping[str, float | int] | None = None,
+) -> None:
+    """Normalize a batch and retain its pending write for request-scoped draining."""
+    context = _current_run()
+    if context is None or not (tags or params or metrics):
         return
     try:
-        mlflow.log_metrics(
-            {
-                key: float(value)
-                for key, value in metrics.items()
+        timestamp = int(time.time() * 1000)
+        operation = context.client.log_batch(
+            run_id=context.run_id,
+            tags=[RunTag(key, value) for key, value in _string_map(tags or {}).items()],
+            params=[
+                Param(key, str(_param_value(value)))
+                for key, value in (params or {}).items()
+                if value is not None and str(value).strip()
+            ],
+            metrics=[
+                Metric(key, float(value), timestamp, step=0)
+                for key, value in (metrics or {}).items()
                 if isinstance(value, int | float)
-            },
+            ],
             synchronous=not is_async_logging_enabled(),
         )
+        if operation is not None:
+            context.pending_operations.append(operation)
     except Exception as error:
-        logger.warning("MLflow metric logging failed error=%s", error)
+        logger.warning(
+            "MLflow batch logging failed run_id=%s error=%s", context.run_id, error
+        )
 
 
 def log_json_artifact(artifact_file: str, payload: Any) -> None:
-    """Best-effort log one redacted JSON artifact to the active MLflow run."""
-    if not _has_active_run():
+    """Best-effort log one redacted JSON artifact to this task's explicit run."""
+    context = _current_run()
+    if context is None:
         return
     try:
-        mlflow.log_dict(_json_safe(payload), artifact_file)
+        context.client.log_dict(context.run_id, _json_safe(payload), artifact_file)
     except Exception as error:
         logger.warning(
             "MLflow JSON artifact logging failed artifact_file=%s error=%s",
@@ -422,11 +865,12 @@ def log_json_artifact(artifact_file: str, payload: Any) -> None:
 
 
 def log_text_artifact(artifact_file: str, content: str) -> None:
-    """Best-effort log one redacted text artifact to the active MLflow run."""
-    if not _has_active_run():
+    """Best-effort log one redacted text artifact to this task's explicit run."""
+    context = _current_run()
+    if context is None:
         return
     try:
-        mlflow.log_text(_redact_text(content), artifact_file)
+        context.client.log_text(context.run_id, _redact_text(content), artifact_file)
     except Exception as error:
         logger.warning(
             "MLflow text artifact logging failed artifact_file=%s error=%s",
@@ -440,11 +884,14 @@ def log_directory_artifacts(
     *,
     artifact_path: str,
 ) -> None:
-    """Best-effort upload an exact local artifact directory to the active run."""
-    if not _has_active_run() or not local_directory.is_dir():
+    """Best-effort upload an exact local artifact directory to this task's run."""
+    context = _current_run()
+    if context is None or not local_directory.is_dir():
         return
     try:
-        mlflow.log_artifacts(str(local_directory), artifact_path=artifact_path)
+        context.client.log_artifacts(
+            context.run_id, str(local_directory), artifact_path=artifact_path
+        )
     except Exception as error:
         logger.warning(
             "MLflow directory artifact logging failed local_directory=%s artifact_path=%s error=%s",
@@ -517,7 +964,10 @@ def _json_safe(value: Any, *, key: str | None = None) -> Any:
         except TypeError:
             return _json_safe(value.model_dump())
     if isinstance(value, Mapping):
-        return {str(item_key): _json_safe(item_value, key=str(item_key)) for item_key, item_value in value.items()}
+        return {
+            str(item_key): _json_safe(item_value, key=str(item_key))
+            for item_key, item_value in value.items()
+        }
     if isinstance(value, str):
         return _redact_text(value)
     if value is None or isinstance(value, int | float | bool):

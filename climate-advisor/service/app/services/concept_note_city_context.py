@@ -7,7 +7,7 @@ from decimal import Decimal, InvalidOperation
 from typing import Any
 from uuid import UUID
 
-from app.models.concept_note_city_context import (
+from app.models.cnb.concept_note_city_context import (
     GhgiContext,
     GhgiDataState,
     GhgiEmissions,

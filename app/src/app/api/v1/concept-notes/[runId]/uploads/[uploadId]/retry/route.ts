@@ -3,8 +3,8 @@
  * /api/v1/concept-notes/{runId}/uploads/{uploadId}/retry:
  *   post:
  *     operationId: retryConceptNoteUpload
- *     summary: Retry failed Concept Note OCR or Markdown-pointer delivery
- *     description: Failed OCR reruns conversion; delivery retry reuses successful OCR without calling Mistral again.
+ *     summary: Retry failed PDF OCR or Markdown-pointer delivery
+ *     description: Failed PDF OCR reruns conversion; failed pointer delivery reuses the stored PDF-derived or native Markdown artifact. A source-storage failure requires the user to upload the file again.
  *     tags:
  *       - concept-notes
  *     parameters:
@@ -48,7 +48,7 @@
  *       404:
  *         description: Run or upload not found
  *       409:
- *         description: The upload has completed or its CC OCR job is unavailable
+ *         description: The upload has completed or its CC processing job is unavailable
  */
 import { randomUUID } from "node:crypto";
 
@@ -61,6 +61,7 @@ import {
   loadConceptNoteUpload,
   updateConceptNoteUpload,
 } from "@/backend/ConceptNoteUploadService";
+import { triggerConceptNoteSourceProcessing } from "@/backend/ConceptNoteSourceProcessingService";
 import {
   getConceptNotePdfOcrJob,
   normalizeConceptNotePdfOcrStatus,
@@ -99,7 +100,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
   });
   const job = await getConceptNotePdfOcrJob(uploadId);
   if (!job) {
-    throw new createHttpError.Conflict("PDF conversion job is unavailable");
+    throw new createHttpError.Conflict("Source processing job is unavailable");
   }
   const currentState = normalizeConceptNotePdfOcrStatus(job);
   if (upload.status === "ready" || currentState.status === "ready") {
@@ -116,6 +117,9 @@ export const POST = apiHandler(async (req, { session, params }) => {
   const retryKind = await retryConceptNotePdfOcr(job);
   const acceptedKind =
     retryKind === "noop" ? currentState.retryKind : retryKind;
+  if (retryKind !== "noop") {
+    triggerConceptNoteSourceProcessing();
+  }
   logger.info(
     {
       requestId,

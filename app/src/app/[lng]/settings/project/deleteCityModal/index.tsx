@@ -92,7 +92,7 @@ const DeleteCityModal = (props: DeleteCityModalProps) => {
           fontFamily="heading"
           lineHeight="32"
           color="base.dark"
-          padding="24px"
+          padding="6"
           borderBottomWidth="2px"
           borderStyle="solid"
           borderColor="background.neutral"
@@ -100,7 +100,7 @@ const DeleteCityModal = (props: DeleteCityModalProps) => {
           {t("delete-city")}
         </DialogHeader>
         <DialogCloseTrigger mt={"2"} color="interactive.control" mr={"2"} />
-        <HStack flexDirection="column" alignItems="center" padding="24px">
+        <HStack flexDirection="column" alignItems="center" padding="6">
           <Badge
             color="sentiment.negativeDefault"
             h="68px"
@@ -153,6 +153,7 @@ const DeleteCityModal = (props: DeleteCityModalProps) => {
                 <Input
                   value={cityToDelete}
                   onChange={(e) => setCityToDelete(e.target.value)}
+                  size="lg"
                 />
               </Field>
             </Box>

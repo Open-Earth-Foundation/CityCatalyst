@@ -8,6 +8,7 @@ from app.modules.prioritizer.localization import (
     chapter_terms,
     chapter_title,
     localized_source_value,
+    localized_text_map,
     supported_languages,
     terminology_for_translation,
     translate_term,
@@ -43,6 +44,20 @@ def test_official_source_names_are_not_translated() -> None:
         )
         == "Plan de Mitigación Sector Energía"
     )
+
+
+def test_localized_text_map_cleans_languages_and_preserves_source_fallback() -> None:
+    """Localized response text should use normalized keys without blank values."""
+    assert localized_text_map(
+        localized={" EN ": " translated ", "es": "  "},
+        fallback_language="en",
+        fallback="canonical",
+    ) == {"en": "translated"}
+    assert localized_text_map(
+        localized={"es": " traduccion "},
+        fallback_language=" EN ",
+        fallback=" canonical ",
+    ) == {"es": "traduccion", "en": "canonical"}
 
 
 def test_translation_terminology_contains_source_and_exact_target() -> None:

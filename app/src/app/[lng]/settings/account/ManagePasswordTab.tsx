@@ -47,7 +47,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
     setError: setFormError,
     watch,
     reset,
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({ mode: "onChange" });
 
   const [updatePassword] = api.useUpdatePasswordMutation();
 
@@ -59,6 +59,20 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
 
   const watchPassword = watch("newPassword", "");
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    if (!isPasswordPatternValid(data.newPassword)) {
+      setFormError("newPassword", {
+        type: "custom",
+        message: t("password-hint"),
+      });
+      return;
+    }
+    if (data.newPassword === data.currentPassword) {
+      setFormError("newPassword", {
+        type: "custom",
+        message: t("new-password-same-as-current"),
+      });
+      return;
+    }
     if (data.newPassword !== data.confirmPassword) {
       setFormError("confirmPassword", {
         type: "custom",
@@ -85,11 +99,15 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
   };
 
   const newPasswordStrength = computePasswordStrength(watchPassword);
-  const passwordValid = isPasswordPatternValid(watchPassword);
 
   return (
-    <Box backgroundColor="white" p={6} borderRadius="8px" boxShadow="shadow-lg">
-      <TitleMedium pb={4}>{t("manage-password")}</TitleMedium>
+    <Box
+      backgroundColor="white"
+      p={6}
+      borderRadius="rounded"
+      boxShadow="shadow-lg"
+    >
+      <TitleMedium pb="9">{t("manage-password")}</TitleMedium>
       <Box>
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -109,6 +127,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
             t={t}
             id="newPassword"
             shouldValidate
+            liveValidate={false}
             watchPassword={watchPassword}
           />
           <PasswordStrengthMeter value={newPasswordStrength} />
@@ -120,12 +139,13 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
             t={t}
           />
           {error && <Text color="semantic.danger">{error}</Text>}
-          <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
+          <Box display="flex" w="100%" justifyContent="right" marginTop="3">
             <Button
               type="submit"
               loading={isSubmitting}
               h={16}
-              disabled={!isValid || !passwordValid}
+              minW="175px"
+              disabled={!isValid}
             >
               {t("reset-button")}
             </Button>

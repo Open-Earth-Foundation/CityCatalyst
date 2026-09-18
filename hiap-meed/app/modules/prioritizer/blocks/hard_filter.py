@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from app.modules.prioritizer.internal_models import (
     Action,
-    LegalAssessmentRecord,
     HardFilterResult,
+    LegalAssessmentRecord,
 )
+from app.modules.prioritizer.localization import localized_text_map
 
 
 def _apply_confirmed_exclusion_filter(
@@ -91,19 +92,23 @@ def _apply_legal_hard_filter(
             "gpc_sector": assessment.gpc_sector,
             "ownership_category": assessment.ownership_category,
             "ownership_score": assessment.ownership_score,
-            "ownership_description": assessment.ownership_description,
-            "ownership_description_es": assessment.ownership_description_i18n.get("es"),
+            "ownership_description": localized_text_map(
+                localized=assessment.ownership_description_i18n,
+                fallback_language="en",
+                fallback=assessment.ownership_description,
+            ),
             "restrictions_category": assessment.restrictions_category,
             "restrictions_score": assessment.restrictions_score,
-            "restrictions_description": assessment.restrictions_description,
-            "restrictions_description_es": (
-                assessment.restrictions_description_i18n.get("es")
+            "restrictions_description": localized_text_map(
+                localized=assessment.restrictions_description_i18n,
+                fallback_language="en",
+                fallback=assessment.restrictions_description,
             ),
-            "legal_justification": (
-                assessment.legal_justification_i18n.get("es")
-                or assessment.legal_justification
+            "legal_justification": localized_text_map(
+                localized=assessment.legal_justification_i18n,
+                fallback_language="es",
+                fallback=assessment.legal_justification,
             ),
-            "legal_justification_en": assessment.legal_justification_i18n.get("en"),
             "legal_references": list(assessment.legal_references),
             "analysis_date": assessment.analysis_date,
             "generation_method": assessment.generation_method,

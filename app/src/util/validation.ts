@@ -5,6 +5,7 @@ import {
   OrganizationPlanType,
 } from "./enums";
 import { OrganizationRole, LANGUAGES } from "@/util/types";
+import { WEBHOOK_EMITTED_EVENT_TYPES } from "@/backend/webhooks/events";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -98,7 +99,7 @@ export const resetPasswordRequest = z.object({
 export const createInventoryValue = z.object({
   activityValue: z.number().nullable().optional(),
   activityUnits: z.string().nullable().optional(),
-  co2eq: z.coerce.bigint().gte(0n).optional(),
+  co2eq: z.coerce.bigint().optional(),
   co2eqYears: z.number().optional(),
   gpcReferenceNumber: z.string().optional(),
   unavailableReason: z.string().optional(),
@@ -108,11 +109,11 @@ export const createInventoryValue = z.object({
       z.object({
         gas: z.string(),
         // if not present, use activityValue with emissionsFactor instead
-        gasAmount: z.coerce.bigint().gte(0n).nullable().optional(),
+        gasAmount: z.coerce.bigint().nullable().optional(),
         emissionsFactorId: z.string().uuid().optional(),
         emissionsFactor: z
           .object({
-            emissionsPerActivity: z.number().gte(0),
+            emissionsPerActivity: z.number(),
             gas: z.string(),
             units: z.string(),
           })
@@ -125,7 +126,7 @@ export const createInventoryValue = z.object({
 export const patchInventoryValue = z.object({
   activityValue: z.number().nullable().optional(),
   activityUnits: z.string().nullable().optional(),
-  co2eq: z.coerce.bigint().gte(0n).optional(),
+  co2eq: z.coerce.bigint().optional(),
   co2eqYears: z.number().optional(),
   gpcReferenceNumber: z.string(),
   unavailableReason: z.string().optional(),
@@ -212,10 +213,10 @@ const gasValueSchema = z.object({
   id: z.string().uuid().optional(),
   emissionsFactorId: z.string().uuid().optional(),
   gas: z.string(),
-  gasAmount: z.coerce.bigint().gte(0n).optional(),
+  gasAmount: z.coerce.bigint().optional(),
   emissionsFactor: z
     .object({
-      emissionsPerActivity: z.number().gte(0).optional(),
+      emissionsPerActivity: z.number().optional(),
       gas: z.string().optional(),
       units: z.string().optional(),
       gpcReferenceNumber: z.string().optional(),
@@ -405,6 +406,38 @@ export const nativeInputCatalogRegisterRequest = z.object({
 
 export type NativeInputCatalogRegisterRequest = z.infer<
   typeof nativeInputCatalogRegisterRequest
+>;
+
+const webhookHttpsUrl = z
+  .string()
+  .url()
+  .refine((value) => value.toLowerCase().startsWith("https://"), {
+    message: "webhook-url-must-be-https",
+  });
+
+const webhookEmittedEvents = z
+  .array(z.enum(WEBHOOK_EMITTED_EVENT_TYPES))
+  .min(1);
+
+export const createWebhookSubscriptionRequest = z.object({
+  name: z.string().trim().min(1).max(255),
+  url: webhookHttpsUrl,
+  events: webhookEmittedEvents,
+});
+
+export type CreateWebhookSubscriptionRequest = z.infer<
+  typeof createWebhookSubscriptionRequest
+>;
+
+export const updateWebhookSubscriptionRequest = z.object({
+  name: z.string().trim().min(1).max(255).optional(),
+  url: webhookHttpsUrl.optional(),
+  events: webhookEmittedEvents.optional(),
+  enabled: z.boolean().optional(),
+});
+
+export type UpdateWebhookSubscriptionRequest = z.infer<
+  typeof updateWebhookSubscriptionRequest
 >;
 
 export const nativeInputCatalogReconciliationRequest = z.object({

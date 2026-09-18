@@ -1,4 +1,4 @@
-﻿"""Unit tests for data source selection and mock loading."""
+"""Unit tests for data source selection and mock loading."""
 
 from __future__ import annotations
 
@@ -1967,15 +1967,7 @@ def test_prioritizer_request_accepts_activity_type_field() -> None:
     request = PrioritizerApiRequest.model_validate(
         {
             "meta": {
-                "requestId": "req-1",
-                "generatedAtUtc": "2026-05-12T00:00:00+00:00",
-                "backendConsumer": "hiap-meed",
-                "upstreamProvider": "city_catalyst_frontend",
-                "apiContext": {
-                    "endpoint": "POST /v1/prioritize",
-                    "locodes": ["CL-SCL"],
-                },
-                "totalRecords": 1,
+              "requestId": "req-1"
             },
             "requestData": {
                 "requestedLanguages": ["en"],
@@ -2020,15 +2012,7 @@ def test_prioritizer_request_rejects_unexpected_frontend_field() -> None:
         PrioritizerApiRequest.model_validate(
             {
                 "meta": {
-                    "requestId": "req-1",
-                    "generatedAtUtc": "2026-05-12T00:00:00+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/prioritize",
-                        "locodes": ["CL-SCL"],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-1"
                 },
                 "requestData": {
                     "requestedLanguages": ["en"],
@@ -2057,15 +2041,7 @@ def test_prioritizer_request_rejects_negative_non_afolu_total_emissions() -> Non
         PrioritizerApiRequest.model_validate(
             {
                 "meta": {
-                    "requestId": "req-1",
-                    "generatedAtUtc": "2026-05-12T00:00:00+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/prioritize",
-                        "locodes": ["CL-SCL"],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-1"
                 },
                 "requestData": {
                     "requestedLanguages": ["en"],
@@ -2101,15 +2077,7 @@ def test_prioritizer_request_accepts_negative_afolu_total_emissions() -> None:
     request = PrioritizerApiRequest.model_validate(
         {
             "meta": {
-                "requestId": "req-1",
-                "generatedAtUtc": "2026-05-12T00:00:00+00:00",
-                "backendConsumer": "hiap-meed",
-                "upstreamProvider": "city_catalyst_frontend",
-                "apiContext": {
-                    "endpoint": "POST /v1/prioritize",
-                    "locodes": ["CL-SCL"],
-                },
-                "totalRecords": 1,
+              "requestId": "req-1"
             },
             "requestData": {
                 "requestedLanguages": ["en"],

@@ -128,6 +128,7 @@ export interface UserInfoResponse {
   email?: string;
   preferredLanguage?: string;
   numberFormat?: string;
+  twoFactorEnabled?: boolean;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -349,19 +350,26 @@ export interface TopEmission {
   co2eq: bigint;
   sectorName: string;
   subsectorName: string;
-  percentage: number;
+  /** null when co2eq is a removal - % of emissions isn't meaningful there, see CC-749 */
+  percentage: number | null;
 }
 
 export interface SectorEmission {
   sectorName: string;
+  /** net (emissions + removals) */
   co2eq: bigint;
+  grossCo2eq?: bigint;
+  removalsCo2eq?: bigint;
   percentage: number;
 }
 
 export interface ResultsResponse {
   totalEmissions: {
     bySector: SectorEmission[];
+    /** net (emissions + removals) */
     total: bigint;
+    grossTotal?: bigint;
+    removalsTotal?: bigint;
   };
   topEmissions: { bySubSector: TopEmission[] };
 }
@@ -391,7 +399,7 @@ export interface YearOverYearResultResponse {
   topEmissionsBySubSector: {
     inventoryId: string;
     co2eq: bigint;
-    percentage: number;
+    percentage: number | null;
     scopeName: string;
     sectorName: string;
     subsectorName: string;
@@ -433,7 +441,8 @@ export interface ActivityDataByScope {
   activityTitle: string;
   scopes: { [key: string]: Decimal };
   totalEmissions: Decimal;
-  percentage: number;
+  /** null when totalEmissions is a removal - % of emissions isn't meaningful there, see CC-749 */
+  percentage: number | null;
   datasource_id: string;
   datasource_name: string;
   activities?: ActivityValue[];
@@ -442,6 +451,8 @@ export interface ActivityDataByScope {
 export type SectorBreakdownResponse = BreakdownByActivity & {
   byActivity: BreakdownByActivity;
   byScope: ActivityDataByScope[];
+  /** sum of non-negative (emissions-only) totalEmissions across byScope - % denominator */
+  grossTotalEmissions: Decimal;
 };
 
 export type InventoryValueWithActivityValues = InventoryValue & {
@@ -1000,6 +1011,38 @@ export interface PersonalAccessTokenCreateResponse {
   created: string;
 }
 
+export interface WebhookSubscriptionResponse {
+  id: string;
+  organizationId: string;
+  name: string;
+  url: string;
+  secretPrefix: string;
+  events: string[];
+  enabled: boolean;
+  consecutiveFailures: number;
+  disabledAt: string | null;
+  createdBy: string | null;
+  created: string | null;
+  lastUpdated: string | null;
+}
+
+export interface WebhookSubscriptionSecretResponse extends WebhookSubscriptionResponse {
+  secret: string;
+}
+
+export interface CreateWebhookSubscriptionRequest {
+  name: string;
+  url: string;
+  events: string[];
+}
+
+export interface UpdateWebhookSubscriptionRequest {
+  name?: string;
+  url?: string;
+  events?: string[];
+  enabled?: boolean;
+}
+
 export type UserOrganizationsResponse = {
   organizationId: string;
   name: string;
@@ -1028,6 +1071,18 @@ export interface ConceptNoteRun {
   status: string;
   workflow_step: string;
   progress_summary: Record<string, unknown>;
+  uploads?: Array<{
+    upload_id: string;
+    run_id: string;
+    status: ConceptNoteUploadStatus;
+    filename: string;
+    source_label?: string | null;
+    source_format: "pdf" | "markdown";
+    page_count?: number | null;
+    error_code?: string | null;
+    received_at: string;
+    completed_at?: string | null;
+  }>;
   created_at: string;
   updated_at: string;
 }
@@ -1036,10 +1091,179 @@ export interface ConceptNoteRunListResponse {
   runs: ConceptNoteRun[];
 }
 
+export interface ConceptNoteTemplateChapter {
+  chapter_ref: string;
+  title: string;
+  description?: string | null;
+  required?: boolean | null;
+}
+
+export interface ConceptNoteApplicationContext {
+  run_id: string;
+  city_id: string;
+  funder: {
+    id: string;
+    name: string;
+  } | null;
+  opportunity: {
+    id: string;
+    name: string;
+  } | null;
+  template: {
+    id: string;
+    name: string;
+    output_format: string | null;
+    chapter_schema: ConceptNoteTemplateChapter[];
+    required_fields: string[];
+  } | null;
+  included_sources: {
+    city: boolean;
+    project: boolean;
+    ghgi: boolean;
+    ccra: boolean;
+    hiap: boolean;
+  };
+}
+
+export type ConceptNoteDraftRunStatus =
+  "not_started" | "running" | "failed" | "complete";
+
+export type ConceptNoteDraftChapterStatus =
+  "empty" | "draft" | "needs_review" | "ready";
+
+export type ConceptNoteGapSeverity = "critical" | "noncritical";
+export type ConceptNoteGapState =
+  "open" | "processing" | "resolved" | "dismissed" | "caveat";
+export type ConceptNoteGapResolutionAction =
+  "answer" | "correction" | "not_a_gap" | "defer_as_caveat" | "evidence_update";
+
+export interface ConceptNoteGapSuggestion {
+  value: string;
+  source_refs: string[];
+}
+
+export interface ConceptNoteGapResolution {
+  resolution_id: string;
+  action: ConceptNoteGapResolutionAction;
+  answer: string | null;
+  actor_user_id: string;
+  source_refs: string[];
+  created_at: string;
+}
+
+export interface ConceptNoteGap {
+  gap_id: string;
+  field_key: string;
+  question: string;
+  why_asking: string;
+  severity: ConceptNoteGapSeverity;
+  state: ConceptNoteGapState;
+  suggestions: ConceptNoteGapSuggestion[];
+  source_refs: string[];
+  version: number;
+  resolution: ConceptNoteGapResolution | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type ConceptNoteChapterValidationStatus =
+  "ready" | "needs_review" | "incomplete";
+
+export type ConceptNoteChapterValidationCheckStatus =
+  "pass" | "warning" | "fail";
+
+export type ConceptNoteChapterValidationFindingPhase =
+  "completeness" | "consistency" | "evidence";
+
+export type ConceptNoteChapterValidationFindingSeverity =
+  "warning" | "blocking";
+
+export interface ConceptNoteChapterValidationCheck {
+  key: string;
+  label?: string | null;
+  status: ConceptNoteChapterValidationCheckStatus;
+  message?: string | null;
+}
+
+export interface ConceptNoteChapterValidationEvidence {
+  selected_source_label: string;
+  source_location: string | null;
+  claim_ref: string | null;
+  quote_or_summary: string | null;
+}
+
+export interface ConceptNoteChapterValidationFinding {
+  phase: ConceptNoteChapterValidationFindingPhase;
+  category: string;
+  severity: ConceptNoteChapterValidationFindingSeverity;
+  message: string;
+  suggested_action: string;
+  involved_chapter_ids: string[];
+  excerpts?: string[];
+  evidence: ConceptNoteChapterValidationEvidence[];
+}
+
+export interface ConceptNoteChapterValidation {
+  status: ConceptNoteChapterValidationStatus;
+  is_stale: boolean;
+  validated_revision_number: number | null;
+  validated_at: string | null;
+  checks: ConceptNoteChapterValidationCheck[];
+  findings: ConceptNoteChapterValidationFinding[];
+}
+
+export interface ConceptNoteChapterValidationResponse extends ConceptNoteChapterValidation {
+  chapter_id: string;
+}
+
+export interface ValidateConceptNoteChapterRequest {
+  chapterId: string;
+  runId: string;
+}
+
+export interface ConceptNoteDraftChapter {
+  chapter_id: string;
+  template_section_id: string | null;
+  title: string;
+  position: number;
+  status: ConceptNoteDraftChapterStatus;
+  required: boolean;
+  user_locked: boolean;
+  body_markdown: string | null;
+  gaps: ConceptNoteGap[];
+  open_gap_count: number;
+  caveat_count: number;
+  revision_number: number | null;
+  confirmed_body_markdown: string | null;
+  confirmed_revision_number: number | null;
+  validation?: ConceptNoteChapterValidation | null;
+}
+
+export interface ConceptNoteDraftState {
+  run_id: string;
+  status: ConceptNoteDraftRunStatus;
+  completed_chapters: number;
+  total_chapters: number;
+  current_chapter_id: string | null;
+  error_code: string | null;
+  chapters: ConceptNoteDraftChapter[];
+}
+
+export interface ConfirmConceptNoteChapterRequest {
+  runId: string;
+  chapterId: string;
+  expectedRevision: number;
+  idempotencyKey: string;
+}
+
 export interface StartConceptNoteRunRequest {
   cityId: string;
   idempotencyKey: string;
   name: string;
+  projectId?: string | null;
+  funderId?: string | null;
+  selectedFundingOpportunityId?: string | null;
+  threadId?: string | null;
 }
 
 export type ConceptNoteUploadStatus =
@@ -1051,6 +1275,13 @@ export interface ConceptNoteUploadResponse {
   status: ConceptNoteUploadStatus;
   pageCount?: number | null;
   errorCode?: string;
+  stage?: string;
+  canRetry?: boolean;
+  retryKind?: string | null;
+  filename?: string;
+  sourceLabel?: string | null;
+  receivedAt?: string;
+  completedAt?: string | null;
 }
 
 export interface ConceptNoteUploadRequest {
@@ -1062,4 +1293,9 @@ export interface ConceptNoteUploadRequest {
 export interface ConceptNoteUploadStatusRequest {
   runId: string;
   uploadId: string;
+}
+
+export interface ConceptNoteContextBundleRetryResponse {
+  run_id: string;
+  status: "queued";
 }

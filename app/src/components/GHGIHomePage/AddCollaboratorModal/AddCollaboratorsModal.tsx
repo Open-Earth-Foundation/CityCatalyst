@@ -63,13 +63,18 @@ const AddCollaboratorsDialog = ({
       placement="center"
     >
       <DialogContent
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        gap="24px"
         minW="779px"
         minH="779px"
+        maxH="calc(100vh - 56px * 2)"
         overflowY="auto"
-        px="48px"
         py="24px"
       >
         <DialogHeader
+          w="full"
           display="flex"
           justifyContent="start"
           fontWeight="semibold"
@@ -77,11 +82,10 @@ const AddCollaboratorsDialog = ({
           fontFamily="heading"
           lineHeight="32"
           color="base.dark"
-          padding="24px"
+          px="48px"
           borderBottomWidth="2px"
           borderStyle="solid"
           borderColor="background.neutral"
-          p="0px"
           pb="24px"
         >
           <HStack>
@@ -89,7 +93,7 @@ const AddCollaboratorsDialog = ({
           </HStack>
         </DialogHeader>
         <DialogCloseTrigger mt="2" color="interactive.control" mr="4" />
-        <DialogBody p="0px" py="24px">
+        <DialogBody w="full" px="48px" py="24px">
           <InviteCollaboratorsStep
             ref={stepRef}
             lng={lng}
@@ -97,18 +101,25 @@ const AddCollaboratorsDialog = ({
           />
         </DialogBody>
         <DialogFooter
-          paddingX={6}
+          w="full"
+          paddingX="48px"
           paddingY={6}
           borderTop="2px"
           borderColor="background.neutral"
           borderStyle="solid"
         >
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} h="auto" px="l" py="m">
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
               {t("cancel")}
             </Text>
           </Button>
-          <Button onClick={handleSend} disabled={!canSubmit}>
+          <Button
+            onClick={handleSend}
+            disabled={!canSubmit}
+            h="auto"
+            px="l"
+            py="m"
+          >
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
               {t("send-invites-action")}
             </Text>

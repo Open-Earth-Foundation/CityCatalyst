@@ -123,6 +123,7 @@ export function createChatMarkdownComponents(
     li: ({ children }) => (
       <Box
         as="li"
+        fontSize={options.paragraph.fontSize}
         lineHeight={options.list.lineHeight}
         mb={1}
         color={options.list.color}

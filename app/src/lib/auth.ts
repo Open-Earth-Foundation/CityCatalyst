@@ -9,7 +9,7 @@ import {
 import { Roles } from "@/util/types";
 import { logger } from "@/services/logger";
 import crypto from "node:crypto";
-import { verifyToken } from "./2fa";
+import { recoveryTokenLength, verifyRecoveryCode, verifyToken } from "./2fa";
 
 // extracted from next-auth/providers/credentials
 // added here since the node test runner/ tsx wouldn't properly import ESM modules
@@ -108,10 +108,16 @@ export const authOptions: NextAuthOptions = {
             logger.error("No securityToken passed for user with 2FA enabled");
             return null;
           }
-          const isValid = await verifyToken(
-            credentials.securityToken,
-            user.twoFactorSecret,
-          );
+          let isValid = false;
+          if (credentials.securityToken.length >= recoveryTokenLength) {
+            // allow using a single-use recovery code and delete it from user record if successful
+            isValid = await verifyRecoveryCode(user, credentials.securityToken);
+          } else {
+            isValid = await verifyToken(
+              credentials.securityToken,
+              user.twoFactorSecret,
+            );
+          }
           if (!isValid) {
             logger.error("Invalid securityToken for 2FA");
             return null;

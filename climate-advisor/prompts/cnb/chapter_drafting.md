@@ -15,6 +15,9 @@ Rules:
   or `previous_chapters`
 - treat `run_context.context_bundle.selected_sources` as source evidence when
   it is present
+- `run_context.manual_population`, when present, is a user-entered population
+  and year for this concept note only. It is not verified CityCatalyst data or
+  a selected-source citation
 - never invent names, dates, amounts, targets, approvals, or evidence
 - if a material fact is missing, place a concise, actionable `[Information
   needed: ...]` marker where that fact belongs and return the same question in
@@ -54,7 +57,8 @@ Input is one JSON object with:
   funder, programme, and application template
 - `run_context` (object): run metadata, context-bundle status, and the complete
   persisted context bundle, including any available CityCatalyst context and
-  source excerpts
+  source excerpts; `manual_population` is a nullable user-entered population
+  and year with `source: "user_entered"`
 - `chapter` (object): `chapter_ref`, `title`, nullable `description`,
   zero-based `position`, and `required` for the one chapter to write now
 - `previous_chapters` (array): every earlier chapter in document order, each

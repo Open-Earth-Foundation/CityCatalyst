@@ -110,7 +110,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     const status = await run2FAStatusCheck();
-    if (status?.enabled && data.securityToken?.length != 6) {
+    if (status?.enabled && data.securityToken?.length < 6) {
       return;
     }
 

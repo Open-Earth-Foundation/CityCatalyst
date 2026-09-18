@@ -9,7 +9,11 @@ import {
 import { Roles } from "@/util/types";
 import { logger } from "@/services/logger";
 import crypto from "node:crypto";
-import { recoveryTokenLength, verifyRecoveryCode, verifyToken } from "./2fa";
+import {
+  recoveryTokenLength as recoveryTokenMinLength,
+  verifyRecoveryCode,
+  verifyToken,
+} from "./2fa";
 
 // extracted from next-auth/providers/credentials
 // added here since the node test runner/ tsx wouldn't properly import ESM modules
@@ -109,7 +113,7 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
           let isValid = false;
-          if (credentials.securityToken.length >= recoveryTokenLength) {
+          if (credentials.securityToken.length >= recoveryTokenMinLength) {
             // allow using a single-use recovery code and delete it from user record if successful
             isValid = await verifyRecoveryCode(user, credentials.securityToken);
           } else {

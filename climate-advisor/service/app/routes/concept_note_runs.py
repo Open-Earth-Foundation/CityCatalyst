@@ -9,6 +9,12 @@ from app.db.session import get_session
 from app.models.cnb.concept_note_application_context import (
     ConceptNoteApplicationContextResponse,
 )
+from app.models.cnb.funding_catalogue import (
+    FundingCatalogueResponse,
+    FundingSelectionRequest,
+)
+from app.services.cnb.funding_catalogue import load_funding_catalogue
+from app.services.cnb.funding_selection import save_funding_selection
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterConfirmRequest,
     ConceptNoteDraftResponse,
@@ -260,6 +266,44 @@ async def get_concept_note_application_context(
         workflow_session=session
     )
     return await application_context_service.load_for_run(run)
+
+
+@router.get(
+    "/concept-notes/{run_id}/funding-catalogue", response_model=FundingCatalogueResponse
+)
+async def get_concept_note_funding_catalogue(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> FundingCatalogueResponse:
+    """Browse all existing funders after checking run ownership and city access."""
+    await ConceptNoteRunService(session).get_authorized_run(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+    return await load_funding_catalogue()
+
+
+@router.patch(
+    "/concept-notes/{run_id}/application-context",
+    response_model=ConceptNoteApplicationContextResponse,
+)
+async def update_concept_note_application_context(
+    run_id: UUID,
+    payload: FundingSelectionRequest,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteApplicationContextResponse:
+    """Save a compatible funding selection on an authorized concept-note run."""
+    run = await ConceptNoteRunService(session).get_authorized_run(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+    return await save_funding_selection(session, run, payload)
 
 
 @router.get(

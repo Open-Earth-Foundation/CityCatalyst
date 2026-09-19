@@ -1125,6 +1125,44 @@ export interface ConceptNoteApplicationContext {
   };
 }
 
+export interface ConceptNoteFundingOpportunity {
+  id: string;
+  name: string;
+  applicant_type: string | null;
+  category: string | null;
+  sector: string | null;
+  region_scope: string | null;
+  finance_route: string | null;
+  instrument_type: string | null;
+  min_award: string | null;
+  max_award: string | null;
+  currency: string | null;
+  status: string | null;
+  summary: string | null;
+  hazards: string[];
+  interventions: string[];
+  known_gaps: string[];
+  template: ConceptNoteApplicationContext["template"];
+}
+
+export interface ConceptNoteFunder {
+  id: string;
+  name: string;
+  funder_type: string | null;
+  country: string | null;
+  region: string | null;
+  profile: Record<string, unknown>;
+  opportunities: ConceptNoteFundingOpportunity[];
+}
+
+export interface ConceptNoteFundingSelection {
+  funder_id: string | null;
+  selected_funding_opportunity_id: string | null;
+  expected_funder_id: string | null;
+  expected_funding_opportunity_id: string | null;
+  acknowledge_draft_review: boolean;
+}
+
 export type ConceptNoteDraftRunStatus =
   "not_started" | "running" | "failed" | "complete";
 

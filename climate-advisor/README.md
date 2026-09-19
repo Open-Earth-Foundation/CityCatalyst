@@ -727,7 +727,12 @@ language, or client-side fallback behavior. The boundary is:
   Concept Note Builder workspace and validation flow and used for its
   funding-reference tables; the repository migrates it through the independent
   CNB Alembic chain, never the CA chain. The reviewed-reference importer,
-  similar-project reader, and runtime funding-reference validation also use it
+  similar-project reader, runtime funding-reference validation, and the workspace's
+  searchable funder/programme/template catalogue also use it. Funding selection
+  does not run research or call an LLM. See the
+  [workspace funding-selection contract](../docs/ConceptNoteBuilderArchitecture.md#funding-selection-in-the-workspace)
+  for compatible-template checks, draft review invalidation, serialized edit
+  registration/application, and focused tests
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
 - `OPENAI_API_KEY` - OpenAI API key for embeddings

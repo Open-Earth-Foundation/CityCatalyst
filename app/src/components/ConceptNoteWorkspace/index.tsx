@@ -36,6 +36,7 @@ import {
 import { StatusBadge } from "../ConceptNoteDashboard/status-badge";
 import { ConceptNoteChatPanel } from "./chat-panel";
 import { ContextTab } from "./context-tab";
+import { FundingSelectionDialog } from "./funding-selection-dialog";
 import { DraftTab } from "./draft-tab";
 import { ExportDialog } from "./export-dialog";
 import { ReviewButton } from "./review-button";
@@ -88,6 +89,7 @@ export function ConceptNoteWorkspace({
   const reducedMotion = useReducedMotion() ?? false;
   const [tab, setTab] = useState<WorkspaceTab>("draft");
   const [startNewChatOpen, setStartNewChatOpen] = useState(false);
+  const [fundingOpen, setFundingOpen] = useState(false);
   const [resetThread, setResetThread] = useState<{
     previousThreadId: string | null;
     threadId: string;
@@ -134,6 +136,7 @@ export function ConceptNoteWorkspace({
     isDraftRunning,
     populationLabel,
     refetchDraft,
+    refetchApplicationContext,
     refetchRun,
     retryActiveUpload,
     retryBundleState,
@@ -456,7 +459,11 @@ export function ConceptNoteWorkspace({
                     <Button
                       size="xs"
                       variant="ghost"
-                      onClick={() => setTab("context")}
+                      onClick={() => {
+                        setTab("context");
+                        if (applicationContext) setFundingOpen(true);
+                        else void refetchApplicationContext();
+                      }}
                     >
                       {t("review-application-setup")}
                     </Button>
@@ -584,6 +591,10 @@ export function ConceptNoteWorkspace({
               >
                 <ContextTab
                   applicationContext={applicationContext ?? null}
+                  onSelectFunding={() => setFundingOpen(true)}
+                  fundingLoading={applicationContextLoading}
+                  fundingError={applicationContextFailed}
+                  onRetryFunding={() => void refetchApplicationContext()}
                   bundle={bundle}
                   contextStatus={contextStatus}
                   cityFilesCount={files.length}
@@ -628,6 +639,16 @@ export function ConceptNoteWorkspace({
         onRetryDraft={() => refetchDraft()}
         onReviewComplete={() => refetchDraft()}
       />
+      {fundingOpen && applicationContext && (
+        <FundingSelectionDialog
+          applicationContext={applicationContext}
+          hasDraft={Boolean(draft?.chapters.length)}
+          busy={isDraftRunning || contextStatus.busy || Boolean(edits.busy)}
+          lng={lng}
+          runId={runId}
+          onClose={() => setFundingOpen(false)}
+        />
+      )}
       {startNewChatOpen && (
         <StartNewChatDialog
           cityId={cityId}

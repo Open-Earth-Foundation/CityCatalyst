@@ -548,5 +548,19 @@
   "clima-context-failed-message": "Clima ne peut pas encore utiliser votre document. Ouvrez le panneau de contexte pour vérifier l'erreur et réessayez le traitement.",
   "chat-waiting-for-context": "En attente de contexte...",
   "chat-waiting-for-context-help": "Le chat est en pause jusqu'à la fin du traitement. Vous n'avez pas besoin de télécharger à nouveau le document.",
-  "chat-context-failed-help": "Le chat est en pause. Révisez le contexte et essayez de nouveau le traitement pour continuer."
+  "chat-context-failed-help": "Le chat est en pause. Révisez le contexte et essayez de nouveau le traitement pour continuer.",
+  "population-loading": "Chargement de la population…",
+  "population-load-error": "La population n'a pas pu être chargée",
+  "population-source-error": "La source de population de la ville est indisponible. Vous pouvez entrer une valeur pour cette note.",
+  "population-cnb-only": "Cette valeur est utilisée uniquement dans cette note conceptuelle. Elle ne mettra pas à jour les données de la ville CityCatalyst.",
+  "population-manual-source": "Saisi manuellement pour cette note conceptuelle",
+  "population-amount-label": "Population",
+  "population-year-label": "Année",
+  "population-enter": "Entrez la population",
+  "population-edit": "Modifier la population",
+  "population-remove": "Supprimer la valeur manuelle",
+  "population-save": "Économiser",
+  "population-invalid": "Saisissez une population en nombre entier et une année de 1800 à 2100.",
+  "population-save-error": "La population n'a pas pu être enregistrée. Réessayer.",
+  "population-draft-running": "Attendez la fin de la rédaction du chapitre avant de changer cette valeur."
 }

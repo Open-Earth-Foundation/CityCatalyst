@@ -9,7 +9,21 @@ import {
 import { Roles } from "@/util/types";
 import { logger } from "@/services/logger";
 import crypto from "node:crypto";
+import { RateLimiter } from "@/util/rate-limiter";
 import { verifyToken } from "./2fa";
+
+const isPlaywrightTest = process.env.PLAYWRIGHT_TEST === "1";
+// 5 attempts/15 minutes per email — brute-force throttle for the login path.
+// A 1-minute window barely slows an attacker (just wait it out between
+// bursts); 15 minutes is a standard OWASP-aligned balance between blocking
+// sustained guessing and not locking out a real user for long.
+// Per-email keying only (per CC-875): an attacker who knows a victim's email
+// could transiently lock out that victim's real logins by repeatedly guessing
+// their password. Combining with IP is a reasonable follow-up but out of
+// scope here — the ticket is explicit about per-email.
+const loginLimiter = isPlaywrightTest
+  ? null
+  : new RateLimiter(15 * 60 * 1000, 5);
 
 // extracted from next-auth/providers/credentials
 // added here since the node test runner/ tsx wouldn't properly import ESM modules
@@ -76,13 +90,20 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        const email = credentials.email.toLowerCase();
+
+        if (loginLimiter && !loginLimiter.checkLimit(email)) {
+          logger.error({ email }, "Login rate limit exceeded");
+          throw new Error("rate-limited");
+        }
+
         let user: User | null = null;
         try {
           if (!db.initialized) {
             await db.initialize();
           }
           user = await db.models.User.findOne({
-            where: { email: credentials.email.toLowerCase() },
+            where: { email },
           });
         } catch (err: unknown) {
           logger.error({ err: err }, "Failed to login:");

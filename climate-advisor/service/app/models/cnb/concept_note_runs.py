@@ -70,6 +70,23 @@ class ConceptNoteRenameRequest(BaseModel):
         return normalized
 
 
+class ManualConceptNotePopulation(BaseModel):
+    """Population supplied by a user for one concept-note run only."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    population: int = Field(ge=0, le=10_000_000_000)
+    year: int = Field(ge=1800, le=2100)
+
+
+class ConceptNotePopulationRequest(BaseModel):
+    """Set or clear the run-scoped manual population."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    manual_population: ManualConceptNotePopulation | None
+
+
 class ConceptNoteRunListItemResponse(BaseModel):
     """Stable display and resume fields for one concept-note run."""
 
@@ -97,6 +114,7 @@ class ConceptNoteRunResponse(ConceptNoteRunListItemResponse):
     """Persisted concept-note run returned by start and detail endpoints."""
 
     user_id: str
+    manual_population: ManualConceptNotePopulation | None = None
     uploads: list[ConceptNoteUploadStatusResponse] = Field(default_factory=list)
     next_action: Literal["load_context"] = "load_context"
     created: bool

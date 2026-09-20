@@ -4,10 +4,12 @@ from uuid import UUID, uuid4
 
 import pytest
 from fastapi import HTTPException
+from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
 from app.models.cnb.concept_note_runs import (
+    ConceptNotePopulationRequest,
     ConceptNoteRunListResponse,
     ConceptNoteStartRequest,
 )
@@ -213,6 +215,103 @@ async def test_get_run_rejects_authenticated_user_mismatch() -> None:
 
     assert exc_info.value.status_code == 403
     repository.get_for_user.assert_not_awaited()
+
+
+async def test_manual_population_is_scoped_to_one_run_and_can_be_cleared() -> None:
+    """Save CNB-only data without replacing other run progress."""
+    payload = _start_request()
+    run = _persisted_run(
+        payload,
+        request_fingerprint=_request_fingerprint(payload),
+        context_summary={"context_bundle": {"status": "ready"}},
+    )
+    service, _, _, _ = _run_service()
+    service.get_authorized_run = AsyncMock(return_value=run)
+
+    saved = await service.update_manual_population(
+        run_id=run.run_id,
+        payload=ConceptNotePopulationRequest(
+            manual_population={"population": 0, "year": 2024}
+        ),
+        requested_user_id=run.user_id,
+        authorization="Bearer token",
+    )
+
+    assert saved.manual_population is not None
+    assert saved.manual_population.population == 0
+    assert saved.manual_population.year == 2024
+    assert run.context_summary == {
+        "context_bundle": {"status": "ready"},
+        "manual_population": {"population": 0, "year": 2024},
+    }
+    service.session.refresh.assert_awaited_once_with(run, with_for_update=True)
+
+    cleared = await service.update_manual_population(
+        run_id=run.run_id,
+        payload=ConceptNotePopulationRequest(manual_population=None),
+        requested_user_id=run.user_id,
+        authorization="Bearer token",
+    )
+    assert cleared.manual_population is None
+    assert run.context_summary == {"context_bundle": {"status": "ready"}}
+    assert service.session.commit.await_count == 2
+
+
+@pytest.mark.parametrize(
+    "manual_population",
+    [{"population": 123456, "year": 2024}, None],
+)
+async def test_manual_population_rejects_edits_during_drafting_after_lock(
+    manual_population: dict[str, int] | None,
+) -> None:
+    """Reject edits when drafting starts before the run lock is acquired."""
+    payload = _start_request()
+    run = _persisted_run(
+        payload,
+        request_fingerprint=_request_fingerprint(payload),
+        context_summary={"manual_population": {"population": 100, "year": 2020}},
+    )
+    service, _, _, _ = _run_service()
+    service.get_authorized_run = AsyncMock(return_value=run)
+
+    async def refresh_with_running_draft(*_args: object, **_kwargs: object) -> None:
+        run.context_summary = {
+            **run.context_summary,
+            "draft_document": {"status": "running"},
+        }
+
+    service.session.refresh.side_effect = refresh_with_running_draft
+
+    with pytest.raises(HTTPException) as exc_info:
+        await service.update_manual_population(
+            run_id=run.run_id,
+            payload=ConceptNotePopulationRequest(manual_population=manual_population),
+            requested_user_id=run.user_id,
+            authorization="Bearer token",
+        )
+
+    assert exc_info.value.status_code == 409
+    assert run.context_summary["manual_population"] == {
+        "population": 100,
+        "year": 2020,
+    }
+    service.session.refresh.assert_awaited_once_with(run, with_for_update=True)
+    service.session.commit.assert_not_awaited()
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        {"population": -1, "year": 2024},
+        {"population": 12.5, "year": 2024},
+        {"population": 100, "year": 0},
+        {"population": 100, "year": 2024.5},
+    ],
+)
+def test_manual_population_rejects_invalid_values(value: dict) -> None:
+    """Require a whole-number population and a usable year."""
+    with pytest.raises(ValidationError):
+        ConceptNotePopulationRequest(manual_population=value)
 
 
 async def test_get_run_hides_missing_or_unowned_run() -> None:

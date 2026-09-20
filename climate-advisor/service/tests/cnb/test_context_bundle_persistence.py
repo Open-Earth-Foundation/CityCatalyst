@@ -431,7 +431,12 @@ async def test_no_upload_commit_advances_run_and_loads_agent_context(
         async with session_factory() as session, session.begin():
             session.add_all(
                 [
-                    concept_note_run(run_id),
+                    concept_note_run(
+                        run_id,
+                        context_summary={
+                            "manual_population": {"population": 123456, "year": 2024}
+                        },
+                    ),
                     ConceptNoteContextBundle(run_id=run_id, context_bundle={}),
                 ]
             )
@@ -481,6 +486,12 @@ async def test_no_upload_commit_advances_run_and_loads_agent_context(
         )
         assert agent_context is not None
         assert agent_context["selected_sources"] == []
+        assert agent_context["manual_population"] == {
+            "population": 123456,
+            "year": 2024,
+            "source": "user_entered",
+        }
+        assert agent_context["cc_context"]["city"] is None
         assert agent_context["context_bundle_status"]["document_grounding"] == "none"
 
         await begin_build(

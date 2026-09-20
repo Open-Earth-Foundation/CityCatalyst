@@ -132,7 +132,12 @@ export function ConceptNoteWorkspace({
     hasApplicationTemplate,
     inventory,
     isDraftRunning,
+    manualPopulation,
+    manualPopulationSaving,
+    populationFailed,
     populationLabel,
+    populationLoading,
+    populationMissing,
     refetchDraft,
     refetchRun,
     retryActiveUpload,
@@ -143,6 +148,7 @@ export function ConceptNoteWorkspace({
     run,
     runFailed,
     runLoading,
+    saveManualPopulation,
     startDrafting,
     startDraftState,
     uploadSource,
@@ -591,6 +597,7 @@ export function ConceptNoteWorkspace({
                   country={city?.country ?? null}
                   firstCityFile={files[0]?.fileName ?? null}
                   inventoryYear={inventory?.year ?? null}
+                  isDraftRunning={isDraftRunning}
                   isRetryingBundle={retryBundleState.isLoading}
                   isRetryingUpload={retryUploadState.isLoading}
                   isUploading={uploadState.isLoading}
@@ -598,7 +605,13 @@ export function ConceptNoteWorkspace({
                   onRetryBundle={() => void retryContextBundle()}
                   onRetryUpload={() => void retryActiveUpload()}
                   onUploadFile={uploadSource}
+                  manualPopulation={manualPopulation}
+                  manualPopulationSaving={manualPopulationSaving}
+                  onSaveManualPopulation={saveManualPopulation}
+                  populationFailed={populationFailed}
                   populationLabel={populationLabel}
+                  populationLoading={populationLoading}
+                  populationMissing={populationMissing}
                   upload={effectiveUpload}
                   uploadError={effectiveUploadError}
                 />

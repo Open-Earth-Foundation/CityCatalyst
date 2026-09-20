@@ -2481,6 +2481,9 @@ export const api = createApi({
           url: `concept-notes/${runId}/`,
           params: { city_id: cityId },
         }),
+        providesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteRuns", id: runId },
+        ],
       }),
       getConceptNoteApplicationContext: builder.query<
         ConceptNoteApplicationContext,
@@ -2522,6 +2525,24 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
           { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      updateConceptNotePopulation: builder.mutation<
+        ConceptNoteRun,
+        {
+          cityId: string;
+          runId: string;
+          manualPopulation: { population: number; year: number } | null;
+        }
+      >({
+        query: ({ cityId, runId, manualPopulation }) => ({
+          url: `concept-notes/${runId}/population/`,
+          method: "PATCH",
+          params: { city_id: cityId },
+          body: { manual_population: manualPopulation },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteRuns", id: runId },
         ],
       }),
       renameConceptNoteRun: builder.mutation<
@@ -2831,6 +2852,7 @@ export const {
   useGetConceptNoteApplicationContextQuery,
   useGetConceptNoteDraftQuery,
   useStartConceptNoteRunMutation,
+  useUpdateConceptNotePopulationMutation,
   useRenameConceptNoteRunMutation,
   useDuplicateConceptNoteRunMutation,
   useDeleteConceptNoteRunMutation,

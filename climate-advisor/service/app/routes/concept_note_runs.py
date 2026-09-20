@@ -14,6 +14,7 @@ from app.models.cnb.concept_note_draft import (
     ConceptNoteDraftResponse,
 )
 from app.models.cnb.concept_note_runs import (
+    ConceptNotePopulationRequest,
     ConceptNoteRenameRequest,
     ConceptNoteRunListResponse,
     ConceptNoteRunResponse,
@@ -147,6 +148,26 @@ async def get_concept_note_run(
     service = ConceptNoteRunService(session)
     return await service.get_run(
         run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
+@router.patch(
+    "/concept-notes/{run_id}/population",
+    response_model=ConceptNoteRunResponse,
+)
+async def update_concept_note_population(
+    run_id: UUID,
+    payload: ConceptNotePopulationRequest,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunResponse:
+    """Set or clear user-entered population for one authorized CNB run."""
+    return await ConceptNoteRunService(session).update_manual_population(
+        run_id=run_id,
+        payload=payload,
         requested_user_id=user_id,
         authorization=authorization,
     )

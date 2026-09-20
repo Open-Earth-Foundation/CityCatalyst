@@ -63,9 +63,13 @@ export function useConceptNoteWorkspaceData({
     pollingInterval: 15_000,
     skipPollingIfUnfocused: true,
   });
-  const { data: population } = api.useGetMostRecentCityPopulationQuery({
-    cityId,
-  });
+  const {
+    data: population,
+    isError: populationFailed,
+    isLoading: populationLoading,
+  } = api.useGetMostRecentCityPopulationQuery({ cityId });
+  const [updateManualPopulation, manualPopulationState] =
+    api.useUpdateConceptNotePopulationMutation();
   const { data: inventory } = api.useGetInventoryByCityIdQuery(cityId);
   const { data: cityFiles } = api.useGetUserFilesQuery(cityId);
   const [uploadSourceMutation, uploadState] =
@@ -129,14 +133,22 @@ export function useConceptNoteWorkspaceData({
     : uploadError;
   const cityName = city?.name || t("selected-city");
   const populationData = normalizePopulationData(population);
-  const populationLabel = populationData
+  const manualPopulation = run?.manual_population ?? null;
+  const displayedPopulation = manualPopulation ?? populationData;
+  const populationLabel = displayedPopulation
     ? t("population", {
         population: new Intl.NumberFormat(lng).format(
-          populationData.population,
+          displayedPopulation.population,
         ),
-        year: populationData.year,
+        year: displayedPopulation.year,
       })
-    : t("population-unavailable");
+    : t(
+        populationLoading
+          ? "population-loading"
+          : populationFailed
+            ? "population-load-error"
+            : "population-unavailable",
+      );
   const files = cityFiles ?? [];
   const canStartDrafting = Boolean(
     applicationContext?.funder &&
@@ -225,6 +237,17 @@ export function useConceptNoteWorkspaceData({
     }
   }
 
+  async function saveManualPopulation(
+    value: { population: number; year: number } | null,
+  ): Promise<void> {
+    await updateManualPopulation({
+      cityId,
+      runId,
+      manualPopulation: value,
+    }).unwrap();
+    await refetchRun();
+  }
+
   return {
     applicationContext,
     applicationContextFailed,
@@ -244,7 +267,12 @@ export function useConceptNoteWorkspaceData({
     hasApplicationTemplate,
     inventory,
     isDraftRunning,
+    manualPopulation,
+    manualPopulationSaving: manualPopulationState.isLoading,
+    populationFailed,
     populationLabel,
+    populationLoading,
+    populationMissing: !populationData,
     refetchDraft,
     refetchRun,
     retryActiveUpload,
@@ -255,6 +283,7 @@ export function useConceptNoteWorkspaceData({
     run,
     runFailed,
     runLoading,
+    saveManualPopulation,
     startDrafting,
     startDraftState,
     uploadSource,

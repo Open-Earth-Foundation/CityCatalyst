@@ -1071,6 +1071,7 @@ export interface ConceptNoteRun {
   status: string;
   workflow_step: string;
   progress_summary: Record<string, unknown>;
+  manual_population?: { population: number; year: number } | null;
   uploads?: Array<{
     upload_id: string;
     run_id: string;

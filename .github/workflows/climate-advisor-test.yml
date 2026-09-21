@@ -192,17 +192,7 @@ jobs:
         run: kubectl get pods -n default
 
       - name: Deploy test service
-        env:
-          CNB_DATABASE_URL: ${{ secrets.CNB_DATABASE_URL_TEST }}
         run: |
-          if [ -z "${CNB_DATABASE_URL}" ]; then
-            echo "::error::Repository secret CNB_DATABASE_URL_TEST is required for the isolated CNB test database."
-            exit 1
-          fi
-          kubectl create secret generic climate-advisor-cnb-db-test \
-            --from-literal=CNB_DATABASE_URL="${CNB_DATABASE_URL}" \
-            --dry-run=client -o yaml -n default \
-            | kubectl apply -f - -n default
           kubectl apply -f climate-advisor/k8s/db-configmap-test.yml -n default
           kubectl create -f climate-advisor/k8s/migrate-test.yml -n default
           cnb_migration_job="$(

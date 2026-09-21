@@ -66,6 +66,8 @@ import {
   Authz,
   CityDashboardResponse,
   ConceptNoteApplicationContext,
+  ConceptNoteFunder,
+  ConceptNoteFundingSelection,
   ConfirmConceptNoteChapterRequest,
   ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
@@ -167,6 +169,8 @@ export const api = createApi({
     "ConceptNoteUpload",
     "ConceptNoteDraft",
     "ConceptNoteEdits",
+    "ConceptNoteApplicationContext",
+    "ConceptNoteFundingCatalogue",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -2490,6 +2494,32 @@ export const api = createApi({
         string
       >({
         query: (runId) => `concept-notes/${runId}/application-context/`,
+        providesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteApplicationContext", id: runId },
+        ],
+      }),
+      getConceptNoteFundingCatalogue: builder.query<
+        { funders: ConceptNoteFunder[] },
+        string
+      >({
+        query: (runId) => `concept-notes/${runId}/funding-catalogue/`,
+        providesTags: ["ConceptNoteFundingCatalogue"],
+      }),
+      updateConceptNoteFundingSelection: builder.mutation<
+        ConceptNoteApplicationContext,
+        { runId: string; selection: ConceptNoteFundingSelection }
+      >({
+        query: ({ runId, selection }) => ({
+          url: `concept-notes/${runId}/application-context/`,
+          method: "PATCH",
+          body: selection,
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteApplicationContext", id: runId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
+        ],
       }),
       getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
         query: (runId) => `concept-notes/${runId}/draft/`,

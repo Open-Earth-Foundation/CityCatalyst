@@ -53,6 +53,7 @@ export function useConceptNoteWorkspaceData({
     data: applicationContext,
     isError: applicationContextFailed,
     isLoading: applicationContextLoading,
+    refetch: refetchApplicationContext,
   } = api.useGetConceptNoteApplicationContextQuery(runId);
   const {
     data: draft,
@@ -153,7 +154,7 @@ export function useConceptNoteWorkspaceData({
   const canStartDrafting = Boolean(
     applicationContext?.funder &&
     applicationContext.opportunity &&
-    applicationContext.template,
+    applicationContext.template?.chapter_schema.length,
   );
   const hasApplicationTemplate = Boolean(applicationContext?.template);
   const hasDraftChapters = Boolean(draft?.chapters.length);
@@ -249,6 +250,7 @@ export function useConceptNoteWorkspaceData({
   }
 
   return {
+    refetchApplicationContext,
     applicationContext,
     applicationContextFailed,
     applicationContextLoading,

@@ -32,6 +32,10 @@ import { uploadStatusTranslationKey } from "../ConceptNoteWiringHarness/utils";
 
 interface ContextTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
+  onSelectFunding: () => void;
+  fundingLoading: boolean;
+  fundingError: boolean;
+  onRetryFunding: () => void;
   bundle: ConceptNoteBundleProgress;
   contextStatus: ConceptNoteContextPresentation;
   cityFilesCount: number;
@@ -67,6 +71,7 @@ import {
 } from "./context-status-badge";
 
 interface ContextCardProps {
+  action?: { label: string; onClick: () => void; disabled?: boolean };
   children?: ReactNode;
   details: string[];
   label: string;
@@ -91,6 +96,7 @@ function ContextSectionLabel({ children }: { children: string }) {
 }
 
 function ContextCard({
+  action,
   children,
   details,
   label,
@@ -110,7 +116,22 @@ function ContextCard({
       p={3}
     >
       <VStack align="stretch" gap={2} h="full">
-        <ContextSectionLabel>{label}</ContextSectionLabel>
+        <HStack justify="space-between" align="start" gap={2}>
+          <ContextSectionLabel>{label}</ContextSectionLabel>
+          {action && (
+            <Button
+              size="xs"
+              variant="outline"
+              flexShrink={0}
+              textTransform="none"
+              letterSpacing="normal"
+              disabled={action.disabled}
+              onClick={action.onClick}
+            >
+              {action.label}
+            </Button>
+          )}
+        </HStack>
         <ContextStatusBadge label={status} tone={tone} />
         <Text
           fontFamily="heading"
@@ -140,6 +161,10 @@ function ContextCard({
 
 export function ContextTab({
   applicationContext,
+  onSelectFunding,
+  fundingLoading,
+  fundingError,
+  onRetryFunding,
   bundle,
   contextStatus,
   cityFilesCount,
@@ -431,6 +456,17 @@ export function ContextTab({
         >
           <ContextCard
             label={t("funder-profile")}
+            action={{
+              label: t(
+                fundingError
+                  ? "try-again"
+                  : applicationContext?.funder
+                    ? "funding-view-change"
+                    : "funding-browse",
+              ),
+              onClick: fundingError ? onRetryFunding : onSelectFunding,
+              disabled: fundingLoading,
+            }}
             value={
               applicationContext?.funder?.name || t("funding-not-selected")
             }
@@ -455,6 +491,15 @@ export function ContextTab({
             tone="warning"
           />
         </Grid>
+        {fundingError && (
+          <Text
+            role="alert"
+            fontSize="body.sm"
+            color="sentiment.negativeDefault"
+          >
+            {t("funding-load-error")}
+          </Text>
+        )}
       </VStack>
 
       <VStack align="stretch" gap={2}>

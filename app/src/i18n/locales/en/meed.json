@@ -23,7 +23,6 @@
   "step-placeholder-description": "This step's content will appear here.",
   "back-to-overview": "Back to overview",
   "emissions-description": "This greenhouse gas inventory identifies which sectors contribute most to your city's emissions. This data determines the potential impact of each climate action and shapes how actions are ranked.",
-  "emissions-ranking-weight": "Emissions data shapes 55% of the ranking",
   "emissions-step-sub": "{{n}} of {{total}} sectors with data",
   "emissions-error-title": "Emissions data couldn't be loaded",
   "emissions-error-body": "We couldn't reach the inventory results for this city. Check your connection and try again.",

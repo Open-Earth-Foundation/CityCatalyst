@@ -7,7 +7,7 @@
 
 export interface FeasibilityInputs {
   action?: { capital_intensity?: number; preparation_complexity?: number };
-  city?: { profile?: string };
+  city?: { profile?: string | null };
   finance?: { fund_access?: string; n_reachable_opportunities?: number };
   evidence?: { n_existing_projects?: number };
 }
@@ -46,6 +46,8 @@ export interface Project {
   lifecycle_stage?: string;
   funding_channel?: string;
   cost_total?: number | null;
+  /** Scale of `cost_total`, e.g. "CLP_thousands". */
+  amount_unit?: string | null;
   funding_sources?: FundingSource[];
   action_matches?: { action_id: string; confidence?: string }[];
 }
@@ -72,9 +74,17 @@ export function extractLinkedList<T>(data: unknown): {
   total: number;
 } {
   if (!data || typeof data !== "object") return { rows: [], total: 0 };
-  const env = data as { data?: unknown; meta?: { total?: number } };
+  const env = data as {
+    data?: unknown;
+    meta?: { total?: number; count?: number };
+  };
   const rows = Array.isArray(env.data) ? (env.data as T[]) : [];
+  // Projects report `meta.total`; opportunities only report `meta.count`.
   const total =
-    typeof env.meta?.total === "number" ? env.meta.total : rows.length;
+    typeof env.meta?.total === "number"
+      ? env.meta.total
+      : typeof env.meta?.count === "number"
+        ? env.meta.count
+        : rows.length;
   return { rows, total };
 }

@@ -10,10 +10,19 @@ import type { FeasibilityRow } from "./types";
 
 // ─── Financing routes ─────────────────────────────────────────────────────────
 
-export type RouteKey = "self" | "cofinance" | "support" | "other";
+/** One key per route the feasibility endpoint emits, plus a fallback. */
+export type RouteKey =
+  | "self"
+  | "ownBudget"
+  | "technicalAssistance"
+  | "cofinance"
+  | "support"
+  | "other";
 
 export const ROUTE_ORDER: RouteKey[] = [
   "self",
+  "ownBudget",
+  "technicalAssistance",
   "cofinance",
   "support",
   "other",
@@ -27,6 +36,16 @@ export const ROUTE_META: Record<
     labelKey: "route-self",
     taglineKey: "route-self-tagline",
     tone: "positive",
+  },
+  ownBudget: {
+    labelKey: "route-own-budget",
+    taglineKey: "route-own-budget-tagline",
+    tone: "positive",
+  },
+  technicalAssistance: {
+    labelKey: "route-technical-assistance",
+    taglineKey: "route-technical-assistance-tagline",
+    tone: "info",
   },
   cofinance: {
     labelKey: "route-cofinance",
@@ -45,31 +64,46 @@ export const ROUTE_META: Record<
   },
 };
 
+/**
+ * Maps the endpoint's `route` string to a key, one-to-one: "self-deliverable",
+ * "own-budget feasible", "needs technical assistance", "needs external
+ * co-finance", "needs external finance + TA / pooling". Routes are never
+ * merged, so every count quotes what the endpoint said.
+ */
 export function routeKeyOf(route: string | null | undefined): RouteKey {
   const k = (route ?? "").toLowerCase();
   if (!k) return "other";
-  if (
-    k.includes("self-deliverable") ||
-    k.includes("own-budget") ||
-    k.includes("own budget")
-  ) {
-    return "self";
-  }
+  if (k.includes("self-deliverable")) return "self";
+  if (k.includes("own-budget") || k.includes("own budget")) return "ownBudget";
   if (k.includes("co-finance")) return "cofinance";
-  if (k.includes("pooling") || k.includes("ta /") || k.includes("support")) {
-    return "support";
-  }
+  if (k.includes("pooling") || k.includes("ta /")) return "support";
+  if (k.includes("technical assistance")) return "technicalAssistance";
   return "other";
 }
 
-// Actions the city can fund from its own budget don't need external financing;
-// sector-level funds are reframed as optional (see the prototype's rationale).
+// Both routes mean the city's own budget covers the action, so external
+// financing is optional and sector-level funds are reframed as such.
 export function isSelfFundable(route: string | null | undefined): boolean {
-  return routeKeyOf(route) === "self";
+  const key = routeKeyOf(route);
+  return key === "self" || key === "ownBudget";
 }
 
+/**
+ * Label for the reachable-funds count, following the endpoint's
+ * `inputs.finance.fund_access` ("direct" | "competitive").
+ */
+export function fundAccessLabelKey(
+  fundAccess: string | null | undefined,
+): string {
+  const k = (fundAccess ?? "").toLowerCase();
+  if (k === "direct") return "fund-access-direct";
+  if (k === "competitive") return "fund-access-competitive";
+  return "fund-access-count";
+}
+
+/** Only the "self-deliverable" route — not "own-budget feasible". */
 export function countSelfDeliverable(rows: FeasibilityRow[]): number {
-  return rows.filter((row) => isSelfFundable(row.route)).length;
+  return rows.filter((row) => routeKeyOf(row.route) === "self").length;
 }
 
 // ─── Levels & city profile ────────────────────────────────────────────────────
@@ -123,43 +157,49 @@ export interface ProfileAttrs {
   dc?: Level;
 }
 
-export function profileAttrs(profile: string | undefined): ProfileAttrs {
-  const p = (profile ?? "").toLowerCase().replace(/_/g, "-");
+/**
+ * The endpoint's city archetype. Upstream bands financial autonomy and
+ * delivery capacity at 0.5 into four archetypes, so the meters can only say
+ * "higher" or "lower" — the endpoint does not return the underlying numbers.
+ * A missing or unrecognised profile gets no meters and no claims.
+ */
+export function profileAttrs(profile: string | null | undefined): ProfileAttrs {
+  const p = (profile ?? "").toLowerCase().replace(/[_ ]/g, "-");
+  if (p.includes("self-sufficient")) {
+    return {
+      labelKey: "profile-self-sufficient",
+      descKey: "profile-self-sufficient-desc",
+      fa: "higher",
+      dc: "higher",
+    };
+  }
   if (p.includes("delivery-ready")) {
     return {
       labelKey: "profile-delivery-ready",
       descKey: "profile-delivery-ready-desc",
       fa: "lower",
-      dc: "high",
-    };
-  }
-  if (p.includes("financially-strong") || p.includes("self-sufficient")) {
-    return {
-      labelKey: "profile-financially-strong",
-      descKey: "profile-financially-strong-desc",
-      fa: "high",
-      dc: "high",
-    };
-  }
-  if (p.includes("revenue-strong")) {
-    return {
-      labelKey: "profile-revenue-strong",
-      descKey: "profile-revenue-strong-desc",
-      fa: "high",
-      dc: "lower",
-    };
-  }
-  if (p.includes("capacity-rich")) {
-    return {
-      labelKey: "profile-capacity-rich",
-      descKey: "profile-capacity-rich-desc",
-      fa: "lower",
       dc: "higher",
     };
   }
+  if (p.includes("well-resourced")) {
+    return {
+      labelKey: "profile-well-resourced",
+      descKey: "profile-well-resourced-desc",
+      fa: "higher",
+      dc: "lower",
+    };
+  }
+  if (p.includes("support-ready")) {
+    return {
+      labelKey: "profile-support-ready",
+      descKey: "profile-support-ready-desc",
+      fa: "lower",
+      dc: "lower",
+    };
+  }
   return {
-    labelKey: "profile-transitioning",
-    descKey: "profile-transitioning-desc",
+    labelKey: "profile-unknown",
+    descKey: "profile-unknown-desc",
   };
 }
 
@@ -171,13 +211,36 @@ export const TONE_TEXT_COLOR: Record<MeedTone, string> = {
   info: "content.link",
   positive: "sentiment.positiveDefault",
   warning: "sentiment.warningDefault",
+  caution: "interactive.quaternary",
   negative: "sentiment.negativeDefault",
 };
 
+/**
+ * Feasibility score → the standard four-level scale: High (green), Medium
+ * (yellow), Low (orange), Very low (red). 0.7 is where the endpoint's routes
+ * stop needing external money, so it stays the "High" line.
+ */
+export type ScoreLevel = "high" | "medium" | "low" | "veryLow";
+
+export function scoreLevel(v: number): ScoreLevel {
+  if (v >= 0.7) return "high";
+  if (v >= 0.55) return "medium";
+  if (v >= 0.4) return "low";
+  return "veryLow";
+}
+
+export const SCORE_LEVEL_META: Record<
+  ScoreLevel,
+  { labelKey: string; tone: MeedTone }
+> = {
+  high: { labelKey: "score-level-high", tone: "positive" },
+  medium: { labelKey: "score-level-medium", tone: "warning" },
+  low: { labelKey: "score-level-low", tone: "caution" },
+  veryLow: { labelKey: "score-level-very-low", tone: "negative" },
+};
+
 export function scoreTone(v: number): MeedTone {
-  if (v >= 0.7) return "positive";
-  if (v >= 0.4) return "warning";
-  return "neutral";
+  return SCORE_LEVEL_META[scoreLevel(v)].tone;
 }
 
 /** Humanize a data enum (e.g. "stationary_energy" → "Stationary Energy"). */
@@ -190,12 +253,18 @@ export const STATUS_KEYS: Record<string, string> = {
   open: "status-open",
   ongoing: "status-ongoing",
   closed: "status-closed",
+  periodic: "status-periodic",
+  emerging: "status-emerging",
+  in_rollout: "status-in-rollout",
 };
 
 export const STATUS_TONE: Record<string, MeedTone> = {
   open: "info",
   ongoing: "positive",
   closed: "neutral",
+  periodic: "info",
+  emerging: "neutral",
+  in_rollout: "info",
 };
 
 export function lifecycleTone(stage: string | undefined): MeedTone {
@@ -204,34 +273,55 @@ export function lifecycleTone(stage: string | undefined): MeedTone {
     return "warning";
   }
   if (l.includes("complet") || l.includes("finish")) return "positive";
-  if (l.includes("plan") || l.includes("formul")) return "info";
+  if (l.includes("plan") || l.includes("formul") || l.includes("apprais")) {
+    return "info";
+  }
   return "neutral";
 }
 
+/** `null` for a confidence value the endpoint has not used before. */
 export function confidenceMeta(confidence: string | undefined): {
   labelKey: string;
   tone: MeedTone;
-} {
+} | null {
   const l = (confidence ?? "").toLowerCase();
   if (l.includes("strong"))
     return { labelKey: "match-strong", tone: "positive" };
   if (l.includes("goal")) return { labelKey: "match-goal", tone: "info" };
-  return { labelKey: "match-matched", tone: "neutral" };
+  return null;
 }
 
-// cost_total is in CLP millions per the API (amount_unit: "CLP_millions").
-export function formatClpMillions(
+/** Multiplier to CLP millions for each `amount_unit` the endpoint reports. */
+const CLP_UNIT_TO_MILLIONS: Record<string, number> = {
+  CLP: 1 / 1_000_000,
+  CLP_thousands: 1 / 1_000,
+  CLP_millions: 1,
+};
+
+/**
+ * Formats a project amount using the row's own `amount_unit`. Returns `null`
+ * for a missing amount or a unit this screen does not know, rather than
+ * guessing a scale.
+ */
+export function formatClpAmount(
   val: number | null | undefined,
+  unit: string | null | undefined,
   t: TFunction,
 ): string | null {
   if (!val || val <= 0) return null;
-  if (val >= 1_000_000) {
-    return t("amount-clp-t", { value: (val / 1_000_000).toFixed(1) });
+  const factor = unit ? CLP_UNIT_TO_MILLIONS[unit] : undefined;
+  if (factor === undefined) return null;
+  const millions = val * factor;
+  if (millions >= 1_000_000) {
+    return t("amount-clp-t", { value: (millions / 1_000_000).toFixed(1) });
   }
-  if (val >= 1_000) {
-    return t("amount-clp-b", { value: (val / 1_000).toFixed(1) });
+  if (millions >= 1_000) {
+    return t("amount-clp-b", { value: (millions / 1_000).toFixed(1) });
   }
-  return t("amount-clp-m", { value: Math.round(val) });
+  if (millions >= 1) {
+    return t("amount-clp-m", { value: Math.round(millions) });
+  }
+  return t("amount-clp-k", { value: Math.round(millions * 1_000) });
 }
 
 export function withLimit(link: string, limit: number): string {
@@ -242,7 +332,7 @@ export function withLimit(link: string, limit: number): string {
 
 /**
  * Column widths, summing to 100%. Without these the table collapses.
- * Route carries the longest chip ("Needs finance & support"), so it gets more
+ * Route carries the longest chip ("Needs external finance + TA"), so it gets more
  * room than the numeric columns, which only ever hold a short value.
  */
 export const FINANCE_COLUMN_WIDTHS = [

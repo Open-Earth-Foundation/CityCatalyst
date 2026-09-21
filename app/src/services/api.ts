@@ -300,9 +300,7 @@ export const api = createApi({
       // pass-throughs to hiap-meed, so unlike the ranking route their payloads
       // are snake_case with a `meta`/`warnings` envelope — see the contract
       // types. The older proxies stay until their consumers are migrated;
-      // that migration also retires `finance/follow`, whose guard only permits
-      // `/api/v1/cities/` while the real links are `/api/v1/climate-finance/`,
-      // so both of its calls 400 and the cards silently render "no data".
+      // that migration also retires `finance/follow`.
       getMeedReferenceActions: builder.query<
         MeedReferenceActionsResponse,
         { cityId: string }

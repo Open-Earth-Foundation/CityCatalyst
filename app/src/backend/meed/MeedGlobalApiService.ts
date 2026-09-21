@@ -1,5 +1,6 @@
 import { GLOBAL_API_URL } from "@/services/api";
 import { logger } from "@/services/logger";
+import { resolveFinanceLink } from "./financeLinks";
 
 /**
  * Server-side reader for the Global API endpoints the MEED+ module consumes.
@@ -71,15 +72,18 @@ export class MeedGlobalApiService {
   /**
    * Follow a relative link returned inside a Global API response
    * (`links.projects` / `links.opportunities` on finance feasibility rows).
-   * Only Global-API city paths are allowed.
+   * Only the paths allowed by `resolveFinanceLink` are followed.
    */
-  public static async followLink(relativePath: string): Promise<unknown | null> {
-    if (!relativePath.startsWith("/api/v1/cities/")) {
+  public static async followLink(
+    relativePath: string,
+  ): Promise<unknown | null> {
+    const resolved = resolveFinanceLink(relativePath);
+    if (!resolved) {
       logger.warn(
         `MeedGlobalApiService.followLink rejected path: ${relativePath}`,
       );
       return null;
     }
-    return this.fetchJson(relativePath);
+    return this.fetchJson(resolved);
   }
 }

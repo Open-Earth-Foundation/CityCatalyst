@@ -7,7 +7,7 @@
  *       - modules
  *     operationId: getMeedFinanceFollowLink
  *     summary: Follow a relative finance link returned by the Global API.
- *     description: Finance feasibility rows contain relative links (links.projects, links.opportunities). This proxies such a link against the Global API host. Only /api/v1/cities/ paths are allowed. Requires a signed-in user with access to the city. Response is wrapped in '{' data '}'.
+ *     description: Finance feasibility rows contain relative links (links.projects, links.opportunities). This proxies such a link against the Global API host. Only /api/v1/cities/ and /api/v1/climate-finance/ paths are allowed. Requires a signed-in user with access to the city. Response is wrapped in '{' data '}'.
  *     parameters:
  *       - in: path
  *         name: city
@@ -28,6 +28,7 @@ import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import UserService from "@/backend/UserService";
 import { MeedGlobalApiService } from "@/backend/meed/MeedGlobalApiService";
+import { resolveFinanceLink } from "@/backend/meed/financeLinks";
 import { z } from "zod";
 
 const paramsSchema = z.object({
@@ -37,7 +38,10 @@ const paramsSchema = z.object({
 const querySchema = z.object({
   link: z
     .string()
-    .startsWith("/api/v1/cities/", "Only Global API city paths are allowed"),
+    .refine(
+      (value) => resolveFinanceLink(value) !== null,
+      "Only Global API city and climate-finance paths are allowed",
+    ),
 });
 
 export const GET = apiHandler(async (req: Request, context) => {

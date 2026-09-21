@@ -10,6 +10,7 @@ import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
 import { MeedScoreComposition } from "../../../components/MeedScoreComposition";
+import { ActionFinanceSection } from "./ActionFinanceSection";
 import { SelectActionCheckbox } from "./SelectActionCheckbox";
 import { actionName, sectorLabel, type MeedActionIndex } from "./actionCatalog";
 import type { MeedScoreWeights } from "./rankingFacts";
@@ -62,7 +63,7 @@ function CoBenefitSection({
 /**
  * Right-hand drawer with everything about one ranked action: where it sits in
  * the ranking, what it is, why the model put it there, how its score is made
- * up, and what it delivers beyond emissions. The footer lets the user add it
+ * up, what it delivers beyond emissions, and how it could be financed. The footer lets the user add it
  * to the report from here, so reading and choosing happen in one place.
  *
  * Built on Chakra's Drawer for scroll lock, focus trap and Escape.
@@ -77,6 +78,7 @@ export function DetailPanel({
   total,
   isSelected,
   onToggleSelect,
+  finance,
 }: {
   action: MeedRankedActionResult;
   index: MeedActionIndex;
@@ -89,6 +91,8 @@ export function DetailPanel({
   isSelected?: boolean;
   /** Omit to hide the report control (e.g. when opened from the home screen). */
   onToggleSelect?: (actionId: string) => void;
+  /** Omit to leave financing out of the drawer. */
+  finance?: { cityId: string; lng: string; financeHref: string };
 }) {
   const name = actionName(index, action.action_id, t);
   const description = index.get(action.action_id)?.description;
@@ -204,6 +208,13 @@ export function DetailPanel({
                   color="sentiment.warningDefault"
                   t={t}
                 />
+
+                {finance && (
+                  <ActionFinanceSection
+                    actionId={action.action_id}
+                    {...finance}
+                  />
+                )}
               </VStack>
             </Drawer.Body>
 

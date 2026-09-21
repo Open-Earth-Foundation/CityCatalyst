@@ -45,7 +45,7 @@ export interface MeedContextData {
   finance: MeedFinanceFacts | null;
   /** action_id → raw financing route, for per-action questions. */
   financeRoutes: Map<string, string | null | undefined>;
-  /** Translated financial profile of the city, e.g. "Transitioning city". */
+  /** Translated financial profile of the city, e.g. "Self-sufficient city". */
   cityProfileLabel: string | null;
   policy: PolicyAggregates | null;
 }

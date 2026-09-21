@@ -9,8 +9,12 @@ import {
 import { Roles } from "@/util/types";
 import { logger } from "@/services/logger";
 import crypto from "node:crypto";
+import {
+  recoveryTokenLength as recoveryTokenMinLength,
+  verifyRecoveryCode,
+  verifyToken,
+} from "./2fa";
 import { RateLimiter } from "@/util/rate-limiter";
-import { verifyToken } from "./2fa";
 
 const isPlaywrightTest = process.env.PLAYWRIGHT_TEST === "1";
 // 5 attempts/15 minutes per email — brute-force throttle for the login path.
@@ -129,10 +133,16 @@ export const authOptions: NextAuthOptions = {
             logger.error("No securityToken passed for user with 2FA enabled");
             return null;
           }
-          const isValid = await verifyToken(
-            credentials.securityToken,
-            user.twoFactorSecret,
-          );
+          let isValid = false;
+          if (credentials.securityToken.length >= recoveryTokenMinLength) {
+            // allow using a single-use recovery code and delete it from user record if successful
+            isValid = await verifyRecoveryCode(user, credentials.securityToken);
+          } else {
+            isValid = await verifyToken(
+              credentials.securityToken,
+              user.twoFactorSecret,
+            );
+          }
           if (!isValid) {
             logger.error("Invalid securityToken for 2FA");
             return null;

@@ -1,5 +1,6 @@
 "use client";
 import { Box, HStack, VStack } from "@chakra-ui/react";
+import type { TFunction } from "i18next";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { MeedChartTip } from "./MeedChartTip";
@@ -18,6 +19,8 @@ export interface MeedShareBarProps {
   ariaLabel: string;
   tipTitle?: string;
   tipNote?: string;
+  /** `meed-results` namespace, for percent formatting. */
+  t: TFunction;
 }
 
 /**
@@ -31,13 +34,15 @@ export function MeedShareBar({
   ariaLabel,
   tipTitle,
   tipNote,
+  t,
 }: MeedShareBarProps) {
   const shown = segments.filter((s) => s.value > 0);
   const total = shown.reduce((sum, s) => sum + s.value, 0);
   if (shown.length === 0 || total <= 0) return null;
   const format =
     formatValue ??
-    ((s: MeedShareSegment) => `${Math.round((s.value / total) * 100)}%`);
+    ((s: MeedShareSegment) =>
+      t("percent-value", { value: Math.round((s.value / total) * 100) }));
 
   const bar = (
     <Box role="img" aria-label={ariaLabel} tabIndex={-1}>
@@ -80,7 +85,7 @@ export function MeedShareBar({
               color="content.secondary"
               fontVariantNumeric="tabular-nums"
             >
-              {`${s.label} · ${format(s, total)}`}
+              {t("legend-item", { label: s.label, value: format(s, total) })}
             </BodySmall>
           </HStack>
         ))}

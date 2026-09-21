@@ -7,7 +7,7 @@ import type { MeedRankedActionResult } from "@/util/types/meed";
 import type { SectorEmission } from "@/util/types";
 import type { MeedActionIndex } from "./actionCatalog";
 import { scoreContributions, type MeedScoreWeights } from "./rankingFacts";
-import { sectorShares } from "../../../components/MeedSectorShareBar";
+import { sectorShares } from "../../../components/sectorShares";
 import { routeKeyOf } from "../../finance/labels";
 
 export type MeedPillar = "impact" | "alignment" | "feasibility";

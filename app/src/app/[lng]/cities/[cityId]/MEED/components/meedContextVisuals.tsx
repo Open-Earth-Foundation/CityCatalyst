@@ -19,7 +19,7 @@ import { MeedFunnelStrip } from "./MeedFunnelStrip";
 import { MeedMeter } from "./MeedMeter";
 import { MeedShareBar } from "./MeedShareBar";
 import { MeedStatusTag } from "./MeedStatusTag";
-import { sectorShares } from "./MeedSectorShareBar";
+import { sectorShares } from "./sectorShares";
 
 export interface MeedContextVisualInputs {
   bySector?: SectorEmission[];
@@ -72,6 +72,7 @@ export function meedContextVisual(
           ariaLabel={t("sector-share-tip-title")}
           tipTitle={t("sector-share-tip-title")}
           tipNote={t("sector-share-tip-note")}
+          t={t}
         />
       ) : undefined;
     }
@@ -159,6 +160,7 @@ export function meedContextVisual(
           ariaLabel={t("route-tip-title")}
           tipTitle={t("route-tip-title")}
           tipNote={t("route-tip-note")}
+          t={t}
         />
       ) : undefined;
 
@@ -173,19 +175,19 @@ export function meedContextVisual(
             ] as const
           ).map(([scope, label]) => {
             const value = policy[scope];
+            const valueText =
+              value === null
+                ? t("policy-scope-none")
+                : t("percent-value", { value: Math.round(value * 100) });
             return (
               <MeedMeter
                 key={scope}
                 value={value ?? 0}
                 tone={value === null ? "neutral" : scoreTone(value)}
                 label={label}
-                valueText={
-                  value === null
-                    ? t("policy-scope-none")
-                    : `${Math.round(value * 100)}%`
-                }
+                valueText={valueText}
                 height="6px"
-                ariaLabel={`${label}: ${value === null ? t("policy-scope-none") : `${Math.round(value * 100)}%`}`}
+                ariaLabel={t("legend-item", { label, value: valueText })}
               />
             );
           })}

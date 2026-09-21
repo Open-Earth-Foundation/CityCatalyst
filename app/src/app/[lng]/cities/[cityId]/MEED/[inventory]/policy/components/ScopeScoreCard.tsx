@@ -44,6 +44,7 @@ export function ScopeScoreCard({
             })}
             tipTitle={scopeLabel}
             tipNote={t("ring-note")}
+            t={t}
           />
           <VStack alignItems="stretch" gap="xs" flex="1" minW={0}>
             <Overline>{scopeLabel}</Overline>

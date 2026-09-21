@@ -235,5 +235,7 @@
   "config-exclusions-sectors": "sectors: {{list}}",
   "config-exclusions-cobenefits": "co-benefit impact: {{list}}",
   "config-weights": "Scoring weights",
-  "config-weights-value": "Impact {{impact}}% · Alignment {{alignment}}% · Feasibility {{feasibility}}%"
+  "config-weights-value": "Impact {{impact}}% · Alignment {{alignment}}% · Feasibility {{feasibility}}%",
+  "percent-value": "{{value}}%",
+  "legend-item": "{{label}} · {{value}}"
 }

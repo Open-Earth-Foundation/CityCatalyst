@@ -19,7 +19,9 @@ import { actionName, sectorLabel, type MeedActionIndex } from "./actionCatalog";
 
 const ROW_HEIGHT = 28;
 const MOBILE_MAX_BARS = 10;
-const NAME_MAX_CHARS = 26;
+/** Characters of action name on the y-axis, and the margin that fits them. */
+const LABEL_CHARS = { md: 34, lg: 52 } as const;
+const LABEL_WIDTH = { md: 250, lg: 360 } as const;
 
 interface GlanceDatum extends BarDatum {
   id: string;
@@ -68,6 +70,12 @@ export function RankingGlanceChart({
   onSelect: (action: MeedRankedActionResult) => void;
 }) {
   const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
+  const labelChars =
+    useBreakpointValue({ base: 0, md: LABEL_CHARS.md, lg: LABEL_CHARS.lg }) ??
+    LABEL_CHARS.lg;
+  const labelWidth =
+    useBreakpointValue({ base: 8, md: LABEL_WIDTH.md, lg: LABEL_WIDTH.lg }) ??
+    LABEL_WIDTH.lg;
   const [textColor, gridColor, fallbackColor] = useToken("colors", [
     "content.secondary",
     "border.overlay",
@@ -136,7 +144,7 @@ export function RankingGlanceChart({
             top: 8,
             right: 44,
             bottom: 32,
-            left: isMobile ? 8 : 200,
+            left: labelWidth,
           }}
           padding={0.3}
           borderRadius={4}
@@ -164,7 +172,7 @@ export function RankingGlanceChart({
                       byId.get(String(id))
                         ? actionName(index, String(id), t)
                         : String(id),
-                      NAME_MAX_CHARS,
+                      labelChars,
                     ),
                 }
           }

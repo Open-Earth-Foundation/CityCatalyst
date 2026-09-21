@@ -249,7 +249,11 @@ export function Hero({
                   fontWeight={400}
                   data-testid="hero-inventory-line"
                 >
-                  {`${inventory.year} · ${value} ${unit}`.trim()}
+                  {t("hero-inventory-line", {
+                    year: inventory.year,
+                    value,
+                    unit,
+                  })}
                 </Text>
               )}
               {!isCompact && (

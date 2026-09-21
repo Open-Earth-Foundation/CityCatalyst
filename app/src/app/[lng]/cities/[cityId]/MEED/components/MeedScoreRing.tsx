@@ -1,5 +1,6 @@
 "use client";
 import { Box } from "@chakra-ui/react";
+import type { TFunction } from "i18next";
 import {
   ProgressCircleRing,
   ProgressCircleRoot,
@@ -27,6 +28,8 @@ export interface MeedScoreRingProps {
   /** Hover explanation of what the percentage means. */
   tipTitle?: string;
   tipNote?: string;
+  /** `meed-results` (or any namespace with `percent-value`). */
+  t: TFunction;
 }
 
 /**
@@ -41,8 +44,10 @@ export function MeedScoreRing({
   ariaLabel,
   tipTitle,
   tipNote,
+  t,
 }: MeedScoreRingProps) {
   const pct = value === null ? 0 : Math.round(value * 100);
+  const pctText = value === null ? "—" : t("percent-value", { value: pct });
   const ring = (
     <Box role="img" aria-label={ariaLabel} flexShrink={0} tabIndex={-1}>
       <ProgressCircleRoot value={pct} size={size}>
@@ -57,7 +62,7 @@ export function MeedScoreRing({
           fontVariantNumeric="tabular-nums"
           color={value === null ? "content.tertiary" : "content.primary"}
         >
-          {valueText ?? (value === null ? "—" : `${pct}%`)}
+          {valueText ?? pctText}
         </ProgressCircleValueText>
       </ProgressCircleRoot>
     </Box>
@@ -66,7 +71,7 @@ export function MeedScoreRing({
   return (
     <MeedChartTip
       title={tipTitle}
-      rows={[{ label: ariaLabel, value: value === null ? "—" : `${pct}%` }]}
+      rows={[{ label: ariaLabel, value: pctText }]}
       note={tipNote}
     >
       {ring}

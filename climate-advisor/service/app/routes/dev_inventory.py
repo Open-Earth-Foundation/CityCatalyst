@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List
+from datetime import UTC, datetime
+from typing import Annotated, Any, Dict, List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
 
 from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
-    TokenRefreshError,
 )
+from app.utils.citycatalyst_auth import authenticate_write_request
+from app.utils.token_manager import get_token_expiry
 
 
 logger = logging.getLogger(__name__)
@@ -37,24 +39,28 @@ class InventoryCheckResponse(BaseModel):
     response_model=InventoryCheckResponse,
     summary="Fetch inventories for debugging CityCatalyst connectivity.",
 )
-async def user_inventories_check(payload: InventoryCheckRequest) -> InventoryCheckResponse:
-    """Fetch inventories for the provided user ID using the CityCatalyst client."""
+async def user_inventories_check(
+    payload: InventoryCheckRequest,
+    authorization: Annotated[str | None, Header()] = None,
+) -> InventoryCheckResponse:
+    """Fetch inventories for the authenticated canonical user."""
 
-    user_id = payload.user_id
+    identity = await authenticate_write_request(
+        authorization=authorization,
+        claimed_user_id=payload.user_id,
+    )
     async with CityCatalystClient() as client:
         try:
-            token, expires_in = await client.refresh_token(user_id)
-        except TokenRefreshError as exc:
-            logger.error("Token refresh failed for user_id=%s: %s", user_id, exc)
-            raise HTTPException(status_code=502, detail=f"Token refresh failed: {exc}") from exc
-
-        try:
             inventories = await client.get_user_inventories(
-                token=token,
-                user_id=user_id,
+                token=identity.token,
+                user_id=identity.user_id,
             )
         except CityCatalystClientError as exc:
-            logger.error("User inventories fetch failed for user_id=%s: %s", user_id, exc)
+            logger.error(
+                "User inventories fetch failed for user_id=%s: %s",
+                identity.user_id,
+                exc,
+            )
             raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     data: List[Any] = []
@@ -63,9 +69,15 @@ async def user_inventories_check(payload: InventoryCheckRequest) -> InventoryChe
         if isinstance(maybe_data, list):
             data = maybe_data
 
+    expires_at = get_token_expiry(identity.token)
+    expires_in = (
+        max(0, int((expires_at - datetime.now(UTC)).total_seconds()))
+        if expires_at is not None
+        else 0
+    )
     return InventoryCheckResponse(
         success=True,
-        user_id=user_id,
+        user_id=identity.user_id,
         expires_in=expires_in,
         inventory_count=len(data),
         inventories=inventories,

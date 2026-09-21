@@ -29,11 +29,15 @@
           <input id="baseUrl" value="" placeholder="e.g., http://localhost:8080" />
         </div>
         <div style="flex:1">
+          <label>Bearer token (required for writes)</label>
+          <input id="accessToken" value="" placeholder="CityCatalyst user JWT" />
+        </div>
+        <div style="flex:1">
           <label>X-Request-Id</label>
           <input id="reqId" value="" placeholder="optional (auto-generated if empty)" />
         </div>
       </div>
-      <p class="muted">Leave Base URL empty to use same origin.</p>
+      <p class="muted">Leave Base URL empty to use same origin. Thread, message, and inventory writes require a Bearer token.</p>
     </div>
 
     <div class="row">
@@ -85,7 +89,7 @@
 
       <div class="card">
         <div class="endpoint">POST /v1/dev/user-inventories-check</div>
-        <p class="muted">Quick connectivity check against CityCatalyst. Uses the admin playground user by default.</p>
+        <p class="muted">Requires the Bearer token above. Queries inventories for the canonical authenticated user; body user ID must match that subject.</p>
         <label>User ID</label>
         <input id="devUserId" placeholder="3e9c2695-ba01-470c-ae66-b564b6b36996" />
         <button id="btnDevInventory">Run Inventory Check</button>
@@ -97,9 +101,9 @@
       <div class="endpoint">Endpoints Map</div>
       <ul>
         <li><code>GET /health</code> – liveness</li>
-        <li><code>POST /v1/threads</code> – create thread, returns <code>{ thread_id }</code></li>
-        <li><code>POST /v1/messages</code> – streams SSE <code>event: message</code> chunks and terminal <code>event: done</code></li>
-        <li><code>POST /v1/dev/user-inventories-check</code> – refresh token + fetch inventories for debugging</li>
+        <li><code>POST /v1/threads</code> – authenticated create thread, returns <code>{ thread_id }</code></li>
+        <li><code>POST /v1/messages</code> – authenticated SSE stream; canonical subject is bound before persistence</li>
+        <li><code>POST /v1/dev/user-inventories-check</code> – authenticated inventory connectivity check using the presented bearer</li>
       </ul>
       <p class="muted">Docs: <a href="/docs" target="_blank">Swagger UI</a> • <a href="/redoc" target="_blank">ReDoc</a></p>
     </div>
@@ -122,11 +126,26 @@
         }
       }
 
+      function writeHeaders() {
+        const headers = { 'Content-Type': 'application/json' };
+        const reqId = document.getElementById('reqId').value.trim();
+        if (reqId) headers['X-Request-Id'] = reqId;
+        const token = document.getElementById('accessToken').value.trim();
+        if (!token) return null;
+        headers['Authorization'] = 'Bearer ' + token;
+        return headers;
+      }
+
       document.getElementById('btnHealth').onclick = () => doGet('/health', document.getElementById('outHealth'));
 
       document.getElementById('btnCreateThread').onclick = async () => {
         const out = document.getElementById('outThreads');
         out.textContent = '...';
+        const headers = writeHeaders();
+        if (!headers) {
+          out.textContent = 'Authorization Bearer token is required';
+          return;
+        }
         let ctxVal = document.getElementById('threadsContext').value.trim();
         let ctx = undefined;
         if (ctxVal) {
@@ -137,9 +156,6 @@
           inventory_id: document.getElementById('threadsInventoryId').value.trim() || undefined,
           context: ctx
         };
-        const headers = { 'Content-Type': 'application/json' };
-        const reqId = document.getElementById('reqId').value.trim();
-        if (reqId) headers['X-Request-Id'] = reqId;
         try {
           const res = await fetch(url('/v1/threads'), { method: 'POST', headers, body: JSON.stringify(payload) });
           const json = await res.json();
@@ -153,6 +169,11 @@
       document.getElementById('btnSendMessage').onclick = async () => {
         const out = document.getElementById('outMessages');
         out.textContent = '';
+        const headers = writeHeaders();
+        if (!headers) {
+          out.textContent = 'Authorization Bearer token is required';
+          return;
+        }
         const payload = {
           user_id: document.getElementById('msgUserId').value.trim() || 'test-user',
           thread_id: document.getElementById('msgThreadId').value.trim() || undefined,
@@ -165,10 +186,6 @@
         if (model) payload.options.model = model;
         if (temp) payload.options.temperature = parseFloat(temp);
         if (maxTok) payload.options.max_tokens = parseInt(maxTok, 10);
-
-        const headers = { 'Content-Type': 'application/json' };
-        const reqId = document.getElementById('reqId').value.trim();
-        if (reqId) headers['X-Request-Id'] = reqId;
 
         try {
           const res = await fetch(url('/v1/messages'), { method: 'POST', headers, body: JSON.stringify(payload) });
@@ -235,12 +252,14 @@
       document.getElementById('btnDevInventory').onclick = async () => {
         const out = document.getElementById('outDevInventory');
         out.textContent = '...';
+        const headers = writeHeaders();
+        if (!headers) {
+          out.textContent = 'Authorization Bearer token is required';
+          return;
+        }
         const payload = {};
         const userId = document.getElementById('devUserId').value.trim();
         if (userId) payload.user_id = userId;
-        const headers = { 'Content-Type': 'application/json' };
-        const reqId = document.getElementById('reqId').value.trim();
-        if (reqId) headers['X-Request-Id'] = reqId;
         try {
           const res = await fetch(url('/v1/dev/user-inventories-check'), {
             method: 'POST',

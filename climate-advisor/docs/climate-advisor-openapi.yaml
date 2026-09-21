@@ -4,6 +4,12 @@ info:
   version: 0.1.0
   description: |
     API for the Climate Advisor microservice. Provides health checks and chat endpoints.
+
+    `POST /v1/threads` and `POST /v1/messages` require a CityCatalyst user bearer.
+    Climate Advisor validates it at Core identity before any write. Core's canonical
+    user ID must equal body `user_id`. Missing, malformed, rejected, or subject-mismatched
+    credentials return HTTP 401 and persist nothing. Core identity unavailability
+    returns HTTP 503 and persists nothing.
 servers:
   - url: http://localhost:8080
 paths:
@@ -23,6 +29,8 @@ paths:
   /v1/threads:
     post:
       summary: Create thread
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -40,11 +48,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ThreadCreateResponse'
+        '401':
+          $ref: '#/components/responses/WriteAuthFailed'
+        '503':
+          $ref: '#/components/responses/WriteAuthUnavailable'
         '422':
           description: Validation error
   /v1/messages:
     post:
       summary: Send a message (streams SSE)
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -58,10 +72,59 @@ paths:
             text/event-stream:
               schema:
                 type: string
+        '401':
+          $ref: '#/components/responses/WriteAuthFailed'
+        '503':
+          $ref: '#/components/responses/WriteAuthUnavailable'
         '422':
           description: Validation error
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: CityCatalyst user token validated at Core `/api/v1/internal/ca/auth/identity` before any write.
+  responses:
+    WriteAuthFailed:
+      description: Missing, malformed, rejected, expired, or subject-mismatched bearer. Nothing is persisted.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: about:blank
+            title: CityCatalyst authentication failed
+            status: 401
+            detail: CityCatalyst authentication failed
+    WriteAuthUnavailable:
+      description: Core identity validation is unavailable. Nothing is persisted.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: about:blank
+            title: CityCatalyst identity service is unavailable
+            status: 503
+            detail: CityCatalyst identity service is unavailable
   schemas:
+    ProblemDetails:
+      type: object
+      required: [title, status]
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        request_id:
+          type: string
     ThreadCreateRequest:
       type: object
       required: [user_id]

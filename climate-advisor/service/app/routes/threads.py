@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import logging
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi import APIRouter, Depends, Header, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_session
@@ -15,6 +16,10 @@ from app.models.responses import (
 )
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
+from app.utils.citycatalyst_auth import (
+    authenticate_write_request,
+    normalize_write_context,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -30,24 +35,38 @@ async def create_thread(
     payload: ThreadCreateRequest,
     response: Response,
     session: AsyncSession = Depends(get_session),
+    authorization: Annotated[str | None, Header()] = None,
 ):
+    # Bind the write to Core's canonical subject before any persistence.
+    identity = await authenticate_write_request(
+        authorization=authorization,
+        claimed_user_id=payload.user_id,
+    )
+    authenticated_payload = payload.model_copy(
+        update={
+            "user_id": identity.user_id,
+            "context": normalize_write_context(payload.context, identity.token),
+        }
+    )
     logger.info(
         "=== POST /threads request received ===\n"
         "  user_id: %s\n"
         "  inventory_id: %s\n"
         "  has_context: %s\n"
         "  context_keys: %s",
-        payload.user_id,
-        payload.inventory_id,
-        bool(payload.context),
-        list(payload.context.keys()) if payload.context and isinstance(payload.context, dict) else []
+        authenticated_payload.user_id,
+        authenticated_payload.inventory_id,
+        bool(authenticated_payload.context),
+        list(authenticated_payload.context.keys())
+        if authenticated_payload.context and isinstance(authenticated_payload.context, dict)
+        else [],
     )
-    
+
     service = ThreadService(session)
     try:
-        thread = await service.create_thread(payload)
+        thread = await service.create_thread(authenticated_payload)
         await session.commit()
-        
+
         logger.info(
             "=== Thread created successfully ===\n"
             "  thread_id: %s (type: %s)\n"
@@ -67,7 +86,7 @@ async def create_thread(
     except Exception as e:
         logger.error(
             "Failed to create thread for user_id=%s: %s",
-            payload.user_id,
+            identity.user_id,
             str(e),
             exc_info=True
         )

@@ -12,7 +12,7 @@ Input is one JSON object derived from ReportChapterInput with user-facing eviden
 - `title` (string): chapter title
 - `language` (string): requested report language
 - `terminology` (object): exact localized table and subsection labels
-- `facts.legal` (object or null): selected-action legal verdict, ownership, restrictions, justifications, and references when available
+- `facts.legal` (object or null): selected-action legal verdict, ownership, restrictions, `authority_scope`, `authority_scope_summary`, justifications, and references when available
 - `facts.ranking` (object): selected-action feasibility and legal component score facts when available
 - `facts.action` (object): selected action facts when available
 - `source_refs` (array): source keys available to cite in `source_refs`
@@ -24,10 +24,10 @@ Runtime input:
 
 <output>
 Use the shared OutputPlanChapterResponse contract:
-- `markdown` (string): Start with one clear verdict sentence in `language`. Then produce a two-column Markdown table using exactly `terminology.city_can_do | terminology.other_government`. Derive the left column from ownership and enabled powers; derive the right column from restrictions and explicit external approvals or coordination in `legal_justification`. Do not infer actors or approvals. If no external decision is identified, state that conclusion in `language`, while preserving any stated technical coordination. Finish with `terminology.who_leads` as the subsection heading and one direct sentence based on ownership and verdict facts.
+- `markdown` (string): Start with one clear verdict sentence in `language`. Then produce a two-column Markdown table using exactly `terminology.city_can_do | terminology.other_government`. Derive the left column from ownership, enabled powers, and `authority_scope`; derive the right column from restrictions and explicit external approvals or coordination in `legal_justification`. Do not infer actors or approvals. If no external decision is identified, state that conclusion in `language`, while preserving any stated technical coordination. Finish with `terminology.who_leads` as the subsection heading and one direct sentence based on `authority_scope` plus ownership and verdict facts.
 - `limitations` (array of strings): relevant legal-data limitations.
 
-Do not soften a blocked verdict. Do not make permit, SEIA, ownership, restriction, or legal-authority claims unless those facts are explicitly present. If legal facts are missing, state that the legal mandate cannot be confirmed from the available information.
+Do not soften a blocked verdict. Do not make permit, SEIA, ownership, restriction, or legal-authority claims unless those facts are explicitly present. If `authority_scope` is `municipal_assets_only`, keep the municipal-versus-private split and never claim authority over private or external assets. If `authority_scope` is `qualified` or `unspecified`, do not say the municipality can lead directly across the action's scope. If legal facts are missing, state that the legal mandate cannot be confirmed from the available information.
 </output>
 
 <example_output>

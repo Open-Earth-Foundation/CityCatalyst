@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -22,6 +23,7 @@ from app.modules.prioritizer.report_context import (
     build_report_context,
     validate_report_snapshot,
 )
+from app.modules.prioritizer.report_models import ReportContext
 
 
 def _report_request(
@@ -327,6 +329,9 @@ def test_snapshot_input_includes_defensible_ask_from_action_finance_and_legal() 
             verdict_category="enabled",
             ownership_category="enabled",
             restrictions_category="enabled",
+            ownership_description=(
+                "Municipality has explicit legal authority to act directly."
+            ),
         ),
         policy_score=None,
         mitigation_feasibility=None,
@@ -361,6 +366,9 @@ def test_snapshot_input_includes_defensible_ask_from_action_finance_and_legal() 
     )
     assert finance_legal["additional_approval"] == (
         "The legal review identifies no additional decision-making approval."
+    )
+    assert chapters["legal_mandate_delivery"].facts["legal"]["authority_scope"] == (
+        "full_direct"
     )
 
 
@@ -636,6 +644,7 @@ def test_snapshot_finance_and_sources_inputs_expose_structured_report_rows() -> 
                     "explicitness": "explicit",
                     "evidence_strength": 0.1 * index,
                     "evidence_text": f"Evidence {index}",
+                    "page": index,
                     "link": (
                         "https://policy.example/document-4" if index == 4 else None
                     ),
@@ -876,3 +885,355 @@ def test_chapter_source_refs_and_limitations_are_chapter_specific() -> None:
         "financial_feasibility",
         "finance_catalogues",
     ]
+
+
+_ICARE_0016_JUSTIFICATION = (
+    "Law 18.695 art. 5° authorizes the municipality to install these technologies "
+    "in its own buildings—direct and full competence. For private stock, the "
+    "municipality acts as facilitator of access to Ministry of Energy subsidies, "
+    "without regulatory power over appliances."
+)
+_PRIVATE_OPERATOR_JUSTIFICATION = (
+    "Law 18.695 art. 3(d) establishes cleanliness and public ornament as an "
+    "essential municipal function, and art. 6 expressly authorizes municipalities "
+    "to contract with private parties through public bidding. Management "
+    "competence is mediated by the contract with the private operator; it is "
+    "not fully direct."
+)
+
+
+_LEGAL_MOCK_PATH = (
+    Path(__file__).resolve().parents[2] / "data" / "mock" / "actions_legal_api_mock.json"
+)
+
+
+def _legal_mock_assessment(action_id: str) -> LegalAssessmentRecord:
+    """Load one real legal-catalogue row as an internal assessment record."""
+    rows = json.loads(_LEGAL_MOCK_PATH.read_text(encoding="utf-8"))
+    row = next(item for item in rows if item["srcActionId"] == action_id)
+    return LegalAssessmentRecord(
+        action_id=row["srcActionId"],
+        country_code=row["countryCode"],
+        gpc_sector=row.get("gpcSector"),
+        verdict_category=row["verdictCategory"],
+        ownership_category=row["ownershipCategory"],
+        ownership_score=row.get("ownershipScore"),
+        restrictions_category=row["restrictionsCategory"],
+        restrictions_score=row.get("restrictionsScore"),
+        ownership_description=row.get("ownershipDescription"),
+        restrictions_description=row.get("restrictionsDescription"),
+        legal_justification=row.get("legalJustification"),
+        ownership_description_i18n=row.get("ownershipDescriptionI18n") or {},
+        restrictions_description_i18n=row.get("restrictionsDescriptionI18n") or {},
+        legal_justification_i18n=row.get("legalJustificationI18n") or {},
+    )
+
+
+def _enabled_legal_report_context(
+    *,
+    legal_assessment: LegalAssessmentRecord | None = None,
+    ownership_description: str | None = None,
+    restrictions_description: str | None = None,
+    legal_justification: str | None = None,
+) -> ReportContext:
+    """Build a compact enabled/enabled legal context for authority-scope tests."""
+    if legal_assessment is None:
+        legal_assessment = LegalAssessmentRecord(
+            action_id="A_1",
+            country_code="CL",
+            verdict_category="enabled",
+            ownership_category="enabled",
+            restrictions_category="enabled",
+            ownership_description=ownership_description,
+            restrictions_description=restrictions_description,
+            legal_justification=legal_justification,
+        )
+    return build_report_context(
+        request=_report_request(),
+        action=Action(action_id="A_1", action_name="Street lighting upgrade"),
+        city=CityData(
+            city_name="Santiago",
+            locode="CL-SCL",
+            country_code="CL",
+            region_name="Metropolitana",
+            region_code="RM",
+        ),
+        legal_assessment=legal_assessment,
+        policy_score=None,
+        mitigation_feasibility=None,
+        financial_feasibility=None,
+        source_metadata={"city": {"source": "test"}},
+    )
+
+
+def _mixed_scope_report_context() -> ReportContext:
+    """Build the mixed legal-scope, contextual-finance, and incomplete-policy pattern."""
+    return build_report_context(
+        request=_report_request(),
+        action=Action(
+            action_id="A_1",
+            action_name=(
+                "Promote solar thermal and heat pump systems for water heating"
+            ),
+        ),
+        city=CityData(
+            city_name="Iquique",
+            locode="CL-SCL",
+            country_code="CL",
+            region_name="Tarapaca",
+            region_code="TA",
+        ),
+        policy_score=ActionPolicyScoreRecord(
+            action_id="A_1",
+            policy_support_score=0.8,
+            policy_support_category="high",
+            n_findings=4,
+            n_docs=2,
+            policy_evidence=[
+                {
+                    "evidence_rank": 1,
+                    "document_name": "Plan de Mitigacion Sector Ciudades",
+                    "signal_type": "action",
+                    "signal_relation": "commits",
+                    "explicitness": "explicit",
+                    "evidence_strength": 0.9,
+                    "evidence_text": "Promote solar thermal systems in public buildings.",
+                    "page": 12,
+                    "link": "https://policy.example/plan",
+                },
+                {
+                    "evidence_rank": 2,
+                    "document_name": "Unquoted fragment",
+                    "signal_type": "governance",
+                    "signal_relation": "governs",
+                    "explicitness": "implicit",
+                    "evidence_strength": 0.8,
+                    "evidence_text": "   ",
+                },
+                {
+                    "evidence_rank": 3,
+                    "document_name": "Missing signal row",
+                    "signal_type": "action",
+                    "evidence_text": "A usable excerpt without a signal relation.",
+                    "page": 4,
+                },
+                {
+                    "evidence_rank": 4,
+                    "signal_relation": "supports",
+                    "evidence_text": "An excerpt without a document name.",
+                    "page": 8,
+                },
+            ],
+        ),
+        legal_assessment=LegalAssessmentRecord(
+            action_id="A_1",
+            country_code="CL",
+            verdict_category="enabled",
+            ownership_category="enabled",
+            restrictions_category="enabled",
+            ownership_description=(
+                "Municipality has explicit legal authority to act directly."
+            ),
+            legal_justification=_ICARE_0016_JUSTIFICATION,
+        ),
+        mitigation_feasibility=None,
+        financial_feasibility=ActionFinancialFeasibilityScoreRecord(
+            action_id="A_1",
+            sector="stationary_energy",
+            route="own-budget feasible",
+            reason="Within the city's own budget and capacity.",
+            inputs={"evidence": {"n_existing_projects": 2}},
+        ),
+        finance_opportunities=[
+            ClimateFinanceOpportunityRecord(
+                opportunity_name="Sector energy programme",
+                funder_name="Energy Agency",
+                instrument="grant",
+                status="open",
+                source_url="https://agency.example/programme",
+            )
+        ],
+        comparable_projects=[
+            ClimateFinanceProjectRecord(
+                project_name="Municipal solar water heating",
+                jurisdiction="Antofagasta",
+                lifecycle_stage="in-execution",
+                action_matches=[
+                    {"action_id": "A_1", "confidence": "goal_aligned"}
+                ],
+            )
+        ],
+        source_metadata={"city": {"source": "test"}},
+    )
+
+
+def test_mixed_legal_scope_does_not_claim_unrestricted_direct_authority() -> None:
+    """Enabled ownership must still preserve municipal versus private limits."""
+    chapters = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(_mixed_scope_report_context())
+    }
+    snapshot_ask = chapters["snapshot"].facts["ask"]
+    legal_facts = chapters["legal_mandate_delivery"].facts["legal"]
+    finance_legal = chapters["financing_precedents_pathway"].facts["legal"]
+
+    assert legal_facts["authority_scope"] == "municipal_assets_only"
+    assert "municipal assets" in snapshot_ask["legal_position"]
+    assert "private or external assets" in snapshot_ask["legal_position"]
+    assert "legally empowered to lead directly." not in snapshot_ask["summary"]
+    assert "municipal assets" in finance_legal["delivery_position"]
+    assert "facilitates rather than exercising direct authority" in finance_legal[
+        "delivery_position"
+    ]
+    assert finance_legal["authority_scope"] == "municipal_assets_only"
+
+
+def test_missing_legal_scope_text_does_not_claim_full_direct_authority() -> None:
+    """Enabled verdict and ownership without scope text stay qualified."""
+    chapters = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(_enabled_legal_report_context())
+    }
+    snapshot_ask = chapters["snapshot"].facts["ask"]
+    legal_facts = chapters["legal_mandate_delivery"].facts["legal"]
+    finance_legal = chapters["financing_precedents_pathway"].facts["legal"]
+
+    assert legal_facts["authority_scope"] == "qualified"
+    assert snapshot_ask["legal_position"] == (
+        "an action the legal review finds the city can pursue"
+    )
+    assert "legally empowered to lead directly" not in snapshot_ask["summary"]
+    assert finance_legal["authority_scope"] == "qualified"
+    assert "lead delivery directly" not in finance_legal["delivery_position"]
+
+
+def test_mediated_private_operator_wording_does_not_claim_full_direct_authority() -> None:
+    """Explicit mediated / not-fully-direct wording must not classify as full_direct."""
+    chapters = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(
+            _enabled_legal_report_context(
+                ownership_description=(
+                    "Municipality has explicit legal authority to act directly."
+                ),
+                legal_justification=_PRIVATE_OPERATOR_JUSTIFICATION,
+            )
+        )
+    }
+    snapshot_ask = chapters["snapshot"].facts["ask"]
+    legal_facts = chapters["legal_mandate_delivery"].facts["legal"]
+    finance_legal = chapters["financing_precedents_pathway"].facts["legal"]
+
+    assert legal_facts["authority_scope"] == "qualified"
+    assert "lead directly" not in snapshot_ask["legal_position"]
+    assert finance_legal["authority_scope"] == "qualified"
+    assert "lead delivery directly" not in finance_legal["delivery_position"]
+
+
+@pytest.mark.parametrize("language", ["en", "es"])
+def test_icare_0121_fixture_keeps_full_direct_authority(language: str) -> None:
+    """A private concession operator does not erase explicit full municipal authority."""
+    chapters = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(
+            _enabled_legal_report_context(
+                legal_assessment=_legal_mock_assessment("icare_0121"),
+            ).model_copy(update={"language": language})
+        )
+    }
+    snapshot_ask = chapters["snapshot"].facts["ask"]
+    legal_facts = chapters["legal_mandate_delivery"].facts["legal"]
+    finance_legal = chapters["financing_precedents_pathway"].facts["legal"]
+    justification = (legal_facts.get("legal_justification") or "").lower()
+
+    assert legal_facts["authority_scope"] == "full_direct"
+    assert finance_legal["authority_scope"] == "full_direct"
+    assert snapshot_ask["legal_position"] == (
+        "an action the city is legally empowered to lead directly"
+    )
+    assert finance_legal["delivery_position"] == (
+        "The legal review finds that the municipality can lead delivery directly."
+    )
+    if language == "es":
+        assert "operador privado" in justification
+    else:
+        assert "private operator" in justification
+
+
+def test_snapshot_signals_include_row_level_source_refs() -> None:
+    """Each Snapshot signal should cite the evidence domains that row used."""
+    chapters = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(_mixed_scope_report_context())
+    }
+    snapshot = chapters["snapshot"]
+    refs_by_check = {
+        row["what_we_checked"]: row["source_refs"] for row in snapshot.facts["signals"]
+    }
+
+    assert refs_by_check["Climate benefit"] == ["ranking_snapshot", "action_pathways"]
+    assert refs_by_check["Policy backing"] == ["policy_scores"]
+    assert refs_by_check["Legal room to act"] == ["legal"]
+    assert refs_by_check["Funding"] == ["financial_feasibility", "finance_catalogues"]
+    assert refs_by_check["Track record"] == [
+        "financial_feasibility",
+        "finance_catalogues",
+    ]
+    for expected_ref in (
+        "ranking_snapshot",
+        "city",
+        "action_pathways",
+        "policy_scores",
+        "legal",
+        "financial_feasibility",
+        "finance_catalogues",
+    ):
+        assert expected_ref in snapshot.source_refs
+    assert "mitigation_feasibility" not in snapshot.source_refs
+
+
+def test_finance_opportunities_are_classified_as_contextual_catalogue_candidates() -> None:
+    """Sector/route catalogue rows must stay contextual, never confirmed matches."""
+    chapters = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(_mixed_scope_report_context())
+    }
+    opportunity = chapters["financing_precedents_pathway"].facts["opportunities"][0]
+
+    assert opportunity["match_class"] == "contextual"
+    assert opportunity["match_label"] == "Contextual candidate"
+    assert "not a confirmed match" in opportunity["reader_note"]
+    assert "eligibility for this action" in opportunity["reader_note"]
+
+
+def test_comparable_projects_include_action_match_rationale() -> None:
+    """Comparable projects should expose selected-action match confidence only."""
+    chapters = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(_mixed_scope_report_context())
+    }
+    project = chapters["financing_precedents_pathway"].facts["comparable_projects"][0]
+
+    assert project["selected_action_id"] == "A_1"
+    assert project["match_class"] == "direct"
+    assert project["match_confidence"] == "goal_aligned"
+    assert project["match_rationale"] == (
+        "Matched to selected action A_1 with confidence goal_aligned."
+    )
+
+
+def test_incomplete_policy_evidence_is_omitted_with_a_visible_limitation() -> None:
+    """Opaque policy fragments should not reach the reader-facing evidence table."""
+    chapters = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(_mixed_scope_report_context())
+    }
+    policy = chapters["policy_backing"].facts["policy_score"]
+
+    assert [row["evidence_rank"] for row in policy["policy_evidence"]] == [1]
+    assert policy["omitted_incomplete_evidence_count"] == 3
+    assert "incomplete excerpts were omitted" in policy["evidence_selection_note"]
+    assert any(
+        "lacked document, signal, or quotation context" in limitation
+        for limitation in chapters["policy_backing"].limitations
+    )

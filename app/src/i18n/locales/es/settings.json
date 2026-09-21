@@ -277,5 +277,7 @@
   "two-factor-disable-button": "Deshabilitar",
   "two-factor-disable-confirm-message": "Después de desactivar la autenticación de dos factores, puedes configurar otra aplicación o dispositivo",
   "two-factor-disable-password-message": "Confirma tu contraseña para desactivar la autenticación de dos factores para tu cuenta",
-  "two-factor-disabled": "Desactivación exitosa de la autenticación de dos factores"
+  "two-factor-disabled": "Desactivación exitosa de la autenticación de dos factores",
+  "two-factor-recovery-codes-message": "Estos son tus códigos de recuperación de un solo uso. <1>Por favor, anótalos o guárdalos en tu administrador de contraseñas ya que no se mostrarán de nuevo.</1> Usa estos en lugar de un código de seguridad en caso de que pierdas el acceso a tu aplicación o dispositivo de autenticación.",
+  "two-factor-copy-recovery-codes-label": "Copiar códigos de recuperación al portapapeles"
 }

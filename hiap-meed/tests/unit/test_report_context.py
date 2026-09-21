@@ -1216,6 +1216,61 @@ def test_icare_0121_fixture_keeps_full_direct_authority(language: str) -> None:
         assert "private operator" in justification
 
 
+@pytest.mark.parametrize("language", ["en", "es"])
+def test_c40_0017_fixture_keeps_municipal_assets_only(language: str) -> None:
+    """Spanish mixed-scope phrasing must not collapse to unrestricted full_direct."""
+    chapters = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(
+            _enabled_legal_report_context(
+                legal_assessment=_legal_mock_assessment("c40_0017"),
+            ).model_copy(update={"language": language})
+        )
+    }
+    snapshot_ask = chapters["snapshot"].facts["ask"]
+    legal_facts = chapters["legal_mandate_delivery"].facts["legal"]
+    finance_legal = chapters["financing_precedents_pathway"].facts["legal"]
+    justification = (legal_facts.get("legal_justification") or "").lower()
+
+    assert legal_facts["authority_scope"] == "municipal_assets_only"
+    assert finance_legal["authority_scope"] == "municipal_assets_only"
+    assert "municipal assets" in snapshot_ask["legal_position"]
+    assert "private or external assets" in snapshot_ask["legal_position"]
+    assert "lead delivery directly." not in finance_legal["delivery_position"]
+    if language == "es":
+        assert "edificios de terceros privados" in justification
+        assert "no puede imponer" in justification
+    else:
+        assert "private third-party buildings" in justification
+
+
+@pytest.mark.parametrize("language", ["en", "es"])
+def test_conditional_c40_0016_fixture_stays_qualified(language: str) -> None:
+    """Conditional reviews that mention private assets stay qualified, not municipal-direct."""
+    chapters = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(
+            _enabled_legal_report_context(
+                legal_assessment=_legal_mock_assessment("c40_0016"),
+            ).model_copy(update={"language": language})
+        )
+    }
+    snapshot_ask = chapters["snapshot"].facts["ask"]
+    legal_facts = chapters["legal_mandate_delivery"].facts["legal"]
+    finance_legal = chapters["financing_precedents_pathway"].facts["legal"]
+
+    assert legal_facts["authority_scope"] == "qualified"
+    assert finance_legal["authority_scope"] == "qualified"
+    assert snapshot_ask["legal_position"] == (
+        "subject to the conditions identified in the legal review"
+    )
+    assert "lead delivery directly" not in finance_legal["delivery_position"]
+    assert "no additional decision-making approval" not in finance_legal[
+        "additional_approval"
+    ]
+    assert "conditions identified" in finance_legal["delivery_position"]
+
+
 def test_snapshot_signals_include_row_level_source_refs() -> None:
     """Each Snapshot signal should cite the evidence domains that row used."""
     chapters = {

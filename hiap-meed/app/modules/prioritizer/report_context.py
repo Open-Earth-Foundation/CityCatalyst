@@ -65,6 +65,10 @@ _AUTHORITY_SCOPE_MUNICIPAL_LIMIT_MARKERS = (
     "sin potestad regulatoria",
     "does not authorize the municipality to regulate",
     "no autoriza al municipio a regular",
+    "no habilita al municipio a regular",
+    "edificios de terceros",
+    "terceros privados",
+    "no puede imponer",
 )
 _AUTHORITY_SCOPE_QUALIFIED_MARKERS = (
     "not fully direct",
@@ -1460,7 +1464,18 @@ def _legal_facts(context: ReportContext) -> dict[str, Any] | None:
             ),
             "legal_references": legal.legal_references,
         }
-        facts.update(_authority_scope_fields(facts))
+        facts.update(
+            _authority_scope_fields(
+                facts,
+                extra_source_text=_authority_scope_source_text(
+                    {
+                        "ownership_description": legal.ownership_description,
+                        "restrictions_description": legal.restrictions_description,
+                        "legal_justification": legal.legal_justification,
+                    }
+                ),
+            )
+        )
         return facts
 
     snapshot_legal = context.ranked_action.evidence_summary.feasibility.legal
@@ -1476,29 +1491,44 @@ def _legal_facts(context: ReportContext) -> dict[str, Any] | None:
     return facts
 
 
-def _authority_scope_fields(legal: dict[str, Any]) -> dict[str, Any]:
+def _authority_scope_fields(
+    legal: dict[str, Any], extra_source_text: str = ""
+) -> dict[str, Any]:
     """Return structured authority-scope fields derived from legal source text."""
-    scope = _classify_authority_scope(legal)
+    scope = _classify_authority_scope(legal, extra_source_text=extra_source_text)
     return {
         "authority_scope": scope,
         "authority_scope_summary": _authority_scope_summary(legal, scope),
     }
 
 
-def _classify_authority_scope(legal: dict[str, Any]) -> str:
+def _classify_authority_scope(
+    legal: dict[str, Any], extra_source_text: str = ""
+) -> str:
     """Classify authority from limitation semantics, not from private-actor mentions."""
     verdict = legal.get("verdict_category")
     if verdict == "blocked":
         return AUTHORITY_SCOPE_BLOCKED
 
-    source_text = _authority_scope_source_text(legal)
-    if _source_text_contains_any(source_text, _AUTHORITY_SCOPE_MUNICIPAL_LIMIT_MARKERS):
+    source_text = " ".join(
+        part
+        for part in (_authority_scope_source_text(legal), extra_source_text)
+        if part.strip()
+    )
+    ownership_enabled = legal.get("ownership_category") == "enabled"
+    if (
+        verdict == "enabled"
+        and ownership_enabled
+        and _source_text_contains_any(
+            source_text, _AUTHORITY_SCOPE_MUNICIPAL_LIMIT_MARKERS
+        )
+    ):
         return AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY
     if _source_text_contains_any(source_text, _AUTHORITY_SCOPE_QUALIFIED_MARKERS):
         return AUTHORITY_SCOPE_QUALIFIED
     if (
         verdict == "enabled"
-        and legal.get("ownership_category") == "enabled"
+        and ownership_enabled
         and _source_text_contains_any(source_text, _AUTHORITY_SCOPE_FULL_DIRECT_MARKERS)
     ):
         return AUTHORITY_SCOPE_FULL_DIRECT

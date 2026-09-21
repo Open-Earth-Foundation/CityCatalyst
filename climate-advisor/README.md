@@ -1396,16 +1396,25 @@ Notes:
 
 ## Kubernetes CNB Database Deployment
 
-GitHub Actions is the credential source of truth. Configure
-`CNB_DATABASE_URL_DEV` and `CNB_DATABASE_URL_PROD` as repository Secrets; the
-test deployment intentionally reuses the development value until a distinct
-test database is available. Rotate any credential shared in chat or ticket text
-before saving it, and URL-encode reserved password characters in the DSN.
+The test workflow uses the repository Actions secret `CNB_DATABASE_URL_TEST`
+as its credential source. Configure it with the dedicated `cnb_test` database
+and user on `dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com`,
+port `5432`. The URL format is
+`postgresql://cnb_test:<URL-encoded-password>@dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com:5432/cnb_test`.
+Store the actual URL only in GitHub Actions Secrets, not in this repository.
+For example, pipe the URL from a secure source into
+`gh secret set CNB_DATABASE_URL_TEST --repo Open-Earth-Foundation/CityCatalyst`.
 
-Each deployment workflow reconciles an environment-specific Kubernetes Secret
-containing only `CNB_DATABASE_URL`. The Climate Advisor Deployment and CNB
-migration Job consume that Secret with `secretRef`; CNB credentials do not
-belong in the existing database ConfigMaps or in checked-in Secret manifests.
+Before running migrations, the test workflow requires that secret and reconciles
+the Kubernetes Secret `default/climate-advisor-cnb-db-test`, containing only
+`CNB_DATABASE_URL`. Both the test Deployment and CNB migration Job consume it
+with `secretRef`. Test has no fallback to the development CNB database. The CA,
+development, and production database configurations are unchanged.
+
+After deployment, verify that the runtime connection uses database and user
+`cnb_test`, the CNB migration Job completes, and required test funding/reference
+data is present before running a full CNB smoke flow. This configuration change
+does not copy development data or seed the new database.
 
 Each deployment workflow launches the existing CA migration Job, then the CNB
 Job (`alembic -c cnb-alembic.ini upgrade head`). The workflow waits for the CNB

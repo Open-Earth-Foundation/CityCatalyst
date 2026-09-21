@@ -1,6 +1,14 @@
 /**
  * @swagger
  * /api/v1/concept-notes/{runId}/structure:
+ *   parameters:
+ *     - in: path
+ *       name: runId
+ *       required: true
+ *       schema:
+ *         type: string
+ *         format: uuid
+ *       description: Concept note run identifier
  *   get:
  *     operationId: getConceptNoteStructure
  *     summary: Restore run-owned chapter structure

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { StructureProposal } from "./concept-note-structure";
+import type { StructureProposal } from "@/util/concept-note-structure";
 
 export const editScopeSchema = z
   .object({

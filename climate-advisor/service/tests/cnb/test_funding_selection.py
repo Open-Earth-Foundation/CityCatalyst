@@ -15,6 +15,7 @@ from app.models.cnb.concept_note_edits import (
     PlannedTextChange,
 )
 from app.models.cnb.funding_catalogue import FundingSelectionRequest
+from app.models.cnb.concept_note_structure import StructureChapter, StructureSaveRequest
 from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.models.db.cnb_reference import (
     CnbFunder,
@@ -32,6 +33,7 @@ from app.persistence.concept_notes.edits import (
     EditOperationError,
 )
 from app.persistence.concept_notes.workspace import normalize_template_chapters
+from app.persistence.concept_notes.structure import save_structure, structure_snapshot
 from app.services.cnb.application_context import ConceptNoteApplicationContextService
 from app.services.cnb.chapter_drafting import ConceptNoteChapterDraftService
 from app.services.cnb.edits import ConceptNoteEditService
@@ -411,11 +413,29 @@ async def test_incompatible_template_switch_preserves_selection_and_draft(new_re
         assert after.status == "draft"
 
 
-async def test_compatible_switch_updates_chapter_metadata_without_replacing_text():
-    async with _funded_draft("Keep this text.") as fixture:
+async def test_compatible_switch_preserves_run_title_heading_and_guidance():
+    async with _funded_draft("## Project summary\n\nKeep this text.") as fixture:
         workspace, factory, session, run, first, second, opportunity_id, chapter = (
             fixture
         )
+        before = structure_snapshot(await workspace.list_chapters(run_id=run.run_id))
+        async with factory() as reference, reference.begin():
+            await save_structure(
+                reference,
+                run.run_id,
+                StructureSaveRequest(
+                    expected_fingerprint=before.fingerprint,
+                    chapters=[
+                        before.chapters[0].model_copy(
+                            update={
+                                "title": "My overview",
+                                "description": "Run-specific guidance",
+                            }
+                        )
+                    ],
+                ),
+            )
+        renamed = (await workspace.list_chapters(run_id=run.run_id))[0]
         new_opportunity = await _programme(
             factory,
             second,
@@ -434,10 +454,72 @@ async def test_compatible_switch_updates_chapter_metadata_without_replacing_text
             reference_factory=factory,
         )
         after = (await workspace.list_chapters(run_id=run.run_id))[0]
-        assert after.title == "Executive overview" and after.required is False
+        assert after.title == "My overview" and after.required is False
+        assert after.description == "Run-specific guidance"
+        assert after.revision_id == renamed.revision_id
         assert after.chapter_id == chapter.chapter_id
-        assert after.body_markdown == "Keep this text."
+        assert after.body_markdown == "## My overview\n\nKeep this text."
         assert after.status == "needs_review"
+
+
+async def test_compatible_funding_switch_preserves_reordered_template_and_custom_chapters():
+    async with _funded_draft("Original text.") as fixture:
+        workspace, factory, session, run, first, second, opportunity_id, chapter = (
+            fixture
+        )
+        # Extend the fixture to two template chapters and put a custom chapter first.
+        async with factory() as reference, reference.begin():
+            reference.add(
+                ConceptNoteChapter(
+                    chapter_id=uuid4(),
+                    run_id=run.run_id,
+                    template_section_id="budget",
+                    title="My budget",
+                    description="Budget guidance",
+                    position=1,
+                    required=False,
+                    status="empty",
+                )
+            )
+        before = structure_snapshot(await workspace.list_chapters(run_id=run.run_id))
+        custom = StructureChapter(
+            chapter_id=uuid4(), title="Community", description="Local priorities"
+        )
+        ordered = [custom, before.chapters[1], before.chapters[0]]
+        async with factory() as reference, reference.begin():
+            await save_structure(
+                reference,
+                run.run_id,
+                StructureSaveRequest(
+                    expected_fingerprint=before.fingerprint,
+                    chapters=ordered,
+                ),
+            )
+        new_opportunity = await _programme(
+            factory,
+            second,
+            [
+                {"chapter_ref": "summary", "title": "Summary", "required": False},
+                {"chapter_ref": "budget", "title": "Budget", "required": True},
+            ],
+        )
+        await save_funding_selection(
+            session,
+            run,
+            _selection(second, new_opportunity, first, opportunity_id, True),
+            reference_factory=factory,
+        )
+        after = await workspace.list_chapters(run_id=run.run_id)
+        assert [item.chapter_id for item in after] == [
+            item.chapter_id for item in ordered
+        ]
+        assert [item.title for item in after] == [item.title for item in ordered]
+        assert [item.description for item in after] == [
+            item.description for item in ordered
+        ]
+        assert [item.required for item in after] == [False, True, False]
+        assert after[2].revision_id == chapter.revision_id
+        assert after[2].body_markdown == "Original text."
 
 
 async def test_edit_registration_reloads_funding_and_blocks_switch_until_finished(

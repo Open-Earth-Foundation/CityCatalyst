@@ -60,6 +60,7 @@ def build_draft_tools(
         chapters: list[StructurePlannedChapter],
     ) -> dict[str, Any]:
         """Preview complete chapter order/titles/descriptions; null positions insert custom chapters."""
+        # Resolve positions against the immutable server snapshot.
         session.plan = None
         before = structure_snapshot(list(session.chapters.values()))
         after = []
@@ -80,6 +81,7 @@ def build_draft_tools(
                         description=item.description,
                     )
                 )
+            # Reject protected membership changes before staging a preview.
             validate_structure(before.chapters, after)
             if before.chapters == after:
                 raise EditOperationError(
@@ -87,6 +89,7 @@ def build_draft_tools(
                 )
         except (EditOperationError, ValueError) as error:
             return {"ok": False, "message": str(error)}
+        # Stage only; acceptance is a separate authorized operation.
         session.plan = EditPlanOutput(
             intent="edit", structure=StructureProposal(before=before, after=after)
         )

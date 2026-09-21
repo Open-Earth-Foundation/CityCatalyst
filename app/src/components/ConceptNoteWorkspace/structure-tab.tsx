@@ -25,6 +25,7 @@ import { structureApi } from "@/services/concept-note-structure-api";
 import { editErrorCode } from "@/services/concept-note-edit-api";
 import {
   structureSaveSchema,
+  structureDraftSchema,
   type StructureState,
   type StructureChapter,
 } from "@/util/concept-note-structure";
@@ -33,7 +34,7 @@ import type {
   ConceptNoteDraftState,
 } from "@/util/types";
 
-import { getChapterDisplayStatus } from "./chapter-validation";
+import { getChapterDisplayStatus } from "@/components/ConceptNoteWorkspace/chapter-validation";
 
 interface StructureTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
@@ -54,13 +55,35 @@ export function StructureTab({
     refetchOnMountOrArgChange: true,
   });
   const [save, saving] = structureApi.useSaveConceptNoteStructureMutation();
-  const [pending, setPending] = useState<StructureState | null>(null);
+  const recoveryKey = `cnb-structure-draft:${runId}`;
+  const [pending, setPending] = useState<StructureState | null>(() => {
+    try {
+      const stored = sessionStorage.getItem(recoveryKey);
+      const recovered = stored
+        ? structureDraftSchema.safeParse(JSON.parse(stored))
+        : null;
+      return recovered?.success ? recovered.data : null;
+    } catch {
+      // Server rendering and browser privacy settings may prevent local recovery.
+      return null;
+    }
+  });
   const [error, setError] = useState<string | null>(null);
   const [announcement, setAnnouncement] = useState("");
   const dragged = useRef<string | null>(null);
   const state = pending ?? query.currentData;
   const chapters = state?.chapters ?? [];
   const disabled = saving.isLoading || draft?.status === "running";
+
+  function remember(next: StructureState | null): void {
+    setPending(next);
+    try {
+      if (next) sessionStorage.setItem(recoveryKey, JSON.stringify(next));
+      else sessionStorage.removeItem(recoveryKey);
+    } catch {
+      // Keep the editable in-memory form and unload warning when storage is unavailable.
+    }
+  }
 
   useEffect(() => {
     if (!pending) return;
@@ -73,7 +96,7 @@ export function StructureTab({
 
   function update(next: StructureChapter[]): void {
     if (!state || disabled) return;
-    setPending({ ...state, chapters: next });
+    remember({ ...state, chapters: next });
     setError(null);
   }
   function move(id: string, target: number): void {
@@ -118,7 +141,7 @@ export function StructureTab({
           () => saved,
         ),
       );
-      setPending(null);
+      remember(null);
       setError(null);
       setAnnouncement(t("structure-saved"));
     } catch (failure) {
@@ -352,7 +375,7 @@ export function StructureTab({
             color="content.link"
             disabled={saving.isLoading}
             onClick={() => {
-              setPending(null);
+              remember(null);
               setError(null);
               void query.refetch();
             }}

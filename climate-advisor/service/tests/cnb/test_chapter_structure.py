@@ -5,10 +5,11 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 from agents.tool_context import ToolContext
@@ -22,6 +23,7 @@ from app.models.cnb.concept_note_structure import (
     StructureChapter,
     StructureProposal,
     StructureSaveRequest,
+    StructureState,
 )
 from app.models.db import cnb_reference  # noqa: F401
 from app.models.db.cnb_workspace import (
@@ -48,7 +50,7 @@ from app.services.cnb.edits import ConceptNoteEditService
 from app.tools.concept_note_draft_tools import build_draft_tools
 from pydantic import ValidationError
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 
 def test_all_titles_editable_but_template_identity_and_removal_protected():
@@ -80,7 +82,9 @@ def test_all_titles_editable_but_template_identity_and_removal_protected():
 
 
 @pytest.fixture
-async def workspace():
+async def workspace() -> AsyncIterator[
+    tuple[ConceptNoteWorkspaceRepository, async_sessionmaker[AsyncSession], UUID]
+]:
     url = os.getenv("CNB_TEST_DATABASE_URL")
     if not url:
         pytest.skip("Requires an isolated CNB_TEST_DATABASE_URL")
@@ -131,7 +135,11 @@ async def workspace():
         await engine.dispose()
 
 
-async def apply_direct(sessions, run_id, request):
+async def apply_direct(
+    sessions: async_sessionmaker[AsyncSession],
+    run_id: UUID,
+    request: StructureSaveRequest,
+) -> StructureState:
     async with sessions() as session, session.begin():
         await lock_run(session, run_id)
         return await save_structure(session, run_id, request)
@@ -481,7 +489,9 @@ async def test_structural_refinement_replaces_prior_preview_without_applying(wor
     )
 
     @asynccontextmanager
-    async def context(run):
+    async def context(
+        run: SimpleNamespace,
+    ) -> AsyncIterator[tuple[SimpleNamespace, dict[str, object]]]:
         yield run, {}
 
     service.locked_context = context

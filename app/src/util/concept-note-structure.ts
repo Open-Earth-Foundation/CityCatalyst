@@ -28,6 +28,14 @@ export const structureSaveSchema = z
   })
   .strict();
 export type StructureChapter = z.infer<typeof structureChapterSchema>;
+// Recovery must retain unfinished titles that are not valid for saving yet.
+export const structureDraftSchema = z.object({
+  fingerprint: z.string().regex(/^[0-9a-f]{64}$/),
+  chapters: z
+    .array(structureChapterSchema.extend({ title: z.string().max(255) }))
+    .min(1)
+    .max(100),
+});
 export interface StructureState {
   fingerprint: string;
   chapters: StructureChapter[];

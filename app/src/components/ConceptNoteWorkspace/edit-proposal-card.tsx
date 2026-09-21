@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { LuChevronLeft, LuChevronRight, LuEllipsis } from "react-icons/lu";
 
-import { ReviewButton as Button } from "./review-button";
+import { ReviewButton as Button } from "@/components/ConceptNoteWorkspace/review-button";
 import {
   DialogBody,
   DialogCloseTrigger,

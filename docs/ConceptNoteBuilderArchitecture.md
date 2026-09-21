@@ -1791,11 +1791,12 @@ Funding changes are rejected during active context assembly, drafting, or edit
 planning. For an existing draft, the user must acknowledge another review: chapter
 text and revision history are retained, confirmations and prior validation results
 are cleared, pending edit proposals become stale, and previous project matches are
-removed. An existing draft can switch to a template only when its ordered chapter
-references match the draft. Incompatible switches are rejected without changing
-the selected funding or draft; the user is directed to start a new note for that
-template. Compatible switches update chapter titles and required flags while
-preserving revision history. Clearing funding, or selecting a funder without a
+removed. An existing draft can switch to a template when its template chapter
+references match, regardless of document order or added custom chapters.
+Incompatible switches are rejected without changing the selected funding or draft;
+the user is directed to start a new note for that template. Compatible switches
+update required flags by reference while preserving run-owned titles, descriptions,
+order and revision history. Clearing funding, or selecting a funder without a
 template, preserves the draft for a later compatible selection.
 
 Edit registration snapshots context while holding the same CA run-row lock as
@@ -2893,6 +2894,9 @@ body paragraphs, revisions, evidence and missing-information records retain thei
 identity. Renames append a revision, updating the matching chapter heading while
 retaining all body content. Duplicate notes copy the current descriptions and order.
 Navigation and DOCX/PDF export consume the same saved chapter titles/positions.
+Compatible funding changes compare template reference membership independently of
+chapter order and custom chapters. They preserve run-owned titles, descriptions,
+order and body revisions, while updating required flags by template reference.
 
 Any structural mutation resets drafted chapters to `needs_review`, clears their
 confirmation/lock and invalidates document validation because order and guidance
@@ -2905,7 +2909,11 @@ Direct edits stay local until **Save structure**. Drag handles, keyboard Up/Down
 and arrow buttons use the same reorder operation. Failed saves retain the local
 form and show a retry message. A stale fingerprint requires reviewing local edits
 and explicitly discarding/reloading the latest snapshot before reapplying them.
-The page warns before leaving with unsaved changes.
+Unsaved edits are recovered from session storage when returning to the note in
+the same browser tab, including unfinished titles. Recovery retains the original
+fingerprint, so newer server changes still require explicit stale-state resolution.
+Saving or discarding clears recovery data. An unload warning also protects edits
+when closing or reloading the page. Browser storage restrictions can disable recovery.
 Adding an empty custom chapter keeps existing saved chapter bodies visible in
 Draft, including after reload. A compact **Continue drafting** action lets the
 user generate the new chapters while the run is marked `not_started`.

@@ -1,13 +1,13 @@
 "use client";
 
 import { HStack, Text } from "@chakra-ui/react";
-import { ReviewButton as Button } from "./review-button";
+import { ReviewButton as Button } from "@/components/ConceptNoteWorkspace/review-button";
 import { useTranslation } from "@/i18n/client";
 import type { EditChange, EditProposal } from "@/util/concept-note-edit-types";
 import type { ConceptNoteDraftChapter } from "@/util/types";
-import { EditProposalCard } from "./edit-proposal-card";
-import { proposalMatchesDraft } from "./inline-review";
-import type { useConceptNoteEdits } from "./use-concept-note-edits";
+import { EditProposalCard } from "@/components/ConceptNoteWorkspace/edit-proposal-card";
+import { proposalMatchesDraft } from "@/components/ConceptNoteWorkspace/inline-review";
+import type { useConceptNoteEdits } from "@/components/ConceptNoteWorkspace/use-concept-note-edits";
 
 export type EditController = ReturnType<typeof useConceptNoteEdits>;
 

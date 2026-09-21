@@ -190,6 +190,7 @@ async def get_structure(
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> StructureState:
     """Initialize run-owned template chapters once and restore the saved structure."""
+    # Materialize the selected template under the same lock as funding changes.
     async with service.locked_context(run) as (current, _):
         context = await ConceptNoteApplicationContextService().load_for_run(current)
         if context.template is not None:

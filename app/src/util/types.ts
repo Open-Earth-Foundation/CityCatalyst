@@ -1,3 +1,5 @@
+import type Decimal from "decimal.js";
+import type { GeoJSON } from "geojson";
 import type {
   DataSourceWithRelations,
   GlobalAPISourceResponse,
@@ -22,7 +24,6 @@ import type {
   EmissionsFactorAttributes,
 } from "@/models/EmissionsFactor";
 import type { ActivityValue } from "@/models/ActivityValue";
-import type Decimal from "decimal.js";
 import { OrganizationPlanType } from "@/util/enums";
 import type {
   FailedSourceResult,
@@ -32,7 +33,6 @@ import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
 import type { VersionAttributes } from "@/models/Version";
 import type { BoundingBox } from "@/util/geojson";
-import type { GeoJSON } from "geojson";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;

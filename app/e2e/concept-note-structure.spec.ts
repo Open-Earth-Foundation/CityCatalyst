@@ -232,6 +232,8 @@ async function setup(page: Page, chat = false, chapterCount = 2) {
 test("drag, keyboard, edit all chapters, validate, save, reload and recover", async ({
   page,
 }) => {
+  // Keep both drag targets visible under the default CI and dedicated configs.
+  await page.setViewportSize({ width: 1440, height: 1000 });
   const fixture = await setup(page);
   await page.getByRole("tab", { name: "Structure", exact: true }).click();
   const title = (position: number) =>
@@ -318,6 +320,53 @@ test("drag, keyboard, edit all chapters, validate, save, reload and recover", as
     path: "test-results/cc864-structure.png",
     fullPage: true,
   });
+});
+
+test("unsaved structure survives internal navigation and clears only after save or discard", async ({
+  page,
+}) => {
+  const fixture = await setup(page);
+  await page.getByRole("tab", { name: "Structure", exact: true }).click();
+  const title = page.getByRole("textbox", {
+    name: "Title for chapter 1",
+    exact: true,
+  });
+  await title.fill("");
+  await page.getByRole("link", { name: "All concept notes" }).click();
+  await expect(page).toHaveURL(
+    new RegExp(`/cities/${cityId}/concept-notes/?$`),
+  );
+  await page.goBack();
+  await expect(page).toHaveURL(new RegExp(`/concept-notes/${runId}/?$`));
+  await page.getByRole("tab", { name: "Structure", exact: true }).click();
+  await expect(title).toHaveValue("");
+  expect(fixture.saves()).toBe(0);
+  await title.fill("Recovered overview");
+  await page
+    .getByRole("button", { name: "Save structure", exact: true })
+    .click();
+  await expect.poll(fixture.saves).toBe(1);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (key) => sessionStorage.getItem(key),
+        `cnb-structure-draft:${runId}`,
+      ),
+    )
+    .toBeNull();
+  await title.fill("Discard this edit");
+  await page
+    .getByRole("button", { name: "Discard edits and reload", exact: true })
+    .click();
+  await expect(title).toHaveValue("Recovered overview");
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (key) => sessionStorage.getItem(key),
+        `cnb-structure-draft:${runId}`,
+      ),
+    )
+    .toBeNull();
 });
 
 test("chat structural before/after requires confirmation and updates navigation", async ({

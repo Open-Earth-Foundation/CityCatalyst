@@ -1,6 +1,6 @@
 import type { EditChange, EditProposal } from "@/util/concept-note-edit-types";
 import type { ConceptNoteDraftChapter } from "@/util/types";
-import { missingInformationRanges } from "./draft-markdown";
+import { missingInformationRanges } from "@/components/ConceptNoteWorkspace/draft-markdown";
 
 export type InlineReviewDecision = "accepted" | "rejected";
 

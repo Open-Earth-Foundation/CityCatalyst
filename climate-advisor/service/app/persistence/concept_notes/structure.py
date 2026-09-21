@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 def structure_snapshot(chapters: list[WorkspaceChapterSnapshot]) -> StructureState:
     """Fingerprint metadata and revisions so stale previews cannot overwrite content."""
+    # Canonical order binds the preview to the current document.
     ordered = sorted(chapters, key=lambda c: c.position)
     items = [
         StructureChapter(
@@ -45,6 +46,7 @@ def structure_snapshot(chapters: list[WorkspaceChapterSnapshot]) -> StructureSta
         )
         for c in ordered
     ]
+    # Include revisions and locks even when visible metadata is unchanged.
     payload = [
         (item.model_dump(mode="json"), chapter.revision_number, chapter.user_locked)
         for item, chapter in zip(items, ordered, strict=True)
@@ -59,6 +61,7 @@ def validate_structure(
     before: list[StructureChapter], after: list[StructureChapter]
 ) -> None:
     """Allow all labels/order to change; retain template identities and required flags."""
+    # Validate identities before enforcing template membership.
     existing = {c.chapter_id: c for c in before}
     proposed = {c.chapter_id: c for c in after}
     if not after or len(after) > 100 or len(proposed) != len(after):
@@ -76,6 +79,7 @@ def validate_structure(
                 "Template chapters can be renamed, described and reordered, but cannot be removed. Remove only custom chapters.",
                 status_code=422,
             )
+    # Custom insertions cannot impersonate required template chapters.
     for chapter in after:
         prior = existing.get(chapter.chapter_id)
         if prior is None:

@@ -1,4 +1,3 @@
-import type { ConceptNoteContextPresentation } from "./context-status";
 import { Box, Flex, HStack, Icon, Text } from "@chakra-ui/react";
 import {
   LuCircleAlert,
@@ -6,6 +5,7 @@ import {
   LuRefreshCw,
   LuSparkles,
 } from "react-icons/lu";
+import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
@@ -15,9 +15,9 @@ import type {
   ConceptNoteDraftState,
 } from "@/util/types";
 
-import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
+import type { ConceptNoteBundleProgress } from "@/components/ConceptNoteDashboard/utils";
 
-import { chapterTone } from "./draft-document-panel";
+import { chapterTone } from "@/components/ConceptNoteWorkspace/draft-document-panel";
 
 interface DraftSetupPanelProps {
   applicationContext: ConceptNoteApplicationContext | null;

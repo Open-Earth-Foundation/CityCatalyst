@@ -38,6 +38,31 @@ def test_explanation_terms_use_shared_spanish_catalogue() -> None:
     )
 
 
+def test_legal_explanation_context_selects_nested_language_text() -> None:
+    """Explanation facts should read legal prose from language-keyed maps."""
+    evidence = {
+        "legal": {
+            "ownership_description": {
+                "en": "The municipality can act directly.",
+                "es": "El municipio puede actuar directamente.",
+            }
+        }
+    }
+
+    assert explanations_service._localized_legal_description(
+        evidence,
+        "legal",
+        "ownership_description",
+        "es",
+    ) == "El municipio puede actuar directamente."
+    assert explanations_service._localized_legal_description(
+        evidence,
+        "legal",
+        "ownership_description",
+        "en",
+    ) == "The municipality can act directly."
+
+
 def test_generate_explanations_populates_each_requested_language(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

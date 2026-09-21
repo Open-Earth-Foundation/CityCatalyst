@@ -49,58 +49,72 @@ export default function Onboarding(props: {
       });
   }, [searchParams, acceptOrgInvite, status, pathname, router]);
 
-  const steps = [1, 2, 3];
+  const steps = [1, 2];
   const projectId = searchParams.get("project");
   const setupHref = projectId
     ? `${pathname}/setup?project=${projectId}`
     : `${pathname}/setup`;
 
   return (
-    <>
-      <Box w={"1090px"} maxW="full" mx="auto">
-        <Box display="flex" gap="55px" alignItems="center">
-          <Box w="full" h="full" display="flex" flexDir="column" gap="24px">
-            <Text
-              fontFamily="heading"
-              fontWeight="600"
-              lineHeight="16px"
-              letterSpacing="1.5px"
-              textTransform="uppercase"
-              color="content.tertiary"
-              fontSize="title.sm"
-              data-testid="start-page-title"
-            >
-              {t("welcome-top")}
-            </Text>
-            <Heading
-              as="h1"
-              color="content.alternative"
-              fontSize="display.sm"
-              lineHeight="44px"
-              fontWeight="600"
-              fontStyle="normal"
-              data-testid="start-page-heading"
-            >
-              {t("welcome-title")}
-            </Heading>
-            <Text
-              color="content.tertiary"
-              fontSize="body.lg"
-              lineHeight="24px"
-              fontWeight="400"
-              letterSpacing="wide"
-              data-testid="start-page-description"
-            >
-              {t("welcome-description")}
-            </Text>
-          </Box>
-          <Box>
-            <Image
-              src="/assets/onboarding-building-illustration.png"
-              alt="buildings.png"
-              height={420}
-              width={900}
-            />
+    <Box
+      w="full"
+      h="calc(100vh - 80px)"
+      display="flex"
+      flexDirection="column"
+      justifyContent={{ base: "space-between", md: "center" }}
+    >
+      <Box
+        w="full"
+        pt={{ base: "32px", md: 0 }}
+        display="flex"
+        alignItems={{ base: "flex-start", md: "center" }}
+        justifyContent="center"
+      >
+        <Box w={"1090px"} maxW="full" mx="auto">
+          <Box display="flex" gap="55px" alignItems="center">
+            <Box w="full" h="full" display="flex" flexDir="column" gap="24px">
+              <Text
+                fontFamily="heading"
+                fontWeight="600"
+                lineHeight="16px"
+                letterSpacing="1.5px"
+                textTransform="uppercase"
+                color="content.tertiary"
+                fontSize="title.sm"
+                data-testid="start-page-title"
+              >
+                {t("welcome-top")}
+              </Text>
+              <Heading
+                as="h1"
+                color="content.alternative"
+                fontSize="display.sm"
+                lineHeight="44px"
+                fontWeight="600"
+                fontStyle="normal"
+                data-testid="start-page-heading"
+              >
+                {t("welcome-title")}
+              </Heading>
+              <Text
+                color="content.tertiary"
+                fontSize="body.lg"
+                lineHeight="24px"
+                fontWeight="400"
+                letterSpacing="wide"
+                data-testid="start-page-description"
+              >
+                {t("welcome-description")}
+              </Text>
+            </Box>
+            <Box display={{ base: "none", md: "block" }}>
+              <Image
+                src="/assets/onboarding-building-illustration.png"
+                alt="buildings.png"
+                height={420}
+                width={900}
+              />
+            </Box>
           </Box>
         </Box>
       </Box>
@@ -108,7 +122,7 @@ export default function Onboarding(props: {
         bg="base.light"
         h="145px"
         w="full"
-        pos="fixed"
+        pos={{ base: "static", md: "fixed" }}
         bottom="0"
         left="0"
         data-onboarding-bottom-bar
@@ -131,7 +145,7 @@ export default function Onboarding(props: {
           display="flex"
           justifyContent="end"
           py="32px"
-          px="175px"
+          px={{ base: 4, md: "175px" }}
           gap="16px"
         >
           <Button
@@ -150,6 +164,6 @@ export default function Onboarding(props: {
           </Button>
         </Box>
       </Box>
-    </>
+    </Box>
   );
 }

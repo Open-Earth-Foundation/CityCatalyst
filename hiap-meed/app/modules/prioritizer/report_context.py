@@ -641,6 +641,8 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
     """Build the six evidence rows required by the Snapshot signal table."""
     policy = _policy_facts(context.policy_score) or {}
     legal = _legal_facts(context) or {}
+    ownership_description = legal.get("ownership_description") or {}
+    restrictions_description = legal.get("restrictions_description") or {}
     financial = _financial_facts(context) or {}
     project_count = financial.get("comparable_project_count")
     emissions = context.action.emissions
@@ -698,11 +700,16 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
         )
     if context.comparable_projects:
         track_refs.append("finance_catalogues")
-    legal_detail = (
-        legal.get("authority_scope_summary")
-        or legal.get("ownership_description")
-        or legal.get("restrictions_description")
-    )
+    # Prefer the conservative municipal-asset summary when that split is assessed.
+    # Otherwise keep the localized ownership or restrictions text from the source.
+    if legal.get("authority_scope") == AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY:
+        legal_detail = legal.get("authority_scope_summary")
+    else:
+        legal_detail = (
+            legal.get("ownership_description")
+            or legal.get("restrictions_description")
+            or legal.get("authority_scope_summary")
+        )
     return [
         {
             "what_we_checked": translate_term(

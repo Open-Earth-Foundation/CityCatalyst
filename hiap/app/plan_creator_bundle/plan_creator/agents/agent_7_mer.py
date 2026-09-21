@@ -20,7 +20,11 @@ logger = logging.getLogger(__name__)
 OPENAI_MODEL_NAME_PLAN_CREATOR = os.environ["OPENAI_MODEL_NAME_PLAN_CREATOR"]
 
 # Create the agents
-model = ChatOpenAI(model=OPENAI_MODEL_NAME_PLAN_CREATOR, temperature=0.0, seed=42)
+model = ChatOpenAI(
+    model=OPENAI_MODEL_NAME_PLAN_CREATOR,
+    seed=42,
+    reasoning_effort="none",
+)
 
 # Define tools for the agent
 tools = [retriever_indicators_tool]

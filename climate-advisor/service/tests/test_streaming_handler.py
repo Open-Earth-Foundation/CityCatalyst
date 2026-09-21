@@ -8,7 +8,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 from app.models.requests import MessageCreateRequest
+from app.services.native_input_catalog_service import ActiveRequestContext
 from app.utils.chat_workflow_context import ChatWorkflowContext
+from app.utils.mlflow_logging import (
+    finish_tool_observation,
+    start_tool_observation,
+)
 from app.utils.sse import format_sse
 from app.utils.streaming_handler import StreamingHandler
 
@@ -30,8 +35,124 @@ def _parse_sse_payload(chunk: bytes) -> dict:
 
 
 class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
+    def test_native_input_catalog_context_uses_authenticated_request_identity(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id="thread-1",
+            user_id="body-user",
+            session_factory=MagicMock(),
+            cc_access_token="trusted-core-token",
+            catalog_user_id="authenticated-user",
+            inventory_id="inventory-1",
+            request_context={
+                "city_id": "city-1",
+                "native_input_selection": {
+                    "catalog_id": "request-context-catalog",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            },
+            request_options={
+                "project_id": "project-1",
+                "native_input_selection": {
+                    "catalog_id": "request-options-catalog",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            },
+        )
+        payload = MessageCreateRequest(
+            user_id="attacker-supplied-user",
+            content="hello",
+            context={
+                "user_id": "attacker-supplied-user",
+                "organization_id": "organization-1",
+                "native_input_selection": {
+                    "catalog_id": "catalog-1",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            },
+            options={"native_input_selection": {"catalog_id": "forged"}},
+        )
+
+        context = handler._native_input_catalog_request(payload)
+
+        self.assertEqual(
+            context,
+            ActiveRequestContext(
+                user_id="authenticated-user",
+                thread_id="thread-1",
+                organization_id="organization-1",
+                project_id="project-1",
+                city_id="city-1",
+                inventory_id="inventory-1",
+            ),
+        )
+
+    def test_native_input_catalog_context_requires_validated_core_identity(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id="thread-1",
+            user_id="body-user",
+            session_factory=MagicMock(),
+            cc_access_token="unvalidated-token",
+            request_context={"city_id": "city-1"},
+        )
+        payload = MessageCreateRequest(
+            user_id="body-user",
+            content="hello",
+            context={"organization_id": "organization-1"},
+        )
+
+        self.assertIsNone(handler._native_input_catalog_request(payload))
+
+    def test_native_input_catalog_context_requires_current_core_credential(
+        self,
+    ) -> None:
+        """Body identity and scope do not establish catalog authorization."""
+        handler = StreamingHandler(
+            thread_id="thread-1",
+            user_id="authenticated-user",
+            session_factory=MagicMock(),
+            inventory_id="inventory-1",
+            request_context={"city_id": "city-1"},
+            request_options={"project_id": "project-1"},
+        )
+        payload = MessageCreateRequest(
+            user_id="attacker-supplied-user",
+            content="hello",
+            context={
+                "user_id": "attacker-supplied-user",
+                "organization_id": "organization-1",
+                "native_input_selection": {
+                    "catalog_id": "catalog-1",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            },
+            options={"native_input_selection": {"catalog_id": "forged"}},
+        )
+
+        context = handler._native_input_catalog_request(payload)
+
+        self.assertIsNone(context)
+
     async def test_done_event_reflects_persisted_history(self) -> None:
-        payload = MessageCreateRequest(user_id="user-1", content="hello")
+        payload = MessageCreateRequest(
+            user_id="user-1",
+            content="hello",
+            context={
+                "native_input_selection": {
+                    "catalog_id": "payload-catalog",
+                    "capability_id": "ghgi.inventory.status_overview",
+                }
+            },
+            options={
+                "native_input_selection": {
+                    "catalog_id": "options-catalog",
+                    "capability_id": "ghgi.inventory.status_overview",
+                }
+            },
+        )
         handler = StreamingHandler(
             thread_id="thread-1",
             user_id="user-1",
@@ -56,7 +177,7 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             patch(
                 "app.utils.streaming_handler.AgentService",
                 return_value=fake_agent_service,
-            ),
+            ) as mock_agent_service,
             patch.object(
                 StreamingHandler,
                 "_load_conversation_history",
@@ -80,6 +201,9 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(done_payload["data"]["history_saved"])
         self.assertTrue(handler.history_saved)
         fake_agent_service.close.assert_awaited_once()
+        agent_service_kwargs = mock_agent_service.call_args.kwargs
+        self.assertNotIn("native_input_selection", agent_service_kwargs)
+        self.assertIsNone(agent_service_kwargs["native_input_catalog_context"])
 
     async def test_persist_refreshed_token_from_agent_service(self) -> None:
         handler = StreamingHandler(
@@ -316,6 +440,40 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(recorded["fallback_instructions"], original_instructions)
         self.assertEqual(agent.instructions, original_instructions)
 
+    async def test_cnb_fallback_retains_composed_cnb_instructions(self) -> None:
+        payload = MessageCreateRequest(
+            user_id="user-1", content="Check the project budget"
+        )
+        handler = StreamingHandler(
+            thread_id=str(uuid4()), user_id="user-1", session_factory=None
+        )
+        handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(uuid4()))
+        instructions = "Shared core + CNB-specific instructions"
+        agent = SimpleNamespace(instructions=instructions)
+        recorded = {}
+
+        class Messages:
+            def run_stream(self, prompt):
+                recorded["instructions"] = agent.instructions
+
+                async def chunks():
+                    yield "No source context available"
+
+                return chunks()
+
+        agent.messages = Messages()
+        with patch(
+            "app.utils.streaming_handler.Runner.run_streamed",
+            side_effect=RuntimeError("unavailable"),
+        ):
+            chunks = [
+                chunk
+                async for chunk in handler._stream_agent_events(agent, payload, [])
+            ]
+        assert chunks == [b"No source context available"]
+        assert recorded["instructions"] == instructions
+        assert handler._mlflow_tags(payload)["prompt_name"] == "cnb_chat"
+
     async def test_cancelled_stream_logs_cancelled_mlflow_summary(self) -> None:
         payload = MessageCreateRequest(user_id="user-1", content="hello")
         handler = StreamingHandler(
@@ -526,3 +684,401 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(instruction_text, "Composed Stationary Energy prompt")
         prompts.compose_prompt.assert_called_once_with("stationary_energy_review")
+
+    async def test_catalog_tools_keep_sse_payloads_and_redact_mlflow_records(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.request_identifier = "req-catalog"
+
+        discover_called = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="native_input_discover",
+                call_id="call-discover",
+                arguments="{}",
+            )
+        )
+        read_called = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="native_input_read",
+                call_id="call-read",
+                arguments=json.dumps(
+                    {
+                        "catalogId": "cat-secret-uuid",
+                        "capabilityId": "ghgi.inventory.status_overview",
+                    }
+                ),
+            )
+        )
+        discover_output = SimpleNamespace(
+            raw_item=SimpleNamespace(call_id="call-discover", name="native_input_discover"),
+            output=json.dumps(
+                {
+                    "action": "native_input_discover",
+                    "success": True,
+                    "data": {
+                        "entries": [
+                            {
+                                "catalogId": "cat-secret-uuid",
+                                "capabilityIds": ["ghgi.inventory.status_overview"],
+                            }
+                        ]
+                    },
+                }
+            ),
+        )
+        read_output = SimpleNamespace(
+            raw_item=SimpleNamespace(call_id="call-read", name="native_input_read"),
+            output=json.dumps(
+                {
+                    "action": "ghgi.inventory.status_overview",
+                    "success": False,
+                    "error_code": "capability_unavailable",
+                    "error": "Requested capability is unavailable.",
+                }
+            ),
+        )
+
+        sse_chunks = [
+            chunk async for chunk in handler._handle_tool_called(discover_called)
+        ]
+        sse_chunks.extend(
+            [chunk async for chunk in handler._handle_tool_called(read_called)]
+        )
+        sse_chunks.extend(
+            [chunk async for chunk in handler._handle_tool_output(discover_output)]
+        )
+        sse_chunks.extend(
+            [chunk async for chunk in handler._handle_tool_output(read_output)]
+        )
+        parsed = [_parse_sse_payload(chunk) for chunk in sse_chunks]
+        logged: list[tuple[str, object]] = []
+
+        def fake_log_json_artifact(artifact_file: str, payload: object) -> None:
+            logged.append((artifact_file, payload))
+
+        with patch(
+            "app.utils.streaming_handler.log_json_artifact",
+            side_effect=fake_log_json_artifact,
+        ), patch("app.utils.streaming_handler.log_metrics"), patch(
+            "app.utils.streaming_handler.log_tags"
+        ), patch("app.utils.streaming_handler.log_text_artifact"):
+            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+
+        names = [record["tool_name"] for record in handler._tool_observation_records]
+        outcomes = [record["outcome"] for record in handler._tool_observation_records]
+        dumped = json.dumps(handler._tool_observation_records)
+        artifact = next(
+            payload
+            for artifact_file, payload in logged
+            if artifact_file == "chat/tool_invocations.json"
+        )
+
+        self.assertEqual(names, ["native_input_discover", "native_input_read"])
+        self.assertEqual(outcomes, ["success", "error"])
+        self.assertIn("cat-secret-uuid", json.dumps(parsed))
+        self.assertNotIn("cat-secret-uuid", dumped)
+        self.assertEqual(
+            handler.tool_invocations[1]["arguments"]["catalogId"],
+            "cat-secret-uuid",
+        )
+        self.assertEqual(artifact["tool_invocations"], handler._tool_observation_records)
+
+    async def test_agentic_mlflow_fallback_omits_raw_catalog_payloads(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.request_identifier = "req-agentic-fallback"
+        handler.workflow_context = ChatWorkflowContext(
+            stationary_energy_draft_run_id=str(uuid4())
+        )
+        marker = "cat-fallback-secret-uuid"
+        called = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="native_input_read",
+                call_id="call-read-fallback",
+                arguments=json.dumps(
+                    {
+                        "catalogId": marker,
+                        "capabilityId": "ghgi.inventory.status_overview",
+                    }
+                ),
+            )
+        )
+        output = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                call_id="call-read-fallback",
+                name="native_input_read",
+            ),
+            output=json.dumps(
+                {
+                    "action": "native_input_read",
+                    "success": False,
+                    "error_code": "capability_unavailable",
+                    "error": "Requested capability is unavailable.",
+                    "data": {"catalogId": marker, "bounded": True},
+                }
+            ),
+        )
+
+        with patch(
+            "app.utils.streaming_handler.start_tool_observation",
+            side_effect=RuntimeError("mlflow span start failed"),
+        ), patch(
+            "app.utils.streaming_handler.finish_tool_observation",
+            side_effect=RuntimeError("mlflow span finish failed"),
+        ):
+            sse_chunks = [chunk async for chunk in handler._handle_tool_called(called)]
+            sse_chunks.extend(
+                [chunk async for chunk in handler._handle_tool_output(output)]
+            )
+
+        self.assertEqual(handler._tool_observation_records, [])
+        self.assertEqual(
+            handler.tool_invocations[0]["arguments"]["catalogId"],
+            marker,
+        )
+        self.assertIn(marker, json.dumps(handler.tool_invocations))
+        self.assertIn(marker, b"".join(sse_chunks).decode("utf-8"))
+
+        logged: list[tuple[str, object]] = []
+
+        def fake_log_json_artifact(artifact_file: str, payload: object) -> None:
+            logged.append((artifact_file, payload))
+
+        with patch(
+            "app.utils.streaming_handler.log_json_artifact",
+            side_effect=fake_log_json_artifact,
+        ), patch("app.utils.streaming_handler.log_metrics"), patch(
+            "app.utils.streaming_handler.log_tags"
+        ), patch("app.utils.streaming_handler.log_text_artifact"), patch(
+            "app.utils.streaming_handler.close_open_tool_observations",
+            side_effect=RuntimeError("mlflow close failed"),
+        ):
+            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+
+        artifact = next(
+            payload
+            for artifact_file, payload in logged
+            if artifact_file == "chat/tool_invocations.json"
+        )
+        dumped = json.dumps(artifact)
+        record = artifact["tool_invocations"][0]
+        self.assertNotIn(marker, dumped)
+        self.assertNotIn("bounded", dumped)
+        self.assertEqual(handler.tool_invocations[0]["status"], "success")
+        self.assertEqual(record["state"], "failed")
+        self.assertEqual(record["outcome"], "error")
+        self.assertEqual(record["output"]["success"], False)
+        self.assertEqual(record["output"]["error_code"], "capability_unavailable")
+
+    async def test_agentic_mlflow_fallback_keeps_executing_tools_incomplete(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.request_identifier = "req-incomplete-fallback"
+        handler.workflow_context = ChatWorkflowContext(
+            stationary_energy_draft_run_id=str(uuid4())
+        )
+        marker = "cat-incomplete-secret-uuid"
+        called = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="native_input_read",
+                call_id="call-read-incomplete",
+                arguments=json.dumps(
+                    {
+                        "catalogId": marker,
+                        "capabilityId": "ghgi.inventory.status_overview",
+                    }
+                ),
+            )
+        )
+
+        with patch(
+            "app.utils.streaming_handler.start_tool_observation",
+            side_effect=RuntimeError("mlflow span start failed"),
+        ):
+            _ = [chunk async for chunk in handler._handle_tool_called(called)]
+
+        self.assertEqual(handler.tool_invocations[0]["status"], "executing")
+        self.assertNotIn("result", handler.tool_invocations[0])
+
+        logged: list[tuple[str, object]] = []
+
+        def fake_log_json_artifact(artifact_file: str, payload: object) -> None:
+            logged.append((artifact_file, payload))
+
+        with patch(
+            "app.utils.streaming_handler.log_json_artifact",
+            side_effect=fake_log_json_artifact,
+        ), patch("app.utils.streaming_handler.log_metrics"), patch(
+            "app.utils.streaming_handler.log_tags"
+        ), patch("app.utils.streaming_handler.log_text_artifact"), patch(
+            "app.utils.streaming_handler.close_open_tool_observations",
+            side_effect=RuntimeError("mlflow close failed"),
+        ):
+            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+
+        artifact = next(
+            payload
+            for artifact_file, payload in logged
+            if artifact_file == "chat/tool_invocations.json"
+        )
+        record = artifact["tool_invocations"][0]
+        dumped = json.dumps(artifact)
+        self.assertNotIn(marker, dumped)
+        self.assertEqual(record["state"], "cancelled")
+        self.assertEqual(record["outcome"], "incomplete")
+        self.assertNotEqual(record["outcome"], "success")
+
+    async def test_agentic_mlflow_summary_merges_partial_instrumentation_failure(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.request_identifier = "req-partial-fallback"
+        handler.workflow_context = ChatWorkflowContext(
+            stationary_energy_draft_run_id=str(uuid4())
+        )
+        marker = "cat-partial-secret-uuid"
+        discover_called = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="native_input_discover",
+                call_id="call-discover",
+                arguments="{}",
+            )
+        )
+        read_called = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="native_input_read",
+                call_id="call-read",
+                arguments=json.dumps(
+                    {
+                        "catalogId": marker,
+                        "capabilityId": "ghgi.inventory.status_overview",
+                    }
+                ),
+            )
+        )
+        discover_output = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                call_id="call-discover",
+                name="native_input_discover",
+            ),
+            output=json.dumps(
+                {
+                    "action": "native_input_discover",
+                    "success": True,
+                    "data": {"entries": [{"catalogId": marker}]},
+                }
+            ),
+        )
+        read_output = SimpleNamespace(
+            raw_item=SimpleNamespace(call_id="call-read", name="native_input_read"),
+            output=json.dumps(
+                {
+                    "action": "native_input_read",
+                    "success": False,
+                    "error_code": "capability_unavailable",
+                    "error": "Requested capability is unavailable.",
+                    "data": {"catalogId": marker},
+                }
+            ),
+        )
+
+        def start_side_effect(pending, **kwargs):
+            if kwargs.get("tool_name") == "native_input_read":
+                raise RuntimeError("mlflow span start failed")
+            return start_tool_observation(pending, **kwargs)
+
+        def finish_side_effect(pending, completed, **kwargs):
+            if kwargs.get("call_id") == "call-read":
+                raise RuntimeError("mlflow span finish failed")
+            return finish_tool_observation(pending, completed, **kwargs)
+
+        with patch(
+            "app.utils.streaming_handler.start_tool_observation",
+            side_effect=start_side_effect,
+        ), patch(
+            "app.utils.streaming_handler.finish_tool_observation",
+            side_effect=finish_side_effect,
+        ):
+            _ = [chunk async for chunk in handler._handle_tool_called(discover_called)]
+            _ = [chunk async for chunk in handler._handle_tool_called(read_called)]
+            _ = [chunk async for chunk in handler._handle_tool_output(discover_output)]
+            _ = [chunk async for chunk in handler._handle_tool_output(read_output)]
+
+        self.assertEqual(len(handler.tool_invocations), 2)
+        self.assertEqual(len(handler._tool_observation_records), 1)
+
+        logged: list[tuple[str, object]] = []
+
+        def fake_log_json_artifact(artifact_file: str, payload: object) -> None:
+            logged.append((artifact_file, payload))
+
+        with patch(
+            "app.utils.streaming_handler.log_json_artifact",
+            side_effect=fake_log_json_artifact,
+        ), patch("app.utils.streaming_handler.log_metrics"), patch(
+            "app.utils.streaming_handler.log_tags"
+        ), patch("app.utils.streaming_handler.log_text_artifact"), patch(
+            "app.utils.streaming_handler.close_open_tool_observations",
+            side_effect=RuntimeError("mlflow close failed"),
+        ):
+            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+
+        artifact = next(
+            payload
+            for artifact_file, payload in logged
+            if artifact_file == "chat/tool_invocations.json"
+        )
+        records = artifact["tool_invocations"]
+        dumped = json.dumps(artifact)
+        self.assertEqual(
+            [record["tool_name"] for record in records],
+            ["native_input_discover", "native_input_read"],
+        )
+        self.assertEqual(records[0]["outcome"], "success")
+        self.assertEqual(records[1]["state"], "failed")
+        self.assertEqual(records[1]["outcome"], "error")
+        self.assertNotIn(marker, dumped)
+
+    async def test_mlflow_tool_logging_failure_does_not_change_sse(self) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        run_item = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="native_input_discover",
+                call_id="call-discover",
+                arguments="{}",
+            )
+        )
+
+        with patch(
+            "app.utils.streaming_handler.start_tool_observation",
+            side_effect=RuntimeError("mlflow down"),
+        ):
+            chunks = [chunk async for chunk in handler._handle_tool_called(run_item)]
+
+        parsed = [_parse_sse_payload(chunk) for chunk in chunks]
+        self.assertEqual(parsed[0]["event"], "tool_result")
+        self.assertEqual(parsed[0]["data"]["name"], "native_input_discover")
+        self.assertEqual(parsed[0]["data"]["status"], "executing")

@@ -33,9 +33,10 @@ app = FastAPI(
     title="HIAP-MEED",
     description=(
         "Climate-action prioritization and City Action Report generation service. "
-        "All workflow requests use a `meta` envelope for caller correlation and a "
-        "`requestData` payload for the operation-specific input. See each endpoint "
-        "for required input, response semantics, and retry guidance."
+        "Workflow requests contain `meta.requestId` for caller correlation and "
+        "a `requestData` payload for operation-specific input. Successful business "
+        "responses contain server-owned `meta` with the resolved request ID, response "
+        "timestamp, and returned record count."
     ),
     version="0.1.0",
     openapi_tags=[

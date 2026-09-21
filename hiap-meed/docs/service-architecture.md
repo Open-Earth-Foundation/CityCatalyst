@@ -126,7 +126,7 @@ sequenceDiagram
     participant Orch as Orchestrator
     participant Clients as Data clients (mock by default)
 
-    FE->>API: POST /v1/prioritize PrioritizerApiRequest (meta + requestData.cityDataList)
+    FE->>API: POST /v1/prioritize PrioritizerApiRequest (meta.requestId + requestData.cityDataList)
     Note over API: FastAPI validates request body (Pydantic)
     API->>Orch: run_prioritization(locode, city_emissions_context, clients, per_city_options...)
     Orch->>Clients: get_city / list_actions / get_action_legal_assessments / get_action_policy_scores / feasibility score fetches

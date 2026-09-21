@@ -36,11 +36,12 @@ export default function CreateTokenForm({
       w="full"
       borderWidth="1px"
       borderColor="border.overlay"
-      borderRadius="8px"
-      bg="background.backgroundLight"
-      p="24px"
+      borderRadius="rounded"
+      bg="white"
+      shadow="1dp"
+      p="6"
     >
-      <HStack gap="24px" align="flex-start" mb="24px">
+      <HStack gap="6" align="flex-start" mb="9">
         <Field
           label={t("token-name")}
           required
@@ -51,8 +52,8 @@ export default function CreateTokenForm({
             placeholder={t("token-name-placeholder")}
             value={tokenName}
             onChange={(e) => onTokenNameChange(e.target.value)}
-            h="48px"
-            borderRadius="4px"
+            size="lg"
+            borderRadius="minimal"
             borderColor="border.default"
             bg="base.light"
             _placeholder={{ color: "content.tertiary" }}
@@ -60,12 +61,11 @@ export default function CreateTokenForm({
         </Field>
 
         <Field label={t("expiration")} flex="1" labelColor="content.secondary">
-          <NativeSelectRoot w="full">
+          <NativeSelectRoot w="full" size="lg">
             <NativeSelectField
               value={expiresIn}
               onChange={(e) => onExpiresInChange(e.target.value)}
-              h="48px"
-              borderRadius="4px"
+              borderRadius="minimal"
               borderColor="border.neutral"
               shadow="sm"
               bg="base.light"
@@ -79,11 +79,11 @@ export default function CreateTokenForm({
         </Field>
       </HStack>
 
-      <HStack justifyContent="flex-end" gap="16px">
+      <HStack justifyContent="flex-end" gap="4">
         <Button
           variant="outline"
           h="63px"
-          minW="120px"
+          minW="171px"
           onClick={onCancel}
           textTransform="uppercase"
           letterSpacing="wider"
@@ -95,7 +95,7 @@ export default function CreateTokenForm({
         <Button
           variant="solid"
           h="63px"
-          minW="160px"
+          minW="171px"
           onClick={onSubmit}
           loading={isSubmitting}
           textTransform="uppercase"

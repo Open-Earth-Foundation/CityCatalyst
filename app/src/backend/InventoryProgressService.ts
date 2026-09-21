@@ -11,6 +11,7 @@ import {
   SECTORS,
 } from "@/util/constants";
 import { InventoryTypeEnum } from "@/util/enums";
+import { isNotEstimated, isNotOccurring } from "@/util/notation-keys";
 
 const romanTable: Record<string, number> = {
   I: 1,
@@ -144,9 +145,9 @@ export default class InventoryProgressService {
           (acc, inventoryValue) => {
             if (inventoryValue.dataSource) {
               acc.thirdParty++;
-            } else if (inventoryValue.unavailableReason === "reason-NE") {
+            } else if (isNotEstimated(inventoryValue.unavailableReason)) {
               acc.reasonNE++;
-            } else if (inventoryValue.unavailableReason === "reason-NO") {
+            } else if (isNotOccurring(inventoryValue.unavailableReason)) {
               acc.reasonNO++;
             } else {
               acc.uploaded++;

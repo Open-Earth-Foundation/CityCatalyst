@@ -8,11 +8,19 @@ from app.middleware.request_context import RequestContextMiddleware, get_request
 from app.routes.concept_note_city_context import (
     router as concept_note_city_context_router,
 )
+from app.routes.concept_note_chapter_validation import (
+    router as concept_note_chapter_validation_router,
+)
 from app.routes.concept_note_context_bundle import (
     router as concept_note_context_bundle_router,
 )
 from app.routes.concept_note_markdown import router as concept_note_markdown_router
 from app.routes.concept_note_runs import router as concept_note_runs_router
+from app.routes.concept_note_edits import (
+    edit_exception_handler,
+    router as concept_note_edits_router,
+)
+from app.persistence.concept_notes.edits import EditOperationError
 from app.routes.dev_inventory import router as dev_inventory_router
 from app.routes.health import router as health_router
 from app.routes.messages import router as messages_router
@@ -20,6 +28,7 @@ from app.routes.stationary_energy_drafts import (
     router as stationary_energy_drafts_router,
 )
 from app.routes.threads import router as threads_router
+from app.services.cnb.chapter_drafting import run_chapter_drafting_reconciler
 from app.services.cnb.context_bundle import run_context_bundle_reconciler
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -86,12 +95,22 @@ def get_app() -> FastAPI:
         app.state.context_bundle_reconciler = asyncio.create_task(
             run_context_bundle_reconciler()
         )
+        app.state.chapter_drafting_reconciler = asyncio.create_task(
+            run_chapter_drafting_reconciler()
+        )
 
     @app.on_event("shutdown")
     async def _shutdown() -> None:
-        reconciler = getattr(app.state, "context_bundle_reconciler", None)
-        if reconciler is not None:
-            reconciler.cancel()
+        reconcilers = [
+            getattr(app.state, "context_bundle_reconciler", None),
+            getattr(app.state, "chapter_drafting_reconciler", None),
+        ]
+        for reconciler in reconcilers:
+            if reconciler is not None:
+                reconciler.cancel()
+        for reconciler in reconcilers:
+            if reconciler is None:
+                continue
             try:
                 await reconciler
             except asyncio.CancelledError:
@@ -106,8 +125,11 @@ def get_app() -> FastAPI:
     app.include_router(stationary_energy_drafts_router, prefix="/v1")
     app.include_router(concept_note_markdown_router, prefix="/v1")
     app.include_router(concept_note_city_context_router, prefix="/v1")
+    app.include_router(concept_note_chapter_validation_router, prefix="/v1")
     app.include_router(concept_note_context_bundle_router, prefix="/v1")
     app.include_router(concept_note_runs_router, prefix="/v1")
+    app.include_router(concept_note_edits_router, prefix="/v1")
+    app.add_exception_handler(EditOperationError, edit_exception_handler)
 
     # Static playground for manual testing
     static_dir = Path(__file__).resolve().parent / "static"

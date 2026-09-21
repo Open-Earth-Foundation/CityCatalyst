@@ -6,17 +6,17 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from uuid import UUID
 
+from app.db.session import get_session_factory
+from app.models.cnb.concept_note_markdown import (
+    ConceptNoteMarkdownRequest,
+    ConceptNoteSourceFormat,
+    ConceptNoteUploadCreateRequest,
+    source_format_from_filename,
+)
+from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from app.db.session import get_session_factory
-from app.models.concept_note_markdown import (
-    ConceptNoteMarkdownRequest,
-    ConceptNoteUploadCreateRequest,
-)
-from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
-
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +57,7 @@ class ConceptNoteUploadSnapshot:
     error_code: str | None
     received_at: datetime
     completed_at: datetime | None
+    source_format: ConceptNoteSourceFormat = "pdf"
 
 
 class ConceptNoteMarkdownRepository(ABC):
@@ -217,6 +218,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                         user_id=user_id,
                         filename=payload.filename,
                         source_label=payload.source_label,
+                        source_format=payload.source_format,
                     )
                     return _snapshot(existing)
 
@@ -246,6 +248,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                         user_id=user_id,
                         filename=payload.filename,
                         source_label=payload.source_label,
+                        source_format=payload.source_format,
                     )
                     return _snapshot(existing)
 
@@ -328,6 +331,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                     user_id=user_id,
                     filename=payload.filename,
                     source_label=payload.source_label,
+                    source_format=payload.source_format,
                 )
                 if upload.markdown_sha256 is not None:
                     _validate_existing_markdown(
@@ -547,13 +551,18 @@ def _validate_upload_identity(
     user_id: str,
     filename: str,
     source_label: str | None,
+    source_format: ConceptNoteSourceFormat,
 ) -> None:
     _require_upload_binding(
         upload=existing,
         run_id=run_id,
         user_id=user_id,
     )
-    if existing.filename != filename or existing.source_label != source_label:
+    if (
+        existing.filename != filename
+        or existing.source_label != source_label
+        or source_format_from_filename(existing.filename) != source_format
+    ):
         raise ConceptNoteMarkdownRepositoryError(
             "upload_identity_conflict",
             409,
@@ -566,7 +575,7 @@ def _validate_existing_markdown(
     existing: ConceptNoteUpload,
     markdown_s3_key: str,
     markdown_sha256: str,
-    page_count: int,
+    page_count: int | None,
 ) -> None:
     if (
         existing.markdown_s3_key != markdown_s3_key
@@ -587,6 +596,7 @@ def _snapshot(upload: ConceptNoteUpload) -> ConceptNoteUploadSnapshot:
         user_id=upload.uploaded_by_user_id,
         filename=upload.filename,
         source_label=upload.source_label,
+        source_format=source_format_from_filename(upload.filename),
         markdown_s3_key=upload.markdown_s3_key,
         markdown_sha256=upload.markdown_sha256,
         page_count=upload.page_count,

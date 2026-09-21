@@ -74,7 +74,7 @@ def translate_plan(
                     "content": system_prompt,
                 },
             ],
-            temperature=0,
+            reasoning_effort="none",
             response_format=PlanResponse,
         )
         # Extract application-owned data immediately; do not log/serialize `completion`

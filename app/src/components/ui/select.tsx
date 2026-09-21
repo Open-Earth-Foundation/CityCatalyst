@@ -100,27 +100,40 @@ export const SelectValueText = React.forwardRef<
   );
 });
 
-export const SelectRoot = React.forwardRef<
-  HTMLDivElement,
-  ChakraSelect.RootProps
->(function SelectRoot(props, ref) {
-  return (
-    <ChakraSelect.Root
-      {...props}
-      ref={ref}
-      positioning={{ sameWidth: true, ...props.positioning }}
-    >
-      {props.asChild ? (
-        props.children
-      ) : (
-        <>
-          <ChakraSelect.HiddenSelect />
-          {props.children}
-        </>
-      )}
-    </ChakraSelect.Root>
-  );
-}) as ChakraSelect.RootComponent;
+interface SelectRootProps<T extends CollectionItem = CollectionItem>
+  extends ChakraSelect.RootProps<T> {
+  /** Overrides the trigger's rendered height (e.g. "44px"), bypassing the size variant's default. */
+  triggerHeight?: string;
+}
+
+export const SelectRoot = React.forwardRef<HTMLDivElement, SelectRootProps>(
+  function SelectRoot(props, ref) {
+    const { triggerHeight, css, ...rest } = props;
+    return (
+      <ChakraSelect.Root
+        {...rest}
+        ref={ref}
+        css={
+          triggerHeight
+            ? { "--select-trigger-height": triggerHeight, ...css }
+            : css
+        }
+        positioning={{ sameWidth: true, ...props.positioning }}
+      >
+        {props.asChild ? (
+          props.children
+        ) : (
+          <>
+            <ChakraSelect.HiddenSelect />
+            {props.children}
+          </>
+        )}
+      </ChakraSelect.Root>
+    );
+  },
+) as <T extends CollectionItem = CollectionItem>(
+  props: SelectRootProps<T> & React.RefAttributes<HTMLDivElement>,
+) => React.ReactElement;
 
 interface SelectItemGroupProps extends ChakraSelect.ItemGroupProps {
   label: React.ReactNode;

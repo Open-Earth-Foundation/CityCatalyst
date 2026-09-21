@@ -11,8 +11,6 @@ from __future__ import annotations
 
 import logging
 from typing import Annotated, NoReturn
-from uuid import uuid4
-
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 
 from app.modules.reference_data.models import (
@@ -56,6 +54,7 @@ from app.services.data_clients import (
     get_city_data_api_client,
 )
 from app.services.http_client import UpstreamApiError
+from app.utils.api_contract import new_request_id
 
 logger = logging.getLogger(__name__)
 
@@ -72,9 +71,8 @@ LocodePath = Annotated[
 ]
 
 
-def _raise_upstream_error(error: UpstreamApiError) -> NoReturn:
+def _raise_upstream_error(error: UpstreamApiError, request_id: str) -> NoReturn:
     """Log upstream diagnostics and raise the established public error shape."""
-    request_id = str(uuid4())
     logger.warning(
         "Reference-data upstream failure request_id=%s status=%s "
         "upstream_status=%s url=%s error=%s",
@@ -120,13 +118,14 @@ def get_city_attributes(
     is called, validation, normalization, which indicator fields are returned,
     and diagnostic details that remain in backend logs.
     """
+    request_id = new_request_id()
     try:
         city = client.get_city(locode)
     except UpstreamApiError as error:
-        _raise_upstream_error(error)
+        _raise_upstream_error(error, request_id)
     except ValueError as error:
         raise HTTPException(status_code=404, detail={"error": str(error)}) from error
-    return build_city_attributes_response(city, locode=locode)
+    return build_city_attributes_response(city, request_id=request_id)
 
 
 @router.get(
@@ -155,10 +154,11 @@ def list_action_pathways(
     shared action-membership rule. Only actions whose type is `mitigation` are
     returned; all other and missing action types are excluded.
     """
+    request_id = new_request_id()
     try:
         result = client.list_actions()
     except UpstreamApiError as error:
-        _raise_upstream_error(error)
+        _raise_upstream_error(error, request_id)
     actions, _, missing_action_type_actions = select_prioritizable_actions(
         result.actions
     )
@@ -166,6 +166,7 @@ def list_action_pathways(
         result.model_copy(update={"actions": actions}),
         requested_languages=query.language,
         missing_action_type_count=len(missing_action_type_actions),
+        request_id=request_id,
     )
 
 
@@ -194,11 +195,16 @@ def get_action_policy_scores(
     fetched, validation, missing-release handling, ordering, and the national,
     regional, and municipal averages.
     """
+    request_id = new_request_id()
     try:
         result = client.get_action_policy_scores(locode)
     except UpstreamApiError as error:
-        _raise_upstream_error(error)
-    return build_action_policy_scores_response(result, locode=locode)
+        _raise_upstream_error(error, request_id)
+    return build_action_policy_scores_response(
+        result,
+        locode=locode,
+        request_id=request_id,
+    )
 
 
 @router.get(
@@ -227,17 +233,19 @@ def get_action_mitigation_feasibility_scores(
     Global API address is called, validation, missing-release behavior, field
     mapping, and row order.
     """
+    request_id = new_request_id()
     try:
         result = client.get_action_mitigation_feasibility_scores(
             locode,
             query.country_code,
         )
     except UpstreamApiError as error:
-        _raise_upstream_error(error)
+        _raise_upstream_error(error, request_id)
     return build_action_mitigation_scores_response(
         result,
         locode=locode,
         country_code=query.country_code,
+        request_id=request_id,
     )
 
 
@@ -268,17 +276,19 @@ def get_action_financial_feasibility_scores(
     Global API address is called, field mapping, missing-release behavior,
     preservation of all normalized rows, and scored-first display ordering.
     """
+    request_id = new_request_id()
     try:
         result = client.get_action_financial_feasibility_scores(
             locode,
             query.country_code,
         )
     except UpstreamApiError as error:
-        _raise_upstream_error(error)
+        _raise_upstream_error(error, request_id)
     return build_action_financial_scores_response(
         result,
         locode=locode,
         country_code=query.country_code,
+        request_id=request_id,
     )
 
 
@@ -308,6 +318,7 @@ def get_climate_finance_opportunities(
     municipal eligibility, screening limit 50, status and recurrence rules,
     technical-assistance preference, ordering, and five current/monitor caps.
     """
+    request_id = new_request_id()
     try:
         result = client.get_report_finance_opportunities(
             country_code=query.country_code,
@@ -315,12 +326,10 @@ def get_climate_finance_opportunities(
             route=query.route,
         )
     except UpstreamApiError as error:
-        _raise_upstream_error(error)
+        _raise_upstream_error(error, request_id)
     return build_climate_finance_opportunities_response(
         result,
-        country_code=query.country_code,
-        sector=query.sector,
-        route=query.route,
+        request_id=request_id,
     )
 
 
@@ -352,15 +361,15 @@ def get_climate_finance_projects(
     which Global API address is called, validation, ordering, and the maximum
     of five projects.
     """
+    request_id = new_request_id()
     try:
         result = client.get_report_finance_projects(
             country_code=query.country_code,
             action_id=query.action_id,
         )
     except UpstreamApiError as error:
-        _raise_upstream_error(error)
+        _raise_upstream_error(error, request_id)
     return build_climate_finance_projects_response(
         result,
-        country_code=query.country_code,
-        action_id=query.action_id,
+        request_id=request_id,
     )

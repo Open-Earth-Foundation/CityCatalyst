@@ -31,6 +31,35 @@ class TestAPIHealth:
 
         assert "openapi" in data
         assert data["info"]["title"] == "HIAP-MEED"
+        response_schemas = [
+            "ExclusionPreviewApiResponse",
+            "PrioritizerApiResponse",
+            "CityActionReportApiResponse",
+            "ExplanationTranslationApiResponse",
+            "CityAttributesResponse",
+            "ActionPathwaysResponse",
+            "ActionPolicyScoresResponse",
+            "ActionMitigationScoresResponse",
+            "ActionFinancialScoresResponse",
+            "ClimateFinanceOpportunitiesResponse",
+            "ClimateFinanceProjectsResponse",
+        ]
+        for schema_name in response_schemas:
+            assert data["components"]["schemas"][schema_name]["properties"]["meta"][
+                "$ref"
+            ].endswith("/ApiResponseMeta")
+        for schema_name in (
+            "ExclusionPreviewApiRequest",
+            "PrioritizerApiRequest",
+            "CityActionReportApiRequest",
+            "ExplanationTranslationApiRequest",
+        ):
+            request_properties = data["components"]["schemas"][schema_name][
+                "properties"
+            ]
+            assert request_properties["meta"]["$ref"].endswith("/ApiRequestMeta")
+            assert "requestId" not in request_properties
+            assert "meta" in data["components"]["schemas"][schema_name]["required"]
         ranked_action_schema = data["components"]["schemas"]["RankedActionResult"]
         evidence_summary_property = ranked_action_schema["properties"]["evidence_summary"]
         assert evidence_summary_property["$ref"].endswith(
@@ -53,13 +82,11 @@ class TestAPIHealth:
             "verdict_category",
             "verdict_score",
             "ownership_description",
-            "ownership_description_es",
             "restrictions_description",
-            "restrictions_description_es",
             "legal_justification",
-            "legal_justification_en",
             "legal_references",
         }.issubset(removed_action_legal_properties.keys())
+        self._assert_localized_legal_fields(removed_action_legal_properties)
 
         feasibility_schema = data["components"]["schemas"][
             "RankedActionFeasibilityEvidenceSummary"
@@ -82,15 +109,13 @@ class TestAPIHealth:
             "ownership_category",
             "ownership_score",
             "ownership_description",
-            "ownership_description_es",
             "restrictions_category",
             "restrictions_score",
             "restrictions_description",
-            "restrictions_description_es",
             "legal_justification",
-            "legal_justification_en",
             "legal_references",
         }.issubset(legal_properties.keys())
+        self._assert_localized_legal_fields(legal_properties)
         hard_filter_schema = data["components"]["schemas"][
             "HardFilterEvidenceSummary"
         ]
@@ -103,10 +128,22 @@ class TestAPIHealth:
         hard_filter_legal_properties = hard_filter_legal_schema["properties"]
         assert {
             "ownership_description",
-            "ownership_description_es",
             "restrictions_description",
-            "restrictions_description_es",
             "legal_justification",
-            "legal_justification_en",
             "legal_references",
         }.issubset(hard_filter_legal_properties.keys())
+        self._assert_localized_legal_fields(hard_filter_legal_properties)
+
+    @staticmethod
+    def _assert_localized_legal_fields(properties):
+        """Assert legal prose uses language-keyed maps without suffix fields."""
+        for field_name in (
+            "ownership_description",
+            "restrictions_description",
+            "legal_justification",
+        ):
+            assert properties[field_name]["additionalProperties"]["type"] == "string"
+            assert properties[field_name]["type"] == "object"
+        assert "ownership_description_es" not in properties
+        assert "restrictions_description_es" not in properties
+        assert "legal_justification_en" not in properties

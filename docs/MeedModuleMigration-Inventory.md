@@ -78,10 +78,10 @@ the proposed `MeedApiService`:
 | `POST /v1/reports/output-plan` | `lib/reportApi.ts:81` | **10–30 s LLM call** — needs the async job pattern |
 | `POST /v1/explanations/translate` | `lib/hiapApi.ts:186` | client-side fallback when a language variant is missing |
 
-All four wrap their payload in `{ meta, requestData }`, where `meta` is built by
-`hiapApi.buildMeta()` with a client-generated UUID, `backendConsumer: "hiap-meed"`, and
-`upstreamProvider: "city_catalyst_frontend"`. That envelope should be constructed server-side in
-`MeedApiService`.
+All four send `{ meta: { requestId }, requestData }`. HIAP-MEED echoes the caller's
+correlation ID in response `meta`. `MeedApiService` should forward the existing
+CityCatalyst request ID, but must not construct
+timestamps, route names, provider labels, or record counts.
 
 ---
 

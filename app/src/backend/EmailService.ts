@@ -26,6 +26,7 @@ import InviteUserTemplate from "@/lib/emails/InviteUserTemplate";
 import confirmRegistrationTemplate from "@/lib/emails/confirmRegistrationTemplate";
 import { UserFileResponse } from "@/util/types";
 import HiapRankingReadyTemplate from "@/lib/emails/HiapRankingReadyTemplate";
+import { buildHiapInventoryUrl } from "@/util/hiap-routes";
 
 interface EmailTranslation {
   subject: string;
@@ -800,18 +801,23 @@ export default class EmailService {
   public static async sendHiapRankingReadyEmail({
     actionType,
     user,
+    cityId,
+    inventoryId,
   }: {
     actionType: ACTION_TYPES;
     user: User;
+    cityId: string;
+    inventoryId: string;
   }) {
-    const host = process.env.HOST ?? "http://localhost:3000";
-    const url = `${host}/hiap/`;
+    const language = user.preferredLanguage || LANGUAGES.en;
+    // Must be the city-scoped HIAP page — `/hiap/` is not a valid app route (CC-746).
+    const url = buildHiapInventoryUrl(cityId, inventoryId, language);
     try {
       const html = await render(
         HiapRankingReadyTemplate({
           url,
           user: user,
-          language: user.preferredLanguage,
+          language,
         }),
       );
 

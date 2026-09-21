@@ -29,7 +29,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
 
 import yaml
-from dotenv import find_dotenv, load_dotenv, dotenv_values
+from dotenv import dotenv_values, find_dotenv, load_dotenv
 from pydantic import BaseModel, Field
 
 _ENV_LOADED = False
@@ -116,7 +116,10 @@ class RoleModelConfig(BaseModel):
     name: str
     description: Optional[str] = None
     supports_streaming: Optional[bool] = None
-    temperature: float
+    temperature: float | None = None
+    reasoning_effort: (
+        Literal["none", "low", "medium", "high", "xhigh", "max"] | None
+    ) = None
 
 
 class ResearchModelConfig(BaseModel):
@@ -129,10 +132,14 @@ class ResearchModelConfig(BaseModel):
 class ModelsConfig(BaseModel):
     orchestrator: RoleModelConfig
     agentic_flow: Optional[RoleModelConfig] = None
+    cnb_chat: Optional[RoleModelConfig] = None
     funding_research: ResearchModelConfig
     funder_identity: ResearchModelConfig
     cnb_source_reader: ResearchModelConfig
     cnb_source_synthesizer: ResearchModelConfig
+    cnb_chapter_drafter: ResearchModelConfig | None = None
+    cnb_chat_edit_planner: ResearchModelConfig | None = None
+    cnb_chapter_validator: ResearchModelConfig
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -148,13 +155,29 @@ class StationaryEnergyPromptBudgetConfig(BaseModel):
 
 
 class CnbSourcePromptBudgetConfig(BaseModel):
-    """Limits for page-preserving Concept Note source analysis."""
+    """Limits for source-preserving Concept Note analysis."""
 
     max_partition_tokens: int = Field(default=50000, ge=1000)
     max_concurrency: int = Field(default=3, ge=1, le=3)
     max_key_excerpts: int = Field(default=8, ge=1, le=20)
     max_topics: int = Field(default=12, ge=1, le=30)
     max_question_chars: int = Field(default=2000, ge=1, le=10000)
+
+
+class CnbEditPromptBudgetConfig(BaseModel):
+    """Limits for the edit tool loop and concurrent chapter semantic reviews."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=2000)
+    max_concurrency: int = Field(default=5, ge=1, le=5)
+    max_agent_turns: int = Field(default=12, ge=3, le=30)
+    max_review_repairs: int = Field(default=2, ge=0, le=3)
+    timeout_seconds: int = Field(default=180, ge=30, le=600)
+
+
+class CnbValidationPromptBudgetConfig(BaseModel):
+    """Full-prompt limit for non-truncating chapter validation batches."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=1000)
 
 
 class PromptBudgetConfig(BaseModel):
@@ -164,6 +187,12 @@ class PromptBudgetConfig(BaseModel):
     )
     cnb_sources: CnbSourcePromptBudgetConfig = Field(
         default_factory=CnbSourcePromptBudgetConfig,
+    )
+    cnb_edits: CnbEditPromptBudgetConfig = Field(
+        default_factory=CnbEditPromptBudgetConfig
+    )
+    cnb_validation: CnbValidationPromptBudgetConfig = Field(
+        default_factory=CnbValidationPromptBudgetConfig,
     )
 
 
@@ -179,12 +208,22 @@ class PromptsConfig(BaseModel):
     core: str
     chat: str
     stationary_energy_review: Optional[str] = None
+    cnb_chat: str = "prompts/cnb/chat.md"
     cnb_funding_opportunity_research: str
     cnb_funder_identity_matching: str
     cnb_similar_project_matching: str
     cnb_source_document_mapping: str = "prompts/cnb/source_document_mapping.md"
     cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
+    cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
+    cnb_chat_edit_planner: str = "prompts/cnb/chat_edit_planner.md"
+    cnb_chat_edit_review: str = "prompts/cnb/chat_edit_review.md"
+    cnb_chapter_validation_completeness: str = (
+        "prompts/cnb/chapter_validation_completeness.md"
+    )
+    cnb_chapter_validation_consistency: str = (
+        "prompts/cnb/chapter_validation_consistency.md"
+    )
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""
@@ -201,11 +240,11 @@ class PromptsConfig(BaseModel):
         if workflow_prompt_type not in {
             "chat",
             "stationary_energy_review",
-            "concept_note",
+            "cnb_chat",
         }:
             raise ValueError(
                 "Workflow prompt type must be 'chat', 'stationary_energy_review', "
-                "or 'concept_note'"
+                "or 'cnb_chat'"
             )
 
         core_prompt = self.get_prompt("core").strip()

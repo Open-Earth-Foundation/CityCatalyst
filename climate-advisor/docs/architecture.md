@@ -14,6 +14,19 @@ All modes share thread persistence, token handling, SSE streaming, and the
 Agents SDK runtime. Workflow-specific context and tools are resolved before the
 single shared stream starts.
 
+Concept Note chat exposes a proposal-only edit tool backed by a planner,
+service, repository and authorized API. Explicit web review applies edits;
+internal application records preserve safe retries and the audit trail.
+The planner searches a fixed draft snapshot, reads chapter context on demand,
+and proposes replacements using server-issued match IDs or an explicit
+all-match selection. Tools compute anchors and return validation errors to the
+agent for correction. Independent semantic review checks affected chapters
+before a durable proposal is created. Protected-match exclusions are counted in
+the proposal and remain visible after reload. Only acceptance writes revisions,
+subject to the existing revision and idempotency checks.
+See the [CNB revision boundary](../../docs/ConceptNoteBuilderArchitecture.md#implemented-chat-revision-boundary-cc-732)
+for validation, inline review and persistence details.
+
 ## Current Architecture (As-Implemented)
 
 ### System Architecture
@@ -64,6 +77,15 @@ sequenceDiagram
     Thread-->>API: thread
 
     API->>Token: Load token from request or thread context
+    opt CityCatalyst bearer is present
+        API->>CC: Validate bearer at /internal/ca/auth/identity
+        CC-->>API: Canonical user ID or identity error
+        alt subject differs, or request-supplied bearer rejected
+            API-->>Client: HTTP 401 (no catalog-enabled agent)
+        else Core unavailable or thread-stored bearer rejected
+            API-->>API: Continue with catalog identity disabled
+        end
+    end
     alt token expired
         Token->>CC: Refresh token
         CC-->>Token: New access token
@@ -228,6 +250,60 @@ workflow state in PostgreSQL.
   - Orchestrates review staging, notation-key staging, preview, rollback, and
     draft-save flows.
   - Commits staged selection transitions through the repository and draft service.
+
+### NativeInputCatalog Consumption Boundary
+
+`services/native_input_catalog_service.py` provides the request-scoped
+consumer seam for the NativeInputCatalog integration. It accepts the resolved
+authenticated request context and defers Core discovery to the runtime tool
+call. Core discovery is limited to its lightweight readiness result; it does
+not load Climate Advisor capabilities or execute full reads for candidates.
+
+`AgentService` registers the stable `native_input_discover` and
+`native_input_read` tools only when authenticated catalog context and the
+current Core credential are available. Registration makes no Core discovery
+request and does not accept a client-selected catalog/capability pair.
+Before constructing `StreamingHandler`, `/v1/messages` validates any supplied
+bearer at Core's `/api/v1/internal/ca/auth/identity` boundary. The request is
+rejected with the same HTTP 401 response when Core's canonical subject differs
+from body `user_id`, or when Core rejects a bearer that came from the request
+payload. Every other identity outcome — Core unavailable, `CC_BASE_URL` unset,
+a malformed identity response, or a rejected thread-stored bearer — leaves the
+chat request running with catalog identity disabled rather than returning 401.
+On that degraded path the route also skips the thread-context write for a
+request-supplied bearer: a token is persisted only after Core returned a
+canonical identity, so an unvalidated bearer cannot be laundered into the more
+permissive thread-stored class on subsequent requests.
+`StreamingHandler` accepts that canonical identity separately for catalog
+context, combines it with the safe request scope, and ignores caller-supplied
+identity and catalog selections. Missing token or validated catalog identity
+leaves the catalog tools disabled.
+
+Thread-stored bearers are never refreshed for the catalog path, and CA-issued
+tokens expire after one hour. After expiry the catalog tools stay unregistered
+for the thread; recovery is a new request-supplied bearer that Core identity
+validation accepts. Refreshing from the thread record's stored `user_id` is
+deliberately rejected as a recovery mechanism, because `POST /v1/threads` is
+unauthenticated and persists an arbitrary caller-supplied `user_id`.
+
+This boundary is closed for request-supplied bearers and for all
+NativeInputCatalog paths, not for Climate Advisor as a whole. `POST /v1/threads`
+remains unauthenticated, and legacy non-catalog inventory tools may still
+derive a token refresh from the request body `user_id`; that residual is
+outside CC-737 scope.
+
+At tool-call time, discovery returns only locally supported safe entries and
+may include an opaque Core continuation cursor so later authorized pages remain
+discoverable. Core bounds the number of raw active candidates examined per
+request and emits that cursor even when the authorized page is short or empty.
+A page or cursor is never cached as an authorization grant. A
+read accepts a model-selected catalog/capability pair with finite bounded
+arguments, then calls Core for fresh authorization and execution. Core remains
+the final read-time authority; unavailable or invalid reads use the stable
+non-disclosing response. NativeInputCatalog discovery and reads never exchange
+a 401 for a new user token and never derive refresh identity from request JSON.
+Unrelated legacy inventory tools retain their existing refresh behavior.
+
 - `services/stationary_energy/stationary_energy_review_resolver.py`
   - Resolves selectable sources, notation-key targets, pending review rows, and
     save-ready decision inputs for one persisted draft snapshot.
@@ -243,6 +319,14 @@ workflow state in PostgreSQL.
 
 ### Tool Layer
 
+- `tools/native_input_catalog_tools.py`
+  - Exposes the stable `native_input_discover` and `native_input_read` tools
+    for bounded Core-mediated catalog access.
+  - Captures active request scope, filters discovery to locally supported
+    capabilities, relays an optional opaque continuation cursor, rejects
+    arbitrary runtime routing/scope or credential arguments, redacts forbidden
+    result fields, and closes the short-lived Core client after each read
+    invocation.
 - `tools/climate_vector_sync.py`
   - General climate knowledge retrieval.
 - `tools/cc_inventory_wrappers.py`
@@ -268,21 +352,37 @@ workflow state in PostgreSQL.
   - Enforces the Stationary Energy chat prompt budget.
   - Emits `tool_result` SSE payloads for normal tools and Stationary Energy UI
     events via `services/stationary_energy/stationary_energy_tool_events.py`.
+  - Records request-local redacted MLflow `TOOL` spans for each agent tool
+    call without changing SSE or persisted chat history. Summary artifacts use
+    those records, or an equally redacted projection when span instrumentation
+    fails, including Stationary Energy and other agentic workflows. Fallback
+    records reuse the same envelope classifier as completed TOOL observations.
+    Incomplete invocations stay non-success, and later uninstrumented calls are
+    merged into the summary in call order.
+- `utils/mlflow_logging.py`
+  - Owns explicit run lifecycle, redaction, sibling per-tool observations,
+    and the local configuration preflight used by
+    `python -m scripts.mlflow_preflight`.
 - `utils/history_manager.py`
   - Prunes older tool metadata for LLM context while keeping full DB audit data.
 - `utils/token_handler.py`
   - Refreshes and persists CityCatalyst tokens.
 
-### Concept Note PDF Context
+### Concept Note Source Context
 
 The detailed bundle schema, persistence guards, source-analysis rules, and
 capability contract live in
 [`ConceptNoteBuilderArchitecture.md`](../../docs/ConceptNoteBuilderArchitecture.md#context-bundle).
-Operationally, a ready PDF triggers guarded background assembly, optional
-GHGI/HIAP failures do not block readiness, and eligible Concept Note turns use
-the existing stream with compact summaries plus one step-scoped read-only
-selected-document query. `llm_config.yaml` remains the source of truth for the
-reader models, prompts, partition budget, and concurrency limit.
+Operationally, run creation schedules guarded background assembly. A run with
+no uploaded source records `document_grounding: none`; a ready PDF or native
+Markdown source rebuilds it as `uploaded_evidence`. Separate
+`available_context` flags report CityCatalyst and uploaded-document presence.
+Evidence keeps page or heading/block locators, optional GHGI/HIAP failures do
+not block readiness, and eligible turns get one scoped read-only source query.
+During rebuilds, callers keep using the last completed bundle; unchanged
+document analyses are reused by digest and analysis-contract version. Reader
+and chapter-drafter configuration remains in `llm_config.yaml`, and the public
+CNB contracts live under `app/models/cnb`.
 
 ## SSE Contract
 
@@ -360,6 +460,13 @@ Stationary Energy chat also has a dedicated prompt budget:
 
 - Token refresh flows through `TokenHandler`.
 - Inventory tools call CityCatalyst APIs with the scoped bearer token.
+- Successful bearer-token identity and city reads use a bounded, process-local
+  30-second cache in `CityCatalystClient`. Keys contain a one-way token
+  fingerprint; concurrent checks share one request, token expiry shortens the
+  TTL, and failures are never retained.
+- The CityCatalyst Concept Note proxy also reuses one successfully issued CA
+  token per user until one minute before expiry. Concurrent issuance is
+  coalesced so polling routes present the same valid token to the CA cache.
 - Stationary Energy draft-save uses the existing CityCatalyst draft-save route
   after CA has assembled a complete reviewed draft state.
 - Inventory commit is not executed directly by CA chat tools; CA returns a
@@ -393,3 +500,19 @@ Each streamed request creates a `RunConfig` with workflow-specific metadata.
 Stationary Energy context chat uses a dedicated workflow name and includes
 `stationary_energy_draft_run_id` in trace metadata so it can be separated from
 general conversations in traces and logs.
+
+All Climate Advisor chat modes share one handler and keep one `Climate Advisor Turn` root
+open through response persistence. Each root represents one user turn; MLflow's
+Sessions view groups turns by the shared thread/session ID. The root stores the
+user message, one hash-keyed copy of each system/developer prompt, the assembled assistant output,
+and the final stream/persistence status. Child model spans reference the root
+prompt snapshot and omit raw streaming-chunk events while retaining their final
+outputs and diagnostic events. Function calls are recorded as child `TOOL` spans
+with call IDs and credential-redacted inputs/outputs. CNB chat and edits now
+record conversation and model/tool content under the same MLflow settings.
+The existing catalog summary projection remains available in tool artifacts.
+CNB source analysis/drafting/validation and Stationary Energy generation/review/save share
+workflow tracing and prompt compaction. Inline operations stay under the chat;
+background tasks own independent traces linked by thread and workflow IDs.
+Standalone jobs omit `mlflow.trace.session`; only conversation turns appear in
+the Sessions view. Workflow traces remain searchable by `thread_id` metadata.

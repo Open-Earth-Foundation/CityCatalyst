@@ -8,6 +8,7 @@ import {
   registerNativeInput,
   supersedeNativeInput,
   withdrawNativeInput,
+  type NativeInputCatalogRegistration,
   type RegisterNativeInputInput,
 } from "@/backend/NativeInputCatalogService";
 import { HighImpactActionRankingStatus, type ACTION_TYPES } from "@/util/types";
@@ -35,6 +36,25 @@ type SelectionRegistration = {
 
 type SelectionSourceType =
   typeof RANKED_SELECTION_SOURCE_TYPE | typeof UNRANKED_SELECTION_SOURCE_TYPE;
+
+export type HIAPCatalogBackfillCursor = {
+  created: string;
+  id: string;
+};
+
+export type HIAPCatalogBackfillPageOptions = {
+  limit: number;
+  cursor?: HIAPCatalogBackfillCursor;
+  dryRun?: boolean;
+};
+
+export type HIAPCatalogBackfillPage = {
+  scanned: number;
+  repaired: number;
+  failed: number;
+  nextCursor: HIAPCatalogBackfillCursor | null;
+  hasMore: boolean;
+};
 
 function digest(value: unknown): string {
   return createHash("sha256")
@@ -227,50 +247,134 @@ export async function registerHIAPRanking(ranking: HighImpactActionRanking) {
   return registration;
 }
 
-export async function backfillMissingHIAPRankings(): Promise<number> {
-  const successfulRankings = await db.models.HighImpactActionRanking.findAll({
-    where: { status: HighImpactActionRankingStatus.SUCCESS },
-    include: [
+function validateBackfillLimit(limit: number): void {
+  if (!Number.isInteger(limit) || limit < 1 || limit > 1000) {
+    throw new Error(
+      "HIAP catalog backfill limit must be an integer from 1 to 1000",
+    );
+  }
+}
+
+function cursorWhere(cursor?: HIAPCatalogBackfillCursor) {
+  if (!cursor) return {};
+
+  return {
+    [Op.or]: [
+      { created: { [Op.gt]: new Date(cursor.created) } },
       {
-        model: db.models.Inventory,
-        as: "inventory",
-        required: true,
-      },
-      {
-        model: db.models.HighImpactActionRanked,
-        as: "highImpactActionRanked",
-        attributes: ["id"],
-        required: true,
+        created: new Date(cursor.created),
+        id: { [Op.gt]: cursor.id },
       },
     ],
-    order: [["created", "ASC"]],
-  });
+  };
+}
 
-  let backfilledCount = 0;
+function cursorFor(record: {
+  id: string;
+  created?: Date;
+}): HIAPCatalogBackfillCursor {
+  if (!record.created) {
+    throw new Error(
+      `HIAP catalog backfill record ${record.id} has no created timestamp`,
+    );
+  }
 
-  for (const ranking of successfulRankings) {
-    const existingCatalogEntry = await db.models.NativeInputCatalog.findOne({
-      where: {
-        owningModule: HIAP_MODULE,
-        sourceType: RANKING_SOURCE_TYPE,
-        sourceId: { [Op.like]: `${ranking.id}:%` },
-        availability: "active",
-      },
-    });
+  return { created: record.created.toISOString(), id: record.id };
+}
 
-    if (existingCatalogEntry) continue;
+async function processBackfillRecords<T extends { id: string }>(
+  records: T[],
+  options: Pick<HIAPCatalogBackfillPageOptions, "dryRun">,
+  build: (record: T) => Promise<RegisterNativeInputInput>,
+  sync: (record: T) => Promise<NativeInputCatalogRegistration | null>,
+): Promise<Pick<HIAPCatalogBackfillPage, "repaired" | "failed">> {
+  let repaired = 0;
+  let failed = 0;
 
-    const registration = await syncHIAPRanking(ranking);
-    if (registration) {
-      backfilledCount++;
-      logger.info(
-        { rankingId: ranking.id, inventoryId: ranking.inventoryId },
-        "Backfilled missing HIAP ranking catalog entry",
+  for (const record of records) {
+    try {
+      if (options.dryRun) {
+        await build(record);
+        repaired++;
+      } else if (await sync(record)) {
+        repaired++;
+      } else {
+        failed++;
+      }
+    } catch (error) {
+      failed++;
+      logger.error(
+        {
+          recordId: record.id,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        "HIAP NativeInputCatalog backfill record failed",
       );
     }
   }
 
-  return backfilledCount;
+  return { repaired, failed };
+}
+
+function pageResult(
+  records: Array<{ id: string; created?: Date }>,
+  limit: number,
+  outcome: Pick<HIAPCatalogBackfillPage, "repaired" | "failed">,
+): HIAPCatalogBackfillPage {
+  const hasMore = records.length === limit;
+  return {
+    scanned: records.length,
+    ...outcome,
+    hasMore,
+    nextCursor:
+      hasMore && records.length > 0
+        ? cursorFor(records[records.length - 1])
+        : null,
+  };
+}
+
+export async function backfillMissingHIAPRankingsPage(
+  options: HIAPCatalogBackfillPageOptions,
+): Promise<HIAPCatalogBackfillPage> {
+  validateBackfillLimit(options.limit);
+
+  const successfulRankings = await db.models.HighImpactActionRanking.findAll({
+    where: {
+      status: HighImpactActionRankingStatus.SUCCESS,
+      ...cursorWhere(options.cursor),
+    },
+    attributes: [
+      "id",
+      "inventoryId",
+      "userId",
+      "locode",
+      "type",
+      "langs",
+      "status",
+      "created",
+    ],
+    include: [
+      {
+        model: db.models.HighImpactActionRanked,
+        as: "highImpactActionRanked",
+        attributes: [],
+        required: true,
+      },
+    ],
+    order: [
+      ["created", "ASC"],
+      ["id", "ASC"],
+    ],
+    limit: options.limit,
+  });
+
+  const outcome = await processBackfillRecords(
+    successfulRankings,
+    options,
+    buildHIAPRankingInput,
+    syncHIAPRanking,
+  );
+  return pageResult(successfulRankings, options.limit, outcome);
 }
 
 function planContent(plan: ActionPlan): Record<string, unknown> {
@@ -337,7 +441,6 @@ export async function buildHIAPActionPlanInput(
 
 export async function registerHIAPActionPlan(plan: ActionPlan) {
   const input = await buildHIAPActionPlanInput(plan);
-
   const registration = await registerNativeInput(input);
   await supersedePreviousVersions(
     ACTION_PLAN_SOURCE_TYPE,
@@ -348,40 +451,57 @@ export async function registerHIAPActionPlan(plan: ActionPlan) {
   return registration;
 }
 
-export async function backfillMissingHIAPActionPlans(): Promise<number> {
+export async function backfillMissingHIAPActionPlansPage(
+  options: HIAPCatalogBackfillPageOptions,
+): Promise<HIAPCatalogBackfillPage> {
+  validateBackfillLimit(options.limit);
+
   const actionPlans = await db.models.ActionPlan.findAll({
     where: {
       inventoryId: { [Op.ne]: null },
       highImpactActionRankedId: { [Op.ne]: null },
+      ...cursorWhere(options.cursor),
     },
-    order: [["created", "ASC"]],
+    attributes: [
+      "id",
+      "actionId",
+      "highImpactActionRankedId",
+      "cityLocode",
+      "cityId",
+      "inventoryId",
+      "actionName",
+      "language",
+      "cityName",
+      "createdAtTimestamp",
+      "cityDescription",
+      "actionDescription",
+      "nationalStrategyExplanation",
+      "subactions",
+      "institutions",
+      "milestones",
+      "timeline",
+      "costBudget",
+      "merIndicators",
+      "mitigations",
+      "adaptations",
+      "sdgs",
+      "createdBy",
+      "created",
+    ],
+    order: [
+      ["created", "ASC"],
+      ["id", "ASC"],
+    ],
+    limit: options.limit,
   });
 
-  let backfilledCount = 0;
-
-  for (const actionPlan of actionPlans) {
-    const existingCatalogEntry = await db.models.NativeInputCatalog.findOne({
-      where: {
-        owningModule: HIAP_MODULE,
-        sourceType: ACTION_PLAN_SOURCE_TYPE,
-        sourceId: actionPlanSourceId(actionPlan),
-        availability: "active",
-      },
-    });
-
-    if (existingCatalogEntry) continue;
-
-    const registration = await syncHIAPActionPlan(actionPlan);
-    if (registration) {
-      backfilledCount++;
-      logger.info(
-        { actionPlanId: actionPlan.id, inventoryId: actionPlan.inventoryId },
-        "Backfilled missing HIAP action-plan catalog entry",
-      );
-    }
-  }
-
-  return backfilledCount;
+  const outcome = await processBackfillRecords(
+    actionPlans,
+    options,
+    buildHIAPActionPlanInput,
+    syncHIAPActionPlan,
+  );
+  return pageResult(actionPlans, options.limit, outcome);
 }
 
 function selectionSourceId(

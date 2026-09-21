@@ -2,28 +2,42 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
+from datetime import UTC, datetime
 from uuid import UUID
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.middleware.request_context import get_request_id
-from app.models.concept_note_runs import (
+from app.models.cnb.concept_note_runs import (
+    ConceptNotePopulationRequest,
     ConceptNoteRunListItemResponse,
     ConceptNoteRunListResponse,
     ConceptNoteRunResponse,
     ConceptNoteStartRequest,
+    ManualConceptNotePopulation,
 )
-from app.models.db.concept_note import ConceptNoteRun
+from app.models.cnb.concept_note_markdown import (
+    ConceptNoteUploadStatusResponse,
+    source_format_from_filename,
+)
+from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.runs import ConceptNoteRunRepository
 from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
 )
+from app.services.cnb.context_bundle import (
+    ContextBundleService,
+    schedule_context_bundle_build,
+)
 from app.services.cnb.funding_references import (
     FundingReferenceValidator,
     PostgresFundingReferenceValidator,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ConceptNoteRunService:
@@ -37,6 +51,7 @@ class ConceptNoteRunService:
         funding_reference_validator: FundingReferenceValidator | None = None,
     ) -> None:
         """Initialize the service with persistence and CityCatalyst clients."""
+        self.session = session
         self.repository = ConceptNoteRunRepository(session)
         self.cc_client = cc_client or CityCatalystClient()
         self.funding_reference_validator = (
@@ -51,6 +66,48 @@ class ConceptNoteRunService:
     ) -> ConceptNoteRunResponse:
         """Create or replay a run after validating user and city access."""
         token = _require_bearer_token(authorization)
+        return await self._start_run_with_token(payload, token=token)
+
+    async def start_run_and_schedule_context(
+        self,
+        payload: ConceptNoteStartRequest,
+        *,
+        authorization: str | None,
+        context_bundle_service: ContextBundleService | None,
+    ) -> ConceptNoteRunResponse:
+        """Persist a run and schedule its initial context build after commit."""
+        token = _require_bearer_token(authorization)
+        response = await self._start_run_with_token(payload, token=token)
+
+        # Commit before the background build opens an independent session.
+        await self.session.commit()
+
+        # Only a newly created run needs its initial context build.
+        if not response.created:
+            return response
+        if context_bundle_service is None:
+            logger.warning(
+                "Concept Note context build was not scheduled because "
+                "storage is unavailable run_id=%s",
+                response.run_id,
+            )
+            return response
+        schedule_context_bundle_build(
+            service=context_bundle_service,
+            user_id=response.user_id,
+            run_id=response.run_id,
+            token=token,
+        )
+        return response
+
+    async def _start_run_with_token(
+        self,
+        payload: ConceptNoteStartRequest,
+        *,
+        token: str,
+    ) -> ConceptNoteRunResponse:
+        """Create or replay a run with an already validated bearer token."""
+        # Validate the authenticated scope and optional funding references.
         await self._authorize_scope(
             token=token,
             requested_user_id=payload.user_id,
@@ -68,6 +125,7 @@ class ConceptNoteRunService:
             selected_funding_opportunity_id=payload.selected_funding_opportunity_id,
         )
 
+        # Create or replay the run and bind its optional chat context.
         fingerprint = _request_fingerprint(payload)
         run, created = await self.repository.create_or_get(
             user_id=payload.user_id,
@@ -98,12 +156,64 @@ class ConceptNoteRunService:
         authorization: str | None,
     ) -> ConceptNoteRunResponse:
         """Return an owned run after revalidating current city access."""
+        run = await self.get_authorized_run(
+            run_id=run_id,
+            requested_user_id=requested_user_id,
+            authorization=authorization,
+        )
+        uploads = await self.repository.list_uploads_for_run(
+            run_id=run.run_id,
+            user_id=run.user_id,
+        )
+        return _to_response(run, created=False, uploads=uploads)
+
+    async def update_manual_population(
+        self,
+        *,
+        run_id: UUID,
+        payload: ConceptNotePopulationRequest,
+        requested_user_id: str,
+        authorization: str | None,
+    ) -> ConceptNoteRunResponse:
+        """Persist run-only population unless chapter drafting is active."""
+        run = await self.get_authorized_run(
+            run_id=run_id,
+            requested_user_id=requested_user_id,
+            authorization=authorization,
+        )
+        # Lock and refresh before checking draft state or updating run metadata.
+        await self.session.refresh(run, with_for_update=True)
+        summary = dict(run.context_summary or {})
+        draft = summary.get("draft_document")
+        if isinstance(draft, dict) and draft.get("status") == "running":
+            raise HTTPException(
+                status_code=409,
+                detail="Wait for chapter drafting to finish before changing population",
+            )
+        if payload.manual_population is None:
+            summary.pop("manual_population", None)
+        else:
+            summary["manual_population"] = payload.manual_population.model_dump()
+        run.context_summary = summary
+        run.updated_at = datetime.now(UTC)
+        await self.session.commit()
+        return _to_response(run, created=False)
+
+    async def get_authorized_run(
+        self,
+        *,
+        run_id: UUID,
+        requested_user_id: str,
+        authorization: str | None,
+    ) -> ConceptNoteRun:
+        """Return the owned run row after revalidating current city access."""
         token = _require_bearer_token(authorization)
         canonical_user_id = await self._authorize_user(
             token=token,
             requested_user_id=requested_user_id,
         )
 
+        # Load the owned run before revalidating its current city access.
         run = await self.repository.get_for_user(
             run_id=run_id,
             user_id=canonical_user_id,
@@ -111,12 +221,13 @@ class ConceptNoteRunService:
         if run is None:
             raise HTTPException(status_code=404, detail="Concept Note run not found")
 
+        # Reject stale local access when CityCatalyst has revoked the city scope.
         await self._validate_city_access(
             token=token,
             user_id=canonical_user_id,
             city_id=UUID(run.city_id),
         )
-        return _to_response(run, created=False)
+        return run
 
     async def list_runs(
         self,
@@ -266,14 +377,40 @@ def _to_response(
     run: ConceptNoteRun,
     *,
     created: bool,
+    uploads: list[ConceptNoteUpload] | None = None,
 ) -> ConceptNoteRunResponse:
     """Serialize one persisted run into the public API contract."""
     list_item = _to_list_item(run)
+    population = (run.context_summary or {}).get("manual_population")
     return ConceptNoteRunResponse(
         **list_item.model_dump(),
         user_id=run.user_id,
+        manual_population=(
+            ManualConceptNotePopulation.model_validate(population)
+            if population is not None
+            else None
+        ),
+        uploads=[_to_upload_response(upload) for upload in uploads or []],
         created=created,
         trace_id=run.trace_id,
+    )
+
+
+def _to_upload_response(
+    upload: ConceptNoteUpload,
+) -> ConceptNoteUploadStatusResponse:
+    """Serialize persisted source metadata for workspace resume."""
+    return ConceptNoteUploadStatusResponse(
+        upload_id=upload.upload_id,
+        run_id=upload.run_id,
+        status=upload.ingest_status,
+        filename=upload.filename,
+        source_label=upload.source_label,
+        source_format=source_format_from_filename(upload.filename),
+        page_count=upload.page_count,
+        error_code=upload.ingest_error_code,
+        received_at=upload.received_at,
+        completed_at=upload.ingest_completed_at,
     )
 
 

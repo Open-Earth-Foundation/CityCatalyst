@@ -1,9 +1,18 @@
+import type { ConceptNoteDraftState } from "@/util/types";
+
+import { isChapterValidationCurrent } from "../ConceptNoteWorkspace/chapter-validation";
+
 export type RunStatusTone =
   "positive" | "warning" | "info" | "negative" | "neutral";
 
-interface RunStatusPresentation {
+export interface RunStatusPresentation {
   tone: RunStatusTone;
-  translationKey?: string;
+  translationKey: string;
+}
+
+interface CityPopulationSummary {
+  population?: number | string | null;
+  year?: number | string | null;
 }
 
 const statusPresentations: Record<string, RunStatusPresentation> = {
@@ -21,29 +30,302 @@ const statusPresentations: Record<string, RunStatusPresentation> = {
   succeeded: { tone: "positive", translationKey: "status-completed" },
 };
 
+const reviewStatusPresentations = {
+  needsFixes: {
+    tone: "negative",
+    translationKey: "status-needs-fixes",
+  },
+  ready: { tone: "positive", translationKey: "status-ready" },
+  reviewed: { tone: "warning", translationKey: "status-reviewed" },
+  stale: { tone: "warning", translationKey: "status-review-stale" },
+} satisfies Record<string, RunStatusPresentation>;
+
+const terminalRunStatuses = new Set([
+  "completed",
+  "error",
+  "exported",
+  "failed",
+  "succeeded",
+]);
+
+const workflowStepTranslationKeys: Record<string, string> = {
+  assembling_context: "workflow-assembling-context",
+  draft: "workflow-draft",
+  drafting_document: "workflow-drafting-document",
+  editing_document: "workflow-editing-document",
+  interviewing: "workflow-interviewing",
+};
+
+const contextSourceStatusTranslationKeys: Record<string, string> = {
+  available: "bundle-source-available",
+  failed: "bundle-source-failed",
+  included: "bundle-source-included",
+  missing: "bundle-source-missing",
+  partial: "bundle-source-partial",
+  pending: "bundle-source-pending",
+  unavailable: "bundle-source-unavailable",
+};
+
+export function normalizePopulationData(
+  population: CityPopulationSummary | null | undefined,
+): { population: number; year: number } | null {
+  if (population?.population == null || population.year == null) {
+    return null;
+  }
+
+  const populationValue = Number(population.population);
+  const yearValue = Number(population.year);
+
+  return Number.isFinite(populationValue) && Number.isFinite(yearValue)
+    ? { population: populationValue, year: yearValue }
+    : null;
+}
+
+function normalizeLifecycleValue(value: string): string {
+  return value.trim().toLowerCase();
+}
+
 export function getRunStatusPresentation(
   status: string,
 ): RunStatusPresentation {
   return (
-    statusPresentations[status.trim().toLowerCase()] ?? { tone: "neutral" }
+    statusPresentations[normalizeLifecycleValue(status)] ?? {
+      tone: "neutral",
+      translationKey: "status-unknown",
+    }
   );
 }
 
-export function humanizeLifecycleValue(value: string): string {
-  const normalized = value.trim().replaceAll(/[_-]+/g, " ");
-  if (!normalized) {
-    return "";
+export function getConceptNoteReviewStatusPresentation(
+  draft: ConceptNoteDraftState | null | undefined,
+): RunStatusPresentation | null {
+  if (draft?.status !== "complete" || draft.chapters.length === 0) {
+    return null;
   }
-  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+
+  const validations = draft.chapters.flatMap((chapter) =>
+    chapter.validation ? [chapter.validation] : [],
+  );
+  if (validations.length !== draft.chapters.length) {
+    return null;
+  }
+
+  if (draft.chapters.some((chapter) => !isChapterValidationCurrent(chapter))) {
+    return reviewStatusPresentations.stale;
+  }
+
+  if (
+    draft.chapters.some((chapter) =>
+      chapter.gaps.some(
+        (gap) => gap.state === "open" || gap.state === "processing",
+      ),
+    ) ||
+    validations.some(
+      (validation) =>
+        validation.status === "incomplete" ||
+        validation.findings.some((finding) => finding.severity === "blocking"),
+    )
+  ) {
+    return reviewStatusPresentations.needsFixes;
+  }
+  if (
+    validations.some(
+      (validation) =>
+        validation.status === "needs_review" ||
+        validation.findings.some((finding) => finding.severity === "warning"),
+    )
+  ) {
+    return reviewStatusPresentations.reviewed;
+  }
+  return reviewStatusPresentations.ready;
+}
+
+export function getConceptNoteStatusPresentation(
+  runStatus: string,
+  draft: ConceptNoteDraftState | null | undefined,
+): RunStatusPresentation {
+  const normalizedStatus = normalizeLifecycleValue(runStatus);
+  if (!terminalRunStatuses.has(normalizedStatus)) {
+    const reviewStatus = getConceptNoteReviewStatusPresentation(draft);
+    if (reviewStatus) {
+      return reviewStatus;
+    }
+  }
+  return getRunStatusPresentation(runStatus);
+}
+
+export function shouldLoadConceptNoteReviewStatus(
+  runStatus: string,
+  progressSummary: Record<string, unknown>,
+): boolean {
+  if (terminalRunStatuses.has(normalizeLifecycleValue(runStatus))) {
+    return false;
+  }
+
+  const draftProgress = recordValue(progressSummary.draft_document);
+  return draftProgress.status === "complete";
+}
+
+export function getWorkflowStepTranslationKey(value: string): string {
+  return (
+    workflowStepTranslationKeys[normalizeLifecycleValue(value)] ??
+    "workflow-unknown"
+  );
+}
+
+export function getContextSourceStatusTranslationKey(value: string): string {
+  return (
+    contextSourceStatusTranslationKeys[normalizeLifecycleValue(value)] ??
+    "bundle-source-status-unknown"
+  );
+}
+
+export function hasPrioritizedHiapActions(widget: unknown): boolean {
+  const hiap = recordValue(widget);
+
+  return [hiap.mitigation, hiap.adaptation].some((actionType) => {
+    const rankedActions = recordValue(actionType).rankedActions;
+    return Array.isArray(rankedActions) && rankedActions.length > 0;
+  });
 }
 
 export function conceptNoteResumeHref(
   lng: string,
   cityId: string,
   runId: string,
+  focus?: {
+    chapterId?: string | null;
+    findingKey?: string | null;
+  },
 ): string {
-  const query = new URLSearchParams({ runId });
-  return `/${lng}/cities/${cityId}/concept-notes/wiring?${query}`;
+  const href = `/${lng}/cities/${cityId}/concept-notes/${runId}`;
+  if (!focus?.chapterId) return href;
+
+  const searchParams = new URLSearchParams({ chapterId: focus.chapterId });
+  if (focus.findingKey) {
+    searchParams.set("findingKey", focus.findingKey);
+  }
+  return `${href}?${searchParams.toString()}`;
+}
+
+export interface ConceptNoteBundleProgress {
+  status: string | null;
+  documentGrounding: "none" | "uploaded_evidence" | null;
+  availableContext: {
+    city: boolean;
+    project: boolean;
+    ghgi: boolean;
+    ccra: boolean;
+    hiap: boolean;
+    uploadedDocuments: boolean;
+  };
+  missingContext: string[];
+  readySources: number;
+  queuedSources: number;
+  processingSources: number;
+  failedSources: number;
+  ghgiStatus: string | null;
+  hiapStatus: string | null;
+  retryable: boolean;
+  errorCode?: string;
+  errorReason?: string;
+}
+
+function recordValue(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function countValue(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.max(0, value)
+    : 0;
+}
+
+function stringValue(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value : null;
+}
+
+function documentGroundingValue(
+  bundle: Record<string, unknown>,
+): "none" | "uploaded_evidence" | null {
+  if (
+    bundle.document_grounding === "none" ||
+    bundle.document_grounding === "uploaded_evidence"
+  ) {
+    return bundle.document_grounding;
+  }
+  if (bundle.context_mode === "thin") {
+    return "none";
+  }
+  return bundle.context_mode === "grounded" ? "uploaded_evidence" : null;
+}
+
+export function getConceptNoteBundleProgress(
+  summary: Record<string, unknown>,
+): ConceptNoteBundleProgress {
+  const bundle = recordValue(summary.context_bundle);
+  const sourceCounts = recordValue(bundle.source_counts);
+  const optionalSources = recordValue(bundle.optional_sources);
+  const availableContext = recordValue(bundle.available_context);
+  const documentGrounding = documentGroundingValue(bundle);
+
+  return {
+    status: stringValue(bundle.status),
+    documentGrounding,
+    availableContext: {
+      city: availableContext.city === true,
+      project: availableContext.project === true,
+      ghgi: availableContext.ghgi === true,
+      ccra: availableContext.ccra === true,
+      hiap: availableContext.hiap === true,
+      uploadedDocuments:
+        availableContext.uploaded_documents === true ||
+        (availableContext.uploaded_documents === undefined &&
+          documentGrounding === "uploaded_evidence"),
+    },
+    missingContext: Array.isArray(bundle.missing_context)
+      ? bundle.missing_context.filter(
+          (item): item is string => typeof item === "string",
+        )
+      : [],
+    readySources: countValue(sourceCounts.ready),
+    queuedSources: countValue(sourceCounts.queued),
+    processingSources: countValue(sourceCounts.processing),
+    failedSources: countValue(sourceCounts.failed),
+    ghgiStatus: stringValue(optionalSources.ghgi),
+    hiapStatus: stringValue(optionalSources.hiap),
+    retryable: bundle.retryable === true,
+    errorCode: stringValue(bundle.error_code) || undefined,
+    errorReason: stringValue(bundle.error_reason) || undefined,
+  };
+}
+
+export function getRunProgressPercent(
+  status: string,
+  workflowStep: string,
+  summary: Record<string, unknown>,
+): number {
+  const normalizedStatus = status.trim().toLowerCase();
+  if (["completed", "exported", "succeeded"].includes(normalizedStatus)) {
+    return 100;
+  }
+
+  const bundle = getConceptNoteBundleProgress(summary);
+  if (workflowStep === "interviewing" || bundle.status === "ready") {
+    return 40;
+  }
+  if (bundle.status === "building") {
+    return 28;
+  }
+  if (bundle.readySources > 0) {
+    return 18;
+  }
+  if (bundle.processingSources > 0 || bundle.queuedSources > 0) {
+    return 10;
+  }
+  return 4;
 }
 
 export function formatRelativeTime(

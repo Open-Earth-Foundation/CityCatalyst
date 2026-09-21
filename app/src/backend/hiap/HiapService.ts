@@ -897,7 +897,7 @@ export const checkActionRankingJob = async (
     // Send email notification when job completes successfully
     if (user && mergedRanked.length > 0) {
       try {
-        await sendRankedReadyEmail(user, type);
+        await sendRankedReadyEmail(user, type, ranking.inventoryId);
         logger.info(
           { userId: user.userId, actionType: type },
           "Sent prioritization ready email",
@@ -1237,8 +1237,26 @@ export async function copyRankedActionsToLang(
 }
 
 // Helper: Send email to user that the ranking is ready
-async function sendRankedReadyEmail(user: User, actionType: ACTION_TYPES) {
-  await EmailService.sendHiapRankingReadyEmail({ actionType, user });
+async function sendRankedReadyEmail(
+  user: User,
+  actionType: ACTION_TYPES,
+  inventoryId: string,
+) {
+  const inventory = await db.models.Inventory.findByPk(inventoryId);
+  if (!inventory?.cityId) {
+    logger.error(
+      { inventoryId },
+      "Cannot send HIAP ranking ready email: inventory has no cityId",
+    );
+    return;
+  }
+
+  await EmailService.sendHiapRankingReadyEmail({
+    actionType,
+    user,
+    cityId: inventory.cityId,
+    inventoryId,
+  });
 }
 
 // Main orchestrator

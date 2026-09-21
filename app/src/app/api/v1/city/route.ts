@@ -130,10 +130,11 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
-import { DEFAULT_PROJECT_ID } from "@/util/constants";
+import { DEFAULT_PROJECT_ID, Modules } from "@/util/constants";
 import EmailService from "@/backend/EmailService";
 import UserService from "@/backend/UserService";
 import { PermissionService } from "@/backend/permissions/PermissionService";
+import { ModuleAccessService } from "@/backend/ModuleAccessService";
 import { Project } from "@/models/Project";
 
 export const POST = apiHandler(async (req, { session }) => {
@@ -170,6 +171,24 @@ export const POST = apiHandler(async (req, { session }) => {
         },
         "Project ID is not provided, defaulting to organization's default project",
       );
+
+      // GHGI is the baseline module every project should have access to, so
+      // the GHG Inventory module shows up on the dashboard right after
+      // onboarding instead of requiring a manual admin step. Check rather
+      // than relying solely on `projectCreated` so projects that were
+      // created without any ProjectModules rows (e.g. by this same code
+      // path before this fix) get self-healed on next use too.
+      const hasGhgiAccess = await ModuleAccessService.hasModuleAccess(
+        defaultProject.projectId,
+        Modules.GHGI.id,
+      );
+      if (!hasGhgiAccess) {
+        await ModuleAccessService.enableModuleAccess(
+          defaultProject.projectId,
+          Modules.GHGI.id,
+        );
+      }
+
       body.projectId = defaultProject.projectId;
     } else {
       logger.info("Project ID is not provided, defaulting to Default Project ");

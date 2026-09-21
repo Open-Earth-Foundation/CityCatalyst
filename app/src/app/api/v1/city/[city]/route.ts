@@ -10,6 +10,7 @@ import { logger } from "@/services/logger";
 import { DEFAULT_PROJECT_ID } from "@/util/constants";
 import { withdrawGHGICatalogForCity } from "@/backend/GHGINativeInputCatalogService";
 import { withdrawHIAPCatalogForCity } from "@/backend/hiap/HiapNativeInputCatalogService";
+import { withdrawMEEDCatalogForInventory } from "@/backend/meed/MeedNativeInputCatalogService";
 /**
  * @swagger
  * /api/v1/city/{city}:
@@ -163,6 +164,13 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
   }
   await withdrawGHGICatalogForCity(params.city);
   await withdrawHIAPCatalogForCity(params.city);
+  const cityInventories = await Inventory.findAll({
+    where: { cityId: params.city },
+    attributes: ["inventoryId"],
+  });
+  for (const inventory of cityInventories) {
+    await withdrawMEEDCatalogForInventory(inventory.inventoryId);
+  }
   await city.destroy();
   return NextResponse.json({ data: city, deleted: true });
 });

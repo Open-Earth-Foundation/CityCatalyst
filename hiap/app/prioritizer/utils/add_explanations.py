@@ -187,7 +187,7 @@ def generate_multilingual_explanation(
                     "content": system_prompt,
                 },
             ],
-            temperature=0,
+            reasoning_effort="none",
             response_format=ExplanationModelDynamic,
             # Per-request timeout (falls back to client default if omitted)
             timeout=_get_openai_timeout_seconds(),

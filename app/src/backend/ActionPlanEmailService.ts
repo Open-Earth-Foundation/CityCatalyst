@@ -5,6 +5,7 @@ import { User } from "@/models/User";
 import { logger } from "@/services/logger";
 import i18next from "@/i18n/server";
 import { LANGUAGES } from "@/util/types";
+import { buildHiapInventoryUrl } from "@/util/hiap-routes";
 
 export interface SendActionPlanEmailInput {
   user: User;
@@ -112,15 +113,14 @@ export default class ActionPlanEmailService {
   }
 
   /**
-   * Build the URL to view the action plan
+   * Build the URL to view the action plan on the city-scoped HIAP page.
    */
   public static buildActionPlanUrl(
     cityId: string,
     inventoryId: string,
     language: string = "en",
   ): string {
-    const baseUrl = process.env.HOST || "http://localhost:3000";
-    return `${baseUrl}/${language}/cities/${cityId}/HIAP/${inventoryId}`;
+    return buildHiapInventoryUrl(cityId, inventoryId, language);
   }
 
   /**

@@ -3,21 +3,28 @@
 import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
-import { Box, Heading, Link, Text } from "@chakra-ui/react";
+import { Box, Heading, Input, Link, Text } from "@chakra-ui/react";
+import { Field } from "@/components/ui/field";
 import { TFunction } from "i18next";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, use } from "react";
+import { Suspense, useEffect, use, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import { useLogin } from "@/hooks/useLogin";
+import { LabelLarge } from "@/components";
+import { api } from "@/services/api";
+import { emailPattern } from "@/util/validation";
 
 export type LoginInputs = {
   email: string;
   password: string;
+  securityToken: string;
 };
+
+const securityCodePattern = /^[0-9]{6}$/;
 
 function VerifiedNotification({ t }: { t: TFunction }) {
   const searchParams = useSearchParams();
@@ -46,8 +53,14 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
   const {
     handleSubmit,
     register,
+    watch,
     formState: { errors },
   } = useForm<LoginInputs>();
+  // Gates native form submit until the client handlers are attached (E2E/hydration).
+  const [isFormReady, setIsFormReady] = useState(false);
+  useEffect(() => {
+    setIsFormReady(true);
+  }, []);
 
   const searchParams = useSearchParams();
   const queryParams = Object.fromEntries(searchParams.entries());
@@ -74,7 +87,32 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
     description: t("verified-toast-description"),
   });
 
+  // check if account with given email has 2FA enabled when the user exits the email field
+  const currentEmail = watch("email");
+  const [check2FAStatus, { data: secondFactorEnabled }] =
+    api.useLazyCheckSecondFactorAuthQuery();
+  const run2FAStatusCheck = async () => {
+    const isValidEmail = emailPattern.test(currentEmail);
+    if (isValidEmail) {
+      return await check2FAStatus({ email: currentEmail })
+        .unwrap()
+        .catch((error) => {
+          console.log("2FA status check error:", error);
+        });
+    }
+  };
+  const showSecurityToken = secondFactorEnabled?.enabled ?? false;
+  const fullError =
+    error == "invalid-email-or-password" && showSecurityToken
+      ? "invalid-email-password-or-security-code"
+      : error;
+
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
+    const status = await run2FAStatusCheck();
+    if (status?.enabled && data.securityToken?.length != 6) {
+      return;
+    }
+
     clearError();
     const result = await login(data, callbackUrl || `/${lng}/`);
 
@@ -83,7 +121,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
     }
   };
 
-  // Extract doesInvitedUserExist from callback params\
+  // Extract doesInvitedUserExist from callback params
   // If it is true, redirect to /user/invites page
   // If it is false, redirect to /auth/signup page
   // Check if the callbackUrl contains a query string
@@ -110,9 +148,19 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
       <Text my={4} color="content.tertiary">
         {t("login-details")}
       </Text>
-      <form noValidate onSubmit={handleSubmit(onSubmit)}>
+      <form
+        noValidate
+        data-testid="login-form"
+        data-ready={isFormReady ? "true" : "false"}
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Box display="flex" flexDirection="column" gap="16px">
-          <EmailInput register={register} error={errors.email} t={t} />
+          <EmailInput
+            register={register}
+            error={errors.email}
+            t={t}
+            inputProps={{ onBlur: run2FAStatusCheck }}
+          />
           <PasswordInput
             register={register}
             error={errors.password}
@@ -121,7 +169,33 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
               value.length >= 8 || t("min-length", { length: 8 })
             }
           />
-          <Text color="semantic.danger">{t(error)}</Text>
+          {showSecurityToken && (
+            <Field
+              label={<LabelLarge>{t("security-code")}</LabelLarge>}
+              invalid={!!errors.securityToken}
+              errorText={errors.securityToken?.message}
+            >
+              <Input
+                type="text"
+                placeholder={t("security-code-placeholder")}
+                size="lg"
+                shadow="2dp"
+                background={
+                  !!errors.securityToken
+                    ? "sentiment.negativeOverlay"
+                    : "background.default"
+                }
+                {...register("securityToken", {
+                  required: t("security-code-required"),
+                  pattern: {
+                    value: securityCodePattern,
+                    message: t("security-code-invalid"),
+                  },
+                })}
+              />
+            </Field>
+          )}
+          <Text color="semantic.danger">{t(fullError)}</Text>
           <Box w="full" textAlign="right">
             <Link href="/auth/forgot-password" textDecoration="underline">
               {t("forgot-password")}
@@ -131,6 +205,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
             type="submit"
             formNoValidate
             loading={isLoading}
+            disabled={!isFormReady || isLoading}
             h={16}
             width="full"
             bgColor="interactive.secondary"

@@ -1,13 +1,5 @@
 import React, { useCallback, useLayoutEffect, useRef } from "react";
-import {
-  Control,
-  Controller,
-  FieldValues,
-  Path,
-  PathValue,
-  UseFormClearErrors,
-  UseFormSetError,
-} from "react-hook-form";
+import { Control, Controller, FieldValues, Path, PathValue } from "react-hook-form";
 import { Group, Input, InputAddon } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { NumberInputProps } from "./ui/number-input";
@@ -18,8 +10,6 @@ interface FormattedNumberInputProps<T extends FieldValues>
   extends NumberInputProps {
   control: Control<T>;
   name: Path<T>;
-  setError?: UseFormSetError<T>;
-  clearErrors?: UseFormClearErrors<T>;
   defaultValue?: PathValue<T, Path<T>>;
   isDisabled?: boolean;
   placeholder?: string;
@@ -171,20 +161,6 @@ function FormattedNumberInput<T extends FieldValues>({
       control={control}
       name={name}
       defaultValue={defaultValue}
-      rules={{
-        required: t("value-required"),
-        validate: (value) => {
-          if (value === "" || isNaN(value)) {
-            return t("value-required");
-          }
-          if (min != null && value < min) {
-            return t("value-too-low", { min });
-          }
-          if (max != null && value > max) {
-            return t("value-too-high", { max });
-          }
-        },
-      }}
       render={({ field }) => {
         const formatted = format(field.value);
         return (

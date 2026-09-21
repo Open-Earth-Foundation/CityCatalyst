@@ -1,23 +1,26 @@
 from datetime import datetime, timedelta, timezone
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 from uuid import UUID, uuid4
 
 import pytest
 from fastapi import HTTPException
+from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from app.models.concept_note_runs import (
+from app.models.cnb.concept_note_runs import (
+    ConceptNotePopulationRequest,
     ConceptNoteRunListResponse,
     ConceptNoteStartRequest,
 )
-from app.models.db.concept_note import ConceptNoteRun
+from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.models.db.thread import Thread
 from app.persistence.concept_notes.runs import ConceptNoteRunRepository
 from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
 )
+from app.services.cnb.context_bundle import ContextBundleService
 from app.services.cnb.funding_references import FundingReferenceValidator
 from app.services.concept_note_runs import (
     ConceptNoteRunService,
@@ -91,6 +94,7 @@ def _run_service(
         funding_reference_validator=funding_validator,
     )
     service.repository = repository
+    repository.list_uploads_for_run.return_value = []
     return service, repository, cc_client, funding_validator
 
 
@@ -137,6 +141,51 @@ async def test_start_run_creates_after_scope_and_reference_validation() -> None:
     )
 
 
+@pytest.mark.parametrize("created", [True, False])
+async def test_start_run_schedules_only_new_context_after_commit(
+    monkeypatch,
+    created: bool,
+) -> None:
+    """Commit every accepted start and schedule only newly created runs."""
+    payload = _start_request()
+    service, repository, _, _ = _run_service()
+    repository.create_or_get.return_value = (
+        _persisted_run(
+            payload,
+            request_fingerprint=_request_fingerprint(payload),
+        ),
+        created,
+    )
+    context_bundle_service = Mock(spec=ContextBundleService)
+    schedule = Mock()
+    events: list[str] = []
+    service.session.commit.side_effect = lambda: events.append("commit")
+    schedule.side_effect = lambda **_: events.append("schedule")
+    monkeypatch.setattr(
+        "app.services.concept_note_runs.schedule_context_bundle_build",
+        schedule,
+    )
+
+    response = await service.start_run_and_schedule_context(
+        payload,
+        authorization="Bearer token",
+        context_bundle_service=context_bundle_service,
+    )
+
+    assert response.created is created
+    assert events == (["commit", "schedule"] if created else ["commit"])
+    service.session.commit.assert_awaited_once_with()
+    if created:
+        schedule.assert_called_once_with(
+            service=context_bundle_service,
+            user_id=payload.user_id,
+            run_id=response.run_id,
+            token="token",
+        )
+    else:
+        schedule.assert_not_called()
+
+
 async def test_start_run_rejects_reused_key_with_different_fingerprint() -> None:
     """Return 409 when an idempotency key is replayed with changed inputs."""
     payload = _start_request()
@@ -166,6 +215,103 @@ async def test_get_run_rejects_authenticated_user_mismatch() -> None:
 
     assert exc_info.value.status_code == 403
     repository.get_for_user.assert_not_awaited()
+
+
+async def test_manual_population_is_scoped_to_one_run_and_can_be_cleared() -> None:
+    """Save CNB-only data without replacing other run progress."""
+    payload = _start_request()
+    run = _persisted_run(
+        payload,
+        request_fingerprint=_request_fingerprint(payload),
+        context_summary={"context_bundle": {"status": "ready"}},
+    )
+    service, _, _, _ = _run_service()
+    service.get_authorized_run = AsyncMock(return_value=run)
+
+    saved = await service.update_manual_population(
+        run_id=run.run_id,
+        payload=ConceptNotePopulationRequest(
+            manual_population={"population": 0, "year": 2024}
+        ),
+        requested_user_id=run.user_id,
+        authorization="Bearer token",
+    )
+
+    assert saved.manual_population is not None
+    assert saved.manual_population.population == 0
+    assert saved.manual_population.year == 2024
+    assert run.context_summary == {
+        "context_bundle": {"status": "ready"},
+        "manual_population": {"population": 0, "year": 2024},
+    }
+    service.session.refresh.assert_awaited_once_with(run, with_for_update=True)
+
+    cleared = await service.update_manual_population(
+        run_id=run.run_id,
+        payload=ConceptNotePopulationRequest(manual_population=None),
+        requested_user_id=run.user_id,
+        authorization="Bearer token",
+    )
+    assert cleared.manual_population is None
+    assert run.context_summary == {"context_bundle": {"status": "ready"}}
+    assert service.session.commit.await_count == 2
+
+
+@pytest.mark.parametrize(
+    "manual_population",
+    [{"population": 123456, "year": 2024}, None],
+)
+async def test_manual_population_rejects_edits_during_drafting_after_lock(
+    manual_population: dict[str, int] | None,
+) -> None:
+    """Reject edits when drafting starts before the run lock is acquired."""
+    payload = _start_request()
+    run = _persisted_run(
+        payload,
+        request_fingerprint=_request_fingerprint(payload),
+        context_summary={"manual_population": {"population": 100, "year": 2020}},
+    )
+    service, _, _, _ = _run_service()
+    service.get_authorized_run = AsyncMock(return_value=run)
+
+    async def refresh_with_running_draft(*_args: object, **_kwargs: object) -> None:
+        run.context_summary = {
+            **run.context_summary,
+            "draft_document": {"status": "running"},
+        }
+
+    service.session.refresh.side_effect = refresh_with_running_draft
+
+    with pytest.raises(HTTPException) as exc_info:
+        await service.update_manual_population(
+            run_id=run.run_id,
+            payload=ConceptNotePopulationRequest(manual_population=manual_population),
+            requested_user_id=run.user_id,
+            authorization="Bearer token",
+        )
+
+    assert exc_info.value.status_code == 409
+    assert run.context_summary["manual_population"] == {
+        "population": 100,
+        "year": 2020,
+    }
+    service.session.refresh.assert_awaited_once_with(run, with_for_update=True)
+    service.session.commit.assert_not_awaited()
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        {"population": -1, "year": 2024},
+        {"population": 12.5, "year": 2024},
+        {"population": 100, "year": 0},
+        {"population": 100, "year": 2024.5},
+    ],
+)
+def test_manual_population_rejects_invalid_values(value: dict) -> None:
+    """Require a whole-number population and a usable year."""
+    with pytest.raises(ValidationError):
+        ConceptNotePopulationRequest(manual_population=value)
 
 
 async def test_get_run_hides_missing_or_unowned_run() -> None:
@@ -217,6 +363,39 @@ async def test_get_run_revalidates_city_access_owned_by_citycatalyst() -> None:
         token="token",
         user_id=payload.user_id,
     )
+
+
+async def test_get_run_returns_owned_upload_metadata() -> None:
+    """Keep uploaded filenames visible when the workspace is resumed."""
+    payload = _start_request()
+    run = _persisted_run(
+        payload,
+        request_fingerprint=_request_fingerprint(payload),
+    )
+    upload = ConceptNoteUpload(
+        upload_id=uuid4(),
+        run_id=run.run_id,
+        uploaded_by_user_id=payload.user_id,
+        filename="Richfield_FloodRiskPrioritization.pdf",
+        source_label="Richfield Flood Risk Prioritization",
+        ingest_status="ready",
+        page_count=55,
+        received_at=datetime.now(timezone.utc),
+        ingest_completed_at=datetime.now(timezone.utc),
+    )
+    service, repository, _, _ = _run_service()
+    repository.get_for_user.return_value = run
+    repository.list_uploads_for_run.return_value = [upload]
+
+    response = await service.get_run(
+        run_id=run.run_id,
+        requested_user_id=payload.user_id,
+        authorization="Bearer token",
+    )
+
+    assert response.uploads[0].filename == upload.filename
+    assert response.uploads[0].status == "ready"
+    assert response.uploads[0].page_count == 55
 
 
 async def test_list_runs_rejects_authenticated_user_mismatch() -> None:

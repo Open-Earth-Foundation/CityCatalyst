@@ -5,7 +5,7 @@ from collections.abc import AsyncIterator
 from typing import Annotated
 from uuid import UUID
 
-from app.models.concept_note_city_context import (
+from app.models.cnb.concept_note_city_context import (
     ConceptNoteCcContext,
     ConceptNoteCityContextRequest,
     ConceptNoteCityContextResponse,

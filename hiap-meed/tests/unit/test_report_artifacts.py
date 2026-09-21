@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from app.models import ApiResponseMeta
 from app.modules.prioritizer.models import (
     CityActionReportApiResponse,
     CityActionReportChapter,
@@ -41,6 +42,11 @@ def test_build_output_plan_markdown_concatenates_report_chapters() -> None:
         metadata=CityActionReportMetadata(
             frontend_request_id="frontend-1",
             internal_request_id="internal-1",
+        ),
+        meta=ApiResponseMeta(
+            requestId="frontend-1",
+            generatedAtUtc="2026-08-19T10:00:00Z",
+            totalRecords=1,
         ),
     )
 

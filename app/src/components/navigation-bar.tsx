@@ -31,7 +31,11 @@ import {
 } from "react-icons/md";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
-import { api, useGetUserAccessStatusQuery } from "@/services/api";
+import {
+  api,
+  useGetModulesQuery,
+  useGetUserAccessStatusQuery,
+} from "@/services/api";
 import {
   MenuContent,
   MenuItem,
@@ -42,14 +46,17 @@ import { Avatar } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 import { Roles } from "@/util/types";
+import { uniqueBy } from "@/util/array";
 import { useTheme } from "next-themes";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
 import { getCityHomePath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
+import { useCitySwitchNavigation } from "@/hooks/useCitySwitchNavigation";
 import { getParamValue } from "@/util/helpers";
 import { env } from "@/lib/runtime-env";
+import { getActiveModuleSegment } from "@/util/module-navigation";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -91,11 +98,23 @@ export function NavigationBar({
 
   const { data: session, status } = useSession();
   const { data: userInfo } = api.useGetUserInfoQuery();
-  const { data: organizations } = api.useGetUserOrganizationsQuery(undefined, {
-    skip: isPublic || status !== "authenticated",
-  });
+  const { data: allModules } = useGetModulesQuery();
+  const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
+    undefined,
+    {
+      skip: isPublic || status !== "authenticated",
+    },
+  );
+  const organizations = useMemo(
+    () =>
+      rawOrganizations &&
+      uniqueBy(rawOrganizations, (org) => org.organizationId),
+    [rawOrganizations],
+  );
   const [getProjects] = api.useLazyGetProjectsQuery();
+  const [getProjectModulesTrigger] = api.useLazyGetProjectModulesQuery();
   const router = useRouter();
+  const navigateToCity = useCitySwitchNavigation(lng);
 
   const onChangeLanguage = async (language: string) => {
     Cookies.set("i18next", language, { path: "/", sameSite: "strict" });
@@ -107,14 +126,15 @@ export function NavigationBar({
     router.refresh();
   };
 
-  // Derive the active module name from the current pathname
+  // Derive the active module name from the current pathname, using the
+  // Modules table as the source of truth so new modules work without code
+  // changes here.
   const moduleName = useMemo(() => {
-    if (!pathname) return null;
-    if (pathname.includes("/GHGI")) return t("page-title-ghg-inventories");
-    if (pathname.includes("/HIAP")) return t("page-title-hiap");
-    if (pathname.includes("/dashboard")) return t("page-title-dashboard");
-    return null;
-  }, [pathname, t]);
+    const active = getActiveModuleSegment(pathname, allModules ?? []);
+    if (!active) return null;
+    if (!active.moduleId) return t("page-title-dashboard");
+    return active.name?.[activeLng] || active.name?.en || null;
+  }, [pathname, allModules, activeLng, t]);
 
   // Memoize city to ensure it updates when route changes
   const currentCityId = useMemo(
@@ -147,12 +167,23 @@ export function NavigationBar({
     const projects = await getProjects({ organizationId })
       .unwrap()
       .catch(() => []);
-    const cityId = projects
-      .flatMap((project) => project.cities)
-      .sort((a, b) => a.name.localeCompare(b.name))[0]?.cityId;
-    router.push(
-      cityId ? `/${lng}/cities/${cityId}` : `/${lng}/cities/onboarding`,
-    );
+
+    const targetProject = projects
+      .flatMap((project) => project.cities.map((city) => ({ project, city })))
+      .sort((a, b) => a.city.name.localeCompare(b.city.name))[0];
+
+    if (!targetProject) {
+      router.push(`/${lng}/cities/onboarding`);
+      return;
+    }
+
+    const projectModules = await getProjectModulesTrigger(
+      targetProject.project.projectId,
+    )
+      .unwrap()
+      .catch(() => []);
+
+    navigateToCity(targetProject.city.cityId, projectModules);
   }
 
   function logOut() {
@@ -169,10 +200,10 @@ export function NavigationBar({
         display="flex"
         justifyContent="space-between"
         flexDirection="row"
-        px={8}
+        px={{ base: 4, md: 8 }}
         py={4}
         alignItems="center"
-        gap={12}
+        gap={{ base: 2, md: 12 }}
         position="relative"
         zIndex={50}
         w="full"
@@ -216,13 +247,13 @@ export function NavigationBar({
                   />
                 </Link>
               )}
-              <Link href={homePath}>
+              <Link href={homePath} display={{ base: "none", md: "block" }}>
                 <Heading size="lg" color="base.light">
                   {t("title")}
                 </Heading>
               </Link>
               {moduleName && (
-                <>
+                <Box display={{ base: "none", md: "flex" }} alignItems="center" gap={2}>
                   <Separator
                     orientation="vertical"
                     height="5"
@@ -231,16 +262,16 @@ export function NavigationBar({
                   <Heading size="lg" color="base.light" fontWeight="normal">
                     {moduleName}
                   </Heading>
-                </>
+                </Box>
               )}
             </HStack>
           )}
         </Box>
 
         {/* Menu Items */}
-        <Box display="flex" gap="48px" alignItems="center">
+        <Box display="flex" gap={{ base: "12px", md: "48px" }} alignItems="center">
           {children}
-          <Box display="flex" gap="32px">
+          <Box display="flex" gap={{ base: "8px", md: "32px" }}>
             <MenuRoot
               onOpenChange={(details) => {
                 setLanguageMenuOpen(details.open);
@@ -271,6 +302,7 @@ export function NavigationBar({
                     />
 
                     <Text
+                      display={{ base: "none", md: "block" }}
                       fontSize="title.sm"
                       fontWeight="medium"
                       letterSpacing="wide"
@@ -310,7 +342,7 @@ export function NavigationBar({
               </MenuContent>
             </MenuRoot>
             {organizations && organizations.length > 1 && (
-              <Box display="flex">
+              <Box display={{ base: "none", md: "flex" }}>
                 <MenuRoot
                   onOpenChange={(details) => {
                     setOrgMenuOpen(details.open);
@@ -360,48 +392,37 @@ export function NavigationBar({
                     </Button>
                   </MenuTrigger>
                   <MenuContent minW="220px" zIndex={2000}>
-                    {/* only show unique organizations and not duplicates */}
-                    {organizations
-                      .filter(
-                        (org, index, self) =>
-                          index ===
-                          self.findIndex(
-                            (t) => t.organizationId === org.organizationId,
-                          ),
-                      )
-                      .map((org) => (
-                        <MenuItem
-                          value={org.organizationId}
-                          onClick={() =>
-                            onChangeOrganization(org.organizationId)
-                          }
-                          key={org.organizationId}
+                    {organizations.map((org) => (
+                      <MenuItem
+                        value={org.organizationId}
+                        onClick={() => onChangeOrganization(org.organizationId)}
+                        key={org.organizationId}
+                      >
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="space-between"
+                          w="full"
                         >
-                          <Box
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="space-between"
-                            w="full"
+                          <Text
+                            fontSize="title.md"
+                            overflow="hidden"
+                            textOverflow="ellipsis"
+                            whiteSpace="nowrap"
                           >
-                            <Text
-                              fontSize="title.md"
-                              overflow="hidden"
-                              textOverflow="ellipsis"
-                              whiteSpace="nowrap"
-                            >
-                              {org.name}
-                            </Text>
-                            {org.organizationId ===
-                              organization?.organizationId && (
-                              <Icon
-                                as={MdCheck}
-                                boxSize={5}
-                                color="interactive.secondary"
-                              />
-                            )}
-                          </Box>
-                        </MenuItem>
-                      ))}
+                            {org.name}
+                          </Text>
+                          {org.organizationId ===
+                            organization?.organizationId && (
+                            <Icon
+                              as={MdCheck}
+                              boxSize={5}
+                              color="interactive.secondary"
+                            />
+                          )}
+                        </Box>
+                      </MenuItem>
+                    ))}
                   </MenuContent>
                 </MenuRoot>
               </Box>
@@ -419,7 +440,12 @@ export function NavigationBar({
                   }
                 >
                   <MenuTrigger asChild whiteSpace="nowrap" textTransform="none">
-                    <Button variant="ghost" px="8px" minW="220px" minH="48px">
+                    <Button
+                      variant="ghost"
+                      px="8px"
+                      minW={{ base: "auto", md: "220px" }}
+                      minH="48px"
+                    >
                       <Box display="flex" alignItems="center" gap="4">
                         <Avatar
                           height="32px"
@@ -430,6 +456,7 @@ export function NavigationBar({
                           src={session.user?.image}
                         />
                         <Text
+                          display={{ base: "none", md: "block" }}
                           w="120px"
                           overflow="hidden"
                           textOverflow="ellipsis"

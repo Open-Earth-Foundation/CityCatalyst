@@ -243,11 +243,6 @@ const ActivityModalBody = ({
           type: "required",
           message: t("emission-factor-required"),
         });
-      } else if (value < 0) {
-        setError(`activity.${fieldName}`, {
-          type: "min",
-          message: t("emission-factor-negative"),
-        });
       } else if (value > EMISSION_FACTOR_MAX) {
         setError(`activity.${fieldName}`, {
           type: "max",

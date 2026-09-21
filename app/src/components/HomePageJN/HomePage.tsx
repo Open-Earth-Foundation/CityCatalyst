@@ -34,7 +34,6 @@ import {
   hasOrganizationChanged,
   normalizeOrganizationState,
 } from "@/hooks/organization-context-provider/use-organizational-context";
-import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { HeadlineMedium } from "@/components/package/Texts/Headline";
 import { useResourceValidation } from "@/hooks/useResourceValidation";
 import {
@@ -48,9 +47,10 @@ import { BodyLarge } from "@/components/package/Texts/Body";
 import { TitleLarge } from "@/components/package/Texts/Title";
 import { LuChevronDown } from "react-icons/lu";
 import { NoModulesCard } from "./NoModulesCard";
-import { Modules, SUPPORT_EMAIL } from "@/util/constants";
+import { SUPPORT_EMAIL } from "@/util/constants";
 import { stageOrder } from "@/config/stages";
 import { Trans } from "react-i18next";
+import { isModuleVisible } from "@/util/module-visibility";
 
 export default function HomePage({
   lng,
@@ -284,14 +284,7 @@ export default function HomePage({
               <AccordionRoot multiple defaultValue={stageOrder} variant="plain">
                 {stageOrder.map((stage) => {
                   const modules = projectModules.filter((mod) => {
-                    // Filter out CCRA module unless feature flag is enabled
-                    if (
-                      mod.id === Modules.CCRA.id &&
-                      !hasFeatureFlag(FeatureFlags.CCRA_MODULE)
-                    ) {
-                      return false;
-                    }
-                    return mod.stage === stage;
+                    return mod.stage === stage && isModuleVisible(mod.id);
                   });
                   return (
                     <AccordionItem key={stage} value={stage} mb={12}>

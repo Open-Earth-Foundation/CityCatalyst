@@ -589,7 +589,6 @@ describe("City HIAP Prioritization API", () => {
     });
 
     it("deletes action plan successfully", async () => {
-      // Create ranking, ranked action, and action plan
       const ranking = await db.models.HighImpactActionRanking.create({
         id: randomUUID(),
         inventoryId,
@@ -639,11 +638,9 @@ describe("City HIAP Prioritization API", () => {
       const body = await res.json();
       expect(body.success).toBe(true);
 
-      // Verify it was deleted
       const deleted = await db.models.ActionPlan.findByPk(actionPlan.id);
       expect(deleted).toBeNull();
 
-      // Cleanup
       await db.models.HighImpactActionRanked.destroy({
         where: { id: rankedAction.id },
       });
@@ -690,9 +687,10 @@ describe("City HIAP Prioritization API", () => {
 
       const requestBody = {
         action: {
+          id: rankedAction.id,
           actionId: rankedAction.actionId,
           name: "Generate Action",
-          hiaRankingId: rankedAction.id,
+          hiaRankingId: ranking.id,
         },
         inventoryId,
         cityLocode: "XX-APT",
@@ -706,12 +704,15 @@ describe("City HIAP Prioritization API", () => {
         }),
       });
 
-      await expectStatusCode(res, 200);
+      // Generation is accepted immediately; HIAP work continues in the background.
+      await expectStatusCode(res, 202);
       const body = await res.json();
-      expect(body.data).toBeTruthy();
-      expect(body.data.actionName).toBe("Mock Action");
+      expect(body.data).toEqual({
+        accepted: true,
+        message:
+          "Action plan generation started; you will receive an email when it is ready.",
+      });
 
-      // Verify the mock was called
       expect(
         HiapApiService.hiapApiWrapper.startActionPlanJob,
       ).toHaveBeenCalled();

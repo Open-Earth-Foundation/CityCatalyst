@@ -142,21 +142,24 @@ def test_prioritize_e2e_with_mock_api_payloads(
             "ownership_category",
             "ownership_score",
             "ownership_description",
-            "ownership_description_es",
             "restrictions_category",
             "restrictions_score",
             "restrictions_description",
-            "restrictions_description_es",
             "legal_justification",
-            "legal_justification_en",
             "legal_references",
         }.issubset(legal_summary.keys())
-        assert isinstance(legal_summary["ownership_description"], str)
-        assert isinstance(legal_summary["ownership_description_es"], str)
-        assert isinstance(legal_summary["restrictions_description"], str)
-        assert isinstance(legal_summary["restrictions_description_es"], str)
-        assert isinstance(legal_summary["legal_justification"], str)
-        assert isinstance(legal_summary["legal_justification_en"], str)
+        assert set(legal_summary["ownership_description"]) == {"en", "es"}
+        assert set(legal_summary["restrictions_description"]) == {"en", "es"}
+        assert set(legal_summary["legal_justification"]) == {"en", "es"}
+        assert all(
+            isinstance(text, str)
+            for field_name in (
+                "ownership_description",
+                "restrictions_description",
+                "legal_justification",
+            )
+            for text in legal_summary[field_name].values()
+        )
         assert isinstance(legal_summary["legal_references"], list)
         assert legal_summary["legal_references"]
 
@@ -171,19 +174,13 @@ def test_prioritize_e2e_with_mock_api_payloads(
         blocked_legal_summary = blocked_evidence["legal_assessment_summary"]
         assert {
             "ownership_description",
-            "ownership_description_es",
             "restrictions_description",
-            "restrictions_description_es",
             "legal_justification",
-            "legal_justification_en",
             "legal_references",
         }.issubset(blocked_legal_summary.keys())
-        assert isinstance(blocked_legal_summary["ownership_description"], str)
-        assert isinstance(blocked_legal_summary["ownership_description_es"], str)
-        assert isinstance(blocked_legal_summary["restrictions_description"], str)
-        assert isinstance(blocked_legal_summary["restrictions_description_es"], str)
-        assert isinstance(blocked_legal_summary["legal_justification"], str)
-        assert isinstance(blocked_legal_summary["legal_justification_en"], str)
+        assert set(blocked_legal_summary["ownership_description"]) == {"en", "es"}
+        assert set(blocked_legal_summary["restrictions_description"]) == {"en", "es"}
+        assert set(blocked_legal_summary["legal_justification"]) == {"en", "es"}
         assert isinstance(blocked_legal_summary["legal_references"], list)
         assert blocked_legal_summary["legal_references"]
         removed_blocked_action = next(
@@ -199,20 +196,11 @@ def test_prioritize_e2e_with_mock_api_payloads(
         assert removed_blocked_action["legal"]["ownership_description"] == (
             blocked_legal_summary["ownership_description"]
         )
-        assert removed_blocked_action["legal"]["ownership_description_es"] == (
-            blocked_legal_summary["ownership_description_es"]
-        )
         assert removed_blocked_action["legal"]["restrictions_description"] == (
             blocked_legal_summary["restrictions_description"]
         )
-        assert removed_blocked_action["legal"]["restrictions_description_es"] == (
-            blocked_legal_summary["restrictions_description_es"]
-        )
         assert removed_blocked_action["legal"]["legal_justification"] == (
             blocked_legal_summary["legal_justification"]
-        )
-        assert removed_blocked_action["legal"]["legal_justification_en"] == (
-            blocked_legal_summary["legal_justification_en"]
         )
         assert removed_blocked_action["legal"]["legal_references"] == (
             blocked_legal_summary["legal_references"]

@@ -8,10 +8,6 @@ import {
 } from "@/util/types";
 import { checkBulkActionRankingJob } from "@/backend/hiap/HiapService";
 import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
-import {
-  backfillMissingHIAPActionPlans,
-  backfillMissingHIAPRankings,
-} from "@/backend/hiap/HiapNativeInputCatalogService";
 import { QueryTypes } from "sequelize";
 import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
 import type { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
@@ -232,22 +228,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const catalogBackfilled = await backfillMissingHIAPRankings();
-    const actionPlansBackfilled = await backfillMissingHIAPActionPlans();
-    if (catalogBackfilled > 0) {
-      logger.info(
-        { catalogBackfilled },
-        "Backfilled missing HIAP catalog entries",
-      );
-    }
-    if (actionPlansBackfilled > 0) {
-      logger.info(
-        { actionPlansBackfilled },
-        "Backfilled missing HIAP action-plan catalog entries",
-      );
-    }
-
-    // Step 3: Start ONE batch if no PENDING jobs exist system-wide
+    // Step 2: Start ONE batch if no PENDING jobs exist system-wide
     if (pendingJobs.length === 0) {
       logger.info(
         "No PENDING jobs system-wide. Checking for TO_DO rankings to start next batch.",
@@ -318,7 +299,7 @@ export async function GET(req: NextRequest) {
         {
           pendingJobCount: pendingJobs.length,
         },
-        "PENDING jobs exist. Skipping Step 3 (enforce 1 batch at a time globally).",
+        "PENDING jobs exist. Skipping Step 2 (enforce 1 batch at a time globally).",
       );
     }
 
@@ -328,8 +309,6 @@ export async function GET(req: NextRequest) {
       {
         checkedJobs: pendingJobs.length,
         completedJobs,
-        catalogBackfilled,
-        actionPlansBackfilled,
         startedBatches,
         durationMs: duration,
       },
@@ -339,8 +318,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       checkedJobs: pendingJobs.length,
       completedJobs,
-      catalogBackfilled,
-      actionPlansBackfilled,
       startedBatches,
       durationMs: duration,
     });

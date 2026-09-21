@@ -36,6 +36,7 @@ from app.modules.prioritizer.internal_models import (
     BlockScoreResult,
     LegalAssessmentRecord,
 )
+from app.modules.prioritizer.localization import localized_text_map
 
 NEUTRAL_COMPONENT_SCORE = 0.5
 
@@ -204,12 +205,13 @@ def run(
                 assessment.ownership_score if assessment is not None else None
             ),
             "ownership_description": (
-                assessment.ownership_description if assessment is not None else None
-            ),
-            "ownership_description_es": (
-                assessment.ownership_description_i18n.get("es")
+                localized_text_map(
+                    localized=assessment.ownership_description_i18n,
+                    fallback_language="en",
+                    fallback=assessment.ownership_description,
+                )
                 if assessment is not None
-                else None
+                else {}
             ),
             "restrictions_category": (
                 assessment.restrictions_category if assessment is not None else None
@@ -218,23 +220,22 @@ def run(
                 assessment.restrictions_score if assessment is not None else None
             ),
             "restrictions_description": (
-                assessment.restrictions_description if assessment is not None else None
-            ),
-            "restrictions_description_es": (
-                assessment.restrictions_description_i18n.get("es")
+                localized_text_map(
+                    localized=assessment.restrictions_description_i18n,
+                    fallback_language="en",
+                    fallback=assessment.restrictions_description,
+                )
                 if assessment is not None
-                else None
+                else {}
             ),
             "legal_justification": (
-                assessment.legal_justification_i18n.get("es")
-                or assessment.legal_justification
+                localized_text_map(
+                    localized=assessment.legal_justification_i18n,
+                    fallback_language="es",
+                    fallback=assessment.legal_justification,
+                )
                 if assessment is not None
-                else None
-            ),
-            "legal_justification_en": (
-                assessment.legal_justification_i18n.get("en")
-                if assessment is not None
-                else None
+                else {}
             ),
             "legal_analysis_date": (
                 assessment.analysis_date if assessment is not None else None

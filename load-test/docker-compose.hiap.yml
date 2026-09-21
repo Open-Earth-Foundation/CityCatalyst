@@ -1,0 +1,20 @@
+services:
+  hiap-loadtest-db:
+    image: postgres:16-alpine
+    container_name: cc-752-hiap-loadtest-db
+    environment:
+      POSTGRES_DB: citycatalyst_loadtest
+      POSTGRES_USER: citycatalyst
+      POSTGRES_PASSWORD: local-loadtest
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U citycatalyst -d citycatalyst_loadtest"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - hiap-loadtest-db-data:/var/lib/postgresql/data
+
+volumes:
+  hiap-loadtest-db-data:

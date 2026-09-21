@@ -44,7 +44,7 @@ def test_translate_explanation_text_returns_explanation() -> None:
         translate_module.openai_client.beta.chat.completions,
         "parse",
         side_effect=_fake_parse,
-    ):
+    ) as mock_parse:
         with warnings.catch_warnings(record=True) as captured:
             warnings.simplefilter("always")
             result = translate_explanation_text(
@@ -56,6 +56,8 @@ def test_translate_explanation_text_returns_explanation() -> None:
     assert isinstance(result, Explanation)
     assert result.explanations["es"] == expected_es
     assert result.explanations["pt"] == expected_pt
+    assert mock_parse.call_args.kwargs["reasoning_effort"] == "none"
+    assert "temperature" not in mock_parse.call_args.kwargs
     warning_text = " ".join(str(item.message) for item in captured)
     assert "PydanticSerializationUnexpectedValue" not in warning_text
 

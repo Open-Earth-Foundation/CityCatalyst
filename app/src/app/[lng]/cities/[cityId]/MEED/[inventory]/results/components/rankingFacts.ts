@@ -88,6 +88,64 @@ export interface MeedScoreWeights {
   feasibility: number;
 }
 
+/** What each pillar actually adds to the final score: score × weight. */
+export interface MeedScoreContributions {
+  impact: number;
+  alignment: number;
+  feasibility: number;
+  /** Sum of the three, for display; `final_score` stays the source of truth. */
+  total: number;
+}
+
+export function scoreContributions(
+  action: Pick<
+    MeedRankedActionResult,
+    "impact_score" | "alignment_score" | "feasibility_score"
+  >,
+  weights: MeedScoreWeights,
+): MeedScoreContributions {
+  const impact = action.impact_score * weights.impact;
+  const alignment = action.alignment_score * weights.alignment;
+  const feasibility = action.feasibility_score * weights.feasibility;
+  return {
+    impact,
+    alignment,
+    feasibility,
+    total: impact + alignment + feasibility,
+  };
+}
+
+/** The legal screening funnel: how many were assessed, passed, and ranked. */
+export interface MeedLegalFunnel {
+  assessed: number;
+  passed: number;
+  ranked: number;
+}
+
+/**
+ * Assessed comes from the response when it says so, otherwise from the catalog
+ * size the caller knows. Passed is `valid_actions`, or assessed minus the legal
+ * discards when only those are reported. Null when there is no ranking or the
+ * response carries neither count — better than a confident wrong funnel.
+ */
+export function legalFunnel(
+  ranking: MeedPrioritizeCityResult | null,
+  catalogSize: number,
+): MeedLegalFunnel | null {
+  if (!ranking) return null;
+  const counts = ranking.metadata?.counts;
+  const ranked = ranking.ranked_actions?.length ?? 0;
+  const assessed = asCount(counts?.total_actions) ?? catalogSize;
+  if (!assessed) return null;
+  const valid = asCount(counts?.valid_actions);
+  const discarded = asCount(counts?.discarded_legal);
+  const passed =
+    valid ??
+    (discarded !== null ? Math.max(assessed - discarded, ranked) : null);
+  if (passed === null) return null;
+  return { assessed, passed, ranked };
+}
+
 export interface MeedPolicyBacking {
   /** Alignment score above 0.75. */
   strong: number;

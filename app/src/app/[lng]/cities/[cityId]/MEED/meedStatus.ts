@@ -5,7 +5,7 @@ import {
   MEED_STATE_CHANGED_EVENT,
   type MeedStepState,
 } from "./meedLocalState";
-import { MEED_ALL_SECTIONS, MEED_WIZARD_STEPS } from "./steps";
+import { MEED_ALL_SECTIONS, MEED_RANKING_INPUT_KEYS } from "./steps";
 
 /**
  * Four-state model for a wizard section.
@@ -80,17 +80,6 @@ export function useMeedSectionStates(inventoryId: string | undefined): {
   return { states, isReady };
 }
 
-export function countByStatus(states: MeedSectionStates) {
-  const values = Object.values(states);
-  return {
-    complete: values.filter((s) => s.status === "complete").length,
-    needsReview: values.filter((s) => s.status === "needs-review").length,
-    inProgress: values.filter((s) => s.status === "in-progress").length,
-    notStarted: values.filter((s) => s.status === "not-started").length,
-    total: MEED_WIZARD_STEPS.length,
-  };
-}
-
 /**
  * Fingerprint of every input that feeds a ranking. Stored alongside a generated
  * ranking so the overview can tell whether the user's answers have moved on
@@ -105,8 +94,8 @@ export function countByStatus(states: MeedSectionStates) {
  * the data does.
  */
 export function inputsFingerprint(states: MeedSectionStates): string {
-  return MEED_WIZARD_STEPS.map((step) => {
-    const state = states[step.key];
-    return [step.key, state?.progress ?? 0, state?.sub ?? ""].join(":");
+  return MEED_RANKING_INPUT_KEYS.map((key) => {
+    const state = states[key];
+    return [key, state?.progress ?? 0, state?.sub ?? ""].join(":");
   }).join("|");
 }

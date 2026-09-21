@@ -7,9 +7,9 @@ import inspect
 import json
 import logging
 import time
-from contextlib import suppress
-from typing import Any, AsyncIterator, Dict, List, Optional, Union
-from uuid import UUID
+from contextlib import aclosing, suppress
+from typing import Any, AsyncGenerator, AsyncIterator, Dict, List, Optional, Union
+from uuid import UUID, uuid4
 
 from agents import RunConfig, Runner, gen_trace_id
 from app.middleware import get_request_id
@@ -32,6 +32,7 @@ from app.services.stationary_energy.stationary_energy_tool_events import (
 )
 from app.services.thread_service import ThreadService
 from app.utils.chat_workflow_context import ChatWorkflowContext
+from app.utils.cnb_progress import emit_cnb_progress, emit_cnb_reasoning, stream_cnb_events
 from app.utils.concept_note_context import (
     clean_cnb_history,
     extract_concept_note_run_id,
@@ -87,6 +88,7 @@ class StreamingHandler:
     ) -> None:
         """Initialize per-request state for streaming one agent response."""
         self.thread_id = thread_id
+        self.reasoning_stream_id = str(uuid4())
         self.user_id = user_id
         self.session_factory = session_factory
         self.cc_access_token = cc_access_token
@@ -115,7 +117,18 @@ class StreamingHandler:
         self,
         payload: MessageCreateRequest,
         history_warning: Optional[str] = None,
-    ) -> AsyncIterator[bytes]:
+    ) -> AsyncGenerator[bytes, None]:
+        """Forward answer and request-local worker events on the existing stream."""
+        events = stream_cnb_events(self._stream_response(payload, history_warning))
+        async with aclosing(events) as stream:
+            async for chunk in stream:
+                yield chunk
+
+    async def _stream_response(
+        self,
+        payload: MessageCreateRequest,
+        history_warning: Optional[str] = None,
+    ) -> AsyncGenerator[bytes, None]:
         """Stream AI responses using OpenAI Agents SDK.
 
         Args:
@@ -129,6 +142,8 @@ class StreamingHandler:
         settings = get_settings()
         started_at = time.perf_counter()
         await self._resolve_workflow_context(payload)
+        if self.workflow_context.concept_note_run_id:
+            await emit_cnb_progress("preparing")
 
         with (
             start_run(
@@ -929,6 +944,12 @@ class StreamingHandler:
             return
 
         response_type = getattr(response_event, "type", "")
+        if self.workflow_context.concept_note_run_id:
+            if response_type == "response.created":
+                self.reasoning_stream_id = str(uuid4())
+            await emit_cnb_reasoning(
+                response_event, stream_id=self.reasoning_stream_id, stage="chat"
+            )
 
         # Stream text/refusal deltas as message events and preserve token order.
         if response_type in {"response.output_text.delta", "response.refusal.delta"}:

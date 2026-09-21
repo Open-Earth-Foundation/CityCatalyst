@@ -15,8 +15,7 @@ from typing import Any, TypeVar, cast
 from agents import (
     Agent,
     AgentOutputSchema,
-    ModelSettings,
-    OpenAIChatCompletionsModel,
+    OpenAIResponsesModel,
     RunConfig,
     Runner,
 )
@@ -36,6 +35,8 @@ from app.models.cnb.source_prompt import (
 )
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.openrouter_client import build_openrouter_client_options
+from app.utils.cnb_model_settings import cnb_model_settings
+from app.utils.cnb_progress import has_cnb_progress_sink, run_with_cnb_reasoning
 from app.utils.concept_note_context import (
     omit_context_identifiers,
     readable_source_heading,
@@ -551,19 +552,26 @@ async def _run_agent(
     agent = Agent(
         name=name,
         instructions=prompt,
-        model=OpenAIChatCompletionsModel(
+        model=OpenAIResponsesModel(
             model=model_config.name,
             openai_client=client,
         ),
-        model_settings=ModelSettings(
-            # Reasoning requests omit unsupported sampling controls.
-            include_usage=True,
-            reasoning={"effort": model_config.reasoning_effort},
-        ),
+        model_settings=cnb_model_settings(model_config.reasoning_effort),
         output_type=output_schema,
         tools=[],
     )
     try:
+        if has_cnb_progress_sink():
+            run_result = await run_with_cnb_reasoning(
+                runner,
+                agent,
+                input_text,
+                run_config=RunConfig(
+                    tracing_disabled=True, trace_include_sensitive_data=False
+                ),
+                stage="reading",
+            )
+            return output_type.model_validate(run_result.final_output)
         try:
             run_result = await runner.run(
                 agent,

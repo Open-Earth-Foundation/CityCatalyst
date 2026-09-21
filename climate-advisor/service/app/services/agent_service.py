@@ -14,7 +14,17 @@ from urllib.parse import urlparse
 from uuid import UUID
 
 import openai
-from agents import Agent, FunctionTool, ModelSettings, OpenAIChatCompletionsModel
+from agents import (
+    Agent,
+    FunctionTool,
+    ModelSettings,
+    OpenAIChatCompletionsModel,
+    OpenAIResponsesModel,
+)
+from openai import AsyncOpenAI
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.config import get_settings
 from app.config.settings import RoleModelConfig
 from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.persistence.concept_notes.context_bundle import (
@@ -42,11 +52,8 @@ from app.tools.stationary_energy_start_draft_tools import (
     build_stationary_energy_start_draft_tools,
 )
 from app.utils.agent_tracing import configure_agents_tracing
+from app.utils.cnb_model_settings import cnb_model_settings
 from app.utils.conversation_observability import traced_conversation_tool
-from openai import AsyncOpenAI
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -480,19 +487,26 @@ class AgentService:
         ]
 
         # Build the Agents SDK object with the finalized instructions and tool list.
+        model_class = (
+            OpenAIResponsesModel
+            if self._has_concept_note_context
+            else OpenAIChatCompletionsModel
+        )
         agent = Agent(
             name="Climate Advisor",
             instructions=agent_instructions,
-            model=OpenAIChatCompletionsModel(
+            model=model_class(
                 model=agent_model,
                 openai_client=self.client,
             ),
-            model_settings=ModelSettings(
-                temperature=agent_temperature,
-                include_usage=True,
-                reasoning={"effort": reasoning_effort}
-                if reasoning_effort is not None
-                else None,
+            model_settings=(
+                cnb_model_settings(reasoning_effort, temperature=agent_temperature)
+                if self._has_concept_note_context
+                else ModelSettings(
+                    temperature=agent_temperature,
+                    include_usage=True,
+                    reasoning={"effort": reasoning_effort} if reasoning_effort else None,
+                )
             ),
             tools=tools,
         )

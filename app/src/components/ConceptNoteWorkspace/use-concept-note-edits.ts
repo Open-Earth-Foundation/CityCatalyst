@@ -8,7 +8,6 @@ import {
   type EditApplyRequest,
   type EditProposal,
 } from "@/util/concept-note-edit-types";
-import { CONCEPT_NOTE_POLL_INTERVAL_MS } from "@/util/concept-note-polling";
 
 function revisionKey(revisions: Record<string, number>): string {
   return JSON.stringify(
@@ -25,14 +24,8 @@ export function useConceptNoteEdits({
   onApplied: (chapterIds: string[]) => Promise<void>;
 }) {
   const dispatch = useAppDispatch();
-  const cached = editApi.endpoints.listEditProposals.useQueryState(runId ?? "");
-  const processing = cached.currentData?.some(
-    (item) => item.status === "processing",
-  );
   const query = editApi.useListEditProposalsQuery(runId ?? "", {
     skip: !runId,
-    pollingInterval: processing ? CONCEPT_NOTE_POLL_INTERVAL_MS : 0,
-    skipPollingIfUnfocused: true,
     refetchOnMountOrArgChange: true,
   });
   const [get] = editApi.useLazyGetEditProposalQuery();
@@ -80,11 +73,6 @@ export function useConceptNoteEdits({
     if (!runId) return;
     try {
       const result = await get({ runId, proposalId }).unwrap();
-      await dispatch(
-        editApi.endpoints.listEditProposals.initiate(runId, {
-          subscribe: false,
-        }),
-      ).unwrap();
       remember(result);
       if (activeRun.current === runId) setError(null);
     } catch {

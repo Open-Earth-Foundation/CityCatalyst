@@ -2431,6 +2431,10 @@ export const api = createApi({
           url: `concept-notes/${runId}/`,
           params: { city_id: cityId },
         }),
+        providesTags: (_result, _error, { cityId, runId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
+        ],
       }),
       getConceptNoteApplicationContext: builder.query<
         ConceptNoteApplicationContext,
@@ -2580,6 +2584,7 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, runId) => [
           { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteRuns", id: runId },
         ],
       }),
       confirmConceptNoteChapter: builder.mutation<

@@ -15,6 +15,7 @@ import {
   shouldPollConceptNoteUpload,
   validateConceptNoteSourceFile,
 } from "../ConceptNoteWiringHarness/utils";
+import { useConceptNoteWorkspaceEvents } from "./use-concept-note-workspace-events";
 
 interface WorkspaceDataOptions {
   cityId: string;
@@ -40,10 +41,7 @@ export function useConceptNoteWorkspaceData({
     isError: runFailed,
     isLoading: runLoading,
     refetch: refetchRun,
-  } = api.useGetConceptNoteRunQuery(
-    { cityId, runId },
-    { pollingInterval: 15_000, skipPollingIfUnfocused: true },
-  );
+  } = api.useGetConceptNoteRunQuery({ cityId, runId });
   const { data: city } = api.useGetCityQuery(cityId);
   const {
     data: applicationContext,
@@ -55,10 +53,7 @@ export function useConceptNoteWorkspaceData({
     isError: draftQueryFailed,
     isLoading: draftLoading,
     refetch: refetchDraft,
-  } = api.useGetConceptNoteDraftQuery(runId, {
-    pollingInterval: 15_000,
-    skipPollingIfUnfocused: true,
-  });
+  } = api.useGetConceptNoteDraftQuery(runId);
   const { data: population } = api.useGetMostRecentCityPopulationQuery({
     cityId,
   });
@@ -84,14 +79,6 @@ export function useConceptNoteWorkspaceData({
       { runId, uploadId: selectedUploadId ?? "" },
       {
         skip: !selectedUploadId,
-        pollingInterval:
-          selectedUploadId &&
-          shouldPollConceptNoteUpload(
-            persistedUploadStatus ?? uploadDetails?.status ?? null,
-          )
-            ? 2_000
-            : 0,
-        skipPollingIfUnfocused: true,
       },
     );
 
@@ -151,6 +138,19 @@ export function useConceptNoteWorkspaceData({
     ? t("draft-start-error")
     : null;
   const isDraftRunning = draft?.status === "running";
+  const isUploadActive = shouldPollConceptNoteUpload(
+    effectiveUpload?.status ?? persistedUploadStatus,
+  );
+
+  useConceptNoteWorkspaceEvents({
+    cityId,
+    runId,
+    uploadId: selectedUploadId,
+    observeDraft: isDraftRunning,
+    observeUpload: isUploadActive,
+    observeRun:
+      bundle.status === "building" || isDraftRunning || isUploadActive,
+  });
 
   async function uploadSource(file: File): Promise<void> {
     setUploadError(null);
@@ -171,7 +171,6 @@ export function useConceptNoteWorkspaceData({
       }).unwrap();
       setActiveUploadId(upload.uploadId);
       setUploadDetails(upload);
-      void refetchRun();
     } catch {
       setUploadError(t("upload-source-error"));
     }
@@ -197,7 +196,6 @@ export function useConceptNoteWorkspaceData({
   async function retryContextBundle(): Promise<void> {
     try {
       await retryBundle(runId).unwrap();
-      await refetchRun();
     } catch {
       setUploadError(t("context-retry-error"));
     }
@@ -207,7 +205,6 @@ export function useConceptNoteWorkspaceData({
     if (!canStartDrafting || isDraftRunning) return;
     try {
       await startDraftMutation(runId).unwrap();
-      await Promise.all([refetchDraft(), refetchRun()]);
     } catch {
       return;
     }

@@ -1294,6 +1294,13 @@ export interface ConceptNoteUploadStatusRequest {
   uploadId: string;
 }
 
+export interface ConceptNoteWorkspaceSnapshot {
+  sequence: number;
+  run?: ConceptNoteRun;
+  draft?: ConceptNoteDraftState;
+  upload?: ConceptNoteUploadResponse;
+}
+
 export interface ConceptNoteContextBundleRetryResponse {
   run_id: string;
   status: "queued";

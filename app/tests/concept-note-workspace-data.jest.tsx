@@ -15,6 +15,39 @@ import { createRoot, type Root } from "react-dom/client";
 
 const persistedUploadId = "persisted-upload";
 const refetchRun = jest.fn(async () => undefined);
+const observeWorkspace = jest.fn();
+const getDraftQuery = jest.fn(() => ({
+  data: undefined,
+  isError: false,
+  isLoading: false,
+  refetch: jest.fn(async () => undefined),
+}));
+const getRunQuery = jest.fn(() => ({
+  data: {
+    progress_summary: {},
+    uploads: [
+      {
+        completed_at: "2026-09-03T09:59:00Z",
+        error_code: "OCR_FAILED",
+        filename: "evidence.pdf",
+        page_count: null,
+        received_at: "2026-09-03T09:50:00Z",
+        run_id: "run-1",
+        source_format: "pdf",
+        source_label: "evidence.pdf",
+        status: "failed",
+        upload_id: persistedUploadId,
+      },
+    ],
+  },
+  isError: false,
+  isLoading: false,
+  refetch: refetchRun,
+}));
+const getUploadQuery = jest.fn(() => ({
+  data: undefined,
+  isError: false,
+}));
 const retryUpload = jest.fn(() => ({
   unwrap: async () => ({
     filename: "evidence.pdf",
@@ -29,6 +62,10 @@ const retryUpload = jest.fn(() => ({
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
+jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/use-concept-note-workspace-events",
+  () => ({ useConceptNoteWorkspaceEvents: observeWorkspace }),
+);
 
 jest.unstable_mockModule("@/services/api", () => ({
   api: {
@@ -38,38 +75,9 @@ jest.unstable_mockModule("@/services/api", () => ({
       isError: false,
       isLoading: false,
     }),
-    useGetConceptNoteDraftQuery: () => ({
-      data: undefined,
-      isError: false,
-      isLoading: false,
-      refetch: jest.fn(async () => undefined),
-    }),
-    useGetConceptNoteRunQuery: () => ({
-      data: {
-        progress_summary: {},
-        uploads: [
-          {
-            completed_at: "2026-09-03T09:59:00Z",
-            error_code: "OCR_FAILED",
-            filename: "evidence.pdf",
-            page_count: null,
-            received_at: "2026-09-03T09:50:00Z",
-            run_id: "run-1",
-            source_format: "pdf",
-            source_label: "evidence.pdf",
-            status: "failed",
-            upload_id: persistedUploadId,
-          },
-        ],
-      },
-      isError: false,
-      isLoading: false,
-      refetch: refetchRun,
-    }),
-    useGetConceptNoteUploadStatusQuery: () => ({
-      data: undefined,
-      isError: false,
-    }),
+    useGetConceptNoteDraftQuery: getDraftQuery,
+    useGetConceptNoteRunQuery: getRunQuery,
+    useGetConceptNoteUploadStatusQuery: getUploadQuery,
     useGetInventoryByCityIdQuery: () => ({ data: undefined }),
     useGetMostRecentCityPopulationQuery: () => ({ data: undefined }),
     useGetUserFilesQuery: () => ({ data: [] }),
@@ -114,6 +122,7 @@ afterAll(() => {
 });
 
 beforeEach(() => {
+  jest.clearAllMocks();
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
@@ -125,6 +134,27 @@ afterEach(async () => {
 });
 
 describe("useConceptNoteWorkspaceData", () => {
+  it("uses initial reads without recurring workspace polling", async () => {
+    await act(async () => root.render(<Harness />));
+
+    expect(getRunQuery).toHaveBeenCalledWith({
+      cityId: "city-1",
+      runId: "run-1",
+    });
+    expect(getDraftQuery).toHaveBeenCalledWith("run-1");
+    expect(getUploadQuery).toHaveBeenCalledWith(
+      { runId: "run-1", uploadId: persistedUploadId },
+      { skip: false },
+    );
+    expect(observeWorkspace).toHaveBeenCalledWith(
+      expect.objectContaining({
+        observeDraft: false,
+        observeRun: false,
+        observeUpload: false,
+      }),
+    );
+  });
+
   it("retries a failed upload restored from the persisted run", async () => {
     await act(async () => root.render(<Harness />));
 

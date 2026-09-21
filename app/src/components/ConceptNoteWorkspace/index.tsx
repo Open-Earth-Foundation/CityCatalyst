@@ -465,10 +465,14 @@ export function ConceptNoteWorkspace({
                     <Button
                       size="xs"
                       variant="ghost"
-                      onClick={() => {
+                      onClick={async () => {
                         setTab("context");
-                        if (applicationContext) setFundingOpen(true);
-                        else void refetchApplicationContext();
+                        if (applicationContext) {
+                          setFundingOpen(true);
+                        } else {
+                          const result = await refetchApplicationContext();
+                          if (result.isSuccess) setFundingOpen(true);
+                        }
                       }}
                     >
                       {t("review-application-setup")}

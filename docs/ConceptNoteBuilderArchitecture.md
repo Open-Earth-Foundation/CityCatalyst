@@ -1760,7 +1760,9 @@ workflow is in before deciding what to do next.
 
 The Context tab's **Browse funders** / **Change** action in the funder card's upper-right corner opens a
 searchable catalogue of every managed funder, including profiles without programmes
-or templates. The inspector shows stated and derived profile facts, programme
+or templates. Search matches funder names, countries, regions, and programme names,
+regions, sectors, and summaries; IDs and template JSON are excluded. The inspector
+shows stated and derived profile facts, programme
 eligibility and award information, and the associated template's ordered chapters
 and required fields. The managed schema has one template per programme; selecting
 a programme selects that compatible template. Changing the funder clears the

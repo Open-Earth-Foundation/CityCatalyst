@@ -107,12 +107,15 @@ export function FundingOpportunityDetails({
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const template = opportunity.template;
-  const amount = (value: string | null) =>
-    value === null
-      ? t("not-available")
-      : new Intl.NumberFormat(lng, { maximumFractionDigits: 0 }).format(
-          Number(value),
-        );
+  const amount = (value: string | null): string => {
+    if (value === null || value.trim() === "") return t("not-available");
+    const numericValue = Number(value);
+    return Number.isFinite(numericValue)
+      ? new Intl.NumberFormat(lng, { maximumFractionDigits: 0 }).format(
+          numericValue,
+        )
+      : value;
+  };
   const facts = [
     ["funding-applicants", opportunity.applicant_type],
     ["funding-region", opportunity.region_scope],

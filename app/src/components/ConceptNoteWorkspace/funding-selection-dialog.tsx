@@ -56,13 +56,26 @@ const selectionButtonProps = {
   whiteSpace: "normal",
 } as const;
 
-/** Search every stored profile and programme; do not hide records without templates. */
+/** Search funder locations and programme details, excluding IDs and template JSON. */
 function matchesFundingSearch(
   funder: ConceptNoteFunder,
   query: string,
 ): boolean {
   const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-  const text = JSON.stringify(funder).toLocaleLowerCase();
+  const text = [
+    funder.name,
+    funder.country,
+    funder.region,
+    ...funder.opportunities.flatMap((opportunity) => [
+      opportunity.name,
+      opportunity.region_scope,
+      opportunity.sector,
+      opportunity.summary,
+    ]),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLocaleLowerCase();
   return terms.every((term) => text.includes(term));
 }
 
@@ -535,7 +548,7 @@ export function FundingSelectionDialog({
                 isLoading ||
                 isError ||
                 busy ||
-                (hasDraft && !acknowledged) ||
+                (hasDraft && changed && !acknowledged) ||
                 (funderId !== null && !funder)
               }
               onClick={() => void save()}

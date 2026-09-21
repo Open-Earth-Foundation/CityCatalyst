@@ -26,7 +26,7 @@ export interface UserAttributes {
   numberFormat?: string;
   // Two factor auth settings
   twoFactorEnabled?: boolean;
-  twoFactorSecret?: string;
+  twoFactorSecret?: string | null;
 }
 
 export type UserPk = "userId";
@@ -69,7 +69,7 @@ export class User
   declare defaultCityId?: string | null;
   declare numberFormat?: string;
   declare twoFactorEnabled?: boolean;
-  declare twoFactorSecret?: string;
+  declare twoFactorSecret?: string | null;
 
   // User belongsTo Inventory via defaultInventoryId
   declare defaultInventory: Inventory;

@@ -482,9 +482,17 @@ export function DraftDocumentPanel({
           borderColor="border.neutral"
           borderRadius="rounded"
           bg="base.light"
-          p={{ base: 4, md: 5 }}
+          px={{ base: 4, md: 5 }}
+          pb={{ base: 4, md: 5 }}
         >
-          <Box position="sticky" zIndex={1} top={-1} bg="base.light" pb={3}>
+          <Box
+            position="sticky"
+            zIndex={1}
+            top={-1}
+            bg="base.light"
+            pt={{ base: 4, md: 5 }}
+            pb={3}
+          >
             <Text
               fontFamily="heading"
               fontSize="body.md"

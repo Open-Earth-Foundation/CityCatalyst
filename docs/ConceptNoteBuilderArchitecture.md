@@ -38,6 +38,16 @@ authenticated read boundary. Runs may begin without uploaded document evidence
 and later rebuild with it; all optional CC, funding, matching, and source
 context may be absent.
 
+When city population is unavailable, the Context tab accepts a population amount
+and year for the current concept-note run. The authenticated CityCatalyst proxy
+forwards `PATCH /api/v1/concept-notes/{runId}/population` to Climate Advisor,
+which stores the value in that run's `context_summary.manual_population`. The
+value is shown in the workspace and passed to chat and chapter drafting with
+`user_entered` provenance. It does not update the CityCatalyst city population
+record or become CC context. Removing it clears only the run-scoped value.
+The editor and API reject changes while chapter drafting is running because the
+drafting worker uses a single population snapshot for all chapters.
+
 In scope:
 
 - A Climate Advisor workflow for concept-note runs.

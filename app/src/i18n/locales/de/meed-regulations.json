@@ -24,5 +24,13 @@
   "excluded-tag": "Ausgeschlossen",
   "flagged-tag": "Bewertung ausstehend",
   "flagged-card-body": "Für diese Maßnahme liegt noch keine rechtliche Beurteilung vor. Sie ist mit einer neutralen Rechtspunktzahl in das Ranking aufgenommen.",
-  "reasons-label": "Warum ausgeschlossen"
+  "reasons-label": "Warum ausgeschlossen",
+  "funnel-assessed": "Bewertet",
+  "funnel-assessed-sub": "Aktionen im Katalog",
+  "funnel-passed": "Rechtliche Überprüfung bestanden",
+  "funnel-passed-sub": "Berechtigt zur Bewertung",
+  "funnel-ranked": "Rangiert",
+  "funnel-ranked-sub": "In Ihrer Top-Liste",
+  "funnel-aria": "{{assessed}} Aktionen bewertet, {{passed}} rechtliche Überprüfung bestanden, {{ranked}} eingestuft",
+  "summary-flagged-count": "{{count}} Aktionen sind mit einem neutralen rechtlichen Bewertung enthalten, während ihre Beurteilung aussteht."
 }

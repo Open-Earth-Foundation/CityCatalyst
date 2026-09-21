@@ -56,5 +56,7 @@
   "evidence-column-scope": "Portée",
   "evidence-column-signal": "Signal",
   "evidence-column-strength": "Force",
-  "evidence-column-weight": "Poids"
+  "evidence-column-weight": "Poids",
+  "ring-aria": "{{scope}} : {{value}}",
+  "ring-note": "Score moyen de soutien politique à travers les plans à cette portée, pour toutes les actions évaluées."
 }

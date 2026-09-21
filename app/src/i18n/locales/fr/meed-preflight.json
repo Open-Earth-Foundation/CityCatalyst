@@ -80,5 +80,7 @@
   "confidence-verdict-moderate": "Modéré",
   "confidence-verdict-high": "Élevé",
   "weight-value-text": "{{value}} pour cent",
-  "gate-ready": "Prêt à générer des recommandations."
+  "gate-ready": "Prêt à générer des recommandations.",
+  "view-breakdown": "Voir le détail",
+  "view-breakdown-aria": "Voir la répartition des émissions"
 }

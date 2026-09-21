@@ -1,7 +1,11 @@
 import { TFunction } from "i18next";
 import { Badge, Box, Heading, Icon, Link, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { MdOutlineAccountTree, MdOutlineCalendarToday } from "react-icons/md";
+import {
+  MdOutlineAccountTree,
+  MdOutlineCalendarToday,
+  MdOutlineEdit,
+} from "react-icons/md";
 import type { InventoryResponse } from "@/util/types";
 import { InventoryTypeEnum } from "@/util/constants";
 import { Selector } from "@/components/selector";
@@ -9,7 +13,6 @@ import React, { useMemo } from "react";
 import { api, useGetCitiesAndYearsQuery } from "@/services/api";
 import { useRouter, usePathname, useParams } from "next/navigation";
 import { Button } from "../ui/button";
-import { DataAlertIcon } from "../icons";
 import { getParamValueRequired } from "@/util/helpers";
 import { getGhgiInventoryPath } from "@/util/ghgi-routes";
 
@@ -87,10 +90,10 @@ export function TabHeader({
                 p={6}
                 onClick={() => router.push(`${pathname}/manage-sectors`)}
                 display="flex"
-                gap={0}
+                gap={2}
               >
-                <Icon as={DataAlertIcon} boxSize={10} mt={3} />
-                <Text>{t("manage-missing-subsectors")}</Text>
+                <Icon as={MdOutlineEdit} boxSize={6} />
+                <Text>{t("notation-keys")}</Text>
               </Button>
             )}
           </Box>

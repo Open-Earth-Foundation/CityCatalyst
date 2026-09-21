@@ -206,6 +206,14 @@ export class NativeInputCatalog
             fields: [{ name: "availability" }],
           },
           {
+            name: "idx_native_input_catalog_availability_created_id",
+            fields: [
+              { name: "availability" },
+              { name: "created" },
+              { name: "id" },
+            ],
+          },
+          {
             name: "idx_native_input_catalog_user_availability",
             fields: [{ name: "user_id" }, { name: "availability" }],
           },

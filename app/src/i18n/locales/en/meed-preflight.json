@@ -7,7 +7,7 @@
   "step-preferences": "Strategic preferences",
   "step-policy": "Policy alignment",
   "step-finance": "Financial feasibility",
-  "status-complete": "Complete",
+  "status-complete": "Done",
   "status-in-progress": "In progress",
   "status-not-started": "Not started",
   "edit-step": "Edit",
@@ -80,5 +80,7 @@
   "confidence-verdict-moderate": "Moderate",
   "confidence-verdict-high": "High",
   "weight-value-text": "{{value}} percent",
-  "gate-ready": "Ready to generate recommendations."
+  "gate-ready": "Ready to generate recommendations.",
+  "view-breakdown": "View breakdown",
+  "view-breakdown-aria": "View the emissions breakdown"
 }

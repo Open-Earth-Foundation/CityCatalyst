@@ -5,14 +5,18 @@ import { useEffect, useRef, useState } from "react";
 import { useSSEStream } from "@/hooks/useSSEStream";
 import { useTranslation } from "@/i18n/client";
 import type { EditScope } from "@/util/concept-note-edit-types";
-
 import {
+  readConceptNoteProgress,
+  readConceptNoteReasoning,
+  type ConceptNoteProgress,
+  type ConceptNoteReasoning,
   type ConceptNoteChatMessage,
   readConceptNoteThreadMessages,
 } from "./chat-utils";
 
 interface UseConceptNoteChatOptions {
   lng: string;
+  runId: string;
   threadId: string | null;
   editScope?: EditScope;
   onProposal?: (proposalId: string) => Promise<void>;
@@ -22,12 +26,15 @@ interface ConceptNoteChatController {
   error: string | null;
   historyLoading: boolean;
   isGenerating: boolean;
+  progress: ConceptNoteProgress | null;
+  reasoning: ConceptNoteReasoning[];
   messages: ConceptNoteChatMessage[];
   sendMessage: (content: string) => Promise<void>;
 }
 
 export function useConceptNoteChat({
   lng,
+  runId,
   threadId,
   editScope,
   onProposal,
@@ -36,11 +43,37 @@ export function useConceptNoteChat({
   const [messages, setMessages] = useState<ConceptNoteChatMessage[]>([]);
   const [messagesThreadId, setMessagesThreadId] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [reasoning, setReasoning] = useState<ConceptNoteReasoning[]>([]);
+  const [progress, setProgress] = useState<ConceptNoteProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
   const assistantMessageIdRef = useRef<string | null>(null);
+  const pendingUserMessageIdRef = useRef<string | null>(null);
 
   const { startStream, stopStream } = useSSEStream({
     forceEventStream: true,
+    onReasoning: (value) => {
+      const update = readConceptNoteReasoning(value);
+      const assistantId = assistantMessageIdRef.current;
+      if (!assistantId || !update) return;
+      setReasoning((current) => {
+        const previous = current.find((item) => item.id === update.id);
+        return [
+          ...current.filter((item) => item.id !== update.id),
+          {
+            ...update,
+            text: update.replace
+              ? update.text
+              : (previous?.text || "") + update.text,
+          },
+        ];
+      });
+    },
+    onProgress: (value) => {
+      const update = readConceptNoteProgress(value);
+      if (assistantMessageIdRef.current && update) {
+        setProgress(update);
+      }
+    },
     onToolResult: (result) => {
       const data = result.data;
       if (
@@ -59,6 +92,9 @@ export function useConceptNoteChat({
       if (!assistantMessageId) {
         return;
       }
+      setProgress((current) =>
+        current?.stage === "responding" ? current : { stage: "responding" },
+      );
       setMessages((current) =>
         current.map((message) =>
           message.id === assistantMessageId
@@ -68,21 +104,37 @@ export function useConceptNoteChat({
       );
     },
     onComplete: () => {
+      setReasoning([]);
       assistantMessageIdRef.current = null;
+      pendingUserMessageIdRef.current = null;
       setIsGenerating(false);
     },
-    onError: () => {
+    onError: (_message, code) => {
+      setReasoning([]);
       const assistantMessageId = assistantMessageIdRef.current;
+      const rejectedUserMessageId =
+        code === "concept_note_context_not_ready"
+          ? pendingUserMessageIdRef.current
+          : null;
       if (assistantMessageId) {
         setMessages((current) =>
           current.filter(
             (message) =>
-              message.id !== assistantMessageId || Boolean(message.text.trim()),
+              message.id !== rejectedUserMessageId &&
+              (message.id !== assistantMessageId ||
+                Boolean(message.text.trim())),
           ),
         );
       }
       assistantMessageIdRef.current = null;
-      setError(t("chat-send-error"));
+      pendingUserMessageIdRef.current = null;
+      setError(
+        t(
+          code === "concept_note_context_not_ready"
+            ? "chat-context-not-ready"
+            : "chat-send-error",
+        ),
+      );
       setIsGenerating(false);
     },
   });
@@ -134,14 +186,18 @@ export function useConceptNoteChat({
     }
 
     const assistantMessageId = crypto.randomUUID();
+    const userMessageId = crypto.randomUUID();
     assistantMessageIdRef.current = assistantMessageId;
+    pendingUserMessageIdRef.current = userMessageId;
     setMessages((current) => [
       ...current,
-      { id: crypto.randomUUID(), role: "user", text: normalizedContent },
+      { id: userMessageId, role: "user", text: normalizedContent },
       { id: assistantMessageId, role: "assistant", text: "" },
     ]);
     setError(null);
     setIsGenerating(true);
+    setReasoning([]);
+    setProgress({ stage: "preparing" });
 
     try {
       await startStream("/api/v1/chat/messages", {
@@ -150,20 +206,24 @@ export function useConceptNoteChat({
         body: JSON.stringify({
           threadId,
           content: normalizedContent,
-          context: editScope
-            ? {
-                concept_note_edit: {
-                  scope: editScope,
-                  idempotency_key: crypto.randomUUID(),
-                },
-              }
-            : undefined,
+          context: {
+            concept_note_run_id: runId,
+            ...(editScope
+              ? {
+                  concept_note_edit: {
+                    scope: editScope,
+                    idempotency_key: crypto.randomUUID(),
+                  },
+                }
+              : {}),
+          },
         }),
       });
     } catch (requestError) {
       if (requestError instanceof Error && requestError.name === "AbortError") {
         assistantMessageIdRef.current = null;
         setIsGenerating(false);
+        setReasoning([]);
       }
     }
   }
@@ -172,6 +232,8 @@ export function useConceptNoteChat({
     error: messagesThreadId === threadId ? error : null,
     historyLoading: Boolean(threadId) && messagesThreadId !== threadId,
     isGenerating,
+    progress,
+    reasoning,
     messages: messagesThreadId === threadId ? messages : [],
     sendMessage,
   };

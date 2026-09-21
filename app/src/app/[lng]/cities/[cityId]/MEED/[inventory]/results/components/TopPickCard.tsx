@@ -10,8 +10,9 @@ import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
 import { Caption } from "@/components/package/Texts/Caption";
 import { MeedInfoTip } from "../../../components/MeedInfoTip";
-import { ReductionBar } from "./ReductionBar";
+import { MeedScoreComposition } from "../../../components/MeedScoreComposition";
 import { SelectActionCheckbox } from "./SelectActionCheckbox";
+import type { MeedScoreWeights } from "./rankingFacts";
 import { FOCUS_RING } from "../../../focusRing";
 import {
   actionDescription,
@@ -27,10 +28,12 @@ import {
 function MetaRow({
   label,
   value,
+  valueColor = "content.secondary",
   info,
 }: {
   label: string;
   value: string;
+  valueColor?: string;
   info?: React.ReactNode;
 }) {
   return (
@@ -39,11 +42,7 @@ function MetaRow({
         <Caption color="content.tertiary">{label}</Caption>
         {info}
       </HStack>
-      <BodySmall
-        color="content.secondary"
-        fontWeight="semibold"
-        textAlign="end"
-      >
+      <BodySmall color={valueColor} fontWeight="semibold" textAlign="end">
         {value}
       </BodySmall>
     </HStack>
@@ -65,6 +64,7 @@ function MetaRow({
 export function TopPickCard({
   action,
   index,
+  weights,
   t,
   isSelected,
   onToggleSelect,
@@ -72,9 +72,11 @@ export function TopPickCard({
 }: {
   action: MeedRankedActionResult;
   index: MeedActionIndex;
+  weights: MeedScoreWeights;
   t: TFunction;
-  isSelected: boolean;
-  onToggleSelect: (actionId: string) => void;
+  isSelected?: boolean;
+  /** Omit to render the card read-only (no report checkbox), as on the home screen. */
+  onToggleSelect?: (actionId: string) => void;
   onOpenDetail: (action: MeedRankedActionResult) => void;
 }) {
   const name = actionName(index, action.action_id, t);
@@ -95,11 +97,13 @@ export function TopPickCard({
             <Icon as={LuBookmark} boxSize="14px" color="content.link" />
             <Overline color="content.link">{t("top-pick-overline")}</Overline>
           </HStack>
-          <SelectActionCheckbox
-            checked={isSelected}
-            onToggle={() => onToggleSelect(action.action_id)}
-            ariaLabel={t("select-action", { name })}
-          />
+          {onToggleSelect && (
+            <SelectActionCheckbox
+              checked={Boolean(isSelected)}
+              onToggle={() => onToggleSelect(action.action_id)}
+              ariaLabel={t("select-action", { name })}
+            />
+          )}
         </HStack>
 
         <TitleMedium color="content.primary" lineClamp={3}>
@@ -114,24 +118,21 @@ export function TopPickCard({
             this point lines up across the row. */}
         <Box flex="1" minH="s" />
 
-        <VStack alignItems="stretch" gap="xs">
-          <ReductionBar level={level} />
-          <HStack justifyContent="space-between" alignItems="center" gap="s">
-            <Caption color="content.tertiary">
-              {t("card-reduction-potential")}
-            </Caption>
-            <BodySmall
-              color={reductionLevelColor(level)}
-              fontWeight="semibold"
-              whiteSpace="nowrap"
-            >
-              {t(reductionLevelLabelKey(level))}
-            </BodySmall>
-          </HStack>
-        </VStack>
+        {/* How the score is made up; the number is the final score. */}
+        <MeedScoreComposition
+          action={action}
+          weights={weights}
+          variant="compact"
+          t={t}
+        />
 
         <Box borderTopWidth="1px" borderColor="border.overlay" pt="s" mt="xs">
           <VStack alignItems="stretch" gap="xs">
+            <MetaRow
+              label={t("card-reduction-potential")}
+              value={t(reductionLevelLabelKey(level))}
+              valueColor={reductionLevelColor(level)}
+            />
             <MetaRow
               label={t("card-sector")}
               value={sectorLabel(index, action.action_id, t)}

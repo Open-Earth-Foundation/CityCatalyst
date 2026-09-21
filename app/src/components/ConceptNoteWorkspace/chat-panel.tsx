@@ -1,19 +1,20 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
-import { Box, Flex, HStack, Icon, Input, Text, VStack } from "@chakra-ui/react";
-import { keyframes } from "@emotion/react";
-import type { IconType } from "react-icons";
 import {
-  LuArrowRight,
-  LuArrowUp,
-  LuCircleAlert,
-  LuDatabase,
-  LuFilePlus2,
-  LuMessageSquarePlus,
-} from "react-icons/lu";
+  Box,
+  Flex,
+  HStack,
+  Icon,
+  Input,
+  Spinner,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import type { IconType } from "react-icons";
+import { LuArrowUp, LuCircleAlert, LuMessageSquarePlus } from "react-icons/lu";
 import { BsStars } from "react-icons/bs";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -22,16 +23,18 @@ import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-
 import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import { useConceptNoteChat } from "./use-concept-note-chat";
+import { ChatProgress } from "./chat-progress";
+import type { ConceptNoteContextPresentation } from "./context-status";
 import type { EditController } from "./document-review";
 import type { EditScope } from "@/util/concept-note-edit-types";
 
 interface ConceptNoteChatPanelProps {
-  bundleStatus: string | null;
+  contextStatus: ConceptNoteContextPresentation;
   composerRequest: { content: string; id: string } | null;
-  documentGrounding: "none" | "uploaded_evidence" | null;
   lng: string;
   onOpenContext: () => void;
   onStartNewChat?: () => void;
+  runId: string;
   threadId: string | null;
   editScope: EditScope;
   edits: EditController;
@@ -39,6 +42,7 @@ interface ConceptNoteChatPanelProps {
 
 interface ContextStatusNoticeProps {
   autoDismissAfterMs?: number;
+  busy?: boolean;
   onOpenContext: () => void;
   status: {
     actionIcon: IconType;
@@ -52,43 +56,9 @@ interface ContextStatusNoticeProps {
 }
 
 const CONTEXT_READY_NOTICE_DURATION_MS = 30_000;
-const typingDotBounce = keyframes`
-  0%, 60%, 100% {
-    transform: translateY(0);
-  }
-  30% {
-    transform: translateY(-4px);
-  }
-`;
-
-function TypingIndicator({ label }: { label: string }) {
-  return (
-    <HStack
-      role="status"
-      aria-label={label}
-      data-testid="concept-note-typing-indicator"
-      gap={1}
-      minH="22px"
-    >
-      {[0, 1, 2].map((index) => (
-        <Box
-          as="span"
-          key={index}
-          aria-hidden="true"
-          data-testid="concept-note-typing-dot"
-          boxSize="6px"
-          borderRadius="full"
-          bg="content.secondary"
-          animation={`${typingDotBounce} 900ms ease-in-out ${index * 120}ms infinite`}
-          _motionReduce={{ animation: "none" }}
-        />
-      ))}
-    </HStack>
-  );
-}
-
 function ContextStatusNotice({
   autoDismissAfterMs,
+  busy,
   onOpenContext,
   status,
 }: ContextStatusNoticeProps) {
@@ -119,9 +89,13 @@ function ContextStatusNotice({
       borderRadius="rounded"
       bg={status.surface}
       p={4}
-      role={autoDismissAfterMs ? "status" : undefined}
+      role="status"
     >
-      <Icon as={status.icon} mt={0.5} color={status.color} />
+      {busy ? (
+        <Spinner size="sm" mt={0.5} color={status.color} />
+      ) : (
+        <Icon as={status.icon} mt={0.5} color={status.color} />
+      )}
       <Box flex={1}>
         <Text
           fontFamily="heading"
@@ -202,12 +176,12 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
 });
 
 export function ConceptNoteChatPanel({
-  bundleStatus,
+  contextStatus,
   composerRequest,
-  documentGrounding,
   lng,
   onOpenContext,
   onStartNewChat,
+  runId,
   threadId,
   editScope,
   edits,
@@ -219,44 +193,33 @@ export function ConceptNoteChatPanel({
     error: chatError,
     historyLoading,
     isGenerating,
+    reasoning,
+    progress,
     messages,
     sendMessage: sendChatMessage,
   } = useConceptNoteChat({
     lng,
+    runId,
     threadId,
     editScope,
     onProposal: edits.loadProposal,
   });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
+  const followLatestRef = useRef(true);
   const initiallyScrolledThreadRef = useRef<string | null>(null);
-  const hasUploadedEvidence =
-    bundleStatus === "ready" && documentGrounding === "uploaded_evidence";
-  const contextStatus = hasUploadedEvidence
-    ? {
-        actionIcon: LuArrowRight,
-        actionLabel: t("review-context"),
-        color: "sentiment.positiveDefault",
-        description: t("clima-context-ready-message"),
-        icon: LuDatabase,
-        surface: "sentiment.positiveOverlay",
-        title: t("source-context-assembled"),
-      }
-    : {
-        actionIcon: LuFilePlus2,
-        actionLabel: t("add-recommended-source"),
-        color: "content.link",
-        description: t("clima-no-uploaded-evidence-message"),
-        icon: LuCircleAlert,
-        surface: "background.neutral",
-        title: t("uploaded-evidence-none"),
-      };
+  const contextState = contextStatus.state;
+  const hasUploadedEvidence = contextState === "ready";
+  const contextBlocked = contextStatus.blocked;
+  const chatDisabled =
+    contextBlocked || !threadId || historyLoading || isGenerating;
 
   useEffect(() => {
     if (
       !threadId ||
       historyLoading ||
       messages.length === 0 ||
-      initiallyScrolledThreadRef.current === threadId
+      (initiallyScrolledThreadRef.current === threadId &&
+        !followLatestRef.current)
     ) {
       return;
     }
@@ -273,7 +236,7 @@ export function ConceptNoteChatPanel({
       initiallyScrolledThreadRef.current = threadId;
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [historyLoading, messages.length, threadId]);
+  }, [historyLoading, messages, reasoning, threadId]);
 
   useEffect(() => {
     if (!composerRequest) {
@@ -291,10 +254,11 @@ export function ConceptNoteChatPanel({
   ): Promise<void> {
     event.preventDefault();
     const content = input.trim();
-    if (!content) {
+    if (chatDisabled || !content) {
       return;
     }
     setInput("");
+    followLatestRef.current = true;
     await sendChatMessage(content);
   }
 
@@ -373,6 +337,11 @@ export function ConceptNoteChatPanel({
 
       <VStack
         ref={chatScrollRef}
+        onScroll={(event) => {
+          const scroll = event.currentTarget;
+          followLatestRef.current =
+            scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 48;
+        }}
         data-testid="concept-note-chat-scroll"
         align="stretch"
         gap={4}
@@ -383,9 +352,8 @@ export function ConceptNoteChatPanel({
         p={4}
       >
         <ContextStatusNotice
-          key={
-            hasUploadedEvidence ? "uploaded-evidence" : "no-uploaded-evidence"
-          }
+          key={contextState}
+          busy={contextBlocked && contextState !== "failed"}
           autoDismissAfterMs={
             hasUploadedEvidence ? CONTEXT_READY_NOTICE_DURATION_MS : undefined
           }
@@ -394,37 +362,49 @@ export function ConceptNoteChatPanel({
         />
 
         {messages.map((message) => (
-          <Box
-            key={message.id}
-            alignSelf={message.role === "user" ? "end" : "start"}
-            maxW="92%"
-            border="1px solid"
-            borderColor="border.neutral"
-            borderRadius="rounded"
-            bg={message.role === "user" ? "background.neutral" : "base.light"}
-            px={3}
-            py={2.5}
-          >
-            {message.role === "assistant" && message.text ? (
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={assistantMarkdownComponents}
+          <Fragment key={message.id}>
+            {message.role === "assistant" &&
+              message.id === messages.at(-1)?.id && (
+                <ChatProgress
+                  lng={lng}
+                  reasoning={reasoning}
+                  progress={progress}
+                  isGenerating={isGenerating}
+                />
+              )}
+            {(message.text || message.role === "user") && (
+              <Box
+                alignSelf={message.role === "user" ? "end" : "start"}
+                maxW="92%"
+                border="1px solid"
+                borderColor="border.neutral"
+                borderRadius="rounded"
+                bg={
+                  message.role === "user" ? "background.neutral" : "base.light"
+                }
+                px={3}
+                py={2.5}
               >
-                {message.text}
-              </ReactMarkdown>
-            ) : message.role === "assistant" ? (
-              <TypingIndicator label={t("chat-generating")} />
-            ) : (
-              <Text
-                fontSize="body.sm"
-                lineHeight="22px"
-                color="content.primary"
-                whiteSpace="pre-wrap"
-              >
-                {message.text}
-              </Text>
+                {message.role === "assistant" && message.text ? (
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={assistantMarkdownComponents}
+                  >
+                    {message.text}
+                  </ReactMarkdown>
+                ) : message.role === "user" ? (
+                  <Text
+                    fontSize="body.sm"
+                    lineHeight="22px"
+                    color="content.primary"
+                    whiteSpace="pre-wrap"
+                  >
+                    {message.text}
+                  </Text>
+                ) : null}
+              </Box>
             )}
-          </Box>
+          </Fragment>
         ))}
 
         {edits.error && (
@@ -474,9 +454,16 @@ export function ConceptNoteChatPanel({
             aria-label={t("chat-input-placeholder")}
             ref={inputRef}
             value={input}
-            disabled={!threadId || historyLoading || isGenerating}
+            disabled={chatDisabled}
+            aria-describedby={
+              contextBlocked ? "concept-note-chat-blocked" : undefined
+            }
             placeholder={
-              threadId ? t("chat-input-placeholder") : t("chat-unavailable")
+              contextBlocked
+                ? t("chat-waiting-for-context")
+                : threadId
+                  ? t("chat-input-placeholder")
+                  : t("chat-unavailable")
             }
             bg="base.light"
             borderColor="border.neutral"
@@ -511,7 +498,7 @@ export function ConceptNoteChatPanel({
               },
             }}
             p={0}
-            disabled={!input.trim() || !threadId || historyLoading}
+            disabled={chatDisabled || !input.trim()}
             loading={isGenerating}
             size="xs"
             variant="solid"
@@ -520,6 +507,18 @@ export function ConceptNoteChatPanel({
             <Icon as={LuArrowUp} boxSize={5} />
           </Button>
         </Flex>
+        {contextBlocked && (
+          <Text
+            id="concept-note-chat-blocked"
+            mt={2}
+            fontSize="label.sm"
+            color="content.secondary"
+          >
+            {contextState === "failed"
+              ? t("chat-context-failed-help")
+              : t("chat-waiting-for-context-help")}
+          </Text>
+        )}
         {!threadId && (
           <Text mt={2} fontSize="label.sm" color="content.tertiary">
             {t("chat-thread-unavailable")}

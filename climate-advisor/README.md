@@ -301,7 +301,42 @@ Content-Type: application/json
 If `thread_id` is omitted, Climate Advisor creates a new thread. If `thread_id`
 is supplied, it must already exist and belong to the requesting user.
 
+When the request or thread supplies a CityCatalyst bearer, Climate Advisor
+validates it through Core's `/api/v1/internal/ca/auth/identity` endpoint before
+persisting the message or constructing the catalog-enabled agent. Core's
+canonical user ID must equal body `user_id`; a subject mismatch, or a bearer
+supplied in the request that Core rejects, receives the same HTTP 401
+authentication failure. When Core is unavailable or misconfigured, or when the
+rejected bearer came from stored thread context, the chat request still
+succeeds and only the NativeInputCatalog tools are disabled. In that degraded
+case a request-supplied bearer is **not** persisted into thread context, so an
+unvalidated token cannot become a thread-stored token on later requests.
+Requests without a CityCatalyst bearer can continue, but NativeInputCatalog
+tools remain disabled.
+
+CA-issued tokens expire after one hour, and Climate Advisor does not refresh a
+thread-stored bearer for the catalog path. Once the stored token expires, the
+NativeInputCatalog tools stay unregistered for the thread until the client
+sends a new bearer in the request that Core identity validation accepts; plain
+chat is unaffected. Refreshing from the thread record's `user_id` is
+deliberately not done, because `POST /v1/threads` is unauthenticated and
+accepts an arbitrary `user_id`, so that identity is not server-validated.
+
+This boundary closes the claimed-identity escalation for request-supplied
+bearers and for every NativeInputCatalog path. It is not a general Climate
+Advisor authentication redesign: `POST /v1/threads` remains unauthenticated,
+and the legacy non-catalog inventory tools may still refresh a token from the
+request body `user_id`. That residual is outside CC-737 scope and is tracked
+separately.
+
 **Server Response (SSE Stream):**
+
+The message stream sends an initial SSE comment and comment heartbeats every
+15 seconds while the agent is silent, including during chapter planning and
+semantic review. These bytes pass through the CityCatalyst chat proxy on the
+existing response; they add no HTTP requests or model calls. Generation remains
+request-bound: a browser disconnect still cancels it. Heartbeats prevent idle
+timeouts but do not provide reconnect or worker-restart recovery.
 
 ```text
 event: message
@@ -551,26 +586,40 @@ orchestrator and agentic-flow model settings, provider base URLs, retry and
 timeout settings, Stationary Energy review chat-context prompt budgets, and the
 CNB source reader/synthesizer roles, chapter drafter, gap-impact reviewer,
 chat-edit planner, and partition/prompt/concurrency limits. Chat-edit planning
-runs one model call per unlocked chapter with at most five calls concurrently,
-then combines and validates one review proposal. The chapter drafter uses GPT-5.6
+uses one document agent with `search_draft`, `read_chapter`, and `propose_edits`.
+The tools resolve exact occurrences and validate replacements immediately so the
+agent can correct a failed selection. Independent semantic review then checks
+only affected chapters, with at most five reviews concurrently. Rejections feed
+the indexed review explanations and complete candidate back to the editor for
+up to two repair attempts (`generation.prompt_budget.cnb_edits.max_review_repairs`).
+Each attempt must submit a complete proposal against the unchanged snapshot;
+every revised candidate receives a fresh independent review. Unsupported edits
+still fail after exhaustion, and no draft changes are applied before acceptance.
+Each editor attempt is limited to 12 model turns, while the complete operation,
+including repairs and reviews, shares one 180-second deadline configured by
+`generation.prompt_budget.cnb_edits.max_agent_turns` and `timeout_seconds`.
+The chapter drafter uses GPT-5.6
 Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra and the
 chat-edit planner uses GPT-5.6 Sol, both with medium reasoning.
 
 Current CA model defaults:
 
 - General chat: `openai/gpt-5.6-terra`, reasoning `medium`.
-- CNB chat: `openai/gpt-5.6-sol`, reasoning `medium`.
+- CNB chat: `openai/gpt-5.6-sol`, reasoning `high`.
 - Stationary Energy chat: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Funding research and similar-project selection: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `low`.
 - Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `low`.
 - Document-summary synthesis: `openai/gpt-5.6-terra`, reasoning `medium`.
 
-Chat keeps the existing OpenRouter Chat Completions tool loop and explicitly sets
-reasoning to `medium`. The configured chat and source-worker requests omit
-`temperature`. Research keeps its Responses API path and existing reasoning
-settings. Source partition budgets,
-concurrency limits, and embedding models are unchanged. Stored summaries are not
+General and Stationary Energy chat use the OpenRouter Chat Completions tool loop
+with medium reasoning. CNB chat and source workers use OpenRouter's Responses API
+with detailed reasoning summaries and `store: false`, retaining each role's
+configured reasoning effort. CNB edit planner/reviewer calls use Chat Completions
+with detailed summaries and `exclude: false`. The configured chat and
+source-worker requests omit `temperature`. Research keeps its Responses API path
+and existing reasoning settings. Source partition budgets, concurrency limits,
+and embedding models are unchanged. Stored summaries are not
 automatically rebuilt by changing the model configuration.
 Stationary Energy draft proposals are generated deterministically from bounded
 CityCatalyst context, not by an LLM prompt. The environment is only for secrets
@@ -597,9 +646,10 @@ Prompt paths are also configured in `llm_config.yaml`:
 CNB document mapping and question-focused source readers use
 `models.cnb_source_reader`: `openai/gpt-5.6-terra` with low reasoning. Document
 summary synthesis uses `models.cnb_source_synthesizer`: `openai/gpt-5.6-terra` with
-medium reasoning. These tool-free workers retain the OpenRouter Chat Completions
-route and structured-output schemas, and omit `temperature`. The 50,000-token
-partition budget and maximum three concurrent readers are unchanged. Existing
+medium reasoning. These tool-free workers use OpenRouter's Responses API with
+detailed summaries, `store: false`, and structured-output schemas, and omit
+`temperature`. The 50,000-token partition budget and maximum three concurrent
+readers are unchanged. Existing
 stored summaries are not automatically regenerated by changing model settings.
 
 At runtime, CA composes the final system instructions as:
@@ -692,7 +742,12 @@ language, or client-side fallback behavior. The boundary is:
   Concept Note Builder workspace and validation flow and used for its
   funding-reference tables; the repository migrates it through the independent
   CNB Alembic chain, never the CA chain. The reviewed-reference importer,
-  similar-project reader, and runtime funding-reference validation also use it
+  similar-project reader, runtime funding-reference validation, and the workspace's
+  searchable funder/programme/template catalogue also use it. Funding selection
+  does not run research or call an LLM. See the
+  [workspace funding-selection contract](../docs/ConceptNoteBuilderArchitecture.md#funding-selection-in-the-workspace)
+  for compatible-template checks, draft review invalidation, serialized edit
+  registration/application, and focused tests
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
 - `OPENAI_API_KEY` - OpenAI API key for embeddings
@@ -761,6 +816,30 @@ Operationally:
   marks builds older than one hour retryable.
 - `POST /v1/concept-notes/{run_id}/context-bundle/retry` and its CityCatalyst
   proxy rerun bundle assembly without rerunning OCR.
+- Reader requests constrain the structured-output sections array to the exact
+  supplied count; backend coverage checks remain authoritative.
+- When a reader returns fewer or more sections than supplied, source analysis
+  discards that response and rereads both halves, with at most two levels of
+  splitting (seven calls per original partition) under the same concurrency limit.
+  Every subgroup must pass coverage checks; incomplete results never enable chat.
+- Source-analysis failures retain a content-free `error_reason` and numeric
+  `error_details` alongside `error_code` in run progress and correlated service
+  logs. These distinguish reader section-count mismatches from partitioning or
+  tokenization text loss without exposing source text or provider payloads.
+  The workspace derives chat and draft status from the same upload/context state;
+  chat stays disabled until document context is ready, and failed analysis shows
+  an error reference with a context retry action.
+  An older failed upload does not block a newer successful upload or count toward
+  required ready sources. Pending uploads and the latest failed upload still block.
+- `POST /v1/messages` validates persisted CNB context before saving a user message
+  or starting SSE. Pending uploads, a failed latest upload, an unfinished/failed
+  bundle, or missing/mismatched ready-source IDs/digests return HTTP `409` with
+  `detail.code: concept_note_context_not_ready`. The workspace supplies its run ID
+  explicitly, and the service verifies that the run is bound to the supplied
+  thread. Before SSE starts, the CC proxy preserves non-success HTTP statuses and
+  exposes `{code, message}` for the readiness rejection so the workspace can show
+  a specific recovery hint without retaining an unsent message in chat history.
+  Ready city-only runs remain supported; ordinary non-CNB chat is unaffected.
 - Eligible Concept Note chat turns receive compact summaries and the read-only,
   single-document `concept_note.sources.query` capability. Raw Markdown, PDFs,
   storage keys, credentials, and derived chunks are not persisted in the bundle.
@@ -782,10 +861,16 @@ the chapter is saved; mismatches fail generation rather than producing a chapter
 that can be incorrectly marked Ready.
 
 Chat creates durable edit proposals; only explicit web review applies changes.
-The LLM planner and independent LLM reviewer determine meaning, factual support,
-and which occurrences belong together. Python verifies exact anchors, source
-identities, user quotes, required headings, and gap markers; it does not compare
-numeric tokens, override semantic judgments, or add replacements after review.
+The LLM planner selects contextual matches or an explicit all-match replacement;
+Python owns occurrence IDs, revision-bound offsets, and the minimal displayed
+diff. Ambiguous selections and structural failures return to the agent for
+correction before independent LLM review of meaning and factual support. Python
+verifies exact anchors, source identities, user quotes, required headings, and
+gap markers; it does not compare numeric tokens, override semantic judgments,
+or add replacements after review. All-match operations exclude locked chapters,
+template headings, and protected information markers and persist visible counts
+with the proposal. Filling a complete, matching information gap still uses the
+existing provenance and gap-resolution rules.
 Review supports inline decisions and Accept all / Reject all, with source links
 and refinement. Clarification questions, processing, failed, and stale responses
 remain visible in the review area, including after reload; users can refine or
@@ -794,7 +879,8 @@ exposed. Internal revision/application records remain for auditing and safe retr
 No new provider credentials are required. CNB migration `20260907_120000`
 provisions the gap and edit storage.
 Merge revision `20260909_120000` joins that migration with chapter validation
-revision `20260828_120000`. Run `alembic -c cnb-alembic.ini upgrade head` from
+revision `20260828_120000`. Revision `20260917_120000` adds the proposal's
+persisted exclusion notices. Run `alembic -c cnb-alembic.ini upgrade head` from
 `service/` to apply both branches from either existing head or a fresh database.
 The original migrations remain unchanged.
 
@@ -835,6 +921,15 @@ successful-authorization cache. It exposes the same persisted status, workflow
 step, and progress summary as the list contract. `PATCH` on the same route
 accepts a trimmed 1-120 character `name` and updates both the run and its
 dedicated thread title.
+
+`PATCH /v1/concept-notes/{run_id}/population?user_id=...` accepts
+`manual_population: {population, year}` or `null` to clear it. The value is
+stored in the run's `context_summary`, returned by the run detail API, and
+provided to chat and chapter drafting as `user_entered` data. It stays separate
+from the CityCatalyst population record and `cc_context`; the CityCatalyst
+proxy is `PATCH /api/v1/concept-notes/{runId}/population?city_id=...`.
+Updates return `409` while chapter drafting is running so every generated
+chapter uses the same population snapshot.
 
 `POST /v1/concept-notes/{run_id}/duplicate` requires `Idempotency-Key` and
 creates a new run and empty chat. It copies current chapter content, context, and
@@ -1149,6 +1244,56 @@ These tools:
 - answer inventory/city count questions as "you have access to" summaries using
   totals plus `by_project`
 
+### NativeInputCatalog Runtime Tools
+
+When an authenticated CityCatalyst catalog context is available, Climate
+Advisor registers two fixed tool definitions for the agent:
+`native_input_discover` and `native_input_read`. Discovery calls Core on every
+invocation, so a newly registered authorized entry can appear without
+recreating the agent. When Core returns more than one authorized page, or when
+a candidate-work budget stops the scan before the catalog is exhausted, the
+discover tool exposes an opaque `continuationCursor` and accepts an optional
+`cursor` argument; the cursor is request state only and is not an authorization
+grant. An empty page with a cursor is valid and must be retried. Every selected read also goes back through Core, which independently
+revalidates the caller scope, catalog lifecycle, capability membership, module
+readiness, and bounded execution contract.
+
+The catalog tools use only the already validated bearer. A 401 from discovery
+or read is returned through the existing safe tool failure path without calling
+the user-token refresh endpoint or deriving a refresh identity from request
+JSON. This restriction is catalog-specific: the existing non-catalog inventory
+tools continue to refresh and persist expired tokens as documented above.
+
+Because the catalog path never refreshes, an expired thread-stored bearer
+leaves both tools unregistered. Recovery requires a new request-supplied bearer
+that passes Core identity validation; there is no mid-thread refresh from a
+stored or claimed `user_id`.
+
+The v1 model-facing read arguments are limited to camelCase `catalogId`,
+`capabilityId`, and optional `language`; `language` is accepted only for the
+bounded HIAP inventory-context capability. Climate Advisor does not accept an
+arbitrary input object, storage path, credential, signed URL, or raw source
+pointer. CNB producer registration and a bounded CNB capability remain outside
+this integration.
+
+Run the focused runtime catalog regression suite from `climate-advisor/`:
+
+```bash
+uv run --directory service pytest \
+  tests/test_native_input_catalog_service.py \
+  tests/test_native_input_catalog_tools.py \
+  tests/test_agent_service.py \
+  tests/test_streaming_handler.py \
+  tests/test_citycatalyst_client_auth_contract.py -q
+```
+
+The environment-gated dynamic running-Core case additionally requires a
+loopback `CC_BASE_URL`, an isolated empty local fixture scope, and explicit
+`CA_AUTH_CONTRACT_ALLOW_CATALOG_MUTATION=1` opt-in. It refuses remote hosts or
+pre-existing entries. It fails closed without withdrawal when registration
+reports `created: false`; after a confirmed creation, it withdraws only the
+returned ID or a single entry recovered by that execution's unique marker.
+
 ### Stationary Energy Draft Review Boundary
 
 The Stationary Energy review tool pack uses the same scoped CityCatalyst token
@@ -1289,8 +1434,11 @@ workflow run identifier when present. CNB chat interactions use the visible
 `workflow=CNB` tag and retain the detailed route as
 `workflow_name=concept_note_context_chat`. Full debug artifacts are logged with
 bearer tokens, API keys, JWTs, and secrets redacted.
-CNB chat and chat-edit interactions are metadata-only: no raw instruction,
-document/source text, or tool payload artifacts are recorded.
+General chat, CNB chat/edits, and Stationary Energy share the same content-logging
+contract: user messages, assistant responses, prompts, source context, and tool
+inputs/outputs are recorded with credential redaction. CNB no longer suppresses
+OpenAI autologging on its clients. `MLFLOW_ENABLED` controls MLflow for every flow;
+the existing LangSmith/Agents SDK export policy remains separate and unchanged.
 
 The shared helper creates runs through `MlflowClient` and keeps the client/run ID
 in a task-local context. Tags, parameters, metrics, artifacts, and termination
@@ -1309,24 +1457,22 @@ CNB user interactions use stable, non-dynamic `mlflow.runName` values:
 | Start or idempotently replay a CNB run | `cnb_start` |
 | Non-mutating CNB chat | `cnb_chat` |
 | Resolve missing information (CC-730) | `cnb_missing_information` |
-| Future chat-driven document edit (CC-732) | `cnb_chat_edit` |
+| Chat-driven document edit (CC-732) | `cnb_chat_edit` |
 
 The durable CNB run ID is retained as `concept_note_run_id`; it is not appended
 to the run name. Missing-information and chat-edit implementations must use the
 reserved names above at their run-scoped mutation boundaries.
 
-Each non-CNB streamed `/v1/messages` model turn emits one MLflow trace. CNB model
-calls suppress raw SDK/agent tracing on their own client instances and record
-allowlisted interaction metadata instead. Climate Advisor
-also assigns the active trace session to the CA `thread_id`, so MLflow's
-session grouping shows all turns from the same UI conversation together while
-still preserving per-turn trace detail. Every chat mode opens a request root span
-before starting the model, so trace/run correlation never depends on a fluent
-active run. CNB turns retain the `CNB` root span and `workflow=CNB` tag.
+Every streamed `/v1/messages` turn uses the shared `conversation_trace` handler,
+including CNB and Stationary Energy. Each `Climate Advisor Turn` root opens before
+agent creation, stays open through persistence, and stores the user message and
+assembled assistant response. `mlflow.trace.session` is the CA `thread_id`, so
+Sessions groups all turns from the same conversation. Workflow tags and durable
+`concept_note_run_id` / `stationary_energy_draft_run_id` retain the flow identity.
+Standalone preparation and workflow jobs omit `mlflow.trace.session` so they
+do not appear as extra chat turns. Find them in Traces using `thread_id` and
+the workflow IDs; inline tool calls remain children of the actual chat turn.
 
-Ordinary CA (`workflow=climate_advisor_conversation`) names each request root
-`Climate Advisor Turn`, keeps it open through message persistence, and stores one
-assembled assistant response on that root.
 `streamed`, `stream_status`, `response_chunk_count`, and `history_saved` describe
 the outcome. These are visible trace attributes, not a custom animated MLflow UI
 indicator. Cancelled requests retain partial assistant text and an error status;
@@ -1334,7 +1480,7 @@ unfinished model spans are closed with a reference to that partial root response
 Raw `mlflow.chunk.item.*` events are removed before export; other events, model
 outputs, usage, and timing remain available.
 
-Each distinct system/developer message is stored once per ordinary CA request
+Each distinct system/developer message is stored once per chat request
 under the root's `Inputs > system_prompts`, keyed by SHA-256. Model-call inputs
 contain explicit references to that snapshot and root span ID. MLflow does not
 automatically inherit or expand a root prompt in a child's chat view: open the
@@ -1342,11 +1488,17 @@ root to read it. Changed prompts receive different snapshots. A subsequent user
 message creates a new request/run, even in the same conversation session. Only
 the logging copies change; provider requests retain their original full prompts.
 
-Ordinary CA function tools record redacted inputs and outputs in execution-level
+All Clima chat function tools record redacted inputs and outputs in execution-level
 `TOOL` spans with call IDs, timing, and exception status. Repeated same-name calls
 are correlated by call ID. Empty tool artifacts are omitted, and JSON tool results
 are logged in one representation without changing the runtime/persisted payload.
-CNB and Stationary Energy context-chat telemetry retain their existing behavior.
+CNB edit planning, source analysis, chapter drafting/validation, funding research, and Stationary Energy
+start/retry, generation, review and save also use the shared workflow trace helper.
+Inline operations remain children of the chat turn. Background jobs start with
+an independent async context and trace, correlated to the durable thread ID
+(or workflow run ID when no thread exists), so they can finish after the chat.
+Standalone workflow roots retain structured inputs/outputs and the same prompt
+library and redaction. Workflow results are not presented as invented chat replies.
 
 This compaction requires MLflow 3.2 or later (the lockfile remains on 3.2.0) and
 uses its [span processing API](https://mlflow.org/docs/latest/api_reference/python_api/mlflow.tracing.html).
@@ -1407,6 +1559,45 @@ Before enabling MLflow in an environment:
    Kubernetes deployment.
 4. If the MLflow server later requires authentication, provide MLflow auth
    variables through Kubernetes secrets rather than configmaps.
+
+Verify a local checkout without printing secrets:
+
+```bash
+uv run --directory service python -m scripts.mlflow_preflight
+```
+
+The command reports presence/absence for credentials, the configured tracking
+URI, environment tag, and whether the `Clima` experiment resolves. It does not
+print usernames, passwords, or create an MLflow run. Use a distinct
+`MLFLOW_ENVIRONMENT` tag for local evidence, for example `local-david`.
+
+Each agent tool call emits a sibling `TOOL` span under the request `CHAIN`
+span, plus a redacted summary artifact at `chat/tool_invocations.json`. The
+artifact is a request summary, not the orchestration proof. The per-tool
+record includes `call_id`, `tool_name`, `sequence`, `state`, `outcome`,
+`duration_ms`, `request_id`, `run_id`, argument key names, and output
+metadata such as `success`, `error_code`, `action`, `entry_count`, and
+`byte_size`. It never includes catalog/capability ID values, user or
+inventory scope, bearer tokens, storage pointers, raw source content, full
+tool arguments, full tool results, or the assistant response. If TOOL span
+instrumentation fails, the summary artifact still uses that same redacted
+projection instead of raw tool payloads. Fallback `state` / `outcome` follow
+the tool result envelope (`success: false` is `failed` / `error`), not the
+transport event status. An executing tool with no result stays `incomplete`.
+A later uninstrumented call is merged into the summary instead of omitted.
+
+In the MLflow UI, open experiment `Clima`, filter by `environment` and
+`request_id`, open the request run, then inspect the trace waterfall for
+`native_input_discover` before `native_input_read`.
+
+The MLflow MCP client is an operator tool, not an application runtime
+dependency. Do not add it to `pyproject.toml`. A local MCP session may use:
+
+```bash
+uv run --with 'mlflow[mcp]==3.12.0' mlflow mcp
+```
+
+Keep Climate Advisor pinned by the existing `pyproject.toml` and lockfile.
 
 ### LangSmith Integration
 
@@ -1517,3 +1708,36 @@ uv run --directory service pytest tests/ -v
 ## License
 
 See `LICENSE.md` for details.
+
+## CNB reasoning summary streaming (CC-907)
+
+CNB chat emits separate `progress` and `reasoning` SSE events. Progress includes
+an explicit workflow stage and optional chapter title/completion counts. Reasoning
+includes a model stream/item/part `id`, stage, optional chapter title, and text
+`delta`; `replace: true` corrects a previously displayed summary.
+
+Main chat and source workers use OpenRouter's Responses API with detailed
+summaries and `store: false`. Edit planner/reviewer calls use Chat Completions
+with detailed summaries and `exclude: false`. Settings are centralized in
+`app/utils/cnb_model_settings.py`; each role retains its configured effort.
+Document workers outside a live chat retain non-streaming execution.
+
+A bounded request-local queue delivers worker events before tools finish,
+independently of transport heartbeats (CC-827). The adapter reconciles deltas and
+completed snapshots without duplicates. Providers may omit readable summaries;
+the app never generates substitutes. Encrypted content is excluded, and summary
+text is not added to message history or reload responses. Provider calls follow
+the shared Clima telemetry and credential-redaction contract described above;
+the SSE adapter does not create separate summary artifacts.
+
+The expandable Reasoning section opens during generation and shows current
+workflow progress separately, with a progress bar when chapter counts are available.
+Summaries use consistent muted italic typography and a subtle vertical divider;
+Markdown headings and emphasis retain this styling instead of looking like final
+answers. The section can be collapsed using its disclosure row. Before a summary arrives, it shows
+a neutral thinking indicator. Summaries clear on completion, failure, or
+cancellation. Interrupted streams without a terminal event restore controls
+through the error path. This does not provide durable reconnect/restart recovery.
+
+See [validation and reproduction](docs/cnb-reasoning-validation.md) for focused
+checks, manual verification steps, and remaining limitations.

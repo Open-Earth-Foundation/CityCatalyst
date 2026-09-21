@@ -227,6 +227,8 @@ export interface ConceptNoteBundleProgress {
   ghgiStatus: string | null;
   hiapStatus: string | null;
   retryable: boolean;
+  errorCode?: string;
+  errorReason?: string;
 }
 
 function recordValue(value: unknown): Record<string, unknown> {
@@ -295,6 +297,8 @@ export function getConceptNoteBundleProgress(
     ghgiStatus: stringValue(optionalSources.ghgi),
     hiapStatus: stringValue(optionalSources.hiap),
     retryable: bundle.retryable === true,
+    errorCode: stringValue(bundle.error_code) || undefined,
+    errorReason: stringValue(bundle.error_reason) || undefined,
   };
 }
 

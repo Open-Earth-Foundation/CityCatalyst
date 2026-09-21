@@ -431,7 +431,12 @@ async def test_no_upload_commit_advances_run_and_loads_agent_context(
         async with session_factory() as session, session.begin():
             session.add_all(
                 [
-                    concept_note_run(run_id),
+                    concept_note_run(
+                        run_id,
+                        context_summary={
+                            "manual_population": {"population": 123456, "year": 2024}
+                        },
+                    ),
                     ConceptNoteContextBundle(run_id=run_id, context_bundle={}),
                 ]
             )
@@ -481,6 +486,12 @@ async def test_no_upload_commit_advances_run_and_loads_agent_context(
         )
         assert agent_context is not None
         assert agent_context["selected_sources"] == []
+        assert agent_context["manual_population"] == {
+            "population": 123456,
+            "year": 2024,
+            "source": "user_entered",
+        }
+        assert agent_context["cc_context"]["city"] is None
         assert agent_context["context_bundle_status"]["document_grounding"] == "none"
 
         await begin_build(
@@ -593,6 +604,8 @@ async def test_failed_build_is_retryable_and_keeps_bundle_unready(tmp_path) -> N
                 run_id=run_id,
                 build_id=snapshot.build_id,
                 error_code="context_bundle_build_failed",
+                error_reason="reader_section_count_mismatch",
+                error_details={"expected_sections": 106, "returned_sections": 4},
                 warning="The context bundle could not be built.",
             )
             is True
@@ -604,6 +617,8 @@ async def test_failed_build_is_retryable_and_keeps_bundle_unready(tmp_path) -> N
         assert run.status == "active"
         assert progress["status"] == "failed"
         assert progress["retryable"] is True
+        assert progress["error_reason"] == "reader_section_count_mismatch"
+        assert progress["error_details"] == {"expected_sections": 106, "returned_sections": 4}
         assert progress["completion_event"] is None
     finally:
         await engine.dispose()

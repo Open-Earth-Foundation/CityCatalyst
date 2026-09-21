@@ -1,30 +1,26 @@
 "use client";
 import React from "react";
-import { Box, Icon, HStack, VStack } from "@chakra-ui/react";
-import { LuArrowLeft, LuCircleCheck, LuTriangleAlert } from "react-icons/lu";
+import { Drawer, HStack, Icon, Portal, VStack } from "@chakra-ui/react";
+import { LuCircleCheck, LuTriangleAlert } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
-import { MeedButton } from "../../../components/MeedButton";
-import { TitleMedium } from "@/components/package/Texts/Title";
+import { CloseButton } from "@/components/ui/close-button";
+import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
-import {
-  BodyLarge,
-  BodyMedium,
-  BodySmall,
-} from "@/components/package/Texts/Body";
-import { ScoreBar } from "./ScoreBar";
+import { BodyMedium } from "@/components/package/Texts/Body";
+import { Overline } from "@/components/package/Texts/Overline";
+import { MeedScoreComposition } from "../../../components/MeedScoreComposition";
+import { SelectActionCheckbox } from "./SelectActionCheckbox";
 import { actionName, sectorLabel, type MeedActionIndex } from "./actionCatalog";
+import type { MeedScoreWeights } from "./rankingFacts";
 import {
   actionCoBenefits,
   actionTradeOffs,
   coBenefitLabel,
 } from "./coBenefits";
 
-export interface ScoreWeights {
-  impact: number;
-  alignment: number;
-  feasibility: number;
-}
+/** Kept as an alias so existing callers keep compiling. */
+export type ScoreWeights = MeedScoreWeights;
 
 /**
  * One list of co-benefit keys under a heading. Renders nothing when empty, so
@@ -64,9 +60,12 @@ function CoBenefitSection({
 }
 
 /**
- * Right-hand drawer with the full score breakdown for one ranked action:
- * description, ranking explanation and the three weighted component scores
- * plus the final-score formula.
+ * Right-hand drawer with everything about one ranked action: where it sits in
+ * the ranking, what it is, why the model put it there, how its score is made
+ * up, and what it delivers beyond emissions. The footer lets the user add it
+ * to the report from here, so reading and choosing happen in one place.
+ *
+ * Built on Chakra's Drawer for scroll lock, focus trap and Escape.
  */
 export function DetailPanel({
   action,
@@ -74,13 +73,24 @@ export function DetailPanel({
   weights,
   t,
   onClose,
+  rank,
+  total,
+  isSelected,
+  onToggleSelect,
 }: {
   action: MeedRankedActionResult;
   index: MeedActionIndex;
-  weights: ScoreWeights;
+  weights: MeedScoreWeights;
   t: TFunction;
   onClose: () => void;
+  /** Position in the ranking, when the caller knows it. */
+  rank?: number;
+  total?: number;
+  isSelected?: boolean;
+  /** Omit to hide the report control (e.g. when opened from the home screen). */
+  onToggleSelect?: (actionId: string) => void;
 }) {
+  const name = actionName(index, action.action_id, t);
   const description = index.get(action.action_id)?.description;
   const explanation =
     action.explanations?.en ?? Object.values(action.explanations ?? {})[0];
@@ -88,152 +98,136 @@ export function DetailPanel({
   const tradeOffs = actionTradeOffs(action, index);
 
   return (
-    <>
-      <Box
-        position="fixed"
-        inset="0"
-        bg="content.primary"
-        opacity={0.3}
-        zIndex={40}
-        onClick={onClose}
-      />
-      <Box
-        position="fixed"
-        top="0"
-        right="0"
-        bottom="0"
-        w={{ base: "full", md: "460px" }}
-        bg="base.light"
-        zIndex={50}
-        boxShadow="lg"
-        display="flex"
-        flexDirection="column"
-      >
-        <Box
-          px="l"
-          py="l"
-          borderBottomWidth="1px"
-          borderColor="border.overlay"
-          flexShrink={0}
-        >
-          <MeedButton
-            variant="text"
-            px="0"
-            leftIcon={<Icon as={LuArrowLeft} />}
-            onClick={onClose}
-          >
-            {t("detail-close")}
-          </MeedButton>
-          <LabelMedium
-            color="content.link"
-            textTransform="uppercase"
-            letterSpacing="0.08em"
-            mt="m"
-          >
-            {sectorLabel(index, action.action_id, t)}
-          </LabelMedium>
-          <TitleMedium color="content.primary" mt="xs">
-            {actionName(index, action.action_id, t)}
-          </TitleMedium>
-        </Box>
-
-        <Box px="l" py="l" flex="1" overflowY="auto">
-          <VStack alignItems="stretch" gap="l">
-            <VStack alignItems="stretch" gap="s">
-              <LabelLarge color="content.primary">
-                {t("detail-description")}
-              </LabelLarge>
-              <BodyMedium color="content.secondary">
-                {description ?? t("no-description")}
-              </BodyMedium>
-            </VStack>
-
-            {explanation && (
-              <VStack alignItems="stretch" gap="s">
-                <LabelLarge color="content.primary">
-                  {t("detail-why")}
-                </LabelLarge>
-                <BodyMedium color="content.secondary" fontStyle="italic">
-                  {explanation}
-                </BodyMedium>
-              </VStack>
-            )}
-
-            <VStack alignItems="stretch" gap="m">
-              <LabelLarge color="content.primary">
-                {t("detail-score-breakdown")}
-              </LabelLarge>
-              <ScoreBar
-                label={t("impact-score")}
-                value={action.impact_score}
-                weight={weights.impact}
-                color="content.link"
-                description={t("impact-score-description")}
-              />
-              <ScoreBar
-                label={t("alignment-score")}
-                value={action.alignment_score}
-                weight={weights.alignment}
-                color="sentiment.warningDefault"
-                description={t("alignment-score-description")}
-              />
-              <ScoreBar
-                label={t("feasibility-score")}
-                value={action.feasibility_score}
-                weight={weights.feasibility}
-                color="sentiment.positiveDefault"
-                description={t("feasibility-score-description")}
-              />
-              <HStack
-                justifyContent="space-between"
-                gap="m"
-                bg="background.neutral"
-                borderRadius="rounded"
-                px="m"
-                py="m"
-              >
-                <BodySmall
-                  color="content.secondary"
-                  fontVariantNumeric="tabular-nums"
-                >
-                  {t("final-score-formula", {
-                    i: action.impact_score.toFixed(2),
-                    wi: weights.impact.toFixed(2),
-                    a: action.alignment_score.toFixed(2),
-                    wa: weights.alignment.toFixed(2),
-                    f: action.feasibility_score.toFixed(2),
-                    wf: weights.feasibility.toFixed(2),
-                  })}
-                </BodySmall>
-                <BodyLarge
-                  color="sentiment.positiveDefault"
-                  fontWeight="bold"
-                  flexShrink={0}
-                  fontVariantNumeric="tabular-nums"
-                >
-                  {action.final_score.toFixed(3)}
-                </BodyLarge>
+    <Drawer.Root
+      open
+      onOpenChange={(e) => {
+        if (!e.open) onClose();
+      }}
+      placement="end"
+      size={{ base: "full", md: "md" }}
+    >
+      <Portal>
+        <Drawer.Backdrop />
+        <Drawer.Positioner>
+          <Drawer.Content>
+            <Drawer.Header
+              display="flex"
+              flexDirection="column"
+              alignItems="stretch"
+              gap="xs"
+              borderBottomWidth="1px"
+              borderColor="border.overlay"
+            >
+              <HStack justifyContent="space-between" alignItems="center">
+                <HStack gap="s" flexWrap="wrap">
+                  {rank !== undefined && total !== undefined && (
+                    <Overline color="content.link">
+                      {t("detail-rank-of", { rank, total })}
+                    </Overline>
+                  )}
+                  <Overline color="content.tertiary">
+                    {sectorLabel(index, action.action_id, t)}
+                  </Overline>
+                </HStack>
+                <Drawer.CloseTrigger asChild>
+                  <CloseButton
+                    size="sm"
+                    color="content.secondary"
+                    aria-label={t("detail-close-aria")}
+                  />
+                </Drawer.CloseTrigger>
               </HStack>
-            </VStack>
+              <Drawer.Title asChild>
+                <TitleMedium color="content.primary">{name}</TitleMedium>
+              </Drawer.Title>
+            </Drawer.Header>
 
-            <CoBenefitSection
-              title={t("detail-cobenefits")}
-              keys={coBenefits}
-              icon={LuCircleCheck}
-              color="sentiment.positiveDefault"
-              t={t}
-            />
+            <Drawer.Body>
+              <VStack alignItems="stretch" gap="l" py="s">
+                <VStack alignItems="stretch" gap="s">
+                  <LabelLarge color="content.primary">
+                    {t("detail-description")}
+                  </LabelLarge>
+                  <BodyMedium color="content.secondary">
+                    {description ?? t("no-description")}
+                  </BodyMedium>
+                </VStack>
 
-            <CoBenefitSection
-              title={t("detail-tradeoffs")}
-              keys={tradeOffs}
-              icon={LuTriangleAlert}
-              color="sentiment.warningDefault"
-              t={t}
-            />
-          </VStack>
-        </Box>
-      </Box>
-    </>
+                {explanation && (
+                  <VStack alignItems="stretch" gap="s">
+                    <LabelLarge color="content.primary">
+                      {t("detail-why")}
+                    </LabelLarge>
+                    <BodyMedium color="content.secondary" fontStyle="italic">
+                      {explanation}
+                    </BodyMedium>
+                  </VStack>
+                )}
+
+                <VStack alignItems="stretch" gap="m">
+                  <HStack justifyContent="space-between" alignItems="baseline">
+                    <LabelLarge color="content.primary">
+                      {t("detail-score-breakdown")}
+                    </LabelLarge>
+                    <HStack gap="xs" alignItems="baseline">
+                      <LabelMedium color="content.tertiary">
+                        {t("detail-final-score")}
+                      </LabelMedium>
+                      <TitleLarge
+                        color="content.primary"
+                        fontVariantNumeric="tabular-nums"
+                      >
+                        {action.final_score.toFixed(2)}
+                      </TitleLarge>
+                    </HStack>
+                  </HStack>
+                  <MeedScoreComposition
+                    action={action}
+                    weights={weights}
+                    variant="detailed"
+                    t={t}
+                  />
+                </VStack>
+
+                <CoBenefitSection
+                  title={t("detail-cobenefits")}
+                  keys={coBenefits}
+                  icon={LuCircleCheck}
+                  color="sentiment.positiveDefault"
+                  t={t}
+                />
+
+                <CoBenefitSection
+                  title={t("detail-tradeoffs")}
+                  keys={tradeOffs}
+                  icon={LuTriangleAlert}
+                  color="sentiment.warningDefault"
+                  t={t}
+                />
+              </VStack>
+            </Drawer.Body>
+
+            {onToggleSelect && (
+              <Drawer.Footer
+                borderTopWidth="1px"
+                borderColor="border.overlay"
+                justifyContent="flex-start"
+              >
+                <HStack gap="s" alignItems="center">
+                  <SelectActionCheckbox
+                    checked={Boolean(isSelected)}
+                    onToggle={() => onToggleSelect(action.action_id)}
+                    ariaLabel={t("select-action", { name })}
+                  />
+                  <LabelMedium color="content.primary">
+                    {t("detail-include-in-report")}
+                  </LabelMedium>
+                </HStack>
+              </Drawer.Footer>
+            )}
+          </Drawer.Content>
+        </Drawer.Positioner>
+      </Portal>
+    </Drawer.Root>
   );
 }

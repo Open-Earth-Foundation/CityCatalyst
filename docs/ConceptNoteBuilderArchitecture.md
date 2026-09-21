@@ -38,6 +38,16 @@ authenticated read boundary. Runs may begin without uploaded document evidence
 and later rebuild with it; all optional CC, funding, matching, and source
 context may be absent.
 
+When city population is unavailable, the Context tab accepts a population amount
+and year for the current concept-note run. The authenticated CityCatalyst proxy
+forwards `PATCH /api/v1/concept-notes/{runId}/population` to Climate Advisor,
+which stores the value in that run's `context_summary.manual_population`. The
+value is shown in the workspace and passed to chat and chapter drafting with
+`user_entered` provenance. It does not update the CityCatalyst city population
+record or become CC context. Removing it clears only the run-scoped value.
+The editor and API reject changes while chapter drafting is running because the
+drafting worker uses a single population snapshot for all chapters.
+
 In scope:
 
 - A Climate Advisor workflow for concept-note runs.
@@ -179,26 +189,39 @@ Confirming a chapter refreshes both its run's draft and edit proposals, so the
 review state updates even when no proposal is processing and polling is stopped.
 
 The proposal-only CA tool uses authorized evidence and explicit user input.
-Bounded chapter workers use an LLM planner and an independent LLM reviewer for
-meaning, factual support, and related occurrences. Python checks exact anchors,
+One bounded document agent searches exact text and reads chapters on demand.
+It proposes contextual matches, selected server-issued match IDs, or explicit
+all-match replacements. Python resolves offsets from the captured revisions and
+returns structural errors to the agent for correction. An independent LLM
+reviewer checks meaning and factual support for each affected chapter. Python checks exact anchors,
 source identity, user quotes, required headings and unresolved markers. It does
 not infer meaning from numeric/entity tokens, merge groups based on shared values,
 or expand replacements after semantic review. Scope is automatic; chapter focus is
 only a navigation hint. Parsed-Markdown redlines preserve source offsets and fail
 closed on stale or overlapping anchors. No edit is applied before acceptance.
+Unchanged matching context is trimmed from the displayed diff. All-match edits
+exclude protected markers, template headings, and locked chapters; server-counted
+exclusions appear in the proposal and chat response. Complete, grounded gap fills
+retain the existing marker-resolution contract. The agent has a 12-turn limit;
+planning plus review has a 180-second deadline, configurable in `llm_config.yaml`.
 
 CNB migration `20260907_120000` provisions proposals and
 immutable application records. Apply locks the run and affected chapters, checks
 the expected revision vector, and appends accepted changes atomically. Records
 remain for audit, sequencing and idempotent retries; public history, undo and
 restore endpoints are not exposed. Inline decisions select the exact applied subset.
+Migration `20260917_120000` adds persisted proposal exclusion notices after the
+`20260909_120000` merge revision.
 
 A grounded marker replacement resolves the matching gap in the same transaction.
 Wording-only edits preserve Ready only when exact confirmation and current gap,
 and lock checks permit it; factual changes require renewed review.
 Proposals and results survive reload. Web and CA independently enforce current
-user/run/city authorization. CNB telemetry remains metadata-only, including
-nested source queries, without disabling concurrent generic tracing.
+user/run/city authorization. CNB uses the shared Clima MLflow content-logging
+contract: chat turns store user messages and complete assistant responses, while
+nested source queries and edit planning record credential-redacted model/tool
+inputs and outputs. Standalone source analysis, drafting, validation, and edit proposals use
+correlated workflow traces with the same prompt snapshot storage.
 
 The first part of the workflow is context bundle building. The
 `ContextBundleService` assembles the reusable run context by:
@@ -1743,6 +1766,62 @@ Always-on context should include:
 This is crucial because the agent should never need to ask a tool what state the
 workflow is in before deciding what to do next.
 
+### Funding selection in the workspace
+
+The Context tab's **Browse funders** / **Change** action in the funder card's upper-right corner opens a
+searchable catalogue of every managed funder, including profiles without programmes
+or templates. Search matches funder names, countries, regions, and programme names,
+regions, sectors, and summaries; IDs and template JSON are excluded. The inspector
+shows stated and derived profile facts, programme
+eligibility and award information, and the associated template's ordered chapters
+and required fields. The managed schema has one template per programme; selecting
+a programme selects that compatible template. Changing the funder clears the
+pending programme and template before saving.
+
+`GET /v1/concept-notes/{run_id}/funding-catalogue` reads the shared CNB reference
+database after run ownership and current city-access checks. It returns the complete
+curated catalogue for client-side search, without ranking or omitting incomplete
+profiles. `PATCH /v1/concept-notes/{run_id}/application-context` validates the full
+selection and expected previous identifiers, then persists the IDs on the CA run
+and replaces the bundle's funding context. City and uploaded-source context remain
+available. The corresponding CityCatalyst proxy routes and RTK cache invalidation
+refresh the selection, draft review state, and pending proposals.
+
+Funding changes are rejected during active context assembly, drafting, or edit
+planning. For an existing draft, the user must acknowledge another review: chapter
+text and revision history are retained, confirmations and prior validation results
+are cleared, pending edit proposals become stale, and previous project matches are
+removed. An existing draft can switch to a template only when its ordered chapter
+references match the draft. Incompatible switches are rejected without changing
+the selected funding or draft; the user is directed to start a new note for that
+template. Compatible switches update chapter titles and required flags while
+preserving revision history. Clearing funding, or selecting a funder without a
+template, preserves the draft for a later compatible selection.
+
+Edit registration snapshots context while holding the same CA run-row lock as
+funding selection, and commits its processing proposal before releasing that
+lock. Funding changes reject processing proposals; completed proposals are
+invalidated on a switch. Edit application also takes the CA lock before CNB
+proposal/chapter locks, so acceptance cannot race funding invalidation. HTTP and
+chat callers cannot supply an earlier context snapshot to the edit service.
+Reference-store review invalidation commits before the CA selection; a failed CA
+commit keeps the old choice but conservatively requires another draft review.
+
+Focused verification:
+
+```bash
+# From climate-advisor/service
+python -m pytest tests/cnb/test_funding_selection.py tests/cnb/test_application_context.py
+# With a disposable PostgreSQL test database, also exercise real row-lock ordering
+CNB_TEST_DATABASE_URL=postgresql://localhost/cnb_test python -m pytest tests/cnb/test_funding_selection_postgres.py
+# From app, against a running local app and authenticated test-user storage state
+CNB_TEST_URL=http://localhost:3000 CNB_AUTH_STATE=playwright/.auth/user.json npx playwright test --config e2e/funding.playwright.config.ts
+```
+
+The browser test exercises the real workspace with controlled API responses;
+the Python tests exercise catalogue joins, persistence, and invalidation in test
+databases. Neither test starts an LLM request.
+
 ### Context Bundle Build Responsibilities
 
 Context bundle building is not an agent tool group. `ContextBundleService`
@@ -1789,6 +1868,11 @@ Rules:
 - Requires exactly one ordered result per input section and verifies every
   retained excerpt as an exact substring of that section. Generated segment
   identifiers are attached only by backend code, never included in the prompt.
+  The provider output schema requires exactly the supplied number of sections;
+  the backend independently checks the returned count.
+  A section-count mismatch discards the incomplete response and rereads both
+  halves, up to two split levels under the same concurrency limit. Every
+  recovered group must pass coverage checks before synthesis can proceed.
 - Requires every factual sentence in a synthesized document summary to remain
   self-contained and supported by an exact retained excerpt. Conflicting
   evidence remains explicit instead of being silently reconciled.
@@ -1802,6 +1886,22 @@ Rules:
 - Completes with `document_grounding: none` when no ready upload exists. A
   pointer/digest change, reader partition failure, or incomplete source coverage
   still fails retryably.
+  Failed run progress and correlated logs retain content-free `error_reason`
+  and numeric `error_details` alongside `error_code`. The workspace derives
+  chat and draft notices from one shared upload/context status, including
+  pending uploads that have not yet reached the bundle. Pending uploads, a failed
+  current upload, and bundle preparation/failure block chat. Older failed uploads
+  are superseded by a newer successful upload and excluded from readiness counts.
+  Ready document context unlocks chat automatically, including after reload.
+- `POST /v1/messages` checks the request/thread's owned CNB run before saving a
+  user turn or starting SSE. Its persisted bundle must be ready and contain the
+  current ready uploads with matching IDs/digests, with no pending uploads or
+  failed latest upload. The workspace sends the run ID explicitly, and Climate
+  Advisor requires that run to match the supplied thread. HTTP `409` /
+  `concept_note_context_not_ready` is preserved by the CC proxy and shown as a
+  recoverable context error in the workspace; other failures before SSE starts
+  also retain their non-success status. The rejected optimistic user message is
+  removed. Ready city-only runs remain valid.
 - Reconciles every five minutes and marks builds left in `building` for more
   than one hour as `context_bundle_build_interrupted`, preserving the existing
   retry route without storing a durable access token in a job queue.
@@ -2504,7 +2604,9 @@ not MLflow's thread-local fluent active-run stack. All shared logging helpers an
 run termination target that ID. Failed starts mask the enclosing target, queued
 writes drain before closure, and exceptions/cancellation terminate only the
 affected request. Trace metadata explicitly links to the source run through
-`mlflow.sourceRun` and records session/user using MLflow 3.2 metadata keys.
+`mlflow.sourceRun` and records user identity using MLflow 3.2 metadata keys.
+Only chat turns set `mlflow.trace.session`. Standalone CNB preparation and
+workflow traces retain thread/workflow IDs without becoming extra chat turns.
 CNB chat carries `prompt_name=cnb_chat` for the composed CNB workflow prompt.
 
 All user-initiated CNB telemetry uses the `Clima` experiment and the visible

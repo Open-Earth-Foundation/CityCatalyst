@@ -229,6 +229,33 @@ class CityCatalystClientAuthTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual([result["request"] for result in results], [1, 2, 3, 4])
         self.assertEqual(get_with_auto_refresh.await_count, 4)
 
+    async def test_validate_user_identity_uses_bearer_and_service_headers(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(
+                base_url="https://cc.example/",
+                api_key="test-api-key",
+            )
+            stub = _StubAsyncClient(
+                [_response(200, json_data={"user_id": "canonical-user"})]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                user_id = await client.validate_user_identity("current-token")
+
+        self.assertEqual(user_id, "canonical-user")
+        recorded = stub.requests[0]
+        self.assertEqual(
+            recorded["url"],
+            "https://cc.example/api/v1/internal/ca/auth/identity",
+        )
+        self.assertEqual(recorded["headers"]["Authorization"], "Bearer current-token")
+        self.assertEqual(recorded["headers"]["X-Service-Name"], "climate-advisor")
+        self.assertEqual(recorded["headers"]["X-Service-Key"], "test-api-key")
+        self.assertNotIn("json", recorded)
+
     async def test_refresh_token_normalizes_base_url_and_validates_payload(self) -> None:
         with patch(
             "app.services.citycatalyst_client.get_settings",

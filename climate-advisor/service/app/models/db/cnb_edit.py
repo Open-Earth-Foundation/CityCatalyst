@@ -6,8 +6,6 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID, uuid4
 
-from app.db.cnb import CnbBase
-from app.models.db.types import JSONBCompat
 from sqlalchemy import (
     CheckConstraint,
     DateTime,
@@ -22,6 +20,9 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
+
+from app.db.cnb import CnbBase
+from app.models.db.types import JSONBCompat
 
 
 class ConceptNoteEditProposal(CnbBase):
@@ -42,6 +43,9 @@ class ConceptNoteEditProposal(CnbBase):
         JSONBCompat(), nullable=False, default=dict, server_default=text("'{}'::jsonb")
     )
     changes: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
+    )
+    notices: Mapped[list[dict[str, Any]]] = mapped_column(
         JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
     )
     status: Mapped[str] = mapped_column(

@@ -7,19 +7,17 @@ import inspect
 import json
 import logging
 import time
-from contextlib import nullcontext, suppress
-from typing import Any, AsyncIterator, Dict, List, Optional, Union
-from uuid import UUID
+from contextlib import aclosing, suppress
+from typing import Any, AsyncGenerator, AsyncIterator, Dict, List, Optional, Union
+from uuid import UUID, uuid4
 
 from agents import RunConfig, Runner, gen_trace_id
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from app.config import Settings, get_settings
 from app.middleware import get_request_id
 from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.requests import MessageCreateRequest
 from app.persistence.concept_notes.context_bundle import load_agent_context
 from app.services.agent_service import AgentService
+from app.services.native_input_catalog_service import ActiveRequestContext
 from app.services.stationary_energy.stationary_energy_chat_context import (
     build_minimal_stationary_energy_context_payload,
     build_stationary_energy_context_payload,
@@ -33,25 +31,28 @@ from app.services.stationary_energy.stationary_energy_tool_events import (
     build_stationary_energy_tool_result_payload,
 )
 from app.services.thread_service import ThreadService
-from app.utils.chat_workflow_context import CNB_WORKFLOW_TAG, ChatWorkflowContext
+from app.utils.chat_workflow_context import ChatWorkflowContext
+from app.utils.cnb_progress import emit_cnb_progress, emit_cnb_reasoning, stream_cnb_events
 from app.utils.concept_note_context import (
     clean_cnb_history,
     extract_concept_note_run_id,
 )
 from app.utils.conversation_observability import (
-    conversation_tool_artifact,
     conversation_trace,
     finish_conversation_trace,
 )
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
+    close_open_tool_observations,
+    finish_tool_observation,
     log_json_artifact,
     log_metrics,
     log_tags,
     log_text_artifact,
+    merge_redacted_tool_records,
     start_run,
-    start_trace_span,
+    start_tool_observation,
     update_current_trace_context,
 )
 from app.utils.prompt_budget import (
@@ -64,6 +65,9 @@ from app.utils.sse import format_sse
 from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
 from app.utils.token_handler import TokenHandler
 from app.utils.tool_handler import persist_assistant_message
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -77,15 +81,18 @@ class StreamingHandler:
         user_id: str,
         session_factory: Optional[async_sessionmaker[AsyncSession]],
         cc_access_token: Optional[str] = None,
+        catalog_user_id: Optional[str] = None,
         inventory_id: Optional[str] = None,
         request_context: Optional[Any] = None,
         request_options: Optional[dict] = None,
     ) -> None:
         """Initialize per-request state for streaming one agent response."""
         self.thread_id = thread_id
+        self.reasoning_stream_id = str(uuid4())
         self.user_id = user_id
         self.session_factory = session_factory
         self.cc_access_token = cc_access_token
+        self.catalog_user_id = catalog_user_id
         self.inventory_id = inventory_id
         self.request_context = request_context
         self.request_options = request_options
@@ -97,6 +104,8 @@ class StreamingHandler:
         # Response state
         self.assistant_tokens: List[str] = []
         self.tool_invocations: List[dict] = []
+        self._pending_tool_observations: dict[str, Any] = {}
+        self._tool_observation_records: List[dict] = []
         self.token_index = 0
         self.history_saved = False
         self.streaming_error = False
@@ -108,7 +117,18 @@ class StreamingHandler:
         self,
         payload: MessageCreateRequest,
         history_warning: Optional[str] = None,
-    ) -> AsyncIterator[bytes]:
+    ) -> AsyncGenerator[bytes, None]:
+        """Forward answer and request-local worker events on the existing stream."""
+        events = stream_cnb_events(self._stream_response(payload, history_warning))
+        async with aclosing(events) as stream:
+            async for chunk in stream:
+                yield chunk
+
+    async def _stream_response(
+        self,
+        payload: MessageCreateRequest,
+        history_warning: Optional[str] = None,
+    ) -> AsyncGenerator[bytes, None]:
         """Stream AI responses using OpenAI Agents SDK.
 
         Args:
@@ -122,21 +142,24 @@ class StreamingHandler:
         settings = get_settings()
         started_at = time.perf_counter()
         await self._resolve_workflow_context(payload)
+        if self.workflow_context.concept_note_run_id:
+            await emit_cnb_progress("preparing")
 
-        with start_run(
-            run_name=self.workflow_context.mlflow_run_name,
-            experiment_name=self._mlflow_experiment_name(payload),
-            tags=self._mlflow_tags(payload),
-            params=self._mlflow_params(payload),
-        ), (
-            nullcontext()
-            if self.workflow_context.is_agentic
-            else conversation_trace(payload.content)
+        with (
+            start_run(
+                run_name=self.workflow_context.mlflow_run_name,
+                experiment_name=self._mlflow_experiment_name(payload),
+                tags=self._mlflow_tags(payload),
+                params=self._mlflow_params(payload),
+            ),
+            conversation_trace(
+                payload.content, attributes=self.workflow_context.telemetry()
+            ),
         ):
-            if not self.workflow_context.concept_note_run_id:
-                log_json_artifact(
-                    "request/message_payload.json", payload.model_dump(mode="json")
-                )
+            self._update_mlflow_trace_context(payload)
+            log_json_artifact(
+                "request/message_payload.json", payload.model_dump(mode="json")
+            )
 
             async for event_bytes in self._stream_response_with_mlflow(
                 payload=payload,
@@ -196,6 +219,7 @@ class StreamingHandler:
                     stationary_energy_surface = True
 
             # Create agent service
+            native_input_catalog_context = self._native_input_catalog_request(payload)
             edit_context = (
                 payload.context.get("concept_note_edit")
                 if isinstance(payload.context, dict)
@@ -233,6 +257,7 @@ class StreamingHandler:
                 stationary_energy_draft_run_id=draft_run_id,
                 stationary_energy_surface=stationary_energy_surface,
                 concept_note_run_id=concept_note_run_id,
+                native_input_catalog_context=native_input_catalog_context,
                 concept_note_edit_request=edit_request,
                 concept_note_edit_history=concept_note_edit_history,
             )
@@ -273,10 +298,9 @@ class StreamingHandler:
 
             agent = await self.agent_service.create_agent(model=self.agent_model)
 
-            if not concept_note_run_id:
-                log_json_artifact(
-                    "chat/conversation_history.json", {"messages": conversation_history}
-                )
+            log_json_artifact(
+                "chat/conversation_history.json", {"messages": conversation_history}
+            )
 
             logger.info(
                 "Starting Agents SDK streaming - thread_id=%s, user_id=%s, request_id=%s",
@@ -763,64 +787,41 @@ class StreamingHandler:
                 self._clear_agent_instructions(agent)
             runner_input = self._enforce_chat_prompt_budget(agent, runner_input)
 
-        workflow_metadata = self.workflow_context.telemetry()
-        # Ordinary CA already owns a root through persistence; scoped chats keep theirs.
-        trace_context = (
-            start_trace_span(
-                name=(
-                    CNB_WORKFLOW_TAG
-                    if self.workflow_context.concept_note_run_id
-                    else self.workflow_context.trace_workflow_name
-                ),
-                span_type="CHAIN",
-                attributes={
-                    "workflow": workflow_metadata["workflow"],
-                    "workflow_name": workflow_metadata["workflow_name"],
-                    "interaction": workflow_metadata["interaction"],
-                },
+        trace_context_updated = self._update_mlflow_trace_context(payload)
+        # Prefer the Agents SDK streamed runner and keep the legacy fallback path.
+        try:
+            result = Runner.run_streamed(
+                agent,
+                runner_input,
+                run_config=self._run_config(payload),
             )
-            if self.workflow_context.is_agentic
-            else nullcontext()
-        )
-        with trace_context:
-            trace_context_updated = self._update_mlflow_trace_context(payload)
-            # Prefer the Agents SDK streamed runner and keep the legacy fallback path.
-            try:
-                result = Runner.run_streamed(
-                    agent,
-                    runner_input,
-                    run_config=self._run_config(payload),
-                )
-            except Exception as runner_exc:
-                logger.warning(
-                    "Agents Runner streaming failed (%s); falling back to agent.messages.run_stream",
-                    runner_exc,
-                )
-                # The fallback only sends raw user content, so restore the scoped prompt.
-                if restore_agent_instructions:
-                    try:
-                        setattr(agent, "instructions", original_agent_instructions)
-                    except Exception as exc:
-                        logger.debug(
-                            "Could not restore embedded agent instructions before fallback: %s",
-                            exc,
-                        )
-                async for event_bytes in self._fallback_stream(agent, payload):
-                    yield event_bytes
-                return
+        except Exception as runner_exc:
+            logger.warning(
+                "Agents Runner streaming failed (%s); falling back to agent.messages.run_stream",
+                runner_exc,
+            )
+            # The fallback only sends raw user content, so restore the scoped prompt.
+            if restore_agent_instructions:
+                try:
+                    setattr(agent, "instructions", original_agent_instructions)
+                except Exception as exc:
+                    logger.debug(
+                        "Could not restore embedded agent instructions before fallback: %s",
+                        exc,
+                    )
+            async for event_bytes in self._fallback_stream(agent, payload):
+                yield event_bytes
+            return
 
-            trace_context_attempted_after_start = False
+        trace_context_attempted_after_start = False
 
-            # Convert SDK stream events into the app's SSE event contract.
-            async for chunk in result.stream_events():
-                if (
-                    not trace_context_updated
-                    and not trace_context_attempted_after_start
-                ):
-                    trace_context_attempted_after_start = True
-                    trace_context_updated = self._update_mlflow_trace_context(payload)
-                async for event_bytes in self._process_chunk(chunk):
-                    yield event_bytes
+        # Convert SDK stream events into the app's SSE event contract.
+        async for chunk in result.stream_events():
+            if not trace_context_updated and not trace_context_attempted_after_start:
+                trace_context_attempted_after_start = True
+                trace_context_updated = self._update_mlflow_trace_context(payload)
+            async for event_bytes in self._process_chunk(chunk):
+                yield event_bytes
 
     @staticmethod
     def _has_embedded_stationary_energy_system_context(
@@ -943,6 +944,12 @@ class StreamingHandler:
             return
 
         response_type = getattr(response_event, "type", "")
+        if self.workflow_context.concept_note_run_id:
+            if response_type == "response.created":
+                self.reasoning_stream_id = str(uuid4())
+            await emit_cnb_reasoning(
+                response_event, stream_id=self.reasoning_stream_id, stage="chat"
+            )
 
         # Stream text/refusal deltas as message events and preserve token order.
         if response_type in {"response.output_text.delta", "response.refusal.delta"}:
@@ -1007,8 +1014,7 @@ class StreamingHandler:
         existing = None
         for inv in self.tool_invocations:
             if (call_id and inv.get("id") == call_id) or (
-                inv.get("name") == tool_name
-                and (not call_id or self.workflow_context.is_agentic)
+                inv.get("name") == tool_name and not call_id
             ):
                 existing = inv
                 break
@@ -1025,6 +1031,19 @@ class StreamingHandler:
             invocation = existing
             invocation["arguments"] = invocation.get("arguments") or arguments
             invocation["status"] = "executing"
+
+        # Best-effort MLflow evidence must not change the SSE tool_result contract.
+        try:
+            start_tool_observation(
+                self._pending_tool_observations,
+                call_id=str(call_id) if call_id else None,
+                tool_name=str(tool_name),
+                arguments=arguments,
+                request_id=self._request_id(),
+                completed_count=len(self._tool_observation_records),
+            )
+        except Exception:
+            logger.warning("MLflow tool observation start failed tool=%s", tool_name)
 
         yield format_sse(
             {
@@ -1063,8 +1082,7 @@ class StreamingHandler:
         invocation = None
         for inv in self.tool_invocations:
             if (call_id and inv.get("id") == call_id) or (
-                inv.get("status") == "executing"
-                and (not call_id or self.workflow_context.is_agentic)
+                inv.get("status") == "executing" and not call_id
             ):
                 invocation = inv
                 break
@@ -1081,6 +1099,17 @@ class StreamingHandler:
         invocation["result"] = str(output_value) if output_value is not None else ""
         if parsed_output is not None:
             invocation["result_json"] = parsed_output
+
+        # Close the request-local TOOL observation after the model-facing result is stored.
+        try:
+            finish_tool_observation(
+                self._pending_tool_observations,
+                self._tool_observation_records,
+                call_id=str(call_id) if call_id else None,
+                output=output_value,
+            )
+        except Exception:
+            logger.warning("MLflow tool observation finish failed call_id=%s", call_id)
 
         # Handle token refresh and errors
         if parsed_output is not None:
@@ -1352,6 +1381,41 @@ class StreamingHandler:
             ),
         )
 
+    def _native_input_catalog_request(
+        self,
+        payload: MessageCreateRequest,
+    ) -> ActiveRequestContext | None:
+        """Resolve catalog scope only when the current request has a Core credential."""
+        if not self.cc_access_token or not self.catalog_user_id:
+            return None
+
+        sources = (
+            payload.context,
+            payload.options,
+            self.request_context,
+            self.request_options,
+        )
+
+        def first_value(field: str) -> Optional[str]:
+            for source in sources:
+                if not isinstance(source, dict):
+                    continue
+                value = source.get(field)
+                if isinstance(value, str) and value.strip():
+                    return value.strip()
+            return None
+
+        return ActiveRequestContext(
+            user_id=self.catalog_user_id,
+            thread_id=self.thread_identifier,
+            organization_id=first_value("organization_id"),
+            project_id=first_value("project_id"),
+            city_id=first_value("city_id"),
+            inventory_id=payload.inventory_id or self.inventory_id or first_value(
+                "inventory_id"
+            ),
+        )
+
     @staticmethod
     def _normalize_workflow_run_id(value: object, label: str) -> str | None:
         """Return a canonical UUID string, ignoring malformed workflow IDs."""
@@ -1377,13 +1441,12 @@ class StreamingHandler:
         assistant_content = "".join(self.assistant_tokens)
         duration_ms = (time.perf_counter() - started_at) * 1000
         stream_status = status or ("ok" if ok else "error")
-        if not self.workflow_context.is_agentic:
-            finish_conversation_trace(
-                assistant_content,
-                status=stream_status,
-                history_saved=self.history_saved,
-                chunks=len(self.assistant_tokens),
-            )
+        finish_conversation_trace(
+            assistant_content,
+            status=stream_status,
+            history_saved=self.history_saved,
+            chunks=len(self.assistant_tokens),
+        )
         log_tags({"stream_status": stream_status})
         log_metrics(
             {
@@ -1395,15 +1458,34 @@ class StreamingHandler:
                 "ok": int(ok),
             }
         )
-        if not self.workflow_context.concept_note_run_id:
-            log_text_artifact("chat/assistant_response.txt", assistant_content)
-            if self.workflow_context.is_agentic or self.tool_invocations:
-                log_json_artifact(
-                    "chat/tool_invocations.json",
-                    {"tool_invocations": self.tool_invocations}
-                    if self.workflow_context.is_agentic
-                    else conversation_tool_artifact(self.tool_invocations),
-                )
+        log_text_artifact("chat/assistant_response.txt", assistant_content)
+        try:
+            close_open_tool_observations(
+                self._pending_tool_observations,
+                self._tool_observation_records,
+                outcome=(
+                    "cancelled"
+                    if stream_status == "cancelled"
+                    else "error"
+                    if stream_status == "error"
+                    else "incomplete"
+                ),
+            )
+        except Exception:
+            logger.warning(
+                "MLflow tool observation close failed status=%s",
+                stream_status,
+            )
+        records = merge_redacted_tool_records(
+            self.tool_invocations,
+            self._tool_observation_records,
+            request_id=self._request_id(),
+        )
+        if records:
+            log_json_artifact(
+                "chat/tool_invocations.json",
+                {"tool_invocations": records},
+            )
         log_json_artifact(
             "response/stream_summary.json",
             {

@@ -1,14 +1,12 @@
 /**
- * The six "what went into this ranking" areas, in one place.
+ * The five "what went into this ranking" areas, in one place.
  *
- * Both the compact grid on the results overview and the context-breakdown tab
- * read this list, so the two views can never drift apart on wording, icons or
- * ordering. Five of them deep-link back to the wizard step that owns the data;
- * the sixth points at the full ranking table further down the same page.
+ * The module home and the results page both read this list, so the two views
+ * can never drift apart on wording, icons or ordering. Each deep-links to the
+ * read-only screen that owns the data.
  */
 import type { IconType } from "react-icons";
 import {
-  LuChartColumn,
   LuClipboardList,
   LuFactory,
   LuScale,
@@ -18,12 +16,12 @@ import {
 import type { TFunction } from "i18next";
 import type { MeedSectionStates } from "../../../meedStatus";
 import { MEED_OUTPUT_AREAS } from "../../../steps";
-import type { MeedPolicyBacking } from "./rankingFacts";
+import type { MeedLegalFunnel, MeedPolicyBacking } from "./rankingFacts";
 
 export interface MeedContextArea {
   key: string;
-  /** Wizard step segment to deep-link to; absent for the full-ranking card. */
-  segment?: string;
+  /** Route segment of the screen that owns this area. */
+  segment: string;
   titleKey: string;
   descriptionKey: string;
   icon: IconType;
@@ -65,12 +63,6 @@ export const MEED_CONTEXT_AREAS: MeedContextArea[] = [
     descriptionKey: "context-desc-policy",
     icon: LuClipboardList,
   },
-  {
-    key: "ranking",
-    titleKey: "context-ranking",
-    descriptionKey: "context-desc-ranking",
-    icon: LuChartColumn,
-  },
 ];
 
 /** Everything the summary lines can quote, gathered once by the page. */
@@ -82,6 +74,21 @@ export interface MeedContextFacts {
   excludedCount: number | null;
   strongPolicyBacking: number;
   states: MeedSectionStates;
+  /**
+   * True on the module home before any ranking exists. The legal and policy
+   * lines then say the area runs with the ranking rather than quoting zeros.
+   */
+  hasRanking?: boolean;
+  /** GPC sectors with emissions in this inventory; 0 means nothing to rank on. */
+  sectorsWithData?: number | null;
+  /** Socioeconomic indicators the Global API holds for this city. */
+  indicatorCount?: number | null;
+  /** Financing-route counts across the action catalog. */
+  finance?: { total: number; self: number; cofinance: number } | null;
+  /** Assessed → passed → ranked, when the ranking reports the counts. */
+  legalFunnel?: MeedLegalFunnel | null;
+  /** Aggregate national plan alignment, 0..1. */
+  nationalPolicy?: number | null;
 }
 
 /**
@@ -98,9 +105,13 @@ export function contextSummary(
   t: TFunction,
 ): string {
   const stepSub = facts.states[area.key]?.sub;
+  const hasRanking = facts.hasRanking ?? true;
 
   switch (area.key) {
     case "emissions":
+      if (facts.sectorsWithData === 0) {
+        return t("context-summary-no-emissions");
+      }
       if (facts.emissionsText) {
         return facts.inventoryYear
           ? t("context-summary-emissions-year", {
@@ -109,20 +120,43 @@ export function contextSummary(
             })
           : t("context-summary-emissions", { value: facts.emissionsText });
       }
-      return stepSub ?? t("context-summary-none");
+      return stepSub ?? t("context-summary-not-retrieved");
     case "regulations":
-      return facts.excludedCount !== null
-        ? t("context-summary-legal", {
-            included: facts.rankedCount,
-            excluded: facts.excludedCount,
-          })
-        : (stepSub ?? t("context-summary-none"));
+      if (facts.legalFunnel) {
+        return t("context-summary-legal-removed", {
+          excluded: facts.legalFunnel.assessed - facts.legalFunnel.passed,
+        });
+      }
+      if (facts.excludedCount !== null) {
+        return t("context-summary-legal", {
+          included: facts.rankedCount,
+          excluded: facts.excludedCount,
+        });
+      }
+      return hasRanking
+        ? (stepSub ?? t("context-summary-none"))
+        : t("context-summary-runs-with-ranking");
     case "policy":
-      return facts.rankedCount > 0
-        ? t("context-summary-policy", { count: facts.strongPolicyBacking })
-        : (stepSub ?? t("context-summary-none"));
-    case "ranking":
-      return t("context-summary-ranking", { count: facts.rankedCount });
+      if (facts.rankedCount > 0) {
+        return t("context-summary-policy", {
+          count: facts.strongPolicyBacking,
+        });
+      }
+      return hasRanking
+        ? (stepSub ?? t("context-summary-none"))
+        : t("context-summary-computed");
+    case "finance":
+      if (facts.finance) {
+        return t("context-summary-finance", {
+          cofinance: facts.finance.cofinance,
+          total: facts.finance.total,
+        });
+      }
+      return t("context-summary-computed");
+    case "context":
+      if (facts.indicatorCount === 0) return t("context-summary-no-indicators");
+      if (facts.indicatorCount) return t("context-summary-indicators");
+      return t("context-summary-computed");
     default: {
       if (stepSub) return stepSub;
       // "Not entered yet" is only true of something the city enters. These
@@ -160,6 +194,15 @@ export function contextStats(
   const unknown = t("stat-unknown");
   switch (area.key) {
     case "emissions":
+      if (facts.sectorsWithData === 0) {
+        return [
+          {
+            label: t("stat-total-emissions"),
+            value: t("stat-no-data"),
+            tone: "negative",
+          },
+        ];
+      }
       return [
         {
           label: t("stat-total-emissions"),
@@ -170,7 +213,32 @@ export function contextStats(
           value: facts.inventoryYear ? String(facts.inventoryYear) : unknown,
         },
       ];
+    case "context":
+      return facts.indicatorCount === null || facts.indicatorCount === undefined
+        ? []
+        : [
+            {
+              label: t("stat-indicators"),
+              value: String(facts.indicatorCount),
+              tone: facts.indicatorCount === 0 ? "negative" : undefined,
+            },
+          ];
+    case "finance":
+      return facts.finance
+        ? [
+            {
+              label: t("stat-self-deliverable"),
+              value: String(facts.finance.self),
+              sub: t("stat-self-deliverable-sub", {
+                total: facts.finance.total,
+              }),
+              tone: "positive",
+            },
+          ]
+        : [];
     case "regulations":
+      // The funnel carries the numbers; a stat above it would repeat them.
+      if (facts.legalFunnel) return [];
       return [
         {
           label: t("stat-excluded"),
@@ -193,19 +261,12 @@ export function contextStats(
         {
           label: t("stat-strongly-backed"),
           value: String(backing.strong),
-          sub: t("stat-strongly-backed-sub"),
+          sub: t("stat-strongly-backed-of", { total: facts.rankedCount }),
         },
         {
           label: t("stat-moderate-backing"),
           value: String(backing.moderate),
           sub: t("stat-moderate-backing-sub"),
-        },
-      ];
-    case "ranking":
-      return [
-        {
-          label: t("stat-ranked"),
-          value: String(facts.rankedCount),
         },
       ];
     default:

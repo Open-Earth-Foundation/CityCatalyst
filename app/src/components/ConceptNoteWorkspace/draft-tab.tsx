@@ -1,5 +1,7 @@
 "use client";
 
+import type { ConceptNoteContextPresentation } from "./context-status";
+
 import { Box, Text, VStack } from "@chakra-ui/react";
 import { useMemo } from "react";
 
@@ -24,6 +26,7 @@ interface DraftTabProps extends DraftInlineReviewProps {
   applicationContextFailed: boolean;
   applicationContextLoading: boolean;
   bundle: ConceptNoteBundleProgress;
+  contextStatus: ConceptNoteContextPresentation;
   canStartDrafting: boolean;
   draft: ConceptNoteDraftState | null;
   draftError: string | null;

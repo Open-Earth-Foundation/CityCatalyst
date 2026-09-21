@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 from collections.abc import Awaitable, Callable
+from contextvars import Context
 from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID, uuid4
@@ -49,6 +50,7 @@ from app.services.cnb.application_context import (
 )
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.concept_note_context import omit_context_identifiers
+from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
 from openai import AsyncOpenAI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -127,32 +129,33 @@ class ConceptNoteChapterDraftService:
         run: ConceptNoteRun,
     ) -> tuple[ConceptNoteDraftResponse, UUID | None]:
         """Materialize chapters and acquire a new resumable drafting lease."""
-        _, included_sources = await self._load_run_context(run.run_id, run.user_id)
-        application_context = await self._application_context.load_for_run(
-            run,
-            included_sources=included_sources,
-        )
-        template, template_chapters = _require_template(application_context)
-        template_fingerprint = calculate_application_template_fingerprint(template)
-        await self._workspace.ensure_template_chapters(
-            run_id=run.run_id,
-            chapters=template_chapters,
-        )
-        chapters = await self._workspace.list_chapters(
-            run_id=run.run_id,
-            template_fingerprint=template_fingerprint,
-        )
-        build_id = await self._begin_draft(
-            run_id=run.run_id,
-            user_id=run.user_id,
-            chapters=chapters,
-        )
-        progress = await self._load_progress(run.run_id, run.user_id)
+        # Hold the workflow lock from template lookup through lease creation so
+        # a funding switch cannot seed chapters from one template and draft another.
+        async with self._ca_session_factory() as session, session.begin():
+            current_run = await _require_owned_run(
+                session, run.run_id, run.user_id, lock=True
+            )
+            bundle_row = await session.get(ConceptNoteContextBundleRow, run.run_id)
+            bundle = normalize_bundle(bundle_row.context_bundle if bundle_row else None)
+            application_context = await self._application_context.load_for_run(
+                current_run,
+                included_sources=included_sources_from_bundle(bundle),
+            )
+            template, template_chapters = _require_template(application_context)
+            template_fingerprint = calculate_application_template_fingerprint(template)
+            await self._workspace.ensure_template_chapters(
+                run_id=run.run_id,
+                chapters=template_chapters,
+            )
+            chapters = await self._workspace.list_chapters(
+                run_id=run.run_id,
+                template_fingerprint=template_fingerprint,
+            )
+            build_id = self._begin_draft(run=current_run, chapters=chapters)
+            progress = _draft_progress(current_run.context_summary)
         return (
             _build_state_response(
-                run_id=run.run_id,
-                progress=progress,
-                chapters=chapters,
+                run_id=run.run_id, progress=progress, chapters=chapters
             ),
             build_id,
         )
@@ -167,71 +170,95 @@ class ConceptNoteChapterDraftService:
         """Generate every missing chapter, persisting each before continuing."""
         try:
             run = await self._load_owned_run(run_id, user_id)
-            run_context, included_sources = await self._load_run_context(
-                run_id,
-                user_id,
-            )
-            application_context = await self._application_context.load_for_run(
-                run,
-                included_sources=included_sources,
-            )
-            template, template_chapters = _require_template(application_context)
-            template_fingerprint = calculate_application_template_fingerprint(template)
-            template_by_ref = {
-                chapter.chapter_ref: chapter for chapter in template_chapters
-            }
-            while await self._lease_is_active(run_id, user_id, build_id):
-                chapters = await self._workspace.list_chapters(
-                    run_id=run_id,
-                    template_fingerprint=template_fingerprint,
-                )
-                current = next(
-                    (chapter for chapter in chapters if chapter.body_markdown is None),
-                    None,
-                )
-                if current is None:
-                    await self._complete_draft(run_id, user_id, build_id, chapters)
-                    return
-
-                if not await self._mark_current_chapter(
+            with workflow_trace(
+                name="cnb_chapter_drafting",
+                inputs={"run_id": str(run_id), "build_id": str(build_id)},
+                session_id=getattr(run, "thread_id", None) or run_id,
+                user_id=user_id,
+                attributes={
+                    "workflow": "CNB",
+                    "interaction": "chapter_drafting",
+                    "concept_note_run_id": str(run_id),
+                },
+            ) as span:
+                finish_workflow_trace(span, {"status": "superseded"})
+                run_context, included_sources = await self._load_run_context(
                     run_id,
                     user_id,
-                    build_id,
-                    current,
-                    chapters,
-                ):
-                    return
-
-                generated = await self._generate_chapter(
-                    _build_chapter_input(
-                        application_context=application_context,
-                        run_context=run_context,
-                        current=current,
-                        template_chapter=template_by_ref.get(current.chapter_ref or ""),
-                        chapters=chapters,
+                )
+                application_context = await self._application_context.load_for_run(
+                    run,
+                    included_sources=included_sources,
+                )
+                template, template_chapters = _require_template(application_context)
+                template_fingerprint = calculate_application_template_fingerprint(
+                    template
+                )
+                template_by_ref = {
+                    chapter.chapter_ref: chapter for chapter in template_chapters
+                }
+                while await self._lease_is_active(run_id, user_id, build_id):
+                    chapters = await self._workspace.list_chapters(
+                        run_id=run_id,
+                        template_fingerprint=template_fingerprint,
                     )
-                )
-                generated = _sanitize_generated_output(generated, run_context)
+                    current = next(
+                        (
+                            chapter
+                            for chapter in chapters
+                            if chapter.body_markdown is None
+                        ),
+                        None,
+                    )
+                    if current is None:
+                        await self._complete_draft(run_id, user_id, build_id, chapters)
+                        finish_workflow_trace(
+                            span,
+                            {"status": "completed", "chapter_count": len(chapters)},
+                        )
+                        return
 
-                # A newer start/resume request supersedes this worker.
-                if not await self._lease_is_active(run_id, user_id, build_id):
-                    return
-                await self._workspace.save_generated_chapter(
-                    chapter_id=current.chapter_id,
-                    body_markdown=generated.body_markdown,
-                    missing_information=generated.missing_information,
-                )
-                refreshed = await self._workspace.list_chapters(
-                    run_id=run_id,
-                    template_fingerprint=template_fingerprint,
-                )
-                if not await self._record_completed_count(
-                    run_id,
-                    user_id,
-                    build_id,
-                    refreshed,
-                ):
-                    return
+                    if not await self._mark_current_chapter(
+                        run_id,
+                        user_id,
+                        build_id,
+                        current,
+                        chapters,
+                    ):
+                        return
+
+                    generated = await self._generate_chapter(
+                        _build_chapter_input(
+                            application_context=application_context,
+                            run_context=run_context,
+                            current=current,
+                            template_chapter=template_by_ref.get(
+                                current.chapter_ref or ""
+                            ),
+                            chapters=chapters,
+                        )
+                    )
+                    generated = _sanitize_generated_output(generated, run_context)
+
+                    # A newer start/resume request supersedes this worker.
+                    if not await self._lease_is_active(run_id, user_id, build_id):
+                        return
+                    await self._workspace.save_generated_chapter(
+                        chapter_id=current.chapter_id,
+                        body_markdown=generated.body_markdown,
+                        missing_information=generated.missing_information,
+                    )
+                    refreshed = await self._workspace.list_chapters(
+                        run_id=run_id,
+                        template_fingerprint=template_fingerprint,
+                    )
+                    if not await self._record_completed_count(
+                        run_id,
+                        user_id,
+                        build_id,
+                        refreshed,
+                    ):
+                        return
         except Exception:
             logger.exception(
                 "Concept Note sequential drafting failed run_id=%s build_id=%s",
@@ -309,46 +336,44 @@ class ConceptNoteChapterDraftService:
         except Exception as exc:
             raise ChapterDraftingError("Chapter generation failed") from exc
 
-    async def _begin_draft(
+    def _begin_draft(
         self,
         *,
-        run_id: UUID,
-        user_id: str,
+        run: ConceptNoteRun,
         chapters: list[WorkspaceChapterSnapshot],
     ) -> UUID | None:
+        """Update drafting progress while the caller holds the workflow row lock."""
         completed = _completed_count(chapters)
-        async with self._ca_session_factory() as session, session.begin():
-            run = await _require_owned_run(session, run_id, user_id, lock=True)
-            if chapters and completed == len(chapters):
-                run.workflow_step = "editing_document"
-                run.context_summary = _replace_draft_progress(
-                    run.context_summary,
-                    {
-                        "status": "complete",
-                        "build_id": None,
-                        "current_chapter_id": None,
-                        "completed_chapters": completed,
-                        "total_chapters": len(chapters),
-                        "error_code": None,
-                    },
-                )
-                return None
-
-            build_id = uuid4()
-            run.workflow_step = "drafting_document"
+        if chapters and completed == len(chapters):
+            run.workflow_step = "editing_document"
             run.context_summary = _replace_draft_progress(
                 run.context_summary,
                 {
-                    "status": "running",
-                    "build_id": str(build_id),
+                    "status": "complete",
+                    "build_id": None,
                     "current_chapter_id": None,
                     "completed_chapters": completed,
                     "total_chapters": len(chapters),
                     "error_code": None,
-                    "started_at": datetime.now(UTC).isoformat(),
                 },
             )
-            return build_id
+            return None
+
+        build_id = uuid4()
+        run.workflow_step = "drafting_document"
+        run.context_summary = _replace_draft_progress(
+            run.context_summary,
+            {
+                "status": "running",
+                "build_id": str(build_id),
+                "current_chapter_id": None,
+                "completed_chapters": completed,
+                "total_chapters": len(chapters),
+                "error_code": None,
+                "started_at": datetime.now(UTC).isoformat(),
+            },
+        )
+        return build_id
 
     async def _load_owned_run(self, run_id: UUID, user_id: str) -> ConceptNoteRun:
         async with self._ca_session_factory() as session:
@@ -383,6 +408,11 @@ class ConceptNoteChapterDraftService:
                     else {}
                 ),
                 "context_bundle": bundle.model_dump(mode="json"),
+                "manual_population": (
+                    {**run.context_summary["manual_population"], "source": "user_entered"}
+                    if (run.context_summary or {}).get("manual_population")
+                    else None
+                ),
             }
             return run_context, included_sources_from_bundle(bundle)
 
@@ -520,7 +550,8 @@ def schedule_chapter_drafting(
             run_id=run_id,
             user_id=user_id,
             build_id=build_id,
-        )
+        ),
+        context=Context(),
     )
     _BACKGROUND_DRAFTS.add(task)
 

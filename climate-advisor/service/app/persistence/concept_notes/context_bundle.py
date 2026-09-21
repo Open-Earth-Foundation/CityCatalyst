@@ -48,6 +48,7 @@ class ContextBundleBuildSnapshot:
     uploads: list[ConceptNoteUploadSnapshot]
     already_current: bool
     previous_sources: list[SelectedSource] = field(default_factory=list)
+    thread_id: UUID | None = None
 
 
 @dataclass(frozen=True)
@@ -152,6 +153,7 @@ async def begin_build(
                 uploads=ready_uploads,
                 already_current=already_current,
                 previous_sources=previous_sources,
+                thread_id=run.thread_id,
             )
     except ContextBundlePersistenceError:
         raise
@@ -273,6 +275,8 @@ async def fail_build(
     build_id: UUID,
     error_code: str,
     warning: str,
+    error_reason: str | None = None,
+    error_details: dict[str, int] | None = None,
 ) -> bool:
     """Persist a retryable failure only if this build is still active."""
     try:
@@ -299,6 +303,8 @@ async def fail_build(
                     **progress,
                     "status": "failed",
                     "error_code": error_code,
+                    "error_reason": error_reason,
+                    "error_details": error_details or {},
                     "warnings": [warning],
                     "retryable": True,
                     "completion_event": None,
@@ -488,6 +494,11 @@ async def load_agent_context(
                         )
                     ],
                     "cc_context": bundle.cc_context.model_dump(mode="json"),
+                    "manual_population": (
+                        {**run.context_summary["manual_population"], "source": "user_entered"}
+                        if (run.context_summary or {}).get("manual_population")
+                        else None
+                    ),
                     "funder_context": bundle.funder_context,
                     "similar_projects": bundle.similar_projects,
                     "document_context": bundle.document_context,

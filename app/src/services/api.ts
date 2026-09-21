@@ -66,6 +66,8 @@ import {
   Authz,
   CityDashboardResponse,
   ConceptNoteApplicationContext,
+  ConceptNoteFunder,
+  ConceptNoteFundingSelection,
   ConfirmConceptNoteChapterRequest,
   ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
@@ -167,6 +169,8 @@ export const api = createApi({
     "ConceptNoteUpload",
     "ConceptNoteDraft",
     "ConceptNoteEdits",
+    "ConceptNoteApplicationContext",
+    "ConceptNoteFundingCatalogue",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -878,6 +882,57 @@ export const api = createApi({
           method: "POST",
           body: { password, token },
         }),
+      }),
+      setupSecondFactorAuth: builder.mutation<
+        { success: boolean; qrCodeDataUrl: string },
+        void
+      >({
+        query: () => ({
+          url: "auth/2fa/setup",
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: { success: boolean; qrCodeDataUrl: string };
+        }) => response.data,
+      }),
+      verifySecondFactorAuth: builder.mutation<
+        { success: boolean; recoveryCodes: string[] },
+        { token: string }
+      >({
+        query: ({ token }) => ({
+          url: "auth/2fa/verify",
+          method: "POST",
+          body: { token },
+        }),
+        transformResponse: (response: {
+          data: { success: boolean; recoveryCodes: string[] };
+        }) => response.data,
+        invalidatesTags: ["UserInfo"],
+      }),
+      disableSecondFactorAuth: builder.mutation<
+        { success: boolean },
+        { password: string }
+      >({
+        query: ({ password }) => ({
+          url: "auth/2fa/disable",
+          method: "POST",
+          body: { password },
+        }),
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
+        invalidatesTags: ["UserInfo"],
+      }),
+      checkSecondFactorAuth: builder.query<
+        { enabled: boolean },
+        { email: string }
+      >({
+        query: ({ email }) => ({
+          url: `auth/2fa/check?email=${encodeURIComponent(email)}`,
+          method: "GET",
+        }),
+        transformResponse: (response: { data: { enabled: boolean } }) =>
+          response.data,
+        providesTags: ["UserInfo"],
       }),
       getCities: builder.query({
         query: () => ({
@@ -2431,8 +2486,7 @@ export const api = createApi({
           url: `concept-notes/${runId}/`,
           params: { city_id: cityId },
         }),
-        providesTags: (_result, _error, { cityId, runId }) => [
-          { type: "ConceptNoteRuns", id: cityId },
+        providesTags: (_result, _error, { runId }) => [
           { type: "ConceptNoteRuns", id: runId },
         ],
       }),
@@ -2441,6 +2495,32 @@ export const api = createApi({
         string
       >({
         query: (runId) => `concept-notes/${runId}/application-context/`,
+        providesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteApplicationContext", id: runId },
+        ],
+      }),
+      getConceptNoteFundingCatalogue: builder.query<
+        { funders: ConceptNoteFunder[] },
+        string
+      >({
+        query: (runId) => `concept-notes/${runId}/funding-catalogue/`,
+        providesTags: ["ConceptNoteFundingCatalogue"],
+      }),
+      updateConceptNoteFundingSelection: builder.mutation<
+        ConceptNoteApplicationContext,
+        { runId: string; selection: ConceptNoteFundingSelection }
+      >({
+        query: ({ runId, selection }) => ({
+          url: `concept-notes/${runId}/application-context/`,
+          method: "PATCH",
+          body: selection,
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteApplicationContext", id: runId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
+        ],
       }),
       getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
         query: (runId) => `concept-notes/${runId}/draft/`,
@@ -2476,6 +2556,24 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
           { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      updateConceptNotePopulation: builder.mutation<
+        ConceptNoteRun,
+        {
+          cityId: string;
+          runId: string;
+          manualPopulation: { population: number; year: number } | null;
+        }
+      >({
+        query: ({ cityId, runId, manualPopulation }) => ({
+          url: `concept-notes/${runId}/population/`,
+          method: "PATCH",
+          params: { city_id: cityId },
+          body: { manual_population: manualPopulation },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteRuns", id: runId },
         ],
       }),
       renameConceptNoteRun: builder.mutation<
@@ -2541,8 +2639,9 @@ export const api = createApi({
           method: "POST",
           body: formData,
         }),
-        invalidatesTags: (_result, _error, { cityId }) => [
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
           { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
         ],
       }),
       getConceptNoteUploadStatus: builder.query<
@@ -2786,6 +2885,7 @@ export const {
   useGetConceptNoteApplicationContextQuery,
   useGetConceptNoteDraftQuery,
   useStartConceptNoteRunMutation,
+  useUpdateConceptNotePopulationMutation,
   useRenameConceptNoteRunMutation,
   useDuplicateConceptNoteRunMutation,
   useDeleteConceptNoteRunMutation,

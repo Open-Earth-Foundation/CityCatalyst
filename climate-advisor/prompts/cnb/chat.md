@@ -32,6 +32,9 @@ CONCEPT_NOTE_CONTEXT_BUNDLE_JSON, followed by a JSON object containing:
   ("pdf" or "markdown"), `summary` (string), and `topics` (array of strings).
 - `cc_context` (object): available city, project, GHGI, CCRA, and HIAP data;
   sections may be null.
+- `manual_population` (object or null): population and year entered for this
+  concept note only, with `source: "user_entered"`. Treat it as an unverified
+  user-provided fact, not as CityCatalyst or document evidence.
 - `funder_context` (object or null): available funding context.
 - `similar_projects` (array of objects): available comparable projects.
 - `document_context` (object or null): available concept-note document and

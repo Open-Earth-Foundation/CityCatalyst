@@ -11,7 +11,32 @@ import {
   jest,
 } from "@jest/globals";
 import { act } from "react";
+import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { createRoot, type Root } from "react-dom/client";
+import type { ConceptNoteRun, ConceptNoteUploadResponse } from "@/util/types";
+
+let contextScenario: Pick<
+  ConceptNoteRun,
+  "progress_summary" | "uploads" | "manual_population"
+> | null = null;
+let cityPopulation:
+  { cityId: string; population?: number; year?: number } | undefined;
+let currentUpload: ConceptNoteUploadResponse | undefined;
+let uploading = false;
+const t = (key: string, values?: { population: string; year: number }) =>
+  key === "population" && values
+    ? `${values.population} residents · ${values.year}`
+    : key;
+const originalFetch = globalThis.fetch;
+const stopStream = jest.fn();
+const startStream = jest.fn(async () => undefined);
+let streamOptions: { onError?: (message: string, code?: string) => void };
+jest.unstable_mockModule("@/hooks/useSSEStream", () => ({
+  useSSEStream: (options: typeof streamOptions) => {
+    streamOptions = options;
+    return { startStream, stopStream };
+  },
+}));
 
 const persistedUploadId = "persisted-upload";
 const refetchRun = jest.fn(async () => undefined);
@@ -23,7 +48,7 @@ const getDraftQuery = jest.fn(() => ({
   refetch: jest.fn(async () => undefined),
 }));
 const getRunQuery = jest.fn(() => ({
-  data: {
+  data: contextScenario ?? {
     progress_summary: {},
     uploads: [
       {
@@ -45,8 +70,12 @@ const getRunQuery = jest.fn(() => ({
   refetch: refetchRun,
 }));
 const getUploadQuery = jest.fn(() => ({
+  currentData: currentUpload,
   data: undefined,
   isError: false,
+}));
+const updateManualPopulation = jest.fn(() => ({
+  unwrap: async () => undefined,
 }));
 const retryUpload = jest.fn(() => ({
   unwrap: async () => ({
@@ -60,7 +89,7 @@ const retryUpload = jest.fn(() => ({
 }));
 
 jest.unstable_mockModule("@/i18n/client", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({ t }),
 }));
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/use-concept-note-workspace-events",
@@ -79,7 +108,15 @@ jest.unstable_mockModule("@/services/api", () => ({
     useGetConceptNoteRunQuery: getRunQuery,
     useGetConceptNoteUploadStatusQuery: getUploadQuery,
     useGetInventoryByCityIdQuery: () => ({ data: undefined }),
-    useGetMostRecentCityPopulationQuery: () => ({ data: undefined }),
+    useGetMostRecentCityPopulationQuery: () => ({
+      data: cityPopulation,
+      isError: false,
+      isLoading: false,
+    }),
+    useUpdateConceptNotePopulationMutation: () => [
+      updateManualPopulation,
+      { isLoading: false },
+    ],
     useGetUserFilesQuery: () => ({ data: [] }),
     useRetryConceptNoteContextBundleMutation: () => [
       jest.fn(),
@@ -93,36 +130,115 @@ jest.unstable_mockModule("@/services/api", () => ({
       jest.fn(),
       { isError: false, isLoading: false },
     ],
-    useUploadConceptNoteSourceMutation: () => [jest.fn(), { isLoading: false }],
+    useUploadConceptNoteSourceMutation: () => [
+      jest.fn(),
+      { isLoading: uploading },
+    ],
   },
 }));
 
 let useConceptNoteWorkspaceData: typeof import("@/components/ConceptNoteWorkspace/use-concept-note-workspace-data").useConceptNoteWorkspaceData;
 let container: HTMLDivElement;
 let root: Root;
+let Panel: typeof import("@/components/ConceptNoteWorkspace/chat-panel").ConceptNoteChatPanel;
+const composerRequest = { id: "draft", content: "Use the new document" };
+
+function ChatHarness() {
+  const { contextStatus } = useConceptNoteWorkspaceData({
+    cityId: "city-1",
+    lng: "en",
+    runId: "run-1",
+  });
+  return (
+    <ChakraProvider value={defaultSystem}>
+      <Panel
+        contextStatus={contextStatus}
+        composerRequest={composerRequest}
+        lng="en"
+        onOpenContext={() => {}}
+        runId="run-1"
+        threadId="thread-1"
+        editScope={{ kind: "auto" }}
+        edits={{ loadProposal: async () => {} } as never}
+      />
+    </ChakraProvider>
+  );
+}
+
+function source(
+  status: "ready" | "failed" | "processing",
+  id: string,
+): NonNullable<ConceptNoteRun["uploads"]>[number] {
+  return {
+    upload_id: id,
+    run_id: "run-1",
+    status,
+    filename: `${id}.pdf`,
+    source_format: "pdf",
+    received_at: "2026-09-14T12:00:00Z",
+  };
+}
 
 function Harness() {
-  const { retryActiveUpload } = useConceptNoteWorkspaceData({
+  const { retryActiveUpload, contextStatus } = useConceptNoteWorkspaceData({
     cityId: "city-1",
     lng: "en",
     runId: "run-1",
   });
 
-  return <button data-testid="retry" onClick={retryActiveUpload} />;
+  return (
+    <button data-testid="retry" onClick={retryActiveUpload}>
+      {contextStatus.state}
+    </button>
+  );
+}
+
+function PopulationHarness() {
+  const { populationLabel, saveManualPopulation } = useConceptNoteWorkspaceData(
+    {
+      cityId: "city-1",
+      lng: "en",
+      runId: "run-1",
+    },
+  );
+  return (
+    <button
+      onClick={() =>
+        void saveManualPopulation({ population: 123456, year: 2024 })
+      }
+    >
+      {populationLabel}
+    </button>
+  );
 }
 
 beforeAll(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  // Chakra recipes are JSON-compatible; jsdom does not provide structuredClone.
+  globalThis.structuredClone = (value) =>
+    value === undefined ? value : JSON.parse(JSON.stringify(value));
   ({ useConceptNoteWorkspaceData } =
     await import("@/components/ConceptNoteWorkspace/use-concept-note-workspace-data"));
+  ({ ConceptNoteChatPanel: Panel } =
+    await import("@/components/ConceptNoteWorkspace/chat-panel"));
 });
 
 afterAll(() => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = false;
+  globalThis.fetch = originalFetch;
 });
 
 beforeEach(() => {
   jest.clearAllMocks();
+  contextScenario = null;
+  cityPopulation = undefined;
+  updateManualPopulation.mockClear();
+  currentUpload = undefined;
+  uploading = false;
+  globalThis.fetch = jest.fn(async () => ({
+    ok: true,
+    json: async () => ({ messages: [] }),
+  })) as unknown as typeof fetch;
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
@@ -153,6 +269,127 @@ describe("useConceptNoteWorkspaceData", () => {
         observeUpload: false,
       }),
     );
+  });
+
+  it("shows a run-scoped manual population when the city source has no value", async () => {
+    cityPopulation = { cityId: "city-1" };
+    contextScenario = {
+      progress_summary: {},
+      uploads: [],
+      manual_population: null,
+    };
+    await act(async () => root.render(<PopulationHarness />));
+    expect(container.textContent).toBe("population-unavailable");
+
+    contextScenario.manual_population = { population: 123456, year: 2024 };
+    await act(async () => root.render(<PopulationHarness />));
+    expect(container.textContent).toBe("123,456 residents · 2024");
+
+    await act(async () => {
+      container.querySelector("button")!.click();
+    });
+    expect(updateManualPopulation).toHaveBeenCalledWith({
+      cityId: "city-1",
+      runId: "run-1",
+      manualPopulation: { population: 123456, year: 2024 },
+    });
+  });
+
+  it("enables the real chat composer after failed A is superseded by ready B, including reload", async () => {
+    contextScenario = {
+      progress_summary: {},
+      uploads: [source("failed", "A")],
+    };
+    await act(async () => root.render(<ChatHarness />));
+    expect(container.querySelector("input")!.disabled).toBe(true);
+
+    contextScenario = {
+      uploads: [source("ready", "B"), source("failed", "A")],
+      progress_summary: {
+        context_bundle: {
+          status: "ready",
+          document_grounding: "uploaded_evidence",
+          source_counts: { ready: 1, failed: 1 },
+        },
+      },
+    };
+    await act(async () => root.render(<ChatHarness />));
+    expect(container.querySelector("input")!.disabled).toBe(false);
+    await act(async () => root.unmount());
+    root = createRoot(container);
+    await act(async () => root.render(<ChatHarness />));
+    await act(async () => {
+      await new Promise(requestAnimationFrame);
+    });
+    expect(container.querySelector("input")!.disabled).toBe(false);
+    const send = container.querySelector<HTMLButtonElement>(
+      'button[type="submit"]',
+    )!;
+    expect(send.disabled).toBe(false);
+    await act(async () => send.click());
+    expect(startStream).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(String(startStream.mock.calls[0]?.[1]?.body))).toEqual({
+      threadId: "thread-1",
+      content: composerRequest.content,
+      context: {
+        concept_note_run_id: "run-1",
+        concept_note_edit: {
+          scope: { kind: "auto" },
+          idempotency_key: expect.any(String),
+        },
+      },
+    });
+
+    // A backend readiness rejection must not leave a phantom accepted turn.
+    await act(async () =>
+      streamOptions.onError?.("Not ready", "concept_note_context_not_ready"),
+    );
+    expect(container.textContent).toContain("chat-context-not-ready");
+    expect(container.textContent).not.toContain(composerRequest.content);
+    expect(container.querySelector("input")!.disabled).toBe(false);
+  });
+
+  it("keeps pending uploads and the latest failed upload blocked", async () => {
+    contextScenario = {
+      uploads: [source("ready", "B"), source("processing", "A")],
+      progress_summary: {
+        context_bundle: {
+          status: "ready",
+          document_grounding: "uploaded_evidence",
+          source_counts: { ready: 1 },
+        },
+      },
+    };
+    await act(async () => root.render(<ChatHarness />));
+    expect(container.querySelector("input")!.disabled).toBe(true);
+    contextScenario.uploads = [source("failed", "B"), source("ready", "A")];
+    await act(async () => root.render(<ChatHarness />));
+    expect(container.querySelector("input")!.disabled).toBe(true);
+  });
+
+  it("blocks chat until upload processing and the context bundle are both ready", async () => {
+    contextScenario = { progress_summary: {}, uploads: [] };
+    currentUpload = { uploadId: "new", status: "processing" };
+    await act(async () => root.render(<Harness />));
+    expect(container.textContent).toBe("processing");
+    currentUpload = { uploadId: "new", status: "ready" };
+    contextScenario.progress_summary = {
+      context_bundle: { status: "building" },
+    };
+    await act(async () => root.render(<Harness />));
+    expect(container.textContent).toBe("processing");
+    contextScenario.progress_summary = {
+      context_bundle: {
+        status: "ready",
+        document_grounding: "uploaded_evidence",
+        source_counts: { ready: 1 },
+      },
+    };
+    await act(async () => root.render(<Harness />));
+    expect(container.textContent).toBe("ready");
+    uploading = true;
+    await act(async () => root.render(<Harness />));
+    expect(container.textContent).toBe("uploading");
   });
 
   it("retries a failed upload restored from the persisted run", async () => {

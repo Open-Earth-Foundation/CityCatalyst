@@ -9,10 +9,6 @@
   "precondition-continue": "No action needed here — continue to the next step.",
   "step-sub": "Screening runs with the ranking",
   "step-sub-counts": "{{excluded}} excluded · {{included}} included",
-  "summary-included": "Passed legal review",
-  "summary-included-sub": "Included in the ranking",
-  "summary-blocked": "Excluded from ranking",
-  "summary-blocked-sub": "Removed before scoring",
   "summary-flagged": "Flagged — evidence missing",
   "summary-flagged-sub": "Included in ranking, assessment pending",
   "all-passed-title": "All actions passed the legal review",
@@ -24,5 +20,13 @@
   "excluded-tag": "Excluded",
   "flagged-tag": "Assessment pending",
   "flagged-card-body": "No legal assessment is available for this action yet. It is included in the ranking with a neutral legal score.",
-  "reasons-label": "Why excluded"
+  "reasons-label": "Why excluded",
+  "funnel-assessed": "Assessed",
+  "funnel-assessed-sub": "Actions in the catalog",
+  "funnel-passed": "Passed legal review",
+  "funnel-passed-sub": "Eligible for scoring",
+  "funnel-ranked": "Ranked",
+  "funnel-ranked-sub": "In your top list",
+  "funnel-aria": "{{assessed}} actions assessed, {{passed}} passed legal review, {{ranked}} ranked",
+  "summary-flagged-count": "{{count}} actions are included with a neutral legal score while their assessment is pending."
 }

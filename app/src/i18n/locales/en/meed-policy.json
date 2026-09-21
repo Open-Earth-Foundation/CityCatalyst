@@ -56,5 +56,7 @@
   "evidence-column-scope": "Scope",
   "evidence-column-signal": "Signal",
   "evidence-column-strength": "Strength",
-  "evidence-column-weight": "Weight"
+  "evidence-column-weight": "Weight",
+  "ring-aria": "{{scope}}: {{value}}",
+  "ring-note": "Average policy support score across the plans at this scope, for all assessed actions."
 }

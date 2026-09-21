@@ -209,7 +209,14 @@ export function sectorLabel(
   actionId: string,
   t: TFunction,
 ): string {
-  const tag = index.get(actionId)?.sectorTag;
+  return sectorTagLabel(index.get(actionId)?.sectorTag, t);
+}
+
+/** Label for a raw catalog sector tag, e.g. "stationary_energy". */
+export function sectorTagLabel(
+  tag: string | null | undefined,
+  t: TFunction,
+): string {
   if (!tag) return t("sector-unknown");
   return t(SECTOR_KEYS[tag] ?? "sector-unknown");
 }

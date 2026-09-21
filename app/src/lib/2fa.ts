@@ -61,6 +61,8 @@ export const generateRecoveryCodes = async () => {
 
 // Check hash of recovery code against remaining hashes in user record and remove if successful
 export const verifyRecoveryCode = async (user: User, recoveryCode: string) => {
+  recoveryCode = recoveryCode.toLowerCase();
+
   // re-add middle dash in case it was not entered by user to make the hash still match
   if (!recoveryCode.includes("-") && recoveryCode.length === 10) {
     recoveryCode = `${recoveryCode.slice(0, 5)}-${recoveryCode.slice(5)}`;

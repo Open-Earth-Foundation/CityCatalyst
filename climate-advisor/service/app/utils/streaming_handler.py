@@ -17,6 +17,7 @@ from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.requests import MessageCreateRequest
 from app.persistence.concept_notes.context_bundle import load_agent_context
 from app.services.agent_service import AgentService
+from app.services.cnb.ui_context import load_ui_state
 from app.services.native_input_catalog_service import ActiveRequestContext
 from app.services.stationary_energy.stationary_energy_chat_context import (
     build_minimal_stationary_energy_context_payload,
@@ -521,6 +522,8 @@ class StreamingHandler:
                     "The authorized Concept Note context bundle is not ready."
                 ),
             }
+        # Refresh workspace facts after ownership validation, not from an old bundle.
+        context["ui_state"] = await load_ui_state(run_id)
         return {
             "role": "user",
             "content": (

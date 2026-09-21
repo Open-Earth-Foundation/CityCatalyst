@@ -294,9 +294,9 @@ export function NavigationBar({
                   <Box display="flex" alignItems="center" gap="3">
                     <CircleFlag
                       countryCode={
-                        countryFromLanguage(i18next.language) === "pt"
+                        countryFromLanguage(activeLng) === "pt"
                           ? "br"
-                          : countryFromLanguage(i18next.language)
+                          : countryFromLanguage(activeLng)
                       }
                       width="24"
                     />
@@ -308,7 +308,7 @@ export function NavigationBar({
                       letterSpacing="wide"
                       lineHeight="20"
                     >
-                      {i18next.language.toUpperCase()}
+                      {activeLng.toUpperCase()}
                     </Text>
 
                     <Icon

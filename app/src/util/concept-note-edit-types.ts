@@ -85,6 +85,10 @@ export interface EditProposal {
   status: EditStatus;
   base_revisions: Record<string, number>;
   changes: EditChange[];
+  notices?: Array<{
+    code: "protected_markers" | "locked_chapters" | "template_headings";
+    count: number;
+  }>;
   clarification: string | null;
   error_code: string | null;
   result: EditApplicationResult | null;

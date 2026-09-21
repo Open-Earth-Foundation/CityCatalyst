@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -145,7 +146,7 @@ def validated_change(
 
 def validate_document_integrity(
     chapters: dict[UUID, WorkspaceChapterSnapshot],
-    changes: list[EditChange],
+    changes: Sequence[PlannedTextChange],
     affected: set[UUID],
 ) -> None:
     """Apply replacements in memory and validate resulting chapter structure."""
@@ -197,7 +198,7 @@ def valid_information_marker_result(
     chapter: WorkspaceChapterSnapshot,
     before: str,
     after: str,
-    changes: list[EditChange],
+    changes: Sequence[PlannedTextChange],
 ) -> bool:
     """Preserve marker order while permitting validated gap-filling removals."""
     before_markers = information_needed_markers(before)

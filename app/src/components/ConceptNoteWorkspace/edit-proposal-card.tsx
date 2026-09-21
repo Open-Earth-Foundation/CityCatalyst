@@ -139,10 +139,24 @@ export function EditProposalCard({
           {proposal.clarification}
         </Text>
       )}
+      {proposal.notices?.map((notice) => (
+        <Text
+          key={notice.code}
+          role="status"
+          flexBasis="100%"
+          fontSize="label.sm"
+          color="content.secondary"
+          data-testid="concept-note-edit-exclusion"
+        >
+          {t(`edit-excluded-${notice.code}`, { count: notice.count })}
+        </Text>
+      ))}
       {proposal.error_code && proposal.status !== "clarification_required" && (
         <Text role="alert" fontSize="label.sm" color="content.primary">
           {t(
-            proposal.status === "stale" ? "edit-stale-hint" : "edit-retry-hint",
+            proposal.status === "stale"
+              ? "edit-stale-hint"
+              : [`edit-error-${proposal.error_code}`, "edit-retry-hint"],
           )}
         </Text>
       )}

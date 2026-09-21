@@ -27,6 +27,7 @@ export interface UserAttributes {
   // Two factor auth settings
   twoFactorEnabled?: boolean;
   twoFactorSecret?: string | null;
+  twoFactorRecoveryHashes?: string[];
 }
 
 export type UserPk = "userId";
@@ -45,7 +46,8 @@ export type UserOptionalAttributes =
   | "defaultCityId"
   | "numberFormat"
   | "twoFactorEnabled"
-  | "twoFactorSecret";
+  | "twoFactorSecret"
+  | "twoFactorRecoveryHashes";
 export type UserCreationAttributes = Optional<
   UserAttributes,
   UserOptionalAttributes
@@ -70,6 +72,7 @@ export class User
   declare numberFormat?: string;
   declare twoFactorEnabled?: boolean;
   declare twoFactorSecret?: string | null;
+  declare twoFactorRecoveryHashes?: string[];
 
   // User belongsTo Inventory via defaultInventoryId
   declare defaultInventory: Inventory;
@@ -267,6 +270,12 @@ export class User
           type: DataTypes.TEXT,
           allowNull: true,
           field: "two_factor_secret",
+        },
+        twoFactorRecoveryHashes: {
+          type: DataTypes.ARRAY(DataTypes.TEXT),
+          allowNull: true,
+          defaultValue: [],
+          field: "two_factor_recovery_hashes",
         },
       },
       {

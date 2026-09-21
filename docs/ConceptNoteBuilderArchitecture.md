@@ -2897,6 +2897,12 @@ Navigation and DOCX/PDF export consume the same saved chapter titles/positions.
 Compatible funding changes compare template reference membership independently of
 chapter order and custom chapters. They preserve run-owned titles, descriptions,
 order and body revisions, while updating required flags by template reference.
+Before any drafting or structure edits, funding changes may discard the empty
+materialized chapters without draft acknowledgement. This requires an exact match
+to the previous template's titles, descriptions, order, references and required
+flags, with no revisions or locks. The next structure load or draft start seeds
+the newly selected template. Saved structure edits and draft revisions retain
+the acknowledgement and template-membership guards.
 
 Any structural mutation resets drafted chapters to `needs_review`, clears their
 confirmation/lock and invalidates document validation because order and guidance

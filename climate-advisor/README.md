@@ -63,6 +63,9 @@ or proposed through Clima for explicit confirmation. Changes belong to the run;
 shared template identities and required fields remain protected. Custom chapters
 can be inserted or removed. Compatible funding switches preserve these run-owned
 labels, guidance and ordering, and match template requirements by stable reference.
+Opening Structure alone does not lock the funding choice: untouched, empty template
+chapters are replaced on a funding switch. Saved structure edits and draft text
+retain the existing review and template-compatibility protections.
 Apply CNB migration `20260921_120000` before using the
 structure API. See [structure rules and persistence](../docs/ConceptNoteBuilderArchitecture.md#run-owned-chapter-structure-cc-864)
 for concurrency, review invalidation, and regression tests.

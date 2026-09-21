@@ -14,6 +14,7 @@ from app.models.cnb.funding_catalogue import FundingSelectionRequest
 from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
+    ConceptNoteChapterRevision,
     ConceptNoteChapterValidation,
     ConceptNoteMatchedProject,
 )
@@ -131,6 +132,48 @@ async def save_funding_selection(
                 status_code=409,
                 detail="Wait for the current edit to finish before changing funding.",
             )
+        # Opening Structure seeds empty chapters, but does not commit the user
+        # to that template. Discard only an exact, revision-free template copy.
+        if chapters and all(
+            chapter.status == "empty" and not chapter.user_locked
+            for chapter in chapters
+        ):
+            previous_context = await context_service.load_for_run(run)
+            try:
+                previous_template = (
+                    normalize_template_chapters(previous_context.template.chapter_schema)
+                    if previous_context.template is not None
+                    else []
+                )
+            except ValueError:
+                # An invalid reference template cannot prove the workspace untouched.
+                previous_template = []
+            untouched = len(chapters) == len(previous_template) and all(
+                chapter.template_section_id == original.chapter_ref
+                and chapter.title == original.title
+                and (chapter.description or "") == (original.description or "")
+                and chapter.required == original.required
+                and chapter.position == position
+                for position, (chapter, original) in enumerate(
+                    zip(chapters, previous_template)
+                )
+            )
+            if untouched:
+                chapter_ids = [chapter.chapter_id for chapter in chapters]
+                revision_id = await reference.scalar(
+                    select(ConceptNoteChapterRevision.revision_id)
+                    .where(
+                        ConceptNoteChapterRevision.chapter_id.in_(chapter_ids)
+                    )
+                    .limit(1)
+                )
+                if revision_id is None:
+                    await reference.execute(
+                        delete(ConceptNoteChapter).where(
+                            ConceptNoteChapter.chapter_id.in_(chapter_ids)
+                        )
+                    )
+                    chapters = []
         if chapters and not payload.acknowledge_draft_review:
             raise HTTPException(
                 status_code=409,

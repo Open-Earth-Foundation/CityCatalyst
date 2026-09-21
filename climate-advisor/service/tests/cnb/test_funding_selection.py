@@ -313,6 +313,97 @@ async def test_existing_draft_requires_acknowledgement_and_preserves_text():
 
 
 @pytest.mark.parametrize(
+    "change", [None, "title", "description", "order", "custom", "revision"]
+)
+async def test_funding_switch_replaces_only_untouched_materialized_structure(
+    change: str | None,
+) -> None:
+    """Opening Structure must not lock funding; saved edits and revisions must."""
+    async with (
+        _workspace_repository() as (workspace, factory),
+        _ca_session() as session,
+    ):
+        first, second, _ = await _seed(factory)
+        opportunity_id = await _programme(
+            factory,
+            first,
+            [
+                {
+                    "chapter_ref": "summary",
+                    "title": "Summary",
+                    "description": "Overview",
+                },
+                {"chapter_ref": "delivery", "title": "Delivery"},
+            ],
+        )
+        replacement = await _programme(
+            factory, second, [{"chapter_ref": "budget", "title": "Budget"}]
+        )
+        run = await _run(session)
+        save = partial(save_funding_selection, session, run, reference_factory=factory)
+        context = await save(_selection(first, opportunity_id))
+        # This is the materialization performed by GET /structure, with no draft.
+        await workspace.ensure_template_chapters(
+            run_id=run.run_id,
+            chapters=normalize_template_chapters(context.template.chapter_schema),
+        )
+        before = await workspace.list_chapters(run_id=run.run_id)
+        if change == "revision":
+            await workspace.save_generated_chapter(
+                chapter_id=before[0].chapter_id,
+                body_markdown="Keep this text.",
+                missing_information=[],
+            )
+            # Even an empty-status row must not lose an existing revision.
+            async with factory() as reference, reference.begin():
+                row = await reference.get(ConceptNoteChapter, before[0].chapter_id)
+                row.status = "empty"
+        elif change is not None:
+            state = structure_snapshot(before)
+            proposed = list(state.chapters)
+            if change in {"title", "description"}:
+                proposed[0] = proposed[0].model_copy(update={change: "User edit"})
+            elif change == "order":
+                proposed.reverse()
+            else:
+                proposed.append(StructureChapter(chapter_id=uuid4(), title="Custom"))
+            async with factory() as reference, reference.begin():
+                await save_structure(
+                    reference,
+                    run.run_id,
+                    StructureSaveRequest(
+                        expected_fingerprint=state.fingerprint, chapters=proposed
+                    ),
+                )
+        saved = await workspace.list_chapters(run_id=run.run_id)
+        selection = _selection(second, replacement, first, opportunity_id)
+        if change is not None:
+            with pytest.raises(HTTPException) as unconfirmed:
+                await save(selection)
+            assert unconfirmed.value.status_code == 409
+            with pytest.raises(HTTPException) as incompatible:
+                await save(
+                    selection.model_copy(update={"acknowledge_draft_review": True})
+                )
+            assert incompatible.value.detail["code"] == "funding_template_incompatible"
+            assert await workspace.list_chapters(run_id=run.run_id) == saved
+            assert run.selected_funding_opportunity_id == opportunity_id
+        else:
+            # A pristine preview can switch templates without draft acknowledgement.
+            updated = await save(selection)
+            assert run.selected_funding_opportunity_id == replacement
+            assert await workspace.list_chapters(run_id=run.run_id) == []
+            await workspace.ensure_template_chapters(
+                run_id=run.run_id,
+                chapters=normalize_template_chapters(updated.template.chapter_schema),
+            )
+            after = await workspace.list_chapters(run_id=run.run_id)
+            assert [(c.chapter_ref, c.title, c.revision_number) for c in after] == [
+                ("budget", "Budget", None)
+            ]
+
+
+@pytest.mark.parametrize(
     "section,status", [("context_bundle", "building"), ("draft_document", "running")]
 )
 async def test_selection_is_blocked_during_generation(section, status):

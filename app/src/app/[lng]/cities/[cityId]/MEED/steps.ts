@@ -21,11 +21,6 @@ export interface MeedStep {
 
 export const MEED_WIZARD_STEPS: MeedStep[] = [
   {
-    key: "emissions",
-    segment: "emissions",
-    labelKey: "step-emissions",
-  },
-  {
     key: "preferences",
     segment: "preferences",
     labelKey: "step-preferences",
@@ -38,14 +33,17 @@ export const MEED_WIZARD_STEPS: MeedStep[] = [
  *
  * Legal screening, policy alignment, financial feasibility and socioeconomic
  * context have no controls: they are read-only views of data the prioritizer
- * or the Global API produces, and none of them runs until the ranking does.
- * They were wizard steps, which made the flow twice as long as the number of
- * decisions in it and let the readiness score award points for opening a page.
+ * or the Global API produces. The emissions breakdown is read-only too: the
+ * inventory is retrieved from CityCatalyst with one action on the home screen,
+ * and this page only lets the user inspect what was pulled. Making them wizard
+ * steps made the flow twice as long as the number of decisions in it and let
+ * the readiness score award points for opening a page.
  *
- * They keep their routes and are reached from the results screen, which is
- * where their content actually explains something.
+ * They keep their routes and are reached from the home screen's context cards
+ * and from the results screen, which is where their content explains something.
  */
 export const MEED_OUTPUT_AREAS: MeedStep[] = [
+  { key: "emissions", segment: "emissions", labelKey: "step-emissions" },
   { key: "context", segment: "context", labelKey: "step-context" },
   { key: "regulations", segment: "regulations", labelKey: "step-regulations" },
   { key: "policy", segment: "policy", labelKey: "step-policy" },
@@ -57,6 +55,18 @@ export const MEED_ALL_SECTIONS: MeedStep[] = [
   ...MEED_WIZARD_STEPS,
   ...MEED_OUTPUT_AREAS,
 ];
+
+/**
+ * The inputs a ranking is computed from, in fingerprint order. Emissions is no
+ * longer a wizard step but it still feeds the ranking, so it stays in the
+ * staleness check; keep the order stable or every stored ranking reports
+ * itself stale after a deploy.
+ */
+export const MEED_RANKING_INPUT_KEYS = [
+  "emissions",
+  "preferences",
+  "preflight",
+] as const;
 
 export function getMeedPath(
   lng: string,

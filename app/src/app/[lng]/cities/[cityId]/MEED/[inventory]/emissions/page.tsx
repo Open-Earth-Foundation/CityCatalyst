@@ -24,6 +24,7 @@ import { formatEmissions } from "@/util/helpers";
 import type { SectorEmission } from "@/util/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { Caption } from "@/components/package/Texts/Caption";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium } from "@/components/package/Texts/Title";
@@ -36,6 +37,7 @@ import {
   MeedTableSkeleton,
 } from "../../components/MeedSkeletons";
 import { setMeedStepState } from "../../meedLocalState";
+import { emissionsRetrievedState } from "../../meedEmissions";
 import { FOCUS_RING } from "../../focusRing";
 
 /** Applied to every focusable control on this screen. */
@@ -235,22 +237,25 @@ function EmissionsReviewContent(props: { lng: string; inventoryId: string }) {
   ).length;
   const formattedTotal = formatEmissions(totalEmissions);
 
-  // Feed the overview and the pre-flight summary with live completion.
-  const stepSub = t("emissions-step-sub", {
-    n: sectorsWithData,
-    total: SECTORS.length,
-  });
+  // Seeing the breakdown with data on screen is the same as having retrieved
+  // it from the home screen, so a deep link (e.g. from pre-flight) leaves the
+  // step in the same state the "Retrieve emissions data" action would.
   useEffect(() => {
-    if (!inventoryId || isLoading || isError) return;
-    setMeedStepState(inventoryId, "emissions", {
-      progress: Math.round((sectorsWithData / SECTORS.length) * 100),
-      sub: stepSub,
-    });
-  }, [inventoryId, isLoading, isError, sectorsWithData, stepSub]);
+    if (!inventoryId || isLoading || isError || !results) return;
+    setMeedStepState(
+      inventoryId,
+      "emissions",
+      emissionsRetrievedState(results, t),
+    );
+  }, [inventoryId, isLoading, isError, results, t]);
 
   return (
     <VStack alignItems="stretch" gap="l">
       <VStack alignItems="stretch" gap="m">
+        {/* Output areas get no heading from the shell, so the page names itself. */}
+        <HeadlineSmall color="content.primary">
+          {t("step-emissions")}
+        </HeadlineSmall>
         <BodyLarge color="content.secondary">
           {t("emissions-description")}
         </BodyLarge>

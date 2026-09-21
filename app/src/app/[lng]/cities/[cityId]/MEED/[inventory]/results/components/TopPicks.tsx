@@ -10,6 +10,7 @@ import { BodySmall } from "@/components/package/Texts/Body";
 import { MeedCardSkeleton } from "../../../components/MeedSkeletons";
 import { TopPickCard } from "./TopPickCard";
 import type { MeedActionIndex } from "./actionCatalog";
+import type { MeedScoreWeights } from "./rankingFacts";
 import { FOCUS_RING } from "../../../focusRing";
 
 /**
@@ -22,6 +23,7 @@ import { FOCUS_RING } from "../../../focusRing";
 export function TopPicks({
   actions,
   index,
+  weights,
   t,
   isCatalogLoading,
   selectedIds,
@@ -31,6 +33,7 @@ export function TopPicks({
 }: {
   actions: MeedRankedActionResult[];
   index: MeedActionIndex;
+  weights: MeedScoreWeights;
   t: TFunction;
   isCatalogLoading: boolean;
   selectedIds: string[];
@@ -76,6 +79,7 @@ export function TopPicks({
                 key={action.action_id}
                 action={action}
                 index={index}
+                weights={weights}
                 t={t}
                 isSelected={selectedIds.includes(action.action_id)}
                 onToggleSelect={onToggleSelect}

@@ -5,24 +5,22 @@ import { LuDownload, LuSquareArrowOutUpRight } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { MeedButton } from "../../../components/MeedButton";
+import { MeedInfoTip } from "../../../components/MeedInfoTip";
+import { MeedScoreComposition } from "../../../components/MeedScoreComposition";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { ReductionBar } from "./ReductionBar";
 import { SelectActionCheckbox } from "./SelectActionCheckbox";
 import { FOCUS_RING } from "../../../focusRing";
-import {
-  actionName,
-  sectorLabel,
-  reductionLevel,
-  reductionLevelLabelKey,
-  reductionLevelColor,
-  type MeedActionIndex,
-} from "./actionCatalog";
+import type { MeedScoreWeights } from "./rankingFacts";
+import { actionName, sectorLabel, type MeedActionIndex } from "./actionCatalog";
 
 /**
- * The full ranked-actions table. Names, sectors and reduction potential come
- * from the action catalog index; rank and scores come from the prioritization
- * ranking result.
+ * The full ranked-actions table. Names and sectors come from the action
+ * catalog index; rank and scores come from the prioritization ranking result.
+ *
+ * The score-composition column shows *how* each action earned its final
+ * score — the same three weighted pillars the drawer breaks down — so two
+ * actions with the same number can be told apart without opening either.
  *
  * The leading checkbox column shares its state with the top-pick cards, so an
  * action ticked here is ticked there too and both feed the one report button in
@@ -34,6 +32,7 @@ import {
 export function RankingTable({
   actions,
   index,
+  weights,
   t,
   onSelect,
   selectedIds,
@@ -42,6 +41,7 @@ export function RankingTable({
 }: {
   actions: MeedRankedActionResult[];
   index: MeedActionIndex;
+  weights: MeedScoreWeights;
   t: TFunction;
   onSelect: (action: MeedRankedActionResult) => void;
   selectedIds: string[];
@@ -86,7 +86,18 @@ export function RankingTable({
             <Table.ColumnHeader>{t("column-rank")}</Table.ColumnHeader>
             <Table.ColumnHeader>{t("column-action")}</Table.ColumnHeader>
             <Table.ColumnHeader>{t("column-sector")}</Table.ColumnHeader>
-            <Table.ColumnHeader>{t("column-reduction")}</Table.ColumnHeader>
+            <Table.ColumnHeader
+              w="220px"
+              display={{ base: "none", md: "table-cell" }}
+            >
+              <HStack gap="xs" alignItems="center">
+                <span>{t("column-composition")}</span>
+                <MeedInfoTip
+                  content={t("column-composition-info")}
+                  ariaLabel={t("column-composition-info")}
+                />
+              </HStack>
+            </Table.ColumnHeader>
             <Table.ColumnHeader textAlign="end">
               {t("column-score")}
             </Table.ColumnHeader>
@@ -95,7 +106,6 @@ export function RankingTable({
         </Table.Header>
         <Table.Body>
           {actions.map((action) => {
-            const level = reductionLevel(index, action.action_id);
             const name = actionName(index, action.action_id, t);
             return (
               <Table.Row key={action.action_id}>
@@ -119,18 +129,16 @@ export function RankingTable({
                     {sectorLabel(index, action.action_id, t)}
                   </BodyMedium>
                 </Table.Cell>
-                <Table.Cell>
-                  <HStack gap="s">
-                    <Box w="80px" flexShrink={0}>
-                      <ReductionBar level={level} />
-                    </Box>
-                    <BodySmall
-                      color={reductionLevelColor(level)}
-                      whiteSpace="nowrap"
-                    >
-                      {t(reductionLevelLabelKey(level))}
-                    </BodySmall>
-                  </HStack>
+                <Table.Cell display={{ base: "none", md: "table-cell" }}>
+                  {/* Bar only: the numeric column beside it carries the value. */}
+                  <Box w="180px">
+                    <MeedScoreComposition
+                      action={action}
+                      weights={weights}
+                      variant="compact"
+                      t={t}
+                    />
+                  </Box>
                 </Table.Cell>
                 <Table.Cell textAlign="end" fontVariantNumeric="tabular-nums">
                   <BodyMedium color="content.primary" fontWeight="bold">

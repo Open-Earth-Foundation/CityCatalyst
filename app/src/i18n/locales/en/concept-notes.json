@@ -93,6 +93,7 @@
   "delete-dialog-retention": "Shared city files and source documents remain available to other concept notes.",
   "delete-permanently": "Delete permanently",
   "delete-success": "Concept note deleted",
+  "delete-unavailable": "This concept note is no longer available.",
   "delete-conflict": "Finish the current concept note operation before deleting it.",
   "delete-error": "The concept note could not be deleted. Please try again.",
   "ordered-by-recent-activity": "Ordered by most recent activity",

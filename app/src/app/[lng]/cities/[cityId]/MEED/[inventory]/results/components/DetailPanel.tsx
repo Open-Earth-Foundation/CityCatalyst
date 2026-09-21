@@ -79,6 +79,7 @@ export function DetailPanel({
   isSelected,
   onToggleSelect,
   finance,
+  extraSections,
 }: {
   action: MeedRankedActionResult;
   index: MeedActionIndex;
@@ -93,6 +94,11 @@ export function DetailPanel({
   onToggleSelect?: (actionId: string) => void;
   /** Omit to leave financing out of the drawer. */
   finance?: { cityId: string; lng: string; financeHref: string };
+  /**
+   * Track-specific sections rendered after the co-benefits — the adaptation
+   * track adds risk cells credited, legal grade and funding pathway here.
+   */
+  extraSections?: React.ReactNode;
 }) {
   const name = actionName(index, action.action_id, t);
   const description = index.get(action.action_id)?.description;
@@ -215,6 +221,7 @@ export function DetailPanel({
                     {...finance}
                   />
                 )}
+                {extraSections}
               </VStack>
             </Drawer.Body>
 

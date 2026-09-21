@@ -19,6 +19,13 @@ export enum FeatureFlags {
    * service exists. Never enable outside local review.
    */
   MEED_MOCK_RANKING = "MEED_MOCK_RANKING",
+  /**
+   * Serves the Brazil Phase 3 HIAP UI demo at /public/hiap-brazil-demo: a
+   * clickable, fixture-only preview of the adaptation and mitigation tracks
+   * for C40 / I Care review. Public and unauthenticated by design, so enable
+   * it on the dev deployment only.
+   */
+  HIAP_BR_DEMO = "HIAP_BR_DEMO",
 }
 
 const QA_FLAGS_STORAGE_KEY = "qa_feature_flags";

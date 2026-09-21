@@ -63,11 +63,17 @@ export function RankingGlanceChart({
   index,
   t,
   onSelect,
+  colorOf,
 }: {
   actions: MeedRankedActionResult[];
   index: MeedActionIndex;
   t: TFunction;
   onSelect: (action: MeedRankedActionResult) => void;
+  /**
+   * Hex colour for a catalog sector tag. Defaults to the GPC sector palette;
+   * catalogs on another sector scheme (AdaptaBrasil) supply their own.
+   */
+  colorOf?: (sectorTag: string | null | undefined) => string | undefined;
 }) {
   const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
   const labelChars =
@@ -91,14 +97,16 @@ export function RankingGlanceChart({
       return {
         id: action.action_id,
         score: Number(action.final_score.toFixed(3)),
-        color: sectorHex(index.get(action.action_id)?.sectorTag, fallbackColor),
+        color:
+          colorOf?.(index.get(action.action_id)?.sectorTag) ??
+          sectorHex(index.get(action.action_id)?.sectorTag, fallbackColor),
         name: actionName(index, action.action_id, t),
         sector: sectorLabel(index, action.action_id, t),
       };
     });
     // Nivo draws the first datum at the bottom; rank 1 belongs at the top.
     return { data: data.reverse(), byId };
-  }, [shown, index, t, fallbackColor]);
+  }, [shown, index, t, fallbackColor, colorOf]);
 
   const height = Math.max(240, shown.length * ROW_HEIGHT + 56);
 

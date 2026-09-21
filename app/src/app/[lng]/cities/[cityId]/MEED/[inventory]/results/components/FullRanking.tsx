@@ -26,6 +26,8 @@ export const FullRanking = React.forwardRef<
     selectedIds: string[];
     onToggleSelect: (actionId: string) => void;
     onExport?: () => void;
+    /** Forwarded to the glance chart; see `RankingGlanceChart.colorOf`. */
+    colorOf?: (sectorTag: string | null | undefined) => string | undefined;
   }
 >(function FullRanking(
   {
@@ -37,6 +39,7 @@ export const FullRanking = React.forwardRef<
     selectedIds,
     onToggleSelect,
     onExport,
+    colorOf,
   },
   ref,
 ) {
@@ -58,6 +61,7 @@ export const FullRanking = React.forwardRef<
               index={index}
               t={t}
               onSelect={onSelect}
+              colorOf={colorOf}
             />
           </Card.Body>
         </Card.Root>

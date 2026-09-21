@@ -160,6 +160,7 @@ export function ContextCardGrid({
   description,
   ctaFor,
   visualFor,
+  indicatorFor,
 }: {
   facts: MeedContextFacts;
   backing: MeedPolicyBacking;
@@ -173,6 +174,11 @@ export function ContextCardGrid({
   ctaFor?: (area: MeedContextArea) => MeedContextCta | undefined;
   /** A small static visual for an area (sector bar, funnel, meters). */
   visualFor?: (area: MeedContextArea) => React.ReactNode;
+  /**
+   * Overrides the headline number for an area. Areas the built-in facts do not
+   * know (another track's inputs) would otherwise show none.
+   */
+  indicatorFor?: (area: MeedContextArea) => MeedContextStat | null | undefined;
 }) {
   const defaultCta = (area: MeedContextArea): MeedContextCta => ({
     label: t("context-view-details"),
@@ -201,12 +207,18 @@ export function ContextCardGrid({
         {areas.map((area) => (
           <GridItem
             key={area.key}
-            colSpan={{ base: 1, md: area.key === "emissions" ? 2 : 1 }}
+            colSpan={{
+              base: 1,
+              md: (area.wide ?? area.key === "emissions") ? 2 : 1,
+            }}
           >
             <ContextCard
               icon={area.icon}
               title={t(area.titleKey)}
-              indicator={contextIndicator(area, facts, backing, t)}
+              indicator={
+                indicatorFor?.(area) ??
+                contextIndicator(area, facts, backing, t)
+              }
               visual={visualFor?.(area)}
               summary={contextSummary(area, facts, t)}
               cta={ctaFor?.(area) ?? defaultCta(area)}

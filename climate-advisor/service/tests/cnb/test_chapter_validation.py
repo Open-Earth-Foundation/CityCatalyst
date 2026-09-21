@@ -151,7 +151,7 @@ async def test_completeness_receives_only_selected_schema_and_associated_fields(
         "name": "Application template",
         "output_format": None,
         "chapter_schema": {
-            "title": "Timetable",
+            "title": "Chapter 1",
             "description": "Explain delivery milestones.",
             "required": True,
             "word_limit": 200,

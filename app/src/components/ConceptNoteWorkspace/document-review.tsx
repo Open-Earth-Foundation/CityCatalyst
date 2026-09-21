@@ -98,9 +98,13 @@ export function DocumentReviewToolbar({
       lng={lng}
       busy={Boolean(edits.busy) || edits.reloadingDraft}
       hasDecisions={hasDecisions}
-      onApply={onAcceptRemaining ?? edits.apply}
+      onApply={
+        proposal.structure ? edits.apply : (onAcceptRemaining ?? edits.apply)
+      }
       onReject={
-        proposal.status === "proposed" && onRejectRemaining
+        !proposal.structure &&
+        proposal.status === "proposed" &&
+        onRejectRemaining
           ? onRejectRemaining
           : edits.reject
       }

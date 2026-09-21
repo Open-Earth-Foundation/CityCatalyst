@@ -53,7 +53,13 @@ function currentChapter(draft: ConceptNoteDraftState | null): string | null {
 export function DraftSetupPanel(props: DraftSetupPanelProps) {
   const { t } = useTranslation(props.lng, "concept-notes");
   const { bundle, draft } = props;
-  const draftStarted = Boolean(draft && draft.status !== "not_started");
+  const hasDraftContent = Boolean(
+    draft?.chapters.some((chapter) => chapter.body_markdown?.trim()),
+  );
+  const canResume = draft?.status === "not_started" && hasDraftContent;
+  const draftStarted = Boolean(
+    draft && (draft.status !== "not_started" || hasDraftContent),
+  );
   const showDraftSetup = !draftStarted || draft?.status === "failed";
   const isBuilding = props.contextStatus.busy;
   const isFailed = props.contextStatus.state === "failed";
@@ -83,6 +89,22 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
 
   return (
     <>
+      {canResume && (
+        <Flex align="center" gap={3} flexWrap="wrap" flexShrink={0}>
+          <Text flex={1} fontSize="body.sm" color="content.secondary">
+            {t("draft-additional-chapters")}
+          </Text>
+          <Button
+            size="sm"
+            disabled={!props.canStartDrafting || props.isDraftRunning}
+            loading={props.isStartingDraft}
+            onClick={props.onStartDrafting}
+          >
+            <Icon as={LuSparkles} />
+            {t("continue-drafting")}
+          </Button>
+        </Flex>
+      )}
       {showDraftSetup && (
         <Flex
           align={{ base: "stretch", xl: "center" }}

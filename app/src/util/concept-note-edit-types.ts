@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { StructureProposal } from "./concept-note-structure";
 
 export const editScopeSchema = z
   .object({
@@ -25,10 +26,7 @@ export const editApplyRequestSchema = z
     idempotency_key: z.string().uuid(),
     expected_revisions: z
       .record(z.string().uuid(), z.number().int().positive())
-      .refine(
-        (value) =>
-          Object.keys(value).length > 0 && Object.keys(value).length <= 100,
-      ),
+      .refine((value) => Object.keys(value).length <= 100),
     selected_change_ids: z
       .array(z.string().uuid())
       .min(1)
@@ -78,6 +76,7 @@ export interface EditApplicationResult {
 }
 
 export interface EditProposal {
+  structure?: StructureProposal | null;
   proposal_id: string;
   run_id: string;
   instruction: string;

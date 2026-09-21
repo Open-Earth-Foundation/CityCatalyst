@@ -13,8 +13,12 @@ from app.models.cnb.concept_note_edits import (
     EditProposalRequest,
     EditProposalResponse,
 )
+from app.models.cnb.concept_note_structure import StructureSaveRequest, StructureState
 from app.models.db.concept_note import ConceptNoteRun
 from app.persistence.concept_notes.edits import EditOperationError
+from app.persistence.concept_notes.structure import structure_snapshot
+from app.persistence.concept_notes.workspace import normalize_template_chapters
+from app.services.cnb.application_context import ConceptNoteApplicationContextService
 from app.services.cnb.edits import (
     ConceptNoteEditService,
     get_edit_service,
@@ -178,3 +182,32 @@ async def refine_edit_proposal(
     )
     bound = payload.model_copy(update={"refines_proposal_id": proposal_id})
     return await service.propose(run, bound)
+
+
+@router.get("/concept-notes/{run_id}/structure", response_model=StructureState)
+async def get_structure(
+    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
+    service: Annotated[ConceptNoteEditService, Depends(edit_service)],
+) -> StructureState:
+    """Initialize run-owned template chapters once and restore the saved structure."""
+    async with service.locked_context(run) as (current, _):
+        context = await ConceptNoteApplicationContextService().load_for_run(current)
+        if context.template is not None:
+            await service.workspace.ensure_template_chapters(
+                run_id=run.run_id,
+                chapters=normalize_template_chapters(context.template.chapter_schema),
+            )
+        return structure_snapshot(
+            await service.workspace.list_chapters(run_id=run.run_id)
+        )
+
+
+@router.put("/concept-notes/{run_id}/structure", response_model=StructureState)
+async def put_structure(
+    payload: StructureSaveRequest,
+    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
+    service: Annotated[ConceptNoteEditService, Depends(edit_service)],
+) -> StructureState:
+    """Save explicit direct edits after ownership and optimistic concurrency checks."""
+    async with service.locked_context(run, structure=True):
+        return await service.repository.save_structure(run.run_id, payload)

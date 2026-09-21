@@ -587,6 +587,8 @@ export function ConceptNoteWorkspace({
                 p={0}
               >
                 <StructureTab
+                  key={runId}
+                  runId={runId}
                   applicationContext={applicationContext ?? null}
                   draft={draft ?? null}
                   lng={lng}

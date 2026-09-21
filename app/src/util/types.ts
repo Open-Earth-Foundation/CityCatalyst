@@ -1261,6 +1261,7 @@ export interface ValidateConceptNoteChapterRequest {
 }
 
 export interface ConceptNoteDraftChapter {
+  description?: string;
   chapter_id: string;
   template_section_id: string | null;
   title: string;

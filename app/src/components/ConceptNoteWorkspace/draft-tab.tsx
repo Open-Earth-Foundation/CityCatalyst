@@ -55,7 +55,9 @@ export function DraftTab(props: DraftTabProps) {
     props.focusFindingKey,
   );
   const draftStarted = Boolean(
-    props.draft && props.draft.status !== "not_started",
+    props.draft &&
+    (props.draft.status !== "not_started" ||
+      chapters.some((chapter) => chapter.body_markdown?.trim())),
   );
 
   return (

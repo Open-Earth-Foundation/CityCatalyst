@@ -41,6 +41,20 @@ export function proposalMatchesDraft(
   proposal: EditProposal,
   chapters: ConceptNoteDraftChapter[],
 ): boolean {
+  if (proposal.structure) {
+    const ordered = [...chapters].sort((a, b) => a.position - b.position);
+    return (
+      ordered.length === proposal.structure.before.chapters.length &&
+      ordered.every((chapter, index) => {
+        const before = proposal.structure!.before.chapters[index];
+        return (
+          chapter.chapter_id === before.chapter_id &&
+          chapter.title === before.title &&
+          (chapter.description ?? "") === before.description
+        );
+      })
+    );
+  }
   return (
     proposal.changes.length > 0 &&
     Object.entries(proposal.base_revisions).every(([id, revision]) => {

@@ -1,0 +1,44 @@
+UI_TREE
+CNB
+├─ LEFT: Clima chat
+│  └─ Bottom: "Ask Clima about this concept note" → "Send message"
+└─ RIGHT: concept-note workspace
+   ├─ Top-right: "Review & export"
+   └─ Tabs
+      ├─ "Draft preview"
+      │  ├─ "Sections": chapter navigation, not a separate view
+      │  └─ Document: read-only preview beside the chat
+      ├─ "Structure": local preview changes; not saved
+      └─ "Context"
+         ├─ "Funder profile" → "Change"
+         │  └─ Choose funder → programme → preview automatically linked template → "Save selection"
+         │     No separate template selection.
+         └─ "Your files" → "Upload file" (PDF/Markdown)
+
+EDIT_FLOW
+Request a replacement in left chat → send → proposed edit
+→ "Review in document" → "Accept this change" or "Accept all".
+Acceptance applies the edit. No direct typing in the preview or separate Save.
+Review controls appear only when a proposal exists.
+
+EXPORT_FLOW
+"Review & export" → "Missing information"
+→ "Continue to conflicts & logic" → "Conflicts & logic"
+→ "Continue to decision" → "Decide & export"
+→ "Export anyway" → "Export PDF" / "Export DOCX".
+Use LIVE_STATE for availability and blockers; do not infer other blockers.
+
+LIVE_STATE
+active_tab: Draft preview
+draft: {exists: true, chapters: 4}
+funding: {funder: European Union LIFE Programme, programme: EUCF Call 7}
+uploaded_files: 0
+pending_proposal: false
+export:
+  enabled: false
+  blockers: [25 critical gaps; fill through reviewed chat edits]
+  missing_upload_blocks_export: false
+review:
+  checked_chapters: 0
+  failed_chapters: 4
+  failure_blocks_export: unknown

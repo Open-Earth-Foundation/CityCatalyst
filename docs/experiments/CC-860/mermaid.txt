@@ -1,0 +1,18 @@
+flowchart LR
+ subgraph L["LEFT · Clima chat"]
+  C["Messages · Uploaded evidence: none"]
+  I["Bottom: Ask Clima about this concept note"] --> S["Send message"]
+ end
+ subgraph R["RIGHT · Concept note workspace"]
+  H["Note title · Run state autosaved"]
+  D["Draft preview · selected"] --> P["Sections + existing 4-chapter draft · read-only"]
+  T["Structure"] --> LP["Chapter changes: local preview only, not saved"]
+  X["Context"] --> F["Funder profile: LIFE · programme: EUCF Call 7"]
+  F --> CH["Change"] --> FC["Choose funder → programme → preview linked template"] --> SS["Save selection"]
+  X --> Y["Your files: none"] --> U["Upload file · PDF or Markdown"]
+  E["Top-right: Review & export"] --> M["Missing information"] --> CL["Conflicts & logic"] --> DE["Decide & export"] --> EA["Export anyway"] --> PDF["Export PDF / Export DOCX · disabled"]
+  PDF --- G["25 critical gaps block export; fill via reviewed chat edits. Missing upload alone is not a blocker. 4 chapter checks failed."]
+ end
+ S --> PR["On edit request: proposed changes, not saved"] --> RD["Review in document"] --> A["Accept all / Accept this change → applies edits"]
+ A --> P
+ N["No direct typing in draft; no separate Save button; review controls require a proposal"] --- RD

@@ -1,0 +1,33 @@
+ui_version: cnb-desktop-2026-09-21
+layout: {left: Clima chat, right: concept-note workspace}
+state:
+  active_tab: Draft preview
+  draft: {exists: true, chapters: 4, editable_directly: false, critical_gaps: 25}
+  funding: {funder: European Union LIFE Programme, programme: EUCF Call 7}
+  files: []
+  proposal: none
+  review: {reviewed: 0, failed_chapters: 4}
+actions:
+  view_draft:
+    path: [right workspace, Draft preview, Sections or document]
+    download_required: false
+  change_funding:
+    path: [right workspace, Context, Funder profile, Change]
+    then: [Choose funding for this concept note, choose funder, choose programme, preview linked template, Save selection]
+  upload:
+    path: [right workspace, Context, Your files, Upload file]
+    accepts: [PDF, Markdown]
+  edit:
+    path: [left chat, bottom textbox "Ask Clima about this concept note", Send message]
+    then: [proposed edits, Review in document, Accept all or Accept this change]
+    applies_on: acceptance
+    separate_save_button: false
+    review_controls_visible_when: proposal exists
+  export:
+    path: [top-right Review & export, Missing information, Continue to conflicts & logic, Conflicts & logic, Continue to decision, Decide & export, Export anyway, Export PDF or Export DOCX]
+    enabled: false
+    blocker: 25 critical gaps; fill through reviewed chat edits
+    missing_upload_is_blocker: false
+  structure:
+    path: [right workspace, Structure]
+    persistence: local preview only; not saved

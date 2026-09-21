@@ -1,0 +1,28 @@
+CNB desktop
+├─ LEFT: Clima chat
+│  ├─ Header: Connected; button "Start new chat"
+│  ├─ Messages: "Uploaded evidence: none"
+│  └─ Bottom: textbox "Ask Clima about this concept note"; button "Send message"
+└─ RIGHT: concept note workspace
+   ├─ Header: note title; "Run state autosaved"; top-right button "Review & export"
+   └─ Tabs
+      ├─ "Draft preview" [selected]
+      │  ├─ "Sections": four chapter jump buttons
+      │  └─ Existing generated draft [read-only], four chapters, 25 critical gaps
+      ├─ "Structure": chapter order/custom chapters [local preview only; not saved]
+      └─ "Context"
+         ├─ "Funder profile": LIFE; "Funding programme": EUCF Call 7
+         │  └─ button "Change" → dialog "Choose funding for this concept note"
+         │     └─ funder → programme → linked template preview → "Save selection" / "Cancel"
+         └─ "Your files": none; button "Upload file" [PDF/Markdown]
+Dialog from "Review & export":
+  "Missing information" → "Continue to conflicts & logic" → "Conflicts & logic"
+  → "Continue to decision" → "Decide & export" → "Export anyway"
+  → "Export PDF" / "Export DOCX" [disabled: 25 critical gaps]
+  Fill critical gaps through reviewed chat edits. Missing upload alone does not block export.
+  0 chapters reviewed; 4 could not be checked.
+Edit lifecycle:
+  Type a replacement request in left chat → "Send message" → proposed edits
+  → "Review in document" → "Accept all" / "Accept this change" applies changes.
+  Review controls appear only with a proposal. Chat alone does not save edits.
+  No direct typing in draft; no separate Save button.

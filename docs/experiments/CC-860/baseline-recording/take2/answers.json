@@ -1,0 +1,64 @@
+{
+  "scope": "Current deployed prompt; proposed UI map is NOT installed",
+  "questions": [
+    {
+      "number": 1,
+      "prompt": "I'm new here. Where can I see the draft you generated? Do I need to download it first?",
+      "answer": "You don’t need to download anything first. The draft should appear directly in the Concept Note Builder’s document/editor area, where you can review proposed changes inline.\n\nI can’t verify from the current context whether a draft has already been created. If the editor is blank, the draft may not yet exist; you can ask me to draft or revise a section. Downloads are typically only needed when you want to export the finished version.",
+      "seconds": 10.9,
+      "errors": []
+    },
+    {
+      "number": 2,
+      "prompt": "Where do I click to change the funder and funding programme for this note?",
+      "answer": "The note is currently linked to:\n\nFunder: European Union LIFE Programme\nFunding programme: European City Facility (EUCF) – Call 7\n\nThese are changed in the note’s setup/funding selection, not by editing the draft text. I can’t see the interface controls in the current context, so I can’t reliably name the exact button. Look for Back, Project setup, or Funding programme near the top of the Concept Note Builder, then choose a different funder and opportunity.\n\nNote that changing the programme may also change the application template and required sections.",
+      "seconds": 22.6,
+      "errors": []
+    },
+    {
+      "number": 3,
+      "prompt": "I have a PDF with more project information. Where do I upload it?",
+      "answer": "No PDF is currently attached. In the Concept Note Builder, look for a Sources, Supporting documents, or Add source section, then select Upload document and choose your PDF.\n\nI can’t see your screen, so I can’t confirm the exact button label. If there is no upload option in the editor, return to the note’s setup page and check there. Once uploaded and selected for this note, I can use it as supporting evidence.",
+      "seconds": 10.2,
+      "errors": []
+    },
+    {
+      "number": 4,
+      "prompt": "I want to correct a sentence in the draft. Where do I type the change, and how do I save it?",
+      "answer": "You have two options:\n\nEdit directly: Click the sentence in the document/editor area and type the correction. I can’t confirm from the available context whether saving is automatic or whether there is a Save button—check the top of the editor for a save/status indicator.\n\nAsk me to revise it: In this chat, write:\n“Replace ‘[current sentence]’ with ‘[corrected sentence]’.”\nI’ll create an inline proposal. You must then review and accept it in the document controls; the chat request alone does not change the draft.",
+      "seconds": 10.5,
+      "errors": []
+    },
+    {
+      "number": 5,
+      "prompt": "How do I download this note as a PDF, and why might the download button be disabled?",
+      "answer": "To download it, open the note’s document/editor view and look for Download or Export, then choose PDF.\n\nI can’t see the exact control state, but the button may be disabled when:\n\nno draft has been generated or loaded yet;\nthe note is still generating or saving;\nrequired setup information is missing;\nproposed edits still need review;\nPDF export is not supported for the selected EUCF online-form template; or\nyou lack edit/export permission.\n\nThe current context does not include an active document, so first confirm that the draft appears in the editor. If it does, hover over the disabled button—its tooltip may state the specific requirement.",
+      "seconds": 19.2,
+      "errors": []
+    }
+  ],
+  "verification": [
+    {
+      "question": 1,
+      "actual": "Draft preview contains generated document text and Sections chapter navigation. No download required."
+    },
+    {
+      "question": 2,
+      "actual": "Context > Funder profile > Change opens the funder/programme catalogue, template preview and Save selection."
+    },
+    {
+      "question": 3,
+      "actual": "Context > Your files > Upload file. No file uploaded during this guidance test."
+    },
+    {
+      "question": 4,
+      "actual": "Chat composer exists on the left. This question asks for instructions only; no edit request or acceptance performed."
+    },
+    {
+      "question": 5,
+      "actual": "Review & export > Missing information > Conflicts & logic > Decide & export > PDF/DOCX. PDF button disabled: true",
+      "visibleExportText": "Review before export\n\nCheck missing information first, then conflicts and logic, before deciding what to do with this draft.\n\nReview steps\n\n1.\n\nMissing information\n\n2.\n\nConflicts & logic\n\n3.\n\nDecide & export\n\nSaved review results\n\nShowing the current saved results for this draft revision.\n\nRE-RUN REVIEW\n\n0 chapters were reviewed, but 4 chapters could not be checked.\n\nIdentification of the applicant, Political commitments, Proposed investment project, Use of EUCF support\n\nRETRY 4 FAILED CHAPTERS\n\nStep 3\n\nExport the current draft\n\nChoose a format. Review findings stay in the workspace and are not added to the exported file.\n\nUploaded evidence: none\n\nExport is not blocked, but adding a document provides page- or anchor-located evidence.\n\nExport impact\n\nIncomplete\n\nDocument review status\n\n25\n\nBlocking issues\n\n0\n\nWarnings stay in the workspace for follow-up\n\nFill every critical gap through reviewed chat edits before exporting this concept note.\n\nDOCX\n\nEditable document\n\nEXPORT DOCX\n\nPDF\n\nReview copy\n\nEXPORT PDF\nBACK TO DECISION"
+    }
+  ],
+  "url": "https://citycatalyst.openearth.dev/en/cities/04d2a48c-d2a2-42e9-868f-c30aeec96a07/concept-notes/da665f2d-095c-4cf8-b049-cad51804d451/"
+}

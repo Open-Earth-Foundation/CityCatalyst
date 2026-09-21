@@ -1,0 +1,40 @@
+{
+  "recorderVersion": "1.1.0",
+  "ok": false,
+  "error": "locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Send message', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"submit\" aria-label=\"Send message\" class=\"chakra-button css-k75zrk\" data-testid=\"concept-note-chat-send\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"css-1ikz0jf\" data-onboarding-bottom-bar=\"true\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"css-1ikz0jf\" data-onboarding-bottom-bar=\"true\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    38 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div class=\"css-1ikz0jf\" data-onboarding-bottom-bar=\"true\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+  "url": "https://citycatalyst.openearth.dev/en/cities/04d2a48c-d2a2-42e9-868f-c30aeec96a07/concept-notes/da665f2d-095c-4cf8-b049-cad51804d451/",
+  "webm": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc860-five-questions\\cc860-five-questions.webm",
+  "mp4": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc860-five-questions\\cc860-five-questions.mp4",
+  "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc860-five-questions\\cc860-five-questions.mp4",
+  "rawVideo": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc860-five-questions\\raw\\page@2a9825b42d04f9acd76af54bd1dddf0a.webm",
+  "metadata": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc860-five-questions\\cc860-five-questions.json",
+  "findingsFile": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc860-five-questions\\cc860-five-questions-findings.json",
+  "width": 1440,
+  "height": 1000,
+  "startedAt": "2026-09-21T20:23:51.831Z",
+  "finishedAt": "2026-09-21T20:24:28.294Z",
+  "elapsed": "00:36",
+  "steps": [
+    {
+      "at": "00:05",
+      "message": "Setup: copy the verification draft for a fresh conversation"
+    },
+    {
+      "at": "00:09",
+      "message": "Fresh chat; existing four-chapter draft visible on the right"
+    },
+    {
+      "at": "00:11",
+      "message": "Question 1/5: I'm new here. Where can I see the draft you generated? Do I need to download it first?"
+    }
+  ],
+  "observations": [],
+  "findings": [
+    {
+      "at": "00:33",
+      "category": "blocker",
+      "message": "Recording stopped before the requested flow completed",
+      "details": "locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Send message', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"submit\" aria-label=\"Send message\" class=\"chakra-button css-k75zrk\" data-testid=\"concept-note-chat-send\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"css-1ikz0jf\" data-onboarding-bottom-bar=\"true\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"css-1ikz0jf\" data-onboarding-bottom-bar=\"true\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    38 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div class=\"css-1ikz0jf\" data-onboarding-bottom-bar=\"true\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "recorderVersion": "1.1.0",
+  "startedAt": "2026-09-21T20:25:25.564Z",
+  "finishedAt": "2026-09-21T20:27:58.903Z",
+  "elapsed": "02:33",
+  "steps": [
+    {
+      "at": "00:05",
+      "message": "Dismiss cookie notice to make the chat controls accessible"
+    },
+    {
+      "at": "00:06",
+      "message": "Fresh chat; existing four-chapter draft visible on the right"
+    },
+    {
+      "at": "00:09",
+      "message": "Question 1/5: I'm new here. Where can I see the draft you generated? Do I need to download it first?"
+    },
+    {
+      "at": "00:22",
+      "message": "Question 1/5: response received — compare with actual controls"
+    },
+    {
+      "at": "00:28",
+      "message": "Question 2/5: Where do I click to change the funder and funding programme for this note?"
+    },
+    {
+      "at": "00:52",
+      "message": "Question 2/5: response received — compare with actual controls"
+    },
+    {
+      "at": "01:03",
+      "message": "Question 3/5: I have a PDF with more project information. Where do I upload it?"
+    },
+    {
+      "at": "01:15",
+      "message": "Question 3/5: response received — compare with actual controls"
+    },
+    {
+      "at": "01:24",
+      "message": "Question 4/5: I want to correct a sentence in the draft. Where do I type the change, and how do I save it?"
+    },
+    {
+      "at": "01:36",
+      "message": "Question 4/5: response received — compare with actual controls"
+    },
+    {
+      "at": "01:42",
+      "message": "Question 5/5: How do I download this note as a PDF, and why might the download button be disabled?"
+    },
+    {
+      "at": "02:04",
+      "message": "Question 5/5: response received — compare with actual controls"
+    },
+    {
+      "at": "02:21",
+      "message": "Five questions recorded. Answers and actual UI evidence saved; no prompt changes installed."
+    }
+  ],
+  "observations": [
+    {
+      "at": "02:11",
+      "type": "http",
+      "method": "POST",
+      "status": 409,
+      "url": "https://citycatalyst.openearth.dev/api/v1/concept-notes/da665f2d-095c-4cf8-b049-cad51804d451/chapters/dad997f7-96d3-40c6-9f2e-6d2760c86a16/validation/"
+    },
+    {
+      "at": "02:11",
+      "type": "console",
+      "level": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "at": "02:12",
+      "type": "http",
+      "method": "POST",
+      "status": 409,
+      "url": "https://citycatalyst.openearth.dev/api/v1/concept-notes/da665f2d-095c-4cf8-b049-cad51804d451/chapters/1efc0f37-60b0-46bc-b0dd-b3e7db691d05/validation/"
+    },
+    {
+      "at": "02:12",
+      "type": "console",
+      "level": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "at": "02:14",
+      "type": "http",
+      "method": "POST",
+      "status": 409,
+      "url": "https://citycatalyst.openearth.dev/api/v1/concept-notes/da665f2d-095c-4cf8-b049-cad51804d451/chapters/5dd88a98-d608-4ddc-b652-72e580f5b862/validation/"
+    },
+    {
+      "at": "02:14",
+      "type": "console",
+      "level": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "at": "02:15",
+      "type": "http",
+      "method": "POST",
+      "status": 409,
+      "url": "https://citycatalyst.openearth.dev/api/v1/concept-notes/da665f2d-095c-4cf8-b049-cad51804d451/chapters/8435a495-c148-4ab8-b64e-9113b86e4963/validation/"
+    },
+    {
+      "at": "02:15",
+      "type": "console",
+      "level": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    }
+  ],
+  "findings": [
+    {
+      "at": "02:16",
+      "category": "needs-work",
+      "message": "Review contains failed chapter checks",
+      "details": "Review before export\n\nCheck missing information first, then conflicts and logic, before deciding what to do with this draft.\n\nReview steps\n\n1.\n\nMissing information\n\n2.\n\nConflicts & logic\n\n3.\n\nDecide & export\n\nSaved review results\n\nShowing the current saved results for this draft revision.\n\nRE-RUN REVIEW\n\n0 chapters were reviewed, but 4 chapters could not be checked.\n\nIdentification of the applicant, Political commitments, Proposed investment project, Use of EUCF support\n\nRETRY 4 FAILED CHAPTERS\n\nStep 1\n\nMissing information\n\nThe completeness review found 0 items that need information or clearer requirements.\n\nNo missing required information was found.\n\nEvidence to add\n\n0 claims need stronger evidence or linked sources.\n\nNo evidence warnings were found.\n\nCONTINUE TO CONFLICTS & LOGIC"
+    }
+  ]
+}

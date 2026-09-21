@@ -1,0 +1,161 @@
+{
+  "model": {
+    "name": "openai/gpt-5.6-sol",
+    "description": "Concept Note Builder chat model.",
+    "reasoning_effort": "high"
+  },
+  "context": "UI_TREE\nCNB\n├─ LEFT: Clima chat\n│  └─ Bottom: \"Ask Clima about this concept note\" → \"Send message\"\n└─ RIGHT: concept-note workspace\n   ├─ Top-right: \"Review & export\"\n   └─ Tabs\n      ├─ \"Draft preview\"\n      │  ├─ \"Sections\": chapter navigation, not a separate view\n      │  └─ Document: read-only preview beside the chat\n      ├─ \"Structure\": local preview changes; not saved\n      └─ \"Context\"\n         ├─ \"Funder profile\" → \"Change\"\n         │  └─ Choose funder → programme → preview automatically linked template → \"Save selection\"\n         │     No separate template selection.\n         └─ \"Your files\" → \"Upload file\" (PDF/Markdown)\n\nEDIT_FLOW\nRequest a replacement in left chat → send → proposed edit\n→ \"Review in document\" → \"Accept this change\" or \"Accept all\".\nAcceptance applies the edit. No direct typing in the preview or separate Save.\nReview controls appear only when a proposal exists.\n\nEXPORT_FLOW\n\"Review & export\" → \"Missing information\"\n→ \"Continue to conflicts & logic\" → \"Conflicts & logic\"\n→ \"Continue to decision\" → \"Decide & export\"\n→ \"Export anyway\" → \"Export PDF\" / \"Export DOCX\".\nUse LIVE_STATE for availability and blockers; do not infer other blockers.\n\nLIVE_STATE\nactive_tab: Draft preview\ndraft: {exists: true, chapters: 4}\nfunding: {funder: European Union LIFE Programme, programme: EUCF Call 7}\nuploaded_files: 0\npending_proposal: false\nexport:\n  enabled: false\n  blockers: [25 critical gaps; fill through reviewed chat edits]\n  missing_upload_blocks_export: false\nreview:\n  checked_chapters: 0\n  failed_chapters: 4\n  failure_blocks_export: unknown",
+  "context_tokens": 416,
+  "results": [
+    {
+      "question": 2,
+      "prompt": "Where do I click to change the funder and funding programme for this note?",
+      "answer": "Click **Context** in the right-hand workspace. Under **Funder profile**, click **Change**, choose the new funder and programme, then click **Save selection**. The linked template will update automatically—there is no separate template-selection step.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2089,
+        "completion_tokens": 54,
+        "total_tokens": 2143,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 443,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0039642,
+          "upstream_inference_prompt_cost": 0.0028842,
+          "upstream_inference_completions_cost": 0.00108
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "model": "openai/gpt-5.6-sol"
+    },
+    {
+      "question": 3,
+      "prompt": "I have a PDF with more project information. Where do I upload it?",
+      "answer": "Open the **Context** tab on the right, then under **Your files** select **Upload file**. You can upload your PDF there.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2088,
+        "completion_tokens": 33,
+        "total_tokens": 2121,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 442,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0035392,
+          "upstream_inference_prompt_cost": 0.0028792,
+          "upstream_inference_completions_cost": 0.00066
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "model": "openai/gpt-5.6-sol"
+    },
+    {
+      "question": 1,
+      "prompt": "I'm new here. Where can I see the draft you generated? Do I need to download it first?",
+      "answer": "Your draft is already visible on the right under **Draft preview**. Use **Sections** to navigate its four chapters.\n\nYou don’t need to download it first—the preview is available directly in the workspace. When you’re ready to export, use **Review & export**. Export is currently disabled because 25 critical gaps must be filled through reviewed chat edits.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2094,
+        "completion_tokens": 76,
+        "total_tokens": 2170,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 448,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0044292,
+          "upstream_inference_prompt_cost": 0.0029092,
+          "upstream_inference_completions_cost": 0.00152
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "model": "openai/gpt-5.6-sol"
+    },
+    {
+      "question": 4,
+      "prompt": "I want to correct a sentence in the draft. Where do I type the change, and how do I save it?",
+      "answer": "Type the requested replacement here in the left Clima chat and send it. I’ll create a proposed edit.\n\nThen select **Review in document** and choose **Accept this change** (or **Accept all**). Accepting applies and saves the edit—there’s no direct typing or separate **Save** button in the draft preview.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2097,
+        "completion_tokens": 71,
+        "total_tokens": 2168,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 451,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0043442,
+          "upstream_inference_prompt_cost": 0.0029242,
+          "upstream_inference_completions_cost": 0.00142
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "model": "openai/gpt-5.6-sol"
+    },
+    {
+      "question": 5,
+      "prompt": "How do I download this note as a PDF, and why might the download button be disabled?",
+      "answer": "To download the note:\n\n1. Click **Review & export**.\n2. Review **Missing information**.\n3. Continue through **Conflicts & logic** to **Decide & export**.\n4. Choose **Export anyway**, then **Export PDF**.\n\nExport is currently disabled because the note has **25 critical information gaps**. Fill them through proposed chat edits, then review and **Accept** those changes in the document. Missing uploaded files do **not** currently block export. All four chapter checks failed, but the interface does not confirm whether those failures independently block export.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2092,
+        "completion_tokens": 179,
+        "total_tokens": 2271,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 446,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0064792,
+          "upstream_inference_prompt_cost": 0.0028992,
+          "upstream_inference_completions_cost": 0.00358
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 56,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "model": "openai/gpt-5.6-sol"
+    }
+  ]
+}

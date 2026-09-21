@@ -1,0 +1,914 @@
+{
+  "model": "openai/gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "base_prompt_tokens_local": 1640,
+  "tokenizer": "o200k_base estimate; API usage is authoritative",
+  "representation_tokens_local": {
+    "html": 1422,
+    "mermaid": 317,
+    "tree": 421,
+    "action_map": 368
+  },
+  "results": [
+    {
+      "representation": "calibration",
+      "question": 1,
+      "prompt": "I'm new here. Where can I see the draft you generated? Do I need to download it first?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024653-ujc0pzijJJEsaOg3EBvw",
+      "provider": "OpenAI",
+      "answer": "The current UI context doesn’t show where the draft is located or whether downloading is required. Look for an inline **Concept Note**, **Document**, or **Draft** panel in the builder; edits are typically reviewed there before any download. If you don’t see one, tell me which page or controls are visible.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 1677,
+        "completion_tokens": 176,
+        "total_tokens": 1853,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1674,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.011902,
+          "upstream_inference_prompt_cost": 0.008382,
+          "upstream_inference_completions_cost": 0.00352
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 107,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 4.31
+    },
+    {
+      "representation": "html",
+      "question": 1,
+      "prompt": "I'm new here. Where can I see the draft you generated? Do I need to download it first?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024657-SD9BAhOpbOzq0PGlgyTy",
+      "provider": "OpenAI",
+      "answer": "You can see the draft directly in the right-hand workspace under **Draft preview**. Select a numbered section from the **Sections** list to view it.\n\nYou don’t need to download it first. Downloads are handled later through **Review & export**, after required gaps and proposed edits have been reviewed.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 3100,
+        "completion_tokens": 64,
+        "total_tokens": 3164,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 1454,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0092192,
+          "upstream_inference_prompt_cost": 0.0079392,
+          "upstream_inference_completions_cost": 0.00128
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 2.3
+    },
+    {
+      "representation": "screenshot",
+      "question": 1,
+      "prompt": "I'm new here. Where can I see the draft you generated? Do I need to download it first?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024657-gjl7EDGxZcdqG91sJaEj",
+      "provider": "OpenAI",
+      "answer": "You’re already viewing it in the **Draft preview** tab in the main panel. Use the **Sections** list on the left to navigate through the draft.\n\nYou don’t need to download it first. When you’re ready to check or export it, select **Review & export** in the top-right.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 3406,
+        "completion_tokens": 66,
+        "total_tokens": 3472,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 1760,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0107892,
+          "upstream_inference_prompt_cost": 0.0094692,
+          "upstream_inference_completions_cost": 0.00132
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 2.39
+    },
+    {
+      "representation": "mermaid",
+      "question": 1,
+      "prompt": "I'm new here. Where can I see the draft you generated? Do I need to download it first?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024657-zL2DE8ffTlfANkM8w8Zf",
+      "provider": "OpenAI",
+      "answer": "You can see the generated draft on the right under **Draft preview**. It contains the existing four-chapter draft and is read-only.\n\nYou don’t need to download it first. To edit it, ask me for a change, then review and accept the proposed edits in the document. Export to PDF or DOCX is currently disabled because critical gaps remain.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 1995,
+        "completion_tokens": 76,
+        "total_tokens": 2071,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 349,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0039342,
+          "upstream_inference_prompt_cost": 0.0024142,
+          "upstream_inference_completions_cost": 0.00152
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 2.58
+    },
+    {
+      "representation": "action_map",
+      "question": 1,
+      "prompt": "I'm new here. Where can I see the draft you generated? Do I need to download it first?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024659-atppvSZJyP19FMr88yOz",
+      "provider": "OpenAI",
+      "answer": "You can view it directly in the **right-hand workspace**:\n\n1. Open **Draft preview**.\n2. Choose **Sections** or **Document**.\n\nYou do **not** need to download it first. The draft currently contains **4 chapters**.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2046,
+        "completion_tokens": 56,
+        "total_tokens": 2102,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 400,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0037892,
+          "upstream_inference_prompt_cost": 0.0026692,
+          "upstream_inference_completions_cost": 0.00112
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 1.66
+    },
+    {
+      "representation": "tree",
+      "question": 1,
+      "prompt": "I'm new here. Where can I see the draft you generated? Do I need to download it first?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024659-xNeg01tXGXTir1Jcv6A0",
+      "provider": "OpenAI",
+      "answer": "You can see the generated draft on the right side of the screen under the selected **Draft preview** tab. It’s read-only, with four chapter buttons for navigation.\n\nYou don’t need to download it first. When it’s ready, use **Review & export** to export it—but export is currently blocked by 25 critical gaps that need to be addressed through reviewed chat edits.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2099,
+        "completion_tokens": 81,
+        "total_tokens": 2180,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 453,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0045542,
+          "upstream_inference_prompt_cost": 0.0029342,
+          "upstream_inference_completions_cost": 0.00162
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 3.19
+    },
+    {
+      "representation": "html",
+      "question": 2,
+      "prompt": "Where do I click to change the funder and funding programme for this note?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024661-JRCYrH1wIldOu8SZoaVF",
+      "provider": "OpenAI",
+      "answer": "Click the **Context** tab in the right-hand workspace, then click **Change** under **Funder profile**. In the dialog, choose the funder and programme, preview the linked template, and click **Save selection**.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 3095,
+        "completion_tokens": 51,
+        "total_tokens": 3146,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 1449,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0089342,
+          "upstream_inference_prompt_cost": 0.0079142,
+          "upstream_inference_completions_cost": 0.00102
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 1.8
+    },
+    {
+      "representation": "screenshot",
+      "question": 2,
+      "prompt": "Where do I click to change the funder and funding programme for this note?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024660-7Hawnv8r16kKIWKULsNv",
+      "provider": "OpenAI",
+      "answer": "Click the **Context** tab near the top, beside **Structure**. That’s where funder and funding programme settings should be managed. The screenshot doesn’t show the controls available after opening that tab.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 3401,
+        "completion_tokens": 110,
+        "total_tokens": 3511,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 1755,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0116442,
+          "upstream_inference_prompt_cost": 0.0094442,
+          "upstream_inference_completions_cost": 0.0022
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 63,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 3.5
+    },
+    {
+      "representation": "mermaid",
+      "question": 2,
+      "prompt": "Where do I click to change the funder and funding programme for this note?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024662-V7qNooxYBidTkwtJQ6Cz",
+      "provider": "OpenAI",
+      "answer": "In the right-hand workspace, open **Context**. Under **Funder profile**, click **Change**. Then:\n\n1. Choose the funder.\n2. Choose the funding programme.\n3. Preview the linked template.\n4. Click **Save selection**.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 1990,
+        "completion_tokens": 57,
+        "total_tokens": 2047,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 344,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0035292,
+          "upstream_inference_prompt_cost": 0.0023892,
+          "upstream_inference_completions_cost": 0.00114
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 1.83
+    },
+    {
+      "representation": "action_map",
+      "question": 2,
+      "prompt": "Where do I click to change the funder and funding programme for this note?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024663-mHQHSRYgw4B8h93FT0TW",
+      "provider": "OpenAI",
+      "answer": "In the right workspace, click:\n\n**Context → Funder profile → Change**\n\nThen choose the funder and programme, preview the linked template, and click **Save selection**.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2041,
+        "completion_tokens": 40,
+        "total_tokens": 2081,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 395,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0034442,
+          "upstream_inference_prompt_cost": 0.0026442,
+          "upstream_inference_completions_cost": 0.0008
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 1.28
+    },
+    {
+      "representation": "tree",
+      "question": 2,
+      "prompt": "Where do I click to change the funder and funding programme for this note?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024663-hF8inxC6ldgyfNDEytHU",
+      "provider": "OpenAI",
+      "answer": "On the right, open the **Context** tab. Under **Funder profile / Funding programme**, click **Change**. In the dialog, select the new **funder**, then the **programme**, review the linked template preview, and click **Save selection**.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2094,
+        "completion_tokens": 58,
+        "total_tokens": 2152,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 448,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0040692,
+          "upstream_inference_prompt_cost": 0.0029092,
+          "upstream_inference_completions_cost": 0.00116
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 1.66
+    },
+    {
+      "representation": "screenshot",
+      "question": 3,
+      "prompt": "I have a PDF with more project information. Where do I upload it?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024664-ck9WgTbuUh74P1Uk4BQk",
+      "provider": "OpenAI",
+      "answer": "In the left **Clima** panel, click **Add recommended source** under **Uploaded evidence: none**, then select your PDF for upload.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 3400,
+        "completion_tokens": 33,
+        "total_tokens": 3433,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 1754,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0100992,
+          "upstream_inference_prompt_cost": 0.0094392,
+          "upstream_inference_completions_cost": 0.00066
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 1.58
+    },
+    {
+      "representation": "mermaid",
+      "question": 3,
+      "prompt": "I have a PDF with more project information. Where do I upload it?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024664-y8YAjAHC9NbfTdsEWmkI",
+      "provider": "OpenAI",
+      "answer": "In the right-hand workspace, open **Context** → **Your files**, then select **Upload file**. You can upload a PDF or Markdown file there.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 1989,
+        "completion_tokens": 36,
+        "total_tokens": 2025,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 343,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0031042,
+          "upstream_inference_prompt_cost": 0.0023842,
+          "upstream_inference_completions_cost": 0.00072
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 1.51
+    },
+    {
+      "representation": "html",
+      "question": 3,
+      "prompt": "I have a PDF with more project information. Where do I upload it?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024664-PPdMKt8jmMgcFQ4bJnrk",
+      "provider": "OpenAI",
+      "answer": "In the right-hand workspace, open the **Context** tab. Under **Your files**, click **Upload file** and select your PDF.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 3094,
+        "completion_tokens": 85,
+        "total_tokens": 3179,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 1448,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0096092,
+          "upstream_inference_prompt_cost": 0.0079092,
+          "upstream_inference_completions_cost": 0.0017
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 51,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 2.83
+    },
+    {
+      "representation": "tree",
+      "question": 3,
+      "prompt": "I have a PDF with more project information. Where do I upload it?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024666-J96RRFUBqv1ulOk46jSr",
+      "provider": "OpenAI",
+      "answer": "In the right-hand workspace, open the **Context** tab. Under **Your files**, click **Upload file** and select your PDF.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2093,
+        "completion_tokens": 32,
+        "total_tokens": 2125,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 447,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0035442,
+          "upstream_inference_prompt_cost": 0.0029042,
+          "upstream_inference_completions_cost": 0.00064
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 1.49
+    },
+    {
+      "representation": "action_map",
+      "question": 3,
+      "prompt": "I have a PDF with more project information. Where do I upload it?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024666-xR2q3BB6hrAfIGOpunO3",
+      "provider": "OpenAI",
+      "answer": "In the right-hand workspace, go to **Context → Your files → Upload file**, then select your PDF.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2040,
+        "completion_tokens": 26,
+        "total_tokens": 2066,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 394,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0031592,
+          "upstream_inference_prompt_cost": 0.0026392,
+          "upstream_inference_completions_cost": 0.00052
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 1.47
+    },
+    {
+      "representation": "html",
+      "question": 4,
+      "prompt": "I want to correct a sentence in the draft. Where do I type the change, and how do I save it?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024667-q3aFJWX9WlDj7BV7d48Z",
+      "provider": "OpenAI",
+      "answer": "Type your requested sentence replacement in the **Clima chat box on the left**, then click the green **↑ Send** button.\n\nClima will create a proposed edit in the document. Review it there, then select **Accept this change** or **Accept all** to save/apply it. The draft preview is read-only, and there is no separate Save button.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 3103,
+        "completion_tokens": 78,
+        "total_tokens": 3181,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 1457,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0095142,
+          "upstream_inference_prompt_cost": 0.0079542,
+          "upstream_inference_completions_cost": 0.00156
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 2.34
+    },
+    {
+      "representation": "tree",
+      "question": 4,
+      "prompt": "I want to correct a sentence in the draft. Where do I type the change, and how do I save it?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024670-1DqhzwwRiQzOzYkyInNw",
+      "provider": "OpenAI",
+      "answer": "Type your replacement request in the **Clima chat textbox on the left**, then click **Send message**.\n\nClima will create a proposed edit. Select **Review in document**, then choose **Accept this change** (or **Accept all**) to save it. The draft itself is read-only, and there is no separate Save button.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2102,
+        "completion_tokens": 72,
+        "total_tokens": 2174,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 456,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0043892,
+          "upstream_inference_prompt_cost": 0.0029492,
+          "upstream_inference_completions_cost": 0.00144
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 1.8
+    },
+    {
+      "representation": "mermaid",
+      "question": 4,
+      "prompt": "I want to correct a sentence in the draft. Where do I type the change, and how do I save it?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024667-LzngtXvv5MkNKQz4aOD9",
+      "provider": "OpenAI",
+      "answer": "Type the requested correction in the **Clima chat box** at the bottom left—for example, quote the sentence and provide the replacement.\n\nClima will create a **proposed change**. Then select **Review in document** and choose **Accept this change** (or **Accept all**) to apply it. The draft is read-only, so you cannot type directly into it, and there is no separate Save button; accepted edits are autosaved.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 1998,
+        "completion_tokens": 138,
+        "total_tokens": 2136,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 352,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0051892,
+          "upstream_inference_prompt_cost": 0.0024292,
+          "upstream_inference_completions_cost": 0.00276
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 42,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 4.17
+    },
+    {
+      "representation": "screenshot",
+      "question": 4,
+      "prompt": "I want to correct a sentence in the draft. Where do I type the change, and how do I save it?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024667-09TWZnVyMXlzTETzuBa0",
+      "provider": "OpenAI",
+      "answer": "Type the exact sentence and your corrected wording in the **“Ask Clima about this concept note”** box at the bottom left, then click the green arrow.\n\nClima will create a reviewable proposal; it does **not** save automatically. Review the inline document changes and accept them using the review controls. This screenshot does not show a direct draft-editing field or the proposal acceptance buttons.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 3409,
+        "completion_tokens": 192,
+        "total_tokens": 3601,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 1763,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0133242,
+          "upstream_inference_prompt_cost": 0.0094842,
+          "upstream_inference_completions_cost": 0.00384
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 106,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 4.52
+    },
+    {
+      "representation": "action_map",
+      "question": 4,
+      "prompt": "I want to correct a sentence in the draft. Where do I type the change, and how do I save it?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024671-pcaiIb2Nkq1MkrZxBoOO",
+      "provider": "OpenAI",
+      "answer": "Type your requested correction in the **bottom-left chat box** labeled **“Ask Clima about this concept note”**, then send it.\n\nI’ll create a proposed edit. In the document, select **Review in document**, then **Accept this change** or **Accept all**. The correction is applied when accepted—there is no separate Save button.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2049,
+        "completion_tokens": 75,
+        "total_tokens": 2124,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 403,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0041842,
+          "upstream_inference_prompt_cost": 0.0026842,
+          "upstream_inference_completions_cost": 0.0015
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 2.27
+    },
+    {
+      "representation": "html",
+      "question": 5,
+      "prompt": "How do I download this note as a PDF, and why might the download button be disabled?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024672-5tuhtUZmw5xrepEhuHck",
+      "provider": "OpenAI",
+      "answer": "Click **Review & export**, then work through:\n\n1. **Missing information**\n2. **Conflicts & logic**\n3. **Decision**\n4. Choose **Export anyway** and confirm exporting the current draft\n5. Click **Export PDF**\n\nThe PDF button may be disabled because the note has **25 blocking issues**, **0 reviewed chapters**, and **4 chapters that could not be checked**. Fill critical gaps by requesting edits in chat, then accept the proposed document changes. Having no uploaded evidence does **not** by itself block export.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 3098,
+        "completion_tokens": 253,
+        "total_tokens": 3351,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 1452,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0129892,
+          "upstream_inference_prompt_cost": 0.0079292,
+          "upstream_inference_completions_cost": 0.00506
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 137,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 4.3
+    },
+    {
+      "representation": "screenshot",
+      "question": 5,
+      "prompt": "How do I download this note as a PDF, and why might the download button be disabled?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024672-qs1aK4bDwBizxkigQOHI",
+      "provider": "OpenAI",
+      "answer": "Click **Review & export** in the upper-right. The next screen should contain the PDF export option, though its exact controls aren’t shown here.\n\nIf PDF download is disabled, the visible likely blockers are the note’s **In progress** status and multiple **open gaps / Needs review** sections. This screen does not confirm the exact disabling rule; check the Review & export screen for validation messages listing required items.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 3404,
+        "completion_tokens": 174,
+        "total_tokens": 3578,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 1758,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0129392,
+          "upstream_inference_prompt_cost": 0.0094592,
+          "upstream_inference_completions_cost": 0.00348
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 85,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 4.5
+    },
+    {
+      "representation": "mermaid",
+      "question": 5,
+      "prompt": "How do I download this note as a PDF, and why might the download button be disabled?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024674-HvPjNWuio4Mw8SPSnTQq",
+      "provider": "OpenAI",
+      "answer": "Open **Review & export** → **Decide & export**. Once the note passes the required checks, select **Export PDF**.\n\nThe button is currently disabled because **25 critical information gaps** are blocking export and **4 chapter checks have failed**. Ask Clima to propose the missing edits, then use **Review in document** and accept the relevant changes. Not having an uploaded file is **not** itself an export blocker.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 1993,
+        "completion_tokens": 169,
+        "total_tokens": 2162,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 347,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0057842,
+          "upstream_inference_prompt_cost": 0.0024042,
+          "upstream_inference_completions_cost": 0.00338
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 75,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 4.47
+    },
+    {
+      "representation": "tree",
+      "question": 5,
+      "prompt": "How do I download this note as a PDF, and why might the download button be disabled?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024676-2Qsr5PRpvtaTYgDXSiFH",
+      "provider": "OpenAI",
+      "answer": "Click **Review & export** in the top-right, then proceed through:\n\n**Missing information → Conflicts & logic → Decision → Export anyway → Export PDF**\n\nThe **Export PDF** button is currently disabled because the note has **25 critical gaps**. Resolve them by requesting replacement content in chat, then use **Review in document** and accept the proposed changes. Chat suggestions are not saved until accepted.\n\nHaving no uploaded files does **not** by itself block export.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2097,
+        "completion_tokens": 189,
+        "total_tokens": 2286,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 451,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0067042,
+          "upstream_inference_prompt_cost": 0.0029242,
+          "upstream_inference_completions_cost": 0.00378
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 89,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 3.45
+    },
+    {
+      "representation": "action_map",
+      "question": 5,
+      "prompt": "How do I download this note as a PDF, and why might the download button be disabled?",
+      "model": "openai/gpt-5.6-sol",
+      "id": "gen-1790024676-r79HCUjubzPl81l0fdPH",
+      "provider": "OpenAI",
+      "answer": "To download a PDF, use **Review & export** in the top-right, then follow:\n\n**Missing information → Conflicts & logic → Decide & export → Export anyway → Export PDF**\n\nThe export control is currently disabled because the draft has **25 critical gaps**. Fill these through chat-proposed edits, then review and accept the changes in the document. Uploaded files are **not** required for export.",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2044,
+        "completion_tokens": 217,
+        "total_tokens": 2261,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 1643,
+          "cache_write_tokens": 398,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0069992,
+          "upstream_inference_prompt_cost": 0.0026592,
+          "upstream_inference_completions_cost": 0.00434
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 129,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "seconds": 4.38
+    }
+  ],
+  "catalog_pricing": {
+    "prompt": "0.000002",
+    "completion": "0.00001",
+    "web_search": "0.01",
+    "input_cache_read": "0.0000002",
+    "input_cache_write": "0.0000025",
+    "overrides": [
+      {
+        "min_prompt_tokens": 272000,
+        "prompt": "0.000004",
+        "completion": "0.000015",
+        "input_cache_read": "0.0000004",
+        "input_cache_write": "0.000005"
+      }
+    ]
+  }
+}

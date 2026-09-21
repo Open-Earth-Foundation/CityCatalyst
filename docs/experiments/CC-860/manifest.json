@@ -1,0 +1,242 @@
+[
+  {
+    "path": ".gitattributes",
+    "bytes": 8,
+    "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+  },
+  {
+    "path": "action_map.txt",
+    "bytes": 1514,
+    "sha256": "48da600f074e3fe7af577cca70c341b66fb16114fd167fb9270898f930ca81da"
+  },
+  {
+    "path": "baseline-recording/first-take/answers.json",
+    "bytes": 261,
+    "sha256": "7abf78293e477b3b52c453f5dd70549fb783af703002c274085d365be8596e53"
+  },
+  {
+    "path": "baseline-recording/first-take/auth.cjs",
+    "bytes": 1496,
+    "sha256": "958a76dc8ed4525165717f26f4a2c0f046d97a5675d85e1453810ffc86f12e3f"
+  },
+  {
+    "path": "baseline-recording/first-take/cc860-five-questions-findings.json",
+    "bytes": 2528,
+    "sha256": "6279102f4fa2ba49d3f07f36609d3e3fc663bea87efb90160c324dfbd98350e0"
+  },
+  {
+    "path": "baseline-recording/first-take/cc860-five-questions.json",
+    "bytes": 5425,
+    "sha256": "e7edeeba27d2a192abf933064f5bc2919befba79855620d3008e4a56497b1f29"
+  },
+  {
+    "path": "baseline-recording/first-take/cc860-five-questions.mp4",
+    "bytes": 1641551,
+    "sha256": "b17932cb7937bcc5c25e5af1f4703e1217e745ba3e5fb5bf1630fcae6a19b8c1"
+  },
+  {
+    "path": "baseline-recording/first-take/cc860-five-questions.webm",
+    "bytes": 2990419,
+    "sha256": "77ab7b023df97457742788bdef6e01ce698f7797ed58f75021521224cd7c1af5"
+  },
+  {
+    "path": "baseline-recording/first-take/preflight.cjs",
+    "bytes": 1255,
+    "sha256": "069a2c94dbaf66a6a08f3b1549d98f548d3b30be3e1784f8ff2ef6976ac0902d"
+  },
+  {
+    "path": "baseline-recording/first-take/preflight.json",
+    "bytes": 181,
+    "sha256": "53474449e56f1966e98abfb8fe501d80715dd8c8733dddd9441f39b028194e59"
+  },
+  {
+    "path": "baseline-recording/first-take/scenario.cjs",
+    "bytes": 7927,
+    "sha256": "d5979f923efbfc37c4254e41625010928b2a700d069aab4ef84ccfa7a2946eab"
+  },
+  {
+    "path": "baseline-recording/first-take/starting-state.png",
+    "bytes": 149593,
+    "sha256": "25aba035a8bc255c91117b472d71cad18aa46b03cbaa685a23e2f12020f20c27"
+  },
+  {
+    "path": "baseline-recording/take2/answers.json",
+    "bytes": 5797,
+    "sha256": "81904eb2e6c264773b385c3986c72289c6fabfb9bc2f488fef4f5569cce76727"
+  },
+  {
+    "path": "baseline-recording/take2/cc860-five-questions-findings.json",
+    "bytes": 4641,
+    "sha256": "c6b878b4c972944746836eea36f95ec5bf844fa2cf2993977323c326ebff8d33"
+  },
+  {
+    "path": "baseline-recording/take2/cc860-five-questions-report.md",
+    "bytes": 11878,
+    "sha256": "12408fe3b9325ef6afea61f59d33d2c587c405c74b6a69988d6aec2343cee604"
+  },
+  {
+    "path": "baseline-recording/take2/cc860-five-questions.json",
+    "bytes": 5792,
+    "sha256": "06a065444ab8a676f82b27c307a6c6b31892156d31e1d76172c0b561e8892bf8"
+  },
+  {
+    "path": "baseline-recording/take2/cc860-five-questions.mp4",
+    "bytes": 9668910,
+    "sha256": "0d6ba9fdb109ac01b65b1a6f7b0a749b582ca07079d1e8314fd4ce0d1794d104"
+  },
+  {
+    "path": "baseline-recording/take2/cc860-five-questions.webm",
+    "bytes": 15215693,
+    "sha256": "62b967ac693d17c07a9c5acbe8b764dd2ad16d0936655ad83fba6549b94bdc46"
+  },
+  {
+    "path": "baseline-recording/take2/preview.png",
+    "bytes": 685935,
+    "sha256": "92cf8dec465060b181ae0e7c9ab63f2fa8df7110bab6910809d696400f19a354"
+  },
+  {
+    "path": "baseline-recording/take2/q1-answer.png",
+    "bytes": 176393,
+    "sha256": "e679e02ef77d2edad662aa9b993d3e262e4ded1b27612576ce0c3c504d7d69df"
+  },
+  {
+    "path": "baseline-recording/take2/q2-answer.png",
+    "bytes": 204775,
+    "sha256": "aaba1bd83d390d71d1182b3b050debf9a4f9c9cc02db15d7bd163a89607f9713"
+  },
+  {
+    "path": "baseline-recording/take2/q2-real-funding-controls.png",
+    "bytes": 168565,
+    "sha256": "a58378d8706fbe90708f0c4522b80b2e6bca911c8cc8f860c5b2009cee1420fc"
+  },
+  {
+    "path": "baseline-recording/take2/q3-answer.png",
+    "bytes": 203843,
+    "sha256": "e041294812334da85446567e8e1333f16820b00ad0e1519b8be86ea902be5991"
+  },
+  {
+    "path": "baseline-recording/take2/q3-real-upload-control.png",
+    "bytes": 195789,
+    "sha256": "38c3126e3dfcbb0d726f9d974531f384fca158d8358af2e5cd0117946c124e82"
+  },
+  {
+    "path": "baseline-recording/take2/q4-answer.png",
+    "bytes": 200762,
+    "sha256": "dba5dd465f643eacee88ce2629e5af3a0a19ad823a89ade44287f5ae6aed0606"
+  },
+  {
+    "path": "baseline-recording/take2/q5-answer.png",
+    "bytes": 194931,
+    "sha256": "dc5f7ccb0c4661961770a4e827d4c510ccbe7cf508bb7982719aa0506c89c8b9"
+  },
+  {
+    "path": "baseline-recording/take2/q5-real-export-controls.png",
+    "bytes": 176359,
+    "sha256": "19231678e174d67673a373d876e68c60e222d3cb8c228413e3375a57a778d428"
+  },
+  {
+    "path": "baseline-recording/take2/starting-state.png",
+    "bytes": 141606,
+    "sha256": "3fa984311bd356436c69fb48f3136fb7e1cb73d01243ececd8b3ee7c1c75e49a"
+  },
+  {
+    "path": "capture.cjs",
+    "bytes": 3105,
+    "sha256": "88874f351fce28c7796b01500fa34f6c7ba8a33d7f167b9a97f1274766b1cbae"
+  },
+  {
+    "path": "compare.py",
+    "bytes": 14666,
+    "sha256": "c40c677e53b0d45a7539bdbc1084783ac0f3fdd19ef4458920d6453acadc3485"
+  },
+  {
+    "path": "experiment-system-prompt.txt",
+    "bytes": 7969,
+    "sha256": "bb1252dcde18fd4abe934d1fe43487e6e422abb1ff3256f1d97f10843d7bd359"
+  },
+  {
+    "path": "html-preview.png",
+    "bytes": 69399,
+    "sha256": "b481296a801c01ee9ae0fe11931990e91c5473592b0d1791c339993791833fcf"
+  },
+  {
+    "path": "html.txt",
+    "bytes": 5278,
+    "sha256": "2d0a284a2f87ea1fadb0aa51922b6c63d89dc7912dbcc9780540d22ffe453151"
+  },
+  {
+    "path": "mermaid.txt",
+    "bytes": 1277,
+    "sha256": "091b7c68e4e623eafbda5890c6caf82ad352d47019bb3f1c74986282daa72166"
+  },
+  {
+    "path": "observed-ui.json",
+    "bytes": 17411,
+    "sha256": "e65cb9cb52e62b3049708a4627157d3ae6268e75eae8f209bc33fb1af2636056"
+  },
+  {
+    "path": "README.md",
+    "bytes": 30883,
+    "sha256": "cf16d3940d6af9b410c705caeaa87c7ffb429ff010e6f1f6699d5fd22e8df8ba"
+  },
+  {
+    "path": "representations.json",
+    "bytes": 10075,
+    "sha256": "d542d33d2a54931c569190a5c5aaeedc0c6a13c6a5227c176f52deeb177bbd34"
+  },
+  {
+    "path": "rerun.py",
+    "bytes": 4144,
+    "sha256": "43cce730d794ef2f8f8b982bd4902c4a9df609b2d002ddf64caed6a28a67dad5"
+  },
+  {
+    "path": "results.json",
+    "bytes": 35987,
+    "sha256": "247e32ee651f37ced94c6af060f51ef487114f990214e03921b47831ed5c3036"
+  },
+  {
+    "path": "runtime-check.py",
+    "bytes": 2683,
+    "sha256": "47667c475a37bce0b69b297845ad4ec97ea770ff81792aeb4e26e4bbb1760f73"
+  },
+  {
+    "path": "runtime-results.json",
+    "bytes": 17850,
+    "sha256": "7f7b744d742a84419239e7cb79aeccbc699794ea5cc1d021f00f0438d6539572"
+  },
+  {
+    "path": "screenshot.png",
+    "bytes": 132454,
+    "sha256": "c9b1453c0080a1f9518ed108a5abbe232de75e65f01d9090d012d2d66a1a296b"
+  },
+  {
+    "path": "selected-context.txt",
+    "bytes": 1722,
+    "sha256": "78d5d1937ad1a979b41db4ab6c033d079ea657cf160bc33a50160dfcb6d1289d"
+  },
+  {
+    "path": "tree-live-results.json",
+    "bytes": 8026,
+    "sha256": "7c38c6c5cc8e8aba14e252a85303a9ae324e401c581be2e4ebb4fde9b8448b7c"
+  },
+  {
+    "path": "tree-live-v2-results.json",
+    "bytes": 8218,
+    "sha256": "1cc191edf1bbaf7e0b7822e288345f16d78a512c014b04eb5e36ac260c059508"
+  },
+  {
+    "path": "tree-live.py",
+    "bytes": 4947,
+    "sha256": "b5cb12dd3a16252cd8671c4b30c72b78826d4ab0019cd2fb26e3e335cdad705d"
+  },
+  {
+    "path": "tree.txt",
+    "bytes": 1728,
+    "sha256": "31b9971c5775ef67be77e5dfc84e35aa15b63c971b19da951160269c9d9c7a04"
+  },
+  {
+    "path": "ui.html",
+    "bytes": 5278,
+    "sha256": "2d0a284a2f87ea1fadb0aa51922b6c63d89dc7912dbcc9780540d22ffe453151"
+  }
+]

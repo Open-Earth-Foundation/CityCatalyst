@@ -539,6 +539,35 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
                         user_id="user-1",
                     )
 
+    async def test_get_user_inventories_skips_refresh_when_disabled(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ), patch("app.services.citycatalyst_client.is_token_expired", return_value=True):
+            client = CityCatalystClient(
+                base_url="https://cc.example", api_key="test-api-key"
+            )
+            stub = _StubAsyncClient([_response(401, json_data={"error": "Unauthorized"})])
+            refresh_token = AsyncMock(return_value=("fresh-token", 3600))
+
+            with (
+                patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+                patch.object(client, "refresh_token", new=refresh_token),
+            ):
+                with self.assertRaises(CityCatalystClientError) as captured:
+                    await client.get_user_inventories(
+                        token="expired-token",
+                        user_id="user-1",
+                        auto_refresh=False,
+                    )
+
+        self.assertEqual(captured.exception.status_code, 401)
+        refresh_token.assert_not_awaited()
+        self.assertEqual(len(stub.requests), 1)
+        self.assertEqual(
+            stub.requests[0]["headers"]["Authorization"], "Bearer expired-token"
+        )
+
     async def test_refresh_token_success(self) -> None:
         with patch(
             "app.services.citycatalyst_client.get_settings",

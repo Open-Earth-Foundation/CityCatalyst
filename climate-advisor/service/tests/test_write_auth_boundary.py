@@ -529,6 +529,36 @@ class DeveloperInventoryBoundaryTests:
         assert response.status_code == 401
         refresh_token.assert_not_awaited()
 
+    def test_inventory_401_does_not_refresh_presented_bearer(self, sqlite_app) -> None:
+        client, _session_factory = sqlite_app
+        refresh_token = AsyncMock(return_value=("fresh-token", 3600))
+        with (
+            patch(
+                "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
+                new=AsyncMock(return_value="user-1"),
+            ),
+            patch(
+                "app.routes.dev_inventory.CityCatalystClient.get_user_inventories",
+                new=AsyncMock(
+                    side_effect=CityCatalystClientError(
+                        "unauthorized", status_code=401
+                    )
+                ),
+            ),
+            patch(
+                "app.routes.dev_inventory.CityCatalystClient.refresh_token",
+                new=refresh_token,
+            ),
+        ):
+            response = client.post(
+                "/v1/dev/user-inventories-check",
+                json={"user_id": "user-1"},
+                headers=_auth_header(),
+            )
+        assert response.status_code == 401
+        assert _problem_title(response) == WRITE_AUTH_FAILED
+        refresh_token.assert_not_awaited()
+
 
 def _empty_stream(*_args: Any, **_kwargs: Any):
     async def _gen():

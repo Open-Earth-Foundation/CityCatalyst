@@ -11,7 +11,10 @@ from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
 )
-from app.utils.citycatalyst_auth import authenticate_write_request
+from app.utils.citycatalyst_auth import (
+    WRITE_AUTH_FAILED,
+    authenticate_write_request,
+)
 from app.utils.token_manager import get_token_expiry
 
 
@@ -54,6 +57,7 @@ async def user_inventories_check(
             inventories = await client.get_user_inventories(
                 token=identity.token,
                 user_id=identity.user_id,
+                auto_refresh=False,
             )
         except CityCatalystClientError as exc:
             logger.error(
@@ -61,6 +65,11 @@ async def user_inventories_check(
                 identity.user_id,
                 exc,
             )
+            if exc.status_code in {401, 403}:
+                raise HTTPException(
+                    status_code=401,
+                    detail=WRITE_AUTH_FAILED,
+                ) from exc
             raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     data: List[Any] = []

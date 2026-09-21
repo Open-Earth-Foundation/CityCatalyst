@@ -313,7 +313,7 @@ class CityCatalystClient:
             CityCatalystClientError: If request fails
         """
         # Check if token is expired and refresh preemptively
-        if is_token_expired(token):
+        if auto_refresh and is_token_expired(token):
             logger.debug("Token expired, refreshing preemptively")
             try:
                 token, _ = await self.refresh_token(user_id)
@@ -917,12 +917,15 @@ class CityCatalystClient:
         *,
         token: str,
         user_id: str,
+        auto_refresh: bool = True,
     ) -> Dict[str, Any]:
         """Fetch all inventories available to the authenticated user.
 
         Args:
             token: User access token
             user_id: User ID for token refresh context
+            auto_refresh: Refresh on expiry/401. Developer write-auth callers
+                pass False so the presented bearer is used as-is.
 
         Returns:
             Dictionary payload containing the list of inventories
@@ -939,6 +942,7 @@ class CityCatalystClient:
             token=token,
             user_id=user_id,
             thread_id="",  # Not used in new refresh method
+            auto_refresh=auto_refresh,
         )
 
         if not response.is_success:
@@ -950,7 +954,8 @@ class CityCatalystClient:
                 error_text,
             )
             raise CityCatalystClientError(
-                f"Failed to fetch user inventories: {response.status_code} - {error_text}"
+                f"Failed to fetch user inventories: {response.status_code} - {error_text}",
+                status_code=response.status_code,
             )
 
         try:

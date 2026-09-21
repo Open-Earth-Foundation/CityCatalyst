@@ -313,25 +313,23 @@ export default class MeedApiService {
         { transaction },
       );
       const removedActions = await db.models.MeedActionRemoved.bulkCreate(
-        removedActionsRaw.map(
-          (action) => ({
+        removedActionsRaw.map((action) => ({
           id: randomUUID(),
           inventoryId,
           rankingId: ranking.id,
-            actionId: action.action_id,
-            actionName: action.action_name,
-            removalReason: action.removal_reason,
-            removalSource: action.removal_source,
-            verdictCategory: action.legal?.verdict_category,
-            ownershipCategory: action.legal?.ownership_category,
-            restrictionsCategory: action.legal?.restrictions_category,
-            ownershipDescription: action.legal?.ownership_description,
-            restrictionsDescription: action.legal?.restrictions_description,
-            legalJustification: action.legal?.legal_justification,
-            legalReferences: action.legal?.legal_references,
-          }),
-          { transaction },
-        ),
+          actionId: action.action_id,
+          actionName: action.action_name,
+          removalReason: action.removal_reason,
+          removalSource: action.removal_source,
+          verdictCategory: action.legal?.verdict_category,
+          ownershipCategory: action.legal?.ownership_category,
+          restrictionsCategory: action.legal?.restrictions_category,
+          ownershipDescription: action.legal?.ownership_description,
+          restrictionsDescription: action.legal?.restrictions_description,
+          legalJustification: action.legal?.legal_justification,
+          legalReferences: action.legal?.legal_references,
+        })),
+        { transaction },
       );
       return { ranking, rankedActions, removedActions };
     });

@@ -312,10 +312,6 @@ export default class MeedApiService {
         })),
         { transaction },
       );
-      // `{ transaction }` is bulkCreate's second argument, not map's: passed
-      // to map it is ignored (map's second argument is `thisArg`), the rows
-      // were inserted outside the transaction, and the FK to the uncommitted
-      // MeedRanking row failed on every ranking that had removed actions.
       const removedActions = await db.models.MeedActionRemoved.bulkCreate(
         removedActionsRaw.map((action) => ({
           id: randomUUID(),

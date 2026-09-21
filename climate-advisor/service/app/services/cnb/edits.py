@@ -27,6 +27,7 @@ from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceReposito
 from app.services.cnb.edit_planner import ConceptNoteEditPlanner
 from app.services.cnb.edit_validation import validate_edit_plan
 from app.utils.cnb_observability import record_edit_outcome
+from app.utils.cnb_progress import emit_cnb_progress
 from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -184,6 +185,7 @@ class ConceptNoteEditService:
                     changes=[],
                     clarification=plan.clarification,
                 )
+            await emit_cnb_progress("validating")
             changes = validate_edit_plan(
                 request,
                 chapters,
@@ -197,7 +199,10 @@ class ConceptNoteEditService:
                 chapter.chapter_id: chapter.revision_number for chapter in chapters
             }
             result = await self.repository.finish(
-                **identity, base_revisions=base_revisions, changes=changes
+                **identity,
+                base_revisions=base_revisions,
+                changes=changes,
+                notices=plan.notices,
             )
             if (
                 prior is not None

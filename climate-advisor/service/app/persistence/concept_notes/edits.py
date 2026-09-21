@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
@@ -17,8 +18,10 @@ from app.models.cnb.concept_note_edits import (
     EditApplicationResult,
     EditApplyRequest,
     EditChange,
+    EditNotice,
     EditProposalRequest,
     EditProposalResponse,
+    PlannedTextChange,
 )
 from app.models.db.cnb_edit import ConceptNoteEditApplication, ConceptNoteEditProposal
 from app.models.db.cnb_workspace import (
@@ -107,6 +110,7 @@ class ConceptNoteEditRepository:
         changes: list[EditChange],
         clarification: str | None = None,
         error_code: str | None = None,
+        notices: list[EditNotice] | None = None,
     ) -> EditProposalResponse:
         """Finalize a processing proposal without reviving a concurrent rejection."""
         async with self._sessions() as session, session.begin():
@@ -119,6 +123,7 @@ class ConceptNoteEditRepository:
                 str(key): value for key, value in base_revisions.items()
             }
             row.changes = [change.model_dump(mode="json") for change in changes]
+            row.notices = [notice.model_dump(mode="json") for notice in (notices or [])]
             row.clarification = clarification
             row.error_code = error_code
             row.status = (
@@ -653,7 +658,7 @@ async def latest_revision(
     )
 
 
-def replace_anchors(body: str, changes: list[EditChange]) -> str:
+def replace_anchors(body: str, changes: Sequence[PlannedTextChange]) -> str:
     """Replace exact, non-overlapping anchors and preserve all unrelated bytes."""
     cursor = 0
     pieces: list[str] = []
@@ -686,6 +691,7 @@ def to_response(row: ConceptNoteEditProposal) -> EditProposalResponse:
             "status": row.status,
             "base_revisions": row.base_revisions,
             "changes": row.changes,
+            "notices": row.notices,
             "clarification": row.clarification,
             "error_code": row.error_code,
             "result": row.applied_result,

@@ -61,7 +61,16 @@ const refresh = jest.fn<() => Promise<void>>();
 
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({
-    t: (key: string) => translations[key as keyof typeof translations] ?? key,
+    t: (key: string, options?: { count?: number }) => {
+      const plural =
+        options?.count === undefined
+          ? key
+          : `${key}_${options.count === 1 ? "one" : "other"}`;
+      return (translations[plural as keyof typeof translations] ?? key).replace(
+        "{{count}}",
+        String(options?.count ?? ""),
+      );
+    },
   }),
 }));
 jest.unstable_mockModule("@/lib/hooks", () => ({
@@ -180,6 +189,21 @@ async function click(label: string) {
   expect(button!.disabled).toBe(false);
   await act(async () => button!.click());
 }
+
+it("shows persisted protected-match exclusions alongside the proposal", async () => {
+  proposals = [
+    { ...proposal, notices: [{ code: "protected_markers", count: 55 }] },
+  ];
+  await act(async () => root.render(<Harness />));
+  expect(
+    container.querySelector('[data-testid="concept-note-edit-exclusion"]')
+      ?.textContent,
+  ).toContain("55");
+  expect(
+    container.querySelector('[data-testid="concept-note-edit-exclusion"]')
+      ?.textContent,
+  ).toContain("preserved");
+});
 
 it("accepts remaining changes without applying a manually rejected change", async () => {
   await act(async () => review.decide(proposal, [ids[0]], "rejected"));

@@ -171,6 +171,7 @@ class CnbEditPromptBudgetConfig(BaseModel):
     max_concurrency: int = Field(default=5, ge=1, le=5)
     max_agent_turns: int = Field(default=12, ge=3, le=30)
     max_review_repairs: int = Field(default=2, ge=0, le=3)
+    max_searches: int = Field(default=100, ge=1, le=1000)
     timeout_seconds: int = Field(default=300, ge=30, le=600)
 
 

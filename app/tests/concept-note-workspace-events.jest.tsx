@@ -18,7 +18,11 @@ jest.unstable_mockModule("next-auth/react", () => ({
   useSession: () => ({ data: { user: { id: "user-1" } } }),
 }));
 jest.unstable_mockModule("@/services/concept-note-edit-api", () => ({
-  editApi: { util: {} },
+  editApi: {
+    util: {
+      upsertQueryEntries: (entries: unknown) => upsertQueryEntries(entries),
+    },
+  },
 }));
 const dispatch = jest.fn();
 const upsertQueryEntries = jest.fn((entries: unknown) => ({ entries }));
@@ -162,12 +166,17 @@ describe("useConceptNoteWorkspaceEvents", () => {
     });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(updateQueryData).toHaveBeenCalledWith(
-      "getConceptNoteDraft",
-      "run-1",
-      expect.any(Function),
-    );
-    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(upsertQueryEntries).toHaveBeenCalledWith([
+      {
+        endpointName: "getConceptNoteDraft",
+        arg: "run-1",
+        value: { run_id: "run-1", status: "complete" },
+      },
+    ]);
+    expect(invalidateTags).toHaveBeenCalledWith([
+      { type: "ConceptNoteRuns", id: "run-1" },
+    ]);
+    expect(dispatch).toHaveBeenCalledTimes(2);
     expect(releaseLock).toHaveBeenCalledTimes(1);
   });
 });

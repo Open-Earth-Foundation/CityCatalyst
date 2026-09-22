@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { shareWorkspaceObservation } from "./shared-workspace-observation";
+import { shareWorkspaceObservation } from "@/components/ConceptNoteWorkspace/shared-workspace-observation";
 
 import { useAppDispatch } from "@/lib/hooks";
 import { api } from "@/services/api";
@@ -154,34 +154,49 @@ export function useConceptNoteWorkspaceEvents({
     if (observeUpload && uploadId) params.set("upload_id", uploadId);
 
     let reconciledUpload = false;
+    let reconciledDraft = false;
     function updateCaches(snapshot: ConceptNoteWorkspaceSnapshot): void {
       if (
         snapshot.edits &&
         snapshot.edits.every((proposal) => proposal.run_id === runId)
       ) {
         dispatch(
-          editApi.util.updateQueryData(
-            "listEditProposals",
-            runId,
-            () => snapshot.edits!,
-          ),
+          editApi.util.upsertQueryEntries([
+            {
+              endpointName: "listEditProposals",
+              arg: runId,
+              value: snapshot.edits,
+            },
+          ]),
         );
       }
       if (snapshot.run?.run_id === runId) {
         dispatch(
-          api.util.updateQueryData(
-            "getConceptNoteRun",
-            { cityId, runId },
-            (current) => Object.assign(current, snapshot.run),
-          ),
+          api.util.upsertQueryEntries([
+            {
+              endpointName: "getConceptNoteRun",
+              arg: { cityId, runId },
+              value: snapshot.run,
+            },
+          ]),
         );
       }
       if (snapshot.draft?.run_id === runId) {
         dispatch(
-          api.util.updateQueryData("getConceptNoteDraft", runId, (current) =>
-            Object.assign(current, snapshot.draft),
-          ),
+          api.util.upsertQueryEntries([
+            {
+              endpointName: "getConceptNoteDraft",
+              arg: runId,
+              value: snapshot.draft,
+            },
+          ]),
         );
+        if (!reconciledDraft && snapshot.draft.status !== "running") {
+          reconciledDraft = true;
+          dispatch(
+            api.util.invalidateTags([{ type: "ConceptNoteRuns", id: runId }]),
+          );
+        }
       }
       if (snapshot.upload?.uploadId === uploadId && uploadId) {
         if (

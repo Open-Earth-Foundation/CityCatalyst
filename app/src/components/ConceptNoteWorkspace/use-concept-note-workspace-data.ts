@@ -2,24 +2,25 @@
 
 import { useState } from "react";
 
+import { useConceptNoteWorkspaceEvents } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-events";
 import { useTranslation } from "@/i18n/client";
+import { useAppDispatch } from "@/lib/hooks";
 import { api } from "@/services/api";
 import type { ConceptNoteUploadResponse } from "@/util/types";
 import {
   getConceptNoteContextState,
   getConceptNoteContextPresentation,
-} from "./context-status";
+} from "@/components/ConceptNoteWorkspace/context-status";
 
 import {
   getConceptNoteBundleProgress,
   normalizePopulationData,
-} from "../ConceptNoteDashboard/utils";
+} from "@/components/ConceptNoteDashboard/utils";
 import {
   conceptNoteSourceLabel,
   shouldPollConceptNoteUpload,
   validateConceptNoteSourceFile,
-} from "../ConceptNoteWiringHarness/utils";
-import { useConceptNoteWorkspaceEvents } from "./use-concept-note-workspace-events";
+} from "@/components/ConceptNoteWiringHarness/utils";
 
 interface WorkspaceDataOptions {
   cityId: string;
@@ -35,6 +36,7 @@ export function useConceptNoteWorkspaceData({
   runId,
 }: WorkspaceDataOptions) {
   const { t } = useTranslation(lng, "concept-notes");
+  const dispatch = useAppDispatch();
   const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
   const [uploadDetails, setUploadDetails] =
     useState<ConceptNoteUploadResponse | null>(null);
@@ -185,9 +187,9 @@ export function useConceptNoteWorkspaceData({
     cityId,
     runId,
     uploadId: selectedUploadId,
-    observeDraft: isDraftRunning,
-    observeUpload: isUploadActive,
-    observeRun: bundle.status === "building",
+    observeDraft: isDraftRunning || draftQueryFailed,
+    observeUpload: isUploadActive || uploadRefreshFailed,
+    observeRun: bundle.status === "building" || runFailed,
   });
 
   async function uploadSource(file: File): Promise<void> {
@@ -241,7 +243,16 @@ export function useConceptNoteWorkspaceData({
   async function startDrafting(): Promise<void> {
     if (!canStartDrafting || isDraftRunning) return;
     try {
-      await startDraftMutation(runId).unwrap();
+      const startedDraft = await startDraftMutation(runId).unwrap();
+      dispatch(
+        api.util.upsertQueryEntries([
+          {
+            endpointName: "getConceptNoteDraft",
+            arg: runId,
+            value: startedDraft,
+          },
+        ]),
+      );
     } catch {
       return;
     }

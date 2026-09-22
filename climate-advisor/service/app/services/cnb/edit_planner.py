@@ -135,6 +135,7 @@ class ConceptNoteEditPlanner:
             chapters,
             run_context,
             [*prior_user_inputs(prior_proposal), *recent_user_inputs(recent_messages)],
+            max_searches=budget.cnb_edits.max_searches,
         )
         options = build_openrouter_client_options(
             self._settings,

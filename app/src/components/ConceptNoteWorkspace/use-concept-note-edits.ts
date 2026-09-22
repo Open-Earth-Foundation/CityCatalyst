@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useConceptNoteWorkspaceEvents } from "./use-concept-note-workspace-events";
+import { useConceptNoteWorkspaceEvents } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-events";
 import { useAppDispatch } from "@/lib/hooks";
 import { editApi, editErrorCode } from "@/services/concept-note-edit-api";
 import {
@@ -37,7 +37,9 @@ export function useConceptNoteEdits({
     observeDraft: false,
     observeUpload: false,
     observeEdits: Boolean(
-      runId && query.currentData?.some((item) => item.status === "processing"),
+      runId &&
+      (query.isError ||
+        query.currentData?.some((item) => item.status === "processing")),
     ),
   });
   const [get] = editApi.useLazyGetEditProposalQuery();
@@ -85,6 +87,15 @@ export function useConceptNoteEdits({
     if (!runId) return;
     try {
       const result = await get({ runId, proposalId }).unwrap();
+      // Patching an absent collection is a no-op; recover it before merging the result.
+      if (!query.currentData || query.isError) {
+        await dispatch(
+          editApi.endpoints.listEditProposals.initiate(runId, {
+            subscribe: false,
+            forceRefetch: true,
+          }),
+        ).unwrap();
+      }
       remember(result);
       if (activeRun.current === runId) setError(null);
     } catch {

@@ -8,6 +8,12 @@ chat recovery. SSE is the delivery transport; active upstream resources are stil
 read periodically. The design proposals below are not all implemented.
 
 - Stable workspaces have no recurring run/draft/upload/proposal status requests.
+- Failed initial resource reads also activate observation so snapshots can populate
+  missing caches and clear query errors. Successful draft starts seed the draft
+  cache directly; terminal draft snapshots invalidate the run to refresh its workflow step.
+- Chat proposal results recover a missing or failed proposal collection before
+  merging the detail response. Pre-stream authorization throttling preserves
+  `Retry-After` through the standard API error handler.
 - Active resource reads are shared by `(authenticated user, run, resource,
   upload ID where applicable)` within a web process. Different resource selections
   can reuse the same resource observer. User data is never shared across users.
@@ -735,4 +741,3 @@ Prioritize removing unconditional run/draft polling, terminal upload polling, an
 Keep the live SSE POST response, including independent heartbeats. For D6, use a separate recovery GET SSE response that sends the current saved snapshot immediately and subsequent updates on the same connection. Reconnect only after interruptions, with backoff; close observation on terminal state. Preserve the previously accepted CNB operation/table, fingerprint, queue, versioning, and manual-editing decisions. Keep the current rate limiter unchanged while R11 is deferred.
 
 Further work on D1-D5 and D7 is outside the current scope. R6 defers model-context rebuilding and GHGI/CCRA refresh-policy changes, not browser polling removal. D6's transport decision does not itself provide worker restart safety, cross-database publication, or operation discovery when its ID is unknown. The workspace observer now covers non-chat run, draft, and upload completion, but durable chat-operation recovery remains unimplemented. This change does not execute migrations or establish browser/deployment evidence.
-

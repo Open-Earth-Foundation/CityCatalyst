@@ -8,7 +8,17 @@ import {
 } from "@jest/globals";
 
 const runId = "11111111-1111-4111-8111-111111111111";
-const loadRunCity = jest.fn<() => Promise<string>>();
+const loadRunCity =
+  jest.fn<
+    () => Promise<{
+      cityId: string;
+      initialUploads: Array<{
+        upload_id: string;
+        filename: string;
+        sha256: string;
+      }>;
+    }>
+  >();
 const updateUpload = jest.fn<() => Promise<void>>();
 const putFile = jest.fn<() => Promise<void>>();
 const enqueue =
@@ -32,7 +42,7 @@ const callConceptNoteApi =
 const canAccessCity = jest.fn<() => Promise<void>>();
 
 jest.unstable_mockModule("@/backend/ConceptNoteUploadService", () => ({
-  loadConceptNoteRunCity: loadRunCity,
+  loadConceptNoteUploadRun: loadRunCity,
   updateConceptNoteUpload: updateUpload,
 }));
 jest.unstable_mockModule("@/backend/InventoryFileStorageService", () => ({
@@ -96,7 +106,10 @@ const context = {
 describe("Concept Note source upload route", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    loadRunCity.mockResolvedValue("33333333-3333-4333-8333-333333333333");
+    loadRunCity.mockResolvedValue({
+      cityId: "33333333-3333-4333-8333-333333333333",
+      initialUploads: [],
+    });
     canAccessCity.mockResolvedValue(undefined);
     callConceptNoteApi.mockImplementation(async (request) =>
       Response.json({
@@ -123,6 +136,61 @@ describe("Concept Note source upload route", () => {
       return { status: "queued", stage: "ocr", canRetry: false };
     });
     updateUpload.mockResolvedValue(undefined);
+  });
+
+  it("replays the same upload after a lost response and confirms durable handoff", async () => {
+    const { createHash } = await import("node:crypto");
+    const uploadId = "22222222-2222-4222-8222-222222222222";
+    const content = "%PDF-1.7\ncontent";
+    loadRunCity.mockResolvedValue({
+      cityId: "33333333-3333-4333-8333-333333333333",
+      initialUploads: [
+        {
+          upload_id: uploadId,
+          filename: "plan.pdf",
+          sha256: createHash("sha256").update(content).digest("hex"),
+        },
+      ],
+    });
+    const request = () => {
+      const form = new FormData();
+      form.set(
+        "file",
+        new File([content], "plan.pdf", { type: "application/pdf" }),
+      );
+      form.set("initialUploadId", uploadId);
+      return new Request("http://localhost/upload", {
+        method: "POST",
+        body: form,
+      });
+    };
+    const first = await uploadHandler(request(), context);
+    const second = await uploadHandler(request(), context);
+    expect((await first.json()).uploadId).toBe(uploadId);
+    expect((await second.json()).uploadId).toBe(uploadId);
+    expect(enqueue.mock.calls.map(([id]) => id)).toEqual([uploadId, uploadId]);
+    expect(callConceptNoteApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: `/v1/concept-notes/${runId}/initial-uploads/${uploadId}/accepted`,
+        method: "POST",
+      }),
+    );
+    const changed = new FormData();
+    changed.set(
+      "file",
+      new File(["%PDF-different"], "plan.pdf", { type: "application/pdf" }),
+    );
+    changed.set("initialUploadId", uploadId);
+    await expect(
+      uploadHandler(
+        new Request("http://localhost/upload", {
+          method: "POST",
+          body: changed,
+        }),
+        context,
+      ),
+    ).rejects.toMatchObject({ statusCode: 409 });
+    expect(enqueue).toHaveBeenCalledTimes(2);
   });
 
   it("authorizes the run and city before consuming multipart bytes", async () => {
@@ -181,7 +249,7 @@ describe("Concept Note source upload route", () => {
     expect(triggerProcessing).toHaveBeenCalledTimes(1);
   });
 
-  it("assigns a fresh identity to repeated initial uploads", async () => {
+  it("assigns a fresh identity to uploads without a persisted initial identity", async () => {
     const first = await uploadHandler(
       requestWithFile("%PDF-1.7\nidentical"),
       context,

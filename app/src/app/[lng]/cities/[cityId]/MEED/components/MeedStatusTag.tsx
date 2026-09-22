@@ -11,7 +11,8 @@ import type { MeedSectionStatus } from "../meedStatus";
  * status variants (which are registered as a plain recipe while Chakra expects
  * a slot recipe, so they never render — see the root backlog).
  */
-export type MeedTone = "neutral" | "info" | "positive" | "warning" | "negative";
+export type MeedTone =
+  "neutral" | "info" | "positive" | "warning" | "caution" | "negative";
 
 const TONE_STYLES: Record<
   MeedTone,
@@ -36,6 +37,12 @@ const TONE_STYLES: Record<
     bg: "sentiment.warningOverlay",
     color: "sentiment.warningDefault",
     borderColor: "sentiment.warningDefault",
+  },
+  // Orange: between warning (yellow) and negative (red).
+  caution: {
+    bg: "sentiment.warningSubtle",
+    color: "interactive.quaternary",
+    borderColor: "interactive.quaternary",
   },
   negative: {
     bg: "sentiment.negativeOverlay",

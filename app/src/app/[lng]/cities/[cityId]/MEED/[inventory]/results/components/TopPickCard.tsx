@@ -72,7 +72,7 @@ export function TopPickCard({
 }: {
   action: MeedRankedActionResult;
   index: MeedActionIndex;
-  weights: MeedScoreWeights;
+  weights: MeedScoreWeights | null;
   t: TFunction;
   isSelected?: boolean;
   /** Omit to render the card read-only (no report checkbox), as on the home screen. */

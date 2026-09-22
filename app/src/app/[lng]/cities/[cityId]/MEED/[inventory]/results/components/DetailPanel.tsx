@@ -82,7 +82,7 @@ export function DetailPanel({
 }: {
   action: MeedRankedActionResult;
   index: MeedActionIndex;
-  weights: MeedScoreWeights;
+  weights: MeedScoreWeights | null;
   t: TFunction;
   onClose: () => void;
   /** Position in the ranking, when the caller knows it. */

@@ -33,7 +33,6 @@ import {
   isEmissionsEmpty,
   isEmissionsRetrieved,
 } from "../meedEmissions";
-import { PILLAR_WEIGHTS } from "../scoringWeights";
 import { buildActionIndex } from "./results/components/actionCatalog";
 import { ContextCardGrid } from "./results/components/ContextCardGrid";
 import type { MeedContextArea } from "./results/components/contextAreas";
@@ -152,7 +151,7 @@ export default function MEEDInventoryPage(props: {
   const ranked = useMemo(() => ranking?.result.ranked_actions ?? [], [ranking]);
   const backing = useMemo(() => policyBacking(ranked), [ranked]);
   const weights = useMemo(
-    () => readRankingWeights(ranking?.result ?? null, PILLAR_WEIGHTS),
+    () => readRankingWeights(ranking?.result ?? null),
     [ranking],
   );
   const excludedCount = excludedActionCount(ranking?.result ?? null);

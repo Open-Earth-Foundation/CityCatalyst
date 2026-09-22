@@ -20,7 +20,7 @@ export const FullRanking = React.forwardRef<
   {
     actions: MeedRankedActionResult[];
     index: MeedActionIndex;
-    weights: MeedScoreWeights;
+    weights: MeedScoreWeights | null;
     t: TFunction;
     onSelect: (action: MeedRankedActionResult) => void;
     selectedIds: string[];

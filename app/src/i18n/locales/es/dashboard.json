@@ -344,5 +344,6 @@
   "net-removal": "Eliminación de redes",
   "removal": "Eliminación",
   "removals-not-countable-footnote": "* Los subsectores con eliminaciones no son contables como emisiones",
-  "no-cited-source": "Sin fuente citada"
+  "no-cited-source": "Sin fuente citada",
+  "hero-inventory-line": "{{year}} · {{value}} {{unit}}"
 }

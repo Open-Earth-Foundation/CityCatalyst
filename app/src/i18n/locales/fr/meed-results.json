@@ -242,7 +242,7 @@
   "config-timeline": "Calendrier de mise en œuvre",
   "config-exclusions": "Exclusions",
   "config-exclusions-actions": "{{count}} actions confirmées pour exclusion",
-  "config-exclusions-sectors": "secteurs: {{liste}}",
+  "config-exclusions-sectors": "secteurs: {{list}}",
   "config-exclusions-cobenefits": "impact des avantages concomitants : {{list}}",
   "config-weights": "Poids de notation",
   "config-weights-value": "Impact {{impact}}% · Alignement {{alignment}}% · Faisabilité {{feasibility}}%",

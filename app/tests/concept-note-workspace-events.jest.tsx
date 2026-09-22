@@ -14,6 +14,12 @@ import { TextDecoder, TextEncoder } from "node:util";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
+jest.unstable_mockModule("next-auth/react", () => ({
+  useSession: () => ({ data: { user: { id: "user-1" } } }),
+}));
+jest.unstable_mockModule("@/services/concept-note-edit-api", () => ({
+  editApi: { util: {} },
+}));
 const dispatch = jest.fn();
 const updateQueryData = jest.fn(
   (endpoint: string, args: unknown, update: (current: object) => void) => ({

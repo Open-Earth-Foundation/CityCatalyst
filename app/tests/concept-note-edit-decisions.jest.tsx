@@ -19,6 +19,11 @@ import type {
 } from "@/util/concept-note-edit-types";
 import type { ConceptNoteDraftChapter } from "@/util/types";
 
+const observeWorkspace = jest.fn();
+jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/use-concept-note-workspace-events",
+  () => ({ useConceptNoteWorkspaceEvents: observeWorkspace }),
+);
 const chapterId = "11111111-1111-4111-8111-111111111111";
 const ids = [1, 2, 3].map((n) => `22222222-2222-4222-8222-22222222222${n}`);
 const proposal: EditProposal = {
@@ -311,4 +316,17 @@ it("does not show a previous run's draft recovery in another run", async () => {
   await act(async () => root.render(<Harness runId="run-2" />));
   expect(controller.needsDraftReload).toBe(false);
   expect(container.querySelector('[role="alert"]')).toBeNull();
+});
+
+it("observes a processing proposal after reload and stops once it is proposed", async () => {
+  proposals = [{ ...proposal, status: "processing" }];
+  await act(async () => root.render(<Harness />));
+  expect(observeWorkspace).toHaveBeenLastCalledWith(
+    expect.objectContaining({ observeEdits: true }),
+  );
+  proposals = [proposal];
+  await act(async () => root.render(<Harness />));
+  expect(observeWorkspace).toHaveBeenLastCalledWith(
+    expect.objectContaining({ observeEdits: false }),
+  );
 });

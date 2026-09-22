@@ -410,6 +410,6 @@ describe("useConceptNoteWorkspaceData", () => {
       runId: "run-1",
       uploadId: persistedUploadId,
     });
-    expect(refetchRun).toHaveBeenCalledTimes(1);
+    expect(refetchRun).not.toHaveBeenCalled();
   });
 });

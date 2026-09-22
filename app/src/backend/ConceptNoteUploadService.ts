@@ -87,11 +87,13 @@ export async function loadConceptNoteUpload(args: {
   uploadId: string;
   userId: string;
   requestId?: string;
+  signal?: AbortSignal;
 }) {
   const response = await callConceptNoteApi({
     path: `/v1/concept-notes/${args.runId}/uploads/${args.uploadId}`,
     userId: args.userId,
     requestId: args.requestId,
+    ...(args.signal ? { signal: args.signal } : {}),
   });
   const payload = await readConceptNoteApiPayload(response);
   if (!response.ok) throw upstreamError(response.status, payload);

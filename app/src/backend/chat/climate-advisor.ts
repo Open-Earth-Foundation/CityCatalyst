@@ -10,6 +10,7 @@ import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 type QueryValue = string | number | boolean | null | undefined;
 
 type ClimateAdvisorRequest = {
+  signal?: AbortSignal;
   path: string;
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: Record<string, unknown>;
@@ -107,6 +108,7 @@ export async function callClimateAdvisorChat(
       buildClimateAdvisorUrl(params.path, params.searchParams),
       {
         method: params.method ?? "GET",
+        ...(params.signal ? { signal: params.signal } : {}),
         headers,
         body: params.body ? JSON.stringify(params.body) : undefined,
       },

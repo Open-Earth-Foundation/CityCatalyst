@@ -173,8 +173,7 @@ export function useConceptNoteWorkspaceData({
     uploadId: selectedUploadId,
     observeDraft: isDraftRunning,
     observeUpload: isUploadActive,
-    observeRun:
-      bundle.status === "building" || isDraftRunning || isUploadActive,
+    observeRun: bundle.status === "building",
   });
 
   async function uploadSource(file: File): Promise<void> {
@@ -212,7 +211,6 @@ export function useConceptNoteWorkspaceData({
       }).unwrap();
       setActiveUploadId(uploadId);
       setUploadDetails(upload);
-      await refetchRun();
     } catch {
       setUploadError(t("conversion-retry-error"));
     }
@@ -243,7 +241,6 @@ export function useConceptNoteWorkspaceData({
       runId,
       manualPopulation: value,
     }).unwrap();
-    await refetchRun();
   }
 
   return {

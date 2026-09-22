@@ -1,17 +1,21 @@
 "use client";
 
 import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { shareWorkspaceObservation } from "./shared-workspace-observation";
 
 import { useAppDispatch } from "@/lib/hooks";
 import { api } from "@/services/api";
+import { editApi } from "@/services/concept-note-edit-api";
 import { logger } from "@/services/logger";
 import type { ConceptNoteWorkspaceSnapshot } from "@/util/types";
 
-const INITIAL_RETRY_MS = 500;
+const INITIAL_RETRY_MS = 5_000;
 const MAX_RETRY_MS = 30_000;
 
 interface WorkspaceEventsOptions {
   cityId: string;
+  observeEdits?: boolean;
   observeDraft: boolean;
   observeRun: boolean;
   observeUpload: boolean;
@@ -25,7 +29,10 @@ interface ParsedEvent {
 }
 
 class ObservationFailure extends Error {
-  constructor(readonly retryable: boolean) {
+  constructor(
+    readonly retryable: boolean,
+    readonly retryAfterMs = 0,
+  ) {
     super("Concept Note workspace observation failed");
   }
 }
@@ -122,6 +129,7 @@ async function consumeEvents(
 /** Hydrate RTK caches from one snapshot-first SSE observer while work is active. */
 export function useConceptNoteWorkspaceEvents({
   cityId,
+  observeEdits = false,
   observeDraft,
   observeRun,
   observeUpload,
@@ -129,20 +137,36 @@ export function useConceptNoteWorkspaceEvents({
   uploadId,
 }: WorkspaceEventsOptions): void {
   const dispatch = useAppDispatch();
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
 
   useEffect(() => {
     const resources = [
+      ...(observeEdits ? ["edits"] : []),
       ...(observeRun ? ["run"] : []),
       ...(observeDraft ? ["draft"] : []),
       ...(observeUpload && uploadId ? ["upload"] : []),
     ];
-    if (resources.length === 0) return;
+    if (resources.length === 0 || !userId) return;
 
     const controller = new AbortController();
     const params = new URLSearchParams({ resources: resources.join(",") });
     if (observeUpload && uploadId) params.set("upload_id", uploadId);
 
+    let reconciledUpload = false;
     function updateCaches(snapshot: ConceptNoteWorkspaceSnapshot): void {
+      if (
+        snapshot.edits &&
+        snapshot.edits.every((proposal) => proposal.run_id === runId)
+      ) {
+        dispatch(
+          editApi.util.updateQueryData(
+            "listEditProposals",
+            runId,
+            () => snapshot.edits!,
+          ),
+        );
+      }
       if (snapshot.run?.run_id === runId) {
         dispatch(
           api.util.updateQueryData(
@@ -160,6 +184,15 @@ export function useConceptNoteWorkspaceEvents({
         );
       }
       if (snapshot.upload?.uploadId === uploadId && uploadId) {
+        if (
+          !reconciledUpload &&
+          ["ready", "failed"].includes(snapshot.upload.status)
+        ) {
+          reconciledUpload = true;
+          dispatch(
+            api.util.invalidateTags([{ type: "ConceptNoteRuns", id: runId }]),
+          );
+        }
         dispatch(
           api.util.updateQueryData(
             "getConceptNoteUploadStatus",
@@ -170,47 +203,78 @@ export function useConceptNoteWorkspaceEvents({
       }
     }
 
-    async function observe(): Promise<void> {
+    async function observe(
+      signal: AbortSignal,
+      publish: (snapshot: ConceptNoteWorkspaceSnapshot) => void,
+    ): Promise<void> {
       let attempt = 0;
-      while (!controller.signal.aborted) {
+      while (!signal.aborted) {
         try {
           const response = await fetch(
             `/api/v1/concept-notes/${encodeURIComponent(runId)}/events?${params}`,
-            { signal: controller.signal },
+            { signal },
           );
           if (!response.ok) {
             throw new ObservationFailure(
               response.status === 429 ||
                 response.status === 503 ||
                 response.status >= 500,
+              (() => {
+                const value = response.headers.get("retry-after");
+                if (!value) return 0;
+                const seconds = Number(value);
+                return Number.isFinite(seconds)
+                  ? Math.max(0, seconds * 1000)
+                  : Math.max(0, Date.parse(value) - Date.now()) || 0;
+              })(),
             );
           }
           if (
-            await consumeEvents(response, controller.signal, (snapshot) => {
-              attempt = 0;
-              updateCaches(snapshot);
+            await consumeEvents(response, signal, (snapshot) => {
+              publish(snapshot);
             })
           ) {
             return;
           }
           throw new ObservationFailure(true);
         } catch (error) {
-          if (controller.signal.aborted) return;
-          if (!(error instanceof ObservationFailure) || !error.retryable) {
+          if (signal.aborted) return;
+          if (error instanceof ObservationFailure && !error.retryable) {
             logger.warn({ error, run_id: runId }, "Workspace observer stopped");
             return;
           }
-          await wait(retryDelay(attempt), controller.signal);
+          await wait(
+            Math.max(
+              retryDelay(attempt),
+              error instanceof ObservationFailure ? error.retryAfterMs : 0,
+            ),
+            signal,
+          );
           attempt += 1;
         }
       }
     }
 
-    void observe();
+    void shareWorkspaceObservation({
+      key: JSON.stringify([
+        "cnb-observer",
+        userId,
+        runId,
+        resources,
+        observeUpload ? uploadId : null,
+      ]),
+      signal: controller.signal,
+      observe,
+      onSnapshot: updateCaches,
+    }).catch((error) =>
+      logger.warn({ error, run_id: runId }, "Workspace observer stopped"),
+    );
     return () => controller.abort();
   }, [
     cityId,
+    userId,
     dispatch,
+    observeEdits,
     observeDraft,
     observeRun,
     observeUpload,

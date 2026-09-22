@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useConceptNoteWorkspaceEvents } from "./use-concept-note-workspace-events";
 import { useAppDispatch } from "@/lib/hooks";
 import { editApi, editErrorCode } from "@/services/concept-note-edit-api";
 import {
@@ -27,6 +28,17 @@ export function useConceptNoteEdits({
   const query = editApi.useListEditProposalsQuery(runId ?? "", {
     skip: !runId,
     refetchOnMountOrArgChange: true,
+  });
+  useConceptNoteWorkspaceEvents({
+    cityId: "",
+    runId: runId ?? "",
+    uploadId: null,
+    observeRun: false,
+    observeDraft: false,
+    observeUpload: false,
+    observeEdits: Boolean(
+      runId && query.currentData?.some((item) => item.status === "processing"),
+    ),
   });
   const [get] = editApi.useLazyGetEditProposalQuery();
   const [apply] = editApi.useApplyEditProposalMutation();

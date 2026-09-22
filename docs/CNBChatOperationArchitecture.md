@@ -1,5 +1,61 @@
 # CNB Chat Operation Architecture
 
+## Implemented request-reduction scope (2026-09-22)
+
+The API limiter, its identity selection, and its limits are unchanged. This branch
+implements a **shared, adaptive observer**, not producer-driven events or durable
+chat recovery. SSE is the delivery transport; active upstream resources are still
+read periodically. The design proposals below are not all implemented.
+
+- Stable workspaces have no recurring run/draft/upload/proposal status requests.
+- Active resource reads are shared by `(authenticated user, run, resource,
+  upload ID where applicable)` within a web process. Different resource selections
+  can reuse the same resource observer. User data is never shared across users.
+- Each active resource is read initially, then after 10 seconds. Unchanged states
+  back off to 20 and 30 seconds; changed states return to 10 seconds. A terminal
+  resource stops independently, even when another resource is still active.
+- Run observation is needed only while its context bundle is building. Draft or
+  upload activity alone no longer causes repeated run reads. Upload completion
+  invalidates the run once to discover context-bundle processing.
+- Processing edit proposals (including after reload) are observed until they leave
+  processing. Initial reads and mutation/chat-result reconciliation remain.
+- The server retries transient upstream failures once per shared observer, rather
+  than making every subscriber reconnect. Run/draft/edit reads honor upstream
+  Retry-After. Browser reconnection also honors Retry-After and uses exponential
+  backoff with jitter; receiving a snapshot does not reset an interruption loop.
+- Each SSE stream emits independent heartbeat comments without upstream reads.
+  Last-subscriber disconnect stops the resource observer and aborts its HTTP read;
+  individual upstream reads have a 30-second timeout.
+- With Web Locks and BroadcastChannel, tabs for the same authenticated user,
+  workspace and resource selection elect one connection owner. Followers receive
+  cached snapshots locally and can take over after leader departure. Different
+  selections can still open separate connections, but their overlapping resource
+  reads are coalesced by the server when they reach the same process.
+- Without those browser APIs, connections are independent; server coalescing still
+  applies within one process. Multiple application replicas and independent browser
+  profiles are **not** globally coordinated. There is no Redis/event bus/worker
+  notification migration in this implementation.
+- Redundant explicit run refreshes after upload retry and population save are
+  removed; existing cache invalidation and terminal reconciliation remain.
+
+### Request budgets and evidence boundary
+
+For one unchanged active resource, the first minute includes four upstream reads
+(at approximately 0, 10, 30 and 60 seconds); subsequent unchanged operation needs
+about two reads/minute. Continuously changing active state is bounded by six reads
+per minute after the initial read, per shared resource observer. These budgets
+exclude authentication, initial page reads, mutation-triggered reconciliation and
+reconnects. Upload status additionally reads the OCR job from the database.
+
+Automated tests cover shared subscribers, user isolation, follower replay and
+leadership transfer, terminal closure, last-subscriber cleanup, adaptive request
+counts, upstream Retry-After, and processing-proposal recovery. They do not establish
+live multi-tab request counts, production proxy identity or cross-replica behavior.
+Worker-published events, persisted chat-operation recovery and full CC-806 acceptance
+evidence remain follow-up work. Do not mark the original investigation complete from
+these unit tests alone.
+
+
 **Status:** Polling-removal implementation complete; browser and deployment verification pending
 
 **Tracking ticket:** [CC-806 — Investigate polling-driven API rate-limit cascade and chat recovery](https://linear.app/openearth/issue/CC-806/cnb-investigate-polling-driven-api-rate-limit-cascade-and-chat)

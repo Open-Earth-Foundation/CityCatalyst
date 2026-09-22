@@ -1335,6 +1335,7 @@ export interface ConceptNoteUploadStatusRequest {
 }
 
 export interface ConceptNoteWorkspaceSnapshot {
+  edits?: import("@/util/concept-note-edit-types").EditProposal[];
   sequence: number;
   run?: ConceptNoteRun;
   draft?: ConceptNoteDraftState;

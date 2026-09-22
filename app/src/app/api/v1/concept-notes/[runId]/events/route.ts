@@ -4,7 +4,7 @@
  *   get:
  *     operationId: observeConceptNoteWorkspace
  *     summary: Observe active Concept Note workspace resources
- *     description: Streams changed run, draft, and upload snapshots and closes when all selected resources are terminal.
+ *     description: Streams changed run, draft, upload, and edit-proposal snapshots and closes when all selected resources are terminal.
  *     tags:
  *       - concept-notes
  *     parameters:
@@ -59,6 +59,7 @@ const allowedResources = new Set<ConceptNoteWorkspaceResource>([
   "run",
   "draft",
   "upload",
+  "edits",
 ]);
 
 export const GET = apiHandler(

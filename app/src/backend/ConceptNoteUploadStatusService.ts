@@ -11,6 +11,7 @@ export async function loadConceptNoteUploadStatus(args: {
   uploadId: string;
   userId: string;
   requestId?: string;
+  signal?: AbortSignal;
 }): Promise<ConceptNoteUploadResponse> {
   const upload = await loadConceptNoteUpload(args);
   const job = await getConceptNotePdfOcrJob(args.uploadId);

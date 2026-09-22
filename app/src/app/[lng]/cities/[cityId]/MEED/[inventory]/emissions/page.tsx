@@ -10,12 +10,7 @@ import {
   Table,
   VStack,
 } from "@chakra-ui/react";
-import {
-  LuChartPie,
-  LuChevronDown,
-  LuChevronRight,
-  LuTriangleAlert,
-} from "react-icons/lu";
+import { LuChevronDown, LuChevronRight, LuTriangleAlert } from "react-icons/lu";
 import { useTranslation } from "@/i18n/client";
 import type { TFunction } from "i18next";
 import { api } from "@/services/api";
@@ -259,19 +254,6 @@ function EmissionsReviewContent(props: { lng: string; inventoryId: string }) {
         <BodyLarge color="content.secondary">
           {t("emissions-description")}
         </BodyLarge>
-        <HStack
-          gap="s"
-          bg="background.neutral"
-          borderRadius="rounded"
-          px="m"
-          py="s"
-          alignSelf="flex-start"
-        >
-          <Icon as={LuChartPie} boxSize="14px" color="content.secondary" />
-          <Caption color="content.secondary">
-            {t("emissions-ranking-weight")}
-          </Caption>
-        </HStack>
       </VStack>
 
       {isError ? (

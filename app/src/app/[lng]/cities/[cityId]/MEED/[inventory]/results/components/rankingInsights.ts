@@ -8,7 +8,7 @@ import type { SectorEmission } from "@/util/types";
 import type { MeedActionIndex } from "./actionCatalog";
 import { scoreContributions, type MeedScoreWeights } from "./rankingFacts";
 import { sectorShares } from "../../../components/sectorShares";
-import { routeKeyOf } from "../../finance/labels";
+import { isSelfFundable } from "../../finance/labels";
 
 export type MeedPillar = "impact" | "alignment" | "feasibility";
 
@@ -109,8 +109,8 @@ export function rankingInsights({
     const withRoute = ranked.filter((a) => financeRoutes.has(a.action_id));
     selfDeliverable = {
       total: withRoute.length,
-      count: withRoute.filter(
-        (a) => routeKeyOf(financeRoutes.get(a.action_id)) === "self",
+      count: withRoute.filter((a) =>
+        isSelfFundable(financeRoutes.get(a.action_id)),
       ).length,
     };
   }

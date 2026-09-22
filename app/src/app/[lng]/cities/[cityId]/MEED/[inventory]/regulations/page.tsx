@@ -160,17 +160,6 @@ function RegulationsContent({
     <VStack alignItems="stretch" gap="l">
       <VStack alignItems="stretch" gap="m">
         <BodyLarge color="content.secondary">{t("intro")}</BodyLarge>
-        <HStack
-          gap="s"
-          bg="background.neutral"
-          borderRadius="rounded"
-          px="m"
-          py="s"
-          alignSelf="flex-start"
-        >
-          <Icon as={LuScale} boxSize="14px" color="content.secondary" />
-          <Caption color="content.secondary">{t("feasibility-note")}</Caption>
-        </HStack>
       </VStack>
 
       {/*

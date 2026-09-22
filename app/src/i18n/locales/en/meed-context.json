@@ -2,8 +2,6 @@
   "context-description": "Socioeconomic indicators are used to assess how feasible each climate action is for this city. Indicators such as income levels, employment, and urban density shape which actions are realistically deliverable.",
   "loading-indicators": "Loading socioeconomic indicators…",
   "indicators-loaded": "{{n}} indicators loaded",
-  "feasibility-note": "Mitigation feasibility shapes 33% of the feasibility score · Feasibility shapes 23% of the ranking",
-  "ranking-weight": "Socioeconomic context shapes 33% of the feasibility score · feasibility shapes 23% of the ranking",
   "no-indicators-sub": "No indicators available",
   "indicators-error-title": "Socioeconomic indicators couldn't be loaded",
   "indicators-error-body": "We couldn't reach the indicator service for this city. Check your connection and try again.",

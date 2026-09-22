@@ -264,21 +264,6 @@ export const api = createApi({
         transformResponse: (response: { data: unknown }) => response.data,
         providesTags: ["Meed"],
       }),
-      getMeedFinanceFeasibility: builder.query<unknown, { cityId: string }>({
-        query: ({ cityId }) =>
-          `city/${cityId}/modules/meed/finance/feasibility`,
-        transformResponse: (response: { data: unknown }) => response.data,
-        providesTags: ["Meed"],
-      }),
-      getMeedFinanceLink: builder.query<
-        unknown,
-        { cityId: string; link: string }
-      >({
-        query: ({ cityId, link }) =>
-          `city/${cityId}/modules/meed/finance/follow?link=${encodeURIComponent(link)}`,
-        transformResponse: (response: { data: unknown }) => response.data,
-        providesTags: ["Meed"],
-      }),
       /**
        * The stored ranking for one inventory. Separate cache tag from "Meed"
        * so running a ranking does not invalidate the catalog and reference
@@ -300,9 +285,7 @@ export const api = createApi({
       // pass-throughs to hiap-meed, so unlike the ranking route their payloads
       // are snake_case with a `meta`/`warnings` envelope — see the contract
       // types. The older proxies stay until their consumers are migrated;
-      // that migration also retires `finance/follow`, whose guard only permits
-      // `/api/v1/cities/` while the real links are `/api/v1/climate-finance/`,
-      // so both of its calls 400 and the cards silently render "no data".
+      // finance already reads through these.
       getMeedReferenceActions: builder.query<
         MeedReferenceActionsResponse,
         { cityId: string }
@@ -2789,8 +2772,6 @@ export const {
   useGetMeedActionsQuery,
   useGetMeedCityAttributesQuery,
   useGetMeedPolicyScoresQuery,
-  useGetMeedFinanceFeasibilityQuery,
-  useGetMeedFinanceLinkQuery,
   useGetMeedRankingQuery,
   useRunMeedRankingMutation,
   useGetMeedPlanQuery,

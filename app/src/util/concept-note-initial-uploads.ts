@@ -4,7 +4,7 @@ export function initialConceptNoteUploads(
   run?: ConceptNoteRun | null,
 ): InitialConceptNoteUpload[] {
   return (
-    (run?.progress_summary.initial_uploads as
+    (run?.progress_summary?.initial_uploads as
       InitialConceptNoteUpload[] | undefined) ?? []
   );
 }

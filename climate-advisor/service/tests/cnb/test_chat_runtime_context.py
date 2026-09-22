@@ -15,59 +15,21 @@ from app.utils.streaming_handler import StreamingHandler
 from app.config import get_settings
 
 
-@pytest.fixture(autouse=True)
-def workspace_state_loader():
-    """Keep runtime tests independent of the managed CNB database."""
-    with patch(
-        "app.utils.streaming_handler.load_ui_state", new=AsyncMock(return_value=None)
-    ) as loader:
-        yield loader
-
-
-async def test_ui_state_refreshes_without_reusing_stale_document_context(
-    workspace_state_loader,
-) -> None:
-    """Each turn uses current workspace facts even when the bundle has no draft."""
+async def test_regular_context_does_not_load_navigation_state() -> None:
     handler = StreamingHandler(
         thread_id=str(uuid4()), user_id="owner", session_factory=MagicMock()
     )
     handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(uuid4()))
-    workspace_state_loader.side_effect = [
-        {"draft": {"exists": False, "chapters": 0}},
-        {"draft": {"exists": True, "chapters": 4}},
-    ]
-    with patch(
-        "app.utils.streaming_handler.load_agent_context",
-        new=AsyncMock(
-            side_effect=[{"document_context": None}, {"document_context": None}]
+    with (
+        patch(
+            "app.utils.streaming_handler.load_agent_context",
+            new=AsyncMock(return_value={"document_context": None}),
         ),
+        patch("app.services.cnb.ui_context.load_ui_state", new=AsyncMock()) as loader,
     ):
-        before = await handler._load_concept_note_context_message()
-        after = await handler._load_concept_note_context_message()
-    assert (
-        json.loads(before["content"].split("\n", 1)[1])["ui_state"]["draft"]["exists"]
-        is False
-    )
-    assert (
-        json.loads(after["content"].split("\n", 1)[1])["ui_state"]["draft"]["exists"]
-        is True
-    )
-
-
-async def test_ui_state_is_not_read_when_run_authorization_fails(
-    workspace_state_loader,
-) -> None:
-    """The separate workspace store must never bypass CA run authorization."""
-    handler = StreamingHandler(
-        thread_id=str(uuid4()), user_id="other", session_factory=MagicMock()
-    )
-    handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(uuid4()))
-    with patch(
-        "app.utils.streaming_handler.load_agent_context",
-        new=AsyncMock(side_effect=PermissionError("Not owned")),
-    ):
-        assert await handler._load_concept_note_context_message() is None
-    workspace_state_loader.assert_not_awaited()
+        message = await handler._load_concept_note_context_message()
+    assert "ui_state" not in json.loads(message["content"].split("\n", 1)[1])
+    loader.assert_not_awaited()
 
 
 @pytest.mark.parametrize("current_already_saved", [False, True])

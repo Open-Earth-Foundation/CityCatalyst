@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from uuid import uuid4
+from unittest.mock import MagicMock
 
 import pytest
 from app.db import Base
@@ -14,6 +15,25 @@ from app.services.agent_service import AgentService
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.config import get_settings
+
+
+@pytest.mark.parametrize("stationary_energy", [False, True])
+async def test_help_is_not_available_outside_cnb(monkeypatch, stationary_energy):
+    settings = get_settings().model_copy(deep=True)
+    settings.openrouter_api_key = "test-key"
+    settings.langsmith_tracing_enabled = False
+    monkeypatch.setattr("app.services.agent_service.get_settings", lambda: settings)
+    service = AgentService(
+        cc_user_id="owner",
+        cc_thread_id=uuid4(),
+        session_factory=MagicMock(),
+        stationary_energy_draft_run_id=uuid4() if stationary_energy else None,
+    )
+    try:
+        agent = await service.create_agent()
+        assert "concept_note_help" not in [tool.name for tool in agent.tools]
+    finally:
+        await service.close()
 
 
 @pytest.mark.asyncio
@@ -45,7 +65,7 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         if edit_enabled
         else None
     )
-    expected_tools = ["concept_note_sources_query"]
+    expected_tools = ["concept_note_help", "concept_note_sources_query"]
     if edit_enabled:
         expected_tools.append("concept_note_edit_propose")
     try:
@@ -125,7 +145,7 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
             concept_note_edit_request=edit_request,
         )
         agent = await service.create_agent()
-        assert agent.tools == []
+        assert [tool.name for tool in agent.tools] == ["concept_note_help"]
         await service.close()
     finally:
         await engine.dispose()

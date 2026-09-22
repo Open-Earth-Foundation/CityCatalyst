@@ -53,11 +53,71 @@ review:
 
 ## Runtime implementation
 
-The production prompt carries the stable navigation tree. After authorization, each chat turn separately reads current chapters from the managed CNB database and adds `ui_state` to the existing context message. Draft existence, chapter count, and known critical-gap export blockers are refreshed. Browser-only tab/proposal/loading/review state remains null (unknown), not copied from this fixture. Funding and source facts retain the existing bundle contract. An unavailable workspace does not erase source evidence or imply an empty draft.
+The CNB agent exposes the read-only `concept_note_help` tool when its authorized
+context bundle is available. Its description and a short prompt policy request
+it for capability and interface-help questions. The semantic UI tree is returned
+on demand from `service/app/tools/concept_note_ui_guide.txt`; it is no longer
+embedded in every system prompt. Normal context loading no longer reads UI state.
 
-No fixture-specific values (four chapters, 25 gaps, LIFE funding) are hardcoded in the runtime. The prompt also handles Browse funders when funding is unselected. A missing context bundle remains unavailable; this change does not bypass the existing readiness or authorization gates.
+The tool takes no model-selected identifiers, rechecks run ownership/readiness,
+and then loads current chapters from the managed CNB database. It returns the
+guide plus `ui_state`: current draft existence, chapter count, and known critical
+gaps. Browser-only tab/proposal/loading/review state remains null. Failure to
+read the workspace preserves the guide with null state, never an empty-draft
+claim. Authorization/readiness failure returns an error without reading workspace
+state. General Clima and Stationary Energy agents do not receive this tool.
 
-## Validation
+No fixture-specific values (four chapters, 25 gaps, LIFE funding) are hardcoded in
+the runtime. Funding/source facts retain the existing context bundle contract.
+The tool also explains capabilities and the boundaries of chat actions.
+
+## Tool evaluation (22 September 2026)
+
+Run from `climate-advisor` with `PYTHONPATH=service`:
+
+```text
+python -m scripts.evaluate_cnb_help --output ../docs/testing/CC-860-help-results.json
+```
+
+This uses the production agent, configured model, actual tool descriptions and
+help implementation with automatic tool selection. Persistence is replaced with
+the original four-chapter/25-critical-gap fixture; other tools keep their schemas
+but execution is rejected to prevent mutations. Each question is an isolated
+turn. Raw answers, tool calls and tokens are in
+[CC-860-help-results.json](CC-860-help-results.json). This does not establish
+browser behavior or deployment. The earlier browser recording predates this rework.
+
+### Results
+
+All five original questions passed manual assessment against the established UI
+paths. The configured `openai/gpt-5.6-sol` model automatically called
+`concept_note_help` once for each navigation question and the capability question.
+It did not call help for the selected-funder fact question. One isolated run per
+question; this is not a statistical reliability estimate.
+
+| Question | Help calls | Observed guidance | Assessment |
+| --- | ---: | --- | --- |
+| Where can I see the draft; download first? | 1 | Right workspace, Draft preview, Sections; existing four chapters; no download required | Pass |
+| Where do I change funder/programme? | 1 | Context, Funder profile, Change, funder/programme, linked template, Save selection | Pass |
+| Where do I upload a PDF? | 1 | Context, Your files, Upload file | Pass |
+| Where do I type and save a correction? | 1 | Left chat, proposed edit, Review in document, Accept this change; no direct typing or separate Save | Pass |
+| How do I export PDF; why disabled? | 1 | Review & export wizard, Export PDF; 25 critical gaps; missing uploads alone do not block | Pass |
+| What can you do? | 1 | Explains evidence, guidance and proposed edits; distinguishes UI actions from chat capabilities | Pass |
+| Which funder/programme is selected? | 0 | LIFE / EUCF Call 7 from supplied context | Pass |
+
+70 focused Python tests passed, including tool isolation, lazy/fresh reads,
+authorization failure, unknown workspace state, context persistence, agent
+construction, and prompt configuration. Ruff passed for the new tool, harness,
+and tool tests. The simplification and documentation passes kept the existing
+state builder and removed eager loading instead of adding another runtime path.
+
+A preliminary run used the general-agent default Terra model before the harness
+was corrected to explicitly select the configured CNB model, as the streaming
+runtime does. Its answers are retained in
+[CC-860-help-terra-results.json](CC-860-help-terra-results.json); the table above
+uses only the final Sol run.
+
+## Previous prompt-only validation
 
 - 20 focused Python tests passed: live-state derivation, refresh across turns, authorization ordering, unknown state, existing runtime history, and context-bundle persistence.
 - Five additional real API calls using the actual updated production prompt and a fixture-shaped runtime payload returned the expected guidance. This evaluates the prompt contract, not deployment or edit persistence.

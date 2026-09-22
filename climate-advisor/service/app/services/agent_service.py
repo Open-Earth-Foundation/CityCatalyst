@@ -42,6 +42,7 @@ from app.tools.cc_inventory_tool import CCInventoryTool
 from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from app.tools.climate_vector_sync import climate_vector_search
 from app.tools.concept_note_edit_tools import build_concept_note_edit_tools
+from app.tools.concept_note_help_tools import build_concept_note_help_tools
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
 from app.tools.inventory_context_tools import build_inventory_capability_tools
 from app.tools.native_input_catalog_tools import build_native_input_catalog_tools
@@ -436,6 +437,14 @@ class AgentService:
                     self.concept_note_run_id,
                 )
                 concept_note_context = None
+            if concept_note_context is not None:
+                tools.extend(
+                    build_concept_note_help_tools(
+                        session_factory=self.session_factory,
+                        run_id=self.concept_note_run_id,
+                        user_id=str(self.cc_user_id),
+                    )
+                )
             if (
                 concept_note_context is not None
                 and concept_note_context.get("workflow_step")

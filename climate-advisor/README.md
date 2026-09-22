@@ -50,12 +50,15 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
    - Composes `prompts.core` with `prompts.cnb_chat`, injects ready-source
      summaries, and exposes the step-scoped read-only source query
    - Uses source evidence for answers; chat suggestions do not persist document edits
-   - Grounds navigation in the versioned desktop UI tree in `prompts/cnb/chat.md`.
-     After run authorization, each turn separately refreshes `ui_state` from the
-     managed CNB workspace: draft existence, chapter count, and known critical-gap
-     export blockers. Browser-only state remains unknown; unavailable workspace
-     storage does not discard source context or imply an empty draft. Funding and
-     source details still come from the existing context bundle.
+   - Exposes `concept_note_help` only to CNB chat with an authorized, ready context.
+     The model calls it for capability/navigation questions, not project-content
+     questions or actual edit requests. Its guide lives in
+     `service/app/tools/concept_note_ui_guide.txt`, outside the always-on prompt.
+     Each invocation reauthorizes the run and loads current draft/critical-gap
+     export state from the CNB workspace. Ordinary turns do not load UI state.
+     Browser-only state remains unknown; unavailable workspace storage preserves
+     the guide without implying an empty draft. Funding and source facts remain
+     in the existing context bundle.
    - Treats vague requests as sufficient intent, uses the already bound run and
      available chapter order, and asks one focused question when the next step
      cannot be derived

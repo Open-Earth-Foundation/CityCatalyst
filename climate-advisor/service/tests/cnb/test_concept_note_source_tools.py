@@ -186,6 +186,10 @@ def _quantity_annotation_artifact(upload_id) -> tuple[bytes, str, ConceptNoteStr
                                         "trends": [
                                             "Transport declines",
                                             "Waste drops by one hundred tonnes",
+                                            "Emissions fall by ⅞",
+                                            "Waste falls by a fifth",
+                                            "A pair of sectors decline",
+                                            "Waste drops by a score",
                                         ]
                                     },
                                 },
@@ -329,5 +333,5 @@ async def test_source_tool_keeps_spelled_quantities_out_of_excerpts() -> None:
     assert payload["data"]["visual_context"][0]["trend_directions"] == [
         "Transport declines"
     ]
-    for leaked in ("fifty", "percent", "hundred", "tonnes"):
+    for leaked in ("fifty", "percent", "hundred", "tonnes", "⅞", "fifth", "pair", "score"):
         assert leaked not in output

@@ -4,30 +4,130 @@ from __future__ import annotations
 
 import hashlib
 import re
+import unicodedata
 from typing import Any, Literal
 
 from app.models.cnb.concept_note_markdown import STRUCTURED_DOCUMENT_SCHEMA_VERSION
 from pydantic import BaseModel, ConfigDict, Field
 
 ANNOTATION_MODES = ("none", "visual_context")
-_QUANTITY = re.compile(
-    r"(?i)(?:"
-    r"\d|[%$€£¥‰½¼¾⅓⅔²³¹]|"
-    r"\b(?:"
-    r"zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
-    r"thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|"
-    r"twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|"
-    r"hundred|thousand|million|billion|trillion|dozen|"
-    r"half|halves|quarter|quarters|third|thirds|double|triple|twice|"
-    r"twofold|threefold|"
-    r"percent|percentage|pct|"
-    r"tonne|tonnes|ton|tons|kiloton|kilotons|megaton|megatons|"
-    r"kilogram|kilograms|kg|kt|mt|gt|tco2e|tco2|co2e|"
-    r"dollar|dollars|euro|euros|pound|pounds|usd|eur"
-    r")\b|"
-    r"per\s+cent"
-    r")"
+# A projected string may contain only these words. Number words, ordinals,
+# fractions, units, and numerical nouns are absent on purpose, so an unknown
+# quantity cannot pass by being omitted from a denylist.
+_QUALITATIVE_WORDS = frozenset(
+    {
+        "a",
+        "above",
+        "across",
+        "after",
+        "an",
+        "and",
+        "area",
+        "as",
+        "at",
+        "bar",
+        "before",
+        "below",
+        "between",
+        "by",
+        "chart",
+        "column",
+        "converge",
+        "converges",
+        "converging",
+        "decline",
+        "declined",
+        "declines",
+        "declining",
+        "decrease",
+        "decreased",
+        "decreases",
+        "decreasing",
+        "diagram",
+        "different",
+        "direction",
+        "directions",
+        "diverge",
+        "diverges",
+        "diverging",
+        "donut",
+        "drop",
+        "dropped",
+        "dropping",
+        "drops",
+        "emissions",
+        "energy",
+        "fall",
+        "falling",
+        "falls",
+        "fell",
+        "flat",
+        "for",
+        "from",
+        "grow",
+        "growing",
+        "grows",
+        "growth",
+        "heatmap",
+        "higher",
+        "histogram",
+        "in",
+        "increase",
+        "increased",
+        "increases",
+        "increasing",
+        "into",
+        "lagging",
+        "larger",
+        "leading",
+        "less",
+        "line",
+        "lower",
+        "map",
+        "mixed",
+        "more",
+        "move",
+        "moved",
+        "moves",
+        "moving",
+        "of",
+        "on",
+        "opposite",
+        "or",
+        "overall",
+        "over",
+        "pie",
+        "relative",
+        "rise",
+        "rises",
+        "rising",
+        "rose",
+        "same",
+        "scatter",
+        "sector",
+        "sectors",
+        "shift",
+        "shifts",
+        "shifting",
+        "similar",
+        "smaller",
+        "stable",
+        "stacked",
+        "than",
+        "the",
+        "to",
+        "transport",
+        "trend",
+        "trends",
+        "unchanged",
+        "under",
+        "waste",
+        "while",
+        "with",
+    }
 )
+_WORD = re.compile(r"[A-Za-z]+(?:'[A-Za-z]+)?")
+_PROSE = re.compile(r"[A-Za-z\s.,;:!?'\"-]+")
 _KINDS = {
     "chart",
     "diagram",
@@ -165,9 +265,31 @@ def _clean_text(value: Any) -> str | None:
     if not isinstance(value, str):
         return None
     text = value.strip()
-    if not text or _QUANTITY.search(text):
+    if not text or not _is_closed_qualitative_prose(text):
         return None
     return text
+
+
+def _is_closed_qualitative_prose(text: str) -> bool:
+    """Keep a string only when every word is in the closed qualitative vocabulary."""
+    if _contains_unicode_number(text) or _PROSE.fullmatch(text) is None:
+        return False
+    words = _WORD.findall(text)
+    return bool(words) and all(word.lower() in _QUALITATIVE_WORDS for word in words)
+
+
+def _contains_unicode_number(text: str) -> bool:
+    """Reject every Unicode number character before the word allowlist is applied."""
+    for char in text:
+        if unicodedata.category(char).startswith("N"):
+            return True
+        try:
+            unicodedata.numeric(char)
+        except (TypeError, ValueError):
+            continue
+        else:
+            return True
+    return False
 
 
 def _clean_list(value: Any) -> list[str]:

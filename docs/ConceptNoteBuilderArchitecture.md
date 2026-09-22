@@ -2150,8 +2150,10 @@ Rules:
   also fetches and verifies the structured artifact's content type, digest,
   schema version, annotation mode, upload identity, and page count.
 - Projects visual annotations into qualitative context only. Exact excerpts and
-  citations stay on source Markdown. Annotation-derived numbers are removed
-  before model or tool context. Stored annotations keep
+  citations stay on source Markdown. A projected string is kept only when it
+  contains no Unicode number and every word is in a closed qualitative
+  vocabulary. Digits, number symbols, and exact word quantities such as
+  ordinals or numerical nouns are dropped. Stored annotations keep
   `source: image_annotation` and `quantitative_reliability: unverified`.
 - Rejects a structured artifact larger than `CNB_STRUCTURED_REQUEST_MAX_BYTES`
   (default 20 MiB) and a CC structured artifact larger than

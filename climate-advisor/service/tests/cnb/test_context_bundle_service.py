@@ -465,7 +465,13 @@ async def test_persisted_source_drops_spelled_annotation_quantities() -> None:
                                     "kind": "chart",
                                     "short_description": "Emissions fall by fifty percent",
                                     "chart": {
-                                        "trends": ["Transport declines"],
+                                        "trends": [
+                                            "Transport declines",
+                                            "Emissions fall by ⅞",
+                                            "Waste falls by a fifth",
+                                            "A pair of sectors decline",
+                                            "Waste drops by a score",
+                                        ],
                                     },
                                 },
                             }
@@ -551,3 +557,7 @@ async def test_persisted_source_drops_spelled_annotation_quantities() -> None:
     assert selected.visual_context[0].trend_directions == ["Transport declines"]
     assert "fifty" not in dumped
     assert "percent" not in dumped
+    assert "⅞" not in dumped
+    assert "fifth" not in dumped
+    assert "pair" not in dumped
+    assert "score" not in dumped

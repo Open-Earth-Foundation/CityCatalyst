@@ -213,20 +213,25 @@ export function TrackPreferences({
             <BodyLarge color="content.secondary">
               {tPrefs("description")}
             </BodyLarge>
-            <HStack
-              gap="s"
-              px="m"
-              py="s"
-              borderRadius="rounded"
-              bg="background.neutral"
-              alignItems="flex-start"
-              alignSelf="flex-start"
-            >
-              <Icon as={LuTarget} boxSize="16px" color="content.link" />
-              <Caption color="content.secondary">
-                {tPrefs("alignment-note")}
-              </Caption>
-            </HStack>
+            {/* The product no longer prints weights the ranking did not
+                report; the adaptation methodology fixes its weights, so the
+                note stays there and only there. */}
+            {track === "adaptation" && (
+              <HStack
+                gap="s"
+                px="m"
+                py="s"
+                borderRadius="rounded"
+                bg="background.neutral"
+                alignItems="flex-start"
+                alignSelf="flex-start"
+              >
+                <Icon as={LuTarget} boxSize="16px" color="content.link" />
+                <Caption color="content.secondary">
+                  {tPrefs("alignment-note")}
+                </Caption>
+              </HStack>
+            )}
           </VStack>
 
           {/* Shared: co-benefits */}

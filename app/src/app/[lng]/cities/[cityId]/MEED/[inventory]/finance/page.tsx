@@ -4,7 +4,7 @@ import { Card, HStack, Table, VStack } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import {
   useGetCityQuery,
-  useGetMeedFinanceFeasibilityQuery,
+  useGetMeedReferenceFinanceFeasibilityQuery,
 } from "@/services/api";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
@@ -48,7 +48,7 @@ function FinancialFeasibilityContent(props: {
   const { t } = useTranslation(lng, "meed-finance");
 
   const { data, isLoading, isError, refetch } =
-    useGetMeedFinanceFeasibilityQuery({ cityId }, { skip: !cityId });
+    useGetMeedReferenceFinanceFeasibilityQuery({ cityId }, { skip: !cityId });
   const { data: city } = useGetCityQuery(cityId, { skip: !cityId });
 
   const [activeRoute, setActiveRoute] = useState<RouteKey | null>(null);

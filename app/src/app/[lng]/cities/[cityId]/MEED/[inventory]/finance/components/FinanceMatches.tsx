@@ -1,9 +1,12 @@
 "use client";
-import { useMemo, useState, type ElementType } from "react";
+import { useState, type ElementType } from "react";
 import { Box, Card, HStack, Icon, Separator, VStack } from "@chakra-ui/react";
 import { LuInbox, LuTriangleAlert } from "react-icons/lu";
 import type { TFunction } from "i18next";
-import { useGetMeedFinanceLinkQuery } from "@/services/api";
+import {
+  useGetMeedReferenceFinanceOpportunitiesQuery,
+  useGetMeedReferenceFinanceProjectsQuery,
+} from "@/services/api";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge } from "@/components/package/Texts/Label";
@@ -11,23 +14,17 @@ import { Overline } from "@/components/package/Texts/Overline";
 import { MeedButton } from "../../../components/MeedButton";
 import { MeedCardSkeleton } from "../../../components/MeedSkeletons";
 import { MeedStatusTag } from "../../../components/MeedStatusTag";
-import {
-  FOCUS_RING,
-  fundAccessLabelKey,
-  isSelfFundable,
-  withLimit,
-} from "../labels";
-import {
-  extractLinkedList,
-  type FeasibilityRow,
-  type Opportunity,
-  type Project,
-} from "../types";
+import { FOCUS_RING, fundAccessLabelKey, isSelfFundable } from "../labels";
+import type { FeasibilityRow, Opportunity, Project } from "../types";
 import { OpportunityCard } from "./OpportunityCard";
 import { ProjectCard } from "./ProjectCard";
 
 const INITIAL_OPPS = 2;
 const INITIAL_PROJECTS = 3;
+
+function listOf<T>(rows: T[], total: number | undefined) {
+  return { rows, total: total ?? rows.length };
+}
 
 function DetailEmpty({
   title,
@@ -59,40 +56,38 @@ export interface FinanceMatchesProps {
 
 /**
  * Funding opportunities and funded projects matched to one feasibility row,
- * lazily fetched via the row's relative Global-API links. Shared by the
- * finance table's expanded row and the results action drawer.
+ * lazily fetched from hiap-meed — the same screening the ranking uses.
+ * Shared by the finance table's expanded row and the results action drawer.
  */
 export function FinanceMatches({ row, cityId, t }: FinanceMatchesProps) {
   const [showAllOpps, setShowAllOpps] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
 
-  const oppLink = row.links?.opportunities;
-  const projLink = row.links?.projects;
-
   const {
     data: oppData,
     isLoading: oppsLoading,
     isError: oppsError,
-  } = useGetMeedFinanceLinkQuery(
-    { cityId, link: oppLink ?? "" },
-    { skip: !oppLink },
+  } = useGetMeedReferenceFinanceOpportunitiesQuery(
+    { cityId, sector: row.sector ?? "", financeRoute: row.route ?? "" },
+    { skip: !row.sector || !row.route },
   );
   const {
     data: projData,
     isLoading: projectsLoading,
     isError: projectsError,
-  } = useGetMeedFinanceLinkQuery(
-    { cityId, link: projLink ? withLimit(projLink, 50) : "" },
-    { skip: !projLink },
-  );
+  } = useGetMeedReferenceFinanceProjectsQuery({
+    cityId,
+    actionId: row.action_id,
+  });
 
-  const opportunities = useMemo(
-    () => extractLinkedList<Opportunity>(oppData),
-    [oppData],
+  // Open/ongoing funds first, then the closed-but-recurring ones to monitor.
+  const opportunities = listOf<Opportunity>(
+    [...(oppData?.current ?? []), ...(oppData?.monitor ?? [])],
+    oppData?.meta?.totalRecords,
   );
-  const projects = useMemo(
-    () => extractLinkedList<Project>(projData),
-    [projData],
+  const projects = listOf<Project>(
+    projData?.projects ?? [],
+    projData?.meta?.totalRecords,
   );
 
   const selfFundable = isSelfFundable(row.route);

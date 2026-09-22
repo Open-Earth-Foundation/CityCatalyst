@@ -280,7 +280,7 @@ export function lifecycleTone(stage: string | undefined): MeedTone {
 }
 
 /** `null` for a confidence value the endpoint has not used before. */
-export function confidenceMeta(confidence: string | undefined): {
+export function confidenceMeta(confidence: string | null | undefined): {
   labelKey: string;
   tone: MeedTone;
 } | null {
@@ -322,10 +322,6 @@ export function formatClpAmount(
     return t("amount-clp-m", { value: Math.round(millions) });
   }
   return t("amount-clp-k", { value: Math.round(millions * 1_000) });
-}
-
-export function withLimit(link: string, limit: number): string {
-  return `${link}${link.includes("?") ? "&" : "?"}limit=${limit}`;
 }
 
 // ─── Table layout & sorting ───────────────────────────────────────────────────

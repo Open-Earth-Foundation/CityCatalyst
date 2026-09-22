@@ -17,8 +17,8 @@ export interface RowDetailProps {
 
 /**
  * Detail for an expanded feasibility row: route reasoning, factor breakdown,
- * and lazily-fetched funding opportunities and funded projects (via the row's
- * relative Global-API links).
+ * and lazily-fetched funding opportunities and funded projects (from
+ * hiap-meed).
  */
 export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
   const inputs = row.inputs ?? {};

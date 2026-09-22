@@ -4,7 +4,7 @@ import { useTranslation } from "@/i18n/client";
 import {
   api,
   useGetMeedCityAttributesQuery,
-  useGetMeedFinanceFeasibilityQuery,
+  useGetMeedReferenceFinanceFeasibilityQuery,
   useGetMeedPolicyScoresQuery,
 } from "@/services/api";
 import type { SectorEmission } from "@/util/types";
@@ -81,7 +81,7 @@ export function useMeedContextFacts({
     { cityId },
     { skip: !cityId },
   );
-  const { data: finance } = useGetMeedFinanceFeasibilityQuery(
+  const { data: finance } = useGetMeedReferenceFinanceFeasibilityQuery(
     { cityId },
     { skip: !cityId },
   );

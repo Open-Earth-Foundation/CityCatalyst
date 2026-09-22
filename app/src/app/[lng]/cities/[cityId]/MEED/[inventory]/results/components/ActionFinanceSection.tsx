@@ -4,7 +4,7 @@ import NextLink from "next/link";
 import { HStack, Icon, VStack } from "@chakra-ui/react";
 import { LuArrowRight } from "react-icons/lu";
 import { useTranslation } from "@/i18n/client";
-import { useGetMeedFinanceFeasibilityQuery } from "@/services/api";
+import { useGetMeedReferenceFinanceFeasibilityQuery } from "@/services/api";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import { MeedButton } from "../../../components/MeedButton";
@@ -33,7 +33,7 @@ export function ActionFinanceSection({
   financeHref,
 }: ActionFinanceSectionProps) {
   const { t } = useTranslation(lng, "meed-finance");
-  const { data } = useGetMeedFinanceFeasibilityQuery({ cityId });
+  const { data } = useGetMeedReferenceFinanceFeasibilityQuery({ cityId });
   const row = useMemo(
     () => extractFeasibilityRows(data).find((r) => r.action_id === actionId),
     [data, actionId],

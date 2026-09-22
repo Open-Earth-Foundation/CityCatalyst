@@ -637,5 +637,6 @@
   "funding-template-incompatible": "Ce modèle a une structure de chapitre différente de votre brouillon. Commencez une nouvelle note conceptuelle pour l'utiliser. Votre sélection de financement actuelle et votre brouillon n'ont pas changé.",
   "funding-busy": "Attendez que l'opération en cours se termine avant de modifier le financement.",
   "funding-draft-warning": "Votre texte de brouillon sera conservé. Les confirmations de chapitre précédentes et les suggestions de modification en attente seront effacées. Un modèle différent doit avoir la même structure de chapitre. Examinez le brouillon par rapport au nouveau bailleur de fonds et au modèle avant l'exportation.",
-  "funding-draft-acknowledge": "Je vais revoir le brouillon existant par rapport à la nouvelle configuration de financement."
+  "funding-draft-acknowledge": "Je vais revoir le brouillon existant par rapport à la nouvelle configuration de financement.",
+  "delete-unavailable": "Cette note conceptuelle n'est plus disponible."
 }

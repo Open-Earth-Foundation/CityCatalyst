@@ -637,5 +637,6 @@
   "funding-template-incompatible": "Este modelo tem uma estrutura de capítulos diferente do seu rascunho. Inicie uma nova nota de conceito para usá-lo. Sua seleção de financiamento atual e rascunho não foram alterados.",
   "funding-busy": "Aguarde o término da operação atual antes de alterar o financiamento.",
   "funding-draft-warning": "O seu rascunho será mantido. Confirmações de capítulos anteriores e sugestões de edição pendentes serão eliminadas. Um modelo diferente deve ter a mesma estrutura de capítulo. Revise o rascunho em função do novo financiador e modelo antes de exportar.",
-  "funding-draft-acknowledge": "Vou revisar o rascunho existente de acordo com a nova configuração de financiamento."
+  "funding-draft-acknowledge": "Vou revisar o rascunho existente de acordo com a nova configuração de financiamento.",
+  "delete-unavailable": "Esta nota conceitual já não está disponível."
 }

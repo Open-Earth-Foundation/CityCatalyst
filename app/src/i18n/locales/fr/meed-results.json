@@ -247,5 +247,7 @@
   "config-weights": "Poids de notation",
   "config-weights-value": "Impact {{impact}}% · Alignement {{alignment}}% · Faisabilité {{feasibility}}%",
   "percent-value": "{{value}}%",
-  "legend-item": "{{label}} · {{value}}"
+  "legend-item": "{{label}} · {{value}}",
+  "route-own-budget": "Réalisation possible avec propre budget",
+  "route-technical-assistance": "A besoin d'assistance technique"
 }

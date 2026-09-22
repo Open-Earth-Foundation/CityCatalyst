@@ -81,7 +81,7 @@ export async function loadConceptNoteUploadRun(args: {
   runId: string;
   userId: string;
   requestId?: string;
-}) {
+}): Promise<z.infer<typeof runWireSchema>> {
   const response = await callConceptNoteApi({
     path: `/v1/concept-notes/${args.runId}`,
     userId: args.userId,

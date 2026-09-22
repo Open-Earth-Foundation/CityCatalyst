@@ -16,7 +16,7 @@
   "badge-optional": "Facultatif",
   "custom-weights-active": "Poids personnalisés actifs",
   "scoring-weights-description": "Ajustez combien chaque pilier contribue au classement final. Déplacer un curseur redistribue le reste proportionnellement entre les deux autres.",
-  "scoring-weights-defaults": "Les poids par défaut suivent la méthodologie standard : Impact {{impact}}% · Alignement {{alignement}}% · Faisabilité {{faisabilité}}%",
+  "scoring-weights-defaults": "Les poids par défaut suivent la méthodologie standard : Impact {{impact}}% · Alignement {{alignment}}% · Faisabilité {{feasibility}}%",
   "weight-impact": "Impact",
   "weight-impact-description": "Potentiel de réduction des émissions et calendrier",
   "weight-alignment": "Alignement",

@@ -21,6 +21,8 @@ jest.unstable_mockModule("@/services/concept-note-edit-api", () => ({
   editApi: { util: {} },
 }));
 const dispatch = jest.fn();
+const upsertQueryEntries = jest.fn((entries: unknown) => ({ entries }));
+const invalidateTags = jest.fn((tags: unknown) => ({ tags }));
 const updateQueryData = jest.fn(
   (endpoint: string, args: unknown, update: (current: object) => void) => ({
     args,
@@ -33,7 +35,7 @@ jest.unstable_mockModule("@/lib/hooks", () => ({
   useAppDispatch: () => dispatch,
 }));
 jest.unstable_mockModule("@/services/api", () => ({
-  api: { util: { updateQueryData } },
+  api: { util: { updateQueryData, upsertQueryEntries, invalidateTags } },
 }));
 jest.unstable_mockModule("@/services/logger", () => ({
   logger: { warn: jest.fn() },
@@ -44,14 +46,14 @@ let container: HTMLDivElement;
 let root: Root;
 const originalFetch = globalThis.fetch;
 
-function Harness(): null {
+function Harness({ upload = false }: { upload?: boolean }): null {
   useConceptNoteWorkspaceEvents({
     cityId: "city-1",
-    observeDraft: true,
+    observeDraft: !upload,
     observeRun: false,
-    observeUpload: false,
+    observeUpload: upload,
     runId: "run-1",
-    uploadId: null,
+    uploadId: upload ? "upload-1" : null,
   });
   return null;
 }
@@ -86,6 +88,46 @@ afterEach(async () => {
 });
 
 describe("useConceptNoteWorkspaceEvents", () => {
+  it("hydrates terminal upload state without requiring an existing cache value", async () => {
+    const snapshot = {
+      sequence: 1,
+      upload: { uploadId: "upload-1", runId: "run-1", status: "ready" },
+    };
+    let delivered = false;
+    const fetchMock = jest.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader: () => ({
+          read: async () => {
+            if (delivered) return { done: true };
+            delivered = true;
+            return {
+              done: false,
+              value: new TextEncoder().encode(
+                `event: snapshot\ndata: ${JSON.stringify(snapshot)}\n\nevent: done\ndata: {}\n\n`,
+              ),
+            };
+          },
+          releaseLock: jest.fn(),
+        }),
+      },
+    }));
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+    await act(async () => {
+      root.render(<Harness upload />);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(upsertQueryEntries).toHaveBeenCalledWith([
+      {
+        endpointName: "getConceptNoteUploadStatus",
+        arg: { runId: "run-1", uploadId: "upload-1" },
+        value: snapshot.upload,
+      },
+    ]);
+    expect(updateQueryData).not.toHaveBeenCalled();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
   it("updates the draft cache and does not reconnect after terminal state", async () => {
     const payload =
       [

@@ -45,7 +45,14 @@ export function useConceptNoteWorkspaceData({
     isError: runFailed,
     isLoading: runLoading,
     refetch: refetchRun,
-  } = api.useGetConceptNoteRunQuery({ cityId, runId });
+  } = api.useGetConceptNoteRunQuery(
+    { cityId, runId },
+    {
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    },
+  );
   const { data: city } = api.useGetCityQuery(cityId);
   const {
     data: applicationContext,
@@ -58,7 +65,11 @@ export function useConceptNoteWorkspaceData({
     isError: draftQueryFailed,
     isLoading: draftLoading,
     refetch: refetchDraft,
-  } = api.useGetConceptNoteDraftQuery(runId);
+  } = api.useGetConceptNoteDraftQuery(runId, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
   const {
     data: population,
     isError: populationFailed,
@@ -88,6 +99,9 @@ export function useConceptNoteWorkspaceData({
       { runId, uploadId: selectedUploadId ?? "" },
       {
         skip: !selectedUploadId,
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
       },
     );
 

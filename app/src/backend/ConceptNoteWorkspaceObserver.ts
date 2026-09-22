@@ -302,7 +302,11 @@ function subscribeResource(
           // Retry here, once for every subscriber, instead of making each browser reconnect.
           delay = Math.max(
             Math.min(MAX_OBSERVATION_INTERVAL_MS, Math.max(minimum, delay * 2)),
-            error instanceof WorkspaceObservationError ? error.retryAfterMs : 0,
+            error instanceof WorkspaceObservationError
+              ? error.retryAfterMs
+              : retryAfterMs(
+                  (error as { retryAfter?: string })?.retryAfter ?? null,
+                ),
           );
         }
         await wait(delay, shared.controller.signal);

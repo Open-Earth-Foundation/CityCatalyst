@@ -21,6 +21,38 @@ jest.unstable_mockModule("@/backend/ConceptNoteUploadStatusService", () => ({
 
 let createConceptNoteWorkspaceEventStream: typeof import("@/backend/ConceptNoteWorkspaceObserver").createConceptNoteWorkspaceEventStream;
 
+it.each(["60", "Tue, 22 Sep 2026 12:01:00 GMT"])(
+  "honors upload Retry-After %s",
+  async (retryAfter) => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-09-22T12:00:00Z"));
+    const controller = new AbortController();
+    try {
+      loadUploadStatus.mockRejectedValue(
+        Object.assign(new Error("throttled"), { statusCode: 429, retryAfter }),
+      );
+      const text = new Response(
+        createConceptNoteWorkspaceEventStream({
+          runId,
+          userId: "upload-backoff",
+          uploadId: runId,
+          resources: new Set(["upload"]),
+          signal: controller.signal,
+        }),
+      ).text();
+      await jest.advanceTimersByTimeAsync(59_999);
+      expect(loadUploadStatus).toHaveBeenCalledTimes(1);
+      await jest.advanceTimersByTimeAsync(1);
+      expect(loadUploadStatus).toHaveBeenCalledTimes(2);
+      controller.abort();
+      await text;
+    } finally {
+      controller.abort();
+      jest.useRealTimers();
+    }
+  },
+);
+
 beforeAll(async () => {
   ({ createConceptNoteWorkspaceEventStream } =
     await import("@/backend/ConceptNoteWorkspaceObserver"));

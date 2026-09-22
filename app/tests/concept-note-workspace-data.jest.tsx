@@ -253,14 +253,22 @@ describe("useConceptNoteWorkspaceData", () => {
   it("uses initial reads without recurring workspace polling", async () => {
     await act(async () => root.render(<Harness />));
 
-    expect(getRunQuery).toHaveBeenCalledWith({
-      cityId: "city-1",
-      runId: "run-1",
-    });
-    expect(getDraftQuery).toHaveBeenCalledWith("run-1");
+    const revalidation = {
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    };
+    expect(getRunQuery).toHaveBeenCalledWith(
+      {
+        cityId: "city-1",
+        runId: "run-1",
+      },
+      revalidation,
+    );
+    expect(getDraftQuery).toHaveBeenCalledWith("run-1", revalidation);
     expect(getUploadQuery).toHaveBeenCalledWith(
       { runId: "run-1", uploadId: persistedUploadId },
-      { skip: false },
+      { skip: false, ...revalidation },
     );
     expect(observeWorkspace).toHaveBeenCalledWith(
       expect.objectContaining({

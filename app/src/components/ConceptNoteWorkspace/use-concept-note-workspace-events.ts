@@ -194,11 +194,15 @@ export function useConceptNoteWorkspaceEvents({
           );
         }
         dispatch(
-          api.util.updateQueryData(
-            "getConceptNoteUploadStatus",
-            { runId, uploadId },
-            (current) => Object.assign(current, snapshot.upload),
-          ),
+          // A failed initial GET has no data to patch. Hydrate it synchronously
+          // so terminal snapshots also clear the query error before we stop.
+          api.util.upsertQueryEntries([
+            {
+              endpointName: "getConceptNoteUploadStatus",
+              arg: { runId, uploadId },
+              value: snapshot.upload,
+            },
+          ]),
         );
       }
     }

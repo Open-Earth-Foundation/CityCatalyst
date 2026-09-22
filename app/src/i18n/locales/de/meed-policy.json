@@ -56,5 +56,7 @@
   "evidence-column-scope": "Geltungsbereich",
   "evidence-column-signal": "Signal",
   "evidence-column-strength": "Stärke",
-  "evidence-column-weight": "Gewicht"
+  "evidence-column-weight": "Gewicht",
+  "ring-aria": "{{scope}}: {{value}}",
+  "ring-note": "Durchschnittlicher Unterstützungswert für Strategien in diesem Umfang, für alle bewerteten Maßnahmen."
 }

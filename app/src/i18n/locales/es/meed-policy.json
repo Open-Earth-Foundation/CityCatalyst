@@ -56,5 +56,7 @@
   "evidence-column-scope": "Alcance",
   "evidence-column-signal": "Señal",
   "evidence-column-strength": "Fortaleza",
-  "evidence-column-weight": "Peso"
+  "evidence-column-weight": "Peso",
+  "ring-aria": "{{scope}}: {{value}}",
+  "ring-note": "Puntuación promedio de apoyo a las políticas en todos los planes de este alcance, para todas las acciones evaluadas."
 }

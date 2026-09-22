@@ -56,5 +56,7 @@
   "evidence-column-scope": "Âmbito",
   "evidence-column-signal": "Sinal",
   "evidence-column-strength": "Força",
-  "evidence-column-weight": "Peso"
+  "evidence-column-weight": "Peso",
+  "ring-aria": "{{scope}}: {{value}}",
+  "ring-note": "Pontuação média de apoio à política em todos os planos neste escopo, para todas as ações avaliadas."
 }

@@ -57,13 +57,13 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
     );
 
     const renderOption = (option: DropdownOption) => (
-      <>
+      <Text as="span">
         <Text as="span" fontWeight="bold">
           {option.label}
           {option.description && ":"}
         </Text>
         {option.description && <> {option.description}</>}
-      </>
+      </Text>
     );
 
     return (

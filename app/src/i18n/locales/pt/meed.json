@@ -92,5 +92,14 @@
   "sample-data": "Dados de amostra",
   "ranking-stale-tag": "Entradas alteradas",
   "ranking-stale-body": "As suas respostas mudaram desde que este ranking foi gerado, por isso já não as reflete. Execute-o novamente para alinhar as recomendações.",
-  "ranking-generated-at": "Gerado {{quando}}"
+  "ranking-generated-at": "Gerado {{quando}}",
+  "get-recommendations": "Obtenha recomendações",
+  "get-recommendations-hint": "Recupere os dados de emissões abaixo para começar.",
+  "ranking-view-all": "Ver todas as recomendações",
+  "how-ranking-works-title": "Como funciona o ranking",
+  "how-ranking-works-description": "O que o modelo considera para classificar ações para a sua cidade. Explore qualquer área antes ou depois de gerar recomendações.",
+  "ranking-update": "Atualizar classificação",
+  "ranking-census": "{{ranked}} classificado · {{excluded}} excluído por triagem legal",
+  "emissions-none-sub": "Sem dados de emissões neste inventário",
+  "get-recommendations-hint-no-data": "Este inventário não possui dados de emissões. Adicione-os no módulo GHGI para desbloquear recomendações."
 }

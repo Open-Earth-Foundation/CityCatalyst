@@ -342,5 +342,6 @@
   "net-removal": "Netzentfernung",
   "removal": "Entfernung",
   "removals-not-countable-footnote": "* Teilsektoren mit Entfernungen sind nicht als Emissionen zählbar",
-  "no-cited-source": "Keine zitierte Quelle"
+  "no-cited-source": "Keine zitierte Quelle",
+  "hero-inventory-line": "{{year}} · {{value}} {{unit}}"
 }

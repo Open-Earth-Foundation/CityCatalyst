@@ -4,12 +4,18 @@ import type { FeasibilityRow } from "./types";
 /** Headline counts the finance page and the context cards both quote. */
 export interface MeedFinanceFacts {
   total: number;
-  /** Route "self": the city can fund and run it alone. */
+  /** "self-deliverable". */
   self: number;
-  /** Route "cofinance": cost exceeds the budget, outside funds close the gap. */
+  /** "own-budget feasible". */
+  ownBudget: number;
+  /** "needs technical assistance": capacity is the constraint, not money. */
+  technicalAssistance: number;
+  /** "needs external co-finance". */
   cofinance: number;
-  /** Route "support": needs finance plus expertise. */
+  /** "needs external finance + TA / pooling". */
   support: number;
+  /** cofinance + support: every route that needs external finance. */
+  externalFinance: number;
   other: number;
   byRoute: Partial<Record<RouteKey, number>>;
 }
@@ -23,8 +29,11 @@ export function financeFacts(rows: FeasibilityRow[]): MeedFinanceFacts {
   return {
     total: rows.length,
     self: byRoute.self ?? 0,
+    ownBudget: byRoute.ownBudget ?? 0,
+    technicalAssistance: byRoute.technicalAssistance ?? 0,
     cofinance: byRoute.cofinance ?? 0,
     support: byRoute.support ?? 0,
+    externalFinance: (byRoute.cofinance ?? 0) + (byRoute.support ?? 0),
     other: byRoute.other ?? 0,
     byRoute,
   };

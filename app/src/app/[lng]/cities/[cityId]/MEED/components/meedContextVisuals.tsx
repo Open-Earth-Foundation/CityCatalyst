@@ -141,6 +141,16 @@ export function meedContextVisual(
               color: "interactive.tertiary",
             },
             {
+              label: t("route-own-budget"),
+              value: finance.ownBudget,
+              color: "sentiment.positiveDefault",
+            },
+            {
+              label: t("route-technical-assistance"),
+              value: finance.technicalAssistance,
+              color: "content.link",
+            },
+            {
               label: t("route-cofinance"),
               value: finance.cofinance,
               color: "sentiment.warningDefault",

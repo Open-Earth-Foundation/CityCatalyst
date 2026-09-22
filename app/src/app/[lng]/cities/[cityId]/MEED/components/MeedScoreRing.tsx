@@ -14,6 +14,7 @@ const TONE_COLOR: Record<MeedTone, string> = {
   info: "content.link",
   positive: "interactive.tertiary",
   warning: "sentiment.warningDefault",
+  caution: "interactive.quaternary",
   negative: "sentiment.negativeDefault",
 };
 

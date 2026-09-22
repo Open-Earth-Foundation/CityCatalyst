@@ -10,7 +10,24 @@ from app.models.cnb.concept_note_markdown import STRUCTURED_DOCUMENT_SCHEMA_VERS
 from pydantic import BaseModel, ConfigDict, Field
 
 ANNOTATION_MODES = ("none", "visual_context")
-_DIGIT = re.compile(r"\d")
+_QUANTITY = re.compile(
+    r"(?i)(?:"
+    r"\d|[%$€£¥‰½¼¾⅓⅔²³¹]|"
+    r"\b(?:"
+    r"zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
+    r"thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|"
+    r"twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|"
+    r"hundred|thousand|million|billion|trillion|dozen|"
+    r"half|halves|quarter|quarters|third|thirds|double|triple|twice|"
+    r"twofold|threefold|"
+    r"percent|percentage|pct|"
+    r"tonne|tonnes|ton|tons|kiloton|kilotons|megaton|megatons|"
+    r"kilogram|kilograms|kg|kt|mt|gt|tco2e|tco2|co2e|"
+    r"dollar|dollars|euro|euros|pound|pounds|usd|eur"
+    r")\b|"
+    r"per\s+cent"
+    r")"
+)
 _KINDS = {
     "chart",
     "diagram",
@@ -148,7 +165,7 @@ def _clean_text(value: Any) -> str | None:
     if not isinstance(value, str):
         return None
     text = value.strip()
-    if not text or _DIGIT.search(text):
+    if not text or _QUANTITY.search(text):
         return None
     return text
 

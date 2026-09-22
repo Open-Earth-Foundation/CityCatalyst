@@ -173,4 +173,97 @@ describe("structured document artifact", () => {
     );
     expect(document.document.pages[0].images).toEqual([]);
   });
+
+  it("keeps OCR 4.1 table identity and average content confidence", () => {
+    const document = buildStructuredDocument(
+      {
+        model: "mistral-ocr-4-1",
+        pages: [
+          {
+            index: 0,
+            markdown: "![img-0.jpeg](img-0.jpeg)",
+            dimensions: { width: 1000, height: 1400 },
+            blocks: [
+              {
+                type: "table",
+                table_id: "tbl-0.md",
+                content: "| Sector | Direction |",
+                confidence_scores: {
+                  average_content_confidence_score: 0.99,
+                  minimum_content_confidence_score: 0.5,
+                  block_type_confidence_score: 1,
+                },
+                top_left_x: 10,
+                top_left_y: 20,
+                bottom_right_x: 400,
+                bottom_right_y: 200,
+              },
+              {
+                type: "image",
+                image_id: "img-0.jpeg",
+                content: "![img-0.jpeg](img-0.jpeg)",
+                confidence_scores: {
+                  minimum_content_confidence_score: 0.4,
+                },
+                top_left_x: 10,
+                top_left_y: 220,
+                bottom_right_x: 300,
+                bottom_right_y: 500,
+              },
+            ],
+            tables: [{ id: "tbl-0.md", content: "| Sector | Direction |" }],
+            images: [
+              {
+                id: "img-0.jpeg",
+                top_left_x: 10,
+                top_left_y: 220,
+                bottom_right_x: 300,
+                bottom_right_y: 500,
+              },
+            ],
+          },
+        ],
+      },
+      { annotationMode: "none", requestedModel: "mistral-ocr-4-1" },
+    );
+    const [tableBlock, imageBlock] = document.document.pages[0].blocks;
+    expect(tableBlock.related_table_id).toBe("tbl-0.md");
+    expect(tableBlock.confidence).toBe(0.99);
+    expect(tableBlock.confidence_metric).toBe(
+      "average_content_confidence_score",
+    );
+    expect(document.document.pages[0].tables[0].table_id).toBe("tbl-0.md");
+    expect(imageBlock.related_image_id).toBe("img-0.jpeg");
+    expect(imageBlock.confidence).toBeNull();
+    expect(imageBlock.confidence_metric).toBeNull();
+  });
+
+  it("rejects a table reference that is not on the same page", () => {
+    expect(() =>
+      buildStructuredDocument(
+        {
+          pages: [
+            {
+              index: 0,
+              markdown: "table",
+              dimensions: { width: 100, height: 100 },
+              blocks: [
+                {
+                  type: "table",
+                  table_id: "missing-table",
+                  content: "| A |",
+                  top_left_x: 0,
+                  top_left_y: 0,
+                  bottom_right_x: 10,
+                  bottom_right_y: 10,
+                },
+              ],
+              tables: [],
+            },
+          ],
+        },
+        { annotationMode: "none", requestedModel: "model" },
+      ),
+    ).toThrow(/missing table/i);
+  });
 });

@@ -67,6 +67,56 @@ def test_projection_drops_numeric_annotation_content() -> None:
     assert "printed" not in dumped
 
 
+def test_projection_drops_spelled_quantities_on_every_string_field() -> None:
+    """Words, ratios, percentages, and units are exact quantities too."""
+    projected = project_visual_context(
+        {
+            "document": {
+                "pages": [
+                    {
+                        "images": [
+                            {
+                                "annotation": {
+                                    "source": "image_annotation",
+                                    "quantitative_reliability": "unverified",
+                                    "provider_annotation": {
+                                        "kind": "chart",
+                                        "title": "Waste drops by one hundred tonnes",
+                                        "short_description": (
+                                            "Emissions fall by fifty percent"
+                                        ),
+                                        "chart": {
+                                            "chart_type": "line by fifty percent",
+                                            "legend": [
+                                                "Transport",
+                                                "one half of waste",
+                                            ],
+                                            "trends": [
+                                                "Transport declines",
+                                                "Waste drops by one hundred tonnes",
+                                            ],
+                                        },
+                                    },
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    )
+
+    assert len(projected) == 1
+    dumped = projected[0].model_dump_json()
+    assert projected[0].chart_type is None
+    assert projected[0].title is None
+    assert projected[0].meaning is None
+    assert projected[0].trend_directions == ["Transport declines"]
+    assert projected[0].relative_relationships == ["Transport"]
+    for leaked in ("fifty", "percent", "hundred", "tonnes", "half"):
+        assert leaked not in dumped
+
+
 def test_structured_delivery_rejects_a_digest_mismatch() -> None:
     """A pointer digest must match the fetched structured bytes."""
     raw = b'{"schema_version":"citycatalyst.structured-document.1"}'

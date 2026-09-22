@@ -458,7 +458,10 @@ Native Markdown has annotation mode `none` and no structured object.
 
 `PdfOcrJob.annotation_mode` is `none` or `visual_context`. It defaults to
 `none`. New CNB PDF uploads request `visual_context`. Inventory imports stay
-`none` and still extract rows only from Markdown. An idempotent re-enqueue
+`none` and still extract rows only from Markdown. The structured-artifact
+migration requeues in-flight CNB PDF jobs onto `visual_context` and leaves
+completed, failed, inventory, and direct-Markdown rows at `none`. An explicit
+retry of a failed PDF then requests `visual_context`. An idempotent re-enqueue
 cannot change the stored mode. A lost lease after the S3 writes does not
 publish those objects: consumers see only the database pointers. The next claim
 uses a new `attempt_count`. An explicit OCR retry of a failed PDF clears both
@@ -1405,7 +1408,11 @@ CityCatalyst owns both source-to-Markdown paths:
   OCR response: `combined_markdown.md` and `document.structured.json`. The
   structured artifact keeps the non-binary provider payload and a normalized
   page, block, hierarchy, order, box, table, figure, caption, and relationship
-  view. Binary image payloads are not stored.
+  view. A block's normalized `confidence` is only Mistral's
+  `average_content_confidence_score`, stored with that metric name. Other
+  provider confidence scores stay in the raw payload and are not relabeled.
+  Provider `table_id` and `image_id` values link a block to the same-page table
+  or image. Binary image payloads are not stored.
 - Native `.md` uploads bypass OCR entirely. CC validates UTF-8, rejects NUL or
   empty content, removes an optional BOM, normalizes line endings, and stores
   that Markdown directly in the final result namespace that CA reads later.

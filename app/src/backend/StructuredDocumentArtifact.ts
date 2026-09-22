@@ -89,10 +89,11 @@ export type NormalizedBlock = {
   page_index: number;
   reading_order_index: number;
   provider_type: string | null;
-  normalized_type: (typeof NORMALIZED_TYPES)[number];
+  normalized_type: NormalizedType;
   hierarchy: BlockHierarchy;
   content: string;
   confidence: number | null;
+  confidence_metric: "average_content_confidence_score" | null;
   bbox_px: BoundingBoxPx;
   bbox_norm: BoundingBoxNorm;
   related_image_id: string | null;
@@ -277,8 +278,20 @@ function normalizeBlocks(
       `page ${pageIndex} block ${readingOrderIndex}`,
     );
     const relatedImage = IMAGE_REF.exec(content);
+    const providerImageId = optionalIdentifier(block.image_id);
+    const markdownImageId = relatedImage?.[1] ?? null;
+    if (
+      providerImageId &&
+      markdownImageId &&
+      providerImageId !== markdownImageId
+    ) {
+      throw malformed(
+        `Page ${pageIndex} block ${readingOrderIndex} image id does not match its markdown reference`,
+      );
+    }
     providerLevels.push(readProviderLevel(block.level));
-    return {
+    const confidence = readAverageContentConfidence(block.confidence_scores);
+    const normalized: NormalizedBlock = {
       block_id: `p${pageIndex}-b${readingOrderIndex}`,
       page_index: pageIndex,
       reading_order_index: readingOrderIndex,
@@ -290,12 +303,14 @@ function normalizeBlocks(
         provenance: "absent",
       },
       content,
-      confidence: readConfidence(block.confidence_scores),
+      confidence: confidence?.value ?? null,
+      confidence_metric: confidence?.metric ?? null,
       bbox_px: boxes.bbox_px,
       bbox_norm: boxes.bbox_norm,
-      related_image_id: relatedImage?.[1] ?? null,
-      related_table_id: null,
+      related_image_id: providerImageId ?? markdownImageId,
+      related_table_id: optionalIdentifier(block.table_id),
     };
+    return normalized;
   });
   return { blocks, providerLevels };
 }
@@ -408,6 +423,7 @@ function normalizeTables(
   if (!Array.isArray(raw)) {
     throw malformed(`Page ${pageIndex} tables must be an array`);
   }
+  const seen = new Set<string>();
   return raw.map((table, index) => {
     if (!isRecord(table)) {
       throw malformed(`Page ${pageIndex} table ${index} must be an object`);
@@ -416,6 +432,10 @@ function normalizeTables(
       typeof table.id === "string" && table.id.length > 0
         ? table.id
         : `table-p${pageIndex}-${index}`;
+    if (seen.has(tableId)) {
+      throw malformed(`Duplicate table id ${tableId}`);
+    }
+    seen.add(tableId);
     const content = tableContent(table);
     const hasAnyCorner = ["top_left_x", "top_left_y", "bottom_right_x", "bottom_right_y"].some(
       (key) => table[key] != null,
@@ -629,7 +649,7 @@ function linkKnownReferences(
 function mapNormalizedType(
   providerType: string | null,
   content: string,
-): (typeof NORMALIZED_TYPES)[number] {
+): NormalizedType {
   if (providerType) {
     const mapped = PROVIDER_TYPE_MAP[providerType.toLowerCase()];
     if (mapped) return mapped;
@@ -687,14 +707,19 @@ function requiredDimensions(raw: unknown, pageIndex: number): PageDimensions {
   return { width, height, dpi };
 }
 
-function readConfidence(raw: unknown): number | null {
-  if (typeof raw === "number" && Number.isFinite(raw)) return raw;
+function readAverageContentConfidence(raw: unknown): {
+  value: number;
+  metric: "average_content_confidence_score";
+} | null {
   if (!isRecord(raw)) return null;
-  for (const key of ["ocr", "score", "value", "block"]) {
-    const value = raw[key];
-    if (typeof value === "number" && Number.isFinite(value)) return value;
-  }
-  return null;
+  const value = raw.average_content_confidence_score;
+  if (typeof value !== "number" || !Number.isFinite(value)) return null;
+  return { value, metric: "average_content_confidence_score" };
+}
+
+function optionalIdentifier(value: unknown): string | null {
+  if (typeof value !== "string" || value.length === 0) return null;
+  return value;
 }
 
 function imageSha256(image: Record<string, unknown>): string | null {

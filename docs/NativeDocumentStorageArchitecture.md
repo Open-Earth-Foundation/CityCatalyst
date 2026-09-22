@@ -232,7 +232,7 @@ Same idea for Path A; **separate schemas** in implementation.
 ### Example 3 — CNB supporting PDF (Path B)
 
 1. City uploads a Climate Action Plan inside **CNB**.  
-2. CNB queues OCR with `visual_context`. Markdown and `document.structured.json` land in S3 via **CC’s** existing upload/OCR plumbing. CNB keeps upload metadata, including the structured pointer, in its SoT. GHGI OCR does not request visual annotation.  
+2. CNB queues OCR with `visual_context`. Markdown and `document.structured.json` land in S3 via **CC’s** existing upload/OCR plumbing. CNB keeps upload metadata, including the structured pointer, in its SoT. GHGI OCR does not request visual annotation.
 3. CNB **registers** a catalog row: owner=`cnb`, `markdown_ready=true`, pointer to upload id, **plus scope** (e.g. city / project / CNB run — not only the module).  
 4. Clima for that CNB run queries the catalog, sees the CAP row, and calls a **CC core** capability/endpoint to **read markdown** for that pointer (same pattern other services could use).  
 5. **CC** reads S3 internally and returns markdown bytes (+ hash / ids). Clima keeps **excerpts** in the run’s context bundle. CNB as a product module may also call that same CC read path when it needs the file — it should not be the only door to S3.

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import json
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
@@ -9,10 +10,14 @@ from uuid import UUID, uuid4
 
 import pytest
 from app.config import get_settings
-from app.models.cnb.context_bundle import SelectedSource
+from app.models.cnb.concept_note_markdown import STRUCTURED_DOCUMENT_SCHEMA_VERSION
+from app.models.cnb.context_bundle import SelectedSource, SourceExcerpt
+from app.services.citycatalyst_client import (
+    ConceptNoteMarkdownArtifact,
+    ConceptNoteStructuredArtifact,
+)
 from app.persistence.concept_notes.context_bundle import ContextBundleBuildSnapshot
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
-from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.cnb.context_bundle import (
     ContextBundleService,
     run_context_bundle_reconciler,
@@ -436,3 +441,113 @@ async def test_source_failure_preserves_safe_diagnostics_without_source_text(
     assert "private document text" not in caplog.text
     assert "secret" not in caplog.text
     client.close.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_persisted_source_drops_spelled_annotation_quantities() -> None:
+    """Selected-source JSON keeps qualitative direction and Markdown excerpts."""
+    upload_id = uuid4()
+    markdown = "<!-- page: 1 -->\nCity evidence"
+    digest = hashlib.sha256(markdown.encode()).hexdigest()
+    body = {
+        "schema_version": STRUCTURED_DOCUMENT_SCHEMA_VERSION,
+        "annotation_mode": "visual_context",
+        "document": {
+            "page_count": 1,
+            "pages": [
+                {
+                    "images": [
+                        {
+                            "annotation": {
+                                "source": "image_annotation",
+                                "quantitative_reliability": "unverified",
+                                "provider_annotation": {
+                                    "kind": "chart",
+                                    "short_description": "Emissions fall by fifty percent",
+                                    "chart": {
+                                        "trends": ["Transport declines"],
+                                    },
+                                },
+                            }
+                        }
+                    ]
+                }
+            ],
+        },
+    }
+    raw = json.dumps(body).encode()
+    structured_sha = hashlib.sha256(raw).hexdigest()
+    structured = ConceptNoteStructuredArtifact(
+        body=body,
+        raw_bytes=raw,
+        content_type="application/json",
+        s3_key="document.structured.json",
+        sha256=structured_sha,
+        schema_version=STRUCTURED_DOCUMENT_SCHEMA_VERSION,
+        annotation_mode="visual_context",
+        page_count=1,
+        upload_id=str(upload_id),
+    )
+    upload = ConceptNoteUploadSnapshot(
+        upload_id=upload_id,
+        run_id=uuid4(),
+        user_id="owner",
+        filename="city.pdf",
+        source_label="City plan",
+        markdown_s3_key="result.md",
+        markdown_sha256=digest,
+        page_count=1,
+        status="ready",
+        error_code=None,
+        received_at=datetime.now(UTC),
+        completed_at=datetime.now(UTC),
+        annotation_mode="visual_context",
+        structured_s3_key=structured.s3_key,
+        structured_sha256=structured_sha,
+        structured_size_bytes=len(raw),
+        structured_schema_version=STRUCTURED_DOCUMENT_SCHEMA_VERSION,
+    )
+
+    async def analyze_document(**kwargs) -> SelectedSource:
+        assert "fifty" not in kwargs["pages"][0].text
+        return SelectedSource(
+            upload_id=kwargs["upload_id"],
+            source_label=kwargs["source_label"],
+            filename=kwargs["filename"],
+            sha256=kwargs["sha256"],
+            page_count=1,
+            summary="City evidence summary.",
+            topics=["city"],
+            key_excerpts=[SourceExcerpt(text=kwargs["pages"][0].text, page=1)],
+        )
+
+    client = SimpleNamespace(
+        get_concept_note_markdown=AsyncMock(
+            return_value=ConceptNoteMarkdownArtifact(
+                markdown=markdown,
+                markdown_s3_key="result.md",
+                sha256=digest,
+                page_count=1,
+            )
+        ),
+        get_concept_note_structured=AsyncMock(return_value=structured),
+    )
+    service = ContextBundleService(
+        object(),
+        analyze_document_fn=analyze_document,
+        verify_source_artifact_fn=fake_verify_source_artifact,
+    )
+    selected = await service._analyze_upload(
+        upload=upload,
+        token="token",
+        cc_client=client,
+        analysis_settings=get_settings(),
+        reader_limit=1,
+        contract_version=source_analysis_contract_version(get_settings()),
+    )
+    dumped = selected.model_dump_json()
+    assert selected.key_excerpts[0].text == "\nCity evidence"
+    assert selected.visual_context[0].meaning is None
+    assert selected.visual_context[0].trend_directions == ["Transport declines"]
+    assert "fifty" not in dumped
+    assert "percent" not in dumped

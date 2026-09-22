@@ -98,7 +98,7 @@ function CheckCard({
         >
           {label}
         </Checkbox.Label>
-        {sublabel && <Caption color="content.tertiary">{sublabel}</Caption>}
+        {sublabel && <BodySmall color="content.tertiary">{sublabel}</BodySmall>}
       </VStack>
     </Checkbox.Root>
   );
@@ -206,6 +206,11 @@ export function TrackPreferences({
         href: trackHref(lng, city.slug, track, "preflight"),
         label: t("step-preflight"),
       }}
+      openPoints={
+        track === "adaptation"
+          ? [t("open-prefs-risks")]
+          : [t("open-mitigation-review")]
+      }
     >
       {!isReady ? null : (
         <VStack alignItems="stretch" gap="l">
@@ -314,17 +319,17 @@ export function TrackPreferences({
                 );
               })}
             </VStack>
-            <Caption color="content.tertiary">
+            <BodySmall color="content.tertiary">
               {t("timeline-two-uses-note")}
-            </Caption>
+            </BodySmall>
           </Section>
 
-          {/* Track-specific: sectors */}
+          {/* Track-specific: sectors. A preference, not a model input the
+              ranking cannot run without — so never marked required. */}
           <Section
             title={tPrefs("priority-sectors-title")}
             badge={t(`badge-${track}`)}
             t={tPrefs}
-            required
           >
             <BodyMedium color="content.secondary">
               {tPrefs("priority-sectors-description")}
@@ -361,9 +366,6 @@ export function TrackPreferences({
                 }
                 ariaLabel={t("priority-risks-title")}
               />
-              <Caption color="content.tertiary">
-                {t("priority-risks-note")}
-              </Caption>
             </Section>
           )}
 
@@ -403,9 +405,9 @@ export function TrackPreferences({
                 ))}
               </SimpleGrid>
             ) : (
-              <Caption color="content.tertiary">
+              <BodySmall color="content.tertiary">
                 {t("exclusions-mitigation-note")}
-              </Caption>
+              </BodySmall>
             )}
             {prefs.excludedActionIds.length > 0 ? (
               <BodySmall color="interactive.tertiary" aria-live="polite">
@@ -414,9 +416,9 @@ export function TrackPreferences({
                 })}
               </BodySmall>
             ) : (
-              <Caption color="content.tertiary">
+              <BodySmall color="content.tertiary">
                 {tPrefs("no-exclusions-set")}
-              </Caption>
+              </BodySmall>
             )}
           </Section>
         </VStack>

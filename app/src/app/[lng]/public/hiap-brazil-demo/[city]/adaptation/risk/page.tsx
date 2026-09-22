@@ -58,20 +58,8 @@ export default function Page(props: {
       title={t("risk-title")}
       description={t("risk-intro")}
       backLabel={t("back-to-home")}
+      openPoints={[t("open-risk-hazard")]}
     >
-      <HStack
-        gap="s"
-        px="m"
-        py="s"
-        borderRadius="rounded"
-        bg="background.neutral"
-        alignItems="flex-start"
-        alignSelf="flex-start"
-      >
-        <Icon as={LuInfo} boxSize="16px" color="content.link" mt="2px" />
-        <Caption color="content.secondary">{t("risk-weight-note")}</Caption>
-      </HStack>
-
       <SimpleGrid columns={{ base: 2, md: 4 }} gap="m">
         {top.map(({ c, r }) => (
           <Card.Root key={c.key} borderColor="border.overlay" h="full">
@@ -109,9 +97,9 @@ export default function Page(props: {
             <TitleMedium color="content.primary">
               {t("risk-table-title")}
             </TitleMedium>
-            <BodySmall color="content.secondary">
+            <BodyMedium color="content.secondary">
               {t("risk-table-description")}
-            </BodySmall>
+            </BodyMedium>
           </VStack>
           <Tabs.Root
             variant="enclosed"
@@ -149,7 +137,7 @@ export default function Page(props: {
           </HStack>
         )}
         <RiskCellTable city={city} lng={lng} t={t} scenario={scenario} />
-        <Caption color="content.tertiary">{t("risk-hazard-note")}</Caption>
+        <BodySmall color="content.tertiary">{t("risk-hazard-note")}</BodySmall>
       </VStack>
 
       <Card.Root borderColor="sentiment.warningDefault">

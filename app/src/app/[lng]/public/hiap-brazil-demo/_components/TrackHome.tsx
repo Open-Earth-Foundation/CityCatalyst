@@ -12,8 +12,7 @@ import {
 } from "react-icons/lu";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { HeadlineLarge } from "@/components/package/Texts/Headline";
-import { BodyLarge } from "@/components/package/Texts/Body";
-import { Caption } from "@/components/package/Texts/Caption";
+import { BodyLarge, BodySmall } from "@/components/package/Texts/Body";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { MeedLatestRanking } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedLatestRanking";
 import { ContextCardGrid } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ContextCardGrid";
@@ -24,6 +23,8 @@ import { useTrack } from "../_lib/useTrack";
 import { useDemoT, useTrackT } from "../_lib/useDemoT";
 import { SCREEN_IDS, trackHref } from "../_lib/hrefs";
 import { RISK_CELLS } from "../_lib/riskCells";
+import { MITIGATION_SHIFTS } from "../_lib/mitigation";
+import { ConceptNotice } from "./ConceptNotice";
 import { DemoHero } from "./DemoHero";
 import { TrackTabs } from "./TrackTabs";
 import { DemoRankingSummary } from "./DemoRankingSummary";
@@ -83,7 +84,7 @@ export function TrackHome({
     [hasRanking, city.locode, ranked, state.generatedAt],
   );
 
-  const { areas, facts, backing, visualFor, indicatorFor, hrefFor } =
+  const { areas, facts, backing, visualFor, indicatorFor, ctaFor, hrefFor } =
     useContextAreas({ lng, data, tResults });
 
   const summary = useMemo(() => {
@@ -146,7 +147,9 @@ export function TrackHome({
     } else {
       lines.push({
         icon: LuChartColumn,
-        text: t("insight-mitigation-provisional"),
+        text: t("insight-mitigation-shifts", {
+          count: MITIGATION_SHIFTS.length,
+        }),
       });
     }
     return { inputs, lines };
@@ -227,7 +230,7 @@ export function TrackHome({
                 ? tMeed("ranking-rerun")
                 : tMeed("get-recommendations")}
             </MeedButton>
-            <Caption
+            <BodySmall
               color="content.tertiary"
               textAlign={{ base: "start", md: "end" }}
               maxW="360px"
@@ -237,7 +240,7 @@ export function TrackHome({
                   ? "get-recommendations-hint-adaptation"
                   : "get-recommendations-hint-mitigation",
               )}
-            </Caption>
+            </BodySmall>
           </VStack>
         </HStack>
 
@@ -287,8 +290,18 @@ export function TrackHome({
           areas={areas}
           visualFor={visualFor}
           indicatorFor={indicatorFor}
+          ctaFor={ctaFor}
         />
       </Box>
+
+      <ConceptNotice
+        lng={lng}
+        points={
+          track === "mitigation"
+            ? [t("open-mitigation-review"), t("open-mitigation-scores")]
+            : []
+        }
+      />
 
       {open && (
         <DetailPanel
@@ -299,6 +312,7 @@ export function TrackHome({
           onClose={() => setOpen(null)}
           rank={open.rank}
           total={ranked.length}
+          size="lg"
           extraSections={
             adaptation && ACTION_BY_ID[open.action_id] ? (
               <AdaptationDrawerSections

@@ -80,6 +80,7 @@ export function DetailPanel({
   onToggleSelect,
   finance,
   extraSections,
+  size = "md",
 }: {
   action: MeedRankedActionResult;
   index: MeedActionIndex;
@@ -99,6 +100,8 @@ export function DetailPanel({
    * track adds risk cells credited, legal grade and funding pathway here.
    */
   extraSections?: React.ReactNode;
+  /** Drawer width on desktop; `lg` gives text-heavy sections room to breathe. */
+  size?: "md" | "lg";
 }) {
   const name = actionName(index, action.action_id, t);
   const description = index.get(action.action_id)?.description;
@@ -114,7 +117,7 @@ export function DetailPanel({
         if (!e.open) onClose();
       }}
       placement="end"
-      size={{ base: "full", md: "md" }}
+      size={{ base: "full", md: size }}
     >
       <Portal>
         <Drawer.Backdrop />

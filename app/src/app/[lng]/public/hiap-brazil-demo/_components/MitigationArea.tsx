@@ -58,6 +58,7 @@ export function MitigationArea({
       title={t(`m-area-${area}-title`)}
       description={t(`m-area-${area}-intro`)}
       backLabel={t("back-to-home")}
+      openPoints={[t("open-mitigation-review")]}
     >
       {area === "emissions" ? (
         <VStack alignItems="stretch" gap="l">
@@ -143,7 +144,9 @@ export function MitigationArea({
               </Table.Body>
             </Table.Root>
           </Card.Root>
-          <Caption color="content.tertiary">{t("m-emissions-note")}</Caption>
+          <BodySmall color="content.tertiary">
+            {t("m-emissions-note")}
+          </BodySmall>
         </VStack>
       ) : (
         <Card.Root borderColor="sentiment.warningDefault">

@@ -15,6 +15,7 @@ import type {
   MeedContextStat,
 } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/contextAreas";
 import type { MeedPolicyBacking } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/rankingFacts";
+import type { MeedContextCta } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ContextCardGrid";
 import { MeedFunnelStrip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedFunnelStrip";
 import { MeedMeter } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedMeter";
 import { MeedShareBar } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedShareBar";
@@ -417,5 +418,12 @@ export function useContextAreas({
   const hrefFor = (segment: string) =>
     trackHref(lng, city.slug, track, segment);
 
-  return { areas, facts, backing, visualFor, indicatorFor, hrefFor };
+  // City context is inside the AdaptaBrasil Impact index already, so the
+  // card's action says so instead of inviting the reader to "view details".
+  const ctaFor = (area: MeedContextArea): MeedContextCta | undefined =>
+    area.key === "context-br" && track === "adaptation"
+      ? { label: t("area-context-cta"), href: hrefFor("context") }
+      : undefined;
+
+  return { areas, facts, backing, visualFor, indicatorFor, ctaFor, hrefFor };
 }

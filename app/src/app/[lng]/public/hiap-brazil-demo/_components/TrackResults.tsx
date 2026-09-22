@@ -1,11 +1,10 @@
 "use client";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { Box, Card, HStack, Icon, VStack } from "@chakra-ui/react";
-import { LuInfo } from "react-icons/lu";
+import { Box, Card, HStack, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { BodySmall } from "@/components/package/Texts/Body";
-import { Caption } from "@/components/package/Texts/Caption";
+import { LabelLarge } from "@/components/package/Texts/Label";
 import { MeedFunnelStrip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedFunnelStrip";
 import { MeedScoreLegend } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedScoreComposition";
 import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
@@ -69,7 +68,7 @@ export function TrackResults({
     () => tallyCoBenefits(topPicks, index),
     [topPicks, index],
   );
-  const { areas, facts, backing, visualFor, indicatorFor, hrefFor } =
+  const { areas, facts, backing, visualFor, indicatorFor, ctaFor, hrefFor } =
     useContextAreas({ lng, data, tResults });
 
   const generateReport = useCallback(async () => {
@@ -189,6 +188,11 @@ export function TrackResults({
       track={track}
       segment="results"
       screenId={screenId}
+      openPoints={
+        track === "adaptation"
+          ? [t("open-results-legal"), t("open-results-narrative")]
+          : [t("open-mitigation-review"), t("open-mitigation-scores")]
+      }
       title={tResults("page-title")}
       description={tResults("page-description")}
       backLabel={t("back-to-home")}
@@ -214,35 +218,14 @@ export function TrackResults({
             t={tResults}
           />
 
-          {track === "mitigation" && (
-            <HStack
-              gap="s"
-              px="m"
-              py="s"
-              borderRadius="rounded"
-              bg="sentiment.warningOverlay"
-              alignItems="flex-start"
-            >
-              <Icon
-                as={LuInfo}
-                boxSize="16px"
-                color="sentiment.warningDefault"
-                mt="2px"
-              />
-              <BodySmall color="content.secondary">
-                {t("mitigation-provisional-body")}
-              </BodySmall>
-            </HStack>
-          )}
-
           {funnel && (
             <Card.Root borderColor="border.overlay">
               <Card.Body>
                 <VStack alignItems="stretch" gap="s">
                   <HStack gap="s" alignItems="center" flexWrap="wrap">
-                    <Caption color="content.tertiary">
+                    <LabelLarge color="content.primary">
                       {t("funnel-title")}
-                    </Caption>
+                    </LabelLarge>
                     <MeedStatusTag tone="info">
                       {t("funnel-per-city")}
                     </MeedStatusTag>
@@ -310,9 +293,9 @@ export function TrackResults({
             }
           />
           {track === "adaptation" && (
-            <Caption color="content.tertiary">
+            <BodySmall color="content.tertiary">
               {t("glance-normalised-note")}
-            </Caption>
+            </BodySmall>
           )}
 
           {adaptation && (
@@ -332,6 +315,7 @@ export function TrackResults({
             areas={areas}
             visualFor={visualFor}
             indicatorFor={indicatorFor}
+            ctaFor={ctaFor}
           />
         </VStack>
       )}
@@ -347,6 +331,7 @@ export function TrackResults({
           total={ranked.length}
           isSelected={selectedIds.includes(open.action_id)}
           onToggleSelect={toggleSelect}
+          size="lg"
           extraSections={drawerExtra(open.action_id)}
         />
       )}
@@ -357,6 +342,7 @@ export function TrackResults({
           weights={weights}
           t={tResults}
           onClose={() => setOpenUnranked(null)}
+          size="lg"
           extraSections={
             <Box>
               <MeedStatusTag tone="warning" mb="m">

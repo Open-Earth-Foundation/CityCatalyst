@@ -5,7 +5,6 @@ import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
@@ -63,9 +62,9 @@ export function ShiftInterventionList({
         <TitleMedium color="content.primary">
           {t("shifts-title", { count: ordered.length })}
         </TitleMedium>
-        <BodySmall color="content.secondary">
+        <BodyMedium color="content.secondary">
           {t("shifts-description")}
-        </BodySmall>
+        </BodyMedium>
       </VStack>
       {ordered.map((shift, i) => {
         const isOpen = open === shift.id;
@@ -120,9 +119,9 @@ export function ShiftInterventionList({
                               {t(`band-${shift.reductionBand}`)}
                             </MeedStatusTag>
                           </HStack>
-                          <BodySmall color="content.secondary">
+                          <BodyMedium color="content.secondary">
                             {pick(shift.description, lng)}
-                          </BodySmall>
+                          </BodyMedium>
                           <HStack gap="l" w="full" maxW="520px" flexWrap="wrap">
                             <Box flex="1" minW="160px">
                               <MeedMeter
@@ -144,11 +143,11 @@ export function ShiftInterventionList({
                         </VStack>
                       </HStack>
                       <HStack gap="xs" flexShrink={0} color="content.link">
-                        <Caption color="content.link">
+                        <BodySmall color="content.link">
                           {t("shift-interventions-count", {
                             count: shift.interventions.length,
                           })}
-                        </Caption>
+                        </BodySmall>
                         <Icon
                           as={isOpen ? LuChevronUp : LuChevronDown}
                           boxSize="16px"
@@ -167,22 +166,22 @@ export function ShiftInterventionList({
                   bg="background.neutral"
                 >
                   <VStack alignItems="stretch" gap="s">
-                    <Caption color="content.tertiary">
+                    <BodySmall color="content.tertiary">
                       {t("shift-interventions-note")}
-                    </Caption>
+                    </BodySmall>
                     {interventions.map((iv, j) => (
                       <HStack
                         key={iv.action_id}
                         justifyContent="space-between"
                         gap="m"
-                        py="s"
+                        py="m"
                         borderTopWidth={j === 0 ? 0 : "1px"}
                         borderColor="border.overlay"
                         flexWrap="wrap"
                       >
                         <VStack
                           alignItems="flex-start"
-                          gap="0"
+                          gap="xs"
                           flex="1"
                           minW="240px"
                         >

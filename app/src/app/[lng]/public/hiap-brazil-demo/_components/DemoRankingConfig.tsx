@@ -4,7 +4,7 @@ import { HStack, Icon, Link, SimpleGrid, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { LuPencil } from "react-icons/lu";
 import type { TFunction } from "i18next";
-import { BodySmall } from "@/components/package/Texts/Body";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
@@ -54,51 +54,51 @@ export function DemoRankingConfig({
         </Link>
       </HStack>
       <SimpleGrid columns={{ base: 1, md: 3 }} gap="m">
-        <VStack alignItems="flex-start" gap="0">
+        <VStack alignItems="flex-start" gap="xs">
           <Caption color="content.tertiary">{t("config-sectors")}</Caption>
-          <BodySmall color="content.secondary">
+          <BodyMedium color="content.secondary">
             {list(preferences.sectors.map(labelFor.sector))}
-          </BodySmall>
+          </BodyMedium>
         </VStack>
-        <VStack alignItems="flex-start" gap="0">
+        <VStack alignItems="flex-start" gap="xs">
           <Caption color="content.tertiary">{t("config-cobenefits")}</Caption>
-          <BodySmall color="content.secondary">
+          <BodyMedium color="content.secondary">
             {list(preferences.coBenefits.map(labelFor.coBenefit))}
-          </BodySmall>
+          </BodyMedium>
         </VStack>
-        <VStack alignItems="flex-start" gap="0">
+        <VStack alignItems="flex-start" gap="xs">
           <Caption color="content.tertiary">{t("config-timeline")}</Caption>
-          <BodySmall color="content.secondary">
+          <BodyMedium color="content.secondary">
             {list(preferences.timeline.map(labelFor.timeline))}
-          </BodySmall>
+          </BodyMedium>
         </VStack>
-        <VStack alignItems="flex-start" gap="0">
+        <VStack alignItems="flex-start" gap="xs">
           <Caption color="content.tertiary">
             {t("config-priority-risks")}
           </Caption>
-          <BodySmall color="content.secondary">
+          <BodyMedium color="content.secondary">
             {list(preferences.priorityRisks.map(labelFor.risk))}
-          </BodySmall>
+          </BodyMedium>
         </VStack>
-        <VStack alignItems="flex-start" gap="0">
+        <VStack alignItems="flex-start" gap="xs">
           <Caption color="content.tertiary">{t("config-exclusions")}</Caption>
-          <BodySmall color="content.secondary">
+          <BodyMedium color="content.secondary">
             {preferences.excludedActionIds.length
               ? t("config-exclusions-count", {
                   count: preferences.excludedActionIds.length,
                 })
               : none}
-          </BodySmall>
+          </BodyMedium>
         </VStack>
-        <VStack alignItems="flex-start" gap="0">
+        <VStack alignItems="flex-start" gap="xs">
           <Caption color="content.tertiary">{t("config-weights")}</Caption>
-          <BodySmall color="content.secondary">
+          <BodyMedium color="content.secondary">
             {t("config-weights-value", {
               impact: w.impact,
               alignment: w.alignment,
               feasibility: w.feasibility,
             })}
-          </BodySmall>
+          </BodyMedium>
         </VStack>
       </SimpleGrid>
     </VStack>

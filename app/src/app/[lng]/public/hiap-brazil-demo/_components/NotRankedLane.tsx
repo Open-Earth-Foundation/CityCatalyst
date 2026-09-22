@@ -77,9 +77,9 @@ export function NotRankedLane({
         <TitleMedium color="content.primary">
           {t("not-ranked-title", { count: items.length })}
         </TitleMedium>
-        <BodySmall color="content.secondary">
+        <BodyMedium color="content.secondary">
           {t("not-ranked-description")}
-        </BodySmall>
+        </BodyMedium>
       </VStack>
       {groups.map(({ reason, actions }) => (
         <Card.Root key={reason} borderColor="border.overlay">
@@ -101,9 +101,9 @@ export function NotRankedLane({
                       {t(`reason-${reason}-tag`)}
                     </MeedStatusTag>
                   </HStack>
-                  <BodySmall color="content.secondary">
+                  <BodyMedium color="content.secondary">
                     {t(`reason-${reason}-body`)}
-                  </BodySmall>
+                  </BodyMedium>
                 </VStack>
               </HStack>
               <VStack alignItems="stretch" gap="xs">
@@ -112,11 +112,11 @@ export function NotRankedLane({
                     key={action.id}
                     justifyContent="space-between"
                     gap="m"
-                    py="s"
+                    py="m"
                     borderTopWidth="1px"
                     borderColor="border.overlay"
                   >
-                    <VStack alignItems="flex-start" gap="0" minW={0}>
+                    <VStack alignItems="flex-start" gap="xs" minW={0}>
                       <BodyMedium color="content.primary" fontWeight="semibold">
                         {pick(action.name, lng)}
                       </BodyMedium>

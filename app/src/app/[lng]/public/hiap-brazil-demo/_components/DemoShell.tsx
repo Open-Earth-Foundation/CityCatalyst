@@ -13,6 +13,7 @@ import type { CityFixture, DemoTrack } from "../_lib/types";
 import { demoHome, trackHref } from "../_lib/hrefs";
 import { useDemoT } from "../_lib/useDemoT";
 import { CitySwitcher } from "./CitySwitcher";
+import { ConceptNotice } from "./ConceptNotice";
 import { DemoStepper, type WizardStep } from "./DemoStepper";
 import { ScreenTag } from "./ScreenTag";
 
@@ -32,6 +33,12 @@ export interface DemoShellProps {
   /** Output areas show a way back instead of a footer. */
   backLabel?: string;
   headerFacts?: string;
+  /**
+   * Decisions still open for this screen (already translated). They render
+   * in the corner notice rather than in the layout, so the screen reads as
+   * the product would while the reviewer still sees what may change it.
+   */
+  openPoints?: string[];
   children: React.ReactNode;
 }
 
@@ -54,6 +61,7 @@ export function DemoShell({
   forward,
   backLabel,
   headerFacts,
+  openPoints,
   children,
 }: DemoShellProps) {
   const { t } = useDemoT(lng);
@@ -210,6 +218,8 @@ export function DemoShell({
           </HStack>
         )}
       </Box>
+
+      <ConceptNotice lng={lng} points={openPoints ?? []} />
     </Box>
   );
 }

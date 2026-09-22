@@ -5,7 +5,6 @@ import NextLink from "next/link";
 import { LuInfo, LuTriangleAlert } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import {
   MeedStatusTag,
@@ -38,7 +37,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <VStack alignItems="stretch" gap="s">
+    <VStack alignItems="stretch" gap="m">
       <HStack gap="s" alignItems="center" flexWrap="wrap">
         <LabelLarge color="content.primary">{title}</LabelLarge>
         {tag}
@@ -114,21 +113,21 @@ export function AdaptationDrawerSections({
               color="sentiment.warningDefault"
               mt="2px"
             />
-            <BodySmall color="content.secondary">
+            <BodyMedium color="content.secondary">
               {t("drawer-uncovered-body", {
                 hazard: pick(
                   UNCOVERED_HAZARD_LABEL[action.uncoveredHazard],
                   lng,
                 ),
               })}
-            </BodySmall>
+            </BodyMedium>
           </HStack>
         ) : directLinks.length === 0 ? (
-          <BodySmall color="content.secondary">
+          <BodyMedium color="content.secondary">
             {t("drawer-no-direct-links")}
-          </BodySmall>
+          </BodyMedium>
         ) : (
-          <Table.Root size="sm">
+          <Table.Root size="md">
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeader>{t("drawer-col-cell")}</Table.ColumnHeader>
@@ -161,7 +160,7 @@ export function AdaptationDrawerSections({
                       </BodySmall>
                     </Table.Cell>
                     <Table.Cell>
-                      <VStack alignItems="flex-start" gap="0">
+                      <VStack alignItems="flex-start" gap="xs">
                         <BodySmall color="content.secondary">
                           {t("drawer-effect-line", {
                             effectiveness: t(
@@ -197,16 +196,16 @@ export function AdaptationDrawerSections({
           </Table.Root>
         )}
         {scored && scored.cells[0] && (
-          <Caption color="content.tertiary">
+          <BodySmall color="content.tertiary">
             {t("drawer-impact-formula", {
               cell: pick(RISK_CELL_BY_KEY[scored.cells[0].cell].label, lng),
               raw: scored.cells[0].raw.toFixed(2),
               impact: scored.impact.toFixed(2),
             })}
-          </Caption>
+          </BodySmall>
         )}
         {otherLinks.length > 0 && (
-          <VStack alignItems="stretch" gap="xs">
+          <VStack alignItems="stretch" gap="s">
             {otherLinks.map((link, i) => (
               <HStack key={i} gap="s" alignItems="flex-start">
                 <Icon
@@ -215,19 +214,19 @@ export function AdaptationDrawerSections({
                   color="content.tertiary"
                   mt="3px"
                 />
-                <Caption color="content.tertiary">
+                <BodySmall color="content.tertiary">
                   {pick(RISK_CELL_BY_KEY[link.cell].label, lng)} ·{" "}
                   {t(`directness-${link.directness}`)} —{" "}
                   {pick(link.rationale, lng)}
-                </Caption>
+                </BodySmall>
               </HStack>
             ))}
           </VStack>
         )}
         {action.links.some((l) => l.maladaptation) && (
-          <BodySmall color="content.secondary">
+          <BodyMedium color="content.secondary">
             {t("drawer-maladaptation-body")}
-          </BodySmall>
+          </BodyMedium>
         )}
       </Section>
 
@@ -241,7 +240,7 @@ export function AdaptationDrawerSections({
             </MeedStatusTag>
           }
         >
-          <VStack alignItems="stretch" gap="xs">
+          <VStack alignItems="stretch" gap="s">
             {action.relationships.map((rel) => {
               const other = ACTION_BY_ID[rel.actionId];
               if (!other) return null;
@@ -273,9 +272,9 @@ export function AdaptationDrawerSections({
               );
             })}
           </VStack>
-          <Caption color="content.tertiary">
+          <BodySmall color="content.tertiary">
             {t("drawer-relationships-note")}
-          </Caption>
+          </BodySmall>
         </Section>
       )}
 
@@ -297,13 +296,13 @@ export function AdaptationDrawerSections({
           <MeedStatusTag tone={GRADE_TONE[grade]}>
             {pick(GRADE_LABEL[grade], lng)}
           </MeedStatusTag>
-          <BodySmall color="content.secondary">
+          <BodyMedium color="content.secondary">
             {t("drawer-legal-line", {
               score: action.legal.score.toFixed(1),
               level: pick(LEVEL_LABEL[action.legal.responsibleLevel], lng),
               norms: action.legal.norms.length,
             })}
-          </BodySmall>
+          </BodyMedium>
         </HStack>
         <Link
           asChild
@@ -324,16 +323,16 @@ export function AdaptationDrawerSections({
 
       {/* Funding */}
       <Section title={t("drawer-funding-title")}>
-        <VStack alignItems="stretch" gap="xs">
+        <VStack alignItems="stretch" gap="s">
           <LabelMedium color="content.primary">
             {pick(GAP_LABEL[funding.gap], lng)}
           </LabelMedium>
           {funding.ifCreditNotIndicated && (
-            <Caption color="content.tertiary">
+            <BodySmall color="content.tertiary">
               {t("drawer-funding-verify", {
                 alt: pick(GAP_LABEL[funding.ifCreditNotIndicated], lng),
               })}
-            </Caption>
+            </BodySmall>
           )}
           <HStack gap="xs" flexWrap="wrap">
             {action.pathways.map((key) => (
@@ -350,9 +349,9 @@ export function AdaptationDrawerSections({
               </MeedStatusTag>
             ))}
           </HStack>
-          <Caption color="content.tertiary">
+          <BodySmall color="content.tertiary">
             {t("drawer-funding-note", { cost: t(`cost-${action.costBand}`) })}
-          </Caption>
+          </BodySmall>
         </VStack>
       </Section>
 
@@ -370,21 +369,21 @@ export function AdaptationDrawerSections({
               </MeedStatusTag>
             ))}
           </HStack>
-          <Caption color="content.tertiary">
+          <BodySmall color="content.tertiary">
             {t("drawer-suppressed-body")}
-          </Caption>
+          </BodySmall>
         </Section>
       )}
 
       {/* Provenance and fallbacks */}
       <Section title={t("drawer-provenance-title")}>
-        <VStack alignItems="stretch" gap="xs">
+        <VStack alignItems="stretch" gap="s">
           {scored?.fallbacks.map((key) => (
             <HStack key={key} gap="s" alignItems="flex-start">
               <Icon as={LuInfo} boxSize="14px" color="content.link" mt="3px" />
-              <BodySmall color="content.secondary">
+              <BodyMedium color="content.secondary">
                 {t(`fallback-${key}`)}
-              </BodySmall>
+              </BodyMedium>
             </HStack>
           ))}
           {action.coBenefitsAiOnly && (
@@ -395,9 +394,9 @@ export function AdaptationDrawerSections({
                 color="sentiment.warningDefault"
                 mt="3px"
               />
-              <BodySmall color="content.secondary">
+              <BodyMedium color="content.secondary">
                 {t("prov-cobenefits-ai")}
-              </BodySmall>
+              </BodyMedium>
             </HStack>
           )}
           {!action.provenance.policyReviewed && (
@@ -408,9 +407,9 @@ export function AdaptationDrawerSections({
                 color="sentiment.warningDefault"
                 mt="3px"
               />
-              <BodySmall color="content.secondary">
+              <BodyMedium color="content.secondary">
                 {t("prov-policy-unreviewed")}
-              </BodySmall>
+              </BodyMedium>
             </HStack>
           )}
           <Box>

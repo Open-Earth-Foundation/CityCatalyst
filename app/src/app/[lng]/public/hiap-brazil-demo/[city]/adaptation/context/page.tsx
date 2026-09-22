@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
 import { LuInfo } from "react-icons/lu";
-import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
@@ -123,9 +123,9 @@ export default function Page(props: {
             </Card.Root>
           ))}
         </SimpleGrid>
-        <BodySmall color="content.secondary">
+        <BodyMedium color="content.secondary">
           {t("context-vulnerability-note")}
-        </BodySmall>
+        </BodyMedium>
       </VStack>
     </DemoShell>
   );

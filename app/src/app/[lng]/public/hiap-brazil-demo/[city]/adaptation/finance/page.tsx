@@ -1,14 +1,6 @@
 "use client";
 import React from "react";
-import {
-  Card,
-  HStack,
-  Icon,
-  SimpleGrid,
-  Table,
-  VStack,
-} from "@chakra-ui/react";
-import { LuInfo, LuLandmark } from "react-icons/lu";
+import { Card, HStack, SimpleGrid, Table, VStack } from "@chakra-ui/react";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelMedium } from "@/components/package/Texts/Label";
@@ -76,21 +68,9 @@ export default function Page(props: {
       title={t("finance-title")}
       description={t("finance-intro")}
       backLabel={t("back-to-home")}
+      openPoints={[t("open-finance-profile"), t("open-finance-tiers")]}
     >
-      <HStack
-        gap="s"
-        px="m"
-        py="s"
-        borderRadius="rounded"
-        bg="background.neutral"
-        alignItems="flex-start"
-        alignSelf="flex-start"
-      >
-        <Icon as={LuInfo} boxSize="16px" color="content.link" mt="2px" />
-        <Caption color="content.secondary">{t("finance-weight-note")}</Caption>
-      </HStack>
-
-      {/* City profile — the part under review (Sep 16): kept as flags. */}
+      {/* City profile — under review (Sep 16, see the corner notice): flags only. */}
       <Card.Root borderColor="border.neutral">
         <Card.Body p="l">
           <VStack alignItems="stretch" gap="m">
@@ -102,27 +82,8 @@ export default function Page(props: {
                 {t("finance-profile-review-tag")}
               </MeedStatusTag>
             </HStack>
-            <HStack
-              gap="m"
-              bg="background.neutral"
-              borderRadius="rounded"
-              px="m"
-              py="m"
-              alignItems="flex-start"
-            >
-              <Icon
-                as={LuLandmark}
-                boxSize="20px"
-                color="content.secondary"
-                mt="xs"
-                flexShrink={0}
-              />
-              <BodyMedium color="content.secondary">
-                {t("finance-profile-review-body")}
-              </BodyMedium>
-            </HStack>
             <SimpleGrid columns={{ base: 1, md: 2 }} gap="m">
-              <VStack alignItems="stretch" gap="xs">
+              <VStack alignItems="stretch" gap="s">
                 <Overline color="content.tertiary">
                   {t("finance-credit-label")}
                 </Overline>
@@ -130,21 +91,21 @@ export default function Page(props: {
                   <MeedStatusTag tone={creditTone}>
                     {pick(CREDIT_LABEL[credit], lng)}
                   </MeedStatusTag>
-                  <Caption color="content.tertiary">
+                  <BodySmall color="content.tertiary">
                     {t("finance-capag-line", {
                       grade: city.capag === "nd" ? "n.d." : city.capag,
                     })}
-                  </Caption>
+                  </BodySmall>
                 </HStack>
-                <Caption color="content.tertiary">
+                <BodySmall color="content.tertiary">
                   {t(
                     credit === "to_verify"
                       ? "finance-credit-verify-note"
                       : "finance-credit-note",
                   )}
-                </Caption>
+                </BodySmall>
               </VStack>
-              <VStack alignItems="stretch" gap="xs">
+              <VStack alignItems="stretch" gap="s">
                 <Overline color="content.tertiary">
                   {t("finance-push-label")}
                 </Overline>
@@ -154,9 +115,9 @@ export default function Page(props: {
                   valueText={`${city.financePush} / 14`}
                   label={pick(PUSH_LABEL[bucket], lng)}
                 />
-                <Caption color="content.tertiary">
+                <BodySmall color="content.tertiary">
                   {t("finance-push-note")}
-                </Caption>
+                </BodySmall>
               </VStack>
             </SimpleGrid>
           </VStack>
@@ -179,9 +140,9 @@ export default function Page(props: {
             <TitleMedium color="content.primary">
               {t("finance-table-title")}
             </TitleMedium>
-            <BodySmall color="content.secondary">
+            <BodyMedium color="content.secondary">
               {t("finance-table-description")}
-            </BodySmall>
+            </BodyMedium>
           </VStack>
           <MeedStatusTag tone="warning">
             {t("finance-tier-pending")}
@@ -254,13 +215,13 @@ export default function Page(props: {
         {(Object.keys(GAP_LABEL) as FundingGap[]).map((gap) => (
           <Card.Root key={gap} borderColor="border.overlay">
             <Card.Body>
-              <VStack alignItems="flex-start" gap="xs">
+              <VStack alignItems="flex-start" gap="s">
                 <MeedStatusTag tone={GAP_TONE[gap]}>
                   {pick(GAP_LABEL[gap], lng)}
                 </MeedStatusTag>
-                <BodySmall color="content.secondary">
+                <BodyMedium color="content.secondary">
                   {pick(GAP_MEANING[gap], lng)}
-                </BodySmall>
+                </BodyMedium>
               </VStack>
             </Card.Body>
           </Card.Root>
@@ -273,7 +234,7 @@ export default function Page(props: {
           {t("finance-pathways-title")}
         </TitleMedium>
         <Card.Root overflow="hidden" borderColor="border.neutral">
-          <Table.Root size="sm">
+          <Table.Root size="md">
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeader>
@@ -332,12 +293,12 @@ export default function Page(props: {
           <TitleMedium color="content.primary">
             {t("finance-projects-title")}
           </TitleMedium>
-          <BodySmall color="content.secondary">
+          <BodyMedium color="content.secondary">
             {t("finance-projects-description")}
-          </BodySmall>
+          </BodyMedium>
         </VStack>
         <Card.Root overflow="hidden" borderColor="border.neutral">
-          <Table.Root size="sm">
+          <Table.Root size="md">
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeader>
@@ -391,7 +352,9 @@ export default function Page(props: {
             </Table.Body>
           </Table.Root>
         </Card.Root>
-        <Caption color="content.tertiary">{t("finance-projects-note")}</Caption>
+        <BodySmall color="content.tertiary">
+          {t("finance-projects-note")}
+        </BodySmall>
       </VStack>
     </DemoShell>
   );

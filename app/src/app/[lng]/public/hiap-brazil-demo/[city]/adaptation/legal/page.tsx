@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import {
-  Box,
   Card,
   HStack,
   Icon,
@@ -10,7 +9,7 @@ import {
   Table,
   VStack,
 } from "@chakra-ui/react";
-import { LuExternalLink, LuInfo } from "react-icons/lu";
+import { LuExternalLink } from "react-icons/lu";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
@@ -71,20 +70,12 @@ export default function Page(props: {
       title={t("legal-title")}
       description={t("legal-intro")}
       backLabel={t("back-to-home")}
+      openPoints={[
+        t("open-legal-classification"),
+        t("open-legal-method"),
+        t("open-legal-filter"),
+      ]}
     >
-      <HStack
-        gap="s"
-        px="m"
-        py="s"
-        borderRadius="rounded"
-        bg="background.neutral"
-        alignItems="flex-start"
-        alignSelf="flex-start"
-      >
-        <Icon as={LuInfo} boxSize="16px" color="content.link" mt="2px" />
-        <Caption color="content.secondary">{t("legal-weight-note")}</Caption>
-      </HStack>
-
       <Card.Root borderColor="border.overlay">
         <Card.Body>
           <VStack alignItems="stretch" gap="m">
@@ -118,31 +109,7 @@ export default function Page(props: {
                 </MeedStatusTag>
               ))}
             </HStack>
-            <BodySmall color="content.secondary">
-              {t("legal-filter-note")}
-            </BodySmall>
           </VStack>
-        </Card.Body>
-      </Card.Root>
-
-      <Card.Root borderColor="sentiment.warningDefault">
-        <Card.Body>
-          <HStack gap="s" alignItems="flex-start">
-            <Icon
-              as={LuInfo}
-              boxSize="16px"
-              color="sentiment.warningDefault"
-              mt="2px"
-            />
-            <VStack alignItems="flex-start" gap="xs">
-              <LabelLarge color="content.primary">
-                {t("legal-placeholder-title")}
-              </LabelLarge>
-              <BodySmall color="content.secondary">
-                {t("legal-placeholder-body")}
-              </BodySmall>
-            </VStack>
-          </HStack>
         </Card.Body>
       </Card.Root>
 
@@ -196,24 +163,24 @@ export default function Page(props: {
                     </VStack>
                   </HStack>
                   <SimpleGrid columns={{ base: 1, md: 2 }} gap="m">
-                    <Box>
+                    <VStack alignItems="stretch" gap="xs">
                       <Overline color="content.tertiary">
                         {t("legal-axis-authority")}
                       </Overline>
-                      <BodySmall color="content.secondary">
+                      <BodyMedium color="content.secondary">
                         {t("legal-axis-authority-body")}
-                      </BodySmall>
-                    </Box>
-                    <Box>
+                      </BodyMedium>
+                    </VStack>
+                    <VStack alignItems="stretch" gap="xs">
                       <Overline color="content.tertiary">
                         {t("legal-axis-competence")}
                       </Overline>
-                      <BodySmall color="content.secondary">
+                      <BodyMedium color="content.secondary">
                         {t("legal-axis-competence-body")}
-                      </BodySmall>
-                    </Box>
+                      </BodyMedium>
+                    </VStack>
                   </SimpleGrid>
-                  <Table.Root size="sm">
+                  <Table.Root size="md">
                     <Table.Header>
                       <Table.Row>
                         <Table.ColumnHeader>
@@ -236,7 +203,7 @@ export default function Page(props: {
                       {a.legal.norms.map((n) => (
                         <Table.Row key={`${a.id}-${n.code}`}>
                           <Table.Cell>
-                            <VStack alignItems="flex-start" gap="0">
+                            <VStack alignItems="flex-start" gap="xs">
                               <LabelMedium color="content.primary">
                                 {n.name}
                               </LabelMedium>
@@ -274,19 +241,14 @@ export default function Page(props: {
                           <Table.Cell
                             display={{ base: "none", md: "table-cell" }}
                           >
-                            <Caption color="content.tertiary">
+                            <BodySmall color="content.tertiary">
                               {pick(n.validation, lng)}
-                            </Caption>
+                            </BodySmall>
                           </Table.Cell>
                         </Table.Row>
                       ))}
                     </Table.Body>
                   </Table.Root>
-                  {a.legal.placeholder && (
-                    <BodyMedium color="content.tertiary" fontSize="body.sm">
-                      {t("legal-row-placeholder")}
-                    </BodyMedium>
-                  )}
                 </VStack>
               </Card.Body>
             </Card.Root>

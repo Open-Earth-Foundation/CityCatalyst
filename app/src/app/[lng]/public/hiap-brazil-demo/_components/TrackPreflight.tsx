@@ -68,7 +68,7 @@ function WeightSlider({
       <HStack justifyContent="space-between" alignItems="center" gap="s">
         <VStack alignItems="flex-start" gap="0" minW="0" flex="1">
           <LabelLarge color="content.primary">{label}</LabelLarge>
-          <Caption color="content.tertiary">{description}</Caption>
+          <BodySmall color="content.tertiary">{description}</BodySmall>
         </VStack>
         <TitleMedium
           color={isDefault ? "content.secondary" : "content.link"}
@@ -114,7 +114,7 @@ function Row({
   isLast,
 }: {
   label: string;
-  status: "complete" | "in-progress" | "not-started";
+  status: "complete" | "in-progress" | "not-started" | "optional";
   statusLabel: string;
   sub: string;
   href: string;
@@ -141,7 +141,7 @@ function Row({
           <LabelLarge color="content.primary">{label}</LabelLarge>
           <MeedStatusTag tone={tone}>{statusLabel}</MeedStatusTag>
         </HStack>
-        <Caption color="content.tertiary">{sub}</Caption>
+        <BodySmall color="content.tertiary">{sub}</BodySmall>
       </VStack>
       <Link
         asChild
@@ -190,13 +190,16 @@ export function TrackPreflight({
   const weights = prefs.weights;
   const total = weights.impact + weights.alignment + weights.feasibility;
   const isCustom = WEIGHT_KEYS.some((k) => weights[k] !== DEFAULT_WEIGHTS[k]);
-  const prefsStatus =
-    prefs.sectors.length > 0
-      ? "complete"
-      : state.visited.preferences
-        ? "in-progress"
-        : "not-started";
-  const canGenerate = prefsStatus !== "not-started";
+  // Preferences are a user choice, not a model requirement: with none set the
+  // city-priorities component falls back to the neutral 0.5 (§7 fallbacks).
+  const hasPreferences =
+    prefs.sectors.length +
+      prefs.coBenefits.length +
+      prefs.timeline.length +
+      prefs.priorityRisks.length +
+      prefs.excludedActionIds.length >
+    0;
+  const prefsStatus = hasPreferences ? "complete" : "optional";
   const cellsWithData = RISK_CELLS.filter((c) => city.risk[c.key]).length;
 
   const prefSummary =
@@ -230,6 +233,11 @@ export function TrackPreflight({
         preferences: Boolean(state.visited.preferences),
         preflight: true,
       }}
+      openPoints={
+        track === "adaptation"
+          ? [t("open-preflight-weights")]
+          : [t("open-mitigation-review")]
+      }
     >
       {!isReady ? null : (
         <VStack alignItems="stretch" gap="l">
@@ -302,9 +310,6 @@ export function TrackPreflight({
                 <BodyMedium color="content.secondary">
                   {tPre("scoring-weights-description")}
                 </BodyMedium>
-                <Caption color="content.tertiary">
-                  {t("weights-locked-note")}
-                </Caption>
                 <VStack alignItems="stretch" gap="l">
                   {WEIGHT_KEYS.map((k) => (
                     <WeightSlider
@@ -353,16 +358,16 @@ export function TrackPreflight({
                 <TitleMedium color="content.primary">
                   {tPre("exclusions-title")}
                 </TitleMedium>
-                <BodySmall color="content.secondary">
+                <BodyMedium color="content.secondary">
                   {prefs.excludedActionIds.length
                     ? tPre("confirmed-exclusions-count", {
                         count: prefs.excludedActionIds.length,
                       })
                     : tPre("no-confirmed-exclusions")}
-                </BodySmall>
-                <Caption color="content.tertiary">
+                </BodyMedium>
+                <BodySmall color="content.tertiary">
                   {t("legal-screening-note")}
-                </Caption>
+                </BodySmall>
               </VStack>
             </Card.Body>
           </Card.Root>
@@ -373,30 +378,19 @@ export function TrackPreflight({
               px="m"
               py="s"
               borderRadius="rounded"
-              bg={
-                canGenerate
-                  ? "sentiment.positiveOverlay"
-                  : "sentiment.warningOverlay"
-              }
+              bg="sentiment.positiveOverlay"
               alignItems="center"
             >
-              <BodySmall
-                color={
-                  canGenerate
-                    ? "interactive.tertiary"
-                    : "sentiment.warningDefault"
-                }
-              >
-                {canGenerate
+              <BodySmall color="interactive.tertiary">
+                {hasPreferences
                   ? tPre("gate-ready")
-                  : t("gate-preferences-required")}
+                  : t("gate-preferences-optional")}
               </BodySmall>
             </HStack>
             <HStack justifyContent="flex-end">
               <MeedButton
                 minW="auto"
                 px="l"
-                disabled={!canGenerate}
                 leftIcon={<Icon as={LuZap} boxSize="16px" />}
                 onClick={() =>
                   router.push(trackHref(lng, city.slug, track, "processing"))

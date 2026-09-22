@@ -71,6 +71,7 @@ export default function Page(props: {
       title={t("policy-title")}
       description={t("policy-intro")}
       backLabel={t("back-to-home")}
+      openPoints={[t("open-policy-corpus")]}
     >
       <HStack
         gap="s"
@@ -82,14 +83,14 @@ export default function Page(props: {
         alignSelf="flex-start"
       >
         <Icon as={LuInfo} boxSize="16px" color="content.link" mt="2px" />
-        <Caption color="content.secondary">
-          {t("policy-city-independent-note")}
-        </Caption>
+        <BodySmall color="content.secondary">
+          {t("policy-city-independent-short")}
+        </BodySmall>
       </HStack>
 
       <SimpleGrid columns={{ base: 1, md: 3 }} gap="m">
         <Card.Root borderColor="border.overlay" h="full">
-          <Card.Body p="m">
+          <Card.Body p="l">
             <HStack alignItems="center" gap="m">
               <MeedScoreRing
                 value={mean}
@@ -111,22 +112,26 @@ export default function Page(props: {
                 <LabelMedium color="content.primary">
                   {t("policy-mean-value", { value: Math.round(mean * 100) })}
                 </LabelMedium>
-                <Caption>{t("policy-mean-note")}</Caption>
+                <BodySmall color="content.tertiary">
+                  {t("policy-mean-note")}
+                </BodySmall>
               </VStack>
             </HStack>
           </Card.Body>
         </Card.Root>
         <Card.Root borderColor="border.overlay" h="full">
-          <Card.Body p="m">
+          <Card.Body p="l">
             <VStack alignItems="flex-start" gap="s">
               <Overline>{t("policy-corpus-label")}</Overline>
               <TitleMedium color="content.primary">{docs.size}</TitleMedium>
-              <Caption>{t("policy-corpus-note")}</Caption>
+              <BodySmall color="content.tertiary">
+                {t("policy-corpus-note")}
+              </BodySmall>
             </VStack>
           </Card.Body>
         </Card.Root>
         <Card.Root borderColor="border.overlay" h="full">
-          <Card.Body p="m">
+          <Card.Body p="l">
             <VStack alignItems="flex-start" gap="s">
               <Overline>{t("policy-grades-label")}</Overline>
               <HStack gap="xs" flexWrap="wrap">
@@ -136,7 +141,9 @@ export default function Page(props: {
                   </MeedStatusTag>
                 ))}
               </HStack>
-              <Caption>{t("policy-grades-note")}</Caption>
+              <BodySmall color="content.tertiary">
+                {t("policy-grades-note")}
+              </BodySmall>
             </VStack>
           </Card.Body>
         </Card.Root>
@@ -156,9 +163,9 @@ export default function Page(props: {
             <TitleMedium color="content.primary">
               {t("policy-table-title")}
             </TitleMedium>
-            <BodySmall color="content.secondary">
+            <BodyMedium color="content.secondary">
               {t("policy-table-description")}
-            </BodySmall>
+            </BodyMedium>
           </VStack>
           <MeedStatusTag tone="info">
             {t("policy-pt-authoritative")}
@@ -193,7 +200,7 @@ export default function Page(props: {
                     >
                       <VStack
                         alignItems="flex-start"
-                        gap="0"
+                        gap="xs"
                         flex="1"
                         minW="240px"
                       >
@@ -237,7 +244,7 @@ export default function Page(props: {
                         {t("policy-no-evidence")}
                       </BodySmall>
                     ) : (
-                      <Table.Root size="sm">
+                      <Table.Root size="md">
                         <Table.Header>
                           <Table.Row>
                             <Table.ColumnHeader>
@@ -298,12 +305,13 @@ export default function Page(props: {
                                 >
                                   {e.pt}
                                 </BodyMedium>
-                                <Caption
+                                <BodySmall
                                   color="content.tertiary"
                                   fontStyle="italic"
+                                  mt="xs"
                                 >
                                   {t("policy-en-aid")}: {e.en}
-                                </Caption>
+                                </BodySmall>
                               </Table.Cell>
                             </Table.Row>
                           ))}
@@ -317,7 +325,7 @@ export default function Page(props: {
           })}
         </VStack>
       </Card.Root>
-      <Caption color="content.tertiary">{t("policy-formula-note")}</Caption>
+      <BodySmall color="content.tertiary">{t("policy-formula-note")}</BodySmall>
     </DemoShell>
   );
 }

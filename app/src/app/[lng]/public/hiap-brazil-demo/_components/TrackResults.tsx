@@ -233,8 +233,6 @@ export function TrackResults({
                   <MeedFunnelStrip
                     steps={funnel}
                     ariaLabel={t("funnel-aria")}
-                    tipTitle={t("funnel-title")}
-                    tipNote={t("funnel-tip-note")}
                   />
                 </VStack>
               </Card.Body>

@@ -3,7 +3,7 @@ import React from "react";
 import { Card, HStack, SimpleGrid, Table, VStack } from "@chakra-ui/react";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
-import { LabelMedium } from "@/components/package/Texts/Label";
+import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { MeedMeter } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedMeter";
@@ -28,8 +28,16 @@ import {
   PUSH_LABEL,
   TIER_SCORE,
   type FundingGap,
+  type FundingTier,
 } from "../../../_lib/finance";
 import { pick } from "../../../_lib/localized";
+
+const TIER_TONE: Record<FundingTier, MeedTone> = {
+  T1: "positive",
+  T2: "info",
+  T3: "warning",
+  T4: "caution",
+};
 
 const GAP_TONE: Record<FundingGap, MeedTone> = {
   self_deliverable: "positive",
@@ -197,12 +205,17 @@ export default function Page(props: {
                   </VStack>
                 </Table.Cell>
                 <Table.Cell textAlign="end">
-                  <BodyMedium
-                    color="content.primary"
-                    fontVariantNumeric="tabular-nums"
-                  >
-                    {f.tier} · {TIER_SCORE[f.tier].toFixed(2)}
-                  </BodyMedium>
+                  <HStack justifyContent="flex-end" gap="s">
+                    <MeedStatusTag tone={TIER_TONE[f.tier]}>
+                      {f.tier}
+                    </MeedStatusTag>
+                    <LabelLarge
+                      color="content.primary"
+                      fontVariantNumeric="tabular-nums"
+                    >
+                      {TIER_SCORE[f.tier].toFixed(2)}
+                    </LabelLarge>
+                  </HStack>
                 </Table.Cell>
               </Table.Row>
             ))}

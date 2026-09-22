@@ -25,7 +25,7 @@ export const SCREEN_IDS = {
     preferences: "BR-A3",
     preflight: "BR-A4",
     processing: "BR-A4b",
-    results: "BR-A5",
+    // BR-A5 (results) merged into BR-A1: the home is the results screen.
     drawer: "BR-A6",
     legal: "BR-A7",
     finance: "BR-A8",
@@ -34,7 +34,7 @@ export const SCREEN_IDS = {
   },
   mitigation: {
     home: "BR-M1",
-    results: "BR-M2",
+    // BR-M2 (results) merged into BR-M1.
     preferences: "BR-M3",
     preflight: "BR-M4",
     processing: "BR-M4b",

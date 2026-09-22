@@ -1,7 +1,6 @@
 "use client";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Box, Card, HStack, VStack } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { LabelLarge } from "@/components/package/Texts/Label";
@@ -11,7 +10,6 @@ import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedS
 import { ContextCardGrid } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ContextCardGrid";
 import { CoBenefitStrip } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/CoBenefitStrip";
 import { DetailPanel } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/DetailPanel";
-import { EmptyState } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/EmptyState";
 import { FullRanking } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/FullRanking";
 import { ResultsHeader } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ResultsHeader";
 import { TopPicks } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/TopPicks";
@@ -20,19 +18,26 @@ import { buildReportPdf } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/res
 import type { DemoTrack } from "../_lib/types";
 import { useTrack } from "../_lib/useTrack";
 import { useDemoT, useTrackT } from "../_lib/useDemoT";
-import { SCREEN_IDS, trackHref } from "../_lib/hrefs";
+import { useLabels } from "../_lib/useLabels";
+import { trackHref } from "../_lib/hrefs";
 import { ACTION_BY_ID, ADAPTATION_ACTIONS } from "../_lib/actions";
 import { SECTOR_HEX } from "../_lib/riskCells";
 import { MITIGATION_SHIFTS } from "../_lib/mitigation";
 import { buildDemoReport } from "../_lib/report";
-import { DemoShell } from "./DemoShell";
 import { NotRankedLane } from "./NotRankedLane";
 import { AdaptationDrawerSections } from "./AdaptationDrawerSections";
+import { DemoRankingConfig } from "./DemoRankingConfig";
 import { ShiftInterventionList } from "./ShiftInterventionList";
 import { useContextAreas } from "./contextAreas";
 
-/** BR-A5 / BR-M2 — the results screen for one track. */
-export function TrackResults({
+/**
+ * Everything a ranking produces, on one screen: header and report control,
+ * the configuration it ran with, the funnel, top picks, the full ranking, the
+ * not-ranked lane and the context cards — plus the action drawer. The module
+ * home renders this once a ranking exists, so there is one results screen,
+ * not a summary and a "view all" copy of it.
+ */
+export function RankingView({
   lng,
   citySlug,
   track,
@@ -42,20 +47,15 @@ export function TrackResults({
   track: DemoTrack;
 }) {
   const data = useTrack(lng, citySlug, track);
-  const { city, ranked, index, weights, adaptation, state, isReady } = data;
+  const { city, ranked, index, weights, adaptation, state } = data;
   const { t } = useDemoT(lng);
   const tResults = useTrackT(lng, track, "meed-results");
-  const router = useRouter();
+  const labels = useLabels(lng, track);
   const [open, setOpen] = useState<MeedRankedActionResult | null>(null);
   const [openUnranked, setOpenUnranked] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const rankingRef = useRef<HTMLDivElement | null>(null);
-  const screenId =
-    track === "adaptation"
-      ? SCREEN_IDS.adaptation.results
-      : SCREEN_IDS.mitigation.results;
-  const hasRanking = Boolean(state.generatedAt);
 
   const toggleSelect = useCallback((id: string) => {
     setSelectedIds((prev) =>
@@ -182,141 +182,129 @@ export function TrackResults({
   }, [adaptation, t]);
 
   return (
-    <DemoShell
-      lng={lng}
-      city={city}
-      track={track}
-      segment="results"
-      screenId={screenId}
-      openPoints={
-        track === "adaptation"
-          ? [t("open-results-legal"), t("open-results-narrative")]
-          : [t("open-mitigation-review"), t("open-mitigation-scores")]
-      }
-      title={tResults("page-title")}
-      description={tResults("page-description")}
-      backLabel={t("back-to-home")}
-    >
-      {!isReady ? null : !hasRanking ? (
-        <EmptyState
-          title={tResults("empty-title")}
-          body={tResults("empty-body")}
-          actionLabel={tResults("empty-action")}
-          onAction={() =>
-            router.push(trackHref(lng, city.slug, track, "preferences"))
+    <>
+      <VStack alignItems="stretch" gap="xl">
+        <ResultsHeader
+          rankedCount={ranked.length}
+          excludedCount={adaptation ? adaptation.notRanked.length : null}
+          selectedCount={selectedIds.length}
+          isGenerating={isGenerating}
+          progress={null}
+          onGenerate={generateReport}
+          t={tResults}
+        />
+
+        <Card.Root borderColor="border.overlay">
+          <Card.Body>
+            <DemoRankingConfig
+              preferences={state.preferences}
+              editHref={trackHref(lng, city.slug, track, "preferences")}
+              labelFor={{
+                sector: labels.sector,
+                coBenefit: labels.coBenefit,
+                timeline: labels.timeline,
+                risk: labels.cell,
+              }}
+              t={tResults}
+            />
+          </Card.Body>
+        </Card.Root>
+
+        {funnel && (
+          <Card.Root borderColor="border.overlay">
+            <Card.Body>
+              <VStack alignItems="stretch" gap="s">
+                <HStack gap="s" alignItems="center" flexWrap="wrap">
+                  <LabelLarge color="content.primary">
+                    {t("funnel-title")}
+                  </LabelLarge>
+                  <MeedStatusTag tone="info">
+                    {t("funnel-per-city")}
+                  </MeedStatusTag>
+                </HStack>
+                <MeedFunnelStrip steps={funnel} ariaLabel={t("funnel-aria")} />
+              </VStack>
+            </Card.Body>
+          </Card.Root>
+        )}
+
+        <TopPicks
+          actions={topPicks}
+          index={index}
+          weights={weights}
+          t={tResults}
+          isCatalogLoading={false}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+          onOpenDetail={setOpen}
+          onBrowseFullRanking={() =>
+            rankingRef.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            })
           }
         />
-      ) : (
-        <VStack alignItems="stretch" gap="xl">
-          <ResultsHeader
-            rankedCount={ranked.length}
-            excludedCount={adaptation ? adaptation.notRanked.length : null}
-            selectedCount={selectedIds.length}
-            isGenerating={isGenerating}
-            progress={null}
-            onGenerate={generateReport}
-            t={tResults}
-          />
+        <MeedScoreLegend weights={weights} t={tResults} />
+        <CoBenefitStrip
+          benefits={coBenefits}
+          total={topPicks.length}
+          t={tResults}
+        />
 
-          {funnel && (
-            <Card.Root borderColor="border.overlay">
-              <Card.Body>
-                <VStack alignItems="stretch" gap="s">
-                  <HStack gap="s" alignItems="center" flexWrap="wrap">
-                    <LabelLarge color="content.primary">
-                      {t("funnel-title")}
-                    </LabelLarge>
-                    <MeedStatusTag tone="info">
-                      {t("funnel-per-city")}
-                    </MeedStatusTag>
-                  </HStack>
-                  <MeedFunnelStrip
-                    steps={funnel}
-                    ariaLabel={t("funnel-aria")}
-                  />
-                </VStack>
-              </Card.Body>
-            </Card.Root>
-          )}
-
-          <TopPicks
-            actions={topPicks}
-            index={index}
+        {track === "mitigation" && (
+          <ShiftInterventionList
+            shifts={MITIGATION_SHIFTS}
+            ranked={ranked}
             weights={weights}
-            t={tResults}
-            isCatalogLoading={false}
-            selectedIds={selectedIds}
-            onToggleSelect={toggleSelect}
-            onOpenDetail={setOpen}
-            onBrowseFullRanking={() =>
-              rankingRef.current?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              })
-            }
+            t={t}
+            tResults={tResults}
+            lng={lng}
+            onOpen={setOpen}
           />
-          <MeedScoreLegend weights={weights} t={tResults} />
-          <CoBenefitStrip
-            benefits={coBenefits}
-            total={topPicks.length}
-            t={tResults}
+        )}
+
+        <FullRanking
+          ref={rankingRef}
+          actions={ranked}
+          index={index}
+          weights={weights}
+          t={tResults}
+          onSelect={setOpen}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+          colorOf={
+            track === "adaptation"
+              ? (tag) =>
+                  tag ? SECTOR_HEX[tag as keyof typeof SECTOR_HEX] : undefined
+              : undefined
+          }
+        />
+        {track === "adaptation" && (
+          <BodySmall color="content.tertiary">
+            {t("glance-normalised-note")}
+          </BodySmall>
+        )}
+
+        {adaptation && (
+          <NotRankedLane
+            items={adaptation.notRanked}
+            lng={lng}
+            t={t}
+            onOpen={(a) => openById(a.id)}
           />
+        )}
 
-          {track === "mitigation" && (
-            <ShiftInterventionList
-              shifts={MITIGATION_SHIFTS}
-              ranked={ranked}
-              weights={weights}
-              t={t}
-              tResults={tResults}
-              lng={lng}
-              onOpen={setOpen}
-            />
-          )}
-
-          <FullRanking
-            ref={rankingRef}
-            actions={ranked}
-            index={index}
-            weights={weights}
-            t={tResults}
-            onSelect={setOpen}
-            selectedIds={selectedIds}
-            onToggleSelect={toggleSelect}
-            colorOf={
-              track === "adaptation"
-                ? (tag) =>
-                    tag ? SECTOR_HEX[tag as keyof typeof SECTOR_HEX] : undefined
-                : undefined
-            }
-          />
-          {track === "adaptation" && (
-            <BodySmall color="content.tertiary">
-              {t("glance-normalised-note")}
-            </BodySmall>
-          )}
-
-          {adaptation && (
-            <NotRankedLane
-              items={adaptation.notRanked}
-              lng={lng}
-              t={t}
-              onOpen={(a) => openById(a.id)}
-            />
-          )}
-
-          <ContextCardGrid
-            facts={facts}
-            backing={backing}
-            t={tResults}
-            hrefFor={hrefFor}
-            areas={areas}
-            visualFor={visualFor}
-            indicatorFor={indicatorFor}
-            ctaFor={ctaFor}
-          />
-        </VStack>
-      )}
+        <ContextCardGrid
+          facts={facts}
+          backing={backing}
+          t={tResults}
+          hrefFor={hrefFor}
+          areas={areas}
+          visualFor={visualFor}
+          indicatorFor={indicatorFor}
+          ctaFor={ctaFor}
+        />
+      </VStack>
 
       {open && (
         <DetailPanel
@@ -351,6 +339,6 @@ export function TrackResults({
           }
         />
       )}
-    </DemoShell>
+    </>
   );
 }

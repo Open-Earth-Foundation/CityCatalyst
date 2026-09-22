@@ -93,7 +93,7 @@ export function MeedStatusTag({
       // words into "Self-…" whenever the column got tight. These labels are a
       // handful of characters; they should never be abbreviated.
       css={{
-        "& [data-part='label']": {
+        "& [data-part='label'], & .chakra-tag__label": {
           lineClamp: "unset",
           WebkitLineClamp: "unset",
           display: "inline",

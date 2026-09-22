@@ -64,7 +64,7 @@ export function TrackProcessing({
     if (!done) return;
     markGenerated();
     const timer = window.setTimeout(
-      () => router.replace(trackHref(lng, city.slug, track, "results")),
+      () => router.replace(trackHref(lng, city.slug, track)),
       900,
     );
     return () => window.clearTimeout(timer);

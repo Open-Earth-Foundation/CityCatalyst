@@ -56,16 +56,9 @@ const SCREENS: {
     segment: "preflight",
   },
   {
-    id: SCREEN_IDS.adaptation.results,
-    key: "a-results",
-    track: "adaptation",
-    segment: "results",
-  },
-  {
     id: SCREEN_IDS.adaptation.drawer,
     key: "a-drawer",
     track: "adaptation",
-    segment: "results",
   },
   {
     id: SCREEN_IDS.adaptation.legal,
@@ -92,12 +85,6 @@ const SCREENS: {
     segment: "context",
   },
   { id: SCREEN_IDS.mitigation.home, key: "m-home", track: "mitigation" },
-  {
-    id: SCREEN_IDS.mitigation.results,
-    key: "m-results",
-    track: "mitigation",
-    segment: "results",
-  },
 ];
 
 /** BR-00 — the review guide. */

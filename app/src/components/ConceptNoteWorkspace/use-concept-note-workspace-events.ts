@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { shareWorkspaceObservation } from "@/components/ConceptNoteWorkspace/shared-workspace-observation";
 
 import { useAppDispatch } from "@/lib/hooks";
 import { api } from "@/services/api";
@@ -274,18 +273,7 @@ export function useConceptNoteWorkspaceEvents({
       }
     }
 
-    void shareWorkspaceObservation({
-      key: JSON.stringify([
-        "cnb-observer",
-        userId,
-        runId,
-        resources,
-        observeUpload ? uploadId : null,
-      ]),
-      signal: controller.signal,
-      observe,
-      onSnapshot: updateCaches,
-    }).catch((error) =>
+    void observe(controller.signal, updateCaches).catch((error) =>
       logger.warn({ error, run_id: runId }, "Workspace observer stopped"),
     );
     return () => controller.abort();

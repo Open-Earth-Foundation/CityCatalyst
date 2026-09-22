@@ -247,5 +247,7 @@
   "config-weights": "Bewertungsgewichte",
   "config-weights-value": "Auswirkung {{impact}}% · Ausrichtung {{alignment}}% · Machbarkeit {{feasibility}}%",
   "percent-value": "{{value}}%",
-  "legend-item": "{{label}} · {{value}}"
+  "legend-item": "{{label}} · {{value}}",
+  "route-own-budget": "Eigenbudget machbar",
+  "route-technical-assistance": "Braucht technische Unterstützung"
 }

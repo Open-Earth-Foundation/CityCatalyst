@@ -247,5 +247,7 @@
   "config-weights": "Pesos de pontuação",
   "config-weights-value": "Impacto {{impact}}% · Alinhamento {{alignment}}% · Viabilidade {{feasibility}}%",
   "percent-value": "{{value}}%",
-  "legend-item": "{{label}} · {{value}}"
+  "legend-item": "{{label}} · {{value}}",
+  "route-own-budget": "Viável com orçamento próprio",
+  "route-technical-assistance": "Precisa de assistência técnica"
 }

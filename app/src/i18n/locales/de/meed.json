@@ -92,5 +92,14 @@
   "sample-data": "Beispieldaten",
   "ranking-stale-tag": "Eingaben geändert",
   "ranking-stale-body": "Ihre Antworten haben sich seit der Erstellung dieser Rangliste geändert, daher spiegelt sie diese nicht mehr wider. Führen Sie sie erneut aus, um die Empfehlungen wieder in Einklang zu bringen.",
-  "ranking-generated-at": "Erstellt {{when}}"
+  "ranking-generated-at": "Erstellt {{when}}",
+  "get-recommendations": "Empfehlungen erhalten",
+  "get-recommendations-hint": "Rufen Sie die Emissionsdaten unten auf, um zu starten.",
+  "ranking-view-all": "Alle Empfehlungen anzeigen",
+  "how-ranking-works-title": "Wie das Ranking funktioniert",
+  "how-ranking-works-description": "Wie das Modell Aktionen für Ihre Stadt gewichtet. Erforschen Sie jeden Bereich vor oder nach der Erstellung von Empfehlungen.",
+  "ranking-update": "Rangliste aktualisieren",
+  "ranking-census": "{{ranked}} eingestuft · {{excluded}} aufgrund einer rechtlichen Prüfung ausgeschlossen",
+  "emissions-none-sub": "Keine Emissionsdaten in diesem Inventar",
+  "get-recommendations-hint-no-data": "Für dieses Inventar liegen keine Emissionsdaten vor. Fügen Sie diese im GHGI-Modul hinzu, um Empfehlungen freizuschalten."
 }

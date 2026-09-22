@@ -24,5 +24,13 @@
   "excluded-tag": "Excluído",
   "flagged-tag": "Avaliação pendente",
   "flagged-card-body": "Ainda não está disponível uma avaliação jurídica para esta ação. Ela está incluída no ranking com uma pontuação jurídica neutra.",
-  "reasons-label": "Por que excluído"
+  "reasons-label": "Por que excluído",
+  "funnel-assessed": "Avaliado",
+  "funnel-assessed-sub": "Ações no catálogo",
+  "funnel-passed": "Passou pela revisão jurídica",
+  "funnel-passed-sub": "Elegível para pontuação",
+  "funnel-ranked": "Classificado",
+  "funnel-ranked-sub": "Na sua lista de topo",
+  "funnel-aria": "{{assessed}} ações avaliadas, {{passed}} passaram pela revisão jurídica, {{ranked}} classificadas",
+  "summary-flagged-count": "{{count}} ações estão incluídas com uma pontuação legal neutra enquanto sua avaliação está pendente."
 }

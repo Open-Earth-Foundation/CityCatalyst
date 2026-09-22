@@ -64,7 +64,7 @@ class DraftEditSession:
                 "code": "invalid_search",
                 "message": "Search for 1-50000 literal characters.",
             }
-        if len(self.searches) >= 30:
+        if len(self.searches) >= 100:
             return {
                 "ok": False,
                 "code": "context_limit",

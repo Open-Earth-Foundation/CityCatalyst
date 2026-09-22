@@ -551,6 +551,8 @@ def source_fingerprint(uploads: list[ConceptNoteUploadSnapshot]) -> str:
             "sha256": upload.markdown_sha256,
             "source_format": upload.source_format,
             "page_count": upload.page_count,
+            "structured_sha256": upload.structured_sha256,
+            "structured_schema_version": upload.structured_schema_version,
         }
         for upload in uploads
     ]
@@ -656,6 +658,11 @@ def _upload_snapshot(upload: ConceptNoteUpload) -> ConceptNoteUploadSnapshot:
         markdown_s3_key=upload.markdown_s3_key,
         markdown_sha256=upload.markdown_sha256,
         page_count=upload.page_count,
+        annotation_mode=upload.annotation_mode,
+        structured_s3_key=upload.structured_s3_key,
+        structured_sha256=upload.structured_sha256,
+        structured_size_bytes=upload.structured_size_bytes,
+        structured_schema_version=upload.structured_schema_version,
         status=upload.ingest_status,
         error_code=upload.ingest_error_code,
         received_at=upload.received_at,

@@ -20,9 +20,21 @@ describe("Mistral OCR Markdown conversion", () => {
           {
             index: 2,
             markdown: "| Value | tCO2e |\n|---|---:|\n| Fuel | 12.50 |",
+            dimensions: { width: 100, height: 100 },
+            blocks: [],
           },
-          { index: 0, markdown: "# Inventory\nNarrative" },
-          { index: 1, markdown: "" },
+          {
+            index: 0,
+            markdown: "# Inventory\nNarrative",
+            dimensions: { width: 100, height: 100 },
+            blocks: [],
+          },
+          {
+            index: 1,
+            markdown: "",
+            dimensions: { width: 100, height: 100 },
+            blocks: [],
+          },
         ],
       },
       "mistral-ocr-latest",
@@ -50,13 +62,20 @@ describe("Mistral OCR Markdown conversion", () => {
     expect(() => mergeMistralPages(payload, "model")).toThrow(MistralOcrError);
   });
 
-  it("uses a presigned document URL, disables image payloads, and leaves table defaults unset", async () => {
+  it("requests structural OCR fields and keeps annotation off by default", async () => {
     process.env.MISTRAL_API_KEY = "secret";
     const fetchMock = jest.spyOn(global, "fetch").mockResolvedValue(
       new Response(
         JSON.stringify({
           model: "returned-model",
-          pages: [{ index: 0, markdown: "ok" }],
+          pages: [
+            {
+              index: 0,
+              markdown: "ok",
+              dimensions: { width: 10, height: 10 },
+              blocks: [],
+            },
+          ],
         }),
         { status: 200, headers: { "Content-Type": "application/json" } },
       ),
@@ -68,7 +87,12 @@ describe("Mistral OCR Markdown conversion", () => {
       document_url: "https://s3.example/presigned",
     });
     expect(request.include_image_base64).toBe(false);
-    expect(request.table_format).toBeUndefined();
+    expect(request.include_blocks).toBe(true);
+    expect(request.table_format).toBe("markdown");
+    expect(request.extract_header).toBe(true);
+    expect(request.extract_footer).toBe(true);
+    expect(request.bbox_annotation_format).toBeUndefined();
+    expect(JSON.stringify(request)).not.toContain("image_base64\":true");
   });
 
   it.each([429, 500, 503])(

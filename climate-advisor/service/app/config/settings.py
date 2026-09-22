@@ -518,6 +518,9 @@ class Settings(BaseModel):
     cnb_markdown_request_max_bytes: int = _parse_int(
         os.getenv("CNB_MARKDOWN_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
     )
+    cnb_structured_request_max_bytes: int = _parse_int(
+        os.getenv("CNB_STRUCTURED_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
+    )
 
     def model_post_init(self, __context: Any) -> None:
         """Load non-secret OpenRouter and observability settings from llm_config.yaml."""

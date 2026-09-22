@@ -28,6 +28,7 @@ from app.services.citycatalyst_client import (
     CityCatalystClientError,
     ConceptNoteMarkdownArtifact,
 )
+from app.services.cnb.visual_context import validate_structured_delivery
 from app.services.cnb.context_bundle import (
     ContextBundleService,
     get_context_bundle_service,
@@ -170,6 +171,65 @@ def validate_markdown_artifact(
     return None
 
 
+async def _verify_structured_delivery(
+    *,
+    cc_client: CityCatalystClient,
+    upload_id: UUID,
+    token: str,
+    payload: ConceptNoteMarkdownRequest,
+) -> JSONResponse | None:
+    """Reject a new PDF delivery whose structured artifact does not match."""
+    if (
+        payload.annotation_mode is None
+        or payload.structured_s3_key is None
+        or payload.structured_sha256 is None
+        or payload.structured_schema_version is None
+        or payload.page_count is None
+    ):
+        return problem(
+            422,
+            "structured_metadata_incomplete",
+            "PDF delivery is missing structured artifact metadata",
+        )
+    try:
+        artifact = await cc_client.get_concept_note_structured(
+            upload_id=str(upload_id),
+            token=token,
+        )
+    except CityCatalystClientError as exc:
+        status_code = exc.status_code if exc.status_code in (409, 413, 422) else 503
+        return problem(
+            status_code,
+            "cc_structured_verification_failed",
+            "CC structured artifact could not be verified",
+        )
+    validation_error = validate_structured_delivery(
+        body=artifact.body,
+        raw_bytes=artifact.raw_bytes,
+        content_type=artifact.content_type,
+        s3_key=payload.structured_s3_key,
+        sha256=payload.structured_sha256,
+        schema_version=payload.structured_schema_version,
+        annotation_mode=payload.annotation_mode,
+        page_count=payload.page_count,
+        upload_id=str(upload_id),
+        header_s3_key=artifact.s3_key,
+        header_sha256=artifact.sha256,
+        header_schema_version=artifact.schema_version,
+        header_annotation_mode=artifact.annotation_mode,
+        header_page_count=str(artifact.page_count),
+        header_upload_id=artifact.upload_id,
+    )
+    if validation_error:
+        status_code = 409 if validation_error.endswith("_conflict") else 422
+        return problem(
+            status_code,
+            validation_error,
+            "Structured artifact verification failed",
+        )
+    return None
+
+
 def status_response(
     snapshot: ConceptNoteUploadSnapshot,
 ) -> ConceptNoteUploadStatusResponse:
@@ -294,6 +354,15 @@ async def ingest_concept_note_markdown(
     if validation_error:
         status_code = 409 if validation_error == "markdown_identity_conflict" else 422
         return problem(status_code, validation_error, "Markdown verification failed")
+    if payload.source_format == "pdf":
+        structured_error = await _verify_structured_delivery(
+            cc_client=cc_client,
+            upload_id=upload_id,
+            token=authorization,
+            payload=payload,
+        )
+        if isinstance(structured_error, JSONResponse):
+            return structured_error
 
     try:
         snapshot = await repository.register_markdown(

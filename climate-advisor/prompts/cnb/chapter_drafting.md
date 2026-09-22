@@ -15,6 +15,9 @@ Rules:
   or `previous_chapters`
 - treat `run_context.context_bundle.selected_sources` as source evidence when
   it is present
+- treat `visual_context` inside a selected source as unverified image
+  annotation. It may describe meaning or direction only. Do not use it for
+  arithmetic, exact values, citations, or decisions that require a quantity
 - `run_context.manual_population`, when present, is a user-entered population
   and year for this concept note only. It is not verified CityCatalyst data or
   a selected-source citation

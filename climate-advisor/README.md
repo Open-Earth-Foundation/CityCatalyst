@@ -758,6 +758,9 @@ language, or client-side fallback behavior. The boundary is:
 - `CNB_MARKDOWN_REQUEST_MAX_BYTES` - Maximum Markdown artifact size CA will
   accept while verifying a CC-owned result (default `20971520`; independent
   from the source-PDF and page-count limits)
+- `CNB_STRUCTURED_REQUEST_MAX_BYTES` - Maximum structured JSON artifact size CA
+  will accept for a new PDF upload (default `20971520`; independent of the
+  Markdown limit). Oversized artifacts fail and are not truncated.
 - `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
 - `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
   `https://mlflow-dev.openearth.dev`
@@ -784,8 +787,16 @@ pre-conversion upload row. The Markdown delivery route receives only the stable
 CC key, digest, labels, and optional PDF page metadata. CA enforces the 16 KiB
 control limit and `CNB_MARKDOWN_REQUEST_MAX_BYTES`, fetches through authenticated
 CC, verifies identity, digest, and source-specific structure, then stores the
-pointer in `CA_DATABASE_URL`. PDFs retain page validation; native `.md` bypasses
-OCR and uses deterministic heading/block anchors. Requests are idempotent,
+pointer in `CA_DATABASE_URL`. New PDF deliveries also register
+`annotation_mode`, the structured object key, digest, size, and schema version
+`citycatalyst.structured-document.1`. CA verifies that artifact through
+`GET /api/v1/internal/ca/concept-note-uploads/{upload_id}/structured` before the
+upload can become ready. Exact excerpts stay on source Markdown. Visual
+annotations are projected to qualitative context only and stay labeled
+`quantitative_reliability: unverified`. Legacy ready rows with null structured
+columns remain readable and are not backfilled. PDFs retain page validation;
+native `.md` bypasses OCR, uses annotation mode `none`, and does not declare a
+structured artifact. Requests are idempotent,
 identity changes return `409`, and unavailable storage returns
 `503 cnb_storage_unavailable`. CA owns no OCR queue, bucket credential, or
 presigned URL. See the authoritative handoff contract in

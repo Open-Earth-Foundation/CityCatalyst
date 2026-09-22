@@ -6,6 +6,7 @@ from typing import Any, Literal
 from uuid import UUID
 
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
+from app.services.cnb.visual_context import QualitativeVisualContext
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
@@ -47,6 +48,9 @@ class SelectedSource(ContextBundleContract):
     summary: str = Field(min_length=1, max_length=4000)
     topics: list[str] = Field(max_length=30)
     key_excerpts: list[SourceExcerpt] = Field(max_length=20)
+    structured_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    structured_schema_version: str | None = None
+    visual_context: list[QualitativeVisualContext] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def validate_source_counts(self) -> SelectedSource:
@@ -116,6 +120,7 @@ class SourceQueryResult(ContextBundleContract):
     source_label: str
     source_format: ConceptNoteSourceFormat
     excerpts: list[SourceExcerpt] = Field(default_factory=list, max_length=20)
+    visual_context: list[QualitativeVisualContext] = Field(default_factory=list)
     units_processed: int = Field(ge=1)
     units_total: int = Field(ge=1)
     segments_processed: int = Field(ge=1)

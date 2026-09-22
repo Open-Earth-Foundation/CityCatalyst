@@ -596,7 +596,7 @@ Each attempt must submit a complete proposal against the unchanged snapshot;
 every revised candidate receives a fresh independent review. Unsupported edits
 still fail after exhaustion, and no draft changes are applied before acceptance.
 Each editor attempt is limited to 12 model turns, while the complete operation,
-including repairs and reviews, shares one 180-second deadline configured by
+including repairs and reviews, shares one 300-second deadline configured by
 `generation.prompt_budget.cnb_edits.max_agent_turns` and `timeout_seconds`.
 The chapter drafter uses GPT-5.6
 Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra and the

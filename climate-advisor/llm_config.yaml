@@ -59,7 +59,7 @@ generation:
       max_concurrency: 5
       max_agent_turns: 12
       max_review_repairs: 2
-      timeout_seconds: 180
+      timeout_seconds: 300
     cnb_validation:
       max_prompt_tokens: 50000
 

@@ -127,8 +127,13 @@ export function FundingSelectionDialog({
 
   function chooseFunder(id: string): void {
     if (id === funderId) return;
+    const opportunities =
+      funders.find((item) => item.id === id)?.opportunities ?? [];
     setFunderId(id);
-    setOpportunityId(null);
+    // A sole programme is preselected; the user can still deselect it.
+    setOpportunityId(
+      opportunities.length === 1 ? (opportunities[0]?.id ?? null) : null,
+    );
     setAcknowledged(false);
     setError(null);
   }
@@ -416,7 +421,9 @@ export function FundingSelectionDialog({
                               }
                               disabled={saveState.isLoading}
                               onClick={() => {
-                                setOpportunityId(item.id);
+                                setOpportunityId(
+                                  item.id === opportunityId ? null : item.id,
+                                );
                                 setAcknowledged(false);
                               }}
                             >

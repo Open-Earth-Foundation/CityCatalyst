@@ -11,6 +11,7 @@ import {
   Icon,
   Tabs,
   Text,
+  VisuallyHidden,
   VStack,
 } from "@chakra-ui/react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -167,6 +168,15 @@ export function ConceptNoteWorkspace({
       if (chapterIds[0]) navigateEdit(chapterIds[0]);
     },
   });
+  const openFundingSetup = async () => {
+    setTab("context");
+    if (applicationContext) {
+      setFundingOpen(true);
+    } else {
+      const result = await refetchApplicationContext();
+      if (result.isSuccess) setFundingOpen(true);
+    }
+  };
   const reviewProposal = selectReviewProposal(edits.proposals);
   const {
     decisions: activeReviewDecisions,
@@ -475,41 +485,9 @@ export function ConceptNoteWorkspace({
                 </Flex>
               </Flex>
               {reviewAvailabilityDescription && (
-                <Box px={3} pb={2}>
-                  <Text
-                    id="review-availability-reason"
-                    fontSize="label.xs"
-                    color="content.tertiary"
-                  >
-                    {reviewAvailabilityDescription}
-                  </Text>
-                  {draftFailed && !draftLoading ? (
-                    <Button
-                      size="xs"
-                      variant="ghost"
-                      onClick={() => void refetchDraft()}
-                    >
-                      {t("try-again")}
-                    </Button>
-                  ) : (applicationContextFailed || !hasApplicationTemplate) &&
-                    !applicationContextLoading ? (
-                    <Button
-                      size="xs"
-                      variant="ghost"
-                      onClick={async () => {
-                        setTab("context");
-                        if (applicationContext) {
-                          setFundingOpen(true);
-                        } else {
-                          const result = await refetchApplicationContext();
-                          if (result.isSuccess) setFundingOpen(true);
-                        }
-                      }}
-                    >
-                      {t("review-application-setup")}
-                    </Button>
-                  ) : null}
-                </Box>
+                <VisuallyHidden id="review-availability-reason">
+                  {reviewAvailabilityDescription}
+                </VisuallyHidden>
               )}
               <Tabs.List
                 flexShrink={0}
@@ -559,7 +537,12 @@ export function ConceptNoteWorkspace({
                   contextStatus={contextStatus}
                   canStartDrafting={canStartDrafting}
                   draft={draft ?? null}
-                  draftError={draftStartError}
+                  draftError={
+                    draftStartError ??
+                    (draftFailed && !draftLoading
+                      ? t("review-draft-load-error")
+                      : null)
+                  }
                   focusChapterId={reviewChapterId}
                   focusFindingKey={reviewFindingKey}
                   applicationContextFailed={applicationContextFailed}
@@ -606,6 +589,7 @@ export function ConceptNoteWorkspace({
                   onConfirmChapter={confirmChapter}
                   mutationError={workspaceMutationError}
                   onOpenContext={() => setTab("context")}
+                  onOpenFundingSetup={() => void openFundingSetup()}
                   onRetry={() => void retryContextBundle()}
                   onStartDrafting={() => void startDrafting()}
                 />

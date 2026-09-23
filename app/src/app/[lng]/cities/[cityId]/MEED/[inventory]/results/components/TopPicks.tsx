@@ -39,7 +39,7 @@ export function TopPicks({
 }: {
   actions: MeedRankedActionResult[];
   index: MeedActionIndex;
-  weights: MeedScoreWeights;
+  weights: MeedScoreWeights | null;
   t: TFunction;
   isCatalogLoading: boolean;
   selectedIds: string[];

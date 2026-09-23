@@ -147,9 +147,12 @@ function ContextCard({
  * to. The module home and the results page render the same grid, before and
  * after a ranking exists.
  *
- * Five cards on a three-column grid would leave a hole; the emissions card —
- * the input that drives most of the score — takes two columns instead.
+ * Five cards on a three-column grid would leave a hole, so the grid is six
+ * columns wide: the first two cards (emissions and city context) each take
+ * three, the last three take two, and both rows come out balanced.
  */
+const WIDE_AREAS = new Set(["emissions", "context"]);
+
 export function ContextCardGrid({
   facts,
   backing,
@@ -200,7 +203,7 @@ export function ContextCardGrid({
         templateColumns={{
           base: "1fr",
           md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
+          lg: "repeat(6, 1fr)",
         }}
         gap="m"
       >
@@ -210,6 +213,7 @@ export function ContextCardGrid({
             colSpan={{
               base: 1,
               md: (area.wide ?? area.key === "emissions") ? 2 : 1,
+              lg: (area.wide ?? WIDE_AREAS.has(area.key)) ? 3 : 2,
             }}
           >
             <ContextCard

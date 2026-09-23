@@ -3,8 +3,9 @@ import { Box, HStack, SimpleGrid, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
-import { BodySmall } from "@/components/package/Texts/Body";
+import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
+import { LabelMedium } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { MeedChartTip } from "./MeedChartTip";
@@ -50,7 +51,8 @@ function scoreOf(action: MeedRankedActionResult, pillar: Pillar): number {
 
 export interface MeedScoreCompositionProps {
   action: MeedRankedActionResult;
-  weights: MeedScoreWeights;
+  /** Null when the ranking did not report its weights: no bar can be drawn. */
+  weights: MeedScoreWeights | null;
   /**
    * `bar`: the stacked bar alone (the caller prints the number elsewhere).
    * `compact`: bar + final score on one line.
@@ -77,6 +79,12 @@ export function MeedScoreComposition({
   variant = "compact",
   t,
 }: MeedScoreCompositionProps) {
+  if (!weights) {
+    // A bar is score × weight; without weights there is nothing to draw and
+    // the caller's own number column carries the value.
+    if (variant === "bar") return null;
+    return <MeedScoreWithoutWeights action={action} variant={variant} t={t} />;
+  }
   const parts = scoreContributions(action, weights);
   const ariaLabel = t("composition-aria", {
     final: action.final_score.toFixed(2),
@@ -179,6 +187,66 @@ export function MeedScoreComposition({
           </VStack>
         ))}
       </SimpleGrid>
+    </VStack>
+  );
+}
+
+/**
+ * Fallback when the ranking did not report the weights it scored with: the
+ * final score, and in the detailed variant each pillar's own score. No bar,
+ * because the bar's segments are score × weight.
+ */
+function MeedScoreWithoutWeights({
+  action,
+  variant,
+  t,
+}: {
+  action: MeedRankedActionResult;
+  variant: "compact" | "detailed";
+  t: TFunction;
+}) {
+  if (variant === "compact") {
+    return (
+      <BodySmall
+        color="content.primary"
+        fontWeight="semibold"
+        fontVariantNumeric="tabular-nums"
+        textAlign="end"
+      >
+        {action.final_score.toFixed(2)}
+      </BodySmall>
+    );
+  }
+  return (
+    <VStack alignItems="stretch" gap="s">
+      {PILLARS.map((pillar, i) => (
+        <HStack key={pillar} alignItems="flex-start" gap="s">
+          <Box
+            w="10px"
+            h="10px"
+            mt="5px"
+            borderRadius="full"
+            bg={PILLAR_COLORS[i]}
+            flexShrink={0}
+          />
+          <VStack alignItems="stretch" gap="xs" flex="1" minW={0}>
+            <HStack justifyContent="space-between" gap="m">
+              <LabelMedium color="content.primary">
+                {t(PILLAR_LABEL_KEY[pillar])}
+              </LabelMedium>
+              <BodyMedium
+                color="content.secondary"
+                fontVariantNumeric="tabular-nums"
+              >
+                {scoreOf(action, pillar).toFixed(2)}
+              </BodyMedium>
+            </HStack>
+            <Caption color="content.tertiary">
+              {t(PILLAR_DESCRIPTION_KEY[pillar])}
+            </Caption>
+          </VStack>
+        </HStack>
+      ))}
     </VStack>
   );
 }

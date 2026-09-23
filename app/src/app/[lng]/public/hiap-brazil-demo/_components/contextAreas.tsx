@@ -63,6 +63,14 @@ export function useContextAreas({
               wide: true,
             },
             {
+              key: "context-br",
+              segment: "context",
+              titleKey: "area-context-title",
+              descriptionKey: "area-context-desc",
+              icon: LuUsers,
+              wide: true,
+            },
+            {
               key: "legal-br",
               segment: "legal",
               titleKey: "area-legal-title",
@@ -82,13 +90,6 @@ export function useContextAreas({
               titleKey: "area-policy-title",
               descriptionKey: "area-policy-desc",
               icon: LuClipboardList,
-            },
-            {
-              key: "context-br",
-              segment: "context",
-              titleKey: "area-context-title",
-              descriptionKey: "area-context-desc",
-              icon: LuUsers,
             },
           ]
         : [
@@ -100,6 +101,14 @@ export function useContextAreas({
               icon: LuFactory,
             },
             {
+              key: "context-br",
+              segment: "context",
+              titleKey: "area-context-mitigation-title",
+              descriptionKey: "area-context-desc",
+              icon: LuUsers,
+              wide: true,
+            },
+            {
               key: "legal-br",
               segment: "legal",
               titleKey: "area-legal-title",
@@ -119,13 +128,6 @@ export function useContextAreas({
               titleKey: "area-policy-title",
               descriptionKey: "area-policy-desc",
               icon: LuClipboardList,
-            },
-            {
-              key: "context-br",
-              segment: "context",
-              titleKey: "area-context-mitigation-title",
-              descriptionKey: "area-context-desc",
-              icon: LuUsers,
             },
           ],
     [track],

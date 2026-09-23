@@ -819,7 +819,7 @@
   "activity-value-success": "¡Nuevos datos de actividad agregados con éxito!",
   "activity-value-error": "Algo salió mal",
   "gwp-info-prefix": "Todas las cálculos consideran un",
-  "gwp-info": "Valor de GWP de 28 para CH4 y 265 para N20 (Versión AR5)",
+  "gwp-info": "Valor de GWP de {{ch4}} para CH4 y {{n2o}} para N20 (Versión {{version}})",
   "manual-input-error-exclusive-secondary": "No puedes crear un valor de Actividad con un <strong>{{targetField}}</strong> de <strong>{{exclusiveFieldValue}}</strong> cuando otro Valor de Actividad existe en esta metodología",
   "manual-input-error-exclusive-secondary-inline": "Por favor, seleccione otro valor",
   "manual-input-error-exclusive": "No puedes crear un Valor de Actividad cuando un Valor de Actividad existente tiene un <strong>{{targetField}}</strong> de <strong>{{exclusiveFieldValue}}</strong>",

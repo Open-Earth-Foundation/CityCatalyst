@@ -13,11 +13,11 @@ import {
 import NextLink from "next/link";
 import { LuArrowRight } from "react-icons/lu";
 import type { TFunction } from "i18next";
-import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
-import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
+import { LabelMedium } from "@/components/package/Texts/Label";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { Overline } from "@/components/package/Texts/Overline";
-import { TitleMedium } from "@/components/package/Texts/Title";
+import { TitleMedium, TitleLarge } from "@/components/package/Texts/Title";
 import type { MeedPolicyBacking } from "./rankingFacts";
 import { FOCUS_RING } from "../../../focusRing";
 import {
@@ -147,9 +147,12 @@ function ContextCard({
  * to. The module home and the results page render the same grid, before and
  * after a ranking exists.
  *
- * Five cards on a three-column grid would leave a hole; the emissions card —
- * the input that drives most of the score — takes two columns instead.
+ * Five cards on a three-column grid would leave a hole, so the grid is six
+ * columns wide: the first two cards (emissions and city context) each take
+ * three, the last three take two, and both rows come out balanced.
  */
+const WIDE_AREAS = new Set(["emissions", "context"]);
+
 export function ContextCardGrid({
   facts,
   backing,
@@ -160,6 +163,7 @@ export function ContextCardGrid({
   description,
   ctaFor,
   visualFor,
+  indicatorFor,
 }: {
   facts: MeedContextFacts;
   backing: MeedPolicyBacking;
@@ -173,6 +177,11 @@ export function ContextCardGrid({
   ctaFor?: (area: MeedContextArea) => MeedContextCta | undefined;
   /** A small static visual for an area (sector bar, funnel, meters). */
   visualFor?: (area: MeedContextArea) => React.ReactNode;
+  /**
+   * Overrides the headline number for an area. Areas the built-in facts do not
+   * know (another track's inputs) would otherwise show none.
+   */
+  indicatorFor?: (area: MeedContextArea) => MeedContextStat | null | undefined;
 }) {
   const defaultCta = (area: MeedContextArea): MeedContextCta => ({
     label: t("context-view-details"),
@@ -182,31 +191,38 @@ export function ContextCardGrid({
   return (
     <VStack alignItems="stretch" gap="m">
       <VStack alignItems="stretch" gap="xs">
-        <LabelLarge color="content.primary">
+        <TitleLarge color="content.primary">
           {title ?? t("context-title")}
-        </LabelLarge>
-        <BodySmall color="content.secondary">
+        </TitleLarge>
+        <BodyMedium color="content.secondary">
           {description ?? t("context-description")}
-        </BodySmall>
+        </BodyMedium>
       </VStack>
 
       <Grid
         templateColumns={{
           base: "1fr",
           md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
+          lg: "repeat(6, 1fr)",
         }}
         gap="m"
       >
         {areas.map((area) => (
           <GridItem
             key={area.key}
-            colSpan={{ base: 1, md: area.key === "emissions" ? 2 : 1 }}
+            colSpan={{
+              base: 1,
+              md: (area.wide ?? area.key === "emissions") ? 2 : 1,
+              lg: (area.wide ?? WIDE_AREAS.has(area.key)) ? 3 : 2,
+            }}
           >
             <ContextCard
               icon={area.icon}
               title={t(area.titleKey)}
-              indicator={contextIndicator(area, facts, backing, t)}
+              indicator={
+                indicatorFor?.(area) ??
+                contextIndicator(area, facts, backing, t)
+              }
               visual={visualFor?.(area)}
               summary={contextSummary(area, facts, t)}
               cta={ctaFor?.(area) ?? defaultCta(area)}

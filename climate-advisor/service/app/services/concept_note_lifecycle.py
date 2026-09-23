@@ -11,6 +11,8 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID, uuid4
 
+import httpx
+
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.models.cnb.context_bundle import ConceptNoteContextBundle
 from app.models.cnb.concept_note_runs import (
@@ -199,6 +201,13 @@ class ConceptNoteLifecycleService:
             await self.workspace.delete_run(run_id=run.run_id)
         except Exception as exc:
             logger.exception("Concept Note workspace deletion failed")
+            # Source delivery can still be active after OCR is ready. Preserve
+            # this retryable conflict so the UI explains why deletion must wait.
+            if isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code == 409:
+                raise HTTPException(
+                    status_code=409,
+                    detail="Wait for source processing to finish before deleting this note",
+                ) from exc
             raise HTTPException(
                 status_code=503,
                 detail="Concept Note could not be deleted",

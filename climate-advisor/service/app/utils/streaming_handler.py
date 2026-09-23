@@ -233,6 +233,12 @@ class StreamingHandler:
                 else None
             )
             self.concept_note_edit_request = edit_request
+            # The CNB frontend sends its active language so help quotes visible labels.
+            concept_note_ui_locale = (
+                payload.context.get("ui_locale")
+                if concept_note_run_id and isinstance(payload.context, dict)
+                else None
+            )
 
             # Load the effective chat input before tool registration so the edit
             # planner can resolve short follow-ups from a bounded visible window.
@@ -260,6 +266,7 @@ class StreamingHandler:
                 native_input_catalog_context=native_input_catalog_context,
                 concept_note_edit_request=edit_request,
                 concept_note_edit_history=concept_note_edit_history,
+                concept_note_ui_locale=concept_note_ui_locale,
             )
 
             # Get model override from options

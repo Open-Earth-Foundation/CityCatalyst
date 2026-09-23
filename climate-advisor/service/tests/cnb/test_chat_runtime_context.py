@@ -15,6 +15,23 @@ from app.utils.streaming_handler import StreamingHandler
 from app.config import get_settings
 
 
+async def test_regular_context_does_not_load_navigation_state() -> None:
+    handler = StreamingHandler(
+        thread_id=str(uuid4()), user_id="owner", session_factory=MagicMock()
+    )
+    handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(uuid4()))
+    with (
+        patch(
+            "app.utils.streaming_handler.load_agent_context",
+            new=AsyncMock(return_value={"document_context": None}),
+        ),
+        patch("app.services.cnb.ui_context.load_ui_state", new=AsyncMock()) as loader,
+    ):
+        message = await handler._load_concept_note_context_message()
+    assert "ui_state" not in json.loads(message["content"].split("\n", 1)[1])
+    loader.assert_not_awaited()
+
+
 @pytest.mark.parametrize("current_already_saved", [False, True])
 async def test_cnb_evidence_uses_user_role_and_preserves_current_request(
     current_already_saved: bool,

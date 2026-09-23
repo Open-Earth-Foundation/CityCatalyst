@@ -99,13 +99,15 @@ export function MeedRankingSummary({
     });
   }
 
-  lines.push({
-    icon: LuChartColumn,
-    text: t("insight-driver", {
-      pillar: t(PILLAR_KEY[insights.mainDriver]),
-      pct: Math.round(insights.driverShares[insights.mainDriver] * 100),
-    }),
-  });
+  if (insights.mainDriver) {
+    lines.push({
+      icon: LuChartColumn,
+      text: t("insight-driver", {
+        pillar: t(PILLAR_KEY[insights.mainDriver.pillar]),
+        pct: Math.round(insights.mainDriver.share * 100),
+      }),
+    });
+  }
 
   if (funnel) {
     lines.push({

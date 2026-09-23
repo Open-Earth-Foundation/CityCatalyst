@@ -42,6 +42,7 @@ from app.tools.cc_inventory_tool import CCInventoryTool
 from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from app.tools.climate_vector_sync import climate_vector_search
 from app.tools.concept_note_edit_tools import build_concept_note_edit_tools
+from app.tools.concept_note_help_tools import build_concept_note_help_tools
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
 from app.tools.inventory_context_tools import build_inventory_capability_tools
 from app.tools.native_input_catalog_tools import build_native_input_catalog_tools
@@ -78,6 +79,7 @@ class AgentService:
         concept_note_run_id: Optional[Union[str, UUID]] = None,
         concept_note_edit_request: EditProposalRequest | None = None,
         concept_note_edit_history: list[dict[str, str]] | None = None,
+        concept_note_ui_locale: str | None = None,
         native_input_catalog_service: Optional[NativeInputCatalogService] = None,
         native_input_catalog_context: Optional[ActiveRequestContext] = None,
     ) -> None:
@@ -91,6 +93,7 @@ class AgentService:
             city_id: Active city ID, used by pre-draft Stationary Energy tools
             concept_note_edit_request: Optional CNB edit proposal request
             concept_note_edit_history: Bounded recent CNB edit messages
+            concept_note_ui_locale: Active frontend language for CNB help labels
             native_input_catalog_service: Optional request-scoped Core coordinator
                 used by runtime NativeInputCatalog tools
             native_input_catalog_context: Authenticated active context for catalog
@@ -116,6 +119,7 @@ class AgentService:
         )
         self.concept_note_edit_request = concept_note_edit_request
         self.concept_note_edit_history = list(concept_note_edit_history or [])
+        self.concept_note_ui_locale = concept_note_ui_locale
         self._stationary_energy_surface = bool(
             stationary_energy_surface or self.stationary_energy_draft_run_id
         )
@@ -436,6 +440,15 @@ class AgentService:
                     self.concept_note_run_id,
                 )
                 concept_note_context = None
+            if concept_note_context is not None:
+                tools.extend(
+                    build_concept_note_help_tools(
+                        session_factory=self.session_factory,
+                        run_id=self.concept_note_run_id,
+                        user_id=str(self.cc_user_id),
+                        ui_locale=self.concept_note_ui_locale,
+                    )
+                )
             if (
                 concept_note_context is not None
                 and concept_note_context.get("workflow_step")

@@ -315,7 +315,7 @@
   "export-formats": "Formatos de exportação",
   "docx-description": "Documento editável",
   "pdf-description": "Cópia para revisão",
-  "export-format": "Exportar {{formato}}",
+  "export-format": "Exportar {{format}}",
   "export-backend-note": "As exportações contêm apenas o texto do capítulo. Solicitações de informações em falta e metadados de revisão permanecem na área de trabalho e não estão incluídos no arquivo baixado.",
   "export-failed": "Não foi possível gerar o documento. Por favor, tente exportar novamente.",
   "go-back": "Voltar",

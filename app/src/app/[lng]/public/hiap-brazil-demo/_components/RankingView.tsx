@@ -8,15 +8,10 @@ import { MeedFunnelStrip } from "@/app/[lng]/cities/[cityId]/MEED/components/Mee
 import { MeedScoreLegend } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedScoreComposition";
 import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { ContextCardGrid } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ContextCardGrid";
-import { CoBenefitStrip } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/CoBenefitStrip";
 import { DetailPanel } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/DetailPanel";
 import { FullRanking } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/FullRanking";
 import { ResultsHeader } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ResultsHeader";
 import { TopPicks } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/TopPicks";
-import {
-  tallyCoBenefits,
-  tallyTradeOffs,
-} from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/coBenefits";
 import { buildReportPdf } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/report/meedReportPdf";
 import type { DemoTrack } from "../_lib/types";
 import { useTrack } from "../_lib/useTrack";
@@ -30,7 +25,8 @@ import { buildDemoReport } from "../_lib/report";
 import { pick } from "../_lib/localized";
 import { NotRankedLane } from "./NotRankedLane";
 import { AdaptationDrawerSections } from "./AdaptationDrawerSections";
-import { DemoRankingConfig } from "./DemoRankingConfig";
+import { RankingSettings } from "./RankingSettings";
+import { CoBenefitMatrix } from "./CoBenefitMatrix";
 import { ShiftInterventionList } from "./ShiftInterventionList";
 import { useContextAreas } from "./contextAreas";
 
@@ -44,13 +40,10 @@ export function RankingView({
   lng,
   citySlug,
   track,
-  headerAction,
 }: {
   lng: string;
   citySlug: string;
   track: DemoTrack;
-  /** Rendered at the right of the census line, e.g. the re-run button. */
-  headerAction?: React.ReactNode;
 }) {
   const data = useTrack(lng, citySlug, track);
   const { city, ranked, index, weights, adaptation, state } = data;
@@ -70,14 +63,6 @@ export function RankingView({
   }, []);
 
   const topPicks = useMemo(() => ranked.slice(0, 3), [ranked]);
-  const coBenefits = useMemo(
-    () => tallyCoBenefits(topPicks, index),
-    [topPicks, index],
-  );
-  const tradeOffs = useMemo(
-    () => tallyTradeOffs(topPicks, index),
-    [topPicks, index],
-  );
   const { areas, facts, backing, visualFor, indicatorFor, ctaFor, hrefFor } =
     useContextAreas({ lng, data, tResults });
 
@@ -221,27 +206,24 @@ export function RankingView({
         <ResultsHeader
           rankedCount={ranked.length}
           excludedCount={adaptation ? adaptation.notRanked.length : null}
-          trailing={headerAction}
           t={tResults}
         />
 
-        <Card.Root borderColor="border.overlay">
-          <Card.Body p="l">
-            <DemoRankingConfig
-              preferences={state.preferences}
-              editHref={trackHref(lng, city.slug, track, "preferences")}
-              labelFor={{
-                sector: labels.sector,
-                coBenefit: labels.coBenefit,
-                timeline: labels.timeline,
-                risk: labels.cell,
-                action: (id) =>
-                  ACTION_BY_ID[id] ? pick(ACTION_BY_ID[id].name, lng) : id,
-              }}
-              t={tResults}
-            />
-          </Card.Body>
-        </Card.Root>
+        <RankingSettings
+          preferences={state.preferences}
+          track={track}
+          editHref={trackHref(lng, city.slug, track, "preferences")}
+          labelFor={{
+            sector: labels.sector,
+            coBenefit: labels.coBenefit,
+            timeline: labels.timeline,
+            risk: labels.cell,
+            action: (id) =>
+              ACTION_BY_ID[id] ? pick(ACTION_BY_ID[id].name, lng) : id,
+          }}
+          t={t}
+          tResults={tResults}
+        />
 
         {funnel && (
           <Card.Root borderColor="border.overlay">
@@ -284,12 +266,7 @@ export function RankingView({
             {...reportProps}
           />
           <MeedScoreLegend weights={weights} t={tResults} />
-          <CoBenefitStrip
-            benefits={coBenefits}
-            tradeOffs={tradeOffs}
-            total={topPicks.length}
-            t={tResults}
-          />
+          <CoBenefitMatrix actions={topPicks} index={index} lng={lng} t={t} />
         </VStack>
 
         {track === "mitigation" && (

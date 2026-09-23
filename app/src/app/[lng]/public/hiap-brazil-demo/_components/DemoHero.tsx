@@ -1,5 +1,13 @@
 "use client";
-import { Box, Heading, HStack, Icon, Link, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Heading,
+  HStack,
+  Icon,
+  Link,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
 import { MdChevronRight } from "react-icons/md";
 import {
@@ -13,10 +21,13 @@ import { useDemoT } from "../_lib/useDemoT";
 import { ScreenTag } from "./ScreenTag";
 
 /**
- * The compact city band from the module home (`GHGIHomePage/Hero`,
- * `variant="compact"`), rebuilt on the same tokens. The shared Hero needs an
- * inventory record and calls the city-data API on mount; a public, fixture-fed
- * page has neither, and the band is small enough to mirror faithfully.
+ * The city band at the top of the module home, after `GHGIHomePage/Hero`
+ * (`variant="compact"`) on the same tokens, and carrying everything the
+ * reader needs before the tabs: who this is for (programme, city, one fact),
+ * what the module does (one sentence) and the one thing to do next (the
+ * call to action, with the ranking's status beside it). The content column
+ * below then starts straight on the results or the inputs — no second
+ * heading to read past.
  */
 export function DemoHero({
   lng,
@@ -24,6 +35,9 @@ export function DemoHero({
   track,
   screenId,
   line,
+  description,
+  status,
+  action,
 }: {
   lng: string;
   city: CityFixture;
@@ -31,6 +45,12 @@ export function DemoHero({
   screenId: string;
   /** One-line fact under the name: the risk census or the inventory total. */
   line: string;
+  /** What this track does, in one sentence. */
+  description?: string;
+  /** The ranking's state, shown next to the action. */
+  status?: string;
+  /** The primary call to action for this track. */
+  action?: React.ReactNode;
 }) {
   const { t } = useDemoT(lng);
   return (
@@ -78,33 +98,77 @@ export function DemoHero({
           </BreadcrumbRoot>
           <ScreenTag id={screenId} title={t("screen-tag-title")} />
         </HStack>
-        <Box display="flex" flexDirection="column" gap={2} pt="m">
-          <Text
-            fontSize="title.md"
-            w="max-content"
-            fontWeight="semibold"
-            color="white"
+
+        <HStack
+          justifyContent="space-between"
+          alignItems="flex-end"
+          gap="l"
+          flexWrap="wrap"
+          pt="m"
+        >
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap={2}
+            flex="1"
+            minW="280px"
           >
-            {t("hero-programme")}
-          </Text>
-          <Box display="flex" alignItems="center" gap={4}>
-            <CircleFlag countryCode="br" width={32} />
-            <Heading
-              fontSize="display.md"
-              color="base.light"
+            <Text
+              fontSize="title.md"
+              w="max-content"
               fontWeight="semibold"
-              lineHeight="52"
-              display="flex"
+              color="white"
             >
-              <span>
-                {city.name}, {city.state}
-              </span>
-            </Heading>
+              {t("hero-programme")}
+            </Text>
+            <Box display="flex" alignItems="center" gap={4}>
+              <CircleFlag countryCode="br" width={32} />
+              <Heading
+                fontSize="display.md"
+                color="base.light"
+                fontWeight="semibold"
+                lineHeight="52"
+                display="flex"
+              >
+                <span>
+                  {city.name}, {city.state}
+                </span>
+              </Heading>
+            </Box>
+            <Text
+              fontSize="body.lg"
+              color="background.overlay"
+              fontWeight={400}
+            >
+              {line}
+            </Text>
+            {description && (
+              <Text
+                fontSize="body.md"
+                lineHeight="20px"
+                color="base.light"
+                maxW="640px"
+                mt="s"
+              >
+                {description}
+              </Text>
+            )}
           </Box>
-          <Text fontSize="body.lg" color="background.overlay" fontWeight={400}>
-            {line}
-          </Text>
-        </Box>
+          {(action || status) && (
+            <VStack alignItems={{ base: "stretch", md: "flex-end" }} gap="s">
+              {action}
+              {status && (
+                <Text
+                  fontSize="body.sm"
+                  color="background.overlay"
+                  textAlign="end"
+                >
+                  {status}
+                </Text>
+              )}
+            </VStack>
+          )}
+        </HStack>
       </Box>
     </Box>
   );

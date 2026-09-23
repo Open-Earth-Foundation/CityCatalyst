@@ -490,6 +490,30 @@
   "pref-row-weights-sub": "Ajuste os três controles abaixo; os padrões seguem a metodologia.",
   "funnel-excluded": "Após suas exclusões",
   "funnel-excluded-sub": "Removidas na tela de preferências",
+  "hero-status-ranked": "Classificado em {{date}} · {{count}} ações",
+  "hero-status-none": "Ainda sem ranking para esta cidade",
+  "settings-title": "Classificado com suas configurações",
+  "settings-none": "Nenhuma preferência definida — o ranking usou os padrões.",
+  "settings-show": "Mostrar configurações",
+  "settings-hide": "Ocultar configurações",
+  "settings-edit": "Editar preferências",
+  "settings-weights-default": "pesos padrão",
+  "settings-weights-custom": "pesos ajustados",
+  "pref-sum-risks_one": "{{count}} risco prioritário",
+  "pref-sum-risks_other": "{{count}} riscos prioritários",
+  "pref-sum-timeline_one": "{{count}} prazo",
+  "pref-sum-timeline_other": "{{count}} prazos",
+  "config-none": "Nenhum definido",
+  "matrix-title": "Cobenefícios e efeitos adversos das principais ações",
+  "matrix-description": "Cada ação é avaliada nas oito categorias de cobenefícios da metodologia, de −2 (adverso) a +2 (benefício forte). As pontuações ficam lado a lado e nunca são somadas. Uma categoria já creditada por meio de uma célula de risco é marcada como contabilizada no Impacto e não é pontuada de novo. Os cobenefícios que sua cidade prioriza entram na pontuação de Alinhamento.",
+  "matrix-col-category": "Categoria",
+  "matrix-in-impact": "Contabilizado no Impacto",
+  "matrix-not-scored": "—",
+  "matrix-ai-tag": "Avaliado por IA",
+  "matrix-scale-strong": "benefício forte",
+  "matrix-scale-benefit": "benefício",
+  "matrix-scale-neutral": "sem efeito",
+  "matrix-scale-adverse": "efeito adverso",
   "adaptation": {
     "meed": {
       "overview-title": "Priorizar ações de adaptação",
@@ -622,8 +646,7 @@
       "config-exclusions-count_other": "{{count}} ações excluídas",
       "composition-weight-short": "× {{weight}}% de peso",
       "tradeoffs-title": "Efeitos adversos entre estas ações",
-      "tradeoffs-description": "Onde uma das principais ações pode prejudicar outro objetivo.",
-      "config-weights-preview": "Impacto · Alinhamento · Viabilidade (%)"
+      "tradeoffs-description": "Onde uma das principais ações pode prejudicar outro objetivo."
     },
     "meed-preferences": {
       "title": "Preferências estratégicas",
@@ -720,8 +743,7 @@
       "config-exclusions-count_other": "{{count}} ações excluídas",
       "composition-weight-short": "× {{weight}}% de peso",
       "tradeoffs-title": "Efeitos adversos entre estas ações",
-      "tradeoffs-description": "Onde uma das principais ações pode prejudicar outro objetivo.",
-      "config-weights-preview": "Impacto · Alinhamento · Viabilidade (%)"
+      "tradeoffs-description": "Onde uma das principais ações pode prejudicar outro objetivo."
     }
   },
   "policy-page-short": "p. {{page}}",

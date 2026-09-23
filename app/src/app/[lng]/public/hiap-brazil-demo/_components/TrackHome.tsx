@@ -1,10 +1,8 @@
 "use client";
 import React from "react";
-import { Box, HStack, VStack } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { LuSparkles } from "react-icons/lu";
-import { TitleLarge } from "@/components/package/Texts/Title";
-import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { ContextCardGrid } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ContextCardGrid";
 import { formatEmissions } from "@/util/helpers";
@@ -20,10 +18,10 @@ import { RankingView } from "./RankingView";
 import { useContextAreas } from "./contextAreas";
 
 /**
- * BR-A1 / BR-M1 — the module home for one track. Before a ranking exists it
- * invites the user in and explains the inputs. Once one exists it *is* the
- * results screen: one place with all the context, rather than a summary and
- * a "view all recommendations" copy of it.
+ * BR-A1 / BR-M1 — the module home for one track. The hero says what the
+ * module does and holds the one call to action; the tabs pick the track;
+ * the column below is either the inputs the ranking will use (before a
+ * ranking) or the ranking itself (after one), with nothing in between.
  */
 export function TrackHome({
   lng,
@@ -35,7 +33,7 @@ export function TrackHome({
   track: DemoTrack;
 }) {
   const data = useTrack(lng, citySlug, track);
-  const { city, state, isReady } = data;
+  const { city, ranked, state, isReady } = data;
   const { t } = useDemoT(lng);
   const tMeed = useTrackT(lng, track, "meed");
   const tResults = useTrackT(lng, track, "meed-results");
@@ -71,6 +69,17 @@ export function TrackHome({
         ? [t("open-results-legal"), t("open-results-narrative")]
         : [];
 
+  const status = !isReady
+    ? undefined
+    : hasRanking
+      ? t("hero-status-ranked", {
+          date: new Date(state.generatedAt!).toLocaleDateString(lng),
+          count: ranked.length,
+          // The date carries "/" — React escapes text itself.
+          interpolation: { escapeValue: false },
+        })
+      : t("hero-status-none");
+
   return (
     <Box
       h="full"
@@ -84,6 +93,24 @@ export function TrackHome({
         track={track}
         screenId={screenId}
         line={heroLine}
+        description={tMeed("overview-description")}
+        status={status}
+        action={
+          <MeedButton
+            minW="auto"
+            px="l"
+            bg="base.light"
+            color="content.link"
+            _hover={{ bg: "background.neutral" }}
+            leftIcon={<LuSparkles size={16} />}
+            disabled={!isReady}
+            onClick={() =>
+              router.push(trackHref(lng, city.slug, track, "preferences"))
+            }
+          >
+            {hasRanking ? tMeed("ranking-rerun") : tMeed("get-recommendations")}
+          </MeedButton>
+        }
       />
       <TrackTabs lng={lng} city={city.slug} track={track} />
       <Box
@@ -97,72 +124,8 @@ export function TrackHome({
         flexDirection="column"
         gap="xl"
       >
-        {!hasRanking && (
-          <HStack
-            justifyContent="space-between"
-            alignItems={{ base: "stretch", md: "flex-end" }}
-            flexDirection={{ base: "column", md: "row" }}
-            gap="l"
-            py="l"
-          >
-            <VStack alignItems="stretch" gap="s" flex="1" minW={0}>
-              <TitleLarge color="content.primary">
-                {tMeed("overview-title")}
-              </TitleLarge>
-              <BodyMedium color="content.secondary" maxW="640px">
-                {tMeed("overview-description")}
-              </BodyMedium>
-            </VStack>
-            <VStack
-              alignItems={{ base: "stretch", md: "flex-end" }}
-              gap="xs"
-              flexShrink={0}
-            >
-              <MeedButton
-                minW="auto"
-                px="l"
-                leftIcon={<LuSparkles size={16} />}
-                disabled={!isReady}
-                onClick={() =>
-                  router.push(trackHref(lng, city.slug, track, "preferences"))
-                }
-              >
-                {tMeed("get-recommendations")}
-              </MeedButton>
-              <BodySmall
-                color="content.tertiary"
-                textAlign={{ base: "start", md: "end" }}
-                maxW="360px"
-              >
-                {t(
-                  track === "adaptation"
-                    ? "get-recommendations-hint-adaptation"
-                    : "get-recommendations-hint-mitigation",
-                )}
-              </BodySmall>
-            </VStack>
-          </HStack>
-        )}
-
         {!isReady ? null : hasRanking ? (
-          <RankingView
-            lng={lng}
-            citySlug={citySlug}
-            track={track}
-            headerAction={
-              <MeedButton
-                variant="outlined"
-                minW="auto"
-                px="l"
-                leftIcon={<LuSparkles size={16} />}
-                onClick={() =>
-                  router.push(trackHref(lng, city.slug, track, "preferences"))
-                }
-              >
-                {tMeed("ranking-rerun")}
-              </MeedButton>
-            }
-          />
+          <RankingView lng={lng} citySlug={citySlug} track={track} />
         ) : (
           <ContextCardGrid
             title={tMeed("how-ranking-works-title")}

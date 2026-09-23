@@ -67,28 +67,16 @@ export function TopPicks({
             {t("top-picks-description")}
           </BodySmall>
         </VStack>
-        <HStack gap="m" alignItems="flex-start" flexWrap="wrap">
-          <MeedButton
-            variant="text"
-            px="0"
-            minW="auto"
-            rightIcon={<Icon as={LuArrowDown} boxSize="14px" />}
-            onClick={onBrowseFullRanking}
-            _focusVisible={FOCUS_RING}
-          >
-            {t("see-full-ranking")}
-          </MeedButton>
-          {onGenerate && (
-            <GenerateReportControl
-              selectedCount={selectedIds.length}
-              isGenerating={isGenerating}
-              progress={progress}
-              onGenerate={onGenerate}
-              t={t}
-              hintId="meed-report-hint-top"
-            />
-          )}
-        </HStack>
+        {onGenerate && (
+          <GenerateReportControl
+            selectedCount={selectedIds.length}
+            isGenerating={isGenerating}
+            progress={progress}
+            onGenerate={onGenerate}
+            t={t}
+            hintId="meed-report-hint-top"
+          />
+        )}
       </HStack>
 
       <SimpleGrid columns={{ base: 1, md: 3 }} gap="m" alignItems="stretch">
@@ -109,6 +97,18 @@ export function TopPicks({
               />
             ))}
       </SimpleGrid>
+
+      <MeedButton
+        variant="text"
+        px="0"
+        minW="auto"
+        alignSelf="flex-start"
+        rightIcon={<Icon as={LuArrowDown} boxSize="14px" />}
+        onClick={onBrowseFullRanking}
+        _focusVisible={FOCUS_RING}
+      >
+        {t("see-full-ranking")}
+      </MeedButton>
     </VStack>
   );
 }

@@ -490,6 +490,30 @@
   "pref-row-weights-sub": "Adjust the three sliders below; the defaults follow the methodology.",
   "funnel-excluded": "After your exclusions",
   "funnel-excluded-sub": "Removed on the preferences screen",
+  "hero-status-ranked": "Ranked on {{date}} · {{count}} actions",
+  "hero-status-none": "No ranking yet for this city",
+  "settings-title": "Ranked with your settings",
+  "settings-none": "No preferences set — the ranking ran on defaults.",
+  "settings-show": "Show settings",
+  "settings-hide": "Hide settings",
+  "settings-edit": "Edit preferences",
+  "settings-weights-default": "default weights",
+  "settings-weights-custom": "adjusted weights",
+  "pref-sum-risks_one": "{{count}} priority risk",
+  "pref-sum-risks_other": "{{count}} priority risks",
+  "pref-sum-timeline_one": "{{count}} timeline",
+  "pref-sum-timeline_other": "{{count}} timelines",
+  "config-none": "None set",
+  "matrix-title": "Co-benefits and adverse effects of the top actions",
+  "matrix-description": "Each action is assessed on the methodology's eight co-benefit categories, from −2 (adverse) to +2 (strong benefit). The scores sit side by side and are never added up. A category already credited through a risk cell is marked as counted in Impact and not scored again. The co-benefits your city prioritises enter the Alignment score.",
+  "matrix-col-category": "Category",
+  "matrix-in-impact": "Counted in Impact",
+  "matrix-not-scored": "—",
+  "matrix-ai-tag": "AI-assessed",
+  "matrix-scale-strong": "strong benefit",
+  "matrix-scale-benefit": "benefit",
+  "matrix-scale-neutral": "no effect",
+  "matrix-scale-adverse": "adverse effect",
   "adaptation": {
     "meed": {
       "overview-title": "Prioritize adaptation actions",
@@ -543,8 +567,7 @@
       "area-context-desc": "Shown for the reader; not scored, because vulnerability already lives in the Impact index.",
       "config-priority-risks": "Priority risks",
       "config-exclusions-count_one": "{{count}} action excluded",
-      "config-exclusions-count_other": "{{count}} actions excluded",
-      "config-weights-preview": "Impact · Alignment · Feasibility (%)"
+      "config-exclusions-count_other": "{{count}} actions excluded"
     },
     "meed-preferences": {
       "title": "Strategic preferences",
@@ -589,8 +612,7 @@
       "detail-tradeoffs": "Adverse effects",
       "config-priority-risks": "Priority risks",
       "config-exclusions-count_one": "{{count}} action excluded",
-      "config-exclusions-count_other": "{{count}} actions excluded",
-      "config-weights-preview": "Impact · Alignment · Feasibility (%)"
+      "config-exclusions-count_other": "{{count}} actions excluded"
     }
   },
   "policy-page-short": "p. {{page}}",

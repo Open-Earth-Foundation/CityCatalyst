@@ -23,7 +23,10 @@ import type {
 } from "@/models/EmissionsFactor";
 import type { ActivityValue } from "@/models/ActivityValue";
 import type Decimal from "decimal.js";
-import { OrganizationPlanType } from "@/util/enums";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  OrganizationPlanType,
+} from "@/util/enums";
 import type {
   FailedSourceResult,
   RemovedSourceResult,
@@ -84,6 +87,11 @@ export type InventoryResponse = InventoryAttributes & {
     };
   };
   inventoryValues: FullInventoryValue[];
+  gwp?: {
+    version: GlobalWarmingPotentialTypeEnum;
+    ch4: number | null;
+    n2o: number | null;
+  } | null;
 };
 
 export interface InventoryPopulationsResponse {
@@ -1295,7 +1303,15 @@ export interface ConfirmConceptNoteChapterRequest {
   idempotencyKey: string;
 }
 
+export interface InitialConceptNoteUpload {
+  upload_id: string;
+  filename: string;
+  sha256: string;
+  accepted?: boolean;
+}
+
 export interface StartConceptNoteRunRequest {
+  initialUploads?: InitialConceptNoteUpload[];
   cityId: string;
   idempotencyKey: string;
   name: string;

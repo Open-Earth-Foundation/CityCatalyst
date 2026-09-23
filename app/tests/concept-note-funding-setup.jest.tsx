@@ -65,6 +65,7 @@ jest.unstable_mockModule(
           status: "active",
           workflow_step: "assembling_context",
           thread_id: null,
+          progress_summary: {},
         },
         files: [],
         bundle: { availableContext: { uploadedDocuments: false } },

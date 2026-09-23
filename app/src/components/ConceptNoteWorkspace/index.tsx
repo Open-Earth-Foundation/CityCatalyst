@@ -26,6 +26,8 @@ import {
 
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
+import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";
+import { NewConceptNoteDialog } from "../ConceptNoteDashboard/new-concept-note-dialog";
 import type { EditScope } from "@/util/concept-note-edit-types";
 import type { ConceptNoteDraftChapter } from "@/util/types";
 
@@ -90,6 +92,7 @@ export function ConceptNoteWorkspace({
   const [tab, setTab] = useState<WorkspaceTab>("draft");
   const [startNewChatOpen, setStartNewChatOpen] = useState(false);
   const [fundingOpen, setFundingOpen] = useState(false);
+  const [retryInitialUploadOpen, setRetryInitialUploadOpen] = useState(false);
   const [resetThread, setResetThread] = useState<{
     previousThreadId: string | null;
     threadId: string;
@@ -264,7 +267,10 @@ export function ConceptNoteWorkspace({
   }
 
   const status = getConceptNoteStatusPresentation(run.status, draft);
-  const statusLabel = t(status.translationKey);
+  const incompleteUploads = hasIncompleteInitialUploads(run);
+  const statusLabel = t(
+    incompleteUploads ? "upload-incomplete" : status.translationKey,
+  );
   const workflowLabel = t(getWorkflowStepTranslationKey(run.workflow_step));
   const activeThreadId =
     resetThread?.previousThreadId === run.thread_id
@@ -312,6 +318,30 @@ export function ConceptNoteWorkspace({
             </Text>
           </HStack>
 
+          {incompleteUploads && (
+            <Box
+              role="status"
+              p={3}
+              borderWidth="1px"
+              borderColor="sentiment.warningDefault"
+            >
+              <Text>{t("upload-incomplete-message")}</Text>
+              <Button onClick={() => setRetryInitialUploadOpen(true)}>
+                {t("retry-upload")}
+              </Button>
+            </Box>
+          )}
+          {retryInitialUploadOpen && (
+            <NewConceptNoteDialog
+              key={run.run_id}
+              retryRun={run}
+              cityId={cityId}
+              cityName={cityName}
+              lng={lng}
+              open
+              onOpenChange={setRetryInitialUploadOpen}
+            />
+          )}
           <Grid
             flex={1}
             data-testid="concept-note-workspace-panels"

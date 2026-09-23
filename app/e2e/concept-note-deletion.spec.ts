@@ -190,7 +190,7 @@ for (const failure of [
       .click();
     await expect(dialog.getByRole("alert")).toHaveText(
       failure.status === 409
-        ? "Finish the current concept note operation before deleting it."
+        ? "Wait for file processing and the current concept note operation to finish, then try deleting it again."
         : "The concept note could not be deleted. Please try again.",
     );
     await expect(dialog).toBeVisible();

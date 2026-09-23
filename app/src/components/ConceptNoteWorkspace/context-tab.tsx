@@ -214,12 +214,26 @@ export function ContextTab({
   const hiapStatusLabel = bundle.hiapStatus
     ? t(getContextSourceStatusTranslationKey(bundle.hiapStatus))
     : t("not-available");
+  // A converted file is not ready for chat until context assembly finishes.
+  // Kept separate from the raw "processing" status, which means converting.
+  const awaitingContext = upload?.status === "ready" && contextStatus.blocked;
+  const contextFailed = awaitingContext && contextStatus.state === "failed";
+  const uploadStatus = contextFailed
+    ? "failed"
+    : awaitingContext
+      ? null
+      : (upload?.status ?? "queued");
   const uploadTone: ContextTone =
-    upload?.status === "ready"
+    uploadStatus === "ready"
       ? "positive"
-      : upload?.status === "failed"
+      : uploadStatus === "failed"
         ? "warning"
         : "neutral";
+  const uploadStatusLabel = t(
+    awaitingContext && !contextFailed
+      ? "status-processing"
+      : uploadStatusTranslationKey(uploadStatus),
+  );
   function onFileChange(event: ChangeEvent<HTMLInputElement>): void {
     const file = event.target.files?.[0];
     if (file) {
@@ -580,7 +594,7 @@ export function ContextTab({
             </Text>
             <Text fontSize="10px" color="content.tertiary">
               {upload
-                ? `${t(uploadStatusTranslationKey(upload.status))}${
+                ? `${uploadStatusLabel}${
                     upload.pageCount
                       ? ` · ${t("pages-count", { count: upload.pageCount })}`
                       : ""
@@ -594,11 +608,7 @@ export function ContextTab({
             </Text>
           </Box>
           <ContextStatusBadge
-            label={
-              upload
-                ? t(uploadStatusTranslationKey(upload.status))
-                : t("not-connected")
-            }
+            label={upload ? uploadStatusLabel : t("not-connected")}
             tone={uploadTone}
           />
           {upload?.status === "failed" && upload.canRetry && (

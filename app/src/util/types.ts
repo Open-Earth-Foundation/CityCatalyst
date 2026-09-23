@@ -24,7 +24,10 @@ import type {
   EmissionsFactorAttributes,
 } from "@/models/EmissionsFactor";
 import type { ActivityValue } from "@/models/ActivityValue";
-import { OrganizationPlanType } from "@/util/enums";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  OrganizationPlanType,
+} from "@/util/enums";
 import type {
   FailedSourceResult,
   RemovedSourceResult,
@@ -84,6 +87,11 @@ export type InventoryResponse = InventoryAttributes & {
     };
   };
   inventoryValues: FullInventoryValue[];
+  gwp?: {
+    version: GlobalWarmingPotentialTypeEnum;
+    ch4: number | null;
+    n2o: number | null;
+  } | null;
 };
 
 export interface InventoryPopulationsResponse {

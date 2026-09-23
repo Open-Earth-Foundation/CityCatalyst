@@ -54,7 +54,7 @@ export function DemoHero({
 }) {
   const { t } = useDemoT(lng);
   return (
-    <Box bg="content.alternative" w="full" pt="xxl" pb="xl" px={8}>
+    <Box bg="content.alternative" w="full" pt="64px" pb="64px" px={8}>
       <Box
         display="flex"
         flexDirection="column"

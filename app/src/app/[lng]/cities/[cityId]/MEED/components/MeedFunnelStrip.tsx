@@ -178,7 +178,10 @@ export function MeedFunnelStrip({
               <Box
                 key={`${step.label}-chevron`}
                 display={{ base: "none", lg: "flex" }}
-                alignItems="center"
+                // Pinned to the number line: label (16px) + gap (4px) + half
+                // the 32px numeral, minus half the icon.
+                alignSelf="start"
+                pt="26px"
                 justifyContent="center"
                 aria-hidden
               >

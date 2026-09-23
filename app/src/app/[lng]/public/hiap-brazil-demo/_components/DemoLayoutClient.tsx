@@ -43,7 +43,7 @@ export function DemoLayoutClient({
           "& .chakra-card__root .chakra-card__root:not([data-selected='true'])":
             {
               boxShadow: "none",
-              background: "background.neutral",
+              background: "background.graySubtle",
             },
         }}
       >

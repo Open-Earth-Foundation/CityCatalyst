@@ -143,7 +143,7 @@ export function MeedScoreComposition({
             gap="xs"
             p="l"
             borderRadius="rounded"
-            bg="background.neutral"
+            bg="background.graySubtle"
           >
             <HStack gap="xs" alignItems="center">
               <Box

@@ -182,9 +182,7 @@ function WeightSlider({
       <HStack justifyContent="space-between" gap="s">
         <Caption color="content.tertiary">5%</Caption>
         <Caption color="content.tertiary" textAlign="center">
-          {isDefault
-            ? t("weight-default", { value: defaultValue })
-            : t("weight-adjusted", { value: defaultValue })}
+          {isDefault ? t("weight-default") : t("weight-adjusted")}
         </Caption>
         <Caption color="content.tertiary">90%</Caption>
       </HStack>
@@ -697,13 +695,6 @@ function PreflightContent(props: {
                   <BodySmall color="content.secondary">
                     {t("scoring-weights-description")}
                   </BodySmall>
-                  <Caption color="content.tertiary">
-                    {t("scoring-weights-defaults", {
-                      impact: DEFAULT_MEED_WEIGHTS.impact,
-                      alignment: DEFAULT_MEED_WEIGHTS.alignment,
-                      feasibility: DEFAULT_MEED_WEIGHTS.feasibility,
-                    })}
-                  </Caption>
                 </VStack>
                 <VStack alignItems="stretch" gap="l">
                   {WEIGHT_KEYS.map((key) => (

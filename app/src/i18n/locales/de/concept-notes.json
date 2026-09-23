@@ -637,5 +637,6 @@
   "funding-template-incompatible": "Diese Vorlage hat eine andere Kapitelstruktur als Ihr Entwurf. Beginnen Sie eine neue Konzeptnote, um sie zu verwenden. Ihre aktuelle Förderauswahl und der Entwurf haben sich nicht geändert.",
   "funding-busy": "Warten Sie, bis die aktuelle Operation abgeschlossen ist, bevor Sie die Finanzierung ändern.",
   "funding-draft-warning": "Ihr Entwurfstext wird aufbewahrt. Vorherige Kapitelbestätigungen und ausstehende Bearbeitungsvorschläge werden gelöscht. Eine andere Vorlage muss die gleiche Kapitelstruktur haben. Überprüfen Sie den Entwurf anhand des neuen Geldgebers und der Vorlage, bevor Sie ihn exportieren.",
-  "funding-draft-acknowledge": "Ich werde den vorhandenen Entwurf im Hinblick auf die neue Finanzierungsstruktur überprüfen."
+  "funding-draft-acknowledge": "Ich werde den vorhandenen Entwurf im Hinblick auf die neue Finanzierungsstruktur überprüfen.",
+  "delete-unavailable": "Diese Konzeptnotiz ist nicht mehr verfügbar."
 }

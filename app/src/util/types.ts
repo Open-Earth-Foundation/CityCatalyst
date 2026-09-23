@@ -1296,7 +1296,15 @@ export interface ConfirmConceptNoteChapterRequest {
   idempotencyKey: string;
 }
 
+export interface InitialConceptNoteUpload {
+  upload_id: string;
+  filename: string;
+  sha256: string;
+  accepted?: boolean;
+}
+
 export interface StartConceptNoteRunRequest {
+  initialUploads?: InitialConceptNoteUpload[];
   cityId: string;
   idempotencyKey: string;
   name: string;

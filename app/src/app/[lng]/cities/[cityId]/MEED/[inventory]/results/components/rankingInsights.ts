@@ -8,7 +8,7 @@ import type { SectorEmission } from "@/util/types";
 import type { MeedActionIndex } from "./actionCatalog";
 import { scoreContributions, type MeedScoreWeights } from "./rankingFacts";
 import { sectorShares } from "../../../components/sectorShares";
-import { routeKeyOf } from "../../finance/labels";
+import { isSelfFundable } from "../../finance/labels";
 
 export type MeedPillar = "impact" | "alignment" | "feasibility";
 
@@ -22,10 +22,11 @@ export interface MeedRankingInsights {
     share: number;
     rankedCount: number;
   } | null;
-  /** Mean share of each final score contributed by each pillar, 0..1. */
-  driverShares: Record<MeedPillar, number>;
-  /** The pillar with the largest mean share. */
-  mainDriver: MeedPillar;
+  /**
+   * The pillar with the largest mean share of the final scores, and that
+   * share (0..1). `null` when the ranking did not report its weights.
+   */
+  mainDriver: { pillar: MeedPillar; share: number } | null;
   /** Ranked actions the city can fund from its own budget, when finance data exists. */
   selfDeliverable: { count: number; total: number } | null;
   /** Ranked actions implementable in under five years. */
@@ -53,7 +54,7 @@ export function rankingInsights({
 }: {
   ranked: MeedRankedActionResult[];
   index: MeedActionIndex;
-  weights: MeedScoreWeights;
+  weights: MeedScoreWeights | null;
   bySector?: SectorEmission[];
   /** action_id → raw financing route, from the finance feasibility rows. */
   financeRoutes?: Map<string, string | null | undefined>;
@@ -80,37 +81,38 @@ export function rankingInsights({
       }
     : null;
 
-  const sums: Record<MeedPillar, number> = {
-    impact: 0,
-    alignment: 0,
-    feasibility: 0,
-  };
-  let counted = 0;
-  for (const a of ranked) {
-    const parts = scoreContributions(a, weights);
-    if (parts.total <= 0) continue;
-    sums.impact += parts.impact / parts.total;
-    sums.alignment += parts.alignment / parts.total;
-    sums.feasibility += parts.feasibility / parts.total;
-    counted += 1;
+  let mainDriver: MeedRankingInsights["mainDriver"] = null;
+  if (weights) {
+    const sums: Record<MeedPillar, number> = {
+      impact: 0,
+      alignment: 0,
+      feasibility: 0,
+    };
+    let counted = 0;
+    for (const a of ranked) {
+      const parts = scoreContributions(a, weights);
+      if (parts.total <= 0) continue;
+      sums.impact += parts.impact / parts.total;
+      sums.alignment += parts.alignment / parts.total;
+      sums.feasibility += parts.feasibility / parts.total;
+      counted += 1;
+    }
+    if (counted > 0) {
+      const pillar = (Object.keys(sums) as MeedPillar[]).reduce(
+        (best, key) => (sums[key] > sums[best] ? key : best),
+        "impact",
+      );
+      mainDriver = { pillar, share: sums[pillar] / counted };
+    }
   }
-  const driverShares: Record<MeedPillar, number> = {
-    impact: counted ? sums.impact / counted : 0,
-    alignment: counted ? sums.alignment / counted : 0,
-    feasibility: counted ? sums.feasibility / counted : 0,
-  };
-  const mainDriver = (Object.keys(driverShares) as MeedPillar[]).reduce(
-    (best, key) => (driverShares[key] > driverShares[best] ? key : best),
-    "impact",
-  );
 
   let selfDeliverable: MeedRankingInsights["selfDeliverable"] = null;
   if (financeRoutes && financeRoutes.size > 0) {
     const withRoute = ranked.filter((a) => financeRoutes.has(a.action_id));
     selfDeliverable = {
       total: withRoute.length,
-      count: withRoute.filter(
-        (a) => routeKeyOf(financeRoutes.get(a.action_id)) === "self",
+      count: withRoute.filter((a) =>
+        isSelfFundable(financeRoutes.get(a.action_id)),
       ).length,
     };
   }
@@ -126,7 +128,6 @@ export function rankingInsights({
     rankedCount,
     sectorCounts,
     topEmissionSector,
-    driverShares,
     mainDriver,
     selfDeliverable,
     shortTerm,

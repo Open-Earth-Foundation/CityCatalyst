@@ -18,7 +18,6 @@ import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { MeedButton } from "../../components/MeedButton";
-import { pillarPercent } from "../../scoringWeights";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MEED_WIZARD_STEPS } from "../../steps";
 import { setMeedStepState } from "../../meedLocalState";
@@ -45,8 +44,6 @@ import {
 } from "./policyRows";
 
 const INITIAL_ROWS = 15;
-
-const POLICY_RANKING_WEIGHT = pillarPercent("alignment");
 
 function PolicyAlignmentContent(props: {
   lng: string;
@@ -112,26 +109,9 @@ function PolicyAlignmentContent(props: {
     sortAriaLabel: t("sort-by-column", { column: columnLabel }),
   });
 
-  const weightStrip = (
-    <HStack
-      gap="s"
-      bg="background.neutral"
-      borderRadius="rounded"
-      px="m"
-      py="s"
-      alignItems="center"
-    >
-      <Icon as={LuClipboardList} boxSize="14px" color="content.secondary" />
-      <Caption color="content.secondary">
-        {t("policy-ranking-weight", { weight: POLICY_RANKING_WEIGHT })}
-      </Caption>
-    </HStack>
-  );
-
   const intro = (
     <VStack alignItems="stretch" gap="s">
       <BodyLarge color="content.secondary">{t("policy-description")}</BodyLarge>
-      {weightStrip}
     </VStack>
   );
 

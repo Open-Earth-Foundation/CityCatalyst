@@ -25,6 +25,8 @@ export interface MeedContextArea {
   titleKey: string;
   descriptionKey: string;
   icon: IconType;
+  /** Takes two grid columns. Defaults to true for the emissions area only. */
+  wide?: boolean;
 }
 
 export const MEED_CONTEXT_AREAS: MeedContextArea[] = [
@@ -84,7 +86,7 @@ export interface MeedContextFacts {
   /** Socioeconomic indicators the Global API holds for this city. */
   indicatorCount?: number | null;
   /** Financing-route counts across the action catalog. */
-  finance?: { total: number; self: number; cofinance: number } | null;
+  finance?: { total: number; self: number; externalFinance: number } | null;
   /** Assessed → passed → ranked, when the ranking reports the counts. */
   legalFunnel?: MeedLegalFunnel | null;
   /** Aggregate national plan alignment, 0..1. */
@@ -148,7 +150,7 @@ export function contextSummary(
     case "finance":
       if (facts.finance) {
         return t("context-summary-finance", {
-          cofinance: facts.finance.cofinance,
+          external: facts.finance.externalFinance,
           total: facts.finance.total,
         });
       }
@@ -232,7 +234,7 @@ export function contextStats(
               sub: t("stat-self-deliverable-sub", {
                 total: facts.finance.total,
               }),
-              tone: "positive",
+              tone: facts.finance.self > 0 ? "positive" : undefined,
             },
           ]
         : [];

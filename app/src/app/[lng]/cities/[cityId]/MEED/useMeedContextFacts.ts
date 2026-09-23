@@ -4,7 +4,7 @@ import { useTranslation } from "@/i18n/client";
 import {
   api,
   useGetMeedCityAttributesQuery,
-  useGetMeedFinanceFeasibilityQuery,
+  useGetMeedReferenceFinanceFeasibilityQuery,
   useGetMeedPolicyScoresQuery,
 } from "@/services/api";
 import type { SectorEmission } from "@/util/types";
@@ -45,7 +45,7 @@ export interface MeedContextData {
   finance: MeedFinanceFacts | null;
   /** action_id → raw financing route, for per-action questions. */
   financeRoutes: Map<string, string | null | undefined>;
-  /** Translated financial profile of the city, e.g. "Transitioning city". */
+  /** Translated financial profile of the city, e.g. "Self-sufficient city". */
   cityProfileLabel: string | null;
   policy: PolicyAggregates | null;
 }
@@ -81,7 +81,7 @@ export function useMeedContextFacts({
     { cityId },
     { skip: !cityId },
   );
-  const { data: finance } = useGetMeedFinanceFeasibilityQuery(
+  const { data: finance } = useGetMeedReferenceFinanceFeasibilityQuery(
     { cityId },
     { skip: !cityId },
   );

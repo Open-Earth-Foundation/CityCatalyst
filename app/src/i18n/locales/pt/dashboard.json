@@ -343,5 +343,6 @@
   "net-removal": "Remoção de rede",
   "removal": "Remoção",
   "removals-not-countable-footnote": "* Sub-setores com remoções não são contabilizáveis como emissões",
-  "no-cited-source": "Sem fonte citada"
+  "no-cited-source": "Sem fonte citada",
+  "hero-inventory-line": "{{year}} · {{value}} {{unit}}"
 }

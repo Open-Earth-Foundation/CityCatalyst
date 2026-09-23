@@ -39,7 +39,6 @@ import {
   policyBacking,
   readRankingWeights,
 } from "./components/rankingFacts";
-import { PILLAR_WEIGHTS } from "../../scoringWeights";
 import { MeedCardSkeleton } from "../../components/MeedSkeletons";
 import { MeedErrorCard } from "../../components/MeedErrorCard";
 import {
@@ -81,8 +80,8 @@ export default function Page(props: {
 
   // The weights the backend actually scored with, so the printed formula in the
   // detail drawer matches the final score beside it.
-  const scoreWeights: ScoreWeights = useMemo(
-    () => readRankingWeights(ranking, PILLAR_WEIGHTS),
+  const scoreWeights: ScoreWeights | null = useMemo(
+    () => readRankingWeights(ranking),
     [ranking],
   );
   const [selected, setSelected] = useState<MeedRankedActionResult | null>(null);
@@ -427,7 +426,7 @@ export default function Page(props: {
               onOpenDetail={setSelected}
               onBrowseFullRanking={showFullRanking}
             />
-            <MeedScoreLegend weights={scoreWeights} t={t} />
+            {scoreWeights && <MeedScoreLegend weights={scoreWeights} t={t} />}
             <CoBenefitStrip
               benefits={coBenefits}
               total={topPicks.length}
@@ -466,6 +465,7 @@ export default function Page(props: {
             total={ranked.length}
             isSelected={selectedIds.includes(selected.action_id)}
             onToggleSelect={toggleSelect}
+            finance={{ cityId, lng, financeHref: hrefFor("finance") }}
           />
         )}
       </>

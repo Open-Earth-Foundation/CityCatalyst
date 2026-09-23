@@ -1,6 +1,6 @@
 import type { DemoTrack } from "./types";
 
-export const DEMO_ROOT = "public/hiap-brazil-demo";
+export const DEMO_ROOT = "public/hiap/brazil-demo";
 
 export function demoHome(lng: string): string {
   return `/${lng}/${DEMO_ROOT}`;

@@ -49,7 +49,7 @@ function scoreOf(action: MeedRankedActionResult, pillar: Pillar): number {
 
 export interface MeedScoreCompositionProps {
   action: MeedRankedActionResult;
-  weights: MeedScoreWeights;
+  weights: MeedScoreWeights | null;
   /** `compact`: bar + final score on one line. `detailed`: bar + one row per pillar. */
   variant?: "compact" | "detailed";
   /** `meed-results` namespace. */
@@ -69,6 +69,9 @@ export function MeedScoreComposition({
   variant = "compact",
   t,
 }: MeedScoreCompositionProps) {
+  if (!weights) {
+    return <MeedScoreWithoutWeights action={action} variant={variant} t={t} />;
+  }
   const parts = scoreContributions(action, weights);
   const ariaLabel = t("composition-aria", {
     final: action.final_score.toFixed(2),
@@ -160,6 +163,66 @@ export function MeedScoreComposition({
           </HStack>
         ))}
       </VStack>
+    </VStack>
+  );
+}
+
+/**
+ * Fallback when the ranking did not report the weights it scored with: the
+ * final score, and in the detailed variant each pillar's own score. No bar,
+ * because the bar's segments are score × weight.
+ */
+function MeedScoreWithoutWeights({
+  action,
+  variant,
+  t,
+}: {
+  action: MeedRankedActionResult;
+  variant: "compact" | "detailed";
+  t: TFunction;
+}) {
+  if (variant === "compact") {
+    return (
+      <BodySmall
+        color="content.primary"
+        fontWeight="semibold"
+        fontVariantNumeric="tabular-nums"
+        textAlign="end"
+      >
+        {action.final_score.toFixed(2)}
+      </BodySmall>
+    );
+  }
+  return (
+    <VStack alignItems="stretch" gap="s">
+      {PILLARS.map((pillar, i) => (
+        <HStack key={pillar} alignItems="flex-start" gap="s">
+          <Box
+            w="10px"
+            h="10px"
+            mt="5px"
+            borderRadius="full"
+            bg={PILLAR_COLORS[i]}
+            flexShrink={0}
+          />
+          <VStack alignItems="stretch" gap="xs" flex="1" minW={0}>
+            <HStack justifyContent="space-between" gap="m">
+              <LabelMedium color="content.primary">
+                {t(PILLAR_LABEL_KEY[pillar])}
+              </LabelMedium>
+              <BodyMedium
+                color="content.secondary"
+                fontVariantNumeric="tabular-nums"
+              >
+                {scoreOf(action, pillar).toFixed(2)}
+              </BodyMedium>
+            </HStack>
+            <Caption color="content.tertiary">
+              {t(PILLAR_DESCRIPTION_KEY[pillar])}
+            </Caption>
+          </VStack>
+        </HStack>
+      ))}
     </VStack>
   );
 }

@@ -31,6 +31,7 @@ import type { EditScope } from "@/util/concept-note-edit-types";
 interface ConceptNoteChatPanelProps {
   contextStatus: ConceptNoteContextPresentation;
   composerRequest: { content: string; id: string } | null;
+  draftOverviewPending: boolean;
   lng: string;
   onOpenContext: () => void;
   onStartNewChat?: () => void;
@@ -178,6 +179,7 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
 export function ConceptNoteChatPanel({
   contextStatus,
   composerRequest,
+  draftOverviewPending,
   lng,
   onOpenContext,
   onStartNewChat,
@@ -197,6 +199,7 @@ export function ConceptNoteChatPanel({
     progress,
     messages,
     sendMessage: sendChatMessage,
+    requestDraftOverview,
   } = useConceptNoteChat({
     lng,
     runId,
@@ -212,6 +215,20 @@ export function ConceptNoteChatPanel({
   const contextBlocked = contextStatus.blocked;
   const chatDisabled =
     contextBlocked || !threadId || historyLoading || isGenerating;
+  const requestedOverviewThreadRef = useRef<string | null>(null);
+
+  // Ask Clima once for the drafting overview; the service claims it per build.
+  useEffect(() => {
+    if (!draftOverviewPending) {
+      requestedOverviewThreadRef.current = null;
+      return;
+    }
+    if (chatDisabled || requestedOverviewThreadRef.current === threadId) {
+      return;
+    }
+    requestedOverviewThreadRef.current = threadId;
+    void requestDraftOverview();
+  }, [chatDisabled, draftOverviewPending, requestDraftOverview, threadId]);
 
   useEffect(() => {
     if (

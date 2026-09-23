@@ -15,6 +15,11 @@ from app.db.session import get_session_factory, get_session_optional
 from app.middleware import get_request_id
 from app.models.requests import MessageCreateRequest
 from app.services.cnb.chat_readiness import require_chat_context_ready
+from app.services.cnb.draft_overview import (
+    DRAFT_OVERVIEW_REQUEST,
+    claim_draft_overview,
+    is_draft_overview_turn,
+)
 from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
@@ -104,6 +109,17 @@ async def post_message(
             context=payload.context,
             options=payload.options,
         )
+
+        # The hidden drafting-overview turn uses server-owned trigger text and
+        # is claimed once per drafting build before any streaming starts.
+        draft_overview_claim = None
+        if is_draft_overview_turn(payload.options):
+            draft_overview_claim = await claim_draft_overview(
+                session_factory=session_factory,
+                thread_id=resolved_thread_id,
+                user_id=payload.user_id,
+            )
+            payload = payload.model_copy(update={"content": DRAFT_OVERVIEW_REQUEST})
         
         # 2. Load CC token - check payload first, then thread context
         cc_access_token: Optional[str] = None
@@ -211,12 +227,15 @@ async def post_message(
                                 resolved_thread_id,
                             )
                         
-                        message_service = MessageService(db_session)
-                        await message_service.create_user_message(
-                            thread_id=resolved_thread_id,
-                            user_id=payload.user_id,
-                            text=payload.content,
-                        )
+                        # The overview trigger is not a user message; keep it
+                        # out of the visible history.
+                        if draft_overview_claim is None:
+                            message_service = MessageService(db_session)
+                            await message_service.create_user_message(
+                                thread_id=resolved_thread_id,
+                                user_id=payload.user_id,
+                                text=payload.content,
+                            )
                         await thread_service.touch_thread(thread)
                         await db_session.commit()
                     
@@ -238,6 +257,7 @@ async def post_message(
             inventory_id=payload.inventory_id,
             request_context=payload.context,
             request_options=payload.options,
+            draft_overview_claim=draft_overview_claim,
         )
 
         headers = {

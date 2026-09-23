@@ -249,6 +249,7 @@
   "chat-thinking": "Thinking…",
   "chat-reasoning": "Reasoning",
   "chat-progress-preparing": "Reading your request and concept note context",
+  "chat-progress-summarizing_draft": "Summarising the new draft",
   "chat-progress-planning": "Checking edits for {{chapter}}",
   "chat-progress-reviewing": "Reviewing proposed changes for {{chapter}}",
   "chat-progress-chapter_completed": "Finished checking {{chapter}}",

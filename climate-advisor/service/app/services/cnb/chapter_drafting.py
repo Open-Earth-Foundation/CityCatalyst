@@ -48,6 +48,7 @@ from app.services.cnb.application_context import (
     calculate_application_template_fingerprint,
     included_sources_from_bundle,
 )
+from app.services.cnb.draft_overview import overview_pending
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.concept_note_context import omit_context_identifiers
 from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
@@ -745,6 +746,7 @@ def _build_state_response(
         total_chapters=len(chapters),
         current_chapter_id=_as_uuid(progress.get("current_chapter_id")),
         error_code=_as_text(progress.get("error_code")),
+        overview_pending=overview_pending(progress),
         chapters=[
             ConceptNoteDraftChapterResponse(
                 chapter_id=chapter.chapter_id,

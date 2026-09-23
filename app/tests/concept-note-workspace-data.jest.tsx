@@ -146,6 +146,7 @@ function ChatHarness() {
       <Panel
         contextStatus={contextStatus}
         composerRequest={composerRequest}
+        draftOverviewPending={false}
         lng="en"
         onOpenContext={() => {}}
         runId="run-1"

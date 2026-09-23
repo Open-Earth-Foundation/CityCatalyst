@@ -322,6 +322,7 @@ export function ConceptNoteWorkspace({
             <ConceptNoteChatPanel
               contextStatus={contextStatus}
               composerRequest={null}
+              draftOverviewPending={Boolean(draft?.overview_pending)}
               lng={lng}
               onOpenContext={() => setTab("context")}
               onStartNewChat={() => setStartNewChatOpen(true)}

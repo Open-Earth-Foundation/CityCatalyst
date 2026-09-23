@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: citycatalyst-test-check-hiap-jobs
+  namespace: default
+spec:
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 180
+      template:
+        metadata:
+          labels:
+            app: citycatalyst-test-cron
+            job: check-hiap-jobs
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: check-hiap-jobs
+              image: curlimages/curl:latest
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  test -n "$CC_CRON_JOB_API_KEY"
+                  echo "Checking test HIAP jobs at $(date)"
+                  curl --fail --location --max-time 60 \
+                    --request GET \
+                    --header "Authorization: Bearer $CC_CRON_JOB_API_KEY" \
+                    http://cc-test-web:3000/api/v1/cron/check-hiap-jobs

@@ -221,7 +221,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
             session_factory=session_factory,
             user_id="owner",
             run_id=run_id,
-            upload_id=ready_id,
+            source_index=1,
         )
         assert query_source.source.upload_id == ready_id
         replacement = await begin_build(
@@ -238,7 +238,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
             session_factory=session_factory,
             user_id="owner",
             run_id=run_id,
-            upload_id=ready_id,
+            source_index=1,
         )
         assert rebuilding_query_source.source.upload_id == ready_id
         with pytest.raises(ContextBundlePersistenceError) as forbidden:
@@ -246,7 +246,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
                 session_factory=session_factory,
                 user_id="other-user",
                 run_id=run_id,
-                upload_id=ready_id,
+                source_index=1,
             )
         assert forbidden.value.code == "concept_note_run_forbidden"
         with pytest.raises(ContextBundlePersistenceError) as unavailable:
@@ -254,7 +254,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
                 session_factory=session_factory,
                 user_id="owner",
                 run_id=run_id,
-                upload_id=queued_id,
+                source_index=2,
             )
         assert unavailable.value.code == "concept_note_source_not_selected"
 
@@ -267,9 +267,155 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
                 session_factory=session_factory,
                 user_id="owner",
                 run_id=run_id,
-                upload_id=ready_id,
+                source_index=1,
             )
         assert wrong_step.value.code == "concept_note_source_query_not_allowed"
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_agent_projection_removes_ids_but_keeps_backend_identity(
+    tmp_path,
+) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    source_upload = upload(
+        run_id=run_id,
+        upload_id=uuid4(),
+        status="ready",
+        received_at=datetime.now(timezone.utc),
+    )
+    source_upload.filename = "plan.pdf"
+    source = selected(source_upload)
+    try:
+        async with session_factory() as session, session.begin():
+            session.add_all(
+                [
+                    concept_note_run(run_id),
+                    source_upload,
+                    ConceptNoteContextBundle(
+                        run_id=run_id,
+                        context_bundle={
+                            "cc_context": {
+                                "city": {
+                                    "cityId": "internal-city",
+                                    "name": "Example City",
+                                }
+                            },
+                            "funder_context": {
+                                "funder_id": "internal-funder",
+                                "name": "Example Fund",
+                            },
+                            "document_context": {
+                                "revision_id": "internal-revision",
+                                "title": "Proposal",
+                            },
+                        },
+                    ),
+                ]
+            )
+        snapshot = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+        )
+        assert await commit_build(session_factory, snapshot, [source])
+        context = await load_agent_context(
+            session_factory=session_factory, user_id="owner", run_id=run_id
+        )
+        assert context is not None
+        assert "concept_note_run_id" not in context
+        assert "upload_id" not in context["selected_sources"][0]
+        assert context["selected_sources"][0]["source_index"] == 1
+        assert "page_count" not in context["selected_sources"][0]
+        assert "block_count" not in context["selected_sources"][0]
+        assert "build_id" not in context["context_bundle_status"]
+        assert "source_fingerprint" not in context["context_bundle_status"]
+        assert context["cc_context"]["city"] == {"name": "Example City"}
+        assert context["funder_context"] == {"name": "Example Fund"}
+        assert context["document_context"] == {"title": "Proposal"}
+        async with session_factory() as session:
+            bundle = await session.get(ConceptNoteContextBundle, run_id)
+            run = await session.get(ConceptNoteRun, run_id)
+            assert bundle.context_bundle["selected_sources"][0]["upload_id"] == str(
+                source_upload.upload_id
+            )
+            assert (
+                bundle.context_bundle["selected_sources"][0]["sha256"] == source.sha256
+            )
+            assert bundle.context_bundle["selected_sources"][0]["page_count"] == source.page_count
+            assert bundle.context_bundle["selected_sources"][0]["block_count"] == source.block_count
+            assert (
+                bundle.context_bundle["cc_context"]["city"]["cityId"] == "internal-city"
+            )
+            assert run.context_summary["context_bundle"]["build_id"] == str(
+                snapshot.build_id
+            )
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_source_index_lookup_disambiguates_duplicate_names(tmp_path) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    uploads = [
+        upload(
+            run_id=run_id,
+            upload_id=uuid4(),
+            status="ready",
+            received_at=datetime.now(timezone.utc),
+        )
+        for _ in range(2)
+    ]
+    for source_upload in uploads:
+        source_upload.filename = "plan.pdf"
+    try:
+        async with session_factory() as session, session.begin():
+            session.add_all([concept_note_run(run_id), *uploads])
+        snapshot = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+        )
+        assert await commit_build(
+            session_factory, snapshot, [selected(item) for item in uploads]
+        )
+        context = await load_agent_context(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+        )
+        assert context is not None
+        assert [source["source_index"] for source in context["selected_sources"]] == [
+            1,
+            2,
+        ]
+        first = await load_query_source(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            source_index=1,
+        )
+        second = await load_query_source(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            source_index=2,
+        )
+        assert first.source.upload_id == uploads[0].upload_id
+        assert second.source.upload_id == uploads[1].upload_id
+        with pytest.raises(ContextBundlePersistenceError) as unavailable:
+            await load_query_source(
+                session_factory=session_factory,
+                user_id="owner",
+                run_id=run_id,
+                source_index=3,
+            )
+        assert unavailable.value.code == "concept_note_source_not_selected"
     finally:
         await engine.dispose()
 
@@ -285,7 +431,12 @@ async def test_no_upload_commit_advances_run_and_loads_agent_context(
         async with session_factory() as session, session.begin():
             session.add_all(
                 [
-                    concept_note_run(run_id),
+                    concept_note_run(
+                        run_id,
+                        context_summary={
+                            "manual_population": {"population": 123456, "year": 2024}
+                        },
+                    ),
                     ConceptNoteContextBundle(run_id=run_id, context_bundle={}),
                 ]
             )
@@ -335,9 +486,13 @@ async def test_no_upload_commit_advances_run_and_loads_agent_context(
         )
         assert agent_context is not None
         assert agent_context["selected_sources"] == []
-        assert (
-            agent_context["context_bundle_status"]["document_grounding"] == "none"
-        )
+        assert agent_context["manual_population"] == {
+            "population": 123456,
+            "year": 2024,
+            "source": "user_entered",
+        }
+        assert agent_context["cc_context"]["city"] is None
+        assert agent_context["context_bundle_status"]["document_grounding"] == "none"
 
         await begin_build(
             session_factory=session_factory,
@@ -354,8 +509,7 @@ async def test_no_upload_commit_advances_run_and_loads_agent_context(
         assert rebuilding_context is not None
         assert rebuilding_context["context_bundle_status"]["status"] == "building"
         assert (
-            rebuilding_context["context_bundle_status"]["document_grounding"]
-            == "none"
+            rebuilding_context["context_bundle_status"]["document_grounding"] == "none"
         )
         assert rebuilding_context["context_bundle_status"]["available_context"] == {
             "city": False,
@@ -450,6 +604,8 @@ async def test_failed_build_is_retryable_and_keeps_bundle_unready(tmp_path) -> N
                 run_id=run_id,
                 build_id=snapshot.build_id,
                 error_code="context_bundle_build_failed",
+                error_reason="reader_section_count_mismatch",
+                error_details={"expected_sections": 106, "returned_sections": 4},
                 warning="The context bundle could not be built.",
             )
             is True
@@ -461,6 +617,8 @@ async def test_failed_build_is_retryable_and_keeps_bundle_unready(tmp_path) -> N
         assert run.status == "active"
         assert progress["status"] == "failed"
         assert progress["retryable"] is True
+        assert progress["error_reason"] == "reader_section_count_mismatch"
+        assert progress["error_details"] == {"expected_sections": 106, "returned_sections": 4}
         assert progress["completion_event"] is None
     finally:
         await engine.dispose()

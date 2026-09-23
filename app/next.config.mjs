@@ -4,6 +4,7 @@ import path from "path";
 const packagePath = path.join(process.cwd(), "package.json");
 const packageJson = fs.readFileSync(packagePath);
 const packageInfo = JSON.parse(packageJson);
+const uploadProxyBodyLimitBytes = 22 * 1024 * 1024;
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -14,6 +15,10 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
+    // Concept Note Builder accepts source files up to 20 MiB. Keep enough
+    // headroom for multipart framing while the upload route enforces the
+    // actual per-file boundary.
+    proxyClientMaxBodySize: uploadProxyBodyLimitBytes,
   },
   // Org logos / branding and other S3 objects used with next/image
   images: {

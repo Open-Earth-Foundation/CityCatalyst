@@ -6,6 +6,9 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
+from app.models.cnb.concept_note_chapter_validation import (
+    ChapterValidationEvidenceLink,
+)
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 ConceptNoteDraftStatus = Literal["not_started", "running", "failed", "complete"]
@@ -15,6 +18,9 @@ ConceptNoteChapterStatus = Literal[
     "needs_review",
     "ready",
 ]
+ConceptNoteValidationStatus = Literal["ready", "needs_review", "incomplete"]
+ConceptNoteValidationCheckStatus = Literal["pass", "warning", "fail"]
+ConceptNoteValidationFindingSeverity = Literal["warning", "blocking"]
 ConceptNoteGapSeverity = Literal["critical", "noncritical"]
 ConceptNoteGapState = Literal[
     "open",
@@ -131,6 +137,48 @@ class ConceptNoteChapterConfirmRequest(BaseModel):
     idempotency_key: UUID
 
 
+class ConceptNoteValidationCheckResponse(BaseModel):
+    """One derived readiness area in the public validation response."""
+
+    key: str
+    label: str
+    status: ConceptNoteValidationCheckStatus
+    message: str | None = None
+
+
+class ConceptNoteValidationFindingResponse(BaseModel):
+    """One actionable issue found by a validation pass or deterministic gate."""
+
+    phase: str
+    category: str
+    severity: ConceptNoteValidationFindingSeverity
+    message: str
+    suggested_action: str
+    involved_chapter_ids: list[UUID] = Field(default_factory=list)
+    excerpts: list[str] = Field(default_factory=list)
+    evidence: list[ChapterValidationEvidenceLink] = Field(
+        default_factory=list,
+        max_length=10,
+    )
+
+
+class ConceptNoteChapterValidationResponse(BaseModel):
+    """Latest persisted chapter validation with server-derived staleness."""
+
+    status: ConceptNoteValidationStatus
+    is_stale: bool
+    validated_revision_number: int | None = Field(default=None, ge=1)
+    validated_at: datetime
+    checks: list[ConceptNoteValidationCheckResponse] = Field(default_factory=list)
+    findings: list[ConceptNoteValidationFindingResponse] = Field(default_factory=list)
+
+
+class ConceptNoteChapterValidationActionResponse(ConceptNoteChapterValidationResponse):
+    """Explicit mark-ready response identifying the validated chapter."""
+
+    chapter_id: UUID
+
+
 class ConceptNoteDraftChapterResponse(BaseModel):
     """One persisted chapter with its current immutable revision."""
 
@@ -151,6 +199,7 @@ class ConceptNoteDraftChapterResponse(BaseModel):
     proposed_revision_number: int | None = Field(default=None, ge=1)
     regeneration_status: ConceptNoteRegenerationStatus = "idle"
     regeneration_error: str | None = None
+    validation: ConceptNoteChapterValidationResponse | None = None
 
 
 class ConceptNoteDraftResponse(BaseModel):

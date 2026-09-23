@@ -182,3 +182,6 @@ demo-recording/
 
 # Codex
 .codex/
+
+# Local load-test evidence generated during runs
+load-test/results/

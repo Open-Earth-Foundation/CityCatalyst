@@ -9,27 +9,42 @@ management.
 from __future__ import annotations
 
 import logging
-from urllib.parse import urlparse
 from typing import Dict, Optional, Sequence, Union
+from urllib.parse import urlparse
 from uuid import UUID
 
 import openai
-from agents import Agent, ModelSettings, OpenAIChatCompletionsModel
+from agents import (
+    Agent,
+    FunctionTool,
+    ModelSettings,
+    OpenAIChatCompletionsModel,
+    OpenAIResponsesModel,
+)
 from openai import AsyncOpenAI
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import get_settings
+from app.config.settings import RoleModelConfig
+from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.persistence.concept_notes.context_bundle import (
     ALLOWED_SOURCE_QUERY_STEPS,
     ContextBundlePersistenceError,
     load_agent_context,
 )
+from app.services.citycatalyst_client import CityCatalystClient
+from app.services.native_input_catalog_service import (
+    ActiveRequestContext,
+    NativeInputCatalogService,
+)
 from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.cc_inventory_tool import CCInventoryTool
 from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from app.tools.climate_vector_sync import climate_vector_search
+from app.tools.concept_note_edit_tools import build_concept_note_edit_tools
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
 from app.tools.inventory_context_tools import build_inventory_capability_tools
+from app.tools.native_input_catalog_tools import build_native_input_catalog_tools
 from app.tools.stationary_energy_review_tools import (
     build_stationary_energy_review_tools,
 )
@@ -37,6 +52,8 @@ from app.tools.stationary_energy_start_draft_tools import (
     build_stationary_energy_start_draft_tools,
 )
 from app.utils.agent_tracing import configure_agents_tracing
+from app.utils.cnb_model_settings import cnb_model_settings
+from app.utils.conversation_observability import traced_conversation_tool
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +76,10 @@ class AgentService:
         stationary_energy_draft_run_id: Optional[Union[str, UUID]] = None,
         stationary_energy_surface: bool = False,
         concept_note_run_id: Optional[Union[str, UUID]] = None,
+        concept_note_edit_request: EditProposalRequest | None = None,
+        concept_note_edit_history: list[dict[str, str]] | None = None,
+        native_input_catalog_service: Optional[NativeInputCatalogService] = None,
+        native_input_catalog_context: Optional[ActiveRequestContext] = None,
     ) -> None:
         """Initialize the agent service with settings and OpenRouter client.
 
@@ -68,6 +89,12 @@ class AgentService:
             cc_user_id: User ID (for token refresh and inventory queries)
             inventory_id: Active inventory ID, used by pre-draft Stationary Energy tools
             city_id: Active city ID, used by pre-draft Stationary Energy tools
+            concept_note_edit_request: Optional CNB edit proposal request
+            concept_note_edit_history: Bounded recent CNB edit messages
+            native_input_catalog_service: Optional request-scoped Core coordinator
+                used by runtime NativeInputCatalog tools
+            native_input_catalog_context: Authenticated active context for catalog
+                tools; never supplied by the model
         """
         self.settings = get_settings()
         configure_agents_tracing(self.settings)
@@ -87,11 +114,25 @@ class AgentService:
         self.concept_note_run_id = (
             str(concept_note_run_id) if concept_note_run_id else None
         )
+        self.concept_note_edit_request = concept_note_edit_request
+        self.concept_note_edit_history = list(concept_note_edit_history or [])
         self._stationary_energy_surface = bool(
             stationary_energy_surface or self.stationary_energy_draft_run_id
         )
         self._inventory_tool: Optional[CCInventoryTool] = None
         self._token_ref: Dict[str, Optional[str]] = {"value": cc_access_token}
+        self.native_input_catalog_context = native_input_catalog_context
+        self._native_input_catalog_client: Optional[CityCatalystClient] = None
+        self.native_input_catalog_service = native_input_catalog_service
+        if (
+            self.native_input_catalog_service is None
+            and self.native_input_catalog_context is not None
+            and self._token_ref.get("value")
+        ):
+            self._native_input_catalog_client = CityCatalystClient()
+            self.native_input_catalog_service = NativeInputCatalogService(
+                core_client=self._native_input_catalog_client
+            )
         self.active_instructions: Optional[str] = None
 
         # Initialize the chat client once and expose it to the Agents SDK.
@@ -118,20 +159,24 @@ class AgentService:
             if self.settings.llm.prompts.stationary_energy_review
             else None
         )
-        self.system_prompt = (
-            None
-            if self._uses_stationary_energy_review_prompt
-            else self.chat_system_prompt
-        )
+        if self._uses_stationary_energy_review_prompt:
+            self.system_prompt = None
+        elif self._has_concept_note_context:
+            self.system_prompt = self.settings.llm.prompts.compose_prompt("cnb_chat")
+        else:
+            self.system_prompt = self.chat_system_prompt
 
         orchestrator_model = self.settings.llm.models.orchestrator
         agentic_flow_model = self.settings.llm.models.agentic_flow or orchestrator_model
+        cnb_chat_model = self.settings.llm.models.cnb_chat or agentic_flow_model
         self.raw_default_model = orchestrator_model.name
         self.raw_agentic_flow_model = agentic_flow_model.name
+        self.raw_cnb_chat_model = cnb_chat_model.name
         self.default_model = self._resolve_chat_model_name(self.raw_default_model)
         self.agentic_flow_model = self._resolve_chat_model_name(
             self.raw_agentic_flow_model
         )
+        self.cnb_chat_model = self._resolve_chat_model_name(self.raw_cnb_chat_model)
         self.default_temperature = orchestrator_model.temperature
         self.agentic_flow_temperature = agentic_flow_model.temperature
 
@@ -154,7 +199,9 @@ class AgentService:
         concept_note_run_id: Optional[str] = None,
     ) -> str:
         """Choose the default chat model for the current workflow context."""
-        if stationary_energy_draft_run_id or concept_note_run_id:
+        if concept_note_run_id:
+            return self.cnb_chat_model
+        if stationary_energy_draft_run_id:
             return self.agentic_flow_model
         return self.default_model
 
@@ -174,14 +221,29 @@ class AgentService:
             return model.split("/", 1)[1]
         return model
 
-    def _temperature_for_model(self, *, raw_model: str, resolved_model: str) -> float:
-        """Return the configured temperature for the selected chat model."""
+    def _config_for_model(
+        self, *, raw_model: str, resolved_model: str
+    ) -> RoleModelConfig | None:
+        """Resolve a configured role without imposing its reasoning on other models."""
+        if self.concept_note_run_id and (
+            raw_model == self.raw_cnb_chat_model
+            or resolved_model == self.cnb_chat_model
+        ):
+            return self.settings.llm.models.cnb_chat or (
+                self.settings.llm.models.agentic_flow
+                or self.settings.llm.models.orchestrator
+            )
         if (
             raw_model == self.raw_agentic_flow_model
             or resolved_model == self.agentic_flow_model
         ):
-            return self.agentic_flow_temperature
-        return self.default_temperature
+            return (
+                self.settings.llm.models.agentic_flow
+                or self.settings.llm.models.orchestrator
+            )
+        if raw_model == self.raw_default_model or resolved_model == self.default_model:
+            return self.settings.llm.models.orchestrator
+        return None
 
     def _create_openrouter_client(self) -> AsyncOpenAI:
         """Create an AsyncOpenAI client configured from the shared OpenRouter helper."""
@@ -218,9 +280,20 @@ class AgentService:
             city_id=str(self.city_id),
             inventory_id=str(self.inventory_id),
             user_id=str(self.cc_user_id),
-            thread_id=(
-                UUID(str(self.cc_thread_id)) if self.cc_thread_id else None
-            ),
+            thread_id=(UUID(str(self.cc_thread_id)) if self.cc_thread_id else None),
+            token_ref=self._token_ref,
+        )
+
+    def _build_native_input_catalog_tools(self) -> Sequence[object]:
+        """Create stable catalog tools from authenticated context and Core credential."""
+        service = self.native_input_catalog_service
+        context = self.native_input_catalog_context
+        if service is None or context is None or not self._token_ref.get("value"):
+            return []
+
+        return build_native_input_catalog_tools(
+            service=service,
+            context=context,
             token_ref=self._token_ref,
         )
 
@@ -245,25 +318,38 @@ class AgentService:
         # Resolve model and instruction settings before registering workflow tools.
         raw_agent_model = model or self.raw_default_model
         agent_model = self._resolve_chat_model_name(raw_agent_model)
-        agent_temperature = self._temperature_for_model(
+        model_config = self._config_for_model(
             raw_model=raw_agent_model,
             resolved_model=agent_model,
+        )
+        agent_temperature = (
+            model_config.temperature
+            if model_config is not None
+            else self.default_temperature
+        )
+        reasoning_effort = (
+            model_config.reasoning_effort if model_config is not None else None
         )
         if instructions:
             agent_instructions = instructions
         elif self._uses_stationary_energy_review_prompt:
             agent_instructions = (
                 self.stationary_energy_system_prompt
-                or self.settings.llm.prompts.compose_prompt(
-                    "stationary_energy_review"
-                )
+                or self.settings.llm.prompts.compose_prompt("stationary_energy_review")
+            )
+        elif self._has_concept_note_context:
+            agent_instructions = (
+                self.system_prompt
+                or self.settings.llm.prompts.compose_prompt("cnb_chat")
             )
         else:
             agent_instructions = (
-                self.system_prompt
-                or self.settings.llm.prompts.compose_prompt("chat")
+                self.system_prompt or self.settings.llm.prompts.compose_prompt("chat")
             )
         tools = []
+
+        # Stable catalog tools defer current discovery and Core authorization to runtime.
+        tools.extend(self._build_native_input_catalog_tools())
 
         # General chat can query CityCatalyst inventory data directly. Active
         # Stationary Energy review chat uses the persisted draft snapshot and
@@ -363,6 +449,17 @@ class AgentService:
                         token_ref=self._token_ref,
                     )
                 )
+                if self.concept_note_edit_request is not None:
+                    tools.extend(
+                        build_concept_note_edit_tools(
+                            session_factory=self.session_factory,
+                            run_id=self.concept_note_run_id,
+                            user_id=str(self.cc_user_id),
+                            token_ref=self._token_ref,
+                            request=self.concept_note_edit_request,
+                            recent_messages=self.concept_note_edit_history,
+                        )
+                    )
                 logger.info(
                     "Registered Concept Note source query for run_id=%s thread_id=%s user_id=%s",
                     self.concept_note_run_id,
@@ -384,17 +481,32 @@ class AgentService:
 
         self.active_instructions = agent_instructions
 
+        tools = [
+            traced_conversation_tool(tool) if isinstance(tool, FunctionTool) else tool
+            for tool in tools
+        ]
+
         # Build the Agents SDK object with the finalized instructions and tool list.
+        model_class = (
+            OpenAIResponsesModel
+            if self._has_concept_note_context
+            else OpenAIChatCompletionsModel
+        )
         agent = Agent(
             name="Climate Advisor",
             instructions=agent_instructions,
-            model=OpenAIChatCompletionsModel(
+            model=model_class(
                 model=agent_model,
                 openai_client=self.client,
             ),
-            model_settings=ModelSettings(
-                temperature=agent_temperature,
-                include_usage=True,
+            model_settings=(
+                cnb_model_settings(reasoning_effort, temperature=agent_temperature)
+                if self._has_concept_note_context
+                else ModelSettings(
+                    temperature=agent_temperature,
+                    include_usage=True,
+                    reasoning={"effort": reasoning_effort} if reasoning_effort else None,
+                )
             ),
             tools=tools,
         )
@@ -416,6 +528,8 @@ class AgentService:
             logger.info("AgentService client closed")
         if self._inventory_tool:
             await self._inventory_tool.close()
+        if self._native_input_catalog_client:
+            await self._native_input_catalog_client.close()
 
     def update_cc_token(self, token: str) -> None:
         """Update the cached CC token used by inventory tools."""

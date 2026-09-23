@@ -21,6 +21,7 @@ from app.services.cnb.source_analysis import (
     query_document,
     verify_source_artifact,
 )
+from app.utils.concept_note_context import omit_context_identifiers
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
@@ -44,11 +45,11 @@ def build_concept_note_source_tools(
     run_uuid = UUID(str(run_id))
 
     @function_tool
-    async def concept_note_sources_query(upload_id: str, question: str) -> str:
+    async def concept_note_sources_query(source_index: int, question: str) -> str:
         """Find exact evidence for one focused question in one selected city source.
 
         Args:
-            upload_id: Exact upload_id from CONCEPT_NOTE_CONTEXT_BUNDLE_JSON.
+            source_index: One-based source_index from CONCEPT_NOTE_CONTEXT_BUNDLE_JSON.
             question: One bounded natural-language question about that document.
 
         The tool re-fetches and verifies the selected document, reads every source
@@ -62,18 +63,13 @@ def build_concept_note_source_tools(
             return error_payload(
                 "missing_token", "CityCatalyst access token is required"
             )
-        # Load the selected source and reverify its authenticated CC artifact.
-        try:
-            upload_uuid = UUID(str(upload_id))
-        except ValueError:
-            return error_payload("invalid_arguments", "upload_id must be a UUID")
-
+        # Resolve names inside the authorized run, then verify its backend artifact.
         try:
             selected = await load_query_source_fn(
                 session_factory=session_factory,
                 user_id=user_id,
                 run_id=run_uuid,
-                upload_id=upload_uuid,
+                source_index=source_index,
             )
             upload = selected.upload
             if (
@@ -89,7 +85,7 @@ def build_concept_note_source_tools(
             client = client_factory()
             try:
                 artifact = await client.get_concept_note_markdown(
-                    upload_id=str(upload_uuid),
+                    upload_id=str(upload.upload_id),
                     token=token,
                 )
                 source_units = verify_source_artifact_fn(
@@ -100,7 +96,7 @@ def build_concept_note_source_tools(
                     page_count=upload.page_count,
                 )
                 result = await query_document_fn(
-                    upload_id=upload_uuid,
+                    upload_id=upload.upload_id,
                     source_label=selected.source.source_label,
                     question=question,
                     source_format=upload.source_format,
@@ -108,11 +104,13 @@ def build_concept_note_source_tools(
                 )
             finally:
                 await client.close()
+            data = omit_context_identifiers(result.model_dump(mode="json"))
+            data["source_index"] = source_index
             return json.dumps(
                 {
                     "action": CONCEPT_NOTE_SOURCE_QUERY_CAPABILITY,
                     "success": True,
-                    "data": result.model_dump(mode="json"),
+                    "data": data,
                 },
                 ensure_ascii=False,
             )
@@ -135,11 +133,18 @@ def build_concept_note_source_tools(
             )
         except SourceAnalysisError as exc:
             logger.warning(
-                "Concept Note source analysis failed run_id=%s code=%s",
+                "Concept Note source analysis failed run_id=%s code=%s reason=%s details=%s",
                 run_uuid,
                 exc.code,
+                exc.reason,
+                exc.details,
             )
-            return error_payload(exc.code, str(exc))
+            return error_payload(
+                exc.code,
+                "The selected document could not be completely analyzed. Please retry.",
+                reason=exc.reason,
+                details=exc.details,
+            )
         except Exception:
             logger.exception("Concept Note source tool failed run_id=%s", run_uuid)
             return error_payload(
@@ -150,13 +155,20 @@ def build_concept_note_source_tools(
     return [concept_note_sources_query]
 
 
-def error_payload(code: str, message: str) -> str:
+def error_payload(
+    code: str,
+    message: str,
+    *,
+    reason: str | None = None,
+    details: dict[str, int] | None = None,
+) -> str:
     """Serialize one stable failed capability envelope."""
-    return json.dumps(
-        {
-            "action": CONCEPT_NOTE_SOURCE_QUERY_CAPABILITY,
-            "success": False,
-            "error_code": code,
-            "error": message,
-        }
-    )
+    payload: dict[str, object] = {
+        "action": CONCEPT_NOTE_SOURCE_QUERY_CAPABILITY,
+        "success": False,
+        "error_code": code,
+        "error": message,
+    }
+    if reason:
+        payload.update(error_reason=reason, error_details=details or {})
+    return json.dumps(payload)

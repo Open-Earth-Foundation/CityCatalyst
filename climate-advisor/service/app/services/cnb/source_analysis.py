@@ -12,23 +12,41 @@ from dataclasses import dataclass
 from itertools import pairwise
 from typing import Any, TypeVar, cast
 
-from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
-from app.config import Settings, get_settings
+from agents import (
+    Agent,
+    AgentOutputSchema,
+    OpenAIResponsesModel,
+    RunConfig,
+    Runner,
+)
+from app.config.settings import ResearchModelConfig
+from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from app.models.cnb.context_bundle import (
     SelectedSource,
-    SourceDocumentSynthesis,
     SourceExcerpt,
     SourcePartitionMap,
     SourceQueryResult,
     SourceQuestionReading,
 )
-from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
+from app.models.cnb.source_prompt import (
+    DocumentMappingReading,
+    DocumentSummary,
+    QuestionReading,
+)
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.openrouter_client import build_openrouter_client_options
+from app.utils.cnb_model_settings import cnb_model_settings
+from app.utils.cnb_progress import has_cnb_progress_sink, run_with_cnb_reasoning
+from app.utils.concept_note_context import (
+    omit_context_identifiers,
+    readable_source_heading,
+)
 from app.utils.prompt_budget import count_prompt_tokens
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from openai import AsyncOpenAI
 from pydantic import BaseModel
+
+from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +57,7 @@ MARKDOWN_HEADING = re.compile(r"^(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", re.MULTILI
 _GLOBAL_READER_SEMAPHORE = asyncio.Semaphore(3)
 MAX_QUERY_EXCERPTS = 20
 MAX_QUERY_CAVEATS = 10
+MAX_COVERAGE_SPLIT_DEPTH = 2
 OutputModel = TypeVar("OutputModel", bound=BaseModel)
 PartitionOutput = TypeVar("PartitionOutput", SourcePartitionMap, SourceQuestionReading)
 
@@ -46,9 +65,19 @@ PartitionOutput = TypeVar("PartitionOutput", SourcePartitionMap, SourceQuestionR
 class SourceAnalysisError(Exception):
     """Retryable failure to verify or completely analyze a source document."""
 
-    def __init__(self, code: str, message: str) -> None:
+    def __init__(
+        self,
+        code: str,
+        message: str,
+        *,
+        reason: str | None = None,
+        details: dict[str, int] | None = None,
+    ) -> None:
+        """Keep content-free diagnostics separate from potentially private messages."""
         super().__init__(message)
         self.code = code
+        self.reason = reason
+        self.details = details or {}
 
 
 @dataclass(frozen=True)
@@ -190,7 +219,7 @@ async def analyze_document(
             fallback_encoding=tokenizer_encoding,
             source_label=label,
         )
-        readings = await gather_all_or_raise(
+        partition_readings = await gather_all_or_raise(
             *(
                 _read_partition(
                     name="Concept Note source partition reader",
@@ -207,6 +236,8 @@ async def analyze_document(
             )
         )
 
+        readings = [reading for group in partition_readings for reading in group]
+
         # Revalidate excerpts against exact source units before synthesis.
         unit_text = {source_unit_anchor(unit): unit.text for unit in pages}
         verified_readings = [
@@ -218,15 +249,16 @@ async def analyze_document(
         synthesis = await _run_agent(
             name="Concept Note source summary synthesizer",
             prompt=settings.llm.prompts.get_prompt("cnb_source_summary_synthesis"),
-            model_name=synthesizer_model.name,
-            output_type=SourceDocumentSynthesis,
+            model_config=synthesizer_model,
+            output_type=DocumentSummary,
             input_text=json.dumps(
                 {
                     "source_label": label,
                     "source_format": source_format,
                     "unit_count": len(pages),
                     "partition_maps": [
-                        item.model_dump(mode="json") for item in verified_readings
+                        omit_context_identifiers(item.model_dump(mode="json"))
+                        for item in verified_readings
                     ],
                     "limits": {
                         "max_topics": budget.max_topics,
@@ -235,7 +267,6 @@ async def analyze_document(
                 },
                 ensure_ascii=False,
             ),
-            settings=settings,
             client=client,
             runner=runner,
         )
@@ -251,9 +282,7 @@ async def analyze_document(
             block_count=len(pages) if source_format == "markdown" else None,
             summary=synthesis.summary,
             topics=deduplicate_strings(synthesis.topics)[: budget.max_topics],
-            key_excerpts=verified_excerpts(synthesis.key_excerpts, unit_text)[
-                : budget.max_key_excerpts
-            ],
+            key_excerpts=_restore_summary_excerpts(synthesis, pages)[: budget.max_key_excerpts],
         )
     finally:
         if owns_client:
@@ -300,7 +329,7 @@ async def query_document(
             fallback_encoding=tokenizer_encoding,
             question=normalized_question,
         )
-        readings = await gather_all_or_raise(
+        partition_readings = await gather_all_or_raise(
             *(
                 _read_partition(
                     name="Concept Note question-focused source reader",
@@ -319,6 +348,8 @@ async def query_document(
                 for partition in partitions
             )
         )
+
+        readings = [reading for group in partition_readings for reading in group]
 
         # Validate and bound all evidence before returning it to the caller.
         unit_text = {source_unit_anchor(unit): unit.text for unit in pages}
@@ -386,62 +417,181 @@ async def _read_partition(
     client: AsyncOpenAI,
     runner: Any,
     reader_limit: asyncio.Semaphore,
-) -> PartitionOutput:
-    """Run one bounded partition reader and require exact segment coverage."""
+    split_depth: int = 0,
+) -> list[PartitionOutput]:
+    """Read all sections, bisecting incomplete groups at most twice before failing."""
     async with reader_limit, _GLOBAL_READER_SEMAPHORE:
         result = await _run_agent(
             name=name,
             prompt=prompt,
-            model_name=settings.llm.models.cnb_source_reader.name,
-            output_type=output_type,
+            model_config=settings.llm.models.cnb_source_reader,
+            output_type=DocumentMappingReading
+            if output_type is SourcePartitionMap
+            else QuestionReading,
             input_text=input_text,
-            settings=settings,
             client=client,
             runner=runner,
+            expected_sections=len(partition),
         )
-    require_partition_coverage(partition, result.covered_segment_ids)
-    return result
+    if len(result.sections) != len(partition):
+        # Never guess which section was skipped: discard the incomplete response
+        # and reread both halves. Release reader permits before scheduling children.
+        if len(partition) > 1 and split_depth < MAX_COVERAGE_SPLIT_DEPTH:
+            logger.warning(
+                "Retrying incomplete source coverage expected_sections=%s returned_sections=%s split_depth=%s",
+                len(partition),
+                len(result.sections),
+                split_depth,
+            )
+            payload = json.loads(input_text)
+            midpoint = len(partition) // 2
+            groups = await gather_all_or_raise(
+                *(
+                    _read_partition(
+                        name=name,
+                        partition=group,
+                        prompt=prompt,
+                        output_type=output_type,
+                        input_text=render_partition(
+                            group,
+                            source_label=payload.get("source_label"),
+                            question=payload.get("question"),
+                        ),
+                        settings=settings,
+                        client=client,
+                        runner=runner,
+                        reader_limit=reader_limit,
+                        split_depth=split_depth + 1,
+                    )
+                    for group in (partition[:midpoint], partition[midpoint:])
+                )
+            )
+            return [reading for group in groups for reading in group]
+        raise SourceAnalysisError(
+            "incomplete_source_coverage",
+            "Reader must return every supplied section in order",
+            reason="reader_section_count_mismatch",
+            details={
+                "expected_sections": len(partition),
+                "returned_sections": len(result.sections),
+            },
+        )
+    # Match evidence to the exact section; the model never chooses an internal locator.
+    excerpts = []
+    caveats = []
+    for segment, reading in zip(partition, result.sections, strict=True):
+        excerpts.extend(
+            SourceExcerpt(text=text, page=segment.page, anchor=segment.anchor)
+            for text in reading.excerpts
+            if text and text in segment.text
+        )
+        caveats.extend(reading.caveats)
+    values = {
+        "excerpts": excerpts[:20],
+        "covered_segment_ids": [s.segment_id for s in partition],
+    }
+    if output_type is SourcePartitionMap:
+        values.update(summary=result.summary, topics=result.topics)
+    else:
+        values["caveats"] = deduplicate_strings(caveats)[:10]
+    return [output_type.model_validate(values)]
+
+
+def _restore_summary_excerpts(
+    summary: DocumentSummary, pages: Sequence[SourceUnit]
+) -> list[SourceExcerpt]:
+    """Resolve readable citations to verified backend locations without guessing."""
+    restored = []
+    for excerpt in summary.key_excerpts:
+        for unit in pages:
+            matches_location = (
+                isinstance(unit, SourcePage)
+                and excerpt.page == unit.number
+                and excerpt.heading is None
+            ) or (
+                isinstance(unit, SourceBlock)
+                and excerpt.page is None
+                and excerpt.heading == readable_source_heading(unit.anchor)
+            )
+            if matches_location and excerpt.text in unit.text:
+                restored.append(
+                    SourceExcerpt(
+                        text=excerpt.text,
+                        page=unit.number if isinstance(unit, SourcePage) else None,
+                        anchor=unit.anchor if isinstance(unit, SourceBlock) else None,
+                    )
+                )
+                break
+    return verified_excerpts(
+        restored, {source_unit_anchor(unit): unit.text for unit in pages}
+    )
 
 
 async def _run_agent(
     *,
     name: str,
     prompt: str,
-    model_name: str,
+    model_config: ResearchModelConfig,
     output_type: type[OutputModel],
     input_text: str,
-    settings: Settings,
     client: AsyncOpenAI,
     runner: Any,
+    expected_sections: int | None = None,
 ) -> OutputModel:
-    """Run one deterministic, tool-free Agents SDK worker."""
-    model_config = (
-        settings.llm.models.cnb_source_reader
-        if model_name == settings.llm.models.cnb_source_reader.name
-        else settings.llm.models.cnb_source_synthesizer
-    )
+    """Run one tool-free worker with its configured model and reasoning effort."""
+    # Constrain the provider's array length as well as checking coverage in code.
+    # Local validation keeps the base model so count errors retain our diagnostic
+    # and bounded recovery path even if a provider ignores the schema constraint.
+    output_schema = AgentOutputSchema(output_type)
+    if expected_sections is not None:
+        output_schema.json_schema()["properties"]["sections"].update(
+            minItems=expected_sections,
+            maxItems=expected_sections,
+        )
+    # Select reasoning by worker role even when both roles share one model.
     agent = Agent(
         name=name,
         instructions=prompt,
-        model=OpenAIChatCompletionsModel(
-            model=model_name,
+        model=OpenAIResponsesModel(
+            model=model_config.name,
             openai_client=client,
         ),
-        model_settings=ModelSettings(
-            temperature=0.0,
-            include_usage=True,
-            reasoning={"effort": model_config.reasoning_effort},
-        ),
-        output_type=output_type,
+        model_settings=cnb_model_settings(model_config.reasoning_effort),
+        output_type=output_schema,
         tools=[],
     )
     try:
-        run_result = await runner.run(agent, input_text)
+        if has_cnb_progress_sink():
+            run_result = await run_with_cnb_reasoning(
+                runner,
+                agent,
+                input_text,
+                run_config=RunConfig(
+                    tracing_disabled=True, trace_include_sensitive_data=False
+                ),
+                stage="reading",
+            )
+            return output_type.model_validate(run_result.final_output)
+        try:
+            run_result = await runner.run(
+                agent,
+                input_text,
+                run_config=RunConfig(
+                    tracing_disabled=True, trace_include_sensitive_data=False
+                ),
+            )
+        except TypeError as exc:
+            # Test and adapter runners may deliberately expose only the stable
+            # two-argument Runner surface. They remain responsible for their
+            # own tracing policy when they do not accept a RunConfig.
+            if "unexpected keyword argument 'run_config'" not in str(exc):
+                raise
+            run_result = await runner.run(agent, input_text)
         return output_type.model_validate(run_result.final_output)
     except SourceAnalysisError:
         raise
     except Exception as exc:
-        logger.exception("Concept Note source agent failed: %s", name)
+        logger.warning("Concept Note source agent failed: %s", name)
         raise SourceAnalysisError("source_analysis_failed", f"{name} failed") from exc
 
 
@@ -502,6 +652,7 @@ def parse_markdown_blocks(markdown: str) -> list[SourceBlock]:
         raise SourceAnalysisError(
             "incomplete_source_coverage",
             "Native Markdown could not be partitioned without loss",
+            reason="markdown_partition_text_loss",
         )
 
     # Build anchors from the active heading path plus an immutable block digest.
@@ -575,6 +726,7 @@ def partition_source_pages(
             raise SourceAnalysisError(
                 "incomplete_source_coverage",
                 f"Source unit {source_unit_anchor(page)} could not be partitioned without loss",
+                reason="source_partition_text_loss",
             )
         segments.extend(page_segments)
 
@@ -742,6 +894,7 @@ def split_exact_text(
             raise SourceAnalysisError(
                 "incomplete_source_coverage",
                 f"Source unit {anchor or page} could not be tokenized without loss",
+                reason="source_tokenization_text_loss",
             )
 
         overflow = 0
@@ -779,35 +932,24 @@ def render_partition(
     source_label: str | None = None,
     question: str | None = None,
 ) -> str:
-    """Render immutable segment framing without altering source text."""
-    prefix: list[str] = []
+    """Render ordered source sections without generated identifiers or hashes."""
+    payload: dict[str, Any] = {}
     if source_label is not None:
-        prefix.append(f"<source_label>{source_label}</source_label>")
+        payload["source_label"] = source_label
     if question is not None:
-        prefix.append(f"<question>{question}</question>")
-    for segment in segments:
-        locator = (
-            f' page="{segment.page}"'
-            if segment.page is not None
-            else f' anchor="{segment.anchor}"'
-        )
-        prefix.append(
-            f'<segment id="{segment.segment_id}"{locator}>\n{segment.text}\n</segment>'
-        )
-    return "\n".join(prefix)
-
-
-def require_partition_coverage(
-    partition: Sequence[SourceSegment],
-    covered_segment_ids: Sequence[str],
-) -> None:
-    """Fail unless the reader explicitly acknowledges every segment exactly once."""
-    expected = [segment.segment_id for segment in partition]
-    if list(covered_segment_ids) != expected:
-        raise SourceAnalysisError(
-            "incomplete_source_coverage",
-            "Source reader did not confirm every partition segment",
-        )
+        payload["question"] = question
+    payload["sections"] = [
+        {
+            **(
+                {"page": segment.page}
+                if segment.page is not None
+                else {"heading": readable_source_heading(segment.anchor or "")}
+            ),
+            "text": segment.text,
+        }
+        for segment in segments
+    ]
+    return json.dumps(payload, ensure_ascii=False)
 
 
 def verified_excerpts(

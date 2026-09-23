@@ -9,12 +9,20 @@ from app.db.session import get_session
 from app.models.cnb.concept_note_application_context import (
     ConceptNoteApplicationContextResponse,
 )
+from app.models.cnb.funding_catalogue import (
+    FundingCatalogueResponse,
+    FundingSelectionRequest,
+)
+from app.services.cnb.funding_catalogue import load_funding_catalogue
+from app.services.cnb.funding_selection import save_funding_selection
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterConfirmRequest,
     ConceptNoteDraftResponse,
     ConceptNoteGapResolveRequest,
 )
 from app.models.cnb.concept_note_runs import (
+    ConceptNotePopulationRequest,
+    ConceptNoteRenameRequest,
     ConceptNoteRunListResponse,
     ConceptNoteRunResponse,
     ConceptNoteStartRequest,
@@ -34,6 +42,16 @@ from app.services.cnb.context_bundle import (
     get_context_bundle_service,
 )
 from app.services.concept_note_runs import ConceptNoteRunService
+from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
+from app.utils.cnb_observability import CNBInteraction
+from app.utils.mlflow_logging import (
+    climate_advisor_experiment_name,
+    log_tags,
+    set_span_outputs,
+    start_run as start_mlflow_run,
+    start_trace_span,
+    update_current_trace_context,
+)
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -77,12 +95,46 @@ async def start_concept_note_run(
     session: AsyncSession = Depends(get_session),
 ) -> JSONResponse:
     """Create a concept-note run or replay an identical idempotent request."""
-    service = ConceptNoteRunService(session)
-    response = await service.start_run_and_schedule_context(
-        payload,
-        authorization=authorization,
-        context_bundle_service=context_bundle_service,
-    )
+    interaction = CNBInteraction.START
+    with start_mlflow_run(
+        run_name=interaction.mlflow_run_name,
+        experiment_name=climate_advisor_experiment_name(),
+        tags={
+            "endpoint": "/v1/concept-notes/start",
+            "workflow": "CNB",
+            "workflow_name": "concept_note_run_lifecycle",
+            "interaction": interaction.value,
+        },
+    ), start_trace_span(
+        name="CNB start",
+        span_type="CHAIN",
+        attributes={
+            "workflow": "CNB",
+            "workflow_name": "concept_note_run_lifecycle",
+            "interaction": interaction.value,
+        },
+    ) as span:
+        service = ConceptNoteRunService(session)
+        response = await service.start_run_and_schedule_context(
+            payload,
+            authorization=authorization,
+            context_bundle_service=context_bundle_service,
+        )
+        result = "created" if response.created else "replayed"
+        correlation_tags = {
+            "concept_note_run_id": str(response.run_id),
+            "result": result,
+        }
+        log_tags(correlation_tags)
+        update_current_trace_context(
+            tags={
+                "workflow": "CNB",
+                "interaction": interaction.value,
+                **correlation_tags,
+            },
+            metadata=correlation_tags,
+        )
+        set_span_outputs(span, correlation_tags)
 
     return JSONResponse(
         status_code=201 if response.created else 200,
@@ -109,6 +161,113 @@ async def get_concept_note_run(
     )
 
 
+@router.patch(
+    "/concept-notes/{run_id}/population",
+    response_model=ConceptNoteRunResponse,
+)
+async def update_concept_note_population(
+    run_id: UUID,
+    payload: ConceptNotePopulationRequest,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunResponse:
+    """Set or clear user-entered population for one authorized CNB run."""
+    return await ConceptNoteRunService(session).update_manual_population(
+        run_id=run_id,
+        payload=payload,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
+@router.patch(
+    "/concept-notes/{run_id}",
+    response_model=ConceptNoteRunResponse,
+)
+async def rename_concept_note_run(
+    run_id: UUID,
+    payload: ConceptNoteRenameRequest,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunResponse:
+    """Rename one active concept note and its dedicated chat."""
+    service = ConceptNoteLifecycleService(session)
+    return await service.rename_run(
+        run_id=run_id,
+        payload=payload,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
+@router.post(
+    "/concept-notes/{run_id}/duplicate",
+    response_model=ConceptNoteRunResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={200: {"model": ConceptNoteRunResponse}},
+)
+async def duplicate_concept_note_run(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    idempotency_key: UUID = Header(alias="Idempotency-Key"),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> JSONResponse:
+    """Create or replay an independent working copy of a concept note."""
+    service = ConceptNoteLifecycleService(session)
+    response, created = await service.duplicate_run(
+        run_id=run_id,
+        idempotency_key=idempotency_key,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+    return JSONResponse(
+        status_code=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+        content=jsonable_encoder(response),
+    )
+
+
+@router.post(
+    "/concept-notes/{run_id}/chat/reset",
+    response_model=ConceptNoteRunResponse,
+)
+async def reset_concept_note_chat(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunResponse:
+    """Replace one concept note's dedicated chat and remove its history."""
+    service = ConceptNoteLifecycleService(session)
+    return await service.reset_chat(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
+@router.delete(
+    "/concept-notes/{run_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_concept_note_run(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> Response:
+    """Permanently delete one concept note and its dedicated chat."""
+    service = ConceptNoteLifecycleService(session)
+    await service.delete_run(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 @router.get(
     "/concept-notes/{run_id}/application-context",
     response_model=ConceptNoteApplicationContextResponse,
@@ -130,6 +289,44 @@ async def get_concept_note_application_context(
         workflow_session=session
     )
     return await application_context_service.load_for_run(run)
+
+
+@router.get(
+    "/concept-notes/{run_id}/funding-catalogue", response_model=FundingCatalogueResponse
+)
+async def get_concept_note_funding_catalogue(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> FundingCatalogueResponse:
+    """Browse all existing funders after checking run ownership and city access."""
+    await ConceptNoteRunService(session).get_authorized_run(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+    return await load_funding_catalogue()
+
+
+@router.patch(
+    "/concept-notes/{run_id}/application-context",
+    response_model=ConceptNoteApplicationContextResponse,
+)
+async def update_concept_note_application_context(
+    run_id: UUID,
+    payload: FundingSelectionRequest,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteApplicationContextResponse:
+    """Save a compatible funding selection on an authorized concept-note run."""
+    run = await ConceptNoteRunService(session).get_authorized_run(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+    return await save_funding_selection(session, run, payload)
 
 
 @router.get(

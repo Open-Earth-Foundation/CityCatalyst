@@ -29,12 +29,12 @@ export default function ProjectSearchInput({
       <Input
         type="search"
         placeholder={t("search-by-project")}
-        borderRadius="4px"
+        borderRadius="minimal"
         borderWidth="1px"
         borderColor="border.neutral"
         shadow="sm"
         bg="base.light"
-        h="48px"
+        size="lg"
         w="full"
         value={value}
         onChange={(e) => onChange(e.target.value)}

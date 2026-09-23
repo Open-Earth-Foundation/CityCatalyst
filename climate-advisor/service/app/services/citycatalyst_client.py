@@ -11,19 +11,47 @@ This module provides an HTTP client for secure communication with CityCatalyst:
 
 from __future__ import annotations
 
+import copy
+import hashlib
 import logging
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import Any, Dict, Optional, Tuple
 
 import httpx
 from app.config import get_settings
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
+from app.utils.single_flight_cache import SingleFlightTTLCache
 from app.utils.token_manager import (
+    get_token_expiry,
     is_token_expired,
     parse_jwt_claims,
 )
 
 logger = logging.getLogger(__name__)
+
+_AUTHORIZATION_CACHE_TTL_SECONDS = 30.0
+_AUTHORIZATION_CACHE_MAX_ENTRIES = 1024
+_IDENTITY_CACHE = SingleFlightTTLCache[str](
+    max_entries=_AUTHORIZATION_CACHE_MAX_ENTRIES
+)
+_CITY_CACHE = SingleFlightTTLCache[dict[str, Any]](
+    max_entries=_AUTHORIZATION_CACHE_MAX_ENTRIES
+)
+
+
+def _token_fingerprint(token: str) -> str:
+    """Return a one-way cache key without retaining the bearer token."""
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def _authorization_cache_ttl(token: str) -> float:
+    """Cap authorization reuse at 30 seconds and the token's JWT expiry."""
+    expires_at = get_token_expiry(token)
+    if expires_at is None:
+        return 0.0
+    remaining_seconds = (expires_at - datetime.now(UTC)).total_seconds()
+    return max(0.0, min(_AUTHORIZATION_CACHE_TTL_SECONDS, remaining_seconds))
 
 
 @dataclass(frozen=True)
@@ -107,6 +135,20 @@ class CityCatalystClient:
         if self._client:
             await self._client.aclose()
             self._client = None
+
+    async def delete_concept_note_sources(self, upload_ids: list[str]) -> None:
+        """Delete unreferenced CC-owned source artifacts; propagate failures for retry."""
+        if not self.base_url or not self.api_key:
+            raise RuntimeError("CityCatalyst source cleanup is not configured")
+        client = await self._get_client()
+        for start in range(0, len(upload_ids), 1000):
+            response = await client.request(
+                "DELETE",
+                f"{self.base_url}/api/v1/internal/ca/concept-note-sources/",
+                headers={"X-CA-Service-Key": self.api_key},
+                json={"upload_ids": upload_ids[start : start + 1000]},
+            )
+            response.raise_for_status()
 
     async def __aenter__(self):
         """Async context manager entry."""
@@ -421,6 +463,16 @@ class CityCatalystClient:
                 "CC_BASE_URL not configured",
                 status_code=503,
             )
+
+        cache_key = (self.base_url, _token_fingerprint(token))
+        return await _IDENTITY_CACHE.get_or_load(
+            cache_key,
+            ttl_seconds=_authorization_cache_ttl(token),
+            loader=lambda: self._request_user_identity(token),
+        )
+
+    async def _request_user_identity(self, token: str) -> str:
+        """Validate one bearer token directly with CityCatalyst."""
         client = await self._get_client()
         try:
             response = await client.post(
@@ -580,15 +632,20 @@ class CityCatalystClient:
         json_data: Dict[str, Any],
         token: Optional[str] = None,
         request_timeout: Optional[float] = None,
+        refresh_user_id: Optional[str] = None,
+        allow_token_refresh: bool = True,
+        safe_selection_error: bool = False,
     ) -> Dict[str, Any]:
-        """POST to an internal CityCatalyst capability endpoint with auth refresh."""
+        """POST to an internal capability, optionally refreshing legacy callers."""
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 
         url = f"{self.base_url.rstrip('/')}{path}"
         client = await self._get_client()
         request_token = token
-        user_id = self._refresh_user_id(json_data)
+        refresh_identity = None
+        if allow_token_refresh:
+            refresh_identity = refresh_user_id or self._refresh_user_id(json_data)
         self.last_refreshed_token = None
 
         response = await client.post(
@@ -600,10 +657,15 @@ class CityCatalystClient:
         )
 
         # Retry once on 401 with a fresh user token, matching the public POST path.
-        if response.status_code == 401 and request_token and user_id:
+        if (
+            allow_token_refresh
+            and response.status_code == 401
+            and request_token
+            and refresh_identity
+        ):
             logger.debug("Internal capability got 401, attempting token refresh")
             try:
-                request_token, _ = await self.refresh_token(user_id)
+                request_token, _ = await self.refresh_token(refresh_identity)
                 self.last_refreshed_token = request_token
                 response = await client.post(
                     url,
@@ -620,6 +682,11 @@ class CityCatalystClient:
                 ) from e
 
         if not response.is_success:
+            if safe_selection_error and response.status_code == 404:
+                raise CityCatalystClientError(
+                    "Requested capability is unavailable.",
+                    status_code=404,
+                )
             error_text = response.text[:500] if response.text else "Unknown error"
             raise CityCatalystClientError(
                 f"CC capability request failed: {response.status_code} - {error_text}",
@@ -635,11 +702,60 @@ class CityCatalystClient:
 
     def _refresh_user_id(self, payload: Dict[str, Any]) -> Optional[str]:
         """Return the user id available for internal capability token refresh."""
-        user_id = payload.get("user_id")
+        user_id = payload.get("userId") or payload.get("user_id")
         if user_id is None:
             return None
         user_id_text = str(user_id).strip()
         return user_id_text or None
+
+    async def discover_native_inputs(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str],
+        user_id: str,
+        thread_id: str,
+    ) -> Dict[str, Any]:
+        """Discover safe NativeInputCatalog entries for the active CA request.
+
+        The Core endpoint performs filtering, lightweight readiness checks, and
+        optional opaque cursor pagination; this method does not load or execute
+        source capabilities. A continuation cursor is request state only and is
+        never treated as an authorization grant.
+        """
+        del user_id, thread_id
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/native-inputs/discover",
+            json_data=request_payload,
+            token=token,
+            request_timeout=self.timeout,
+            allow_token_refresh=False,
+        )
+
+    async def read_native_input(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str],
+        user_id: str,
+        thread_id: str,
+    ) -> Dict[str, Any]:
+        """Read one selected bounded NativeInputCatalog capability through Core."""
+        del user_id, thread_id
+        try:
+            return await self.post_internal_capability(
+                "/api/v1/internal/ca/capabilities/native-inputs/read",
+                json_data=request_payload,
+                token=token,
+                request_timeout=self.timeout,
+                allow_token_refresh=False,
+                safe_selection_error=True,
+            )
+        except httpx.HTTPError as exc:
+            raise CityCatalystClientError(
+                "Selected capability request is unavailable.",
+                status_code=503,
+            ) from exc
 
     async def get_stationary_energy_allowed_capabilities(
         self,
@@ -898,6 +1014,31 @@ class CityCatalystClient:
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 
+        cache_key = (
+            self.base_url,
+            _token_fingerprint(token),
+            user_id,
+            city_id,
+        )
+        city = await _CITY_CACHE.get_or_load(
+            cache_key,
+            ttl_seconds=_authorization_cache_ttl(token),
+            loader=lambda: self._request_city(
+                city_id=city_id,
+                token=token,
+                user_id=user_id,
+            ),
+        )
+        return copy.deepcopy(city)
+
+    async def _request_city(
+        self,
+        *,
+        city_id: str,
+        token: str,
+        user_id: str,
+    ) -> Dict[str, Any]:
+        """Fetch one city directly from CityCatalyst."""
         url = f"{self.base_url}/api/v1/city/{city_id}"
         response = await self.get_with_auto_refresh(
             url=url,

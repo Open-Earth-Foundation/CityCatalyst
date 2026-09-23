@@ -7,6 +7,7 @@ import { trackEvent, identifyUser } from "@/lib/analytics";
 export type LoginData = {
   email: string;
   password: string;
+  securityToken?: string;
 };
 
 export type UseLoginReturn = {
@@ -37,12 +38,16 @@ export const useLogin = (): UseLoginReturn => {
         redirect: false,
         email: data.email,
         password: data.password,
+        securityToken: data.securityToken,
         callbackUrl: callbackUrl || `/${lng}/cities`,
       });
 
       if (result?.error) {
         logger.error({ err: result.error }, "Sign in failure:");
-        const errorMessage = "invalid-email-or-password";
+        const errorMessage =
+          result.error === "rate-limited"
+            ? "too-many-login-attempts"
+            : "invalid-email-or-password";
         setError(errorMessage);
         return { success: false, error: errorMessage };
       }

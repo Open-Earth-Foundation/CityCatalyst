@@ -3,10 +3,11 @@ import { sortGpcReferenceNumbers, toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
 import i18next from "@/i18n/server";
 import { stringify } from "csv-stringify/sync";
-import { db } from "@/models";
+import CalculationService from "@/backend/CalculationService";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import createHttpError from "http-errors";
 import { logger } from "@/services/logger";
+import { toShort } from "@/util/notation-keys";
 
 type InventoryLine = (string | number | null | undefined)[];
 
@@ -68,7 +69,10 @@ export default class CSVDownloadService {
 
     const sortedKeys = sortGpcReferenceNumbers(Object.keys(dataDictionary));
 
-    const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
+    const gwpVersion = CalculationService.resolveGwpVersion(
+      output.globalWarmingPotentialType,
+    );
+    const gasToCO2Eqs = await CalculationService.loadGasToCO2Eqs(gwpVersion);
     const gwps = gasToCO2Eqs.reduce(
       (acc, curr) => {
         acc[curr.gas] = {
@@ -90,21 +94,21 @@ export default class CSVDownloadService {
           activityValue?.emission_co2 != null
             ? Decimal.mul(
                 activityValue?.emission_co2 ?? 0,
-                gwps["CO2"].co2eqPerKg ?? 0,
+                gwps["CO2"]?.co2eqPerKg ?? 0,
               ).toNumber()
             : "";
         const ch4Amount =
           activityValue?.emission_ch4 != null
             ? Decimal.mul(
                 activityValue?.emission_ch4 ?? 0,
-                gwps["CH4"].co2eqPerKg ?? 0,
+                gwps["CH4"]?.co2eqPerKg ?? 0,
               ).toNumber()
             : "";
         const n2oAmount =
           activityValue?.emission_n2o != null
             ? Decimal.mul(
                 activityValue?.emission_n2o ?? 0,
-                gwps["N2O"].co2eqPerKg ?? 0,
+                gwps["N2O"]?.co2eqPerKg ?? 0,
               ).toNumber()
             : "";
 
@@ -174,9 +178,10 @@ export default class CSVDownloadService {
       const finalActivityValues: CSVActivityEntry[] = activityValues.map(
         (activityValue) => {
           const activityTitleKey = activityValue.metadata?.activityTitle;
-          const data_quality = activityValue.metadata?.dataQuality.toString();
+          const data_quality =
+            activityValue.metadata?.dataQuality?.toString() ?? "";
           const dataSource =
-            activityValue.activityData?.["data-source"].toString();
+            activityValue.activityData?.["data-source"]?.toString() ?? "";
 
           const activity_type = t(
             (activityValue?.activityData?.[activityTypeKey] ?? "").toString(),
@@ -300,10 +305,7 @@ export default class CSVDownloadService {
         inventory_reference: inventoryValue.subCategoryId,
         gpc_reference_number: inventoryValue.gpcReferenceNumber,
         subsector_name: inventoryValue.subSector.subsectorName,
-        notation_key: inventoryValue.unavailableReason
-          ?.split("-")
-          .map((word) => word.charAt(0).toUpperCase())
-          .join(""),
+        notation_key: toShort(inventoryValue.unavailableReason) ?? undefined,
         activityValues: finalActivityValues,
       };
 

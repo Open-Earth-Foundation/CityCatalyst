@@ -15,7 +15,6 @@ import { SectorCard } from "@/components/Cards/SectorCard";
 import { TabHeader } from "@/components/GHGIHomePage/TabHeader";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";
-import { BlueSubtitle } from "@/components/package/Texts/BlueSubtitle";
 import { useTranslation } from "@/i18n/client";
 import { getSectorsForInventory, SECTORS } from "@/util/constants";
 import { clamp, formatPercent } from "@/util/helpers";
@@ -134,7 +133,6 @@ export default function InventoryCalculationTab({
             </Badge>
           </Box>
           <Box display="flex" flexDirection="column" gap={8} py={8}>
-            <BlueSubtitle t={t} text={"sector-data"} />
             <Text
               fontFamily="heading"
               fontSize="title.md"

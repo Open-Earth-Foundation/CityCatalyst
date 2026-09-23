@@ -1,4 +1,4 @@
-import { Box, Icon, Text } from "@chakra-ui/react";
+import { Box, Icon, InputProps, Text } from "@chakra-ui/react";
 import {
   FieldError,
   FieldValues,
@@ -24,8 +24,10 @@ export default function PasswordInput<
   w,
   shouldValidate = false,
   watchPassword = "",
-  isSubmitted = true,
+  isSubmitted = false,
   validate,
+  inputProps,
+  liveValidate = true,
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
@@ -38,15 +40,23 @@ export default function PasswordInput<
   watchPassword?: string;
   isSubmitted?: boolean;
   validate?: (value: string) => string | boolean;
+  inputProps?: InputProps;
+  // When false, the pattern hint is driven entirely by the `error` prop
+  // (set by the caller on submit) instead of live-checking watchPassword
+  // as the user types. Callers that flag validation errors themselves
+  // (e.g. account settings) opt out with liveValidate={false}.
+  liveValidate?: boolean;
 }) {
   const labelName = name || t("password");
 
   const passwordValid = isPasswordPatternValid(watchPassword);
 
-  // Hint is always visible as guidance; it's only styled as an error once
-  // the user has attempted to submit and the password still doesn't match.
-  const showHint = shouldValidate && !passwordValid;
-  const passwordInvalid = shouldValidate && isSubmitted && !passwordValid;
+  const showHint = liveValidate
+    ? shouldValidate && !passwordValid
+    : shouldValidate && !error;
+  const passwordInvalid = liveValidate
+    ? shouldValidate && isSubmitted && !passwordValid
+    : !!error;
 
   return (
     <Field
@@ -76,14 +86,14 @@ export default function PasswordInput<
           required: t("please-enter-password"),
           validate,
         })}
+        {...inputProps}
       />
 
       <Box>{children}</Box>
 
-      {/* Password pattern hint — hidden once the password is valid */}
       {showHint && (
         <Text
-          mt="s"
+          mt="6px"
           fontFamily="body"
           fontSize="body.sm"
           fontWeight="regular"

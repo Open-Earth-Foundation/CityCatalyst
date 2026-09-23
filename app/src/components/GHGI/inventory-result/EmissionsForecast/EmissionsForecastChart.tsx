@@ -139,12 +139,10 @@ const EmissionsForecastChartInner = ({
             : getSubSectorByReferenceNumber(sector)?.name || sector,
           color: getColorForSeries(sector),
           data: Object.entries(forecastData.forecast).map(
-            ([year, sectorsData]) => {
-              return {
-                x: year,
-                y: sectorsData[sector] || 0,
-              };
-            },
+            ([year, sectorsData]) => ({
+              x: year,
+              y: sectorsData[sector] || 0,
+            }),
           ),
         };
       })

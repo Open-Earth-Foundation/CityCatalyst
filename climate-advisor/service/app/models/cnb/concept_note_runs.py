@@ -6,6 +6,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from app.models.cnb.concept_note_markdown import ConceptNoteUploadStatusResponse
+
 
 class ConceptNoteStartRequest(BaseModel):
     """Authenticated request to create one Concept Note Builder run."""
@@ -51,6 +53,40 @@ class ConceptNoteStartRequest(BaseModel):
         return self
 
 
+class ConceptNoteRenameRequest(BaseModel):
+    """Validated display-name update for one authorized concept note."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    name: str = Field(min_length=1, max_length=120)
+
+    @field_validator("name")
+    @classmethod
+    def normalize_name(cls, value: str) -> str:
+        """Trim the display name and reject whitespace-only values."""
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("name must not be blank")
+        return normalized
+
+
+class ManualConceptNotePopulation(BaseModel):
+    """Population supplied by a user for one concept-note run only."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    population: int = Field(ge=0, le=10_000_000_000)
+    year: int = Field(ge=1800, le=2100)
+
+
+class ConceptNotePopulationRequest(BaseModel):
+    """Set or clear the run-scoped manual population."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    manual_population: ManualConceptNotePopulation | None
+
+
 class ConceptNoteRunListItemResponse(BaseModel):
     """Stable display and resume fields for one concept-note run."""
 
@@ -78,6 +114,8 @@ class ConceptNoteRunResponse(ConceptNoteRunListItemResponse):
     """Persisted concept-note run returned by start and detail endpoints."""
 
     user_id: str
+    manual_population: ManualConceptNotePopulation | None = None
+    uploads: list[ConceptNoteUploadStatusResponse] = Field(default_factory=list)
     next_action: Literal["load_context"] = "load_context"
     created: bool
     trace_id: str | None = None

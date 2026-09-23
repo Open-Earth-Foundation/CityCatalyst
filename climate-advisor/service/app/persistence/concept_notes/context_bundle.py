@@ -10,13 +10,14 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID
 
-from app.models.cnb.context_bundle import ConceptNoteContextBundle, SelectedSource
 from app.models.cnb.concept_note_markdown import source_format_from_filename
+from app.models.cnb.context_bundle import ConceptNoteContextBundle, SelectedSource
 from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
+from app.utils.concept_note_context import omit_context_identifiers
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -47,6 +48,7 @@ class ContextBundleBuildSnapshot:
     uploads: list[ConceptNoteUploadSnapshot]
     already_current: bool
     previous_sources: list[SelectedSource] = field(default_factory=list)
+    thread_id: UUID | None = None
 
 
 @dataclass(frozen=True)
@@ -151,6 +153,7 @@ async def begin_build(
                 uploads=ready_uploads,
                 already_current=already_current,
                 previous_sources=previous_sources,
+                thread_id=run.thread_id,
             )
     except ContextBundlePersistenceError:
         raise
@@ -272,6 +275,8 @@ async def fail_build(
     build_id: UUID,
     error_code: str,
     warning: str,
+    error_reason: str | None = None,
+    error_details: dict[str, int] | None = None,
 ) -> bool:
     """Persist a retryable failure only if this build is still active."""
     try:
@@ -298,6 +303,8 @@ async def fail_build(
                     **progress,
                     "status": "failed",
                     "error_code": error_code,
+                    "error_reason": error_reason,
+                    "error_details": error_details or {},
                     "warnings": [warning],
                     "retryable": True,
                     "completion_event": None,
@@ -379,9 +386,9 @@ async def load_query_source(
     session_factory: async_sessionmaker[AsyncSession],
     user_id: str,
     run_id: UUID,
-    upload_id: UUID,
+    source_index: int,
 ) -> ContextBundleQuerySource:
-    """Authorize a ready selected source for the active workflow step."""
+    """Resolve a model-safe source position and authorize its backend upload."""
     try:
         async with session_factory() as session:
             run = await _require_owned_run(
@@ -406,21 +413,14 @@ async def load_query_source(
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
             )
-            source = next(
-                (
-                    item
-                    for item in bundle.selected_sources
-                    if item.upload_id == upload_id
-                ),
-                None,
-            )
-            if source is None:
+            if source_index < 1 or source_index > len(bundle.selected_sources):
                 raise ContextBundlePersistenceError(
                     "concept_note_source_not_selected",
                     404,
-                    "Selected Concept Note source was not found",
+                    "Selected Concept Note source index was not found",
                 )
-            upload = await session.get(ConceptNoteUpload, upload_id)
+            source = bundle.selected_sources[source_index - 1]
+            upload = await session.get(ConceptNoteUpload, source.upload_id)
             if (
                 upload is None
                 or upload.run_id != run_id
@@ -454,7 +454,7 @@ async def load_agent_context(
     user_id: str,
     run_id: UUID,
 ) -> dict[str, Any] | None:
-    """Return the last completed context for the authorized CNB agent."""
+    """Return the authorized CNB context without model-facing identity metadata."""
     try:
         async with session_factory() as session:
             # Keep the last usable bundle available during a later rebuild.
@@ -473,28 +473,37 @@ async def load_agent_context(
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
             )
-            return {
-                "concept_note_run_id": str(run_id),
-                "workflow_step": run.workflow_step,
-                "context_bundle_status": bundle_progress,
-                "selected_sources": [
-                    {
-                        "upload_id": str(source.upload_id),
-                        "source_label": source.source_label,
-                        "filename": source.filename,
-                        "source_format": source.source_format,
-                        "page_count": source.page_count,
-                        "block_count": source.block_count,
-                        "summary": source.summary,
-                        "topics": source.topics,
-                    }
-                    for source in bundle.selected_sources
-                ],
-                "cc_context": bundle.cc_context.model_dump(mode="json"),
-                "funder_context": bundle.funder_context,
-                "similar_projects": bundle.similar_projects,
-                "document_context": bundle.document_context,
-            }
+            return omit_context_identifiers(
+                {
+                    "workflow_step": run.workflow_step,
+                    "context_bundle_status": {
+                        key: value for key, value in bundle_progress.items()
+                        if key in {"status", "document_grounding", "available_context", "missing_context", "warnings"}
+                    },
+                    "selected_sources": [
+                        {
+                            "source_index": source_index,
+                            "source_label": source.source_label,
+                            "filename": source.filename,
+                            "source_format": source.source_format,
+                            "summary": source.summary,
+                            "topics": source.topics,
+                        }
+                        for source_index, source in enumerate(
+                            bundle.selected_sources, start=1
+                        )
+                    ],
+                    "cc_context": bundle.cc_context.model_dump(mode="json"),
+                    "manual_population": (
+                        {**run.context_summary["manual_population"], "source": "user_entered"}
+                        if (run.context_summary or {}).get("manual_population")
+                        else None
+                    ),
+                    "funder_context": bundle.funder_context,
+                    "similar_projects": bundle.similar_projects,
+                    "document_context": bundle.document_context,
+                }
+            )
     except ContextBundlePersistenceError:
         raise
     except (OSError, SQLAlchemyError, ValueError) as exc:

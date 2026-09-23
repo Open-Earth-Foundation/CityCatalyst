@@ -1,0 +1,116 @@
+"use client";
+import { Box, HStack, VStack } from "@chakra-ui/react";
+import { SegmentedProgress } from "@/components/SegmentedProgress";
+import { Overline } from "@/components/package/Texts/Overline";
+import { TitleLarge } from "@/components/package/Texts/Title";
+import { Caption } from "@/components/package/Texts/Caption";
+import type { MeedTone } from "./MeedStatusTag";
+import { MeedChartTip } from "./MeedChartTip";
+
+const TONE_COLOR: Record<MeedTone, string> = {
+  neutral: "content.tertiary",
+  info: "content.link",
+  positive: "interactive.tertiary",
+  warning: "sentiment.warningDefault",
+  caution: "interactive.quaternary",
+  negative: "sentiment.negativeDefault",
+};
+
+export interface MeedFunnelStep {
+  label: string;
+  value: number;
+  tone: MeedTone;
+  sublabel?: string;
+}
+
+export interface MeedFunnelStripProps {
+  /** Widest stage first, e.g. assessed → passed → ranked. */
+  steps: MeedFunnelStep[];
+  /** Compact drops the sublabels and shrinks the numbers, for a context card. */
+  compact?: boolean;
+  /** Keep full-size numbers but hide the sublabels (they stay in the tooltip). */
+  showSublabels?: boolean;
+  ariaLabel: string;
+  /** Hover explanation; the stage sublabels become its rows. */
+  tipTitle?: string;
+  tipNote?: string;
+}
+
+/**
+ * A narrowing pipeline as three numbers over one bar. The bar's segments are
+ * the *differences* between stages (what each stage kept vs. dropped), drawn
+ * in reverse so the final stage sits at the left edge in the strongest colour.
+ */
+export function MeedFunnelStrip({
+  steps,
+  compact = false,
+  showSublabels = true,
+  ariaLabel,
+  tipTitle,
+  tipNote,
+}: MeedFunnelStripProps) {
+  const max = steps[0]?.value ?? 0;
+  // Segment i = what stage i kept that stage i+1 did not (last stage = itself).
+  const segments = steps.map((step, i) =>
+    Math.max(step.value - (steps[i + 1]?.value ?? 0), 0),
+  );
+  const reversed = [...steps].reverse();
+  const reversedSegments = [...segments].reverse();
+
+  const strip = (
+    <VStack
+      alignItems="stretch"
+      gap="s"
+      w="full"
+      role="img"
+      aria-label={ariaLabel}
+      tabIndex={-1}
+    >
+      <HStack
+        justifyContent="space-between"
+        alignItems="flex-start"
+        gap="m"
+        flexWrap={compact ? "nowrap" : "wrap"}
+      >
+        {steps.map((step) => (
+          <VStack key={step.label} alignItems="flex-start" gap="0" minW={0}>
+            <Overline color="content.tertiary">{step.label}</Overline>
+            <TitleLarge
+              color={TONE_COLOR[step.tone]}
+              fontVariantNumeric="tabular-nums"
+              fontSize={compact ? "title.md" : undefined}
+            >
+              {step.value}
+            </TitleLarge>
+            {!compact && showSublabels && step.sublabel && (
+              <Caption color="content.secondary">{step.sublabel}</Caption>
+            )}
+          </VStack>
+        ))}
+      </HStack>
+      <Box>
+        <SegmentedProgress
+          values={reversedSegments}
+          colors={reversed.map((s) => TONE_COLOR[s.tone])}
+          max={max || 1}
+          height={compact ? 2 : 3}
+        />
+      </Box>
+    </VStack>
+  );
+
+  if (!tipTitle) return strip;
+  return (
+    <MeedChartTip
+      title={tipTitle}
+      rows={steps.map((step) => ({
+        label: step.sublabel ? `${step.label} — ${step.sublabel}` : step.label,
+        swatch: TONE_COLOR[step.tone],
+        value: String(step.value),
+      }))}
+      note={tipNote}
+    >
+      {strip}
+    </MeedChartTip>
+  );
+}

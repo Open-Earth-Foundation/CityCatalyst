@@ -154,6 +154,17 @@ WHERE har.job_id IN (
 - If 2+ cities share the same `job_id` → Bulk job (`is_bulk = true`)
 - If only 1 city has the `job_id` → Single job (`is_bulk = false`)
 
+### Catalog Backfill Checkpoints
+
+The standalone `npm run hiap-catalog-backfill` command repairs missing HIAP
+catalog entries in pages. Non-dry runs persist independent cursors and
+completion flags for rankings and action plans in
+`HiapCatalogBackfillCheckpoint`, after each page, so a later run resumes from
+the last successful page. A page with failures remains resumable at its current
+cursor. `HIAP_CATALOG_BACKFILL_MAX_BATCHES` limits each catalog type
+independently, and `HIAP_CATALOG_BACKFILL_DRY_RUN=true` disables checkpoint
+reads and writes.
+
 ### Implementation Notes
 
 **Cron Job** (`/api/v1/cron/check-hiap-jobs`):

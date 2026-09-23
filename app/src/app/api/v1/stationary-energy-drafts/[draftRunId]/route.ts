@@ -7,6 +7,7 @@ import {
 } from "@/backend/agentic/ghgi/stationary-energy/ca";
 import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { enrichStationaryEnergyDraftCO2e } from "@/backend/agentic/ghgi/stationary-energy/draft-emissions";
+import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 
 const querySchema = z.object({
@@ -33,7 +34,19 @@ export const GET = apiHandler(async (req, { session, params }) => {
     inventoryId: query.inventory_id,
     requestId: getClimateAdvisorRequestId(req),
   });
-  const payload = await enrichStationaryEnergyDraftCO2e(await response.json());
+
+  let gwpVersion: string | null = null;
+  if (query.inventory_id) {
+    const inventory = await db.models.Inventory.findByPk(query.inventory_id, {
+      attributes: ["globalWarmingPotentialType"],
+    });
+    gwpVersion = inventory?.globalWarmingPotentialType ?? null;
+  }
+
+  const payload = await enrichStationaryEnergyDraftCO2e(
+    await response.json(),
+    gwpVersion,
+  );
 
   return NextResponse.json(payload, { status: response.status });
 });

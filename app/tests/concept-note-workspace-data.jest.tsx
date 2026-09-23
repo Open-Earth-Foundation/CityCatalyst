@@ -61,6 +61,7 @@ jest.unstable_mockModule("@/i18n/client", () => ({
 jest.unstable_mockModule("@/services/api", () => ({
   api: {
     useGetCityQuery: () => ({ data: { name: "Test City" } }),
+    useGetCityDashboardQuery: () => ({ data: undefined }),
     useGetConceptNoteApplicationContextQuery: () => ({
       data: undefined,
       isError: false,

@@ -140,6 +140,15 @@ class ConceptNoteRunService:
             trace_id=get_request_id() or None,
         )
         _require_matching_fingerprint(run, fingerprint)
+        if created and payload.initial_uploads:
+            run.context_summary = {
+                **(run.context_summary or {}),
+                "initial_uploads": [
+                    source.model_dump(mode="json") for source in payload.initial_uploads
+                ],
+            }
+            run.updated_at = datetime.now(UTC)
+            await self.session.flush()
         if payload.thread_id is not None:
             await self.repository.bind_thread_context(
                 thread_id=payload.thread_id,
@@ -166,6 +175,49 @@ class ConceptNoteRunService:
             user_id=run.user_id,
         )
         return _to_response(run, created=False, uploads=uploads)
+
+    async def accept_initial_upload(
+        self,
+        *,
+        run_id: UUID,
+        upload_id: UUID,
+        requested_user_id: str,
+        authorization: str | None,
+    ) -> ConceptNoteRunResponse:
+        """Record successful source handoff without resetting other workflow state."""
+        run = await self.get_authorized_run(
+            run_id=run_id,
+            requested_user_id=requested_user_id,
+            authorization=authorization,
+        )
+        # Serialize concurrent receipts against background context updates.
+        await self.session.refresh(run, with_for_update=True)
+        summary = dict(run.context_summary or {})
+        sources = summary.get("initial_uploads", [])
+        matching = next(
+            (source for source in sources if source["upload_id"] == str(upload_id)),
+            None,
+        )
+        if matching is None:
+            raise HTTPException(status_code=404, detail="Initial upload not found")
+        upload = await self.session.get(ConceptNoteUpload, upload_id)
+        if (
+            upload is None
+            or upload.run_id != run_id
+            or upload.uploaded_by_user_id != run.user_id
+        ):
+            raise HTTPException(status_code=404, detail="Upload not found")
+        summary["initial_uploads"] = [
+            {**source, "accepted": True}
+            if source["upload_id"] == str(upload_id)
+            else source
+            for source in sources
+        ]
+        run.context_summary = summary
+        run.updated_at = datetime.now(UTC)
+        await self.session.commit()
+        logger.info("Initial source accepted run_id=%s upload_id=%s", run_id, upload_id)
+        return _to_response(run, created=False)
 
     async def update_manual_population(
         self,

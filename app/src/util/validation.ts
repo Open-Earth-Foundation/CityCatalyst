@@ -374,6 +374,16 @@ export const conceptNoteStartRequest = z
     funder_id: z.string().uuid().nullable().optional(),
     selected_funding_opportunity_id: z.string().uuid().nullable().optional(),
     thread_id: z.string().uuid().nullable().optional(),
+    initial_uploads: z
+      .array(
+        z.object({
+          upload_id: z.string().uuid(),
+          filename: z.string().trim().min(1).max(255),
+          sha256: z.string().regex(/^[a-f0-9]{64}$/),
+        }),
+      )
+      .max(100)
+      .optional(),
     idempotency_key: z.string().uuid(),
   })
   .superRefine((request, context) => {

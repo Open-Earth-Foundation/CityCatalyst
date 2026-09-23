@@ -116,76 +116,92 @@ export function MeedFunnelStrip({
         </HStack>
       ) : (
         <Grid
+          // Wide: every stage and every chevron is its own column, so the
+          // stages share one width and the chevrons sit exactly between them.
+          // Narrower: the stages wrap and the chevrons go.
           templateColumns={{
             base: "repeat(2, minmax(0, 1fr))",
             md: "repeat(3, minmax(0, 1fr))",
-            lg: `repeat(${steps.length}, minmax(0, 1fr))`,
+            lg: `repeat(${Math.max(steps.length - 1, 0)}, minmax(0, 1fr) auto) minmax(0, 1fr)`,
           }}
-          gap="l"
+          columnGap="m"
+          rowGap="l"
+          alignItems="center"
         >
-          {steps.map((step, i) =>
-            size === "lg" && !compact ? (
-              <VStack
-                key={step.label}
-                alignItems="flex-start"
-                gap="xs"
-                minW={0}
-                position="relative"
+          {steps.flatMap((step, i) => {
+            const stage =
+              size === "lg" ? (
+                <VStack
+                  key={step.label}
+                  alignItems="flex-start"
+                  gap="xs"
+                  minW={0}
+                >
+                  <LabelMedium color="content.tertiary">
+                    {step.label}
+                  </LabelMedium>
+                  <HeadlineLarge
+                    color={TONE_COLOR[step.tone]}
+                    fontVariantNumeric="tabular-nums"
+                    lineHeight="1"
+                  >
+                    {step.value}
+                  </HeadlineLarge>
+                  {showSublabels && step.sublabel && (
+                    <BodySmall color="content.secondary">
+                      {step.sublabel}
+                    </BodySmall>
+                  )}
+                </VStack>
+              ) : (
+                <VStack
+                  key={step.label}
+                  alignItems="flex-start"
+                  gap="0"
+                  minW={0}
+                >
+                  <Overline color="content.tertiary">{step.label}</Overline>
+                  <TitleLarge
+                    color={TONE_COLOR[step.tone]}
+                    fontVariantNumeric="tabular-nums"
+                  >
+                    {step.value}
+                  </TitleLarge>
+                  {showSublabels && step.sublabel && (
+                    <Caption color="content.secondary">{step.sublabel}</Caption>
+                  )}
+                </VStack>
+              );
+            if (size !== "lg" || i === steps.length - 1) return [stage];
+            return [
+              stage,
+              <Box
+                key={`${step.label}-chevron`}
+                display={{ base: "none", lg: "flex" }}
+                alignItems="center"
+                justifyContent="center"
+                aria-hidden
               >
-                {/* One row on wide screens: a chevron in each gap says the
-                    stages read left to right, from the bank to the ranking. */}
-                {i < steps.length - 1 && (
-                  <Icon
-                    as={LuChevronRight}
-                    boxSize="20px"
-                    color="content.tertiary"
-                    position="absolute"
-                    right="-22px"
-                    top="30px"
-                    display={{ base: "none", lg: "block" }}
-                    aria-hidden
-                  />
-                )}
-                <LabelMedium color="content.tertiary">{step.label}</LabelMedium>
-                <HeadlineLarge
-                  color={TONE_COLOR[step.tone]}
-                  fontVariantNumeric="tabular-nums"
-                  lineHeight="1"
-                >
-                  {step.value}
-                </HeadlineLarge>
-                {showSublabels && step.sublabel && (
-                  <BodySmall color="content.secondary">
-                    {step.sublabel}
-                  </BodySmall>
-                )}
-              </VStack>
-            ) : (
-              <VStack key={step.label} alignItems="flex-start" gap="0" minW={0}>
-                <Overline color="content.tertiary">{step.label}</Overline>
-                <TitleLarge
-                  color={TONE_COLOR[step.tone]}
-                  fontVariantNumeric="tabular-nums"
-                  fontSize={compact ? "title.md" : undefined}
-                >
-                  {step.value}
-                </TitleLarge>
-                {!compact && showSublabels && step.sublabel && (
-                  <Caption color="content.secondary">{step.sublabel}</Caption>
-                )}
-              </VStack>
-            ),
-          )}
+                <Icon
+                  as={LuChevronRight}
+                  boxSize="20px"
+                  color="content.tertiary"
+                />
+              </Box>,
+            ];
+          })}
         </Grid>
       )}
-      <Box>
-        <SegmentedProgress
-          values={reversedSegments}
-          colors={reversed.map((s) => TONE_COLOR[s.tone])}
-          max={max || 1}
-          height={compact ? 2 : size === "lg" ? 4 : 3}
-        />
-      </Box>
+      {size !== "lg" && (
+        <Box>
+          <SegmentedProgress
+            values={reversedSegments}
+            colors={reversed.map((s) => TONE_COLOR[s.tone])}
+            max={max || 1}
+            height={compact ? 2 : 3}
+          />
+        </Box>
+      )}
     </VStack>
   );
 

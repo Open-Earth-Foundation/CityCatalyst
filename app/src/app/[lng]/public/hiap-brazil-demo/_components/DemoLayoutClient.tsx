@@ -26,7 +26,27 @@ export function DemoLayoutClient({
       <NavigationBar lng={lng} isPublic={true} />
       <DemoBanner lng={lng} />
       <Toaster />
-      <Box w="full" h="full">
+      {/*
+        Borderless cards: white surfaces on the grey page carry a 1dp shadow
+        instead of a hairline, and a card inside a card sits on the neutral
+        surface so it still reads as a block. A selected top-pick keeps its
+        blue border. Scoped here so the product's own screens are untouched.
+      */}
+      <Box
+        w="full"
+        h="full"
+        css={{
+          "& .chakra-card__root:not([data-selected='true'])": {
+            borderColor: "transparent",
+            boxShadow: "1dp",
+          },
+          "& .chakra-card__root .chakra-card__root:not([data-selected='true'])":
+            {
+              boxShadow: "none",
+              background: "background.neutral",
+            },
+        }}
+      >
         {children}
       </Box>
     </Box>

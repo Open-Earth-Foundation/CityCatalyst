@@ -84,6 +84,7 @@ export function TopPickCard({
   return (
     <Card.Root
       h="full"
+      data-selected={isSelected ? "true" : undefined}
       borderWidth="1px"
       borderColor={isSelected ? "content.link" : "border.neutral"}
       bg={isSelected ? "background.neutral" : "base.light"}

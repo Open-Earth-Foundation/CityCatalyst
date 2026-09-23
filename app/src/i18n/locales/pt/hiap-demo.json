@@ -591,7 +591,7 @@
       "generate-report": "Gerar relatório",
       "generate-report-count": "Gerar relatório ({{count}})",
       "generate-report-running": "Gerando relatório…",
-      "generate-report-hint": "Selecione ações para montar um relatório a partir de seus capítulos fictícios.",
+      "generate-report-hint": "Selecione ações para incluir no relatório.",
       "generate-report-duration_one": "Instantâneo nesta demo — os oito capítulos são gerados a partir de dados fictícios.",
       "generate-report-duration_other": "Instantâneo nesta demo — {{count}} relatórios gerados a partir de dados fictícios.",
       "report-title": "Relatório de ação climática",
@@ -743,7 +743,8 @@
       "config-exclusions-count_other": "{{count}} ações excluídas",
       "composition-weight-short": "× {{weight}}% de peso",
       "tradeoffs-title": "Efeitos adversos entre estas ações",
-      "tradeoffs-description": "Onde uma das principais ações pode prejudicar outro objetivo."
+      "tradeoffs-description": "Onde uma das principais ações pode prejudicar outro objetivo.",
+      "generate-report-hint": "Selecione ações para incluir no relatório."
     }
   },
   "policy-page-short": "p. {{page}}",

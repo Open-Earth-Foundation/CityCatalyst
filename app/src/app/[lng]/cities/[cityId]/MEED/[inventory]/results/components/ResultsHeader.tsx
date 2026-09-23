@@ -37,7 +37,7 @@ export function GenerateReportControl({
   hintId?: string;
 }) {
   return (
-    <VStack alignItems="flex-end" gap="xs" flexShrink={0} maxW="320px">
+    <VStack alignItems="flex-end" gap="xs" flexShrink={0}>
       <MeedButton
         variant="filled"
         minW="auto"
@@ -54,7 +54,12 @@ export function GenerateReportControl({
             ? t("generate-report-count", { count: selectedCount })
             : t("generate-report")}
       </MeedButton>
-      <Caption id={hintId} color="content.tertiary" textAlign="end">
+      <Caption
+        id={hintId}
+        color="content.tertiary"
+        textAlign="end"
+        whiteSpace="nowrap"
+      >
         {isGenerating && progress
           ? progress
           : selectedCount === 0

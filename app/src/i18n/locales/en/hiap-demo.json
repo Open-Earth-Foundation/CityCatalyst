@@ -547,7 +547,7 @@
       "cobenefit-biodiversity": "Biodiversity",
       "cobenefit-mobility": "Mobility",
       "cobenefit-local-economy": "Local economy",
-      "generate-report-hint": "Select actions to build a report from their fixture chapters.",
+      "generate-report-hint": "Select actions to include in the report.",
       "generate-report-duration_one": "Instant in this demo — the eight chapters are rendered from fixtures.",
       "generate-report-duration_other": "Instant in this demo — {{count}} reports rendered from fixtures.",
       "empty-body": "Set your preferences and run the ranking to see the recommended adaptation actions.",
@@ -612,7 +612,8 @@
       "detail-tradeoffs": "Adverse effects",
       "config-priority-risks": "Priority risks",
       "config-exclusions-count_one": "{{count}} action excluded",
-      "config-exclusions-count_other": "{{count}} actions excluded"
+      "config-exclusions-count_other": "{{count}} actions excluded",
+      "generate-report-hint": "Select actions to include in the report."
     }
   },
   "policy-page-short": "p. {{page}}",

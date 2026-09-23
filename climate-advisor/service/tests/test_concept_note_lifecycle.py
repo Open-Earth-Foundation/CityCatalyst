@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
 import pytest
+import httpx
 from fastapi import HTTPException
 from pydantic import ValidationError
 from sqlalchemy import DefaultClause, event, select, text
@@ -401,7 +402,10 @@ async def test_source_cleanup_preserves_shared_copies_and_cleans_the_last_refere
         }
 
 
-async def test_failed_source_cleanup_preserves_run_and_workspace_for_retry() -> None:
+@pytest.mark.parametrize("upstream_status", [409, 503])
+async def test_failed_source_cleanup_preserves_run_and_workspace_for_retry(
+    upstream_status: int,
+) -> None:
     async with _ca_session() as session:
         run = _run(run_id=uuid4(), thread_id=uuid4(), city_id=uuid4())
         session.add(Thread(thread_id=run.thread_id, user_id=run.user_id))
@@ -411,7 +415,11 @@ async def test_failed_source_cleanup_preserves_run_and_workspace_for_retry() -> 
         service.run_service.get_authorized_run = AsyncMock(return_value=run)
         service._unshared_source_upload_ids = AsyncMock(return_value=[str(uuid4())])
         service.run_service.cc_client.delete_concept_note_sources = AsyncMock(
-            side_effect=RuntimeError("storage unavailable")
+            side_effect=httpx.HTTPStatusError(
+                "Source cleanup failed",
+                request=httpx.Request("DELETE", "https://cc.example/sources/"),
+                response=httpx.Response(upstream_status),
+            )
         )
         with pytest.raises(HTTPException) as error:
             await service.delete_run(
@@ -419,10 +427,20 @@ async def test_failed_source_cleanup_preserves_run_and_workspace_for_retry() -> 
                 requested_user_id=run.user_id,
                 authorization="Bearer token",
             )
-        assert error.value.status_code == 503
+        assert error.value.status_code == upstream_status
         service.workspace.delete_run.assert_not_called()
         assert await session.get(ConceptNoteRun, run.run_id) is not None
         assert await session.get(Thread, run.thread_id) is not None
+        # Once source delivery finishes, the same note can be deleted on retry.
+        service.run_service.cc_client.delete_concept_note_sources.side_effect = None
+        await service.delete_run(
+            run_id=run.run_id,
+            requested_user_id=run.user_id,
+            authorization="Bearer token",
+        )
+        service.workspace.delete_run.assert_awaited_once_with(run_id=run.run_id)
+        assert await session.get(ConceptNoteRun, run.run_id) is None
+        assert await session.get(Thread, run.thread_id) is None
 
 
 @pytest.mark.parametrize("value", ["", "   ", "x" * 121])

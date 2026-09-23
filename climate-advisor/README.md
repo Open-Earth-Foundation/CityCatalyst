@@ -50,6 +50,20 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
    - Composes `prompts.core` with `prompts.cnb_chat`, injects ready-source
      summaries, and exposes the step-scoped read-only source query
    - Uses source evidence for answers; chat suggestions do not persist document edits
+   - Exposes `concept_note_help` only to CNB chat with an authorized, ready context.
+     The model calls it for capability/navigation questions, not project-content
+     questions or actual edit requests. Its guide lives in
+     `service/app/tools/concept_note_ui_guide.txt`, outside the always-on prompt.
+     The CNB chat sends its active UI language as `context.ui_locale`; the guide
+     quotes control labels from `concept_note_ui_labels.py` for that language
+     (English fallback). A test keeps those labels equal to the frontend
+     `concept-notes.json` translations. `ui_state.draft` separates
+     `total_sections` from `sections_with_content`.
+     Each invocation reauthorizes the run and loads current draft/critical-gap
+     export state from the CNB workspace. Ordinary turns do not load UI state.
+     Browser-only state remains unknown; unavailable workspace storage preserves
+     the guide without implying an empty draft. Funding and source facts remain
+     in the existing context bundle.
    - Treats vague requests as sufficient intent, uses the already bound run and
      available chapter order, and asks one focused question when the next step
      cannot be derived
@@ -1396,16 +1410,19 @@ Notes:
 
 ## Kubernetes CNB Database Deployment
 
-GitHub Actions is the credential source of truth. Configure
-`CNB_DATABASE_URL_DEV` and `CNB_DATABASE_URL_PROD` as repository Secrets; the
-test deployment intentionally reuses the development value until a distinct
-test database is available. Rotate any credential shared in chat or ticket text
-before saving it, and URL-encode reserved password characters in the DSN.
+CNB database connections are configured in the environment-specific database
+ConfigMaps under `k8s/`. The test ConfigMap sets `CNB_DATABASE_URL` to the
+`cnb_test` database and user on
+`dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com`, port `5432`.
+Both the test Deployment and CNB migration Job consume
+`climate-advisor-db-configmap-test` through `envFrom`, following the existing
+Kubernetes configuration pattern. The CA, development, and production database
+configurations are unchanged.
 
-Each deployment workflow reconciles an environment-specific Kubernetes Secret
-containing only `CNB_DATABASE_URL`. The Climate Advisor Deployment and CNB
-migration Job consume that Secret with `secretRef`; CNB credentials do not
-belong in the existing database ConfigMaps or in checked-in Secret manifests.
+After deployment, verify that the runtime connection uses database and user
+`cnb_test`, the CNB migration Job completes, and required test funding/reference
+data is present before running a full CNB smoke flow. This configuration change
+does not copy development data or seed the new database.
 
 Each deployment workflow launches the existing CA migration Job, then the CNB
 Job (`alembic -c cnb-alembic.ini upgrade head`). The workflow waits for the CNB
@@ -1741,3 +1758,12 @@ through the error path. This does not provide durable reconnect/restart recovery
 
 See [validation and reproduction](docs/cnb-reasoning-validation.md) for focused
 checks, manual verification steps, and remaining limitations.
+
+
+### Initial concept-note upload recovery
+
+The creation request can include `initial_uploads` (up to 100 file identities: upload UUID, filename, SHA-256). These are saved in the run's existing JSON context before transfer. CC validates retried file bytes against this manifest and reuses the upload UUID and OCR/delivery job. After durable storage and queueing, CC records an idempotent receipt at `POST /v1/concept-notes/{run_id}/initial-uploads/{upload_id}/accepted` with the authenticated user and city scope.
+
+The creation dialog automatically retries one transient network/server failure. Persistent failures leave an **Upload incomplete** workspace with optional retry/delete actions; no progress percentage is shown. Reopening retry asks for the original outstanding files and preserves already accepted files. Runs created without initial sources follow the existing workflow. Existing runs without a manifest are not retroactively classified. No database migration or new environment variable is required; deploy the CA contract before the frontend that sends manifests.
+
+Regression coverage: `service/tests/test_concept_note_runs.py` verifies manifest and partial-receipt persistence across database sessions; `app/tests/concept-note-upload.jest.ts` checks identity replay and byte mismatch rejection; `app/e2e/concept-note-upload-recovery.spec.ts` exercises browser failure, reload, partial retry and lost-response recovery with controlled API responses.

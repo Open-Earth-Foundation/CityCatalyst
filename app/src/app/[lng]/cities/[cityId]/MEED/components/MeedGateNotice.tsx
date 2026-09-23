@@ -5,7 +5,7 @@ import { LuCircleAlert, LuCircleCheck, LuTriangleAlert } from "react-icons/lu";
 import { useTranslation } from "@/i18n/client";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import type { MeedGate } from "../meedGate";
-import { MEED_WIZARD_STEPS } from "../steps";
+import { MEED_ALL_SECTIONS } from "../steps";
 import { stepHref, type MeedReturnTarget } from "../navigation";
 import { FOCUS_RING } from "../focusRing";
 
@@ -63,9 +63,11 @@ export function MeedGateNotice({
   const { t } = useTranslation(lng, "meed");
   const tone = TONE[gate.tone];
 
+  // Emissions is an output area rather than a wizard step, but it is still
+  // something the gate can name as missing, so resolve against every section.
   const missingSteps = gate.missing
-    .map((key) => MEED_WIZARD_STEPS.find((s) => s.key === key))
-    .filter((s): s is (typeof MEED_WIZARD_STEPS)[number] => Boolean(s));
+    .map((key) => MEED_ALL_SECTIONS.find((s) => s.key === key))
+    .filter((s): s is (typeof MEED_ALL_SECTIONS)[number] => Boolean(s));
 
   return (
     <VStack

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Card, HStack, Icon, Link, VStack } from "@chakra-ui/react";
+import { Card, HStack, Link, SimpleGrid, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { LuZap } from "react-icons/lu";
 import type { TFunction } from "i18next";
@@ -107,22 +107,16 @@ function WeightSlider({
   );
 }
 
-type InputStatus = "complete" | "optional" | "custom";
+type InputStatus = "complete" | "optional";
 
 const STATUS_TONE: Record<InputStatus, MeedTone> = {
   complete: "positive",
   optional: "neutral",
-  custom: "warning",
 };
 
-/**
- * One input the ranking reads: what it is, whether it is required, whether
- * it is set, and where to change it. Nothing here is a gate — the point of
- * the row is to say so.
- */
+/** One input in the completeness list, after the product's pre-flight row. */
 function Row({
   label,
-  requirement,
   status,
   statusLabel,
   sub,
@@ -131,12 +125,11 @@ function Row({
   isLast,
 }: {
   label: string;
-  requirement: string;
   status: InputStatus;
   statusLabel: string;
   sub: string;
-  href?: string;
-  linkLabel?: string;
+  href: string;
+  linkLabel: string;
   isLast?: boolean;
 }) {
   return (
@@ -144,38 +137,40 @@ function Row({
       justifyContent="space-between"
       alignItems="center"
       gap="m"
-      py="l"
+      py="m"
       borderBottomWidth={isLast ? 0 : "1px"}
       borderColor="border.overlay"
     >
       <VStack alignItems="flex-start" gap="xs" flex="1" minW="0">
         <HStack gap="s" flexWrap="wrap" alignItems="center">
           <LabelLarge color="content.primary">{label}</LabelLarge>
-          <MeedStatusTag tone="info">{requirement}</MeedStatusTag>
           <MeedStatusTag tone={STATUS_TONE[status]}>
             {statusLabel}
           </MeedStatusTag>
         </HStack>
         <BodySmall color="content.tertiary">{sub}</BodySmall>
       </VStack>
-      {href && linkLabel && (
-        <Link
-          asChild
-          flexShrink={0}
-          color="content.link"
-          fontFamily="heading"
-          fontSize="label.md"
-          fontWeight="semibold"
-          _focusVisible={FOCUS_RING}
-        >
-          <NextLink href={href}>{linkLabel}</NextLink>
-        </Link>
-      )}
+      <Link
+        asChild
+        flexShrink={0}
+        color="content.link"
+        fontFamily="heading"
+        fontSize="label.md"
+        fontWeight="semibold"
+        _focusVisible={FOCUS_RING}
+      >
+        <NextLink href={href}>{linkLabel}</NextLink>
+      </Link>
     </HStack>
   );
 }
 
-/** BR-A4 / BR-M4 — pre-flight check. */
+/**
+ * BR-A4 / BR-M4 — pre-flight check, laid out like the product's: on the left
+ * what the model has to work with (three rows), on the right the weights and
+ * the one button. Nothing here gates the ranking; the rows say what is set
+ * and what will run on defaults.
+ */
 export function TrackPreflight({
   lng,
   citySlug,
@@ -210,75 +205,22 @@ export function TrackPreflight({
   const cellsWithData = RISK_CELLS.filter((c) => city.risk[c.key]).length;
   const prefsHref = trackHref(lng, city.slug, track, "preferences");
 
-  // Preferences are the city's choices, not model requirements: with none set
-  // the city-priorities component falls back to the neutral 0.5 (§7).
-  const hasPreferences =
-    prefs.sectors.length +
-      prefs.coBenefits.length +
-      prefs.timeline.length +
-      prefs.priorityRisks.length +
-      prefs.excludedActionIds.length >
-    0;
-
-  const optionalRow = (label: string, items: string[]) => ({
-    label,
-    requirement: t("req-optional"),
-    status: (items.length > 0 ? "complete" : "optional") as InputStatus,
-    statusLabel:
-      items.length > 0
-        ? t("status-set", { count: items.length })
-        : t("status-not-set"),
-    sub: items.length > 0 ? items.join(" · ") : t("status-not-set-sub"),
-    href: prefsHref,
-    linkLabel: items.length > 0 ? tPre("edit-step") : tPre("enter-data"),
-  });
-
-  const rows = [
-    {
-      label: track === "adaptation" ? t("step-risk") : t("step-emissions"),
-      requirement: t("req-required-data"),
-      status: "complete" as InputStatus,
-      statusLabel: t("status-complete"),
-      sub:
-        track === "adaptation"
-          ? t("preflight-risk-sub", { count: cellsWithData })
-          : t("preflight-emissions-sub", { year: city.inventory.year }),
-      href: trackHref(
-        lng,
-        city.slug,
-        track,
-        track === "adaptation" ? "risk" : "emissions",
-      ),
-      linkLabel: tPre("view-breakdown"),
-    },
-    optionalRow(t("pref-row-sectors"), prefs.sectors.map(labels.sector)),
-    optionalRow(
-      t("pref-row-cobenefits"),
-      prefs.coBenefits.map(labels.coBenefit),
-    ),
-    optionalRow(t("pref-row-timeline"), prefs.timeline.map(labels.timeline)),
-    ...(track === "adaptation"
-      ? [optionalRow(t("pref-row-risks"), prefs.priorityRisks.map(labels.cell))]
-      : []),
-    {
-      ...optionalRow(t("pref-row-exclusions"), prefs.excludedActionIds),
-      sub:
-        prefs.excludedActionIds.length > 0
-          ? tPre("confirmed-exclusions-count", {
-              count: prefs.excludedActionIds.length,
-            })
-          : t("status-not-set-sub"),
-    },
-    {
-      label: t("pref-row-weights"),
-      requirement: t("req-optional"),
-      status: (isCustom ? "custom" : "optional") as InputStatus,
-      statusLabel: isCustom
-        ? tPre("custom-weights-active")
-        : t("status-weights-default"),
-      sub: t("pref-row-weights-sub"),
-    },
-  ];
+  const prefParts = [
+    prefs.sectors.length
+      ? t("pref-sum-sectors", { count: prefs.sectors.length })
+      : null,
+    prefs.coBenefits.length
+      ? t("pref-sum-cobenefits", { count: prefs.coBenefits.length })
+      : null,
+    prefs.priorityRisks.length
+      ? t("pref-sum-risks", { count: prefs.priorityRisks.length })
+      : null,
+    prefs.timeline.length
+      ? prefs.timeline.map(labels.timeline).join(", ")
+      : null,
+  ].filter(Boolean) as string[];
+  const hasPreferences = prefParts.length > 0;
+  const hasExclusions = prefs.excludedActionIds.length > 0;
 
   return (
     <DemoShell
@@ -303,120 +245,179 @@ export function TrackPreflight({
         <VStack alignItems="stretch" gap="l">
           <BodyLarge color="content.secondary">{tPre("description")}</BodyLarge>
 
-          <Card.Root borderColor="border.overlay">
-            <Card.Body p="l">
-              <VStack alignItems="stretch" gap="s">
-                <TitleMedium color="content.primary">
-                  {tPre("data-completeness-title")}
-                </TitleMedium>
-                <BodyMedium color="content.secondary">
-                  {t("preflight-nothing-mandatory")}
-                </BodyMedium>
-                <VStack alignItems="stretch" gap="0">
-                  {rows.map((row, i) => (
-                    <Row
-                      key={row.label}
-                      {...row}
-                      isLast={i === rows.length - 1}
-                    />
-                  ))}
-                </VStack>
-                <BodySmall color="content.tertiary">
-                  {t("legal-screening-note")}
-                </BodySmall>
-              </VStack>
-            </Card.Body>
-          </Card.Root>
-
-          <Card.Root borderColor="border.overlay">
-            <Card.Body p="l">
-              <VStack alignItems="stretch" gap="m">
-                <HStack gap="s" alignItems="center" flexWrap="wrap">
+          <SimpleGrid
+            columns={{ base: 1, lg: 2 }}
+            gridTemplateColumns={{ lg: "1fr 380px" }}
+            alignItems="start"
+            gap="l"
+          >
+            {/* Left — what the model has to work with. */}
+            <Card.Root borderColor="border.overlay">
+              <Card.Body p="l">
+                <VStack alignItems="stretch" gap="s">
                   <TitleMedium color="content.primary">
-                    {tPre("scoring-weights-title")}
+                    {tPre("data-completeness-title")}
                   </TitleMedium>
-                  <MeedStatusTag
-                    tone={isCustom ? "warning" : "neutral"}
-                    ml="auto"
-                  >
-                    {isCustom
-                      ? tPre("custom-weights-active")
-                      : tPre("badge-optional")}
-                  </MeedStatusTag>
-                </HStack>
-                <BodyMedium color="content.secondary">
-                  {tPre("scoring-weights-description")}
-                </BodyMedium>
-                <VStack alignItems="stretch" gap="l">
-                  {WEIGHT_KEYS.map((k) => (
-                    <WeightSlider
-                      key={k}
-                      label={tPre(`weight-${k}`)}
-                      description={t(`weight-${k}-description-${track}`)}
-                      value={weights[k]}
-                      defaultValue={DEFAULT_WEIGHTS[k]}
-                      onChange={(v) =>
-                        setPreferences({ weights: rebalance(weights, k, v) })
+                  <VStack alignItems="stretch" gap="0">
+                    <Row
+                      label={
+                        track === "adaptation"
+                          ? t("step-risk")
+                          : t("step-emissions")
                       }
-                      t={tPre}
+                      status="complete"
+                      statusLabel={t("status-complete")}
+                      sub={
+                        track === "adaptation"
+                          ? t("preflight-risk-sub", { count: cellsWithData })
+                          : t("preflight-emissions-sub", {
+                              year: city.inventory.year,
+                            })
+                      }
+                      href={trackHref(
+                        lng,
+                        city.slug,
+                        track,
+                        track === "adaptation" ? "risk" : "emissions",
+                      )}
+                      linkLabel={tPre("view-breakdown")}
                     />
-                  ))}
-                </VStack>
-                <HStack gap="s" flexWrap="wrap" alignItems="center">
-                  <BodySmall
-                    color={
-                      total === 100
-                        ? "content.secondary"
-                        : "sentiment.warningDefault"
-                    }
-                  >
-                    {tPre("weights-total", { total })}
-                  </BodySmall>
-                  {isCustom && (
-                    <MeedButton
-                      variant="outlined"
-                      minW="auto"
-                      px="m"
-                      onClick={() =>
-                        setPreferences({ weights: { ...DEFAULT_WEIGHTS } })
+                    <Row
+                      label={t("step-preferences")}
+                      status={hasPreferences ? "complete" : "optional"}
+                      statusLabel={
+                        hasPreferences
+                          ? t("status-complete")
+                          : t("req-optional")
                       }
-                    >
-                      {tPre("reset-to-defaults")}
-                    </MeedButton>
-                  )}
-                </HStack>
-              </VStack>
-            </Card.Body>
-          </Card.Root>
+                      sub={
+                        hasPreferences
+                          ? prefParts.join(" · ")
+                          : t("status-not-set-sub")
+                      }
+                      href={prefsHref}
+                      linkLabel={
+                        hasPreferences ? tPre("edit-step") : tPre("enter-data")
+                      }
+                    />
+                    <Row
+                      label={tPre("exclusions-title")}
+                      status={hasExclusions ? "complete" : "optional"}
+                      statusLabel={
+                        hasExclusions ? t("status-complete") : t("req-optional")
+                      }
+                      sub={
+                        hasExclusions
+                          ? tPre("confirmed-exclusions-count", {
+                              count: prefs.excludedActionIds.length,
+                            })
+                          : t("legal-screening-note")
+                      }
+                      href={prefsHref}
+                      linkLabel={
+                        hasExclusions ? tPre("edit-step") : tPre("enter-data")
+                      }
+                      isLast
+                    />
+                  </VStack>
+                </VStack>
+              </Card.Body>
+            </Card.Root>
 
-          <VStack alignItems="stretch" gap="s">
-            <HStack
-              gap="s"
-              px="m"
-              py="s"
-              borderRadius="rounded"
-              bg="sentiment.positiveOverlay"
-              alignItems="center"
-            >
-              <BodySmall color="interactive.tertiary">
-                {hasPreferences
-                  ? tPre("gate-ready")
-                  : t("gate-preferences-optional")}
-              </BodySmall>
-            </HStack>
-            <HStack justifyContent="flex-end">
-              <MeedButton
-                minW="auto"
-                px="l"
-                leftIcon={<Icon as={LuZap} boxSize="16px" />}
-                onClick={() =>
-                  router.push(trackHref(lng, city.slug, track, "processing"))
-                }
-              >
-                {tPre("generate-ranking-cta")}
-              </MeedButton>
-            </HStack>
-          </VStack>
+            {/* Right — how the ranking is weighted, and the one button. */}
+            <VStack alignItems="stretch" gap="l">
+              <Card.Root borderColor="border.overlay">
+                <Card.Body p="l">
+                  <VStack alignItems="stretch" gap="m">
+                    <HStack gap="s" alignItems="center" flexWrap="wrap">
+                      <TitleMedium color="content.primary">
+                        {tPre("scoring-weights-title")}
+                      </TitleMedium>
+                      <MeedStatusTag
+                        tone={isCustom ? "warning" : "neutral"}
+                        ml="auto"
+                      >
+                        {isCustom
+                          ? tPre("custom-weights-active")
+                          : tPre("badge-optional")}
+                      </MeedStatusTag>
+                    </HStack>
+                    <BodySmall color="content.secondary">
+                      {tPre("scoring-weights-description")}
+                    </BodySmall>
+                    <VStack alignItems="stretch" gap="l">
+                      {WEIGHT_KEYS.map((k) => (
+                        <WeightSlider
+                          key={k}
+                          label={tPre(`weight-${k}`)}
+                          description={t(`weight-${k}-description-${track}`)}
+                          value={weights[k]}
+                          defaultValue={DEFAULT_WEIGHTS[k]}
+                          onChange={(v) =>
+                            setPreferences({
+                              weights: rebalance(weights, k, v),
+                            })
+                          }
+                          t={tPre}
+                        />
+                      ))}
+                    </VStack>
+                    <HStack gap="s" flexWrap="wrap" alignItems="center">
+                      <MeedStatusTag
+                        tone={total === 100 ? "positive" : "negative"}
+                      >
+                        {tPre("weights-total", { total })}
+                      </MeedStatusTag>
+                      {isCustom && (
+                        <MeedButton
+                          variant="text"
+                          minW="auto"
+                          px="m"
+                          onClick={() =>
+                            setPreferences({ weights: { ...DEFAULT_WEIGHTS } })
+                          }
+                          _focusVisible={FOCUS_RING}
+                        >
+                          {tPre("reset-to-defaults")}
+                        </MeedButton>
+                      )}
+                    </HStack>
+                  </VStack>
+                </Card.Body>
+              </Card.Root>
+
+              <Card.Root borderColor="border.overlay">
+                <Card.Body p="l">
+                  <VStack alignItems="stretch" gap="m">
+                    <BodyMedium
+                      color="content.secondary"
+                      id="demo-preflight-gate"
+                    >
+                      {hasPreferences
+                        ? tPre("gate-ready")
+                        : t("gate-preferences-optional")}
+                    </BodyMedium>
+                    <MeedButton
+                      variant="filled"
+                      minW="auto"
+                      w="full"
+                      px="l"
+                      leftIcon={<LuZap size={16} />}
+                      aria-describedby="demo-preflight-gate"
+                      onClick={() =>
+                        router.push(
+                          trackHref(lng, city.slug, track, "processing"),
+                        )
+                      }
+                      _focusVisible={FOCUS_RING}
+                    >
+                      {tPre("generate-ranking-cta")}
+                    </MeedButton>
+                  </VStack>
+                </Card.Body>
+              </Card.Root>
+            </VStack>
+          </SimpleGrid>
         </VStack>
       )}
     </DemoShell>

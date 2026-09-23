@@ -78,6 +78,7 @@ export function ResultsHeader({
   isGenerating = false,
   progress = null,
   onGenerate,
+  trailing,
   t,
 }: {
   rankedCount: number;
@@ -91,6 +92,8 @@ export function ResultsHeader({
   progress?: string | null;
   /** Omit to render the census line alone. */
   onGenerate?: () => void;
+  /** Rendered at the right when there is no report control here. */
+  trailing?: React.ReactNode;
   t: TFunction;
 }) {
   // Each clause is dropped rather than guessed at when its number is missing.
@@ -112,6 +115,7 @@ export function ResultsHeader({
       flexWrap="wrap"
     >
       <LabelLarge color="content.tertiary">{census}</LabelLarge>
+      {!onGenerate && trailing}
       {onGenerate && (
         <GenerateReportControl
           selectedCount={selectedCount}

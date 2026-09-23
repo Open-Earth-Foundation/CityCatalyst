@@ -488,6 +488,9 @@
   "pref-row-exclusions": "Exclusions",
   "pref-row-weights": "Scoring weights",
   "pref-row-weights-sub": "Adjust the three sliders below; the defaults follow the methodology.",
+  "funnel-excluded": "After your exclusions",
+  "funnel-excluded-sub": "Removed on the preferences screen",
+  "config-weights-preview": "Impact · Alignment · Feasibility (%)",
   "adaptation": {
     "meed": {
       "overview-title": "Prioritize adaptation actions",

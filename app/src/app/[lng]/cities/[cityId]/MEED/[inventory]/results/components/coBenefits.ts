@@ -260,9 +260,26 @@ export function tallyCoBenefits(
   index: MeedActionIndex,
   limit = 6,
 ): MeedCoBenefitTally[] {
+  return tally(actions, limit, (a) => actionCoBenefitScores(a, index));
+}
+
+/** Trade-offs shared across a set of actions, most common first. */
+export function tallyTradeOffs(
+  actions: MeedRankedActionResult[],
+  index: MeedActionIndex,
+  limit = 6,
+): MeedCoBenefitTally[] {
+  return tally(actions, limit, (a) => actionTradeOffScores(a, index));
+}
+
+function tally(
+  actions: MeedRankedActionResult[],
+  limit: number,
+  scoresOf: (action: MeedRankedActionResult) => MeedCoBenefitScore[],
+): MeedCoBenefitTally[] {
   const counts = new Map<string, { count: number; values: number[] }>();
   for (const action of actions) {
-    for (const { key, value } of actionCoBenefitScores(action, index)) {
+    for (const { key, value } of scoresOf(action)) {
       const tally = counts.get(key) ?? { count: 0, values: [] };
       tally.count += 1;
       if (value !== null) tally.values.push(value);

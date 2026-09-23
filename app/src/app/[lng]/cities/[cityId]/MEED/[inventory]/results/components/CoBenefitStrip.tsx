@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { Card, HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
+import { LuTriangleAlert } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { BodySmall } from "@/components/package/Texts/Body";
@@ -28,56 +29,102 @@ export function formatMagnitude(value: number): string {
  */
 export function CoBenefitStrip({
   benefits,
+  tradeOffs = [],
   total,
   t,
 }: {
   benefits: MeedCoBenefitTally[];
+  /** Adverse effects across the same actions; the block is omitted when empty. */
+  tradeOffs?: MeedCoBenefitTally[];
   /** How many top actions the counts are out of. */
   total: number;
   t: TFunction;
 }) {
-  if (benefits.length === 0) return null;
+  if (benefits.length === 0 && tradeOffs.length === 0) return null;
 
+  return (
+    <VStack alignItems="stretch" gap="l">
+      {benefits.length > 0 && (
+        <TallyBlock
+          title={t("cobenefits-title")}
+          description={t("cobenefits-description")}
+          items={benefits}
+          total={total}
+          adverse={false}
+          t={t}
+        />
+      )}
+      {tradeOffs.length > 0 && (
+        <TallyBlock
+          title={t("tradeoffs-title")}
+          description={t("tradeoffs-description")}
+          items={tradeOffs}
+          total={total}
+          adverse
+          t={t}
+        />
+      )}
+    </VStack>
+  );
+}
+
+function TallyBlock({
+  title,
+  description,
+  items,
+  total,
+  adverse,
+  t,
+}: {
+  title: string;
+  description: string;
+  items: MeedCoBenefitTally[];
+  total: number;
+  adverse: boolean;
+  t: TFunction;
+}) {
   return (
     <VStack alignItems="stretch" gap="s">
       <VStack alignItems="stretch" gap="xs">
-        <LabelLarge color="content.primary">{t("cobenefits-title")}</LabelLarge>
-        <BodySmall color="content.secondary">
-          {t("cobenefits-description")}
-        </BodySmall>
+        <LabelLarge color="content.primary">{title}</LabelLarge>
+        <BodySmall color="content.secondary">{description}</BodySmall>
       </VStack>
       <SimpleGrid
-        columns={{ base: 2, md: 3, lg: Math.min(benefits.length, 6) }}
+        columns={{ base: 2, md: 3, lg: Math.min(items.length, 6) }}
         gap="m"
       >
-        {benefits.map((benefit) => (
+        {items.map((item) => (
           <Card.Root
-            key={benefit.key}
+            key={item.key}
             borderWidth="1px"
-            borderColor="border.neutral"
+            borderColor={
+              adverse ? "sentiment.negativeDefault" : "border.neutral"
+            }
             h="full"
           >
             <Card.Body p="m">
               <VStack alignItems="flex-start" gap="s" h="full">
                 <HStack justifyContent="space-between" w="full" gap="s">
                   <Icon
-                    as={coBenefitIcon(benefit.key)}
+                    as={adverse ? LuTriangleAlert : coBenefitIcon(item.key)}
                     boxSize="24px"
-                    color="content.link"
+                    color={
+                      adverse ? "sentiment.negativeDefault" : "content.link"
+                    }
                   />
-                  {benefit.mean !== null && (
+                  {item.mean !== null && (
                     <MeedStatusTag
-                      tone={benefit.mean < 0 ? "negative" : "positive"}
+                      tone={item.mean < 0 ? "negative" : "positive"}
                     >
-                      {formatMagnitude(benefit.mean)}
+                      {formatMagnitude(item.mean)}
                     </MeedStatusTag>
                   )}
                 </HStack>
                 <LabelMedium color="content.primary">
-                  {coBenefitLabel(benefit.key, t)}
+                  {coBenefitLabel(item.key, t)}
                 </LabelMedium>
                 <BodySmall color="content.tertiary" mt="auto">
-                  {t("cobenefit-count", { count: benefit.count, total })}
+                  {t("cobenefit-count", { count: item.count, total })}
                 </BodySmall>
               </VStack>
             </Card.Body>

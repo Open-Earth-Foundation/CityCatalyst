@@ -488,6 +488,9 @@
   "pref-row-exclusions": "Exclusões",
   "pref-row-weights": "Pesos da pontuação",
   "pref-row-weights-sub": "Ajuste os três controles abaixo; os padrões seguem a metodologia.",
+  "funnel-excluded": "Após suas exclusões",
+  "funnel-excluded-sub": "Removidas na tela de preferências",
+  "config-weights-preview": "Impacto · Alinhamento · Viabilidade (%)",
   "adaptation": {
     "meed": {
       "overview-title": "Priorizar ações de adaptação",
@@ -618,7 +621,9 @@
       "config-priority-risks": "Riscos prioritários",
       "config-exclusions-count_one": "{{count}} ação excluída",
       "config-exclusions-count_other": "{{count}} ações excluídas",
-      "composition-weight-short": "× {{weight}}% de peso"
+      "composition-weight-short": "× {{weight}}% de peso",
+      "tradeoffs-title": "Efeitos adversos entre estas ações",
+      "tradeoffs-description": "Onde uma das principais ações pode prejudicar outro objetivo."
     },
     "meed-preferences": {
       "title": "Preferências estratégicas",
@@ -713,7 +718,9 @@
       "config-priority-risks": "Riscos prioritários",
       "config-exclusions-count_one": "{{count}} ação excluída",
       "config-exclusions-count_other": "{{count}} ações excluídas",
-      "composition-weight-short": "× {{weight}}% de peso"
+      "composition-weight-short": "× {{weight}}% de peso",
+      "tradeoffs-title": "Efeitos adversos entre estas ações",
+      "tradeoffs-description": "Onde uma das principais ações pode prejudicar outro objetivo."
     }
   },
   "policy-page-short": "p. {{page}}",

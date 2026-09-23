@@ -13,7 +13,10 @@ import { DetailPanel } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/result
 import { FullRanking } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/FullRanking";
 import { ResultsHeader } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ResultsHeader";
 import { TopPicks } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/TopPicks";
-import { tallyCoBenefits } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/coBenefits";
+import {
+  tallyCoBenefits,
+  tallyTradeOffs,
+} from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/coBenefits";
 import { buildReportPdf } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/report/meedReportPdf";
 import type { DemoTrack } from "../_lib/types";
 import { useTrack } from "../_lib/useTrack";
@@ -41,10 +44,13 @@ export function RankingView({
   lng,
   citySlug,
   track,
+  headerAction,
 }: {
   lng: string;
   citySlug: string;
   track: DemoTrack;
+  /** Rendered at the right of the census line, e.g. the re-run button. */
+  headerAction?: React.ReactNode;
 }) {
   const data = useTrack(lng, citySlug, track);
   const { city, ranked, index, weights, adaptation, state } = data;
@@ -66,6 +72,10 @@ export function RankingView({
   const topPicks = useMemo(() => ranked.slice(0, 3), [ranked]);
   const coBenefits = useMemo(
     () => tallyCoBenefits(topPicks, index),
+    [topPicks, index],
+  );
+  const tradeOffs = useMemo(
+    () => tallyTradeOffs(topPicks, index),
     [topPicks, index],
   );
   const { areas, facts, backing, visualFor, indicatorFor, ctaFor, hrefFor } =
@@ -150,6 +160,9 @@ export function RankingView({
     const legal =
       direct -
       adaptation.notRanked.filter((n) => n.reason === "legally_blocked").length;
+    const excluded = adaptation.notRanked.filter(
+      (n) => n.reason === "excluded_by_city",
+    ).length;
     return [
       {
         label: t("funnel-bank"),
@@ -175,6 +188,18 @@ export function RankingView({
         tone: "warning" as const,
         sublabel: t("funnel-legal-sub"),
       },
+      // The city's own exclusions only appear as a stage when there are any,
+      // so the last two numbers never differ without a stage explaining it.
+      ...(excluded > 0
+        ? [
+            {
+              label: t("funnel-excluded"),
+              value: legal - excluded,
+              tone: "caution" as const,
+              sublabel: t("funnel-excluded-sub"),
+            },
+          ]
+        : []),
       {
         label: t("funnel-ranked"),
         value: adaptation.ranked.length,
@@ -196,6 +221,7 @@ export function RankingView({
         <ResultsHeader
           rankedCount={ranked.length}
           excludedCount={adaptation ? adaptation.notRanked.length : null}
+          trailing={headerAction}
           t={tResults}
         />
 
@@ -229,7 +255,11 @@ export function RankingView({
                     {t("funnel-per-city")}
                   </MeedStatusTag>
                 </HStack>
-                <MeedFunnelStrip steps={funnel} ariaLabel={t("funnel-aria")} />
+                <MeedFunnelStrip
+                  steps={funnel}
+                  size="lg"
+                  ariaLabel={t("funnel-aria")}
+                />
               </VStack>
             </Card.Body>
           </Card.Root>
@@ -256,6 +286,7 @@ export function RankingView({
           <MeedScoreLegend weights={weights} t={tResults} />
           <CoBenefitStrip
             benefits={coBenefits}
+            tradeOffs={tradeOffs}
             total={topPicks.length}
             t={tResults}
           />

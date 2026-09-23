@@ -2,7 +2,10 @@
 import { Box, HStack, VStack } from "@chakra-ui/react";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { Overline } from "@/components/package/Texts/Overline";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
+import { LabelMedium } from "@/components/package/Texts/Label";
 import { TitleLarge } from "@/components/package/Texts/Title";
+import { BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import type { MeedTone } from "./MeedStatusTag";
 import { MeedChartTip } from "./MeedChartTip";
@@ -30,6 +33,8 @@ export interface MeedFunnelStripProps {
   compact?: boolean;
   /** Keep full-size numbers but hide the sublabels (they stay in the tooltip). */
   showSublabels?: boolean;
+  /** `lg` makes the numbers the size of a score, for a section that is about them. */
+  size?: "md" | "lg";
   ariaLabel: string;
   /** Hover explanation; the stage sublabels become its rows. */
   tipTitle?: string;
@@ -45,6 +50,7 @@ export function MeedFunnelStrip({
   steps,
   compact = false,
   showSublabels = true,
+  size = "md",
   ariaLabel,
   tipTitle,
   tipNote,
@@ -72,28 +78,44 @@ export function MeedFunnelStrip({
         gap="m"
         flexWrap={compact ? "nowrap" : "wrap"}
       >
-        {steps.map((step) => (
-          <VStack key={step.label} alignItems="flex-start" gap="0" minW={0}>
-            <Overline color="content.tertiary">{step.label}</Overline>
-            <TitleLarge
-              color={TONE_COLOR[step.tone]}
-              fontVariantNumeric="tabular-nums"
-              fontSize={compact ? "title.md" : undefined}
-            >
-              {step.value}
-            </TitleLarge>
-            {!compact && showSublabels && step.sublabel && (
-              <Caption color="content.secondary">{step.sublabel}</Caption>
-            )}
-          </VStack>
-        ))}
+        {steps.map((step) =>
+          size === "lg" && !compact ? (
+            <VStack key={step.label} alignItems="flex-start" gap="xs" minW={0}>
+              <LabelMedium color="content.tertiary">{step.label}</LabelMedium>
+              <HeadlineSmall
+                color={TONE_COLOR[step.tone]}
+                fontVariantNumeric="tabular-nums"
+                lineHeight="1"
+              >
+                {step.value}
+              </HeadlineSmall>
+              {showSublabels && step.sublabel && (
+                <BodySmall color="content.secondary">{step.sublabel}</BodySmall>
+              )}
+            </VStack>
+          ) : (
+            <VStack key={step.label} alignItems="flex-start" gap="0" minW={0}>
+              <Overline color="content.tertiary">{step.label}</Overline>
+              <TitleLarge
+                color={TONE_COLOR[step.tone]}
+                fontVariantNumeric="tabular-nums"
+                fontSize={compact ? "title.md" : undefined}
+              >
+                {step.value}
+              </TitleLarge>
+              {!compact && showSublabels && step.sublabel && (
+                <Caption color="content.secondary">{step.sublabel}</Caption>
+              )}
+            </VStack>
+          ),
+        )}
       </HStack>
       <Box>
         <SegmentedProgress
           values={reversedSegments}
           colors={reversed.map((s) => TONE_COLOR[s.tone])}
           max={max || 1}
-          height={compact ? 2 : 3}
+          height={compact ? 2 : size === "lg" ? 4 : 3}
         />
       </Box>
     </VStack>

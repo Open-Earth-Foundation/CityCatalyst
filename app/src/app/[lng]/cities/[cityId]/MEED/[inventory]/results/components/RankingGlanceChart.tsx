@@ -125,24 +125,31 @@ export function RankingGlanceChart({
     <Box>
       <HStack
         justifyContent="space-between"
-        alignItems="baseline"
+        alignItems="center"
         gap="m"
         flexWrap="wrap"
       >
         <LabelLarge color="content.primary">{t("glance-title")}</LabelLarge>
-        <Caption color="content.tertiary">{t("glance-keyboard-note")}</Caption>
+        <HStack gap="m" flexWrap="wrap">
+          {legend.map(([sector, color]) => (
+            <HStack key={sector} gap="xs" alignItems="center">
+              <Box
+                boxSize="12px"
+                borderRadius="full"
+                bg={color}
+                flexShrink={0}
+              />
+              <BodySmall color="content.secondary">{sector}</BodySmall>
+            </HStack>
+          ))}
+        </HStack>
       </HStack>
-      <BodySmall color="content.secondary" mt="xs">
-        {t("glance-description", { count: shown.length })}
-      </BodySmall>
-      <HStack gap="m" flexWrap="wrap" mt="s">
-        {legend.map(([sector, color]) => (
-          <HStack key={sector} gap="xs" alignItems="center">
-            <Box boxSize="12px" borderRadius="full" bg={color} flexShrink={0} />
-            <BodySmall color="content.secondary">{sector}</BodySmall>
-          </HStack>
-        ))}
-      </HStack>
+      {/* What the chart is and how to browse it without a mouse: for
+          assistive tech, not for the layout — the bars speak for themselves. */}
+      <Caption srOnly>
+        {t("glance-description", { count: shown.length })}{" "}
+        {t("glance-keyboard-note")}
+      </Caption>
       <Box h={`${height}px`} minH="240px" position="relative" mt="s">
         <ResponsiveBar<GlanceDatum>
           data={data}

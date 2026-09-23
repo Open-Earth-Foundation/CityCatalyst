@@ -3,8 +3,8 @@ import React from "react";
 import { Box, HStack, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { LuSparkles } from "react-icons/lu";
-import { HeadlineLarge } from "@/components/package/Texts/Headline";
-import { BodyLarge, BodySmall } from "@/components/package/Texts/Body";
+import { TitleLarge } from "@/components/package/Texts/Title";
+import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { ContextCardGrid } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ContextCardGrid";
 import { formatEmissions } from "@/util/helpers";
@@ -97,55 +97,72 @@ export function TrackHome({
         flexDirection="column"
         gap="xl"
       >
-        <HStack
-          justifyContent="space-between"
-          alignItems={{ base: "stretch", md: "flex-end" }}
-          flexDirection={{ base: "column", md: "row" }}
-          gap="l"
-          py="l"
-        >
-          <VStack alignItems="stretch" gap="s" flex="1" minW={0}>
-            <HeadlineLarge color="content.primary">
-              {tMeed("overview-title")}
-            </HeadlineLarge>
-            <BodyLarge color="content.secondary" maxW="640px">
-              {tMeed("overview-description")}
-            </BodyLarge>
-          </VStack>
-          <VStack
+        {!hasRanking && (
+          <HStack
+            justifyContent="space-between"
             alignItems={{ base: "stretch", md: "flex-end" }}
-            gap="xs"
-            flexShrink={0}
+            flexDirection={{ base: "column", md: "row" }}
+            gap="l"
+            py="l"
           >
-            <MeedButton
-              minW="auto"
-              px="l"
-              leftIcon={<LuSparkles size={16} />}
-              disabled={!isReady}
-              onClick={() =>
-                router.push(trackHref(lng, city.slug, track, "preferences"))
-              }
+            <VStack alignItems="stretch" gap="s" flex="1" minW={0}>
+              <TitleLarge color="content.primary">
+                {tMeed("overview-title")}
+              </TitleLarge>
+              <BodyMedium color="content.secondary" maxW="640px">
+                {tMeed("overview-description")}
+              </BodyMedium>
+            </VStack>
+            <VStack
+              alignItems={{ base: "stretch", md: "flex-end" }}
+              gap="xs"
+              flexShrink={0}
             >
-              {hasRanking
-                ? tMeed("ranking-rerun")
-                : tMeed("get-recommendations")}
-            </MeedButton>
-            <BodySmall
-              color="content.tertiary"
-              textAlign={{ base: "start", md: "end" }}
-              maxW="360px"
-            >
-              {t(
-                track === "adaptation"
-                  ? "get-recommendations-hint-adaptation"
-                  : "get-recommendations-hint-mitigation",
-              )}
-            </BodySmall>
-          </VStack>
-        </HStack>
+              <MeedButton
+                minW="auto"
+                px="l"
+                leftIcon={<LuSparkles size={16} />}
+                disabled={!isReady}
+                onClick={() =>
+                  router.push(trackHref(lng, city.slug, track, "preferences"))
+                }
+              >
+                {tMeed("get-recommendations")}
+              </MeedButton>
+              <BodySmall
+                color="content.tertiary"
+                textAlign={{ base: "start", md: "end" }}
+                maxW="360px"
+              >
+                {t(
+                  track === "adaptation"
+                    ? "get-recommendations-hint-adaptation"
+                    : "get-recommendations-hint-mitigation",
+                )}
+              </BodySmall>
+            </VStack>
+          </HStack>
+        )}
 
         {!isReady ? null : hasRanking ? (
-          <RankingView lng={lng} citySlug={citySlug} track={track} />
+          <RankingView
+            lng={lng}
+            citySlug={citySlug}
+            track={track}
+            headerAction={
+              <MeedButton
+                variant="outlined"
+                minW="auto"
+                px="l"
+                leftIcon={<LuSparkles size={16} />}
+                onClick={() =>
+                  router.push(trackHref(lng, city.slug, track, "preferences"))
+                }
+              >
+                {tMeed("ranking-rerun")}
+              </MeedButton>
+            }
+          />
         ) : (
           <ContextCardGrid
             title={tMeed("how-ranking-works-title")}

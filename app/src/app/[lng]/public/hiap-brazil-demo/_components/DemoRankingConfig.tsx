@@ -1,34 +1,50 @@
 "use client";
 import React from "react";
-import { Grid, HStack, Icon, Link, SimpleGrid, VStack } from "@chakra-ui/react";
+import { HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { LuPencil } from "react-icons/lu";
 import type { TFunction } from "i18next";
-import { BodyMedium } from "@/components/package/Texts/Body";
+import { BodySmall } from "@/components/package/Texts/Body";
 import { LabelLarge } from "@/components/package/Texts/Label";
-import { MeedMeter } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedMeter";
-import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
-import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
+import { Overline } from "@/components/package/Texts/Overline";
+import { TitleMedium } from "@/components/package/Texts/Title";
+import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import type { DemoPreferences } from "../_lib/types";
 
-function ChipRow({ items, none }: { items: string[]; none: string }) {
-  if (items.length === 0)
-    return <BodyMedium color="content.tertiary">{none}</BodyMedium>;
+function Preview({
+  label,
+  value,
+  detail,
+}: {
+  label: string;
+  value: string;
+  detail: string;
+}) {
   return (
-    <HStack gap="xs" flexWrap="wrap">
-      {items.map((item) => (
-        <MeedStatusTag key={item} tone="neutral">
-          {item}
-        </MeedStatusTag>
-      ))}
-    </HStack>
+    <VStack
+      alignItems="stretch"
+      gap="xs"
+      p="m"
+      borderRadius="rounded"
+      bg="background.neutral"
+      minW={0}
+    >
+      <Overline color="content.tertiary">{label}</Overline>
+      <TitleMedium color="content.primary" fontVariantNumeric="tabular-nums">
+        {value}
+      </TitleMedium>
+      <BodySmall color="content.secondary" lineClamp={1} title={detail}>
+        {detail}
+      </BodySmall>
+    </VStack>
   );
 }
 
 /**
- * The configuration behind the ranking — the demo's counterpart to
- * `MeedRankingConfig`: one labelled row per preference group, chips for the
- * choices, read-only meters for the weights, and one way to change any of it.
+ * A reminder of the settings the ranking ran with — one small box per
+ * parameter with a count and a one-line preview, and one button to change
+ * any of it. Not a place to read the preferences in full; that is the
+ * preferences screen.
  */
 export function DemoRankingConfig({
   preferences,
@@ -50,87 +66,54 @@ export function DemoRankingConfig({
 }) {
   const none = t("config-none");
   const w = preferences.weights;
-  const rows: { label: string; items: string[] }[] = [
+  const box = (label: string, items: string[]) => ({
+    label,
+    value: String(items.length),
+    detail: items.length ? items.join(", ") : none,
+  });
+  const boxes = [
+    box(t("config-sectors"), preferences.sectors.map(labelFor.sector)),
+    box(t("config-cobenefits"), preferences.coBenefits.map(labelFor.coBenefit)),
+    box(
+      t("config-priority-risks"),
+      preferences.priorityRisks.map(labelFor.risk),
+    ),
+    box(t("config-timeline"), preferences.timeline.map(labelFor.timeline)),
+    box(
+      t("config-exclusions"),
+      preferences.excludedActionIds.map(labelFor.action),
+    ),
     {
-      label: t("config-sectors"),
-      items: preferences.sectors.map(labelFor.sector),
-    },
-    {
-      label: t("config-cobenefits"),
-      items: preferences.coBenefits.map(labelFor.coBenefit),
-    },
-    {
-      label: t("config-priority-risks"),
-      items: preferences.priorityRisks.map(labelFor.risk),
-    },
-    {
-      label: t("config-timeline"),
-      items: preferences.timeline.map(labelFor.timeline),
-    },
-    {
-      label: t("config-exclusions"),
-      items: preferences.excludedActionIds.map(labelFor.action),
-    },
-  ];
-  const pillars = [
-    { key: "impact", label: t("composition-impact"), value: w.impact },
-    { key: "alignment", label: t("composition-alignment"), value: w.alignment },
-    {
-      key: "feasibility",
-      label: t("composition-feasibility"),
-      value: w.feasibility,
+      label: t("config-weights"),
+      value: `${w.impact} · ${w.alignment} · ${w.feasibility}`,
+      detail: t("config-weights-preview"),
     },
   ];
 
   return (
     <VStack alignItems="stretch" gap="m">
-      <HStack justifyContent="space-between" alignItems="center" gap="m">
-        <LabelLarge color="content.primary">{t("config-title")}</LabelLarge>
-        <Link
-          asChild
-          color="content.link"
-          fontFamily="heading"
-          fontSize="label.md"
-          fontWeight="semibold"
-          _focusVisible={FOCUS_RING}
-        >
-          <NextLink href={editHref}>
-            <HStack gap="xs">
-              <Icon as={LuPencil} boxSize="14px" />
-              <span>{t("config-edit")}</span>
-            </HStack>
-          </NextLink>
-        </Link>
-      </HStack>
-      <Grid
-        templateColumns={{ base: "1fr", md: "max-content 1fr" }}
-        columnGap="l"
-        rowGap="m"
-        alignItems="start"
+      <HStack
+        justifyContent="space-between"
+        alignItems="center"
+        gap="m"
+        flexWrap="wrap"
       >
-        {rows.map((row) => (
-          <React.Fragment key={row.label}>
-            <BodyMedium color="content.tertiary" pt="2px">
-              {row.label}
-            </BodyMedium>
-            <ChipRow items={row.items} none={none} />
-          </React.Fragment>
+        <LabelLarge color="content.primary">{t("config-title")}</LabelLarge>
+        <MeedButton
+          asChild
+          variant="outlined"
+          minW="auto"
+          px="m"
+          leftIcon={<Icon as={LuPencil} boxSize="14px" />}
+        >
+          <NextLink href={editHref}>{t("config-edit")}</NextLink>
+        </MeedButton>
+      </HStack>
+      <SimpleGrid columns={{ base: 2, md: 3, lg: 6 }} gap="m">
+        {boxes.map((b) => (
+          <Preview key={b.label} {...b} />
         ))}
-        <BodyMedium color="content.tertiary" pt="2px">
-          {t("config-weights")}
-        </BodyMedium>
-        <SimpleGrid columns={{ base: 1, sm: 3 }} gap="m">
-          {pillars.map((p) => (
-            <MeedMeter
-              key={p.key}
-              value={p.value / 100}
-              tone="info"
-              label={p.label}
-              valueText={`${p.value}%`}
-            />
-          ))}
-        </SimpleGrid>
-      </Grid>
+      </SimpleGrid>
     </VStack>
   );
 }

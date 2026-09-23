@@ -91,6 +91,8 @@
   "legal-filter-info-label": "About the legal filter",
   "cobenefits-title": "Top co-benefits across these actions",
   "cobenefits-description": "What these top picks deliver beyond emissions reduction.",
+  "tradeoffs-title": "Adverse effects across these actions",
+  "tradeoffs-description": "Where a top action could set another goal back.",
   "cobenefit-count": "{{count}} of {{total}} top actions",
   "cobenefit-air-quality": "Air quality",
   "cobenefit-cost-of-living": "Cost of living",

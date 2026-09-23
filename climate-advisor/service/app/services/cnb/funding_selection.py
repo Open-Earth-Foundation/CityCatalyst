@@ -55,11 +55,10 @@ async def save_funding_selection(
         raise HTTPException(
             status_code=409, detail="Funding selection changed. Reload and try again."
         )
-    summary = deepcopy(run.context_summary or {})
-    if (
-        summary.get("context_bundle", {}).get("status") == "building"
-        or summary.get("draft_document", {}).get("status") == "running"
-    ):
+    # Document processing only rewrites source sections, so it does not block;
+    # drafting reads funding mid-run and must finish first.
+    summary = run.context_summary or {}
+    if summary.get("draft_document", {}).get("status") == "running":
         raise HTTPException(
             status_code=409,
             detail="Wait for the current operation to finish before changing funding.",
@@ -185,7 +184,13 @@ async def save_funding_selection(
     # Publish current funding context for Clima and subsequent chapter generation.
     run.funder_id, run.selected_funding_opportunity_id = requested
     run.updated_at = datetime.now(UTC)
-    bundle = await session.get(ConceptNoteContextBundle, run.run_id)
+    # Lock the bundle so a finishing document build cannot overwrite this write.
+    bundle = await session.get(
+        ConceptNoteContextBundle,
+        run.run_id,
+        with_for_update=True,
+        populate_existing=True,
+    )
     if bundle is None:
         bundle = ConceptNoteContextBundle(run_id=run.run_id, context_bundle={})
         session.add(bundle)

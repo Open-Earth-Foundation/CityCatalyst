@@ -660,7 +660,7 @@ export function ConceptNoteWorkspace({
         <FundingSelectionDialog
           applicationContext={applicationContext}
           hasDraft={Boolean(draft?.chapters.length)}
-          busy={isDraftRunning || contextStatus.busy || Boolean(edits.busy)}
+          busy={isDraftRunning || Boolean(edits.busy)}
           lng={lng}
           runId={runId}
           onClose={() => setFundingOpen(false)}

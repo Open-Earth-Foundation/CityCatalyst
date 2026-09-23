@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import { HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
 import { LuArrowDown } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { MeedButton } from "../../../components/MeedButton";
-import { LabelLarge } from "@/components/package/Texts/Label";
-import { BodySmall } from "@/components/package/Texts/Body";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import { MeedCardSkeleton } from "../../../components/MeedSkeletons";
 import { TopPickCard } from "./TopPickCard";
 import { GenerateReportControl } from "./ResultsHeader";
@@ -60,12 +60,12 @@ export function TopPicks({
         flexWrap="wrap"
       >
         <VStack alignItems="stretch" gap="xs" flex="1" minW="240px">
-          <LabelLarge color="content.primary">
+          <TitleLarge color="content.primary">
             {t("top-picks-title")}
-          </LabelLarge>
-          <BodySmall color="content.secondary">
+          </TitleLarge>
+          <BodyMedium color="content.secondary">
             {t("top-picks-description")}
-          </BodySmall>
+          </BodyMedium>
         </VStack>
         {onGenerate && (
           <GenerateReportControl

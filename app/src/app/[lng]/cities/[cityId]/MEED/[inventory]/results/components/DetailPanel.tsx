@@ -7,7 +7,7 @@ import type { MeedRankedActionResult } from "@/util/types/meed";
 import { CloseButton } from "@/components/ui/close-button";
 import { HeadlineLarge } from "@/components/package/Texts/Headline";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
+import { LabelMedium } from "@/components/package/Texts/Label";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
 import { MeedScoreComposition } from "../../../components/MeedScoreComposition";
@@ -55,7 +55,7 @@ export function DrawerSection({
             flexWrap="wrap"
           >
             <HStack gap="s" alignItems="center" flexWrap="wrap">
-              <LabelLarge color="content.primary">{title}</LabelLarge>
+              <TitleMedium color="content.primary">{title}</TitleMedium>
               {tag}
             </HStack>
             {trailing}

@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import { Card, HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
 import { LuTriangleAlert } from "react-icons/lu";
 import type { TFunction } from "i18next";
-import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
-import { BodySmall } from "@/components/package/Texts/Body";
+import { LabelMedium } from "@/components/package/Texts/Label";
+import { BodySmall, BodyMedium } from "@/components/package/Texts/Body";
 import { MeedStatusTag } from "../../../components/MeedStatusTag";
 import { coBenefitIcon, coBenefitLabel } from "./coBenefits";
 import type { MeedCoBenefitTally } from "./coBenefits";
@@ -86,8 +87,8 @@ function TallyBlock({
   return (
     <VStack alignItems="stretch" gap="s">
       <VStack alignItems="stretch" gap="xs">
-        <LabelLarge color="content.primary">{title}</LabelLarge>
-        <BodySmall color="content.secondary">{description}</BodySmall>
+        <TitleLarge color="content.primary">{title}</TitleLarge>
+        <BodyMedium color="content.secondary">{description}</BodyMedium>
       </VStack>
       <SimpleGrid
         columns={{ base: 2, md: 3, lg: Math.min(items.length, 6) }}

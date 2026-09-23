@@ -7,8 +7,8 @@ import type { MeedRankedActionResult } from "@/util/types/meed";
 import { MeedButton } from "../../../components/MeedButton";
 import { MeedInfoTip } from "../../../components/MeedInfoTip";
 import { MeedScoreComposition } from "../../../components/MeedScoreComposition";
-import { TitleMedium } from "@/components/package/Texts/Title";
-import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
+import { TitleLarge } from "@/components/package/Texts/Title";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import { SelectActionCheckbox } from "./SelectActionCheckbox";
 import { GenerateReportControl } from "./ResultsHeader";
@@ -71,10 +71,10 @@ export function RankingTable({
         flexWrap="wrap"
       >
         <Box flex="1" minW="240px">
-          <TitleMedium color="content.primary">{t("table-title")}</TitleMedium>
-          <BodySmall color="content.secondary" mt="xs">
+          <TitleLarge color="content.primary">{t("table-title")}</TitleLarge>
+          <BodyMedium color="content.secondary" mt="s">
             {t("table-description", { count: actions.length })}
-          </BodySmall>
+          </BodyMedium>
         </Box>
         <HStack gap="m" alignItems="flex-start" flexWrap="wrap">
           {onExport && (

@@ -13,11 +13,11 @@ import {
 import NextLink from "next/link";
 import { LuArrowRight } from "react-icons/lu";
 import type { TFunction } from "i18next";
-import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
-import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
+import { LabelMedium } from "@/components/package/Texts/Label";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { Overline } from "@/components/package/Texts/Overline";
-import { TitleMedium } from "@/components/package/Texts/Title";
+import { TitleMedium, TitleLarge } from "@/components/package/Texts/Title";
 import type { MeedPolicyBacking } from "./rankingFacts";
 import { FOCUS_RING } from "../../../focusRing";
 import {
@@ -188,12 +188,12 @@ export function ContextCardGrid({
   return (
     <VStack alignItems="stretch" gap="m">
       <VStack alignItems="stretch" gap="xs">
-        <LabelLarge color="content.primary">
+        <TitleLarge color="content.primary">
           {title ?? t("context-title")}
-        </LabelLarge>
-        <BodySmall color="content.secondary">
+        </TitleLarge>
+        <BodyMedium color="content.secondary">
           {description ?? t("context-description")}
-        </BodySmall>
+        </BodyMedium>
       </VStack>
 
       <Grid

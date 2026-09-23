@@ -11,8 +11,7 @@ import {
 import type { TFunction } from "i18next";
 import type { IconType } from "react-icons";
 import { BodyMedium } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
-import { TitleMedium } from "@/components/package/Texts/Title";
+import { TitleMedium, TitleLarge } from "@/components/package/Texts/Title";
 import {
   MeedStatusTag,
   type MeedTone,
@@ -73,9 +72,9 @@ export function NotRankedLane({
   return (
     <VStack alignItems="stretch" gap="l">
       <VStack alignItems="stretch" gap="s">
-        <TitleMedium color="content.primary">
+        <TitleLarge color="content.primary">
           {t("not-ranked-title", { count: items.length })}
-        </TitleMedium>
+        </TitleLarge>
         <BodyMedium color="content.secondary">
           {t("not-ranked-description")}
         </BodyMedium>
@@ -93,9 +92,9 @@ export function NotRankedLane({
                 />
                 <VStack alignItems="flex-start" gap="xs" flex="1">
                   <HStack gap="s" flexWrap="wrap">
-                    <LabelLarge color="content.primary">
+                    <TitleMedium color="content.primary">
                       {t(`reason-${reason}`)}
-                    </LabelLarge>
+                    </TitleMedium>
                     <MeedStatusTag tone={REASON_TONE[reason]}>
                       {t(`reason-${reason}-tag`)}
                     </MeedStatusTag>

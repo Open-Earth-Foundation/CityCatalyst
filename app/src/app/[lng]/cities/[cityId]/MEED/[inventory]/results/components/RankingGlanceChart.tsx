@@ -1,5 +1,6 @@
 "use client";
 import React, { useMemo } from "react";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import {
   Box,
   Card,
@@ -13,7 +14,6 @@ import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { SECTORS } from "@/util/constants";
 import { Caption } from "@/components/package/Texts/Caption";
-import { LabelLarge } from "@/components/package/Texts/Label";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { actionName, sectorLabel, type MeedActionIndex } from "./actionCatalog";
 
@@ -129,7 +129,7 @@ export function RankingGlanceChart({
         gap="m"
         flexWrap="wrap"
       >
-        <LabelLarge color="content.primary">{t("glance-title")}</LabelLarge>
+        <TitleLarge color="content.primary">{t("glance-title")}</TitleLarge>
         <HStack gap="m" flexWrap="wrap">
           {legend.map(([sector, color]) => (
             <HStack key={sector} gap="xs" alignItems="center">

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import {
   Box,
   Card,
@@ -14,7 +15,6 @@ import NextLink from "next/link";
 import { LuChevronDown, LuChevronUp, LuPencil } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import { BodyMedium } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { MeedMeter } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedMeter";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
@@ -118,9 +118,9 @@ export function RankingSettings({
             flexWrap="wrap"
           >
             <VStack alignItems="flex-start" gap="xs" flex="1" minW="240px">
-              <LabelLarge color="content.primary">
+              <TitleLarge color="content.primary">
                 {t("settings-title")}
-              </LabelLarge>
+              </TitleLarge>
               <BodyMedium color="content.secondary">
                 {summaryParts.length > 1
                   ? summaryParts.join(" · ")

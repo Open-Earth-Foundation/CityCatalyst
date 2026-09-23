@@ -1,11 +1,12 @@
 "use client";
 import React from "react";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import { Card, HStack, Table, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import type { MeedActionIndex } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/actionCatalog";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
+import { LabelMedium } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
 import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { formatMagnitude } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/CoBenefitStrip";
@@ -78,7 +79,7 @@ export function CoBenefitMatrix({
   return (
     <VStack alignItems="stretch" gap="m">
       <VStack alignItems="stretch" gap="s">
-        <LabelLarge color="content.primary">{t("matrix-title")}</LabelLarge>
+        <TitleLarge color="content.primary">{t("matrix-title")}</TitleLarge>
         <BodyMedium color="content.secondary">
           {t("matrix-description")}
         </BodyMedium>

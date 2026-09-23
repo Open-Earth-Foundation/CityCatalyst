@@ -38,7 +38,7 @@ export default function ResponsesPage(props: {
   const [denied, setDenied] = useState(false);
 
   useEffect(() => {
-    fetch("/api/v1/hiap-demo/feedback", { credentials: "include" })
+    fetch("/api/v1/hiap-demo/feedback/", { credentials: "include" })
       .then(async (res) => {
         if (!res.ok) {
           setDenied(true);

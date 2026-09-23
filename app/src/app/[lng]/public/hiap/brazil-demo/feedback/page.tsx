@@ -156,7 +156,7 @@ export default function FeedbackPage(props: {
       r.files.forEach((f, n) => form.append(`shot-${i}-${n}`, f, f.name)),
     );
     try {
-      const res = await fetch("/api/v1/hiap-demo/feedback", {
+      const res = await fetch("/api/v1/hiap-demo/feedback/", {
         method: "POST",
         body: form,
       });

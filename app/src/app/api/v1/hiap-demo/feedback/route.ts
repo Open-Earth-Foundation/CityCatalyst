@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import createHttpError from "http-errors";
 import { z } from "zod";
 import { apiHandler } from "@/util/api";
+import { logger } from "@/services/logger";
 import { db } from "@/models";
 import { Roles } from "@/util/types";
 import { FeatureFlags, hasServerFeatureFlag } from "@/util/feature-flags";
@@ -101,12 +102,21 @@ export async function POST(req: NextRequest) {
     const up = uploader();
     for (const { index, file } of files) {
       const buffer = Buffer.from(await file.arrayBuffer());
-      const stored = await up.uploadFile({
-        filename: `hiap-demo-feedback/${file.name.replace(/[^\w.-]+/g, "_")}`,
-        mimetype: file.type,
-        size: file.size,
-        buffer,
-      });
+      let stored;
+      try {
+        stored = await up.uploadFile({
+          filename: `hiap-demo-feedback/${file.name.replace(/[^\w.-]+/g, "_")}`,
+          mimetype: file.type,
+          size: file.size,
+          buffer,
+        });
+      } catch (err) {
+        logger.error({ err }, "HIAP demo feedback: screenshot upload failed");
+        return NextResponse.json(
+          { error: "Screenshot upload failed" },
+          { status: 502 },
+        );
+      }
       const list = shotsByComment.get(index) ?? [];
       list.push({
         url: stored.url,

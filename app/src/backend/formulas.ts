@@ -605,7 +605,21 @@ function getVolumeBasedActivityAmount(
   );
 
   const activityAmountKey = activityValue.metadata?.["activityTitle"] ?? "";
-  return Number(data?.[activityAmountKey.toString()]) || 0;
+  if (!activityAmountKey) {
+    throw new createHttpError.BadRequest(
+      "Activity value is missing metadata.activityTitle required for volume-based calculation",
+    );
+  }
+
+  const amount = Number(data?.[activityAmountKey.toString()]);
+  // NaN previously became silent 0 emissions (e.g. tonnes→m³ without density).
+  if (!Number.isFinite(amount)) {
+    throw new createHttpError.BadRequest(
+      `Could not convert activity amount for "${activityAmountKey}" to the methodology default unit`,
+    );
+  }
+
+  return amount;
 }
 
 export function handleActivityAmountTimesEmissionsFactorFormula(

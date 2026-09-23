@@ -459,6 +459,8 @@ test("unsaved structure edits are flagged stale after a chat structure apply", a
     .getByRole("button", { name: "Confirm structure changes", exact: true })
     .click();
   await expect.poll(fixture.applied).toBe(true);
+  // Applying navigates to the edited chapter; return to the unsaved structure.
+  await page.getByRole("tab", { name: "Structure", exact: true }).click();
   await expect(
     page.getByRole("alert").filter({ hasText: "changed elsewhere" }),
   ).toBeVisible();

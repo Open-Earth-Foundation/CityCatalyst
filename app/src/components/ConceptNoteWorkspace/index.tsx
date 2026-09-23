@@ -24,6 +24,7 @@ import {
   LuShieldCheck,
 } from "react-icons/lu";
 
+import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";

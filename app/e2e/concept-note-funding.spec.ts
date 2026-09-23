@@ -202,7 +202,15 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
       exact: true,
     }),
   ).toBeVisible();
-  await clickDialogButton(/Green Cities Programme/);
+  const programme = dialog.getByRole("button", {
+    name: /Green Cities Programme/,
+  });
+  // A funder's only programme is preselected and can still be deselected.
+  await expect(programme).toHaveAttribute("aria-pressed", "true");
+  await programme.click();
+  await expect(programme).toHaveAttribute("aria-pressed", "false");
+  await programme.click();
+  await expect(programme).toHaveAttribute("aria-pressed", "true");
   await expect(
     dialog.getByText("Project summary", { exact: true }),
   ).toBeVisible();
@@ -252,7 +260,7 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
     .getByRole("button", { name: "Browse funders", exact: true })
     .click();
   await clickDialogButton(/European Climate Fund/);
-  await clickDialogButton(/Green Cities Programme/);
+  await expect(programme).toHaveAttribute("aria-pressed", "true");
   await expect(
     dialog.getByRole("button", { name: "Save selection", exact: true }),
   ).toBeVisible();

@@ -81,7 +81,8 @@ export const visualAnnotationSchema = z
     schema_version: z.literal(VISUAL_ANNOTATION_SCHEMA_VERSION),
     kind: annotationKindSchema,
     title: z.union([z.string(), z.null()]),
-    short_description: z.string().min(1),
+    // Empty string is schema-valid; do not coerce "" → null or inject substitute text.
+    short_description: z.string(),
     text_visible: z.array(z.string()),
     chart: z.union([chartSchema, z.null()]),
     uncertainties: z.array(z.string()),
@@ -120,7 +121,7 @@ export const VISUAL_ANNOTATION_JSON_SCHEMA = {
       ],
     },
     title: { type: ["string", "null"] },
-    short_description: { type: "string", minLength: 1 },
+    short_description: { type: "string" },
     text_visible: { type: "array", items: { type: "string" } },
     chart: {
       oneOf: [
@@ -258,9 +259,14 @@ export function bboxAnnotationFormat(): {
 
 export function parseVisualAnnotation(raw: unknown): VisualAnnotation | null {
   const candidate = unwrapAnnotation(raw);
-  if (!candidate) return null;
+  if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) {
+    return null;
+  }
   const parsed = visualAnnotationSchema.safeParse(candidate);
-  return parsed.success ? parsed.data : null;
+  if (!parsed.success) return null;
+  // Validation confirms the shape; store the decoded candidate unchanged so
+  // schema-permitted empty/null values are not rebuilt from selected fields.
+  return candidate as VisualAnnotation;
 }
 
 function unwrapAnnotation(raw: unknown): unknown {

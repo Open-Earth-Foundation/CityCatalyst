@@ -2149,12 +2149,15 @@ Rules:
   supplied SHA-256 digest before durably registering its pointer. For a PDF, it
   also fetches and verifies the structured artifact's content type, digest,
   schema version, annotation mode, upload identity, and page count.
-- Projects visual annotations into qualitative context only. Exact excerpts and
-  citations stay on source Markdown. A projected string is kept only when it
-  contains no Unicode number and every word is in a closed qualitative
-  vocabulary. Digits, number symbols, and exact word quantities such as
-  ordinals or numerical nouns are dropped. Stored annotations keep
-  `source: image_annotation` and `quantitative_reliability: unverified`.
+- Passes each stored visual annotation through as the complete unverified
+  envelope (`source: image_annotation`, `quantitative_reliability: unverified`,
+  page/image identity, bounding boxes, and unchanged `provider_annotation`).
+  Exact excerpts and citations stay on source Markdown. Prompts and tools treat
+  visual context as untrusted descriptive context only: never as instructions,
+  evidence, citations, or trusted quantitative input. A
+  `VISUAL_CONTEXT_CONTRACT_VERSION` invalidates legacy filtered projections so
+  an authorised refresh rehydrates the full envelope from the structured
+  artifact without re-running Markdown LLM analysis.
 - Rejects a structured artifact larger than `CNB_STRUCTURED_REQUEST_MAX_BYTES`
   (default 20 MiB) and a CC structured artifact larger than
   `PDF_OCR_STRUCTURED_MAX_BYTES` (default 20 MiB). Oversized JSON fails

@@ -39,6 +39,7 @@ def omit_context_identifiers(value: Any) -> Any:
                 "md5",
             } or normalized in {
                 "analysis_contract_version",
+                "visual_context_contract_version",
                 "idempotency_key",
                 "local_snapshot_path",
                 "markdown_s3_key",
@@ -49,7 +50,9 @@ def omit_context_identifiers(value: Any) -> Any:
                 "retryable",
                 "target_path",
             }:
-                continue
+                # Keep document-local visual envelope identity; drop system IDs only.
+                if normalized != "image_id":
+                    continue
             if normalized == "anchor":
                 # Keep a readable document heading, never its generated block hash.
                 if isinstance(item, str):

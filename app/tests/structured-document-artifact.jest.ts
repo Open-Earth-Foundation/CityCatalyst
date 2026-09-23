@@ -123,8 +123,74 @@ describe("structured document artifact", () => {
       page_index: 0,
       image_id: "img-0.jpeg",
     });
+    expect(stored?.provider_annotation).toEqual(annotation);
     expect(stored?.provider_annotation).not.toHaveProperty(
       "quantitative_reliability",
+    );
+  });
+
+  it("preserves English and Portuguese values, empty strings, and null fields", () => {
+    const richAnnotation = {
+      schema_version: VISUAL_ANNOTATION_SCHEMA_VERSION,
+      kind: "chart",
+      title: "Emissões setoriais / Sector emissions",
+      short_description: "",
+      text_visible: ["Transport", "12.5%", "Resíduos"],
+      chart: {
+        chart_type: "line",
+        x_axis: { label: "Year", values: [2020, null] },
+        y_axis: { label: "Emissions", unit: "ktCO2e", scale: "linear" },
+        legend: ["Transport", "Waste"],
+        series: [
+          {
+            name: "Transport",
+            points: [{ x: 2020, y: 12.5, value_kind: "printed" as const }],
+          },
+        ],
+        trends: ["Transport declines", "Queda de 12.5%"],
+        targets: [{ label: "2030", value: "12.5%", value_kind: "printed" as const }],
+        callouts: [],
+        readable_values: [
+          { label: "Fuel", value: null, value_kind: "unreadable" as const },
+        ],
+      },
+      uncertainties: [],
+    };
+    const document = buildStructuredDocument(
+      {
+        model: "mistral-ocr-latest",
+        pages: [
+          {
+            index: 0,
+            markdown: "![img-0.jpeg](img-0.jpeg)",
+            dimensions: { width: 1000, height: 1000, dpi: 72 },
+            blocks: [],
+            images: [
+              {
+                id: "img-0.jpeg",
+                top_left_x: 100,
+                top_left_y: 100,
+                bottom_right_x: 500,
+                bottom_right_y: 400,
+                image_annotation: richAnnotation,
+              },
+            ],
+            tables: [],
+          },
+        ],
+      },
+      { annotationMode: "visual_context", requestedModel: "mistral-ocr-latest" },
+    );
+    const stored = document.document.pages[0].images[0].annotation;
+    expect(stored?.source).toBe("image_annotation");
+    expect(stored?.quantitative_reliability).toBe("unverified");
+    expect(stored?.provider_annotation).toEqual(richAnnotation);
+    expect(stored?.provider_annotation.short_description).toBe("");
+    expect(stored?.provider_annotation.title).toBe(
+      "Emissões setoriais / Sector emissions",
+    );
+    expect(JSON.stringify(document.provider.payload)).not.toContain(
+      "image_base64",
     );
   });
 

@@ -488,6 +488,10 @@ async def load_agent_context(
                             "source_format": source.source_format,
                             "summary": source.summary,
                             "topics": source.topics,
+                            "visual_context": [
+                                item.model_dump(mode="json")
+                                for item in source.visual_context
+                            ],
                         }
                         for source_index, source in enumerate(
                             bundle.selected_sources, start=1

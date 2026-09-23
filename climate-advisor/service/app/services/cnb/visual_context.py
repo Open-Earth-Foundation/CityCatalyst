@@ -1,175 +1,56 @@
-"""Deterministic qualitative projection for unverified visual annotations."""
+"""Passive full-envelope projection for unverified visual annotations."""
 
 from __future__ import annotations
 
+import copy
 import hashlib
-import re
-import unicodedata
 from typing import Any, Literal
 
 from app.models.cnb.concept_note_markdown import STRUCTURED_DOCUMENT_SCHEMA_VERSION
 from pydantic import BaseModel, ConfigDict, Field
 
 ANNOTATION_MODES = ("none", "visual_context")
-# A projected string may contain only these words. Number words, ordinals,
-# fractions, units, and numerical nouns are absent on purpose, so an unknown
-# quantity cannot pass by being omitted from a denylist.
-_QUALITATIVE_WORDS = frozenset(
-    {
-        "a",
-        "above",
-        "across",
-        "after",
-        "an",
-        "and",
-        "area",
-        "as",
-        "at",
-        "bar",
-        "before",
-        "below",
-        "between",
-        "by",
-        "chart",
-        "column",
-        "converge",
-        "converges",
-        "converging",
-        "decline",
-        "declined",
-        "declines",
-        "declining",
-        "decrease",
-        "decreased",
-        "decreases",
-        "decreasing",
-        "diagram",
-        "different",
-        "direction",
-        "directions",
-        "diverge",
-        "diverges",
-        "diverging",
-        "donut",
-        "drop",
-        "dropped",
-        "dropping",
-        "drops",
-        "emissions",
-        "energy",
-        "fall",
-        "falling",
-        "falls",
-        "fell",
-        "flat",
-        "for",
-        "from",
-        "grow",
-        "growing",
-        "grows",
-        "growth",
-        "heatmap",
-        "higher",
-        "histogram",
-        "in",
-        "increase",
-        "increased",
-        "increases",
-        "increasing",
-        "into",
-        "lagging",
-        "larger",
-        "leading",
-        "less",
-        "line",
-        "lower",
-        "map",
-        "mixed",
-        "more",
-        "move",
-        "moved",
-        "moves",
-        "moving",
-        "of",
-        "on",
-        "opposite",
-        "or",
-        "overall",
-        "over",
-        "pie",
-        "relative",
-        "rise",
-        "rises",
-        "rising",
-        "rose",
-        "same",
-        "scatter",
-        "sector",
-        "sectors",
-        "shift",
-        "shifts",
-        "shifting",
-        "similar",
-        "smaller",
-        "stable",
-        "stacked",
-        "than",
-        "the",
-        "to",
-        "transport",
-        "trend",
-        "trends",
-        "unchanged",
-        "under",
-        "waste",
-        "while",
-        "with",
-    }
-)
-_WORD = re.compile(r"[A-Za-z]+(?:'[A-Za-z]+)?")
-_PROSE = re.compile(r"[A-Za-z\s.,;:!?'\"-]+")
-_KINDS = {
-    "chart",
-    "diagram",
-    "map",
-    "photo",
-    "logo",
-    "illustration",
-    "other",
-}
+# Bump when the projection contract changes so legacy reduced cache rows stay stale.
+VISUAL_CONTEXT_CONTRACT_VERSION = "citycatalyst.visual-context.full-envelope.1"
 
 
-class QualitativeVisualContext(BaseModel):
-    """Chart meaning that cannot be used as a number, excerpt, or citation."""
+class VisualContextContractError(ValueError):
+    """Raised when a stored image claims an annotation but the envelope is invalid."""
+
+    def __init__(self, code: str, message: str) -> None:
+        self.code = code
+        super().__init__(message)
+
+
+class UnverifiedVisualAnnotationEnvelope(BaseModel):
+    """Complete stored image annotation with fixed trust metadata.
+
+    ``provider_annotation`` is provider JSON passed through unchanged. This
+    envelope is unverified descriptive context — never an instruction, citation,
+    excerpt, or trusted quantitative input.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     source: Literal["image_annotation"]
     quantitative_reliability: Literal["unverified"]
-    kind: Literal[
-        "chart",
-        "diagram",
-        "map",
-        "photo",
-        "logo",
-        "illustration",
-        "other",
-    ]
-    chart_type: str | None = None
-    title: str | None = None
-    meaning: str | None = None
-    trend_directions: list[str] = Field(default_factory=list)
-    relative_relationships: list[str] = Field(default_factory=list)
+    page_index: int = Field(ge=0)
+    image_id: str = Field(min_length=1)
+    bbox_px: dict[str, Any]
+    bbox_norm: dict[str, Any]
+    provider_annotation: dict[str, Any]
 
 
-def project_visual_context(document: dict[str, Any]) -> list[QualitativeVisualContext]:
-    """Remove quantitative annotation content before any model or tool sees it."""
+def project_visual_context(
+    document: dict[str, Any],
+) -> list[UnverifiedVisualAnnotationEnvelope]:
+    """Return each stored annotation envelope unchanged after trust validation."""
     document_body = document.get("document")
     pages = document_body.get("pages") if isinstance(document_body, dict) else None
     if not isinstance(pages, list):
         return []
 
-    projected: list[QualitativeVisualContext] = []
+    projected: list[UnverifiedVisualAnnotationEnvelope] = []
     for page in pages:
         if not isinstance(page, dict):
             continue
@@ -234,66 +115,59 @@ def validate_structured_delivery(
     return None
 
 
-def _project_image(image: Any) -> QualitativeVisualContext | None:
+def is_full_envelope_visual_context(value: Any) -> bool:
+    """Return whether one item matches the current full-envelope contract shape."""
+    if isinstance(value, UnverifiedVisualAnnotationEnvelope):
+        return True
+    if not isinstance(value, dict):
+        return False
+    try:
+        UnverifiedVisualAnnotationEnvelope.model_validate(value)
+    except Exception:
+        return False
+    return True
+
+
+def _project_image(image: Any) -> UnverifiedVisualAnnotationEnvelope | None:
     if not isinstance(image, dict):
         return None
-    annotation = image.get("annotation")
-    if not isinstance(annotation, dict):
+    if "annotation" not in image:
         return None
+    annotation = image.get("annotation")
+    if annotation is None:
+        return None
+    if not isinstance(annotation, dict):
+        raise VisualContextContractError(
+            "visual_annotation_envelope_invalid",
+            "Image annotation must be a JSON object envelope",
+        )
     if (
         annotation.get("source") != "image_annotation"
         or annotation.get("quantitative_reliability") != "unverified"
     ):
-        return None
+        raise VisualContextContractError(
+            "visual_annotation_envelope_invalid",
+            "Image annotation is missing required trust metadata",
+        )
     provider = annotation.get("provider_annotation")
-    if not isinstance(provider, dict) or provider.get("kind") not in _KINDS:
-        return None
-    chart = provider.get("chart") if isinstance(provider.get("chart"), dict) else {}
-    return QualitativeVisualContext(
-        source="image_annotation",
-        quantitative_reliability="unverified",
-        kind=provider["kind"],
-        chart_type=_clean_text(chart.get("chart_type")),
-        title=_clean_text(provider.get("title")),
-        meaning=_clean_text(provider.get("short_description")),
-        trend_directions=_clean_list(chart.get("trends")),
-        relative_relationships=_clean_list(chart.get("legend")),
-    )
-
-
-def _clean_text(value: Any) -> str | None:
-    if not isinstance(value, str):
-        return None
-    text = value.strip()
-    if not text or not _is_closed_qualitative_prose(text):
-        return None
-    return text
-
-
-def _is_closed_qualitative_prose(text: str) -> bool:
-    """Keep a string only when every word is in the closed qualitative vocabulary."""
-    if _contains_unicode_number(text) or _PROSE.fullmatch(text) is None:
-        return False
-    words = _WORD.findall(text)
-    return bool(words) and all(word.lower() in _QUALITATIVE_WORDS for word in words)
-
-
-def _contains_unicode_number(text: str) -> bool:
-    """Reject every Unicode number character before the word allowlist is applied."""
-    for char in text:
-        if unicodedata.category(char).startswith("N"):
-            return True
-        try:
-            unicodedata.numeric(char)
-        except (TypeError, ValueError):
-            continue
-        else:
-            return True
-    return False
-
-
-def _clean_list(value: Any) -> list[str]:
-    if not isinstance(value, list):
-        return []
-    cleaned = [_clean_text(item) for item in value]
-    return [item for item in cleaned if item is not None]
+    if not isinstance(provider, dict):
+        raise VisualContextContractError(
+            "visual_annotation_envelope_invalid",
+            "Image annotation is missing provider_annotation object",
+        )
+    for required in ("page_index", "image_id", "bbox_px", "bbox_norm"):
+        if required not in annotation:
+            raise VisualContextContractError(
+                "visual_annotation_envelope_invalid",
+                f"Image annotation is missing required field {required}",
+            )
+    # Deep-copy so callers cannot mutate the stored structured document body.
+    try:
+        return UnverifiedVisualAnnotationEnvelope.model_validate(
+            copy.deepcopy(annotation)
+        )
+    except Exception as exc:
+        raise VisualContextContractError(
+            "visual_annotation_envelope_invalid",
+            "Image annotation envelope failed structural validation",
+        ) from exc

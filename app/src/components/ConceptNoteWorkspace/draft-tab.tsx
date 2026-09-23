@@ -38,6 +38,7 @@ interface DraftTabProps extends DraftInlineReviewProps {
   lng: string;
   noteName: string;
   onOpenContext: () => void;
+  onOpenFundingSetup: () => void;
   onRetry: () => void;
   onStartDrafting: () => void;
 }

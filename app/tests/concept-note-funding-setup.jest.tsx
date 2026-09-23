@@ -99,11 +99,16 @@ jest.unstable_mockModule(
     selectReviewProposal: () => null,
   }),
 );
-// Keep workspace state and its actual setup button; unrelated panels are outside this test.
+// The draft tab's setup button calls the workspace handler under test.
+jest.unstable_mockModule("@/components/ConceptNoteWorkspace/draft-tab", () => ({
+  DraftTab: ({ onOpenFundingSetup }: { onOpenFundingSetup: () => void }) => (
+    <button aria-label="open-funding-setup" onClick={onOpenFundingSetup} />
+  ),
+}));
+// Keep workspace state; unrelated panels are outside this test.
 for (const [path, name] of [
   ["chat-panel", "ConceptNoteChatPanel"],
   ["context-tab", "ContextTab"],
-  ["draft-tab", "DraftTab"],
   ["structure-tab", "StructureTab"],
   ["export-dialog", "ExportDialog"],
   ["start-new-chat-dialog", "StartNewChatDialog"],
@@ -161,7 +166,7 @@ async function clickSetup() {
     );
   });
   const button = [...container.querySelectorAll("button")].find(
-    (item) => item.textContent === "review-application-setup",
+    (item) => item.getAttribute("aria-label") === "open-funding-setup",
   );
   expect(button).toBeDefined();
   await act(async () => button!.click());

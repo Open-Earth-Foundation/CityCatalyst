@@ -6,6 +6,10 @@ export function demoHome(lng: string): string {
   return `/${lng}/${DEMO_ROOT}`;
 }
 
+export function feedbackHref(lng: string): string {
+  return `${demoHome(lng)}/feedback`;
+}
+
 export function trackHref(
   lng: string,
   city: string,

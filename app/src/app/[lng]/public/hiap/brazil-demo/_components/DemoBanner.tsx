@@ -6,7 +6,7 @@ import { BodySmall } from "@/components/package/Texts/Body";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import { useDemoT } from "../_lib/useDemoT";
-import { demoHome } from "../_lib/hrefs";
+import { demoHome, feedbackHref } from "../_lib/hrefs";
 import { FEEDBACK_SHEET_URL } from "../_lib/links";
 
 /**
@@ -56,6 +56,19 @@ export function DemoBanner({ lng }: { lng: string }) {
             _focusVisible={FOCUS_RING}
           >
             <NextLink href={demoHome(lng)}>{t("banner-guide-link")}</NextLink>
+          </Link>
+          <Link
+            asChild
+            color="content.link"
+            fontFamily="heading"
+            fontSize="label.md"
+            fontWeight="semibold"
+            textDecoration="underline"
+            _focusVisible={FOCUS_RING}
+          >
+            <NextLink href={feedbackHref(lng)}>
+              {t("banner-form-link")}
+            </NextLink>
           </Link>
           {FEEDBACK_SHEET_URL && (
             <Link

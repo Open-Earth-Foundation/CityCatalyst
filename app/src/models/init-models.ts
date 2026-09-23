@@ -233,6 +233,11 @@ import {
   ProjectInviteCreationAttributes,
 } from "@/models/ProjectInvite";
 import {
+  HiapDemoFeedback as _HiapDemoFeedback,
+  HiapDemoFeedbackAttributes,
+  HiapDemoFeedbackCreationAttributes,
+} from "@/models/HiapDemoFeedback";
+import {
   Theme as _Theme,
   ThemeAttributes,
   ThemeCreationAttributes,
@@ -340,6 +345,7 @@ export {
   _OrganizationAdmin as OrganizationAdmin,
   _ProjectAdmin as ProjectAdmin,
   _ProjectInvite as ProjectInvite,
+  _HiapDemoFeedback as HiapDemoFeedback,
   _Theme as Theme,
   _HighImpactActionRanking as HighImpactActionRanking,
   _HighImpactActionRanked as HighImpactActionRanked,
@@ -456,6 +462,8 @@ export type {
   ProjectInviteAttributes,
   ProjectInviteCreationAttributes,
   ThemeAttributes,
+  HiapDemoFeedbackAttributes,
+  HiapDemoFeedbackCreationAttributes,
   ThemeCreationAttributes,
   HighImpactActionRankingAttributes,
   HighImpactActionRankingCreationAttributes,
@@ -537,6 +545,7 @@ export function initModels(sequelize: Sequelize) {
   const OrganizationAdmin = _OrganizationAdmin.initModel(sequelize);
   const ProjectAdmin = _ProjectAdmin.initModel(sequelize);
   const ProjectInvite = _ProjectInvite.initModel(sequelize);
+  const HiapDemoFeedback = _HiapDemoFeedback.initModel(sequelize);
   const Theme = _Theme.initModel(sequelize);
   const HighImpactActionRankingModel =
     _HighImpactActionRanking.initModel(sequelize);
@@ -1408,6 +1417,7 @@ export function initModels(sequelize: Sequelize) {
     OrganizationAdmin: OrganizationAdmin,
     ProjectAdmin: ProjectAdmin,
     ProjectInvite: ProjectInvite,
+    HiapDemoFeedback: HiapDemoFeedback,
     Theme: Theme,
     HighImpactActionRanking: HighImpactActionRankingModel,
     HighImpactActionRanked: HighImpactActionRankedModel,

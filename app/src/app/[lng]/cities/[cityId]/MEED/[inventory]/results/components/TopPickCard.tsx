@@ -5,7 +5,8 @@ import { LuArrowRight, LuBookmark } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { MeedButton } from "../../../components/MeedButton";
-import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
+import { TitleMedium } from "@/components/package/Texts/Title";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
 import { Caption } from "@/components/package/Texts/Caption";
@@ -113,13 +114,13 @@ export function TopPickCard({
 
         <VStack alignItems="stretch" gap="xs" mt="s">
           <HStack alignItems="baseline" gap="s">
-            <TitleLarge
+            <HeadlineSmall
               color="content.primary"
               fontVariantNumeric="tabular-nums"
               lineHeight="1"
             >
               {action.final_score.toFixed(2)}
-            </TitleLarge>
+            </HeadlineSmall>
             <Caption color="content.tertiary">
               {t("detail-final-score")}
             </Caption>

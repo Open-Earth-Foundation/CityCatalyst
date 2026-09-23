@@ -5,7 +5,7 @@ import { LuCircleCheck, LuTriangleAlert } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { CloseButton } from "@/components/ui/close-button";
-import { HeadlineSmall } from "@/components/package/Texts/Headline";
+import { HeadlineLarge } from "@/components/package/Texts/Headline";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { BodyMedium } from "@/components/package/Texts/Body";
@@ -232,13 +232,13 @@ export function DetailPanel({
                         <LabelMedium color="content.tertiary">
                           {t("detail-final-score")}
                         </LabelMedium>
-                        <HeadlineSmall
+                        <HeadlineLarge
                           color="content.primary"
                           fontVariantNumeric="tabular-nums"
                           lineHeight="1"
                         >
                           {action.final_score.toFixed(2)}
-                        </HeadlineSmall>
+                        </HeadlineLarge>
                       </HStack>
                     }
                   >

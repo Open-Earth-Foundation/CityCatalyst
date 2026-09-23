@@ -2,7 +2,7 @@
 import { Box, HStack, VStack } from "@chakra-ui/react";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { Overline } from "@/components/package/Texts/Overline";
-import { HeadlineSmall } from "@/components/package/Texts/Headline";
+import { HeadlineLarge } from "@/components/package/Texts/Headline";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import { TitleLarge } from "@/components/package/Texts/Title";
 import { BodySmall } from "@/components/package/Texts/Body";
@@ -82,13 +82,13 @@ export function MeedFunnelStrip({
           size === "lg" && !compact ? (
             <VStack key={step.label} alignItems="flex-start" gap="xs" minW={0}>
               <LabelMedium color="content.tertiary">{step.label}</LabelMedium>
-              <HeadlineSmall
+              <HeadlineLarge
                 color={TONE_COLOR[step.tone]}
                 fontVariantNumeric="tabular-nums"
                 lineHeight="1"
               >
                 {step.value}
-              </HeadlineSmall>
+              </HeadlineLarge>
               {showSublabels && step.sublabel && (
                 <BodySmall color="content.secondary">{step.sublabel}</BodySmall>
               )}

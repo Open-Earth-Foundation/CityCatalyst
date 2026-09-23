@@ -20,7 +20,7 @@ export enum FeatureFlags {
    */
   MEED_MOCK_RANKING = "MEED_MOCK_RANKING",
   /**
-   * Serves the Brazil Phase 3 HIAP UI demo at /public/hiap-brazil-demo: a
+   * Serves the Brazil Phase 3 HIAP UI demo at /public/hiap/brazil-demo: a
    * clickable, fixture-only preview of the adaptation and mitigation tracks
    * for C40 / I Care review. Public and unauthenticated by design, so enable
    * it on the dev deployment only.

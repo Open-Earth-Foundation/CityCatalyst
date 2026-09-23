@@ -3,30 +3,30 @@ import { describe, expect, it } from "@jest/globals";
 import {
   ADAPTATION_ACTIONS,
   ACTION_BY_ID,
-} from "@/app/[lng]/public/hiap-brazil-demo/_lib/actions";
+} from "@/app/[lng]/public/hiap/brazil-demo/_lib/actions";
 import {
   CITIES,
   CITY_BY_SLUG,
-} from "@/app/[lng]/public/hiap-brazil-demo/_lib/cities";
+} from "@/app/[lng]/public/hiap/brazil-demo/_lib/cities";
 import {
   RISK_CELLS,
   RISK_CELL_BY_KEY,
-} from "@/app/[lng]/public/hiap-brazil-demo/_lib/riskCells";
-import { EMPTY_PREFERENCES } from "@/app/[lng]/public/hiap-brazil-demo/_lib/state";
+} from "@/app/[lng]/public/hiap/brazil-demo/_lib/riskCells";
+import { EMPTY_PREFERENCES } from "@/app/[lng]/public/hiap/brazil-demo/_lib/state";
 import {
   cellImpacts,
   componentScore,
   rankAdaptation,
   toRankedResults,
-} from "@/app/[lng]/public/hiap-brazil-demo/_lib/ranking";
-import { fundingResult } from "@/app/[lng]/public/hiap-brazil-demo/_lib/finance";
-import { suppressedCoBenefits } from "@/app/[lng]/public/hiap-brazil-demo/_lib/coBenefits";
-import { adaptationIndex } from "@/app/[lng]/public/hiap-brazil-demo/_lib/catalog";
+} from "@/app/[lng]/public/hiap/brazil-demo/_lib/ranking";
+import { fundingResult } from "@/app/[lng]/public/hiap/brazil-demo/_lib/finance";
+import { suppressedCoBenefits } from "@/app/[lng]/public/hiap/brazil-demo/_lib/coBenefits";
+import { adaptationIndex } from "@/app/[lng]/public/hiap/brazil-demo/_lib/catalog";
 import {
   MITIGATION_SHIFTS,
   mitigationRanked,
-} from "@/app/[lng]/public/hiap-brazil-demo/_lib/mitigation";
-import { relatedActions } from "@/app/[lng]/public/hiap-brazil-demo/_lib/relationships";
+} from "@/app/[lng]/public/hiap/brazil-demo/_lib/mitigation";
+import { relatedActions } from "@/app/[lng]/public/hiap/brazil-demo/_lib/relationships";
 import {
   actionCoBenefitScores,
   actionTradeOffScores,

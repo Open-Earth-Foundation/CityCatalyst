@@ -22,7 +22,7 @@ const kebab = (key: string) => key.replace(/_/g, "-");
 export interface MeedRankingConfigProps {
   inventoryId: string;
   /** The weights the ranking was actually scored with (from its metadata). */
-  weights: MeedScoreWeights;
+  weights: MeedScoreWeights | null;
   /** True when the stored preferences no longer match the ranking. */
   isStale: boolean;
   /** Where "Edit preferences" leads (the preferences step, with a return target). */
@@ -124,18 +124,25 @@ export function MeedRankingConfig({
         </BodyMedium>
       ),
     },
-    {
-      label: tResults("config-weights"),
-      value: (
-        <BodyMedium color="content.primary" fontVariantNumeric="tabular-nums">
-          {tResults("config-weights-value", {
-            impact: Math.round(weights.impact * 100),
-            alignment: Math.round(weights.alignment * 100),
-            feasibility: Math.round(weights.feasibility * 100),
-          })}
-        </BodyMedium>
-      ),
-    },
+    ...(weights
+      ? [
+          {
+            label: tResults("config-weights"),
+            value: (
+              <BodyMedium
+                color="content.primary"
+                fontVariantNumeric="tabular-nums"
+              >
+                {tResults("config-weights-value", {
+                  impact: Math.round(weights.impact * 100),
+                  alignment: Math.round(weights.alignment * 100),
+                  feasibility: Math.round(weights.feasibility * 100),
+                })}
+              </BodyMedium>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (

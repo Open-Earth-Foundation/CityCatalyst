@@ -1,5 +1,6 @@
 "use client";
-import { Box, Grid, HStack, VStack } from "@chakra-ui/react";
+import { Box, Grid, HStack, Icon, VStack } from "@chakra-ui/react";
+import { LuChevronRight } from "react-icons/lu";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { Overline } from "@/components/package/Texts/Overline";
 import { HeadlineLarge } from "@/components/package/Texts/Headline";
@@ -122,14 +123,29 @@ export function MeedFunnelStrip({
           }}
           gap="l"
         >
-          {steps.map((step) =>
+          {steps.map((step, i) =>
             size === "lg" && !compact ? (
               <VStack
                 key={step.label}
                 alignItems="flex-start"
                 gap="xs"
                 minW={0}
+                position="relative"
               >
+                {/* One row on wide screens: a chevron in each gap says the
+                    stages read left to right, from the bank to the ranking. */}
+                {i < steps.length - 1 && (
+                  <Icon
+                    as={LuChevronRight}
+                    boxSize="20px"
+                    color="content.tertiary"
+                    position="absolute"
+                    right="-22px"
+                    top="30px"
+                    display={{ base: "none", lg: "block" }}
+                    aria-hidden
+                  />
+                )}
                 <LabelMedium color="content.tertiary">{step.label}</LabelMedium>
                 <HeadlineLarge
                   color={TONE_COLOR[step.tone]}

@@ -1,14 +1,18 @@
 """Evaluate automatic CNB help-tool selection with real configured model calls.
 
-Inputs: --output JSON path; optional --locale UI language (default en); existing service provider credentials/environment and
-llm_config.yaml. Reads the five original CC-860 questions. Persistence is replaced
+Inputs: --output JSON path; optional --locale UI language (default en); optional
+--questions JSON list of {number, prompt} replacing the default set (the five
+original CC-860 questions plus two capability/fact checks); existing service
+provider credentials/environment and llm_config.yaml. Persistence is replaced
 with the original four-chapter, 25-gap fixture; only the real help tool may execute.
 Outputs: raw answers, tool calls, usage, and fixture/scope metadata as JSON.
 No project data is changed. This is an API evaluation, not a browser test.
 
 Usage from climate-advisor (PYTHONPATH=service):
     python -m scripts.evaluate_cnb_help --output ../docs/testing/CC-860-help-results.json
-    python -m scripts.evaluate_cnb_help --locale pt --output ../docs/testing/CC-860-help-results-pt.json
+    python -m scripts.evaluate_cnb_help --locale pt \
+        --questions ../docs/testing/CC-860-cnb-navigation-questions-pt.json \
+        --output ../docs/testing/CC-860-help-results-pt.json
 """
 
 import argparse
@@ -29,15 +33,22 @@ logger = logging.getLogger(__name__)
 
 
 def parse_args() -> argparse.Namespace:
-    """Parse the results destination and simulated UI language."""
+    """Parse the results destination, simulated UI language, and question set."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True, help="Results JSON path")
     parser.add_argument("--locale", default="en", help="Frontend UI language code")
+    parser.add_argument(
+        "--questions",
+        type=Path,
+        help="JSON list of {number, prompt}; replaces defaults",
+    )
     return parser.parse_args()
 
 
-async def evaluate(output: Path, ui_locale: str) -> None:
-    """Run isolated turns through the production agent and help tool."""
+def load_questions(questions_path: Path | None) -> list[dict]:
+    """Load a custom question set, or the original questions plus two checks."""
+    if questions_path is not None:
+        return json.loads(questions_path.read_text(encoding="utf-8-sig"))
     root = Path(__file__).resolve().parents[2]
     questions = json.loads(
         (root / "docs/testing/CC-860-cnb-navigation-answers.json").read_text(
@@ -53,6 +64,11 @@ async def evaluate(output: Path, ui_locale: str) -> None:
             },
         ]
     )
+    return questions
+
+
+async def evaluate(output: Path, ui_locale: str, questions: list[dict]) -> None:
+    """Run isolated turns through the production agent and help tool."""
     context = {
         "workflow_step": "editing_document",
         "document_context": None,
@@ -166,7 +182,7 @@ def main() -> None:
     logging.basicConfig(level=logging.WARNING)
     logger.setLevel(logging.INFO)
     args = parse_args()
-    asyncio.run(evaluate(args.output, args.locale))
+    asyncio.run(evaluate(args.output, args.locale, load_questions(args.questions)))
 
 
 if __name__ == "__main__":

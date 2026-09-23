@@ -261,17 +261,7 @@ class ConceptNoteWorkspaceRepository:
                 return False
 
             # Never persist a draft whose visible unknowns disagree with its gap records.
-            marker_keys = {
-                information_marker_key(marker)
-                for marker in information_needed_markers(body_markdown)
-            }
-            gap_keys = {
-                information_marker_key(gap.question) for gap in missing_information
-            }
-            if marker_keys != gap_keys:
-                raise WorkspaceConflictError(
-                    "Missing-information markers must match the generated gaps"
-                )
+            _require_markers_match_gaps(body_markdown, missing_information)
 
             # Persist the immutable draft and its initial structured gaps.
             session.add(
@@ -576,6 +566,20 @@ class ConceptNoteWorkspaceRepository:
             chapter.regeneration_status = "processing"
             chapter.regeneration_error = None
             chapter.updated_at = datetime.now(UTC)
+
+            # Answers may be propagated by the impact review, so surface every
+            # other drafted chapter as pending before that review starts.
+            if action in {"answer", "correction"} and answer:
+                await session.execute(
+                    update(ConceptNoteChapter)
+                    .where(
+                        ConceptNoteChapter.run_id == run_id,
+                        ConceptNoteChapter.chapter_id != chapter.chapter_id,
+                        ConceptNoteChapter.status.not_in(("empty", "deleted")),
+                        ConceptNoteChapter.regeneration_status == "idle",
+                    )
+                    .values(regeneration_status="queued")
+                )
             return GapResolutionStart(
                 chapter_id=chapter.chapter_id,
                 resolution_id=resolution.resolution_id,
@@ -723,6 +727,18 @@ class ConceptNoteWorkspaceRepository:
             chapter.updated_at = datetime.now(UTC)
             return True
 
+    async def release_queued_chapters(self, *, run_id: UUID) -> None:
+        """Return chapters the impact review did not rewrite to idle."""
+        async with self._session_factory() as session, session.begin():
+            await session.execute(
+                update(ConceptNoteChapter)
+                .where(
+                    ConceptNoteChapter.run_id == run_id,
+                    ConceptNoteChapter.regeneration_status == "queued",
+                )
+                .values(regeneration_status="idle")
+            )
+
     async def begin_gap_impact_regeneration(
         self,
         *,
@@ -752,11 +768,14 @@ class ConceptNoteWorkspaceRepository:
         generated: ConceptNoteChapterDraftOutput,
         source_gap_id: UUID,
         source_resolution_id: UUID,
-        actor_user_id: str,
         answer: str,
         source_refs: list[str],
     ) -> bool:
-        """Append a reviewer-selected rewrite with the user's answer provenance."""
+        """Append a reviewer-selected rewrite with the user's answer provenance.
+
+        Raises ``WorkspaceConflictError`` when the rewrite's markers disagree with
+        its gaps or when it drops an open gap without declaring it answered.
+        """
         async with self._session_factory() as session, session.begin():
             chapter = await _require_chapter(session, chapter_id, lock=True)
             latest = await _latest_revision(session, chapter_id)
@@ -767,14 +786,32 @@ class ConceptNoteWorkspaceRepository:
             ):
                 return False
 
+            # Reject rewrites that would silently lose an unanswered gap.
+            _require_markers_match_gaps(
+                generated.body_markdown, generated.missing_information
+            )
+            open_keys = {
+                gap.field_key
+                for gap in await _chapter_gaps(session, chapter_id)
+                if gap.status in {"open", "processing"}
+            }
+            retained_keys = {item.field_key for item in generated.missing_information}
+            answered_keys = open_keys & set(generated.answered_field_keys)
+            if open_keys - retained_keys - answered_keys:
+                raise WorkspaceConflictError(
+                    "Propagated rewrite dropped open gaps it did not answer"
+                )
+
+            # Answered gaps are closed by the propagated fact, not by the user.
             gaps_changed = await _reconcile_generated_gaps(
                 session,
                 chapter,
                 generated.missing_information,
-                close_action="answer",
+                close_action="evidence_update",
                 close_answer=answer,
-                close_actor_user_id=actor_user_id,
+                close_actor_user_id="system",
                 source_refs=source_refs,
+                closable_field_keys=answered_keys,
             )
             body_changed = (
                 latest.body_markdown.strip() != generated.body_markdown.strip()
@@ -833,6 +870,35 @@ class ConceptNoteWorkspaceRepository:
             chapter.regeneration_status = "failed"
             chapter.regeneration_error = "gap_impact_regeneration_failed"
             chapter.updated_at = datetime.now(UTC)
+
+
+def _require_markers_match_gaps(
+    body_markdown: str,
+    missing_information: list[ConceptNoteDraftGapOutput],
+) -> None:
+    """Raise ``WorkspaceConflictError`` unless markers and gap questions agree."""
+    marker_keys = {
+        information_marker_key(marker)
+        for marker in information_needed_markers(body_markdown)
+    }
+    gap_keys = {information_marker_key(gap.question) for gap in missing_information}
+    if marker_keys != gap_keys:
+        raise WorkspaceConflictError(
+            "Missing-information markers must match the generated gaps"
+        )
+
+
+async def _chapter_gaps(
+    session: AsyncSession, chapter_id: UUID
+) -> list[ConceptNoteGap]:
+    """Return every gap row for one chapter."""
+    return list(
+        (
+            await session.scalars(
+                select(ConceptNoteGap).where(ConceptNoteGap.chapter_id == chapter_id)
+            )
+        ).all()
+    )
 
 
 async def _require_chapter(
@@ -1033,7 +1099,8 @@ async def _latest_revision(
         .limit(1)
     )
 
-async def _latest_resolution(
+
+async def _latest_resolution(
     session: AsyncSession,
     gap_id: UUID,
 ) -> ConceptNoteGapResolution | None:
@@ -1683,15 +1750,7 @@ async def _merge_generated_gaps(
     protected_gap_id: UUID,
 ) -> None:
     """Update still-open gaps and add newly discovered ones after a user answer."""
-    existing = list(
-        (
-            await session.scalars(
-                select(ConceptNoteGap).where(
-                    ConceptNoteGap.chapter_id == chapter.chapter_id
-                )
-            )
-        ).all()
-    )
+    existing = await _chapter_gaps(session, chapter.chapter_id)
     by_key = {gap.field_key: gap for gap in existing}
     for output in outputs:
         gap = by_key.get(output.field_key)
@@ -1735,17 +1794,14 @@ async def _reconcile_generated_gaps(
     close_answer: str | None,
     close_actor_user_id: str,
     source_refs: list[str],
+    closable_field_keys: set[str] | None = None,
 ) -> bool:
-    """Reconcile one generated gap set while retaining append-only provenance."""
-    existing = list(
-        (
-            await session.scalars(
-                select(ConceptNoteGap).where(
-                    ConceptNoteGap.chapter_id == chapter.chapter_id
-                )
-            )
-        ).all()
-    )
+    """Reconcile one generated gap set while retaining append-only provenance.
+
+    ``closable_field_keys`` limits which absent gaps may be closed; ``None``
+    closes every open, caveat, or processing gap the output no longer lists.
+    """
+    existing = await _chapter_gaps(session, chapter.chapter_id)
     by_key = {gap.field_key: gap for gap in existing}
     output_by_key = {output.field_key: output for output in outputs}
     changed = False
@@ -1753,7 +1809,12 @@ async def _reconcile_generated_gaps(
     # Close open or caveat gaps that the new evidence now answers.
     for gap in existing:
         output = output_by_key.get(gap.field_key)
-        if output is None and gap.status in {"open", "caveat", "processing"}:
+        closable = closable_field_keys is None or gap.field_key in closable_field_keys
+        if (
+            output is None
+            and closable
+            and gap.status in {"open", "caveat", "processing"}
+        ):
             gap.status = "resolved"
             gap.version += 1
             gap.updated_at = datetime.now(UTC)

@@ -67,7 +67,9 @@ export function useConceptNoteWorkspaceData({
   });
   const draftRegenerating = Boolean(
     draft?.chapters.some(
-      (chapter) => chapter.regeneration_status === "processing",
+      (chapter) =>
+        chapter.regeneration_status === "queued" ||
+        chapter.regeneration_status === "processing",
     ),
   );
   if (draftRegenerating !== chaptersRegenerating) {

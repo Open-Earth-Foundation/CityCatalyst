@@ -69,6 +69,7 @@ _BACKGROUND_GAP_REGENERATIONS: set[asyncio.Task[None]] = set()
 _BACKGROUND_REVALIDATIONS: set[asyncio.Task[None]] = set()
 CHAPTER_DRAFT_RECONCILE_INTERVAL_SECONDS = 300
 CHAPTER_DRAFT_STALE_AFTER = timedelta(hours=1)
+PROPAGATED_REWRITE_ATTEMPTS = 2
 
 
 class ChapterDraftingError(Exception):
@@ -327,7 +328,32 @@ class ConceptNoteChapterDraftService:
         gap_id: UUID,
         resolution_id: UUID,
     ) -> None:
-        """Regenerate one affected chapter after an accepted user disposition."""
+        """Regenerate one affected chapter after an accepted user disposition.
+
+        Always releases chapters queued for the impact review, whether the
+        rewrite and propagation succeed, fail, or are skipped.
+        """
+        try:
+            await self._regenerate_resolved_gap(
+                run_id=run_id,
+                user_id=user_id,
+                chapter_id=chapter_id,
+                gap_id=gap_id,
+                resolution_id=resolution_id,
+            )
+        finally:
+            await self._workspace.release_queued_chapters(run_id=run_id)
+
+    async def _regenerate_resolved_gap(
+        self,
+        *,
+        run_id: UUID,
+        user_id: str,
+        chapter_id: UUID,
+        gap_id: UUID,
+        resolution_id: UUID,
+    ) -> None:
+        """Rewrite the source chapter, then propagate the answer to others."""
         try:
             # Reload all durable inputs so a background worker never uses request state.
             run = await self._load_owned_run(run_id, user_id)
@@ -397,7 +423,6 @@ class ConceptNoteChapterDraftService:
             try:
                 await self._propagate_resolved_information(
                     run_id=run_id,
-                    user_id=user_id,
                     source_chapter=current,
                     source_gap=source_gap,
                     application_context=application_context,
@@ -417,7 +442,6 @@ class ConceptNoteChapterDraftService:
         self,
         *,
         run_id: UUID,
-        user_id: str,
         source_chapter: WorkspaceChapterSnapshot,
         source_gap: WorkspaceGapSnapshot,
         application_context: ConceptNoteApplicationContextResponse,
@@ -474,27 +498,39 @@ class ConceptNoteChapterDraftService:
             if not started:
                 continue
             try:
-                generated = await self._generate_chapter(
-                    _build_chapter_input(
-                        application_context=application_context,
-                        run_context=run_context,
-                        current=current,
-                        template_chapter=template_by_ref.get(current.chapter_ref or ""),
-                        chapters=refreshed,
-                        propagated_information=[new_information],
+                chapter_input = _build_chapter_input(
+                    application_context=application_context,
+                    run_context=run_context,
+                    current=current,
+                    template_chapter=template_by_ref.get(current.chapter_ref or ""),
+                    chapters=refreshed,
+                    propagated_information=[new_information],
+                )
+                # Retry once when the rewrite drops or mismatches open gaps.
+                for attempt in range(1, PROPAGATED_REWRITE_ATTEMPTS + 1):
+                    generated = _sanitize_generated_output(
+                        await self._generate_chapter(chapter_input), run_context
                     )
-                )
-                generated = _sanitize_generated_output(generated, run_context)
-                await self._workspace.save_gap_impact_regeneration(
-                    chapter_id=current.chapter_id,
-                    expected_revision_number=expected_revision,
-                    generated=generated,
-                    source_gap_id=source_gap.gap_id,
-                    source_resolution_id=resolution.resolution_id,
-                    actor_user_id=user_id,
-                    answer=resolution.answer,
-                    source_refs=resolution.source_refs,
-                )
+                    try:
+                        await self._workspace.save_gap_impact_regeneration(
+                            chapter_id=current.chapter_id,
+                            expected_revision_number=expected_revision,
+                            generated=generated,
+                            source_gap_id=source_gap.gap_id,
+                            source_resolution_id=resolution.resolution_id,
+                            answer=resolution.answer,
+                            source_refs=resolution.source_refs,
+                        )
+                        break
+                    except WorkspaceConflictError:
+                        if attempt == PROPAGATED_REWRITE_ATTEMPTS:
+                            raise
+                        logger.warning(
+                            "Concept Note propagated rewrite rejected; retrying "
+                            "run_id=%s chapter=%s",
+                            run_id,
+                            chapter_number,
+                        )
             except Exception:
                 logger.exception(
                     "Concept Note propagated rewrite failed run_id=%s chapter=%s",

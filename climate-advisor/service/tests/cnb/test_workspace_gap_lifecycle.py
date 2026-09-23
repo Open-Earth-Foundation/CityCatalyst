@@ -454,12 +454,10 @@ async def test_critical_gap_cannot_be_deferred(workspace) -> None:
         )
 
 
-async def test_gap_impact_rewrite_appends_revision_and_answer_provenance(
+async def test_gap_impact_rewrite_closes_only_declared_gaps_as_evidence_update(
     workspace,
 ) -> None:
-    """Turn a reviewer-selected chapter into a proposal without overwriting it."""
-    source_gap_id = uuid4()
-    source_resolution_id = uuid4()
+    """Attribute a propagated closure to the system, never to the user."""
     started = await workspace.begin_gap_impact_regeneration(
         chapter_id=CHAPTER_ID,
         expected_revision_number=1,
@@ -474,10 +472,10 @@ async def test_gap_impact_rewrite_appends_revision_and_answer_provenance(
                 "## Implementation\n\nThe municipality confirmed it will lead delivery."
             ),
             missing_information=[],
+            answered_field_keys=["lead_partner"],
         ),
-        source_gap_id=source_gap_id,
-        source_resolution_id=source_resolution_id,
-        actor_user_id="owner",
+        source_gap_id=uuid4(),
+        source_resolution_id=uuid4(),
         answer="The municipality will lead delivery.",
         source_refs=["project-plan.pdf"],
     )
@@ -489,10 +487,164 @@ async def test_gap_impact_rewrite_appends_revision_and_answer_provenance(
     assert chapter.regeneration_status == "idle"
     assert chapter.gaps[0].state == "resolved"
     assert chapter.gaps[0].resolution is not None
-    assert chapter.gaps[0].resolution.action == "answer"
+    assert chapter.gaps[0].resolution.action == "evidence_update"
     assert chapter.gaps[0].resolution.answer == "The municipality will lead delivery."
-    assert chapter.gaps[0].resolution.actor_user_id == "owner"
+    assert chapter.gaps[0].resolution.actor_user_id == "system"
     assert chapter.gaps[0].resolution.source_refs == ["project-plan.pdf"]
+
+
+async def test_gap_impact_rewrite_rejects_undeclared_dropped_gap(workspace) -> None:
+    """Keep an unrelated open gap open when a rewrite silently drops its marker."""
+    await workspace.begin_gap_impact_regeneration(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=1,
+    )
+
+    with pytest.raises(WorkspaceConflictError, match="dropped open gaps"):
+        await workspace.save_gap_impact_regeneration(
+            chapter_id=CHAPTER_ID,
+            expected_revision_number=1,
+            generated=ConceptNoteChapterDraftOutput(
+                body_markdown="## Implementation\n\nGreen measures were added.",
+                missing_information=[],
+            ),
+            source_gap_id=uuid4(),
+            source_resolution_id=uuid4(),
+            answer="Rain gardens at the new stops.",
+            source_refs=[],
+        )
+
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.revision_number == 1
+    assert chapter.gaps[0].state == "open"
+    assert chapter.gaps[0].resolution is None
+
+
+async def test_gap_impact_rewrite_rejects_marker_mismatch(workspace) -> None:
+    """Apply the first-draft marker contract to propagated rewrites."""
+    await workspace.begin_gap_impact_regeneration(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=1,
+    )
+
+    with pytest.raises(WorkspaceConflictError, match="markers must match"):
+        await workspace.save_gap_impact_regeneration(
+            chapter_id=CHAPTER_ID,
+            expected_revision_number=1,
+            generated=ConceptNoteChapterDraftOutput(
+                body_markdown="## Implementation\n\nNo marker remains here.",
+                missing_information=[
+                    ConceptNoteDraftGapOutput(
+                        field_key="lead_partner",
+                        question="Confirm the lead partner.",
+                        why_asking="The delivery model must name an accountable partner.",
+                        severity="critical",
+                    )
+                ],
+            ),
+            source_gap_id=uuid4(),
+            source_resolution_id=uuid4(),
+            answer="Unrelated answer.",
+            source_refs=[],
+        )
+
+
+async def test_gap_impact_rewrite_keeps_undeclared_caveat(workspace) -> None:
+    """A propagated rewrite must not convert an acknowledged caveat to resolved."""
+    async with workspace._session_factory() as session, session.begin():
+        gap = await session.get(ConceptNoteGap, GAP_ID)
+        assert gap is not None
+        gap.status = "caveat"
+    await workspace.begin_gap_impact_regeneration(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=1,
+    )
+
+    await workspace.save_gap_impact_regeneration(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=1,
+        generated=ConceptNoteChapterDraftOutput(
+            body_markdown="## Implementation\n\nThe lead partner remains a caveat.",
+            missing_information=[],
+        ),
+        source_gap_id=uuid4(),
+        source_resolution_id=uuid4(),
+        answer="Unrelated answer.",
+        source_refs=[],
+    )
+
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.gaps[0].state == "caveat"
+
+
+async def _add_budget_chapter(workspace, *, status: str = "draft") -> UUID:
+    """Add a second chapter to the run and return its id."""
+    chapter_id = uuid4()
+    async with workspace._session_factory() as session, session.begin():
+        session.add(
+            ConceptNoteChapter(
+                chapter_id=chapter_id,
+                run_id=RUN_ID,
+                template_section_id=f"budget-{status}",
+                title="Budget",
+                position=1 if status == "draft" else 2,
+                status=status,
+                required=True,
+            )
+        )
+    return chapter_id
+
+
+async def _regeneration_statuses(workspace) -> dict[UUID, str]:
+    """Map every chapter in the run to its regeneration status."""
+    async with workspace._session_factory() as session:
+        rows = await session.execute(
+            select(
+                ConceptNoteChapter.chapter_id, ConceptNoteChapter.regeneration_status
+            ).where(ConceptNoteChapter.run_id == RUN_ID)
+        )
+        return dict(rows.all())
+
+
+async def test_answer_queues_other_drafted_chapters_until_released(workspace) -> None:
+    """Expose pending propagation before the impact review selects chapters."""
+    drafted_id = await _add_budget_chapter(workspace)
+    empty_id = await _add_budget_chapter(workspace, status="empty")
+
+    await workspace.prepare_gap_resolution(
+        run_id=RUN_ID,
+        gap_id=GAP_ID,
+        action="answer",
+        answer="Lincoln Park Neighborhood Council",
+        expected_version=1,
+        idempotency_key=uuid4(),
+        user_id="owner",
+    )
+    statuses = await _regeneration_statuses(workspace)
+    assert statuses[CHAPTER_ID] == "processing"
+    assert statuses[drafted_id] == "queued"
+    assert statuses[empty_id] == "idle"
+
+    await workspace.release_queued_chapters(run_id=RUN_ID)
+    statuses = await _regeneration_statuses(workspace)
+    assert statuses[CHAPTER_ID] == "processing"
+    assert statuses[drafted_id] == "idle"
+
+
+async def test_dismissal_does_not_queue_other_chapters(workspace) -> None:
+    """Only answers can be propagated, so other dispositions queue nothing."""
+    drafted_id = await _add_budget_chapter(workspace)
+
+    await workspace.prepare_gap_resolution(
+        run_id=RUN_ID,
+        gap_id=GAP_ID,
+        action="not_a_gap",
+        answer=None,
+        expected_version=1,
+        idempotency_key=uuid4(),
+        user_id="owner",
+    )
+    assert (await _regeneration_statuses(workspace))[drafted_id] == "idle"
 
 
 async def test_noncritical_gap_can_remain_visible_as_confirmed_caveat(

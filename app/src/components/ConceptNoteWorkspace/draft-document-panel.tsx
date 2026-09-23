@@ -577,6 +577,15 @@ export function DraftDocumentPanel({
                           {t("chapter-regenerating")}
                         </Text>
                       )}
+                      {chapter.regeneration_status === "queued" && (
+                        <Text
+                          fontSize="10px"
+                          color="content.tertiary"
+                          data-testid="concept-note-chapter-update-pending"
+                        >
+                          {t("chapter-update-pending")}
+                        </Text>
+                      )}
                       {chapter.regeneration_status === "failed" && (
                         <Text fontSize="10px" color="sentiment.negativeDefault">
                           {t("chapter-regeneration-failed")}

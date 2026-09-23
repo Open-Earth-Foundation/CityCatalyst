@@ -172,6 +172,15 @@ class ConceptNoteEditService:
                     "Finish drafting before requesting edits.",
                     status_code=422,
                 )
+            # Chapters awaiting a gap-driven rewrite would make this proposal stale.
+            if any(
+                chapter.regeneration_status in {"queued", "processing"}
+                for chapter in chapters
+            ):
+                raise EditOperationError(
+                    "chapters_updating",
+                    "Related chapters are still being updated. Try again when they finish.",
+                )
             if len(chapters) > 100:
                 raise EditOperationError(
                     "context_limit",

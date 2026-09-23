@@ -36,7 +36,7 @@ ConceptNoteGapResolutionAction = Literal[
     "defer_as_caveat",
     "evidence_update",
 ]
-ConceptNoteRegenerationStatus = Literal["idle", "processing", "failed"]
+ConceptNoteRegenerationStatus = Literal["idle", "queued", "processing", "failed"]
 
 
 class ConceptNoteGapSuggestion(BaseModel):
@@ -73,6 +73,7 @@ class ConceptNoteChapterDraftOutput(BaseModel):
         default_factory=list,
         max_length=30,
     )
+    answered_field_keys: list[str] = Field(default_factory=list, max_length=30)
 
 
 class ConceptNoteGapResolutionResponse(BaseModel):

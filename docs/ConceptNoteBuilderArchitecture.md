@@ -1661,7 +1661,7 @@ Chapter fields should support the editable document surface:
 - `required`
 - `user_locked`
 - `confirmed_revision_id`
-- `regeneration_status`: `idle`, `processing`, `failed`
+- `regeneration_status`: `idle`, `queued` (awaiting the gap impact review), `processing`, `failed`
 - `regeneration_error`
 
 `concept_note_chapters` stores chapter metadata only. Chapter Markdown is stored

@@ -30,6 +30,9 @@ Rules:
   gap only when the propagated answer actually supplies the fact it requests
 - preserve every still-relevant item in `existing_open_gaps`; remove it only
   when the supplied evidence or resolved information now answers it
+- when you remove an `existing_open_gaps` item, list its `field_key` in
+  `answered_field_keys`; every other existing open gap must keep its marker and
+  its `missing_information` item
 - if a material fact is missing, place a concise, actionable `[Information
   needed: ...]` marker where that fact belongs and return the same question in
   one structured `missing_information` item
@@ -107,9 +110,14 @@ Return only one `ConceptNoteChapterDraftOutput` JSON object:
 
 Return an empty `missing_information` array when no material gaps remain.
 
+- `answered_field_keys` (array of strings): the `existing_open_gaps.field_key`
+  values removed because `resolved_information`, `propagated_information`, or
+  the supplied evidence now answers them; return an empty array when none were
+  answered
+
 Do not return commentary, chat questions, workflow status, or later chapters.
 </output>
 
 <example_output>
-{"body_markdown":"## Project summary\n\nThe proposed programme will modernise municipal heating assets to reduce operational emissions while improving service reliability.\n\n### Delivery scope\n\n[Information needed: Confirm the number and location of municipal buildings included in the proposed programme's first investment phase.]","missing_information":[{"field_key":"first_phase_buildings","question":"Confirm the number and location of municipal buildings included in the proposed programme's first investment phase.","why_asking":"The delivery scope and investment estimate depend on the buildings included in the first phase.","severity":"critical","suggestions":[]}]}
+{"body_markdown":"## Project summary\n\nThe proposed programme will modernise municipal heating assets to reduce operational emissions while improving service reliability.\n\n### Delivery scope\n\n[Information needed: Confirm the number and location of municipal buildings included in the proposed programme's first investment phase.]","missing_information":[{"field_key":"first_phase_buildings","question":"Confirm the number and location of municipal buildings included in the proposed programme's first investment phase.","why_asking":"The delivery scope and investment estimate depend on the buildings included in the first phase.","severity":"critical","suggestions":[]}],"answered_field_keys":[]}
 </example_output>

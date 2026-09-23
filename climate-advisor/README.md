@@ -913,7 +913,13 @@ it receives deterministic, token-bounded slices covering the full document.
 Its only tool response is a sorted chapter-number array. Only those chapters
 are regenerated with the confirmed answer, and confirmed revisions remain
 preserved as reviewable proposals. The answer remains audited if any rewrite
-fails. Grounded answer suggestions keep their selected-source references;
+fails. Accepting an answer marks every other drafted chapter `queued` until the
+review finishes, so the workspace shows pending work and chat edit proposals
+are refused with `chapters_updating` while any chapter is `queued` or
+`processing`. A propagated rewrite must keep a marker and structured gap for
+every open gap it does not list in `answered_field_keys`; otherwise it is
+retried once and then marked failed. Gaps it does list are closed as
+`evidence_update` by `system`, never attributed to the user. Grounded answer suggestions keep their selected-source references;
 unsupported suggestions are removed.
 Every model-generated gap includes a fact-specific `why_asking` rationale in
 the same structured item as its question. Legacy string-only gaps are displayed
@@ -928,7 +934,7 @@ upload affects an already Ready chapter, the confirmed revision is preserved
 and a separate proposed revision requires renewed review. The CNB Alembic
 revision `20260907_120000` provisions the structured gap, append-only resolution,
 and exact-revision review contract; `20260924_120000` adds per-chapter
-regeneration status tracking.
+regeneration status tracking (`idle`, `queued`, `processing`, `failed`).
 
 ### Concept Note draft review and chat editing
 

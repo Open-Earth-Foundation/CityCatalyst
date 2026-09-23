@@ -219,8 +219,21 @@ export function ConceptNoteChatPanel({
   const contextState = contextStatus.state;
   const hasUploadedEvidence = contextState === "ready";
   const contextBlocked = contextStatus.blocked;
+  // Hold chat while a gap answer may still rewrite chapters, so edits are
+  // never proposed against text that is about to be replaced.
+  const chaptersUpdating = Boolean(
+    gapInterview?.draft?.chapters.some(
+      (chapter) =>
+        chapter.regeneration_status === "queued" ||
+        chapter.regeneration_status === "processing",
+    ),
+  );
   const chatDisabled =
-    contextBlocked || !threadId || historyLoading || isGenerating;
+    contextBlocked ||
+    chaptersUpdating ||
+    !threadId ||
+    historyLoading ||
+    isGenerating;
   const requestedOverviewThreadRef = useRef<string | null>(null);
 
   // Ask Clima once for the drafting overview; the service claims it per build.
@@ -491,14 +504,20 @@ export function ConceptNoteChatPanel({
             value={input}
             disabled={chatDisabled}
             aria-describedby={
-              contextBlocked ? "concept-note-chat-blocked" : undefined
+              contextBlocked
+                ? "concept-note-chat-blocked"
+                : chaptersUpdating
+                  ? "concept-note-chat-updating"
+                  : undefined
             }
             placeholder={
               contextBlocked
                 ? t("chat-waiting-for-context")
-                : threadId
-                  ? t("chat-input-placeholder")
-                  : t("chat-unavailable")
+                : chaptersUpdating
+                  ? t("chat-waiting-for-chapter-updates")
+                  : threadId
+                    ? t("chat-input-placeholder")
+                    : t("chat-unavailable")
             }
             bg="base.light"
             borderColor="border.neutral"
@@ -552,6 +571,17 @@ export function ConceptNoteChatPanel({
             {contextState === "failed"
               ? t("chat-context-failed-help")
               : t("chat-waiting-for-context-help")}
+          </Text>
+        )}
+        {chaptersUpdating && !contextBlocked && (
+          <Text
+            id="concept-note-chat-updating"
+            data-testid="concept-note-chat-updating"
+            mt={2}
+            fontSize="label.sm"
+            color="content.secondary"
+          >
+            {t("chat-chapters-updating-help")}
           </Text>
         )}
         {!threadId && (

@@ -28,6 +28,7 @@ from app.models.cnb.concept_note_draft import (
 from app.models.db.concept_note import ConceptNoteRun
 from app.persistence.concept_notes.workspace import (
     WorkspaceChapterSnapshot,
+    WorkspaceConflictError,
     WorkspaceGapResolutionSnapshot,
     WorkspaceGapSnapshot,
 )
@@ -249,11 +250,37 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
     )
 
 
-async def test_confirmed_answer_rewrites_only_review_selected_other_chapters() -> None:
-    """Review every other chapter but regenerate only returned chapter numbers."""
-    source_chapter_id = uuid4()
-    target_chapter_id = uuid4()
-    untouched_chapter_id = uuid4()
+class _PropagationWorkspace:
+    """Record propagated rewrites; ``save_outcomes`` drives each save call."""
+
+    def __init__(self, chapters, save_outcomes):
+        self.chapters = chapters
+        self.save_outcomes = list(save_outcomes)
+        self.started: list[UUID] = []
+        self.saved: list[dict[str, Any]] = []
+        self.failed: list[UUID] = []
+
+    async def list_chapters(self, *, run_id: UUID):
+        assert run_id == RUN_ID
+        return self.chapters
+
+    async def begin_gap_impact_regeneration(self, **kwargs):
+        self.started.append(kwargs["chapter_id"])
+        return True
+
+    async def save_gap_impact_regeneration(self, **kwargs):
+        self.saved.append(kwargs)
+        outcome = self.save_outcomes.pop(0)
+        if isinstance(outcome, Exception):
+            raise outcome
+        return outcome
+
+    async def fail_gap_impact_regeneration(self, **kwargs):
+        self.failed.append(kwargs["chapter_id"])
+
+
+def _propagation_setup(save_outcomes):
+    """Build a service with one answered source gap and three chapters."""
     resolution_id = uuid4()
     gap = WorkspaceGapSnapshot(
         gap_id=uuid4(),
@@ -277,9 +304,9 @@ async def test_confirmed_answer_rewrites_only_review_selected_other_chapters() -
         updated_at=datetime.now(UTC),
     )
 
-    def chapter(chapter_id: UUID, position: int, title: str):
+    def chapter(position: int, title: str) -> WorkspaceChapterSnapshot:
         return WorkspaceChapterSnapshot(
-            chapter_id=chapter_id,
+            chapter_id=uuid4(),
             chapter_ref=f"chapter-{position + 1}",
             title=title,
             position=position,
@@ -297,32 +324,8 @@ async def test_confirmed_answer_rewrites_only_review_selected_other_chapters() -
             regeneration_error=None,
         )
 
-    chapters = [
-        chapter(source_chapter_id, 0, "Summary"),
-        chapter(target_chapter_id, 1, "Timeline"),
-        chapter(untouched_chapter_id, 2, "Climate impact"),
-    ]
-
-    class PropagationWorkspace:
-        def __init__(self):
-            self.started: list[UUID] = []
-            self.saved: list[dict[str, Any]] = []
-
-        async def list_chapters(self, *, run_id: UUID):
-            assert run_id == RUN_ID
-            return chapters
-
-        async def begin_gap_impact_regeneration(self, **kwargs):
-            self.started.append(kwargs["chapter_id"])
-            return True
-
-        async def save_gap_impact_regeneration(self, **kwargs):
-            self.saved.append(kwargs)
-            return True
-
-        async def fail_gap_impact_regeneration(self, **kwargs):
-            raise AssertionError(f"Unexpected failure: {kwargs}")
-
+    chapters = [chapter(0, "Summary"), chapter(1, "Timeline"), chapter(2, "Climate")]
+    workspace = _PropagationWorkspace(chapters, save_outcomes)
     reviewer = SimpleNamespace(select_chapters=AsyncMock(return_value=[2]))
     payloads: list[dict[str, Any]] = []
 
@@ -332,7 +335,6 @@ async def test_confirmed_answer_rewrites_only_review_selected_other_chapters() -
             body_markdown="## Timeline\n\nOpening is planned for 1 January 2029."
         )
 
-    workspace = PropagationWorkspace()
     service = cast(
         ConceptNoteChapterDraftService,
         object.__new__(ConceptNoteChapterDraftService),
@@ -341,26 +343,43 @@ async def test_confirmed_answer_rewrites_only_review_selected_other_chapters() -
     service._impact_reviewer = reviewer
     service._generate_chapter_override = generate
 
-    await service._propagate_resolved_information(
-        run_id=RUN_ID,
-        user_id="owner",
-        source_chapter=chapters[0],
-        source_gap=gap,
-        application_context=cast(
-            ConceptNoteApplicationContextResponse,
-            SimpleNamespace(model_dump=lambda **_: {}),
-        ),
-        run_context={"context_bundle": {}},
-        template_by_ref={},
+    async def propagate() -> None:
+        await service._propagate_resolved_information(
+            run_id=RUN_ID,
+            source_chapter=chapters[0],
+            source_gap=gap,
+            application_context=cast(
+                ConceptNoteApplicationContextResponse,
+                SimpleNamespace(model_dump=lambda **_: {}),
+            ),
+            run_context={"context_bundle": {}},
+            template_by_ref={},
+        )
+
+    return SimpleNamespace(
+        chapters=chapters,
+        payloads=payloads,
+        propagate=propagate,
+        resolution_id=resolution_id,
+        reviewer=reviewer,
+        workspace=workspace,
     )
 
-    reviewed = reviewer.select_chapters.await_args.kwargs["chapters"]
+
+async def test_confirmed_answer_rewrites_only_review_selected_other_chapters() -> None:
+    """Review every other chapter but regenerate only returned chapter numbers."""
+    setup = _propagation_setup([True])
+
+    await setup.propagate()
+
+    target_chapter_id = setup.chapters[1].chapter_id
+    reviewed = setup.reviewer.select_chapters.await_args.kwargs["chapters"]
     assert [item.position + 1 for item in reviewed] == [2, 3]
-    assert workspace.started == [target_chapter_id]
-    assert len(workspace.saved) == 1
-    assert workspace.saved[0]["chapter_id"] == target_chapter_id
-    assert workspace.saved[0]["source_resolution_id"] == resolution_id
-    assert payloads[0]["propagated_information"] == [
+    assert setup.workspace.started == [target_chapter_id]
+    assert len(setup.workspace.saved) == 1
+    assert setup.workspace.saved[0]["chapter_id"] == target_chapter_id
+    assert setup.workspace.saved[0]["source_resolution_id"] == setup.resolution_id
+    assert setup.payloads[0]["propagated_information"] == [
         {
             "source_chapter_number": 1,
             "field_key": "opening_date",
@@ -369,6 +388,50 @@ async def test_confirmed_answer_rewrites_only_review_selected_other_chapters() -
             "action": "answer",
         }
     ]
+
+
+async def test_rejected_propagated_rewrite_is_retried_once() -> None:
+    """Regenerate once more when a rewrite drops or mismatches open gaps."""
+    setup = _propagation_setup([WorkspaceConflictError("dropped"), True])
+
+    await setup.propagate()
+
+    assert len(setup.payloads) == 2
+    assert len(setup.workspace.saved) == 2
+    assert setup.workspace.failed == []
+
+
+async def test_repeatedly_rejected_propagated_rewrite_marks_chapter_failed() -> None:
+    """Surface a retryable failure instead of saving a rewrite that loses gaps."""
+    setup = _propagation_setup(
+        [WorkspaceConflictError("dropped"), WorkspaceConflictError("dropped")]
+    )
+
+    await setup.propagate()
+
+    assert len(setup.payloads) == 2
+    assert setup.workspace.failed == [setup.chapters[1].chapter_id]
+
+
+async def test_gap_regeneration_always_releases_queued_chapters() -> None:
+    """Release queued chapters even when the rewrite pipeline raises."""
+    service = cast(
+        ConceptNoteChapterDraftService,
+        object.__new__(ConceptNoteChapterDraftService),
+    )
+    service._workspace = SimpleNamespace(release_queued_chapters=AsyncMock())
+    service._regenerate_resolved_gap = AsyncMock(side_effect=RuntimeError("boom"))
+
+    with pytest.raises(RuntimeError):
+        await service.regenerate_resolved_gap(
+            run_id=RUN_ID,
+            user_id="owner",
+            chapter_id=uuid4(),
+            gap_id=uuid4(),
+            resolution_id=uuid4(),
+        )
+
+    service._workspace.release_queued_chapters.assert_awaited_once_with(run_id=RUN_ID)
 
 
 def test_only_source_grounded_suggestions_survive_sanitization() -> None:

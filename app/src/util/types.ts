@@ -1285,7 +1285,7 @@ export interface ConceptNoteDraftChapter {
   confirmed_body_markdown: string | null;
   confirmed_revision_number: number | null;
   proposed_revision_number: number | null;
-  regeneration_status: "idle" | "processing" | "failed";
+  regeneration_status: "idle" | "queued" | "processing" | "failed";
   regeneration_error: string | null;
   validation?: ConceptNoteChapterValidation | null;
 }

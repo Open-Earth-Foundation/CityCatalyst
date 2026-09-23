@@ -76,7 +76,7 @@ class ConceptNoteChapter(CnbBase):
             name="status_valid",
         ),
         CheckConstraint(
-            "regeneration_status IN ('idle', 'processing', 'failed')",
+            "regeneration_status IN ('idle', 'queued', 'processing', 'failed')",
             name="regeneration_status_valid",
         ),
         Index(

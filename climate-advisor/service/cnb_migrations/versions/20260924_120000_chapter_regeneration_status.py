@@ -34,7 +34,7 @@ def upgrade() -> None:
     op.create_check_constraint(
         "ck_concept_note_chapters_regeneration_status_valid",
         "concept_note_chapters",
-        "regeneration_status IN ('idle', 'processing', 'failed')",
+        "regeneration_status IN ('idle', 'queued', 'processing', 'failed')",
     )
 
 

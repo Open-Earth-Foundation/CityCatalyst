@@ -339,7 +339,7 @@ const ActivityModalBody = ({
           errors={errors}
           setValue={setValue}
           fields={fields}
-          gwpVersion={inventory?.globalWarmingPotentialType}
+          gwp={inventory?.gwp}
         />
       </form>
     </DialogBody>

@@ -365,8 +365,6 @@ export function ConceptNoteWorkspace({
               composerRequest={null}
               draftOverviewPending={Boolean(draft?.overview_pending)}
               lng={lng}
-              mutationError={workspaceMutationError}
-              onConfirmChapter={confirmChapter}
               onOpenContext={() => setTab("context")}
               onStartNewChat={() => setStartNewChatOpen(true)}
               runId={run.run_id}

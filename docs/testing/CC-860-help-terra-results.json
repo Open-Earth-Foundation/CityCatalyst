@@ -1,0 +1,161 @@
+{
+  "scope": "Real model and production agent/tool; fixture persistence; no browser/deployment test; preliminary default-model Terra run",
+  "context": {
+    "workflow_step": "editing_document",
+    "document_context": null,
+    "selected_sources": [],
+    "funder_context": {
+      "funder": "European Union LIFE Programme",
+      "programme": "EUCF Call 7"
+    }
+  },
+  "ui_state": {
+    "version": "cnb-desktop-v1",
+    "active_tab": null,
+    "draft": {
+      "exists": true,
+      "chapters": 4
+    },
+    "pending_proposal": null,
+    "export": {
+      "enabled": false,
+      "blockers": [
+        "25 critical gaps; fill through reviewed chat edits"
+      ],
+      "missing_upload_blocks_export": false
+    },
+    "review": {
+      "failed_chapters": null,
+      "failure_blocks_export": null
+    }
+  },
+  "results": [
+    {
+      "number": 1,
+      "prompt": "I'm new here. Where can I see the draft you generated? Do I need to download it first?",
+      "answer": "Your draft already exists (with 4 chapters). You do not need to download it to view it.\n\nIn the right-hand workspace, open the **Draft preview** tab. Use **Sections** there to navigate between chapters.\n\nDownloading is only for a finished export: select **Review & export** in the top-right, then complete the review steps and choose **Export PDF** or **Export DOCX**. Currently, export is blocked by 25 critical information gaps that need to be addressed through reviewed chat edits.",
+      "tool_calls": [
+        "concept_note_help"
+      ],
+      "model": "openai/gpt-5.6-terra",
+      "usage": [
+        {
+          "input_tokens": 2231,
+          "output_tokens": 27
+        },
+        {
+          "input_tokens": 2995,
+          "output_tokens": 107
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "prompt": "Where do I click to change the funder and funding programme for this note?",
+      "answer": "Open the **Context** tab in the right-hand workspace, then:\n\n1. Select **Funder profile**\n2. Click **Change** (or **Browse funders** if none is selected)\n3. Choose the funder, then the funding programme\n4. Review the automatically linked template and click **Save selection**\n\nThere is no separate template-selection step.",
+      "tool_calls": [
+        "concept_note_help"
+      ],
+      "model": "openai/gpt-5.6-terra",
+      "usage": [
+        {
+          "input_tokens": 2226,
+          "output_tokens": 16
+        },
+        {
+          "input_tokens": 2979,
+          "output_tokens": 77
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "prompt": "I have a PDF with more project information. Where do I upload it?",
+      "answer": "Open the **Context** tab in the right-hand workspace, then go to **Your files** and select **Upload file**. You can upload a PDF or Markdown file.\n\nOnce uploaded, I can help locate and use relevant information from it.",
+      "tool_calls": [
+        "concept_note_help"
+      ],
+      "model": "openai/gpt-5.6-terra",
+      "usage": [
+        {
+          "input_tokens": 2225,
+          "output_tokens": 27
+        },
+        {
+          "input_tokens": 2989,
+          "output_tokens": 53
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "prompt": "I want to correct a sentence in the draft. Where do I type the change, and how do I save it?",
+      "answer": "Type the correction as a message to me in the left Clima chat—for example: “Replace [current sentence] with [new sentence].”\n\nI’ll create a reviewable proposed edit. Then select **Review in document** and choose **Accept this change** (or **Accept all**). The draft preview is read-only, so there is no separate Save button; accepting the reviewed change applies it.",
+      "tool_calls": [
+        "concept_note_help"
+      ],
+      "model": "openai/gpt-5.6-terra",
+      "usage": [
+        {
+          "input_tokens": 2234,
+          "output_tokens": 16
+        },
+        {
+          "input_tokens": 2987,
+          "output_tokens": 85
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "prompt": "How do I download this note as a PDF, and why might the download button be disabled?",
+      "answer": "To download the note:\n\n1. Select **Review & export** in the top-right of the concept-note workspace.\n2. Work through **Missing information** → **Conflicts & logic** → **Decide & export**.\n3. Choose **Export anyway** (or **Continue to export**), then select **Export PDF**.\n\nThe PDF export is currently disabled because the draft has **25 critical information gaps**. These need to be addressed through reviewed chat edit proposals and accepted in the document. Missing uploaded evidence alone is not blocking export.",
+      "tool_calls": [
+        "concept_note_help"
+      ],
+      "model": "openai/gpt-5.6-terra",
+      "usage": [
+        {
+          "input_tokens": 2229,
+          "output_tokens": 16
+        },
+        {
+          "input_tokens": 2982,
+          "output_tokens": 114
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "prompt": "What can you do in this concept note builder?",
+      "answer": "I can help you:\n\n- Explain the active funding context: European Union LIFE Programme, EUCF Call 7.\n- Answer questions about the concept note, funding, and comparable projects when that context is available.\n- Search selected PDF or Markdown source files for precise supporting evidence.\n- Propose edits to the draft for your review. You choose **Review in document** and then **Accept this change** or **Accept all**; I cannot apply edits directly.\n- Help identify and address missing information or logic issues before export.\n\nIn the workspace, use:\n- **Context → Funder profile → Change** to change the funder/programme.\n- **Context → Your files → Upload file** to add PDF or Markdown evidence.\n- **Review & export** to work through missing information, conflicts/logic, and export the final PDF or DOCX.\n\nThere is a 4-chapter draft. Export is not yet enabled because the current review identifies **25 critical gaps** to fill through reviewed chat edits.",
+      "tool_calls": [
+        "concept_note_help"
+      ],
+      "model": "openai/gpt-5.6-terra",
+      "usage": [
+        {
+          "input_tokens": 2220,
+          "output_tokens": 16
+        },
+        {
+          "input_tokens": 2973,
+          "output_tokens": 206
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "prompt": "Which funder and programme are selected for this project?",
+      "answer": "The selected funder is the European Union LIFE Programme, under the EUCF Call 7 programme.",
+      "tool_calls": [],
+      "model": "openai/gpt-5.6-terra",
+      "usage": [
+        {
+          "input_tokens": 2221,
+          "output_tokens": 24
+        }
+      ]
+    }
+  ]
+}

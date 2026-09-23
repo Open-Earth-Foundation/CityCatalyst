@@ -74,6 +74,7 @@ export function ConceptNoteDashboard({
   const router = useRouter();
   const reducedMotion = useReducedMotion() ?? false;
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [retryRun, setRetryRun] = useState<ConceptNoteRun | null>(null);
   const [lifecycleDialog, setLifecycleDialog] = useState<{
     action: ConceptNoteLifecycleAction;
     run: ConceptNoteRun;
@@ -386,6 +387,7 @@ export function ConceptNoteDashboard({
                     resumeHref={conceptNoteResumeHref(lng, cityId, run.run_id)}
                     duplicateLoading={duplicatingRunId === run.run_id}
                     lifecycleDisabled={Boolean(duplicatingRunId)}
+                    onRetryUpload={() => setRetryRun(run)}
                     onRename={() =>
                       setLifecycleDialog({ action: "rename", run })
                     }
@@ -461,6 +463,19 @@ export function ConceptNoteDashboard({
         projectId={city?.projectId ?? null}
         projectName={city?.project?.name ?? null}
       />
+      {retryRun && (
+        <NewConceptNoteDialog
+          key={retryRun.run_id}
+          retryRun={retryRun}
+          cityId={cityId}
+          cityName={cityName}
+          lng={lng}
+          open
+          onOpenChange={(open) => {
+            if (!open) setRetryRun(null);
+          }}
+        />
+      )}
       {lifecycleDialog && (
         <ConceptNoteLifecycleDialog
           key={`${lifecycleDialog.action}-${lifecycleDialog.run.run_id}`}

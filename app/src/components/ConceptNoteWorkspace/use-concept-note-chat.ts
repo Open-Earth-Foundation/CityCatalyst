@@ -208,6 +208,8 @@ export function useConceptNoteChat({
           content: normalizedContent,
           context: {
             concept_note_run_id: runId,
+            // Lets Clima's help quote control labels in the visible UI language.
+            ui_locale: lng,
             ...(editScope
               ? {
                   concept_note_edit: {

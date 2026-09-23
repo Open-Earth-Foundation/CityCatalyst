@@ -25,6 +25,8 @@ export interface MeedContextArea {
   titleKey: string;
   descriptionKey: string;
   icon: IconType;
+  /** Takes two grid columns. Defaults to true for the emissions area only. */
+  wide?: boolean;
 }
 
 export const MEED_CONTEXT_AREAS: MeedContextArea[] = [

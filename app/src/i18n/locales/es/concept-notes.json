@@ -675,5 +675,8 @@
   "edit-error-structure_changed": "Los cambios de encabezado necesitan una propuesta estructural. Pide a Clima que renombre el capítulo, o edítalo en la pestaña Estructura.",
   "edit-error-template_headings": "Renombra capítulos a través de una propuesta estructural o la pestaña Estructura. Los capítulos de la plantilla no se pueden eliminar.",
   "edit-error-protected_template": "Todos los títulos de capítulos, descripciones y ordenamientos son editables. Solo se pueden eliminar los capítulos personalizados.",
-  "edit-error-stale_structure": "La estructura o el borrador cambiaron. Genere una nueva propuesta antes de confirmar."
+  "edit-error-stale_structure": "La estructura o el borrador cambiaron. Genere una nueva propuesta antes de confirmar.",
+  "drafting-setup-choose-funding": "Elija financiador y programa",
+  "drafting-setup-change-funding": "Cambiar financiador o programa",
+  "template-view": "Ver plantilla"
 }

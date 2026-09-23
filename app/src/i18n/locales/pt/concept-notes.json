@@ -675,5 +675,8 @@
   "edit-error-structure_changed": "As mudanças de título precisam de uma proposta estrutural. Peça ao Clima para renomear o capítulo, ou edite-o na aba Estrutura.",
   "edit-error-template_headings": "Renomeie capítulos através de uma proposta estrutural ou na aba Estrutura. Capítulos de modelo não podem ser removidos.",
   "edit-error-protected_template": "Todos os títulos, descrições e ordenações dos capítulos são editáveis. Apenas os capítulos personalizados podem ser removidos.",
-  "edit-error-stale_structure": "A estrutura ou rascunho mudou. Gere uma nova proposta antes de confirmar."
+  "edit-error-stale_structure": "A estrutura ou rascunho mudou. Gere uma nova proposta antes de confirmar.",
+  "drafting-setup-choose-funding": "Escolha o financiador e o programa",
+  "drafting-setup-change-funding": "Mudar financiador ou programa",
+  "template-view": "Visualizar modelo"
 }

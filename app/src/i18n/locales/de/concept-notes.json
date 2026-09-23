@@ -675,5 +675,8 @@
   "edit-error-structure_changed": "Für Änderungen an Überschriften ist ein Strukturvorschlag erforderlich. Bitten Sie Clima, das Kapitel umzubenennen, oder bearbeiten Sie es im Struktur-Tab.",
   "edit-error-template_headings": "Kapitel durch einen Strukturvorschlag oder den Struktur-Tab umbenennen. Vorlagenkapitel können nicht entfernt werden.",
   "edit-error-protected_template": "Alle Kapiteltitel, Beschreibungen und die Reihenfolge sind bearbeitbar. Nur benutzerdefinierte Kapitel können entfernt werden.",
-  "edit-error-stale_structure": "Die Struktur oder der Entwurf hat sich geändert. Erstellen Sie einen neuen Vorschlag, bevor Sie bestätigen."
+  "edit-error-stale_structure": "Die Struktur oder der Entwurf hat sich geändert. Erstellen Sie einen neuen Vorschlag, bevor Sie bestätigen.",
+  "drafting-setup-choose-funding": "Wählen Sie Geldgeber und Programm",
+  "drafting-setup-change-funding": "Förderer oder Programm ändern",
+  "template-view": "Vorlage anzeigen"
 }

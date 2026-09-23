@@ -675,5 +675,8 @@
   "edit-error-structure_changed": "Les modifications de titres nécessitent une proposition structurelle. Demandez à Clima de renommer le chapitre, ou modifiez-le dans l'onglet Structure.",
   "edit-error-template_headings": "Renommez les chapitres par une proposition structurelle ou l'onglet Structure. Les chapitres de modèle ne peuvent pas être supprimés.",
   "edit-error-protected_template": "Tous les titres de chapitres, les descriptions et l'ordre sont modifiables. Seuls les chapitres personnalisés peuvent être supprimés.",
-  "edit-error-stale_structure": "La structure ou le brouillon a changé. Générez une nouvelle proposition avant de confirmer."
+  "edit-error-stale_structure": "La structure ou le brouillon a changé. Générez une nouvelle proposition avant de confirmer.",
+  "drafting-setup-choose-funding": "Choisissez le bailleur de fonds et le programme",
+  "drafting-setup-change-funding": "Changer de bailleur de fonds ou de programme",
+  "template-view": "Voir le modèle"
 }

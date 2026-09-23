@@ -574,6 +574,7 @@
   "edit-error-planning_interrupted": "L'édition a été interrompue. Renvoyez votre demande; aucune modification n'a été appliquée.",
   "chat-reasoning": "Raisonnement",
   "chat-progress-preparing": "Lecture de votre demande et du contexte de votre note conceptuelle",
+  "chat-progress-summarizing_draft": "Synthèse du nouveau brouillon",
   "chat-progress-planning": "Vérification des modifications pour {{chapitre}}",
   "chat-progress-reviewing": "Examen des modifications proposées pour {{chapter}}",
   "chat-progress-chapter_completed": "Vérification terminée {{chapter}}",

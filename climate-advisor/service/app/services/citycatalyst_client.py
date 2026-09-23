@@ -1059,6 +1059,37 @@ class CityCatalystClient:
         except Exception as e:
             raise CityCatalystClientError(f"Failed to parse city response: {e}") from e
 
+    async def get_city_population(
+        self,
+        city_id: str,
+        token: str,
+        user_id: str,
+    ) -> Dict[str, Any]:
+        """Fetch the city's most recent population, as shown in its profile."""
+        if not self.base_url:
+            raise CityCatalystClientError("CC_BASE_URL not configured")
+
+        url = f"{self.base_url}/api/v1/city/{city_id}/population"
+        response = await self.get_with_auto_refresh(
+            url=url,
+            token=token,
+            user_id=user_id,
+            thread_id="",
+        )
+        if not response.is_success:
+            error_text = response.text[:200] if response.text else "Unknown error"
+            raise CityCatalystClientError(
+                f"Failed to fetch population for city {city_id}: "
+                f"{response.status_code} - {error_text}",
+                status_code=response.status_code,
+            )
+        try:
+            return response.json()
+        except Exception as e:
+            raise CityCatalystClientError(
+                f"Failed to parse city population response: {e}"
+            ) from e
+
     async def get_inventory_datasources(
         self,
         inventory_id: str,

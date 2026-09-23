@@ -574,6 +574,7 @@
   "edit-error-planning_interrupted": "La edición fue interrumpida. Envíe su solicitud de nuevo; no se aplicaron cambios.",
   "chat-reasoning": "Razonamiento",
   "chat-progress-preparing": "Leyendo su solicitud y el contexto de la nota conceptual",
+  "chat-progress-summarizing_draft": "Resumiendo el nuevo borrador",
   "chat-progress-planning": "Verificando ediciones para {{chapter}}",
   "chat-progress-reviewing": "Revisando los cambios propuestos para {{chapter}}",
   "chat-progress-chapter_completed": "Terminé de revisar {{chapter}}",

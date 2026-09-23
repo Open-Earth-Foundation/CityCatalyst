@@ -171,7 +171,7 @@ def validate_document_integrity(
         ):
             raise EditOperationError(
                 "structure_changed",
-                "Edits must preserve template headings.",
+                "Use a structural proposal or the Structure tab to rename a chapter. Internal template subheadings are protected from body-text replacements.",
                 status_code=422,
             )
 

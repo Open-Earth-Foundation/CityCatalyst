@@ -574,6 +574,7 @@
   "edit-error-planning_interrupted": "Die Bearbeitung wurde unterbrochen. Senden Sie Ihre Anfrage erneut; es wurden keine Änderungen vorgenommen.",
   "chat-reasoning": "Begründung",
   "chat-progress-preparing": "Lesen Ihrer Anfrage und des Kontexts Ihrer Konzeptnotiz",
+  "chat-progress-summarizing_draft": "Zusammenfassung des neuen Entwurfs",
   "chat-progress-planning": "Überprüfung der Änderungen für {{Kapitel}}",
   "chat-progress-reviewing": "Überprüfung vorgeschlagener Änderungen für {{Kapitel}}",
   "chat-progress-chapter_completed": "Überprüfung von {{chapter}} abgeschlossen",

@@ -135,6 +135,11 @@ import type {
   MeedActionRemovedAttributes,
   MeedActionRemovedCreationAttributes,
 } from "./MeedActionRemoved";
+import { MeedRanking as _MeedRanking } from "./MeedRanking";
+import type {
+  MeedRankingAttributes,
+  MeedRankingCreationAttributes,
+} from "./MeedRanking";
 import type {
   MeedActionReportAttributes,
   MeedActionReportCreationAttributes,
@@ -145,6 +150,11 @@ import type {
   MeedRankSnapshotCreationAttributes,
 } from "./MeedRankSnapshot";
 import { MeedRankSnapshot as _MeedRankSnapshot } from "./MeedRankSnapshot";
+import type {
+  MeedStateAttributes,
+  MeedStateCreationAttributes,
+} from "./MeedState";
+import { MeedState as _MeedState } from "./MeedState";
 import type {
   MethodologyAttributes,
   MethodologyCreationAttributes,
@@ -306,8 +316,10 @@ export {
   _ImportMappingFeedback as ImportMappingFeedback,
   _MeedActionRanked as MeedActionRanked,
   _MeedActionRemoved as MeedActionRemoved,
+  _MeedRanking as MeedRanking,
   _MeedActionReport as MeedActionReport,
   _MeedRankSnapshot as MeedRankSnapshot,
+  _MeedState as MeedState,
   _Methodology as Methodology,
   _Organization as Organization,
   _Project as Project,
@@ -397,10 +409,14 @@ export type {
   MeedActionRankedCreationAttributes,
   MeedActionRemovedAttributes,
   MeedActionRemovedCreationAttributes,
+  MeedRankingAttributes,
+  MeedRankingCreationAttributes,
   MeedActionReportAttributes,
   MeedActionReportCreationAttributes,
   MeedRankSnapshotAttributes,
   MeedRankSnapshotCreationAttributes,
+  MeedStateAttributes,
+  MeedStateCreationAttributes,
   MethodologyAttributes,
   MethodologyCreationAttributes,
   OrganizationAttributes,
@@ -497,8 +513,10 @@ export function initModels(sequelize: Sequelize) {
   const ImportMappingFeedback = _ImportMappingFeedback.initModel(sequelize);
   const MeedActionRanked = _MeedActionRanked.initModel(sequelize);
   const MeedActionRemoved = _MeedActionRemoved.initModel(sequelize);
+  const MeedRanking = _MeedRanking.initModel(sequelize);
   const MeedActionReport = _MeedActionReport.initModel(sequelize);
   const MeedRankSnapshot = _MeedRankSnapshot.initModel(sequelize);
+  const MeedState = _MeedState.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
   const Organization = _Organization.initModel(sequelize);
   const Project = _Project.initModel(sequelize);
@@ -1173,6 +1191,32 @@ export function initModels(sequelize: Sequelize) {
   });
 
   // Associations for MeedActionRanked and MeedActionRemoved
+  MeedRanking.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedRanking, {
+    as: "meedRankings",
+    foreignKey: "inventoryId",
+  });
+
+  MeedRanking.hasMany(MeedActionRanked, {
+    as: "meedActionRanked",
+    foreignKey: "rankingId",
+  });
+  MeedRanking.hasMany(MeedActionRemoved, {
+    as: "meedActionRemoved",
+    foreignKey: "rankingId",
+  });
+  MeedActionRanked.belongsTo(MeedRanking, {
+    as: "meedRanking",
+    foreignKey: "rankingId",
+  });
+  MeedActionRemoved.belongsTo(MeedRanking, {
+    as: "meedRanking",
+    foreignKey: "rankingId",
+  });
+
   MeedActionRanked.belongsTo(Inventory, {
     as: "inventory",
     foreignKey: "inventoryId",
@@ -1190,7 +1234,7 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "inventoryId",
   });
 
-  // Associations for MeedActionReport and MeedRankSnapshot
+  // Associations for MeedActionReport, MeedRankSnapshot and MeedState
   MeedActionReport.belongsTo(Inventory, {
     as: "inventory",
     foreignKey: "inventoryId",
@@ -1205,6 +1249,14 @@ export function initModels(sequelize: Sequelize) {
   });
   Inventory.hasMany(MeedRankSnapshot, {
     as: "meedRankSnapshots",
+    foreignKey: "inventoryId",
+  });
+  MeedState.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedState, {
+    as: "meedStates",
     foreignKey: "inventoryId",
   });
 
@@ -1331,8 +1383,10 @@ export function initModels(sequelize: Sequelize) {
     ImportMappingFeedback: ImportMappingFeedback,
     MeedActionRanked: MeedActionRanked,
     MeedActionRemoved: MeedActionRemoved,
+    MeedRanking: MeedRanking,
     MeedActionReport: MeedActionReport,
     MeedRankSnapshot: MeedRankSnapshot,
+    MeedState: MeedState,
     Methodology: Methodology,
     Organization: Organization,
     Project: Project,

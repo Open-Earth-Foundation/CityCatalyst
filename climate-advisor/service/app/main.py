@@ -8,11 +8,19 @@ from app.middleware.request_context import RequestContextMiddleware, get_request
 from app.routes.concept_note_city_context import (
     router as concept_note_city_context_router,
 )
+from app.routes.concept_note_chapter_validation import (
+    router as concept_note_chapter_validation_router,
+)
 from app.routes.concept_note_context_bundle import (
     router as concept_note_context_bundle_router,
 )
 from app.routes.concept_note_markdown import router as concept_note_markdown_router
 from app.routes.concept_note_runs import router as concept_note_runs_router
+from app.routes.concept_note_edits import (
+    edit_exception_handler,
+    router as concept_note_edits_router,
+)
+from app.persistence.concept_notes.edits import EditOperationError
 from app.routes.dev_inventory import router as dev_inventory_router
 from app.routes.health import router as health_router
 from app.routes.messages import router as messages_router
@@ -117,8 +125,11 @@ def get_app() -> FastAPI:
     app.include_router(stationary_energy_drafts_router, prefix="/v1")
     app.include_router(concept_note_markdown_router, prefix="/v1")
     app.include_router(concept_note_city_context_router, prefix="/v1")
+    app.include_router(concept_note_chapter_validation_router, prefix="/v1")
     app.include_router(concept_note_context_bundle_router, prefix="/v1")
     app.include_router(concept_note_runs_router, prefix="/v1")
+    app.include_router(concept_note_edits_router, prefix="/v1")
+    app.add_exception_handler(EditOperationError, edit_exception_handler)
 
     # Static playground for manual testing
     static_dir = Path(__file__).resolve().parent / "static"

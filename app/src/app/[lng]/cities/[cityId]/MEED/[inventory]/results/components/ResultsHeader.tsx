@@ -9,23 +9,81 @@ import { Caption } from "@/components/package/Texts/Caption";
 import { FOCUS_RING } from "../../../focusRing";
 
 /**
- * Census line plus the screen's single report entry point.
+ * The report control: one filled button whose label says how many actions
+ * are selected, and one line under it that always says something true —
+ * what is happening while generating, what is missing when nothing is
+ * selected, and how long to expect otherwise (these are 10-30 s LLM calls,
+ * one per action, so a silent wait would read as a hang).
  *
- * There is deliberately one "Generate report" button on the whole page. The
- * prototype offered a per-card generate button *and* a checkbox-driven
- * multi-action report, and it was never clear which one a user was invoking;
- * cards now only open details, and every checkbox — card or table row — feeds
- * this one button.
- *
- * The button stays disabled either way for now: nothing generates a report
- * until the prioritization backend lands, and a button that silently does
- * nothing is worse than one that says why.
+ * The button is enabled only with a selection: reports are generated per
+ * action, so with nothing selected there is nothing to generate. Every
+ * checkbox on the screen — card or table row — feeds it.
+ */
+export function GenerateReportControl({
+  selectedCount,
+  isGenerating,
+  progress,
+  onGenerate,
+  t,
+  hintId = "meed-report-hint",
+}: {
+  selectedCount: number;
+  isGenerating: boolean;
+  /** Live "3 of 8" detail while reports generate, or null when idle. */
+  progress: string | null;
+  onGenerate: () => void;
+  t: TFunction;
+  /** Unique when the control is rendered more than once on a screen. */
+  hintId?: string;
+}) {
+  return (
+    <VStack alignItems="flex-end" gap="xs" flexShrink={0}>
+      <MeedButton
+        variant="filled"
+        minW="auto"
+        px="l"
+        disabled={selectedCount === 0 || isGenerating}
+        leftIcon={<Icon as={LuSparkles} boxSize="16px" />}
+        aria-describedby={hintId}
+        onClick={onGenerate}
+        _focusVisible={FOCUS_RING}
+      >
+        {isGenerating
+          ? t("generate-report-running")
+          : selectedCount > 0
+            ? t("generate-report-count", { count: selectedCount })
+            : t("generate-report")}
+      </MeedButton>
+      <Caption
+        id={hintId}
+        color="content.tertiary"
+        textAlign="end"
+        whiteSpace="nowrap"
+      >
+        {isGenerating && progress
+          ? progress
+          : selectedCount === 0
+            ? t("generate-report-hint")
+            : t("generate-report-duration", { count: selectedCount })}
+      </Caption>
+    </VStack>
+  );
+}
+
+/**
+ * Census line plus, when the caller wants it here, the screen's report entry
+ * point. Callers that place the report control next to the selection (the
+ * top-pick grid, the ranked table) leave `onGenerate` out.
  */
 export function ResultsHeader({
   rankedCount,
   excludedCount,
   emissionsText,
-  selectedCount,
+  selectedCount = 0,
+  isGenerating = false,
+  progress = null,
+  onGenerate,
+  trailing,
   t,
 }: {
   rankedCount: number;
@@ -33,7 +91,14 @@ export function ResultsHeader({
   excludedCount: number | null;
   /** Formatted total city emissions, e.g. "1.1 MtCO2e". */
   emissionsText?: string;
-  selectedCount: number;
+  selectedCount?: number;
+  isGenerating?: boolean;
+  /** Live "3 of 8" detail while reports generate, or null when idle. */
+  progress?: string | null;
+  /** Omit to render the census line alone. */
+  onGenerate?: () => void;
+  /** Rendered at the right when there is no report control here. */
+  trailing?: React.ReactNode;
   t: TFunction;
 }) {
   // Each clause is dropped rather than guessed at when its number is missing.
@@ -55,30 +120,16 @@ export function ResultsHeader({
       flexWrap="wrap"
     >
       <LabelLarge color="content.tertiary">{census}</LabelLarge>
-
-      <VStack alignItems="flex-end" gap="xs" flexShrink={0} maxW="320px">
-        <MeedButton
-          variant="filled"
-          minW="auto"
-          px="l"
-          disabled
-          leftIcon={<Icon as={LuSparkles} boxSize="16px" />}
-          _focusVisible={FOCUS_RING}
-        >
-          {selectedCount > 0
-            ? t("generate-report-count", { count: selectedCount })
-            : t("generate-report")}
-        </MeedButton>
-        {/*
-          The unavailability is stated up front. This used to invite the user
-          to "select one or more actions to build a report" and only admit the
-          feature did not exist *after* they had selected some — the promise
-          first and the retraction second.
-        */}
-        <Caption color="content.tertiary" textAlign="end">
-          {t("generate-report-pending")}
-        </Caption>
-      </VStack>
+      {!onGenerate && trailing}
+      {onGenerate && (
+        <GenerateReportControl
+          selectedCount={selectedCount}
+          isGenerating={isGenerating}
+          progress={progress}
+          onGenerate={onGenerate}
+          t={t}
+        />
+      )}
     </HStack>
   );
 }

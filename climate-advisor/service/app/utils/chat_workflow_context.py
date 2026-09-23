@@ -57,7 +57,7 @@ class ChatWorkflowContext:
             return "Climate Advisor Concept Note Context Chat"
         if self.stationary_energy_draft_run_id:
             return "Climate Advisor Stationary Energy Context Chat"
-        return "Climate Advisor Conversation"
+        return "Climate Advisor Turn"
 
     def telemetry(self) -> dict[str, object]:
         """Return shared low-cardinality workflow metadata for logs and traces."""

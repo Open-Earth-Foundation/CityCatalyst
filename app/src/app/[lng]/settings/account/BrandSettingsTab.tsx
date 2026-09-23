@@ -156,7 +156,12 @@ const BrandSettingsTab = ({
   }, [selectedTheme, organization?.themeId, file, clearImage]);
 
   return (
-    <Box backgroundColor="white" p={6} borderRadius="8px" boxShadow="shadow-lg">
+    <Box
+      backgroundColor="white"
+      p={6}
+      borderRadius="rounded"
+      boxShadow="shadow-lg"
+    >
       <Text
         color="content.primary"
         fontWeight="semibold"
@@ -169,7 +174,11 @@ const BrandSettingsTab = ({
       </Text>
       <Box mt={9}>
         <Field w="full" label={t("logo")}>
-          <FileUploadRoot accept={{ "image/*": [] }} maxFiles={1}>
+          <FileUploadRoot
+            key={organization?.logoUrl ?? "no-logo"}
+            accept={{ "image/*": [] }}
+            maxFiles={1}
+          >
             <LogoUploadCard
               defaultUrl={clearImage ? undefined : organization?.logoUrl}
               setFile={setFile}
@@ -194,7 +203,7 @@ const BrandSettingsTab = ({
               setSelectedTheme(value[0]);
             }}
             shadow="1dp"
-            borderRadius="4px"
+            borderRadius="minimal"
             border="inputBox"
             fontSize="md"
             triggerHeight="44px"

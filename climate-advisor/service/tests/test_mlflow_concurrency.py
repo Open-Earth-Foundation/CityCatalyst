@@ -11,6 +11,7 @@ import pytest
 from app.models.requests import MessageCreateRequest
 from app.utils import mlflow_logging
 from app.utils.chat_workflow_context import ChatWorkflowContext
+from app.utils.conversation_observability import conversation_trace
 from app.utils.streaming_handler import StreamingHandler
 
 
@@ -294,18 +295,19 @@ async def test_real_mlflow_persists_isolated_runs_and_trace_links(
         mlflow.set_tracking_uri(previous_uri)
 
 
-@pytest.mark.parametrize("stationary_energy", [False, True])
+@pytest.mark.parametrize("mode", ["general", "stationary_energy", "cnb"])
 @pytest.mark.asyncio
-async def test_other_chat_modes_link_traces_before_model_start(
-    monkeypatch, stationary_energy
-):
+async def test_other_chat_modes_link_traces_before_model_start(monkeypatch, mode):
     recorded = {}
     active = False
     handler = StreamingHandler(
         thread_id=uuid4(), user_id="user-1", session_factory=None
     )
     handler.workflow_context = ChatWorkflowContext(
-        stationary_energy_draft_run_id=str(uuid4()) if stationary_energy else None
+        stationary_energy_draft_run_id=str(uuid4())
+        if mode == "stationary_energy"
+        else None,
+        concept_note_run_id=str(uuid4()) if mode == "cnb" else None,
     )
 
     @contextmanager
@@ -314,7 +316,7 @@ async def test_other_chat_modes_link_traces_before_model_start(
         active = True
         recorded["span"] = kwargs
         try:
-            yield object()
+            yield SimpleNamespace(trace_id="test-trace", span_id="root")
         finally:
             active = False
 
@@ -332,13 +334,23 @@ async def test_other_chat_modes_link_traces_before_model_start(
         assert recorded["updated"]
         return Result()
 
-    monkeypatch.setattr("app.utils.streaming_handler.start_trace_span", span_context)
+    monkeypatch.setattr(
+        "app.utils.conversation_observability.start_trace_span", span_context
+    )
     monkeypatch.setattr(
         "app.utils.streaming_handler.update_current_trace_context", update_context
     )
     monkeypatch.setattr("app.utils.streaming_handler.Runner.run_streamed", run_streamed)
     payload = MessageCreateRequest(user_id="user-1", content="Review the context")
-    assert [
-        chunk async for chunk in handler._stream_agent_events(object(), payload, [])
-    ] == []
-    assert recorded["span"]["name"] == handler.workflow_context.trace_workflow_name
+    # Every chat owns its root around the entire request, including persistence.
+    with conversation_trace(
+        payload.content, attributes=handler.workflow_context.telemetry()
+    ):
+        assert [
+            chunk async for chunk in handler._stream_agent_events(object(), payload, [])
+        ] == []
+    assert recorded["span"]["name"] == "Climate Advisor Turn"
+    assert (
+        recorded["span"]["attributes"]["workflow"]
+        == handler.workflow_context.telemetry()["workflow"]
+    )

@@ -1,9 +1,20 @@
 "use client";
 
-import type { ChangeEvent } from "react";
-import { useRef } from "react";
+import type { ConceptNoteContextPresentation } from "./context-status";
 
-import { Box, Flex, Grid, HStack, Icon, Text, VStack } from "@chakra-ui/react";
+import type { ChangeEvent, FormEvent, ReactNode } from "react";
+import { useRef, useState } from "react";
+
+import {
+  Box,
+  Flex,
+  Grid,
+  HStack,
+  Icon,
+  Input,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { LuCircleAlert, LuRefreshCw, LuUpload } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
@@ -21,69 +32,52 @@ import { uploadStatusTranslationKey } from "../ConceptNoteWiringHarness/utils";
 
 interface ContextTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
+  onSelectFunding: () => void;
+  fundingLoading: boolean;
+  fundingError: boolean;
+  onRetryFunding: () => void;
   bundle: ConceptNoteBundleProgress;
+  contextStatus: ConceptNoteContextPresentation;
   cityFilesCount: number;
   cityName: string;
   country: string | null;
   firstCityFile: string | null;
   inventoryYear: number | null;
+  isDraftRunning: boolean;
   isRetryingBundle: boolean;
   isRetryingUpload: boolean;
   isUploading: boolean;
   lng: string;
+  manualPopulation: { population: number; year: number } | null;
+  manualPopulationSaving: boolean;
   onRetryBundle: () => void;
   onRetryUpload: () => void;
+  onSaveManualPopulation: (
+    value: { population: number; year: number } | null,
+  ) => Promise<void>;
   onUploadFile: (file: File) => Promise<void>;
+  populationFailed: boolean;
   populationLabel: string;
+  populationLoading: boolean;
+  populationMissing: boolean;
   upload: ConceptNoteUploadResponse | null;
   uploadError: string | null;
 }
 
-type ContextTone = "positive" | "neutral" | "warning";
+import {
+  ContextStatusBadge,
+  toneColor,
+  type ContextTone,
+} from "./context-status-badge";
 
 interface ContextCardProps {
+  action?: { label: string; onClick: () => void; disabled?: boolean };
+  children?: ReactNode;
   details: string[];
   label: string;
   status: string;
   tone?: ContextTone;
   value: string;
-}
-
-function toneColor(tone: ContextTone): string {
-  if (tone === "positive") {
-    return "sentiment.positiveDefault";
-  }
-  if (tone === "warning") {
-    return "sentiment.warningDefault";
-  }
-  return "content.tertiary";
-}
-
-function ContextStatusBadge({
-  label,
-  tone = "neutral",
-}: {
-  label: string;
-  tone?: ContextTone;
-}) {
-  const color = toneColor(tone);
-
-  return (
-    <HStack
-      alignSelf="flex-start"
-      gap={1.5}
-      border="1px solid"
-      borderColor={color}
-      borderRadius="pill"
-      px={2}
-      py={0.5}
-    >
-      <Box boxSize="6px" borderRadius="full" bg={color} />
-      <Text fontSize="10px" lineHeight="16px" color="content.secondary">
-        {label}
-      </Text>
-    </HStack>
-  );
 }
 
 function ContextSectionLabel({ children }: { children: string }) {
@@ -102,6 +96,8 @@ function ContextSectionLabel({ children }: { children: string }) {
 }
 
 function ContextCard({
+  action,
+  children,
   details,
   label,
   status,
@@ -109,9 +105,9 @@ function ContextCard({
   value,
 }: ContextCardProps) {
   return (
-    <VStack
-      align="stretch"
-      gap={2}
+    <Box
+      minW={0}
+      textAlign="start"
       minH="128px"
       border="1px solid"
       borderColor="border.neutral"
@@ -119,53 +115,87 @@ function ContextCard({
       bg="base.light"
       p={3}
     >
-      <ContextSectionLabel>{label}</ContextSectionLabel>
-      <ContextStatusBadge label={status} tone={tone} />
-      <Text
-        fontFamily="heading"
-        fontSize="body.sm"
-        fontWeight="semibold"
-        color="content.primary"
-      >
-        {value}
-      </Text>
-      <VStack align="stretch" gap={0.5}>
-        {details.filter(Boolean).map((detail) => (
-          <Text
-            key={detail}
-            fontSize="10px"
-            lineHeight="16px"
-            color="content.tertiary"
-          >
-            {detail}
-          </Text>
-        ))}
+      <VStack align="stretch" gap={2} h="full">
+        <HStack justify="space-between" align="start" gap={2}>
+          <ContextSectionLabel>{label}</ContextSectionLabel>
+          {action && (
+            <Button
+              size="xs"
+              variant="outline"
+              flexShrink={0}
+              textTransform="none"
+              letterSpacing="normal"
+              disabled={action.disabled}
+              onClick={action.onClick}
+            >
+              {action.label}
+            </Button>
+          )}
+        </HStack>
+        <ContextStatusBadge label={status} tone={tone} />
+        <Text
+          fontFamily="heading"
+          fontSize="body.sm"
+          fontWeight="semibold"
+          color="content.primary"
+        >
+          {value}
+        </Text>
+        <VStack align="stretch" gap={0.5}>
+          {details.filter(Boolean).map((detail) => (
+            <Text
+              key={detail}
+              fontSize="10px"
+              lineHeight="16px"
+              color="content.tertiary"
+            >
+              {detail}
+            </Text>
+          ))}
+        </VStack>
+        {children}
       </VStack>
-    </VStack>
+    </Box>
   );
 }
 
 export function ContextTab({
   applicationContext,
+  onSelectFunding,
+  fundingLoading,
+  fundingError,
+  onRetryFunding,
   bundle,
+  contextStatus,
   cityFilesCount,
   cityName,
   country,
   firstCityFile,
   inventoryYear,
+  isDraftRunning,
   isRetryingBundle,
   isRetryingUpload,
   isUploading,
   lng,
+  manualPopulation,
+  manualPopulationSaving,
   onRetryBundle,
   onRetryUpload,
+  onSaveManualPopulation,
   onUploadFile,
+  populationFailed,
   populationLabel,
+  populationLoading,
+  populationMissing,
   upload,
   uploadError,
 }: ContextTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [editingPopulation, setEditingPopulation] = useState(false);
+  const [populationInput, setPopulationInput] = useState("");
+  const [yearInput, setYearInput] = useState("");
+  const [populationError, setPopulationError] = useState<string | null>(null);
   const ghgiIncluded =
     bundle.availableContext.ghgi ||
     (applicationContext?.included_sources.ghgi ?? false);
@@ -181,19 +211,76 @@ export function ContextTab({
   const hiapStatusLabel = bundle.hiapStatus
     ? t(getContextSourceStatusTranslationKey(bundle.hiapStatus))
     : t("not-available");
+  // A converted file is not ready for chat until context assembly finishes.
+  // Kept separate from the raw "processing" status, which means converting.
+  const awaitingContext = upload?.status === "ready" && contextStatus.blocked;
+  const contextFailed = awaitingContext && contextStatus.state === "failed";
+  const uploadStatus = contextFailed
+    ? "failed"
+    : awaitingContext
+      ? null
+      : (upload?.status ?? "queued");
   const uploadTone: ContextTone =
-    upload?.status === "ready"
+    uploadStatus === "ready"
       ? "positive"
-      : upload?.status === "failed"
+      : uploadStatus === "failed"
         ? "warning"
         : "neutral";
-
+  const uploadStatusLabel = t(
+    awaitingContext && !contextFailed
+      ? "status-processing"
+      : uploadStatusTranslationKey(uploadStatus),
+  );
   function onFileChange(event: ChangeEvent<HTMLInputElement>): void {
     const file = event.target.files?.[0];
     if (file) {
       void onUploadFile(file);
     }
     event.target.value = "";
+  }
+
+  function beginPopulationEdit(): void {
+    setPopulationInput(manualPopulation?.population.toString() ?? "");
+    setYearInput(manualPopulation?.year.toString() ?? "");
+    setPopulationError(null);
+    setEditingPopulation(true);
+  }
+
+  async function savePopulation(
+    event: FormEvent<HTMLFormElement>,
+  ): Promise<void> {
+    event.preventDefault();
+    const population = Number(populationInput);
+    const year = Number(yearInput);
+    if (
+      !populationInput.trim() ||
+      !yearInput.trim() ||
+      !Number.isSafeInteger(population) ||
+      population < 0 ||
+      population > 10_000_000_000 ||
+      !Number.isInteger(year) ||
+      year < 1800 ||
+      year > 2100
+    ) {
+      setPopulationError(t("population-invalid"));
+      return;
+    }
+    try {
+      await onSaveManualPopulation({ population, year });
+      setEditingPopulation(false);
+      setPopulationError(null);
+    } catch {
+      setPopulationError(t("population-save-error"));
+    }
+  }
+
+  async function clearPopulation(): Promise<void> {
+    try {
+      await onSaveManualPopulation(null);
+      setPopulationError(null);
+    } catch {
+      setPopulationError(t("population-save-error"));
+    }
   }
 
   return (
@@ -220,9 +307,125 @@ export function ContextTab({
             label={t("city-population")}
             value={populationLabel}
             details={[[cityName, country].filter(Boolean).join(", ")]}
-            status={t(cityIncluded ? "included-in-run" : "not-included-in-run")}
-            tone={cityIncluded ? "positive" : "warning"}
-          />
+            status={t(
+              manualPopulation
+                ? "population-manual-source"
+                : populationMissing
+                  ? "population-unavailable"
+                  : cityIncluded
+                    ? "included-in-run"
+                    : "not-included-in-run",
+            )}
+            tone={
+              manualPopulation || (!populationMissing && cityIncluded)
+                ? "positive"
+                : "warning"
+            }
+          >
+            {(populationMissing || Boolean(manualPopulation)) &&
+              (!populationLoading || Boolean(manualPopulation)) && (
+                <VStack align="stretch" gap={2}>
+                  <Text fontSize="xs" color="content.tertiary">
+                    {t("population-cnb-only")}
+                  </Text>
+                  {isDraftRunning && (
+                    <Text fontSize="xs" color="content.tertiary">
+                      {t("population-draft-running")}
+                    </Text>
+                  )}
+                  {editingPopulation ? (
+                    <form onSubmit={(event) => void savePopulation(event)}>
+                      <VStack align="stretch" gap={2}>
+                        <label>
+                          <Text fontSize="xs">
+                            {t("population-amount-label")}
+                          </Text>
+                          <Input
+                            type="number"
+                            min={0}
+                            max={10_000_000_000}
+                            step={1}
+                            value={populationInput}
+                            onChange={(event) =>
+                              setPopulationInput(event.target.value)
+                            }
+                          />
+                        </label>
+                        <label>
+                          <Text fontSize="xs">
+                            {t("population-year-label")}
+                          </Text>
+                          <Input
+                            type="number"
+                            min={1800}
+                            max={2100}
+                            step={1}
+                            value={yearInput}
+                            onChange={(event) =>
+                              setYearInput(event.target.value)
+                            }
+                          />
+                        </label>
+                        <HStack>
+                          <Button
+                            type="submit"
+                            size="xs"
+                            disabled={isDraftRunning}
+                            loading={manualPopulationSaving}
+                          >
+                            {t("population-save")}
+                          </Button>
+                          <Button
+                            type="button"
+                            size="xs"
+                            variant="ghost"
+                            onClick={() => setEditingPopulation(false)}
+                          >
+                            {t("cancel")}
+                          </Button>
+                        </HStack>
+                      </VStack>
+                    </form>
+                  ) : (
+                    <HStack>
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        disabled={isDraftRunning}
+                        onClick={beginPopulationEdit}
+                      >
+                        {t(
+                          manualPopulation
+                            ? "population-edit"
+                            : "population-enter",
+                        )}
+                      </Button>
+                      {manualPopulation && (
+                        <Button
+                          size="xs"
+                          variant="ghost"
+                          disabled={isDraftRunning}
+                          loading={manualPopulationSaving}
+                          onClick={() => void clearPopulation()}
+                        >
+                          {t("population-remove")}
+                        </Button>
+                      )}
+                    </HStack>
+                  )}
+                  {populationError && (
+                    <Text role="alert" fontSize="xs" color="semantic.danger">
+                      {populationError}
+                    </Text>
+                  )}
+                  {populationFailed && !manualPopulation && (
+                    <Text fontSize="xs" color="content.tertiary">
+                      {t("population-source-error")}
+                    </Text>
+                  )}
+                </VStack>
+              )}
+          </ContextCard>
           <ContextCard
             label={t("ghg-inventory")}
             value={
@@ -248,54 +451,13 @@ export function ContextTab({
           <ContextCard
             label={t("hiap-context")}
             value={hiapIncluded ? hiapStatusLabel : t("not-available")}
-            details={[
-              t(hiapIncluded ? "hiap-optional" : "hiap-impact-missing-summary"),
-            ]}
+            details={[t("hiap-optional")]}
             status={t(
               hiapIncluded ? "included-in-run" : "bundle-source-missing",
             )}
             tone={hiapIncluded ? "positive" : "warning"}
           />
         </Grid>
-
-        {!hiapIncluded && (
-          <Flex
-            data-testid="hiap-missing-impact"
-            role="status"
-            align="start"
-            gap={3}
-            border="1px solid"
-            borderColor="sentiment.warningDefault"
-            borderRadius="rounded"
-            bg="sentiment.warningOverlay"
-            p={4}
-          >
-            <Icon
-              as={LuCircleAlert}
-              flexShrink={0}
-              mt={0.5}
-              color="sentiment.warningDefault"
-            />
-            <Box>
-              <Text
-                fontFamily="heading"
-                fontSize="body.sm"
-                fontWeight="semibold"
-                color="content.primary"
-              >
-                {t("hiap-impact-missing-title")}
-              </Text>
-              <Text
-                mt={1}
-                fontSize="label.sm"
-                lineHeight="20px"
-                color="content.secondary"
-              >
-                {t("hiap-impact-missing-description")}
-              </Text>
-            </Box>
-          </Flex>
-        )}
       </VStack>
 
       <VStack align="stretch" gap={2}>
@@ -308,6 +470,17 @@ export function ContextTab({
         >
           <ContextCard
             label={t("funder-profile")}
+            action={{
+              label: t(
+                fundingError
+                  ? "try-again"
+                  : applicationContext?.funder
+                    ? "funding-view-change"
+                    : "funding-browse",
+              ),
+              onClick: fundingError ? onRetryFunding : onSelectFunding,
+              disabled: fundingLoading,
+            }}
             value={
               applicationContext?.funder?.name || t("funding-not-selected")
             }
@@ -332,6 +505,15 @@ export function ContextTab({
             tone="warning"
           />
         </Grid>
+        {fundingError && (
+          <Text
+            role="alert"
+            fontSize="body.sm"
+            color="sentiment.negativeDefault"
+          >
+            {t("funding-load-error")}
+          </Text>
+        )}
       </VStack>
 
       <VStack align="stretch" gap={2}>
@@ -381,7 +563,7 @@ export function ContextTab({
             </Text>
             <Text fontSize="10px" color="content.tertiary">
               {upload
-                ? `${t(uploadStatusTranslationKey(upload.status))}${
+                ? `${uploadStatusLabel}${
                     upload.pageCount
                       ? ` · ${t("pages-count", { count: upload.pageCount })}`
                       : ""
@@ -395,11 +577,7 @@ export function ContextTab({
             </Text>
           </Box>
           <ContextStatusBadge
-            label={
-              upload
-                ? t(uploadStatusTranslationKey(upload.status))
-                : t("not-connected")
-            }
+            label={upload ? uploadStatusLabel : t("not-connected")}
             tone={uploadTone}
           />
           {upload?.status === "failed" && upload.canRetry && (
@@ -438,7 +616,7 @@ export function ContextTab({
         )}
       </VStack>
 
-      {bundle.status === "failed" && bundle.retryable && (
+      {contextStatus.state === "failed" && bundle.retryable && (
         <Flex
           align={{ base: "start", sm: "center" }}
           direction={{ base: "column", sm: "row" }}
@@ -456,10 +634,10 @@ export function ContextTab({
               fontWeight="semibold"
               color="content.primary"
             >
-              {t("context-retry-title")}
+              {contextStatus.title}
             </Text>
             <Text mt={1} fontSize="label.sm" color="content.secondary">
-              {t("context-failed-description")}
+              {contextStatus.description}
             </Text>
           </Box>
           <Button

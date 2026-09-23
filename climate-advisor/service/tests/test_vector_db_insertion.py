@@ -1,30 +1,22 @@
 """
-Test suite for verifying that documents are properly inserted into the vector database.
+Brief: Inspect an existing vector database for uploaded documents and embeddings.
 
-This test validates:
-- Documents are inserted with correct metadata
-- Embeddings are generated and stored
-- Vector data is properly formatted
-- Database structure is correct
+Inputs: VECTOR_TEST_DATABASE_URL must explicitly identify the populated database;
+no .env file is loaded. Standard unittest command-line options are supported.
+Outputs: Read-only database checks and unittest results on stdout/stderr.
+
+Usage from the repository root:
+python -m unittest discover -s climate-advisor/service/tests -p test_vector_db_insertion.py
 """
 from __future__ import annotations
 
 import asyncio
 import os
 import unittest
-from pathlib import Path
-from typing import List
 from uuid import UUID
 
-from dotenv import load_dotenv
-from sqlalchemy import text, select
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-
-# Load environment variables for database connection
-env_path = Path(__file__).resolve().parents[2] / '.env'
-load_dotenv(env_path)
-
-from app.models.db.document_embedding import DocumentEmbedding
 
 
 class VectorDBInsertionTests(unittest.TestCase):
@@ -33,9 +25,9 @@ class VectorDBInsertionTests(unittest.TestCase):
     def setUp(self):
         """Set up test database connection."""
         # Get database URL from environment
-        database_url = os.getenv('CA_DATABASE_URL')
+        database_url = os.getenv('VECTOR_TEST_DATABASE_URL')
         if not database_url:
-            self.skipTest("CA_DATABASE_URL environment variable not set")
+            self.skipTest("VECTOR_TEST_DATABASE_URL environment variable not set")
 
         # Convert to asyncpg format
         self.database_url = database_url.replace('postgresql://', 'postgresql+asyncpg://')
@@ -248,9 +240,9 @@ class VectorDBIntegrationTests(unittest.TestCase):
     def setUp(self):
         """Set up integration test environment."""
         # Similar setup to unit tests but for integration scenarios
-        database_url = os.getenv('CA_DATABASE_URL')
+        database_url = os.getenv('VECTOR_TEST_DATABASE_URL')
         if not database_url:
-            self.skipTest("CA_DATABASE_URL environment variable not set")
+            self.skipTest("VECTOR_TEST_DATABASE_URL environment variable not set")
 
         self.database_url = database_url.replace('postgresql://', 'postgresql+asyncpg://')
 

@@ -34,9 +34,7 @@ const LogoUploadCard = ({
   };
 
   useEffect(() => {
-    if (files.length > 0) {
-      setFile(files[0]);
-    }
+    setFile(files.length > 0 ? files[0] : null);
   }, [files]);
 
   return (
@@ -47,7 +45,7 @@ const LogoUploadCard = ({
         p={0}
         label={
           <Box
-            rounded="spacing.2"
+            borderRadius="rounded"
             w="250px"
             h="80px"
             textAlign="center"
@@ -56,6 +54,9 @@ const LogoUploadCard = ({
             alignItems="center"
             justifyContent="center"
             position="relative"
+            border="1px solid"
+            borderColor="border.neutral"
+            overflow="hidden"
           >
             <Box
               bg="base.dark/60"
@@ -96,9 +97,9 @@ const LogoUploadCard = ({
                 data-testid="activity-more-icon"
                 aria-label="more-icon"
                 variant="ghost"
-                ml={2}
                 position="absolute"
-                left="100%"
+                top={1}
+                right={1}
                 color="content.tertiary"
                 onClick={(e) => {
                   e.stopPropagation();

@@ -4090,19 +4090,6 @@
             ]
           }
         ]
-      },
-      {
-        "id": "first-order-of-decay-solid-waste-inboundary-methodology",
-        "activityTypeField": "total-municipal-solid-waste-disposed",
-        "inputRequired": [
-          "landfill-id",
-          "landfill-address",
-          "total-municipal-solid-waste-disposed",
-          "methane-collected-and-removed",
-          "waste-composition"
-        ],
-        "formula": "first-order-of-decay",
-        "disabled": true
       }
     ],
     "directMeasure": {
@@ -4203,18 +4190,6 @@
             ]
           }
         ]
-      },
-      {
-        "id": "first-order-of-decay-solid-waste-outboundary-methodology",
-        "inputRequired": [
-          "landfill-id",
-          "landfill-address",
-          "total-municipal-solid-waste-disposed",
-          "methane-collected-and-removed",
-          "waste-composition"
-        ],
-        "formula": "first-order-of-decay",
-        "disabled": true
       }
     ],
     "directMeasure": {

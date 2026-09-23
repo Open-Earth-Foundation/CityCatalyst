@@ -93,7 +93,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
             ),
             models=SimpleNamespace(
                 funding_research=SimpleNamespace(
-                    name="openai/gpt-5.4",
+                    name="openai/gpt-5.6-sol",
                     reasoning_effort="medium",
                 )
             ),
@@ -138,7 +138,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
 
     monkeypatch.setattr(
         research_service,
-        "start_trace_span",
+        "workflow_trace",
         fake_start_trace_span,
     )
     monkeypatch.setattr(
@@ -200,10 +200,10 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         (run_directory / "research_bundle.json").read_text(encoding="utf-8")
     )
     assert saved_bundle["request"]["program_name"] == "Example Program"
-    assert saved_bundle["run_metadata"]["model_name"] == "openai/gpt-5.4"
+    assert saved_bundle["run_metadata"]["model_name"] == "openai/gpt-5.6-sol"
     assert (run_directory / "review.md").exists()
     assert (run_directory / "agent_trace.jsonl").exists()
-    assert fake_openai.responses.calls[0]["model"] == "openai/gpt-5.4"
+    assert fake_openai.responses.calls[0]["model"] == "openai/gpt-5.6-sol"
     assert fake_openai.responses.calls[0]["reasoning"] == {"effort": "medium"}
     assert "tools" not in fake_openai.responses.calls[0]
     model_input = json.loads(fake_openai.responses.calls[0]["input"])
@@ -213,7 +213,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     assert "current_filled_object" not in model_input["research_request"]
     assert model_input["missing_data"]
     assert model_input["turn_budget"]["final_audit"] is True
-    assert bundle.run_metadata.model_name == "openai/gpt-5.4"
+    assert bundle.run_metadata.model_name == "openai/gpt-5.6-sol"
     assert bundle.run_metadata.reasoning_effort == "medium"
     assert bundle.run_metadata.mlflow_run_id == "mlflow-001"
     assert bundle.run_metadata.prompt_sha256
@@ -223,4 +223,6 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     assert started_run_kwargs[0]["tags"]["module"] == "concept_note_builder"
     assert workflow_span_calls[0]["name"] == "cnb_funding_opportunity_research"
     assert workflow_span_calls[0]["span"].outputs["turns_used"] == 1
-    assert trace_context_updates[0]["session_id"] == bundle.run_id
+    assert "session_id" not in trace_context_updates[0]
+    assert trace_context_updates[0]["client_request_id"] == bundle.run_id
+    assert trace_context_updates[0]["metadata"]["run_id"] == bundle.run_id

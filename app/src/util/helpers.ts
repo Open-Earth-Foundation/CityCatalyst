@@ -9,6 +9,17 @@ export function isFetchBaseQueryError(
   return typeof error === "object" && error != null && "status" in error;
 }
 
+export function isFetchBaseQueryDetailError(
+  error: unknown,
+): error is FetchBaseQueryError & { data: { error: { message: string } } } {
+  return (
+    typeof error === "object" &&
+    error != null &&
+    "status" in error &&
+    "data" in error
+  );
+}
+
 // Extracts a human-readable message from an RTK Query mutation/query rejection
 // (FetchBaseQueryError | SerializedError, the type `.unwrap()` throws) or a
 // plain Error, falling back to `fallback` if nothing usable is found.
@@ -18,8 +29,7 @@ export function getApiErrorMessage(error: unknown, fallback = ""): string {
       return error.error;
     }
     const data = error.data as
-      | { message?: string; error?: { message?: string } }
-      | undefined;
+      { message?: string; error?: { message?: string } } | undefined;
     return data?.error?.message || data?.message || fallback;
   }
   if (
@@ -43,10 +53,7 @@ export const getTranslationFromDictionary = (
   if (typeof translations === "string") {
     return translations;
   }
-  if (
-    typeof translations === "object" &&
-    !!Object.keys(translations).length
-  ) {
+  if (typeof translations === "object" && !!Object.keys(translations).length) {
     return (
       (lng && translations[lng]) ||
       translations["user"] ||
@@ -391,6 +398,22 @@ export function toDecimal(
     return new Decimal(value.toString());
   }
   return new Decimal(value);
+}
+
+/**
+ * Format kg emissions/removals, showing negative (removal) values as a positive
+ * magnitude with `removedLabel` instead of a negative number - see CC-749.
+ */
+export function formatEmissionsOrRemoval(
+  valueInKg: number | Decimal | bigint,
+  numberFormat: string | undefined,
+  removedLabel: string,
+): string {
+  const kg = toDecimal(valueInKg);
+  if (kg && kg.isNegative()) {
+    return `${convertKgToTonnes(kg.abs(), numberFormat)} ${removedLabel}`;
+  }
+  return convertKgToTonnes(valueInKg, numberFormat);
 }
 
 /**

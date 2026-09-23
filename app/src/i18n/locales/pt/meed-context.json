@@ -2,8 +2,6 @@
   "context-description": "Indicadores socioeconômicos são usados para avaliar quão viável cada ação climática é para esta cidade. Indicadores como níveis de renda, emprego e densidade urbana moldam quais ações são realisticamente executáveis.",
   "loading-indicators": "Carregando indicadores socioeconômicos…",
   "indicators-loaded": "{{n}} indicadores carregados",
-  "feasibility-note": "A viabilidade de mitigação corresponde a 33% da pontuação de viabilidade · A viabilidade corresponde a 23% do ranking",
-  "ranking-weight": "O contexto socioeconômico molda 33% da pontuação de viabilidade · a viabilidade molda 23% do ranking",
   "no-indicators-sub": "Sem indicadores disponíveis",
   "indicators-error-title": "Não foi possível carregar os indicadores socioeconômicos",
   "indicators-error-body": "Não conseguimos alcançar o serviço de indicador para esta cidade. Verifique sua conexão e tente novamente.",

@@ -66,6 +66,10 @@ import {
   Authz,
   CityDashboardResponse,
   ConceptNoteApplicationContext,
+  ConceptNoteFunder,
+  ConceptNoteFundingSelection,
+  ConfirmConceptNoteChapterRequest,
+  ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
   ConceptNoteRun,
   ConceptNoteRunListResponse,
@@ -76,6 +80,7 @@ import {
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
   StartConceptNoteRunRequest,
+  ValidateConceptNoteChapterRequest,
   WebhookSubscriptionResponse,
   WebhookSubscriptionSecretResponse,
   CreateWebhookSubscriptionRequest,
@@ -98,6 +103,8 @@ import type {
   ProjectBoundary,
 } from "@/util/types";
 import type {
+  MeedGeneratePlanRequest,
+  MeedPlanRouteReport,
   MeedRankRouteResponse,
   MeedReferenceActionsResponse,
   MeedReferenceCityAttributesResponse,
@@ -157,9 +164,13 @@ export const api = createApi({
     "AdminModules",
     "Meed",
     "MeedRanking",
+    "MeedPlan",
     "ConceptNoteRuns",
     "ConceptNoteUpload",
     "ConceptNoteDraft",
+    "ConceptNoteEdits",
+    "ConceptNoteApplicationContext",
+    "ConceptNoteFundingCatalogue",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -253,21 +264,6 @@ export const api = createApi({
         transformResponse: (response: { data: unknown }) => response.data,
         providesTags: ["Meed"],
       }),
-      getMeedFinanceFeasibility: builder.query<unknown, { cityId: string }>({
-        query: ({ cityId }) =>
-          `city/${cityId}/modules/meed/finance/feasibility`,
-        transformResponse: (response: { data: unknown }) => response.data,
-        providesTags: ["Meed"],
-      }),
-      getMeedFinanceLink: builder.query<
-        unknown,
-        { cityId: string; link: string }
-      >({
-        query: ({ cityId, link }) =>
-          `city/${cityId}/modules/meed/finance/follow?link=${encodeURIComponent(link)}`,
-        transformResponse: (response: { data: unknown }) => response.data,
-        providesTags: ["Meed"],
-      }),
       /**
        * The stored ranking for one inventory. Separate cache tag from "Meed"
        * so running a ranking does not invalidate the catalog and reference
@@ -289,9 +285,7 @@ export const api = createApi({
       // pass-throughs to hiap-meed, so unlike the ranking route their payloads
       // are snake_case with a `meta`/`warnings` envelope — see the contract
       // types. The older proxies stay until their consumers are migrated;
-      // that migration also retires `finance/follow`, whose guard only permits
-      // `/api/v1/cities/` while the real links are `/api/v1/climate-finance/`,
-      // so both of its calls 400 and the cards silently render "no data".
+      // finance already reads through these.
       getMeedReferenceActions: builder.query<
         MeedReferenceActionsResponse,
         { cityId: string }
@@ -355,6 +349,38 @@ export const api = createApi({
           data: MeedReferenceFinanceProjectsResponse;
         }) => r.data,
         providesTags: ["Meed"],
+      }),
+      /**
+       * One action's report. Reports are stored server-side, so this reads back
+       * an existing one without paying for another generation.
+       */
+      getMeedPlan: builder.query<
+        MeedPlanRouteReport,
+        { cityId: string; inventoryId: string; actionId: string }
+      >({
+        query: ({ cityId, inventoryId, actionId }) =>
+          `city/${cityId}/meed/generate-plan?inventoryId=${encodeURIComponent(
+            inventoryId,
+          )}&actionId=${encodeURIComponent(actionId)}`,
+        transformResponse: (r: { data: MeedPlanRouteReport }) => r.data,
+        providesTags: ["MeedPlan"],
+      }),
+      /**
+       * Generates one action's report. A 10–30 s LLM call upstream, so callers
+       * must show progress rather than a spinner — and it is per action, so a
+       * multi-action report is several of these.
+       */
+      runMeedGeneratePlan: builder.mutation<
+        MeedPlanRouteReport,
+        { cityId: string; body: MeedGeneratePlanRequest }
+      >({
+        query: ({ cityId, body }) => ({
+          url: `city/${cityId}/meed/generate-plan`,
+          method: "POST",
+          body,
+        }),
+        transformResponse: (r: { data: MeedPlanRouteReport }) => r.data,
+        invalidatesTags: ["MeedPlan"],
       }),
       /** Runs the ranking, stores it, and returns the same envelope as the GET. */
       runMeedRanking: builder.mutation<
@@ -839,6 +865,57 @@ export const api = createApi({
           method: "POST",
           body: { password, token },
         }),
+      }),
+      setupSecondFactorAuth: builder.mutation<
+        { success: boolean; qrCodeDataUrl: string },
+        void
+      >({
+        query: () => ({
+          url: "auth/2fa/setup",
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: { success: boolean; qrCodeDataUrl: string };
+        }) => response.data,
+      }),
+      verifySecondFactorAuth: builder.mutation<
+        { success: boolean; recoveryCodes: string[] },
+        { token: string }
+      >({
+        query: ({ token }) => ({
+          url: "auth/2fa/verify",
+          method: "POST",
+          body: { token },
+        }),
+        transformResponse: (response: {
+          data: { success: boolean; recoveryCodes: string[] };
+        }) => response.data,
+        invalidatesTags: ["UserInfo"],
+      }),
+      disableSecondFactorAuth: builder.mutation<
+        { success: boolean },
+        { password: string }
+      >({
+        query: ({ password }) => ({
+          url: "auth/2fa/disable",
+          method: "POST",
+          body: { password },
+        }),
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
+        invalidatesTags: ["UserInfo"],
+      }),
+      checkSecondFactorAuth: builder.query<
+        { enabled: boolean },
+        { email: string }
+      >({
+        query: ({ email }) => ({
+          url: `auth/2fa/check?email=${encodeURIComponent(email)}`,
+          method: "GET",
+        }),
+        transformResponse: (response: { data: { enabled: boolean } }) =>
+          response.data,
+        providesTags: ["UserInfo"],
       }),
       getCities: builder.query({
         query: () => ({
@@ -2232,8 +2309,9 @@ export const api = createApi({
         string
       >({
         query: (organizationId) => `/organizations/${organizationId}/webhooks`,
-        transformResponse: (response: { data: WebhookSubscriptionResponse[] }) =>
-          response.data,
+        transformResponse: (response: {
+          data: WebhookSubscriptionResponse[];
+        }) => response.data,
         providesTags: (result, _err, organizationId) =>
           result
             ? [
@@ -2376,7 +2454,7 @@ export const api = createApi({
       }),
       getConceptNoteRuns: builder.query<ConceptNoteRunListResponse, string>({
         query: (cityId) => ({
-          url: "concept-notes",
+          url: "concept-notes/",
           params: { city_id: cityId },
         }),
         providesTags: (_result, _error, cityId) => [
@@ -2388,18 +2466,47 @@ export const api = createApi({
         { cityId: string; runId: string }
       >({
         query: ({ cityId, runId }) => ({
-          url: `concept-notes/${runId}`,
+          url: `concept-notes/${runId}/`,
           params: { city_id: cityId },
         }),
+        providesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteRuns", id: runId },
+        ],
       }),
       getConceptNoteApplicationContext: builder.query<
         ConceptNoteApplicationContext,
         string
       >({
-        query: (runId) => `concept-notes/${runId}/application-context`,
+        query: (runId) => `concept-notes/${runId}/application-context/`,
+        providesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteApplicationContext", id: runId },
+        ],
+      }),
+      getConceptNoteFundingCatalogue: builder.query<
+        { funders: ConceptNoteFunder[] },
+        string
+      >({
+        query: (runId) => `concept-notes/${runId}/funding-catalogue/`,
+        providesTags: ["ConceptNoteFundingCatalogue"],
+      }),
+      updateConceptNoteFundingSelection: builder.mutation<
+        ConceptNoteApplicationContext,
+        { runId: string; selection: ConceptNoteFundingSelection }
+      >({
+        query: ({ runId, selection }) => ({
+          url: `concept-notes/${runId}/application-context/`,
+          method: "PATCH",
+          body: selection,
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteApplicationContext", id: runId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
+        ],
       }),
       getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
-        query: (runId) => `concept-notes/${runId}/draft`,
+        query: (runId) => `concept-notes/${runId}/draft/`,
         providesTags: (_result, _error, runId) => [
           { type: "ConceptNoteDraft", id: runId },
         ],
@@ -2416,10 +2523,12 @@ export const api = createApi({
           funderId,
           selectedFundingOpportunityId,
           threadId,
+          initialUploads,
         }) => ({
-          url: "concept-notes/start",
+          url: "concept-notes/start/",
           method: "POST",
           body: {
+            initial_uploads: initialUploads,
             city_id: cityId,
             idempotency_key: idempotencyKey,
             name,
@@ -2434,12 +2543,30 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
+      updateConceptNotePopulation: builder.mutation<
+        ConceptNoteRun,
+        {
+          cityId: string;
+          runId: string;
+          manualPopulation: { population: number; year: number } | null;
+        }
+      >({
+        query: ({ cityId, runId, manualPopulation }) => ({
+          url: `concept-notes/${runId}/population/`,
+          method: "PATCH",
+          params: { city_id: cityId },
+          body: { manual_population: manualPopulation },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteRuns", id: runId },
+        ],
+      }),
       renameConceptNoteRun: builder.mutation<
         ConceptNoteRun,
         { cityId: string; name: string; runId: string }
       >({
         query: ({ cityId, name, runId }) => ({
-          url: `concept-notes/${runId}`,
+          url: `concept-notes/${runId}/`,
           method: "PATCH",
           body: { name },
           params: { city_id: cityId },
@@ -2453,7 +2580,7 @@ export const api = createApi({
         { cityId: string; idempotencyKey: string; runId: string }
       >({
         query: ({ cityId, idempotencyKey, runId }) => ({
-          url: `concept-notes/${runId}/duplicate`,
+          url: `concept-notes/${runId}/duplicate/`,
           method: "POST",
           headers: { "Idempotency-Key": idempotencyKey },
           params: { city_id: cityId },
@@ -2467,8 +2594,21 @@ export const api = createApi({
         { cityId: string; runId: string }
       >({
         query: ({ cityId, runId }) => ({
-          url: `concept-notes/${runId}`,
+          url: `concept-notes/${runId}/`,
           method: "DELETE",
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      resetConceptNoteChat: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}/chat/reset`,
+          method: "POST",
           params: { city_id: cityId },
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
@@ -2480,12 +2620,13 @@ export const api = createApi({
         ConceptNoteUploadRequest
       >({
         query: ({ formData, runId }) => ({
-          url: `concept-notes/${runId}/uploads`,
+          url: `concept-notes/${runId}/uploads/`,
           method: "POST",
           body: formData,
         }),
-        invalidatesTags: (_result, _error, { cityId }) => [
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
           { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
         ],
       }),
       getConceptNoteUploadStatus: builder.query<
@@ -2493,7 +2634,7 @@ export const api = createApi({
         ConceptNoteUploadStatusRequest
       >({
         query: ({ runId, uploadId }) =>
-          `concept-notes/${runId}/uploads/${uploadId}`,
+          `concept-notes/${runId}/uploads/${uploadId}/`,
         providesTags: (_result, _error, { uploadId }) => [
           { type: "ConceptNoteUpload", id: uploadId },
         ],
@@ -2503,7 +2644,7 @@ export const api = createApi({
         ConceptNoteUploadStatusRequest
       >({
         query: ({ runId, uploadId }) => ({
-          url: `concept-notes/${runId}/uploads/${uploadId}/retry`,
+          url: `concept-notes/${runId}/uploads/${uploadId}/retry/`,
           method: "POST",
         }),
         invalidatesTags: (_result, _error, { uploadId }) => [
@@ -2515,19 +2656,45 @@ export const api = createApi({
         string
       >({
         query: (runId) => ({
-          url: `concept-notes/${runId}/context-bundle/retry`,
+          url: `concept-notes/${runId}/context-bundle/retry/`,
           method: "POST",
         }),
         invalidatesTags: ["ConceptNoteRuns"],
       }),
       startConceptNoteDraft: builder.mutation<ConceptNoteDraftState, string>({
         query: (runId) => ({
-          url: `concept-notes/${runId}/draft`,
+          url: `concept-notes/${runId}/draft/`,
           method: "POST",
         }),
         invalidatesTags: (_result, _error, runId) => [
           { type: "ConceptNoteDraft", id: runId },
         ],
+      }),
+      confirmConceptNoteChapter: builder.mutation<
+        ConceptNoteDraftState,
+        ConfirmConceptNoteChapterRequest
+      >({
+        query: ({ runId, chapterId, expectedRevision, idempotencyKey }) => ({
+          url: `concept-notes/${runId}/chapters/${chapterId}/confirm`,
+          method: "POST",
+          body: {
+            expected_revision: expectedRevision,
+            idempotency_key: idempotencyKey,
+          },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
+        ],
+      }),
+      validateConceptNoteChapter: builder.mutation<
+        ConceptNoteChapterValidationResponse,
+        ValidateConceptNoteChapterRequest
+      >({
+        query: ({ chapterId, runId }) => ({
+          url: `concept-notes/${runId}/chapters/${chapterId}/validation/`,
+          method: "POST",
+        }),
       }),
     };
   },
@@ -2608,10 +2775,11 @@ export const {
   useGetMeedActionsQuery,
   useGetMeedCityAttributesQuery,
   useGetMeedPolicyScoresQuery,
-  useGetMeedFinanceFeasibilityQuery,
-  useGetMeedFinanceLinkQuery,
   useGetMeedRankingQuery,
   useRunMeedRankingMutation,
+  useGetMeedPlanQuery,
+  useLazyGetMeedPlanQuery,
+  useRunMeedGeneratePlanMutation,
   useGetMeedReferenceActionsQuery,
   useGetMeedReferenceCityAttributesQuery,
   useGetMeedReferencePolicyScoresQuery,
@@ -2699,10 +2867,14 @@ export const {
   useGetConceptNoteApplicationContextQuery,
   useGetConceptNoteDraftQuery,
   useStartConceptNoteRunMutation,
+  useUpdateConceptNotePopulationMutation,
   useRenameConceptNoteRunMutation,
   useDuplicateConceptNoteRunMutation,
   useDeleteConceptNoteRunMutation,
+  useResetConceptNoteChatMutation,
   useStartConceptNoteDraftMutation,
+  useConfirmConceptNoteChapterMutation,
+  useValidateConceptNoteChapterMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,
   useRetryConceptNoteUploadMutation,

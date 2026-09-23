@@ -4,14 +4,16 @@ from uuid import UUID, uuid4
 
 import pytest
 from fastapi import HTTPException
+from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
 from app.models.cnb.concept_note_runs import (
+    ConceptNotePopulationRequest,
     ConceptNoteRunListResponse,
     ConceptNoteStartRequest,
 )
-from app.models.db.concept_note import ConceptNoteRun
+from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.models.db.thread import Thread
 from app.persistence.concept_notes.runs import ConceptNoteRunRepository
 from app.services.citycatalyst_client import (
@@ -24,6 +26,96 @@ from app.services.concept_note_runs import (
     ConceptNoteRunService,
     _request_fingerprint,
 )
+
+
+async def test_initial_uploads_survive_reload_and_partial_receipt() -> None:
+    from app.models.cnb.concept_note_runs import InitialConceptNoteUpload
+    from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteUpload
+
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:", poolclass=StaticPool)
+    factory = async_sessionmaker(engine, expire_on_commit=False)
+    payload = _start_request()
+    first_id, second_id = uuid4(), uuid4()
+    payload.initial_uploads = [
+        InitialConceptNoteUpload(
+            upload_id=first_id, filename="first.md", sha256="a" * 64
+        ),
+        InitialConceptNoteUpload(
+            upload_id=second_id, filename="second.md", sha256="b" * 64
+        ),
+    ]
+    client = AsyncMock(spec=CityCatalystClient)
+    client.validate_user_identity.return_value = payload.user_id
+    client.get_city.return_value = {}
+    validator = AsyncMock(spec=FundingReferenceValidator)
+    try:
+        async with engine.begin() as connection:
+            for model in (ConceptNoteRun, ConceptNoteContextBundle, ConceptNoteUpload):
+                await connection.run_sync(model.__table__.create)
+        async with factory() as session:
+            service = ConceptNoteRunService(
+                session, cc_client=client, funding_reference_validator=validator
+            )
+            run = await service.start_run(payload, authorization="Bearer test")
+            await session.commit()
+            run_id = run.run_id
+        async with factory() as session:
+            service = ConceptNoteRunService(
+                session, cc_client=client, funding_reference_validator=validator
+            )
+            listing = await service.list_runs(
+                requested_user_id=payload.user_id,
+                city_id=payload.city_id,
+                authorization="Bearer test",
+            )
+            assert len(listing.runs) == 1
+            sources = listing.runs[0].progress_summary["initial_uploads"]
+            assert len(sources) == 2
+            assert not any(source.get("accepted") for source in sources)
+            session.add(
+                ConceptNoteUpload(
+                    upload_id=first_id,
+                    run_id=run_id,
+                    uploaded_by_user_id=payload.user_id,
+                    filename="first.md",
+                    ingest_status="queued",
+                )
+            )
+            await session.commit()
+            for _ in range(2):
+                await service.accept_initial_upload(
+                    run_id=run_id,
+                    upload_id=first_id,
+                    requested_user_id=payload.user_id,
+                    authorization="Bearer test",
+                )
+            with pytest.raises(HTTPException) as missing:
+                await service.accept_initial_upload(
+                    run_id=run_id,
+                    upload_id=second_id,
+                    requested_user_id=payload.user_id,
+                    authorization="Bearer test",
+                )
+            assert missing.value.status_code == 404
+        async with factory() as session:
+            service = ConceptNoteRunService(
+                session, cc_client=client, funding_reference_validator=validator
+            )
+            run = await service.get_run(
+                run_id=run_id,
+                requested_user_id=payload.user_id,
+                authorization="Bearer test",
+            )
+            sources = run.progress_summary["initial_uploads"]
+            assert sources[0]["accepted"] is True
+            assert not sources[1].get("accepted")
+            assert len(run.uploads) == 1
+            replay = await service.start_run(payload, authorization="Bearer test")
+            assert not replay.created
+            assert replay.run_id == run_id
+            assert replay.progress_summary["initial_uploads"][0]["accepted"] is True
+    finally:
+        await engine.dispose()
 
 
 def _start_request(
@@ -92,6 +184,7 @@ def _run_service(
         funding_reference_validator=funding_validator,
     )
     service.repository = repository
+    repository.list_uploads_for_run.return_value = []
     return service, repository, cc_client, funding_validator
 
 
@@ -214,6 +307,103 @@ async def test_get_run_rejects_authenticated_user_mismatch() -> None:
     repository.get_for_user.assert_not_awaited()
 
 
+async def test_manual_population_is_scoped_to_one_run_and_can_be_cleared() -> None:
+    """Save CNB-only data without replacing other run progress."""
+    payload = _start_request()
+    run = _persisted_run(
+        payload,
+        request_fingerprint=_request_fingerprint(payload),
+        context_summary={"context_bundle": {"status": "ready"}},
+    )
+    service, _, _, _ = _run_service()
+    service.get_authorized_run = AsyncMock(return_value=run)
+
+    saved = await service.update_manual_population(
+        run_id=run.run_id,
+        payload=ConceptNotePopulationRequest(
+            manual_population={"population": 0, "year": 2024}
+        ),
+        requested_user_id=run.user_id,
+        authorization="Bearer token",
+    )
+
+    assert saved.manual_population is not None
+    assert saved.manual_population.population == 0
+    assert saved.manual_population.year == 2024
+    assert run.context_summary == {
+        "context_bundle": {"status": "ready"},
+        "manual_population": {"population": 0, "year": 2024},
+    }
+    service.session.refresh.assert_awaited_once_with(run, with_for_update=True)
+
+    cleared = await service.update_manual_population(
+        run_id=run.run_id,
+        payload=ConceptNotePopulationRequest(manual_population=None),
+        requested_user_id=run.user_id,
+        authorization="Bearer token",
+    )
+    assert cleared.manual_population is None
+    assert run.context_summary == {"context_bundle": {"status": "ready"}}
+    assert service.session.commit.await_count == 2
+
+
+@pytest.mark.parametrize(
+    "manual_population",
+    [{"population": 123456, "year": 2024}, None],
+)
+async def test_manual_population_rejects_edits_during_drafting_after_lock(
+    manual_population: dict[str, int] | None,
+) -> None:
+    """Reject edits when drafting starts before the run lock is acquired."""
+    payload = _start_request()
+    run = _persisted_run(
+        payload,
+        request_fingerprint=_request_fingerprint(payload),
+        context_summary={"manual_population": {"population": 100, "year": 2020}},
+    )
+    service, _, _, _ = _run_service()
+    service.get_authorized_run = AsyncMock(return_value=run)
+
+    async def refresh_with_running_draft(*_args: object, **_kwargs: object) -> None:
+        run.context_summary = {
+            **run.context_summary,
+            "draft_document": {"status": "running"},
+        }
+
+    service.session.refresh.side_effect = refresh_with_running_draft
+
+    with pytest.raises(HTTPException) as exc_info:
+        await service.update_manual_population(
+            run_id=run.run_id,
+            payload=ConceptNotePopulationRequest(manual_population=manual_population),
+            requested_user_id=run.user_id,
+            authorization="Bearer token",
+        )
+
+    assert exc_info.value.status_code == 409
+    assert run.context_summary["manual_population"] == {
+        "population": 100,
+        "year": 2020,
+    }
+    service.session.refresh.assert_awaited_once_with(run, with_for_update=True)
+    service.session.commit.assert_not_awaited()
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        {"population": -1, "year": 2024},
+        {"population": 12.5, "year": 2024},
+        {"population": 100, "year": 0},
+        {"population": 100, "year": 2024.5},
+    ],
+)
+def test_manual_population_rejects_invalid_values(value: dict) -> None:
+    """Require a whole-number population and a usable year."""
+    with pytest.raises(ValidationError):
+        ConceptNotePopulationRequest(manual_population=value)
+
+
 async def test_get_run_hides_missing_or_unowned_run() -> None:
     """Return the same 404 for a missing run or one owned by another user."""
     service, repository, cc_client, _ = _run_service()
@@ -263,6 +453,39 @@ async def test_get_run_revalidates_city_access_owned_by_citycatalyst() -> None:
         token="token",
         user_id=payload.user_id,
     )
+
+
+async def test_get_run_returns_owned_upload_metadata() -> None:
+    """Keep uploaded filenames visible when the workspace is resumed."""
+    payload = _start_request()
+    run = _persisted_run(
+        payload,
+        request_fingerprint=_request_fingerprint(payload),
+    )
+    upload = ConceptNoteUpload(
+        upload_id=uuid4(),
+        run_id=run.run_id,
+        uploaded_by_user_id=payload.user_id,
+        filename="Richfield_FloodRiskPrioritization.pdf",
+        source_label="Richfield Flood Risk Prioritization",
+        ingest_status="ready",
+        page_count=55,
+        received_at=datetime.now(timezone.utc),
+        ingest_completed_at=datetime.now(timezone.utc),
+    )
+    service, repository, _, _ = _run_service()
+    repository.get_for_user.return_value = run
+    repository.list_uploads_for_run.return_value = [upload]
+
+    response = await service.get_run(
+        run_id=run.run_id,
+        requested_user_id=payload.user_id,
+        authorization="Bearer token",
+    )
+
+    assert response.uploads[0].filename == upload.filename
+    assert response.uploads[0].status == "ready"
+    assert response.uploads[0].page_count == 55
 
 
 async def test_list_runs_rejects_authenticated_user_mismatch() -> None:

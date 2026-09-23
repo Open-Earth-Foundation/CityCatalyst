@@ -13,12 +13,17 @@ Tests cover:
 from __future__ import annotations
 
 import asyncio
+import unittest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
-import unittest
 from uuid import uuid4
 
+from agents import OpenAIResponsesModel
+
 from app.services.agent_service import AgentService
+from app.services.native_input_catalog_service import (
+    ActiveRequestContext,
+)
 
 
 def build_mock_settings(
@@ -27,9 +32,11 @@ def build_mock_settings(
     base_url: str = "https://openrouter.ai/api/v1",
     prompt: str = "You are helpful",
     temperature: float = 0.0,
-    default_model: str = "openai/gpt-5.4-mini",
+    default_model: str = "openai/gpt-5.6-terra",
     agentic_flow_model: str | None = None,
     agentic_flow_temperature: float | None = None,
+    cnb_chat_model: str | None = None,
+    cnb_chat_reasoning_effort: str | None = None,
 ):
     """Create a reusable SimpleNamespace matching AgentService expectations."""
     prompts = MagicMock()
@@ -67,6 +74,16 @@ def build_mock_settings(
             if agentic_flow_model is not None or agentic_flow_temperature is not None
             else None
         ),
+        cnb_chat=(
+            SimpleNamespace(
+                name=cnb_chat_model or agentic_flow_model or default_model,
+                reasoning_effort=cnb_chat_reasoning_effort,
+                temperature=temperature,
+            )
+            if cnb_chat_model is not None
+            or cnb_chat_reasoning_effort is not None
+            else None
+        ),
     )
 
     llm_settings = SimpleNamespace(
@@ -96,7 +113,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
         with patch("app.services.agent_service.AsyncOpenAI"):
             service = AgentService()
             self.assertIsNotNone(service)
-            self.assertEqual(service.default_model, "openai/gpt-5.4-mini")
+            self.assertEqual(service.default_model, "openai/gpt-5.6-terra")
             self.assertEqual(service.default_temperature, 0.0)
 
     @patch("app.services.agent_service.get_settings")
@@ -108,7 +125,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
         mock_settings = build_mock_settings(
             base_url="https://api.openai.com/v1",
             default_model="openai/gpt-4.1",
-            agentic_flow_model="openai/gpt-5.4",
+            agentic_flow_model="openai/gpt-5.6-sol",
         )
         mock_get_settings.return_value = mock_settings
 
@@ -116,7 +133,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
             service = AgentService()
 
         self.assertEqual(service.default_model, "gpt-4.1")
-        self.assertEqual(service.agentic_flow_model, "gpt-5.4")
+        self.assertEqual(service.agentic_flow_model, "gpt-5.6-sol")
 
     @patch("app.services.agent_service.get_settings")
     def test_agent_service_keeps_provider_prefix_for_openrouter_base_url(
@@ -144,7 +161,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
         mock_settings = build_mock_settings(
             base_url="https://api.openai.com/v1",
             default_model="openai/gpt-4.1",
-            agentic_flow_model="openai/gpt-5.4",
+            agentic_flow_model="openai/gpt-5.6-sol",
         )
         mock_get_settings.return_value = mock_settings
 
@@ -154,7 +171,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
             with patch("app.services.agent_service.AsyncOpenAI"):
                 service = AgentService()
 
-        self.assertEqual(service.agentic_flow_model, "gpt-5.4")
+        self.assertEqual(service.agentic_flow_model, "gpt-5.6-sol")
 
     @patch("app.services.agent_service.get_settings")
     def test_agent_service_raises_without_api_key(self, mock_get_settings) -> None:
@@ -321,7 +338,7 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
                     # Verify agent was created
                     mock_agent_class.assert_called_once()
                     call_kwargs = mock_agent_class.call_args[1]
-                    self.assertEqual(call_kwargs["model"].model, "openai/gpt-5.4-mini")
+                    self.assertEqual(call_kwargs["model"].model, "openai/gpt-5.6-terra")
                     self.assertEqual(call_kwargs["model_settings"].temperature, 0.0)
 
     async def test_create_agent_with_model_override(self) -> None:
@@ -361,7 +378,7 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
     async def test_create_agent_uses_agentic_flow_temperature(self) -> None:
         """Test agent creation uses agentic-flow temperature for that configured model."""
         mock_settings = build_mock_settings(
-            agentic_flow_model="openai/gpt-5.4",
+            agentic_flow_model="openai/gpt-5.6-sol",
             agentic_flow_temperature=0.3,
         )
 
@@ -371,10 +388,10 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
             with patch("app.services.agent_service.AsyncOpenAI"):
                 with patch("app.services.agent_service.Agent") as mock_agent_class:
                     service = AgentService()
-                    await service.create_agent(model="openai/gpt-5.4")
+                    await service.create_agent(model="openai/gpt-5.6-sol")
 
                     call_kwargs = mock_agent_class.call_args[1]
-                    self.assertEqual(call_kwargs["model"].model, "openai/gpt-5.4")
+                    self.assertEqual(call_kwargs["model"].model, "openai/gpt-5.6-sol")
                     self.assertEqual(call_kwargs["model_settings"].temperature, 0.3)
 
     async def test_create_agent_includes_system_prompt(self) -> None:
@@ -409,6 +426,168 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
                     call_kwargs = mock_agent_class.call_args[1]
                     # Tools should be included
                     self.assertIn("tools", call_kwargs)
+
+
+class NativeInputCatalogCompositionTests(unittest.IsolatedAsyncioTestCase):
+    """Tests for stable runtime NativeInputCatalog tool composition."""
+
+    def _context(self) -> ActiveRequestContext:
+        return ActiveRequestContext(
+            user_id="user-1",
+            thread_id="thread-1",
+            organization_id="organization-1",
+            project_id="project-1",
+            city_id="city-1",
+            inventory_id="inventory-1",
+        )
+
+    async def test_create_agent_registers_stable_catalog_tools_without_discovery(
+        self,
+    ) -> None:
+        settings = build_mock_settings()
+        context = self._context()
+        catalog_service = MagicMock()
+        catalog_service.discover = AsyncMock()
+        stable_tools = [
+            SimpleNamespace(name="native_input_discover"),
+            SimpleNamespace(name="native_input_read"),
+        ]
+
+        def build_tools(**kwargs):
+            self.assertIs(kwargs["service"], catalog_service)
+            self.assertIs(kwargs["context"], context)
+            self.assertIs(kwargs["token_ref"], service._token_ref)
+            return stable_tools
+
+        with (
+            patch("app.services.agent_service.get_settings", return_value=settings),
+            patch("app.services.agent_service.AsyncOpenAI"),
+            patch(
+                "app.services.agent_service.build_native_input_catalog_tools",
+                create=True,
+                side_effect=build_tools,
+            ) as mock_build_tools,
+            patch("app.services.agent_service.Agent") as mock_agent,
+        ):
+            service = AgentService(
+                cc_access_token="jwt-token",
+                cc_thread_id="thread-1",
+                cc_user_id="user-1",
+                native_input_catalog_service=catalog_service,
+                native_input_catalog_context=context,
+            )
+
+            await service.create_agent()
+
+        mock_build_tools.assert_called_once()
+        catalog_service.discover.assert_not_awaited()
+        tool_names = [
+            getattr(tool, "name", "")
+            for tool in mock_agent.call_args.kwargs["tools"]
+        ]
+        self.assertIn("native_input_discover", tool_names)
+        self.assertIn("native_input_read", tool_names)
+        self.assertIn("climate_vector_search", tool_names)
+
+    async def test_create_agent_skips_catalog_tools_without_active_context(
+        self,
+    ) -> None:
+        settings = build_mock_settings()
+        catalog_service = MagicMock()
+        catalog_service.discover = AsyncMock()
+
+        with (
+            patch("app.services.agent_service.get_settings", return_value=settings),
+            patch("app.services.agent_service.AsyncOpenAI"),
+            patch(
+                "app.services.agent_service.build_native_input_catalog_tools",
+                create=True,
+            ) as build_tools,
+            patch("app.services.agent_service.Agent") as mock_agent,
+        ):
+            service = AgentService(
+                cc_access_token="jwt-token",
+                cc_thread_id="thread-1",
+                cc_user_id="user-1",
+                native_input_catalog_service=catalog_service,
+            )
+
+            await service.create_agent()
+
+        catalog_service.discover.assert_not_awaited()
+        build_tools.assert_not_called()
+        tool_names = [
+            getattr(tool, "name", "")
+            for tool in mock_agent.call_args.kwargs["tools"]
+        ]
+        self.assertIn("climate_vector_search", tool_names)
+
+    async def test_create_agent_skips_catalog_tools_without_core_credential(
+        self,
+    ) -> None:
+        """Catalog tools require a current Core credential as well as context."""
+        settings = build_mock_settings()
+        context = self._context()
+        catalog_service = MagicMock()
+        catalog_service.discover = AsyncMock()
+
+        with (
+            patch("app.services.agent_service.get_settings", return_value=settings),
+            patch("app.services.agent_service.AsyncOpenAI"),
+            patch(
+                "app.services.agent_service.build_native_input_catalog_tools",
+                create=True,
+            ) as build_tools,
+            patch("app.services.agent_service.Agent") as mock_agent,
+        ):
+            service = AgentService(
+                cc_thread_id="thread-1",
+                cc_user_id="user-1",
+                native_input_catalog_service=catalog_service,
+                native_input_catalog_context=context,
+            )
+
+            await service.create_agent()
+
+        catalog_service.discover.assert_not_awaited()
+        build_tools.assert_not_called()
+        tool_names = [
+            getattr(tool, "name", "")
+            for tool in mock_agent.call_args.kwargs["tools"]
+        ]
+        self.assertNotIn("native_input_discover", tool_names)
+        self.assertNotIn("native_input_read", tool_names)
+
+    async def test_create_agent_preserves_existing_tools_when_catalog_service_is_missing(
+        self,
+    ) -> None:
+        settings = build_mock_settings()
+        context = self._context()
+
+        with (
+            patch("app.services.agent_service.get_settings", return_value=settings),
+            patch("app.services.agent_service.AsyncOpenAI"),
+            patch(
+                "app.services.agent_service.build_native_input_catalog_tools",
+                create=True,
+            ) as build_tools,
+            patch("app.services.agent_service.Agent") as mock_agent,
+        ):
+            service = AgentService(
+                cc_access_token="jwt-token",
+                cc_thread_id="thread-1",
+                cc_user_id="user-1",
+                native_input_catalog_context=context,
+            )
+
+            await service.create_agent()
+
+        build_tools.assert_called_once()
+        tool_names = [
+            getattr(tool, "name", "")
+            for tool in mock_agent.call_args.kwargs["tools"]
+        ]
+        self.assertIn("climate_vector_search", tool_names)
 
 
 class SystemPromptLoadingTests(unittest.TestCase):
@@ -716,6 +895,12 @@ class InventoryToolIntegrationTests(unittest.TestCase):
             asyncio.run(service.create_agent())
             assert agent_class.call_args.kwargs["instructions"] == "Core + cnb_chat"
             assert agent_class.call_args.kwargs["tools"] == []
+
+            assert isinstance(agent_class.call_args.kwargs["model"], OpenAIResponsesModel)
+            model_settings = agent_class.call_args.kwargs["model_settings"]
+            assert model_settings.reasoning.summary == "detailed"
+            assert model_settings.store is False
+            assert model_settings.extra_body is None
 
             # Rebuilding an agent must not fall back to general chat instructions.
             service.system_prompt = None

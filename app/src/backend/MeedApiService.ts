@@ -3,9 +3,11 @@ import { db } from "@/models";
 import PopulationService from "./PopulationService";
 import createHttpError from "http-errors";
 import { InventoryService } from "./InventoryService";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { Op } from "sequelize";
 import { logger } from "@/services/logger";
+import { registerMEEDRanking } from "@/backend/meed/MeedNativeInputCatalogService";
+import type { MeedStateCreationAttributes } from "@/models/MeedState";
 
 const MEED_API_URL = process.env.HIAP_MEED_API_URL + "/v1/";
 
@@ -89,6 +91,23 @@ type MeedResponseActionRemoved = {
   };
 };
 
+function canonicalize(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (!value || typeof value !== "object") return value;
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, entry]) => [key, canonicalize(entry)]),
+  );
+}
+
+function digest(value: unknown): string {
+  return createHash("sha256")
+    .update(JSON.stringify(canonicalize(value)))
+    .digest("hex");
+}
+
 type ExclusionsPreviewRequest = {
   cityDataList: {
     locode: string;
@@ -102,6 +121,7 @@ export default class MeedApiService {
   public static async runRanking(
     inventoryId: string,
     requestBody: RunRankingRequest,
+    userId?: string,
   ): Promise<unknown> {
     const inventory = await db.models.Inventory.findOne({
       where: { inventoryId },
@@ -140,70 +160,80 @@ export default class MeedApiService {
     });
 
     // enrich frontend request with inventory data from database
-    const fullRequest = requestBody as RunRankingFullRequest;
-    fullRequest.cityDataList = requestBody.cityDataList.map((cityData) => {
-      return {
-        ...cityData,
-        locode: inventory.city.locode ?? "",
-        countryCode: inventory.city.countryLocode ?? "",
-        populationSize: population ?? 0,
-        cityEmissionsData: {
-          inventoryYear: inventory.year ?? 0,
-          gpcData: inventoryValues.reduce(
-            (acc, inventoryValue) => {
-              const notationKey =
-                inventoryValue.unavailableReason &&
-                inventoryValue.unavailableReason.length > 0
-                  ? inventoryValue.unavailableReason
-                  : undefined;
-              let activities = inventoryValue.activityValues.map((activity) => {
-                const fields = InventoryService.extractActivityFields(
-                  activity,
-                  inventoryValue,
-                );
-                return fields as GpcActivity;
-              });
-
-              // make sure direct measure data is represented even if there are no activities
-              if (activities.length === 0 && (inventoryValue.co2eq ?? 0) > 0) {
-                activities = [
-                  {
-                    activityType: "direct-measure",
-                    totalEmissions: Number(inventoryValue.co2eq) ?? 0,
-                    totalEmissionsUnit: "kg",
-                    dataSource: inventoryValue.dataSource?.datasourceName,
-                    notationKey: inventoryValue.unavailableReason ?? undefined,
+    const fullRequest: RunRankingFullRequest = {
+      ...requestBody,
+      createExplanations: requestBody.createExplanations ?? false,
+      cityDataList: requestBody.cityDataList.map((cityData) => {
+        return {
+          ...cityData,
+          locode: inventory.city.locode ?? "",
+          countryCode: inventory.city.countryLocode ?? "",
+          populationSize: population ?? 0,
+          cityEmissionsData: {
+            inventoryYear: inventory.year ?? 0,
+            gpcData: inventoryValues.reduce(
+              (acc, inventoryValue) => {
+                const notationKey =
+                  inventoryValue.unavailableReason &&
+                  inventoryValue.unavailableReason.length > 0
+                    ? inventoryValue.unavailableReason
+                    : undefined;
+                let activities = inventoryValue.activityValues.map(
+                  (activity) => {
+                    const fields = InventoryService.extractActivityFields(
+                      activity,
+                      inventoryValue,
+                    );
+                    return fields as GpcActivity;
                   },
-                ];
-              }
-
-              // validation for duplicate or missing GPC reference numbers
-              if (!inventoryValue.gpcReferenceNumber) {
-                throw new createHttpError.BadRequest(
-                  "Missing GPC reference number for InventoryValue " +
-                    inventoryValue.id,
                 );
-              }
-              if (acc.hasOwnProperty(inventoryValue.gpcReferenceNumber)) {
-                throw new createHttpError.BadRequest(
-                  "Duplicate GPC reference number in inventory: " +
-                    inventoryValue.gpcReferenceNumber,
-                );
-              }
 
-              return {
-                ...acc,
-                [inventoryValue.gpcReferenceNumber ?? ""]: {
-                  notationKey,
-                  activities,
-                },
-              };
-            },
-            {} as Record<string, GpcDataEntry>,
-          ),
-        },
-      };
-    });
+                // make sure direct measure data is represented even if there are no activities
+                if (
+                  activities.length === 0 &&
+                  (inventoryValue.co2eq ?? 0) > 0
+                ) {
+                  activities = [
+                    {
+                      activityType: "direct-measure",
+                      totalEmissions: Number(inventoryValue.co2eq) ?? 0,
+                      totalEmissionsUnit: "kg",
+                      dataSource: inventoryValue.dataSource?.datasourceName,
+                      notationKey:
+                        inventoryValue.unavailableReason ?? undefined,
+                    },
+                  ];
+                }
+
+                // validation for duplicate or missing GPC reference numbers
+                if (!inventoryValue.gpcReferenceNumber) {
+                  throw new createHttpError.BadRequest(
+                    "Missing GPC reference number for InventoryValue " +
+                      inventoryValue.id,
+                  );
+                }
+                if (acc.hasOwnProperty(inventoryValue.gpcReferenceNumber)) {
+                  throw new createHttpError.BadRequest(
+                    "Duplicate GPC reference number in inventory: " +
+                      inventoryValue.gpcReferenceNumber,
+                  );
+                }
+
+                return {
+                  ...acc,
+                  [inventoryValue.gpcReferenceNumber ?? ""]: {
+                    notationKey,
+                    activities,
+                  },
+                };
+              },
+              {} as Record<string, GpcDataEntry>,
+            ),
+          },
+        };
+      }),
+    };
+    const inputDigest = digest(fullRequest);
 
     // make API request to MEED API
     const requestId = randomUUID(); // to be able to save it to snapshot later
@@ -214,22 +244,42 @@ export default class MeedApiService {
     );
 
     const rankedActionsRaw: MeedResponseActionRanked[] =
-      result.results[0].ranked_actions;
+      result.results?.[0]?.ranked_actions ?? [];
     const removedActionsRaw: MeedResponseActionRemoved[] =
-      result.results[0].removed_actions;
-    const weights = result.results[0].metadata.weights;
+      result.results?.[0]?.removed_actions ?? [];
+    const weights = result.results?.[0]?.metadata?.weights ?? {};
+    if (rankedActionsRaw.length + removedActionsRaw.length === 0) {
+      throw new createHttpError.BadRequest(
+        "MEED API returned an incomplete ranking",
+      );
+    }
+    const contentDigest = digest({
+      rankedActions: rankedActionsRaw,
+      removedActions: removedActionsRaw,
+      weights,
+    });
 
-    // save result to database
-    const data = await db.sequelize?.transaction(async (transaction) => {
-      // delete previous data if it's present
-      await db.models.MeedActionRanked.destroy({
-        where: { inventoryId },
-        transaction,
-      });
-      await db.models.MeedActionRemoved.destroy({
-        where: { inventoryId },
-        transaction,
-      });
+    if (!db.sequelize) {
+      throw new createHttpError.InternalServerError(
+        "Database is not initialized",
+      );
+    }
+
+    const data = await db.sequelize.transaction(async (transaction) => {
+      const ranking = await db.models.MeedRanking.create(
+        {
+          id: randomUUID(),
+          inventoryId,
+          userId: userId ?? null,
+          inputDigest,
+          contentDigest,
+          status: "completed",
+          actionCount: rankedActionsRaw.length + removedActionsRaw.length,
+          requestedLanguages: requestBody.requestedLanguages,
+          topN: requestBody.topN ?? null,
+        },
+        { transaction },
+      );
 
       // delete existing rank snapshots so there's only one per inventory
       await db.models.MeedRankSnapshot.destroy({
@@ -255,6 +305,7 @@ export default class MeedApiService {
         rankedActionsRaw.map((action) => ({
           id: randomUUID(),
           inventoryId,
+          rankingId: ranking.id,
           actionId: action.action_id,
           rank: action.rank,
           finalScore: action.final_score,
@@ -268,32 +319,58 @@ export default class MeedApiService {
         { transaction },
       );
       const removedActions = await db.models.MeedActionRemoved.bulkCreate(
-        removedActionsRaw.map(
-          (action) => ({
-            id: randomUUID(),
-            inventoryId,
-            actionId: action.action_id,
-            actionName: action.action_name,
-            removalReason: action.removal_reason,
-            removalSource: action.removal_source,
-            verdictCategory: action.legal?.verdict_category,
-            ownershipCategory: action.legal?.ownership_category,
-            restrictionsCategory: action.legal?.restrictions_category,
-            ownershipDescription: action.legal?.ownership_description,
-            restrictionsDescription: action.legal?.restrictions_description,
-            legalJustification: action.legal?.legal_justification,
-            legalReferences: action.legal?.legal_references,
-          }),
-          { transaction },
-        ),
+        removedActionsRaw.map((action) => ({
+          id: randomUUID(),
+          inventoryId,
+          rankingId: ranking.id,
+          actionId: action.action_id,
+          actionName: action.action_name,
+          removalReason: action.removal_reason,
+          removalSource: action.removal_source,
+          verdictCategory: action.legal?.verdict_category,
+          ownershipCategory: action.legal?.ownership_category,
+          restrictionsCategory: action.legal?.restrictions_category,
+          ownershipDescription: action.legal?.ownership_description,
+          restrictionsDescription: action.legal?.restrictions_description,
+          legalJustification: action.legal?.legal_justification,
+          legalReferences: action.legal?.legal_references,
+        })),
+        { transaction },
       );
-      return { rankedActions, removedActions };
+      return { ranking, rankedActions, removedActions };
     });
 
-    return data;
+    try {
+      await registerMEEDRanking(data.ranking.id);
+    } catch (error) {
+      logger.error(
+        { error, rankingId: data.ranking.id, inventoryId },
+        "Failed to register MEED ranking in NativeInputCatalog",
+      );
+    }
+
+    return {
+      rankedActions: data.rankedActions,
+      removedActions: data.removedActions,
+    };
   }
 
-  public static async getRanking(inventoryId: string) {
+  public static async getRanking(inventoryId: string, _userId?: string) {
+    const latestRanking = await db.models.MeedRanking.findOne({
+      where: { inventoryId, status: "completed" },
+      order: [["created", "DESC"]],
+    });
+    if (latestRanking) {
+      const rankedActions = await db.models.MeedActionRanked.findAll({
+        where: { rankingId: latestRanking.id },
+        order: [["rank", "ASC"]],
+      });
+      const removedActions = await db.models.MeedActionRemoved.findAll({
+        where: { rankingId: latestRanking.id },
+      });
+      return { rankedActions, removedActions };
+    }
+
     const rankedActions = await db.models.MeedActionRanked.findAll({
       where: {
         inventoryId,
@@ -370,10 +447,25 @@ export default class MeedApiService {
       throw new createHttpError.NotFound("City not found");
     }
     const countryLocode = city.countryLocode;
+    // hiap-meed answers 404 when no project matches the action; that is an
+    // empty list to the caller, not an error.
     const result = await this.makeRequest(
       `climate-finance/projects?country_code=${countryLocode}&action_id=${actionId}`,
+      null,
+      undefined,
+      { notFoundAsNull: true },
     );
-    return result;
+    return (
+      result ?? {
+        projects: [],
+        meta: {
+          requestId: randomUUID(),
+          generatedAtUtc: new Date().toISOString(),
+          totalRecords: 0,
+        },
+        warnings: [],
+      }
+    );
   }
 
   public static async getExclusionsPreview(data: ExclusionsPreviewRequest) {
@@ -558,10 +650,34 @@ export default class MeedApiService {
     return plan;
   }
 
+  public static async getState(inventoryId: string) {
+    const state = await db.models.MeedState.findOne({ where: { inventoryId } });
+    return state;
+  }
+
+  public static async setState(
+    updatedState: Omit<MeedStateCreationAttributes, "id">,
+  ) {
+    let state = await db.models.MeedState.findOne({
+      where: { inventoryId: updatedState.inventoryId },
+    });
+    if (!state) {
+      state = await db.models.MeedState.create({
+        ...updatedState,
+        id: randomUUID(),
+      });
+    } else {
+      await state.update(updatedState);
+    }
+
+    return state;
+  }
+
   private static async makeRequest(
     route: string,
     data: object | null = null,
     requestId: string | undefined = undefined,
+    options: { notFoundAsNull?: boolean } = {},
   ) {
     const method = data == null ? "GET" : "POST";
     requestId = requestId ?? randomUUID();
@@ -584,6 +700,9 @@ export default class MeedApiService {
 
     const result = await response.json();
 
+    if (response.status === 404 && options.notFoundAsNull) {
+      return null;
+    }
     if (response.status != 200 || result.detail) {
       const resultString = JSON.stringify(result, null, 2);
       throw new createHttpError.BadRequest("MEED API error: " + resultString);

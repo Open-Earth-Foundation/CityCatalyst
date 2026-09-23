@@ -185,7 +185,7 @@
   "afolu-other-agriculture": "Outra agricultura",
   "afolu-livestock": "Gado",
   "afolu-land": "Terra",
-  "manage-missing-subsectors": "Gerenciar subsetores ausentes",
+  "notation-keys": "Chaves de notação",
   "add-a-new-city": "Adicione uma nova cidade",
   "rate": "taxa",
   "sector": "setor",
@@ -338,5 +338,11 @@
   "all-tools": "Todas as ferramentas",
   "useful-links": "Links úteis",
   "learning-hub": "Centro de aprendizado",
-  "module-unavailable-for-city": "{{module}} não está disponível para esta cidade. Mostrando a visão geral da cidade em vez disso."
+  "module-unavailable-for-city": "{{module}} não está disponível para esta cidade. Mostrando a visão geral da cidade em vez disso.",
+  "removed": "removido",
+  "net-removal": "Remoção de rede",
+  "removal": "Remoção",
+  "removals-not-countable-footnote": "* Sub-setores com remoções não são contabilizáveis como emissões",
+  "no-cited-source": "Sem fonte citada",
+  "hero-inventory-line": "{{year}} · {{value}} {{unit}}"
 }

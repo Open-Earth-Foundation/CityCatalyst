@@ -23,7 +23,10 @@ import type {
 } from "@/models/EmissionsFactor";
 import type { ActivityValue } from "@/models/ActivityValue";
 import type Decimal from "decimal.js";
-import { OrganizationPlanType } from "@/util/enums";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  OrganizationPlanType,
+} from "@/util/enums";
 import type {
   FailedSourceResult,
   RemovedSourceResult,
@@ -84,6 +87,11 @@ export type InventoryResponse = InventoryAttributes & {
     };
   };
   inventoryValues: FullInventoryValue[];
+  gwp?: {
+    version: GlobalWarmingPotentialTypeEnum;
+    ch4: number | null;
+    n2o: number | null;
+  } | null;
 };
 
 export interface InventoryPopulationsResponse {
@@ -128,6 +136,7 @@ export interface UserInfoResponse {
   email?: string;
   preferredLanguage?: string;
   numberFormat?: string;
+  twoFactorEnabled?: boolean;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -349,19 +358,26 @@ export interface TopEmission {
   co2eq: bigint;
   sectorName: string;
   subsectorName: string;
-  percentage: number;
+  /** null when co2eq is a removal - % of emissions isn't meaningful there, see CC-749 */
+  percentage: number | null;
 }
 
 export interface SectorEmission {
   sectorName: string;
+  /** net (emissions + removals) */
   co2eq: bigint;
+  grossCo2eq?: bigint;
+  removalsCo2eq?: bigint;
   percentage: number;
 }
 
 export interface ResultsResponse {
   totalEmissions: {
     bySector: SectorEmission[];
+    /** net (emissions + removals) */
     total: bigint;
+    grossTotal?: bigint;
+    removalsTotal?: bigint;
   };
   topEmissions: { bySubSector: TopEmission[] };
 }
@@ -391,7 +407,7 @@ export interface YearOverYearResultResponse {
   topEmissionsBySubSector: {
     inventoryId: string;
     co2eq: bigint;
-    percentage: number;
+    percentage: number | null;
     scopeName: string;
     sectorName: string;
     subsectorName: string;
@@ -433,7 +449,8 @@ export interface ActivityDataByScope {
   activityTitle: string;
   scopes: { [key: string]: Decimal };
   totalEmissions: Decimal;
-  percentage: number;
+  /** null when totalEmissions is a removal - % of emissions isn't meaningful there, see CC-749 */
+  percentage: number | null;
   datasource_id: string;
   datasource_name: string;
   activities?: ActivityValue[];
@@ -442,6 +459,8 @@ export interface ActivityDataByScope {
 export type SectorBreakdownResponse = BreakdownByActivity & {
   byActivity: BreakdownByActivity;
   byScope: ActivityDataByScope[];
+  /** sum of non-negative (emissions-only) totalEmissions across byScope - % denominator */
+  grossTotalEmissions: Decimal;
 };
 
 export type InventoryValueWithActivityValues = InventoryValue & {
@@ -1015,8 +1034,7 @@ export interface WebhookSubscriptionResponse {
   lastUpdated: string | null;
 }
 
-export interface WebhookSubscriptionSecretResponse
-  extends WebhookSubscriptionResponse {
+export interface WebhookSubscriptionSecretResponse extends WebhookSubscriptionResponse {
   secret: string;
 }
 
@@ -1061,6 +1079,19 @@ export interface ConceptNoteRun {
   status: string;
   workflow_step: string;
   progress_summary: Record<string, unknown>;
+  manual_population?: { population: number; year: number } | null;
+  uploads?: Array<{
+    upload_id: string;
+    run_id: string;
+    status: ConceptNoteUploadStatus;
+    filename: string;
+    source_label?: string | null;
+    source_format: "pdf" | "markdown";
+    page_count?: number | null;
+    error_code?: string | null;
+    received_at: string;
+    completed_at?: string | null;
+  }>;
   created_at: string;
   updated_at: string;
 }
@@ -1103,11 +1134,139 @@ export interface ConceptNoteApplicationContext {
   };
 }
 
+export interface ConceptNoteFundingOpportunity {
+  id: string;
+  name: string;
+  applicant_type: string | null;
+  category: string | null;
+  sector: string | null;
+  region_scope: string | null;
+  finance_route: string | null;
+  instrument_type: string | null;
+  min_award: string | null;
+  max_award: string | null;
+  currency: string | null;
+  status: string | null;
+  summary: string | null;
+  hazards: string[];
+  interventions: string[];
+  known_gaps: string[];
+  template: ConceptNoteApplicationContext["template"];
+}
+
+export interface ConceptNoteFunder {
+  id: string;
+  name: string;
+  funder_type: string | null;
+  country: string | null;
+  region: string | null;
+  profile: Record<string, unknown>;
+  opportunities: ConceptNoteFundingOpportunity[];
+}
+
+export interface ConceptNoteFundingSelection {
+  funder_id: string | null;
+  selected_funding_opportunity_id: string | null;
+  expected_funder_id: string | null;
+  expected_funding_opportunity_id: string | null;
+  acknowledge_draft_review: boolean;
+}
+
 export type ConceptNoteDraftRunStatus =
   "not_started" | "running" | "failed" | "complete";
 
 export type ConceptNoteDraftChapterStatus =
   "empty" | "draft" | "needs_review" | "ready";
+
+export type ConceptNoteGapSeverity = "critical" | "noncritical";
+export type ConceptNoteGapState =
+  "open" | "processing" | "resolved" | "dismissed" | "caveat";
+export type ConceptNoteGapResolutionAction =
+  "answer" | "correction" | "not_a_gap" | "defer_as_caveat" | "evidence_update";
+
+export interface ConceptNoteGapSuggestion {
+  value: string;
+  source_refs: string[];
+}
+
+export interface ConceptNoteGapResolution {
+  resolution_id: string;
+  action: ConceptNoteGapResolutionAction;
+  answer: string | null;
+  actor_user_id: string;
+  source_refs: string[];
+  created_at: string;
+}
+
+export interface ConceptNoteGap {
+  gap_id: string;
+  field_key: string;
+  question: string;
+  why_asking: string;
+  severity: ConceptNoteGapSeverity;
+  state: ConceptNoteGapState;
+  suggestions: ConceptNoteGapSuggestion[];
+  source_refs: string[];
+  version: number;
+  resolution: ConceptNoteGapResolution | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type ConceptNoteChapterValidationStatus =
+  "ready" | "needs_review" | "incomplete";
+
+export type ConceptNoteChapterValidationCheckStatus =
+  "pass" | "warning" | "fail";
+
+export type ConceptNoteChapterValidationFindingPhase =
+  "completeness" | "consistency" | "evidence";
+
+export type ConceptNoteChapterValidationFindingSeverity =
+  "warning" | "blocking";
+
+export interface ConceptNoteChapterValidationCheck {
+  key: string;
+  label?: string | null;
+  status: ConceptNoteChapterValidationCheckStatus;
+  message?: string | null;
+}
+
+export interface ConceptNoteChapterValidationEvidence {
+  selected_source_label: string;
+  source_location: string | null;
+  claim_ref: string | null;
+  quote_or_summary: string | null;
+}
+
+export interface ConceptNoteChapterValidationFinding {
+  phase: ConceptNoteChapterValidationFindingPhase;
+  category: string;
+  severity: ConceptNoteChapterValidationFindingSeverity;
+  message: string;
+  suggested_action: string;
+  involved_chapter_ids: string[];
+  excerpts?: string[];
+  evidence: ConceptNoteChapterValidationEvidence[];
+}
+
+export interface ConceptNoteChapterValidation {
+  status: ConceptNoteChapterValidationStatus;
+  is_stale: boolean;
+  validated_revision_number: number | null;
+  validated_at: string | null;
+  checks: ConceptNoteChapterValidationCheck[];
+  findings: ConceptNoteChapterValidationFinding[];
+}
+
+export interface ConceptNoteChapterValidationResponse extends ConceptNoteChapterValidation {
+  chapter_id: string;
+}
+
+export interface ValidateConceptNoteChapterRequest {
+  chapterId: string;
+  runId: string;
+}
 
 export interface ConceptNoteDraftChapter {
   chapter_id: string;
@@ -1118,8 +1277,13 @@ export interface ConceptNoteDraftChapter {
   required: boolean;
   user_locked: boolean;
   body_markdown: string | null;
-  missing_information: string[];
+  gaps: ConceptNoteGap[];
+  open_gap_count: number;
+  caveat_count: number;
   revision_number: number | null;
+  confirmed_body_markdown: string | null;
+  confirmed_revision_number: number | null;
+  validation?: ConceptNoteChapterValidation | null;
 }
 
 export interface ConceptNoteDraftState {
@@ -1132,7 +1296,22 @@ export interface ConceptNoteDraftState {
   chapters: ConceptNoteDraftChapter[];
 }
 
+export interface ConfirmConceptNoteChapterRequest {
+  runId: string;
+  chapterId: string;
+  expectedRevision: number;
+  idempotencyKey: string;
+}
+
+export interface InitialConceptNoteUpload {
+  upload_id: string;
+  filename: string;
+  sha256: string;
+  accepted?: boolean;
+}
+
 export interface StartConceptNoteRunRequest {
+  initialUploads?: InitialConceptNoteUpload[];
   cityId: string;
   idempotencyKey: string;
   name: string;

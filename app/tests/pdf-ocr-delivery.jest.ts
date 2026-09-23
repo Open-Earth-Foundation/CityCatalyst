@@ -15,7 +15,7 @@ const getSourceFormat = jest.fn<() => "pdf" | "markdown">();
 jest.unstable_mockModule("@/models", () => ({
   db: { models: { PdfOcrJob: { findAll: jest.fn() } } },
 }));
-jest.unstable_mockModule("@/backend/chat/climate-advisor", () => ({
+jest.unstable_mockModule("@/backend/climate-advisor-token", () => ({
   issueClimateAdvisorUserToken: issueToken,
 }));
 jest.unstable_mockModule("@/backend/PdfOcrService", () => ({

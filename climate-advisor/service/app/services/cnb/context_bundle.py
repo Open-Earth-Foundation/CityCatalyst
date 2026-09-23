@@ -5,11 +5,11 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable
+from contextvars import Context
 from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID, uuid4
 
-from app.config import Settings, get_settings
 from app.db.session import get_session_factory
 from app.models.cnb.context_bundle import SelectedSource
 from app.persistence.concept_notes.context_bundle import (
@@ -35,7 +35,10 @@ from app.services.concept_note_city_context import (
     load_ghgi_context,
     load_hiap_context,
 )
+from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 _BACKGROUND_BUILDS: set[asyncio.Task[bool]] = set()
@@ -98,106 +101,138 @@ class ContextBundleService:
         if active.already_current:
             return True
 
-        cc_client: CityCatalystClient | None = None
-        try:
-            cc_client = self.cc_client_factory()
-            selected_sources: list[SelectedSource] = []
+        with workflow_trace(
+            name="cnb_source_analysis",
+            inputs={"run_id": str(run_id), "build_id": str(active.build_id)},
+            session_id=active.thread_id or run_id,
+            user_id=user_id,
+            attributes={
+                "workflow": "CNB",
+                "interaction": "source_analysis",
+                "concept_note_run_id": str(run_id),
+            },
+        ) as span:
+            cc_client: CityCatalystClient | None = None
+            try:
+                cc_client = self.cc_client_factory()
+                selected_sources: list[SelectedSource] = []
 
-            # Reuse unchanged source analyses and run the LLM only for new inputs.
-            if active.uploads:
-                analysis_settings = get_settings()
-                contract_version = source_analysis_contract_version(
-                    analysis_settings
-                )
-                reader_limit = asyncio.Semaphore(
-                    analysis_settings.llm.generation.prompt_budget.cnb_sources.max_concurrency
-                )
-                previous_by_upload = {
-                    source.upload_id: source for source in active.previous_sources
-                }
-                selected_by_upload: dict[UUID, SelectedSource] = {}
-                uploads_to_analyze: list[ConceptNoteUploadSnapshot] = []
-                for upload in active.uploads:
-                    previous = previous_by_upload.get(upload.upload_id)
-                    if previous is not None and _can_reuse_source_analysis(
-                        upload,
-                        previous,
-                        contract_version,
-                    ):
-                        selected_by_upload[upload.upload_id] = previous
-                    else:
-                        uploads_to_analyze.append(upload)
+                # Reuse unchanged source analyses and run the LLM only for new inputs.
+                if active.uploads:
+                    analysis_settings = get_settings()
+                    contract_version = source_analysis_contract_version(
+                        analysis_settings
+                    )
+                    reader_limit = asyncio.Semaphore(
+                        analysis_settings.llm.generation.prompt_budget.cnb_sources.max_concurrency
+                    )
+                    previous_by_upload = {
+                        source.upload_id: source for source in active.previous_sources
+                    }
+                    selected_by_upload: dict[UUID, SelectedSource] = {}
+                    uploads_to_analyze: list[ConceptNoteUploadSnapshot] = []
+                    for upload in active.uploads:
+                        previous = previous_by_upload.get(upload.upload_id)
+                        if previous is not None and _can_reuse_source_analysis(
+                            upload,
+                            previous,
+                            contract_version,
+                        ):
+                            selected_by_upload[upload.upload_id] = previous
+                        else:
+                            uploads_to_analyze.append(upload)
 
-                if uploads_to_analyze:
-                    analyzed_sources = await gather_all_or_raise(
-                        *(
-                            self._analyze_upload(
-                                upload=upload,
-                                token=token,
-                                cc_client=cc_client,
-                                analysis_settings=analysis_settings,
-                                reader_limit=reader_limit,
-                                contract_version=contract_version,
+                    if uploads_to_analyze:
+                        analyzed_sources = await gather_all_or_raise(
+                            *(
+                                self._analyze_upload(
+                                    upload=upload,
+                                    token=token,
+                                    cc_client=cc_client,
+                                    analysis_settings=analysis_settings,
+                                    reader_limit=reader_limit,
+                                    contract_version=contract_version,
+                                )
+                                for upload in uploads_to_analyze
                             )
-                            for upload in uploads_to_analyze
                         )
-                    )
-                    selected_by_upload.update(
-                        {source.upload_id: source for source in analyzed_sources}
-                    )
-                selected_sources = [
-                    selected_by_upload[upload.upload_id] for upload in active.uploads
-                ]
+                        selected_by_upload.update(
+                            {source.upload_id: source for source in analyzed_sources}
+                        )
+                    selected_sources = [
+                        selected_by_upload[upload.upload_id]
+                        for upload in active.uploads
+                    ]
 
-            # Enrich every run with best-effort CityCatalyst context.
-            ghgi, hiap, optional_statuses, warnings = await self._load_optional_context(
-                user_id=user_id,
-                city_id=UUID(active.city_id),
-                token=token,
-                cc_client=cc_client,
-            )
-            if not active.uploads:
-                warnings.insert(
-                    0,
-                    "No source document is attached; responses use limited context until a source is added.",
+                # Enrich every run with best-effort CityCatalyst context.
+                (
+                    ghgi,
+                    hiap,
+                    optional_statuses,
+                    warnings,
+                ) = await self._load_optional_context(
+                    user_id=user_id,
+                    city_id=UUID(active.city_id),
+                    token=token,
+                    cc_client=cc_client,
                 )
+                if not active.uploads:
+                    warnings.insert(
+                        0,
+                        "No source document is attached; responses use limited context until a source is added.",
+                    )
 
-            # A bundle without uploads is ready and can be rebuilt after an upload.
-            return await complete_build(
-                session_factory=self.session_factory,
-                user_id=user_id,
-                run_id=run_id,
-                build_id=active.build_id,
-                selected_sources=list(selected_sources),
-                ghgi=ghgi,
-                hiap=hiap,
-                optional_sources=optional_statuses,
-                warnings=warnings,
-            )
-        except SourceAnalysisError as exc:
-            await self._record_failure(
-                user_id=user_id,
-                snapshot=active,
-                error_code=exc.code,
-                warning="A ready city source could not be fully analyzed.",
-            )
-            return False
-        except Exception:
-            logger.exception(
-                "Unexpected Concept Note context build failure run_id=%s build_id=%s",
-                run_id,
-                active.build_id,
-            )
-            await self._record_failure(
-                user_id=user_id,
-                snapshot=active,
-                error_code="context_bundle_build_failed",
-                warning="The context bundle could not be built.",
-            )
-            return False
-        finally:
-            if cc_client is not None:
-                await cc_client.close()
+                # A bundle without uploads is ready and can be rebuilt after an upload.
+                completed = await complete_build(
+                    session_factory=self.session_factory,
+                    user_id=user_id,
+                    run_id=run_id,
+                    build_id=active.build_id,
+                    selected_sources=list(selected_sources),
+                    ghgi=ghgi,
+                    hiap=hiap,
+                    optional_sources=optional_statuses,
+                    warnings=warnings,
+                )
+                finish_workflow_trace(span, {"completed": completed}, ok=completed)
+                return completed
+            except SourceAnalysisError as exc:
+                # Record only safe diagnostics, never document text or provider payloads.
+                logger.warning(
+                    "Concept Note source analysis failed run_id=%s build_id=%s code=%s reason=%s details=%s",
+                    run_id,
+                    active.build_id,
+                    exc.code,
+                    exc.reason,
+                    exc.details,
+                )
+                await self._record_failure(
+                    user_id=user_id,
+                    snapshot=active,
+                    error_code=exc.code,
+                    warning="A ready city source could not be fully analyzed.",
+                    error_reason=exc.reason,
+                    error_details=exc.details,
+                )
+                finish_workflow_trace(span, {"completed": False}, ok=False)
+                return False
+            except Exception:
+                logger.exception(
+                    "Unexpected Concept Note context build failure run_id=%s build_id=%s",
+                    run_id,
+                    active.build_id,
+                )
+                await self._record_failure(
+                    user_id=user_id,
+                    snapshot=active,
+                    error_code="context_bundle_build_failed",
+                    warning="The context bundle could not be built.",
+                )
+                finish_workflow_trace(span, {"completed": False}, ok=False)
+                return False
+            finally:
+                if cc_client is not None:
+                    await cc_client.close()
 
     async def _analyze_upload(
         self,
@@ -370,6 +405,8 @@ class ContextBundleService:
         snapshot: ContextBundleBuildSnapshot,
         error_code: str,
         warning: str,
+        error_reason: str | None = None,
+        error_details: dict[str, int] | None = None,
     ) -> None:
         """Persist one guarded retryable failure without masking its cause."""
         await fail_build(
@@ -379,6 +416,8 @@ class ContextBundleService:
             build_id=snapshot.build_id,
             error_code=error_code,
             warning=warning,
+            error_reason=error_reason,
+            error_details=error_details,
         )
 
 
@@ -417,7 +456,8 @@ def schedule_context_bundle_build(
             token=token,
             force=force,
             snapshot=snapshot,
-        )
+        ),
+        context=Context(),
     )
     _BACKGROUND_BUILDS.add(task)
 

@@ -2,6 +2,7 @@ import { SectorEmission } from "@/util/types";
 import { Box, Icon, Table, Text } from "@chakra-ui/react";
 import {
   convertKgToTonnes,
+  formatEmissionsOrRemoval,
   formatNumber,
   shortSectorNameToKebabCase,
 } from "@/util/helpers";
@@ -92,14 +93,16 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
                   )}
                 </Table.Cell>
                 <Table.Cell>
-                  {convertKgToTonnes(sectorBreakDown.co2eq, numberFormat)}
+                  {formatEmissionsOrRemoval(
+                    sectorBreakDown.co2eq,
+                    numberFormat,
+                    tDashboard("removed"),
+                  )}
                 </Table.Cell>
                 <Table.Cell>
-                  {formatNumber(
-                    sectorBreakDown.totalInventoryPercentage ?? 0,
-                    numberFormat,
-                  )}
-                  %
+                  {sectorBreakDown.totalInventoryPercentage === null
+                    ? tDashboard("removal")
+                    : `${formatNumber(sectorBreakDown.totalInventoryPercentage, numberFormat)}%`}
                 </Table.Cell>
                 <Table.Cell
                   display="flex"

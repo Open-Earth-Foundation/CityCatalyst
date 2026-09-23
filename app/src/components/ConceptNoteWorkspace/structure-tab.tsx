@@ -1,330 +1,308 @@
 "use client";
 
-import { useState } from "react";
-
-import { Box, Flex, HStack, Icon, Text, VStack } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
+import {
+  Box,
+  Flex,
+  HStack,
+  Icon,
+  Input,
+  Text,
+  Textarea,
+  VStack,
+} from "@chakra-ui/react";
 import {
   LuArrowDown,
   LuArrowUp,
-  LuCheck,
   LuGripVertical,
-  LuInfo,
-  LuLock,
   LuPlus,
+  LuTrash2,
 } from "react-icons/lu";
-
 import { Button } from "@/components/ui/button";
+import { useAppDispatch } from "@/lib/hooks";
 import { useTranslation } from "@/i18n/client";
+import { structureApi } from "@/services/concept-note-structure-api";
+import { editErrorCode } from "@/services/concept-note-edit-api";
+import {
+  structureSaveSchema,
+  structureDraftSchema,
+  type StructureState,
+  type StructureChapter,
+} from "@/util/concept-note-structure";
 import type {
   ConceptNoteApplicationContext,
   ConceptNoteDraftState,
 } from "@/util/types";
 
-import {
-  type ChapterDisplayStatus,
-  getChapterDisplayStatus,
-} from "./chapter-validation";
-
-const initialChapterKeys = [
-  "chapter-project-summary",
-  "chapter-context-rationale",
-  "chapter-objectives",
-  "chapter-theory-of-change",
-  "chapter-project-components",
-  "chapter-implementation",
-  "chapter-climate-impact",
-  "chapter-environmental-social",
-  "chapter-gender-inclusion",
-  "chapter-financing",
-  "chapter-risk-management",
-  "chapter-monitoring-evaluation",
-] as const;
-
-interface StructureChapter {
-  id: string;
-  required: boolean;
-  title: string | null;
-  translationKey: string | null;
-}
-
-interface ChapterOrderState {
-  chapters: StructureChapter[];
-  sourceId: string;
-}
+import { getChapterDisplayStatus } from "@/components/ConceptNoteWorkspace/chapter-validation";
 
 interface StructureTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
   draft: ConceptNoteDraftState | null;
   lng: string;
-}
-
-function chapterStatusTranslationKey(
-  status: ChapterDisplayStatus | null,
-): string {
-  switch (status) {
-    case "draft":
-      return "chapter-status-draft";
-    case "needs_review":
-      return "chapter-status-needs-review";
-    case "ready":
-      return "chapter-status-ready";
-    case "incomplete":
-      return "chapter-status-validation-incomplete";
-    case "stale":
-      return "chapter-status-validation-stale";
-    case "empty":
-    default:
-      return "not-started";
-  }
-}
-
-function chapterStatusColor(status: ChapterDisplayStatus | null): string {
-  switch (status) {
-    case "ready":
-      return "sentiment.positiveDefault";
-    case "needs_review":
-    case "stale":
-      return "sentiment.warningDefault";
-    case "incomplete":
-      return "sentiment.negativeDefault";
-    case "draft":
-      return "content.link";
-    case "empty":
-    default:
-      return "content.tertiary";
-  }
-}
-
-function defaultChapters(): StructureChapter[] {
-  return initialChapterKeys.map((translationKey, index) => ({
-    id: translationKey,
-    required: index < 2,
-    title: null,
-    translationKey,
-  }));
-}
-
-function chaptersFromTemplate(
-  applicationContext: ConceptNoteApplicationContext | null,
-): StructureChapter[] {
-  const templateChapters = applicationContext?.template?.chapter_schema;
-  if (!templateChapters?.length) {
-    return defaultChapters();
-  }
-
-  return templateChapters.map((chapter) => ({
-    id: chapter.chapter_ref,
-    required: chapter.required === true,
-    title: chapter.title,
-    translationKey: null,
-  }));
+  runId: string;
 }
 
 export function StructureTab({
   applicationContext,
   draft,
   lng,
+  runId,
 }: StructureTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
-  const sourceId = applicationContext?.template?.id ?? "default";
-  const sourceChapters = chaptersFromTemplate(applicationContext);
-  const [chapterOrder, setChapterOrder] = useState<ChapterOrderState | null>(
-    null,
+  const dispatch = useAppDispatch();
+  const query = structureApi.useGetConceptNoteStructureQuery(runId, {
+    refetchOnMountOrArgChange: true,
+  });
+  const [save, saving] = structureApi.useSaveConceptNoteStructureMutation();
+  const recoveryKey = `cnb-structure-draft:${runId}`;
+  const [pending, setPending] = useState<StructureState | null>(() => {
+    try {
+      const stored = sessionStorage.getItem(recoveryKey);
+      const recovered = stored
+        ? structureDraftSchema.safeParse(JSON.parse(stored))
+        : null;
+      return recovered?.success ? recovered.data : null;
+    } catch {
+      // Server rendering and browser privacy settings may prevent local recovery.
+      return null;
+    }
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState("");
+  const dragged = useRef<string | null>(null);
+  const server = query.currentData;
+  // A chat apply or concurrent save moved the server past the unsaved edits' base.
+  const serverChanged = Boolean(
+    pending && server && server.fingerprint !== pending.fingerprint,
   );
-  const chapters =
-    chapterOrder?.sourceId === sourceId
-      ? chapterOrder.chapters
-      : sourceChapters;
-  const draftChapterBySection = new Map(
-    (draft?.chapters ?? []).map((chapter) => [
-      chapter.template_section_id ?? chapter.chapter_id,
-      chapter,
-    ]),
-  );
+  const state = pending ?? server;
+  const chapters = state?.chapters ?? [];
+  const disabled = saving.isLoading || draft?.status === "running";
+  const shownError = serverChanged ? "structure-stale" : error;
 
-  function moveChapter(index: number, direction: -1 | 1): void {
-    const target = index + direction;
-    if (target < 0 || target >= chapters.length) {
+  function remember(next: StructureState | null): void {
+    setPending(next);
+    try {
+      if (next) sessionStorage.setItem(recoveryKey, JSON.stringify(next));
+      else sessionStorage.removeItem(recoveryKey);
+    } catch {
+      // Keep the editable in-memory form and unload warning when storage is unavailable.
+    }
+  }
+
+  useEffect(() => {
+    if (!pending) return;
+    const preventLoss = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
+    window.addEventListener("beforeunload", preventLoss);
+    return () => window.removeEventListener("beforeunload", preventLoss);
+  }, [pending]);
+
+  function update(next: StructureChapter[]): void {
+    if (!state || disabled) return;
+    remember({ ...state, chapters: next });
+    setError(null);
+  }
+  function move(id: string, target: number): void {
+    const from = chapters.findIndex((chapter) => chapter.chapter_id === id);
+    if (from < 0 || target < 0 || target >= chapters.length || from === target)
+      return;
+    const next = [...chapters];
+    const [chapter] = next.splice(from, 1);
+    next.splice(target, 0, chapter);
+    update(next);
+    setAnnouncement(
+      t("structure-moved", { chapter: chapter.title, position: target + 1 }),
+    );
+  }
+  function field(
+    id: string,
+    key: "title" | "description",
+    value: string,
+  ): void {
+    update(
+      chapters.map((chapter) =>
+        chapter.chapter_id === id ? { ...chapter, [key]: value } : chapter,
+      ),
+    );
+  }
+  async function persist(): Promise<void> {
+    if (!pending || disabled) return;
+    const parsed = structureSaveSchema.safeParse({
+      expected_fingerprint: pending.fingerprint,
+      chapters,
+    });
+    if (!parsed.success) {
+      setError("structure-invalid");
       return;
     }
-    const reordered = [...chapters];
-    [reordered[index], reordered[target]] = [
-      reordered[target],
-      reordered[index],
-    ];
-    setChapterOrder({ chapters: reordered, sourceId });
+    try {
+      const saved = await save({ runId, ...parsed.data }).unwrap();
+      dispatch(
+        structureApi.util.updateQueryData(
+          "getConceptNoteStructure",
+          runId,
+          () => saved,
+        ),
+      );
+      remember(null);
+      setError(null);
+      setAnnouncement(t("structure-saved"));
+    } catch (failure) {
+      setError(
+        editErrorCode(failure) === "stale_structure"
+          ? "structure-stale"
+          : "structure-save-error",
+      );
+    }
   }
 
   return (
-    <VStack align="stretch" gap={5} p={{ base: 4, md: 6 }}>
-      <Flex
-        align={{ base: "start", md: "center" }}
-        justify="space-between"
-        direction={{ base: "column", md: "row" }}
-        gap={3}
-      >
-        <Box>
-          <Text
-            fontFamily="heading"
-            fontSize="title.md"
-            fontWeight="semibold"
-            color="content.primary"
-          >
-            {t("structure-title")}
-          </Text>
-          <Text mt={1} fontSize="body.sm" color="content.tertiary">
-            {applicationContext?.template
-              ? t("structure-template-description", {
-                  template: applicationContext.template.name,
-                })
-              : t("structure-description")}
-          </Text>
+    <VStack align="stretch" gap={4} p={{ base: 4, md: 6 }}>
+      <Text fontFamily="heading" fontSize="title.md" fontWeight="semibold">
+        {t("structure-title")}
+      </Text>
+      <Text fontSize="body.sm">{t("structure-edit-note")}</Text>
+      {!applicationContext?.template && !chapters.length && (
+        <Text>{t("structure-backend-note")}</Text>
+      )}
+      {query.isLoading && <Text role="status">{t("structure-loading")}</Text>}
+      {query.isError && (
+        <Box role="alert">
+          <Text>{t("structure-load-error")}</Text>
+          <Button onClick={() => void query.refetch()}>
+            {t("structure-retry")}
+          </Button>
         </Box>
-        <HStack
-          gap={2}
-          border="1px solid"
-          borderColor={
-            applicationContext?.template
-              ? "sentiment.positiveDefault"
-              : "sentiment.warningDefault"
-          }
-          borderRadius="pill"
-          bg={
-            applicationContext?.template
-              ? "sentiment.positiveOverlay"
-              : "sentiment.warningOverlay"
-          }
-          px={3}
-          py={1.5}
-        >
-          <Icon
-            as={applicationContext?.template ? LuCheck : LuInfo}
-            color={
-              applicationContext?.template
-                ? "sentiment.positiveDefault"
-                : "sentiment.warningDefault"
-            }
-          />
-          <Text fontSize="label.sm" color="content.secondary">
-            {t(
-              applicationContext?.template ? "template-ready" : "preview-only",
-            )}
-          </Text>
-        </HStack>
-      </Flex>
-
-      <Box
-        border="1px solid"
-        borderColor="sentiment.warningDefault"
-        borderRadius="rounded"
-        bg="sentiment.warningOverlay"
-        p={4}
-      >
-        <Text fontSize="body.sm" lineHeight="22px" color="content.secondary">
-          {t(
-            applicationContext?.template
-              ? "structure-save-note"
-              : "structure-backend-note",
-          )}
-        </Text>
-      </Box>
-
-      <VStack align="stretch" gap={2}>
-        {chapters.map((chapter, index) => {
-          const draftChapter =
-            draftChapterBySection.get(chapter.id) ??
-            draft?.chapters?.find(
-              (item) => item.position === index || item.position === index + 1,
-            ) ??
-            null;
-          const chapterLabel = chapter.title
-            ? chapter.title
-            : chapter.translationKey
-              ? t(chapter.translationKey)
-              : t("custom-chapter", { number: index + 1 });
-          const runtimeStatus = draftChapter
-            ? getChapterDisplayStatus(draftChapter)
-            : null;
-          const runtimeStatusColor = chapterStatusColor(runtimeStatus);
-
-          return (
-            <Flex
-              key={chapter.id}
-              align="center"
-              gap={3}
-              border="1px solid"
-              borderColor="border.neutral"
-              borderRadius="rounded"
-              bg="base.light"
-              px={3}
-              py={3}
-              boxShadow="1dp"
+      )}
+      {draft?.status === "running" && (
+        <Text role="status">{t("structure-draft-running")}</Text>
+      )}
+      <Text role="status" aria-live="polite">
+        {announcement}
+      </Text>
+      {chapters.map((chapter, index) => {
+        const runtime = draft?.chapters.find(
+          (item) => item.chapter_id === chapter.chapter_id,
+        );
+        const status = runtime ? getChapterDisplayStatus(runtime) : "empty";
+        const statusKey = {
+          empty: "not-started",
+          deleted: "not-started",
+          draft: "chapter-status-draft",
+          needs_review: "chapter-status-needs-review",
+          ready: "chapter-status-ready",
+          incomplete: "chapter-status-validation-incomplete",
+          stale: "chapter-status-validation-stale",
+        }[status];
+        return (
+          <Flex
+            key={chapter.chapter_id}
+            data-testid="structure-chapter"
+            data-chapter-id={chapter.chapter_id}
+            align="start"
+            gap={3}
+            border="1px solid"
+            borderColor="border.neutral"
+            borderRadius="rounded"
+            p={3}
+            onDragOver={(event) => {
+              if (!disabled) event.preventDefault();
+            }}
+            onDrop={(event) => {
+              event.preventDefault();
+              if (dragged.current) move(dragged.current, index);
+              dragged.current = null;
+            }}
+          >
+            <Button
+              size="xs"
+              variant="ghost"
+              color="content.link"
+              draggable={!disabled}
+              disabled={disabled}
+              aria-label={t("structure-drag", { chapter: chapter.title })}
+              title={t("structure-keyboard-help")}
+              onDragStart={(event) => {
+                dragged.current = chapter.chapter_id;
+                event.dataTransfer.setData("text/plain", chapter.chapter_id);
+                event.dataTransfer.effectAllowed = "move";
+              }}
+              onDragEnd={() => {
+                dragged.current = null;
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                  event.preventDefault();
+                  move(
+                    chapter.chapter_id,
+                    index + (event.key === "ArrowUp" ? -1 : 1),
+                  );
+                }
+              }}
             >
-              <Icon as={LuGripVertical} color="content.tertiary" />
-              <Flex
-                boxSize="28px"
-                align="center"
-                justify="center"
-                borderRadius="full"
-                bg="background.neutral"
+              <Icon as={LuGripVertical} />
+            </Button>
+            <VStack flex={1} minW={0} align="stretch" gap={2}>
+              <Text fontSize="label.sm">
+                {t("structure-position", { position: index + 1 })}
+                {chapter.required ? ` · ${t("required")}` : ""}
+              </Text>
+              <HStack
+                flexWrap="wrap"
+                color="content.tertiary"
+                fontSize="label.sm"
               >
-                <Text
-                  fontSize="label.sm"
-                  fontWeight="semibold"
-                  color="content.secondary"
-                >
-                  {index + 1}
-                </Text>
-              </Flex>
-              <Box minW={0} flex={1}>
-                <Text
-                  fontFamily="heading"
-                  fontSize="body.sm"
-                  fontWeight="semibold"
-                  color="content.primary"
-                >
-                  {chapterLabel}
-                </Text>
-                <HStack mt={1} gap={2}>
-                  <Box
-                    boxSize="6px"
-                    borderRadius="full"
-                    bg={runtimeStatusColor}
-                  />
-                  <Text fontSize="label.sm" color="content.tertiary">
-                    {t(chapterStatusTranslationKey(runtimeStatus))}
+                <Text>{t(statusKey)}</Text>
+                {runtime && runtime.open_gap_count > 0 && (
+                  <Text>
+                    {t("chapter-open-gaps", { count: runtime.open_gap_count })}
                   </Text>
-                  {draftChapter && draftChapter.open_gap_count > 0 && (
-                    <Text fontSize="label.sm" color="sentiment.warningDefault">
-                      {t("chapter-open-gaps", {
-                        count: draftChapter.open_gap_count,
-                      })}
-                    </Text>
-                  )}
-                  {draftChapter && draftChapter.caveat_count > 0 && (
-                    <Text fontSize="label.sm" color="content.tertiary">
-                      {t("chapter-caveats", {
-                        count: draftChapter.caveat_count,
-                      })}
-                    </Text>
-                  )}
-                  {chapter.required && (
-                    <HStack gap={1} color="content.tertiary">
-                      <Icon as={LuLock} boxSize={3} />
-                      <Text fontSize="label.sm">{t("required")}</Text>
-                    </HStack>
-                  )}
-                </HStack>
+                )}
+                {runtime && runtime.caveat_count > 0 && (
+                  <Text>
+                    {t("chapter-caveats", { count: runtime.caveat_count })}
+                  </Text>
+                )}
+              </HStack>
+              <Box as="label">
+                <Text fontSize="label.sm">{t("structure-chapter-title")}</Text>
+                <Input
+                  aria-label={t("structure-title-for", { position: index + 1 })}
+                  value={chapter.title}
+                  maxLength={255}
+                  disabled={disabled}
+                  onChange={(event) =>
+                    field(chapter.chapter_id, "title", event.target.value)
+                  }
+                />
               </Box>
-              <HStack gap={1}>
+              <Box as="label">
+                <Text fontSize="label.sm">
+                  {t("structure-chapter-description")}
+                </Text>
+                <Textarea
+                  aria-label={t("structure-description-for", {
+                    position: index + 1,
+                  })}
+                  value={chapter.description}
+                  maxLength={4000}
+                  disabled={disabled}
+                  onChange={(event) =>
+                    field(chapter.chapter_id, "description", event.target.value)
+                  }
+                />
+              </Box>
+              <HStack flexWrap="wrap">
                 <Button
                   size="xs"
                   variant="ghost"
                   color="content.link"
-                  _hover={{ color: "content.link" }}
-                  disabled={index === 0}
-                  aria-label={t("move-chapter-up", { chapter: chapterLabel })}
-                  onClick={() => moveChapter(index, -1)}
+                  disabled={disabled || index === 0}
+                  aria-label={t("move-chapter-up", { chapter: chapter.title })}
+                  onClick={() => move(chapter.chapter_id, index - 1)}
                 >
                   <Icon as={LuArrowUp} />
                 </Button>
@@ -332,41 +310,87 @@ export function StructureTab({
                   size="xs"
                   variant="ghost"
                   color="content.link"
-                  _hover={{ color: "content.link" }}
-                  disabled={index === chapters.length - 1}
-                  aria-label={t("move-chapter-down", { chapter: chapterLabel })}
-                  onClick={() => moveChapter(index, 1)}
+                  disabled={disabled || index === chapters.length - 1}
+                  aria-label={t("move-chapter-down", {
+                    chapter: chapter.title,
+                  })}
+                  onClick={() => move(chapter.chapter_id, index + 1)}
                 >
                   <Icon as={LuArrowDown} />
                 </Button>
+                {!chapter.required && chapter.template_section_id === null && (
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    color="content.link"
+                    disabled={disabled || chapters.length === 1}
+                    aria-label={t("structure-remove", {
+                      chapter: chapter.title,
+                    })}
+                    onClick={() =>
+                      update(
+                        chapters.filter(
+                          (item) => item.chapter_id !== chapter.chapter_id,
+                        ),
+                      )
+                    }
+                  >
+                    <Icon as={LuTrash2} />
+                  </Button>
+                )}
               </HStack>
-            </Flex>
-          );
-        })}
-      </VStack>
-
-      <Button
-        size="sm"
-        variant="outline"
-        alignSelf="start"
-        onClick={() =>
-          setChapterOrder({
-            chapters: [
+            </VStack>
+          </Flex>
+        );
+      })}
+      {shownError && (
+        <Text role="alert" color="sentiment.negativeDefault">
+          {t(shownError)}
+        </Text>
+      )}
+      <HStack flexWrap="wrap">
+        <Button
+          variant="outline"
+          disabled={disabled || !chapters.length || chapters.length >= 100}
+          onClick={() =>
+            update([
               ...chapters,
               {
-                id: `custom-chapter-${chapters.length + 1}`,
+                chapter_id: crypto.randomUUID(),
+                template_section_id: null,
                 required: false,
-                title: null,
-                translationKey: null,
+                title: t("custom-chapter", { number: chapters.length + 1 }),
+                description: "",
               },
-            ],
-            sourceId,
-          })
-        }
-      >
-        <Icon as={LuPlus} />
-        {t("add-custom-chapter")}
-      </Button>
+            ])
+          }
+        >
+          <Icon as={LuPlus} />
+          {t("add-custom-chapter")}
+        </Button>
+        <Button
+          disabled={disabled || !pending || serverChanged}
+          loading={saving.isLoading}
+          onClick={() => void persist()}
+        >
+          {t("structure-save")}
+        </Button>
+        {pending && (
+          <Button
+            variant="ghost"
+            color="content.link"
+            disabled={saving.isLoading}
+            onClick={() => {
+              remember(null);
+              setError(null);
+              void query.refetch();
+            }}
+          >
+            {t("structure-discard")}
+          </Button>
+        )}
+      </HStack>
+      {pending && <Text role="status">{t("structure-unsaved")}</Text>}
     </VStack>
   );
 }

@@ -9,8 +9,6 @@ from typing import Any
 
 from agents import Agent, OpenAIChatCompletionsModel, RunConfig, Runner
 from agents.exceptions import MaxTurnsExceeded
-from openai import AsyncOpenAI
-
 from app.config.settings import Settings
 from app.models.cnb.concept_note_edits import (
     ChapterEditReview,
@@ -30,6 +28,7 @@ from app.utils.cnb_model_settings import cnb_model_settings
 from app.utils.cnb_progress import emit_cnb_progress, run_with_cnb_reasoning
 from app.utils.concept_note_context import omit_context_identifiers
 from app.utils.prompt_budget import count_prompt_tokens
+from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
 
@@ -88,13 +87,13 @@ class ConceptNoteEditPlanner:
         )
         budget = self._settings.llm.generation.prompt_budget
         chapters = sorted(
-            (c for c in chapters if c.body_markdown is not None),
+            chapters,
             key=lambda c: c.position,
         )
-        if not any(not chapter.user_locked for chapter in chapters):
+        if not chapters:
             return EditPlanOutput(
                 intent="clarification",
-                clarification="This draft has no unlocked chapters to edit.",
+                clarification="This draft has no chapters to edit.",
             )
 
         # Keep source and prior-proposal projection identical for tools and review.
@@ -117,6 +116,9 @@ class ConceptNoteEditPlanner:
                 {
                     "position": chapter.position,
                     "title": chapter.title,
+                    "description": chapter.description or "",
+                    "required": chapter.required,
+                    "custom": chapter.chapter_ref is None,
                     "revision": chapter.revision_number,
                     "locked": chapter.user_locked,
                     "focused": chapter.chapter_id == request.scope.focused_chapter_id,
@@ -128,6 +130,23 @@ class ConceptNoteEditPlanner:
             else {
                 "instruction": prior_proposal.instruction,
                 "user_inputs": prior_user_inputs(prior_proposal),
+                "proposed_structure": [
+                    {
+                        "chapter_position": next(
+                            (
+                                c.position
+                                for c in chapters
+                                if c.chapter_id == item.chapter_id
+                            ),
+                            None,
+                        ),
+                        "title": item.title,
+                        "description": item.description,
+                    }
+                    for item in prior_proposal.structure.after
+                ]
+                if prior_proposal.structure
+                else None,
             },
         }
         session = DraftEditSession(
@@ -205,6 +224,9 @@ class ConceptNoteEditPlanner:
                         status_code=422,
                     )
 
+                if session.plan.structure is not None:
+                    return session.plan
+
                 # Review the already resolved changes, grouped in document order.
                 chapter_changes = {
                     chapter.chapter_id: [
@@ -215,7 +237,9 @@ class ConceptNoteEditPlanner:
                     for chapter in chapters
                 }
                 affected = [
-                    chapter for chapter in chapters if chapter_changes[chapter.chapter_id]
+                    chapter
+                    for chapter in chapters
+                    if chapter_changes[chapter.chapter_id]
                 ]
                 reviewer = Agent(
                     name="Concept Note edit semantic reviewer",
@@ -350,11 +374,14 @@ class ConceptNoteEditPlanner:
                         "chapter_position": chapter.position,
                         "chapter_title": chapter.title,
                         "changes": [
-                            change.model_dump(exclude={"chapter_id"}) for change in changes
+                            change.model_dump(exclude={"chapter_id"})
+                            for change in changes
                         ],
                         "decisions": review.model_dump()["decisions"],
                     }
-                    for chapter, (changes, review) in zip(affected, reviews, strict=True)
+                    for chapter, (changes, review) in zip(
+                        affected, reviews, strict=True
+                    )
                 ]
         finally:
             await client.close()

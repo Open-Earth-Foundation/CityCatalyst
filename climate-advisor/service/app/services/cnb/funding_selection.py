@@ -14,6 +14,7 @@ from app.models.cnb.funding_catalogue import FundingSelectionRequest
 from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
+    ConceptNoteChapterRevision,
     ConceptNoteChapterValidation,
     ConceptNoteMatchedProject,
 )
@@ -130,6 +131,48 @@ async def save_funding_selection(
                 status_code=409,
                 detail="Wait for the current edit to finish before changing funding.",
             )
+        # Opening Structure seeds empty chapters, but does not commit the user
+        # to that template. Discard only an exact, revision-free template copy.
+        if chapters and all(
+            chapter.status == "empty" and not chapter.user_locked
+            for chapter in chapters
+        ):
+            previous_context = await context_service.load_for_run(run)
+            try:
+                previous_template = (
+                    normalize_template_chapters(previous_context.template.chapter_schema)
+                    if previous_context.template is not None
+                    else []
+                )
+            except ValueError:
+                # An invalid reference template cannot prove the workspace untouched.
+                previous_template = []
+            untouched = len(chapters) == len(previous_template) and all(
+                chapter.template_section_id == original.chapter_ref
+                and chapter.title == original.title
+                and (chapter.description or "") == (original.description or "")
+                and chapter.required == original.required
+                and chapter.position == position
+                for position, (chapter, original) in enumerate(
+                    zip(chapters, previous_template)
+                )
+            )
+            if untouched:
+                chapter_ids = [chapter.chapter_id for chapter in chapters]
+                revision_id = await reference.scalar(
+                    select(ConceptNoteChapterRevision.revision_id)
+                    .where(
+                        ConceptNoteChapterRevision.chapter_id.in_(chapter_ids)
+                    )
+                    .limit(1)
+                )
+                if revision_id is None:
+                    await reference.execute(
+                        delete(ConceptNoteChapter).where(
+                            ConceptNoteChapter.chapter_id.in_(chapter_ids)
+                        )
+                    )
+                    chapters = []
         if chapters and not payload.acknowledge_draft_review:
             raise HTTPException(
                 status_code=409,
@@ -137,7 +180,7 @@ async def save_funding_selection(
             )
         # A populated workspace cannot migrate unrelated sections without a
         # separate user decision about where each existing revision belongs.
-        template_chapters = None
+        template_by_ref = None
         if chapters and opportunity and opportunity.template:
             try:
                 template_chapters = normalize_template_chapters(
@@ -145,9 +188,15 @@ async def save_funding_selection(
                 )
             except ValueError:
                 template_chapters = []
-            if [chapter.template_section_id for chapter in chapters] != [
-                chapter.chapter_ref for chapter in template_chapters
-            ]:
+            template_by_ref = {
+                chapter.chapter_ref: chapter for chapter in template_chapters
+            }
+            existing_refs = {
+                chapter.template_section_id
+                for chapter in chapters
+                if chapter.template_section_id is not None
+            }
+            if existing_refs != template_by_ref.keys():
                 raise HTTPException(
                     status_code=409,
                     detail={
@@ -156,10 +205,10 @@ async def save_funding_selection(
                         "Start a new concept note to use it without changing this draft.",
                     },
                 )
-        for index, chapter in enumerate(chapters):
-            if template_chapters is not None:
-                chapter.title = template_chapters[index].title
-                chapter.required = template_chapters[index].required
+        # Funding owns requirements; the run keeps its labels, guidance and order.
+        for chapter in chapters:
+            if template_by_ref is not None and chapter.template_section_id is not None:
+                chapter.required = template_by_ref[chapter.template_section_id].required
             chapter.status = "needs_review"
             chapter.user_locked = False
             chapter.confirmed_revision_id = None

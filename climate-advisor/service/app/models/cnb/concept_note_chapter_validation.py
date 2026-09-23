@@ -32,6 +32,7 @@ class ChapterValidationChapter(BaseModel):
 
     chapter_id: UUID
     template_section_id: str | None = None
+    description: str | None = None
     title: str = Field(min_length=1, max_length=500)
     position: int = Field(ge=0)
     required: bool

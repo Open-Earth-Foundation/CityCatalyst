@@ -15,6 +15,7 @@ from app.models.cnb.concept_note_edits import (
     PlannedTextChange,
 )
 from app.models.cnb.funding_catalogue import FundingSelectionRequest
+from app.models.cnb.concept_note_structure import StructureChapter, StructureSaveRequest
 from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.models.db.cnb_reference import (
     CnbFunder,
@@ -32,6 +33,7 @@ from app.persistence.concept_notes.edits import (
     EditOperationError,
 )
 from app.persistence.concept_notes.workspace import normalize_template_chapters
+from app.persistence.concept_notes.structure import save_structure, structure_snapshot
 from app.services.cnb.application_context import ConceptNoteApplicationContextService
 from app.services.cnb.chapter_drafting import ConceptNoteChapterDraftService
 from app.services.cnb.edits import ConceptNoteEditService
@@ -310,6 +312,97 @@ async def test_existing_draft_requires_acknowledgement_and_preserves_text():
             ).status == "stale"
 
 
+@pytest.mark.parametrize(
+    "change", [None, "title", "description", "order", "custom", "revision"]
+)
+async def test_funding_switch_replaces_only_untouched_materialized_structure(
+    change: str | None,
+) -> None:
+    """Opening Structure must not lock funding; saved edits and revisions must."""
+    async with (
+        _workspace_repository() as (workspace, factory),
+        _ca_session() as session,
+    ):
+        first, second, _ = await _seed(factory)
+        opportunity_id = await _programme(
+            factory,
+            first,
+            [
+                {
+                    "chapter_ref": "summary",
+                    "title": "Summary",
+                    "description": "Overview",
+                },
+                {"chapter_ref": "delivery", "title": "Delivery"},
+            ],
+        )
+        replacement = await _programme(
+            factory, second, [{"chapter_ref": "budget", "title": "Budget"}]
+        )
+        run = await _run(session)
+        save = partial(save_funding_selection, session, run, reference_factory=factory)
+        context = await save(_selection(first, opportunity_id))
+        # This is the materialization performed by GET /structure, with no draft.
+        await workspace.ensure_template_chapters(
+            run_id=run.run_id,
+            chapters=normalize_template_chapters(context.template.chapter_schema),
+        )
+        before = await workspace.list_chapters(run_id=run.run_id)
+        if change == "revision":
+            await workspace.save_generated_chapter(
+                chapter_id=before[0].chapter_id,
+                body_markdown="Keep this text.",
+                missing_information=[],
+            )
+            # Even an empty-status row must not lose an existing revision.
+            async with factory() as reference, reference.begin():
+                row = await reference.get(ConceptNoteChapter, before[0].chapter_id)
+                row.status = "empty"
+        elif change is not None:
+            state = structure_snapshot(before)
+            proposed = list(state.chapters)
+            if change in {"title", "description"}:
+                proposed[0] = proposed[0].model_copy(update={change: "User edit"})
+            elif change == "order":
+                proposed.reverse()
+            else:
+                proposed.append(StructureChapter(chapter_id=uuid4(), title="Custom"))
+            async with factory() as reference, reference.begin():
+                await save_structure(
+                    reference,
+                    run.run_id,
+                    StructureSaveRequest(
+                        expected_fingerprint=state.fingerprint, chapters=proposed
+                    ),
+                )
+        saved = await workspace.list_chapters(run_id=run.run_id)
+        selection = _selection(second, replacement, first, opportunity_id)
+        if change is not None:
+            with pytest.raises(HTTPException) as unconfirmed:
+                await save(selection)
+            assert unconfirmed.value.status_code == 409
+            with pytest.raises(HTTPException) as incompatible:
+                await save(
+                    selection.model_copy(update={"acknowledge_draft_review": True})
+                )
+            assert incompatible.value.detail["code"] == "funding_template_incompatible"
+            assert await workspace.list_chapters(run_id=run.run_id) == saved
+            assert run.selected_funding_opportunity_id == opportunity_id
+        else:
+            # A pristine preview can switch templates without draft acknowledgement.
+            updated = await save(selection)
+            assert run.selected_funding_opportunity_id == replacement
+            assert await workspace.list_chapters(run_id=run.run_id) == []
+            await workspace.ensure_template_chapters(
+                run_id=run.run_id,
+                chapters=normalize_template_chapters(updated.template.chapter_schema),
+            )
+            after = await workspace.list_chapters(run_id=run.run_id)
+            assert [(c.chapter_ref, c.title, c.revision_number) for c in after] == [
+                ("budget", "Budget", None)
+            ]
+
+
 async def test_selection_is_blocked_during_draft_generation():
     async with _workspace_repository() as (_, factory), _ca_session() as session:
         first, _, opportunity_id = await _seed(factory)
@@ -426,11 +519,29 @@ async def test_incompatible_template_switch_preserves_selection_and_draft(new_re
         assert after.status == "draft"
 
 
-async def test_compatible_switch_updates_chapter_metadata_without_replacing_text():
-    async with _funded_draft("Keep this text.") as fixture:
+async def test_compatible_switch_preserves_run_title_heading_and_guidance():
+    async with _funded_draft("## Project summary\n\nKeep this text.") as fixture:
         workspace, factory, session, run, first, second, opportunity_id, chapter = (
             fixture
         )
+        before = structure_snapshot(await workspace.list_chapters(run_id=run.run_id))
+        async with factory() as reference, reference.begin():
+            await save_structure(
+                reference,
+                run.run_id,
+                StructureSaveRequest(
+                    expected_fingerprint=before.fingerprint,
+                    chapters=[
+                        before.chapters[0].model_copy(
+                            update={
+                                "title": "My overview",
+                                "description": "Run-specific guidance",
+                            }
+                        )
+                    ],
+                ),
+            )
+        renamed = (await workspace.list_chapters(run_id=run.run_id))[0]
         new_opportunity = await _programme(
             factory,
             second,
@@ -449,10 +560,72 @@ async def test_compatible_switch_updates_chapter_metadata_without_replacing_text
             reference_factory=factory,
         )
         after = (await workspace.list_chapters(run_id=run.run_id))[0]
-        assert after.title == "Executive overview" and after.required is False
+        assert after.title == "My overview" and after.required is False
+        assert after.description == "Run-specific guidance"
+        assert after.revision_id == renamed.revision_id
         assert after.chapter_id == chapter.chapter_id
-        assert after.body_markdown == "Keep this text."
+        assert after.body_markdown == "## My overview\n\nKeep this text."
         assert after.status == "needs_review"
+
+
+async def test_compatible_funding_switch_preserves_reordered_template_and_custom_chapters():
+    async with _funded_draft("Original text.") as fixture:
+        workspace, factory, session, run, first, second, opportunity_id, chapter = (
+            fixture
+        )
+        # Extend the fixture to two template chapters and put a custom chapter first.
+        async with factory() as reference, reference.begin():
+            reference.add(
+                ConceptNoteChapter(
+                    chapter_id=uuid4(),
+                    run_id=run.run_id,
+                    template_section_id="budget",
+                    title="My budget",
+                    description="Budget guidance",
+                    position=1,
+                    required=False,
+                    status="empty",
+                )
+            )
+        before = structure_snapshot(await workspace.list_chapters(run_id=run.run_id))
+        custom = StructureChapter(
+            chapter_id=uuid4(), title="Community", description="Local priorities"
+        )
+        ordered = [custom, before.chapters[1], before.chapters[0]]
+        async with factory() as reference, reference.begin():
+            await save_structure(
+                reference,
+                run.run_id,
+                StructureSaveRequest(
+                    expected_fingerprint=before.fingerprint,
+                    chapters=ordered,
+                ),
+            )
+        new_opportunity = await _programme(
+            factory,
+            second,
+            [
+                {"chapter_ref": "summary", "title": "Summary", "required": False},
+                {"chapter_ref": "budget", "title": "Budget", "required": True},
+            ],
+        )
+        await save_funding_selection(
+            session,
+            run,
+            _selection(second, new_opportunity, first, opportunity_id, True),
+            reference_factory=factory,
+        )
+        after = await workspace.list_chapters(run_id=run.run_id)
+        assert [item.chapter_id for item in after] == [
+            item.chapter_id for item in ordered
+        ]
+        assert [item.title for item in after] == [item.title for item in ordered]
+        assert [item.description for item in after] == [
+            item.description for item in ordered
+        ]
+        assert [item.required for item in after] == [False, True, False]
+        assert after[2].revision_id == chapter.revision_id
+        assert after[2].body_markdown == "Original text."
 
 
 async def test_edit_registration_reloads_funding_and_blocks_switch_until_finished(

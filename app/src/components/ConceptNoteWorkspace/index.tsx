@@ -26,35 +26,37 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
+import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";
+import { NewConceptNoteDialog } from "../ConceptNoteDashboard/new-concept-note-dialog";
 import type { EditScope } from "@/util/concept-note-edit-types";
 import type { ConceptNoteDraftChapter } from "@/util/types";
 
 import {
   getConceptNoteStatusPresentation,
   getWorkflowStepTranslationKey,
-} from "../ConceptNoteDashboard/utils";
-import { StatusBadge } from "../ConceptNoteDashboard/status-badge";
-import { ConceptNoteChatPanel } from "./chat-panel";
-import { ContextTab } from "./context-tab";
-import { FundingSelectionDialog } from "./funding-selection-dialog";
-import { DraftTab } from "./draft-tab";
-import { ExportDialog } from "./export-dialog";
-import { ReviewButton } from "./review-button";
-import { StructureTab } from "./structure-tab";
-import { StartNewChatDialog } from "./start-new-chat-dialog";
-import { useConceptNoteEdits } from "./use-concept-note-edits";
+} from "@/components/ConceptNoteDashboard/utils";
+import { StatusBadge } from "@/components/ConceptNoteDashboard/status-badge";
+import { ConceptNoteChatPanel } from "@/components/ConceptNoteWorkspace/chat-panel";
+import { ContextTab } from "@/components/ConceptNoteWorkspace/context-tab";
+import { FundingSelectionDialog } from "@/components/ConceptNoteWorkspace/funding-selection-dialog";
+import { DraftTab } from "@/components/ConceptNoteWorkspace/draft-tab";
+import { ExportDialog } from "@/components/ConceptNoteWorkspace/export-dialog";
+import { ReviewButton } from "@/components/ConceptNoteWorkspace/review-button";
+import { StructureTab } from "@/components/ConceptNoteWorkspace/structure-tab";
+import { StartNewChatDialog } from "@/components/ConceptNoteWorkspace/start-new-chat-dialog";
+import { useConceptNoteEdits } from "@/components/ConceptNoteWorkspace/use-concept-note-edits";
 import {
   DocumentReviewToolbar,
   DocumentReviewFeedback,
   documentReviewChanges,
   selectReviewProposal,
-} from "./document-review";
-import { useInlineReviewDecisions } from "./use-inline-review-decisions";
-import { useConceptNoteWorkspaceData } from "./use-concept-note-workspace-data";
+} from "@/components/ConceptNoteWorkspace/document-review";
+import { useInlineReviewDecisions } from "@/components/ConceptNoteWorkspace/use-inline-review-decisions";
+import { useConceptNoteWorkspaceData } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-data";
 import {
   WorkspaceLoadingState,
   WorkspaceUnavailableState,
-} from "./workspace-states";
+} from "@/components/ConceptNoteWorkspace/workspace-states";
 
 type WorkspaceTab = "draft" | "structure" | "context";
 
@@ -90,6 +92,7 @@ export function ConceptNoteWorkspace({
   const [tab, setTab] = useState<WorkspaceTab>("draft");
   const [startNewChatOpen, setStartNewChatOpen] = useState(false);
   const [fundingOpen, setFundingOpen] = useState(false);
+  const [retryInitialUploadOpen, setRetryInitialUploadOpen] = useState(false);
   const [resetThread, setResetThread] = useState<{
     previousThreadId: string | null;
     threadId: string;
@@ -255,7 +258,10 @@ export function ConceptNoteWorkspace({
   }
 
   const status = getConceptNoteStatusPresentation(run.status, draft);
-  const statusLabel = t(status.translationKey);
+  const incompleteUploads = hasIncompleteInitialUploads(run);
+  const statusLabel = t(
+    incompleteUploads ? "upload-incomplete" : status.translationKey,
+  );
   const workflowLabel = t(getWorkflowStepTranslationKey(run.workflow_step));
   const activeThreadId =
     resetThread?.previousThreadId === run.thread_id
@@ -303,6 +309,30 @@ export function ConceptNoteWorkspace({
             </Text>
           </HStack>
 
+          {incompleteUploads && (
+            <Box
+              role="status"
+              p={3}
+              borderWidth="1px"
+              borderColor="sentiment.warningDefault"
+            >
+              <Text>{t("upload-incomplete-message")}</Text>
+              <Button onClick={() => setRetryInitialUploadOpen(true)}>
+                {t("retry-upload")}
+              </Button>
+            </Box>
+          )}
+          {retryInitialUploadOpen && (
+            <NewConceptNoteDialog
+              key={run.run_id}
+              retryRun={run}
+              cityId={cityId}
+              cityName={cityName}
+              lng={lng}
+              open
+              onOpenChange={setRetryInitialUploadOpen}
+            />
+          )}
           <Grid
             flex={1}
             data-testid="concept-note-workspace-panels"
@@ -587,6 +617,8 @@ export function ConceptNoteWorkspace({
                 p={0}
               >
                 <StructureTab
+                  key={runId}
+                  runId={runId}
                   applicationContext={applicationContext ?? null}
                   draft={draft ?? null}
                   lng={lng}

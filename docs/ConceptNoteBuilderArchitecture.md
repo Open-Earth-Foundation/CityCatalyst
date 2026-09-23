@@ -1791,11 +1791,12 @@ Funding changes are rejected during active context assembly, drafting, or edit
 planning. For an existing draft, the user must acknowledge another review: chapter
 text and revision history are retained, confirmations and prior validation results
 are cleared, pending edit proposals become stale, and previous project matches are
-removed. An existing draft can switch to a template only when its ordered chapter
-references match the draft. Incompatible switches are rejected without changing
-the selected funding or draft; the user is directed to start a new note for that
-template. Compatible switches update chapter titles and required flags while
-preserving revision history. Clearing funding, or selecting a funder without a
+removed. An existing draft can switch to a template when its template chapter
+references match, regardless of document order or added custom chapters.
+Incompatible switches are rejected without changing the selected funding or draft;
+the user is directed to start a new note for that template. Compatible switches
+update required flags by reference while preserving run-owned titles, descriptions,
+order and revision history. Clearing funding, or selecting a funder without a
 template, preserves the draft for a later compatible selection.
 
 Edit registration snapshots context while holding the same CA run-row lock as
@@ -2864,3 +2865,96 @@ Minimum test surface:
 - Should available risk assessments and GreenStep actions be transformed into
   the current CityCatalyst CCRA/action format, or remain source evidence that is
   summarized only inside the context bundle?
+
+
+## Run-owned chapter structure (CC-864)
+
+The Structure tab edits persisted `concept_note_chapters`, not shared funder
+reference templates. `GET /v1/concept-notes/{run_id}/structure` initializes the
+selected template once and returns ordered chapter metadata and a fingerprint.
+`PUT` accepts the complete ordered list and its `expected_fingerprint`. Both
+routes recheck run ownership and city access; writes are serialized with drafting,
+funding changes, and chat acceptance. Apply the CNB migration
+`20260921_120000` before deploying this feature.
+
+| Operation | Template chapters, including required chapters | Custom chapters |
+| --- | --- | --- |
+| Rename title | Allowed | Allowed |
+| Edit description | Allowed | Allowed |
+| Reorder | Allowed, preserving template references | Allowed |
+| Insert | Cannot invent or change template identities | Allowed |
+| Remove | Blocked with an actionable explanation | Soft-delete |
+
+Titles must be nonblank single lines, at most 255 characters. Descriptions are
+editable generation/validation guidance, at most 4,000 characters; they do not
+replace the chapter body. An empty description is an explicit cleared value.
+Existing chapters with an unset description copy template guidance on first
+structure load or draft start. Chapter IDs, template references, required flags,
+body paragraphs, revisions, evidence and missing-information records retain their
+identity. Renames append a revision, updating the matching chapter heading while
+retaining all body content. Duplicate notes copy the current descriptions and order.
+Navigation and DOCX/PDF export consume the same saved chapter titles/positions.
+Compatible funding changes compare template reference membership independently of
+chapter order and custom chapters. They preserve run-owned titles, descriptions,
+order and body revisions, while updating required flags by template reference.
+Before any drafting or structure edits, funding changes may discard the empty
+materialized chapters without draft acknowledgement. This requires an exact match
+to the previous template's titles, descriptions, order, references and required
+flags, with no revisions or locks. The next structure load or draft start seeds
+the newly selected template. Saved structure edits and draft revisions retain
+the acknowledgement and template-membership guards.
+
+Any structural mutation resets drafted chapters to `needs_review`, clears their
+confirmation/lock and invalidates document validation because order and guidance
+can affect cross-chapter checks. Existing gaps, answers and evidence remain intact.
+Descriptions participate in validation fingerprints, preventing an in-flight
+validation from marking an older description ready. New custom chapters start
+empty and are drafted by the existing start/resume action.
+
+Direct edits stay local until **Save structure**. Drag handles, keyboard Up/Down,
+and arrow buttons use the same reorder operation. Failed saves retain the local
+form and show a retry message. A stale fingerprint requires reviewing local edits
+and explicitly discarding/reloading the latest snapshot before reapplying them.
+Unsaved edits are recovered from session storage when returning to the note in
+the same browser tab, including unfinished titles. Recovery retains the original
+fingerprint, so newer server changes still require explicit stale-state resolution.
+Saving or discarding clears recovery data. An unload warning also protects edits
+when closing or reloading the page. Browser storage restrictions can disable recovery.
+Adding an empty custom chapter keeps existing saved chapter bodies visible in
+Draft, including after reload. A compact **Continue drafting** action lets the
+user generate the new chapters while the run is marked `not_started`.
+
+Chat uses `propose_structure` to stage a durable `StructureProposal` in the
+existing edit-proposal lifecycle. The model addresses existing chapters by
+catalogue position; the server supplies their identities. Structural proposals
+show complete before/after lists in a bounded, scrollable review dialog and
+require **Confirm structure changes**. The dialog keeps its action buttons
+visible on desktop and mobile; closing it leaves the Structure editor and
+**Save structure** available while the proposal is pending.
+Text and structural changes are separate proposals. Required chapter rename and
+description edits are allowed; attempts to remove template chapters receive a
+specific explanation. Acceptance runs the same transaction as direct saves,
+checks a fingerprint covering metadata/content revisions, and replays the same
+acceptance key without another mutation. Structure changes invalidate pending
+text/structure proposals. No model tool applies a structure automatically.
+
+Regression coverage:
+- `service/tests/cnb/test_chapter_structure.py`: isolated PostgreSQL persistence,
+  concurrent saves, stable identity/content/gaps, duplication, protected removal,
+  durable chat preview, ownership and idempotent acceptance.
+- `app/e2e/concept-note-structure.spec.ts`: actual workspace components and RTK
+  requests with deterministic API fixtures for dragging, keyboard, all-chapter
+  editing, reload, failed/stale saves, and explicit structural confirmation.
+- `app/tests/concept-note-edit-routes.jest.ts`: authenticated proxy boundaries,
+  payload validation and upstream errors; export tests cover document ordering.
+
+
+For the browser contract suite, start a local app with
+`CONCEPT_NOTE_BUILDER,CA_SERVICE_INTEGRATION` in `NEXT_PUBLIC_FEATURE_FLAGS`.
+Set `CNB_BROWSER_TEST_URL` to that local server and `CNB_BROWSER_TEST_SECRET` to
+its local test `NEXTAUTH_SECRET`; the fixture signs a test-user cookie and mocks
+application API responses. From `app`, run
+`npx playwright test --config playwright.concept-note-structure.config.ts`.
+These browser tests do not call a live model or prove deployment. For real
+persistence tests, set `CNB_TEST_DATABASE_URL` to a disposable PostgreSQL database
+with pgvector; the structure tests create and remove their own UUID-named schemas.

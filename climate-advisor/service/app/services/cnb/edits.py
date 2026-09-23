@@ -53,9 +53,9 @@ class ConceptNoteEditService:
         self._workflow_sessions = workflow_sessions
 
     @asynccontextmanager
-    async def _locked_context(
-        self, run: ConceptNoteRun
-    ) -> AsyncIterator[dict[str, Any]]:
+    async def locked_context(
+        self, run: ConceptNoteRun, *, structure: bool = False
+    ) -> AsyncIterator[tuple[ConceptNoteRun, dict[str, Any]]]:
         """Serialize edit registration/application with funding changes.
 
         Read context only after acquiring the workflow row lock. Registration
@@ -75,8 +75,19 @@ class ConceptNoteEditService:
                 raise EditOperationError(
                     "run_inactive", "Only an active Concept Note can be edited."
                 )
+            if (
+                structure
+                and (current.context_summary or {})
+                .get("draft_document", {})
+                .get("status")
+                == "running"
+            ):
+                raise EditOperationError(
+                    "draft_running",
+                    "Wait for drafting to finish before changing the structure.",
+                )
             bundle = await session.get(ConceptNoteContextBundle, run.run_id)
-            yield bundle.context_bundle if bundle else {}
+            yield current, bundle.context_bundle if bundle else {}
 
     async def propose(
         self,
@@ -133,7 +144,7 @@ class ConceptNoteEditService:
     ) -> EditProposalResponse:
         """Persist progress before planning and recover safely from provider/cancellation failures."""
         # Register processing and snapshot authoritative context under one lock.
-        async with self._locked_context(run) as run_context:
+        async with self.locked_context(run) as (_, run_context):
             proposal, created = await self.repository.start(
                 run_id=run.run_id, user_id=run.user_id, request=request
             )
@@ -155,9 +166,7 @@ class ConceptNoteEditService:
                     proposal_id=request.refines_proposal_id,
                 )
             chapters = await self.workspace.list_chapters(run_id=run.run_id)
-            if not chapters or any(
-                chapter.body_markdown is None for chapter in chapters
-            ):
+            if not chapters:
                 raise EditOperationError(
                     "draft_unavailable",
                     "Finish drafting before requesting edits.",
@@ -185,24 +194,33 @@ class ConceptNoteEditService:
                     changes=[],
                     clarification=plan.clarification,
                 )
-            await emit_cnb_progress("validating")
-            changes = validate_edit_plan(
-                request,
-                chapters,
-                plan,
-                run_context,
-                prior_proposal=prior,
-                recent_messages=recent_messages,
-            )
-            # Automatic edits rely on the whole document remaining the reviewed base.
-            base_revisions = {
-                chapter.chapter_id: chapter.revision_number for chapter in chapters
-            }
+            changes = []
+            if plan.structure is None:
+                await emit_cnb_progress("validating")
+                if any(chapter.revision_number is None for chapter in chapters):
+                    raise EditOperationError(
+                        "draft_unavailable",
+                        "Finish drafting before requesting body-text edits.",
+                        status_code=422,
+                    )
+                changes = validate_edit_plan(
+                    request,
+                    chapters,
+                    plan,
+                    run_context,
+                    prior_proposal=prior,
+                    recent_messages=recent_messages,
+                )
+                # Automatic edits rely on the whole document remaining the reviewed base.
+                base_revisions = {
+                    chapter.chapter_id: chapter.revision_number for chapter in chapters
+                }
             result = await self.repository.finish(
                 **identity,
                 base_revisions=base_revisions,
                 changes=changes,
                 notices=plan.notices,
+                structure=plan.structure,
             )
             if (
                 prior is not None
@@ -295,7 +313,7 @@ class ConceptNoteEditService:
         try:
             # Funding invalidation and acceptance use the same workflow-first
             # lock order; a stale proposal cannot race the funding commit.
-            async with self._locked_context(run) as run_context:
+            async with self.locked_context(run, structure=True) as (_, run_context):
                 proposal = await self.repository.get(
                     run_id=run.run_id, user_id=run.user_id, proposal_id=proposal_id
                 )
@@ -324,6 +342,13 @@ class ConceptNoteEditService:
                     request=request,
                 )
         except EditOperationError as error:
+            if error.code == "stale_structure":
+                await self.repository.mark_stale(
+                    run_id=run.run_id,
+                    user_id=run.user_id,
+                    proposal_id=proposal_id,
+                    error_code="stale_structure",
+                )
             record_edit_outcome(
                 run_id=run.run_id,
                 proposal_id=proposal_id,

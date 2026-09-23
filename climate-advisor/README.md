@@ -70,6 +70,20 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
    - Uses the detailed contract in
      [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
 
+### Concept Note chapter structure
+
+All chapter titles, descriptions and ordering can be edited in the Structure tab
+or proposed through Clima for explicit confirmation. Changes belong to the run;
+shared template identities and required fields remain protected. Custom chapters
+can be inserted or removed. Compatible funding switches preserve these run-owned
+labels, guidance and ordering, and match template requirements by stable reference.
+Opening Structure alone does not lock the funding choice: untouched, empty template
+chapters are replaced on a funding switch. Saved structure edits and draft text
+retain the existing review and template-compatibility protections.
+Apply CNB migration `20260921_120000` before using the
+structure API. See [structure rules and persistence](../docs/ConceptNoteBuilderArchitecture.md#run-owned-chapter-structure-cc-864)
+for concurrency, review invalidation, and regression tests.
+
 ### Concept Note chapter validation
 
 Chapter validation is triggered from CityCatalyst's **Review & export** button,
@@ -1758,3 +1772,12 @@ through the error path. This does not provide durable reconnect/restart recovery
 
 See [validation and reproduction](docs/cnb-reasoning-validation.md) for focused
 checks, manual verification steps, and remaining limitations.
+
+
+### Initial concept-note upload recovery
+
+The creation request can include `initial_uploads` (up to 100 file identities: upload UUID, filename, SHA-256). These are saved in the run's existing JSON context before transfer. CC validates retried file bytes against this manifest and reuses the upload UUID and OCR/delivery job. After durable storage and queueing, CC records an idempotent receipt at `POST /v1/concept-notes/{run_id}/initial-uploads/{upload_id}/accepted` with the authenticated user and city scope.
+
+The creation dialog automatically retries one transient network/server failure. Persistent failures leave an **Upload incomplete** workspace with optional retry/delete actions; no progress percentage is shown. Reopening retry asks for the original outstanding files and preserves already accepted files. Runs created without initial sources follow the existing workflow. Existing runs without a manifest are not retroactively classified. No database migration or new environment variable is required; deploy the CA contract before the frontend that sends manifests.
+
+Regression coverage: `service/tests/test_concept_note_runs.py` verifies manifest and partial-receipt persistence across database sessions; `app/tests/concept-note-upload.jest.ts` checks identity replay and byte mismatch rejection; `app/e2e/concept-note-upload-recovery.spec.ts` exercises browser failure, reload, partial retry and lost-response recovery with controlled API responses.

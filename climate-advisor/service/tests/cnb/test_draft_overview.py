@@ -19,6 +19,7 @@ from app.models.db.concept_note import (
 from app.models.db.thread import Thread
 from app.models.requests import MessageCreateRequest
 from app.routes import messages
+from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.cnb.draft_overview import (
     BODY_EXCERPT_CHARS,
     DRAFT_OVERVIEW_REQUEST,
@@ -217,6 +218,47 @@ async def test_release_ignores_a_newer_drafting_build(chat_api):
     )
 
     assert not overview_pending(await _draft_progress(factory, run_id))
+
+
+@pytest.mark.asyncio
+async def test_rejected_bearer_does_not_use_up_the_overview(chat_api):
+    client, factory, run_id, thread_id, _save_message, handler = chat_api
+    request = {**_overview_request(thread_id), "context": {"access_token": "token"}}
+    rejected = AsyncMock(
+        side_effect=CityCatalystClientError("rejected", status_code=401)
+    )
+
+    with patch.object(
+        messages.CityCatalystClient, "validate_user_identity", new=rejected
+    ):
+        response = await client.post("/v1/messages", json=request)
+
+    assert response.status_code == 401
+    handler.assert_not_called()
+    assert overview_pending(await _draft_progress(factory, run_id))
+
+    with patch.object(
+        messages.CityCatalystClient,
+        "validate_user_identity",
+        new=AsyncMock(return_value="owner"),
+    ):
+        retry = await client.post("/v1/messages", json=request)
+
+    assert retry.status_code == 200
+    assert handler.call_args.kwargs["draft_overview_claim"] == (run_id, BUILD_ID)
+
+
+@pytest.mark.asyncio
+async def test_handler_setup_failure_releases_the_overview(chat_api, monkeypatch):
+    client, factory, run_id, thread_id, _save_message, _handler = chat_api
+    monkeypatch.setattr(
+        messages, "StreamingHandler", Mock(side_effect=RuntimeError("boom"))
+    )
+
+    response = await client.post("/v1/messages", json=_overview_request(thread_id))
+
+    assert response.status_code == 500
+    assert overview_pending(await _draft_progress(factory, run_id))
 
 
 @pytest.mark.asyncio

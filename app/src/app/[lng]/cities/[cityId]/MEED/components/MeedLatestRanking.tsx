@@ -22,7 +22,7 @@ export interface MeedLatestRankingProps {
   index: MeedActionIndex;
   isCatalogLoading: boolean;
   /** The weights this ranking was scored with. */
-  weights: MeedScoreWeights;
+  weights: MeedScoreWeights | null;
   /** Actions the legal screening removed, when the ranking reports it. */
   excludedCount: number | null;
   /** True when inputs changed after this ranking was produced. */
@@ -149,7 +149,7 @@ export function MeedLatestRanking({
         </SimpleGrid>
       )}
 
-      <MeedScoreLegend weights={weights} t={tResults} />
+      {weights && <MeedScoreLegend weights={weights} t={tResults} />}
 
       {/* One way forward. Re-running lives on the header button, which
           already reads "Re-run ranking" once a result exists. */}

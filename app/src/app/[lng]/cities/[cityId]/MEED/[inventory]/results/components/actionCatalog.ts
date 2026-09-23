@@ -25,6 +25,12 @@ export interface MeedCatalogAction {
    * what made every action render as "Cross-sector".
    */
   sectorTag?: string | null;
+  /**
+   * Pre-resolved sector label for catalogs whose sectors are not GPC sectors —
+   * the Brazil adaptation track ranks on AdaptaBrasil sectors, which have no
+   * `sector-*` key here. When present it wins over `sectorTag` lookup.
+   */
+  sectorLabel?: string | null;
   /** Raw catalog value, e.g. "<5 years". */
   timelineForImplementation?: string | null;
   /** Keyed by co-benefit key, e.g. `air_quality`. */
@@ -209,7 +215,8 @@ export function sectorLabel(
   actionId: string,
   t: TFunction,
 ): string {
-  return sectorTagLabel(index.get(actionId)?.sectorTag, t);
+  const action = index.get(actionId);
+  return action?.sectorLabel ?? sectorTagLabel(action?.sectorTag, t);
 }
 
 /** Label for a raw catalog sector tag, e.g. "stationary_energy". */

@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
+from app.models.cnb.concept_note_structure import StructureProposal
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 
 EditStatus = Literal[
@@ -139,6 +140,7 @@ class EditPlanOutput(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
     intent: Literal["edit", "question", "clarification"]
+    structure: StructureProposal | None = None
     changes: list[PlannedTextChange] = Field(default_factory=list, max_length=100)
     notices: list[EditNotice] = Field(default_factory=list)
     clarification: str | None = Field(default=None, min_length=1, max_length=2_000)
@@ -146,7 +148,9 @@ class EditPlanOutput(BaseModel):
     @model_validator(mode="after")
     def validate_intent(self) -> EditPlanOutput:
         """Keep ordinary questions and clarification separate from edit proposals."""
-        if (self.intent == "edit") != bool(self.changes):
+        if self.structure is not None and self.changes:
+            raise ValueError("Propose structure and text changes separately")
+        if (self.intent == "edit") != bool(self.changes or self.structure):
             raise ValueError("only edit intent may contain changes, and requires them")
         if (self.intent == "clarification") != (self.clarification is not None):
             raise ValueError("clarification intent requires exactly one question")
@@ -175,7 +179,9 @@ class EditApplyRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
     idempotency_key: UUID
-    expected_revisions: dict[UUID, PositiveInt] = Field(min_length=1, max_length=100)
+    expected_revisions: dict[UUID, PositiveInt] = Field(
+        default_factory=dict, max_length=100
+    )
     selected_change_ids: list[UUID] | None = Field(
         default=None, min_length=1, max_length=100
     )
@@ -209,6 +215,7 @@ class EditProposalResponse(BaseModel):
     scope: EditScope
     status: EditStatus
     base_revisions: dict[UUID, PositiveInt] = Field(default_factory=dict)
+    structure: StructureProposal | None = None
     changes: list[EditChange] = Field(default_factory=list)
     notices: list[EditNotice] = Field(default_factory=list)
     clarification: str | None = None

@@ -1,6 +1,5 @@
 {
   "description": "Díganos qué sectores y objetivos son los más importantes para su ciudad, qué tan rápido deben implementarse las acciones y si debería excluirse algún tipo de acción de la clasificación.",
-  "alignment-note": "La alineación conforma el 22% de la clasificación: sectores prioritarios 15% · preferencia de plazo 5% · prioridades estratégicas 5%",
   "required": "Requerido",
   "badge-alignment-15": "Alineación · 15%",
   "badge-alignment-5": "Alineación · 5%",

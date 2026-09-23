@@ -30,7 +30,7 @@ from app.utils.cnb_information_markers import (
     information_marker_key,
     information_needed_markers,
 )
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 LEGACY_GENERIC_GAP_RATIONALE = "This information is required to complete the chapter."
@@ -92,6 +92,7 @@ class WorkspaceChapterSnapshot:
     required: bool
     user_locked: bool
     body_markdown: str | None
+    description: str | None = None
     gaps: list[WorkspaceGapSnapshot] = field(default_factory=list)
     revision_id: UUID | None = None
     revision_number: int | None = None
@@ -133,6 +134,7 @@ class WorkspaceValidationChapter:
     body_markdown: str | None
     revision_id: UUID | None
     revision_number: int | None
+    description: str | None = None
     confirmed_body_markdown: str | None = None
     confirmed_revision_number: int | None = None
 
@@ -216,6 +218,19 @@ class ConceptNoteWorkspaceRepository:
                 .limit(1)
             )
             if existing is not None:
+                # Populate only unset descriptions on pre-existing workspaces. An
+                # explicitly cleared description stays empty on every later load.
+                for chapter in chapters:
+                    await session.execute(
+                        update(ConceptNoteChapter)
+                        .where(
+                            ConceptNoteChapter.run_id == run_id,
+                            ConceptNoteChapter.template_section_id
+                            == chapter.chapter_ref,
+                            ConceptNoteChapter.description.is_(None),
+                        )
+                        .values(description=chapter.description or "")
+                    )
                 return
 
             for position, chapter in enumerate(chapters):
@@ -224,6 +239,7 @@ class ConceptNoteWorkspaceRepository:
                         run_id=run_id,
                         template_section_id=chapter.chapter_ref,
                         title=chapter.title,
+                        description=chapter.description or "",
                         position=position,
                         status="empty",
                         required=chapter.required,
@@ -893,6 +909,7 @@ async def _copy_chapters(
         destination = ConceptNoteChapter(
             run_id=destination_run_id,
             template_section_id=source.template_section_id,
+            description=source.description,
             title=source.title,
             position=source.position,
             status=status,
@@ -1144,6 +1161,7 @@ def _validation_chapters(
             WorkspaceValidationChapter(
                 chapter_id=chapter.chapter_id,
                 chapter_ref=chapter.template_section_id,
+                description=chapter.description,
                 title=chapter.title,
                 position=chapter.position,
                 status=chapter.status,
@@ -1203,6 +1221,7 @@ def calculate_validation_input_fingerprint(
             {
                 "chapter_id": str(chapter.chapter_id),
                 "chapter_ref": chapter.chapter_ref,
+                "description": chapter.description,
                 "title": chapter.title,
                 "position": chapter.position,
                 "required": chapter.required,
@@ -1481,6 +1500,7 @@ def _chapter_snapshot(
         title=chapter.title,
         position=chapter.position,
         status=effective_status,
+        description=chapter.description,
         required=chapter.required,
         user_locked=chapter.user_locked,
         body_markdown=detached.body_markdown,

@@ -60,21 +60,23 @@ export function excludedActionCount(
  *
  * Normalised by their own sum so a percent-scale payload (55/22/23) renders as
  * `× 0.55` rather than `× 55.00`.
+ *
+ * `null` when the response does not state its weights: the UI then shows the
+ * pillar scores without a formula rather than printing weights it assumed.
  */
 export function readRankingWeights(
   ranking: MeedPrioritizeCityResult | null,
-  fallback: MeedScoreWeights,
-): MeedScoreWeights {
+): MeedScoreWeights | null {
   const w = ranking?.metadata?.weights;
-  if (!w) return fallback;
+  if (!w) return null;
   const { impact, alignment, feasibility } = w;
   const values = [impact, alignment, feasibility];
   if (
     !values.every((v) => typeof v === "number" && Number.isFinite(v) && v > 0)
   )
-    return fallback;
+    return null;
   const total = values.reduce((a, b) => a + b, 0);
-  if (total <= 0) return fallback;
+  if (total <= 0) return null;
   return {
     impact: impact / total,
     alignment: alignment / total,

@@ -17,6 +17,11 @@ from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.requests import MessageCreateRequest
 from app.persistence.concept_notes.context_bundle import load_agent_context
 from app.services.agent_service import AgentService
+from app.services.cnb.draft_overview import (
+    draft_overview_instructions,
+    load_draft_overview_message,
+    release_draft_overview,
+)
 from app.services.native_input_catalog_service import ActiveRequestContext
 from app.services.stationary_energy.stationary_energy_chat_context import (
     build_minimal_stationary_energy_context_payload,
@@ -85,6 +90,7 @@ class StreamingHandler:
         inventory_id: Optional[str] = None,
         request_context: Optional[Any] = None,
         request_options: Optional[dict] = None,
+        draft_overview_claim: Optional[tuple[UUID, str]] = None,
     ) -> None:
         """Initialize per-request state for streaming one agent response."""
         self.thread_id = thread_id
@@ -96,6 +102,8 @@ class StreamingHandler:
         self.inventory_id = inventory_id
         self.request_context = request_context
         self.request_options = request_options
+        # (run_id, build_id) when this is the hidden CNB drafting-overview turn.
+        self.draft_overview_claim = draft_overview_claim
         self.thread_identifier = str(thread_id)
         self.workflow_context = ChatWorkflowContext()
         self.agent_model: Optional[str] = None
@@ -233,6 +241,12 @@ class StreamingHandler:
                 else None
             )
             self.concept_note_edit_request = edit_request
+            # The CNB frontend sends its active language so help quotes visible labels.
+            concept_note_ui_locale = (
+                payload.context.get("ui_locale")
+                if concept_note_run_id and isinstance(payload.context, dict)
+                else None
+            )
 
             # Load the effective chat input before tool registration so the edit
             # planner can resolve short follow-ups from a bounded visible window.
@@ -260,6 +274,7 @@ class StreamingHandler:
                 native_input_catalog_context=native_input_catalog_context,
                 concept_note_edit_request=edit_request,
                 concept_note_edit_history=concept_note_edit_history,
+                concept_note_ui_locale=concept_note_ui_locale,
             )
 
             # Get model override from options
@@ -296,7 +311,14 @@ class StreamingHandler:
                 }
             )
 
-            agent = await self.agent_service.create_agent(model=self.agent_model)
+            agent = await self.agent_service.create_agent(
+                model=self.agent_model,
+                instructions=(
+                    draft_overview_instructions(settings.llm.prompts)
+                    if self.draft_overview_claim
+                    else None
+                ),
+            )
 
             log_json_artifact(
                 "chat/conversation_history.json", {"messages": conversation_history}
@@ -380,6 +402,15 @@ class StreamingHandler:
             yield self._format_completion_event(req_id, ok=False)
 
         finally:
+            # A failed overview turn stays retryable for the same drafting build.
+            if self.draft_overview_claim and not self.history_saved:
+                run_id, build_id = self.draft_overview_claim
+                await release_draft_overview(
+                    session_factory=self.session_factory,
+                    run_id=run_id,
+                    user_id=self.user_id,
+                    build_id=build_id,
+                )
             # Clean up agent service
             if self.agent_service:
                 await self.agent_service.close()
@@ -420,6 +451,20 @@ class StreamingHandler:
 
         if context_message:
             conversation_history = [context_message, *conversation_history]
+            if self.draft_overview_claim and self.session_factory:
+                # Fail the turn rather than let the overview run without draft facts.
+                conversation_history.append(
+                    await load_draft_overview_message(
+                        session_factory=self.session_factory,
+                        run_id=self.draft_overview_claim[0],
+                        user_id=self.user_id,
+                        ui_locale=(
+                            payload.context.get("ui_locale")
+                            if isinstance(payload.context, dict)
+                            else None
+                        ),
+                    )
+                )
             if not self._history_contains_current_user_message(
                 conversation_history,
                 payload.content,

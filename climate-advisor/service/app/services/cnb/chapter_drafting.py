@@ -51,6 +51,7 @@ from app.services.cnb.application_context import (
     calculate_application_template_fingerprint,
     included_sources_from_bundle,
 )
+from app.services.cnb.draft_overview import overview_pending
 from app.services.cnb.gap_impact_review import ConceptNoteGapImpactReviewer
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.concept_note_context import omit_context_identifiers
@@ -681,7 +682,10 @@ class ConceptNoteChapterDraftService:
                 ),
                 "context_bundle": bundle.model_dump(mode="json"),
                 "manual_population": (
-                    {**run.context_summary["manual_population"], "source": "user_entered"}
+                    {
+                        **run.context_summary["manual_population"],
+                        "source": "user_entered",
+                    }
                     if (run.context_summary or {}).get("manual_population")
                     else None
                 ),
@@ -1027,11 +1031,11 @@ def _build_chapter_input(
             "chapter": {
                 "chapter_ref": current.chapter_ref,
                 "title": current.title,
-                "description": (
-                    template_chapter.description
-                    if template_chapter is not None
-                    else None
-                ),
+                "description": current.description
+                if current.description is not None
+                else template_chapter.description
+                if template_chapter
+                else None,
                 "position": current.position,
                 "required": current.required,
             },
@@ -1086,7 +1090,9 @@ def _build_state_response(
 ) -> ConceptNoteDraftResponse:
     completed = _completed_count(chapters)
     stored_status = progress.get("status")
-    if stored_status in {"running", "failed", "complete"}:
+    if stored_status == "complete" and completed < len(chapters):
+        status = "not_started"
+    elif stored_status in {"running", "failed", "complete"}:
         status = stored_status
     elif chapters and completed == len(chapters):
         status = "complete"
@@ -1101,10 +1107,12 @@ def _build_state_response(
         current_chapter_id=_as_uuid(progress.get("current_chapter_id")),
         focused_gap_id=focused_gap_id,
         error_code=_as_text(progress.get("error_code")),
+        overview_pending=overview_pending(progress),
         chapters=[
             ConceptNoteDraftChapterResponse(
                 chapter_id=chapter.chapter_id,
                 template_section_id=chapter.chapter_ref,
+                description=chapter.description or "",
                 title=chapter.title,
                 position=chapter.position,
                 status=chapter.status,

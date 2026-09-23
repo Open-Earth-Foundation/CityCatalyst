@@ -180,7 +180,7 @@ def test_cnb_merge_upgrades_either_existing_head_without_losing_gaps(
         with engine.connect() as connection:
             assert connection.execute(
                 text("SELECT version_num FROM cnb_alembic_version")
-            ).scalars().all() == ["20260923_120000"]
+            ).scalars().all() == ["20260924_120000"]
             assert connection.execute(
                 text(
                     "SELECT question, status FROM concept_note_gaps WHERE gap_id = :gap_id"
@@ -237,11 +237,11 @@ def test_cnb_notices_upgrade_and_downgrade_preserve_existing_proposal() -> None:
                 .one()
             )
 
-        # Upgrading backfills an empty list without changing the proposal.
+        # Test the notices revision independently of later schema additions.
         _run_alembic(
             config="cnb-alembic.ini",
             database_env="CNB_DATABASE_URL",
-            args=["upgrade", "head"],
+            args=["upgrade", "20260917_120000"],
         )
         columns = {
             column["name"]: column
@@ -523,7 +523,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         revision = connection.execute(
             text("SELECT version_num FROM cnb_alembic_version")
         ).scalar_one()
-    assert revision == "20260923_120000"
+    assert revision == "20260924_120000"
 
     _run_alembic(
         config="cnb-alembic.ini",

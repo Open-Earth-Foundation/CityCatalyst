@@ -230,6 +230,7 @@ class PromptsConfig(BaseModel):
     cnb_gap_impact_review: str = "prompts/cnb/gap_impact_review.md"
     cnb_chat_edit_planner: str = "prompts/cnb/chat_edit_planner.md"
     cnb_chat_edit_review: str = "prompts/cnb/chat_edit_review.md"
+    cnb_draft_overview: str = "prompts/cnb/draft_overview.md"
     cnb_chapter_validation_completeness: str = (
         "prompts/cnb/chapter_validation_completeness.md"
     )

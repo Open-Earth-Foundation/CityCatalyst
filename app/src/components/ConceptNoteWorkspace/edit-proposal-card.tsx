@@ -12,7 +12,18 @@ import {
 } from "@chakra-ui/react";
 import { LuChevronLeft, LuChevronRight, LuEllipsis } from "react-icons/lu";
 
-import { ReviewButton as Button } from "./review-button";
+import { ReviewButton as Button } from "@/components/ConceptNoteWorkspace/review-button";
+import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   PopoverBody,
   PopoverContent,
@@ -37,6 +48,8 @@ interface ProposalCardProps {
     instruction: string,
   ) => Promise<void | boolean>;
   onOpenSources?: () => void;
+  /** Apply/reject failure, repeated inside the modal so it is not hidden behind it. */
+  errorMessage?: string;
 }
 
 export function EditProposalCard({
@@ -51,10 +64,12 @@ export function EditProposalCard({
   canApply = true,
   hasDecisions = false,
   activeChangeId,
+  errorMessage,
 }: ProposalCardProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [index, setIndex] = useState(0);
   const [refining, setRefining] = useState(false);
+  const [structureOpen, setStructureOpen] = useState(false);
   const [instruction, setInstruction] = useState(proposal.instruction);
   const activeIndex = activeChangeId
     ? Math.max(
@@ -94,6 +109,107 @@ export function EditProposalCard({
       data-testid="concept-note-document-review"
       data-proposal-id={proposal.proposal_id}
     >
+      {proposal.structure && (
+        <DialogRoot
+          open={structureOpen}
+          onOpenChange={({ open }) => setStructureOpen(open)}
+          size="xl"
+          placement="center"
+          scrollBehavior="inside"
+        >
+          <DialogTrigger asChild>
+            <Button size="sm" variant="outline">
+              {t("structure-review")}
+            </Button>
+          </DialogTrigger>
+          <DialogContent
+            maxH="calc(100dvh - 48px)"
+            maxW="min(960px, calc(100vw - 32px))"
+            data-testid="structure-proposal"
+          >
+            <DialogHeader flexShrink={0} pe={12}>
+              <DialogTitle>{t("structure-proposal-title")}</DialogTitle>
+              <DialogDescription>
+                {t("structure-proposal-note")}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogBody
+              minH={0}
+              overflowY="auto"
+              data-testid="structure-preview-scroll"
+            >
+              <HStack
+                align="start"
+                flexDirection={{ base: "column", md: "row" }}
+              >
+                {(["before", "after"] as const).map((side) => (
+                  <Box
+                    key={side}
+                    flex={1}
+                    minW={0}
+                    w="full"
+                    overflowWrap="anywhere"
+                  >
+                    <Text fontWeight="semibold">{t(`structure-${side}`)}</Text>
+                    {(side === "before"
+                      ? proposal.structure!.before.chapters
+                      : proposal.structure!.after
+                    ).map((chapter, index) => (
+                      <Box key={chapter.chapter_id} py={2}>
+                        <Text>{`${index + 1}. ${chapter.title}`}</Text>
+                        <Text fontSize="label.sm" whiteSpace="pre-wrap">
+                          {chapter.description}
+                        </Text>
+                      </Box>
+                    ))}
+                  </Box>
+                ))}
+              </HStack>
+            </DialogBody>
+            {awaitingReview && (
+              <DialogFooter flexShrink={0} flexWrap="wrap">
+                {errorMessage && (
+                  <Text
+                    role="alert"
+                    flexBasis="100%"
+                    fontSize="label.sm"
+                    color="content.primary"
+                    data-testid="structure-proposal-error"
+                  >
+                    {errorMessage}
+                  </Text>
+                )}
+                <Button
+                  disabled={busy || !canApply}
+                  loading={busy}
+                  onClick={async () => {
+                    if ((await onApply(proposal)) !== false)
+                      setStructureOpen(false);
+                  }}
+                >
+                  {t("structure-confirm")}
+                </Button>
+                <Button
+                  disabled={busy}
+                  variant="ghost"
+                  onClick={async () => {
+                    if ((await onReject(proposal)) !== false)
+                      setStructureOpen(false);
+                  }}
+                >
+                  {t("edit-reject-all")}
+                </Button>
+              </DialogFooter>
+            )}
+            {!awaitingReview && (
+              <DialogFooter>
+                <Text role="status">{t(`edit-status-${proposal.status}`)}</Text>
+              </DialogFooter>
+            )}
+            <DialogCloseTrigger aria-label={t("structure-close-preview")} />
+          </DialogContent>
+        </DialogRoot>
+      )}
       {!awaitingReview && (
         <Text role="status" flexBasis="100%" fontSize="body.sm">
           {t(`edit-status-${proposal.status}`)}

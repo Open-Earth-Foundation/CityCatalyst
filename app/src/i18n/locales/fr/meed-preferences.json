@@ -1,6 +1,5 @@
 {
   "description": "Dites-nous quels secteurs et objectifs comptent le plus pour votre ville, à quelle vitesse les actions doivent être mises en œuvre, et si certains types d'actions devraient être exclus du classement.",
-  "alignment-note": "L'alignement façonne 22% du classement - secteurs prioritaires 15% · préférence de délai 5% · priorités stratégiques 5%",
   "required": "Requis",
   "badge-alignment-15": "Alignement · 15%",
   "badge-alignment-5": "Alignement · 5%",

@@ -41,7 +41,6 @@
   "percent-value": "{{value}}%",
   "show-more-actions": "Zeige alle {{n}} Aktionen",
   "show-fewer-actions": "Weniger Aktionen anzeigen",
-  "policy-ranking-weight": "Die Ausrichtung der Politik trägt 75% zur Ausrichtungsbewertung bei · die Ausrichtung formt {{weight}}% des Rankings",
   "policy-step-sub": "{{n}} bewertete Maßnahmen · {{p}} nationale Pläne",
   "policy-error-title": "Richtlinienabstimmung konnte nicht geladen werden",
   "policy-error-body": "Der Policy-Abgleichsdienst hat nicht reagiert. Ihre anderen Eingaben sind nicht betroffen - versuchen Sie es erneut, oder fahren Sie fort und erstellen Sie das Ranking ohne Policy-Abgleich.",

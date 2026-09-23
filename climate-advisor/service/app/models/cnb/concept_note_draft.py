@@ -184,6 +184,7 @@ class ConceptNoteDraftChapterResponse(BaseModel):
 
     chapter_id: UUID
     template_section_id: str | None = None
+    description: str = ""
     title: str
     position: int = Field(ge=0)
     status: ConceptNoteChapterStatus
@@ -212,4 +213,6 @@ class ConceptNoteDraftResponse(BaseModel):
     current_chapter_id: UUID | None = None
     focused_gap_id: UUID | None = None
     error_code: str | None = None
+    # True once a drafting build finishes and its chat overview is not yet posted.
+    overview_pending: bool = False
     chapters: list[ConceptNoteDraftChapterResponse] = Field(default_factory=list)

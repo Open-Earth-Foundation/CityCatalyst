@@ -161,6 +161,26 @@ async def get_concept_note_run(
     )
 
 
+@router.post(
+    "/concept-notes/{run_id}/initial-uploads/{upload_id}/accepted",
+    response_model=ConceptNoteRunResponse,
+)
+async def accept_initial_upload(
+    run_id: UUID,
+    upload_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunResponse:
+    """Record CC's durable source handoff for an authorized initial upload."""
+    return await ConceptNoteRunService(session).accept_initial_upload(
+        run_id=run_id,
+        upload_id=upload_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
 @router.patch(
     "/concept-notes/{run_id}/population",
     response_model=ConceptNoteRunResponse,

@@ -30,7 +30,7 @@ import { api } from "@/services/api";
 import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";
 import { NewConceptNoteDialog } from "../ConceptNoteDashboard/new-concept-note-dialog";
 import type { EditScope } from "@/util/concept-note-edit-types";
-import type { ConceptNoteDraftChapter } from "@/util/types";
+import type { ConceptNoteDraftChapter, ConceptNoteGap } from "@/util/types";
 
 import {
   getConceptNoteStatusPresentation,
@@ -38,6 +38,10 @@ import {
 } from "@/components/ConceptNoteDashboard/utils";
 import { StatusBadge } from "@/components/ConceptNoteDashboard/status-badge";
 import { ConceptNoteChatPanel } from "@/components/ConceptNoteWorkspace/chat-panel";
+import type {
+  GapResolutionAction,
+  GapReviewRequest,
+} from "@/components/ConceptNoteWorkspace/gap-interview-panel";
 import { ContextTab } from "@/components/ConceptNoteWorkspace/context-tab";
 import { FundingSelectionDialog } from "@/components/ConceptNoteWorkspace/funding-selection-dialog";
 import { DraftTab } from "@/components/ConceptNoteWorkspace/draft-tab";
@@ -112,6 +116,10 @@ export function ConceptNoteWorkspace({
   >(null);
   const [confirmChapterMutation, confirmChapterState] =
     api.useConfirmConceptNoteChapterMutation();
+  const [resolveGapMutation, resolveGapState] =
+    api.useResolveConceptNoteGapMutation();
+  const [gapReviewRequest, setGapReviewRequest] =
+    useState<GapReviewRequest | null>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewChapterId, setReviewChapterId] = useState<string | null>(
     initialReviewChapterId ?? null,
@@ -253,6 +261,39 @@ export function ConceptNoteWorkspace({
     }
   }
 
+  async function resolveGap(
+    gap: ConceptNoteGap,
+    action: GapResolutionAction,
+    answer?: string,
+  ): Promise<void> {
+    setWorkspaceMutationError(null);
+    try {
+      await resolveGapMutation({
+        runId,
+        gapId: gap.gap_id,
+        action,
+        answer,
+        expectedVersion: gap.version,
+        idempotencyKey: crypto.randomUUID(),
+      }).unwrap();
+      await refetchDraft();
+    } catch {
+      setWorkspaceMutationError(t("gap-resolution-error"));
+    }
+  }
+
+  function reviewChapterGaps(chapter: ConceptNoteDraftChapter): void {
+    const firstOpenGap = chapter.gaps.find((gap) => gap.state === "open");
+    if (!firstOpenGap) {
+      return;
+    }
+    setGapReviewRequest({
+      chapterId: chapter.chapter_id,
+      gapId: firstOpenGap.gap_id,
+      requestId: crypto.randomUUID(),
+    });
+  }
+
   if (runLoading) {
     return <WorkspaceLoadingState />;
   }
@@ -371,6 +412,14 @@ export function ConceptNoteWorkspace({
               threadId={activeThreadId}
               editScope={editScope}
               edits={edits}
+              gapInterview={{
+                draft: draft ?? null,
+                isResolvingGap: resolveGapState.isLoading,
+                mutationError: workspaceMutationError,
+                onResolveGap: resolveGap,
+                onReviewDraft: () => setTab("draft"),
+                reviewRequest: gapReviewRequest,
+              }}
             />
 
             <Tabs.Root
@@ -588,6 +637,7 @@ export function ConceptNoteWorkspace({
                     })
                   }
                   onConfirmChapter={confirmChapter}
+                  onReviewChapterGaps={reviewChapterGaps}
                   mutationError={workspaceMutationError}
                   onOpenContext={() => setTab("context")}
                   onOpenFundingSetup={() => void openFundingSetup()}

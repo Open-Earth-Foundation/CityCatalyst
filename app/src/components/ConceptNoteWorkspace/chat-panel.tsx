@@ -27,6 +27,10 @@ import { ChatProgress } from "./chat-progress";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import type { EditController } from "./document-review";
 import type { EditScope } from "@/util/concept-note-edit-types";
+import {
+  GapInterviewPanel,
+  type GapInterviewControls,
+} from "./gap-interview-panel";
 
 interface ConceptNoteChatPanelProps {
   contextStatus: ConceptNoteContextPresentation;
@@ -39,6 +43,7 @@ interface ConceptNoteChatPanelProps {
   threadId: string | null;
   editScope: EditScope;
   edits: EditController;
+  gapInterview?: GapInterviewControls;
 }
 
 interface ContextStatusNoticeProps {
@@ -187,6 +192,7 @@ export function ConceptNoteChatPanel({
   threadId,
   editScope,
   edits,
+  gapInterview,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [input, setInput] = useState("");
@@ -423,6 +429,18 @@ export function ConceptNoteChatPanel({
             )}
           </Fragment>
         ))}
+
+        {gapInterview && (
+          <GapInterviewPanel
+            {...gapInterview}
+            askClimaDisabled={chatDisabled}
+            lng={lng}
+            onAskClima={(prompt) => {
+              followLatestRef.current = true;
+              void sendChatMessage(prompt);
+            }}
+          />
+        )}
 
         {edits.error && (
           <Text role="alert" fontSize="label.sm" color="content.primary">

@@ -55,15 +55,24 @@ export function useConceptNoteWorkspaceData({
     isLoading: applicationContextLoading,
     refetch: refetchApplicationContext,
   } = api.useGetConceptNoteApplicationContextQuery(runId);
+  const [chaptersRegenerating, setChaptersRegenerating] = useState(false);
   const {
     data: draft,
     isError: draftQueryFailed,
     isLoading: draftLoading,
     refetch: refetchDraft,
   } = api.useGetConceptNoteDraftQuery(runId, {
-    pollingInterval: 15_000,
+    pollingInterval: chaptersRegenerating ? 3_000 : 15_000,
     skipPollingIfUnfocused: true,
   });
+  const draftRegenerating = Boolean(
+    draft?.chapters.some(
+      (chapter) => chapter.regeneration_status === "processing",
+    ),
+  );
+  if (draftRegenerating !== chaptersRegenerating) {
+    setChaptersRegenerating(draftRegenerating);
+  }
   const {
     data: population,
     isError: populationFailed,

@@ -36,7 +36,10 @@ jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 jest.unstable_mockModule("@/services/api", () => ({
-  api: { useConfirmConceptNoteChapterMutation: () => [jest.fn(), {}] },
+  api: {
+    useConfirmConceptNoteChapterMutation: () => [jest.fn(), {}],
+    useResolveConceptNoteGapMutation: () => [jest.fn(), {}],
+  },
 }));
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/use-concept-note-workspace-data",

@@ -204,6 +204,7 @@ function chapterPreviewMarkdown(markdown: string, title: string): string {
 export interface DraftInlineReviewProps {
   isConfirmingChapter: boolean;
   onConfirmChapter: (chapter: ConceptNoteDraftChapter) => void;
+  onReviewChapterGaps?: (chapter: ConceptNoteDraftChapter) => void;
   editFocus?: {
     chapterId: string;
     changeId?: string;
@@ -243,6 +244,7 @@ export function DraftDocumentPanel({
   onRejectReviewChange,
   isConfirmingChapter,
   onConfirmChapter,
+  onReviewChapterGaps,
 }: DraftDocumentPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const {
@@ -541,11 +543,43 @@ export function DraftDocumentPanel({
                               : "chapter-status-draft",
                         )}
                       </Text>
-                      {chapter.open_gap_count > 0 && (
-                        <Text fontSize="10px" color="sentiment.warningDefault">
-                          {t("chapter-open-gaps", {
-                            count: chapter.open_gap_count,
-                          })}
+                      {chapter.open_gap_count > 0 &&
+                        (onReviewChapterGaps ? (
+                          <Box
+                            as="button"
+                            fontSize="10px"
+                            color="sentiment.warningDefault"
+                            textDecoration="underline"
+                            cursor="pointer"
+                            data-testid="concept-note-chapter-open-gaps"
+                            onClick={() => onReviewChapterGaps(chapter)}
+                          >
+                            {t("chapter-open-gaps", {
+                              count: chapter.open_gap_count,
+                            })}
+                          </Box>
+                        ) : (
+                          <Text
+                            fontSize="10px"
+                            color="sentiment.warningDefault"
+                          >
+                            {t("chapter-open-gaps", {
+                              count: chapter.open_gap_count,
+                            })}
+                          </Text>
+                        ))}
+                      {chapter.regeneration_status === "processing" && (
+                        <Text
+                          fontSize="10px"
+                          color="content.link"
+                          data-testid="concept-note-chapter-regenerating"
+                        >
+                          {t("chapter-regenerating")}
+                        </Text>
+                      )}
+                      {chapter.regeneration_status === "failed" && (
+                        <Text fontSize="10px" color="sentiment.negativeDefault">
+                          {t("chapter-regeneration-failed")}
                         </Text>
                       )}
                       {chapter.caveat_count > 0 && (
@@ -558,7 +592,8 @@ export function DraftDocumentPanel({
                     </HStack>
                   </Box>
                   {chapter.status === "draft" &&
-                    chapter.open_gap_count === 0 && (
+                    chapter.open_gap_count === 0 &&
+                    chapter.regeneration_status === "idle" && (
                       <Button
                         size="xs"
                         variant="solid"

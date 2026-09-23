@@ -39,6 +39,7 @@
             ],
             "retryable": false,
             "context_mode": "grounded",
+            "document_grounding": "uploaded_evidence",
             "source_counts": {
               "ready": 1,
               "failed": 0,

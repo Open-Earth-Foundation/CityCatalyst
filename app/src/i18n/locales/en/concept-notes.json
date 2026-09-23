@@ -461,6 +461,7 @@
   "gap-summary-description": "{{gaps}} The interview starts with these — answer them, or mark them not applicable. Missing information is never invented.",
   "gap-start-interview": "Start the interview",
   "gap-review-draft-first": "Review the draft first",
+  "gap-chat-alternative": "Prefer chat? Tell Clima the missing facts and accept the proposed edit instead.",
   "gap-quick-decision": "A quick decision",
   "gap-critical": "Critical gap",
   "gap-noncritical": "Non-critical gap",

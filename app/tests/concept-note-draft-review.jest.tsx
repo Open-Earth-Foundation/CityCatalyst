@@ -55,6 +55,9 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
     gaps: [],
     open_gap_count: 0,
     caveat_count: 0,
+    proposed_revision_number: null,
+    regeneration_status: "idle",
+    regeneration_error: null,
   };
   const change: EditChange = {
     change_id: "change-1",

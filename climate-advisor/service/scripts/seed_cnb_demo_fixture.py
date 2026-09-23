@@ -347,6 +347,13 @@ def seed_fixture(args: argparse.Namespace) -> None:
     ca_rows["concept_note_runs"][0]["request_fingerprint"] = hashlib.sha256(
         f"{args.user_id}:{args.city_id}:{destination_run_id}".encode()
     ).hexdigest()
+    # Chat readiness and the drafting-overview claim resolve the run from the
+    # thread context, which the sanitized fixture ships empty.
+    for thread in ca_rows["threads"]:
+        thread["context"] = {
+            **(thread.get("context") or {}),
+            "concept_note_run_id": destination_run_id,
+        }
 
     # Seed each independent database transactionally. Reruns are idempotent.
     with psycopg2.connect(cnb_database_url) as cnb_connection:

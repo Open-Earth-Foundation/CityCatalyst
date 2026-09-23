@@ -406,6 +406,7 @@ def build_planner_input(
         key: run_context[key]
         for key in (
             "cc_context",
+            "manual_population",
             "funder_context",
             "document_context",
             "similar_projects",
@@ -472,6 +473,7 @@ def build_planner_input(
                                 "kind",
                                 "group_id",
                                 "user_input_quote",
+                                "context_refs",
                             },
                         ),
                         # Rebind verified snapshots after source reordering; never replay IDs.

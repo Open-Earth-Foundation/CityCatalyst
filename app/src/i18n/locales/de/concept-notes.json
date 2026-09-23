@@ -463,8 +463,6 @@
   "review-incomplete-export-confirmation": "Ich verstehe, dass fehlende Informationen, blockierende Konflikte oder unvollständige Kapitelüberprüfungen im Arbeitsbereich verbleiben können und nicht in das exportierte Dokument aufgenommen werden.",
   "workspace-refresh-error-title": "Dieses Konzeptnote konnte nicht aktualisiert werden",
   "workspace-refresh-error-description": "CityCatalyst konnte diesen Lauf vorübergehend nicht aktualisieren. Warten Sie einen Moment und versuchen Sie es erneut.",
-  "edit-review-scope_one": "{{count}} vorgeschlagene Änderung · Betroffene Abschnitte: {{chapters}}",
-  "edit-review-scope_other": "{{count}} vorgeschlagene Änderungen · Betroffene Abschnitte: {{chapters}}",
   "edit-user-facts-notice": "Verwendet Fakten aus Ihrer Anleitung; diese wurden nicht unabhängig gegen eine hochgeladene Quelle überprüft.",
   "start-new-chat": "Neuen Chat starten",
   "start-new-chat-dialog-title": "Einen neuen Chat beginnen?",

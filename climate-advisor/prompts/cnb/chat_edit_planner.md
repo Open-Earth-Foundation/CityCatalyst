@@ -52,7 +52,13 @@ resolve it, return clarification with the specific limitation.
 Mark numeric, date, organization, commitment, or meaning changes as factual.
 Reference evidence with the exact selected-source index as a string. Quote user
 input exactly from the current request, recent user messages, or prior human
-inputs. An independent reviewer will assess the resolved changes; never invent
+inputs. CityCatalyst data in run_context.cc_context and a user-entered
+run_context.manual_population are valid evidence: cite the section name in
+context_refs ("city", "project", "ghgi", "ccra", "hiap" or "manual_population")
+instead of asking the user for a value that section already supplies. Prefer
+manual_population over the CityCatalyst population when both are present.
+Set user_input_quote only when the user's words supply the value itself; a
+request such as "add the population" is not user input for a context value. An independent reviewer will assess the resolved changes; never invent
 facts, strengthen commitments, or remove caveats. For refinement, read the
 relevant chapter's prior_proposal and retain the original requested changes while
 incorporating the new instruction.
@@ -76,8 +82,11 @@ Input is a JSON object containing:
 - instruction (string): the current user instruction.
 - recent_messages (array): up to three previous visible user/assistant messages.
 - run_context (object): selected_sources with one-based source_index, summaries
-  and excerpts; available cc_context, funder_context, document_context and
-  similar_projects. No source storage identities are supplied.
+  and excerpts; available cc_context (CityCatalyst city profile with population
+  and population_year, project, ghgi, ccra, hiap; sections may be null),
+  nullable manual_population ({population, year, source: "user_entered"}),
+  funder_context, document_context and similar_projects. No source storage
+  identities are supplied.
 - chapters (array): position (zero-based), title, description, required, custom, revision, locked and focused.
   Focus is a hint, not a restriction on the user's requested scope.
 - prior_proposal (object or null): original instruction, verified user_inputs, and

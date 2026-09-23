@@ -96,6 +96,7 @@ jest.unstable_mockModule(
     DocumentReviewToolbar: () => null,
     DocumentReviewFeedback: () => null,
     documentReviewChanges: () => [],
+    editFeedbackKey: () => null,
     selectReviewProposal: () => null,
   }),
 );

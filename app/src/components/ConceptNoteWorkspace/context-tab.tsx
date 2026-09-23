@@ -48,6 +48,7 @@ interface ContextTabProps {
   isRetryingBundle: boolean;
   isRetryingUpload: boolean;
   isUploading: boolean;
+  livePopulation: { population: number; year: number } | null;
   lng: string;
   manualPopulation: { population: number; year: number } | null;
   manualPopulationSaving: boolean;
@@ -60,7 +61,6 @@ interface ContextTabProps {
   populationFailed: boolean;
   populationLabel: string;
   populationLoading: boolean;
-  populationMissing: boolean;
   upload: ConceptNoteUploadResponse | null;
   uploadError: string | null;
 }
@@ -177,6 +177,7 @@ export function ContextTab({
   isRetryingBundle,
   isRetryingUpload,
   isUploading,
+  livePopulation,
   lng,
   manualPopulation,
   manualPopulationSaving,
@@ -187,7 +188,6 @@ export function ContextTab({
   populationFailed,
   populationLabel,
   populationLoading,
-  populationMissing,
   upload,
   uploadError,
 }: ContextTabProps) {
@@ -208,9 +208,26 @@ export function ContextTab({
   const hiapIncluded =
     bundle.availableContext.hiap ||
     (applicationContext?.included_sources.hiap ?? false);
-  const cityIncluded =
-    bundle.availableContext.city ||
-    (applicationContext?.included_sources.city ?? false);
+  const populationMissing = !livePopulation;
+  const runPopulation = bundle.cityPopulation;
+  // The run keeps the population from its last context build; offer a refresh
+  // when CityCatalyst has a figure the run is missing or has since changed.
+  const populationRefreshNeeded =
+    !manualPopulation &&
+    bundle.status !== "building" &&
+    livePopulation !== null &&
+    (runPopulation === null ||
+      runPopulation.population !== livePopulation.population ||
+      runPopulation.year !== livePopulation.year);
+  const populationStatus = manualPopulation
+    ? "population-manual-source"
+    : bundle.status === "building"
+      ? "bundle-source-pending"
+      : runPopulation
+        ? "included-in-run"
+        : populationMissing
+          ? "population-unavailable"
+          : "not-included-in-run";
   const hiapStatusLabel = bundle.hiapStatus
     ? t(getContextSourceStatusTranslationKey(bundle.hiapStatus))
     : t("not-available");
@@ -309,20 +326,32 @@ export function ContextTab({
           <ContextCard
             label={t("city-population")}
             value={populationLabel}
-            details={[[cityName, country].filter(Boolean).join(", ")]}
-            status={t(
-              manualPopulation
-                ? "population-manual-source"
-                : populationMissing
-                  ? "population-unavailable"
-                  : cityIncluded
-                    ? "included-in-run"
-                    : "not-included-in-run",
-            )}
+            details={[
+              [cityName, country].filter(Boolean).join(", "),
+              populationRefreshNeeded
+                ? t(
+                    runPopulation
+                      ? "population-refresh-outdated"
+                      : "population-refresh-hint",
+                  )
+                : "",
+            ]}
+            status={t(populationStatus)}
             tone={
-              manualPopulation || (!populationMissing && cityIncluded)
-                ? "positive"
-                : "warning"
+              populationStatus === "bundle-source-pending"
+                ? "neutral"
+                : manualPopulation || runPopulation
+                  ? "positive"
+                  : "warning"
+            }
+            action={
+              populationRefreshNeeded
+                ? {
+                    label: t("population-refresh"),
+                    onClick: onRetryBundle,
+                    disabled: isRetryingBundle || isDraftRunning,
+                  }
+                : undefined
             }
           >
             {(populationMissing || Boolean(manualPopulation)) &&

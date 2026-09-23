@@ -224,6 +224,7 @@ export interface ConceptNoteBundleProgress {
   queuedSources: number;
   processingSources: number;
   failedSources: number;
+  cityPopulation: { population: number; year: number } | null;
   ghgiStatus: string | null;
   hiapStatus: string | null;
   retryable: boolean;
@@ -294,6 +295,9 @@ export function getConceptNoteBundleProgress(
     queuedSources: countValue(sourceCounts.queued),
     processingSources: countValue(sourceCounts.processing),
     failedSources: countValue(sourceCounts.failed),
+    cityPopulation: normalizePopulationData(
+      recordValue(bundle.city_population) as CityPopulationSummary,
+    ),
     ghgiStatus: stringValue(optionalSources.ghgi),
     hiapStatus: stringValue(optionalSources.hiap),
     retryable: bundle.retryable === true,

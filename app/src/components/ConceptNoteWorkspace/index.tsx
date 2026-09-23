@@ -48,6 +48,7 @@ import { StartNewChatDialog } from "@/components/ConceptNoteWorkspace/start-new-
 import { useConceptNoteEdits } from "@/components/ConceptNoteWorkspace/use-concept-note-edits";
 import {
   DocumentReviewToolbar,
+  editFeedbackKey,
   DocumentReviewFeedback,
   documentReviewChanges,
   selectReviewProposal,
@@ -143,7 +144,7 @@ export function ConceptNoteWorkspace({
     populationFailed,
     populationLabel,
     populationLoading,
-    populationMissing,
+    populationData,
     refetchDraft,
     refetchApplicationContext,
     refetchRun,
@@ -429,37 +430,6 @@ export function ConceptNoteWorkspace({
                   </Box>
                 </HStack>
                 <Flex align="center" gap={2} flexWrap="wrap" minW={0}>
-                  {reviewProposal && (
-                    <DocumentReviewToolbar
-                      proposal={reviewProposal}
-                      chapters={draft?.chapters ?? []}
-                      edits={edits}
-                      changes={reviewChanges}
-                      activeChangeId={activeChangeId}
-                      lng={lng}
-                      onNavigate={navigateEdit}
-                      onOpenSources={() => setTab("context")}
-                      isDocumentVisible={tab === "draft"}
-                      hasDecisions={
-                        Object.keys(activeReviewDecisions).length > 0
-                      }
-                      onAcceptRemaining={(proposal) =>
-                        decideRemaining(proposal, "accepted")
-                      }
-                      onRejectRemaining={(proposal) =>
-                        decideRemaining(proposal, "rejected")
-                      }
-                    />
-                  )}
-                  <DocumentReviewFeedback edits={edits} lng={lng} />
-                  {reviewProposal && (
-                    <Box
-                      h="32px"
-                      borderInlineStart="1px solid"
-                      borderColor="border.neutral"
-                      mx={1}
-                    />
-                  )}
                   <ReviewButton
                     size="sm"
                     minH="44px"
@@ -484,6 +454,45 @@ export function ConceptNoteWorkspace({
                   </ReviewButton>
                 </Flex>
               </Flex>
+              {(reviewProposal || editFeedbackKey(edits)) && (
+                // Proposal review gets its own row so it never squeezes the title.
+                <Flex
+                  data-testid="concept-note-review-bar"
+                  flexShrink={0}
+                  align="center"
+                  gap={3}
+                  flexWrap="wrap"
+                  px={4}
+                  py={2}
+                  bg="background.neutral"
+                  borderBottom="1px solid"
+                  borderColor="border.neutral"
+                >
+                  {reviewProposal && (
+                    <DocumentReviewToolbar
+                      proposal={reviewProposal}
+                      chapters={draft?.chapters ?? []}
+                      edits={edits}
+                      changes={reviewChanges}
+                      activeChangeId={activeChangeId}
+                      lng={lng}
+                      onNavigate={navigateEdit}
+                      onOpenSources={() => setTab("context")}
+                      isDocumentVisible={tab === "draft"}
+                      hasDecisions={
+                        Object.keys(activeReviewDecisions).length > 0
+                      }
+                      onAcceptRemaining={(proposal) =>
+                        decideRemaining(proposal, "accepted")
+                      }
+                      onRejectRemaining={(proposal) =>
+                        decideRemaining(proposal, "rejected")
+                      }
+                    />
+                  )}
+                  <DocumentReviewFeedback edits={edits} lng={lng} />
+                </Flex>
+              )}
               {reviewAvailabilityDescription && (
                 <VisuallyHidden id="review-availability-reason">
                   {reviewAvailabilityDescription}
@@ -633,6 +642,7 @@ export function ConceptNoteWorkspace({
                   isRetryingBundle={retryBundleState.isLoading}
                   isRetryingUpload={retryUploadState.isLoading}
                   isUploading={uploadState.isLoading}
+                  livePopulation={populationData}
                   lng={lng}
                   onRetryBundle={() => void retryContextBundle()}
                   onRetryUpload={() => void retryActiveUpload()}
@@ -643,7 +653,6 @@ export function ConceptNoteWorkspace({
                   populationFailed={populationFailed}
                   populationLabel={populationLabel}
                   populationLoading={populationLoading}
-                  populationMissing={populationMissing}
                   upload={effectiveUpload}
                   uploadError={effectiveUploadError}
                 />

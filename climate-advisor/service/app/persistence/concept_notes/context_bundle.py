@@ -17,7 +17,10 @@ from app.models.db.concept_note import (
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
-from app.utils.concept_note_context import omit_context_identifiers
+from app.utils.concept_note_context import (
+    manual_population_context,
+    omit_context_identifiers,
+)
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -124,6 +127,9 @@ async def begin_build(
                         "available_context": _available_context_from_bundle(
                             previous_bundle
                         ),
+                        "city_population": _city_population_from_bundle(
+                            previous_bundle
+                        ),
                         "missing_context": (
                             previous.get("missing_context")
                             if isinstance(previous.get("missing_context"), list)
@@ -136,6 +142,7 @@ async def begin_build(
                             "failed": status_counts.get("failed", 0),
                         },
                         "optional_sources": {
+                            "city": "pending",
                             "ghgi": "pending",
                             "hiap": "pending",
                         },
@@ -247,6 +254,7 @@ async def complete_build(
                     "uploaded_evidence" if selected_sources else "none"
                 ),
                 "available_context": _available_context_from_bundle(bundle),
+                "city_population": _city_population_from_bundle(bundle),
                 "missing_context": [] if selected_sources else ["source_documents"],
                 "optional_sources": optional_sources,
                 "warnings": warnings,
@@ -501,11 +509,7 @@ async def load_agent_context(
                         )
                     ],
                     "cc_context": bundle.cc_context.model_dump(mode="json"),
-                    "manual_population": (
-                        {**run.context_summary["manual_population"], "source": "user_entered"}
-                        if (run.context_summary or {}).get("manual_population")
-                        else None
-                    ),
+                    "manual_population": manual_population_context(run.context_summary),
                     "funder_context": bundle.funder_context,
                     "similar_projects": bundle.similar_projects,
                     "document_context": bundle.document_context,
@@ -641,6 +645,18 @@ def _available_context_from_bundle(
         "hiap": context.hiap is not None,
         "uploaded_documents": bool(bundle.selected_sources),
     }
+
+
+def _city_population_from_bundle(
+    bundle: ConceptNoteContextBundle,
+) -> dict[str, int] | None:
+    """Report the CityCatalyst population this bundle gives the models, if any."""
+    city = bundle.cc_context.city or {}
+    population = city.get("population")
+    year = city.get("population_year")
+    if population is None or year is None:
+        return None
+    return {"population": population, "year": year}
 
 
 def _replace_bundle_progress(summary: Any, progress: dict[str, Any]) -> dict[str, Any]:

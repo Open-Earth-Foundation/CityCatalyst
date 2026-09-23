@@ -135,7 +135,9 @@ export function useConceptNoteWorkspaceData({
   const cityName = city?.name || t("selected-city");
   const populationData = normalizePopulationData(population);
   const manualPopulation = run?.manual_population ?? null;
-  const displayedPopulation = manualPopulation ?? populationData;
+  // Prefer what the models actually see; fall back to the live city record.
+  const displayedPopulation =
+    manualPopulation ?? bundle.cityPopulation ?? populationData;
   const populationLabel = displayedPopulation
     ? t("population", {
         population: new Intl.NumberFormat(lng).format(
@@ -274,7 +276,7 @@ export function useConceptNoteWorkspaceData({
     populationFailed,
     populationLabel,
     populationLoading,
-    populationMissing: !populationData,
+    populationData,
     refetchDraft,
     refetchRun,
     retryActiveUpload,

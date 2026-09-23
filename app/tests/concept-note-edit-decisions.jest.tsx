@@ -190,19 +190,24 @@ async function click(label: string) {
   await act(async () => button!.click());
 }
 
-it("shows persisted protected-match exclusions alongside the proposal", async () => {
+it("keeps protected-match exclusions in the review details, not the toolbar", async () => {
   proposals = [
     { ...proposal, notices: [{ code: "protected_markers", count: 55 }] },
   ];
   await act(async () => root.render(<Harness />));
-  expect(
-    container.querySelector('[data-testid="concept-note-edit-exclusion"]')
-      ?.textContent,
-  ).toContain("55");
-  expect(
-    container.querySelector('[data-testid="concept-note-edit-exclusion"]')
-      ?.textContent,
-  ).toContain("preserved");
+  const exclusion = () =>
+    document.querySelector('[data-testid="concept-note-edit-exclusion"]');
+  expect(exclusion()).toBeNull();
+
+  await act(async () => {
+    container
+      .querySelector<HTMLButtonElement>(
+        '[data-testid="concept-note-edit-options"]',
+      )!
+      .click();
+  });
+  expect(exclusion()?.textContent).toContain("55");
+  expect(exclusion()?.textContent).toContain("preserved");
 });
 
 it("accepts remaining changes without applying a manually rejected change", async () => {

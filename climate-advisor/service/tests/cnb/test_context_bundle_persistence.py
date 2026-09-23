@@ -671,3 +671,75 @@ async def test_recovery_marks_only_stale_building_runs_retryable(tmp_path) -> No
         assert stored_ready.context_summary["context_bundle"]["status"] == "ready"
     finally:
         await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_progress_reports_the_city_population_the_models_receive(
+    tmp_path,
+) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    city = {"name": "Kraków", "population": 1_000_000, "population_year": 2025}
+
+    async def build(city_profile: dict | None) -> dict:
+        snapshot = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+            force=True,
+        )
+        async with session_factory() as session:
+            building = (await session.get(ConceptNoteRun, run_id)).context_summary
+        assert await complete_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=snapshot.build_id,
+            selected_sources=[],
+            city=city_profile,
+            ghgi=None,
+            hiap=None,
+            optional_sources={
+                "city": "available",
+                "ghgi": "missing",
+                "hiap": "missing",
+            },
+            warnings=[],
+        )
+        async with session_factory() as session:
+            ready = (await session.get(ConceptNoteRun, run_id)).context_summary
+        return {
+            "building": building["context_bundle"],
+            "ready": ready["context_bundle"],
+        }
+
+    try:
+        async with session_factory() as session, session.begin():
+            session.add(concept_note_run(run_id))
+
+        # A city profile without a population record reports no population.
+        first = await build({**city, "population": None})
+        assert first["building"]["city_population"] is None
+        assert first["building"]["optional_sources"]["city"] == "pending"
+        assert first["ready"]["available_context"]["city"] is True
+        assert first["ready"]["city_population"] is None
+
+        second = await build(city)
+        assert second["ready"]["city_population"] == {
+            "population": 1_000_000,
+            "year": 2025,
+        }
+
+        # A rebuild whose city lookup fails keeps reporting the stored figure.
+        third = await build(None)
+        assert third["building"]["city_population"] == {
+            "population": 1_000_000,
+            "year": 2025,
+        }
+        assert third["ready"]["city_population"] == {
+            "population": 1_000_000,
+            "year": 2025,
+        }
+    finally:
+        await engine.dispose()

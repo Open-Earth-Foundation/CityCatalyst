@@ -926,8 +926,9 @@ sets Ready. Open critical gaps prevent confirmation and export, while persisted
 non-critical caveats remain visible and non-blocking. When a newly analyzed
 upload affects an already Ready chapter, the confirmed revision is preserved
 and a separate proposed revision requires renewed review. The CNB Alembic
-revision `20260823_120000` provisions the structured gap, append-only resolution,
-and exact-revision review contract.
+revision `20260907_120000` provisions the structured gap, append-only resolution,
+and exact-revision review contract; `20260924_120000` adds per-chapter
+regeneration status tracking.
 
 ### Concept Note draft review and chat editing
 

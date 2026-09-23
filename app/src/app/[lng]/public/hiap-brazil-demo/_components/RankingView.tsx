@@ -1,6 +1,6 @@
 "use client";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { Box, Card, HStack, VStack } from "@chakra-ui/react";
+import { Box, Card, VStack } from "@chakra-ui/react";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { LabelLarge } from "@/components/package/Texts/Label";
@@ -229,14 +229,9 @@ export function RankingView({
           <Card.Root borderColor="border.overlay">
             <Card.Body p="l">
               <VStack alignItems="stretch" gap="m">
-                <HStack gap="s" alignItems="center" flexWrap="wrap">
-                  <LabelLarge color="content.primary">
-                    {t("funnel-title")}
-                  </LabelLarge>
-                  <MeedStatusTag tone="info">
-                    {t("funnel-per-city")}
-                  </MeedStatusTag>
-                </HStack>
+                <LabelLarge color="content.primary">
+                  {t("funnel-title")}
+                </LabelLarge>
                 <MeedFunnelStrip
                   steps={funnel}
                   size="lg"

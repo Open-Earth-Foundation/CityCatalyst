@@ -6,7 +6,7 @@ import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { MeedButton } from "../../../components/MeedButton";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import { HeadlineSmall } from "@/components/package/Texts/Headline";
+import { HeadlineLarge } from "@/components/package/Texts/Headline";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
 import { Caption } from "@/components/package/Texts/Caption";
@@ -114,13 +114,13 @@ export function TopPickCard({
 
         <VStack alignItems="stretch" gap="xs" mt="s">
           <HStack alignItems="baseline" gap="s">
-            <HeadlineSmall
+            <HeadlineLarge
               color="content.primary"
               fontVariantNumeric="tabular-nums"
               lineHeight="1"
             >
               {action.final_score.toFixed(2)}
-            </HeadlineSmall>
+            </HeadlineLarge>
             <Caption color="content.tertiary">
               {t("detail-final-score")}
             </Caption>

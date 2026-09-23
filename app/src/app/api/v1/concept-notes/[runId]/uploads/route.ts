@@ -4,7 +4,7 @@
  *   post:
  *     operationId: createConceptNoteUpload
  *     summary: Register and process an authorized Concept Note source upload
- *     description: Initial uploads replay a persisted identity bound to the original file bytes; other uploads receive a new UUID v4.
+ *     description: Initial uploads replay a persisted identity bound to the original file bytes; a failed replay is re-queued before the handoff is acknowledged. Other uploads receive a new UUID v4.
  *     tags:
  *       - concept-notes
  *     parameters:
@@ -96,6 +96,7 @@ import {
   normalizeConceptNoteMarkdown,
   normalizeConceptNotePdfOcrStatus,
   registerConceptNoteMarkdownUpload,
+  retryConceptNotePdfOcr,
 } from "@/backend/PdfOcrService";
 import {
   callConceptNoteApi,
@@ -280,6 +281,16 @@ export const POST = apiHandler(async (req, { session, params }) => {
       "Climate Advisor returned an invalid upload identity",
     );
   }
+  // Idempotent create keeps a failed row failed; re-queue it before replaying.
+  if (created.data.status === "failed") {
+    await updateConceptNoteUpload({
+      runId,
+      uploadId,
+      userId,
+      action: "retry",
+      requestId: currentRequestId,
+    });
+  }
 
   let failureCode = "source_storage_failed";
   let job:
@@ -300,6 +311,10 @@ export const POST = apiHandler(async (req, { session, params }) => {
         uploadId,
         markdownText ?? "",
       );
+    }
+    // A replay can find the job from an earlier failed attempt.
+    if (normalizeConceptNotePdfOcrStatus(job).status === "failed") {
+      await retryConceptNotePdfOcr(job);
     }
   } catch (error) {
     if (createHttpError.isHttpError(error)) {

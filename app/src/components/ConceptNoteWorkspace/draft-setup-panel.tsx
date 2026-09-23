@@ -2,6 +2,7 @@ import { Box, Flex, HStack, Icon, Text } from "@chakra-ui/react";
 import {
   LuCircleAlert,
   LuDatabase,
+  LuLandmark,
   LuRefreshCw,
   LuSparkles,
 } from "react-icons/lu";
@@ -33,6 +34,7 @@ interface DraftSetupPanelProps {
   isStartingDraft: boolean;
   lng: string;
   onOpenContext: () => void;
+  onOpenFundingSetup: () => void;
   onRetry: () => void;
   onStartDrafting: () => void;
 }
@@ -81,7 +83,11 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
     ? t("drafting-setup-load-error")
     : props.applicationContextLoading
       ? t("drafting-setup-loading")
-      : t("drafting-setup-missing", { requirements: requirements.join(", ") });
+      : t("drafting-setup-missing", {
+          requirements: new Intl.ListFormat(props.lng, {
+            type: "conjunction",
+          }).format(requirements),
+        });
   const totalChapters =
     draft?.total_chapters ||
     props.applicationContext?.template?.chapter_schema.length ||
@@ -211,16 +217,27 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
             >
               {setupDescription}
             </Text>
-            {!props.applicationContextFailed &&
-              !props.applicationContextLoading && (
-                <Text
-                  mt={1}
-                  fontSize="label.sm"
-                  lineHeight="20px"
-                  color="content.secondary"
+            {!props.applicationContextLoading &&
+              (props.applicationContextFailed || requirements.length > 0) && (
+                <Button
+                  mt={3}
+                  size="sm"
+                  variant="outline"
+                  onClick={props.onOpenFundingSetup}
                 >
-                  {t("drafting-setup-review-context")}
-                </Text>
+                  <Icon
+                    as={
+                      props.applicationContextFailed ? LuRefreshCw : LuLandmark
+                    }
+                  />
+                  {t(
+                    props.applicationContextFailed
+                      ? "try-again"
+                      : props.applicationContext?.funder
+                        ? "drafting-setup-change-funding"
+                        : "drafting-setup-choose-funding",
+                  )}
+                </Button>
               )}
           </Box>
         </Flex>

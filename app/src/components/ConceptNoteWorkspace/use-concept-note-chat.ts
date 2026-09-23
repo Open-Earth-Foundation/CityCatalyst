@@ -14,6 +14,10 @@ import {
   readConceptNoteThreadMessages,
 } from "./chat-utils";
 
+// The service replaces this content with its own hidden overview trigger.
+const DRAFT_OVERVIEW_CONTENT = "draft_overview";
+const DRAFT_OVERVIEW_UNAVAILABLE = "concept_note_draft_overview_unavailable";
+
 interface UseConceptNoteChatOptions {
   lng: string;
   runId: string;
@@ -30,6 +34,7 @@ interface ConceptNoteChatController {
   reasoning: ConceptNoteReasoning[];
   messages: ConceptNoteChatMessage[];
   sendMessage: (content: string) => Promise<void>;
+  requestDraftOverview: () => Promise<void>;
 }
 
 export function useConceptNoteChat({
@@ -48,6 +53,8 @@ export function useConceptNoteChat({
   const [error, setError] = useState<string | null>(null);
   const assistantMessageIdRef = useRef<string | null>(null);
   const pendingUserMessageIdRef = useRef<string | null>(null);
+  // The overview turn keeps its own label instead of the request-based stages.
+  const draftOverviewTurnRef = useRef(false);
 
   const { startStream, stopStream } = useSSEStream({
     forceEventStream: true,
@@ -70,7 +77,11 @@ export function useConceptNoteChat({
     },
     onProgress: (value) => {
       const update = readConceptNoteProgress(value);
-      if (assistantMessageIdRef.current && update) {
+      if (
+        assistantMessageIdRef.current &&
+        update &&
+        !draftOverviewTurnRef.current
+      ) {
         setProgress(update);
       }
     },
@@ -92,9 +103,11 @@ export function useConceptNoteChat({
       if (!assistantMessageId) {
         return;
       }
-      setProgress((current) =>
-        current?.stage === "responding" ? current : { stage: "responding" },
-      );
+      if (!draftOverviewTurnRef.current) {
+        setProgress((current) =>
+          current?.stage === "responding" ? current : { stage: "responding" },
+        );
+      }
       setMessages((current) =>
         current.map((message) =>
           message.id === assistantMessageId
@@ -104,12 +117,14 @@ export function useConceptNoteChat({
       );
     },
     onComplete: () => {
+      draftOverviewTurnRef.current = false;
       setReasoning([]);
       assistantMessageIdRef.current = null;
       pendingUserMessageIdRef.current = null;
       setIsGenerating(false);
     },
     onError: (_message, code) => {
+      draftOverviewTurnRef.current = false;
       setReasoning([]);
       const assistantMessageId = assistantMessageIdRef.current;
       const rejectedUserMessageId =
@@ -128,6 +143,11 @@ export function useConceptNoteChat({
       }
       assistantMessageIdRef.current = null;
       pendingUserMessageIdRef.current = null;
+      setIsGenerating(false);
+      // Another tab or an earlier visit already posted this overview.
+      if (code === DRAFT_OVERVIEW_UNAVAILABLE) {
+        return;
+      }
       setError(
         t(
           code === "concept_note_context_not_ready"
@@ -135,7 +155,6 @@ export function useConceptNoteChat({
             : "chat-send-error",
         ),
       );
-      setIsGenerating(false);
     },
   });
 
@@ -185,19 +204,59 @@ export function useConceptNoteChat({
       return;
     }
 
-    const assistantMessageId = crypto.randomUUID();
     const userMessageId = crypto.randomUUID();
-    assistantMessageIdRef.current = assistantMessageId;
     pendingUserMessageIdRef.current = userMessageId;
+    await streamReply({
+      userMessage: { id: userMessageId, role: "user", text: normalizedContent },
+      content: normalizedContent,
+      context: editScope
+        ? {
+            concept_note_edit: {
+              scope: editScope,
+              idempotency_key: crypto.randomUUID(),
+            },
+          }
+        : {},
+    });
+  }
+
+  // Starts the hidden first turn that summarises a finished drafting pass.
+  async function requestDraftOverview(): Promise<void> {
+    if (!threadId || isGenerating) {
+      return;
+    }
+    draftOverviewTurnRef.current = true;
+    await streamReply({
+      content: DRAFT_OVERVIEW_CONTENT,
+      context: {},
+      options: { concept_note_turn: "draft_overview" },
+    });
+  }
+
+  async function streamReply({
+    userMessage,
+    content,
+    context,
+    options,
+  }: {
+    userMessage?: ConceptNoteChatMessage;
+    content: string;
+    context: Record<string, unknown>;
+    options?: Record<string, unknown>;
+  }): Promise<void> {
+    const assistantMessageId = crypto.randomUUID();
+    assistantMessageIdRef.current = assistantMessageId;
     setMessages((current) => [
       ...current,
-      { id: userMessageId, role: "user", text: normalizedContent },
+      ...(userMessage ? [userMessage] : []),
       { id: assistantMessageId, role: "assistant", text: "" },
     ]);
     setError(null);
     setIsGenerating(true);
     setReasoning([]);
-    setProgress({ stage: "preparing" });
+    setProgress({
+      stage: draftOverviewTurnRef.current ? "summarizing_draft" : "preparing",
+    });
 
     try {
       await startStream("/api/v1/chat/messages", {
@@ -205,24 +264,19 @@ export function useConceptNoteChat({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           threadId,
-          content: normalizedContent,
+          content,
           context: {
             concept_note_run_id: runId,
             // Lets Clima's help quote control labels in the visible UI language.
             ui_locale: lng,
-            ...(editScope
-              ? {
-                  concept_note_edit: {
-                    scope: editScope,
-                    idempotency_key: crypto.randomUUID(),
-                  },
-                }
-              : {}),
+            ...context,
           },
+          ...(options ? { options } : {}),
         }),
       });
     } catch (requestError) {
       if (requestError instanceof Error && requestError.name === "AbortError") {
+        draftOverviewTurnRef.current = false;
         assistantMessageIdRef.current = null;
         setIsGenerating(false);
         setReasoning([]);
@@ -238,5 +292,6 @@ export function useConceptNoteChat({
     reasoning,
     messages: messagesThreadId === threadId ? messages : [],
     sendMessage,
+    requestDraftOverview,
   };
 }

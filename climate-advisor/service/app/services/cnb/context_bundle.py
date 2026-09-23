@@ -32,6 +32,7 @@ from app.services.cnb.source_analysis import (
 from app.services.concept_note_city_context import (
     ConceptNoteCityContextDataError,
     load_accessible_inventory,
+    load_city_profile,
     load_ghgi_context,
     load_hiap_context,
 )
@@ -166,16 +167,25 @@ class ContextBundleService:
 
                 # Enrich every run with best-effort CityCatalyst context.
                 (
-                    ghgi,
-                    hiap,
-                    optional_statuses,
-                    warnings,
-                ) = await self._load_optional_context(
-                    user_id=user_id,
-                    city_id=UUID(active.city_id),
-                    token=token,
-                    cc_client=cc_client,
+                    (ghgi, hiap, optional_statuses, warnings),
+                    (city, city_status, city_warning),
+                ) = await asyncio.gather(
+                    self._load_optional_context(
+                        user_id=user_id,
+                        city_id=UUID(active.city_id),
+                        token=token,
+                        cc_client=cc_client,
+                    ),
+                    self._try_load_city(
+                        cc_client=cc_client,
+                        user_id=user_id,
+                        city_id=UUID(active.city_id),
+                        token=token,
+                    ),
                 )
+                optional_statuses = {"city": city_status, **optional_statuses}
+                if city_warning:
+                    warnings.insert(0, city_warning)
                 if not active.uploads:
                     warnings.insert(
                         0,
@@ -189,6 +199,7 @@ class ContextBundleService:
                     run_id=run_id,
                     build_id=active.build_id,
                     selected_sources=list(selected_sources),
+                    city=city,
                     ghgi=ghgi,
                     hiap=hiap,
                     optional_sources=optional_statuses,
@@ -339,6 +350,29 @@ class ContextBundleService:
         hiap, statuses["hiap"], hiap_warning = hiap_result
         warnings.extend(item for item in (ghgi_warning, hiap_warning) if item)
         return ghgi, hiap, statuses, warnings
+
+    async def _try_load_city(
+        self,
+        *,
+        cc_client: CityCatalystClient,
+        user_id: str,
+        city_id: UUID,
+        token: str,
+    ) -> tuple[dict[str, Any] | None, str, str | None]:
+        """Return the city profile, or an explicit null that does not block readiness."""
+        try:
+            profile = await load_city_profile(
+                cc_client=cc_client,
+                user_id=user_id,
+                city_id=city_id,
+                token=token,
+            )
+        except (CityCatalystClientError, ConceptNoteCityContextDataError):
+            return None, "unavailable", "City profile was unavailable."
+        except Exception:
+            logger.exception("Unexpected optional city profile lookup failure")
+            return None, "unavailable", "City profile was unavailable."
+        return profile, "available", None
 
     async def _try_load_ghgi(
         self,

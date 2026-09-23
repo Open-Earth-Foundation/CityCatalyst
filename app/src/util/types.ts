@@ -1294,6 +1294,7 @@ export interface ConceptNoteDraftState {
   total_chapters: number;
   current_chapter_id: string | null;
   error_code: string | null;
+  overview_pending?: boolean;
   chapters: ConceptNoteDraftChapter[];
 }
 

@@ -403,14 +403,11 @@ async def test_funding_switch_replaces_only_untouched_materialized_structure(
             ]
 
 
-@pytest.mark.parametrize(
-    "section,status", [("context_bundle", "building"), ("draft_document", "running")]
-)
-async def test_selection_is_blocked_during_generation(section, status):
+async def test_selection_is_blocked_during_draft_generation():
     async with _workspace_repository() as (_, factory), _ca_session() as session:
         first, _, opportunity_id = await _seed(factory)
         run = await _run(session)
-        run.context_summary = {section: {"status": status}}
+        run.context_summary = {"draft_document": {"status": "running"}}
         await session.commit()
         with pytest.raises(HTTPException) as busy:
             await save_funding_selection(
@@ -421,6 +418,24 @@ async def test_selection_is_blocked_during_generation(section, status):
             )
         assert busy.value.status_code == 409
         assert run.funder_id is None
+
+
+async def test_selection_is_allowed_while_documents_process():
+    async with _workspace_repository() as (_, factory), _ca_session() as session:
+        first, _, opportunity_id = await _seed(factory)
+        run = await _run(session)
+        run.context_summary = {"context_bundle": {"status": "building"}}
+        await session.commit()
+        await save_funding_selection(
+            session,
+            run,
+            _selection(first, opportunity_id),
+            reference_factory=factory,
+        )
+        assert run.funder_id == first
+        assert run.selected_funding_opportunity_id == opportunity_id
+        bundle = await session.get(ConceptNoteContextBundle, run.run_id)
+        assert bundle.context_bundle["funder_context"]["funder"]["id"] == str(first)
 
 
 def test_opportunity_requires_funder():

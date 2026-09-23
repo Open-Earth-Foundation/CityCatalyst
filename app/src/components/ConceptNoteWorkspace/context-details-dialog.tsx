@@ -193,14 +193,14 @@ export function ContextDetailsDialog({
   tone,
 }: ContextDetailsDialogProps) {
   const { t } = useTranslation(lng, "concept-notes");
-  const ghgiCandidate = cityDashboard?.widgets.ghgi;
+  const ghgiCandidate = cityDashboard?.widgets?.ghgi;
   const ghgi =
     ghgiCandidate?.inventory && ghgiCandidate.totalEmissions
       ? ghgiCandidate
       : null;
-  const ccraCandidate = cityDashboard?.widgets.ccra;
+  const ccraCandidate = cityDashboard?.widgets?.ccra;
   const ccra = Array.isArray(ccraCandidate?.topRisks) ? ccraCandidate : null;
-  const hiapCandidate = cityDashboard?.widgets.hiap;
+  const hiapCandidate = cityDashboard?.widgets?.hiap;
   const hiap =
     Array.isArray(hiapCandidate?.mitigation?.rankedActions) &&
     Array.isArray(hiapCandidate?.mitigation?.unrankedActions) &&

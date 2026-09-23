@@ -122,11 +122,23 @@ function ContextCard({
 }: ContextCardProps) {
   return (
     <Box
-      as={onClick ? "button" : "div"}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
       minW={0}
       textAlign="start"
       cursor={onClick ? "pointer" : "default"}
       onClick={onClick}
+      onKeyDown={
+        onClick
+          ? (event) => {
+              if (event.target !== event.currentTarget) return;
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onClick();
+              }
+            }
+          : undefined
+      }
       _hover={onClick ? { borderColor: "interactive.control" } : undefined}
       _focusVisible={
         onClick
@@ -155,7 +167,10 @@ function ContextCard({
               textTransform="none"
               letterSpacing="normal"
               disabled={action.disabled}
-              onClick={action.onClick}
+              onClick={(event) => {
+                event.stopPropagation();
+                action.onClick();
+              }}
             >
               {action.label}
             </Button>
@@ -274,13 +289,14 @@ export function ContextTab({
         ? "warning"
         : "neutral";
   const ghgiAvailable = Boolean(
-    cityDashboard?.widgets.ghgi?.inventory &&
+    cityDashboard?.widgets?.ghgi?.inventory &&
     cityDashboard.widgets.ghgi.totalEmissions,
   );
-  const ccraAvailable = Boolean(cityDashboard?.widgets.ccra?.topRisks?.length);
+  const ccraAvailable = Boolean(cityDashboard?.widgets?.ccra?.topRisks?.length);
   const hiapAvailable = Boolean(
-    (cityDashboard?.widgets.hiap?.mitigation?.rankedActions?.length ?? 0) > 0 ||
-    (cityDashboard?.widgets.hiap?.adaptation?.rankedActions?.length ?? 0) > 0,
+    (cityDashboard?.widgets?.hiap?.mitigation?.rankedActions?.length ?? 0) >
+      0 ||
+    (cityDashboard?.widgets?.hiap?.adaptation?.rankedActions?.length ?? 0) > 0,
   );
   const detailStatus =
     detailKey === "funder"

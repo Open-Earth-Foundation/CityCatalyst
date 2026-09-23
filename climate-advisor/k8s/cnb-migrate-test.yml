@@ -1,4 +1,4 @@
-# CNB migration job for the test deployment (currently using the development CNB database).
+# CNB migration job for the isolated cnb_test database.
 apiVersion: batch/v1
 kind: Job
 metadata:

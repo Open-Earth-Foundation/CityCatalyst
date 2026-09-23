@@ -1396,16 +1396,19 @@ Notes:
 
 ## Kubernetes CNB Database Deployment
 
-GitHub Actions is the credential source of truth. Configure
-`CNB_DATABASE_URL_DEV` and `CNB_DATABASE_URL_PROD` as repository Secrets; the
-test deployment intentionally reuses the development value until a distinct
-test database is available. Rotate any credential shared in chat or ticket text
-before saving it, and URL-encode reserved password characters in the DSN.
+CNB database connections are configured in the environment-specific database
+ConfigMaps under `k8s/`. The test ConfigMap sets `CNB_DATABASE_URL` to the
+`cnb_test` database and user on
+`dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com`, port `5432`.
+Both the test Deployment and CNB migration Job consume
+`climate-advisor-db-configmap-test` through `envFrom`, following the existing
+Kubernetes configuration pattern. The CA, development, and production database
+configurations are unchanged.
 
-Each deployment workflow reconciles an environment-specific Kubernetes Secret
-containing only `CNB_DATABASE_URL`. The Climate Advisor Deployment and CNB
-migration Job consume that Secret with `secretRef`; CNB credentials do not
-belong in the existing database ConfigMaps or in checked-in Secret manifests.
+After deployment, verify that the runtime connection uses database and user
+`cnb_test`, the CNB migration Job completes, and required test funding/reference
+data is present before running a full CNB smoke flow. This configuration change
+does not copy development data or seed the new database.
 
 Each deployment workflow launches the existing CA migration Job, then the CNB
 Job (`alembic -c cnb-alembic.ini upgrade head`). The workflow waits for the CNB

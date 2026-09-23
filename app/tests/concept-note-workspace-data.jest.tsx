@@ -313,6 +313,15 @@ describe("useConceptNoteWorkspaceData", () => {
     expect(container.textContent?.match(/status-failed/g)).toHaveLength(2);
     expect(container.textContent).not.toContain("status-ready");
   });
+  it("labels a file that is still converting as converting, not processing", async () => {
+    contextScenario = {
+      uploads: [source("processing", "A")],
+      progress_summary: { context_bundle: { status: "building" } },
+    };
+    await act(async () => root.render(<ContextHarness />));
+    expect(container.textContent).toContain("status-converting");
+    expect(container.textContent).not.toContain("status-processing");
+  });
   it("shows a run-scoped manual population when the city source has no value", async () => {
     cityPopulation = { cityId: "city-1" };
     contextScenario = {

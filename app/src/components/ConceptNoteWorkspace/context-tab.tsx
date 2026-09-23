@@ -212,11 +212,13 @@ export function ContextTab({
     ? t(getContextSourceStatusTranslationKey(bundle.hiapStatus))
     : t("not-available");
   // A converted file is not ready for chat until context assembly finishes.
-  const uploadStatus =
-    upload?.status === "ready" && contextStatus.blocked
-      ? contextStatus.state === "failed"
-        ? "failed"
-        : "processing"
+  // Kept separate from the raw "processing" status, which means converting.
+  const awaitingContext = upload?.status === "ready" && contextStatus.blocked;
+  const contextFailed = awaitingContext && contextStatus.state === "failed";
+  const uploadStatus = contextFailed
+    ? "failed"
+    : awaitingContext
+      ? null
       : (upload?.status ?? "queued");
   const uploadTone: ContextTone =
     uploadStatus === "ready"
@@ -225,7 +227,7 @@ export function ContextTab({
         ? "warning"
         : "neutral";
   const uploadStatusLabel = t(
-    uploadStatus === "processing"
+    awaitingContext && !contextFailed
       ? "status-processing"
       : uploadStatusTranslationKey(uploadStatus),
   );

@@ -141,7 +141,7 @@ export function MeedScoreComposition({
             key={pillar}
             alignItems="stretch"
             gap="xs"
-            p="m"
+            p="l"
             borderRadius="rounded"
             bg="background.neutral"
           >

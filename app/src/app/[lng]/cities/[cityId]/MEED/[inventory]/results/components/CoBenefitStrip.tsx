@@ -102,7 +102,7 @@ function TallyBlock({
             }
             h="full"
           >
-            <Card.Body p="m">
+            <Card.Body p="l">
               <VStack alignItems="flex-start" gap="s" h="full">
                 <HStack justifyContent="space-between" w="full" gap="s">
                   <Icon

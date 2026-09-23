@@ -71,8 +71,8 @@ export function NotRankedLane({
   })).filter((g) => g.actions.length > 0);
 
   return (
-    <VStack alignItems="stretch" gap="m">
-      <VStack alignItems="stretch" gap="xs">
+    <VStack alignItems="stretch" gap="l">
+      <VStack alignItems="stretch" gap="s">
         <TitleMedium color="content.primary">
           {t("not-ranked-title", { count: items.length })}
         </TitleMedium>
@@ -83,7 +83,7 @@ export function NotRankedLane({
       {groups.map(({ reason, actions }) => (
         <Card.Root key={reason} borderColor="border.overlay">
           <Card.Body p="l">
-            <VStack alignItems="stretch" gap="m">
+            <VStack alignItems="stretch" gap="l">
               <HStack gap="s" alignItems="flex-start">
                 <Icon
                   as={REASON_ICON[reason]}

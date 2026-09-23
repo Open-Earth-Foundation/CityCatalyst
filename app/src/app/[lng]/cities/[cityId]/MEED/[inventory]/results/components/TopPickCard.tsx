@@ -89,7 +89,7 @@ export function TopPickCard({
       bg={isSelected ? "background.neutral" : "base.light"}
       transition="border-color 0.15s, background-color 0.15s"
     >
-      <Card.Body display="flex" flexDirection="column" gap="s" h="full">
+      <Card.Body display="flex" flexDirection="column" gap="m" h="full" p="l">
         <HStack justifyContent="space-between" alignItems="flex-start" gap="s">
           <HStack gap="xs" alignItems="center">
             <Icon as={LuBookmark} boxSize="14px" color="content.link" />

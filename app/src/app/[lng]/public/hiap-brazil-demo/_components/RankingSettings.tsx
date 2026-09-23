@@ -160,7 +160,7 @@ export function RankingSettings({
           <Box
             px="l"
             pb="l"
-            pt="m"
+            pt="l"
             borderTopWidth="1px"
             borderColor="border.overlay"
           >

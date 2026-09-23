@@ -39,8 +39,8 @@ export function ActionMiniCard({
 }) {
   return (
     <Card.Root borderColor="border.neutral" h="full">
-      <Card.Body p="m">
-        <VStack alignItems="stretch" gap="s" h="full">
+      <Card.Body p="l">
+        <VStack alignItems="stretch" gap="m" h="full">
           <HStack gap="s" flexWrap="wrap">
             <Overline color="content.tertiary">
               {pick(SECTOR_LABEL[action.sector], lng)}

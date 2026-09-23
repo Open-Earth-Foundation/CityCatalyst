@@ -52,7 +52,7 @@ export function TopPicks({
   progress?: string | null;
 }) {
   return (
-    <VStack alignItems="stretch" gap="m">
+    <VStack alignItems="stretch" gap="l">
       <HStack
         justifyContent="space-between"
         alignItems="flex-start"
@@ -79,7 +79,7 @@ export function TopPicks({
         )}
       </HStack>
 
-      <SimpleGrid columns={{ base: 1, md: 3 }} gap="m" alignItems="stretch">
+      <SimpleGrid columns={{ base: 1, md: 3 }} gap="l" alignItems="stretch">
         {isCatalogLoading
           ? actions.map((action) => (
               <MeedCardSkeleton key={action.action_id} lines={3} />

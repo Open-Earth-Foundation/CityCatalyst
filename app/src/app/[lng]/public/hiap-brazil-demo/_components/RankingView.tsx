@@ -202,7 +202,7 @@ export function RankingView({
 
   return (
     <>
-      <VStack alignItems="stretch" gap="xl">
+      <VStack alignItems="stretch" gap="xxl">
         <ResultsHeader
           rankedCount={ranked.length}
           excludedCount={adaptation ? adaptation.notRanked.length : null}

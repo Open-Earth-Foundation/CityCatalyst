@@ -144,7 +144,7 @@ function Row({
       justifyContent="space-between"
       alignItems="center"
       gap="m"
-      py="m"
+      py="l"
       borderBottomWidth={isLast ? 0 : "1px"}
       borderColor="border.overlay"
     >

@@ -62,7 +62,7 @@ export function RankingTable({
     <Card.Root overflow="hidden">
       <HStack
         px="l"
-        py="m"
+        py="l"
         gap="m"
         alignItems="flex-start"
         justifyContent="space-between"

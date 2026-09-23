@@ -56,12 +56,6 @@ const LEVEL_TONE: Record<string, MeedTone> = {
   low: "neutral",
 };
 
-function Provenance({ ok, label }: { ok: boolean; label: string }) {
-  return (
-    <MeedStatusTag tone={ok ? "positive" : "warning"}>{label}</MeedStatusTag>
-  );
-}
-
 /**
  * The adaptation-specific half of the action drawer — what the shared
  * `DetailPanel` cannot know: which risk cells the action credits and how,
@@ -99,19 +93,7 @@ export function AdaptationDrawerSections({
   return (
     <>
       {/* Risk cells credited */}
-      <DrawerSection
-        title={t("drawer-risk-title")}
-        tag={
-          <Provenance
-            ok={action.provenance.linksReviewed}
-            label={t(
-              action.provenance.linksReviewed
-                ? "prov-reviewed"
-                : "prov-proposed",
-            )}
-          />
-        }
-      >
+      <DrawerSection title={t("drawer-risk-title")}>
         {action.uncoveredHazard ? (
           <HStack
             gap="s"
@@ -321,19 +303,7 @@ export function AdaptationDrawerSections({
       )}
 
       {/* Legal */}
-      <DrawerSection
-        title={t("drawer-legal-title")}
-        tag={
-          <Provenance
-            ok={action.provenance.legalReviewed}
-            label={t(
-              action.provenance.legalReviewed
-                ? "prov-icare"
-                : "prov-placeholder",
-            )}
-          />
-        }
-      >
+      <DrawerSection title={t("drawer-legal-title")}>
         <HStack gap="s" flexWrap="wrap" alignItems="center">
           <MeedStatusTag tone={GRADE_TONE[grade]}>
             {pick(GRADE_LABEL[grade], lng)}
@@ -414,7 +384,7 @@ export function AdaptationDrawerSections({
                 alignItems="flex-start"
                 gap="m"
                 px="m"
-                py="s"
+                py="m"
                 borderTopWidth={i === 0 ? 0 : "1px"}
                 borderColor="border.overlay"
               >
@@ -472,32 +442,6 @@ export function AdaptationDrawerSections({
               </BodyMedium>
             </HStack>
           ))}
-          {action.coBenefitsAiOnly && (
-            <HStack gap="s" alignItems="flex-start">
-              <Icon
-                as={LuInfo}
-                boxSize="14px"
-                color="sentiment.warningDefault"
-                mt="3px"
-              />
-              <BodyMedium color="content.secondary">
-                {t("prov-cobenefits-ai")}
-              </BodyMedium>
-            </HStack>
-          )}
-          {!action.provenance.policyReviewed && (
-            <HStack gap="s" alignItems="flex-start">
-              <Icon
-                as={LuInfo}
-                boxSize="14px"
-                color="sentiment.warningDefault"
-                mt="3px"
-              />
-              <BodyMedium color="content.secondary">
-                {t("prov-policy-unreviewed")}
-              </BodyMedium>
-            </HStack>
-          )}
           <Caption color="content.tertiary">
             {t("drawer-source-line", {
               source: action.source.toUpperCase(),

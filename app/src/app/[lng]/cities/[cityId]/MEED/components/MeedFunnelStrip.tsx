@@ -1,5 +1,5 @@
 "use client";
-import { Box, HStack, VStack } from "@chakra-ui/react";
+import { Box, Grid, HStack, VStack } from "@chakra-ui/react";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { Overline } from "@/components/package/Texts/Overline";
 import { HeadlineLarge } from "@/components/package/Texts/Headline";
@@ -14,8 +14,8 @@ const TONE_COLOR: Record<MeedTone, string> = {
   neutral: "content.tertiary",
   info: "content.link",
   positive: "interactive.tertiary",
-  warning: "sentiment.warningDefault",
-  caution: "interactive.quaternary",
+  warning: "sentiment.warningFg",
+  caution: "sentiment.warningFg",
   negative: "sentiment.negativeDefault",
 };
 
@@ -66,50 +66,102 @@ export function MeedFunnelStrip({
   const strip = (
     <VStack
       alignItems="stretch"
-      gap="s"
+      gap="m"
       w="full"
       role="img"
       aria-label={ariaLabel}
       tabIndex={-1}
     >
-      <HStack
-        justifyContent="space-between"
-        alignItems="flex-start"
-        gap="m"
-        flexWrap={compact ? "nowrap" : "wrap"}
-      >
-        {steps.map((step) =>
-          size === "lg" && !compact ? (
-            <VStack key={step.label} alignItems="flex-start" gap="xs" minW={0}>
-              <LabelMedium color="content.tertiary">{step.label}</LabelMedium>
-              <HeadlineLarge
-                color={TONE_COLOR[step.tone]}
-                fontVariantNumeric="tabular-nums"
-                lineHeight="1"
+      {compact ? (
+        <HStack justifyContent="space-between" alignItems="flex-start" gap="m">
+          {steps.map((step) =>
+            size === "lg" && !compact ? (
+              <VStack
+                key={step.label}
+                alignItems="flex-start"
+                gap="xs"
+                minW={0}
               >
-                {step.value}
-              </HeadlineLarge>
-              {showSublabels && step.sublabel && (
-                <BodySmall color="content.secondary">{step.sublabel}</BodySmall>
-              )}
-            </VStack>
-          ) : (
-            <VStack key={step.label} alignItems="flex-start" gap="0" minW={0}>
-              <Overline color="content.tertiary">{step.label}</Overline>
-              <TitleLarge
-                color={TONE_COLOR[step.tone]}
-                fontVariantNumeric="tabular-nums"
-                fontSize={compact ? "title.md" : undefined}
+                <LabelMedium color="content.tertiary">{step.label}</LabelMedium>
+                <HeadlineLarge
+                  color={TONE_COLOR[step.tone]}
+                  fontVariantNumeric="tabular-nums"
+                  lineHeight="1"
+                >
+                  {step.value}
+                </HeadlineLarge>
+                {showSublabels && step.sublabel && (
+                  <BodySmall color="content.secondary">
+                    {step.sublabel}
+                  </BodySmall>
+                )}
+              </VStack>
+            ) : (
+              <VStack key={step.label} alignItems="flex-start" gap="0" minW={0}>
+                <Overline color="content.tertiary">{step.label}</Overline>
+                <TitleLarge
+                  color={TONE_COLOR[step.tone]}
+                  fontVariantNumeric="tabular-nums"
+                  fontSize={compact ? "title.md" : undefined}
+                >
+                  {step.value}
+                </TitleLarge>
+                {!compact && showSublabels && step.sublabel && (
+                  <Caption color="content.secondary">{step.sublabel}</Caption>
+                )}
+              </VStack>
+            ),
+          )}
+        </HStack>
+      ) : (
+        <Grid
+          templateColumns={{
+            base: "repeat(2, minmax(0, 1fr))",
+            md: "repeat(3, minmax(0, 1fr))",
+            lg: `repeat(${steps.length}, minmax(0, 1fr))`,
+          }}
+          gap="l"
+        >
+          {steps.map((step) =>
+            size === "lg" && !compact ? (
+              <VStack
+                key={step.label}
+                alignItems="flex-start"
+                gap="xs"
+                minW={0}
               >
-                {step.value}
-              </TitleLarge>
-              {!compact && showSublabels && step.sublabel && (
-                <Caption color="content.secondary">{step.sublabel}</Caption>
-              )}
-            </VStack>
-          ),
-        )}
-      </HStack>
+                <LabelMedium color="content.tertiary">{step.label}</LabelMedium>
+                <HeadlineLarge
+                  color={TONE_COLOR[step.tone]}
+                  fontVariantNumeric="tabular-nums"
+                  lineHeight="1"
+                >
+                  {step.value}
+                </HeadlineLarge>
+                {showSublabels && step.sublabel && (
+                  <BodySmall color="content.secondary">
+                    {step.sublabel}
+                  </BodySmall>
+                )}
+              </VStack>
+            ) : (
+              <VStack key={step.label} alignItems="flex-start" gap="0" minW={0}>
+                <Overline color="content.tertiary">{step.label}</Overline>
+                <TitleLarge
+                  color={TONE_COLOR[step.tone]}
+                  fontVariantNumeric="tabular-nums"
+                  fontSize={compact ? "title.md" : undefined}
+                >
+                  {step.value}
+                </TitleLarge>
+                {!compact && showSublabels && step.sublabel && (
+                  <Caption color="content.secondary">{step.sublabel}</Caption>
+                )}
+              </VStack>
+            ),
+          )}
+        </Grid>
+      )}
       <Box>
         <SegmentedProgress
           values={reversedSegments}

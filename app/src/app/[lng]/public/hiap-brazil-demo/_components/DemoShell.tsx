@@ -135,7 +135,7 @@ export function DemoShell({
         w="full"
         maxW="1090px"
         flexDirection="column"
-        gap="l"
+        gap="xl"
       >
         {backLabel && (
           <Link
@@ -155,7 +155,7 @@ export function DemoShell({
             </NextLink>
           </Link>
         )}
-        <VStack alignItems="stretch" gap="s">
+        <VStack alignItems="stretch" gap="m">
           <HeadlineSmall color="content.primary">{title}</HeadlineSmall>
           {description && (
             <BodyLarge color="content.secondary">{description}</BodyLarge>

@@ -47,7 +47,7 @@ export function DrawerSection({
   return (
     <Card.Root borderColor="border.overlay">
       <Card.Body p="l">
-        <VStack alignItems="stretch" gap="m">
+        <VStack alignItems="stretch" gap="l">
           <HStack
             justifyContent="space-between"
             alignItems="center"
@@ -223,7 +223,7 @@ export function DetailPanel({
             </Drawer.Header>
 
             <Drawer.Body>
-              <VStack alignItems="stretch" gap="l" py="m">
+              <VStack alignItems="stretch" gap="xl" py="l">
                 {showScore && (
                   <DrawerSection
                     title={t("detail-score-breakdown")}

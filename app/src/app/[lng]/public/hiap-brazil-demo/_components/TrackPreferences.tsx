@@ -121,8 +121,8 @@ function Section({
 }) {
   return (
     <Card.Root borderColor="border.overlay">
-      <Card.Body>
-        <VStack alignItems="stretch" gap="m">
+      <Card.Body p="l">
+        <VStack alignItems="stretch" gap="l">
           <HStack gap="s" alignItems="center" flexWrap="wrap">
             <TitleMedium color="content.primary">{title}</TitleMedium>
             {required && (

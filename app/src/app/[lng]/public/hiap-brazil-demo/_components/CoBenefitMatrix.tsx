@@ -76,22 +76,21 @@ export function CoBenefitMatrix({
   if (actions.length === 0 || rows.length === 0) return null;
 
   return (
-    <VStack alignItems="stretch" gap="s">
-      <VStack alignItems="stretch" gap="xs">
+    <VStack alignItems="stretch" gap="m">
+      <VStack alignItems="stretch" gap="s">
         <LabelLarge color="content.primary">{t("matrix-title")}</LabelLarge>
         <BodyMedium color="content.secondary">
           {t("matrix-description")}
         </BodyMedium>
       </VStack>
       <Card.Root overflow="hidden" borderColor="border.neutral">
-        <Table.Root size="md" tableLayout="fixed">
+        <Table.Root size="lg" tableLayout="fixed">
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeader w={{ base: "40%", md: "28%" }}>
                 {t("matrix-col-category")}
               </Table.ColumnHeader>
               {actions.map((action) => {
-                const fixture = ACTION_BY_ID[action.action_id];
                 return (
                   <Table.ColumnHeader key={action.action_id}>
                     <VStack alignItems="flex-start" gap="xs">
@@ -102,11 +101,6 @@ export function CoBenefitMatrix({
                         {index.get(action.action_id)?.actionName ??
                           action.action_id}
                       </LabelMedium>
-                      {fixture?.coBenefitsAiOnly && (
-                        <MeedStatusTag tone="warning">
-                          {t("matrix-ai-tag")}
-                        </MeedStatusTag>
-                      )}
                     </VStack>
                   </Table.ColumnHeader>
                 );

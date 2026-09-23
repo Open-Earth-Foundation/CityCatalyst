@@ -189,6 +189,16 @@ def _database_value(value: Any) -> Any:
     return value
 
 
+def _existing_columns(connection: PgConnection, table_name: str) -> set[str]:
+    """Return the live column names for a table so stale fixture keys can be dropped."""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT column_name FROM information_schema.columns WHERE table_name = %s",
+            (table_name,),
+        )
+        return {row[0] for row in cursor.fetchall()}
+
+
 def _upsert_rows(
     connection: PgConnection,
     table_name: str,
@@ -196,8 +206,18 @@ def _upsert_rows(
     rows: list[dict[str, Any]],
 ) -> None:
     """Upsert fixture rows by primary key without deleting unrelated data."""
+    table_columns = _existing_columns(connection, table_name)
     for row in rows:
-        columns = list(row)
+        # The tracked fixture can predate later schema changes; only write
+        # columns the current table actually has and warn about the rest.
+        stale_columns = set(row) - table_columns
+        if stale_columns:
+            logger.warning(
+                "Dropping fixture columns not present on %s: %s",
+                table_name,
+                sorted(stale_columns),
+            )
+        columns = [column for column in row if column in table_columns]
         update_columns = [column for column in columns if column != primary_key]
         query = sql.SQL("INSERT INTO {table} ({columns}) VALUES ({values}) ").format(
             table=sql.Identifier(table_name),

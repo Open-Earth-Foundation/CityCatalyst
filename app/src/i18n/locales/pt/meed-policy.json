@@ -41,7 +41,6 @@
   "percent-value": "{{value}}%",
   "show-more-actions": "Mostrar todas as {{n}} ações",
   "show-fewer-actions": "Mostrar menos ações",
-  "policy-ranking-weight": "O alinhamento de políticas contribui com 75% da pontuação de alinhamento · o alinhamento molda {{weight}}% do ranking",
   "policy-step-sub": "{{n}} ações avaliadas · {{p}} planos nacionais",
   "policy-error-title": "Não foi possível carregar o alinhamento de políticas",
   "policy-error-body": "O serviço de alinhamento de políticas não respondeu. Suas outras entradas não foram afetadas — tente novamente, ou continue e gere o ranking sem o alinhamento de políticas.",

@@ -21,6 +21,7 @@ from sqlalchemy.pool import StaticPool
 from app.main import get_app
 from app.db import Base
 from fastapi.testclient import TestClient
+from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
 class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
@@ -67,9 +68,15 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
         ] = get_session_optional
 
         self.client = TestClient(self.app)
+        self.identity_patcher = patch(
+            "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
+            new=AsyncMock(return_value="user-1"),
+        )
+        self.identity_patcher.start()
 
     async def asyncTearDown(self) -> None:
         """Clean up test database and close connections."""
+        self.identity_patcher.stop()
         # Close test client first
         if hasattr(self, 'client'):
             self.client.close()
@@ -90,7 +97,8 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
                 "user_id": "user-1",
                 "thread_id": "not-a-valid-uuid",
                 "content": "Test"
-            }
+            },
+            headers={"Authorization": "Bearer user-1"},
         )
         
         # Should fail with appropriate error (400 or 404)
@@ -105,7 +113,8 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
                 "user_id": "user-1",
                 "thread_id": thread_id,
                 "content": "Test"
-            }
+            },
+            headers={"Authorization": "Bearer user-1"},
         )
 
         self.assertEqual(response.status_code, 404)
@@ -118,7 +127,8 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
             json={
                 "user_id": "user-1",
                 "content": "Test message without thread"
-            }
+            },
+            headers={"Authorization": "Bearer user-1"},
         )
         
         # Should succeed with streaming response
@@ -155,7 +165,8 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
             json={
                 "user_id": "user-1",
                 "content": "First message"
-            }
+            },
+            headers={"Authorization": "Bearer user-1"},
         )
         
         self.assertEqual(response1.status_code, 200)
@@ -181,7 +192,8 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
                 "user_id": "user-1",
                 "thread_id": thread_id,
                 "content": "Second message in same thread"
-            }
+            },
+            headers={"Authorization": "Bearer user-1"},
         )
         
         # Should succeed with streaming response

@@ -88,7 +88,7 @@ class AgentService:
         Args:
             cc_access_token: JWT token from CityCatalyst for inventory access
             cc_thread_id: Current thread ID (for token refresh context)
-            cc_user_id: User ID (for token refresh and inventory queries)
+            cc_user_id: Canonical authenticated user ID for inventory queries
             inventory_id: Active inventory ID, used by pre-draft Stationary Energy tools
             city_id: Active city ID, used by pre-draft Stationary Energy tools
             concept_note_edit_request: Optional CNB edit proposal request

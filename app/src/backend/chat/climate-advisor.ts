@@ -146,6 +146,9 @@ export async function createClimateAdvisorThread(params: {
   const response = await callClimateAdvisorChat({
     path: "/v1/threads",
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${token.access_token}`,
+    },
     body: {
       user_id: params.userId,
       inventory_id: params.inventoryId,

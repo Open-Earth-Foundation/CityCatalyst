@@ -105,6 +105,7 @@ export const POST = apiHandler(async (req, { session }) => {
       path: "/v1/messages",
       method: "POST",
       headers: {
+        Authorization: `Bearer ${token.access_token}`,
         "X-Request-ID": `cc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       },
       body: buildClimateAdvisorMessagePayload({

@@ -27,10 +27,14 @@ class ThreadResolver:
     ) -> Union[str, UUID]:
         """Resolve or create a thread ID for the request.
 
+        ``user_id`` must already be Core's canonical authenticated subject.
+        The payload context must already be normalized so raw credential
+        aliases are not persisted.
+
         Args:
             thread_id: Optional thread ID from path parameter
-            payload: Message creation request
-            user_id: User ID from authentication
+            payload: Message creation request bound to the canonical subject
+            user_id: Canonical user ID from authentication
             session_factory: Database session factory (optional)
 
         Returns:

@@ -261,13 +261,13 @@ persistence, or production UUIDs.
 
 ```http
 POST /v1/threads
+Authorization: Bearer <citycatalyst_user_token>
 Content-Type: application/json
 
 {
   "user_id": "user-123",
   "inventory_id": "inventory-456",
   "context": {
-    "cc_access_token": "jwt_token_from_citycatalyst",
     "city_name": "San Francisco",
     "other_data": "..."
   }
@@ -286,8 +286,10 @@ Content-Type: application/json
 
 **Processing:**
 
-- `ThreadService` creates a UUID-based thread
-- Stores thread with `user_id`, `inventory_id`, and `context` (`JSONB`)
+- `ThreadService` creates a UUID-based thread for Core's canonical user
+- Stores thread with canonical `user_id`, `inventory_id`, and normalized
+  `context` (`JSONB`) containing only the validated request bearer as
+  `access_token`
 - Returns `thread_id` for later `/v1/messages` calls
 
 ### 2. Send Message And Stream Response
@@ -296,6 +298,7 @@ Content-Type: application/json
 
 ```http
 POST /v1/messages
+Authorization: Bearer <citycatalyst_user_token>
 Content-Type: application/json
 
 {
@@ -303,9 +306,6 @@ Content-Type: application/json
   "content": "What are the top climate risks for San Francisco?",
   "thread_id": "550e8400-e29b-41d4-a716-446655440000",
   "inventory_id": "inventory-456",
-  "context": {
-    "cc_access_token": "jwt_token_from_citycatalyst"
-  },
   "options": {
     "model": "openai/gpt-5.6-terra"
   }
@@ -315,33 +315,25 @@ Content-Type: application/json
 If `thread_id` is omitted, Climate Advisor creates a new thread. If `thread_id`
 is supplied, it must already exist and belong to the requesting user.
 
-When the request or thread supplies a CityCatalyst bearer, Climate Advisor
-validates it through Core's `/api/v1/internal/ca/auth/identity` endpoint before
-persisting the message or constructing the catalog-enabled agent. Core's
-canonical user ID must equal body `user_id`; a subject mismatch, or a bearer
-supplied in the request that Core rejects, receives the same HTTP 401
-authentication failure. When Core is unavailable or misconfigured, or when the
-rejected bearer came from stored thread context, the chat request still
-succeeds and only the NativeInputCatalog tools are disabled. In that degraded
-case a request-supplied bearer is **not** persisted into thread context, so an
-unvalidated token cannot become a thread-stored token on later requests.
-Requests without a CityCatalyst bearer can continue, but NativeInputCatalog
-tools remain disabled.
+`POST /v1/threads` and `POST /v1/messages` require `Authorization: Bearer
+<token>`. Climate Advisor validates that bearer through Core's
+`/api/v1/internal/ca/auth/identity` endpoint **before** thread lookup,
+implicit thread creation, message persistence, or tool registration. Core's
+canonical user ID must equal body `user_id`. A missing, malformed, rejected,
+or subject-mismatched bearer returns the same HTTP 401 problem response and
+persists nothing. When Core identity validation is unavailable, the write
+returns HTTP 503 and persists nothing.
 
-CA-issued tokens expire after one hour, and Climate Advisor does not refresh a
-thread-stored bearer for the catalog path. Once the stored token expires, the
-NativeInputCatalog tools stay unregistered for the thread until the client
-sends a new bearer in the request that Core identity validation accepts; plain
-chat is unaffected. Refreshing from the thread record's `user_id` is
-deliberately not done, because `POST /v1/threads` is unauthenticated and
-accepts an arbitrary `user_id`, so that identity is not server-validated.
+The validated request bearer is the only credential stored on the thread,
+always under `access_token`. Conflicting body `access_token` /
+`cc_access_token` values are discarded. Later writes do not fall back to a
+stored thread token. Legacy internal inventory capabilities fail closed on 401
+and never derive a refresh user from request JSON. NativeInputCatalog
+discovery and reads remain explicitly no-refresh.
 
-This boundary closes the claimed-identity escalation for request-supplied
-bearers and for every NativeInputCatalog path. It is not a general Climate
-Advisor authentication redesign: `POST /v1/threads` remains unauthenticated,
-and the legacy non-catalog inventory tools may still refresh a token from the
-request body `user_id`. That residual is outside CC-737 scope and is tracked
-separately.
+CA-issued tokens expire after one hour. Direct clients must send a current
+user-scoped bearer on every write. The CityCatalyst web proxy issues a fresh
+token and sends it as `Authorization` for both thread creation and messages.
 
 **Server Response (SSE Stream):**
 
@@ -1275,13 +1267,13 @@ readiness, and bounded execution contract.
 The catalog tools use only the already validated bearer. A 401 from discovery
 or read is returned through the existing safe tool failure path without calling
 the user-token refresh endpoint or deriving a refresh identity from request
-JSON. This restriction is catalog-specific: the existing non-catalog inventory
-tools continue to refresh and persist expired tokens as documented above.
+JSON. Legacy internal inventory capabilities use the same fail-closed 401
+behavior and do not refresh from claimed `userId` / `user_id` request JSON.
 
-Because the catalog path never refreshes, an expired thread-stored bearer
-leaves both tools unregistered. Recovery requires a new request-supplied bearer
-that passes Core identity validation; there is no mid-thread refresh from a
-stored or claimed `user_id`.
+Because write requests require a current validated bearer, an expired stored
+thread token cannot register catalog or inventory tools. Recovery is a new
+request `Authorization` bearer that passes Core identity validation; there is
+no mid-thread refresh from a stored or claimed `user_id`.
 
 The v1 model-facing read arguments are limited to camelCase `catalogId`,
 `capabilityId`, and optional `language`; `language` is accepted only for the

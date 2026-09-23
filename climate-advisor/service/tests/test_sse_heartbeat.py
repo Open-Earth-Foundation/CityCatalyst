@@ -132,10 +132,15 @@ async def test_message_route_emits_heartbeat_before_silent_handler(
     )
     monkeypatch.setattr(messages, "require_chat_context_ready", AsyncMock())
     monkeypatch.setattr(messages.StreamingHandler, "stream_response", silent_response)
+    monkeypatch.setattr(
+        "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
+        AsyncMock(return_value="owner-1"),
+    )
     response = await messages.post_message(
         MessageCreateRequest(
             user_id="owner-1", content="change the stage to V from IV"
         ),
+        authorization="Bearer owner-token",
         session=None,
         session_factory=None,
     )

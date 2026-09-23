@@ -77,8 +77,14 @@ class ThreadCreationRouteTests(unittest.IsolatedAsyncioTestCase):
         ] = get_session
 
         self.client = TestClient(self.app)
+        self.identity_patcher = patch(
+            "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
+            new=AsyncMock(side_effect=lambda token: token),
+        )
+        self.identity_patcher.start()
 
     async def asyncTearDown(self) -> None:
+        self.identity_patcher.stop()
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
         await self.engine.dispose()
@@ -87,7 +93,8 @@ class ThreadCreationRouteTests(unittest.IsolatedAsyncioTestCase):
         """Test thread creation with minimal required fields."""
         response = self.client.post(
             "/v1/threads",
-            json={"user_id": "test-user-1"}
+            json={"user_id": "test-user-1"},
+            headers={"Authorization": "Bearer test-user-1"},
         )
         
         self.assertEqual(response.status_code, 201)
@@ -103,7 +110,8 @@ class ThreadCreationRouteTests(unittest.IsolatedAsyncioTestCase):
             json={
                 "user_id": "test-user-2",
                 "inventory_id": "inv-123"
-            }
+            },
+            headers={"Authorization": "Bearer test-user-2"},
         )
         
         self.assertEqual(response.status_code, 201)
@@ -118,7 +126,8 @@ class ThreadCreationRouteTests(unittest.IsolatedAsyncioTestCase):
             json={
                 "user_id": "test-user-3",
                 "context": context
-            }
+            },
+            headers={"Authorization": "Bearer test-user-3"},
         )
         
         self.assertEqual(response.status_code, 201)
@@ -161,12 +170,12 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
         validate_identity = AsyncMock(return_value="user-1")
         with (
             patch(
-                "app.routes.messages.ThreadResolver.resolve_thread",
-                new=AsyncMock(return_value="thread-1"),
+                "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
+                new=validate_identity,
             ),
             patch(
-                "app.services.citycatalyst_client.CityCatalystClient.validate_user_identity",
-                new=validate_identity,
+                "app.routes.messages.ThreadResolver.resolve_thread",
+                new=AsyncMock(return_value="thread-1"),
             ),
             patch("app.routes.messages.StreamingHandler") as streaming_handler,
         ):
@@ -175,30 +184,29 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
                     user_id="user-1",
                     content="Hello assistant",
                     thread_id="thread-1",
-                    context={"access_token": "valid-token"},
                 ),
+                authorization="Bearer valid-token",
                 session=None,
                 session_factory=None,
             )
 
         self.assertEqual(response.status_code, 200)
         validate_identity.assert_awaited_once_with("valid-token")
+        self.assertEqual(streaming_handler.call_args.kwargs["catalog_user_id"], "user-1")
+        self.assertEqual(streaming_handler.call_args.kwargs["user_id"], "user-1")
         self.assertEqual(
-            streaming_handler.call_args.kwargs["catalog_user_id"],
-            "user-1",
+            streaming_handler.call_args.kwargs["cc_access_token"],
+            "valid-token",
         )
 
     async def test_message_rejects_invalid_core_token_before_catalog_agent_creation(
         self,
     ) -> None:
         """An unvalidated bearer must never reach the catalog-enabled handler."""
+        resolve_thread = AsyncMock()
         with (
             patch(
-                "app.routes.messages.ThreadResolver.resolve_thread",
-                new=AsyncMock(return_value="thread-1"),
-            ),
-            patch(
-                "app.services.citycatalyst_client.CityCatalystClient.validate_user_identity",
+                "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
                 new=AsyncMock(
                     side_effect=CityCatalystClientError(
                         "invalid token",
@@ -206,6 +214,7 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
                     )
                 ),
             ),
+            patch("app.routes.messages.ThreadResolver.resolve_thread", new=resolve_thread),
             patch("app.routes.messages.StreamingHandler") as streaming_handler,
         ):
             with self.assertRaises(HTTPException) as captured:
@@ -214,8 +223,8 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
                         user_id="user-1",
                         content="Hello assistant",
                         thread_id="thread-1",
-                        context={"access_token": "invalid-token"},
                     ),
+                    authorization="Bearer invalid-token",
                     session=None,
                     session_factory=None,
                 )
@@ -225,19 +234,18 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
             captured.exception.detail,
             "CityCatalyst authentication failed",
         )
+        resolve_thread.assert_not_awaited()
         streaming_handler.assert_not_called()
 
     async def test_message_rejects_core_token_subject_mismatch(self) -> None:
         """The claimed body user must not select scope for another token subject."""
+        resolve_thread = AsyncMock()
         with (
             patch(
-                "app.routes.messages.ThreadResolver.resolve_thread",
-                new=AsyncMock(return_value="thread-1"),
-            ),
-            patch(
-                "app.services.citycatalyst_client.CityCatalystClient.validate_user_identity",
+                "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
                 new=AsyncMock(return_value="canonical-other-user"),
             ),
+            patch("app.routes.messages.ThreadResolver.resolve_thread", new=resolve_thread),
             patch("app.routes.messages.StreamingHandler") as streaming_handler,
         ):
             with self.assertRaises(HTTPException) as captured:
@@ -246,30 +254,22 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
                         user_id="user-1",
                         content="Hello assistant",
                         thread_id="thread-1",
-                        context={"access_token": "other-user-token"},
                     ),
+                    authorization="Bearer other-user-token",
                     session=None,
                     session_factory=None,
                 )
 
         self.assertEqual(captured.exception.status_code, 401)
-        self.assertEqual(
-            captured.exception.detail,
-            "CityCatalyst authentication failed",
-        )
+        resolve_thread.assert_not_awaited()
         streaming_handler.assert_not_called()
 
-    async def test_message_continues_without_catalog_when_core_is_unavailable(
-        self,
-    ) -> None:
-        """A Core outage disables the catalog instead of failing plain chat."""
+    async def test_message_fails_closed_when_core_is_unavailable(self) -> None:
+        """A Core outage must not create a write or catalog-enabled handler."""
+        resolve_thread = AsyncMock()
         with (
             patch(
-                "app.routes.messages.ThreadResolver.resolve_thread",
-                new=AsyncMock(return_value="thread-1"),
-            ),
-            patch(
-                "app.services.citycatalyst_client.CityCatalystClient.validate_user_identity",
+                "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
                 new=AsyncMock(
                     side_effect=CityCatalystClientError(
                         "CC identity validation unavailable",
@@ -277,22 +277,28 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
                     )
                 ),
             ),
+            patch("app.routes.messages.ThreadResolver.resolve_thread", new=resolve_thread),
             patch("app.routes.messages.StreamingHandler") as streaming_handler,
         ):
-            response = await post_message(
-                MessageCreateRequest(
-                    user_id="user-1",
-                    content="Hello assistant",
-                    thread_id="thread-1",
-                    context={"access_token": "valid-token"},
-                ),
-                session=None,
-                session_factory=None,
-            )
+            with self.assertRaises(HTTPException) as captured:
+                await post_message(
+                    MessageCreateRequest(
+                        user_id="user-1",
+                        content="Hello assistant",
+                        thread_id="thread-1",
+                    ),
+                    authorization="Bearer valid-token",
+                    session=None,
+                    session_factory=None,
+                )
 
-        self.assertEqual(response.status_code, 200)
-        streaming_handler.assert_called_once()
-        self.assertIsNone(streaming_handler.call_args.kwargs["catalog_user_id"])
+        self.assertEqual(captured.exception.status_code, 503)
+        self.assertEqual(
+            captured.exception.detail,
+            "CityCatalyst identity service is unavailable",
+        )
+        resolve_thread.assert_not_awaited()
+        streaming_handler.assert_not_called()
 
     async def test_message_does_not_persist_payload_token_when_identity_is_unvalidated(
         self,
@@ -301,11 +307,7 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
         thread_service = AsyncMock()
         with (
             patch(
-                "app.routes.messages.ThreadResolver.resolve_thread",
-                new=AsyncMock(return_value="thread-1"),
-            ),
-            patch(
-                "app.services.citycatalyst_client.CityCatalystClient.validate_user_identity",
+                "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
                 new=AsyncMock(
                     side_effect=CityCatalystClientError(
                         "CC identity validation unavailable",
@@ -314,94 +316,58 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
                 ),
             ),
             patch(
-                "app.routes.messages.require_chat_context_ready",
-                new=AsyncMock(),
+                "app.routes.messages.ThreadResolver.resolve_thread",
+                new=AsyncMock(return_value="thread-1"),
             ),
             patch(
                 "app.routes.messages.ThreadService",
                 new=MagicMock(return_value=thread_service),
             ),
-            patch(
-                "app.routes.messages.MessageService",
-                new=MagicMock(return_value=AsyncMock()),
-            ),
             patch("app.routes.messages.StreamingHandler") as streaming_handler,
         ):
-            response = await post_message(
-                MessageCreateRequest(
-                    user_id="user-1",
-                    content="Hello assistant",
-                    thread_id="thread-1",
-                    context={"access_token": "unvalidated-token"},
-                ),
-                session=None,
-                session_factory=_stub_session_factory(),
-            )
+            with self.assertRaises(HTTPException) as captured:
+                await post_message(
+                    MessageCreateRequest(
+                        user_id="user-1",
+                        content="Hello assistant",
+                        thread_id="thread-1",
+                        context={"access_token": "unvalidated-token"},
+                    ),
+                    authorization="Bearer unvalidated-token",
+                    session=None,
+                    session_factory=_stub_session_factory(),
+                )
 
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNone(streaming_handler.call_args.kwargs["catalog_user_id"])
-        persisted_keys = [
-            key
-            for call in thread_service.update_context.await_args_list
-            for key in call.kwargs.get("context_update", {})
-        ]
-        self.assertNotIn("access_token", persisted_keys)
+        self.assertEqual(captured.exception.status_code, 503)
+        streaming_handler.assert_not_called()
         thread_service.update_context.assert_not_awaited()
 
-    async def test_message_continues_without_catalog_when_thread_token_is_rejected(
+    async def test_message_rejects_missing_bearer_instead_of_stale_thread_token(
         self,
     ) -> None:
-        """A stale thread-stored bearer disables the catalog, not the chat."""
-        token_handler = MagicMock(
-            return_value=AsyncMock(
-                load_token_from_thread=AsyncMock(return_value="stale-thread-token")
-            )
-        )
+        """A stale thread-stored bearer cannot authenticate a later write."""
         refresh_token = AsyncMock()
         with (
-            patch(
-                "app.routes.messages.ThreadResolver.resolve_thread",
-                new=AsyncMock(return_value="thread-1"),
-            ),
-            patch("app.utils.token_handler.TokenHandler", new=token_handler),
-            patch(
-                "app.services.citycatalyst_client.CityCatalystClient.validate_user_identity",
-                new=AsyncMock(
-                    side_effect=CityCatalystClientError(
-                        "CC bearer token is invalid",
-                        status_code=401,
-                    )
-                ),
-            ),
             patch(
                 "app.services.citycatalyst_client.CityCatalystClient.refresh_token",
                 new=refresh_token,
             ),
-            patch(
-                "app.routes.messages.require_chat_context_ready",
-                new=AsyncMock(),
-            ),
-            patch("app.routes.messages.ThreadService", new=MagicMock(return_value=AsyncMock())),
-            patch("app.routes.messages.MessageService", new=MagicMock(return_value=AsyncMock())),
             patch("app.routes.messages.StreamingHandler") as streaming_handler,
         ):
-            response = await post_message(
-                MessageCreateRequest(
-                    user_id="user-1",
-                    content="Hello assistant",
-                    thread_id="thread-1",
-                ),
-                session=None,
-                session_factory=_stub_session_factory(),
-            )
+            with self.assertRaises(HTTPException) as captured:
+                await post_message(
+                    MessageCreateRequest(
+                        user_id="user-1",
+                        content="Hello assistant",
+                        thread_id="thread-1",
+                    ),
+                    authorization=None,
+                    session=None,
+                    session_factory=_stub_session_factory(),
+                )
 
-        self.assertEqual(response.status_code, 200)
-        streaming_handler.assert_called_once()
-        self.assertIsNone(streaming_handler.call_args.kwargs["catalog_user_id"])
-        self.assertEqual(
-            streaming_handler.call_args.kwargs["cc_access_token"],
-            "stale-thread-token",
-        )
+        self.assertEqual(captured.exception.status_code, 401)
+        streaming_handler.assert_not_called()
         refresh_token.assert_not_awaited()
 
 
@@ -450,15 +416,25 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
         ] = get_session_factory_override
 
         self.client = TestClient(self.app)
+        self.identity_patcher = patch(
+            "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
+            new=AsyncMock(side_effect=lambda token: token),
+        )
+        self.identity_patcher.start()
 
     async def asyncTearDown(self) -> None:
+        self.identity_patcher.stop()
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
         await self.engine.dispose()
 
     def _create_thread(self, user_id: str = "user-1") -> str:
         """Create a persisted thread for message route tests."""
-        response = self.client.post("/v1/threads", json={"user_id": user_id})
+        response = self.client.post(
+            "/v1/threads",
+            json={"user_id": user_id},
+            headers={"Authorization": f"Bearer {user_id}"},
+        )
         self.assertEqual(response.status_code, 201)
         return response.json()["thread_id"]
 
@@ -502,7 +478,8 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
                     "user_id": "user-1",
                     "content": "Hello assistant",
                     "thread_id": thread_id
-                }
+                },
+                headers={"Authorization": "Bearer user-1"},
             )
 
             # Should return streaming response
@@ -518,7 +495,8 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
                 "user_id": "user-1",
                 "content": "Hello assistant",
                 "thread_id": thread_id,
-            }
+            },
+            headers={"Authorization": "Bearer user-1"},
         )
 
         self.assertEqual(response.status_code, 404)
@@ -543,7 +521,8 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
                 json={
                     "user_id": "user-1",
                     "content": "Hello"
-                }
+                },
+                headers={"Authorization": "Bearer user-1"},
             )
             
             self.assertEqual(response.status_code, 200)
@@ -574,7 +553,8 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
                         "model": "openai/gpt-4o",
                         "temperature": 0.5
                     }
-                }
+                },
+                headers={"Authorization": "Bearer user-1"},
             )
             
             self.assertIn(response.status_code, [200, 400])  # May fail if agent setup fails

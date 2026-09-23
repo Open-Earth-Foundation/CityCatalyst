@@ -33,15 +33,16 @@ const TONE_STYLES: Record<
     color: "interactive.tertiary",
     borderColor: "interactive.tertiary",
   },
+  // Dark amber text: the yellow default fails contrast on its own overlay.
   warning: {
     bg: "sentiment.warningOverlay",
-    color: "sentiment.warningDefault",
+    color: "sentiment.warningFg",
     borderColor: "sentiment.warningDefault",
   },
   // Orange: between warning (yellow) and negative (red).
   caution: {
     bg: "sentiment.warningSubtle",
-    color: "interactive.quaternary",
+    color: "sentiment.warningFg",
     borderColor: "interactive.quaternary",
   },
   negative: {
@@ -83,7 +84,7 @@ export function MeedStatusTag({
       borderColor={styles.borderColor}
       borderWidth="1px"
       borderRadius="pill"
-      px="s"
+      px="m"
       py="xs"
       fontSize="label.sm"
       fontWeight="semibold"
@@ -93,7 +94,7 @@ export function MeedStatusTag({
       // words into "Self-…" whenever the column got tight. These labels are a
       // handful of characters; they should never be abbreviated.
       css={{
-        "& [data-part='label']": {
+        "& [data-part='label'], & .chakra-tag__label": {
           lineClamp: "unset",
           WebkitLineClamp: "unset",
           display: "inline",

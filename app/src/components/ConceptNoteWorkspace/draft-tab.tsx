@@ -1,9 +1,9 @@
 "use client";
 
-import type { ConceptNoteContextPresentation } from "./context-status";
-
 import { Box, Text, VStack } from "@chakra-ui/react";
+
 import { useMemo } from "react";
+import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
 
 import { useTranslation } from "@/i18n/client";
 import type {
@@ -11,14 +11,14 @@ import type {
   ConceptNoteDraftState,
 } from "@/util/types";
 
-import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
+import type { ConceptNoteBundleProgress } from "@/components/ConceptNoteDashboard/utils";
 
 import {
   DraftDocumentPanel,
   type DraftInlineReviewProps,
-} from "./draft-document-panel";
-import { DraftSetupPanel } from "./draft-setup-panel";
-import { useDraftFocus } from "./use-draft-focus";
+} from "@/components/ConceptNoteWorkspace/draft-document-panel";
+import { DraftSetupPanel } from "@/components/ConceptNoteWorkspace/draft-setup-panel";
+import { useDraftFocus } from "@/components/ConceptNoteWorkspace/use-draft-focus";
 
 interface DraftTabProps extends DraftInlineReviewProps {
   mutationError: string | null;
@@ -55,7 +55,9 @@ export function DraftTab(props: DraftTabProps) {
     props.focusFindingKey,
   );
   const draftStarted = Boolean(
-    props.draft && props.draft.status !== "not_started",
+    props.draft &&
+    (props.draft.status !== "not_started" ||
+      chapters.some((chapter) => chapter.body_markdown?.trim())),
   );
 
   return (

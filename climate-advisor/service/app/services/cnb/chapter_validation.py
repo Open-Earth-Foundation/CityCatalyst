@@ -9,7 +9,6 @@ from typing import Any, Literal, cast
 from uuid import UUID
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
-from app.config import Settings, get_settings
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterCompletenessValidationOutput,
@@ -32,6 +31,8 @@ from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
 from pydantic import BaseModel, TypeAdapter, ValidationError
+
+from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -92,6 +93,17 @@ def select_chapter_validation_profile(
     """
     if template is None:
         return None
+    if target.template_section_id is None:
+        return ChapterValidationProfile(
+            name=template.name,
+            output_format=template.output_format,
+            chapter_schema={
+                "title": target.title,
+                "description": target.description,
+                "required": False,
+            },
+            required_fields=[],
+        )
 
     # Reuse workspace normalization so generated chapter references match exactly.
     try:
@@ -126,8 +138,10 @@ def select_chapter_validation_profile(
                         for key, value in schema.items()
                         if key not in {"chapter_ref", "required_fields"}
                     },
-                    "title": chapter.title,
-                    "description": chapter.description,
+                    "title": target.title,
+                    "description": chapter.description
+                    if target.description is None
+                    else target.description,
                     "required": chapter.required,
                 },
                 required_fields=fields,
@@ -165,6 +179,7 @@ def build_chapter_validation_request(
             ChapterValidationChapter(
                 chapter_id=chapter.chapter_id,
                 template_section_id=chapter.chapter_ref,
+                description=chapter.description,
                 title=chapter.title,
                 position=chapter.position,
                 required=chapter.required,

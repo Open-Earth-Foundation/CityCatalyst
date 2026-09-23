@@ -1,4 +1,3 @@
-import type { ConceptNoteContextPresentation } from "./context-status";
 import { Box, Flex, HStack, Icon, Text } from "@chakra-ui/react";
 import {
   LuCircleAlert,
@@ -6,6 +5,7 @@ import {
   LuRefreshCw,
   LuSparkles,
 } from "react-icons/lu";
+import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
@@ -15,9 +15,9 @@ import type {
   ConceptNoteDraftState,
 } from "@/util/types";
 
-import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
+import type { ConceptNoteBundleProgress } from "@/components/ConceptNoteDashboard/utils";
 
-import { chapterTone } from "./draft-document-panel";
+import { chapterTone } from "@/components/ConceptNoteWorkspace/draft-document-panel";
 
 interface DraftSetupPanelProps {
   applicationContext: ConceptNoteApplicationContext | null;
@@ -53,7 +53,13 @@ function currentChapter(draft: ConceptNoteDraftState | null): string | null {
 export function DraftSetupPanel(props: DraftSetupPanelProps) {
   const { t } = useTranslation(props.lng, "concept-notes");
   const { bundle, draft } = props;
-  const draftStarted = Boolean(draft && draft.status !== "not_started");
+  const hasDraftContent = Boolean(
+    draft?.chapters.some((chapter) => chapter.body_markdown?.trim()),
+  );
+  const canResume = draft?.status === "not_started" && hasDraftContent;
+  const draftStarted = Boolean(
+    draft && (draft.status !== "not_started" || hasDraftContent),
+  );
   const showDraftSetup = !draftStarted || draft?.status === "failed";
   const isBuilding = props.contextStatus.busy;
   const isFailed = props.contextStatus.state === "failed";
@@ -83,6 +89,22 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
 
   return (
     <>
+      {canResume && (
+        <Flex align="center" gap={3} flexWrap="wrap" flexShrink={0}>
+          <Text flex={1} fontSize="body.sm" color="content.secondary">
+            {t("draft-additional-chapters")}
+          </Text>
+          <Button
+            size="sm"
+            disabled={!props.canStartDrafting || props.isDraftRunning}
+            loading={props.isStartingDraft}
+            onClick={props.onStartDrafting}
+          >
+            <Icon as={LuSparkles} />
+            {t("continue-drafting")}
+          </Button>
+        </Flex>
+      )}
       {showDraftSetup && (
         <Flex
           align={{ base: "stretch", xl: "center" }}

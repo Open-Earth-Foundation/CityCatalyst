@@ -34,29 +34,29 @@ import type { ConceptNoteDraftChapter } from "@/util/types";
 import {
   getConceptNoteStatusPresentation,
   getWorkflowStepTranslationKey,
-} from "../ConceptNoteDashboard/utils";
-import { StatusBadge } from "../ConceptNoteDashboard/status-badge";
-import { ConceptNoteChatPanel } from "./chat-panel";
-import { ContextTab } from "./context-tab";
-import { FundingSelectionDialog } from "./funding-selection-dialog";
-import { DraftTab } from "./draft-tab";
-import { ExportDialog } from "./export-dialog";
-import { ReviewButton } from "./review-button";
-import { StructureTab } from "./structure-tab";
-import { StartNewChatDialog } from "./start-new-chat-dialog";
-import { useConceptNoteEdits } from "./use-concept-note-edits";
+} from "@/components/ConceptNoteDashboard/utils";
+import { StatusBadge } from "@/components/ConceptNoteDashboard/status-badge";
+import { ConceptNoteChatPanel } from "@/components/ConceptNoteWorkspace/chat-panel";
+import { ContextTab } from "@/components/ConceptNoteWorkspace/context-tab";
+import { FundingSelectionDialog } from "@/components/ConceptNoteWorkspace/funding-selection-dialog";
+import { DraftTab } from "@/components/ConceptNoteWorkspace/draft-tab";
+import { ExportDialog } from "@/components/ConceptNoteWorkspace/export-dialog";
+import { ReviewButton } from "@/components/ConceptNoteWorkspace/review-button";
+import { StructureTab } from "@/components/ConceptNoteWorkspace/structure-tab";
+import { StartNewChatDialog } from "@/components/ConceptNoteWorkspace/start-new-chat-dialog";
+import { useConceptNoteEdits } from "@/components/ConceptNoteWorkspace/use-concept-note-edits";
 import {
   DocumentReviewToolbar,
   DocumentReviewFeedback,
   documentReviewChanges,
   selectReviewProposal,
-} from "./document-review";
-import { useInlineReviewDecisions } from "./use-inline-review-decisions";
-import { useConceptNoteWorkspaceData } from "./use-concept-note-workspace-data";
+} from "@/components/ConceptNoteWorkspace/document-review";
+import { useInlineReviewDecisions } from "@/components/ConceptNoteWorkspace/use-inline-review-decisions";
+import { useConceptNoteWorkspaceData } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-data";
 import {
   WorkspaceLoadingState,
   WorkspaceUnavailableState,
-} from "./workspace-states";
+} from "@/components/ConceptNoteWorkspace/workspace-states";
 
 type WorkspaceTab = "draft" | "structure" | "context";
 
@@ -617,6 +617,8 @@ export function ConceptNoteWorkspace({
                 p={0}
               >
                 <StructureTab
+                  key={runId}
+                  runId={runId}
                   applicationContext={applicationContext ?? null}
                   draft={draft ?? null}
                   lng={lng}

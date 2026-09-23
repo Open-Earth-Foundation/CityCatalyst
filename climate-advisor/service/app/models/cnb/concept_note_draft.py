@@ -158,6 +158,7 @@ class ConceptNoteDraftChapterResponse(BaseModel):
 
     chapter_id: UUID
     template_section_id: str | None = None
+    description: str = ""
     title: str
     position: int = Field(ge=0)
     status: ConceptNoteChapterStatus

@@ -12,7 +12,10 @@ from app.config import get_settings
 from app.models.cnb.context_bundle import SelectedSource
 from app.persistence.concept_notes.context_bundle import ContextBundleBuildSnapshot
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
-from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
+from app.services.citycatalyst_client import (
+    CityCatalystClientError,
+    ConceptNoteMarkdownArtifact,
+)
 from app.services.cnb.context_bundle import (
     ContextBundleService,
     run_context_bundle_reconciler,
@@ -139,6 +142,11 @@ async def test_source_build_completes_with_null_optional_sources(
         "app.services.cnb.context_bundle.load_accessible_inventory",
         AsyncMock(return_value=None),
     )
+    city_profile = {"name": "Kraków", "population": 800000, "population_year": 2024}
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_city_profile",
+        AsyncMock(return_value=city_profile),
+    )
     monkeypatch.setattr(
         "app.services.cnb.context_bundle.begin_build",
         begin_build,
@@ -167,9 +175,11 @@ async def test_source_build_completes_with_null_optional_sources(
     )
     fail_build.assert_not_awaited()
     completed = complete_build.await_args.kwargs
+    assert completed["city"] == city_profile
     assert completed["ghgi"] is None
     assert completed["hiap"] is None
     assert completed["optional_sources"] == {
+        "city": "available",
         "ghgi": "missing",
         "hiap": "missing",
     }
@@ -306,6 +316,10 @@ async def test_build_without_uploads_completes_without_document_evidence(
         AsyncMock(return_value=None),
     )
     monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_city_profile",
+        AsyncMock(side_effect=CityCatalystClientError("denied", status_code=403)),
+    )
+    monkeypatch.setattr(
         "app.services.cnb.context_bundle.begin_build",
         AsyncMock(return_value=snapshot),
     )
@@ -327,12 +341,16 @@ async def test_build_without_uploads_completes_without_document_evidence(
     fail_build.assert_not_awaited()
     completed = complete_build.await_args.kwargs
     assert completed["selected_sources"] == []
+    # A failed city lookup is optional: it warns and keeps any stored profile.
+    assert completed["city"] is None
     assert completed["optional_sources"] == {
+        "city": "unavailable",
         "ghgi": "missing",
         "hiap": "missing",
     }
     assert completed["warnings"] == [
-        "No source document is attached; responses use limited context until a source is added."
+        "No source document is attached; responses use limited context until a source is added.",
+        "City profile was unavailable.",
     ]
     client.close.assert_awaited_once_with()
 

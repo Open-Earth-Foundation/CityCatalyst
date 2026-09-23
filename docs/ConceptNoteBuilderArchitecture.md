@@ -1839,7 +1839,9 @@ Context loaded:
 - Every ready upload's identity, summary, topics, and bounded exact excerpts,
   using pages for PDFs and deterministic heading/block anchors for Markdown.
   Queued and failed uploads are excluded.
-- City profile summary if another workflow has populated it.
+- City profile from the CityCatalyst city page: name, LOCODE, country, region,
+  area (km²), and the most recent population and year. The boundary geometry
+  is omitted. A failed lookup warns and keeps the last stored profile.
 - Project summary if another workflow has populated it.
 - GHGI summary if available.
 - CCRA risk summary if available.
@@ -1910,8 +1912,9 @@ Rules:
   refreshed similar projects, or user-confirmed facts.
 - Does not expose arbitrary context bundle replacement. Bundle edits must come
   from a known workflow trigger and preserve the rest of the assembled context.
-- Replaces only `selected_sources`, `cc_context.ghgi`, and `cc_context.hiap` on a
-  source-triggered rebuild, preserving all unrelated sections populated later.
+- Replaces only `selected_sources`, `cc_context.city` (when the lookup
+  succeeds), `cc_context.ghgi`, and `cc_context.hiap` on a source-triggered
+  rebuild, preserving all unrelated sections populated later.
 - Does not register CC context loading or context bundle editing as
   agent-callable tools. The separate source-query capability is read-only.
 

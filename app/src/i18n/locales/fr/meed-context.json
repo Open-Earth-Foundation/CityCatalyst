@@ -2,8 +2,6 @@
   "context-description": "Les indicateurs socio-économiques sont utilisés pour évaluer la faisabilité de chaque action climatique pour cette ville. Des indicateurs tels que les niveaux de revenu, l'emploi et la densité urbaine déterminent quelles actions sont réalisables en réalité.",
   "loading-indicators": "Chargement des indicateurs socio-économiques...",
   "indicators-loaded": "{{n}} indicateurs chargés",
-  "feasibility-note": "La faisabilité d'atténuation forme 33% du score de faisabilité · La faisabilité forme 23% du classement",
-  "ranking-weight": "Le contexte socio-économique forme 33% du score de faisabilité · la faisabilité forme 23% du classement",
   "no-indicators-sub": "Aucun indicateur disponible",
   "indicators-error-title": "Les indicateurs socio-économiques n'ont pas pu être chargés",
   "indicators-error-body": "Nous n'avons pas pu atteindre le service d'indicateurs pour cette ville. Vérifiez votre connexion et réessayez.",

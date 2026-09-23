@@ -143,20 +143,33 @@ function convertDataToDefaultUnit(
   };
   // check if it has a default unit property
   if (activity?.["default-units"]) {
-    const val = data[activity?.["activity-title"] as string];
-    const fuelTypeKey = Object.keys(data).find((key) =>
-      key.includes("fuel-type"),
-    );
-    const fuelType = data[fuelTypeKey as string];
-    const fromUnit = data[`${activity?.["activity-title"]}-unit`];
-    data[activity?.["activity-title"] as string] = new Decimal(
-      UnitConversionService.convertUnits(
-        Number(val),
-        fromUnit?.toString(),
-        activity["default-units"],
-        fuelType?.toString(),
-      ),
-    );
+    const activityTitle = activity["activity-title"] as string;
+    const val = data[activityTitle];
+    const fromUnit = data[`${activityTitle}-unit`];
+
+    // Skip when the activity amount is absent (wrong key / empty payload).
+    // Require an explicit unit when a value is present — never convert with
+    // undefined fromUnit (that used to yield NaN and silent 0 emissions).
+    if (val != null && val !== "") {
+      if (fromUnit == null || fromUnit === "") {
+        throw new createHttpError.BadRequest(
+          `Activity is missing unit field "${activityTitle}-unit"`,
+        );
+      }
+
+      const fuelTypeKey = Object.keys(data).find((key) =>
+        key.includes("fuel-type"),
+      );
+      const fuelType = data[fuelTypeKey as string];
+      data[activityTitle] = new Decimal(
+        UnitConversionService.convertUnits(
+          Number(val),
+          fromUnit.toString(),
+          activity["default-units"],
+          fuelType?.toString(),
+        ),
+      );
+    }
   }
 
   if (activity?.["extra-fields"]) {

@@ -133,8 +133,8 @@ class WorkspaceValidationChapter:
     body_markdown: str | None
     revision_id: UUID | None
     revision_number: int | None
-    confirmed_body_markdown: str | None
-    confirmed_revision_number: int | None
+    confirmed_body_markdown: str | None = None
+    confirmed_revision_number: int | None = None
 
 
 @dataclass(frozen=True)

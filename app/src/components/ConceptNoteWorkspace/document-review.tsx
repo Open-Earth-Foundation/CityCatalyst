@@ -11,6 +11,15 @@ import type { useConceptNoteEdits } from "@/components/ConceptNoteWorkspace/use-
 
 export type EditController = ReturnType<typeof useConceptNoteEdits>;
 
+/** Translation key for the current edit failure, shared by the toolbar and dialogs. */
+export function editFeedbackKey(edits: EditController): string | null {
+  if (edits.needsDraftReload) return "edit-draft-reload-hint";
+  if (!edits.error) return null;
+  return edits.error === "stale_base"
+    ? "edit-stale-hint"
+    : "edit-request-error";
+}
+
 /** Keep the latest actionable response visible, including questions and recoverable failures. */
 export function selectReviewProposal(
   proposals: EditProposal[],
@@ -76,6 +85,7 @@ export function DocumentReviewToolbar({
   onRejectRemaining,
 }: Props) {
   const { t } = useTranslation(lng, "concept-notes");
+  const feedbackKey = editFeedbackKey(edits);
   if (!isDocumentVisible && changes[0])
     return (
       <Button
@@ -116,6 +126,7 @@ export function DocumentReviewToolbar({
           proposalMatchesDraft(proposal, chapters))
       }
       onOpenSources={onOpenSources}
+      errorMessage={feedbackKey ? t(feedbackKey) : undefined}
       onRefine={edits.refine}
     />
   );
@@ -130,7 +141,8 @@ export function DocumentReviewFeedback({
   lng: string;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
-  if (!edits.error && !edits.needsDraftReload) return null;
+  const feedbackKey = editFeedbackKey(edits);
+  if (!feedbackKey) return null;
   return (
     <HStack
       align="start"
@@ -138,13 +150,7 @@ export function DocumentReviewFeedback({
       data-testid="concept-note-document-edit-error"
     >
       <Text role="alert" fontSize="label.sm" color="content.primary">
-        {t(
-          edits.needsDraftReload
-            ? "edit-draft-reload-hint"
-            : edits.error === "stale_base"
-              ? "edit-stale-hint"
-              : "edit-request-error",
-        )}
+        {t(feedbackKey)}
       </Text>
       <Button
         size="xs"

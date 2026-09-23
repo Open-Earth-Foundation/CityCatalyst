@@ -71,9 +71,15 @@ export function StructureTab({
   const [error, setError] = useState<string | null>(null);
   const [announcement, setAnnouncement] = useState("");
   const dragged = useRef<string | null>(null);
-  const state = pending ?? query.currentData;
+  const server = query.currentData;
+  // A chat apply or concurrent save moved the server past the unsaved edits' base.
+  const serverChanged = Boolean(
+    pending && server && server.fingerprint !== pending.fingerprint,
+  );
+  const state = pending ?? server;
   const chapters = state?.chapters ?? [];
   const disabled = saving.isLoading || draft?.status === "running";
+  const shownError = serverChanged ? "structure-stale" : error;
 
   function remember(next: StructureState | null): void {
     setPending(next);
@@ -337,9 +343,9 @@ export function StructureTab({
           </Flex>
         );
       })}
-      {error && (
+      {shownError && (
         <Text role="alert" color="sentiment.negativeDefault">
-          {t(error)}
+          {t(shownError)}
         </Text>
       )}
       <HStack flexWrap="wrap">
@@ -363,7 +369,7 @@ export function StructureTab({
           {t("add-custom-chapter")}
         </Button>
         <Button
-          disabled={disabled || !pending}
+          disabled={disabled || !pending || serverChanged}
           loading={saving.isLoading}
           onClick={() => void persist()}
         >

@@ -48,6 +48,8 @@ interface ProposalCardProps {
     instruction: string,
   ) => Promise<void | boolean>;
   onOpenSources?: () => void;
+  /** Apply/reject failure, repeated inside the modal so it is not hidden behind it. */
+  errorMessage?: string;
 }
 
 export function EditProposalCard({
@@ -62,6 +64,7 @@ export function EditProposalCard({
   canApply = true,
   hasDecisions = false,
   activeChangeId,
+  errorMessage,
 }: ProposalCardProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [index, setIndex] = useState(0);
@@ -165,6 +168,17 @@ export function EditProposalCard({
             </DialogBody>
             {awaitingReview && (
               <DialogFooter flexShrink={0} flexWrap="wrap">
+                {errorMessage && (
+                  <Text
+                    role="alert"
+                    flexBasis="100%"
+                    fontSize="label.sm"
+                    color="content.primary"
+                    data-testid="structure-proposal-error"
+                  >
+                    {errorMessage}
+                  </Text>
+                )}
                 <Button
                   disabled={busy || !canApply}
                   loading={busy}

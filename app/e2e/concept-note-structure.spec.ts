@@ -51,6 +51,7 @@ async function setup(page: Page, chat = false, chapterCount = 2) {
     chapters: structuredClone(fixtureChapters),
   };
   let failure = 0;
+  let applyFailure = 0;
   let applied = false;
   let saves = 0;
   const proposal = {
@@ -193,6 +194,11 @@ async function setup(page: Page, chat = false, chapterCount = 2) {
     if (path.endsWith("/edit-proposals"))
       return route.fulfill({ json: chat && !applied ? [proposal] : [] });
     if (path.endsWith("/apply")) {
+      if (applyFailure) {
+        const status = applyFailure;
+        applyFailure = 0;
+        return route.fulfill({ status, json: { code: "storage_unavailable" } });
+      }
       applied = true;
       state = {
         fingerprint: "c".repeat(64),
@@ -222,6 +228,9 @@ async function setup(page: Page, chat = false, chapterCount = 2) {
   return {
     failNext: (status: number) => {
       failure = status;
+    },
+    failNextApply: (status: number) => {
+      applyFailure = status;
     },
     state: () => state,
     saves: () => saves,
@@ -425,6 +434,68 @@ test("chat structural before/after requires confirmation and updates navigation"
   expect(xml.indexOf("1. Budget")).toBeLessThan(
     xml.indexOf("2. Project overview"),
   );
+});
+
+test("unsaved structure edits are flagged stale after a chat structure apply", async ({
+  page,
+}) => {
+  const fixture = await setup(page, true);
+  await page.getByRole("tab", { name: "Structure", exact: true }).click();
+  const title = (position: number) =>
+    page.getByRole("textbox", {
+      name: `Title for chapter ${position}`,
+      exact: true,
+    });
+  await title(1).fill("Unsaved local title");
+  const save = page.getByRole("button", {
+    name: "Save structure",
+    exact: true,
+  });
+  await expect(save).toBeEnabled();
+  await page
+    .getByRole("button", { name: "Review chapter changes", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirm structure changes", exact: true })
+    .click();
+  await expect.poll(fixture.applied).toBe(true);
+  await expect(
+    page.getByRole("alert").filter({ hasText: "changed elsewhere" }),
+  ).toBeVisible();
+  await expect(title(1)).toHaveValue("Unsaved local title");
+  await expect(save).toBeDisabled();
+  await page
+    .getByRole("button", { name: "Discard edits and reload", exact: true })
+    .click();
+  await expect(title(1)).toHaveValue("Budget");
+  await expect(title(2)).toHaveValue("Project overview");
+  await expect(
+    page.getByRole("alert").filter({ hasText: "changed elsewhere" }),
+  ).toHaveCount(0);
+  expect(fixture.saves()).toBe(0);
+});
+
+test("structure apply failure is shown inside the proposal dialog", async ({
+  page,
+}) => {
+  const fixture = await setup(page, true);
+  await page
+    .getByRole("button", { name: "Review chapter changes", exact: true })
+    .click();
+  const dialog = page.getByTestId("structure-proposal");
+  fixture.failNextApply(503);
+  await page
+    .getByRole("button", { name: "Confirm structure changes", exact: true })
+    .click();
+  await expect(
+    dialog.getByRole("alert").filter({ hasText: "could not finish" }),
+  ).toBeVisible();
+  expect(fixture.applied()).toBe(false);
+  await dialog
+    .getByRole("button", { name: "Confirm structure changes", exact: true })
+    .click();
+  await expect.poll(fixture.applied).toBe(true);
+  await expect(dialog).toBeHidden();
 });
 
 for (const mobile of [false, true]) {

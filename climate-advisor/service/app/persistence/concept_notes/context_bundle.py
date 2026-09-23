@@ -17,6 +17,7 @@ from app.models.db.concept_note import (
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
+from app.services.cnb.visual_context import VISUAL_CONTEXT_CONTRACT_VERSION
 from app.utils.concept_note_context import omit_context_identifiers
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
@@ -101,11 +102,13 @@ async def begin_build(
             )
             previous_sources = list(previous_bundle.selected_sources)
 
-            # Reuse only a ready bundle built from this exact source set.
+            # Reuse only a ready bundle built from this exact source set whose
+            # visual projection already matches the current full-envelope contract.
             already_current = bool(
                 not force
                 and previous.get("status") == "ready"
                 and previous.get("source_fingerprint") == fingerprint
+                and _selected_sources_have_current_visual_contract(previous_sources)
             )
             if not already_current:
                 # Preserve the last completed context while its replacement builds.
@@ -562,6 +565,16 @@ def source_fingerprint(uploads: list[ConceptNoteUploadSnapshot]) -> str:
     ]
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _selected_sources_have_current_visual_contract(
+    sources: list[SelectedSource],
+) -> bool:
+    """Return whether every selected source already carries the full-envelope contract."""
+    return all(
+        source.visual_context_contract_version == VISUAL_CONTEXT_CONTRACT_VERSION
+        for source in sources
+    )
 
 
 async def _matches_current_source_fingerprint(

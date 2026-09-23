@@ -570,7 +570,11 @@ async def test_persisted_source_keeps_full_annotation_envelope() -> None:
 
 @pytest.mark.asyncio
 async def test_stale_visual_contract_reprojects_without_markdown_llm() -> None:
-    """Markdown analysis reuse still rebuilds visual context when the contract bumps."""
+    """After begin_build rejects a stale ready bundle, visual reprojects without Markdown LLM.
+
+    Persistence coverage for the force=False entry decision lives in
+    test_begin_build_rebuilds_ready_bundle_when_visual_contract_is_stale.
+    """
     upload_id = uuid4()
     markdown = "<!-- page: 1 -->\nCity evidence"
     digest = hashlib.sha256(markdown.encode()).hexdigest()

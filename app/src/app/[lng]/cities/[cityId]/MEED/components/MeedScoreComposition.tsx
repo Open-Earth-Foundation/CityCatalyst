@@ -1,11 +1,12 @@
 "use client";
-import { Box, HStack, VStack } from "@chakra-ui/react";
+import { Box, HStack, SimpleGrid, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
-import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
+import { BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
-import { LabelMedium } from "@/components/package/Texts/Label";
+import { Overline } from "@/components/package/Texts/Overline";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { MeedChartTip } from "./MeedChartTip";
 import {
   scoreContributions,
@@ -50,8 +51,12 @@ function scoreOf(action: MeedRankedActionResult, pillar: Pillar): number {
 export interface MeedScoreCompositionProps {
   action: MeedRankedActionResult;
   weights: MeedScoreWeights;
-  /** `compact`: bar + final score on one line. `detailed`: bar + one row per pillar. */
-  variant?: "compact" | "detailed";
+  /**
+   * `bar`: the stacked bar alone (the caller prints the number elsewhere).
+   * `compact`: bar + final score on one line.
+   * `detailed`: bar + one tile per pillar with its score and meaning.
+   */
+  variant?: "bar" | "compact" | "detailed";
   /** `meed-results` namespace. */
   t: TFunction;
 }
@@ -62,6 +67,9 @@ export interface MeedScoreCompositionProps {
  * same 0..1 scale as the final score. Two actions with the same final score
  * can look completely different here, which is exactly the point — the number
  * alone hides whether an action won on impact or on policy backing.
+ *
+ * The formula (score × weight = contribution) lives in the hover tip, so the
+ * layout never has to print it.
  */
 export function MeedScoreComposition({
   action,
@@ -98,11 +106,13 @@ export function MeedScoreComposition({
           values={[parts.impact, parts.alignment, parts.feasibility]}
           colors={[...PILLAR_COLORS]}
           max={1}
-          height={variant === "compact" ? 2 : 3}
+          height={variant === "detailed" ? 3 : 2}
         />
       </Box>
     </MeedChartTip>
   );
+
+  if (variant === "bar") return bar;
 
   if (variant === "compact") {
     return (
@@ -125,41 +135,50 @@ export function MeedScoreComposition({
   return (
     <VStack alignItems="stretch" gap="m">
       {bar}
-      <VStack alignItems="stretch" gap="s">
+      <SimpleGrid columns={{ base: 1, sm: 3 }} gap="m">
         {PILLARS.map((pillar, i) => (
-          <HStack key={pillar} alignItems="flex-start" gap="s">
-            <Box
-              w="10px"
-              h="10px"
-              mt="5px"
-              borderRadius="full"
-              bg={PILLAR_COLORS[i]}
-              flexShrink={0}
-            />
-            <VStack alignItems="stretch" gap="xs" flex="1" minW={0}>
-              <HStack justifyContent="space-between" gap="m">
-                <LabelMedium color="content.primary">
-                  {t(PILLAR_LABEL_KEY[pillar])}
-                </LabelMedium>
-                <BodyMedium
-                  color="content.secondary"
-                  fontVariantNumeric="tabular-nums"
-                  whiteSpace="nowrap"
-                >
-                  {t("composition-row", {
-                    score: scoreOf(action, pillar).toFixed(2),
-                    weight: weights[pillar].toFixed(2),
-                    result: parts[pillar].toFixed(2),
-                  })}
-                </BodyMedium>
-              </HStack>
-              <Caption color="content.tertiary">
-                {t(PILLAR_DESCRIPTION_KEY[pillar])}
+          <VStack
+            key={pillar}
+            alignItems="stretch"
+            gap="xs"
+            p="m"
+            borderRadius="rounded"
+            bg="background.neutral"
+          >
+            <HStack gap="xs" alignItems="center">
+              <Box
+                w="10px"
+                h="10px"
+                borderRadius="full"
+                bg={PILLAR_COLORS[i]}
+                flexShrink={0}
+              />
+              <Overline color="content.tertiary">
+                {t(PILLAR_LABEL_KEY[pillar])}
+              </Overline>
+            </HStack>
+            <HStack alignItems="baseline" gap="xs">
+              <TitleMedium
+                color="content.primary"
+                fontVariantNumeric="tabular-nums"
+              >
+                {scoreOf(action, pillar).toFixed(2)}
+              </TitleMedium>
+              <Caption
+                color="content.tertiary"
+                fontVariantNumeric="tabular-nums"
+              >
+                {t("composition-weight-short", {
+                  weight: Math.round(weights[pillar] * 100),
+                })}
               </Caption>
-            </VStack>
-          </HStack>
+            </HStack>
+            <BodySmall color="content.secondary">
+              {t(PILLAR_DESCRIPTION_KEY[pillar])}
+            </BodySmall>
+          </VStack>
         ))}
-      </VStack>
+      </SimpleGrid>
     </VStack>
   );
 }
@@ -187,18 +206,18 @@ export function MeedScoreLegend({
             bg={PILLAR_COLORS[i]}
             flexShrink={0}
           />
-          <Caption color="content.secondary">
+          <BodySmall color="content.secondary">
             {t(PILLAR_LABEL_KEY[pillar])}
-          </Caption>
+          </BodySmall>
         </HStack>
       ))}
-      <Caption color="content.tertiary" fontVariantNumeric="tabular-nums">
+      <BodySmall color="content.tertiary" fontVariantNumeric="tabular-nums">
         {t("score-formula-caption", {
           wi: weights.impact.toFixed(2),
           wa: weights.alignment.toFixed(2),
           wf: weights.feasibility.toFixed(2),
         })}
-      </Caption>
+      </BodySmall>
     </HStack>
   );
 }

@@ -53,6 +53,21 @@ const OVERLAP: Partial<Record<CoBenefitKey, RiskCellKey[]>> = {
   housing: ["floods", "landslide"],
 };
 
+/** Each suppressed co-benefit with the credited risk cell that already carries it. */
+export function suppressionSources(
+  action: AdaptationAction,
+): { key: CoBenefitKey; cell: RiskCellKey }[] {
+  const credited = new Set(
+    action.links
+      .filter((link) => link.directness === "direct")
+      .map((link) => link.cell),
+  );
+  return (Object.keys(action.coBenefits) as CoBenefitKey[]).flatMap((key) => {
+    const cell = (OVERLAP[key] ?? []).find((c) => credited.has(c));
+    return cell ? [{ key, cell }] : [];
+  });
+}
+
 /** Co-benefits suppressed for this action because a credited link overlaps. */
 export function suppressedCoBenefits(action: AdaptationAction): CoBenefitKey[] {
   const credited = new Set(

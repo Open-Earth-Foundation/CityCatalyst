@@ -24,6 +24,7 @@ import { ACTION_BY_ID, ADAPTATION_ACTIONS } from "../_lib/actions";
 import { SECTOR_HEX } from "../_lib/riskCells";
 import { MITIGATION_SHIFTS } from "../_lib/mitigation";
 import { buildDemoReport } from "../_lib/report";
+import { pick } from "../_lib/localized";
 import { NotRankedLane } from "./NotRankedLane";
 import { AdaptationDrawerSections } from "./AdaptationDrawerSections";
 import { DemoRankingConfig } from "./DemoRankingConfig";
@@ -31,11 +32,10 @@ import { ShiftInterventionList } from "./ShiftInterventionList";
 import { useContextAreas } from "./contextAreas";
 
 /**
- * Everything a ranking produces, on one screen: header and report control,
- * the configuration it ran with, the funnel, top picks, the full ranking, the
- * not-ranked lane and the context cards — plus the action drawer. The module
- * home renders this once a ranking exists, so there is one results screen,
- * not a summary and a "view all" copy of it.
+ * Everything a ranking produces, on one screen: the census, the configuration
+ * it ran with, the funnel, the top picks with the report control beside
+ * their checkboxes, the full table (with the same control) and the chart,
+ * the actions outside the ranking, and the context cards — plus the drawer.
  */
 export function RankingView({
   lng,
@@ -109,6 +109,8 @@ export function RankingView({
 
   const scoredFor = (id: string) =>
     adaptation?.ranked.find((s) => s.action.id === id) ?? null;
+  const rankOf = (id: string) =>
+    ranked.find((x) => x.action_id === id)?.rank ?? null;
   const openById = (id: string) => {
     const r = ranked.find((x) => x.action_id === id);
     if (r) {
@@ -128,6 +130,7 @@ export function RankingView({
         city={city}
         lng={lng}
         t={t}
+        rankOf={rankOf}
         onOpenAction={openById}
       />
     ) : undefined;
@@ -181,21 +184,23 @@ export function RankingView({
     ];
   }, [adaptation, t]);
 
+  const reportProps = {
+    onGenerate: generateReport,
+    isGenerating,
+    progress: null,
+  };
+
   return (
     <>
       <VStack alignItems="stretch" gap="xl">
         <ResultsHeader
           rankedCount={ranked.length}
           excludedCount={adaptation ? adaptation.notRanked.length : null}
-          selectedCount={selectedIds.length}
-          isGenerating={isGenerating}
-          progress={null}
-          onGenerate={generateReport}
           t={tResults}
         />
 
         <Card.Root borderColor="border.overlay">
-          <Card.Body>
+          <Card.Body p="l">
             <DemoRankingConfig
               preferences={state.preferences}
               editHref={trackHref(lng, city.slug, track, "preferences")}
@@ -204,6 +209,8 @@ export function RankingView({
                 coBenefit: labels.coBenefit,
                 timeline: labels.timeline,
                 risk: labels.cell,
+                action: (id) =>
+                  ACTION_BY_ID[id] ? pick(ACTION_BY_ID[id].name, lng) : id,
               }}
               t={tResults}
             />
@@ -212,8 +219,8 @@ export function RankingView({
 
         {funnel && (
           <Card.Root borderColor="border.overlay">
-            <Card.Body>
-              <VStack alignItems="stretch" gap="s">
+            <Card.Body p="l">
+              <VStack alignItems="stretch" gap="m">
                 <HStack gap="s" alignItems="center" flexWrap="wrap">
                   <LabelLarge color="content.primary">
                     {t("funnel-title")}
@@ -228,28 +235,31 @@ export function RankingView({
           </Card.Root>
         )}
 
-        <TopPicks
-          actions={topPicks}
-          index={index}
-          weights={weights}
-          t={tResults}
-          isCatalogLoading={false}
-          selectedIds={selectedIds}
-          onToggleSelect={toggleSelect}
-          onOpenDetail={setOpen}
-          onBrowseFullRanking={() =>
-            rankingRef.current?.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            })
-          }
-        />
-        <MeedScoreLegend weights={weights} t={tResults} />
-        <CoBenefitStrip
-          benefits={coBenefits}
-          total={topPicks.length}
-          t={tResults}
-        />
+        <VStack alignItems="stretch" gap="l">
+          <TopPicks
+            actions={topPicks}
+            index={index}
+            weights={weights}
+            t={tResults}
+            isCatalogLoading={false}
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
+            onOpenDetail={setOpen}
+            onBrowseFullRanking={() =>
+              rankingRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              })
+            }
+            {...reportProps}
+          />
+          <MeedScoreLegend weights={weights} t={tResults} />
+          <CoBenefitStrip
+            benefits={coBenefits}
+            total={topPicks.length}
+            t={tResults}
+          />
+        </VStack>
 
         {track === "mitigation" && (
           <ShiftInterventionList
@@ -263,27 +273,30 @@ export function RankingView({
           />
         )}
 
-        <FullRanking
-          ref={rankingRef}
-          actions={ranked}
-          index={index}
-          weights={weights}
-          t={tResults}
-          onSelect={setOpen}
-          selectedIds={selectedIds}
-          onToggleSelect={toggleSelect}
-          colorOf={
-            track === "adaptation"
-              ? (tag) =>
-                  tag ? SECTOR_HEX[tag as keyof typeof SECTOR_HEX] : undefined
-              : undefined
-          }
-        />
-        {track === "adaptation" && (
-          <BodySmall color="content.tertiary">
-            {t("glance-normalised-note")}
-          </BodySmall>
-        )}
+        <VStack alignItems="stretch" gap="s">
+          <FullRanking
+            ref={rankingRef}
+            actions={ranked}
+            index={index}
+            weights={weights}
+            t={tResults}
+            onSelect={setOpen}
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
+            colorOf={
+              track === "adaptation"
+                ? (tag) =>
+                    tag ? SECTOR_HEX[tag as keyof typeof SECTOR_HEX] : undefined
+                : undefined
+            }
+            {...reportProps}
+          />
+          {track === "adaptation" && (
+            <BodySmall color="content.tertiary">
+              {t("glance-normalised-note")}
+            </BodySmall>
+          )}
+        </VStack>
 
         {adaptation && (
           <NotRankedLane
@@ -312,6 +325,7 @@ export function RankingView({
           index={index}
           weights={weights}
           t={tResults}
+          lng={lng}
           onClose={() => setOpen(null)}
           rank={open.rank}
           total={ranked.length}
@@ -327,8 +341,10 @@ export function RankingView({
           index={index}
           weights={weights}
           t={tResults}
+          lng={lng}
           onClose={() => setOpenUnranked(null)}
           size="lg"
+          showScore={false}
           extraSections={
             <Box>
               <MeedStatusTag tone="warning" mb="m">

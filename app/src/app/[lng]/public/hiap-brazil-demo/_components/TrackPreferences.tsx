@@ -351,8 +351,7 @@ export function TrackPreferences({
           {track === "adaptation" && (
             <Section
               title={t("priority-risks-title")}
-              badge={t("badge-pending")}
-              badgeTone="warning"
+              badge={t("badge-adaptation")}
               t={tPrefs}
             >
               <BodyMedium color="content.secondary">

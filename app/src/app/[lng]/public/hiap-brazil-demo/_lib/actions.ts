@@ -192,8 +192,22 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
     },
     coBenefitsAiOnly: false,
     relationships: [
-      { kind: "prerequisite", actionId: "icare_0176" },
-      { kind: "synergistic", actionId: "c40_0038" },
+      {
+        kind: "prerequisite",
+        actionId: "icare_0176",
+        rationale: l(
+          "The adaptation plan sets the watershed priorities and the governance the protection programme is delivered through.",
+          "O plano de adaptação define as prioridades de bacias e a governança pela qual o programa de proteção é executado.",
+        ),
+      },
+      {
+        kind: "synergistic",
+        actionId: "c40_0038",
+        rationale: l(
+          "Slope and watershed restoration and source protection work on the same land; together they hold water and soil better than either alone.",
+          "A restauração de encostas e bacias e a proteção de mananciais atuam no mesmo território; juntas retêm água e solo melhor do que isoladas.",
+        ),
+      },
     ],
     legal: {
       score: 3.4,
@@ -297,7 +311,16 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
     ],
     coBenefits: { water_quality: 1, local_economy: 1, social_equity: 0 },
     coBenefitsAiOnly: true,
-    relationships: [{ kind: "synergistic", actionId: "icare_0104" }],
+    relationships: [
+      {
+        kind: "synergistic",
+        actionId: "icare_0104",
+        rationale: l(
+          "Lower demand keeps the protected sources within their safe yield, so the two reinforce each other in dry years.",
+          "Uma demanda menor mantém os mananciais protegidos dentro da vazão segura, e as duas ações se reforçam em anos secos.",
+        ),
+      },
+    ],
     legal: {
       score: 4.2,
       responsibleLevel: "municipal",
@@ -380,7 +403,16 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
     ],
     coBenefits: { public_health: 2, social_equity: 2, local_economy: 0 },
     coBenefitsAiOnly: false,
-    relationships: [{ kind: "synergistic", actionId: "icare_0201" }],
+    relationships: [
+      {
+        kind: "synergistic",
+        actionId: "icare_0201",
+        rationale: l(
+          "Early-warning data lets health services stage surveillance and capacity before an outbreak or heat episode arrives.",
+          "Os dados de alerta precoce permitem aos serviços de saúde preparar vigilância e capacidade antes de um surto ou episódio de calor.",
+        ),
+      },
+    ],
     legal: {
       score: 3.8,
       responsibleLevel: "shared",
@@ -470,7 +502,16 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
       water_quality: 1,
     },
     coBenefitsAiOnly: true,
-    relationships: [{ kind: "synergistic", actionId: "icare_0112" }],
+    relationships: [
+      {
+        kind: "synergistic",
+        actionId: "icare_0112",
+        rationale: l(
+          "Resilient production only reaches households if storage and distribution survive the same events.",
+          "A produção resiliente só chega às famílias se o armazenamento e a distribuição resistirem aos mesmos eventos.",
+        ),
+      },
+    ],
     legal: {
       score: 2.9,
       responsibleLevel: "shared",
@@ -564,8 +605,22 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
     },
     coBenefitsAiOnly: false,
     relationships: [
-      { kind: "prerequisite", actionId: "icare_0176" },
-      { kind: "synergistic", actionId: "ipcc_0096" },
+      {
+        kind: "prerequisite",
+        actionId: "icare_0176",
+        rationale: l(
+          "The plan identifies the critical food routes and depots the resilient infrastructure is built for.",
+          "O plano identifica as rotas e os entrepostos de alimentos críticos para os quais a infraestrutura resiliente é construída.",
+        ),
+      },
+      {
+        kind: "synergistic",
+        actionId: "ipcc_0096",
+        rationale: l(
+          "Resilient production only reaches households if storage and distribution survive the same events.",
+          "A produção resiliente só chega às famílias se o armazenamento e a distribuição resistirem aos mesmos eventos.",
+        ),
+      },
     ],
     legal: {
       score: 4.6,
@@ -657,7 +712,16 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
     ],
     coBenefits: { local_economy: 2, social_equity: 2, public_health: 1 },
     coBenefitsAiOnly: true,
-    relationships: [{ kind: "synergistic", actionId: "icare_0112" }],
+    relationships: [
+      {
+        kind: "synergistic",
+        actionId: "icare_0112",
+        rationale: l(
+          "Territorial value chains depend on resilient storage and distribution to keep food moving after an event.",
+          "As cadeias territoriais dependem de armazenamento e distribuição resilientes para manter o abastecimento após um evento.",
+        ),
+      },
+    ],
     legal: {
       score: 4.0,
       responsibleLevel: "municipal",
@@ -745,8 +809,22 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
     coBenefits: { public_health: 2, social_equity: 1, housing: 1 },
     coBenefitsAiOnly: false,
     relationships: [
-      { kind: "prerequisite", actionId: "icare_0176" },
-      { kind: "corequisite", actionId: "icare_0201" },
+      {
+        kind: "prerequisite",
+        actionId: "icare_0176",
+        rationale: l(
+          "The emergency plan is a chapter of the adaptation plan: it inherits its risk scenarios and responsibilities.",
+          "O plano de emergência é um capítulo do plano de adaptação: herda seus cenários de risco e responsabilidades.",
+        ),
+      },
+      {
+        kind: "corequisite",
+        actionId: "icare_0201",
+        rationale: l(
+          "A response plan without monitoring has no trigger, and monitoring without a plan has no response; they are delivered together.",
+          "Um plano de resposta sem monitoramento não tem gatilho, e monitoramento sem plano não tem resposta; são executados juntos.",
+        ),
+      },
     ],
     legal: {
       score: 4.8,
@@ -842,8 +920,22 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
     },
     coBenefitsAiOnly: false,
     relationships: [
-      { kind: "prerequisite", actionId: "icare_0176" },
-      { kind: "synergistic", actionId: "c40_0038" },
+      {
+        kind: "prerequisite",
+        actionId: "icare_0176",
+        rationale: l(
+          "The plan's flood scenarios set the design standard the drainage upgrade is sized to.",
+          "Os cenários de inundação do plano definem o padrão de projeto para o qual a drenagem é dimensionada.",
+        ),
+      },
+      {
+        kind: "synergistic",
+        actionId: "c40_0038",
+        rationale: l(
+          "Restored slopes and watersheds slow runoff, so the drainage network handles smaller peaks.",
+          "Encostas e bacias restauradas retardam o escoamento, e a rede de drenagem passa a lidar com picos menores.",
+        ),
+      },
     ],
     legal: {
       score: 4.4,
@@ -999,7 +1091,16 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
       housing: -1,
     },
     coBenefitsAiOnly: false,
-    relationships: [{ kind: "synergistic", actionId: "c40_0048" }],
+    relationships: [
+      {
+        kind: "synergistic",
+        actionId: "c40_0048",
+        rationale: l(
+          "Restored slopes and watersheds slow runoff, so the drainage network handles smaller peaks.",
+          "Encostas e bacias restauradas retardam o escoamento, e a rede de drenagem passa a lidar com picos menores.",
+        ),
+      },
+    ],
     legal: {
       score: 3.6,
       responsibleLevel: "shared",
@@ -1105,7 +1206,16 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
     ],
     coBenefits: { public_health: 1, social_equity: 1, housing: -1 },
     coBenefitsAiOnly: true,
-    relationships: [{ kind: "corequisite", actionId: "c40_0042" }],
+    relationships: [
+      {
+        kind: "corequisite",
+        actionId: "c40_0042",
+        rationale: l(
+          "Shelters are opened and evacuations ordered by the emergency plan; without it the infrastructure has no protocol.",
+          "Os abrigos são abertos e as evacuações ordenadas pelo plano de emergência; sem ele a infraestrutura não tem protocolo.",
+        ),
+      },
+    ],
     legal: {
       score: 4.1,
       responsibleLevel: "municipal",
@@ -1160,7 +1270,16 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
     links: [],
     coBenefits: { local_economy: 1, housing: 1, biodiversity: -1 },
     coBenefitsAiOnly: true,
-    relationships: [{ kind: "prerequisite", actionId: "icare_0176" }],
+    relationships: [
+      {
+        kind: "prerequisite",
+        actionId: "icare_0176",
+        rationale: l(
+          "Coastal works are committed through the plan's shoreline strategy and its long-term financing.",
+          "As obras costeiras são assumidas por meio da estratégia de orla do plano e de seu financiamento de longo prazo.",
+        ),
+      },
+    ],
     legal: {
       score: 2.3,
       responsibleLevel: "national",

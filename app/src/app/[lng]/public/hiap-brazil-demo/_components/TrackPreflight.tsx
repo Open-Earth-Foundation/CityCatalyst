@@ -14,7 +14,10 @@ import { LabelLarge } from "@/components/package/Texts/Label";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { Slider } from "@/components/ui/slider";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
-import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
+import {
+  MeedStatusTag,
+  type MeedTone,
+} from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import { useRouter } from "next/navigation";
 import type { DemoTrack, DemoWeights } from "../_lib/types";
@@ -104,8 +107,22 @@ function WeightSlider({
   );
 }
 
+type InputStatus = "complete" | "optional" | "custom";
+
+const STATUS_TONE: Record<InputStatus, MeedTone> = {
+  complete: "positive",
+  optional: "neutral",
+  custom: "warning",
+};
+
+/**
+ * One input the ranking reads: what it is, whether it is required, whether
+ * it is set, and where to change it. Nothing here is a gate — the point of
+ * the row is to say so.
+ */
 function Row({
   label,
+  requirement,
   status,
   statusLabel,
   sub,
@@ -114,19 +131,14 @@ function Row({
   isLast,
 }: {
   label: string;
-  status: "complete" | "in-progress" | "not-started" | "optional";
+  requirement: string;
+  status: InputStatus;
   statusLabel: string;
   sub: string;
-  href: string;
-  linkLabel: string;
+  href?: string;
+  linkLabel?: string;
   isLast?: boolean;
 }) {
-  const tone =
-    status === "complete"
-      ? "positive"
-      : status === "in-progress"
-        ? "warning"
-        : "neutral";
   return (
     <HStack
       justifyContent="space-between"
@@ -139,21 +151,26 @@ function Row({
       <VStack alignItems="flex-start" gap="xs" flex="1" minW="0">
         <HStack gap="s" flexWrap="wrap" alignItems="center">
           <LabelLarge color="content.primary">{label}</LabelLarge>
-          <MeedStatusTag tone={tone}>{statusLabel}</MeedStatusTag>
+          <MeedStatusTag tone="info">{requirement}</MeedStatusTag>
+          <MeedStatusTag tone={STATUS_TONE[status]}>
+            {statusLabel}
+          </MeedStatusTag>
         </HStack>
         <BodySmall color="content.tertiary">{sub}</BodySmall>
       </VStack>
-      <Link
-        asChild
-        flexShrink={0}
-        color="content.link"
-        fontFamily="heading"
-        fontSize="label.md"
-        fontWeight="semibold"
-        _focusVisible={FOCUS_RING}
-      >
-        <NextLink href={href}>{linkLabel}</NextLink>
-      </Link>
+      {href && linkLabel && (
+        <Link
+          asChild
+          flexShrink={0}
+          color="content.link"
+          fontFamily="heading"
+          fontSize="label.md"
+          fontWeight="semibold"
+          _focusVisible={FOCUS_RING}
+        >
+          <NextLink href={href}>{linkLabel}</NextLink>
+        </Link>
+      )}
     </HStack>
   );
 }
@@ -190,8 +207,11 @@ export function TrackPreflight({
   const weights = prefs.weights;
   const total = weights.impact + weights.alignment + weights.feasibility;
   const isCustom = WEIGHT_KEYS.some((k) => weights[k] !== DEFAULT_WEIGHTS[k]);
-  // Preferences are a user choice, not a model requirement: with none set the
-  // city-priorities component falls back to the neutral 0.5 (§7 fallbacks).
+  const cellsWithData = RISK_CELLS.filter((c) => city.risk[c.key]).length;
+  const prefsHref = trackHref(lng, city.slug, track, "preferences");
+
+  // Preferences are the city's choices, not model requirements: with none set
+  // the city-priorities component falls back to the neutral 0.5 (§7).
   const hasPreferences =
     prefs.sectors.length +
       prefs.coBenefits.length +
@@ -199,26 +219,66 @@ export function TrackPreflight({
       prefs.priorityRisks.length +
       prefs.excludedActionIds.length >
     0;
-  const prefsStatus = hasPreferences ? "complete" : "optional";
-  const cellsWithData = RISK_CELLS.filter((c) => city.risk[c.key]).length;
 
-  const prefSummary =
-    [
-      prefs.sectors.length
-        ? t("pref-sum-sectors", { count: prefs.sectors.length })
-        : null,
-      prefs.coBenefits.length
-        ? t("pref-sum-cobenefits", { count: prefs.coBenefits.length })
-        : null,
-      prefs.timeline.length
-        ? prefs.timeline.map(labels.timeline).join(", ")
-        : null,
-      prefs.excludedActionIds.length
-        ? t("pref-sum-exclusions", { count: prefs.excludedActionIds.length })
-        : null,
-    ]
-      .filter(Boolean)
-      .join(" · ") || tPre("no-detail-yet");
+  const optionalRow = (label: string, items: string[]) => ({
+    label,
+    requirement: t("req-optional"),
+    status: (items.length > 0 ? "complete" : "optional") as InputStatus,
+    statusLabel:
+      items.length > 0
+        ? t("status-set", { count: items.length })
+        : t("status-not-set"),
+    sub: items.length > 0 ? items.join(" · ") : t("status-not-set-sub"),
+    href: prefsHref,
+    linkLabel: items.length > 0 ? tPre("edit-step") : tPre("enter-data"),
+  });
+
+  const rows = [
+    {
+      label: track === "adaptation" ? t("step-risk") : t("step-emissions"),
+      requirement: t("req-required-data"),
+      status: "complete" as InputStatus,
+      statusLabel: t("status-complete"),
+      sub:
+        track === "adaptation"
+          ? t("preflight-risk-sub", { count: cellsWithData })
+          : t("preflight-emissions-sub", { year: city.inventory.year }),
+      href: trackHref(
+        lng,
+        city.slug,
+        track,
+        track === "adaptation" ? "risk" : "emissions",
+      ),
+      linkLabel: tPre("view-breakdown"),
+    },
+    optionalRow(t("pref-row-sectors"), prefs.sectors.map(labels.sector)),
+    optionalRow(
+      t("pref-row-cobenefits"),
+      prefs.coBenefits.map(labels.coBenefit),
+    ),
+    optionalRow(t("pref-row-timeline"), prefs.timeline.map(labels.timeline)),
+    ...(track === "adaptation"
+      ? [optionalRow(t("pref-row-risks"), prefs.priorityRisks.map(labels.cell))]
+      : []),
+    {
+      ...optionalRow(t("pref-row-exclusions"), prefs.excludedActionIds),
+      sub:
+        prefs.excludedActionIds.length > 0
+          ? tPre("confirmed-exclusions-count", {
+              count: prefs.excludedActionIds.length,
+            })
+          : t("status-not-set-sub"),
+    },
+    {
+      label: t("pref-row-weights"),
+      requirement: t("req-optional"),
+      status: (isCustom ? "custom" : "optional") as InputStatus,
+      statusLabel: isCustom
+        ? tPre("custom-weights-active")
+        : t("status-weights-default"),
+      sub: t("pref-row-weights-sub"),
+    },
+  ];
 
   return (
     <DemoShell
@@ -244,55 +304,32 @@ export function TrackPreflight({
           <BodyLarge color="content.secondary">{tPre("description")}</BodyLarge>
 
           <Card.Root borderColor="border.overlay">
-            <Card.Body>
+            <Card.Body p="l">
               <VStack alignItems="stretch" gap="s">
                 <TitleMedium color="content.primary">
                   {tPre("data-completeness-title")}
                 </TitleMedium>
+                <BodyMedium color="content.secondary">
+                  {t("preflight-nothing-mandatory")}
+                </BodyMedium>
                 <VStack alignItems="stretch" gap="0">
-                  <Row
-                    label={
-                      track === "adaptation"
-                        ? t("step-risk")
-                        : t("step-emissions")
-                    }
-                    status="complete"
-                    statusLabel={t("status-complete")}
-                    sub={
-                      track === "adaptation"
-                        ? t("preflight-risk-sub", { count: cellsWithData })
-                        : t("preflight-emissions-sub", {
-                            year: city.inventory.year,
-                          })
-                    }
-                    href={trackHref(
-                      lng,
-                      city.slug,
-                      track,
-                      track === "adaptation" ? "risk" : "emissions",
-                    )}
-                    linkLabel={tPre("view-breakdown")}
-                  />
-                  <Row
-                    label={t("step-preferences")}
-                    status={prefsStatus}
-                    statusLabel={t(`status-${prefsStatus}`)}
-                    sub={prefSummary}
-                    href={trackHref(lng, city.slug, track, "preferences")}
-                    linkLabel={
-                      prefsStatus === "complete"
-                        ? tPre("edit-step")
-                        : tPre("enter-data")
-                    }
-                    isLast
-                  />
+                  {rows.map((row, i) => (
+                    <Row
+                      key={row.label}
+                      {...row}
+                      isLast={i === rows.length - 1}
+                    />
+                  ))}
                 </VStack>
+                <BodySmall color="content.tertiary">
+                  {t("legal-screening-note")}
+                </BodySmall>
               </VStack>
             </Card.Body>
           </Card.Root>
 
           <Card.Root borderColor="border.overlay">
-            <Card.Body>
+            <Card.Body p="l">
               <VStack alignItems="stretch" gap="m">
                 <HStack gap="s" alignItems="center" flexWrap="wrap">
                   <TitleMedium color="content.primary">
@@ -348,26 +385,6 @@ export function TrackPreflight({
                     </MeedButton>
                   )}
                 </HStack>
-              </VStack>
-            </Card.Body>
-          </Card.Root>
-
-          <Card.Root borderColor="border.overlay">
-            <Card.Body>
-              <VStack alignItems="stretch" gap="s">
-                <TitleMedium color="content.primary">
-                  {tPre("exclusions-title")}
-                </TitleMedium>
-                <BodyMedium color="content.secondary">
-                  {prefs.excludedActionIds.length
-                    ? tPre("confirmed-exclusions-count", {
-                        count: prefs.excludedActionIds.length,
-                      })
-                    : tPre("no-confirmed-exclusions")}
-                </BodyMedium>
-                <BodySmall color="content.tertiary">
-                  {t("legal-screening-note")}
-                </BodySmall>
               </VStack>
             </Card.Body>
           </Card.Root>

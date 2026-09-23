@@ -26,6 +26,12 @@ import {
   MITIGATION_SHIFTS,
   mitigationRanked,
 } from "@/app/[lng]/public/hiap-brazil-demo/_lib/mitigation";
+import { relatedActions } from "@/app/[lng]/public/hiap-brazil-demo/_lib/relationships";
+import {
+  actionCoBenefitScores,
+  actionTradeOffScores,
+  tallyCoBenefits,
+} from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/coBenefits";
 
 // The fixtures are hand-written; these checks are what stops a typo from
 // producing a screen that quietly shows the wrong thing.
@@ -46,6 +52,15 @@ describe("fixture integrity", () => {
           expect(link.effectiveness).toBeDefined();
           expect(link.confidence).toBeDefined();
         }
+      }
+    }
+  });
+
+  it("every relationship explains itself in both languages", () => {
+    for (const action of ADAPTATION_ACTIONS) {
+      for (const rel of action.relationships) {
+        expect(rel.rationale.en.length).toBeGreaterThan(20);
+        expect(rel.rationale.pt.length).toBeGreaterThan(20);
       }
     }
   });
@@ -236,5 +251,64 @@ describe("mitigation fixture", () => {
     );
     expect(rows.map((r) => r.action_id).sort()).toEqual([...all].sort());
     expect(rows.map((r) => r.rank)).toEqual(rows.map((_, i) => i + 1));
+  });
+});
+
+describe("related actions (both directions)", () => {
+  it("shows an enabling action what it unlocks", () => {
+    const plan = relatedActions(ACTION_BY_ID.icare_0176);
+    const unlocked = plan.filter((r) => r.role === "unlocks");
+    expect(unlocked.map((r) => r.action.id)).toEqual(
+      expect.arrayContaining(["icare_0104", "c40_0042", "c40_0048"]),
+    );
+    expect(plan.every((r) => r.rationale.en)).toBe(true);
+  });
+
+  it("reads a declared prerequisite as 'requires' and keeps co-requisites symmetric", () => {
+    const drainage = relatedActions(ACTION_BY_ID.c40_0048);
+    expect(drainage.find((r) => r.action.id === "icare_0176")?.role).toBe(
+      "requires",
+    );
+    const shelters = relatedActions(ACTION_BY_ID.c40_0044);
+    const plan = relatedActions(ACTION_BY_ID.c40_0042);
+    expect(shelters.find((r) => r.action.id === "c40_0042")?.role).toBe(
+      "corequisite",
+    );
+    expect(plan.find((r) => r.action.id === "c40_0044")?.role).toBe(
+      "corequisite",
+    );
+  });
+});
+
+describe("co-benefit magnitudes through the MEED helpers", () => {
+  const city = CITY_BY_SLUG.sobral;
+  const ranking = rankAdaptation(city, ADAPTATION_ACTIONS, EMPTY_PREFERENCES);
+  const rows = toRankedResults(ranking, "en");
+  const index = adaptationIndex(ADAPTATION_ACTIONS, city, "en");
+  const rowOf = (id: string) => rows.find((r) => r.action_id === id)!;
+
+  it("carries +2/−1 magnitudes and leaves a scored zero out of both lists", () => {
+    // icare_0112 scores mobility 0: neither a benefit nor a trade-off.
+    const storage = rowOf("icare_0112");
+    const benefits = actionCoBenefitScores(storage, index);
+    expect(benefits.every((b) => b.value !== null && b.value > 0)).toBe(true);
+    expect(benefits.map((b) => b.key)).not.toContain("mobility");
+    expect(
+      actionTradeOffScores(storage, index).map((b) => b.key),
+    ).not.toContain("mobility");
+    // c40_0048 scores biodiversity −1: a trade-off with its magnitude.
+    const drainage = rowOf("c40_0048");
+    expect(actionTradeOffScores(drainage, index)).toEqual(
+      expect.arrayContaining([{ key: "biodiversity", value: -1 }]),
+    );
+  });
+
+  it("tallies a mean magnitude across the top picks", () => {
+    const tally = tallyCoBenefits(rows.slice(0, 3), index);
+    expect(tally.length).toBeGreaterThan(0);
+    for (const item of tally) {
+      expect(item.count).toBeGreaterThan(0);
+      expect(item.mean === null || item.mean > 0).toBe(true);
+    }
   });
 });

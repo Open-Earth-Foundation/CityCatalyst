@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Card, HStack, Icon, VStack } from "@chakra-ui/react";
+import { Card, HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
 import {
   LuCircleOff,
   LuLink2,
@@ -10,10 +10,9 @@ import {
 } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { IconType } from "react-icons";
-import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import {
   MeedStatusTag,
   type MeedTone,
@@ -22,6 +21,7 @@ import type { NotRankedAction, NotRankedReason } from "../_lib/ranking";
 import type { AdaptationAction } from "../_lib/types";
 import { UNCOVERED_HAZARD_LABEL } from "../_lib/riskCells";
 import { pick } from "../_lib/localized";
+import { ActionMiniCard } from "./ActionMiniCard";
 
 const REASON_ICON: Record<NotRankedReason, IconType> = {
   outside_coverage: LuMapPinOff,
@@ -50,9 +50,8 @@ const ORDER: NotRankedReason[] = [
 /**
  * Actions that are in the bank but not in the ranking, grouped by the reason —
  * each group says in one sentence why, because "not ranked" must never read as
- * "low priority". The methodology asks for a display separate from the main
- * list for hazards outside AdaptaBrasil (§9.1); the same lane also carries the
- * complementary (enabling) actions the Sep 8 review moved out of scoring.
+ * "low priority". The actions use the same compact card as related actions in
+ * the drawer, with the reason in place of a score.
  */
 export function NotRankedLane({
   items,
@@ -83,7 +82,7 @@ export function NotRankedLane({
       </VStack>
       {groups.map(({ reason, actions }) => (
         <Card.Root key={reason} borderColor="border.overlay">
-          <Card.Body>
+          <Card.Body p="l">
             <VStack alignItems="stretch" gap="m">
               <HStack gap="s" alignItems="flex-start">
                 <Icon
@@ -106,42 +105,34 @@ export function NotRankedLane({
                   </BodyMedium>
                 </VStack>
               </HStack>
-              <VStack alignItems="stretch" gap="xs">
+              <SimpleGrid columns={{ base: 1, md: 2 }} gap="m">
                 {actions.map((action) => (
-                  <HStack
+                  <ActionMiniCard
                     key={action.id}
-                    justifyContent="space-between"
-                    gap="m"
-                    py="m"
-                    borderTopWidth="1px"
-                    borderColor="border.overlay"
-                  >
-                    <VStack alignItems="flex-start" gap="xs" minW={0}>
-                      <BodyMedium color="content.primary" fontWeight="semibold">
-                        {pick(action.name, lng)}
-                      </BodyMedium>
-                      {action.uncoveredHazard && (
-                        <BodySmall color="content.tertiary">
+                    action={action}
+                    lng={lng}
+                    note={pick(action.description, lng)}
+                    tag={
+                      action.uncoveredHazard ? (
+                        <MeedStatusTag tone="warning">
                           {t("not-ranked-hazard", {
                             hazard: pick(
                               UNCOVERED_HAZARD_LABEL[action.uncoveredHazard],
                               lng,
                             ),
                           })}
-                        </BodySmall>
-                      )}
-                    </VStack>
-                    <MeedButton
-                      variant="outlined"
-                      minW="auto"
-                      px="m"
-                      onClick={() => onOpen(action)}
-                    >
-                      {t("not-ranked-open")}
-                    </MeedButton>
-                  </HStack>
+                        </MeedStatusTag>
+                      ) : (
+                        <MeedStatusTag tone={REASON_TONE[reason]}>
+                          {t(`reason-${reason}-tag`)}
+                        </MeedStatusTag>
+                      )
+                    }
+                    onOpen={() => onOpen(action)}
+                    t={t}
+                  />
                 ))}
-              </VStack>
+              </SimpleGrid>
             </VStack>
           </Card.Body>
         </Card.Root>

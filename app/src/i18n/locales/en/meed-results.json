@@ -158,6 +158,7 @@
   "composition-alignment": "Alignment",
   "composition-feasibility": "Feasibility",
   "composition-row": "{{score}} × {{weight}} = {{result}}",
+  "composition-weight-short": "× {{weight}}% weight",
   "composition-aria": "Final score {{final}}: impact {{impact}}, alignment {{alignment}}, feasibility {{feasibility}}",
   "score-formula-caption": "Final score = impact × {{wi}} + alignment × {{wa}} + feasibility × {{wf}}",
   "glance-title": "Ranking at a glance",

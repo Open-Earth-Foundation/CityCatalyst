@@ -137,6 +137,8 @@ export type RelationshipKind = "prerequisite" | "corequisite" | "synergistic";
 export interface ActionRelationship {
   kind: RelationshipKind;
   actionId: string;
+  /** One sentence on why the two actions belong together, shown on the card. */
+  rationale: Localized;
 }
 
 /** I Care legal classification (methodology §5.1, Sep 2026 revision). */

@@ -305,11 +305,7 @@ export default function Page(props: {
                                 >
                                   {e.pt}
                                 </BodyMedium>
-                                <BodySmall
-                                  color="content.tertiary"
-                                  fontStyle="italic"
-                                  mt="xs"
-                                >
+                                <BodySmall color="content.tertiary" mt="xs">
                                   {t("policy-en-aid")}: {e.en}
                                 </BodySmall>
                               </Table.Cell>

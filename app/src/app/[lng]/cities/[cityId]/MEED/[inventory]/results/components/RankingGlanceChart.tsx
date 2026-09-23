@@ -82,8 +82,9 @@ export function RankingGlanceChart({
   const labelWidth =
     useBreakpointValue({ base: 8, md: LABEL_WIDTH.md, lg: LABEL_WIDTH.lg }) ??
     LABEL_WIDTH.lg;
-  const [textColor, gridColor, fallbackColor] = useToken("colors", [
+  const [textColor, labelColor, gridColor, fallbackColor] = useToken("colors", [
     "content.secondary",
+    "content.primary",
     "border.overlay",
     "content.link",
   ]);
@@ -137,8 +138,8 @@ export function RankingGlanceChart({
       <HStack gap="m" flexWrap="wrap" mt="s">
         {legend.map(([sector, color]) => (
           <HStack key={sector} gap="xs" alignItems="center">
-            <Box boxSize="10px" borderRadius="full" bg={color} flexShrink={0} />
-            <Caption color="content.secondary">{sector}</Caption>
+            <Box boxSize="12px" borderRadius="full" bg={color} flexShrink={0} />
+            <BodySmall color="content.secondary">{sector}</BodySmall>
           </HStack>
         ))}
       </HStack>
@@ -150,7 +151,7 @@ export function RankingGlanceChart({
           layout="horizontal"
           margin={{
             top: 8,
-            right: 44,
+            right: 56,
             bottom: 32,
             left: labelWidth,
           }}
@@ -184,10 +185,15 @@ export function RankingGlanceChart({
                     ),
                 }
           }
+          // Values sit just past the end of each bar, in dark text on the
+          // card background, rather than inside bars whose sector colour may
+          // not carry 12px text.
           enableLabel
           label={(bar) => Number(bar.value).toFixed(2)}
-          labelSkipWidth={36}
-          labelTextColor={textColor}
+          labelPosition="end"
+          labelOffset={8}
+          labelSkipWidth={0}
+          labelTextColor={labelColor}
           theme={{
             text: { fill: textColor, fontSize: 12 },
             axis: { ticks: { text: { fill: textColor, fontSize: 12 } } },

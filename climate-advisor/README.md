@@ -1741,3 +1741,21 @@ through the error path. This does not provide durable reconnect/restart recovery
 
 See [validation and reproduction](docs/cnb-reasoning-validation.md) for focused
 checks, manual verification steps, and remaining limitations.
+
+### Concept Note chat suggestions
+
+`POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
+for the authorized run and its active conversation. Questions target 3–7 words
+and are limited to 80 characters each. The UI keeps them directly above the
+chat input, outside the scrolling message history. The `cnb_chat_suggestions`
+model uses `openai/gpt-5.6-luna` through the existing `OPENROUTER_API_KEY`, with
+medium reasoning. Its prompt is `prompts/cnb/chat_suggestions.md`.
+
+The model receives the first 20,000 `o200k_base` tokens of the created document
+(in chapter order), up to six recent messages (2,000 tokens each), and compact
+workspace metadata. Uploaded source bodies and internal identifiers are excluded.
+The call has a 20-second deadline, no retries, and a 4,096-token completion cap.
+Invalid output or provider failure returns an empty list so the UI uses two
+translated deterministic questions. Suggestions never write messages or edit
+the document; selecting one fills and focuses the composer. Suggestions refresh
+after replies, tab changes, or run/draft revisions; the UI cancels stale requests.

@@ -639,5 +639,9 @@
   "funding-draft-warning": "Ihr Entwurfstext wird aufbewahrt. Vorherige Kapitelbestätigungen und ausstehende Bearbeitungsvorschläge werden gelöscht. Eine andere Vorlage muss die gleiche Kapitelstruktur haben. Überprüfen Sie den Entwurf anhand des neuen Geldgebers und der Vorlage, bevor Sie ihn exportieren.",
   "funding-draft-acknowledge": "Ich werde den vorhandenen Entwurf im Hinblick auf die neue Finanzierungsstruktur überprüfen.",
   "delete-unavailable": "Diese Konzeptnotiz ist nicht mehr verfügbar.",
-  "status-processing": "Bearbeitung"
+  "status-processing": "Bearbeitung",
+  "upload-incomplete": "Upload unvollständig",
+  "upload-incomplete-message": "Ihre Datei konnte nicht hochgeladen werden. Ihr Arbeitsbereich ist gespeichert. Versuchen Sie die Datei erneut hochzuladen, wenn Sie bereit sind.",
+  "upload-select-originals": "Wählen Sie die Originaldateien aus, die noch hochgeladen werden müssen. Erfolgreich hochgeladene Dateien sind bereits gespeichert.",
+  "retry-upload": "Versuchen Sie, den Upload erneut durchzuführen"
 }

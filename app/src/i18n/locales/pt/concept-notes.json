@@ -639,5 +639,9 @@
   "funding-draft-warning": "O seu rascunho será mantido. Confirmações de capítulos anteriores e sugestões de edição pendentes serão eliminadas. Um modelo diferente deve ter a mesma estrutura de capítulo. Revise o rascunho em função do novo financiador e modelo antes de exportar.",
   "funding-draft-acknowledge": "Vou revisar o rascunho existente de acordo com a nova configuração de financiamento.",
   "delete-unavailable": "Esta nota conceitual já não está disponível.",
-  "status-processing": "Em processamento"
+  "status-processing": "Em processamento",
+  "upload-incomplete": "Upload incompleto",
+  "upload-incomplete-message": "O seu arquivo não pôde ser carregado. O seu espaço de trabalho foi salvo. Tente carregar o arquivo novamente quando estiver pronto.",
+  "upload-select-originals": "Selecione os arquivos originais que ainda precisam ser carregados. Arquivos enviados com sucesso já estão salvos.",
+  "retry-upload": "Tente fazer o upload novamente"
 }

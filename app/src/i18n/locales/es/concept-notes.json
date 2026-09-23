@@ -639,5 +639,9 @@
   "funding-draft-warning": "Se mantendrá el texto de su borrador. Las confirmaciones de capítulos anteriores y las sugerencias de edición pendientes se eliminarán. Una plantilla diferente debe tener la misma estructura de capítulos. Revise el borrador frente al nuevo financiador y plantilla antes de exportar.",
   "funding-draft-acknowledge": "Revisaré el borrador existente en función del nuevo esquema de financiación.",
   "delete-unavailable": "Esta nota conceptual ya no está disponible.",
-  "status-processing": "Procesando"
+  "status-processing": "Procesando",
+  "upload-incomplete": "Carga incompleta",
+  "upload-incomplete-message": "No se pudo cargar su archivo. Su espacio de trabajo está guardado. Intente cargar el archivo de nuevo cuando esté listo.",
+  "upload-select-originals": "Seleccione los archivos originales que aún necesitan ser cargados. Los archivos cargados con éxito ya están guardados.",
+  "retry-upload": "Intenta subir de nuevo"
 }

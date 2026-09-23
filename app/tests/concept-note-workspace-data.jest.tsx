@@ -303,6 +303,7 @@ describe("useConceptNoteWorkspaceData", () => {
       content: composerRequest.content,
       context: {
         concept_note_run_id: "run-1",
+        ui_locale: "en",
         concept_note_edit: {
           scope: { kind: "auto" },
           idempotency_key: expect.any(String),

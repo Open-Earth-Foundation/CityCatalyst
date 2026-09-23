@@ -90,7 +90,9 @@ Return a concise plain-text assistant answer or invoke a registered tool with a
 JSON object, not a JSON-encoded string.
 
 `concept_note_help` takes no arguments: invoke it with `{}`. Its read-only result
-contains `guide` and `ui_state` (current draft and known export blockers).
+contains `guide`, `ui_locale`, and `ui_state` (current draft and known export
+blockers). Quote control labels exactly as the guide gives them; they match the
+user's UI language even when you answer in another language.
 
 `concept_note_edit_propose` takes no arguments: invoke it with `{}`. After a
 successful result, use its status: for `proposed`, direct the user to review the

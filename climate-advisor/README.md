@@ -54,6 +54,11 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      The model calls it for capability/navigation questions, not project-content
      questions or actual edit requests. Its guide lives in
      `service/app/tools/concept_note_ui_guide.txt`, outside the always-on prompt.
+     The CNB chat sends its active UI language as `context.ui_locale`; the guide
+     quotes control labels from `concept_note_ui_labels.py` for that language
+     (English fallback). A test keeps those labels equal to the frontend
+     `concept-notes.json` translations. `ui_state.draft` separates
+     `total_sections` from `sections_with_content`.
      Each invocation reauthorizes the run and loads current draft/critical-gap
      export state from the CNB workspace. Ordinary turns do not load UI state.
      Browser-only state remains unknown; unavailable workspace storage preserves

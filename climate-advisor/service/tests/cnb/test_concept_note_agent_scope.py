@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from uuid import uuid4
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from app.db import Base
@@ -149,3 +149,31 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         await service.close()
     finally:
         await engine.dispose()
+
+
+async def test_help_receives_active_ui_locale(monkeypatch):
+    """The CNB frontend language must reach help so labels match the UI."""
+    settings = get_settings().model_copy(deep=True)
+    settings.openrouter_api_key = "test-key"
+    settings.langsmith_tracing_enabled = False
+    monkeypatch.setattr("app.services.agent_service.get_settings", lambda: settings)
+    monkeypatch.setattr(
+        "app.services.agent_service.load_agent_context",
+        AsyncMock(return_value={"workflow_step": None}),
+    )
+    build = MagicMock(return_value=[])
+    monkeypatch.setattr(
+        "app.services.agent_service.build_concept_note_help_tools", build
+    )
+    service = AgentService(
+        cc_user_id="owner",
+        cc_thread_id=uuid4(),
+        session_factory=MagicMock(),
+        concept_note_run_id=uuid4(),
+        concept_note_ui_locale="pt",
+    )
+    try:
+        await service.create_agent()
+    finally:
+        await service.close()
+    assert build.call_args.kwargs["ui_locale"] == "pt"

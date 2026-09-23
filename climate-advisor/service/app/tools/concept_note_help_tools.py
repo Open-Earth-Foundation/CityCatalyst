@@ -2,12 +2,12 @@
 
 import json
 import logging
-from pathlib import Path
 from uuid import UUID
 
 from agents import FunctionTool, function_tool
 from app.persistence.concept_notes.context_bundle import load_agent_context
 from app.services.cnb.ui_context import load_ui_state
+from app.tools.concept_note_ui_labels import render_concept_note_ui_guide
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
@@ -18,8 +18,13 @@ def build_concept_note_help_tools(
     session_factory: async_sessionmaker[AsyncSession],
     run_id: str | UUID,
     user_id: str,
+    ui_locale: str | None = None,
 ) -> list[FunctionTool]:
-    """Bind UI help to one CNB run and recheck access on every invocation."""
+    """Bind UI help to one CNB run and recheck access on every invocation.
+
+    `ui_locale` is the user's active frontend language; the guide quotes control
+    labels in that language and falls back to English when it is unsupported.
+    """
     run_uuid = UUID(str(run_id))
 
     @function_tool
@@ -44,13 +49,17 @@ def build_concept_note_help_tools(
 
             # Read state only when help is requested; never guess browser-only facts.
             state = await load_ui_state(run_uuid)
-            guide = (
-                Path(__file__)
-                .with_name("concept_note_ui_guide.txt")
-                .read_text(encoding="utf-8")
+            guide, locale = render_concept_note_ui_guide(ui_locale)
+            logger.info("Loaded CNB help run_id=%s ui_locale=%s", run_uuid, locale)
+            return json.dumps(
+                {
+                    "success": True,
+                    "ui_locale": locale,
+                    "guide": guide,
+                    "ui_state": state,
+                },
+                ensure_ascii=False,
             )
-            logger.info("Loaded CNB help run_id=%s", run_uuid)
-            return json.dumps({"success": True, "guide": guide, "ui_state": state})
         except Exception:
             logger.warning("CNB help unavailable run_id=%s", run_uuid, exc_info=True)
             return json.dumps({"success": False, "error": "CNB help unavailable"})

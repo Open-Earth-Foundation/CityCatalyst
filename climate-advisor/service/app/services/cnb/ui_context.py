@@ -15,7 +15,11 @@ logger = logging.getLogger(__name__)
 def build_ui_state(chapters: list[WorkspaceChapterSnapshot]) -> dict[str, object]:
     """Expose known draft/blocker facts without guessing browser-only state."""
     active = [chapter for chapter in chapters if chapter.status != "deleted"]
-    has_draft = any((chapter.body_markdown or "").strip() for chapter in active)
+    # Template sections exist before generation; count only those with text as drafted.
+    with_content = sum(
+        bool((chapter.body_markdown or "").strip()) for chapter in active
+    )
+    has_draft = with_content > 0
     critical_gaps = sum(
         gap.severity == "critical" and gap.state in {"open", "processing"}
         for chapter in active
@@ -33,7 +37,11 @@ def build_ui_state(chapters: list[WorkspaceChapterSnapshot]) -> dict[str, object
     return {
         "version": "cnb-desktop-v1",
         "active_tab": None,
-        "draft": {"exists": has_draft, "chapters": len(active)},
+        "draft": {
+            "exists": has_draft,
+            "total_sections": len(active),
+            "sections_with_content": with_content,
+        },
         "pending_proposal": None,
         "export": {
             "enabled": False if blockers else None,

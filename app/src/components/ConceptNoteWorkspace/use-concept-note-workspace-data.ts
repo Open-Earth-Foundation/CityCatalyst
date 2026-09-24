@@ -14,6 +14,7 @@ import {
 
 import {
   getConceptNoteBundleProgress,
+  getConceptNoteDraftProgress,
   normalizePopulationData,
 } from "@/components/ConceptNoteDashboard/utils";
 import {
@@ -108,6 +109,9 @@ export function useConceptNoteWorkspaceData({
     );
 
   const bundle = getConceptNoteBundleProgress(run?.progress_summary ?? {});
+  const draftProgress = getConceptNoteDraftProgress(
+    run?.progress_summary ?? {},
+  );
   const persistedUploadDetails: ConceptNoteUploadResponse | null =
     persistedUpload
       ? {
@@ -281,6 +285,7 @@ export function useConceptNoteWorkspaceData({
     draft,
     draftFailed,
     draftLoading,
+    draftProgress,
     draftStartError,
     effectiveUpload,
     effectiveUploadError,

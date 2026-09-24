@@ -1,4 +1,4 @@
-import i18next, { TFunction } from "i18next";
+import type { TFunction } from "i18next";
 import { Box, Button, Icon, Text, VStack } from "@chakra-ui/react";
 import { InventoryResponse } from "@/util/types";
 import type { Locale } from "date-fns";
@@ -11,10 +11,12 @@ export function PublishedView({
   inventoryId,
   inventory,
   t,
+  lng,
 }: {
   inventoryId: string;
   inventory: InventoryResponse;
   t: TFunction;
+  lng: string;
 }) {
   const getLocale = (language: string): Locale => {
     switch (language) {
@@ -29,7 +31,6 @@ export function PublishedView({
     }
   };
 
-  const lng = i18next.language;
   const relativeTime =
     inventory.publishedAt &&
     formatDistance(inventory.publishedAt, toZonedTime(new Date(), "GMT"), {

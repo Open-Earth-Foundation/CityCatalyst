@@ -724,6 +724,15 @@ export function ConceptNoteWorkspace({
                   focusFindingKey={reviewFindingKey}
                   highlightStartDrafting={highlightStartDrafting}
                   nextStep={nextStepBanner}
+                  onAnswerGap={(chapter, row) =>
+                    setComposerRequest({
+                      id: crypto.randomUUID(),
+                      content: t("gap-answer-prefill", {
+                        chapter: chapter.title,
+                        question: row.question,
+                      }),
+                    })
+                  }
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}

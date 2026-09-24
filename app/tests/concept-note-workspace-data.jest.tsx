@@ -112,7 +112,6 @@ jest.unstable_mockModule("@/services/api", () => ({
   api: {
     util: { upsertQueryEntries },
     useGetCityQuery: () => ({ data: { name: "Test City" } }),
-    useGetCityDashboardQuery: () => ({ data: undefined }),
     useGetConceptNoteApplicationContextQuery: getApplicationContext,
     useGetConceptNoteDraftQuery: getDraftQuery,
     useGetConceptNoteRunQuery: getRunQuery,

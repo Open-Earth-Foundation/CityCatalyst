@@ -15,17 +15,11 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import {
-  LuChevronRight,
-  LuCircleAlert,
-  LuRefreshCw,
-  LuUpload,
-} from "react-icons/lu";
+import { LuCircleAlert, LuRefreshCw, LuUpload } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import type {
-  CityDashboardResponse,
   ConceptNoteApplicationContext,
   ConceptNoteUploadResponse,
 } from "@/util/types";
@@ -35,10 +29,6 @@ import {
   type ConceptNoteBundleProgress,
 } from "../ConceptNoteDashboard/utils";
 import { uploadStatusTranslationKey } from "../ConceptNoteWiringHarness/utils";
-import {
-  ContextDetailsDialog,
-  type ContextDetailKey,
-} from "./context-details-dialog";
 import { ApplicationTemplateDialog } from "./application-template-dialog";
 
 interface ContextTabProps {
@@ -48,7 +38,6 @@ interface ContextTabProps {
   fundingError: boolean;
   onRetryFunding: () => void;
   bundle: ConceptNoteBundleProgress;
-  cityDashboard: CityDashboardResponse | null;
   contextStatus: ConceptNoteContextPresentation;
   cityFilesCount: number;
   cityName: string;
@@ -91,8 +80,6 @@ interface ContextCardProps {
   status: string;
   tone?: ContextTone;
   value: string;
-  viewLabel?: string;
-  onClick?: () => void;
 }
 
 function ContextSectionLabel({ children }: { children: string }) {
@@ -118,38 +105,11 @@ function ContextCard({
   status,
   tone = "neutral",
   value,
-  viewLabel,
-  onClick,
 }: ContextCardProps) {
   return (
     <Box
-      role={onClick ? "button" : undefined}
-      tabIndex={onClick ? 0 : undefined}
       minW={0}
       textAlign="start"
-      cursor={onClick ? "pointer" : "default"}
-      onClick={onClick}
-      onKeyDown={
-        onClick
-          ? (event) => {
-              if (event.target !== event.currentTarget) return;
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                onClick();
-              }
-            }
-          : undefined
-      }
-      _hover={onClick ? { borderColor: "interactive.control" } : undefined}
-      _focusVisible={
-        onClick
-          ? {
-              outline: "2px solid",
-              outlineColor: "interactive.control",
-              outlineOffset: "2px",
-            }
-          : undefined
-      }
       minH="128px"
       border="1px solid"
       borderColor="border.neutral"
@@ -168,10 +128,7 @@ function ContextCard({
               textTransform="none"
               letterSpacing="normal"
               disabled={action.disabled}
-              onClick={(event) => {
-                event.stopPropagation();
-                action.onClick();
-              }}
+              onClick={action.onClick}
             >
               {action.label}
             </Button>
@@ -198,20 +155,6 @@ function ContextCard({
             </Text>
           ))}
         </VStack>
-        {onClick && viewLabel && (
-          <HStack mt="auto" gap={1} color="content.link">
-            <Text
-              fontFamily="heading"
-              fontSize="10px"
-              fontWeight="semibold"
-              textTransform="uppercase"
-              letterSpacing="0.5px"
-            >
-              {viewLabel}
-            </Text>
-            <Icon as={LuChevronRight} boxSize={3} />
-          </HStack>
-        )}
         {children}
       </VStack>
     </Box>
@@ -225,7 +168,6 @@ export function ContextTab({
   fundingError,
   onRetryFunding,
   bundle,
-  cityDashboard,
   contextStatus,
   cityFilesCount,
   cityName,
@@ -253,7 +195,6 @@ export function ContextTab({
 }: ContextTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [detailKey, setDetailKey] = useState<ContextDetailKey | null>(null);
   useEffect(() => {
     if (uploadPickerRequest) fileInputRef.current?.click();
   }, [uploadPickerRequest]);
@@ -293,41 +234,6 @@ export function ContextTab({
       : uploadStatus === "failed"
         ? "warning"
         : "neutral";
-  const ghgiAvailable = Boolean(
-    cityDashboard?.widgets?.ghgi?.inventory &&
-    cityDashboard.widgets.ghgi.totalEmissions,
-  );
-  const ccraAvailable = Boolean(cityDashboard?.widgets?.ccra?.topRisks?.length);
-  const hiapAvailable = Boolean(
-    (cityDashboard?.widgets?.hiap?.mitigation?.rankedActions?.length ?? 0) >
-      0 ||
-    (cityDashboard?.widgets?.hiap?.adaptation?.rankedActions?.length ?? 0) > 0,
-  );
-  const detailStatus =
-    detailKey === "funder"
-      ? t(applicationContext?.funder ? "connected" : "not-connected")
-      : detailKey === "ghgi"
-        ? t(ghgiIncluded ? "connected" : "available-to-run")
-        : detailKey === "ccra"
-          ? t(ccraIncluded ? "included-in-run" : "connected")
-          : detailKey === "hiap"
-            ? t(hiapIncluded ? "included-in-run" : "connected")
-            : t(cityIncluded ? "included-in-run" : "not-included-in-run");
-  const detailTone: ContextTone =
-    detailKey === "city"
-      ? cityIncluded
-        ? "positive"
-        : "warning"
-      : detailKey === "ghgi"
-        ? ghgiIncluded
-          ? "positive"
-          : "neutral"
-        : detailKey === "funder"
-          ? applicationContext?.funder
-            ? "positive"
-            : "warning"
-          : "positive";
-
   const uploadStatusLabel = t(
     awaitingContext && !contextFailed
       ? "status-processing"
@@ -422,14 +328,6 @@ export function ContextTab({
               manualPopulation || (!populationMissing && cityIncluded)
                 ? "positive"
                 : "warning"
-            }
-            viewLabel={t("view-context-data")}
-            onClick={
-              cityDashboard?.population &&
-              !populationMissing &&
-              !manualPopulation
-                ? () => setDetailKey("city")
-                : undefined
             }
           >
             {(populationMissing || Boolean(manualPopulation)) &&
@@ -548,8 +446,6 @@ export function ContextTab({
             ]}
             status={t(ghgiIncluded ? "connected" : "available-to-run")}
             tone={ghgiIncluded ? "positive" : "neutral"}
-            viewLabel={t("view-context-data")}
-            onClick={ghgiAvailable ? () => setDetailKey("ghgi") : undefined}
           />
           <ContextCard
             label={t("climate-risk-assessment")}
@@ -559,8 +455,6 @@ export function ContextTab({
             details={[t("ccra-not-in-bundle")]}
             status={t(ccraIncluded ? "included-in-run" : "not-connected")}
             tone={ccraIncluded ? "positive" : "warning"}
-            viewLabel={t("view-context-data")}
-            onClick={ccraAvailable ? () => setDetailKey("ccra") : undefined}
           />
           <ContextCard
             label={t("hiap-context")}
@@ -570,8 +464,6 @@ export function ContextTab({
               hiapIncluded ? "included-in-run" : "bundle-source-missing",
             )}
             tone={hiapIncluded ? "positive" : "warning"}
-            viewLabel={t("view-context-data")}
-            onClick={hiapAvailable ? () => setDetailKey("hiap") : undefined}
           />
         </Grid>
       </VStack>
@@ -605,12 +497,6 @@ export function ContextTab({
               applicationContext?.funder ? "connected" : "not-connected",
             )}
             tone={applicationContext?.funder ? "positive" : "warning"}
-            viewLabel={t("view-context-data")}
-            onClick={
-              applicationContext?.funder
-                ? () => setDetailKey("funder")
-                : undefined
-            }
           />
           <ContextCard
             label={t("funding-template-preview")}
@@ -801,22 +687,6 @@ export function ContextTab({
           </Button>
         </Flex>
       )}
-
-      <ContextDetailsDialog
-        applicationContext={applicationContext}
-        cityDashboard={cityDashboard}
-        cityName={cityName}
-        country={country}
-        detailKey={detailKey}
-        lng={lng}
-        status={detailStatus}
-        tone={detailTone}
-        onOpenChange={(open) => {
-          if (!open) {
-            setDetailKey(null);
-          }
-        }}
-      />
     </VStack>
   );
 }

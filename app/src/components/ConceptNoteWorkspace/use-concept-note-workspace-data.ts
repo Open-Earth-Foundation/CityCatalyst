@@ -81,7 +81,6 @@ export function useConceptNoteWorkspaceData({
   const [updateManualPopulation, manualPopulationState] =
     api.useUpdateConceptNotePopulationMutation();
   const { data: inventory } = api.useGetInventoryByCityIdQuery(cityId);
-  const { data: cityDashboard } = api.useGetCityDashboardQuery({ cityId, lng });
   const { data: cityFiles } = api.useGetUserFilesQuery(cityId);
   const [uploadSourceMutation, uploadState] =
     api.useUploadConceptNoteSourceMutation();
@@ -282,7 +281,6 @@ export function useConceptNoteWorkspaceData({
     canStartDrafting,
     contextStatus: getConceptNoteContextPresentation(contextState, bundle, t),
     city,
-    cityDashboard,
     cityName,
     draft,
     draftFailed,

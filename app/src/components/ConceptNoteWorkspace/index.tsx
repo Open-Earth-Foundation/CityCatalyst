@@ -140,7 +140,6 @@ export function ConceptNoteWorkspace({
     canStartDrafting,
     contextStatus,
     city,
-    cityDashboard,
     cityName,
     draft,
     draftFailed,
@@ -820,7 +819,6 @@ export function ConceptNoteWorkspace({
                   fundingError={applicationContextFailed}
                   onRetryFunding={() => void refetchApplicationContext()}
                   bundle={bundle}
-                  cityDashboard={cityDashboard ?? null}
                   contextStatus={contextStatus}
                   cityFilesCount={files.length}
                   cityName={cityName}

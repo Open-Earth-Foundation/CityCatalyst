@@ -6,7 +6,7 @@ import asyncio
 import logging
 from collections.abc import Awaitable, Callable
 from contextvars import Context
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -538,7 +538,7 @@ async def run_context_bundle_reconciler(
         try:
             recovered = await recover_stale_builds(
                 session_factory=get_session_factory(),
-                stale_before=datetime.now(UTC) - stale_after,
+                stale_before=datetime.now(timezone.utc) - stale_after,
             )
             if recovered:
                 logger.warning(

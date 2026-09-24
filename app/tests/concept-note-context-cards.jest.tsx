@@ -252,6 +252,48 @@ describe("Context tab missing-state cards", () => {
     expect(control("add-inventory-data")).toBeDefined();
   });
 
+  const twoInventories = [
+    { year: 2025, inventoryId: "inv-1", lastUpdate: new Date() },
+    { year: 2023, inventoryId: "inv-old", lastUpdate: new Date() },
+  ] as unknown as ContextTabProps["inventoryOptions"];
+
+  it("keeps choosing available when the newest inventory is empty", async () => {
+    await renderTab({
+      ...withInventory,
+      inventoryHasData: false,
+      inventoryOptions: twoInventories,
+    });
+
+    expect(container.textContent).toContain("inventory-empty");
+    const add = control("add-inventory-data") as HTMLAnchorElement;
+    expect(add.getAttribute("href")).toBe("/en/cities/city-1/GHGI/inv-1/data");
+    await act(async () => inventoryChip()?.click());
+    expect(document.body.textContent).toContain("inventory-choose-title");
+  });
+
+  it("does not judge a chosen older inventory by the newest one's data", async () => {
+    await renderTab({
+      ...withInventory,
+      inventoryHasData: false,
+      inventoryOptions: twoInventories,
+      bundle: bundle(
+        {
+          selectedInventoryId: "inv-old",
+          sourceProvenance: {
+            ghgi: { inventoryId: "inv-old", inventoryYear: 2023 },
+            hiap: null,
+          },
+        },
+        { ghgi: true },
+      ),
+    });
+
+    expect(container.textContent).toContain("included-in-run");
+    expect(container.textContent).not.toContain("inventory-empty");
+    expect(control("add-inventory-data")).toBeUndefined();
+    expect(inventoryChip()).not.toBeNull();
+  });
+
   it("explains that an inventory with data is picked up automatically", async () => {
     await renderTab(withInventory);
 

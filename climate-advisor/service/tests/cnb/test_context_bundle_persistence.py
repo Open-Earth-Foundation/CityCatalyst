@@ -170,6 +170,42 @@ async def test_rebuild_reports_inventory_with_new_data_as_updated(tmp_path) -> N
         await engine.dispose()
 
 
+@pytest.mark.asyncio
+async def test_inventory_selection_waits_for_drafting(tmp_path) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    try:
+        async with session_factory() as session, session.begin():
+            session.add(
+                concept_note_run(
+                    run_id,
+                    context_summary={"draft_document": {"status": "running"}},
+                )
+            )
+
+        state = await load_refresh_state(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+        )
+        assert state.draft_running is True
+        with pytest.raises(ContextBundlePersistenceError) as error:
+            await set_selected_inventory(
+                session_factory=session_factory,
+                user_id="owner",
+                run_id=run_id,
+                inventory_id=uuid4(),
+            )
+        assert (error.value.code, error.value.status_code) == ("draft_running", 409)
+
+        async with session_factory() as session:
+            run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        assert "selected_inventory_id" not in run.context_summary
+    finally:
+        await engine.dispose()
+
+
 async def database(tmp_path):
     engine = create_async_engine(
         f"sqlite+aiosqlite:///{(tmp_path / 'context-bundle.db').as_posix()}"

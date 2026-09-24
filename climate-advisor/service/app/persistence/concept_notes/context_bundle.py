@@ -60,6 +60,7 @@ class ContextBundleRefreshState:
     status: str | None
     selected_inventory_id: UUID | None
     inventory_candidate: dict[str, Any] | None
+    draft_running: bool = False
 
 
 @dataclass(frozen=True)
@@ -326,6 +327,13 @@ async def set_selected_inventory(
                 user_id=user_id,
                 run_id=run_id,
             )
+            # Drafting reads the context mid-run, so it must finish first.
+            if _draft_running(run.context_summary):
+                raise ContextBundlePersistenceError(
+                    "draft_running",
+                    409,
+                    "Wait for drafting to finish before changing the inventory",
+                )
             summary = dict(run.context_summary or {})
             if inventory_id is None:
                 summary.pop("selected_inventory_id", None)
@@ -366,6 +374,7 @@ async def load_refresh_state(
                 status=progress.get("status"),
                 selected_inventory_id=_selected_inventory_id(run.context_summary),
                 inventory_candidate=candidate if isinstance(candidate, dict) else None,
+                draft_running=_draft_running(run.context_summary),
             )
     except ContextBundlePersistenceError:
         raise
@@ -764,6 +773,12 @@ def _source_provenance_from_bundle(
     if isinstance(hiap, dict) and isinstance(hiap.get("inventory_id"), str):
         provenance["hiap"] = {"inventory_id": hiap["inventory_id"]}
     return provenance
+
+
+def _draft_running(summary: Any) -> bool:
+    """Return whether chapter drafting is in progress for the run."""
+    draft = summary.get("draft_document") if isinstance(summary, dict) else None
+    return isinstance(draft, dict) and draft.get("status") == "running"
 
 
 def _selected_inventory_id(summary: Any) -> UUID | None:

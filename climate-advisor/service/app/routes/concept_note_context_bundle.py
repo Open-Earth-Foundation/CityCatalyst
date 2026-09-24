@@ -29,6 +29,7 @@ REPOSITORY_ERROR_MESSAGES = {
     "cnb_storage_unavailable": "Concept Note context storage is unavailable",
     "cc_inventory_unavailable": "City inventories are temporarily unavailable",
     "inventory_not_accessible": "The inventory is not available for this city",
+    "draft_running": "Wait for drafting to finish before changing the inventory",
 }
 
 

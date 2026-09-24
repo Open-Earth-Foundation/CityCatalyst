@@ -296,13 +296,18 @@ export function ContextTab({
     sourceStatus: populationFailed ? "failed" : null,
     selected: Boolean(manualPopulation),
   });
-  // An inventory without emissions data adds nothing to the run.
-  const inventoryEmpty = inventoryAvailable && !inventoryHasData;
   // The run uses the chosen inventory, else the newest one in the city.
   const chosenInventory =
     inventoryOptions.find(
       (option) => option.inventoryId === bundle.selectedInventoryId,
     ) ?? null;
+  // An inventory without emissions data adds nothing to the run. Only the
+  // newest inventory's data is known here, so a run using another inventory
+  // relies on the build's GHGI status instead.
+  const runUsesNewestInventory =
+    !chosenInventory || chosenInventory.inventoryId === inventoryId;
+  const inventoryEmpty =
+    inventoryAvailable && runUsesNewestInventory && !inventoryHasData;
   const inventoryState = getRunSourceState({
     cityAvailable: inventoryAvailable,
     included: ghgiIncluded,
@@ -340,15 +345,23 @@ export function ContextTab({
   const inventoryNext = inventoryLoading
     ? undefined
     : inventorySourceAction(inventoryState, { lng, cityId, inventoryId });
+  // An empty inventory can still be swapped for another year that has data.
+  const inventoryChoosable =
+    inventoryNext?.kind === "choose" ||
+    (inventoryNext?.kind === "fill" && inventoryOptions.length > 1);
+  const inventoryLinkAction: ContextSourceAction | undefined =
+    inventoryNext && inventoryNext.kind !== "choose"
+      ? { label: t(inventoryNext.labelKey), href: inventoryNext.href }
+      : undefined;
   const inventoryAction: ContextSourceAction | undefined = !inventoryNext
     ? undefined
-    : inventoryNext.kind === "choose"
+    : inventoryChoosable
       ? {
           // The chip is the inventory year; clicking it opens the picker.
           label:
             displayedInventory?.year != null
               ? t("inventory-year", { year: displayedInventory.year })
-              : t(inventoryNext.labelKey),
+              : t("inventory-choose-different"),
           onClick: () => setInventoryPickerOpen(true),
           loading: inventorySelectionSaving,
           disabledReason: isDraftRunning
@@ -357,7 +370,7 @@ export function ContextTab({
               ? t("context-action-rebuilding")
               : undefined,
         }
-      : { label: t(inventoryNext.labelKey), href: inventoryNext.href };
+      : inventoryLinkAction;
   // A converted file is not ready for chat until context assembly finishes.
   // Kept separate from the raw "processing" status, which means converting.
   const awaitingContext = upload?.status === "ready" && contextStatus.blocked;
@@ -572,12 +585,13 @@ export function ContextTab({
           <ContextCard
             label={t("ghg-inventory")}
             action={inventoryAction}
-            actionPlacement={
-              inventoryNext?.kind === "choose" ? "status" : "header"
-            }
+            actionPlacement={inventoryChoosable ? "status" : "header"}
             actionTitle={t("inventory-choose-different")}
             headerAside={
-              inventoryNext?.kind === "choose" && displayedInventory ? (
+              inventoryChoosable && inventoryLinkAction ? (
+                // An empty inventory keeps its fill link beside the picker.
+                <ContextSourceActionButton action={inventoryLinkAction} />
+              ) : inventoryChoosable && displayedInventory ? (
                 <Link
                   asChild
                   color="content.tertiary"
@@ -599,8 +613,7 @@ export function ContextTab({
               ) : undefined
             }
             value={
-              inventoryNext?.kind ===
-              "choose" ? undefined : displayedInventory &&
+              inventoryChoosable ? undefined : displayedInventory &&
                 displayedInventory.year != null ? (
                 <Link asChild color="interactive.secondary">
                   <NextLink

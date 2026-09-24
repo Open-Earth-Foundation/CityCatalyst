@@ -394,6 +394,9 @@ class ContextBundleService:
         )
         if state.status == "building":
             return "building"
+        # Drafting reads the context mid-run; the next open checks again.
+        if state.draft_running:
+            return "current"
         # Failed builds recover through retry; unknown states are left alone.
         if state.status != "ready":
             return "current"

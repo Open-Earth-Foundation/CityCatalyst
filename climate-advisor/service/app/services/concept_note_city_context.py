@@ -292,6 +292,10 @@ def compact_ghgi_context(
 
     status_by_sector = records_by_reference(status_data.get("by_sector"))
     emissions_by_sector = records_by_reference(emissions_data.get("by_sector"))
+    # A new, unfilled inventory has no data to ground a note; reporting it as
+    # zero emissions would mislead drafting, so treat it as missing.
+    if count(completion.get("filled")) == 0 and not emissions_by_sector:
+        return GhgiContext(availability="missing", inventory=None, emissions=None)
 
     sectors: list[GhgiSector] = []
     for reference, name in SECTORS:

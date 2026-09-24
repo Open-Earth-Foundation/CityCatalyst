@@ -1857,6 +1857,25 @@ persisted `cc_context` sections. The workspace uses those flags for its status
 badges; it does not infer that city or project context is included merely
 because the corresponding record is available elsewhere in CityCatalyst.
 
+The concept-note list labels each city source as available or unavailable in
+the city. The run's Context tab uses the same status terms for its own bundle:
+available city data can still be absent from a run, while selected, processing,
+included, and failed are distinct run states. Bundle progress exposes
+`source_provenance` from the saved bundle, including the GHGI inventory ID and
+year and the HIAP inventory ID when present. The Context tab uses that saved
+identity for included sources, rather than the city's latest inventory. Older
+bundles without provenance display that the used inventory was not recorded.
+An optional source reported as `unavailable` by bundle progress appears as
+**Not available** in Run Context, even if it exists in the city; an actual
+bundle or source failure appears as **Failed**.
+A GHG inventory with no recorded values is **Empty inventory** in both places.
+The note-list tiles and the Context cards share one implementation: the
+`context-source-status` module derives state, label, tone and help text, the
+same status badge renders it, and `context-source-action` renders the next
+step (Create inventory or Add inventory data in both; Refresh run context only
+in the run). A city with no inventory answers 404, which reads as unavailable;
+other lookup errors read as failed.
+
 Context loaded:
 
 - Every ready upload's identity, summary, topics, and bounded exact excerpts,

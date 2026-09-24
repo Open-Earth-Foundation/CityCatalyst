@@ -38,6 +38,7 @@ const bundle: ConceptNoteBundleProgress = {
   cityPopulation: null,
   ghgiStatus: null,
   hiapStatus: null,
+  sourceProvenance: { ghgi: null, hiap: null },
   retryable: false,
 };
 

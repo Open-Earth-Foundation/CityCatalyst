@@ -180,6 +180,11 @@ export function getContextSourceStatusTranslationKey(value: string): string {
   );
 }
 
+/** Inventory lookup errors other than "this city has no inventory" (404). */
+export function isInventoryLoadFailure(error: unknown): boolean {
+  return Boolean(error) && recordValue(error).status !== 404;
+}
+
 export function hasPrioritizedHiapActions(widget: unknown): boolean {
   const hiap = recordValue(widget);
 
@@ -226,6 +231,10 @@ export interface ConceptNoteBundleProgress {
   failedSources: number;
   ghgiStatus: string | null;
   hiapStatus: string | null;
+  sourceProvenance: {
+    ghgi: { inventoryId: string; inventoryYear: number | null } | null;
+    hiap: { inventoryId: string } | null;
+  };
   retryable: boolean;
   errorCode?: string;
   errorReason?: string;
@@ -269,6 +278,9 @@ export function getConceptNoteBundleProgress(
   const sourceCounts = recordValue(bundle.source_counts);
   const optionalSources = recordValue(bundle.optional_sources);
   const availableContext = recordValue(bundle.available_context);
+  const sourceProvenance = recordValue(bundle.source_provenance);
+  const ghgiProvenance = recordValue(sourceProvenance.ghgi);
+  const hiapProvenance = recordValue(sourceProvenance.hiap);
   const documentGrounding = documentGroundingValue(bundle);
 
   return {
@@ -296,6 +308,20 @@ export function getConceptNoteBundleProgress(
     failedSources: countValue(sourceCounts.failed),
     ghgiStatus: stringValue(optionalSources.ghgi),
     hiapStatus: stringValue(optionalSources.hiap),
+    sourceProvenance: {
+      ghgi: stringValue(ghgiProvenance.inventory_id)
+        ? {
+            inventoryId: String(ghgiProvenance.inventory_id),
+            inventoryYear:
+              typeof ghgiProvenance.inventory_year === "number"
+                ? ghgiProvenance.inventory_year
+                : null,
+          }
+        : null,
+      hiap: stringValue(hiapProvenance.inventory_id)
+        ? { inventoryId: String(hiapProvenance.inventory_id) }
+        : null,
+    },
     retryable: bundle.retryable === true,
     errorCode: stringValue(bundle.error_code) || undefined,
     errorReason: stringValue(bundle.error_reason) || undefined,

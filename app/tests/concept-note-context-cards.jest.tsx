@@ -17,7 +17,10 @@ import { LuDatabase } from "react-icons/lu";
 
 import type { ConceptNoteBundleProgress } from "@/components/ConceptNoteDashboard/utils";
 import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
-import type { ConceptNoteApplicationContext } from "@/util/types";
+import type {
+  CityDashboardResponse,
+  ConceptNoteApplicationContext,
+} from "@/util/types";
 
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -68,6 +71,7 @@ function bundle(
     cityPopulation: null,
     ghgiStatus: null,
     hiapStatus: null,
+    sourceProvenance: { ghgi: null, hiap: null },
     retryable: false,
     ...overrides,
   };
@@ -107,15 +111,19 @@ async function renderTab(overrides: Partial<ContextTabProps> = {}) {
       actionIcon: LuDatabase,
       icon: LuDatabase,
     } as unknown as ConceptNoteContextPresentation,
-    cityContextLoading: false,
+    cityDashboard: null,
+    cityDashboardFailed: false,
+    cityDashboardLoading: false,
     cityFilesCount: 0,
     cityId: "city-1",
     cityName: "Test City",
     country: null,
     firstCityFile: null,
-    hiapAvailableInCity: false,
+    inventoryAvailable: false,
+    inventoryFailed: false,
     inventoryHasData: false,
     inventoryId: null,
+    inventoryLoading: false,
     inventoryYear: null,
     isDraftRunning: false,
     isRetryingBundle: false,
@@ -181,6 +189,18 @@ afterEach(async () => {
   container.remove();
 });
 
+const withInventory = {
+  inventoryAvailable: true,
+  inventoryHasData: true,
+  inventoryId: "inv-1",
+  inventoryYear: 2023,
+};
+const withPlan = {
+  cityDashboard: {
+    widgets: { hiap: { mitigation: { rankedActions: [{ id: "action" }] } } },
+  } as unknown as CityDashboardResponse,
+};
+
 describe("Context tab missing-state cards", () => {
   it("hides the climate risk assessment card", async () => {
     await renderTab();
@@ -189,7 +209,7 @@ describe("Context tab missing-state cards", () => {
     expect(container.textContent).not.toContain("ccra-not-in-bundle");
   });
 
-  it("links to inventory setup in a new tab and offers no Climate Action Plan link", async () => {
+  it("links to inventory setup in a new tab when the city has no inventory", async () => {
     await renderTab();
 
     const create = control("create-inventory") as HTMLAnchorElement;
@@ -198,14 +218,13 @@ describe("Context tab missing-state cards", () => {
     );
     expect(create.getAttribute("target")).toBe("_blank");
     expect(container.textContent).toContain("ghgi-why");
-
-    expect(container.textContent).toContain("hiap-why");
+    expect(container.textContent).toContain("source-help-run-unavailable");
     expect(container.querySelector('a[href*="/HIAP/"]')).toBeNull();
     expect(controls("refresh-run-context")).toHaveLength(0);
   });
 
   it("flags an empty inventory and links to adding data instead of refreshing", async () => {
-    await renderTab({ inventoryId: "inv-1", inventoryYear: 2024 });
+    await renderTab({ ...withInventory, inventoryHasData: false });
 
     expect(container.textContent).toContain("inventory-empty");
     expect(container.textContent).toContain("inventory-empty-detail");
@@ -217,51 +236,41 @@ describe("Context tab missing-state cards", () => {
 
   it("flags an empty inventory even when the run already includes it", async () => {
     await renderTab({
+      ...withInventory,
+      inventoryHasData: false,
       bundle: bundle({}, { ghgi: true }),
-      inventoryId: "inv-1",
-      inventoryYear: 2024,
     });
 
     expect(container.textContent).toContain("inventory-empty");
     expect(control("add-inventory-data")).toBeDefined();
   });
 
-  it("offers a run refresh when an inventory exists but is not in the run", async () => {
-    await renderTab({
-      inventoryHasData: true,
-      inventoryId: "inv-1",
-      inventoryYear: 2023,
-    });
+  it("offers a run refresh when the inventory has data but is not in the run", async () => {
+    await renderTab(withInventory);
 
+    expect(container.textContent).toContain("available-in-city");
+    expect(container.textContent).toContain("not-included-in-run");
     const refresh = control("refresh-run-context") as HTMLButtonElement;
     expect(refresh.disabled).toBe(false);
     await act(async () => refresh.click());
     expect(onRetryBundle).toHaveBeenCalledTimes(1);
-    expect(container.textContent).toContain("not-included-in-run");
     // Only the inventory card: without prioritized actions the plan card has no action.
     expect(controls("refresh-run-context")).toHaveLength(1);
   });
 
   it("offers a run refresh when the plan is ready in CityCatalyst but not in the run", async () => {
     await renderTab({
+      ...withInventory,
+      ...withPlan,
       bundle: bundle({}, { ghgi: true }),
-      hiapAvailableInCity: true,
-      inventoryHasData: true,
-      inventoryId: "inv-1",
-      inventoryYear: 2023,
     });
 
     expect(controls("refresh-run-context")).toHaveLength(1);
-    expect(container.textContent).toContain("hiap-available-in-city");
+    expect(container.textContent).toContain("bundle-source-available");
   });
 
   it("explains why a refresh is unavailable while drafting runs", async () => {
-    await renderTab({
-      inventoryHasData: true,
-      inventoryId: "inv-1",
-      inventoryYear: 2023,
-      isDraftRunning: true,
-    });
+    await renderTab({ ...withInventory, isDraftRunning: true });
 
     const refresh = control("refresh-run-context") as HTMLButtonElement;
     expect(refresh.disabled).toBe(true);
@@ -271,38 +280,44 @@ describe("Context tab missing-state cards", () => {
     expect(reason?.textContent).toBe("context-action-draft-running");
   });
 
-  it("explains why a refresh is unavailable while the context rebuilds", async () => {
+  it("shows processing and explains the disabled refresh while the context rebuilds", async () => {
     await renderTab({
+      ...withInventory,
       bundle: bundle({ status: "building" }),
-      inventoryHasData: true,
-      inventoryId: "inv-1",
-      inventoryYear: 2023,
     });
 
     expect((control("refresh-run-context") as HTMLButtonElement).disabled).toBe(
       true,
     );
-    expect(container.textContent).toContain("bundle-source-pending");
+    expect(container.textContent).toContain("status-processing");
     expect(container.textContent).toContain("context-action-rebuilding");
   });
 
   it("shows no action for sources already in the run", async () => {
     await renderTab({
+      ...withInventory,
+      ...withPlan,
       bundle: bundle({}, { ghgi: true, hiap: true }),
-      inventoryHasData: true,
-      inventoryId: "inv-1",
-      inventoryYear: 2023,
     });
 
+    expect(container.textContent).toContain("included-in-run");
     expect(control("refresh-run-context")).toBeUndefined();
     expect(control("create-inventory")).toBeUndefined();
   });
 
-  it("withholds source actions while CityCatalyst data loads", async () => {
-    await renderTab({ cityContextLoading: true });
+  it("withholds the inventory action while the inventory loads", async () => {
+    await renderTab({ inventoryLoading: true });
 
     expect(control("create-inventory")).toBeUndefined();
-    expect(container.textContent).toContain("context-source-checking");
+    expect(container.textContent).toContain("status-processing");
+  });
+
+  it("does not offer to create an inventory when the lookup failed", async () => {
+    await renderTab({ inventoryFailed: true });
+
+    expect(control("create-inventory")).toBeUndefined();
+    expect(container.textContent).toContain("status-failed");
+    expect(container.textContent).toContain("source-help-failed");
   });
 
   it("opens funding selection from the missing template card", async () => {

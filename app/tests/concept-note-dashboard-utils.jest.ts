@@ -177,6 +177,13 @@ describe("Concept Note dashboard presentation helpers", () => {
           missing_context: [12],
           source_counts: { ready: 2, queued: 1, failed: -1 },
           optional_sources: { ghgi: "included", hiap: "unavailable" },
+          source_provenance: {
+            ghgi: {
+              inventory_id: "00000000-0000-4000-8000-000000000024",
+              inventory_year: 2024,
+            },
+            hiap: { inventory_id: "00000000-0000-4000-8000-000000000024" },
+          },
           retryable: false,
           warnings: ["One optional source was unavailable", 12],
         },
@@ -199,6 +206,13 @@ describe("Concept Note dashboard presentation helpers", () => {
       failedSources: 0,
       ghgiStatus: "included",
       hiapStatus: "unavailable",
+      sourceProvenance: {
+        ghgi: {
+          inventoryId: "00000000-0000-4000-8000-000000000024",
+          inventoryYear: 2024,
+        },
+        hiap: { inventoryId: "00000000-0000-4000-8000-000000000024" },
+      },
       retryable: false,
     });
     expect(

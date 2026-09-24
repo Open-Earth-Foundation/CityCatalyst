@@ -140,6 +140,9 @@ export function ConceptNoteWorkspace({
     canStartDrafting,
     contextStatus,
     city,
+    cityDashboard,
+    cityDashboardFailed,
+    cityDashboardLoading,
     cityName,
     draft,
     draftFailed,
@@ -150,9 +153,9 @@ export function ConceptNoteWorkspace({
     effectiveUploadError,
     files,
     hasApplicationTemplate,
-    hiapAvailableInCity,
     inventory,
-    cityContextLoading,
+    inventoryFailed,
+    inventoryLoading,
     isDraftRunning,
     manualPopulation,
     manualPopulationSaving,
@@ -822,15 +825,19 @@ export function ConceptNoteWorkspace({
                   onRetryFunding={() => void refetchApplicationContext()}
                   bundle={bundle}
                   contextStatus={contextStatus}
-                  cityContextLoading={cityContextLoading}
                   cityFilesCount={files.length}
                   cityId={cityId}
                   cityName={cityName}
+                  cityDashboard={cityDashboard ?? null}
+                  cityDashboardFailed={cityDashboardFailed}
+                  cityDashboardLoading={cityDashboardLoading}
                   country={city?.country ?? null}
                   firstCityFile={files[0]?.fileName ?? null}
-                  hiapAvailableInCity={hiapAvailableInCity}
+                  inventoryAvailable={Boolean(inventory)}
+                  inventoryFailed={inventoryFailed}
                   inventoryHasData={inventory?.totalEmissions != null}
                   inventoryId={inventory?.inventoryId ?? null}
+                  inventoryLoading={inventoryLoading}
                   inventoryYear={inventory?.year ?? null}
                   isDraftRunning={isDraftRunning}
                   isRetryingBundle={retryBundleState.isLoading}

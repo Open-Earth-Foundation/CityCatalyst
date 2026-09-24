@@ -24,6 +24,76 @@ from app.persistence.concept_notes.context_bundle import (
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 
+@pytest.mark.asyncio
+async def test_progress_identifies_inventory_from_persisted_bundle(tmp_path) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    first_inventory = uuid4()
+    second_inventory = uuid4()
+    try:
+        async with session_factory() as session, session.begin():
+            session.add(concept_note_run(run_id))
+
+        first_build = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+        )
+        assert await complete_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=first_build.build_id,
+            selected_sources=[],
+            ghgi={"inventory": {"id": str(first_inventory), "year": 2024}},
+            hiap={"inventory_id": str(first_inventory)},
+            optional_sources={"ghgi": "included", "hiap": "included"},
+            warnings=[],
+        )
+        async with session_factory() as session:
+            run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        assert run.context_summary["context_bundle"]["source_provenance"] == {
+            "ghgi": {"inventory_id": str(first_inventory), "inventory_year": 2024},
+            "hiap": {"inventory_id": str(first_inventory)},
+        }
+
+        next_build = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+            force=True,
+        )
+        async with session_factory() as session:
+            run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        assert (
+            run.context_summary["context_bundle"]["source_provenance"]["ghgi"]["inventory_id"]
+            == str(first_inventory)
+        )
+        assert await complete_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=next_build.build_id,
+            selected_sources=[],
+            ghgi={"inventory": {"id": str(second_inventory), "year": 2025}},
+            hiap=None,
+            optional_sources={"ghgi": "included", "hiap": "missing"},
+            warnings=[],
+        )
+        async with session_factory() as session:
+            run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        assert run.context_summary["context_bundle"]["source_provenance"] == {
+            "ghgi": {"inventory_id": str(second_inventory), "inventory_year": 2025}
+        }
+    finally:
+        await engine.dispose()
+
+
 async def database(tmp_path):
     engine = create_async_engine(
         f"sqlite+aiosqlite:///{(tmp_path / 'context-bundle.db').as_posix()}"
@@ -202,6 +272,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
             "hiap": False,
             "uploaded_documents": True,
         }
+        assert progress["source_provenance"] == {}
         assert "context_mode" not in progress
         assert progress["missing_context"] == []
         assert progress["completion_event"] == "concept_note_context_bundle_ready"

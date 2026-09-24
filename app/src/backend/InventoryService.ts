@@ -1,3 +1,5 @@
+import createHttpError from "http-errors";
+
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
 import { PermissionService } from "./permissions/PermissionService";
@@ -21,7 +23,7 @@ export class InventoryService {
       order: [["year", "DESC"]], // get the most recent one
     });
     if (!inventory) {
-      throw new Error("Inventory not found");
+      throw new createHttpError.NotFound("Inventory not found");
     }
     return inventory.inventoryId;
   }

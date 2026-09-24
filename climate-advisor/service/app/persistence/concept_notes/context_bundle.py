@@ -124,6 +124,9 @@ async def begin_build(
                         "available_context": _available_context_from_bundle(
                             previous_bundle
                         ),
+                        "source_provenance": _source_provenance_from_bundle(
+                            previous_bundle
+                        ),
                         "missing_context": (
                             previous.get("missing_context")
                             if isinstance(previous.get("missing_context"), list)
@@ -247,6 +250,7 @@ async def complete_build(
                     "uploaded_evidence" if selected_sources else "none"
                 ),
                 "available_context": _available_context_from_bundle(bundle),
+                "source_provenance": _source_provenance_from_bundle(bundle),
                 "missing_context": [] if selected_sources else ["source_documents"],
                 "optional_sources": optional_sources,
                 "warnings": warnings,
@@ -641,6 +645,25 @@ def _available_context_from_bundle(
         "hiap": context.hiap is not None,
         "uploaded_documents": bool(bundle.selected_sources),
     }
+
+
+def _source_provenance_from_bundle(
+    bundle: ConceptNoteContextBundle,
+) -> dict[str, dict[str, str | int | None]]:
+    """Expose only persisted source identity, never a newer city-level candidate."""
+    provenance: dict[str, dict[str, str | int | None]] = {}
+    ghgi = bundle.cc_context.ghgi
+    inventory = ghgi.get("inventory") if isinstance(ghgi, dict) else None
+    if isinstance(inventory, dict) and isinstance(inventory.get("id"), str):
+        year = inventory.get("year")
+        provenance["ghgi"] = {
+            "inventory_id": inventory["id"],
+            "inventory_year": year if isinstance(year, int) else None,
+        }
+    hiap = bundle.cc_context.hiap
+    if isinstance(hiap, dict) and isinstance(hiap.get("inventory_id"), str):
+        provenance["hiap"] = {"inventory_id": hiap["inventory_id"]}
+    return provenance
 
 
 def _replace_bundle_progress(summary: Any, progress: dict[str, Any]) -> dict[str, Any]:

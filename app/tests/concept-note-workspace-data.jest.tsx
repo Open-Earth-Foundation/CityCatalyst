@@ -193,15 +193,19 @@ function ContextHarness() {
         onRetryFunding={() => {}}
         bundle={data.bundle}
         contextStatus={data.contextStatus}
-        cityContextLoading={false}
+        cityDashboard={null}
+        cityDashboardFailed={false}
+        cityDashboardLoading={false}
         cityFilesCount={0}
         cityId="city-1"
         cityName="Test City"
         country={null}
         firstCityFile={null}
-        hiapAvailableInCity={false}
+        inventoryAvailable={false}
+        inventoryFailed={false}
         inventoryHasData={false}
         inventoryId={null}
+        inventoryLoading={false}
         inventoryYear={null}
         isDraftRunning={false}
         isRetryingBundle={false}

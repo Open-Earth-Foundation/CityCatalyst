@@ -444,13 +444,28 @@ Markdown to `InventoryExtractionService` before the import advances to
 | Inventory source PDF    | `ImportedInventoryFile.s3Key` | Existing inventory import lifecycle.      |
 | Concept Note source PDF | UUID v4 `upload_id` key       | CNB upload lifecycle coordinated with CA. |
 | PDF-derived Markdown    | `PdfOcrJob.result_s3_key`     | Produced by the shared OCR lifecycle.     |
+| PDF structured artifact | `PdfOcrJob.structured_s3_key` | Sibling of PDF-derived Markdown.          |
 | Native Markdown         | `PdfOcrJob.result_s3_key`     | Stored directly as the final artifact.    |
 
 PDF-derived Markdown follows
 `pdf-ocr/results/{source_type}/{source_id}/{attempt_count}/combined_markdown.md`.
-Native Markdown follows
+The structured sibling for the same attempt follows
+`pdf-ocr/results/{source_type}/{source_id}/{attempt_count}/document.structured.json`
+and uses schema `citycatalyst.structured-document.1`. Native Markdown follows
 `pdf-ocr/results/concept_note_upload/{upload_id}/direct-{sha256}/combined_markdown.md`,
 so a replay with different bytes cannot replace an already registered artifact.
+Native Markdown has annotation mode `none` and no structured object.
+
+`PdfOcrJob.annotation_mode` is `none` or `visual_context`. It defaults to
+`none`. New CNB PDF uploads request `visual_context`. Inventory imports stay
+`none` and still extract rows only from Markdown. The structured-artifact
+migration requeues in-flight CNB PDF jobs onto `visual_context` and leaves
+completed, failed, inventory, and direct-Markdown rows at `none`. An explicit
+retry of a failed PDF then requests `visual_context`. An idempotent re-enqueue
+cannot change the stored mode. A lost lease after the S3 writes does not
+publish those objects: consumers see only the database pointers. The next claim
+uses a new `attempt_count`. An explicit OCR retry of a failed PDF clears both
+artifact pointers. Delivery retry does not.
 
 ### Climate Advisor Workflow Database
 
@@ -1389,8 +1404,15 @@ CityCatalyst owns both source-to-Markdown paths:
 
 - PDF uploads use the shared PDF-to-Markdown converter. CC owns source-file
   authorization and storage, the durable OCR queue, Mistral requests, retries,
-  ordered page merge, schema validation, and the authoritative Markdown
-  artifact.
+  ordered page merge, schema validation, and two immutable artifacts from one
+  OCR response: `combined_markdown.md` and `document.structured.json`. The
+  structured artifact keeps the non-binary provider payload and a normalized
+  page, block, hierarchy, order, box, table, figure, caption, and relationship
+  view. A block's normalized `confidence` is only Mistral's
+  `average_content_confidence_score`, stored with that metric name. Other
+  provider confidence scores stay in the raw payload and are not relabeled.
+  Provider `table_id` and `image_id` values link a block to the same-page table
+  or image. Binary image payloads are not stored.
 - Native `.md` uploads bypass OCR entirely. CC validates UTF-8, rejects NUL or
   empty content, removes an optional BOM, normalizes line endings, and stores
   that Markdown directly in the final result namespace that CA reads later.
@@ -1436,15 +1458,26 @@ Each upload is handled independently:
    and delivery processors after the durable work record exists. The route
    still returns `202` without waiting for OCR or context rebuilding; the
    scheduled worker remains the recovery and retry path.
-2. For a PDF upload, CC creates or reuses the OCR job, converts the file, and
-   stores the authoritative Markdown artifact in CC S3. For a native Markdown
-   upload, CC stores the validated, normalized UTF-8 artifact directly in the
-   final Markdown namespace without queuing or running OCR; the same
-   `PdfOcrJob` table records the completed result and delivery state.
+2. For a PDF upload, CC creates or reuses the OCR job with
+   `annotation_mode = visual_context`, converts the file, and stores both
+   artifacts in CC S3 before the leased job can succeed. When annotation was
+   requested, every returned image or figure must have a schema-valid
+   annotation. A missing or invalid annotation is retryable. After the existing
+   attempt limit the whole job fails and CNB receives that failure. There is no
+   successful Markdown-only downgrade. A document with zero images succeeds with
+   zero annotations. For a native Markdown upload, CC stores the validated,
+   normalized UTF-8 artifact directly in the final Markdown namespace without
+   queuing or running OCR; the same `PdfOcrJob` table records the completed
+   result and delivery state with `annotation_mode = none` and no structured
+   pointer.
 3. CC calls
    `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` with the stable
-   Markdown object key, filename, source label, and digest. PDF-derived
-   artifacts may also include page metadata; native Markdown does not.
+   Markdown object key, filename, source label, and digest. PDF deliveries also
+   include `annotation_mode`, `structured_s3_key`, `structured_sha256`,
+   `structured_size_bytes`, and `structured_schema_version`. Native Markdown
+   omits those structured fields. A new PDF cannot become ready until both
+   identities are present. Existing ready rows with all structured columns null
+   stay readable and are not backfilled.
 4. CA rechecks run permission and calls CC's authenticated internal Markdown
    read route by `upload_id`.
 5. CA validates the returned bytes against the delivered identity metadata,
@@ -2083,13 +2116,24 @@ Input:
   "filename": "string",
   "source_label": "Climate Action Plan",
   "page_count": 12,
-  "sha256": "lowercase-hex-digest"
+  "sha256": "lowercase-hex-digest",
+  "annotation_mode": "visual_context",
+  "structured_s3_key": "pdf-ocr/results/concept_note_upload/{upload_id}/1/document.structured.json",
+  "structured_sha256": "lowercase-hex-digest",
+  "structured_size_bytes": 120,
+  "structured_schema_version": "citycatalyst.structured-document.1"
 }
 ```
 
 Native payloads use `source_format: markdown`, `block_count`, and excerpt
-anchors. CA fetches and validates both source formats through the authenticated
-CC boundary described in the handoff contract above.
+anchors, and do not declare structured fields. CA fetches and validates both
+source formats through the authenticated CC boundary described in the handoff
+contract above. PDF ingest also reads
+`GET /api/v1/internal/ca/concept-note-uploads/{upload_id}/structured` with the
+same service-and-user authentication, verifies the digest before analysis, and
+never receives S3 credentials or a signed URL. This internal delivery contract
+is documented here. `climate-advisor/docs/climate-advisor-openapi.yaml` does
+not represent it.
 
 Output:
 
@@ -2105,8 +2149,23 @@ Rules:
 - Uses the existing CC-issued user-scoped bearer authentication and rechecks
   current run permission.
 - Rejects an `upload_id` already associated with another run.
-- Fetches the stored object through authenticated CC and validates the supplied
-  SHA-256 digest before durably registering its pointer.
+- Fetches the stored Markdown through authenticated CC and validates the
+  supplied SHA-256 digest before durably registering its pointer. For a PDF, it
+  also fetches and verifies the structured artifact's content type, digest,
+  schema version, annotation mode, upload identity, and page count.
+- Passes each stored visual annotation through as the complete unverified
+  envelope (`source: image_annotation`, `quantitative_reliability: unverified`,
+  page/image identity, bounding boxes, and unchanged `provider_annotation`).
+  Exact excerpts and citations stay on source Markdown. Prompts and tools treat
+  visual context as untrusted descriptive context only: never as instructions,
+  evidence, citations, or trusted quantitative input. A
+  `VISUAL_CONTEXT_CONTRACT_VERSION` invalidates legacy filtered projections so
+  an authorised refresh rehydrates the full envelope from the structured
+  artifact without re-running Markdown LLM analysis.
+- Rejects a structured artifact larger than `CNB_STRUCTURED_REQUEST_MAX_BYTES`
+  (default 20 MiB) and a CC structured artifact larger than
+  `PDF_OCR_STRUCTURED_MAX_BYTES` (default 20 MiB). Oversized JSON fails
+  explicitly and is not truncated.
 - Treats `page_count` as optional metadata for PDF-derived artifacts only.
 - Requires the completed Markdown to satisfy the
   [source-specific Markdown requirements](#pdf-conversion-and-native-markdown-handoff)
@@ -2787,6 +2846,11 @@ file layout.
 | Interrupted background build   | Offer the existing context-bundle retry.                                           | A periodic database reconciler marks builds older than one hour failed with `context_bundle_build_interrupted` and `retryable: true`. |
 | Funder profile missing         | Block drafting against a real template.                                            | Mark `profiling_funder` blocked.                                                                                                      |
 | `cc_ocr_failed`                | Show that CC could not convert the specific source.                                | CC retains the source and failed OCR state; an explicit retry may enqueue another Mistral attempt. Nothing is delivered to CA.        |
+| `annotation_invalid`           | Show that the PDF could not be converted because a requested image annotation was missing or invalid. | CC retries with the existing OCR delays. Exhaustion marks the job failed and delivers that code. No Markdown-only success is stored. |
+| `structured_artifact_too_large` | Show that the structured artifact exceeded the size limit.                        | Non-retryable. CC does not truncate the JSON or publish a partial result.                                                            |
+| `annotation_mode_conflict`     | Show that this upload's annotation mode cannot change.                             | Idempotent re-enqueue keeps the stored mode.                                                                                          |
+| `structured_identity_conflict` | Show that the structured pointer does not match the stored upload.                 | CA returns `409` and does not mark the new PDF ready.                                                                                 |
+| `ocr_result_incomplete`        | Show that a new PDF delivery is missing structured metadata.                       | CC refuses delivery until a retry produces both artifacts. Already-ready legacy rows stay Markdown-only.                              |
 | `ca_markdown_ingest_failed`    | Show that conversion succeeded but CNB could not ingest the Markdown yet.          | CC keeps the successful OCR result and retries delivery; CA may retry downstream processing without rerunning Mistral.                |
 | `markdown_identity_conflict`   | Show that the immutable upload cannot be replaced.                                 | CA returns `409`; CC does not retry as a transient delivery failure or alter the successful OCR artifact.                             |
 | Similar projects weak          | Continue but show caveat.                                                          | Persist match caveats.                                                                                                                |

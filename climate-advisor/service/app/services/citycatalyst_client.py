@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 import logging
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -63,6 +64,21 @@ class ConceptNoteMarkdownArtifact:
     sha256: str
     source_format: ConceptNoteSourceFormat = "pdf"
     page_count: int | None = None
+
+
+@dataclass(frozen=True)
+class ConceptNoteStructuredArtifact:
+    """Verified metadata and JSON returned by the CC structured-artifact read."""
+
+    body: dict[str, Any]
+    raw_bytes: bytes
+    content_type: str
+    s3_key: str
+    sha256: str
+    schema_version: str
+    annotation_mode: str
+    page_count: int
+    upload_id: str
 
 
 class TokenRefreshError(Exception):
@@ -623,6 +639,120 @@ class CityCatalystClient:
             sha256=sha256,
             source_format=source_format,
             page_count=page_count,
+        )
+
+    async def get_concept_note_structured(
+        self,
+        *,
+        upload_id: str,
+        token: str,
+    ) -> ConceptNoteStructuredArtifact:
+        """Read a completed structured PDF artifact through authenticated CC."""
+        if not self.base_url:
+            raise CityCatalystClientError(
+                "CC_BASE_URL not configured",
+                status_code=503,
+            )
+
+        client = await self._get_client()
+        try:
+            async with client.stream(
+                "GET",
+                (
+                    f"{self.base_url}/api/v1/internal/ca/"
+                    f"concept-note-uploads/{upload_id}/structured"
+                ),
+                headers=self._internal_headers(token),
+                follow_redirects=True,
+                timeout=self.datasource_timeout,
+            ) as response:
+                if not response.is_success:
+                    raise CityCatalystClientError(
+                        "CC structured artifact could not be verified",
+                        status_code=response.status_code,
+                    )
+                settings = get_settings()
+                max_bytes = settings.cnb_structured_request_max_bytes
+                content_length = response.headers.get("Content-Length")
+                if content_length:
+                    try:
+                        declared_size = int(content_length)
+                    except ValueError as exc:
+                        raise CityCatalystClientError(
+                            "CC structured artifact metadata is invalid",
+                            status_code=502,
+                        ) from exc
+                    if declared_size < 0 or declared_size > max_bytes:
+                        raise CityCatalystClientError(
+                            "CC structured artifact exceeds the configured maximum",
+                            status_code=413 if declared_size > max_bytes else 502,
+                        )
+                raw = bytearray()
+                async for chunk in response.aiter_bytes():
+                    if len(raw) + len(chunk) > max_bytes:
+                        raise CityCatalystClientError(
+                            "CC structured artifact exceeds the configured maximum",
+                            status_code=413,
+                        )
+                    raw.extend(chunk)
+                content_type = response.headers.get("Content-Type", "")
+                s3_key = response.headers.get("X-Structured-S3-Key")
+                sha256 = response.headers.get("X-Structured-SHA256")
+                schema_version = response.headers.get("X-Structured-Schema-Version")
+                annotation_mode = response.headers.get("X-Annotation-Mode")
+                page_count_header = response.headers.get("X-Page-Count")
+                header_upload_id = response.headers.get("X-Upload-Id")
+        except httpx.HTTPError as exc:
+            raise CityCatalystClientError(
+                "CC structured verification is unavailable",
+                status_code=503,
+            ) from exc
+        if (
+            not s3_key
+            or not sha256
+            or len(sha256) != 64
+            or not schema_version
+            or annotation_mode not in ("none", "visual_context")
+            or header_upload_id != upload_id
+        ):
+            raise CityCatalystClientError(
+                "CC structured artifact metadata is invalid",
+                status_code=502,
+            )
+        try:
+            page_count = int(page_count_header or "")
+        except ValueError as exc:
+            raise CityCatalystClientError(
+                "CC structured artifact metadata is invalid",
+                status_code=502,
+            ) from exc
+        if page_count < 1:
+            raise CityCatalystClientError(
+                "CC structured artifact metadata is invalid",
+                status_code=502,
+            )
+        try:
+            parsed = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise CityCatalystClientError(
+                "CC structured artifact metadata is invalid",
+                status_code=502,
+            ) from exc
+        if not isinstance(parsed, dict):
+            raise CityCatalystClientError(
+                "CC structured artifact metadata is invalid",
+                status_code=502,
+            )
+        return ConceptNoteStructuredArtifact(
+            body=parsed,
+            raw_bytes=bytes(raw),
+            content_type=content_type,
+            s3_key=s3_key,
+            sha256=sha256,
+            schema_version=schema_version,
+            annotation_mode=annotation_mode,
+            page_count=page_count,
+            upload_id=header_upload_id,
         )
 
     async def post_internal_capability(

@@ -34,14 +34,19 @@ from tests.cnb.helpers import build_request, build_result
 def assert_clean(value):
     if isinstance(value, dict):
         for key, child in value.items():
-            assert not re.search(
-                r"(?:^|_)(?:ids?|uuids?|refs?|hash|fingerprint|sha256)$", key
-            ), key
             assert key not in {
                 "local_snapshot_path",
                 "markdown_s3_key",
                 "analysis_contract_version",
+                "visual_context_contract_version",
             }
+            # Document-local visual envelope identity is model-facing context.
+            if key == "image_id":
+                assert_clean(child)
+                continue
+            assert not re.search(
+                r"(?:^|_)(?:ids?|uuids?|refs?|hash|fingerprint|sha256)$", key
+            ), key
             assert_clean(child)
     elif isinstance(value, list):
         for child in value:

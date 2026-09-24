@@ -187,6 +187,17 @@ class ConceptNoteUpload(Base):
         nullable=True,
     )
     page_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    annotation_mode: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    structured_s3_key: Mapped[str | None] = mapped_column(
+        String(1024),
+        nullable=True,
+    )
+    structured_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    structured_size_bytes: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    structured_schema_version: Mapped[str | None] = mapped_column(
+        String(64),
+        nullable=True,
+    )
     ingest_status: Mapped[str] = mapped_column(
         String(64),
         nullable=False,
@@ -225,6 +236,26 @@ class ConceptNoteUpload(Base):
         CheckConstraint(
             "page_count > 0",
             name="ck_concept_note_uploads_positive_page_count",
+        ),
+        CheckConstraint(
+            """
+            (
+                annotation_mode IS NULL
+                AND structured_s3_key IS NULL
+                AND structured_sha256 IS NULL
+                AND structured_size_bytes IS NULL
+                AND structured_schema_version IS NULL
+            )
+            OR
+            (
+                annotation_mode IN ('none', 'visual_context')
+                AND structured_s3_key IS NOT NULL
+                AND structured_sha256 IS NOT NULL
+                AND structured_size_bytes > 0
+                AND structured_schema_version IS NOT NULL
+            )
+            """,
+            name="ck_concept_note_uploads_structured_identity",
         ),
         Index(
             "ix_concept_note_uploads_run_status_received",

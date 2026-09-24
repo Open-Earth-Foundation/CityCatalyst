@@ -34,6 +34,11 @@ const job = {
   resultS3Key: "result.md",
   resultSha256: "a".repeat(64),
   pageCount: 1,
+  annotationMode: "visual_context",
+  structuredS3Key: "document.structured.json",
+  structuredSha256: "b".repeat(64),
+  structuredSizeBytes: 120,
+  structuredSchemaVersion: "citycatalyst.structured-document.1",
 } as PdfOcrJob;
 const source = {
   runId: "11111111-1111-4111-8111-111111111111",
@@ -87,6 +92,15 @@ describe("PDF OCR delivery", () => {
         source_format: sourceFormat,
         page_count: pageCount,
         sha256: "a".repeat(64),
+        ...(sourceFormat === "pdf"
+          ? {
+              annotation_mode: "visual_context",
+              structured_s3_key: "document.structured.json",
+              structured_sha256: "b".repeat(64),
+              structured_size_bytes: 120,
+              structured_schema_version: "citycatalyst.structured-document.1",
+            }
+          : {}),
       });
     },
   );

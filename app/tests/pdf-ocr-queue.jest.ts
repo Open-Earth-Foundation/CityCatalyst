@@ -28,15 +28,44 @@ const importedUpdate = jest.fn<AsyncMock>();
 const inventoryFindByPk = jest.fn<AsyncMock>();
 const getTextFile = jest.fn<AsyncMock>();
 const putTextFile = jest.fn<AsyncMock>();
+const getFileMetadata = jest.fn<AsyncMock>();
+const getFilePrefix = jest.fn<AsyncMock>();
+const createSignedDownloadUrl = jest.fn<AsyncMock>();
 const resolveImportedFileBuffer = jest.fn<AsyncMock>();
 const extractRows = jest.fn<AsyncMock>();
 const convertPdfUrlToMarkdown = jest.fn<AsyncMock>();
+const pdfFindByPk = jest.fn<AsyncMock>();
+const syncGHGIImportedInventorySource = jest.fn<AsyncMock>();
+const syncGHGIOcrArtifact = jest.fn<AsyncMock>();
+const syncPendingGHGIOcrArtifacts = jest.fn<AsyncMock>();
+const withdrawGHGIImportCatalog = jest.fn<AsyncMock>();
+
+class MistralOcrError extends Error {
+  code: string;
+  retryable: boolean;
+
+  constructor(
+    code = "mistral_unavailable",
+    retryable = true,
+    message = code,
+  ) {
+    super(message);
+    this.code = code;
+    this.retryable = retryable;
+  }
+}
 
 jest.unstable_mockModule("@/models", () => ({
   db: {
     sequelize: { transaction },
     models: {
-      PdfOcrJob: { findOrCreate, findOne, findAll, update: pdfOcrUpdate },
+      PdfOcrJob: {
+        findOrCreate,
+        findOne,
+        findAll,
+        findByPk: pdfFindByPk,
+        update: pdfOcrUpdate,
+      },
       ImportedInventoryFile: {
         findAll: importedFindAll,
         findByPk: importedFindByPk,
@@ -47,17 +76,30 @@ jest.unstable_mockModule("@/models", () => ({
   },
 }));
 jest.unstable_mockModule("@/backend/InventoryFileStorageService", () => ({
-  default: { getTextFile, putTextFile, resolveImportedFileBuffer },
+  default: {
+    getTextFile,
+    putTextFile,
+    getFileMetadata,
+    getFilePrefix,
+    createSignedDownloadUrl,
+    resolveImportedFileBuffer,
+  },
 }));
 jest.unstable_mockModule("@/backend/MistralOcrService", () => ({
-  MistralOcrError: class extends Error {},
+  MistralOcrError,
   convertPdfUrlToMarkdown,
 }));
 jest.unstable_mockModule("@/backend/InventoryExtractionService", () => ({
   extractInventoryRowsFromDocument: extractRows,
 }));
+jest.unstable_mockModule("@/backend/GHGINativeInputCatalogService", () => ({
+  syncGHGIImportedInventorySource,
+  syncGHGIOcrArtifact,
+  syncPendingGHGIOcrArtifacts,
+  withdrawGHGIImportCatalog,
+}));
 jest.unstable_mockModule("@/services/logger", () => ({
-  logger: { warn: jest.fn(), error: jest.fn() },
+  logger: { info: jest.fn(), warn: jest.fn(), error: jest.fn() },
 }));
 
 let enqueueInventoryPdfOcr: typeof import("@/backend/PdfOcrService").enqueueInventoryPdfOcr;
@@ -71,6 +113,7 @@ let claimPdfOcrJobs: typeof import("@/backend/PdfOcrService").claimPdfOcrJobs;
 let claimInventoryExtractionJobs: typeof import("@/backend/PdfOcrService").claimInventoryExtractionJobs;
 let getInventoryPdfOcrStatus: typeof import("@/backend/PdfOcrService").getInventoryPdfOcrStatus;
 let extractInventoryRowsFromStoredMarkdown: typeof import("@/backend/PdfOcrService").extractInventoryRowsFromStoredMarkdown;
+let processPdfOcrJobs: typeof import("@/backend/PdfOcrService").processPdfOcrJobs;
 
 beforeAll(async () => {
   ({
@@ -85,6 +128,7 @@ beforeAll(async () => {
     claimInventoryExtractionJobs,
     getInventoryPdfOcrStatus,
     extractInventoryRowsFromStoredMarkdown,
+    processPdfOcrJobs,
   } = await import("@/backend/PdfOcrService"));
 });
 
@@ -113,6 +157,7 @@ describe("PdfOcrJob queue", () => {
     expect(findOrCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { sourceType: "inventory_import", sourceId: importedFile.id },
+        defaults: expect.objectContaining({ annotationMode: "none" }),
       }),
     );
     expect(importedFile.update).toHaveBeenCalledWith(
@@ -122,7 +167,7 @@ describe("PdfOcrJob queue", () => {
 
   it("uses the upload identity for one CA-delivered CNB OCR job", async () => {
     const uploadId = "22222222-2222-4222-8222-222222222222";
-    const job = { status: "queued" };
+    const job = { status: "queued", annotationMode: "visual_context" };
     findOrCreate.mockResolvedValue([job, false]);
 
     await expect(enqueueConceptNotePdfOcr(uploadId)).resolves.toBe(job);
@@ -136,6 +181,7 @@ describe("PdfOcrJob queue", () => {
         defaults: expect.objectContaining({
           deliveryTarget: "climate_advisor",
           deliveryStatus: "pending",
+          annotationMode: "visual_context",
         }),
       }),
     );
@@ -452,4 +498,297 @@ describe("PdfOcrJob queue", () => {
     );
     expect(importedUpdate).not.toHaveBeenCalled();
   });
+
+  it("rejects an idempotent CNB re-enqueue that would change annotation mode", async () => {
+    findOrCreate.mockResolvedValue([
+      { status: "queued", annotationMode: "none" },
+      false,
+    ]);
+
+    await expect(
+      enqueueConceptNotePdfOcr("22222222-2222-4222-8222-222222222222"),
+    ).rejects.toThrow("annotation mode cannot change");
+  });
+
+  it("clears stale structured metadata when a failed PDF is explicitly retried", async () => {
+    const update = jest
+      .fn<(values: Record<string, unknown>) => Promise<void>>()
+      .mockResolvedValue(undefined);
+    const job = {
+      status: "failed",
+      model: "mistral-ocr-latest",
+      structuredS3Key: "old/document.structured.json",
+      update,
+    } as unknown as Parameters<typeof retryConceptNotePdfOcr>[0];
+
+    await expect(retryConceptNotePdfOcr(job)).resolves.toBe("ocr");
+
+    expect(update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "queued",
+        annotationMode: "visual_context",
+        resultS3Key: null,
+        structuredS3Key: null,
+        structuredSha256: null,
+        structuredSchemaVersion: null,
+      }),
+    );
+  });
+
+  it("writes both artifacts before a leased PDF job can succeed", async () => {
+    const uploadId = "22222222-2222-4222-8222-222222222222";
+    const job = claimableJob({
+      sourceType: "concept_note_upload",
+      sourceId: uploadId,
+      annotationMode: "visual_context",
+    });
+    stubPdfSource();
+    findAll
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([job])
+      .mockResolvedValueOnce([]);
+    convertPdfUrlToMarkdown.mockResolvedValue(ocrResult());
+
+    await processPdfOcrJobs();
+
+    const markdownKey = `pdf-ocr/results/concept_note_upload/${uploadId}/1/combined_markdown.md`;
+    const structuredKey = `pdf-ocr/results/concept_note_upload/${uploadId}/1/document.structured.json`;
+    expect(convertPdfUrlToMarkdown).toHaveBeenCalledWith(
+      "https://signed.example/source.pdf",
+      "visual_context",
+    );
+    expect(putTextFile).toHaveBeenNthCalledWith(1, markdownKey, "# Plan");
+    expect(putTextFile).toHaveBeenNthCalledWith(
+      2,
+      structuredKey,
+      expect.stringContaining("citycatalyst.structured-document.1"),
+    );
+    expect(pdfOcrUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "succeeded",
+        annotationMode: "visual_context",
+        resultS3Key: markdownKey,
+        structuredS3Key: structuredKey,
+        structuredSchemaVersion: "citycatalyst.structured-document.1",
+      }),
+      expect.objectContaining({
+        where: expect.objectContaining({
+          status: "running",
+          sourceId: uploadId,
+        }),
+      }),
+    );
+    const successCall = pdfOcrUpdate.mock.invocationCallOrder[0];
+    const secondPut = putTextFile.mock.invocationCallOrder[1];
+    expect(secondPut).toBeLessThan(successCall);
+  });
+
+  it("keeps GHGI OCR non-annotated and extracts only from Markdown", async () => {
+    const job = claimableJob({
+      sourceType: "inventory_import",
+      sourceId: "11111111-1111-4111-8111-111111111111",
+      annotationMode: "none",
+    });
+    stubPdfSource();
+    importedFindByPk.mockResolvedValue({
+      fileType: "pdf",
+      s3Key: "inventory/source.pdf",
+      fileSize: 12,
+    });
+    findAll
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([job])
+      .mockResolvedValueOnce([]);
+    convertPdfUrlToMarkdown.mockResolvedValue(ocrResult());
+
+    await processPdfOcrJobs();
+
+    expect(convertPdfUrlToMarkdown).toHaveBeenCalledWith(
+      "https://signed.example/source.pdf",
+      "none",
+    );
+    expect(pdfOcrUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ annotationMode: "none" }),
+      expect.anything(),
+    );
+  });
+
+  it("does not register a success when the lease is lost after both objects are written", async () => {
+    const job = claimableJob({
+      sourceType: "concept_note_upload",
+      sourceId: "22222222-2222-4222-8222-222222222222",
+      annotationMode: "visual_context",
+    });
+    stubPdfSource();
+    findAll
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([job])
+      .mockResolvedValueOnce([]);
+    convertPdfUrlToMarkdown.mockResolvedValue(ocrResult());
+    pdfOcrUpdate.mockResolvedValueOnce([0]).mockResolvedValueOnce([0]);
+
+    await processPdfOcrJobs();
+
+    expect(putTextFile).toHaveBeenCalledTimes(2);
+    expect(pdfOcrUpdate).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ status: "succeeded" }),
+      expect.objectContaining({
+        where: expect.objectContaining({ status: "running" }),
+      }),
+    );
+    expect(pdfOcrUpdate).toHaveBeenNthCalledWith(
+      2,
+      expect.not.objectContaining({
+        status: "succeeded",
+        structuredS3Key: expect.anything(),
+      }),
+      expect.objectContaining({
+        where: expect.objectContaining({ leaseOwner: expect.any(String) }),
+      }),
+    );
+  });
+
+  it("retries a missing annotation and never succeeds as Markdown-only", async () => {
+    const job = claimableJob({
+      sourceType: "concept_note_upload",
+      sourceId: "22222222-2222-4222-8222-222222222222",
+      annotationMode: "visual_context",
+      attemptCount: 0,
+    });
+    stubPdfSource();
+    findAll
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([job])
+      .mockResolvedValueOnce([]);
+    convertPdfUrlToMarkdown.mockRejectedValue(
+      new MistralOcrError("annotation_invalid", true, "missing annotation"),
+    );
+
+    await processPdfOcrJobs();
+
+    expect(putTextFile).not.toHaveBeenCalled();
+    expect(pdfOcrUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "queued",
+        errorCode: "annotation_invalid",
+      }),
+      expect.anything(),
+    );
+    const retryValues = pdfOcrUpdate.mock.calls.at(-1)?.[0] as Record<
+      string,
+      unknown
+    >;
+    expect(retryValues).not.toHaveProperty("resultS3Key");
+    expect(retryValues).not.toHaveProperty("structuredS3Key");
+    expect(retryValues.status).toBe("queued");
+  });
+
+  it("fails the upload explicitly after the annotation retry limit is exhausted", async () => {
+    const job = claimableJob({
+      sourceType: "concept_note_upload",
+      sourceId: "22222222-2222-4222-8222-222222222222",
+      annotationMode: "visual_context",
+      attemptCount: 2,
+    });
+    stubPdfSource();
+    findAll
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([job])
+      .mockResolvedValueOnce([]);
+    convertPdfUrlToMarkdown.mockRejectedValue(
+      new MistralOcrError("annotation_invalid", true, "missing annotation"),
+    );
+
+    await processPdfOcrJobs();
+
+    expect(putTextFile).not.toHaveBeenCalled();
+    expect(pdfOcrUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "failed",
+        errorCode: "annotation_invalid",
+      }),
+      expect.anything(),
+    );
+  });
+
+  it("fails an oversized structured artifact without writing either object", async () => {
+    const previous = process.env.PDF_OCR_STRUCTURED_MAX_BYTES;
+    process.env.PDF_OCR_STRUCTURED_MAX_BYTES = "20";
+    const job = claimableJob({
+      sourceType: "concept_note_upload",
+      sourceId: "22222222-2222-4222-8222-222222222222",
+      annotationMode: "visual_context",
+    });
+    stubPdfSource();
+    findAll
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([job])
+      .mockResolvedValueOnce([]);
+    convertPdfUrlToMarkdown.mockResolvedValue(ocrResult());
+
+    try {
+      await processPdfOcrJobs();
+    } finally {
+      if (previous === undefined) {
+        delete process.env.PDF_OCR_STRUCTURED_MAX_BYTES;
+      } else {
+        process.env.PDF_OCR_STRUCTURED_MAX_BYTES = previous;
+      }
+    }
+
+    expect(putTextFile).not.toHaveBeenCalled();
+    expect(pdfOcrUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "failed",
+        errorCode: "structured_artifact_too_large",
+      }),
+      expect.anything(),
+    );
+  });
 });
+
+function claimableJob(
+  values: Record<string, unknown>,
+): {
+  update: (next: Record<string, unknown>) => Promise<void>;
+} & Record<string, unknown> {
+  const job: {
+    update: (next: Record<string, unknown>) => Promise<void>;
+  } & Record<string, unknown> = {
+    id: "job-1",
+    status: "queued",
+    attemptCount: 0,
+    update: async (next) => {
+      Object.assign(job, next);
+    },
+    ...values,
+  };
+  return job;
+}
+
+function stubPdfSource(): void {
+  getFileMetadata.mockResolvedValue({
+    ContentLength: 12,
+    ContentType: "application/pdf",
+  });
+  getFilePrefix.mockResolvedValue(Buffer.from("%PDF-"));
+  createSignedDownloadUrl.mockResolvedValue(
+    "https://signed.example/source.pdf",
+  );
+  pdfFindByPk.mockResolvedValue(null);
+}
+
+function ocrResult(): {
+  markdown: string;
+  pageCount: number;
+  model: string;
+  structured: { schema_version: string };
+} {
+  return {
+    markdown: "# Plan",
+    pageCount: 1,
+    model: "mistral-ocr-latest",
+    structured: { schema_version: "citycatalyst.structured-document.1" },
+  };
+}

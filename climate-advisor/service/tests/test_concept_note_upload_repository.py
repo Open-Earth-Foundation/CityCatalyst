@@ -124,6 +124,11 @@ async def test_repository_persists_nullable_then_immutable_pointer(
             source_label="Plan",
             page_count=3,
             sha256="b" * 64,
+            annotation_mode="visual_context",
+            structured_s3_key="pdf-ocr/results/result.json",
+            structured_sha256="c" * 64,
+            structured_size_bytes=32,
+            structured_schema_version="citycatalyst.structured-document.1",
         )
         await _set_run_updated_at(session_factory, run_id, inactive_at)
         ready = await repository.register_markdown(

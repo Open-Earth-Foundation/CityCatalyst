@@ -56,7 +56,7 @@ export function serializeMarkdownDeliveryPayload(
       "Source result metadata is incomplete",
     );
   }
-  const payload = {
+  const payload: Record<string, unknown> = {
     markdown_s3_key: job.resultS3Key,
     filename: source.filename,
     source_label: source.sourceLabel || null,
@@ -64,6 +64,29 @@ export function serializeMarkdownDeliveryPayload(
     page_count: sourceFormat === "pdf" ? job.pageCount : null,
     sha256: job.resultSha256,
   };
+  if (sourceFormat === "pdf") {
+    const structuredSize = Number(job.structuredSizeBytes);
+    if (
+      (job.annotationMode !== "none" &&
+        job.annotationMode !== "visual_context") ||
+      !job.structuredS3Key ||
+      !job.structuredSha256 ||
+      !Number.isInteger(structuredSize) ||
+      structuredSize < 1 ||
+      !job.structuredSchemaVersion
+    ) {
+      throw new PdfOcrDeliveryError(
+        "ocr_result_incomplete",
+        false,
+        "Structured PDF artifact metadata is incomplete",
+      );
+    }
+    payload.annotation_mode = job.annotationMode;
+    payload.structured_s3_key = job.structuredS3Key;
+    payload.structured_sha256 = job.structuredSha256;
+    payload.structured_size_bytes = structuredSize;
+    payload.structured_schema_version = job.structuredSchemaVersion;
+  }
   return JSON.stringify(payload);
 }
 

@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 ConceptNoteSourceFormat = Literal["pdf", "markdown"]
+STRUCTURED_DOCUMENT_SCHEMA_VERSION = "citycatalyst.structured-document.1"
 
 
 def source_format_from_filename(filename: str) -> ConceptNoteSourceFormat:
@@ -49,6 +50,15 @@ class ConceptNoteMarkdownRequest(BaseModel):
     source_format: ConceptNoteSourceFormat = "pdf"
     page_count: int | None = Field(default=None, ge=1)
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    annotation_mode: Literal["none", "visual_context"] | None = None
+    structured_s3_key: str | None = Field(default=None, min_length=1, max_length=1024)
+    structured_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    structured_size_bytes: int | None = Field(default=None, ge=1)
+    structured_schema_version: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=64,
+    )
 
     @model_validator(mode="after")
     def validate_source_metadata(self) -> ConceptNoteMarkdownRequest:
@@ -59,6 +69,26 @@ class ConceptNoteMarkdownRequest(BaseModel):
             raise ValueError("PDF sources require page_count")
         if self.source_format == "markdown" and self.page_count is not None:
             raise ValueError("Markdown sources cannot declare page_count")
+        structured_values = (
+            self.annotation_mode,
+            self.structured_s3_key,
+            self.structured_sha256,
+            self.structured_size_bytes,
+            self.structured_schema_version,
+        )
+        if self.source_format == "markdown" and any(
+            value is not None for value in structured_values
+        ):
+            raise ValueError("Markdown sources cannot declare structured artifacts")
+        if self.source_format == "pdf" and any(
+            value is None for value in structured_values
+        ):
+            raise ValueError("PDF sources require structured artifact metadata")
+        if (
+            self.source_format == "pdf"
+            and self.structured_schema_version != STRUCTURED_DOCUMENT_SCHEMA_VERSION
+        ):
+            raise ValueError("Unsupported structured schema version")
         return self
 
 

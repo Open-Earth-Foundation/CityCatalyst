@@ -21,6 +21,14 @@ from app.persistence.concept_notes.context_bundle import (
 )
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
+from app.services.cnb.visual_context import (
+    VISUAL_CONTEXT_CONTRACT_VERSION,
+    UnverifiedVisualAnnotationEnvelope,
+    VisualContextContractError,
+    is_full_envelope_visual_context,
+    project_visual_context,
+    validate_structured_delivery,
+)
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceUnit,
@@ -132,6 +140,9 @@ class ContextBundleService:
                     }
                     selected_by_upload: dict[UUID, SelectedSource] = {}
                     uploads_to_analyze: list[ConceptNoteUploadSnapshot] = []
+                    uploads_to_reproject_visual: list[
+                        tuple[ConceptNoteUploadSnapshot, SelectedSource]
+                    ] = []
                     for upload in active.uploads:
                         previous = previous_by_upload.get(upload.upload_id)
                         if previous is not None and _can_reuse_source_analysis(
@@ -139,9 +150,32 @@ class ContextBundleService:
                             previous,
                             contract_version,
                         ):
-                            selected_by_upload[upload.upload_id] = previous
+                            if _visual_context_contract_current(previous):
+                                selected_by_upload[upload.upload_id] = previous
+                            else:
+                                uploads_to_reproject_visual.append((upload, previous))
                         else:
                             uploads_to_analyze.append(upload)
+
+                    if uploads_to_reproject_visual:
+                        for upload, previous in uploads_to_reproject_visual:
+                            visual_context = await self._verified_visual_context(
+                                upload=upload,
+                                token=token,
+                                cc_client=cc_client,
+                            )
+                            selected_by_upload[upload.upload_id] = previous.model_copy(
+                                update={
+                                    "visual_context": visual_context,
+                                    "visual_context_contract_version": (
+                                        VISUAL_CONTEXT_CONTRACT_VERSION
+                                    ),
+                                    "structured_sha256": upload.structured_sha256,
+                                    "structured_schema_version": (
+                                        upload.structured_schema_version
+                                    ),
+                                }
+                            )
 
                     if uploads_to_analyze:
                         analyzed_sources = await gather_all_or_raise(
@@ -284,6 +318,11 @@ class ContextBundleService:
             source_format=upload.source_format,
             page_count=upload.page_count,
         )
+        visual_context = await self._verified_visual_context(
+            upload=upload,
+            token=token,
+            cc_client=cc_client,
+        )
         # Analyze only the verified source units under the shared reader limit.
         analysis = await self.analyze_document_fn(
             upload_id=upload.upload_id,
@@ -296,8 +335,96 @@ class ContextBundleService:
             reader_limit=reader_limit,
         )
         return analysis.model_copy(
-            update={"analysis_contract_version": contract_version}
+            update={
+                "analysis_contract_version": contract_version,
+                "visual_context_contract_version": VISUAL_CONTEXT_CONTRACT_VERSION,
+                "structured_sha256": upload.structured_sha256,
+                "structured_schema_version": upload.structured_schema_version,
+                "visual_context": visual_context,
+            }
         )
+
+    async def _verified_visual_context(
+        self,
+        *,
+        upload: ConceptNoteUploadSnapshot,
+        token: str,
+        cc_client: CityCatalystClient,
+    ) -> list[UnverifiedVisualAnnotationEnvelope]:
+        """Fetch and project a structured artifact without mixing it into excerpts."""
+        structured_fields = (
+            upload.annotation_mode,
+            upload.structured_s3_key,
+            upload.structured_sha256,
+            upload.structured_size_bytes,
+            upload.structured_schema_version,
+        )
+        if all(value is None for value in structured_fields):
+            return []
+        if (
+            upload.source_format != "pdf"
+            or any(value is None for value in structured_fields)
+            or upload.page_count is None
+        ):
+            raise SourceAnalysisError(
+                "incomplete_source_pointer",
+                "Ready upload is missing immutable structured metadata",
+            )
+        annotation_mode = upload.annotation_mode
+        structured_s3_key = upload.structured_s3_key
+        structured_sha256 = upload.structured_sha256
+        structured_schema_version = upload.structured_schema_version
+        page_count = upload.page_count
+        if (
+            annotation_mode is None
+            or structured_s3_key is None
+            or structured_sha256 is None
+            or structured_schema_version is None
+            or page_count is None
+        ):
+            raise SourceAnalysisError(
+                "incomplete_source_pointer",
+                "Ready upload is missing immutable structured metadata",
+            )
+        try:
+            artifact = await cc_client.get_concept_note_structured(
+                upload_id=str(upload.upload_id),
+                token=token,
+            )
+        except CityCatalystClientError as exc:
+            raise SourceAnalysisError(
+                "structured_fetch_failed",
+                "Ready structured artifact could not be fetched from CityCatalyst",
+            ) from exc
+        error_code = validate_structured_delivery(
+            body=artifact.body,
+            raw_bytes=artifact.raw_bytes,
+            content_type=artifact.content_type,
+            s3_key=structured_s3_key,
+            sha256=structured_sha256,
+            schema_version=structured_schema_version,
+            annotation_mode=annotation_mode,
+            page_count=page_count,
+            upload_id=str(upload.upload_id),
+            header_s3_key=artifact.s3_key,
+            header_sha256=artifact.sha256,
+            header_schema_version=artifact.schema_version,
+            header_annotation_mode=artifact.annotation_mode,
+            header_page_count=str(artifact.page_count),
+            header_upload_id=artifact.upload_id,
+        )
+        if error_code:
+            raise SourceAnalysisError(
+                error_code,
+                "CityCatalyst structured artifact did not match its pointer",
+            )
+        try:
+            return project_visual_context(artifact.body)
+        except VisualContextContractError as exc:
+            raise SourceAnalysisError(
+                exc.code,
+                str(exc),
+            ) from exc
 
     async def _load_optional_context(
         self,
@@ -460,7 +587,7 @@ def _can_reuse_source_analysis(
     previous: SelectedSource,
     contract_version: str,
 ) -> bool:
-    """Return whether a persisted analysis matches this immutable source input."""
+    """Return whether a persisted Markdown analysis matches this immutable source."""
     return (
         upload.markdown_sha256 is not None
         and previous.upload_id == upload.upload_id
@@ -469,6 +596,15 @@ def _can_reuse_source_analysis(
         and previous.filename == upload.filename
         and previous.source_label == (upload.source_label or upload.filename)
         and previous.analysis_contract_version == contract_version
+        and previous.structured_sha256 == upload.structured_sha256
+        and previous.structured_schema_version == upload.structured_schema_version
+    )
+
+
+def _visual_context_contract_current(previous: SelectedSource) -> bool:
+    """Return whether cached visual context matches the full-envelope contract."""
+    return previous.visual_context_contract_version == VISUAL_CONTEXT_CONTRACT_VERSION and all(
+        is_full_envelope_visual_context(item) for item in previous.visual_context
     )
 
 

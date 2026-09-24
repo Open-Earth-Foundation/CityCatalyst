@@ -1,5 +1,12 @@
 import { z } from "zod";
 import { getPdfOcrConfig } from "@/backend/pdf-ocr-config";
+import { bboxAnnotationFormat } from "@/backend/MistralVisualAnnotation";
+import {
+  buildStructuredDocument,
+  StructuredDocumentError,
+  type StructuredDocument,
+} from "@/backend/StructuredDocumentArtifact";
+import type { PdfOcrAnnotationMode } from "@/models/PdfOcrJob";
 
 const responseSchema = z.object({
   model: z.string().optional(),
@@ -26,11 +33,34 @@ export type MistralOcrResult = {
   markdown: string;
   pageCount: number;
   model: string;
+  structured: StructuredDocument;
 };
+
+export function buildMistralOcrRequest(
+  documentUrl: string,
+  model: string,
+  annotationMode: PdfOcrAnnotationMode,
+): Record<string, unknown> {
+  const request: Record<string, unknown> = {
+    model,
+    document: { type: "document_url", document_url: documentUrl },
+    include_blocks: true,
+    confidence_scores_granularity: "block",
+    extract_header: true,
+    extract_footer: true,
+    table_format: "markdown",
+    include_image_base64: false,
+  };
+  if (annotationMode === "visual_context") {
+    request.bbox_annotation_format = bboxAnnotationFormat();
+  }
+  return request;
+}
 
 export function mergeMistralPages(
   response: unknown,
   requestedModel: string,
+  annotationMode: PdfOcrAnnotationMode = "none",
 ): MistralOcrResult {
   const parsed = responseSchema.safeParse(response);
   if (!parsed.success || parsed.data.pages.length === 0) {
@@ -60,17 +90,32 @@ export function mergeMistralPages(
     );
   }
 
+  let structured: StructuredDocument;
+  try {
+    structured = buildStructuredDocument(response, {
+      annotationMode,
+      requestedModel,
+    });
+  } catch (error) {
+    if (error instanceof StructuredDocumentError) {
+      throw new MistralOcrError(error.code, error.retryable, error.message);
+    }
+    throw error;
+  }
+
   return {
     markdown: pages
       .map((page) => `<!-- page: ${page.index + 1} -->\n${page.markdown}`)
       .join("\n\n"),
     pageCount: pages.length,
     model: parsed.data.model || requestedModel,
+    structured,
   };
 }
 
 export async function convertPdfUrlToMarkdown(
   documentUrl: string,
+  annotationMode: PdfOcrAnnotationMode = "none",
 ): Promise<MistralOcrResult> {
   const config = getPdfOcrConfig();
   const apiKey = process.env.MISTRAL_API_KEY;
@@ -90,11 +135,9 @@ export async function convertPdfUrlToMarkdown(
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: config.model,
-        document: { type: "document_url", document_url: documentUrl },
-        include_image_base64: false,
-      }),
+      body: JSON.stringify(
+        buildMistralOcrRequest(documentUrl, config.model, annotationMode),
+      ),
       signal: AbortSignal.timeout(config.requestTimeoutMs),
     });
   } catch (error) {
@@ -133,5 +176,5 @@ export async function convertPdfUrlToMarkdown(
       "Mistral OCR returned invalid JSON",
     );
   }
-  return mergeMistralPages(payload, config.model);
+  return mergeMistralPages(payload, config.model, annotationMode);
 }

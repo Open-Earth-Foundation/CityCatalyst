@@ -109,9 +109,9 @@ export function useGuidedReview({
     chapters.find((chapter) => countUnresolvedExportItems([chapter]) > 0) ??
     null;
   const firstMissingInformationFinding = blockingMissingInformation[0] ?? null;
-  const requiresExportAcknowledgement =
-    blockingIssueCount > 0 || failedChapters.length > 0;
   const hasCriticalGap = hasCriticalExportBlocker(chapters);
+  const requiresExportAcknowledgement =
+    blockingIssueCount > 0 || failedChapters.length > 0 || hasCriticalGap;
   const canExport =
     canExportConceptNote(chapters, acceptedIncompleteReview) &&
     (!requiresExportAcknowledgement || acceptedIncompleteReview) &&

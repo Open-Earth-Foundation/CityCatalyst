@@ -195,6 +195,7 @@ export function GuidedReviewFindingsPanel({
   onNext,
   onOpenFinding,
   review,
+  uncheckedCount,
 }: {
   chapterTitles: Record<string, string>;
   lng: string;
@@ -203,6 +204,7 @@ export function GuidedReviewFindingsPanel({
   onNext: () => void;
   onOpenFinding: (entry: DocumentReviewFinding) => void;
   review: GuidedReviewController["review"];
+  uncheckedCount: number;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const isMissing = mode === "missing_information";
@@ -213,12 +215,17 @@ export function GuidedReviewFindingsPanel({
   return (
     <VStack align="stretch" gap={6}>
       <ReviewStageHeader
-        description={t(
-          isMissing
-            ? "review-missing-description"
-            : "review-conflicts-description",
-          { count: entries.length },
-        )}
+        description={
+          // A "found N" summary would read as a conclusion for unchecked chapters.
+          uncheckedCount > 0
+            ? t("review-step-incomplete", { count: uncheckedCount })
+            : t(
+                isMissing
+                  ? "review-missing-description"
+                  : "review-conflicts-description",
+                { count: entries.length },
+              )
+        }
         lng={lng}
         step={isMissing ? 1 : 2}
         title={t(isMissing ? "review-missing-title" : "review-conflicts-title")}
@@ -241,6 +248,7 @@ export function GuidedReviewFindingsPanel({
         entries={entries}
         lng={lng}
         onOpenFinding={onOpenFinding}
+        uncheckedCount={uncheckedCount}
       />
       {isMissing && (
         <Box borderTop="1px solid" borderColor="border.neutral" pt={5}>
@@ -254,7 +262,11 @@ export function GuidedReviewFindingsPanel({
             {t("review-evidence-title")}
           </Text>
           <Text mt={1} fontSize="body.sm" color="content.secondary">
-            {t("review-evidence-description", { count: review.evidenceCount })}
+            {uncheckedCount > 0
+              ? t("review-step-incomplete", { count: uncheckedCount })
+              : t("review-evidence-description", {
+                  count: review.evidenceCount,
+                })}
           </Text>
           <ReviewFindingList
             chapterTitles={chapterTitles}
@@ -262,6 +274,7 @@ export function GuidedReviewFindingsPanel({
             entries={review.groups.evidence}
             lng={lng}
             onOpenFinding={onOpenFinding}
+            uncheckedCount={uncheckedCount}
           />
         </Box>
       )}
@@ -335,6 +348,19 @@ export function GuidedReviewDecisionPanel({
           {t("review-fix-missing-information")}
         </Button>
       )}
+      {/* Export stays visible and available; incomplete drafts confirm first. */}
+      <Button
+        variant={effectiveReviewStatus === "ready" ? "solid" : "outline"}
+        data-testid="concept-note-review-export"
+        onClick={() => setStage("export")}
+      >
+        <Icon as={LuDownload} />
+        {t(
+          effectiveReviewStatus === "ready"
+            ? "review-continue-export"
+            : "review-export-as-is",
+        )}
+      </Button>
       {blockingConflictCount > 0 && (
         <Button variant="outline" onClick={() => setStage("conflicts_logic")}>
           <Icon as={LuSearchCheck} />
@@ -352,14 +378,6 @@ export function GuidedReviewDecisionPanel({
           {t("review-review-warnings", { count: review.warningCount })}
         </Button>
       )}
-      <Button variant="ghost" onClick={() => setStage("export")}>
-        <Icon as={LuDownload} />
-        {t(
-          effectiveReviewStatus === "ready"
-            ? "review-continue-export"
-            : "review-export-as-is",
-        )}
-      </Button>
       <Button variant="ghost" onClick={() => setStage("conflicts_logic")}>
         <Icon as={LuArrowLeft} />
         {t("review-back-conflicts")}
@@ -457,7 +475,7 @@ export function GuidedReviewExportPanel({
           {t("draft-preflight-critical-gap-description")}
         </Text>
       )}
-      {requiresExportAcknowledgement && !controller.hasCriticalGap && (
+      {requiresExportAcknowledgement && (
         <Checkbox
           alignItems="start"
           checked={acceptedIncompleteReview}

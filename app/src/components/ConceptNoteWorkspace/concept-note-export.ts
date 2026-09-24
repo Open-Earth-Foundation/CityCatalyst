@@ -103,11 +103,12 @@ export function canExportConceptNote(
   acceptedMissingInformation: boolean,
 ): boolean {
   const hasExportableDraft = exportableChapters(chapters).length > 0;
-  const unresolvedCount = countUnresolvedExportItems(chapters);
+  const hasMissingInformation =
+    countUnresolvedExportItems(chapters) > 0 ||
+    hasCriticalExportBlocker(chapters);
+  // Missing information, including critical gaps, needs explicit acknowledgement.
   return (
-    hasExportableDraft &&
-    !hasCriticalExportBlocker(chapters) &&
-    (unresolvedCount === 0 || acceptedMissingInformation)
+    hasExportableDraft && (!hasMissingInformation || acceptedMissingInformation)
   );
 }
 

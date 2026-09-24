@@ -14,6 +14,7 @@ import {
   type ChapterReviewErrorKind,
   getChapterReviewErrorKind,
   isChapterValidationCurrent,
+  isRetryableChapterReviewError,
   type ReviewedConceptNoteChapter,
 } from "./chapter-validation";
 import {
@@ -109,13 +110,17 @@ export function useGuidedReview({
     chapters.find((chapter) => countUnresolvedExportItems([chapter]) > 0) ??
     null;
   const firstMissingInformationFinding = blockingMissingInformation[0] ?? null;
-  const requiresExportAcknowledgement =
-    blockingIssueCount > 0 || failedChapters.length > 0;
   const hasCriticalGap = hasCriticalExportBlocker(chapters);
+  const requiresExportAcknowledgement =
+    blockingIssueCount > 0 || failedChapters.length > 0 || hasCriticalGap;
   const canExport =
     canExportConceptNote(chapters, acceptedIncompleteReview) &&
     (!requiresExportAcknowledgement || acceptedIncompleteReview) &&
     !exportingFormat;
+  const uncheckedChapterCount = Math.max(
+    chapters.length - reviewedChapters.length,
+    0,
+  );
   const progressPercent = chapters.length
     ? Math.round((completedChapterCount / chapters.length) * 100)
     : 0;
@@ -141,9 +146,11 @@ export function useGuidedReview({
 
   const runReview = useCallback(
     async ({
+      preservedFailures = [],
       preservedResults,
       targetChapters,
     }: {
+      preservedFailures?: FailedChapterReview[];
       preservedResults: ReviewedConceptNoteChapter[];
       targetChapters: ConceptNoteDraftChapter[];
     }) => {
@@ -151,9 +158,11 @@ export function useGuidedReview({
       activeRequestRef.current = requestId;
       setStage("running");
       setReviewedChapters(preservedResults);
-      setFailedChapters([]);
+      setFailedChapters(preservedFailures);
       setReviewError(null);
-      setCompletedChapterCount(preservedResults.length);
+      setCompletedChapterCount(
+        preservedResults.length + preservedFailures.length,
+      );
       setAcceptedIncompleteReview(false);
       setExportError(false);
 
@@ -161,8 +170,8 @@ export function useGuidedReview({
         preservedResults.map((result) => [result.chapter.chapter_id, result]),
       );
       let nextChapterIndex = 0;
-      let completedCount = preservedResults.length;
-      const failures: FailedChapterReview[] = [];
+      let completedCount = preservedResults.length + preservedFailures.length;
+      const failures: FailedChapterReview[] = [...preservedFailures];
 
       function publishResults(): void {
         setReviewedChapters(
@@ -294,8 +303,13 @@ export function useGuidedReview({
 
   function retryFailedChapters(): void {
     void runReview({
+      preservedFailures: failedChapters.filter(
+        ({ errorKind }) => !isRetryableChapterReviewError(errorKind),
+      ),
       preservedResults: reviewedChapters,
-      targetChapters: failedChapters.map(({ chapter }) => chapter),
+      targetChapters: failedChapters
+        .filter(({ errorKind }) => isRetryableChapterReviewError(errorKind))
+        .map(({ chapter }) => chapter),
     });
   }
 
@@ -341,6 +355,7 @@ export function useGuidedReview({
     setAcceptedIncompleteReview,
     setStage,
     stage,
+    uncheckedChapterCount,
     unresolvedCount,
   };
 }

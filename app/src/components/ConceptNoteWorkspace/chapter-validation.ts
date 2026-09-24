@@ -39,6 +39,7 @@ export type ChapterReviewErrorKind =
   | "draft_unavailable"
   | "generic"
   | "service_unavailable"
+  | "template_invalid"
   | "template_unavailable";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -55,6 +56,13 @@ export function getChapterReviewErrorKind(
   ) {
     return "template_unavailable";
   }
+  // Invalid template setup fails the same way on every retry.
+  if (
+    isRecord(payload) &&
+    payload.code === "chapter_validation_template_invalid"
+  ) {
+    return "template_invalid";
+  }
   const status = isRecord(error) ? error.status : null;
   if (
     status === "FETCH_ERROR" ||
@@ -64,6 +72,15 @@ export function getChapterReviewErrorKind(
     return "service_unavailable";
   }
   return "generic";
+}
+
+/** Template setup failures repeat on every retry until the setup is repaired. */
+export function isRetryableChapterReviewError(
+  errorKind: ChapterReviewErrorKind,
+): boolean {
+  return (
+    errorKind !== "template_invalid" && errorKind !== "template_unavailable"
+  );
 }
 
 export function getChapterDisplayStatus(

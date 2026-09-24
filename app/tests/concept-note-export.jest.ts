@@ -172,7 +172,7 @@ describe("concept note export preparation", () => {
     expect(canExportConceptNote([], true)).toBe(false);
   });
 
-  test("blocks open critical gaps but allows acknowledged caveats", () => {
+  test("requires acknowledgement for open critical gaps and allows caveats", () => {
     const criticalGap = {
       gap_id: "gap-critical",
       field_key: "legal_authority",
@@ -190,7 +190,8 @@ describe("concept note export preparation", () => {
     const blocked = [chapter({ gaps: [criticalGap], open_gap_count: 1 })];
 
     expect(hasCriticalExportBlocker(blocked)).toBe(true);
-    expect(canExportConceptNote(blocked, true)).toBe(false);
+    expect(canExportConceptNote(blocked, false)).toBe(false);
+    expect(canExportConceptNote(blocked, true)).toBe(true);
 
     const caveat = [
       chapter({

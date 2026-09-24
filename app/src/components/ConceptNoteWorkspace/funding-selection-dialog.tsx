@@ -123,6 +123,9 @@ export function FundingSelectionDialog({
   const changed =
     funderId !== (initialContext.funder?.id ?? null) ||
     opportunityId !== (initialContext.opportunity?.id ?? null);
+  // Only a first save with a drafting template moves the user on to drafting.
+  const savesIntoDrafting =
+    !hasDraft && Boolean(opportunity?.template?.chapter_schema.length);
   const forbidden =
     isFetchBaseQueryError(catalogueError) &&
     [401, 403, 404].includes(Number(catalogueError.status));
@@ -156,7 +159,7 @@ export function FundingSelectionDialog({
       }).unwrap();
       toaster.create({ title: t("funding-saved"), type: "success" });
       onClose();
-      onSaved?.();
+      if (savesIntoDrafting) onSaved?.();
     } catch (cause) {
       const status = isFetchBaseQueryError(cause) ? cause.status : null;
       const data = isFetchBaseQueryError(cause) ? cause.data : null;
@@ -564,11 +567,7 @@ export function FundingSelectionDialog({
               onClick={() => void save()}
               data-testid="concept-note-funding-save"
             >
-              {t(
-                !hasDraft && opportunity?.template?.chapter_schema.length
-                  ? "funding-save-and-draft"
-                  : "funding-save",
-              )}
+              {t(savesIntoDrafting ? "funding-save-and-draft" : "funding-save")}
             </Button>
           </Flex>
         </DialogFooter>

@@ -1,4 +1,9 @@
 {
+  "chat-suggestions-title": "You could ask Clima",
+  "chat-suggestion-review": "What should I improve first?",
+  "chat-suggestion-gaps": "What details are missing?",
+  "chat-suggestion-start": "How do I get started?",
+  "chat-suggestion-evidence": "What evidence should I gather?",
   "upload-incomplete": "Upload incomplete",
   "upload-incomplete-message": "Your file could not be uploaded. Your workspace is saved. Try uploading the file again when you are ready.",
   "upload-select-originals": "Select the original files that still need uploading. Successfully uploaded files are already saved.",

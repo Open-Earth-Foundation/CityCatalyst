@@ -218,8 +218,13 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
   await expect(
     dialog.getByText("Municipal governments", { exact: true }),
   ).toBeVisible();
-  await clickDialogButton("Save selection");
+  // A first save with a drafting template moves on to the Draft tab.
+  await clickDialogButton("Save and go to drafting");
   await expect(dialog).not.toBeVisible();
+  await expect(
+    page.getByRole("tab", { name: "Draft preview", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("tab", { name: "Context", exact: true }).click();
   await expect(
     page.getByText("European Climate Fund", { exact: true }),
   ).toBeVisible();
@@ -262,7 +267,10 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
   await clickDialogButton(/European Climate Fund/);
   await expect(programme).toHaveAttribute("aria-pressed", "true");
   await expect(
-    dialog.getByRole("button", { name: "Save selection", exact: true }),
+    dialog.getByRole("button", {
+      name: "Save and go to drafting",
+      exact: true,
+    }),
   ).toBeVisible();
   expect(
     await dialog.evaluate(

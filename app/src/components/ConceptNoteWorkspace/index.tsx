@@ -26,7 +26,6 @@ import {
   LuSparkles,
 } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";
@@ -121,6 +120,8 @@ export function ConceptNoteWorkspace({
     "start-drafting" | "choose-funding" | "chat" | null
   >(null);
   const [highlightStartDrafting, setHighlightStartDrafting] = useState(false);
+  // Bumped when chat's "Add recommended source" should open the file picker.
+  const [uploadPickerRequest, setUploadPickerRequest] = useState(0);
   const [composerRequest, setComposerRequest] = useState<{
     content: string;
     id: string;
@@ -388,6 +389,9 @@ export function ConceptNoteWorkspace({
 
   const status = getConceptNoteStatusPresentation(run.status, draft);
   const incompleteUploads = hasIncompleteInitialUploads(run);
+  const statusHelp = incompleteUploads
+    ? ""
+    : t(`${status.translationKey}-help`, { defaultValue: "" });
   const statusLabel = t(
     incompleteUploads ? "upload-incomplete" : status.translationKey,
   );
@@ -439,17 +443,18 @@ export function ConceptNoteWorkspace({
           </HStack>
 
           {incompleteUploads && (
-            <Box
-              role="status"
-              p={3}
-              borderWidth="1px"
-              borderColor="sentiment.warningDefault"
-            >
-              <Text>{t("upload-incomplete-message")}</Text>
-              <Button onClick={() => setRetryInitialUploadOpen(true)}>
-                {t("retry-upload")}
-              </Button>
-            </Box>
+            <NextStepBanner
+              tone="warning"
+              title={t("upload-incomplete")}
+              description={t("upload-incomplete-message")}
+              primary={{
+                label: t("retry-upload"),
+                icon: LuRefreshCw,
+                onClick: () => setRetryInitialUploadOpen(true),
+                testId: "concept-note-retry-upload",
+              }}
+              testId="concept-note-upload-incomplete"
+            />
           )}
           {retryInitialUploadOpen && (
             <NewConceptNoteDialog
@@ -483,7 +488,12 @@ export function ConceptNoteWorkspace({
               composerRequest={composerRequest}
               draftOverviewPending={Boolean(draft?.overview_pending)}
               lng={lng}
-              onOpenContext={() => setTab("context")}
+              onOpenContext={() => {
+                setTab("context");
+                if (contextStatus.state === "none") {
+                  setUploadPickerRequest((value) => value + 1);
+                }
+              }}
               onStartNewChat={() => setStartNewChatOpen(true)}
               runId={run.run_id}
               threadId={activeThreadId}
@@ -557,6 +567,17 @@ export function ConceptNoteWorkspace({
                       </Text>
                       <StatusBadge label={statusLabel} tone={status.tone} />
                     </HStack>
+                    {statusHelp && (
+                      <Text
+                        mt={1}
+                        fontSize="label.sm"
+                        lineHeight="18px"
+                        color="content.secondary"
+                        data-testid="concept-note-status-help"
+                      >
+                        {statusHelp}
+                      </Text>
+                    )}
                   </Box>
                 </HStack>
                 <Flex align="center" gap={2} flexWrap="wrap" minW={0}>
@@ -834,6 +855,7 @@ export function ConceptNoteWorkspace({
                   populationMissing={populationMissing}
                   upload={effectiveUpload}
                   uploadError={effectiveUploadError}
+                  uploadPickerRequest={uploadPickerRequest}
                 />
               </Tabs.Content>
             </Tabs.Root>

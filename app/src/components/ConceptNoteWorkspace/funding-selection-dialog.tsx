@@ -31,6 +31,7 @@ import { api } from "@/services/api";
 import { isFetchBaseQueryError } from "@/util/helpers";
 import type {
   ConceptNoteApplicationContext,
+  ConceptNoteFundingOpportunity,
   ConceptNoteFunder,
 } from "@/util/types";
 import { FunderProfile, FundingOpportunityDetails } from "./funding-details";
@@ -138,6 +139,22 @@ export function FundingSelectionDialog({
     );
     setAcknowledged(false);
     setError(null);
+  }
+
+  function programmeMeta(item: ConceptNoteFundingOpportunity): string {
+    const amount = (value: string | null) => {
+      const numeric = Number(value);
+      return value && Number.isFinite(numeric)
+        ? new Intl.NumberFormat(lng, { maximumFractionDigits: 0 }).format(
+            numeric,
+          )
+        : (value ?? "");
+    };
+    const award =
+      item.min_award !== null || item.max_award !== null
+        ? `${amount(item.min_award)} – ${amount(item.max_award)} ${item.currency ?? ""}`.trim()
+        : null;
+    return [award, item.status?.replace(/_/g, " ")].filter(Boolean).join(" · ");
   }
 
   async function save(): Promise<void> {
@@ -343,15 +360,28 @@ export function FundingSelectionDialog({
                         >
                           {item.name}
                         </Text>
-                        <Text
-                          mt={1}
-                          fontSize="label.sm"
-                          color="content.tertiary"
-                        >
-                          {[item.country, item.region]
-                            .filter(Boolean)
-                            .join(" · ") || item.funder_type}
-                        </Text>
+                        <HStack mt={1} gap={2} flexWrap="wrap">
+                          {item.funder_type && (
+                            <Text
+                              as="span"
+                              fontSize="10px"
+                              lineHeight="16px"
+                              px={1.5}
+                              borderRadius="full"
+                              border="1px solid"
+                              borderColor="border.neutral"
+                              color="content.secondary"
+                              whiteSpace="nowrap"
+                            >
+                              {item.funder_type}
+                            </Text>
+                          )}
+                          <Text fontSize="label.sm" color="content.tertiary">
+                            {[item.country, item.region]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </Text>
+                        </HStack>
                         <Text
                           mt={1}
                           fontSize="label.sm"
@@ -449,6 +479,15 @@ export function FundingSelectionDialog({
                                   {item.template?.name ??
                                     t("funding-no-template")}
                                 </Text>
+                                {programmeMeta(item) && (
+                                  <Text
+                                    mt={1}
+                                    fontSize="label.sm"
+                                    color="content.secondary"
+                                  >
+                                    {programmeMeta(item)}
+                                  </Text>
+                                )}
                               </Box>
                             </Button>
                           ))}
@@ -563,6 +602,11 @@ export function FundingSelectionDialog({
               }
               onClick={() => void save()}
               data-testid="concept-note-funding-save"
+              title={
+                !hasDraft && opportunity?.template?.chapter_schema.length
+                  ? t("funding-next-step")
+                  : undefined
+              }
             >
               {t(
                 !hasDraft && opportunity?.template?.chapter_schema.length

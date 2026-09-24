@@ -565,7 +565,12 @@ export function DraftDocumentPanel({
                               ? "chapter-status-ready"
                               : getChapterDisplayStatus(chapter) === "empty"
                                 ? "chapter-status-empty"
-                                : "chapter-status-draft",
+                                : getChapterDisplayStatus(chapter) ===
+                                    "incomplete"
+                                  ? "chapter-status-validation-incomplete"
+                                  : getChapterDisplayStatus(chapter) === "stale"
+                                    ? "chapter-status-validation-stale"
+                                    : "chapter-status-draft",
                         )}
                       </Text>
                       {chapter.open_gap_count > 0 && (

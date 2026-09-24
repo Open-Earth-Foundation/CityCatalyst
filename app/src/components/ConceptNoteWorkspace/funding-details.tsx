@@ -1,7 +1,9 @@
 "use client";
 
 import { Box, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { useState } from "react";
 import { useTranslation } from "@/i18n/client";
+import { Button } from "@/components/ui/button";
 import type {
   ConceptNoteApplicationContext,
   ConceptNoteFunder,
@@ -68,6 +70,38 @@ function ProfileValue({ value, lng }: { value: unknown; lng: string }) {
   );
 }
 
+/** Scalar facts from the profile (stated first, then derived), at most `limit`. */
+function summaryFacts(
+  profile: Record<string, unknown>,
+  limit: number,
+): Array<[string, string]> {
+  const groups = ["stated", "derived"].flatMap((group) => {
+    const value = profile[group];
+    return value && typeof value === "object" && !Array.isArray(value)
+      ? [value as Record<string, unknown>]
+      : [];
+  });
+  const source = groups.length ? groups : [profile];
+  const facts: Array<[string, string]> = [];
+  for (const record of source) {
+    for (const [key, value] of Object.entries(record)) {
+      if (facts.length >= limit) return facts;
+      if (typeof value === "string" && value.trim()) {
+        facts.push([key, value.trim()]);
+      } else if (typeof value === "number" || typeof value === "boolean") {
+        facts.push([key, String(value)]);
+      } else if (
+        Array.isArray(value) &&
+        value.length &&
+        value.every((item) => typeof item === "string")
+      ) {
+        facts.push([key, value.join(", ")]);
+      }
+    }
+  }
+  return facts;
+}
+
 export function FunderProfile({
   funder,
   lng,
@@ -76,6 +110,8 @@ export function FunderProfile({
   lng: string;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
+  const [showAll, setShowAll] = useState(false);
+  const facts = summaryFacts(funder.profile, 6);
   return (
     <VStack align="stretch" gap={4}>
       <Box>
@@ -88,12 +124,52 @@ export function FunderProfile({
             .join(" · ") || t("funding-profile-location-missing")}
         </Text>
       </Box>
-      {Object.keys(funder.profile).length ? (
+      {facts.length > 0 && !showAll && (
+        <Box
+          as="dl"
+          display="grid"
+          gridTemplateColumns={{ base: "1fr", sm: "1fr 1fr" }}
+          gap={3}
+          data-testid="concept-note-funder-summary"
+        >
+          {facts.map(([key, value]) => (
+            <Box key={key} minW={0}>
+              <Text as="dt" fontSize="label.sm" color="content.tertiary">
+                {t(`funding-field-${key}`, { defaultValue: fieldLabel(key) })}
+              </Text>
+              <Text
+                as="dd"
+                fontSize="body.sm"
+                color="content.primary"
+                lineClamp={3}
+                overflowWrap="anywhere"
+              >
+                {value}
+              </Text>
+            </Box>
+          ))}
+        </Box>
+      )}
+      {showAll && Object.keys(funder.profile).length > 0 && (
         <ProfileValue value={funder.profile} lng={lng} />
-      ) : (
+      )}
+      {Object.keys(funder.profile).length === 0 && (
         <Text fontSize="body.sm" color="content.tertiary">
           {t("funding-profile-empty")}
         </Text>
+      )}
+      {Object.keys(funder.profile).length > 0 && (
+        <Box>
+          <Button
+            size="sm"
+            variant="ghost"
+            px={2}
+            onClick={() => setShowAll((value) => !value)}
+            data-testid="concept-note-funder-details-toggle"
+          >
+            {t(showAll ? "funding-hide-details" : "funding-show-all-details")}
+          </Button>
+        </Box>
       )}
     </VStack>
   );

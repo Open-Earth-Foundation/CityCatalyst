@@ -67,6 +67,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
   const response = await callAuthorizedConceptNoteApi({
     path: `/v1/concept-notes/${runId}/chat/suggestions`,
     method: "POST",
+    signal: req.signal,
     session,
     cityId,
     requestId,

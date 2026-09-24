@@ -1,3 +1,4 @@
+import asyncio
 import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
@@ -139,6 +140,7 @@ async def test_route_authorizes_before_reading_draft_or_calling_model(monkeypatc
         await propose_chat_questions(
             uuid4(),
             ChatSuggestionsRequest(),
+            SimpleNamespace(is_disconnected=AsyncMock(return_value=False)),
             draft_service,
             user_id="other",
             authorization="Bearer test",
@@ -180,6 +182,7 @@ async def test_route_reads_only_authorized_run_and_active_thread(monkeypatch):
     result = await propose_chat_questions(
         run.run_id,
         ChatSuggestionsRequest(),
+        SimpleNamespace(is_disconnected=AsyncMock(return_value=False)),
         None,
         user_id="owner",
         authorization="Bearer test",
@@ -192,3 +195,63 @@ async def test_route_reads_only_authorized_run_and_active_thread(monkeypatch):
         {"role": "user", "content": "Discuss the budget"}
     ]
     assert str(run.run_id) not in json.dumps(payload)
+
+
+async def test_disconnect_cancels_in_flight_model_request(monkeypatch):
+    from app.routes.concept_note_runs import propose_chat_questions
+
+    run = ConceptNoteRun(run_id=uuid4(), workflow_step="drafting")
+    monkeypatch.setattr(
+        "app.routes.concept_note_runs.ConceptNoteRunService",
+        Mock(
+            return_value=SimpleNamespace(get_authorized_run=AsyncMock(return_value=run))
+        ),
+    )
+    monkeypatch.setattr(
+        "app.routes.concept_note_runs.get_settings",
+        Mock(
+            return_value=Settings(llm=_load_llm_config(), openrouter_api_key="test-key")
+        ),
+    )
+
+    started = asyncio.Event()
+    cancelled = asyncio.Event()
+    disconnected = asyncio.Event()
+
+    async def model_request(**_kwargs):
+        started.set()
+        try:
+            await asyncio.Future()
+        except asyncio.CancelledError:
+            cancelled.set()
+            raise
+
+    client = AsyncMock()
+    client.__aenter__.return_value = client
+    client.chat.completions.create.side_effect = model_request
+    monkeypatch.setattr(
+        "app.services.cnb.chat_suggestions.AsyncOpenAI", Mock(return_value=client)
+    )
+    request = SimpleNamespace(
+        is_disconnected=AsyncMock(side_effect=lambda: disconnected.is_set())
+    )
+    session = AsyncMock()
+    session.get.return_value = None
+
+    generation = asyncio.create_task(
+        propose_chat_questions(
+            run.run_id,
+            ChatSuggestionsRequest(),
+            request,
+            None,
+            user_id="owner",
+            authorization="Bearer test",
+            session=session,
+        )
+    )
+    await asyncio.wait_for(started.wait(), timeout=2)
+    disconnected.set()
+    await asyncio.wait_for(cancelled.wait(), timeout=2)
+    with pytest.raises(asyncio.CancelledError):
+        await generation
+    client.__aexit__.assert_awaited_once()

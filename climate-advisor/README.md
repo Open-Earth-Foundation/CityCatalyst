@@ -1792,6 +1792,8 @@ Invalid output or provider failure returns an empty list so the UI uses two
 translated deterministic questions. Suggestions never write messages or edit
 the document; selecting one fills and focuses the composer. Suggestions refresh
 after replies, tab changes, or run/draft revisions; the UI cancels stale requests.
+The CityCatalyst proxy forwards that cancellation to Climate Advisor, which
+cancels an in-flight model request when the client disconnects.
 
 ### Initial concept-note upload recovery
 

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+from contextlib import suppress
 from typing import Annotated
 from uuid import UUID
 
@@ -63,7 +65,16 @@ from app.utils.mlflow_logging import (
 from app.utils.mlflow_logging import (
     start_run as start_mlflow_run,
 )
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    Header,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    status,
+)
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -78,6 +89,7 @@ router = APIRouter()
 async def propose_chat_questions(
     run_id: UUID,
     payload: ChatSuggestionsRequest,
+    request: Request,
     draft_service: Annotated[
         ConceptNoteChapterDraftService | None, Depends(get_chapter_draft_service)
     ],
@@ -85,7 +97,7 @@ async def propose_chat_questions(
     user_id: str = Query(..., min_length=1),
     authorization: str | None = Header(default=None),
 ) -> ChatSuggestionsResponse:
-    """Suggest questions using only this user's authorized run and active chat."""
+    """Suggest questions for the authorized chat; stop generation on disconnect."""
     # Authorize before reading any document, bundle, or conversation content.
     run = await ConceptNoteRunService(session).get_authorized_run(
         run_id=run_id, requested_user_id=user_id, authorization=authorization
@@ -102,7 +114,22 @@ async def propose_chat_questions(
     context = build_suggestion_context(
         payload, run, draft, bundle.context_bundle if bundle else {}, messages
     )
-    return await generate_chat_suggestions(get_settings(), context)
+    generation = asyncio.create_task(generate_chat_suggestions(get_settings(), context))
+
+    async def cancel_on_disconnect() -> None:
+        while not generation.done():
+            if await request.is_disconnected():
+                generation.cancel()
+                return
+            await asyncio.sleep(0.1)
+
+    disconnect_watcher = asyncio.create_task(cancel_on_disconnect())
+    try:
+        return await generation
+    finally:
+        disconnect_watcher.cancel()
+        with suppress(asyncio.CancelledError):
+            await disconnect_watcher
 
 
 @router.get(

@@ -29,6 +29,7 @@ const context: ConceptNoteApplicationContext = {
   },
 };
 let initialContext: ConceptNoteApplicationContext | undefined;
+let reviewProposal: { proposal_id: string } | null = null;
 let finishRefetch: (success: boolean) => void;
 const refetch = jest.fn<() => Promise<{ isSuccess: boolean }>>();
 
@@ -93,10 +94,11 @@ jest.unstable_mockModule(
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/document-review",
   () => ({
-    DocumentReviewToolbar: () => null,
+    DocumentReviewToolbar: () => <div data-testid="review-toolbar" />,
     DocumentReviewFeedback: () => null,
     documentReviewChanges: () => [],
-    selectReviewProposal: () => null,
+    editFeedbackKey: () => null,
+    selectReviewProposal: () => reviewProposal,
   }),
 );
 // The draft tab's setup button calls the workspace handler under test.
@@ -148,6 +150,7 @@ afterAll(() => {
 });
 beforeEach(() => {
   initialContext = undefined;
+  reviewProposal = null;
   refetch.mockReset();
   container = document.createElement("div");
   document.body.append(container);
@@ -195,4 +198,14 @@ it("opens funding immediately when context is already loaded", async () => {
   await clickSetup();
   expect(refetch).not.toHaveBeenCalled();
   expect(container.querySelector('[role="dialog"]')).not.toBeNull();
+});
+
+it("renders the edit review toolbar once, in its own row", async () => {
+  reviewProposal = { proposal_id: "proposal" };
+  await clickSetup();
+  const toolbars = container.querySelectorAll('[data-testid="review-toolbar"]');
+  expect(toolbars).toHaveLength(1);
+  expect(
+    toolbars[0].closest('[data-testid="concept-note-review-bar"]'),
+  ).not.toBeNull();
 });

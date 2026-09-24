@@ -138,6 +138,9 @@ async def begin_build(
                         "source_provenance": _source_provenance_from_bundle(
                             previous_bundle
                         ),
+                        # Keep the checked inventory version so completion can
+                        # report an inventory whose data changed as "updated".
+                        "inventory_candidate": previous.get("inventory_candidate"),
                         "missing_context": (
                             previous.get("missing_context")
                             if isinstance(previous.get("missing_context"), list)

@@ -125,6 +125,51 @@ async def test_progress_identifies_inventory_from_persisted_bundle(tmp_path) -> 
         await engine.dispose()
 
 
+@pytest.mark.asyncio
+async def test_rebuild_reports_inventory_with_new_data_as_updated(tmp_path) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    inventory = uuid4()
+    ghgi = {"inventory": {"id": str(inventory), "year": 2024}}
+    try:
+        async with session_factory() as session, session.begin():
+            session.add(concept_note_run(run_id))
+
+        for updated_at in ("2026-09-01T10:00:00Z", "2026-09-02T10:00:00Z"):
+            build = await begin_build(
+                session_factory=session_factory,
+                user_id="owner",
+                run_id=run_id,
+                build_id=uuid4(),
+                force=True,
+            )
+            assert await complete_build(
+                session_factory=session_factory,
+                user_id="owner",
+                run_id=run_id,
+                build_id=build.build_id,
+                selected_sources=[],
+                ghgi=ghgi,
+                hiap=None,
+                optional_sources={"ghgi": "partial", "hiap": "missing"},
+                warnings=[],
+                inventory_candidate={
+                    "inventory_id": str(inventory),
+                    "updated_at": updated_at,
+                },
+            )
+
+        async with session_factory() as session:
+            run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        # Same inventory, newer data: the rebuild must announce it as updated.
+        assert run.context_summary["context_bundle"]["context_changes"] == [
+            {"source": "ghgi", "change": "updated", "inventory_year": 2024}
+        ]
+    finally:
+        await engine.dispose()
+
+
 async def database(tmp_path):
     engine = create_async_engine(
         f"sqlite+aiosqlite:///{(tmp_path / 'context-bundle.db').as_posix()}"

@@ -452,7 +452,7 @@
   "hiap-no-actions": "No prioritized actions",
   "inventory-empty-detail": "This inventory has no emissions data yet, so it can't inform the draft. Add data; this note picks it up automatically when you come back to it.",
   "add-inventory-data": "Add inventory data",
-  "context-action-draft-running": "Wait for chapter drafting to finish before refreshing the run context.",
+  "context-action-draft-running": "Wait for chapter drafting to finish before changing the inventory.",
   "context-action-rebuilding": "The run context is updating. This takes a moment.",
   "funder-why": "The funder's priorities shape how each chapter is framed.",
   "template-why": "The programme's template sets the chapters Clima drafts.",

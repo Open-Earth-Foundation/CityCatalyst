@@ -101,8 +101,13 @@ export function useConceptNoteWorkspaceData({
     refetchOnFocus: true,
   });
   const inventoryFailed = isSourceLookupFailure(inventoryError);
+  // Same refetch rules as the inventory, so the picker lists an inventory
+  // created in another tab.
   const { data: cityYears, isLoading: inventoryOptionsLoading } =
-    api.useGetCityYearsQuery(cityId, { refetchOnMountOrArgChange: true });
+    api.useGetCityYearsQuery(cityId, {
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+    });
   const inventoryOptions = [...(cityYears?.years ?? [])].sort(
     (a, b) => b.year - a.year,
   );

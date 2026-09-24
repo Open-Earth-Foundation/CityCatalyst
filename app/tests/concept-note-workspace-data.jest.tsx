@@ -59,6 +59,12 @@ const getDraftQuery = jest.fn(() => ({
   isLoading: false,
   refetch: jest.fn(async () => undefined),
 }));
+const getCityYearsQuery = jest.fn(
+  (_cityId: string, _options?: Record<string, unknown>) => ({
+    data: undefined,
+    isLoading: false,
+  }),
+);
 const getRunQuery = jest.fn(() => ({
   data: contextScenario ?? {
     progress_summary: {},
@@ -118,7 +124,7 @@ jest.unstable_mockModule("@/services/api", () => ({
     useGetConceptNoteUploadStatusQuery: getUploadQuery,
     useGetInventoryByCityIdQuery: () => ({ data: undefined }),
     useGetCityDashboardQuery: () => ({ data: undefined }),
-    useGetCityYearsQuery: () => ({ data: undefined, isLoading: false }),
+    useGetCityYearsQuery: getCityYearsQuery,
     useRefreshConceptNoteContextBundleMutation: () => [
       jest.fn(() => ({ unwrap: async () => ({ status: "current" }) })),
       { isLoading: false },
@@ -337,6 +343,15 @@ afterEach(async () => {
 });
 
 describe("useConceptNoteWorkspaceData", () => {
+  it("reloads the city's inventories on focus so the picker sees new ones", async () => {
+    await act(async () => root.render(<DraftStartHarness />));
+
+    expect(getCityYearsQuery).toHaveBeenCalledWith(
+      "city-1",
+      expect.objectContaining({ refetchOnFocus: true }),
+    );
+  });
+
   it("seeds running state from the start response even when the status GET failed", async () => {
     getApplicationContext.mockReturnValueOnce({
       data: { funder: {}, opportunity: {}, template: { chapter_schema: [{}] } },

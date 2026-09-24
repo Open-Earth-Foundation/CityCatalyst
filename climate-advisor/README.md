@@ -605,26 +605,6 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8081 --rel
 - **Liveness Check**: http://localhost:8081/health
 - **Database Readiness Check**: http://localhost:8081/ready
 
-### CC-730 Krakow Missing-Information Demo
-
-The tracked [Krakow demo fixture](fixtures/cnb/krakow/README.md) packages the
-source PDF, EIB funder/opportunity/template reference data, assembled run
-context, chat history, chapters, revisions, structured gaps, resolution events,
-and confirmation state used by the CC-730 review flow. The snapshot excludes
-thread credentials and S3 pointers; its seeder replaces local ownership at
-import time and performs idempotent upserts without deleting unrelated records.
-
-After applying both CA and CNB migrations, seed the default fixture with:
-
-```powershell
-$env:CA_DATABASE_URL = "postgresql://climateadvisor:climateadvisor@localhost:5433/climateadvisor"
-$env:CNB_DATABASE_URL = "postgresql://climateadvisor:climateadvisor@localhost:5433/cnb"
-uv run --directory service python -m scripts.seed_cnb_demo_fixture
-```
-
-See the fixture guide for the deterministic CityCatalyst user/city setup,
-existing-account overrides, expected local URL, and flow checks.
-
 ## Configuration
 
 ### LLM Configuration

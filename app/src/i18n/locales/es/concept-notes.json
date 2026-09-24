@@ -456,7 +456,7 @@
   "review-review-blocking-conflicts_other": "Revisar bloqueos conflictivos ({{count}})",
   "review-review-warnings": "Advertencias de revisión ({{count}})",
   "review-back-conflicts": "Regresar a conflictos y lógica",
-  "review-export-as-is": "Exportar de todos modos (con información faltante)",
+  "review-export-as-is": "Exportar de todos modos",
   "review-continue-export": "Continuar con la exportación",
   "review-export-title": "Exportar el borrador actual",
   "review-export-description": "Elija un formato. Las conclusiones de la revisión permanecen en el espacio de trabajo y no se añaden al archivo exportado.",

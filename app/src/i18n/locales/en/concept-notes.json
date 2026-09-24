@@ -535,7 +535,7 @@
   "review-review-blocking-conflicts_other": "Review blocking conflicts ({{count}})",
   "review-review-warnings": "Review warnings ({{count}})",
   "review-back-conflicts": "Back to conflicts & logic",
-  "review-export-as-is": "Export anyway (with missing information)",
+  "review-export-as-is": "Export anyway",
   "review-continue-export": "Continue to export",
   "review-export-title": "Export the current draft",
   "review-export-description": "Choose a format. Review findings stay in the workspace and are not added to the exported file.",

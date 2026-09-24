@@ -456,7 +456,7 @@
   "review-review-blocking-conflicts_other": "Examiner les conflits bloquants ({{count}})",
   "review-review-warnings": "Avertissements de revue ({{count}})",
   "review-back-conflicts": "Retour aux conflits et logique",
-  "review-export-as-is": "Exporter quand même (avec des informations manquantes)",
+  "review-export-as-is": "Exporter quand même",
   "review-continue-export": "Continuer l'exportation",
   "review-export-title": "Exporter le brouillon actuel",
   "review-export-description": "Choisissez un format. Les conclusions de l'examen restent dans l'espace de travail et ne sont pas ajoutées au fichier exporté.",

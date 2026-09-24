@@ -456,7 +456,7 @@
   "review-review-blocking-conflicts_other": "Blockierende Konflikte überprüfen ({{count}})",
   "review-review-warnings": "Überprüfungswarnungen ({{count}})",
   "review-back-conflicts": "Zurück zu Konflikten & Logik",
-  "review-export-as-is": "Trotzdem exportieren (mit fehlenden Informationen)",
+  "review-export-as-is": "Trotzdem exportieren",
   "review-continue-export": "Weiter zum Export",
   "review-export-title": "Den aktuellen Entwurf exportieren",
   "review-export-description": "Wählen Sie ein Format. Überprüfungsergebnisse verbleiben in der Arbeitsfläche und werden nicht zur exportierten Datei hinzugefügt.",

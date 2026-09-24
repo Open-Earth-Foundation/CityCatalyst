@@ -580,29 +580,6 @@ export function DraftDocumentPanel({
                           })}
                         </Text>
                       )}
-                      {chapter.regeneration_status === "processing" && (
-                        <Text
-                          fontSize="10px"
-                          color="content.link"
-                          data-testid="concept-note-chapter-regenerating"
-                        >
-                          {t("chapter-regenerating")}
-                        </Text>
-                      )}
-                      {chapter.regeneration_status === "queued" && (
-                        <Text
-                          fontSize="10px"
-                          color="content.tertiary"
-                          data-testid="concept-note-chapter-update-pending"
-                        >
-                          {t("chapter-update-pending")}
-                        </Text>
-                      )}
-                      {chapter.regeneration_status === "failed" && (
-                        <Text fontSize="10px" color="sentiment.negativeDefault">
-                          {t("chapter-regeneration-failed")}
-                        </Text>
-                      )}
                       {chapter.caveat_count > 0 && (
                         <Text fontSize="10px" color="content.tertiary">
                           {t("chapter-caveats", {
@@ -613,8 +590,7 @@ export function DraftDocumentPanel({
                     </HStack>
                   </Box>
                   {chapter.status === "draft" &&
-                    chapter.open_gap_count === 0 &&
-                    chapter.regeneration_status === "idle" && (
+                    chapter.open_gap_count === 0 && (
                       <Button
                         size="xs"
                         variant="solid"

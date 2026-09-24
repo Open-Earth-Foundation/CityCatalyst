@@ -66,9 +66,9 @@ import {
   Authz,
   CityDashboardResponse,
   ConceptNoteApplicationContext,
-  ConfirmConceptNoteChapterRequest,
   ConceptNoteFunder,
   ConceptNoteFundingSelection,
+  ConfirmConceptNoteChapterRequest,
   ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
   ConceptNoteRun,
@@ -79,7 +79,6 @@ import {
   ConceptNoteContextBundleRetryResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
-  ResolveConceptNoteGapRequest,
   StartConceptNoteRunRequest,
   ValidateConceptNoteChapterRequest,
   WebhookSubscriptionResponse,
@@ -2672,31 +2671,6 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: runId },
         ],
       }),
-      resolveConceptNoteGap: builder.mutation<
-        ConceptNoteDraftState,
-        ResolveConceptNoteGapRequest
-      >({
-        query: ({
-          runId,
-          gapId,
-          action,
-          answer,
-          expectedVersion,
-          idempotencyKey,
-        }) => ({
-          url: `concept-notes/${runId}/gaps/${gapId}/resolve`,
-          method: "POST",
-          body: {
-            action,
-            answer,
-            expected_version: expectedVersion,
-            idempotency_key: idempotencyKey,
-          },
-        }),
-        invalidatesTags: (_result, _error, { runId }) => [
-          { type: "ConceptNoteDraft", id: runId },
-        ],
-      }),
       confirmConceptNoteChapter: builder.mutation<
         ConceptNoteDraftState,
         ConfirmConceptNoteChapterRequest
@@ -2900,7 +2874,6 @@ export const {
   useDeleteConceptNoteRunMutation,
   useResetConceptNoteChatMutation,
   useStartConceptNoteDraftMutation,
-  useResolveConceptNoteGapMutation,
   useConfirmConceptNoteChapterMutation,
   useValidateConceptNoteChapterMutation,
   useUploadConceptNoteSourceMutation,

@@ -666,8 +666,6 @@ Prompt paths are also configured in `llm_config.yaml`:
   still requires user acceptance in the document review controls
 - the three `prompts.cnb_source_*` entries map document partitions, reduce them
   to compact document summaries, and read focused questions for exact evidence
-- `prompts.cnb_gap_impact_review` is loaded only after a user answer is accepted;
-  its single tool returns the chapter numbers that require propagated rewrites
 - `prompts.cnb_chat_edit_planner` creates bounded, grounded edit proposals from
   actual chapter text; its output cannot apply a revision without user review
 - `prompts.cnb_chat_edit_review` independently compares each proposed chapter edit
@@ -878,51 +876,13 @@ Operationally:
 - Chapter drafting reserves H1 for the final document title and generates each
   template chapter at H2. A separate reconciler marks drafting leases left
   `running` for more than one hour as retryable.
-
-### Concept Note missing-information lifecycle
-
-`GET` and `POST /v1/concept-notes/{run_id}/draft` expose the persisted chapter
-workspace. Draft responses include structured gaps, open/caveat counts,
-current/confirmed/proposed revision numbers, the confirmed body used for proposal
-comparison, and regeneration state.
-
-The workspace answers gaps through chat: a chapter's "Answer in chat" action
-prefills the composer, and accepting the resulting reviewed edit closes the
-matching gap. The resolve endpoint below is available to API clients; the
-workspace does not call it.
-
-`POST /v1/concept-notes/{run_id}/gaps/{gap_id}/resolve` records an idempotent,
-version-checked `answer`, `correction`, `not_a_gap`, or non-critical
-`defer_as_caveat` action and first regenerates the affected chapter. For an
-`answer` or `correction`, a separate review-only agent then inspects every other
-chapter. It receives all chapter bodies in one prompt when they fit; otherwise
-it receives deterministic, token-bounded slices covering the full document.
-Its only tool response is a sorted chapter-number array. Only those chapters
-are regenerated with the confirmed answer, and confirmed revisions remain
-preserved as reviewable proposals. The answer remains audited if any rewrite
-fails. Accepting an answer marks every other drafted chapter `queued` until the
-review finishes, so the workspace shows pending work and chat edit proposals
-are refused with `chapters_updating` while any chapter is `queued` or
-`processing`. A propagated rewrite must keep a marker and structured gap for
-every open gap it does not list in `answered_field_keys`; otherwise it is
-retried once and then marked failed. Gaps it does list are closed as
-`evidence_update` by `system`, never attributed to the user. Grounded answer suggestions keep their selected-source references;
-unsupported suggestions are removed.
-Every model-generated gap includes a fact-specific `why_asking` rationale in
-the same structured item as its question. Legacy string-only gaps are displayed
-with a question- and chapter-specific grounded-evidence rationale instead of
-the original generic migration text.
-
-`POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/confirm` confirms one
-exact revision. Regeneration stops at Draft, and only this explicit user action
-sets Ready. Open critical gaps prevent confirmation; export only warns and asks
-for acknowledgement. Persisted non-critical caveats remain visible and
-non-blocking. When a newly analyzed
-upload affects an already Ready chapter, the confirmed revision is preserved
-and a separate proposed revision requires renewed review. The CNB Alembic
-revision `20260907_120000` provisions the structured gap, append-only resolution,
-and exact-revision review contract; `20260924_120000` adds per-chapter
-regeneration status tracking (`idle`, `queued`, `processing`, `failed`).
+- When a newly uploaded source finishes analysis, a background source-impact
+  scan redrafts only chapters whose text or open gaps overlap that source. Each
+  redraft appends a revision, resolves gaps the evidence now fills as
+  `evidence_update` by `system`, and reopens resolved gaps it contradicts. The
+  last confirmed revision is preserved, so an affected Ready chapter returns to
+  review. The drafter receives the chapter's `resolved_information` and
+  `existing_open_gaps` so earlier answers stay applied and gap keys stay stable.
 
 ### Concept Note draft review and chat editing
 

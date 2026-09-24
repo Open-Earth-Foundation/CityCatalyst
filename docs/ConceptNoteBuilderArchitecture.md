@@ -514,11 +514,6 @@ flowchart TB
 | `drafting_document`    | application context, complete run bundle, current chapter, all earlier chapter Markdown | independent structured drafting; document validation stays in the UI               |
 | `editing_document`     | selected chapter/revision and per-document summaries                                    | document edit tools and selected-source query; document validation stays in the UI |
 
-The chapter drafter remains tool-free. After an accepted gap `answer` or
-`correction`, a separate review-only invocation temporarily loads only
-`select_chapters_for_rewrite`; that tool returns a chapter-number array and is
-not registered for drafting or ordinary Concept Note chat.
-
 Export is not a workflow step for the LLM. It is a document workspace button
 that calls export preflight and generation routes against the current chapters
 and template.
@@ -873,7 +868,6 @@ important planning rules are:
 These are the logical workflow/document tables the CNB backend needs to use.
 `concept_note_chapters`, `concept_note_chapter_revisions`,
 `concept_note_evidence_links`, `concept_note_gaps`,
-`concept_note_gap_resolutions`, `concept_note_chapter_reviews`,
 `concept_note_chapter_validations`,
 `concept_note_matched_projects`, and `concept_note_exports` live under
 `CNB_DATABASE_URL`. Climate Advisor consumes them through typed
@@ -894,9 +888,7 @@ erDiagram
     concept_note_runs ||--o{ concept_note_matched_projects : "stores"
     concept_note_runs ||--o{ concept_note_exports : "produces"
     concept_note_chapters ||--o{ concept_note_chapter_revisions : "has"
-    concept_note_chapters ||--o{ concept_note_chapter_reviews : "confirms"
     concept_note_chapters ||--o{ concept_note_evidence_links : "cites"
-    concept_note_gaps ||--o{ concept_note_gap_resolutions : "records"
     concept_note_chapters ||--o| concept_note_chapter_validations : "has latest"
 
     concept_note_runs {
@@ -949,14 +941,9 @@ erDiagram
         uuid chapter_id
         string field_key
         string severity
-        text question
-        text why_asking
-        jsonb suggestions
-        jsonb source_refs
+        text reason
         string status
-        int version
         timestamp created_at
-        timestamp updated_at
     }
 
     concept_note_chapters {
@@ -968,9 +955,6 @@ erDiagram
         string status
         bool required
         bool user_locked
-        uuid confirmed_revision_id
-        string regeneration_status
-        string regeneration_error
         timestamp created_at
         timestamp updated_at
     }
@@ -983,26 +967,6 @@ erDiagram
         string change_type
         text body_markdown
         jsonb patch_summary
-        timestamp created_at
-    }
-
-    concept_note_gap_resolutions {
-        uuid resolution_id
-        uuid gap_id
-        string action
-        text answer
-        string actor_user_id
-        jsonb source_refs
-        uuid idempotency_key
-        timestamp created_at
-    }
-
-    concept_note_chapter_reviews {
-        uuid review_id
-        uuid chapter_id
-        uuid revision_id
-        string user_id
-        uuid idempotency_key
         timestamp created_at
     }
 
@@ -1066,12 +1030,6 @@ before passing the identifier into the workflow.
 `concept_note_chapter_revisions` enforces a unique
 `(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
 revision.
-
-Gap resolutions and chapter reviews are append-only. A gap resolution is unique
-per `(gap_id, idempotency_key)`, and a chapter review is unique per
-`(chapter_id, idempotency_key)`. `concept_note_chapters.confirmed_revision_id`
-points to the exact revision that the user last confirmed; a newer source-driven
-revision therefore remains a proposal instead of replacing confirmed content.
 
 `concept_note_chapter_validations` enforces one latest row per chapter. Its
 nullable validated-revision foreign key uses `ON DELETE SET NULL`; chapter
@@ -1535,14 +1493,8 @@ flowchart TB
     Revisions --> Chapters
     DocService --> Gaps["Missing facts / gaps"]
     Gaps --> Workspace
-    Workspace --> UserAnswers["Answer, dismiss,<br/>or defer noncritical gap"]
+    Workspace --> UserAnswers["User answers<br/>or marks unavailable"]
     UserAnswers --> DocService
-    DocService --> Regenerate["Regenerate affected chapter"]
-    Regenerate --> ImpactReview["For answers/corrections:<br/>review every other chapter"]
-    ImpactReview --> Selected["Rewrite selected<br/>chapter numbers"]
-    Regenerate --> DraftReview["Draft<br/>Review & confirm"]
-    Selected --> DraftReview
-    DraftReview -->|"explicit user confirmation"| Ready["Ready"]
     Context --> EvidenceLinks["Evidence links<br/>claim -> selected source"]
     Chapters --> EvidenceLinks
     EvidenceLinks --> Workspace
@@ -1563,25 +1515,16 @@ How it works:
 - The workspace shows editable chapters as the main document surface.
 - Every add, delete, restore, reorder, or text edit creates a chapter revision.
   Revisions are an audit/history trail; they do not feed evidence links.
-- Missing facts are stored as structured gaps with a stable field key, focused
-  question, rationale, severity, state, grounded suggestions, source references,
-  and optimistic-concurrency version. They do not create chapters by themselves.
-- Answering or dismissing a gap appends an audit event and first regenerates its
-  chapter. After an `answer` or `correction`, a separate review-only LLM call
-  inspects every other chapter. It receives all chapter bodies when they fit the
-  configured prompt budget; otherwise deterministic token slices cover every
-  body. Its only tool returns the sorted chapter numbers that need the confirmed
-  information, and only those chapters are rewritten. The new revisions retain
-  the source gap/resolution provenance and preserve confirmed revisions as
-  reviewable proposals. A non-critical gap may instead remain visible as a
-  non-blocking caveat; a critical gap cannot be deferred.
-- Regeneration produces a Draft. Only explicit confirmation of the current
-  revision—through the Draft view or the equivalent chat action—sets Ready.
-  Clima may announce that a chapter is ready for review but cannot auto-promote
-  it.
-- A newly processed source runs an impact scan. Unaffected Ready chapters stay
-  unchanged; affected Ready chapters retain their confirmed revision and receive
-  a proposed revision or a newly opened blocking gap that requires review.
+- Missing facts are stored as gaps and surfaced to the user in the workspace.
+  They do not create chapters by themselves.
+- Users answer gaps through chat: accepting a reviewed edit that fills a
+  gap's marker resolves that gap.
+- A newly processed source runs an impact scan. Chapters whose text or open
+  gaps overlap the new source are redrafted as a new revision; unaffected
+  chapters stay unchanged. Gaps the new evidence fills are resolved as
+  `evidence_update` by `system`, and previously resolved gaps that it
+  contradicts reopen. A confirmed revision is never replaced, so an affected
+  Ready chapter returns to review.
 - Evidence links are shown to the user to explain why a claim was grounded.
   They are review/audit UI only and are ignored by DOCX/PDF export.
 - Chapter-validation prompts reference evidence by one-based list position.
@@ -1669,9 +1612,6 @@ Chapter fields should support the editable document surface:
 - `status`: `empty`, `draft`, `needs_review`, `ready`, `deleted`
 - `required`
 - `user_locked`
-- `confirmed_revision_id`
-- `regeneration_status`: `idle`, `queued` (awaiting the gap impact review), `processing`, `failed`
-- `regeneration_error`
 
 `concept_note_chapters` stores chapter metadata only. Chapter Markdown is stored
 only in `concept_note_chapter_revisions.body_markdown`. The current chapter body
@@ -1693,30 +1633,6 @@ Revision fields should support history and conflict handling:
 Every revision stores the complete `body_markdown`, including revisions created
 for non-text chapter operations, so any historical chapter state can be
 reconstructed without reading Markdown from `concept_note_chapters`.
-
-### Structured gap lifecycle API
-
-The workspace answers gaps through chat: a chapter's "Answer in chat" action
-prefills the composer, and accepting the resulting reviewed edit closes the
-matching gap. Climate Advisor also exposes these run-scoped mutations through
-CityCatalyst's authenticated proxies; the workspace calls only `draft` and
-`confirm`:
-
-- `GET /v1/concept-notes/{run_id}/draft` returns chapters, structured gaps,
-  open/caveat counts, current/confirmed/proposed revision numbers, the preserved
-  confirmed body for proposal comparison, regeneration state, and one focused
-  gap.
-- `POST /v1/concept-notes/{run_id}/gaps/{gap_id}/resolve` accepts `action`, an
-  optional answer, `expected_version`, and an idempotency key. Valid actions are
-  `answer`, `correction`, `not_a_gap`, and `defer_as_caveat`.
-- `POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/confirm` accepts the
-  expected current revision and an idempotency key.
-
-Both mutations recheck run ownership. Stale gap versions or chapter revisions
-return a conflict. An accepted answer remains in the append-only resolution log
-if regeneration fails; the chapter exposes a retryable failure state rather
-than losing user input. The workspace event stream carries draft snapshots, so chat is
-held while any chapter is `queued` or `processing`.
 
 ## Document Tool Deep Dive
 

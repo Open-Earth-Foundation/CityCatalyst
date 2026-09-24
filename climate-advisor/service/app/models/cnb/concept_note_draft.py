@@ -9,7 +9,7 @@ from uuid import UUID
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationEvidenceLink,
 )
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field
 
 ConceptNoteDraftStatus = Literal["not_started", "running", "failed", "complete"]
 ConceptNoteChapterStatus = Literal[
@@ -36,7 +36,6 @@ ConceptNoteGapResolutionAction = Literal[
     "defer_as_caveat",
     "evidence_update",
 ]
-ConceptNoteRegenerationStatus = Literal["idle", "queued", "processing", "failed"]
 
 
 class ConceptNoteGapSuggestion(BaseModel):
@@ -73,7 +72,6 @@ class ConceptNoteChapterDraftOutput(BaseModel):
         default_factory=list,
         max_length=30,
     )
-    answered_field_keys: list[str] = Field(default_factory=list, max_length=30)
 
 
 class ConceptNoteGapResolutionResponse(BaseModel):
@@ -102,31 +100,6 @@ class ConceptNoteGapResponse(BaseModel):
     resolution: ConceptNoteGapResolutionResponse | None = None
     created_at: datetime
     updated_at: datetime
-
-
-class ConceptNoteGapResolveRequest(BaseModel):
-    """Versioned, idempotent request to resolve or revisit one gap."""
-
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
-
-    action: Literal[
-        "answer",
-        "correction",
-        "not_a_gap",
-        "defer_as_caveat",
-    ]
-    answer: str | None = Field(default=None, max_length=10_000)
-    expected_version: int = Field(ge=1)
-    idempotency_key: UUID
-
-    @model_validator(mode="after")
-    def validate_answer(self) -> ConceptNoteGapResolveRequest:
-        """Require text only for answer-bearing resolution actions."""
-        if self.action in {"answer", "correction"} and not self.answer:
-            raise ValueError("answer is required for answer and correction actions")
-        if self.action not in {"answer", "correction"} and self.answer is not None:
-            raise ValueError("answer is only valid for answer and correction actions")
-        return self
 
 
 class ConceptNoteChapterConfirmRequest(BaseModel):
@@ -198,9 +171,6 @@ class ConceptNoteDraftChapterResponse(BaseModel):
     revision_number: int | None = Field(default=None, ge=1)
     confirmed_body_markdown: str | None = None
     confirmed_revision_number: int | None = Field(default=None, ge=1)
-    proposed_revision_number: int | None = Field(default=None, ge=1)
-    regeneration_status: ConceptNoteRegenerationStatus = "idle"
-    regeneration_error: str | None = None
     validation: ConceptNoteChapterValidationResponse | None = None
 
 
@@ -212,7 +182,6 @@ class ConceptNoteDraftResponse(BaseModel):
     completed_chapters: int = Field(ge=0)
     total_chapters: int = Field(ge=0)
     current_chapter_id: UUID | None = None
-    focused_gap_id: UUID | None = None
     error_code: str | None = None
     # True once a drafting build finishes and its chat overview is not yet posted.
     overview_pending: bool = False

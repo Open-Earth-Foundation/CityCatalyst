@@ -11,7 +11,6 @@ import {
   Icon,
   Tabs,
   Text,
-  VisuallyHidden,
   VStack,
 } from "@chakra-ui/react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -19,12 +18,13 @@ import NextLink from "next/link";
 import {
   LuArrowLeft,
   LuFileText,
+  LuLandmark,
   LuLayers3,
+  LuMessageSquare,
   LuRefreshCw,
   LuShieldCheck,
 } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";
@@ -38,6 +38,7 @@ import {
 } from "@/components/ConceptNoteDashboard/utils";
 import { StatusBadge } from "@/components/ConceptNoteDashboard/status-badge";
 import { ConceptNoteChatPanel } from "@/components/ConceptNoteWorkspace/chat-panel";
+import { NextStepBanner } from "@/components/ConceptNoteWorkspace/next-step-banner";
 import { ContextTab } from "@/components/ConceptNoteWorkspace/context-tab";
 import { FundingSelectionDialog } from "@/components/ConceptNoteWorkspace/funding-selection-dialog";
 import { DraftTab } from "@/components/ConceptNoteWorkspace/draft-tab";
@@ -48,9 +49,9 @@ import { StartNewChatDialog } from "@/components/ConceptNoteWorkspace/start-new-
 import { useConceptNoteEdits } from "@/components/ConceptNoteWorkspace/use-concept-note-edits";
 import {
   DocumentReviewToolbar,
-  editFeedbackKey,
   DocumentReviewFeedback,
   documentReviewChanges,
+  editFeedbackKey,
   selectReviewProposal,
 } from "@/components/ConceptNoteWorkspace/document-review";
 import { useInlineReviewDecisions } from "@/components/ConceptNoteWorkspace/use-inline-review-decisions";
@@ -114,6 +115,17 @@ export function ConceptNoteWorkspace({
   const [confirmChapterMutation, confirmChapterState] =
     api.useConfirmConceptNoteChapterMutation();
   const [reviewOpen, setReviewOpen] = useState(false);
+  // "What next?" guidance: set on funder save, sources ready, drafting complete.
+  const [nextStep, setNextStep] = useState<
+    "start-drafting" | "choose-funding" | "chat" | null
+  >(null);
+  const [highlightStartDrafting, setHighlightStartDrafting] = useState(false);
+  // Bumped when chat's "Add recommended source" should open the file picker.
+  const [uploadPickerRequest, setUploadPickerRequest] = useState(0);
+  const [composerRequest, setComposerRequest] = useState<{
+    content: string;
+    id: string;
+  } | null>(null);
   const [reviewChapterId, setReviewChapterId] = useState<string | null>(
     initialReviewChapterId ?? null,
   );
@@ -132,6 +144,7 @@ export function ConceptNoteWorkspace({
     draft,
     draftFailed,
     draftLoading,
+    draftProgress,
     draftStartError,
     effectiveUpload,
     effectiveUploadError,
@@ -170,7 +183,6 @@ export function ConceptNoteWorkspace({
     },
   });
   const openFundingSetup = async () => {
-    setTab("context");
     if (applicationContext) {
       setFundingOpen(true);
     } else {
@@ -178,6 +190,119 @@ export function ConceptNoteWorkspace({
       if (result.isSuccess) setFundingOpen(true);
     }
   };
+  const draftHasContent = Boolean(
+    draft?.chapters.some((chapter) => Boolean(chapter.body_markdown)),
+  );
+  // Transition detection during render (React's "derived from previous
+  // props" pattern) keeps guidance changes out of effect bodies.
+  const sourcesReadyForDrafting =
+    contextStatus.state === "ready" &&
+    draft?.status === "not_started" &&
+    !draftHasContent;
+  const [seenSourcesReady, setSeenSourcesReady] = useState(
+    sourcesReadyForDrafting,
+  );
+  if (seenSourcesReady !== sourcesReadyForDrafting) {
+    setSeenSourcesReady(sourcesReadyForDrafting);
+    if (sourcesReadyForDrafting) {
+      setTab("draft");
+      setNextStep(canStartDrafting ? "start-drafting" : "choose-funding");
+    }
+  }
+
+  const draftStatusValue = draft?.status;
+  const [seenDraftStatus, setSeenDraftStatus] = useState(draftStatusValue);
+  if (seenDraftStatus !== draftStatusValue) {
+    setSeenDraftStatus(draftStatusValue);
+    if (seenDraftStatus === "running" && draftStatusValue === "complete") {
+      setNextStep("chat");
+    }
+    if (draftStatusValue !== "complete" && nextStep === "chat") {
+      setNextStep(null);
+    }
+    if (draftStatusValue === "running") {
+      setHighlightStartDrafting(false);
+    }
+  }
+  // Funding may arrive after source readiness. Resolve that guidance from the
+  // current setup without reopening a banner the user already dismissed.
+  const visibleNextStep =
+    ((nextStep === "start-drafting" || nextStep === "choose-funding") &&
+      (isDraftRunning ||
+        draftStatusValue === "complete" ||
+        draftHasContent ||
+        contextStatus.blocked ||
+        applicationContextLoading ||
+        applicationContextFailed)) ||
+    (nextStep === "start-drafting" && !hasApplicationTemplate)
+      ? null
+      : nextStep === "choose-funding" && canStartDrafting
+        ? "start-drafting"
+        : nextStep;
+
+  useEffect(() => {
+    if (!highlightStartDrafting) return;
+    const timer = window.setTimeout(
+      () => setHighlightStartDrafting(false),
+      6_000,
+    );
+    return () => window.clearTimeout(timer);
+  }, [highlightStartDrafting]);
+
+  const templateChapterCount =
+    applicationContext?.template?.chapter_schema.length ?? 0;
+  const nextStepBanner =
+    visibleNextStep === "start-drafting" ? (
+      <NextStepBanner
+        title={t("next-step-funding-saved-title")}
+        description={t("next-step-funding-saved", {
+          count: templateChapterCount,
+          template:
+            applicationContext?.template?.name ??
+            t("drafting-requirement-template"),
+        })}
+        // The setup panel's highlighted Start drafting stays the only button.
+        dismissLabel={t("next-step-dismiss")}
+        onDismiss={() => setNextStep(null)}
+      />
+    ) : visibleNextStep === "choose-funding" ? (
+      <NextStepBanner
+        title={t("next-step-sources-ready-title")}
+        description={t("next-step-sources-ready-funding")}
+        primary={{
+          label: t("drafting-setup-choose-funding"),
+          icon: LuLandmark,
+          onClick: () => void openFundingSetup(),
+          testId: "concept-note-next-step-funding",
+        }}
+        dismissLabel={t("next-step-dismiss")}
+        onDismiss={() => setNextStep(null)}
+      />
+    ) : visibleNextStep === "chat" ? (
+      <NextStepBanner
+        title={t("next-step-draft-complete-title")}
+        description={t("next-step-draft-complete")}
+        primary={{
+          label: t("next-step-ask-clima"),
+          icon: LuMessageSquare,
+          onClick: () =>
+            setComposerRequest({ content: "", id: crypto.randomUUID() }),
+          testId: "concept-note-next-step-chat",
+        }}
+        secondary={{
+          label: t("review-and-export"),
+          icon: LuShieldCheck,
+          onClick: () => {
+            setReviewChapterId(null);
+            setReviewFindingKey(null);
+            setReviewOpen(true);
+          },
+        }}
+        dismissLabel={t("next-step-dismiss")}
+        onDismiss={() => setNextStep(null)}
+      />
+    ) : null;
+
   const reviewProposal = selectReviewProposal(edits.proposals);
   const {
     decisions: activeReviewDecisions,
@@ -247,7 +372,6 @@ export function ConceptNoteWorkspace({
         expectedRevision: chapter.revision_number,
         idempotencyKey: crypto.randomUUID(),
       }).unwrap();
-      await refetchDraft();
     } catch {
       setWorkspaceMutationError(t("chapter-confirm-error"));
     }
@@ -270,6 +394,9 @@ export function ConceptNoteWorkspace({
 
   const status = getConceptNoteStatusPresentation(run.status, draft);
   const incompleteUploads = hasIncompleteInitialUploads(run);
+  const statusHelp = incompleteUploads
+    ? ""
+    : t(`${status.translationKey}-help`, { defaultValue: "" });
   const statusLabel = t(
     incompleteUploads ? "upload-incomplete" : status.translationKey,
   );
@@ -321,17 +448,18 @@ export function ConceptNoteWorkspace({
           </HStack>
 
           {incompleteUploads && (
-            <Box
-              role="status"
-              p={3}
-              borderWidth="1px"
-              borderColor="sentiment.warningDefault"
-            >
-              <Text>{t("upload-incomplete-message")}</Text>
-              <Button onClick={() => setRetryInitialUploadOpen(true)}>
-                {t("retry-upload")}
-              </Button>
-            </Box>
+            <NextStepBanner
+              tone="warning"
+              title={t("upload-incomplete")}
+              description={t("upload-incomplete-message")}
+              primary={{
+                label: t("retry-upload"),
+                icon: LuRefreshCw,
+                onClick: () => setRetryInitialUploadOpen(true),
+                testId: "concept-note-retry-upload",
+              }}
+              testId="concept-note-upload-incomplete"
+            />
           )}
           {retryInitialUploadOpen && (
             <NewConceptNoteDialog
@@ -362,15 +490,45 @@ export function ConceptNoteWorkspace({
           >
             <ConceptNoteChatPanel
               contextStatus={contextStatus}
-              composerRequest={null}
+              composerRequest={composerRequest}
               draftOverviewPending={Boolean(draft?.overview_pending)}
+              onDraftOverviewComplete={() => void refetchDraft()}
               lng={lng}
-              onOpenContext={() => setTab("context")}
+              onOpenContext={() => {
+                setTab("context");
+                if (contextStatus.state === "none") {
+                  setUploadPickerRequest((value) => value + 1);
+                }
+              }}
               onStartNewChat={() => setStartNewChatOpen(true)}
               runId={run.run_id}
               threadId={activeThreadId}
               editScope={editScope}
               edits={edits}
+              draft={draft ?? null}
+              draftStartedAt={draftProgress?.startedAt ?? null}
+              draftCompletedAt={draftProgress?.completedAt ?? null}
+              welcomeStage={
+                draftHasContent
+                  ? "drafted"
+                  : canStartDrafting
+                    ? "ready-to-draft"
+                    : "choose-funding"
+              }
+              onOpenDraft={() => setTab("draft")}
+              onOpenFundingSetup={() => void openFundingSetup()}
+              activeTab={tab}
+              hasDocument={draftHasContent}
+              suggestionRevision={JSON.stringify([
+                run.updated_at,
+                contextStatus.state,
+                draft?.status,
+                draft?.chapters.map((chapter) => [
+                  chapter.chapter_id,
+                  chapter.revision_number,
+                  chapter.open_gap_count,
+                ]),
+              ])}
             />
 
             <Tabs.Root
@@ -427,6 +585,17 @@ export function ConceptNoteWorkspace({
                       </Text>
                       <StatusBadge label={statusLabel} tone={status.tone} />
                     </HStack>
+                    {statusHelp && (
+                      <Text
+                        mt={1}
+                        fontSize="label.sm"
+                        lineHeight="18px"
+                        color="content.secondary"
+                        data-testid="concept-note-status-help"
+                      >
+                        {statusHelp}
+                      </Text>
+                    )}
                   </Box>
                 </HStack>
                 <Flex align="center" gap={2} flexWrap="wrap" minW={0}>
@@ -452,6 +621,18 @@ export function ConceptNoteWorkspace({
                     <Icon as={LuShieldCheck} />
                     {t("review-and-export")}
                   </ReviewButton>
+                  {reviewAvailabilityDescription && (
+                    <Text
+                      id="review-availability-reason"
+                      fontSize="label.sm"
+                      lineHeight="18px"
+                      color="content.tertiary"
+                      maxW="280px"
+                      data-testid="concept-note-review-reason"
+                    >
+                      {reviewAvailabilityDescription}
+                    </Text>
+                  )}
                 </Flex>
               </Flex>
               {(reviewProposal || editFeedbackKey(edits)) && (
@@ -492,11 +673,6 @@ export function ConceptNoteWorkspace({
                   )}
                   <DocumentReviewFeedback edits={edits} lng={lng} />
                 </Flex>
-              )}
-              {reviewAvailabilityDescription && (
-                <VisuallyHidden id="review-availability-reason">
-                  {reviewAvailabilityDescription}
-                </VisuallyHidden>
               )}
               <Tabs.List
                 flexShrink={0}
@@ -554,6 +730,17 @@ export function ConceptNoteWorkspace({
                   }
                   focusChapterId={reviewChapterId}
                   focusFindingKey={reviewFindingKey}
+                  highlightStartDrafting={highlightStartDrafting}
+                  nextStep={nextStepBanner}
+                  onAnswerGap={(chapter, row) =>
+                    setComposerRequest({
+                      id: crypto.randomUUID(),
+                      content: t("gap-answer-prefill", {
+                        chapter: chapter.title,
+                        question: row.question,
+                      }),
+                    })
+                  }
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}
@@ -655,6 +842,7 @@ export function ConceptNoteWorkspace({
                   populationLoading={populationLoading}
                   upload={effectiveUpload}
                   uploadError={effectiveUploadError}
+                  uploadPickerRequest={uploadPickerRequest}
                 />
               </Tabs.Content>
             </Tabs.Root>
@@ -690,6 +878,11 @@ export function ConceptNoteWorkspace({
           lng={lng}
           runId={runId}
           onClose={() => setFundingOpen(false)}
+          onSaved={() => {
+            setTab("draft");
+            setNextStep("start-drafting");
+            setHighlightStartDrafting(true);
+          }}
         />
       )}
       {startNewChatOpen && (

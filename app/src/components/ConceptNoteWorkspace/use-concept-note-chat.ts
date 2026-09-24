@@ -24,6 +24,7 @@ interface UseConceptNoteChatOptions {
   threadId: string | null;
   editScope?: EditScope;
   onProposal?: (proposalId: string) => Promise<void>;
+  onDraftOverviewComplete?: () => void;
 }
 
 interface ConceptNoteChatController {
@@ -43,6 +44,7 @@ export function useConceptNoteChat({
   threadId,
   editScope,
   onProposal,
+  onDraftOverviewComplete,
 }: UseConceptNoteChatOptions): ConceptNoteChatController {
   const { t } = useTranslation(lng, "concept-notes");
   const [messages, setMessages] = useState<ConceptNoteChatMessage[]>([]);
@@ -117,6 +119,8 @@ export function useConceptNoteChat({
       );
     },
     onComplete: () => {
+      // Draft observation ends at chapter completion; refresh the consumed overview.
+      if (draftOverviewTurnRef.current) onDraftOverviewComplete?.();
       draftOverviewTurnRef.current = false;
       setReasoning([]);
       assistantMessageIdRef.current = null;
@@ -124,6 +128,9 @@ export function useConceptNoteChat({
       setIsGenerating(false);
     },
     onError: (_message, code) => {
+      if (draftOverviewTurnRef.current && code === DRAFT_OVERVIEW_UNAVAILABLE) {
+        onDraftOverviewComplete?.();
+      }
       draftOverviewTurnRef.current = false;
       setReasoning([]);
       const assistantMessageId = assistantMessageIdRef.current;

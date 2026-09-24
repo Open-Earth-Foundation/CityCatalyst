@@ -23,7 +23,6 @@ import {
   LuMessageSquare,
   LuRefreshCw,
   LuShieldCheck,
-  LuSparkles,
 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
@@ -220,10 +219,12 @@ export function ConceptNoteWorkspace({
       setHighlightStartDrafting(false);
     }
   }
-  // Pre-drafting guidance is moot once chapters exist or drafting runs.
+  // Pre-drafting guidance is moot once chapters exist or drafting runs, and
+  // "ready to draft" is stale once the funder selection is cleared.
   const visibleNextStep =
-    (nextStep === "start-drafting" || nextStep === "choose-funding") &&
-    (isDraftRunning || draftStatusValue === "complete" || draftHasContent)
+    ((nextStep === "start-drafting" || nextStep === "choose-funding") &&
+      (isDraftRunning || draftStatusValue === "complete" || draftHasContent)) ||
+    (nextStep === "start-drafting" && !hasApplicationTemplate)
       ? null
       : nextStep;
 
@@ -248,14 +249,7 @@ export function ConceptNoteWorkspace({
             applicationContext?.template?.name ??
             t("drafting-requirement-template"),
         })}
-        primary={{
-          label: t("start-drafting"),
-          icon: LuSparkles,
-          disabled: !canStartDrafting || isDraftRunning,
-          loading: startDraftState.isLoading,
-          onClick: () => void startDrafting(),
-          testId: "concept-note-next-step-start",
-        }}
+        // The setup panel's highlighted Start drafting stays the only button.
         dismissLabel={t("next-step-dismiss")}
         onDismiss={() => setNextStep(null)}
       />

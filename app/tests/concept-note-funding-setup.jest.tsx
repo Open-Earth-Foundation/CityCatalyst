@@ -10,7 +10,7 @@ import {
   jest,
 } from "@jest/globals";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
-import { act, useState } from "react";
+import { act, type ReactNode, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import type { ConceptNoteApplicationContext } from "@/util/types";
 
@@ -31,6 +31,7 @@ const context: ConceptNoteApplicationContext = {
 let initialContext: ConceptNoteApplicationContext | undefined;
 let reviewProposal: { proposal_id: string } | null = null;
 let finishRefetch: (success: boolean) => void;
+let setApplicationContext: (value: ConceptNoteApplicationContext) => void;
 const refetch = jest.fn<() => Promise<{ isSuccess: boolean }>>();
 
 jest.unstable_mockModule("@/i18n/client", () => ({
@@ -44,6 +45,7 @@ jest.unstable_mockModule(
   () => ({
     useConceptNoteWorkspaceData: () => {
       const [applicationContext, setContext] = useState(initialContext);
+      setApplicationContext = setContext;
       refetch.mockImplementation(
         () =>
           new Promise((resolve) => {
@@ -57,6 +59,7 @@ jest.unstable_mockModule(
         applicationContext,
         applicationContextFailed: !applicationContext,
         applicationContextLoading: false,
+        hasApplicationTemplate: Boolean(applicationContext?.template),
         refetchApplicationContext: refetch,
         reviewAvailabilityDescription: "review-setup-load-error",
         run: {
@@ -103,8 +106,17 @@ jest.unstable_mockModule(
 );
 // The draft tab's setup button calls the workspace handler under test.
 jest.unstable_mockModule("@/components/ConceptNoteWorkspace/draft-tab", () => ({
-  DraftTab: ({ onOpenFundingSetup }: { onOpenFundingSetup: () => void }) => (
-    <button aria-label="open-funding-setup" onClick={onOpenFundingSetup} />
+  DraftTab: ({
+    nextStep,
+    onOpenFundingSetup,
+  }: {
+    nextStep?: ReactNode;
+    onOpenFundingSetup: () => void;
+  }) => (
+    <>
+      {nextStep}
+      <button aria-label="open-funding-setup" onClick={onOpenFundingSetup} />
+    </>
   ),
 }));
 // Keep workspace state; unrelated panels are outside this test.
@@ -122,7 +134,11 @@ for (const [path, name] of [
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/funding-selection-dialog",
   () => ({
-    FundingSelectionDialog: () => <div role="dialog" />,
+    FundingSelectionDialog: ({ onSaved }: { onSaved?: () => void }) => (
+      <div role="dialog">
+        <button aria-label="save-funding" onClick={onSaved} />
+      </div>
+    ),
   }),
 );
 
@@ -208,4 +224,24 @@ it("renders the edit review toolbar once, in its own row", async () => {
   expect(
     toolbars[0].closest('[data-testid="concept-note-review-bar"]'),
   ).not.toBeNull();
+});
+
+it("shows one ready-to-draft banner without its own start button until funding is cleared", async () => {
+  const template = {
+    name: "EIB starter",
+    chapter_schema: [{}, {}],
+  } as unknown as ConceptNoteApplicationContext["template"];
+  initialContext = { ...context, template };
+  await clickSetup();
+  const save = container.querySelector('[aria-label="save-funding"]');
+  await act(async () => (save as HTMLButtonElement).click());
+
+  const banner = () =>
+    container.querySelector('[data-testid="concept-note-next-step"]');
+  expect(banner()?.textContent).toContain("next-step-funding-saved-title");
+  // The setup panel's Start drafting is the only start button.
+  expect(banner()?.textContent).not.toContain("start-drafting");
+
+  await act(async () => setApplicationContext({ ...context, template: null }));
+  expect(banner()).toBeNull();
 });

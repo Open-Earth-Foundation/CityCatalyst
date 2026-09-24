@@ -600,7 +600,13 @@ export default class UserService {
           {
             model: db.models.City,
             as: "cities",
-            attributes: ["cityId", "name", "countryLocode", "country", "region"],
+            attributes: [
+              "cityId",
+              "name",
+              "countryLocode",
+              "country",
+              "region",
+            ],
             include: [
               {
                 model: db.models.Inventory,
@@ -693,7 +699,8 @@ export default class UserService {
         cities: (project.cities ?? []).map((city) => ({
           name: city.name as string,
           cityId: city.cityId as string,
-          inventories: city.inventories as unknown as CityResponse["inventories"],
+          inventories:
+            city.inventories as unknown as CityResponse["inventories"],
           country: city.country as string,
           countryLocode: city.countryLocode as string,
           locode: city.locode as string,
@@ -726,7 +733,8 @@ export default class UserService {
         projectsById[projectId].cities.push({
           name: city.name as string,
           cityId: city.cityId as string,
-          inventories: city.inventories as unknown as CityResponse["inventories"],
+          inventories:
+            city.inventories as unknown as CityResponse["inventories"],
           country: city.country as string,
           countryLocode: city.countryLocode as string,
           locode: city.locode as string,
@@ -784,6 +792,7 @@ export default class UserService {
         name: orgAdmin.user.name ?? null,
         status: InviteStatus.ACCEPTED,
         role: OrganizationRole.ORG_ADMIN,
+        twoFactorEnabled: orgAdmin.user.twoFactorEnabled ?? false,
       }));
 
     users.push(
@@ -834,6 +843,7 @@ export default class UserService {
         status: InviteStatus.ACCEPTED,
         role: OrganizationRole.COLLABORATOR,
         cityId: cityUser.cityId as string,
+        twoFactorEnabled: cityUser.user.twoFactorEnabled ?? false,
       }));
 
     const cityInvites = cities.flatMap((city) =>

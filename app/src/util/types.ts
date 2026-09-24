@@ -556,6 +556,7 @@ export type ProjectUserResponse = {
   role: OrganizationRole;
   status: InviteStatus;
   cityId?: string;
+  twoFactorEnabled?: boolean;
 };
 
 export type UserAccessResponse = {

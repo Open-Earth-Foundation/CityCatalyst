@@ -92,7 +92,8 @@ const stages = [
   "responding",
 ] as const;
 export interface ConceptNoteProgress {
-  stage: (typeof stages)[number];
+  // `summarizing_draft` is client-only: the hidden drafting-overview turn.
+  stage: (typeof stages)[number] | "summarizing_draft";
   chapterTitle?: string;
   completed?: number;
   total?: number;

@@ -18,7 +18,7 @@ from app.models.cnb.concept_note_city_context import (
     HiapContext,
     HiapCounts,
 )
-from app.services.citycatalyst_client import CityCatalystClient
+from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
 from pydantic import ValidationError
 
 SECTORS: tuple[tuple[str, str], ...] = (
@@ -57,6 +57,48 @@ async def load_accessible_inventory(
         capability_data(inventory_payload),
         city_id=city_id,
     )
+
+
+async def load_city_profile(
+    *,
+    cc_client: CityCatalystClient,
+    user_id: str,
+    city_id: UUID,
+    token: str,
+) -> dict[str, Any]:
+    """Build the compact city profile the CityCatalyst city page shows.
+
+    The boundary geometry is omitted. A population lookup failure keeps the
+    rest of the profile, with population fields left null.
+    """
+    city_payload = await cc_client.get_city(
+        city_id=str(city_id), token=token, user_id=user_id
+    )
+    city = city_payload.get("data") if isinstance(city_payload, Mapping) else None
+    if not isinstance(city, Mapping) or str(city.get("cityId")) != str(city_id):
+        raise ConceptNoteCityContextDataError("City profile response is invalid")
+    try:
+        population_payload = await cc_client.get_city_population(
+            city_id=str(city_id), token=token, user_id=user_id
+        )
+        population = population_payload.get("data")
+    except CityCatalystClientError:
+        population = None
+    if not isinstance(population, Mapping):
+        population = {}
+    area = city.get("area")
+    return {
+        "name": optional_string(city.get("name")),
+        "locode": optional_string(city.get("locode")),
+        "country": optional_string(city.get("country")),
+        "country_locode": optional_string(city.get("countryLocode")),
+        "region": optional_string(city.get("region")),
+        "region_locode": optional_string(city.get("regionLocode")),
+        "area_km2": number(area) if area is not None else None,
+        "population": optional_int(population.get("population")),
+        "population_year": optional_int(population.get("year")),
+        "source": "citycatalyst",
+    }
 
 
 async def load_ghgi_context(

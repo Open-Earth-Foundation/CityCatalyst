@@ -11,6 +11,7 @@ import {
   Icon,
   Tabs,
   Text,
+  VisuallyHidden,
   VStack,
 } from "@chakra-ui/react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -26,35 +27,37 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
+import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";
+import { NewConceptNoteDialog } from "../ConceptNoteDashboard/new-concept-note-dialog";
 import type { EditScope } from "@/util/concept-note-edit-types";
 import type { ConceptNoteDraftChapter } from "@/util/types";
 
 import {
   getConceptNoteStatusPresentation,
   getWorkflowStepTranslationKey,
-} from "../ConceptNoteDashboard/utils";
-import { StatusBadge } from "../ConceptNoteDashboard/status-badge";
-import { ConceptNoteChatPanel } from "./chat-panel";
-import { ContextTab } from "./context-tab";
-import { FundingSelectionDialog } from "./funding-selection-dialog";
-import { DraftTab } from "./draft-tab";
-import { ExportDialog } from "./export-dialog";
-import { ReviewButton } from "./review-button";
-import { StructureTab } from "./structure-tab";
-import { StartNewChatDialog } from "./start-new-chat-dialog";
-import { useConceptNoteEdits } from "./use-concept-note-edits";
+} from "@/components/ConceptNoteDashboard/utils";
+import { StatusBadge } from "@/components/ConceptNoteDashboard/status-badge";
+import { ConceptNoteChatPanel } from "@/components/ConceptNoteWorkspace/chat-panel";
+import { ContextTab } from "@/components/ConceptNoteWorkspace/context-tab";
+import { FundingSelectionDialog } from "@/components/ConceptNoteWorkspace/funding-selection-dialog";
+import { DraftTab } from "@/components/ConceptNoteWorkspace/draft-tab";
+import { ExportDialog } from "@/components/ConceptNoteWorkspace/export-dialog";
+import { ReviewButton } from "@/components/ConceptNoteWorkspace/review-button";
+import { StructureTab } from "@/components/ConceptNoteWorkspace/structure-tab";
+import { StartNewChatDialog } from "@/components/ConceptNoteWorkspace/start-new-chat-dialog";
+import { useConceptNoteEdits } from "@/components/ConceptNoteWorkspace/use-concept-note-edits";
 import {
   DocumentReviewToolbar,
   DocumentReviewFeedback,
   documentReviewChanges,
   selectReviewProposal,
-} from "./document-review";
-import { useInlineReviewDecisions } from "./use-inline-review-decisions";
-import { useConceptNoteWorkspaceData } from "./use-concept-note-workspace-data";
+} from "@/components/ConceptNoteWorkspace/document-review";
+import { useInlineReviewDecisions } from "@/components/ConceptNoteWorkspace/use-inline-review-decisions";
+import { useConceptNoteWorkspaceData } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-data";
 import {
   WorkspaceLoadingState,
   WorkspaceUnavailableState,
-} from "./workspace-states";
+} from "@/components/ConceptNoteWorkspace/workspace-states";
 
 type WorkspaceTab = "draft" | "structure" | "context";
 
@@ -90,6 +93,7 @@ export function ConceptNoteWorkspace({
   const [tab, setTab] = useState<WorkspaceTab>("draft");
   const [startNewChatOpen, setStartNewChatOpen] = useState(false);
   const [fundingOpen, setFundingOpen] = useState(false);
+  const [retryInitialUploadOpen, setRetryInitialUploadOpen] = useState(false);
   const [resetThread, setResetThread] = useState<{
     previousThreadId: string | null;
     threadId: string;
@@ -164,6 +168,15 @@ export function ConceptNoteWorkspace({
       if (chapterIds[0]) navigateEdit(chapterIds[0]);
     },
   });
+  const openFundingSetup = async () => {
+    setTab("context");
+    if (applicationContext) {
+      setFundingOpen(true);
+    } else {
+      const result = await refetchApplicationContext();
+      if (result.isSuccess) setFundingOpen(true);
+    }
+  };
   const reviewProposal = selectReviewProposal(edits.proposals);
   const {
     decisions: activeReviewDecisions,
@@ -233,7 +246,6 @@ export function ConceptNoteWorkspace({
         expectedRevision: chapter.revision_number,
         idempotencyKey: crypto.randomUUID(),
       }).unwrap();
-      await refetchDraft();
     } catch {
       setWorkspaceMutationError(t("chapter-confirm-error"));
     }
@@ -255,7 +267,10 @@ export function ConceptNoteWorkspace({
   }
 
   const status = getConceptNoteStatusPresentation(run.status, draft);
-  const statusLabel = t(status.translationKey);
+  const incompleteUploads = hasIncompleteInitialUploads(run);
+  const statusLabel = t(
+    incompleteUploads ? "upload-incomplete" : status.translationKey,
+  );
   const workflowLabel = t(getWorkflowStepTranslationKey(run.workflow_step));
   const activeThreadId =
     resetThread?.previousThreadId === run.thread_id
@@ -303,6 +318,30 @@ export function ConceptNoteWorkspace({
             </Text>
           </HStack>
 
+          {incompleteUploads && (
+            <Box
+              role="status"
+              p={3}
+              borderWidth="1px"
+              borderColor="sentiment.warningDefault"
+            >
+              <Text>{t("upload-incomplete-message")}</Text>
+              <Button onClick={() => setRetryInitialUploadOpen(true)}>
+                {t("retry-upload")}
+              </Button>
+            </Box>
+          )}
+          {retryInitialUploadOpen && (
+            <NewConceptNoteDialog
+              key={run.run_id}
+              retryRun={run}
+              cityId={cityId}
+              cityName={cityName}
+              lng={lng}
+              open
+              onOpenChange={setRetryInitialUploadOpen}
+            />
+          )}
           <Grid
             flex={1}
             data-testid="concept-note-workspace-panels"
@@ -322,6 +361,7 @@ export function ConceptNoteWorkspace({
             <ConceptNoteChatPanel
               contextStatus={contextStatus}
               composerRequest={null}
+              draftOverviewPending={Boolean(draft?.overview_pending)}
               lng={lng}
               onOpenContext={() => setTab("context")}
               onStartNewChat={() => setStartNewChatOpen(true)}
@@ -460,41 +500,9 @@ export function ConceptNoteWorkspace({
                 </Flex>
               </Flex>
               {reviewAvailabilityDescription && (
-                <Box px={3} pb={2}>
-                  <Text
-                    id="review-availability-reason"
-                    fontSize="label.xs"
-                    color="content.tertiary"
-                  >
-                    {reviewAvailabilityDescription}
-                  </Text>
-                  {draftFailed && !draftLoading ? (
-                    <Button
-                      size="xs"
-                      variant="ghost"
-                      onClick={() => void refetchDraft()}
-                    >
-                      {t("try-again")}
-                    </Button>
-                  ) : (applicationContextFailed || !hasApplicationTemplate) &&
-                    !applicationContextLoading ? (
-                    <Button
-                      size="xs"
-                      variant="ghost"
-                      onClick={async () => {
-                        setTab("context");
-                        if (applicationContext) {
-                          setFundingOpen(true);
-                        } else {
-                          const result = await refetchApplicationContext();
-                          if (result.isSuccess) setFundingOpen(true);
-                        }
-                      }}
-                    >
-                      {t("review-application-setup")}
-                    </Button>
-                  ) : null}
-                </Box>
+                <VisuallyHidden id="review-availability-reason">
+                  {reviewAvailabilityDescription}
+                </VisuallyHidden>
               )}
               <Tabs.List
                 flexShrink={0}
@@ -544,7 +552,12 @@ export function ConceptNoteWorkspace({
                   contextStatus={contextStatus}
                   canStartDrafting={canStartDrafting}
                   draft={draft ?? null}
-                  draftError={draftStartError}
+                  draftError={
+                    draftStartError ??
+                    (draftFailed && !draftLoading
+                      ? t("review-draft-load-error")
+                      : null)
+                  }
                   focusChapterId={reviewChapterId}
                   focusFindingKey={reviewFindingKey}
                   applicationContextFailed={applicationContextFailed}
@@ -591,6 +604,7 @@ export function ConceptNoteWorkspace({
                   onConfirmChapter={confirmChapter}
                   mutationError={workspaceMutationError}
                   onOpenContext={() => setTab("context")}
+                  onOpenFundingSetup={() => void openFundingSetup()}
                   onRetry={() => void retryContextBundle()}
                   onStartDrafting={() => void startDrafting()}
                 />
@@ -603,6 +617,8 @@ export function ConceptNoteWorkspace({
                 p={0}
               >
                 <StructureTab
+                  key={runId}
+                  runId={runId}
                   applicationContext={applicationContext ?? null}
                   draft={draft ?? null}
                   lng={lng}
@@ -676,7 +692,7 @@ export function ConceptNoteWorkspace({
         <FundingSelectionDialog
           applicationContext={applicationContext}
           hasDraft={Boolean(draft?.chapters.length)}
-          busy={isDraftRunning || contextStatus.busy || Boolean(edits.busy)}
+          busy={isDraftRunning || Boolean(edits.busy)}
           lng={lng}
           runId={runId}
           onClose={() => setFundingOpen(false)}

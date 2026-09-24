@@ -2523,10 +2523,12 @@ export const api = createApi({
           funderId,
           selectedFundingOpportunityId,
           threadId,
+          initialUploads,
         }) => ({
           url: "concept-notes/start/",
           method: "POST",
           body: {
+            initial_uploads: initialUploads,
             city_id: cityId,
             idempotency_key: idempotencyKey,
             name,
@@ -2622,8 +2624,9 @@ export const api = createApi({
           method: "POST",
           body: formData,
         }),
-        invalidatesTags: (_result, _error, { cityId }) => [
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
           { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
         ],
       }),
       getConceptNoteUploadStatus: builder.query<
@@ -2665,6 +2668,7 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, runId) => [
           { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteRuns", id: runId },
         ],
       }),
       confirmConceptNoteChapter: builder.mutation<

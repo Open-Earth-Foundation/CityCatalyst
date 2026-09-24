@@ -1,5 +1,6 @@
 "use client";
 import React, { useMemo } from "react";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import {
   Box,
   Card,
@@ -13,7 +14,6 @@ import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { SECTORS } from "@/util/constants";
 import { Caption } from "@/components/package/Texts/Caption";
-import { LabelLarge } from "@/components/package/Texts/Label";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { actionName, sectorLabel, type MeedActionIndex } from "./actionCatalog";
 
@@ -63,11 +63,17 @@ export function RankingGlanceChart({
   index,
   t,
   onSelect,
+  colorOf,
 }: {
   actions: MeedRankedActionResult[];
   index: MeedActionIndex;
   t: TFunction;
   onSelect: (action: MeedRankedActionResult) => void;
+  /**
+   * Hex colour for a catalog sector tag. Defaults to the GPC sector palette;
+   * catalogs on another sector scheme (AdaptaBrasil) supply their own.
+   */
+  colorOf?: (sectorTag: string | null | undefined) => string | undefined;
 }) {
   const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
   const labelChars =
@@ -76,8 +82,9 @@ export function RankingGlanceChart({
   const labelWidth =
     useBreakpointValue({ base: 8, md: LABEL_WIDTH.md, lg: LABEL_WIDTH.lg }) ??
     LABEL_WIDTH.lg;
-  const [textColor, gridColor, fallbackColor] = useToken("colors", [
+  const [textColor, labelColor, gridColor, fallbackColor] = useToken("colors", [
     "content.secondary",
+    "content.primary",
     "border.overlay",
     "content.link",
   ]);
@@ -91,14 +98,16 @@ export function RankingGlanceChart({
       return {
         id: action.action_id,
         score: Number(action.final_score.toFixed(3)),
-        color: sectorHex(index.get(action.action_id)?.sectorTag, fallbackColor),
+        color:
+          colorOf?.(index.get(action.action_id)?.sectorTag) ??
+          sectorHex(index.get(action.action_id)?.sectorTag, fallbackColor),
         name: actionName(index, action.action_id, t),
         sector: sectorLabel(index, action.action_id, t),
       };
     });
     // Nivo draws the first datum at the bottom; rank 1 belongs at the top.
     return { data: data.reverse(), byId };
-  }, [shown, index, t, fallbackColor]);
+  }, [shown, index, t, fallbackColor, colorOf]);
 
   const height = Math.max(240, shown.length * ROW_HEIGHT + 56);
 
@@ -116,24 +125,31 @@ export function RankingGlanceChart({
     <Box>
       <HStack
         justifyContent="space-between"
-        alignItems="baseline"
+        alignItems="center"
         gap="m"
         flexWrap="wrap"
       >
-        <LabelLarge color="content.primary">{t("glance-title")}</LabelLarge>
-        <Caption color="content.tertiary">{t("glance-keyboard-note")}</Caption>
+        <TitleLarge color="content.primary">{t("glance-title")}</TitleLarge>
+        <HStack gap="m" flexWrap="wrap">
+          {legend.map(([sector, color]) => (
+            <HStack key={sector} gap="xs" alignItems="center">
+              <Box
+                boxSize="12px"
+                borderRadius="full"
+                bg={color}
+                flexShrink={0}
+              />
+              <BodySmall color="content.secondary">{sector}</BodySmall>
+            </HStack>
+          ))}
+        </HStack>
       </HStack>
-      <BodySmall color="content.secondary" mt="xs">
-        {t("glance-description", { count: shown.length })}
-      </BodySmall>
-      <HStack gap="m" flexWrap="wrap" mt="s">
-        {legend.map(([sector, color]) => (
-          <HStack key={sector} gap="xs" alignItems="center">
-            <Box boxSize="10px" borderRadius="full" bg={color} flexShrink={0} />
-            <Caption color="content.secondary">{sector}</Caption>
-          </HStack>
-        ))}
-      </HStack>
+      {/* What the chart is and how to browse it without a mouse: for
+          assistive tech, not for the layout — the bars speak for themselves. */}
+      <Caption srOnly>
+        {t("glance-description", { count: shown.length })}{" "}
+        {t("glance-keyboard-note")}
+      </Caption>
       <Box h={`${height}px`} minH="240px" position="relative" mt="s">
         <ResponsiveBar<GlanceDatum>
           data={data}
@@ -142,7 +158,7 @@ export function RankingGlanceChart({
           layout="horizontal"
           margin={{
             top: 8,
-            right: 44,
+            right: 56,
             bottom: 32,
             left: labelWidth,
           }}
@@ -176,10 +192,15 @@ export function RankingGlanceChart({
                     ),
                 }
           }
+          // Values sit just past the end of each bar, in dark text on the
+          // card background, rather than inside bars whose sector colour may
+          // not carry 12px text.
           enableLabel
           label={(bar) => Number(bar.value).toFixed(2)}
-          labelSkipWidth={36}
-          labelTextColor={textColor}
+          labelPosition="end"
+          labelOffset={8}
+          labelSkipWidth={0}
+          labelTextColor={labelColor}
           theme={{
             text: { fill: textColor, fontSize: 12 },
             axis: { ticks: { text: { fill: textColor, fontSize: 12 } } },

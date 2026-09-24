@@ -3,6 +3,7 @@
 import { Box, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import type {
+  ConceptNoteApplicationContext,
   ConceptNoteFunder,
   ConceptNoteFundingOpportunity,
 } from "@/util/types";
@@ -172,101 +173,117 @@ export function FundingOpportunityDetails({
         </Box>
       )}
       <Box borderTop="1px solid" borderColor="border.neutral" pt={4}>
-        <HStack justify="space-between" mb={3} align="start">
-          <Box>
-            <Text fontSize="label.sm" color="content.tertiary">
-              {t("funding-template-preview")}
-            </Text>
-            <Heading as="h4" mt={1} fontSize="body.md">
-              {template?.name || t("template-not-selected")}
-            </Heading>
-          </Box>
-          {template?.output_format && (
-            <Text
-              fontSize="label.sm"
-              color="content.tertiary"
-              textTransform="uppercase"
-            >
-              {template.output_format}
-            </Text>
-          )}
-        </HStack>
-        {!template ? (
-          <Text fontSize="body.sm" color="content.tertiary">
-            {t("funding-template-unavailable")}
-          </Text>
-        ) : (
-          <VStack align="stretch" gap={4}>
-            <Text fontSize="label.sm" color="content.tertiary">
-              {t("funding-template-chapters", {
-                count: template.chapter_schema.length,
-              })}
-            </Text>
-            {template.chapter_schema.length === 0 && (
-              <Text color="sentiment.warningDefault" fontSize="body.sm">
-                {t("funding-template-no-chapters")}
-              </Text>
-            )}
-            <Box as="ol" listStyleType="none" m={0} p={0}>
-              {template.chapter_schema.map((chapter, index) => (
-                <Flex
-                  as="li"
-                  key={chapter.chapter_ref ?? index}
-                  gap={3}
-                  py={3}
-                  borderTop="1px solid"
-                  borderColor="border.neutral"
-                >
-                  <Text
-                    color="content.link"
-                    fontSize="body.sm"
-                    fontWeight="semibold"
-                    minW="24px"
-                  >
-                    {String(index + 1).padStart(2, "0")}
-                  </Text>
-                  <Box flex={1} minW={0}>
-                    <HStack justify="space-between" align="start">
-                      <Text fontSize="body.sm" fontWeight="semibold">
-                        {chapter.title}
-                      </Text>
-                      {chapter.required && (
-                        <Text fontSize="label.sm" color="content.tertiary">
-                          {t("funding-required")}
-                        </Text>
-                      )}
-                    </HStack>
-                    {chapter.description && (
-                      <Text mt={1} fontSize="body.sm" color="content.secondary">
-                        {chapter.description}
-                      </Text>
-                    )}
-                  </Box>
-                </Flex>
-              ))}
-            </Box>
-            {template.required_fields.length > 0 && (
-              <Box>
-                <Text fontWeight="semibold" fontSize="body.sm" mb={2}>
-                  {t("funding-required-fields")}
-                </Text>
-                <Box as="ul" ps={5}>
-                  {template.required_fields.map((field, index) => (
-                    <Text
-                      as="li"
-                      key={index}
-                      fontSize="body.sm"
-                      color="content.secondary"
-                    >
-                      {fieldLabel(field)}
-                    </Text>
-                  ))}
-                </Box>
-              </Box>
-            )}
-          </VStack>
-        )}
+        <ApplicationTemplatePreview template={template} lng={lng} />
       </Box>
     </VStack>
+  );
+}
+
+/** Template name, format, chapters and required information for a programme. */
+export function ApplicationTemplatePreview({
+  template,
+  lng,
+}: {
+  template: ConceptNoteApplicationContext["template"];
+  lng: string;
+}) {
+  const { t } = useTranslation(lng, "concept-notes");
+  return (
+    <>
+      <HStack justify="space-between" mb={3} align="start">
+        <Box>
+          <Text fontSize="label.sm" color="content.tertiary">
+            {t("funding-template-preview")}
+          </Text>
+          <Heading as="h4" mt={1} fontSize="body.md">
+            {template?.name || t("template-not-selected")}
+          </Heading>
+        </Box>
+        {template?.output_format && (
+          <Text
+            fontSize="label.sm"
+            color="content.tertiary"
+            textTransform="uppercase"
+          >
+            {template.output_format}
+          </Text>
+        )}
+      </HStack>
+      {!template ? (
+        <Text fontSize="body.sm" color="content.tertiary">
+          {t("funding-template-unavailable")}
+        </Text>
+      ) : (
+        <VStack align="stretch" gap={4}>
+          <Text fontSize="label.sm" color="content.tertiary">
+            {t("funding-template-chapters", {
+              count: template.chapter_schema.length,
+            })}
+          </Text>
+          {template.chapter_schema.length === 0 && (
+            <Text color="sentiment.warningDefault" fontSize="body.sm">
+              {t("funding-template-no-chapters")}
+            </Text>
+          )}
+          <Box as="ol" listStyleType="none" m={0} p={0}>
+            {template.chapter_schema.map((chapter, index) => (
+              <Flex
+                as="li"
+                key={chapter.chapter_ref ?? index}
+                gap={3}
+                py={3}
+                borderTop="1px solid"
+                borderColor="border.neutral"
+              >
+                <Text
+                  color="content.link"
+                  fontSize="body.sm"
+                  fontWeight="semibold"
+                  minW="24px"
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </Text>
+                <Box flex={1} minW={0}>
+                  <HStack justify="space-between" align="start">
+                    <Text fontSize="body.sm" fontWeight="semibold">
+                      {chapter.title}
+                    </Text>
+                    {chapter.required && (
+                      <Text fontSize="label.sm" color="content.tertiary">
+                        {t("funding-required")}
+                      </Text>
+                    )}
+                  </HStack>
+                  {chapter.description && (
+                    <Text mt={1} fontSize="body.sm" color="content.secondary">
+                      {chapter.description}
+                    </Text>
+                  )}
+                </Box>
+              </Flex>
+            ))}
+          </Box>
+          {template.required_fields.length > 0 && (
+            <Box>
+              <Text fontWeight="semibold" fontSize="body.sm" mb={2}>
+                {t("funding-required-fields")}
+              </Text>
+              <Box as="ul" ps={5}>
+                {template.required_fields.map((field, index) => (
+                  <Text
+                    as="li"
+                    key={index}
+                    fontSize="body.sm"
+                    color="content.secondary"
+                  >
+                    {fieldLabel(field)}
+                  </Text>
+                ))}
+              </Box>
+            </Box>
+          )}
+        </VStack>
+      )}
+    </>
   );
 }

@@ -45,12 +45,15 @@ class DraftEditSession:
         chapters: list[WorkspaceChapterSnapshot],
         run_context: dict[str, Any],
         prior_inputs: list[str],
+        *,
+        max_searches: int,
     ) -> None:
         """Capture one run's revisions and human provenance for an isolated loop."""
         self.request = request
         self.chapters = {chapter.position: chapter for chapter in chapters}
         self.run_context = run_context
         self.prior_inputs = prior_inputs
+        self.max_searches = max_searches
         self.searches: dict[str, list[DraftMatch]] = {}
         self.plan: EditPlanOutput | None = None
 
@@ -58,18 +61,20 @@ class DraftEditSession:
         self, text: str, chapter_positions: list[int] | None = None
     ) -> dict[str, Any]:
         """Find literal text and return occurrence IDs, context, and protection flags."""
+        # Reject invalid requests before consuming the shared proposal search budget.
         if not text or len(text) > 50_000:
             return {
                 "ok": False,
                 "code": "invalid_search",
                 "message": "Search for 1-50000 literal characters.",
             }
-        if len(self.searches) >= 30:
+        if len(self.searches) >= self.max_searches:
             return {
                 "ok": False,
                 "code": "context_limit",
                 "message": "Too many searches in one proposal.",
             }
+        # Resolve the requested chapter scope before assigning stable match identifiers.
         positions = (
             list(self.chapters) if chapter_positions is None else chapter_positions
         )
@@ -143,7 +148,9 @@ class DraftEditSession:
                         if not replacement.replace_all:
                             raise EditOperationError(
                                 reason,
-                                "This match is protected. Preserve it or fill the complete matching information gap.",
+                                "Use propose_structure to rename a chapter title. Internal template subheadings cannot be changed through text replacements."
+                                if reason == "template_headings"
+                                else "This match is protected. Preserve it or fill the complete matching information gap.",
                             )
                         exclusions.setdefault(reason, set()).add(
                             (match.chapter.position, match.start, match.text)

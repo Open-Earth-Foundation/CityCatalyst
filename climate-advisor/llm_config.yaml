@@ -62,7 +62,8 @@ generation:
       max_concurrency: 5
       max_agent_turns: 12
       max_review_repairs: 2
-      timeout_seconds: 180
+      max_searches: 100
+      timeout_seconds: 300
     cnb_validation:
       max_prompt_tokens: 50000
 
@@ -96,6 +97,8 @@ prompts:
   cnb_chapter_drafting: "prompts/cnb/chapter_drafting.md"
   cnb_chat_edit_planner: "prompts/cnb/chat_edit_planner.md"
   cnb_chat_edit_review: "prompts/cnb/chat_edit_review.md"
+  # Hidden first chat turn summarising a finished drafting pass
+  cnb_draft_overview: "prompts/cnb/draft_overview.md"
   cnb_chapter_validation_completeness: "prompts/cnb/chapter_validation_completeness.md"
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 

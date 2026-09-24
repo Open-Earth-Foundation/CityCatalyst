@@ -1,8 +1,12 @@
 "use client";
-import { Box, HStack, VStack } from "@chakra-ui/react";
+import { Box, Grid, HStack, Icon, VStack } from "@chakra-ui/react";
+import { LuChevronRight } from "react-icons/lu";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { Overline } from "@/components/package/Texts/Overline";
+import { HeadlineLarge } from "@/components/package/Texts/Headline";
+import { LabelMedium } from "@/components/package/Texts/Label";
 import { TitleLarge } from "@/components/package/Texts/Title";
+import { BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import type { MeedTone } from "./MeedStatusTag";
 import { MeedChartTip } from "./MeedChartTip";
@@ -11,8 +15,8 @@ const TONE_COLOR: Record<MeedTone, string> = {
   neutral: "content.tertiary",
   info: "content.link",
   positive: "interactive.tertiary",
-  warning: "sentiment.warningDefault",
-  caution: "interactive.quaternary",
+  warning: "sentiment.warningFg",
+  caution: "sentiment.warningFg",
   negative: "sentiment.negativeDefault",
 };
 
@@ -30,6 +34,8 @@ export interface MeedFunnelStripProps {
   compact?: boolean;
   /** Keep full-size numbers but hide the sublabels (they stay in the tooltip). */
   showSublabels?: boolean;
+  /** `lg` makes the numbers the size of a score, for a section that is about them. */
+  size?: "md" | "lg";
   ariaLabel: string;
   /** Hover explanation; the stage sublabels become its rows. */
   tipTitle?: string;
@@ -45,6 +51,7 @@ export function MeedFunnelStrip({
   steps,
   compact = false,
   showSublabels = true,
+  size = "md",
   ariaLabel,
   tipTitle,
   tipNote,
@@ -60,42 +67,144 @@ export function MeedFunnelStrip({
   const strip = (
     <VStack
       alignItems="stretch"
-      gap="s"
+      gap="m"
       w="full"
       role="img"
       aria-label={ariaLabel}
       tabIndex={-1}
     >
-      <HStack
-        justifyContent="space-between"
-        alignItems="flex-start"
-        gap="m"
-        flexWrap={compact ? "nowrap" : "wrap"}
-      >
-        {steps.map((step) => (
-          <VStack key={step.label} alignItems="flex-start" gap="0" minW={0}>
-            <Overline color="content.tertiary">{step.label}</Overline>
-            <TitleLarge
-              color={TONE_COLOR[step.tone]}
-              fontVariantNumeric="tabular-nums"
-              fontSize={compact ? "title.md" : undefined}
-            >
-              {step.value}
-            </TitleLarge>
-            {!compact && showSublabels && step.sublabel && (
-              <Caption color="content.secondary">{step.sublabel}</Caption>
-            )}
-          </VStack>
-        ))}
-      </HStack>
-      <Box>
-        <SegmentedProgress
-          values={reversedSegments}
-          colors={reversed.map((s) => TONE_COLOR[s.tone])}
-          max={max || 1}
-          height={compact ? 2 : 3}
-        />
-      </Box>
+      {compact ? (
+        <HStack justifyContent="space-between" alignItems="flex-start" gap="m">
+          {steps.map((step) =>
+            size === "lg" && !compact ? (
+              <VStack
+                key={step.label}
+                alignItems="flex-start"
+                gap="xs"
+                minW={0}
+              >
+                <LabelMedium color="content.tertiary">{step.label}</LabelMedium>
+                <HeadlineLarge
+                  color={TONE_COLOR[step.tone]}
+                  fontVariantNumeric="tabular-nums"
+                  lineHeight="1"
+                >
+                  {step.value}
+                </HeadlineLarge>
+                {showSublabels && step.sublabel && (
+                  <BodySmall color="content.secondary">
+                    {step.sublabel}
+                  </BodySmall>
+                )}
+              </VStack>
+            ) : (
+              <VStack key={step.label} alignItems="flex-start" gap="0" minW={0}>
+                <Overline color="content.tertiary">{step.label}</Overline>
+                <TitleLarge
+                  color={TONE_COLOR[step.tone]}
+                  fontVariantNumeric="tabular-nums"
+                  fontSize={compact ? "title.md" : undefined}
+                >
+                  {step.value}
+                </TitleLarge>
+                {!compact && showSublabels && step.sublabel && (
+                  <Caption color="content.secondary">{step.sublabel}</Caption>
+                )}
+              </VStack>
+            ),
+          )}
+        </HStack>
+      ) : (
+        <Grid
+          // Wide: every stage and every chevron is its own column, so the
+          // stages share one width and the chevrons sit exactly between them.
+          // Narrower: the stages wrap and the chevrons go.
+          templateColumns={{
+            base: "repeat(2, minmax(0, 1fr))",
+            md: "repeat(3, minmax(0, 1fr))",
+            lg: `repeat(${Math.max(steps.length - 1, 0)}, minmax(0, 1fr) auto) minmax(0, 1fr)`,
+          }}
+          columnGap="m"
+          rowGap="l"
+          alignItems="center"
+        >
+          {steps.flatMap((step, i) => {
+            const stage =
+              size === "lg" ? (
+                <VStack
+                  key={step.label}
+                  alignItems="flex-start"
+                  gap="xs"
+                  minW={0}
+                >
+                  <LabelMedium color="content.tertiary">
+                    {step.label}
+                  </LabelMedium>
+                  <HeadlineLarge
+                    color={TONE_COLOR[step.tone]}
+                    fontVariantNumeric="tabular-nums"
+                    lineHeight="1"
+                  >
+                    {step.value}
+                  </HeadlineLarge>
+                  {showSublabels && step.sublabel && (
+                    <BodySmall color="content.secondary">
+                      {step.sublabel}
+                    </BodySmall>
+                  )}
+                </VStack>
+              ) : (
+                <VStack
+                  key={step.label}
+                  alignItems="flex-start"
+                  gap="0"
+                  minW={0}
+                >
+                  <Overline color="content.tertiary">{step.label}</Overline>
+                  <TitleLarge
+                    color={TONE_COLOR[step.tone]}
+                    fontVariantNumeric="tabular-nums"
+                  >
+                    {step.value}
+                  </TitleLarge>
+                  {showSublabels && step.sublabel && (
+                    <Caption color="content.secondary">{step.sublabel}</Caption>
+                  )}
+                </VStack>
+              );
+            if (size !== "lg" || i === steps.length - 1) return [stage];
+            return [
+              stage,
+              <Box
+                key={`${step.label}-chevron`}
+                display={{ base: "none", lg: "flex" }}
+                // Pinned to the number line: label (16px) + gap (4px) + half
+                // the 32px numeral, minus half the icon.
+                alignSelf="start"
+                pt="26px"
+                justifyContent="center"
+                aria-hidden
+              >
+                <Icon
+                  as={LuChevronRight}
+                  boxSize="20px"
+                  color="content.tertiary"
+                />
+              </Box>,
+            ];
+          })}
+        </Grid>
+      )}
+      {size !== "lg" && (
+        <Box>
+          <SegmentedProgress
+            values={reversedSegments}
+            colors={reversed.map((s) => TONE_COLOR[s.tone])}
+            max={max || 1}
+            height={compact ? 2 : 3}
+          />
+        </Box>
+      )}
     </VStack>
   );
 

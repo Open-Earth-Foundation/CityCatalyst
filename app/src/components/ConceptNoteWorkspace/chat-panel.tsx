@@ -44,6 +44,7 @@ interface ConceptNoteChatPanelProps {
   edits: EditController;
   draft?: ConceptNoteDraftState | null;
   draftStartedAt?: string | null;
+  draftCompletedAt?: string | null;
   welcomeStage?: ChatWelcomeStage | null;
   onOpenDraft?: () => void;
   onOpenFundingSetup?: () => void;
@@ -197,6 +198,7 @@ export function ConceptNoteChatPanel({
   edits,
   draft = null,
   draftStartedAt = null,
+  draftCompletedAt = null,
   welcomeStage = null,
   onOpenDraft,
   onOpenFundingSetup,
@@ -455,6 +457,7 @@ export function ConceptNoteChatPanel({
             draft={draft}
             lng={lng}
             startedAt={draftStartedAt}
+            completedAt={draftCompletedAt}
           />
         )}
 

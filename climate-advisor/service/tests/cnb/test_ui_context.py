@@ -7,8 +7,8 @@ from uuid import uuid4
 from app.services.cnb.ui_context import build_ui_state, load_ui_state
 
 
-def test_only_active_critical_gaps_are_known_export_blockers():
-    """Deleted/resolved/warning gaps must not become critical blockers."""
+def test_active_critical_gaps_require_acknowledgement_without_blocking_export():
+    """Critical gaps permit export after acknowledgement; browser state is unknown."""
     chapter = SimpleNamespace(
         status="needs_review",
         body_markdown="Current draft",
@@ -26,10 +26,10 @@ def test_only_active_critical_gaps_are_known_export_blockers():
         "total_sections": 1,
         "sections_with_content": 1,
     }
-    assert state["export"]["enabled"] is False
-    assert state["export"]["blockers"] == [
-        "2 critical gaps; fill through reviewed chat edits"
-    ]
+    assert state["export"]["enabled"] is None
+    assert state["export"]["blockers"] == []
+    assert state["export"]["critical_gap_count"] == 2
+    assert state["export"]["requires_acknowledgement"] is True
     assert state["review"]["failure_blocks_export"] is None
     assert state["pending_proposal"] is None
     assert state["active_tab"] is None
@@ -38,6 +38,8 @@ def test_only_active_critical_gaps_are_known_export_blockers():
     state = build_ui_state([chapter])
     assert state["export"]["blockers"] == []
     assert state["export"]["enabled"] is None  # Browser acknowledgement is unknown.
+    assert state["export"]["critical_gap_count"] == 0
+    assert state["export"]["requires_acknowledgement"] is None
 
 
 def test_empty_template_is_not_a_generated_draft():
@@ -50,6 +52,7 @@ def test_empty_template_is_not_a_generated_draft():
         "sections_with_content": 0,
     }
     assert state["export"]["blockers"] == ["No generated draft"]
+    assert state["export"]["enabled"] is False
     assert state["export"]["missing_upload_blocks_export"] is False
 
 

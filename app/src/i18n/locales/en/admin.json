@@ -363,5 +363,8 @@
   "event-inventory-deleted": "Inventory deleted",
   "event-datasource-disconnected": "Datasource disconnected",
   "event-city-created": "City created",
-  "event-organization-updated": "Organization updated"
+  "event-organization-updated": "Organization updated",
+  "2fa-security": "2FA Security",
+  "enabled": "Enabled",
+  "disabled": "Disabled"
 }

@@ -13,6 +13,8 @@ import {
 } from "@chakra-ui/react";
 import {
   MdAdd,
+  MdCheckCircle,
+  MdErrorOutline,
   MdLink,
   MdMoreVert,
   MdOutlineGroup,
@@ -512,6 +514,7 @@ const AdminOrganizationTeamPage = (props: {
               columns={[
                 { header: t("email"), accessor: "email" },
                 { header: t("role"), accessor: "role" },
+                { header: t("2fa-security"), accessor: "twoFactorEnabled" },
                 { header: "", accessor: null },
               ]}
               renderRow={(item, idx) => (
@@ -527,6 +530,24 @@ const AdminOrganizationTeamPage = (props: {
                     >
                       {TagMapping[item.role as OrganizationRole].text}
                     </Tag>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Text
+                      color={
+                        item.twoFactorEnabled
+                          ? "sentiment.positiveDefault"
+                          : "sentiment.negativeDefault"
+                      }
+                    >
+                      <Icon
+                        as={
+                          item.twoFactorEnabled ? MdCheckCircle : MdErrorOutline
+                        }
+                        boxSize={6}
+                        mr={1}
+                      />
+                      {item.twoFactorEnabled ? t("enabled") : t("disabled")}
+                    </Text>
                   </Table.Cell>
 
                   <Table.Cell>

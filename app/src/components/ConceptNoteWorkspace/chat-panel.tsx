@@ -24,9 +24,11 @@ import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import { useConceptNoteChat } from "./use-concept-note-chat";
 import { ChatProgress } from "./chat-progress";
+import { DraftingProgressCard } from "./drafting-progress-card";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import type { EditController } from "./document-review";
 import type { EditScope } from "@/util/concept-note-edit-types";
+import type { ConceptNoteDraftState } from "@/util/types";
 
 interface ConceptNoteChatPanelProps {
   contextStatus: ConceptNoteContextPresentation;
@@ -39,6 +41,8 @@ interface ConceptNoteChatPanelProps {
   threadId: string | null;
   editScope: EditScope;
   edits: EditController;
+  draft?: ConceptNoteDraftState | null;
+  draftStartedAt?: string | null;
 }
 
 interface ContextStatusNoticeProps {
@@ -187,6 +191,8 @@ export function ConceptNoteChatPanel({
   threadId,
   editScope,
   edits,
+  draft = null,
+  draftStartedAt = null,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [input, setInput] = useState("");
@@ -423,6 +429,14 @@ export function ConceptNoteChatPanel({
             )}
           </Fragment>
         ))}
+
+        {draft && (
+          <DraftingProgressCard
+            draft={draft}
+            lng={lng}
+            startedAt={draftStartedAt}
+          />
+        )}
 
         {edits.error && (
           <Text role="alert" fontSize="label.sm" color="content.primary">

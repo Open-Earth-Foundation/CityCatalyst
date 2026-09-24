@@ -42,6 +42,7 @@ interface FundingSelectionDialogProps {
   lng: string;
   runId: string;
   onClose: () => void;
+  onSaved?: () => void;
 }
 
 const selectionButtonProps = {
@@ -86,6 +87,7 @@ export function FundingSelectionDialog({
   lng,
   runId,
   onClose,
+  onSaved,
 }: FundingSelectionDialogProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const searchRef = useRef<HTMLInputElement>(null);
@@ -154,6 +156,7 @@ export function FundingSelectionDialog({
       }).unwrap();
       toaster.create({ title: t("funding-saved"), type: "success" });
       onClose();
+      onSaved?.();
     } catch (cause) {
       const status = isFetchBaseQueryError(cause) ? cause.status : null;
       const data = isFetchBaseQueryError(cause) ? cause.data : null;
@@ -559,8 +562,13 @@ export function FundingSelectionDialog({
                 (funderId !== null && !funder)
               }
               onClick={() => void save()}
+              data-testid="concept-note-funding-save"
             >
-              {t("funding-save")}
+              {t(
+                !hasDraft && opportunity?.template?.chapter_schema.length
+                  ? "funding-save-and-draft"
+                  : "funding-save",
+              )}
             </Button>
           </Flex>
         </DialogFooter>

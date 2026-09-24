@@ -12,7 +12,10 @@ import {
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { act, type ReactNode, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import type { ConceptNoteApplicationContext } from "@/util/types";
+import type {
+  ConceptNoteApplicationContext,
+  ConceptNoteDraftRunStatus,
+} from "@/util/types";
 
 const context: ConceptNoteApplicationContext = {
   run_id: "run",
@@ -28,6 +31,25 @@ const context: ConceptNoteApplicationContext = {
     hiap: false,
   },
 };
+const fundedContext: ConceptNoteApplicationContext = {
+  ...context,
+  funder: { id: "funder", name: "Funder" },
+  opportunity: { id: "programme", name: "Programme" },
+  template: {
+    id: "template",
+    name: "Template",
+    output_format: null,
+    chapter_schema: [{ chapter_ref: "summary", title: "Summary" }],
+    required_fields: [],
+  },
+};
+interface WorkspaceState {
+  draftStatus: ConceptNoteDraftRunStatus | undefined;
+  contextState: "none" | "processing" | "ready";
+  hasContent?: boolean;
+}
+let initialWorkspaceState: WorkspaceState;
+let setWorkspaceState: (value: WorkspaceState) => void;
 let initialContext: ConceptNoteApplicationContext | undefined;
 let reviewProposal: { proposal_id: string } | null = null;
 let finishRefetch: (success: boolean) => void;
@@ -46,6 +68,8 @@ jest.unstable_mockModule(
     useConceptNoteWorkspaceData: () => {
       const [applicationContext, setContext] = useState(initialContext);
       setApplicationContext = setContext;
+      const [workspaceState, setState] = useState(initialWorkspaceState);
+      setWorkspaceState = setState;
       refetch.mockImplementation(
         () =>
           new Promise((resolve) => {
@@ -60,6 +84,20 @@ jest.unstable_mockModule(
         applicationContextFailed: !applicationContext,
         applicationContextLoading: false,
         hasApplicationTemplate: Boolean(applicationContext?.template),
+        canStartDrafting: Boolean(
+          applicationContext?.funder &&
+          applicationContext.opportunity &&
+          applicationContext.template?.chapter_schema.length,
+        ),
+        isDraftRunning: workspaceState.draftStatus === "running",
+        draft: workspaceState.draftStatus
+          ? {
+              status: workspaceState.draftStatus,
+              chapters: workspaceState.hasContent
+                ? [{ chapter_id: "chapter", body_markdown: "Drafted content" }]
+                : [],
+            }
+          : undefined,
         refetchApplicationContext: refetch,
         reviewAvailabilityDescription: "review-setup-load-error",
         run: {
@@ -73,7 +111,11 @@ jest.unstable_mockModule(
         },
         files: [],
         bundle: { availableContext: { uploadedDocuments: false } },
-        contextStatus: { busy: false },
+        contextStatus: {
+          state: workspaceState.contextState,
+          busy: workspaceState.contextState === "processing",
+          blocked: workspaceState.contextState === "processing",
+        },
         retryBundleState: {},
         retryUploadState: {},
         startDraftState: {},
@@ -166,6 +208,7 @@ afterAll(() => {
 });
 beforeEach(() => {
   initialContext = undefined;
+  initialWorkspaceState = { draftStatus: "not_started", contextState: "none" };
   reviewProposal = null;
   refetch.mockReset();
   container = document.createElement("div");
@@ -244,4 +287,93 @@ it("shows one ready-to-draft banner without its own start button until funding i
 
   await act(async () => setApplicationContext({ ...context, template: null }));
   expect(banner()).toBeNull();
+});
+
+it("clears completion guidance when a chapter is added and drafting resumes", async () => {
+  initialContext = fundedContext;
+  initialWorkspaceState = {
+    draftStatus: "running",
+    contextState: "ready",
+    hasContent: true,
+  };
+  await clickSetup();
+  await act(async () =>
+    setWorkspaceState({ ...initialWorkspaceState, draftStatus: "complete" }),
+  );
+  expect(container.textContent).toContain("next-step-draft-complete-title");
+  for (const draftStatus of ["not_started", "running", "failed"] as const) {
+    await act(async () =>
+      setWorkspaceState({ ...initialWorkspaceState, draftStatus }),
+    );
+    expect(
+      container.querySelector('[data-testid="concept-note-next-step"]'),
+    ).toBeNull();
+  }
+});
+
+it("uses funding that loads after sources become ready", async () => {
+  initialWorkspaceState = {
+    draftStatus: "not_started",
+    contextState: "processing",
+  };
+  await clickSetup();
+  await act(async () =>
+    setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
+  );
+  await act(async () => setApplicationContext(fundedContext));
+  expect(container.textContent).toContain("next-step-funding-saved-title");
+  expect(container.textContent).not.toContain(
+    "next-step-sources-ready-funding",
+  );
+});
+
+it("keeps dismissed source guidance closed when funding arrives", async () => {
+  initialContext = context;
+  initialWorkspaceState = {
+    draftStatus: "not_started",
+    contextState: "processing",
+  };
+  await clickSetup();
+  await act(async () =>
+    setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
+  );
+  const dismiss = container.querySelector<HTMLButtonElement>(
+    '[data-testid="concept-note-next-step-dismiss"]',
+  );
+  expect(dismiss).not.toBeNull();
+  await act(async () => dismiss!.click());
+  await act(async () => setApplicationContext(fundedContext));
+  expect(
+    container.querySelector('[data-testid="concept-note-next-step"]'),
+  ).toBeNull();
+});
+
+it("shows source guidance when the draft loads after ready sources", async () => {
+  initialContext = fundedContext;
+  initialWorkspaceState = { draftStatus: undefined, contextState: "ready" };
+  await clickSetup();
+  await act(async () =>
+    setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
+  );
+  expect(container.textContent).toContain("next-step-funding-saved-title");
+});
+
+it("waits for sources before showing ready-to-draft guidance after saving funding", async () => {
+  initialContext = fundedContext;
+  initialWorkspaceState = {
+    draftStatus: "not_started",
+    contextState: "processing",
+  };
+  await clickSetup();
+  const save = container.querySelector<HTMLButtonElement>(
+    '[aria-label="save-funding"]',
+  );
+  await act(async () => save!.click());
+  expect(
+    container.querySelector('[data-testid="concept-note-next-step"]'),
+  ).toBeNull();
+  await act(async () =>
+    setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
+  );
+  expect(container.textContent).toContain("next-step-funding-saved-title");
 });

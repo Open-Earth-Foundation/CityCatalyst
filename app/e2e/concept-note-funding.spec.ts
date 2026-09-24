@@ -202,7 +202,15 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
       exact: true,
     }),
   ).toBeVisible();
-  await clickDialogButton(/Green Cities Programme/);
+  const programme = dialog.getByRole("button", {
+    name: /Green Cities Programme/,
+  });
+  // A funder's only programme is preselected and can still be deselected.
+  await expect(programme).toHaveAttribute("aria-pressed", "true");
+  await programme.click();
+  await expect(programme).toHaveAttribute("aria-pressed", "false");
+  await programme.click();
+  await expect(programme).toHaveAttribute("aria-pressed", "true");
   await expect(
     dialog.getByText("Project summary", { exact: true }),
   ).toBeVisible();
@@ -210,8 +218,13 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
   await expect(
     dialog.getByText("Municipal governments", { exact: true }),
   ).toBeVisible();
-  await clickDialogButton("Save selection");
+  // A first save with a drafting template moves on to the Draft tab.
+  await clickDialogButton("Save and go to drafting");
   await expect(dialog).not.toBeVisible();
+  await expect(
+    page.getByRole("tab", { name: "Draft preview", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("tab", { name: "Context", exact: true }).click();
   await expect(
     page.getByText("European Climate Fund", { exact: true }),
   ).toBeVisible();
@@ -252,9 +265,12 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
     .getByRole("button", { name: "Browse funders", exact: true })
     .click();
   await clickDialogButton(/European Climate Fund/);
-  await clickDialogButton(/Green Cities Programme/);
+  await expect(programme).toHaveAttribute("aria-pressed", "true");
   await expect(
-    dialog.getByRole("button", { name: "Save selection", exact: true }),
+    dialog.getByRole("button", {
+      name: "Save and go to drafting",
+      exact: true,
+    }),
   ).toBeVisible();
   expect(
     await dialog.evaluate(

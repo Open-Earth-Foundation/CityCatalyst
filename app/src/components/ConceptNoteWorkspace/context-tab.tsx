@@ -3,7 +3,7 @@
 import type { ConceptNoteContextPresentation } from "./context-status";
 
 import type { ChangeEvent, FormEvent, ReactNode } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -29,6 +29,7 @@ import {
   type ConceptNoteBundleProgress,
 } from "../ConceptNoteDashboard/utils";
 import { uploadStatusTranslationKey } from "../ConceptNoteWiringHarness/utils";
+import { ApplicationTemplateDialog } from "./application-template-dialog";
 
 interface ContextTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
@@ -61,6 +62,7 @@ interface ContextTabProps {
   populationLoading: boolean;
   populationMissing: boolean;
   upload: ConceptNoteUploadResponse | null;
+  uploadPickerRequest?: number;
   uploadError: string | null;
 }
 
@@ -189,13 +191,19 @@ export function ContextTab({
   populationMissing,
   upload,
   uploadError,
+  uploadPickerRequest,
 }: ContextTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (uploadPickerRequest) fileInputRef.current?.click();
+  }, [uploadPickerRequest]);
   const [editingPopulation, setEditingPopulation] = useState(false);
   const [populationInput, setPopulationInput] = useState("");
   const [yearInput, setYearInput] = useState("");
   const [populationError, setPopulationError] = useState<string | null>(null);
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const template = applicationContext?.template ?? null;
   const ghgiIncluded =
     bundle.availableContext.ghgi ||
     (applicationContext?.included_sources.ghgi ?? false);
@@ -466,7 +474,7 @@ export function ContextTab({
         </ContextSectionLabel>
         <Grid
           gap={2}
-          gridTemplateColumns={{ base: "1fr", lg: "repeat(2, minmax(0, 1fr))" }}
+          gridTemplateColumns={{ base: "1fr", lg: "repeat(3, minmax(0, 1fr))" }}
         >
           <ContextCard
             label={t("funder-profile")}
@@ -484,18 +492,39 @@ export function ContextTab({
             value={
               applicationContext?.funder?.name || t("funding-not-selected")
             }
-            details={[
-              applicationContext?.opportunity?.name || "",
-              applicationContext?.template
-                ? t("template-context-detail", {
-                    template: applicationContext.template.name,
-                  })
-                : t("template-not-selected"),
-            ]}
+            details={[applicationContext?.opportunity?.name || ""]}
             status={t(
               applicationContext?.funder ? "connected" : "not-connected",
             )}
             tone={applicationContext?.funder ? "positive" : "warning"}
+          />
+          <ContextCard
+            label={t("funding-template-preview")}
+            action={
+              template
+                ? {
+                    label: t("template-view"),
+                    onClick: () => setTemplateOpen(true),
+                  }
+                : undefined
+            }
+            value={template?.name || t("template-not-selected")}
+            details={
+              template
+                ? [
+                    [
+                      t("funding-template-chapters", {
+                        count: template.chapter_schema.length,
+                      }),
+                      template.output_format?.toUpperCase(),
+                    ]
+                      .filter(Boolean)
+                      .join(" · "),
+                  ]
+                : []
+            }
+            status={t(template ? "template-ready" : "not-connected")}
+            tone={template ? "positive" : "warning"}
           />
           <ContextCard
             label={t("similar-funded-projects")}
@@ -513,6 +542,13 @@ export function ContextTab({
           >
             {t("funding-load-error")}
           </Text>
+        )}
+        {templateOpen && template && (
+          <ApplicationTemplateDialog
+            lng={lng}
+            template={template}
+            onClose={() => setTemplateOpen(false)}
+          />
         )}
       </VStack>
 

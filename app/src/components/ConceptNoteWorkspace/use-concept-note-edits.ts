@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useConceptNoteWorkspaceEvents } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-events";
 import { useAppDispatch } from "@/lib/hooks";
 import { editApi, editErrorCode } from "@/services/concept-note-edit-api";
 import {
@@ -8,7 +9,6 @@ import {
   type EditApplyRequest,
   type EditProposal,
 } from "@/util/concept-note-edit-types";
-import { CONCEPT_NOTE_POLL_INTERVAL_MS } from "@/util/concept-note-polling";
 
 function revisionKey(revisions: Record<string, number>): string {
   return JSON.stringify(
@@ -25,15 +25,22 @@ export function useConceptNoteEdits({
   onApplied: (chapterIds: string[]) => Promise<void>;
 }) {
   const dispatch = useAppDispatch();
-  const cached = editApi.endpoints.listEditProposals.useQueryState(runId ?? "");
-  const processing = cached.currentData?.some(
-    (item) => item.status === "processing",
-  );
   const query = editApi.useListEditProposalsQuery(runId ?? "", {
     skip: !runId,
-    pollingInterval: processing ? CONCEPT_NOTE_POLL_INTERVAL_MS : 0,
-    skipPollingIfUnfocused: true,
     refetchOnMountOrArgChange: true,
+  });
+  useConceptNoteWorkspaceEvents({
+    cityId: "",
+    runId: runId ?? "",
+    uploadId: null,
+    observeRun: false,
+    observeDraft: false,
+    observeUpload: false,
+    observeEdits: Boolean(
+      runId &&
+      (query.isError ||
+        query.currentData?.some((item) => item.status === "processing")),
+    ),
   });
   const [get] = editApi.useLazyGetEditProposalQuery();
   const [apply] = editApi.useApplyEditProposalMutation();
@@ -80,11 +87,15 @@ export function useConceptNoteEdits({
     if (!runId) return;
     try {
       const result = await get({ runId, proposalId }).unwrap();
-      await dispatch(
-        editApi.endpoints.listEditProposals.initiate(runId, {
-          subscribe: false,
-        }),
-      ).unwrap();
+      // Patching an absent collection is a no-op; recover it before merging the result.
+      if (!query.currentData || query.isError) {
+        await dispatch(
+          editApi.endpoints.listEditProposals.initiate(runId, {
+            subscribe: false,
+            forceRefetch: true,
+          }),
+        ).unwrap();
+      }
       remember(result);
       if (activeRun.current === runId) setError(null);
     } catch {

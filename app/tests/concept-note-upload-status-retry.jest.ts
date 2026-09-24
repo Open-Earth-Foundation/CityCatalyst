@@ -13,6 +13,7 @@ const cityId = "33333333-3333-4333-8333-333333333333";
 
 const loadRunCity = jest.fn<() => Promise<string>>();
 const loadUpload = jest.fn<() => Promise<Record<string, unknown>>>();
+const loadUploadStatus = jest.fn<() => Promise<Record<string, unknown>>>();
 const updateUpload = jest.fn<() => Promise<void>>();
 const getJob = jest.fn<() => Promise<Record<string, unknown> | null>>();
 const retryOcr = jest.fn<() => Promise<"ocr" | "delivery" | "noop">>();
@@ -59,6 +60,9 @@ jest.unstable_mockModule("@/backend/ConceptNoteUploadService", () => ({
   loadConceptNoteRunCity: loadRunCity,
   loadConceptNoteUpload: loadUpload,
   updateConceptNoteUpload: updateUpload,
+}));
+jest.unstable_mockModule("@/backend/ConceptNoteUploadStatusService", () => ({
+  loadConceptNoteUploadStatus: loadUploadStatus,
 }));
 jest.unstable_mockModule("@/backend/PdfOcrService", () => ({
   getConceptNotePdfOcrJob: getJob,
@@ -112,6 +116,20 @@ describe("Concept Note upload status and retry routes", () => {
       receivedAt: "2026-07-31T10:00:00Z",
       completedAt: "2026-07-31T10:01:00Z",
     });
+    loadUploadStatus.mockResolvedValue({
+      uploadId,
+      runId,
+      status: "failed",
+      stage: "ocr",
+      canRetry: true,
+      retryKind: "ocr",
+      errorCode: "mistral_unavailable",
+      filename: "plan.pdf",
+      sourceLabel: "Climate plan",
+      pageCount: null,
+      receivedAt: "2026-07-31T10:00:00Z",
+      completedAt: "2026-07-31T10:01:00Z",
+    });
     getJob.mockResolvedValue({
       status: "failed",
       deliveryStatus: "delivered",
@@ -139,19 +157,17 @@ describe("Concept Note upload status and retry routes", () => {
   });
 
   it("pinpoints a pointer-delivery failure without rerunning OCR", async () => {
-    loadUpload.mockResolvedValueOnce({
+    loadUploadStatus.mockResolvedValueOnce({
       uploadId,
       runId,
-      status: "processing",
+      status: "failed",
+      stage: "delivery",
+      canRetry: true,
+      retryKind: "delivery",
+      errorCode: "ca_delivery_rejected",
       filename: "plan.pdf",
       receivedAt: "2026-07-31T10:00:00Z",
     });
-    getJob.mockResolvedValueOnce({
-      status: "succeeded",
-      deliveryStatus: "failed",
-      deliveryErrorCode: "ca_delivery_rejected",
-    });
-
     const response = await statusHandler(
       new Request("http://localhost"),
       context,
@@ -169,16 +185,16 @@ describe("Concept Note upload status and retry routes", () => {
   });
 
   it("marks pre-queue upload failures as non-retryable through the OCR endpoint", async () => {
-    getJob.mockResolvedValueOnce(null);
-    loadUpload.mockResolvedValueOnce({
+    loadUploadStatus.mockResolvedValueOnce({
       uploadId,
       runId,
       status: "failed",
-      filename: "plan.pdf",
+      stage: "upload",
+      canRetry: false,
       errorCode: "source_storage_failed",
+      filename: "plan.pdf",
       receivedAt: "2026-07-31T10:00:00Z",
     });
-
     const response = await statusHandler(
       new Request("http://localhost"),
       context,

@@ -615,6 +615,8 @@ timeout settings, Stationary Energy review chat-context prompt budgets, and the
 CNB source reader/synthesizer roles, chapter drafter, gap-impact reviewer,
 chat-edit planner, and partition/prompt/concurrency limits. Chat-edit planning
 uses one document agent with `search_draft`, `read_chapter`, and `propose_edits`.
+Each proposal permits up to 100 draft searches, shared across repair attempts,
+configured by `generation.prompt_budget.cnb_edits.max_searches`.
 The tools resolve exact occurrences and validate replacements immediately so the
 agent can correct a failed selection. Independent semantic review then checks
 only affected chapters, with at most five reviews concurrently. Rejections feed
@@ -624,7 +626,7 @@ Each attempt must submit a complete proposal against the unchanged snapshot;
 every revised candidate receives a fresh independent review. Unsupported edits
 still fail after exhaustion, and no draft changes are applied before acceptance.
 Each editor attempt is limited to 12 model turns, while the complete operation,
-including repairs and reviews, shares one 180-second deadline configured by
+including repairs and reviews, shares one 300-second deadline configured by
 `generation.prompt_budget.cnb_edits.max_agent_turns` and `timeout_seconds`.
 The chapter drafter uses GPT-5.6
 Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra and the
@@ -1773,6 +1775,25 @@ through the error path. This does not provide durable reconnect/restart recovery
 See [validation and reproduction](docs/cnb-reasoning-validation.md) for focused
 checks, manual verification steps, and remaining limitations.
 
+### Concept Note chat suggestions
+
+`POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
+for the authorized run and its active conversation. Questions target 3–7 words
+and are limited to 80 characters each. The UI keeps them directly above the
+chat input, outside the scrolling message history. The `cnb_chat_suggestions`
+model uses `openai/gpt-5.6-luna` through the existing `OPENROUTER_API_KEY`, with
+medium reasoning. Its prompt is `prompts/cnb/chat_suggestions.md`.
+
+The model receives the first 20,000 `o200k_base` tokens of the created document
+(in chapter order), up to six recent messages (2,000 tokens each), and compact
+workspace metadata. Uploaded source bodies and internal identifiers are excluded.
+The call has a 20-second deadline, no retries, and a 4,096-token completion cap.
+Invalid output or provider failure returns an empty list so the UI uses two
+translated deterministic questions. Suggestions never write messages or edit
+the document; selecting one fills and focuses the composer. Suggestions refresh
+after replies, tab changes, or run/draft revisions; the UI cancels stale requests.
+The CityCatalyst proxy forwards that cancellation to Climate Advisor, which
+cancels an in-flight model request when the client disconnects.
 
 ### Initial concept-note upload recovery
 

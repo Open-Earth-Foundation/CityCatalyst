@@ -93,8 +93,11 @@ export default class UnitConversionService {
       return value;
     }
 
+    // Must include tonnes — fuel-sales activity data allows mass units while
+    // IPCC factors are kg/m³, so mass→volume needs density conversion.
     const massUnits = [
       "units-kilograms",
+      "units-tonnes",
       "units-milligrams",
       "units-long-tons",
       "units-short-tons",
@@ -116,7 +119,7 @@ export default class UnitConversionService {
       }
 
       const valueInKg = this.convertUnits(value, fromUnit, "units-kilograms");
-      return valueInKg / this.fuelDensities[fuelType || "fuel-type-all"];
+      return valueInKg / density_kg_m3;
     }
 
     if (!this.conversionTable[toUnit]) {
@@ -133,7 +136,14 @@ export default class UnitConversionService {
       }
     }
 
-    return this.conversionTable[toUnit][fromUnit] * value;
+    const factor = this.conversionTable[toUnit][fromUnit];
+    if (factor == null) {
+      throw new createHttpError.BadRequest(
+        `Conversion from ${fromUnit} to ${toUnit} is not supported`,
+      );
+    }
+
+    return factor * value;
   }
 
   public static convertUnitsWithoutDensity(

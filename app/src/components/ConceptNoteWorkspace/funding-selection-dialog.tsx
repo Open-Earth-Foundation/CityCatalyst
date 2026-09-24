@@ -31,6 +31,7 @@ import { api } from "@/services/api";
 import { isFetchBaseQueryError } from "@/util/helpers";
 import type {
   ConceptNoteApplicationContext,
+  ConceptNoteFundingOpportunity,
   ConceptNoteFunder,
 } from "@/util/types";
 import { FunderProfile, FundingOpportunityDetails } from "./funding-details";
@@ -42,6 +43,7 @@ interface FundingSelectionDialogProps {
   lng: string;
   runId: string;
   onClose: () => void;
+  onSaved?: () => void;
 }
 
 const selectionButtonProps = {
@@ -86,6 +88,7 @@ export function FundingSelectionDialog({
   lng,
   runId,
   onClose,
+  onSaved,
 }: FundingSelectionDialogProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const searchRef = useRef<HTMLInputElement>(null);
@@ -121,16 +124,40 @@ export function FundingSelectionDialog({
   const changed =
     funderId !== (initialContext.funder?.id ?? null) ||
     opportunityId !== (initialContext.opportunity?.id ?? null);
+  // Only a first save with a drafting template moves the user on to drafting.
+  const savesIntoDrafting =
+    !hasDraft && Boolean(opportunity?.template?.chapter_schema.length);
   const forbidden =
     isFetchBaseQueryError(catalogueError) &&
     [401, 403, 404].includes(Number(catalogueError.status));
 
   function chooseFunder(id: string): void {
     if (id === funderId) return;
+    const opportunities =
+      funders.find((item) => item.id === id)?.opportunities ?? [];
     setFunderId(id);
-    setOpportunityId(null);
+    // A sole programme is preselected; the user can still deselect it.
+    setOpportunityId(
+      opportunities.length === 1 ? (opportunities[0]?.id ?? null) : null,
+    );
     setAcknowledged(false);
     setError(null);
+  }
+
+  function programmeMeta(item: ConceptNoteFundingOpportunity): string {
+    const amount = (value: string | null) => {
+      const numeric = Number(value);
+      return value && Number.isFinite(numeric)
+        ? new Intl.NumberFormat(lng, { maximumFractionDigits: 0 }).format(
+            numeric,
+          )
+        : (value ?? "");
+    };
+    const award =
+      item.min_award !== null || item.max_award !== null
+        ? `${amount(item.min_award)} – ${amount(item.max_award)} ${item.currency ?? ""}`.trim()
+        : null;
+    return [award, item.status?.replace(/_/g, " ")].filter(Boolean).join(" · ");
   }
 
   async function save(): Promise<void> {
@@ -149,6 +176,7 @@ export function FundingSelectionDialog({
       }).unwrap();
       toaster.create({ title: t("funding-saved"), type: "success" });
       onClose();
+      if (savesIntoDrafting) onSaved?.();
     } catch (cause) {
       const status = isFetchBaseQueryError(cause) ? cause.status : null;
       const data = isFetchBaseQueryError(cause) ? cause.data : null;
@@ -335,15 +363,28 @@ export function FundingSelectionDialog({
                         >
                           {item.name}
                         </Text>
-                        <Text
-                          mt={1}
-                          fontSize="label.sm"
-                          color="content.tertiary"
-                        >
-                          {[item.country, item.region]
-                            .filter(Boolean)
-                            .join(" · ") || item.funder_type}
-                        </Text>
+                        <HStack mt={1} gap={2} flexWrap="wrap">
+                          {item.funder_type && (
+                            <Text
+                              as="span"
+                              fontSize="10px"
+                              lineHeight="16px"
+                              px={1.5}
+                              borderRadius="full"
+                              border="1px solid"
+                              borderColor="border.neutral"
+                              color="content.secondary"
+                              whiteSpace="nowrap"
+                            >
+                              {item.funder_type}
+                            </Text>
+                          )}
+                          <Text fontSize="label.sm" color="content.tertiary">
+                            {[item.country, item.region]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </Text>
+                        </HStack>
                         <Text
                           mt={1}
                           fontSize="label.sm"
@@ -416,7 +457,9 @@ export function FundingSelectionDialog({
                               }
                               disabled={saveState.isLoading}
                               onClick={() => {
-                                setOpportunityId(item.id);
+                                setOpportunityId(
+                                  item.id === opportunityId ? null : item.id,
+                                );
                                 setAcknowledged(false);
                               }}
                             >
@@ -439,6 +482,15 @@ export function FundingSelectionDialog({
                                   {item.template?.name ??
                                     t("funding-no-template")}
                                 </Text>
+                                {programmeMeta(item) && (
+                                  <Text
+                                    mt={1}
+                                    fontSize="label.sm"
+                                    color="content.secondary"
+                                  >
+                                    {programmeMeta(item)}
+                                  </Text>
+                                )}
                               </Box>
                             </Button>
                           ))}
@@ -552,8 +604,14 @@ export function FundingSelectionDialog({
                 (funderId !== null && !funder)
               }
               onClick={() => void save()}
+              data-testid="concept-note-funding-save"
+              title={
+                !hasDraft && opportunity?.template?.chapter_schema.length
+                  ? t("funding-next-step")
+                  : undefined
+              }
             >
-              {t("funding-save")}
+              {t(savesIntoDrafting ? "funding-save-and-draft" : "funding-save")}
             </Button>
           </Flex>
         </DialogFooter>

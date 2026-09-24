@@ -302,6 +302,22 @@ export function getConceptNoteBundleProgress(
   };
 }
 
+export interface ConceptNoteDraftProgress {
+  startedAt: string | null;
+  completedAt: string | null;
+}
+
+/** Timing of the current chapter-drafting run, from the run's progress summary. */
+export function getConceptNoteDraftProgress(
+  summary: Record<string, unknown>,
+): ConceptNoteDraftProgress {
+  const progress = recordValue(summary.draft_document);
+  return {
+    startedAt: stringValue(progress.started_at) || null,
+    completedAt: stringValue(progress.completed_at) || null,
+  };
+}
+
 export function getRunProgressPercent(
   status: string,
   workflowStep: string,

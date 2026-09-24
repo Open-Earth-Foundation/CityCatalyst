@@ -53,6 +53,7 @@ import {
   DocumentReviewToolbar,
   DocumentReviewFeedback,
   documentReviewChanges,
+  editFeedbackKey,
   selectReviewProposal,
 } from "@/components/ConceptNoteWorkspace/document-review";
 import { useInlineReviewDecisions } from "@/components/ConceptNoteWorkspace/use-inline-review-decisions";
@@ -560,37 +561,6 @@ export function ConceptNoteWorkspace({
                   </Box>
                 </HStack>
                 <Flex align="center" gap={2} flexWrap="wrap" minW={0}>
-                  {reviewProposal && (
-                    <DocumentReviewToolbar
-                      proposal={reviewProposal}
-                      chapters={draft?.chapters ?? []}
-                      edits={edits}
-                      changes={reviewChanges}
-                      activeChangeId={activeChangeId}
-                      lng={lng}
-                      onNavigate={navigateEdit}
-                      onOpenSources={() => setTab("context")}
-                      isDocumentVisible={tab === "draft"}
-                      hasDecisions={
-                        Object.keys(activeReviewDecisions).length > 0
-                      }
-                      onAcceptRemaining={(proposal) =>
-                        decideRemaining(proposal, "accepted")
-                      }
-                      onRejectRemaining={(proposal) =>
-                        decideRemaining(proposal, "rejected")
-                      }
-                    />
-                  )}
-                  <DocumentReviewFeedback edits={edits} lng={lng} />
-                  {reviewProposal && (
-                    <Box
-                      h="32px"
-                      borderInlineStart="1px solid"
-                      borderColor="border.neutral"
-                      mx={1}
-                    />
-                  )}
                   <ReviewButton
                     size="sm"
                     minH="44px"
@@ -627,7 +597,7 @@ export function ConceptNoteWorkspace({
                   )}
                 </Flex>
               </Flex>
-              {reviewProposal && (
+              {(reviewProposal || editFeedbackKey(edits)) && (
                 // Proposal review gets its own row so it never squeezes the title.
                 <Flex
                   data-testid="concept-note-review-bar"

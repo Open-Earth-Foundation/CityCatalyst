@@ -40,6 +40,7 @@ import {
   MISSING_INFORMATION_LINK,
   remarkMissingInformation,
 } from "./draft-markdown";
+import { markerLabel } from "./missing-information";
 import {
   getChapterDisplayStatus,
   type ChapterDisplayStatus,
@@ -112,16 +113,24 @@ const markdownComponents = {
           <chakra.button
             type="button"
             aria-label={message}
-            display="inline-grid"
-            placeItems="center"
-            boxSize="26px"
+            data-testid="concept-note-gap-marker"
+            display="inline-flex"
+            alignItems="center"
+            gap={1.5}
+            maxW="100%"
+            minH="26px"
+            px={2}
+            py="2px"
             mx={1}
             border="1px solid"
             borderColor="sentiment.warningDefault"
             borderRadius="7px"
             bg="sentiment.warningOverlay"
             color="sentiment.warningDefault"
-            lineHeight={1}
+            fontSize="12px"
+            lineHeight="16px"
+            fontWeight="medium"
+            textAlign="left"
             verticalAlign="middle"
             cursor="pointer"
             transitionDuration="150ms"
@@ -138,7 +147,15 @@ const markdownComponents = {
               outlineOffset: "2px",
             }}
           >
-            <Icon as={LuCircleAlert} boxSize="16px" />
+            <Icon as={LuCircleAlert} boxSize="16px" flexShrink={0} />
+            <chakra.span
+              overflow="hidden"
+              textOverflow="ellipsis"
+              whiteSpace="nowrap"
+              data-testid="concept-note-gap-marker-label"
+            >
+              {markerLabel(message)}
+            </chakra.span>
           </chakra.button>
         </PopoverTrigger>
         <PopoverContent

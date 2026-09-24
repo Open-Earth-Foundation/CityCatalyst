@@ -20,7 +20,7 @@ const MARKER_PREFIX = /^information needed:\s*/i;
 
 /** Short inline label so a gap reads as text, not as a bare icon; the full
  * message stays in the tooltip. */
-function markerLabel(message: string): string {
+export function markerLabel(message: string): string {
   const body = message.replace(MARKER_PREFIX, "").trim();
   return body.length > 72 ? `${body.slice(0, 69).trimEnd()}…` : body;
 }

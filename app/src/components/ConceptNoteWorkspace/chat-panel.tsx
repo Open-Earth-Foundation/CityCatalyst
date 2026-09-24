@@ -25,6 +25,7 @@ import { useTranslation } from "@/i18n/client";
 import { useConceptNoteChat } from "./use-concept-note-chat";
 import { ChatProgress } from "./chat-progress";
 import { DraftingProgressCard } from "./drafting-progress-card";
+import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import type { EditController } from "./document-review";
 import type { EditScope } from "@/util/concept-note-edit-types";
@@ -43,6 +44,9 @@ interface ConceptNoteChatPanelProps {
   edits: EditController;
   draft?: ConceptNoteDraftState | null;
   draftStartedAt?: string | null;
+  welcomeStage?: ChatWelcomeStage | null;
+  onOpenDraft?: () => void;
+  onOpenFundingSetup?: () => void;
 }
 
 interface ContextStatusNoticeProps {
@@ -193,6 +197,9 @@ export function ConceptNoteChatPanel({
   edits,
   draft = null,
   draftStartedAt = null,
+  welcomeStage = null,
+  onOpenDraft,
+  onOpenFundingSetup,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [input, setInput] = useState("");
@@ -383,6 +390,19 @@ export function ConceptNoteChatPanel({
           onOpenContext={onOpenContext}
           status={contextStatus}
         />
+
+        {welcomeStage &&
+          threadId &&
+          !historyLoading &&
+          messages.length === 0 &&
+          draft?.status !== "running" && (
+            <ChatWelcome
+              lng={lng}
+              stage={welcomeStage}
+              onOpenDraft={onOpenDraft}
+              onOpenFundingSetup={onOpenFundingSetup}
+            />
+          )}
 
         {messages.map((message) => (
           <Fragment key={message.id}>

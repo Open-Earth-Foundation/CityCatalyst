@@ -491,6 +491,15 @@ export function ConceptNoteWorkspace({
               edits={edits}
               draft={draft ?? null}
               draftStartedAt={draftProgress?.startedAt ?? null}
+              welcomeStage={
+                draftHasContent
+                  ? "drafted"
+                  : canStartDrafting
+                    ? "ready-to-draft"
+                    : "choose-funding"
+              }
+              onOpenDraft={() => setTab("draft")}
+              onOpenFundingSetup={() => void openFundingSetup()}
             />
 
             <Tabs.Root

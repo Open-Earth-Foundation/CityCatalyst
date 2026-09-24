@@ -12,8 +12,10 @@ import {
 
 import {
   getConceptNoteBundleProgress,
+  getConceptNoteDraftProgress,
   normalizePopulationData,
 } from "../ConceptNoteDashboard/utils";
+import { isDraftingInProgress } from "./drafting-progress-card";
 import {
   conceptNoteSourceLabel,
   shouldPollConceptNoteUpload,
@@ -55,15 +57,22 @@ export function useConceptNoteWorkspaceData({
     isLoading: applicationContextLoading,
     refetch: refetchApplicationContext,
   } = api.useGetConceptNoteApplicationContextQuery(runId);
+  // Poll the draft quickly while chapters are being written so the chat rail
+  // and Draft tab follow the backend chapter by chapter, not in 15 s batches.
+  const [draftActive, setDraftActive] = useState(false);
   const {
     data: draft,
     isError: draftQueryFailed,
     isLoading: draftLoading,
     refetch: refetchDraft,
   } = api.useGetConceptNoteDraftQuery(runId, {
-    pollingInterval: 15_000,
+    pollingInterval: draftActive ? 3_000 : 15_000,
     skipPollingIfUnfocused: true,
   });
+  const draftInProgress = isDraftingInProgress(draft);
+  if (draftInProgress !== draftActive) {
+    setDraftActive(draftInProgress);
+  }
   const {
     data: population,
     isError: populationFailed,
@@ -105,6 +114,9 @@ export function useConceptNoteWorkspaceData({
     );
 
   const bundle = getConceptNoteBundleProgress(run?.progress_summary ?? {});
+  const draftProgress = getConceptNoteDraftProgress(
+    run?.progress_summary ?? {},
+  );
   const persistedUploadDetails: ConceptNoteUploadResponse | null =
     persistedUpload
       ? {
@@ -262,6 +274,7 @@ export function useConceptNoteWorkspaceData({
     draft,
     draftFailed,
     draftLoading,
+    draftProgress,
     draftStartError,
     effectiveUpload,
     effectiveUploadError,

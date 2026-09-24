@@ -131,6 +131,7 @@ export function ConceptNoteWorkspace({
     draft,
     draftFailed,
     draftLoading,
+    draftProgress,
     draftStartError,
     effectiveUpload,
     effectiveUploadError,
@@ -370,6 +371,8 @@ export function ConceptNoteWorkspace({
               threadId={activeThreadId}
               editScope={editScope}
               edits={edits}
+              draft={draft ?? null}
+              draftStartedAt={draftProgress.startedAt}
             />
 
             <Tabs.Root

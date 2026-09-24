@@ -31,6 +31,22 @@ def test_tracked_fixture_document_integrity(relative_path: Path) -> None:
     _validate_fixture(payload, fixture_path)
 
 
+def test_krakow_template_assigns_every_required_field_to_a_chapter() -> None:
+    fixture_path = CLIMATE_ADVISOR_ROOT / "fixtures/cnb/krakow/krakow-demo.json"
+    payload = json.loads(fixture_path.read_text(encoding="utf-8"))
+    template = payload["cnb"]["funder_templates"][0]
+    chapters = template["chapter_schema"]
+
+    refs = [chapter["chapter_ref"] for chapter in chapters]
+    assert len(refs) == len(set(refs))
+    assigned = {field for chapter in chapters for field in chapter["required_fields"]}
+    # Chapter validation rejects the template when any field lacks a chapter.
+    assert set(template["required_fields"]) == assigned
+    assert all(
+        chapter["description"] and chapter["required_fields"] for chapter in chapters
+    )
+
+
 def test_validate_fixture_checks_document_integrity(tmp_path) -> None:
     document = tmp_path / "source.pdf"
     document.write_bytes(b"portable demo")

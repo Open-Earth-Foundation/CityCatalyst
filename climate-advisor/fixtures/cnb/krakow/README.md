@@ -13,7 +13,9 @@ a deterministic local CityCatalyst user, and open the same review state.
 - `krakow-demo.json`: a sanitized snapshot containing:
   - the European Investment Bank funder profile;
   - the EIB Private Sector Loans funding opportunity;
-  - the 12-chapter CityCatalyst EIB starter template;
+  - the 12-chapter CityCatalyst EIB starter template, with detailed chapter
+    guidance and 51 required fields, each assigned to the chapters it applies
+    to so chapter validation can run;
   - one CA run, its assembled context, upload metadata, thread, and eight chat
     messages;
   - 12 chapters, 25 immutable revisions, 62 structured gaps, five resolution

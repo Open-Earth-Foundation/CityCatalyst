@@ -316,85 +316,207 @@
         "output_format": "internal_starter",
         "chapter_schema": [
           {
+            "chapter_ref": "project_summary",
             "title": "Project summary",
             "required": true,
-            "chapter_ref": "project_summary",
-            "description": "Project purpose, location, sponsor, delivery model, investment size, and financing request."
+            "description": "A one-page overview a lender can read first. State the project name, city and sector; the public sponsor, private partner and delivery model; the total project cost and the financing requested from the EIB, with the proposed instrument; the current implementation stage and key dates; and the headline mobility and climate benefits. Summarise only: detailed evidence belongs in the later chapters.",
+            "required_fields": [
+              "project name, location and sector",
+              "project sponsor and PPP/SPV structure",
+              "total project cost and requested financing",
+              "proposed EIB financing instrument",
+              "current implementation stage and key dates",
+              "headline mobility and climate benefits"
+            ]
           },
           {
+            "chapter_ref": "context_and_rationale",
             "title": "Context and rationale",
             "required": true,
-            "chapter_ref": "context_and_rationale",
-            "description": "Urban mobility problem, affected users, strategic alignment, and evidence for intervention."
+            "description": "Explain the urban mobility problem the project addresses, with baseline conditions such as congestion, travel times, public-transport coverage, modal split and emissions. Identify the affected districts and user groups, show alignment with the city's sustainable urban mobility plan and with national and EU climate and transport policy, and explain why the selected option was chosen over the alternatives considered.",
+            "required_fields": [
+              "current mobility problem and baseline conditions",
+              "affected districts and user groups",
+              "alignment with local, national and EU policy",
+              "alternatives considered and reason for the selected option"
+            ]
           },
           {
+            "chapter_ref": "objectives",
             "title": "Objectives",
             "required": true,
-            "chapter_ref": "objectives",
-            "description": "Specific transport, accessibility, climate, and service-quality objectives."
+            "description": "Set out specific, measurable objectives for transport service, accessibility, climate and service quality. Give each objective a target value and target year, and link it to the problem described in Context and rationale. Avoid general aims without a measurable result.",
+            "required_fields": [
+              "specific measurable objectives",
+              "target values and target years",
+              "link between objectives and the identified problem"
+            ]
           },
           {
+            "chapter_ref": "theory_of_change",
             "title": "Theory of change",
             "required": false,
-            "chapter_ref": "theory_of_change",
-            "description": "How activities and outputs lead to modal shift, lower emissions, and wider benefits."
+            "description": "Describe the causal pathway from project activities to outputs, outcomes and long-term impacts, such as new tram capacity leading to modal shift, lower car traffic and lower emissions. State the key assumptions and external conditions the pathway depends on.",
+            "required_fields": [
+              "causal pathway from activities to outputs, outcomes and impacts",
+              "key assumptions and external conditions"
+            ]
           },
           {
+            "chapter_ref": "project_components",
             "title": "Project components",
             "required": true,
-            "chapter_ref": "project_components",
-            "description": "Civil works, rolling-stock or systems scope, stations, tunnels, utilities, and supporting measures."
+            "description": "Describe each physical and technical component: track length and alignment, tunnels, stops and depots, rolling stock, signalling and power systems, utility relocation, and green infrastructure. Give the main technical specifications and the cost of each component, and list complementary measures such as bus integration, park-and-ride and walking or cycling links.",
+            "required_fields": [
+              "physical scope and technical specifications per component",
+              "cost breakdown by component",
+              "rolling stock and systems scope",
+              "complementary measures"
+            ]
           },
           {
+            "chapter_ref": "implementation_arrangements",
             "title": "Implementation arrangements",
             "required": true,
-            "chapter_ref": "implementation_arrangements",
-            "description": "Sponsor, PPP/SPV structure, procurement, governance, responsibilities, schedule, and readiness."
+            "description": "Explain who delivers and operates the project: the public sponsor, the private partner or SPV and their contractual structure, the procurement route and contract status, governance and each party's responsibilities, the implementation schedule with milestones and readiness, and the operation and maintenance arrangements after completion.",
+            "required_fields": [
+              "project sponsor and PPP/SPV structure",
+              "procurement route and contract status",
+              "governance and responsibilities of each party",
+              "implementation schedule and readiness",
+              "operation and maintenance arrangements"
+            ]
           },
           {
+            "chapter_ref": "climate_impact",
             "title": "Climate impact",
             "required": true,
-            "chapter_ref": "climate_impact",
-            "description": "Expected modal shift, emissions impact, climate alignment, resilience, and measurement approach."
+            "description": "Quantify the expected climate and transport effects: the ridership and modal-shift forecast, estimated annual greenhouse-gas emission reductions with the calculation method and baseline, climate resilience and adaptation measures, and alignment with the Paris Agreement and the EU taxonomy. State how each indicator will be measured.",
+            "required_fields": [
+              "climate and transport impact indicators",
+              "ridership and modal-shift forecast",
+              "estimated greenhouse-gas emission reduction and calculation method",
+              "climate resilience and adaptation measures",
+              "Paris alignment and EU taxonomy contribution"
+            ]
           },
           {
+            "chapter_ref": "environmental_social_safeguards",
             "title": "Environmental and social safeguards",
             "required": true,
-            "chapter_ref": "environmental_social_safeguards",
-            "description": "Permits, assessments, land and disruption impacts, mitigation, stakeholder engagement, and compliance."
+            "description": "Report the environmental and social assessment status, including the environmental impact assessment and its decision, permits obtained or pending, land acquisition and resettlement impacts, construction-phase disruption such as noise, traffic and utilities with mitigation measures, and the stakeholder engagement and public consultation carried out.",
+            "required_fields": [
+              "environmental and social assessment status",
+              "permits and approvals obtained or pending",
+              "land acquisition and resettlement impacts",
+              "construction impacts and mitigation measures",
+              "stakeholder engagement and public consultation"
+            ]
           },
           {
+            "chapter_ref": "gender_social_inclusion",
             "title": "Gender and social inclusion",
             "required": false,
-            "chapter_ref": "gender_social_inclusion",
-            "description": "Accessibility, safety, affordability, inclusion, and distribution of benefits."
+            "description": "Describe how the project serves all users: step-free access and facilities for people with disabilities or reduced mobility, fare affordability, personal safety on vehicles and at stops, and how benefits are distributed across districts, income groups and genders.",
+            "required_fields": [
+              "accessibility for people with disabilities and reduced mobility",
+              "fare affordability",
+              "personal safety measures",
+              "distribution of benefits across user groups"
+            ]
           },
           {
+            "chapter_ref": "financing_plan",
             "title": "Financing plan",
             "required": true,
-            "chapter_ref": "financing_plan",
-            "description": "Total project cost, eligible cost, requested EIB financing, co-financing, repayment, and affordability."
+            "description": "Present the total project cost, the eligible investment cost and the EIB financing requested, with a sources-and-uses table covering every co-financier such as EU grants, national funds, the city budget and private equity. Explain the repayment or availability-payment mechanism, the revenue sources and the sponsor's affordability, and the status of any grant or state-aid approvals.",
+            "required_fields": [
+              "total project cost and requested financing",
+              "eligible investment cost",
+              "sources and uses of funds",
+              "co-financing and repayment plan",
+              "revenue sources and affordability",
+              "grant and state-aid approval status"
+            ]
           },
           {
+            "chapter_ref": "risk_management",
             "title": "Risk management",
             "required": true,
-            "chapter_ref": "risk_management",
-            "description": "Construction, demand, cost, schedule, permitting, financing, operational, and allocation risks."
+            "description": "Identify the key risks, including construction, ground conditions, cost overrun, schedule, permitting, demand, financing and counterparty, and operational risks. For each, describe its likelihood and impact, which party bears it under the PPP or contract structure, and the mitigation measures in place.",
+            "required_fields": [
+              "construction, cost and schedule risks",
+              "demand and revenue risks",
+              "financing and counterparty risks",
+              "risk allocation between public and private partners",
+              "mitigation measure for each key risk"
+            ]
           },
           {
+            "chapter_ref": "monitoring_evaluation",
             "title": "Monitoring and evaluation",
             "required": true,
-            "chapter_ref": "monitoring_evaluation",
-            "description": "Outputs, outcomes, indicators, baselines, targets, reporting responsibilities, and evaluation schedule."
+            "description": "Define the output and outcome indicators with their baselines and targets, the data sources and measurement frequency, who reports progress to the lender and when, and how and when the project will be evaluated after completion.",
+            "required_fields": [
+              "output and outcome indicators with baselines and targets",
+              "data sources and measurement frequency",
+              "reporting responsibilities and schedule",
+              "post-completion evaluation plan"
+            ]
           }
         ],
         "required_fields": [
+          "project name, location and sector",
           "project sponsor and PPP/SPV structure",
           "total project cost and requested financing",
+          "proposed EIB financing instrument",
+          "current implementation stage and key dates",
+          "headline mobility and climate benefits",
+          "current mobility problem and baseline conditions",
+          "affected districts and user groups",
+          "alignment with local, national and EU policy",
+          "alternatives considered and reason for the selected option",
+          "specific measurable objectives",
+          "target values and target years",
+          "link between objectives and the identified problem",
+          "causal pathway from activities to outputs, outcomes and impacts",
+          "key assumptions and external conditions",
+          "physical scope and technical specifications per component",
+          "cost breakdown by component",
+          "rolling stock and systems scope",
+          "complementary measures",
+          "procurement route and contract status",
+          "governance and responsibilities of each party",
           "implementation schedule and readiness",
-          "co-financing and repayment plan",
+          "operation and maintenance arrangements",
           "climate and transport impact indicators",
-          "environmental and social assessment status"
+          "ridership and modal-shift forecast",
+          "estimated greenhouse-gas emission reduction and calculation method",
+          "climate resilience and adaptation measures",
+          "Paris alignment and EU taxonomy contribution",
+          "environmental and social assessment status",
+          "permits and approvals obtained or pending",
+          "land acquisition and resettlement impacts",
+          "construction impacts and mitigation measures",
+          "stakeholder engagement and public consultation",
+          "accessibility for people with disabilities and reduced mobility",
+          "fare affordability",
+          "personal safety measures",
+          "distribution of benefits across user groups",
+          "eligible investment cost",
+          "sources and uses of funds",
+          "co-financing and repayment plan",
+          "revenue sources and affordability",
+          "grant and state-aid approval status",
+          "construction, cost and schedule risks",
+          "demand and revenue risks",
+          "financing and counterparty risks",
+          "risk allocation between public and private partners",
+          "mitigation measure for each key risk",
+          "output and outcome indicators with baselines and targets",
+          "data sources and measurement frequency",
+          "reporting responsibilities and schedule",
+          "post-completion evaluation plan"
         ]
       }
     ],

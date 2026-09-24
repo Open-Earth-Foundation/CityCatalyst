@@ -678,5 +678,10 @@
   "edit-error-stale_structure": "La structure ou le brouillon a changé. Générez une nouvelle proposition avant de confirmer.",
   "drafting-setup-choose-funding": "Choisissez le bailleur de fonds et le programme",
   "drafting-setup-change-funding": "Changer de bailleur de fonds ou de programme",
-  "template-view": "Voir le modèle"
+  "template-view": "Voir le modèle",
+  "chat-suggestions-title": "Vous pourriez demander à Clima",
+  "chat-suggestion-review": "Qu'est-ce que je devrais améliorer en premier ?",
+  "chat-suggestion-gaps": "Quels détails manquent ?",
+  "chat-suggestion-start": "Comment puis-je commencer ?",
+  "chat-suggestion-evidence": "Quelles preuves devrais-je rassembler ?"
 }

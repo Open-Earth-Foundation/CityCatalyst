@@ -678,5 +678,10 @@
   "edit-error-stale_structure": "Die Struktur oder der Entwurf hat sich geändert. Erstellen Sie einen neuen Vorschlag, bevor Sie bestätigen.",
   "drafting-setup-choose-funding": "Wählen Sie Geldgeber und Programm",
   "drafting-setup-change-funding": "Förderer oder Programm ändern",
-  "template-view": "Vorlage anzeigen"
+  "template-view": "Vorlage anzeigen",
+  "chat-suggestions-title": "Sie könnten Clima fragen",
+  "chat-suggestion-review": "Was sollte ich zuerst verbessern?",
+  "chat-suggestion-gaps": "Welche Details fehlen?",
+  "chat-suggestion-start": "Wie fange ich an?",
+  "chat-suggestion-evidence": "Welche Beweise sollte ich sammeln?"
 }

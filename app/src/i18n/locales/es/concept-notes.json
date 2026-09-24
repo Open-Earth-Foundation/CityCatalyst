@@ -678,5 +678,10 @@
   "edit-error-stale_structure": "La estructura o el borrador cambiaron. Genere una nueva propuesta antes de confirmar.",
   "drafting-setup-choose-funding": "Elija financiador y programa",
   "drafting-setup-change-funding": "Cambiar financiador o programa",
-  "template-view": "Ver plantilla"
+  "template-view": "Ver plantilla",
+  "chat-suggestions-title": "Podrías preguntar a Clima",
+  "chat-suggestion-review": "¿Qué debería mejorar primero?",
+  "chat-suggestion-gaps": "¿Qué detalles faltan?",
+  "chat-suggestion-start": "¿Cómo comienzo?",
+  "chat-suggestion-evidence": "¿Qué evidencia debería reunir?"
 }

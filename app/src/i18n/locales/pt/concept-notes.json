@@ -678,5 +678,10 @@
   "edit-error-stale_structure": "A estrutura ou rascunho mudou. Gere uma nova proposta antes de confirmar.",
   "drafting-setup-choose-funding": "Escolha o financiador e o programa",
   "drafting-setup-change-funding": "Mudar financiador ou programa",
-  "template-view": "Visualizar modelo"
+  "template-view": "Visualizar modelo",
+  "chat-suggestions-title": "Você poderia perguntar ao Clima",
+  "chat-suggestion-review": "O que eu deveria melhorar primeiro?",
+  "chat-suggestion-gaps": "Quais detalhes estão faltando?",
+  "chat-suggestion-start": "Como eu começo?",
+  "chat-suggestion-evidence": "Que provas devo reunir?"
 }

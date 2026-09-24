@@ -391,6 +391,7 @@ const AdminOrganizationTeamPage = (props: {
                       w="full"
                       hideIndicator
                       padding="0px"
+                      asChild
                     >
                       <Button
                         rounded={0}

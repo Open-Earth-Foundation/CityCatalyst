@@ -48,6 +48,7 @@ interface ConceptNoteChatPanelProps {
   welcomeStage?: ChatWelcomeStage | null;
   onOpenDraft?: () => void;
   onOpenFundingSetup?: () => void;
+  onDraftOverviewComplete?: () => void;
 }
 
 interface ContextStatusNoticeProps {
@@ -202,6 +203,7 @@ export function ConceptNoteChatPanel({
   welcomeStage = null,
   onOpenDraft,
   onOpenFundingSetup,
+  onDraftOverviewComplete,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [input, setInput] = useState("");
@@ -221,6 +223,7 @@ export function ConceptNoteChatPanel({
     threadId,
     editScope,
     onProposal: edits.loadProposal,
+    onDraftOverviewComplete,
   });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const followLatestRef = useRef(true);

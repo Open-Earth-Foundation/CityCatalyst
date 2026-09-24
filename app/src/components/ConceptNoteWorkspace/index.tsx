@@ -194,15 +194,16 @@ export function ConceptNoteWorkspace({
   );
   // Transition detection during render (React's "derived from previous
   // props" pattern) keeps guidance changes out of effect bodies.
-  const contextStateValue = contextStatus.state;
-  const [seenContextState, setSeenContextState] = useState(contextStateValue);
-  if (seenContextState !== contextStateValue) {
-    setSeenContextState(contextStateValue);
-    if (
-      contextStateValue === "ready" &&
-      draft?.status === "not_started" &&
-      !draftHasContent
-    ) {
+  const sourcesReadyForDrafting =
+    contextStatus.state === "ready" &&
+    draft?.status === "not_started" &&
+    !draftHasContent;
+  const [seenSourcesReady, setSeenSourcesReady] = useState(
+    sourcesReadyForDrafting,
+  );
+  if (seenSourcesReady !== sourcesReadyForDrafting) {
+    setSeenSourcesReady(sourcesReadyForDrafting);
+    if (sourcesReadyForDrafting) {
       setTab("draft");
       setNextStep(canStartDrafting ? "start-drafting" : "choose-funding");
     }
@@ -215,18 +216,28 @@ export function ConceptNoteWorkspace({
     if (seenDraftStatus === "running" && draftStatusValue === "complete") {
       setNextStep("chat");
     }
+    if (draftStatusValue !== "complete" && nextStep === "chat") {
+      setNextStep(null);
+    }
     if (draftStatusValue === "running") {
       setHighlightStartDrafting(false);
     }
   }
-  // Pre-drafting guidance is moot once chapters exist or drafting runs, and
-  // "ready to draft" is stale once the funder selection is cleared.
+  // Funding may arrive after source readiness. Resolve that guidance from the
+  // current setup without reopening a banner the user already dismissed.
   const visibleNextStep =
     ((nextStep === "start-drafting" || nextStep === "choose-funding") &&
-      (isDraftRunning || draftStatusValue === "complete" || draftHasContent)) ||
+      (isDraftRunning ||
+        draftStatusValue === "complete" ||
+        draftHasContent ||
+        contextStatus.blocked ||
+        applicationContextLoading ||
+        applicationContextFailed)) ||
     (nextStep === "start-drafting" && !hasApplicationTemplate)
       ? null
-      : nextStep;
+      : nextStep === "choose-funding" && canStartDrafting
+        ? "start-drafting"
+        : nextStep;
 
   useEffect(() => {
     if (!highlightStartDrafting) return;
@@ -476,6 +487,7 @@ export function ConceptNoteWorkspace({
               contextStatus={contextStatus}
               composerRequest={composerRequest}
               draftOverviewPending={Boolean(draft?.overview_pending)}
+              onDraftOverviewComplete={() => void refetchDraft()}
               lng={lng}
               onOpenContext={() => setTab("context")}
               onStartNewChat={() => setStartNewChatOpen(true)}

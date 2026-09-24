@@ -165,10 +165,11 @@ function control(label: string): HTMLElement | undefined {
   ).filter((element) => element.textContent?.trim() === label)[0];
 }
 
-function controls(label: string): HTMLElement[] {
-  return Array.from(
-    container.querySelectorAll<HTMLElement>("a, button"),
-  ).filter((element) => element.textContent?.trim() === label);
+/** The inventory year chip; its tooltip names the action. */
+function inventoryChip(): HTMLButtonElement | null {
+  return container.querySelector<HTMLButtonElement>(
+    'button[title="inventory-choose-different"]',
+  );
 }
 
 beforeAll(async () => {
@@ -225,7 +226,7 @@ describe("Context tab missing-state cards", () => {
     expect(create.getAttribute("target")).toBe("_blank");
     expect(container.textContent).toContain("ghgi-why");
     expect(container.textContent).toContain("source-help-run-unavailable");
-    expect(control("inventory-choose-different")).toBeUndefined();
+    expect(inventoryChip()).toBeNull();
     expect(container.querySelector('a[href*="/HIAP/"]')).toBeNull();
   });
 
@@ -234,7 +235,7 @@ describe("Context tab missing-state cards", () => {
 
     expect(container.textContent).toContain("inventory-empty");
     expect(container.textContent).toContain("inventory-empty-detail");
-    expect(control("inventory-choose-different")).toBeUndefined();
+    expect(inventoryChip()).toBeNull();
     const add = control("add-inventory-data") as HTMLAnchorElement;
     expect(add.getAttribute("href")).toBe("/en/cities/city-1/GHGI/inv-1/data");
     expect(add.getAttribute("target")).toBe("_blank");
@@ -257,7 +258,33 @@ describe("Context tab missing-state cards", () => {
     expect(container.textContent).toContain("available-in-city");
     expect(container.textContent).toContain("source-help-run-available");
     expect(control("refresh-run-context")).toBeUndefined();
-    expect(control("inventory-choose-different")).toBeDefined();
+    expect(inventoryChip()).not.toBeNull();
+  });
+
+  it("shows the inventory year as a chip beside the status, with a GHGI link", async () => {
+    await renderTab({
+      ...withInventory,
+      bundle: bundle(
+        {
+          sourceProvenance: {
+            ghgi: { inventoryId: "inv-1", inventoryYear: 2023 },
+            hiap: null,
+          },
+        },
+        { ghgi: true },
+      ),
+    });
+
+    const chip = inventoryChip() as HTMLButtonElement;
+    expect(chip.textContent).toContain("inventory-year");
+    expect(chip.getAttribute("aria-haspopup")).toBe("dialog");
+    // The chip shares a row with the status badge instead of a second line.
+    expect(chip.parentElement?.textContent).toContain("included-in-run");
+    const ghgiLink = container.querySelector<HTMLAnchorElement>(
+      'a[title="inventory-open-in-ghgi"]',
+    );
+    expect(ghgiLink?.getAttribute("href")).toBe("/en/cities/city-1/GHGI/inv-1");
+    expect(ghgiLink?.getAttribute("target")).toBe("_blank");
   });
 
   it("opens the inventory picker from Choose different", async () => {
@@ -269,7 +296,7 @@ describe("Context tab missing-state cards", () => {
       ] as unknown as ContextTabProps["inventoryOptions"],
     });
 
-    await act(async () => control("inventory-choose-different")?.click());
+    await act(async () => inventoryChip()?.click());
     expect(document.body.textContent).toContain("inventory-choose-title");
   });
 
@@ -286,7 +313,7 @@ describe("Context tab missing-state cards", () => {
   it("explains why choosing is unavailable while drafting runs", async () => {
     await renderTab({ ...withInventory, isDraftRunning: true });
 
-    const choose = control("inventory-choose-different") as HTMLButtonElement;
+    const choose = inventoryChip() as HTMLButtonElement;
     expect(choose.disabled).toBe(true);
     const reason = document.getElementById(
       choose.getAttribute("aria-describedby") ?? "",
@@ -301,7 +328,7 @@ describe("Context tab missing-state cards", () => {
     });
 
     expect(container.textContent).toContain("status-processing");
-    expect(control("inventory-choose-different")).toBeUndefined();
+    expect(inventoryChip()).toBeNull();
   });
 
   it("shows the included state and no refresh control", async () => {
@@ -320,7 +347,9 @@ describe("Context tab missing-state cards", () => {
     await renderTab({ ...withInventory, ...withPlan });
 
     expect(container.textContent).toContain("bundle-source-available");
-    expect(controls("inventory-choose-different")).toHaveLength(1);
+    expect(
+      container.querySelectorAll('button[title="inventory-choose-different"]'),
+    ).toHaveLength(1);
     expect(container.querySelector('a[href*="/HIAP/"]')).toBeNull();
   });
 

@@ -748,6 +748,7 @@
   "edit-error-protected_template": "All chapter titles, descriptions and ordering are editable. Only custom chapters can be removed.",
   "edit-error-stale_structure": "The structure or draft changed. Generate a fresh proposal before confirming.",
   "inventory-partial": "Partial data: some sectors are still missing.",
+  "inventory-open-in-ghgi": "Open this inventory in GHGI",
   "inventory-choose-different": "Choose different",
   "inventory-choose-title": "Choose a GHG inventory",
   "inventory-choose-description": "This note uses the newest inventory unless you choose another year. Changing it refreshes the note's context.",

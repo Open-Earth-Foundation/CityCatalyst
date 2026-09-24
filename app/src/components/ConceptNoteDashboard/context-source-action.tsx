@@ -1,8 +1,8 @@
 "use client";
 
-import { Icon } from "@chakra-ui/react";
+import { chakra, Icon } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { LuExternalLink } from "react-icons/lu";
+import { LuChevronDown, LuExternalLink } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 
@@ -13,6 +13,51 @@ export interface ContextSourceAction {
   href?: string;
   loading?: boolean;
   disabledReason?: string;
+}
+
+/**
+ * A choice shown as a chip beside the status badge, sized to match it, e.g.
+ * the inventory year that opens the inventory picker.
+ */
+export function ContextSourceChip({
+  action,
+  reasonId,
+  title,
+}: {
+  action: ContextSourceAction;
+  reasonId?: string;
+  title?: string;
+}) {
+  const disabled = Boolean(action.disabledReason) || Boolean(action.loading);
+  return (
+    <chakra.button
+      type="button"
+      display="inline-flex"
+      alignItems="center"
+      gap={1}
+      px={2}
+      py={0.5}
+      border="1px solid"
+      borderColor="background.overlay"
+      borderRadius="pill"
+      bg="background.neutral"
+      color="content.link"
+      fontSize="10px"
+      lineHeight="16px"
+      fontWeight="semibold"
+      cursor={disabled ? "not-allowed" : "pointer"}
+      opacity={disabled ? 0.6 : 1}
+      _hover={disabled ? undefined : { borderColor: "content.link" }}
+      title={title}
+      aria-haspopup="dialog"
+      aria-describedby={action.disabledReason ? reasonId : undefined}
+      disabled={disabled}
+      onClick={action.onClick}
+    >
+      {action.label}
+      <Icon as={LuChevronDown} boxSize={3} />
+    </chakra.button>
+  );
 }
 
 /** Next-step control shared by the note-list tiles and the Context tab cards. */

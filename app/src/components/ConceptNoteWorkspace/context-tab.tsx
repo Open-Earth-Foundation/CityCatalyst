@@ -17,7 +17,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { LuCircleAlert, LuRefreshCw, LuUpload } from "react-icons/lu";
+import {
+  LuCircleAlert,
+  LuExternalLink,
+  LuRefreshCw,
+  LuUpload,
+} from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
@@ -36,6 +41,7 @@ import {
 } from "../ConceptNoteDashboard/utils";
 import {
   ContextSourceActionButton,
+  ContextSourceChip,
   type ContextSourceAction,
 } from "../ConceptNoteDashboard/context-source-action";
 import {
@@ -104,12 +110,18 @@ import {
 
 interface ContextCardProps {
   action?: ContextSourceAction;
+  /** "status" renders the action as a chip beside the status badge. */
+  actionPlacement?: "header" | "status";
+  /** Label for the chip's tooltip when the action sits beside the status. */
+  actionTitle?: string;
   children?: ReactNode;
   details: string[];
+  /** Shown top right when the header has no action, e.g. an external link. */
+  headerAside?: ReactNode;
   label: string;
   status: string;
   tone?: ContextTone;
-  value: ReactNode;
+  value?: ReactNode;
 }
 
 function ContextSectionLabel({ children }: { children: string }) {
@@ -129,8 +141,11 @@ function ContextSectionLabel({ children }: { children: string }) {
 
 function ContextCard({
   action,
+  actionPlacement = "header",
+  actionTitle,
   children,
   details,
+  headerAside,
   label,
   status,
   tone = "neutral",
@@ -138,6 +153,8 @@ function ContextCard({
 }: ContextCardProps) {
   const reasonId = useId();
   const disabled = Boolean(action?.disabledReason);
+  const statusAction = actionPlacement === "status" ? action : undefined;
+  const headerAction = actionPlacement === "header" ? action : undefined;
   return (
     <Box
       minW={0}
@@ -152,19 +169,37 @@ function ContextCard({
       <VStack align="stretch" gap={2} h="full">
         <HStack justify="space-between" align="start" gap={2}>
           <ContextSectionLabel>{label}</ContextSectionLabel>
-          {action && (
-            <ContextSourceActionButton action={action} reasonId={reasonId} />
+          {headerAction ? (
+            <ContextSourceActionButton
+              action={headerAction}
+              reasonId={reasonId}
+            />
+          ) : (
+            headerAside
           )}
         </HStack>
-        <ContextStatusBadge label={status} tone={tone} />
-        <Text
-          fontFamily="heading"
-          fontSize="body.sm"
-          fontWeight="semibold"
-          color="content.primary"
-        >
-          {value}
-        </Text>
+        {statusAction ? (
+          <HStack gap={2} flexWrap="wrap">
+            <ContextStatusBadge label={status} tone={tone} />
+            <ContextSourceChip
+              action={statusAction}
+              reasonId={reasonId}
+              title={actionTitle}
+            />
+          </HStack>
+        ) : (
+          <ContextStatusBadge label={status} tone={tone} />
+        )}
+        {value != null && (
+          <Text
+            fontFamily="heading"
+            fontSize="body.sm"
+            fontWeight="semibold"
+            color="content.primary"
+          >
+            {value}
+          </Text>
+        )}
         <VStack align="stretch" gap={0.5}>
           {details.filter(Boolean).map((detail) => (
             <Text
@@ -295,7 +330,9 @@ export function ContextTab({
       }
     : chosenInventory
       ? { id: chosenInventory.inventoryId, year: chosenInventory.year }
-      : inventoryId && { id: inventoryId, year: inventoryYear };
+      : inventoryId
+        ? { id: inventoryId, year: inventoryYear }
+        : null;
   const hiapStatusLabel = bundle.hiapStatus
     ? t(getContextSourceStatusTranslationKey(bundle.hiapStatus))
     : t("not-available");
@@ -307,7 +344,11 @@ export function ContextTab({
     ? undefined
     : inventoryNext.kind === "choose"
       ? {
-          label: t(inventoryNext.labelKey),
+          // The chip is the inventory year; clicking it opens the picker.
+          label:
+            displayedInventory?.year != null
+              ? t("inventory-year", { year: displayedInventory.year })
+              : t(inventoryNext.labelKey),
           onClick: () => setInventoryPickerOpen(true),
           loading: inventorySelectionSaving,
           disabledReason: isDraftRunning
@@ -531,8 +572,36 @@ export function ContextTab({
           <ContextCard
             label={t("ghg-inventory")}
             action={inventoryAction}
+            actionPlacement={
+              inventoryNext?.kind === "choose" ? "status" : "header"
+            }
+            actionTitle={t("inventory-choose-different")}
+            headerAside={
+              inventoryNext?.kind === "choose" && displayedInventory ? (
+                <Link
+                  asChild
+                  color="content.tertiary"
+                  aria-label={t("inventory-open-in-ghgi")}
+                  title={t("inventory-open-in-ghgi")}
+                >
+                  <NextLink
+                    href={getGhgiInventoryPath(
+                      lng,
+                      cityId,
+                      displayedInventory.id,
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Icon as={LuExternalLink} boxSize={3.5} />
+                  </NextLink>
+                </Link>
+              ) : undefined
+            }
             value={
-              displayedInventory && displayedInventory.year != null ? (
+              inventoryNext?.kind ===
+              "choose" ? undefined : displayedInventory &&
+                displayedInventory.year != null ? (
                 <Link asChild color="interactive.secondary">
                   <NextLink
                     href={getGhgiInventoryPath(

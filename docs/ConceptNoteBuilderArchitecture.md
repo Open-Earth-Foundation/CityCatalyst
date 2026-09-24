@@ -50,9 +50,11 @@ drafting worker uses a single population snapshot for all chapters.
 
 Missing Context cards offer the next step. The GHG inventory card links to GHGI
 onboarding when the city has no inventory, and to adding data when the inventory
-has no recorded values (**Empty inventory**); otherwise **Choose different**
-picks which inventory the run uses, disabled with a reason while drafting runs
-or the bundle is building. GHGI links open in a new tab. Run context refreshes
+has no recorded values (**Empty inventory**); otherwise the inventory year is a
+chip beside the status badge that opens the inventory picker ("Choose
+different"), disabled with a reason while drafting runs or the bundle is
+building, and a small icon opens that inventory in GHGI. GHGI links open in a
+new tab. Run context refreshes
 automatically (see below), so there is no manual refresh control. The Climate
 Action Plan card has no module link because not every project enables HIAP. A
 missing application template opens funding selection. The climate risk

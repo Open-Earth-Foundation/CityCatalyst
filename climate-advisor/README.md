@@ -615,6 +615,8 @@ timeout settings, Stationary Energy review chat-context prompt budgets, and the
 CNB source reader/synthesizer roles, chapter drafter, gap-impact reviewer,
 chat-edit planner, and partition/prompt/concurrency limits. Chat-edit planning
 uses one document agent with `search_draft`, `read_chapter`, and `propose_edits`.
+Each proposal permits up to 100 draft searches, shared across repair attempts,
+configured by `generation.prompt_budget.cnb_edits.max_searches`.
 The tools resolve exact occurrences and validate replacements immediately so the
 agent can correct a failed selection. Independent semantic review then checks
 only affected chapters, with at most five reviews concurrently. Rejections feed
@@ -624,7 +626,7 @@ Each attempt must submit a complete proposal against the unchanged snapshot;
 every revised candidate receives a fresh independent review. Unsupported edits
 still fail after exhaustion, and no draft changes are applied before acceptance.
 Each editor attempt is limited to 12 model turns, while the complete operation,
-including repairs and reviews, shares one 180-second deadline configured by
+including repairs and reviews, shares one 300-second deadline configured by
 `generation.prompt_budget.cnb_edits.max_agent_turns` and `timeout_seconds`.
 The chapter drafter uses GPT-5.6
 Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra and the

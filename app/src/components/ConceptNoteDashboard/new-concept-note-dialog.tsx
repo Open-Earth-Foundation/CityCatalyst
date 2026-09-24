@@ -50,6 +50,7 @@ interface NewConceptNoteDialogProps {
   cityName: string;
   lng: string;
   onOpenChange: (open: boolean) => void;
+  onUploadingRunChange?: (runId: string | null) => void;
   open: boolean;
   projectId?: string | null;
   projectName?: string | null;
@@ -74,6 +75,7 @@ export function NewConceptNoteDialog({
   cityName,
   lng,
   onOpenChange,
+  onUploadingRunChange,
   open,
   projectId,
   projectName,
@@ -217,6 +219,9 @@ export function NewConceptNoteDialog({
         targetRunId = run.run_id;
         setCreatedRunId(targetRunId);
       }
+      // Stays set on success: the dashboard should not flash the retry state
+      // for this run while the router navigates to the workspace.
+      onUploadingRunChange?.(targetRunId);
 
       for (const source of pending) {
         const file = selected.find(
@@ -254,6 +259,7 @@ export function NewConceptNoteDialog({
       resetDraft();
       onOpenChange(false);
     } catch {
+      onUploadingRunChange?.(null);
       setError(
         t(targetRunId ? "upload-incomplete-message" : "create-note-error"),
       );

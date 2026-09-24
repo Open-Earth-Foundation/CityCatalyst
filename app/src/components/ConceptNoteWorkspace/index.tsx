@@ -156,6 +156,8 @@ export function ConceptNoteWorkspace({
     inventory,
     inventoryFailed,
     inventoryLoading,
+    inventoryOptions,
+    inventorySelectionSaving,
     isDraftRunning,
     manualPopulation,
     manualPopulationSaving,
@@ -175,6 +177,7 @@ export function ConceptNoteWorkspace({
     runFailed,
     runLoading,
     saveManualPopulation,
+    selectInventory,
     startDrafting,
     startDraftState,
     uploadSource,
@@ -495,6 +498,8 @@ export function ConceptNoteWorkspace({
           >
             <ConceptNoteChatPanel
               contextStatus={contextStatus}
+              contextBuildId={bundle.buildId}
+              contextChanges={bundle.contextChanges}
               composerRequest={composerRequest}
               draftOverviewPending={Boolean(draft?.overview_pending)}
               onDraftOverviewComplete={() => void refetchDraft()}
@@ -838,7 +843,10 @@ export function ConceptNoteWorkspace({
                   inventoryHasData={inventory?.totalEmissions != null}
                   inventoryId={inventory?.inventoryId ?? null}
                   inventoryLoading={inventoryLoading}
+                  inventoryOptions={inventoryOptions}
+                  inventorySelectionSaving={inventorySelectionSaving}
                   inventoryYear={inventory?.year ?? null}
+                  onSelectInventory={selectInventory}
                   isDraftRunning={isDraftRunning}
                   isRetryingBundle={retryBundleState.isLoading}
                   isRetryingUpload={retryUploadState.isLoading}

@@ -118,6 +118,15 @@ jest.unstable_mockModule("@/services/api", () => ({
     useGetConceptNoteUploadStatusQuery: getUploadQuery,
     useGetInventoryByCityIdQuery: () => ({ data: undefined }),
     useGetCityDashboardQuery: () => ({ data: undefined }),
+    useGetCityYearsQuery: () => ({ data: undefined, isLoading: false }),
+    useRefreshConceptNoteContextBundleMutation: () => [
+      jest.fn(() => ({ unwrap: async () => ({ status: "current" }) })),
+      { isLoading: false },
+    ],
+    useSelectConceptNoteInventoryMutation: () => [
+      jest.fn(),
+      { isLoading: false },
+    ],
     useGetMostRecentCityPopulationQuery: () => ({
       data: cityPopulation,
       isError: false,
@@ -206,7 +215,10 @@ function ContextHarness() {
         inventoryHasData={false}
         inventoryId={null}
         inventoryLoading={false}
+        inventoryOptions={[]}
+        inventorySelectionSaving={false}
         inventoryYear={null}
+        onSelectInventory={async () => {}}
         isDraftRunning={false}
         isRetryingBundle={false}
         isRetryingUpload={false}

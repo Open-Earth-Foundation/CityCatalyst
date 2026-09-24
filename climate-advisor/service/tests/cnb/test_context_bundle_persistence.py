@@ -19,7 +19,9 @@ from app.persistence.concept_notes.context_bundle import (
     fail_build,
     load_agent_context,
     load_query_source,
+    load_refresh_state,
     recover_stale_builds,
+    set_selected_inventory,
 )
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
@@ -50,6 +52,10 @@ async def test_progress_identifies_inventory_from_persisted_bundle(tmp_path) -> 
             hiap={"inventory_id": str(first_inventory)},
             optional_sources={"ghgi": "included", "hiap": "included"},
             warnings=[],
+            inventory_candidate={
+                "inventory_id": str(first_inventory),
+                "updated_at": "2026-09-01T10:00:00Z",
+            },
         )
         async with session_factory() as session:
             run = await session.get(ConceptNoteRun, run_id)
@@ -57,6 +63,26 @@ async def test_progress_identifies_inventory_from_persisted_bundle(tmp_path) -> 
         assert run.context_summary["context_bundle"]["source_provenance"] == {
             "ghgi": {"inventory_id": str(first_inventory), "inventory_year": 2024},
             "hiap": {"inventory_id": str(first_inventory)},
+        }
+        # The first bundle has no predecessor, so nothing is reported as new.
+        assert run.context_summary["context_bundle"]["context_changes"] == []
+
+        await set_selected_inventory(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            inventory_id=second_inventory,
+        )
+        state = await load_refresh_state(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+        )
+        assert state.status == "ready"
+        assert state.selected_inventory_id == second_inventory
+        assert state.inventory_candidate == {
+            "inventory_id": str(first_inventory),
+            "updated_at": "2026-09-01T10:00:00Z",
         }
 
         next_build = await begin_build(
@@ -73,6 +99,7 @@ async def test_progress_identifies_inventory_from_persisted_bundle(tmp_path) -> 
             run.context_summary["context_bundle"]["source_provenance"]["ghgi"]["inventory_id"]
             == str(first_inventory)
         )
+        assert next_build.selected_inventory_id == second_inventory
         assert await complete_build(
             session_factory=session_factory,
             user_id="owner",
@@ -90,6 +117,10 @@ async def test_progress_identifies_inventory_from_persisted_bundle(tmp_path) -> 
         assert run.context_summary["context_bundle"]["source_provenance"] == {
             "ghgi": {"inventory_id": str(second_inventory), "inventory_year": 2025}
         }
+        assert run.context_summary["context_bundle"]["context_changes"] == [
+            {"source": "ghgi", "change": "changed", "inventory_year": 2025},
+            {"source": "hiap", "change": "removed"},
+        ]
     finally:
         await engine.dispose()
 

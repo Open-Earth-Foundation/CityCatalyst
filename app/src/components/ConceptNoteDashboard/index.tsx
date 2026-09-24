@@ -41,7 +41,8 @@ import {
   contextSourceStatusKey,
   contextSourceTone,
   getCitySourceState,
-  inventorySourceLink,
+  inventorySourceAction,
+  isSourceLookupFailure,
 } from "./context-source-status";
 import {
   ConceptNoteLifecycleDialog,
@@ -57,7 +58,6 @@ import {
   getRunProgressPercent,
   getWorkflowStepTranslationKey,
   hasPrioritizedHiapActions,
-  isInventoryLoadFailure,
   normalizePopulationData,
 } from "./utils";
 
@@ -106,6 +106,7 @@ export function ConceptNoteDashboard({
     isLoading: inventoryLoading,
     error: inventoryError,
   } = api.useGetInventoryByCityIdQuery(cityId);
+  const inventoryFailed = isSourceLookupFailure(inventoryError);
   const {
     data: files,
     isLoading: filesLoading,
@@ -158,16 +159,19 @@ export function ConceptNoteDashboard({
   // A city without an inventory answers 404; an inventory with no values is empty.
   const inventoryState = getCitySourceState(
     Boolean(inventory),
-    isInventoryLoadFailure(inventoryError),
+    inventoryFailed,
     inventory?.totalEmissions == null,
   );
-  const inventoryLink = inventoryLoading
+  // Tiles link to GHGI to create or fill an inventory; choosing one is per note.
+  const inventoryNext = inventoryLoading
     ? undefined
-    : inventorySourceLink(inventoryState, {
+    : inventorySourceAction(inventoryState, {
         lng,
         cityId,
         inventoryId: inventory?.inventoryId ?? null,
       });
+  const inventoryAction =
+    inventoryNext?.href !== undefined ? inventoryNext : undefined;
   const actionPlanState = getCitySourceState(hiapAvailable, modulesFailed);
   const filesState = getCitySourceState(cityFiles.length > 0, filesFailed);
   const exportBundle = exportRun
@@ -321,12 +325,16 @@ export function ConceptNoteDashboard({
               <ContextTile
                 icon={LuBuilding2}
                 label={t("city-context")}
-                help={t(contextSourceHelpKey(populationState, "city"))}
-                status={
+                help={
                   populationLoading
                     ? undefined
-                    : t(contextSourceStatusKey(populationState))
+                    : t(contextSourceHelpKey(populationState, "city"))
                 }
+                status={t(
+                  populationLoading
+                    ? "status-processing"
+                    : contextSourceStatusKey(populationState),
+                )}
                 statusTone={contextSourceTone(populationState)}
                 value={cityLoading ? <Skeleton h="20px" /> : cityLocation}
                 detail={
@@ -337,32 +345,42 @@ export function ConceptNoteDashboard({
                 icon={LuLandmark}
                 label={t("ghg-inventory")}
                 action={
-                  inventoryLink && {
-                    label: t(inventoryLink.labelKey),
-                    href: inventoryLink.href,
+                  inventoryAction && {
+                    label: t(inventoryAction.labelKey),
+                    href: inventoryAction.href,
                   }
                 }
-                help={t(contextSourceHelpKey(inventoryState, "city"))}
-                status={
+                help={
                   inventoryLoading
                     ? undefined
-                    : t(contextSourceStatusKey(inventoryState))
+                    : t(contextSourceHelpKey(inventoryState, "city"))
                 }
+                status={t(
+                  inventoryLoading
+                    ? "status-processing"
+                    : contextSourceStatusKey(inventoryState),
+                )}
                 statusTone={contextSourceTone(inventoryState)}
                 value={
                   inventoryLoading ? <Skeleton h="20px" /> : inventoryLabel
                 }
-                detail={inventory ? t("inventory-detail") : t("no-inventory")}
+                detail={
+                  inventoryLoading ? "" : inventory ? t("inventory-detail") : ""
+                }
               />
               <ContextTile
                 icon={LuListChecks}
                 label={t("hiap-context")}
-                help={t(contextSourceHelpKey(actionPlanState, "city"))}
-                status={
+                help={
                   modulesLoading
                     ? undefined
-                    : t(contextSourceStatusKey(actionPlanState))
+                    : t(contextSourceHelpKey(actionPlanState, "city"))
                 }
+                status={t(
+                  modulesLoading
+                    ? "status-processing"
+                    : contextSourceStatusKey(actionPlanState),
+                )}
                 statusTone={contextSourceTone(actionPlanState)}
                 value={
                   modulesLoading ? (
@@ -373,19 +391,25 @@ export function ConceptNoteDashboard({
                     t("hiap-no-actions")
                   )
                 }
-                detail={t(
-                  hiapAvailable ? "hiap-detail" : "hiap-impact-missing-summary",
-                )}
+                detail={
+                  modulesLoading
+                    ? ""
+                    : t(
+                        hiapAvailable
+                          ? "hiap-detail"
+                          : "hiap-impact-missing-summary",
+                      )
+                }
               />
               <ContextTile
                 icon={LuFolderOpen}
                 label={t("city-files")}
                 help={t(contextSourceHelpKey(filesState, "city"))}
-                status={
+                status={t(
                   filesLoading
-                    ? undefined
-                    : t(contextSourceStatusKey(filesState))
-                }
+                    ? "status-processing"
+                    : contextSourceStatusKey(filesState),
+                )}
                 statusTone={contextSourceTone(filesState)}
                 value={filesLoading ? <Skeleton h="20px" /> : fileName}
                 detail={t("file-count", { count: cityFiles.length })}

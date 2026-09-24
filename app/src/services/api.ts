@@ -76,6 +76,7 @@ import {
   ConceptNoteUploadRequest,
   ConceptNoteUploadResponse,
   ConceptNoteUploadStatusRequest,
+  ConceptNoteContextBundleRefreshResponse,
   ConceptNoteContextBundleRetryResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
@@ -2658,6 +2659,29 @@ export const api = createApi({
         query: (runId) => ({
           url: `concept-notes/${runId}/context-bundle/retry/`,
           method: "POST",
+        }),
+        invalidatesTags: ["ConceptNoteRuns"],
+      }),
+      refreshConceptNoteContextBundle: builder.mutation<
+        ConceptNoteContextBundleRefreshResponse,
+        string
+      >({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/context-bundle/refresh/`,
+          method: "POST",
+        }),
+        // Only a queued rebuild changes the run; skip needless refetches.
+        invalidatesTags: (result) =>
+          result?.status === "queued" ? ["ConceptNoteRuns"] : [],
+      }),
+      selectConceptNoteInventory: builder.mutation<
+        ConceptNoteContextBundleRetryResponse,
+        { runId: string; inventoryId: string | null }
+      >({
+        query: ({ runId, inventoryId }) => ({
+          url: `concept-notes/${runId}/inventory-selection/`,
+          method: "PUT",
+          body: { inventory_id: inventoryId },
         }),
         invalidatesTags: ["ConceptNoteRuns"],
       }),

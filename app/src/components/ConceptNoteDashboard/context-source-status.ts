@@ -1,7 +1,8 @@
 import { getGhgiInventoryPath } from "@/util/ghgi-routes";
+import { isFetchBaseQueryError } from "@/util/helpers";
 
-// "empty": the source exists in the city but holds no data yet (only the GHG
-// inventory reports this), so it cannot inform a run until data is added.
+// Only the GHG inventory reports "empty" (it exists but holds no data, so it
+// cannot inform a run) and "partial" (the run uses it but sectors are missing).
 export type ContextSourceState =
   | "unavailable"
   | "available"
@@ -9,6 +10,7 @@ export type ContextSourceState =
   | "selected"
   | "processing"
   | "included"
+  | "partial"
   | "failed";
 
 interface RunSourceStateInput {
@@ -43,7 +45,7 @@ export function getRunSourceState({
   }
   // An empty source contributes nothing, even if an older build included it.
   if (cityAvailable && empty) return "empty";
-  if (included) return "included";
+  if (included) return sourceStatus === "partial" ? "partial" : "included";
   if (sourceStatus === "unavailable") return "unavailable";
   if (sourceStatus === "failed") return "failed";
   if (cityAvailable && bundleStatus === "failed") return "failed";
@@ -74,6 +76,8 @@ export function contextSourceHelpKey(
       return "source-help-processing";
     case "included":
       return "source-help-included";
+    case "partial":
+      return "inventory-partial";
     case "failed":
       return "source-help-failed";
   }
@@ -91,6 +95,8 @@ export function contextSourceStatusKey(state: ContextSourceState): string {
       return "status-processing";
     case "included":
       return "included-in-run";
+    case "partial":
+      return "included-partial";
     case "failed":
       return "status-failed";
     case "unavailable":
@@ -104,35 +110,48 @@ export function contextSourceTone(
   if (state === "available" || state === "selected" || state === "included") {
     return "positive";
   }
-  if (state === "failed" || state === "empty") return "warning";
+  if (state === "failed" || state === "empty" || state === "partial") {
+    return "warning";
+  }
   return "neutral";
 }
 
+/** A 404 means the city has no such source yet, not that loading it failed. */
+export function isSourceLookupFailure(error: unknown): boolean {
+  return (
+    Boolean(error) && !(isFetchBaseQueryError(error) && error.status === 404)
+  );
+}
+
+export type InventoryActionKind = "create" | "fill" | "choose";
+
 /**
- * Where to fix a missing or empty GHG inventory in CityCatalyst: create one,
- * or add data to the existing one. Other states need no inventory link.
+ * The inventory card's next step: create an inventory when the city has none,
+ * fill an empty one, otherwise choose which inventory a run uses. Create and
+ * fill link to GHGI; choosing only applies inside a run.
  */
-export function inventorySourceLink(
+export function inventorySourceAction(
   state: ContextSourceState,
   {
     lng,
     cityId,
     inventoryId,
   }: { lng: string; cityId: string; inventoryId: string | null },
-):
-  | { labelKey: "create-inventory" | "add-inventory-data"; href: string }
-  | undefined {
-  if (state === "empty" && inventoryId) {
+): { kind: InventoryActionKind; labelKey: string; href?: string } | undefined {
+  if (state === "failed" || state === "processing") return undefined;
+  if (!inventoryId) {
     return {
-      labelKey: "add-inventory-data",
-      href: getGhgiInventoryPath(lng, cityId, inventoryId, "data"),
-    };
-  }
-  if (state === "unavailable" && !inventoryId) {
-    return {
+      kind: "create",
       labelKey: "create-inventory",
       href: `/${lng}/cities/${cityId}/GHGI/onboarding`,
     };
   }
-  return undefined;
+  if (state === "empty") {
+    return {
+      kind: "fill",
+      labelKey: "add-inventory-data",
+      href: getGhgiInventoryPath(lng, cityId, inventoryId, "data"),
+    };
+  }
+  return { kind: "choose", labelKey: "inventory-choose-different" };
 }

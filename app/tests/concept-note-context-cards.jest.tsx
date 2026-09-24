@@ -72,6 +72,9 @@ function bundle(
     ghgiStatus: null,
     hiapStatus: null,
     sourceProvenance: { ghgi: null, hiap: null },
+    buildId: null,
+    contextChanges: [],
+    selectedInventoryId: null,
     retryable: false,
     ...overrides,
   };
@@ -124,7 +127,10 @@ async function renderTab(overrides: Partial<ContextTabProps> = {}) {
     inventoryHasData: false,
     inventoryId: null,
     inventoryLoading: false,
+    inventoryOptions: [],
+    inventorySelectionSaving: false,
     inventoryYear: null,
+    onSelectInventory: async () => {},
     isDraftRunning: false,
     isRetryingBundle: false,
     isRetryingUpload: false,
@@ -219,16 +225,16 @@ describe("Context tab missing-state cards", () => {
     expect(create.getAttribute("target")).toBe("_blank");
     expect(container.textContent).toContain("ghgi-why");
     expect(container.textContent).toContain("source-help-run-unavailable");
+    expect(control("inventory-choose-different")).toBeUndefined();
     expect(container.querySelector('a[href*="/HIAP/"]')).toBeNull();
-    expect(controls("refresh-run-context")).toHaveLength(0);
   });
 
-  it("flags an empty inventory and links to adding data instead of refreshing", async () => {
+  it("flags an empty inventory and links to filling it", async () => {
     await renderTab({ ...withInventory, inventoryHasData: false });
 
     expect(container.textContent).toContain("inventory-empty");
     expect(container.textContent).toContain("inventory-empty-detail");
-    expect(control("refresh-run-context")).toBeUndefined();
+    expect(control("inventory-choose-different")).toBeUndefined();
     const add = control("add-inventory-data") as HTMLAnchorElement;
     expect(add.getAttribute("href")).toBe("/en/cities/city-1/GHGI/inv-1/data");
     expect(add.getAttribute("target")).toBe("_blank");
@@ -245,55 +251,60 @@ describe("Context tab missing-state cards", () => {
     expect(control("add-inventory-data")).toBeDefined();
   });
 
-  it("offers a run refresh when the inventory has data but is not in the run", async () => {
+  it("explains that an inventory with data is picked up automatically", async () => {
     await renderTab(withInventory);
 
     expect(container.textContent).toContain("available-in-city");
-    expect(container.textContent).toContain("not-included-in-run");
-    const refresh = control("refresh-run-context") as HTMLButtonElement;
-    expect(refresh.disabled).toBe(false);
-    await act(async () => refresh.click());
-    expect(onRetryBundle).toHaveBeenCalledTimes(1);
-    // Only the inventory card: without prioritized actions the plan card has no action.
-    expect(controls("refresh-run-context")).toHaveLength(1);
+    expect(container.textContent).toContain("source-help-run-available");
+    expect(control("refresh-run-context")).toBeUndefined();
+    expect(control("inventory-choose-different")).toBeDefined();
   });
 
-  it("offers a run refresh when the plan is ready in CityCatalyst but not in the run", async () => {
+  it("opens the inventory picker from Choose different", async () => {
     await renderTab({
       ...withInventory,
-      ...withPlan,
       bundle: bundle({}, { ghgi: true }),
+      inventoryOptions: [
+        { year: 2024, inventoryId: "inv-1", lastUpdate: new Date() },
+      ] as unknown as ContextTabProps["inventoryOptions"],
     });
 
-    expect(controls("refresh-run-context")).toHaveLength(1);
-    expect(container.textContent).toContain("bundle-source-available");
+    await act(async () => control("inventory-choose-different")?.click());
+    expect(document.body.textContent).toContain("inventory-choose-title");
   });
 
-  it("explains why a refresh is unavailable while drafting runs", async () => {
+  it("marks an included inventory with missing sectors as partial", async () => {
+    await renderTab({
+      ...withInventory,
+      bundle: bundle({ ghgiStatus: "partial" }, { ghgi: true }),
+    });
+
+    expect(container.textContent).toContain("included-partial");
+    expect(container.textContent).toContain("inventory-partial");
+  });
+
+  it("explains why choosing is unavailable while drafting runs", async () => {
     await renderTab({ ...withInventory, isDraftRunning: true });
 
-    const refresh = control("refresh-run-context") as HTMLButtonElement;
-    expect(refresh.disabled).toBe(true);
+    const choose = control("inventory-choose-different") as HTMLButtonElement;
+    expect(choose.disabled).toBe(true);
     const reason = document.getElementById(
-      refresh.getAttribute("aria-describedby") ?? "",
+      choose.getAttribute("aria-describedby") ?? "",
     );
     expect(reason?.textContent).toBe("context-action-draft-running");
   });
 
-  it("shows processing and explains the disabled refresh while the context rebuilds", async () => {
+  it("shows processing while the context rebuilds", async () => {
     await renderTab({
       ...withInventory,
       bundle: bundle({ status: "building" }),
     });
 
-    expect((control("refresh-run-context") as HTMLButtonElement).disabled).toBe(
-      true,
-    );
     expect(container.textContent).toContain("status-processing");
-    expect(container.textContent).toContain("context-action-rebuilding");
+    expect(control("inventory-choose-different")).toBeUndefined();
   });
 
-  it("shows no action for sources already in the run", async () => {
+  it("shows the included state and no refresh control", async () => {
     await renderTab({
       ...withInventory,
       ...withPlan,
@@ -303,6 +314,14 @@ describe("Context tab missing-state cards", () => {
     expect(container.textContent).toContain("included-in-run");
     expect(control("refresh-run-context")).toBeUndefined();
     expect(control("create-inventory")).toBeUndefined();
+  });
+
+  it("gives the Climate Action Plan card no action", async () => {
+    await renderTab({ ...withInventory, ...withPlan });
+
+    expect(container.textContent).toContain("bundle-source-available");
+    expect(controls("inventory-choose-different")).toHaveLength(1);
+    expect(container.querySelector('a[href*="/HIAP/"]')).toBeNull();
   });
 
   it("withholds the inventory action while the inventory loads", async () => {

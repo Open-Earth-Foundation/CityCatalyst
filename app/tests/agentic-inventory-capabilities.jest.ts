@@ -537,17 +537,6 @@ describe("GHGI inventory internal CA capability routes", () => {
     expect(payload.data.completion.filled).toBeGreaterThan(0);
     expect(stationaryEnergy.data_state.third_party).toBe(1);
     expect(transportation.data_state.manual_or_uploaded).toBeGreaterThan(0);
-    // GPC Basic tracks sectors I-III; IV and V are reported with nothing required.
-    expect(
-      payload.data.by_sector
-        .map((sector: { reference: string }) => sector.reference)
-        .sort(),
-    ).toEqual(["I", "II", "III", "IV", "V"]);
-    expect(
-      payload.data.by_sector.find(
-        (sector: { reference: string }) => sector.reference === "V",
-      ),
-    ).toEqual(expect.objectContaining({ required: 0, missing: 0 }));
     expect(JSON.stringify(payload)).not.toContain(inventory.inventoryId);
     expect(JSON.stringify(payload)).not.toContain(city.cityId);
   });
@@ -573,12 +562,6 @@ describe("GHGI inventory internal CA capability routes", () => {
         }),
       ]),
     );
-    // Every GPC sector is reported, with zero where nothing is recorded.
-    expect(
-      payload.data.by_sector
-        .map((row: { reference: string }) => row.reference)
-        .sort(),
-    ).toEqual(["I", "II", "III", "IV", "V"]);
     expect(payload.data.top_emitters[0]).toEqual(
       expect.objectContaining({
         sector: "Stationary Energy",

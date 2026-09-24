@@ -180,11 +180,6 @@ export function getContextSourceStatusTranslationKey(value: string): string {
   );
 }
 
-/** Inventory lookup errors other than "this city has no inventory" (404). */
-export function isInventoryLoadFailure(error: unknown): boolean {
-  return Boolean(error) && recordValue(error).status !== 404;
-}
-
 export function hasPrioritizedHiapActions(widget: unknown): boolean {
   const hiap = recordValue(widget);
 
@@ -213,8 +208,15 @@ export function conceptNoteResumeHref(
   return `${href}?${searchParams.toString()}`;
 }
 
+export interface ConceptNoteContextChange {
+  source: "ghgi" | "hiap";
+  change: "added" | "changed" | "updated" | "removed";
+  inventoryYear: number | null;
+}
+
 export interface ConceptNoteBundleProgress {
   status: string | null;
+  buildId: string | null;
   documentGrounding: "none" | "uploaded_evidence" | null;
   availableContext: {
     city: boolean;
@@ -235,6 +237,10 @@ export interface ConceptNoteBundleProgress {
     ghgi: { inventoryId: string; inventoryYear: number | null } | null;
     hiap: { inventoryId: string } | null;
   };
+  /** City sources the latest rebuild added, replaced, refreshed, or dropped. */
+  contextChanges: ConceptNoteContextChange[];
+  /** Inventory the user chose for this run; null means the newest is used. */
+  selectedInventoryId: string | null;
   retryable: boolean;
   errorCode?: string;
   errorReason?: string;
@@ -254,6 +260,37 @@ function countValue(value: unknown): number {
 
 function stringValue(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value : null;
+}
+
+const CONTEXT_CHANGE_SOURCES = new Set(["ghgi", "hiap"]);
+const CONTEXT_CHANGE_KINDS = new Set([
+  "added",
+  "changed",
+  "updated",
+  "removed",
+]);
+
+function contextChangesValue(value: unknown): ConceptNoteContextChange[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    const change = recordValue(item);
+    if (
+      !CONTEXT_CHANGE_SOURCES.has(String(change.source)) ||
+      !CONTEXT_CHANGE_KINDS.has(String(change.change))
+    ) {
+      return [];
+    }
+    return [
+      {
+        source: change.source as ConceptNoteContextChange["source"],
+        change: change.change as ConceptNoteContextChange["change"],
+        inventoryYear:
+          typeof change.inventory_year === "number"
+            ? change.inventory_year
+            : null,
+      },
+    ];
+  });
 }
 
 function documentGroundingValue(
@@ -285,6 +322,7 @@ export function getConceptNoteBundleProgress(
 
   return {
     status: stringValue(bundle.status),
+    buildId: stringValue(bundle.build_id),
     documentGrounding,
     availableContext: {
       city: availableContext.city === true,
@@ -322,6 +360,8 @@ export function getConceptNoteBundleProgress(
         ? { inventoryId: String(hiapProvenance.inventory_id) }
         : null,
     },
+    contextChanges: contextChangesValue(bundle.context_changes),
+    selectedInventoryId: stringValue(summary.selected_inventory_id),
     retryable: bundle.retryable === true,
     errorCode: stringValue(bundle.error_code) || undefined,
     errorReason: stringValue(bundle.error_reason) || undefined,

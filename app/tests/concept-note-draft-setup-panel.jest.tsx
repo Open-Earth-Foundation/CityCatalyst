@@ -39,6 +39,9 @@ const bundle: ConceptNoteBundleProgress = {
   ghgiStatus: null,
   hiapStatus: null,
   sourceProvenance: { ghgi: null, hiap: null },
+  contextChanges: [],
+  selectedInventoryId: null,
+  buildId: null,
   retryable: false,
 };
 

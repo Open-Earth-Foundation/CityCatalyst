@@ -48,18 +48,15 @@ record or become CC context. Removing it clears only the run-scoped value.
 The editor and API reject changes while chapter drafting is running because the
 drafting worker uses a single population snapshot for all chapters.
 
-Missing Context cards offer the next step. A missing GHG inventory links to GHGI
-onboarding in a new tab; an inventory with no emissions data is flagged as empty
-and links to adding data, because CityCatalyst reports no sector breakdown for it
-and it cannot enter the run. Once any sector has data, the GHGI capabilities
-report all five GPC sectors (zero where nothing is recorded or the sector is
-outside the inventory's scope), which the context bundle requires. The workspace
-refetches the city inventory and dashboard on window focus. The Climate Action Plan card has no module link because not every
-project enables HIAP. When CityCatalyst has an inventory or prioritized actions the
-run lacks, the card offers Refresh run context, which forces a context-bundle
-rebuild; it is disabled with an explanation while drafting runs or the bundle is
-building. A missing application template opens funding selection. The climate
-risk assessment card is hidden until CCRA data feeds concept notes.
+Missing Context cards offer the next step. The GHG inventory card links to GHGI
+onboarding when the city has no inventory, and to adding data when the inventory
+has no recorded values (**Empty inventory**); otherwise **Choose different**
+picks which inventory the run uses, disabled with a reason while drafting runs
+or the bundle is building. GHGI links open in a new tab. Run context refreshes
+automatically (see below), so there is no manual refresh control. The Climate
+Action Plan card has no module link because not every project enables HIAP. A
+missing application template opens funding selection. The climate risk
+assessment card and tile are hidden until CCRA data feeds concept notes.
 
 In scope:
 
@@ -1868,13 +1865,35 @@ bundles without provenance display that the used inventory was not recorded.
 An optional source reported as `unavailable` by bundle progress appears as
 **Not available** in Run Context, even if it exists in the city; an actual
 bundle or source failure appears as **Failed**.
-A GHG inventory with no recorded values is **Empty inventory** in both places.
+A GHG inventory with no recorded values is **Empty inventory** in both places;
+one the run uses with sectors still missing is **Included, partial data**.
 The note-list tiles and the Context cards share one implementation: the
 `context-source-status` module derives state, label, tone and help text, the
-same status badge renders it, and `context-source-action` renders the next
-step (Create inventory or Add inventory data in both; Refresh run context only
-in the run). A city with no inventory answers 404, which reads as unavailable;
-other lookup errors read as failed.
+same status badge renders it (**Processing** while data loads), and
+`context-source-action` renders the next step (Create inventory or Add inventory
+data in both; Choose different only in the run). A city with no inventory
+answers 404, which reads as unavailable; other lookup errors read as failed.
+
+GHGI uses the newest accessible inventory (year, then last update, then ID),
+the same order `GET /api/v1/city/{city}/ghgi` uses; that route returns 404 when
+the city has none. A partially filled inventory is still used: sectors missing
+from CityCatalyst's status or emissions data, including IV and V in BASIC
+inventories, count as zero and the source is marked `partial`. "Choose
+different" on the GHGI card calls `PUT /concept-notes/{run}/inventory-selection`,
+which stores `context_summary.selected_inventory_id` (null restores the newest)
+and rebuilds the bundle. A chosen inventory that is no longer accessible falls
+back to the newest with a warning.
+
+Each build records the inventory version it checked as
+`context_bundle.inventory_candidate`. Opening the workspace, and returning to
+its tab (at most every 10 seconds), calls
+`POST /concept-notes/{run}/context-bundle/refresh`. That compares the
+city's current inventory ID and `updated_at` with the recorded version and
+queues a forced rebuild only when they differ, so an inventory created or
+edited after the note started is picked up without a user action. A rebuild
+stores `context_changes` (GHGI added, changed, updated, or removed; HIAP added
+or removed), and the chat shows them once per build as a
+"New context available" notice.
 
 Context loaded:
 

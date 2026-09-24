@@ -12,15 +12,19 @@ import {
   HStack,
   Icon,
   Input,
+  Link,
   Text,
   VStack,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
 import { LuCircleAlert, LuRefreshCw, LuUpload } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
+import { getGhgiInventoryPath } from "@/util/ghgi-routes";
 import type {
   CityDashboardResponse,
+  CityYearData,
   ConceptNoteApplicationContext,
   ConceptNoteUploadResponse,
 } from "@/util/types";
@@ -39,11 +43,11 @@ import {
   contextSourceStatusKey,
   contextSourceTone,
   getRunSourceState,
-  inventorySourceLink,
-  type ContextSourceState,
+  inventorySourceAction,
 } from "../ConceptNoteDashboard/context-source-status";
 import { uploadStatusTranslationKey } from "../ConceptNoteWiringHarness/utils";
 import { ApplicationTemplateDialog } from "./application-template-dialog";
+import { InventorySelectionDialog } from "./inventory-selection-dialog";
 
 interface ContextTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
@@ -66,7 +70,10 @@ interface ContextTabProps {
   inventoryHasData: boolean;
   inventoryId: string | null;
   inventoryLoading: boolean;
+  inventoryOptions: CityYearData[];
+  inventorySelectionSaving: boolean;
   inventoryYear: number | null;
+  onSelectInventory: (inventoryId: string | null) => Promise<void>;
   isDraftRunning: boolean;
   isRetryingBundle: boolean;
   isRetryingUpload: boolean;
@@ -102,7 +109,7 @@ interface ContextCardProps {
   label: string;
   status: string;
   tone?: ContextTone;
-  value: string;
+  value: ReactNode;
 }
 
 function ContextSectionLabel({ children }: { children: string }) {
@@ -202,7 +209,10 @@ export function ContextTab({
   inventoryHasData,
   inventoryId,
   inventoryLoading,
+  inventoryOptions,
+  inventorySelectionSaving,
   inventoryYear,
+  onSelectInventory,
   isDraftRunning,
   isRetryingBundle,
   isRetryingUpload,
@@ -232,6 +242,7 @@ export function ContextTab({
   const [yearInput, setYearInput] = useState("");
   const [populationError, setPopulationError] = useState<string | null>(null);
   const [templateOpen, setTemplateOpen] = useState(false);
+  const [inventoryPickerOpen, setInventoryPickerOpen] = useState(false);
   const template = applicationContext?.template ?? null;
   const ghgiIncluded =
     bundle.availableContext.ghgi ||
@@ -244,19 +255,26 @@ export function ContextTab({
     (applicationContext?.included_sources.city ?? false);
   const populationState = getRunSourceState({
     cityAvailable: !populationMissing || Boolean(manualPopulation),
-    included: cityIncluded && !manualPopulation,
+    // The city profile can be included without a population value.
+    included: cityIncluded && !manualPopulation && !populationMissing,
     bundleStatus: bundle.status,
     sourceStatus: populationFailed ? "failed" : null,
     selected: Boolean(manualPopulation),
   });
   // An inventory without emissions data adds nothing to the run.
   const inventoryEmpty = inventoryAvailable && !inventoryHasData;
+  // The run uses the chosen inventory, else the newest one in the city.
+  const chosenInventory =
+    inventoryOptions.find(
+      (option) => option.inventoryId === bundle.selectedInventoryId,
+    ) ?? null;
   const inventoryState = getRunSourceState({
     cityAvailable: inventoryAvailable,
     included: ghgiIncluded,
     bundleStatus: bundle.status,
     sourceStatus: inventoryFailed ? "failed" : bundle.ghgiStatus,
     empty: inventoryEmpty,
+    selected: Boolean(chosenInventory),
   });
   const actionPlanAvailable = hasPrioritizedHiapActions(
     cityDashboard?.widgets.hiap,
@@ -267,52 +285,38 @@ export function ContextTab({
     bundleStatus: bundle.status,
     sourceStatus: cityDashboardFailed ? "failed" : bundle.hiapStatus,
   });
+  const inventoryInRun =
+    inventoryState === "included" || inventoryState === "partial";
   const usedInventory = bundle.sourceProvenance.ghgi;
-  const displayedInventoryYear =
-    inventoryState === "included"
-      ? usedInventory?.inventoryYear
-      : inventoryYear;
+  const displayedInventory = inventoryInRun
+    ? usedInventory && {
+        id: usedInventory.inventoryId,
+        year: usedInventory.inventoryYear,
+      }
+    : chosenInventory
+      ? { id: chosenInventory.inventoryId, year: chosenInventory.year }
+      : inventoryId && { id: inventoryId, year: inventoryYear };
   const hiapStatusLabel = bundle.hiapStatus
     ? t(getContextSourceStatusTranslationKey(bundle.hiapStatus))
     : t("not-available");
-  // A rebuild pulls sources added in CityCatalyst since the run was built.
-  const refreshRunAction: ContextSourceAction = {
-    label: t("refresh-run-context"),
-    onClick: onRetryBundle,
-    loading: isRetryingBundle,
-    disabledReason: isDraftRunning
-      ? t("context-action-draft-running")
-      : bundle.status === "building"
-        ? t("context-action-rebuilding")
-        : undefined,
-  };
-  // Offer a rebuild when the city has the source but this run doesn't use it.
-  function refreshActionFor(
-    state: ContextSourceState,
-    availableInCity: boolean,
-  ): ContextSourceAction | undefined {
-    return availableInCity &&
-      (state === "available" ||
-        state === "unavailable" ||
-        state === "failed" ||
-        state === "processing")
-      ? refreshRunAction
-      : undefined;
-  }
-  const inventoryLink = inventorySourceLink(inventoryState, {
-    lng,
-    cityId,
-    inventoryId,
-  });
-  const inventoryAction: ContextSourceAction | undefined = inventoryLoading
+  // Create an inventory, fill an empty one, or choose which one this run uses.
+  const inventoryNext = inventoryLoading
     ? undefined
-    : inventoryLink
-      ? { label: t(inventoryLink.labelKey), href: inventoryLink.href }
-      : refreshActionFor(inventoryState, inventoryAvailable);
-  // No link to the HIAP module: not every project has it enabled.
-  const actionPlanAction = cityDashboardLoading
+    : inventorySourceAction(inventoryState, { lng, cityId, inventoryId });
+  const inventoryAction: ContextSourceAction | undefined = !inventoryNext
     ? undefined
-    : refreshActionFor(actionPlanState, actionPlanAvailable);
+    : inventoryNext.kind === "choose"
+      ? {
+          label: t(inventoryNext.labelKey),
+          onClick: () => setInventoryPickerOpen(true),
+          loading: inventorySelectionSaving,
+          disabledReason: isDraftRunning
+            ? t("context-action-draft-running")
+            : bundle.status === "building"
+              ? t("context-action-rebuilding")
+              : undefined,
+        }
+      : { label: t(inventoryNext.labelKey), href: inventoryNext.href };
   // A converted file is not ready for chat until context assembly finishes.
   // Kept separate from the raw "processing" status, which means converting.
   const awaitingContext = upload?.status === "ready" && contextStatus.blocked;
@@ -528,18 +532,30 @@ export function ContextTab({
             label={t("ghg-inventory")}
             action={inventoryAction}
             value={
-              displayedInventoryYear != null
-                ? t("inventory-year", { year: displayedInventoryYear })
-                : inventoryState === "included"
-                  ? t("inventory-used-unknown")
-                  : t("no-inventory")
+              displayedInventory && displayedInventory.year != null ? (
+                <Link asChild color="interactive.secondary">
+                  <NextLink
+                    href={getGhgiInventoryPath(
+                      lng,
+                      cityId,
+                      displayedInventory.id,
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t("inventory-year", { year: displayedInventory.year })}
+                  </NextLink>
+                </Link>
+              ) : inventoryInRun ? (
+                t("inventory-used-unknown")
+              ) : (
+                t("no-inventory")
+              )
             }
             details={[
               t("ghgi-why"),
-              inventoryState === "included"
-                ? usedInventory
-                  ? t("inventory-used-id", { id: usedInventory.inventoryId })
-                  : ""
+              inventoryInRun
+                ? ""
                 : inventoryState === "available" ||
                     (inventoryState === "unavailable" && inventoryAvailable)
                   ? t("not-included-in-run")
@@ -559,7 +575,6 @@ export function ContextTab({
           />
           <ContextCard
             label={t("hiap-context")}
-            action={actionPlanAction}
             value={
               hiapIncluded
                 ? hiapStatusLabel
@@ -570,11 +585,6 @@ export function ContextTab({
             details={[
               t("hiap-why"),
               actionPlanState === "available" ? t("not-included-in-run") : "",
-              hiapIncluded && bundle.sourceProvenance.hiap
-                ? t("hiap-used-inventory-id", {
-                    id: bundle.sourceProvenance.hiap.inventoryId,
-                  })
-                : "",
               t(
                 actionPlanState === "unavailable" && actionPlanAvailable
                   ? "source-help-run-unavailable-existing"
@@ -681,6 +691,17 @@ export function ContextTab({
           >
             {t("funding-load-error")}
           </Text>
+        )}
+        {inventoryPickerOpen && (
+          <InventorySelectionDialog
+            cityId={cityId}
+            lng={lng}
+            options={inventoryOptions}
+            saving={inventorySelectionSaving}
+            selectedInventoryId={chosenInventory?.inventoryId ?? null}
+            onClose={() => setInventoryPickerOpen(false)}
+            onSelect={onSelectInventory}
+          />
         )}
         {templateOpen && template && (
           <ApplicationTemplateDialog

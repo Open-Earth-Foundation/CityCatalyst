@@ -631,7 +631,7 @@ def test_hiap_contract_requires_unique_actions_and_matching_counts() -> None:
 
 
 @pytest.mark.parametrize("payload_name", ["status", "emissions"])
-@pytest.mark.parametrize("bad_shape", ["missing", "duplicate", "unexpected"])
+@pytest.mark.parametrize("bad_shape", ["duplicate", "unexpected"])
 def test_rejects_noncanonical_sector_sets(
     payload_name: str,
     bad_shape: str,
@@ -643,9 +643,7 @@ def test_rejects_noncanonical_sector_sets(
         if payload_name == "status"
         else invalid_emissions["by_sector"]
     )
-    if bad_shape == "missing":
-        sectors.pop()
-    elif bad_shape == "duplicate":
+    if bad_shape == "duplicate":
         sectors[-1]["reference"] = "I"
     else:
         sectors[-1]["reference"] = "VI"
@@ -656,6 +654,38 @@ def test_rejects_noncanonical_sector_sets(
             status_data=invalid_status,
             emissions_data=invalid_emissions,
         )
+
+
+def test_partial_inventory_with_missing_sectors_is_usable() -> None:
+    partial_status = status_data()
+    partial_emissions = emissions_data()
+    partial_status["by_sector"] = [
+        sector for sector in partial_status["by_sector"] if sector["reference"] == "I"
+    ]
+    partial_emissions["by_sector"] = [
+        sector
+        for sector in partial_emissions["by_sector"]
+        if sector["reference"] == "I"
+    ]
+
+    result = compact_ghgi_context(
+        inventory=inventory_choices()[0],
+        status_data=partial_status,
+        emissions_data=partial_emissions,
+    )
+
+    assert result.availability == "partial"
+    assert result.emissions is not None
+    assert [sector.gpc for sector in result.emissions.sectors] == [
+        "I",
+        "II",
+        "III",
+        "IV",
+        "V",
+    ]
+    missing_sector = result.emissions.sectors[4]
+    assert missing_sector.emissions_kgco2e == 0
+    assert missing_sector.required == 0
 
 
 def inventory_choices() -> list[dict[str, Any]]:

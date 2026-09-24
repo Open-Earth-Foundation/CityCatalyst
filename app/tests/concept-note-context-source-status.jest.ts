@@ -3,8 +3,9 @@ import {
   contextSourceTone,
   getCitySourceState,
   getRunSourceState,
+  inventorySourceAction,
+  isSourceLookupFailure,
 } from "@/components/ConceptNoteDashboard/context-source-status";
-import { isInventoryLoadFailure } from "@/components/ConceptNoteDashboard/utils";
 
 describe("concept-note context source status", () => {
   it("distinguishes a city inventory from evidence included in a run", () => {
@@ -91,9 +92,51 @@ describe("concept-note context source status", () => {
   });
 
   it("treats a missing inventory (404) as unavailable, not failed", () => {
-    expect(isInventoryLoadFailure(undefined)).toBe(false);
-    expect(isInventoryLoadFailure({ status: 404 })).toBe(false);
-    expect(isInventoryLoadFailure({ status: 500 })).toBe(true);
-    expect(isInventoryLoadFailure({ status: "FETCH_ERROR" })).toBe(true);
+    expect(isSourceLookupFailure(undefined)).toBe(false);
+    expect(isSourceLookupFailure({ status: 404 })).toBe(false);
+    expect(isSourceLookupFailure({ status: 500 })).toBe(true);
+    expect(isSourceLookupFailure({ status: "FETCH_ERROR" })).toBe(true);
+  });
+
+  it("marks an included source with missing sectors as partial", () => {
+    expect(
+      getRunSourceState({
+        cityAvailable: true,
+        included: true,
+        bundleStatus: "ready",
+        sourceStatus: "partial",
+      }),
+    ).toBe("partial");
+    expect(contextSourceStatusKey("partial")).toBe("included-partial");
+    expect(contextSourceTone("partial")).toBe("warning");
+  });
+
+  it("picks the inventory card's next step from the state", () => {
+    const where = { lng: "en", cityId: "city-1" };
+    expect(
+      inventorySourceAction("unavailable", { ...where, inventoryId: null }),
+    ).toEqual({
+      kind: "create",
+      labelKey: "create-inventory",
+      href: "/en/cities/city-1/GHGI/onboarding",
+    });
+    expect(
+      inventorySourceAction("empty", { ...where, inventoryId: "inv-1" }),
+    ).toEqual({
+      kind: "fill",
+      labelKey: "add-inventory-data",
+      href: "/en/cities/city-1/GHGI/inv-1/data",
+    });
+    for (const state of ["available", "included", "partial"] as const) {
+      expect(
+        inventorySourceAction(state, { ...where, inventoryId: "inv-1" })?.kind,
+      ).toBe("choose");
+    }
+    expect(
+      inventorySourceAction("failed", { ...where, inventoryId: null }),
+    ).toBeUndefined();
+    expect(
+      inventorySourceAction("processing", { ...where, inventoryId: "inv-1" }),
+    ).toBeUndefined();
   });
 });

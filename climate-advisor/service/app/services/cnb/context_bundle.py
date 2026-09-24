@@ -7,17 +7,20 @@ import logging
 from collections.abc import Awaitable, Callable
 from contextvars import Context
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID, uuid4
 
 from app.db.session import get_session_factory
 from app.models.cnb.context_bundle import SelectedSource
 from app.persistence.concept_notes.context_bundle import (
     ContextBundleBuildSnapshot,
+    ContextBundlePersistenceError,
     begin_build,
     complete_build,
     fail_build,
+    load_refresh_state,
     recover_stale_builds,
+    set_selected_inventory,
 )
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
@@ -31,6 +34,8 @@ from app.services.cnb.source_analysis import (
 )
 from app.services.concept_note_city_context import (
     ConceptNoteCityContextDataError,
+    inventory_candidate,
+    inventory_uuid,
     load_accessible_inventory,
     load_city_profile,
     load_ghgi_context,
@@ -167,7 +172,7 @@ class ContextBundleService:
 
                 # Enrich every run with best-effort CityCatalyst context.
                 (
-                    (ghgi, hiap, optional_statuses, warnings),
+                    (ghgi, hiap, optional_statuses, warnings, candidate),
                     (city, city_status, city_warning),
                 ) = await asyncio.gather(
                     self._load_optional_context(
@@ -175,6 +180,7 @@ class ContextBundleService:
                         city_id=UUID(active.city_id),
                         token=token,
                         cc_client=cc_client,
+                        selected_inventory_id=active.selected_inventory_id,
                     ),
                     self._try_load_city(
                         cc_client=cc_client,
@@ -204,6 +210,7 @@ class ContextBundleService:
                     hiap=hiap,
                     optional_sources=optional_statuses,
                     warnings=warnings,
+                    inventory_candidate=candidate,
                 )
                 finish_workflow_trace(span, {"completed": completed}, ok=completed)
                 return completed
@@ -306,29 +313,46 @@ class ContextBundleService:
         city_id: UUID,
         token: str,
         cc_client: CityCatalystClient,
+        selected_inventory_id: UUID | None = None,
     ) -> tuple[
         dict[str, Any] | None,
         dict[str, Any] | None,
         dict[str, str],
         list[str],
+        dict[str, Any] | None,
     ]:
-        """Attempt GHGI and HIAP without allowing either to block readiness."""
+        """Attempt GHGI and HIAP without allowing either to block readiness.
+
+        Also returns the checked inventory version, or ``None`` when the lookup
+        failed, so the next workspace open retries it.
+        """
         statuses = {"ghgi": "missing", "hiap": "missing"}
         warnings: list[str] = []
+        unavailable = ["GHGI and HIAP context were unavailable."]
         try:
             inventory = await load_accessible_inventory(
                 cc_client=cc_client,
                 user_id=user_id,
                 city_id=city_id,
                 token=token,
+                inventory_id=selected_inventory_id,
             )
+            candidate = inventory_candidate(inventory)
         except (CityCatalystClientError, ConceptNoteCityContextDataError):
             statuses = {"ghgi": "unavailable", "hiap": "unavailable"}
-            return None, None, statuses, ["GHGI and HIAP context were unavailable."]
+            return None, None, statuses, unavailable, None
         except Exception:
             logger.exception("Unexpected optional inventory lookup failure")
             statuses = {"ghgi": "unavailable", "hiap": "unavailable"}
-            return None, None, statuses, ["GHGI and HIAP context were unavailable."]
+            return None, None, statuses, unavailable, None
+        if (
+            selected_inventory_id is not None
+            and inventory is not None
+            and inventory_uuid(inventory) != selected_inventory_id
+        ):
+            warnings.append(
+                "The chosen inventory is no longer available; the newest was used."
+            )
 
         ghgi_result, hiap_result = await asyncio.gather(
             self._try_load_ghgi(
@@ -349,7 +373,106 @@ class ContextBundleService:
         ghgi, statuses["ghgi"], ghgi_warning = ghgi_result
         hiap, statuses["hiap"], hiap_warning = hiap_result
         warnings.extend(item for item in (ghgi_warning, hiap_warning) if item)
-        return ghgi, hiap, statuses, warnings
+        return ghgi, hiap, statuses, warnings, candidate
+
+    async def refresh_if_stale(
+        self,
+        *,
+        user_id: str,
+        run_id: UUID,
+        token: str,
+    ) -> Literal["queued", "current", "building"]:
+        """Rebuild a ready bundle only when its inventory changed in the city.
+
+        Called once per workspace open, so it compares cheap inventory list
+        metadata instead of reloading GHGI and HIAP.
+        """
+        state = await load_refresh_state(
+            session_factory=self.session_factory,
+            user_id=user_id,
+            run_id=run_id,
+        )
+        if state.status == "building":
+            return "building"
+        # Failed builds recover through retry; unknown states are left alone.
+        if state.status != "ready":
+            return "current"
+        cc_client = self.cc_client_factory()
+        try:
+            inventory = await load_accessible_inventory(
+                cc_client=cc_client,
+                user_id=user_id,
+                city_id=UUID(state.city_id),
+                token=token,
+                inventory_id=state.selected_inventory_id,
+            )
+            candidate = inventory_candidate(inventory)
+        except (CityCatalystClientError, ConceptNoteCityContextDataError):
+            return "current"
+        finally:
+            await cc_client.close()
+        if candidate == state.inventory_candidate:
+            return "current"
+        await self._queue_rebuild(user_id=user_id, run_id=run_id, token=token)
+        return "queued"
+
+    async def select_inventory(
+        self,
+        *,
+        user_id: str,
+        run_id: UUID,
+        token: str,
+        inventory_id: UUID | None,
+    ) -> None:
+        """Save the run's inventory choice after checking access, then rebuild."""
+        state = await load_refresh_state(
+            session_factory=self.session_factory,
+            user_id=user_id,
+            run_id=run_id,
+        )
+        if inventory_id is not None:
+            cc_client = self.cc_client_factory()
+            try:
+                inventory = await load_accessible_inventory(
+                    cc_client=cc_client,
+                    user_id=user_id,
+                    city_id=UUID(state.city_id),
+                    token=token,
+                    inventory_id=inventory_id,
+                )
+            except (CityCatalystClientError, ConceptNoteCityContextDataError) as exc:
+                raise ContextBundlePersistenceError(
+                    "cc_inventory_unavailable",
+                    503,
+                    "City inventories are temporarily unavailable",
+                ) from exc
+            finally:
+                await cc_client.close()
+            if inventory is None or inventory_uuid(inventory) != inventory_id:
+                raise ContextBundlePersistenceError(
+                    "inventory_not_accessible",
+                    404,
+                    "The inventory is not available for this city",
+                )
+        await set_selected_inventory(
+            session_factory=self.session_factory,
+            user_id=user_id,
+            run_id=run_id,
+            inventory_id=inventory_id,
+        )
+        await self._queue_rebuild(user_id=user_id, run_id=run_id, token=token)
+
+    async def _queue_rebuild(self, *, user_id: str, run_id: UUID, token: str) -> None:
+        """Start a forced background rebuild that reuses unchanged analyses."""
+        snapshot = await self.begin(user_id=user_id, run_id=run_id, force=True)
+        schedule_context_bundle_build(
+            service=self,
+            user_id=user_id,
+            run_id=run_id,
+            token=token,
+            force=True,
+            snapshot=snapshot,
+        )
 
     async def _try_load_city(
         self,

@@ -2712,7 +2712,7 @@ flowchart LR
 Export preflight should check:
 
 - Required chapters present or intentionally skipped.
-- Critical gaps resolved.
+- Critical gaps resolved or explicitly acknowledged for export.
 - Budget, partners, match funding, and commitments are confirmed or intentionally
   left blank.
 - Custom chapters are allowed by the export mode.
@@ -2728,10 +2728,11 @@ the user can explicitly choose **Export as is**. Existing unresolved-information
 acknowledgement remains authoritative for every validation state, including
 Needs re-validation, `needs_review`, and `incomplete`.
 
-Open or processing critical structured gaps still block both export formats;
-acknowledging validation findings cannot override that gate. Noncritical gaps
-can be acknowledged. The draft panel combines validation-finding navigation
-with inline edit decisions and chapter confirmation. Accepting an edit refreshes
+Open or processing structured gaps, including critical gaps, require explicit
+acknowledgement before either export format becomes available. The chat help
+state reports critical gaps separately from hard blockers and leaves browser
+button availability unknown when a draft exists. The draft panel combines
+validation-finding navigation with inline edit decisions and chapter confirmation. Accepting an edit refreshes
 the current draft and its validation freshness before the next guided review.
 
 ## Planned Routes

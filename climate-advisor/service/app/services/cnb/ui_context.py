@@ -28,10 +28,6 @@ def build_ui_state(chapters: list[WorkspaceChapterSnapshot]) -> dict[str, object
     blockers = []
     if not has_draft:
         blockers.append("No generated draft")
-    if critical_gaps:
-        blockers.append(
-            f"{critical_gaps} critical gaps; fill through reviewed chat edits"
-        )
 
     # Browser acknowledgement, loading state, and selected tab are not persisted.
     return {
@@ -46,6 +42,8 @@ def build_ui_state(chapters: list[WorkspaceChapterSnapshot]) -> dict[str, object
         "export": {
             "enabled": False if blockers else None,
             "blockers": blockers,
+            "critical_gap_count": critical_gaps,
+            "requires_acknowledgement": True if critical_gaps else None,
             "missing_upload_blocks_export": False,
         },
         "review": {"failed_chapters": None, "failure_blocks_export": None},

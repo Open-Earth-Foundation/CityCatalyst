@@ -35,10 +35,12 @@ export function DraftingProgressCard({
   draft,
   lng,
   startedAt,
+  completedAt,
 }: {
   draft: ConceptNoteDraftState;
   lng: string;
   startedAt?: string | null;
+  completedAt?: string | null;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const [now, setNow] = useState(() => Date.now());
@@ -57,8 +59,10 @@ export function DraftingProgressCard({
     ? Math.min(Math.max(draft.completed_chapters, 0), total)
     : total;
   const startedMs = startedAt ? Date.parse(startedAt) : Number.NaN;
+  // Once chapters are done the clock freezes at the drafting end time.
+  const endMs = !running && completedAt ? Date.parse(completedAt) : now;
   const elapsed = Number.isFinite(startedMs)
-    ? formatElapsed(now - startedMs)
+    ? formatElapsed((Number.isFinite(endMs) ? endMs : now) - startedMs)
     : null;
   const progressLabel = t("drafting-card-progress", { completed, total });
 

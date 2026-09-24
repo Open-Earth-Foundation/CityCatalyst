@@ -491,6 +491,7 @@ export function ConceptNoteWorkspace({
               edits={edits}
               draft={draft ?? null}
               draftStartedAt={draftProgress?.startedAt ?? null}
+              draftCompletedAt={draftProgress?.completedAt ?? null}
               welcomeStage={
                 draftHasContent
                   ? "drafted"

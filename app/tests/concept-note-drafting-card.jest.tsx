@@ -76,11 +76,20 @@ afterEach(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = false;
 });
 
-async function render(state: ConceptNoteDraftState, startedAt?: string) {
+async function render(
+  state: ConceptNoteDraftState,
+  startedAt?: string,
+  completedAt?: string,
+) {
   await act(async () =>
     root.render(
       <ChakraProvider value={appTheme}>
-        <DraftingProgressCard draft={state} lng="en" startedAt={startedAt} />
+        <DraftingProgressCard
+          draft={state}
+          lng="en"
+          startedAt={startedAt}
+          completedAt={completedAt}
+        />
       </ChakraProvider>,
     ),
   );
@@ -123,9 +132,15 @@ it("shows the summarising state once chapters are complete but the overview is p
       current_chapter_id: null,
       overview_pending: true,
     }),
+    "2026-09-24T10:00:00Z",
+    "2026-09-24T10:00:45Z",
   );
   expect(container.textContent).toContain("drafting-card-summarising-title");
-  expect(container.textContent).not.toContain(" · ");
+  // The clock freezes at the drafting end time, not "now".
+  expect(
+    container.querySelector('[data-testid="concept-note-drafting-progress"]')
+      ?.textContent,
+  ).toBe("drafting-card-summarising · 0:45");
   const rows = Array.from(
     container.querySelectorAll(
       '[data-testid="concept-note-drafting-chapters"] li',

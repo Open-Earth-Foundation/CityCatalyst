@@ -15,6 +15,7 @@ import {
 import {
   getConceptNoteBundleProgress,
   getConceptNoteDraftProgress,
+  hasPrioritizedHiapActions,
   normalizePopulationData,
 } from "@/components/ConceptNoteDashboard/utils";
 import {
@@ -80,7 +81,12 @@ export function useConceptNoteWorkspaceData({
   } = api.useGetMostRecentCityPopulationQuery({ cityId });
   const [updateManualPopulation, manualPopulationState] =
     api.useUpdateConceptNotePopulationMutation();
-  const { data: inventory } = api.useGetInventoryByCityIdQuery(cityId);
+  // Context cards link to GHGI and HIAP in a new tab; refetch on focus so the
+  // cards reflect work done there without a page reload.
+  const { data: inventory, isLoading: inventoryLoading } =
+    api.useGetInventoryByCityIdQuery(cityId, { refetchOnFocus: true });
+  const { data: cityDashboard, isLoading: cityDashboardLoading } =
+    api.useGetCityDashboardQuery({ cityId, lng }, { refetchOnFocus: true });
   const { data: cityFiles } = api.useGetUserFilesQuery(cityId);
   const [uploadSourceMutation, uploadState] =
     api.useUploadConceptNoteSourceMutation();
@@ -291,7 +297,9 @@ export function useConceptNoteWorkspaceData({
     effectiveUploadError,
     files,
     hasApplicationTemplate,
+    hiapAvailableInCity: hasPrioritizedHiapActions(cityDashboard?.widgets.hiap),
     inventory,
+    cityContextLoading: inventoryLoading || cityDashboardLoading,
     isDraftRunning,
     manualPopulation,
     manualPopulationSaving: manualPopulationState.isLoading,

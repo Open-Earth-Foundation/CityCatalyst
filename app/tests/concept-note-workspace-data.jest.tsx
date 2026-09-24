@@ -117,6 +117,7 @@ jest.unstable_mockModule("@/services/api", () => ({
     useGetConceptNoteRunQuery: getRunQuery,
     useGetConceptNoteUploadStatusQuery: getUploadQuery,
     useGetInventoryByCityIdQuery: () => ({ data: undefined }),
+    useGetCityDashboardQuery: () => ({ data: undefined }),
     useGetMostRecentCityPopulationQuery: () => ({
       data: cityPopulation,
       isError: false,
@@ -192,10 +193,15 @@ function ContextHarness() {
         onRetryFunding={() => {}}
         bundle={data.bundle}
         contextStatus={data.contextStatus}
+        cityContextLoading={false}
         cityFilesCount={0}
+        cityId="city-1"
         cityName="Test City"
         country={null}
         firstCityFile={null}
+        hiapAvailableInCity={false}
+        inventoryHasData={false}
+        inventoryId={null}
         inventoryYear={null}
         isDraftRunning={false}
         isRetryingBundle={false}

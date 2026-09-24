@@ -25,7 +25,6 @@ import {
   LuFolderOpen,
   LuLandmark,
   LuListChecks,
-  LuShieldAlert,
 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
@@ -132,7 +131,6 @@ export function ConceptNoteDashboard({
     ? t("inventory-year", { year: inventory.year })
     : t("no-inventory");
   const fileName = cityFiles[0]?.fileName ?? t("no-city-files");
-  const ccraConnected = Boolean(cityDashboard?.widgets.ccra);
   const hiapConnected = hasPrioritizedHiapActions(cityDashboard?.widgets.hiap);
   const exportBundle = exportRun
     ? getConceptNoteBundleProgress(exportRun.progress_summary)
@@ -280,7 +278,7 @@ export function ConceptNoteDashboard({
               gridTemplateColumns={{
                 base: "1fr",
                 sm: "repeat(2, minmax(0, 1fr))",
-                lg: "repeat(5, minmax(0, 1fr))",
+                lg: "repeat(4, minmax(0, 1fr))",
               }}
             >
               <ContextTile
@@ -300,22 +298,6 @@ export function ConceptNoteDashboard({
                   inventoryLoading ? <Skeleton h="20px" /> : inventoryLabel
                 }
                 detail={t("inventory-detail")}
-              />
-              <ContextTile
-                icon={LuShieldAlert}
-                label={t("climate-risk-assessment")}
-                status={ccraConnected ? t("connected") : t("not-available")}
-                statusTone={ccraConnected ? "info" : "neutral"}
-                value={
-                  modulesLoading ? (
-                    <Skeleton h="20px" />
-                  ) : ccraConnected ? (
-                    t("context-ready")
-                  ) : (
-                    t("not-available")
-                  )
-                }
-                detail={t("ccra-detail")}
               />
               <ContextTile
                 icon={LuListChecks}

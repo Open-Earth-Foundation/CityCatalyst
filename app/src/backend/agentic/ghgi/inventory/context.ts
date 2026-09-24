@@ -556,7 +556,7 @@ function metadataForInventory(inventory: Inventory): InventoryMetadata {
 function sectorStatusesFromProgress(
   sectorProgress: ProgressSector[],
 ): SectorStatus[] {
-  return sectorProgress.map((progress) => {
+  const rows = sectorProgress.map((progress) => {
     const required = Number(progress.total ?? 0);
     const dataState = dataStateFromProgress(progress);
     const filled = Object.values(dataState).reduce(
@@ -574,6 +574,30 @@ function sectorStatusesFromProgress(
       data_state: dataState,
     };
   });
+  // Progress only covers sectors in the inventory's scope (GPC Basic skips IV
+  // and V). Report every GPC sector, with nothing required outside the scope.
+  const reported = new Set(rows.map((row) => row.reference));
+  for (const [reference, metadata] of Object.entries(
+    SECTOR_METADATA_BY_REFERENCE,
+  )) {
+    if (!reported.has(reference)) {
+      rows.push({
+        sector: metadata.label,
+        reference,
+        required: 0,
+        filled: 0,
+        missing: 0,
+        completion_percent: 0,
+        data_state: {
+          third_party: 0,
+          manual_or_uploaded: 0,
+          not_estimated: 0,
+          not_occurring: 0,
+        },
+      });
+    }
+  }
+  return rows;
 }
 
 function dataStateFromProgress(progress: ProgressSector): DataState {
@@ -589,7 +613,7 @@ function emissionSectors(
   sectors: EmissionSector[],
   totalEmissions: unknown,
 ): InventoryEmissionsContext["by_sector"] {
-  return sectors.map((sector) => {
+  const rows = sectors.map((sector) => {
     const reference = sectorReferenceForName(sector.sectorName);
     return {
       sector: sectorLabel({
@@ -601,6 +625,26 @@ function emissionSectors(
       share_percent: sharePercent(sector.co2eq, totalEmissions),
     };
   });
+  // Results only include sectors with recorded values. Once any sector has
+  // data, report every GPC sector (zero where nothing is recorded) so
+  // consumers get the full breakdown; an inventory with no values stays empty.
+  if (rows.length === 0) {
+    return rows;
+  }
+  const reported = new Set(rows.map((row) => row.reference));
+  for (const [reference, metadata] of Object.entries(
+    SECTOR_METADATA_BY_REFERENCE,
+  )) {
+    if (!reported.has(reference)) {
+      rows.push({
+        sector: metadata.label,
+        reference,
+        emissions_kgco2e: "0",
+        share_percent: 0,
+      });
+    }
+  }
+  return rows;
 }
 
 function topEmitters(

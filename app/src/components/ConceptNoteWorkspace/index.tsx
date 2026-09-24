@@ -150,7 +150,9 @@ export function ConceptNoteWorkspace({
     effectiveUploadError,
     files,
     hasApplicationTemplate,
+    hiapAvailableInCity,
     inventory,
+    cityContextLoading,
     isDraftRunning,
     manualPopulation,
     manualPopulationSaving,
@@ -820,10 +822,15 @@ export function ConceptNoteWorkspace({
                   onRetryFunding={() => void refetchApplicationContext()}
                   bundle={bundle}
                   contextStatus={contextStatus}
+                  cityContextLoading={cityContextLoading}
                   cityFilesCount={files.length}
+                  cityId={cityId}
                   cityName={cityName}
                   country={city?.country ?? null}
                   firstCityFile={files[0]?.fileName ?? null}
+                  hiapAvailableInCity={hiapAvailableInCity}
+                  inventoryHasData={inventory?.totalEmissions != null}
+                  inventoryId={inventory?.inventoryId ?? null}
                   inventoryYear={inventory?.year ?? null}
                   isDraftRunning={isDraftRunning}
                   isRetryingBundle={retryBundleState.isLoading}

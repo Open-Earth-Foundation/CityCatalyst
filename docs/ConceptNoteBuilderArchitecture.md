@@ -48,6 +48,19 @@ record or become CC context. Removing it clears only the run-scoped value.
 The editor and API reject changes while chapter drafting is running because the
 drafting worker uses a single population snapshot for all chapters.
 
+Missing Context cards offer the next step. A missing GHG inventory links to GHGI
+onboarding in a new tab; an inventory with no emissions data is flagged as empty
+and links to adding data, because CityCatalyst reports no sector breakdown for it
+and it cannot enter the run. Once any sector has data, the GHGI capabilities
+report all five GPC sectors (zero where nothing is recorded or the sector is
+outside the inventory's scope), which the context bundle requires. The workspace
+refetches the city inventory and dashboard on window focus. The Climate Action Plan card has no module link because not every
+project enables HIAP. When CityCatalyst has an inventory or prioritized actions the
+run lacks, the card offers Refresh run context, which forces a context-bundle
+rebuild; it is disabled with an explanation while drafting runs or the bundle is
+building. A missing application template opens funding selection. The climate
+risk assessment card is hidden until CCRA data feeds concept notes.
+
 In scope:
 
 - A Climate Advisor workflow for concept-note runs.

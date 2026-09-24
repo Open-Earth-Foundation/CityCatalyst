@@ -3,7 +3,7 @@
 import type { ConceptNoteContextPresentation } from "./context-status";
 
 import type { ChangeEvent, FormEvent, ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import {
   Box,
@@ -15,10 +15,17 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { LuCircleAlert, LuRefreshCw, LuUpload } from "react-icons/lu";
+import NextLink from "next/link";
+import {
+  LuCircleAlert,
+  LuExternalLink,
+  LuRefreshCw,
+  LuUpload,
+} from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
+import { getGhgiInventoryPath } from "@/util/ghgi-routes";
 import type {
   ConceptNoteApplicationContext,
   ConceptNoteUploadResponse,
@@ -39,10 +46,15 @@ interface ContextTabProps {
   onRetryFunding: () => void;
   bundle: ConceptNoteBundleProgress;
   contextStatus: ConceptNoteContextPresentation;
+  cityContextLoading: boolean;
   cityFilesCount: number;
+  cityId: string;
   cityName: string;
   country: string | null;
   firstCityFile: string | null;
+  hiapAvailableInCity: boolean;
+  inventoryHasData: boolean;
+  inventoryId: string | null;
   inventoryYear: number | null;
   isDraftRunning: boolean;
   isRetryingBundle: boolean;
@@ -72,8 +84,17 @@ import {
   type ContextTone,
 } from "./context-status-badge";
 
+interface ContextCardAction {
+  label: string;
+  onClick?: () => void;
+  // Links open in a new tab so the concept note stays open.
+  href?: string;
+  loading?: boolean;
+  disabledReason?: string;
+}
+
 interface ContextCardProps {
-  action?: { label: string; onClick: () => void; disabled?: boolean };
+  action?: ContextCardAction;
   children?: ReactNode;
   details: string[];
   label: string;
@@ -106,6 +127,8 @@ function ContextCard({
   tone = "neutral",
   value,
 }: ContextCardProps) {
+  const reasonId = useId();
+  const disabled = Boolean(action?.disabledReason);
   return (
     <Box
       minW={0}
@@ -120,19 +143,40 @@ function ContextCard({
       <VStack align="stretch" gap={2} h="full">
         <HStack justify="space-between" align="start" gap={2}>
           <ContextSectionLabel>{label}</ContextSectionLabel>
-          {action && (
-            <Button
-              size="xs"
-              variant="outline"
-              flexShrink={0}
-              textTransform="none"
-              letterSpacing="normal"
-              disabled={action.disabled}
-              onClick={action.onClick}
-            >
-              {action.label}
-            </Button>
-          )}
+          {action &&
+            (action.href && !disabled ? (
+              <Button
+                asChild
+                size="xs"
+                variant="outline"
+                flexShrink={0}
+                textTransform="none"
+                letterSpacing="normal"
+              >
+                <NextLink
+                  href={action.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {action.label}
+                  <Icon as={LuExternalLink} />
+                </NextLink>
+              </Button>
+            ) : (
+              <Button
+                size="xs"
+                variant="outline"
+                flexShrink={0}
+                textTransform="none"
+                letterSpacing="normal"
+                disabled={disabled}
+                loading={action.loading}
+                aria-describedby={disabled ? reasonId : undefined}
+                onClick={action.onClick}
+              >
+                {action.label}
+              </Button>
+            ))}
         </HStack>
         <ContextStatusBadge label={status} tone={tone} />
         <Text
@@ -155,6 +199,11 @@ function ContextCard({
             </Text>
           ))}
         </VStack>
+        {disabled && (
+          <Text id={reasonId} fontSize="xs" color="content.secondary">
+            {action?.disabledReason}
+          </Text>
+        )}
         {children}
       </VStack>
     </Box>
@@ -169,10 +218,15 @@ export function ContextTab({
   onRetryFunding,
   bundle,
   contextStatus,
+  cityContextLoading,
   cityFilesCount,
+  cityId,
   cityName,
   country,
   firstCityFile,
+  hiapAvailableInCity,
+  inventoryHasData,
+  inventoryId,
   inventoryYear,
   isDraftRunning,
   isRetryingBundle,
@@ -207,9 +261,6 @@ export function ContextTab({
   const ghgiIncluded =
     bundle.availableContext.ghgi ||
     (applicationContext?.included_sources.ghgi ?? false);
-  const ccraIncluded =
-    bundle.availableContext.ccra ||
-    (applicationContext?.included_sources.ccra ?? false);
   const hiapIncluded =
     bundle.availableContext.hiap ||
     (applicationContext?.included_sources.hiap ?? false);
@@ -219,6 +270,61 @@ export function ContextTab({
   const hiapStatusLabel = bundle.hiapStatus
     ? t(getContextSourceStatusTranslationKey(bundle.hiapStatus))
     : t("not-available");
+  const contextBuilding = bundle.status === "building";
+  // A rebuild pulls sources added in CityCatalyst since the run was built.
+  const refreshRunAction: ContextCardAction = {
+    label: t("refresh-run-context"),
+    onClick: onRetryBundle,
+    loading: isRetryingBundle,
+    disabledReason: isDraftRunning
+      ? t("context-action-draft-running")
+      : contextBuilding
+        ? t("context-action-rebuilding")
+        : undefined,
+  };
+  function citySourceCard(
+    included: boolean,
+    availableInCity: boolean,
+    missingAction?: ContextCardAction,
+  ): Pick<ContextCardProps, "action" | "status" | "tone"> {
+    if (included) return { status: t("included-in-run"), tone: "positive" };
+    if (cityContextLoading) {
+      return { status: t("context-source-checking"), tone: "neutral" };
+    }
+    if (availableInCity) {
+      return {
+        status: t(
+          contextBuilding ? "bundle-source-pending" : "not-included-in-run",
+        ),
+        tone: contextBuilding ? "neutral" : "warning",
+        action: refreshRunAction,
+      };
+    }
+    return {
+      status: t("not-connected"),
+      tone: "warning",
+      action: missingAction,
+    };
+  }
+  // An inventory without emissions data adds nothing to the run, so point to
+  // filling it before offering a refresh.
+  const ghgiEmpty = Boolean(inventoryId) && !inventoryHasData;
+  const ghgiCard =
+    ghgiEmpty && inventoryId && !cityContextLoading
+      ? {
+          status: t("inventory-empty"),
+          tone: "warning" as const,
+          action: {
+            label: t("add-inventory-data"),
+            href: getGhgiInventoryPath(lng, cityId, inventoryId, "data"),
+          },
+        }
+      : citySourceCard(ghgiIncluded, Boolean(inventoryId), {
+          label: t("create-inventory"),
+          href: `/${lng}/cities/${cityId}/GHGI/onboarding`,
+        });
+  // No link to the HIAP module: not every project has it enabled.
+  const hiapCard = citySourceCard(hiapIncluded, hiapAvailableInCity);
   // A converted file is not ready for chat until context assembly finishes.
   // Kept separate from the raw "processing" status, which means converting.
   const awaitingContext = upload?.status === "ready" && contextStatus.blocked;
@@ -308,7 +414,7 @@ export function ContextTab({
           gridTemplateColumns={{
             base: "1fr",
             md: "repeat(2, minmax(0, 1fr))",
-            xl: "repeat(4, minmax(0, 1fr))",
+            xl: "repeat(3, minmax(0, 1fr))",
           }}
         >
           <ContextCard
@@ -439,31 +545,27 @@ export function ContextTab({
             value={
               inventoryYear
                 ? t("inventory-year", { year: inventoryYear })
-                : t("not-available")
+                : t("no-inventory")
             }
             details={[
-              ghgiIncluded ? t("included-in-run") : t("available-to-run"),
+              t("ghgi-why"),
+              ghgiEmpty && !cityContextLoading
+                ? t("inventory-empty-detail")
+                : "",
             ]}
-            status={t(ghgiIncluded ? "connected" : "available-to-run")}
-            tone={ghgiIncluded ? "positive" : "neutral"}
-          />
-          <ContextCard
-            label={t("climate-risk-assessment")}
-            value={t(
-              ccraIncluded ? "bundle-source-available" : "not-available",
-            )}
-            details={[t("ccra-not-in-bundle")]}
-            status={t(ccraIncluded ? "included-in-run" : "not-connected")}
-            tone={ccraIncluded ? "positive" : "warning"}
+            {...ghgiCard}
           />
           <ContextCard
             label={t("hiap-context")}
-            value={hiapIncluded ? hiapStatusLabel : t("not-available")}
-            details={[t("hiap-optional")]}
-            status={t(
-              hiapIncluded ? "included-in-run" : "bundle-source-missing",
-            )}
-            tone={hiapIncluded ? "positive" : "warning"}
+            value={
+              hiapIncluded
+                ? hiapStatusLabel
+                : hiapAvailableInCity
+                  ? t("hiap-available-in-city")
+                  : t("not-available")
+            }
+            details={[t("hiap-why")]}
+            {...hiapCard}
           />
         </Grid>
       </VStack>
@@ -478,21 +580,31 @@ export function ContextTab({
         >
           <ContextCard
             label={t("funder-profile")}
-            action={{
-              label: t(
-                fundingError
-                  ? "try-again"
-                  : applicationContext?.funder
-                    ? "funding-view-change"
-                    : "funding-browse",
-              ),
-              onClick: fundingError ? onRetryFunding : onSelectFunding,
-              disabled: fundingLoading,
-            }}
+            action={
+              fundingError
+                ? {
+                    label: t("try-again"),
+                    onClick: onRetryFunding,
+                    loading: fundingLoading,
+                  }
+                : {
+                    label: t(
+                      applicationContext?.funder
+                        ? "funding-view-change"
+                        : "funding-browse",
+                    ),
+                    onClick: onSelectFunding,
+                    loading: fundingLoading,
+                  }
+            }
             value={
               applicationContext?.funder?.name || t("funding-not-selected")
             }
-            details={[applicationContext?.opportunity?.name || ""]}
+            details={[
+              applicationContext?.funder
+                ? applicationContext.opportunity?.name || ""
+                : t("funder-why"),
+            ]}
             status={t(
               applicationContext?.funder ? "connected" : "not-connected",
             )}
@@ -506,7 +618,13 @@ export function ContextTab({
                     label: t("template-view"),
                     onClick: () => setTemplateOpen(true),
                   }
-                : undefined
+                : fundingError
+                  ? undefined
+                  : {
+                      label: t("template-choose"),
+                      onClick: onSelectFunding,
+                      loading: fundingLoading,
+                    }
             }
             value={template?.name || t("template-not-selected")}
             details={
@@ -521,7 +639,7 @@ export function ContextTab({
                       .filter(Boolean)
                       .join(" · "),
                   ]
-                : []
+                : [t("template-why")]
             }
             status={t(template ? "template-ready" : "not-connected")}
             tone={template ? "positive" : "warning"}

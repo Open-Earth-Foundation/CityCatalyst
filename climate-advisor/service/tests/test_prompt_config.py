@@ -53,6 +53,7 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "cnb_source_summary_synthesis": prompts.cnb_source_summary_synthesis,
         "cnb_source_question_reading": prompts.cnb_source_question_reading,
         "cnb_chapter_drafting": prompts.cnb_chapter_drafting,
+        "cnb_source_impact_review": prompts.cnb_source_impact_review,
         "cnb_draft_overview": prompts.cnb_draft_overview,
         "cnb_chapter_validation_completeness": (
             prompts.cnb_chapter_validation_completeness
@@ -93,6 +94,29 @@ def test_cnb_chapter_drafting_prompt_defines_missing_information_ui_contract() -
     assert "downstream" in prompt_text
     assert "`critical` or `noncritical`" in prompt_text
     assert "`source_refs`" in prompt_text
+
+
+def test_cnb_source_impact_review_is_tool_only_and_budgeted() -> None:
+    """Keep new-source chapter selection behind one bounded review-only tool."""
+    config = _load_llm_config()
+    prompt = config.prompts.get_prompt("cnb_source_impact_review")
+    budget = config.generation.prompt_budget.cnb_source_impact
+
+    assert config.models.cnb_source_impact_reviewer.name == "openai/gpt-5.4"
+    assert "call `select_chapters_to_update` exactly once" in prompt
+    assert "return no prose" in prompt
+    assert "`open_gaps`" in prompt
+    assert budget.max_prompt_tokens == 50000
+    assert budget.max_chapter_slice_tokens == 12000
+    assert budget.max_gap_queries == 40
+
+
+def test_cnb_chapter_drafting_prompt_applies_new_source_evidence() -> None:
+    """Tell the drafter to fill gaps from cited new-source excerpts."""
+    prompt = _load_llm_config().prompts.get_prompt("cnb_chapter_drafting")
+
+    assert "`new_source_evidence` (array)" in prompt
+    assert "for every item in `new_source_evidence`" in prompt
 
 
 def test_cnb_research_configuration_matches_runtime_contract() -> None:

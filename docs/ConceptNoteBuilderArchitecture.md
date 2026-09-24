@@ -1519,9 +1519,11 @@ How it works:
   They do not create chapters by themselves.
 - Users answer gaps through chat: accepting a reviewed edit that fills a
   gap's marker resolves that gap.
-- A newly processed source runs an impact scan. Chapters whose text or open
-  gaps overlap the new source are redrafted as a new revision; unaffected
-  chapters stay unchanged. Gaps the new evidence fills are resolved as
+- A newly processed source runs an impact review. A review-only LLM call picks
+  the chapters whose content or open gaps the source affects, and each of their
+  open gaps is asked of the verified source text. Only those chapters are
+  redrafted, with the cited answers, as a new revision; unaffected chapters
+  stay unchanged. Gaps the new evidence fills are resolved as
   `evidence_update` by `system`, and previously resolved gaps that it
   contradicts reopen. A confirmed revision is never replaced, so an affected
   Ready chapter returns to review.

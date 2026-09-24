@@ -666,6 +666,8 @@ Prompt paths are also configured in `llm_config.yaml`:
   still requires user acceptance in the document review controls
 - the three `prompts.cnb_source_*` entries map document partitions, reduce them
   to compact document summaries, and read focused questions for exact evidence
+- `prompts.cnb_source_impact_review` runs only after a new source is analyzed;
+  its single tool returns the chapter numbers that the source affects
 - `prompts.cnb_chat_edit_planner` creates bounded, grounded edit proposals from
   actual chapter text; its output cannot apply a revision without user review
 - `prompts.cnb_chat_edit_review` independently compares each proposed chapter edit
@@ -876,13 +878,19 @@ Operationally:
 - Chapter drafting reserves H1 for the final document title and generates each
   template chapter at H2. A separate reconciler marks drafting leases left
   `running` for more than one hour as retryable.
-- When a newly uploaded source finishes analysis, a background source-impact
-  scan redrafts only chapters whose text or open gaps overlap that source. Each
-  redraft appends a revision, resolves gaps the evidence now fills as
-  `evidence_update` by `system`, and reopens resolved gaps it contradicts. The
-  last confirmed revision is preserved, so an affected Ready chapter returns to
-  review. The drafter receives the chapter's `resolved_information` and
-  `existing_open_gaps` so earlier answers stay applied and gap keys stay stable.
+- When a newly uploaded source finishes analysis, a background re-check
+  updates the chapters it affects. A review-only call
+  (`prompts.cnb_source_impact_review`) receives the new source summary and every
+  drafted chapter with its status and open gap questions, and returns only the
+  chapter numbers to redraft. Each open gap in those chapters is then asked of
+  the verified new source text with the focused source reader, capped by
+  `prompt_budget.cnb_source_impact.max_gap_queries`; cited answers reach the
+  drafter as `new_source_evidence`. Each redraft appends a revision, resolves
+  gaps the evidence now fills as `evidence_update` by `system`, and reopens
+  resolved gaps it contradicts. The last confirmed revision is preserved, so an
+  affected Ready chapter returns to review. The drafter also receives the
+  chapter's `resolved_information` and `existing_open_gaps` so earlier answers
+  stay applied and gap keys stay stable.
 
 ### Concept Note draft review and chat editing
 

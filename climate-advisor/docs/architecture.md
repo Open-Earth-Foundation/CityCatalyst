@@ -384,9 +384,11 @@ document analyses are reused by digest and analysis-contract version. Reader
 and chapter-drafter configuration remains in `llm_config.yaml`, and the public
 CNB contracts live under `app/models/cnb`.
 
-When a new source finishes analysis, a bounded source-impact scan redrafts only
-the chapters it affects. Each redraft appends a revision and reconciles gaps
-with the new evidence without replacing the last user-confirmed revision.
+When a new source finishes analysis, a review-only LLM call selects the chapters
+it affects, and each of their open gaps is asked of the verified source text.
+Only those chapters are redrafted with the cited answers. Each redraft appends a
+revision and reconciles gaps with the new evidence without replacing the last
+user-confirmed revision.
 
 ## SSE Contract
 

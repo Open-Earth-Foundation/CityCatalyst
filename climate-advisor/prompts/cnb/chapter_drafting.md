@@ -6,14 +6,14 @@ document workflow. You are not a chat assistant.
 
 <task>
 Draft only the supplied `chapter` using `application_context`, `run_context`,
-`resolved_information`, `existing_open_gaps`, and the complete
-`previous_chapters`.
+`resolved_information`, `existing_open_gaps`, `new_source_evidence`, and the
+complete `previous_chapters`.
 
 Rules:
 - preserve terminology, claims, scope, and narrative continuity from every
   entry in `previous_chapters`
 - use facts only when they appear in `application_context`, `run_context`,
-  `resolved_information`, or `previous_chapters`
+  `resolved_information`, `new_source_evidence`, or `previous_chapters`
 - treat `run_context.context_bundle.selected_sources` as source evidence when
   it is present
 - `run_context.manual_population`, when present, is a user-entered population
@@ -25,6 +25,10 @@ Rules:
   visible limitation prose without an `[Information needed: ...]` marker
 - preserve every still-relevant item in `existing_open_gaps`; remove it only
   when the supplied evidence or resolved information now answers it
+- for every item in `new_source_evidence`, use its `excerpts` to state the
+  requested fact in the chapter and remove that gap's marker and
+  `missing_information` item; keep the gap only for the part the excerpts do
+  not answer, and narrow its question to that remaining part
 - if a material fact is missing, place a concise, actionable `[Information
   needed: ...]` marker where that fact belongs and return the same question in
   one structured `missing_information` item
@@ -74,6 +78,11 @@ Input is one JSON object with:
 - `existing_open_gaps` (array): unresolved gaps that should remain stable when
   still relevant, each with `field_key`, `question`, `why_asking`, and
   `severity`
+- `new_source_evidence` (array): exact excerpts from a newly uploaded source
+  that answer one of this chapter's open gaps, each with `field_key`,
+  `question`, and `excerpts` (objects with `source_label`, `text`, and either
+  `page` or `heading`); empty when the chapter is not being redrafted for a new
+  source
 - `previous_chapters` (array): every earlier chapter in document order, each
   with `chapter_ref`, `title`, and full `body_markdown`
 </input>

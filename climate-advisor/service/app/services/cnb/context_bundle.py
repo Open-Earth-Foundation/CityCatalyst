@@ -25,6 +25,7 @@ from app.services.cnb.chapter_drafting import (
     ConceptNoteChapterDraftService,
     schedule_chapter_revalidation,
 )
+from app.services.cnb.source_impact_review import RevalidationSource
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceUnit,
@@ -124,6 +125,7 @@ class ContextBundleService:
                 cc_client = self.cc_client_factory()
                 selected_sources: list[SelectedSource] = []
                 uploads_to_analyze: list[ConceptNoteUploadSnapshot] = []
+                new_sources: list[RevalidationSource] = []
 
                 # Reuse unchanged source analyses and run the LLM only for new inputs.
                 if active.uploads:
@@ -150,7 +152,7 @@ class ContextBundleService:
                             uploads_to_analyze.append(upload)
 
                     if uploads_to_analyze:
-                        analyzed_sources = await gather_all_or_raise(
+                        new_sources = await gather_all_or_raise(
                             *(
                                 self._analyze_upload(
                                     upload=upload,
@@ -164,7 +166,7 @@ class ContextBundleService:
                             )
                         )
                         selected_by_upload.update(
-                            {source.upload_id: source for source in analyzed_sources}
+                            {item.source.upload_id: item.source for item in new_sources}
                         )
                     selected_sources = [
                         selected_by_upload[upload.upload_id]
@@ -211,23 +213,16 @@ class ContextBundleService:
                     optional_sources=optional_statuses,
                     warnings=warnings,
                 )
+                # Hand the verified new source text to the chapter re-check.
                 if (
                     completed
-                    and uploads_to_analyze
+                    and new_sources
                     and self.schedule_revalidation_fn is not None
                 ):
-                    analyzed_upload_ids = {
-                        upload.upload_id for upload in uploads_to_analyze
-                    }
-                    source_refs = [
-                        source.source_label
-                        for source in selected_sources
-                        if source.upload_id in analyzed_upload_ids
-                    ]
                     self.schedule_revalidation_fn(
                         run_id=run_id,
                         user_id=user_id,
-                        source_refs=source_refs,
+                        new_sources=new_sources,
                     )
                 finish_workflow_trace(span, {"completed": completed}, ok=completed)
                 return completed
@@ -278,7 +273,7 @@ class ContextBundleService:
         analysis_settings: Settings,
         reader_limit: asyncio.Semaphore,
         contract_version: str,
-    ) -> SelectedSource:
+    ) -> RevalidationSource:
         """Re-fetch, revalidate, and fully analyze one ready upload."""
         # Require the immutable metadata needed for the declared source format.
         if (
@@ -319,8 +314,11 @@ class ContextBundleService:
             settings=analysis_settings,
             reader_limit=reader_limit,
         )
-        return analysis.model_copy(
-            update={"analysis_contract_version": contract_version}
+        return RevalidationSource(
+            source=analysis.model_copy(
+                update={"analysis_contract_version": contract_version}
+            ),
+            units=source_units,
         )
 
     async def _load_optional_context(
@@ -567,12 +565,12 @@ def _schedule_source_revalidation(
     *,
     run_id: UUID,
     user_id: str,
-    source_refs: list[str],
+    new_sources: list[RevalidationSource],
 ) -> None:
     """Queue source-impact revalidation with production database dependencies."""
     schedule_chapter_revalidation(
         service=ConceptNoteChapterDraftService(get_session_factory()),
         run_id=run_id,
         user_id=user_id,
-        source_refs=source_refs,
+        new_sources=new_sources,
     )

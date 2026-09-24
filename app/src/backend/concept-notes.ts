@@ -15,7 +15,7 @@ const upstreamRunSchema = z.object({ city_id: z.string().uuid() });
 type ConceptNoteApiRequest = {
   path: string;
   userId: string;
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: Record<string, unknown>;
   headers?: Record<string, string>;
   requestId?: string;

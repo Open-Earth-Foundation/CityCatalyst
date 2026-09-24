@@ -180,8 +180,13 @@ async def complete_build(
     hiap: dict[str, Any] | None,
     optional_sources: dict[str, str],
     warnings: list[str],
+    city: dict[str, Any] | None = None,
 ) -> bool:
-    """Commit only the active build's owned bundle sections."""
+    """Commit only the active build's owned bundle sections.
+
+    ``city`` replaces the city profile only when provided, so a failed lookup
+    keeps the last usable profile.
+    """
     try:
         async with session_factory() as session, session.begin():
             # Reject stale workers before writing any bundle state.
@@ -231,6 +236,8 @@ async def complete_build(
                 session.add(bundle_row)
             bundle = normalize_bundle(bundle_row.context_bundle)
             bundle.selected_sources = selected_sources
+            if city is not None:
+                bundle.cc_context.city = city
             bundle.cc_context.ghgi = ghgi
             bundle.cc_context.hiap = hiap
             bundle_row.context_bundle = bundle.model_dump(mode="json")

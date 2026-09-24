@@ -1,3 +1,5 @@
+import type Decimal from "decimal.js";
+import type { GeoJSON } from "geojson";
 import type {
   DataSourceWithRelations,
   GlobalAPISourceResponse,
@@ -22,7 +24,6 @@ import type {
   EmissionsFactorAttributes,
 } from "@/models/EmissionsFactor";
 import type { ActivityValue } from "@/models/ActivityValue";
-import type Decimal from "decimal.js";
 import {
   GlobalWarmingPotentialTypeEnum,
   OrganizationPlanType,
@@ -35,7 +36,6 @@ import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
 import type { VersionAttributes } from "@/models/Version";
 import type { BoundingBox } from "@/util/geojson";
-import type { GeoJSON } from "geojson";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -1269,6 +1269,7 @@ export interface ValidateConceptNoteChapterRequest {
 }
 
 export interface ConceptNoteDraftChapter {
+  description?: string;
   chapter_id: string;
   template_section_id: string | null;
   title: string;
@@ -1293,6 +1294,7 @@ export interface ConceptNoteDraftState {
   total_chapters: number;
   current_chapter_id: string | null;
   error_code: string | null;
+  overview_pending?: boolean;
   chapters: ConceptNoteDraftChapter[];
 }
 

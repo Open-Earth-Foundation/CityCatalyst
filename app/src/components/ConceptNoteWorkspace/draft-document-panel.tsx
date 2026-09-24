@@ -39,8 +39,14 @@ import {
   decodeMissingInformationMessage,
   MISSING_INFORMATION_LINK,
   remarkMissingInformation,
+  splitStandaloneMarkers,
 } from "./draft-markdown";
 import { markerLabel } from "./missing-information";
+import {
+  ChapterGapsPanel,
+  chapterGapRows,
+  type ChapterGapRow,
+} from "./chapter-gaps-panel";
 import {
   getChapterDisplayStatus,
   type ChapterDisplayStatus,
@@ -234,6 +240,7 @@ export interface DraftInlineReviewProps {
   reviewDecisionBusy?: boolean;
   onAcceptReviewChange?: (changeIds: string[]) => void;
   onRejectReviewChange?: (changeIds: string[]) => void;
+  onAnswerGap?: (chapter: ConceptNoteDraftChapter, row: ChapterGapRow) => void;
 }
 
 interface DraftDocumentPanelProps extends DraftInlineReviewProps {
@@ -260,6 +267,7 @@ export function DraftDocumentPanel({
   onRejectReviewChange,
   isConfirmingChapter,
   onConfirmChapter,
+  onAnswerGap,
 }: DraftDocumentPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const {
@@ -557,7 +565,12 @@ export function DraftDocumentPanel({
                               ? "chapter-status-ready"
                               : getChapterDisplayStatus(chapter) === "empty"
                                 ? "chapter-status-empty"
-                                : "chapter-status-draft",
+                                : getChapterDisplayStatus(chapter) ===
+                                    "incomplete"
+                                  ? "chapter-status-validation-incomplete"
+                                  : getChapterDisplayStatus(chapter) === "stale"
+                                    ? "chapter-status-validation-stale"
+                                    : "chapter-status-draft",
                         )}
                       </Text>
                       {chapter.open_gap_count > 0 && (
@@ -674,6 +687,14 @@ export function DraftDocumentPanel({
                         </Box>
                       );
                     }
+                    // Standalone markers move out of the prose into one
+                    // gap block per chapter; inline ones stay as chips.
+                    const preview = splitStandaloneMarkers(
+                      chapterPreviewMarkdown(
+                        chapter.body_markdown!,
+                        chapter.title,
+                      ),
+                    );
                     return (
                       <Box
                         data-testid="concept-note-current-chapter-body"
@@ -684,11 +705,14 @@ export function DraftDocumentPanel({
                           components={markdownComponents}
                           remarkPlugins={[remarkGfm, remarkMissingInformation]}
                         >
-                          {chapterPreviewMarkdown(
-                            chapter.body_markdown!,
-                            chapter.title,
-                          )}
+                          {preview.markdown}
                         </ReactMarkdown>
+                        <ChapterGapsPanel
+                          chapter={chapter}
+                          lng={lng}
+                          rows={chapterGapRows(chapter, preview.messages)}
+                          onAnswerGap={onAnswerGap}
+                        />
                       </Box>
                     );
                   })()

@@ -260,7 +260,7 @@ afterEach(async () => {
 });
 
 describe("guided review before export", () => {
-  it("allows exporting critical gaps only after explicit acknowledgement", async () => {
+  it("warns on critical gaps and enables export once acknowledged", async () => {
     const savedDraft = draft(1, true);
     savedDraft.chapters[0].gaps[0].severity = "critical";
     await renderDialog({ draft: savedDraft });
@@ -276,12 +276,15 @@ describe("guided review before export", () => {
         /Export (DOCX|PDF)/.test(button.textContent ?? ""),
       );
     expect(downloads()).toHaveLength(2);
+    // Export warns, never blocks: disabled only until the user acknowledges.
     expect(downloads().every((button) => button.disabled)).toBe(true);
-    const acknowledgement = document.body.querySelector(
+    const acknowledgement = document.body.querySelector<HTMLInputElement>(
       'input[type="checkbox"]',
     );
-    expect(acknowledgement).toBeInstanceOf(HTMLInputElement);
-    await act(async () => (acknowledgement as HTMLInputElement).click());
+    expect(acknowledgement).not.toBeNull();
+    await act(async () => {
+      acknowledgement?.click();
+    });
     expect(downloads().every((button) => !button.disabled)).toBe(true);
   });
 

@@ -170,6 +170,15 @@ not driven through chat: starting a draft invokes a dedicated persisted process.
 Afterwards, chat supports user-led questions, clarification, and reviewable edit
 proposals. Only explicit review actions mutate the persisted document.
 
+The workspace renders one edit-review toolbar in a dedicated row below the
+document header. Funding saves navigate to Draft only when the action is labelled
+"Save and go to drafting". Ready-to-draft guidance follows the current funding,
+source, and draft state regardless of their loading order; it hides during source
+processing or when the template is cleared, and does not duplicate the setup
+panel's Start drafting button. Dismissed guidance stays dismissed. Completion
+guidance clears when drafting resumes. Draft progress uses workspace events, and
+finishing the chat overview refreshes the draft's consumed-overview state.
+
 ### Implemented chat revision boundary (CC-732)
 
 The workspace shows red/green changes at each affected passage.

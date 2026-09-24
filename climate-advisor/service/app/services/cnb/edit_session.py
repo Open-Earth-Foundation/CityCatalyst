@@ -148,7 +148,9 @@ class DraftEditSession:
                         if not replacement.replace_all:
                             raise EditOperationError(
                                 reason,
-                                "This match is protected. Preserve it or fill the complete matching information gap.",
+                                "Use propose_structure to rename a chapter title. Internal template subheadings cannot be changed through text replacements."
+                                if reason == "template_headings"
+                                else "This match is protected. Preserve it or fill the complete matching information gap.",
                             )
                         exclusions.setdefault(reason, set()).add(
                             (match.chapter.position, match.start, match.text)

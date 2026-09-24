@@ -150,6 +150,7 @@ let useConceptNoteWorkspaceData: typeof import("@/components/ConceptNoteWorkspac
 let container: HTMLDivElement;
 let root: Root;
 let Panel: typeof import("@/components/ConceptNoteWorkspace/chat-panel").ConceptNoteChatPanel;
+let ContextTab: typeof import("@/components/ConceptNoteWorkspace/context-tab").ContextTab;
 const composerRequest = { id: "draft", content: "Use the new document" };
 
 function ChatHarness() {
@@ -163,12 +164,56 @@ function ChatHarness() {
       <Panel
         contextStatus={contextStatus}
         composerRequest={composerRequest}
+        draftOverviewPending={false}
         lng="en"
         onOpenContext={() => {}}
         runId="run-1"
         threadId="thread-1"
         editScope={{ kind: "auto" }}
         edits={{ loadProposal: async () => {} } as never}
+      />
+    </ChakraProvider>
+  );
+}
+
+function ContextHarness() {
+  const data = useConceptNoteWorkspaceData({
+    cityId: "city-1",
+    lng: "en",
+    runId: "run-1",
+  });
+  return (
+    <ChakraProvider value={defaultSystem}>
+      <ContextTab
+        applicationContext={null}
+        onSelectFunding={() => {}}
+        fundingLoading={false}
+        fundingError={false}
+        onRetryFunding={() => {}}
+        bundle={data.bundle}
+        contextStatus={data.contextStatus}
+        cityFilesCount={0}
+        cityName="Test City"
+        country={null}
+        firstCityFile={null}
+        inventoryYear={null}
+        isDraftRunning={false}
+        isRetryingBundle={false}
+        isRetryingUpload={false}
+        isUploading={false}
+        lng="en"
+        manualPopulation={null}
+        manualPopulationSaving={false}
+        onRetryBundle={() => {}}
+        onRetryUpload={() => {}}
+        onSaveManualPopulation={async () => {}}
+        onUploadFile={async () => {}}
+        populationFailed={false}
+        populationLabel="population-unavailable"
+        populationLoading={false}
+        populationMissing={true}
+        upload={data.effectiveUpload}
+        uploadError={null}
       />
     </ChakraProvider>
   );
@@ -239,6 +284,8 @@ beforeAll(async () => {
     await import("@/components/ConceptNoteWorkspace/use-concept-note-workspace-data"));
   ({ ConceptNoteChatPanel: Panel } =
     await import("@/components/ConceptNoteWorkspace/chat-panel"));
+  ({ ContextTab } =
+    await import("@/components/ConceptNoteWorkspace/context-tab"));
 });
 
 afterAll(() => {
@@ -346,6 +393,41 @@ describe("useConceptNoteWorkspaceData", () => {
     );
   });
 
+  it("keeps both file labels processing until OCR evidence reaches the chat context", async () => {
+    contextScenario = {
+      uploads: [source("ready", "A")],
+      progress_summary: { context_bundle: { status: "building" } },
+    };
+    await act(async () => root.render(<ContextHarness />));
+    expect(container.textContent).toContain("A.pdf");
+    expect(container.textContent?.match(/status-processing/g)).toHaveLength(2);
+    expect(container.textContent).not.toContain("status-ready");
+
+    contextScenario.progress_summary = {
+      context_bundle: {
+        status: "ready",
+        document_grounding: "uploaded_evidence",
+        source_counts: { ready: 1 },
+      },
+    };
+    await act(async () => root.render(<ContextHarness />));
+    expect(container.textContent?.match(/status-ready/g)).toHaveLength(2);
+    expect(container.textContent).not.toContain("status-processing");
+
+    contextScenario.progress_summary = { context_bundle: { status: "failed" } };
+    await act(async () => root.render(<ContextHarness />));
+    expect(container.textContent?.match(/status-failed/g)).toHaveLength(2);
+    expect(container.textContent).not.toContain("status-ready");
+  });
+  it("labels a file that is still converting as converting, not processing", async () => {
+    contextScenario = {
+      uploads: [source("processing", "A")],
+      progress_summary: { context_bundle: { status: "building" } },
+    };
+    await act(async () => root.render(<ContextHarness />));
+    expect(container.textContent).toContain("status-converting");
+    expect(container.textContent).not.toContain("status-processing");
+  });
   it("shows a run-scoped manual population when the city source has no value", async () => {
     cityPopulation = { cityId: "city-1" };
     contextScenario = {
@@ -408,6 +490,7 @@ describe("useConceptNoteWorkspaceData", () => {
       content: composerRequest.content,
       context: {
         concept_note_run_id: "run-1",
+        ui_locale: "en",
         concept_note_edit: {
           scope: { kind: "auto" },
           idempotency_key: expect.any(String),

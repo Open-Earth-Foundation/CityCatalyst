@@ -197,7 +197,11 @@ export function meedContextVisual(
                 label={label}
                 valueText={valueText}
                 height="6px"
-                ariaLabel={t("legend-item", { label, value: valueText })}
+                ariaLabel={t("legend-item", {
+                  label,
+                  value: valueText,
+                  interpolation: { escapeValue: false },
+                })}
               />
             );
           })}

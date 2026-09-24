@@ -187,8 +187,10 @@ export function useConceptNoteEdits({
           ? proposal.proposal_id
           : undefined,
       );
-      if (action === "apply" && result.result) {
-        const chapterIds = Object.keys(result.result.revisions);
+      if (action === "apply" && (result.result || result.structure)) {
+        const chapterIds = result.structure
+          ? result.structure.after.map((chapter) => chapter.chapter_id)
+          : Object.keys(result.result!.revisions);
         try {
           await onApplied(chapterIds);
           if (activeRun.current === runId) setDraftReload(null);

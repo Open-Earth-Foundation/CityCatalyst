@@ -2523,10 +2523,12 @@ export const api = createApi({
           funderId,
           selectedFundingOpportunityId,
           threadId,
+          initialUploads,
         }) => ({
           url: "concept-notes/start/",
           method: "POST",
           body: {
+            initial_uploads: initialUploads,
             city_id: cityId,
             idempotency_key: idempotencyKey,
             name,

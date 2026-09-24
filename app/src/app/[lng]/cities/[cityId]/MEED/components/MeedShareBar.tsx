@@ -85,7 +85,13 @@ export function MeedShareBar({
               color="content.secondary"
               fontVariantNumeric="tabular-nums"
             >
-              {t("legend-item", { label: s.label, value: format(s, total) })}
+              {t("legend-item", {
+                label: s.label,
+                value: format(s, total),
+                // React escapes text itself; i18next's HTML escaping would
+                // turn a "/" or "&" in a label into an entity.
+                interpolation: { escapeValue: false },
+              })}
             </BodySmall>
           </HStack>
         ))}

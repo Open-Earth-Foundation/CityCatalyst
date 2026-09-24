@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/native-select";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import { Inputs } from "../activity-modal-body";
+import { GlobalWarmingPotentialTypeEnum } from "@/util/enums";
 
 interface DataQualitySectionProps {
   t: TFunction;
@@ -28,6 +29,11 @@ interface DataQualitySectionProps {
   errors: FieldErrors<FieldValues>;
   setValue: UseFormSetValue<Inputs>;
   fields: ExtraField[];
+  gwp?: {
+    version: GlobalWarmingPotentialTypeEnum | string;
+    ch4: number | null;
+    n2o: number | null;
+  } | null;
 }
 
 export const DataQualitySection = ({
@@ -37,6 +43,7 @@ export const DataQualitySection = ({
   errors,
   setValue,
   fields,
+  gwp,
 }: DataQualitySectionProps) => {
   const prefix = "";
 
@@ -193,15 +200,21 @@ export const DataQualitySection = ({
         </Field>
       </HStack>
 
-      <HStack alignItems="flex-start" mb={13}>
-        <Icon as={MdInfoOutline} mt={1} color="content.link" />
-        <Text color="content.tertiary">
-          {t("gwp-info-prefix")}{" "}
-          <Text as="span" fontWeight="bold">
-            {t("gwp-info")}
+      {gwp && gwp.ch4 != null && gwp.n2o != null && (
+        <HStack alignItems="flex-start" mb={13}>
+          <Icon as={MdInfoOutline} mt={1} color="content.link" />
+          <Text color="content.tertiary">
+            {t("gwp-info-prefix")}{" "}
+            <Text as="span" fontWeight="bold">
+              {t("gwp-info", {
+                ch4: gwp.ch4,
+                n2o: gwp.n2o,
+                version: gwp.version.toString().toUpperCase(),
+              })}
+            </Text>
           </Text>
-        </Text>
-      </HStack>
+        </HStack>
+      )}
     </>
   );
 };

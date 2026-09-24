@@ -775,7 +775,10 @@ export default class UserService {
       status: InviteStatus;
       role: OrganizationRole;
     }[] = orgAdmins
-      .filter((orgAdmin) => !invitedEmails.has(orgAdmin.user.email))
+      .filter(
+        (orgAdmin) =>
+          !!orgAdmin.user.email && !invitedEmails.has(orgAdmin.user.email),
+      )
       .map((orgAdmin) => ({
         email: orgAdmin.user.email as string,
         name: orgAdmin.user.name ?? null,
@@ -784,12 +787,14 @@ export default class UserService {
       }));
 
     users.push(
-      ...orgInvites.map((invite) => ({
-        email: invite?.email as string,
-        name: null,
-        status: invite?.status as InviteStatus,
-        role: OrganizationRole.ORG_ADMIN,
-      })),
+      ...orgInvites
+        .filter((invite) => !!invite?.email)
+        .map((invite) => ({
+          email: invite.email as string,
+          name: null,
+          status: invite?.status as InviteStatus,
+          role: OrganizationRole.ORG_ADMIN,
+        })),
       ...dedupedOrgAdmin,
     );
 
@@ -821,22 +826,26 @@ export default class UserService {
       ],
     });
 
-    const cityUsers = cityUsersData.map((cityUser) => ({
-      email: cityUser.user.email as string,
-      name: cityUser.user.name ?? null,
-      status: InviteStatus.ACCEPTED,
-      role: OrganizationRole.COLLABORATOR,
-      cityId: cityUser.cityId as string,
-    }));
+    const cityUsers = cityUsersData
+      .filter((cityUser) => !!cityUser.user.email)
+      .map((cityUser) => ({
+        email: cityUser.user.email as string,
+        name: cityUser.user.name ?? null,
+        status: InviteStatus.ACCEPTED,
+        role: OrganizationRole.COLLABORATOR,
+        cityId: cityUser.cityId as string,
+      }));
 
     const cityInvites = cities.flatMap((city) =>
-      city.cityInvites.map((invite) => ({
-        email: invite?.email as string,
-        name: null,
-        status: invite?.status as InviteStatus,
-        role: OrganizationRole.COLLABORATOR,
-        cityId: city.cityId as string,
-      })),
+      city.cityInvites
+        .filter((invite) => !!invite?.email)
+        .map((invite) => ({
+          email: invite.email as string,
+          name: null,
+          status: invite?.status as InviteStatus,
+          role: OrganizationRole.COLLABORATOR,
+          cityId: city.cityId as string,
+        })),
     );
 
     users.push(...cityUsers, ...cityInvites);

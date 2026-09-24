@@ -9,8 +9,25 @@ import {
 const runWireSchema = z
   .object({
     city_id: z.string().uuid(),
+    progress_summary: z
+      .object({
+        initial_uploads: z
+          .array(
+            z.object({
+              upload_id: z.string().uuid(),
+              filename: z.string(),
+              sha256: z.string(),
+              accepted: z.boolean().optional(),
+            }),
+          )
+          .optional(),
+      })
+      .optional(),
   })
-  .transform((run) => ({ cityId: run.city_id }));
+  .transform((run) => ({
+    cityId: run.city_id,
+    initialUploads: run.progress_summary?.initial_uploads ?? [],
+  }));
 
 export const conceptNoteUploadSchema = z.object({
   uploadId: z.string().uuid(),
@@ -64,11 +81,11 @@ function upstreamError(
   return createHttpError(status, detail, { expose: status < 500, retryAfter });
 }
 
-export async function loadConceptNoteRunCity(args: {
+export async function loadConceptNoteUploadRun(args: {
   runId: string;
   userId: string;
   requestId?: string;
-}): Promise<string> {
+}): Promise<z.infer<typeof runWireSchema>> {
   const response = await callConceptNoteApi({
     path: `/v1/concept-notes/${args.runId}`,
     userId: args.userId,
@@ -88,7 +105,15 @@ export async function loadConceptNoteRunCity(args: {
       "Climate Advisor returned an invalid concept-note run",
     );
   }
-  return parsed.data.cityId;
+  return parsed.data;
+}
+
+export async function loadConceptNoteRunCity(args: {
+  runId: string;
+  userId: string;
+  requestId?: string;
+}): Promise<string> {
+  return (await loadConceptNoteUploadRun(args)).cityId;
 }
 
 export async function loadConceptNoteUpload(args: {

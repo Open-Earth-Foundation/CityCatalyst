@@ -130,6 +130,7 @@ class ResearchModelConfig(BaseModel):
 
 
 class ModelsConfig(BaseModel):
+    cnb_chat_suggestions: ResearchModelConfig | None = None
     orchestrator: RoleModelConfig
     agentic_flow: Optional[RoleModelConfig] = None
     cnb_chat: Optional[RoleModelConfig] = None
@@ -205,6 +206,8 @@ class GenerationConfig(BaseModel):
 
 class PromptsConfig(BaseModel):
     """Configured prompt entry points and include-aware prompt loading."""
+
+    cnb_chat_suggestions: str = "prompts/cnb/chat_suggestions.md"
 
     core: str
     chat: str

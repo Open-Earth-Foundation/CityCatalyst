@@ -369,6 +369,22 @@ export function ConceptNoteWorkspace({
               threadId={activeThreadId}
               editScope={editScope}
               edits={edits}
+              activeTab={tab}
+              hasDocument={
+                draft?.chapters.some((chapter) =>
+                  Boolean(chapter.body_markdown),
+                ) ?? false
+              }
+              suggestionRevision={JSON.stringify([
+                run.updated_at,
+                contextStatus.state,
+                draft?.status,
+                draft?.chapters.map((chapter) => [
+                  chapter.chapter_id,
+                  chapter.revision_number,
+                  chapter.open_gap_count,
+                ]),
+              ])}
             />
 
             <Tabs.Root

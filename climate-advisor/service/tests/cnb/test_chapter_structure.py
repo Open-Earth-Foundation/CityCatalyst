@@ -13,6 +13,7 @@ from uuid import UUID, uuid4
 
 import pytest
 from agents.tool_context import ToolContext
+from app.config.settings import CnbEditPromptBudgetConfig
 from app.db.cnb import CnbBase
 from app.models.cnb.concept_note_edits import (
     EditApplyRequest,
@@ -358,6 +359,7 @@ async def test_agent_structural_tool_uses_server_ids_and_rejects_template_deleti
         chapters,
         {},
         [],
+        max_searches=CnbEditPromptBudgetConfig().max_searches,
     )
     tool = next(
         tool

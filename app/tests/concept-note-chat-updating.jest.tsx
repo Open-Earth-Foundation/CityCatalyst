@@ -100,14 +100,7 @@ async function renderPanel(draft: ConceptNoteDraftState): Promise<void> {
     threadId: "thread-1",
     editScope: { kind: "auto" },
     edits: { loadProposal: jest.fn(), error: null, refresh: jest.fn() },
-    gapInterview: {
-      draft,
-      isResolvingGap: false,
-      mutationError: null,
-      onResolveGap: jest.fn(),
-      onReviewDraft: jest.fn(),
-      reviewRequest: null,
-    },
+    draft,
   } as unknown as ComponentProps<typeof ConceptNoteChatPanel>;
   container = document.createElement("div");
   document.body.appendChild(container);
@@ -128,7 +121,7 @@ function chatInput(): HTMLInputElement {
 }
 
 it.each(["queued", "processing"] as const)(
-  "holds chat while a chapter is %s after a gap answer",
+  "holds chat while a chapter is %s",
   async (status) => {
     await renderPanel(draftWith(status));
 

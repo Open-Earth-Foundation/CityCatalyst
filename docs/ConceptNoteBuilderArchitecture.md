@@ -170,6 +170,15 @@ not driven through chat: starting a draft invokes a dedicated persisted process.
 Afterwards, chat supports user-led questions, clarification, and reviewable edit
 proposals. Only explicit review actions mutate the persisted document.
 
+The workspace renders one edit-review toolbar in a dedicated row below the
+document header. Funding saves navigate to Draft only when the action is labelled
+"Save and go to drafting". Ready-to-draft guidance follows the current funding,
+source, and draft state regardless of their loading order; it hides during source
+processing or when the template is cleared, and does not duplicate the setup
+panel's Start drafting button. Dismissed guidance stays dismissed. Completion
+guidance clears when drafting resumes. Draft progress uses workspace events, and
+finishing the chat overview refreshes the draft's consumed-overview state.
+
 ### Implemented chat revision boundary (CC-732)
 
 The workspace shows red/green changes at each affected passage.
@@ -1687,8 +1696,11 @@ reconstructed without reading Markdown from `concept_note_chapters`.
 
 ### Structured gap lifecycle API
 
-The browser and Climate Advisor expose the same run-scoped mutations through
-CityCatalyst's authenticated proxies:
+The workspace answers gaps through chat: a chapter's "Answer in chat" action
+prefills the composer, and accepting the resulting reviewed edit closes the
+matching gap. Climate Advisor also exposes these run-scoped mutations through
+CityCatalyst's authenticated proxies; the workspace calls only `draft` and
+`confirm`:
 
 - `GET /v1/concept-notes/{run_id}/draft` returns chapters, structured gaps,
   open/caveat counts, current/confirmed/proposed revision numbers, the preserved
@@ -1703,8 +1715,8 @@ CityCatalyst's authenticated proxies:
 Both mutations recheck run ownership. Stale gap versions or chapter revisions
 return a conflict. An accepted answer remains in the append-only resolution log
 if regeneration fails; the chapter exposes a retryable failure state rather
-than losing user input. Existing draft polling reports processing and completion
-transitions, so this flow does not require SSE.
+than losing user input. The workspace event stream carries draft snapshots, so chat is
+held while any chapter is `queued` or `processing`.
 
 ## Document Tool Deep Dive
 

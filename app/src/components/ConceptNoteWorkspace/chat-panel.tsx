@@ -24,13 +24,13 @@ import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import { useConceptNoteChat } from "./use-concept-note-chat";
 import { ChatProgress } from "./chat-progress";
+import { DraftingProgressCard } from "./drafting-progress-card";
+import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
+import { ChatSuggestions } from "./chat-suggestions";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import type { EditController } from "./document-review";
 import type { EditScope } from "@/util/concept-note-edit-types";
-import {
-  GapInterviewPanel,
-  type GapInterviewControls,
-} from "./gap-interview-panel";
+import type { ConceptNoteDraftState } from "@/util/types";
 
 interface ConceptNoteChatPanelProps {
   contextStatus: ConceptNoteContextPresentation;
@@ -43,7 +43,16 @@ interface ConceptNoteChatPanelProps {
   threadId: string | null;
   editScope: EditScope;
   edits: EditController;
-  gapInterview?: GapInterviewControls;
+  draft?: ConceptNoteDraftState | null;
+  draftStartedAt?: string | null;
+  draftCompletedAt?: string | null;
+  welcomeStage?: ChatWelcomeStage | null;
+  onOpenDraft?: () => void;
+  onOpenFundingSetup?: () => void;
+  onDraftOverviewComplete?: () => void;
+  activeTab?: "draft" | "structure" | "context";
+  suggestionRevision?: string;
+  hasDocument?: boolean;
 }
 
 interface ContextStatusNoticeProps {
@@ -192,7 +201,16 @@ export function ConceptNoteChatPanel({
   threadId,
   editScope,
   edits,
-  gapInterview,
+  draft = null,
+  draftStartedAt = null,
+  draftCompletedAt = null,
+  welcomeStage = null,
+  onOpenDraft,
+  onOpenFundingSetup,
+  onDraftOverviewComplete,
+  activeTab = "draft",
+  suggestionRevision = "",
+  hasDocument = false,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [input, setInput] = useState("");
@@ -212,6 +230,7 @@ export function ConceptNoteChatPanel({
     threadId,
     editScope,
     onProposal: edits.loadProposal,
+    onDraftOverviewComplete,
   });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const followLatestRef = useRef(true);
@@ -219,10 +238,10 @@ export function ConceptNoteChatPanel({
   const contextState = contextStatus.state;
   const hasUploadedEvidence = contextState === "ready";
   const contextBlocked = contextStatus.blocked;
-  // Hold chat while a gap answer may still rewrite chapters, so edits are
+  // Hold chat while chapters are being rewritten, so edits are
   // never proposed against text that is about to be replaced.
   const chaptersUpdating = Boolean(
-    gapInterview?.draft?.chapters.some(
+    draft?.chapters.some(
       (chapter) =>
         chapter.regeneration_status === "queued" ||
         chapter.regeneration_status === "processing",
@@ -397,6 +416,19 @@ export function ConceptNoteChatPanel({
           status={contextStatus}
         />
 
+        {welcomeStage &&
+          threadId &&
+          !historyLoading &&
+          messages.length === 0 &&
+          draft?.status !== "running" && (
+            <ChatWelcome
+              lng={lng}
+              stage={welcomeStage}
+              onOpenDraft={onOpenDraft}
+              onOpenFundingSetup={onOpenFundingSetup}
+            />
+          )}
+
         {messages.map((message) => (
           <Fragment key={message.id}>
             {message.role === "assistant" &&
@@ -443,15 +475,12 @@ export function ConceptNoteChatPanel({
           </Fragment>
         ))}
 
-        {gapInterview && (
-          <GapInterviewPanel
-            {...gapInterview}
-            askClimaDisabled={chatDisabled}
+        {draft && (
+          <DraftingProgressCard
+            draft={draft}
             lng={lng}
-            onAskClima={(prompt) => {
-              followLatestRef.current = true;
-              void sendChatMessage(prompt);
-            }}
+            startedAt={draftStartedAt}
+            completedAt={draftCompletedAt}
           />
         )}
 
@@ -496,6 +525,23 @@ export function ConceptNoteChatPanel({
         flexShrink={0}
         onSubmit={submitMessage}
       >
+        <Box mb={!chatDisabled && threadId ? 3 : 0}>
+          {!chatDisabled && threadId && (
+            <ChatSuggestions
+              runId={runId}
+              threadId={threadId}
+              lng={lng}
+              tab={activeTab}
+              revision={suggestionRevision}
+              lastMessageId={messages.at(-1)?.id}
+              hasDocument={hasDocument}
+              onSelect={(question) => {
+                setInput(question);
+                inputRef.current?.focus();
+              }}
+            />
+          )}
+        </Box>
         <Flex align="center" gap={3}>
           <Input
             data-testid="concept-note-chat-input"

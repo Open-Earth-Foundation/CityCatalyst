@@ -3,7 +3,7 @@
 import type { ConceptNoteContextPresentation } from "./context-status";
 
 import type { ChangeEvent, FormEvent, ReactNode } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -73,6 +73,7 @@ interface ContextTabProps {
   populationLoading: boolean;
   populationMissing: boolean;
   upload: ConceptNoteUploadResponse | null;
+  uploadPickerRequest?: number;
   uploadError: string | null;
 }
 
@@ -248,10 +249,14 @@ export function ContextTab({
   populationMissing,
   upload,
   uploadError,
+  uploadPickerRequest,
 }: ContextTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [detailKey, setDetailKey] = useState<ContextDetailKey | null>(null);
+  useEffect(() => {
+    if (uploadPickerRequest) fileInputRef.current?.click();
+  }, [uploadPickerRequest]);
   const [editingPopulation, setEditingPopulation] = useState(false);
   const [populationInput, setPopulationInput] = useState("");
   const [yearInput, setYearInput] = useState("");

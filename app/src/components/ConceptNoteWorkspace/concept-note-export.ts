@@ -98,16 +98,20 @@ export function hasCriticalExportBlocker(
   );
 }
 
+/**
+ * Export warns, never blocks: open critical gaps and other unresolved items
+ * require an explicit acknowledgement, but they don't disable the export.
+ */
 export function canExportConceptNote(
   chapters: ConceptNoteDraftChapter[],
   acceptedMissingInformation: boolean,
 ): boolean {
   const hasExportableDraft = exportableChapters(chapters).length > 0;
   const unresolvedCount = countUnresolvedExportItems(chapters);
+  const needsAcknowledgement =
+    unresolvedCount > 0 || hasCriticalExportBlocker(chapters);
   return (
-    hasExportableDraft &&
-    !hasCriticalExportBlocker(chapters) &&
-    (unresolvedCount === 0 || acceptedMissingInformation)
+    hasExportableDraft && (!needsAcknowledgement || acceptedMissingInformation)
   );
 }
 

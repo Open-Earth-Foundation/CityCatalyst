@@ -39,7 +39,14 @@ import {
   decodeMissingInformationMessage,
   MISSING_INFORMATION_LINK,
   remarkMissingInformation,
+  splitStandaloneMarkers,
 } from "./draft-markdown";
+import { markerLabel } from "./missing-information";
+import {
+  ChapterGapsPanel,
+  chapterGapRows,
+  type ChapterGapRow,
+} from "./chapter-gaps-panel";
 import {
   getChapterDisplayStatus,
   type ChapterDisplayStatus,
@@ -112,16 +119,24 @@ const markdownComponents = {
           <chakra.button
             type="button"
             aria-label={message}
-            display="inline-grid"
-            placeItems="center"
-            boxSize="26px"
+            data-testid="concept-note-gap-marker"
+            display="inline-flex"
+            alignItems="center"
+            gap={1.5}
+            maxW="100%"
+            minH="26px"
+            px={2}
+            py="2px"
             mx={1}
             border="1px solid"
             borderColor="sentiment.warningDefault"
             borderRadius="7px"
             bg="sentiment.warningOverlay"
             color="sentiment.warningDefault"
-            lineHeight={1}
+            fontSize="12px"
+            lineHeight="16px"
+            fontWeight="medium"
+            textAlign="left"
             verticalAlign="middle"
             cursor="pointer"
             transitionDuration="150ms"
@@ -138,7 +153,15 @@ const markdownComponents = {
               outlineOffset: "2px",
             }}
           >
-            <Icon as={LuCircleAlert} boxSize="16px" />
+            <Icon as={LuCircleAlert} boxSize="16px" flexShrink={0} />
+            <chakra.span
+              overflow="hidden"
+              textOverflow="ellipsis"
+              whiteSpace="nowrap"
+              data-testid="concept-note-gap-marker-label"
+            >
+              {markerLabel(message)}
+            </chakra.span>
           </chakra.button>
         </PopoverTrigger>
         <PopoverContent
@@ -204,7 +227,6 @@ function chapterPreviewMarkdown(markdown: string, title: string): string {
 export interface DraftInlineReviewProps {
   isConfirmingChapter: boolean;
   onConfirmChapter: (chapter: ConceptNoteDraftChapter) => void;
-  onReviewChapterGaps?: (chapter: ConceptNoteDraftChapter) => void;
   editFocus?: {
     chapterId: string;
     changeId?: string;
@@ -218,6 +240,7 @@ export interface DraftInlineReviewProps {
   reviewDecisionBusy?: boolean;
   onAcceptReviewChange?: (changeIds: string[]) => void;
   onRejectReviewChange?: (changeIds: string[]) => void;
+  onAnswerGap?: (chapter: ConceptNoteDraftChapter, row: ChapterGapRow) => void;
 }
 
 interface DraftDocumentPanelProps extends DraftInlineReviewProps {
@@ -244,7 +267,7 @@ export function DraftDocumentPanel({
   onRejectReviewChange,
   isConfirmingChapter,
   onConfirmChapter,
-  onReviewChapterGaps,
+  onAnswerGap,
 }: DraftDocumentPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const {
@@ -540,34 +563,23 @@ export function DraftDocumentPanel({
                             ? "chapter-status-needs-review"
                             : getChapterDisplayStatus(chapter) === "ready"
                               ? "chapter-status-ready"
-                              : "chapter-status-draft",
+                              : getChapterDisplayStatus(chapter) === "empty"
+                                ? "chapter-status-empty"
+                                : getChapterDisplayStatus(chapter) ===
+                                    "incomplete"
+                                  ? "chapter-status-validation-incomplete"
+                                  : getChapterDisplayStatus(chapter) === "stale"
+                                    ? "chapter-status-validation-stale"
+                                    : "chapter-status-draft",
                         )}
                       </Text>
-                      {chapter.open_gap_count > 0 &&
-                        (onReviewChapterGaps ? (
-                          <Box
-                            as="button"
-                            fontSize="10px"
-                            color="sentiment.warningDefault"
-                            textDecoration="underline"
-                            cursor="pointer"
-                            data-testid="concept-note-chapter-open-gaps"
-                            onClick={() => onReviewChapterGaps(chapter)}
-                          >
-                            {t("chapter-open-gaps", {
-                              count: chapter.open_gap_count,
-                            })}
-                          </Box>
-                        ) : (
-                          <Text
-                            fontSize="10px"
-                            color="sentiment.warningDefault"
-                          >
-                            {t("chapter-open-gaps", {
-                              count: chapter.open_gap_count,
-                            })}
-                          </Text>
-                        ))}
+                      {chapter.open_gap_count > 0 && (
+                        <Text fontSize="10px" color="sentiment.warningDefault">
+                          {t("chapter-open-gaps", {
+                            count: chapter.open_gap_count,
+                          })}
+                        </Text>
+                      )}
                       {chapter.regeneration_status === "processing" && (
                         <Text
                           fontSize="10px"
@@ -699,6 +711,14 @@ export function DraftDocumentPanel({
                         </Box>
                       );
                     }
+                    // Standalone markers move out of the prose into one
+                    // gap block per chapter; inline ones stay as chips.
+                    const preview = splitStandaloneMarkers(
+                      chapterPreviewMarkdown(
+                        chapter.body_markdown!,
+                        chapter.title,
+                      ),
+                    );
                     return (
                       <Box
                         data-testid="concept-note-current-chapter-body"
@@ -709,11 +729,14 @@ export function DraftDocumentPanel({
                           components={markdownComponents}
                           remarkPlugins={[remarkGfm, remarkMissingInformation]}
                         >
-                          {chapterPreviewMarkdown(
-                            chapter.body_markdown!,
-                            chapter.title,
-                          )}
+                          {preview.markdown}
                         </ReactMarkdown>
+                        <ChapterGapsPanel
+                          chapter={chapter}
+                          lng={lng}
+                          rows={chapterGapRows(chapter, preview.messages)}
+                          onAnswerGap={onAnswerGap}
+                        />
                       </Box>
                     );
                   })()

@@ -29,6 +29,7 @@ import {
 } from "@/services/api";
 import React, { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import { CloseButton } from "@/components/ui/close-button";
 import {
   MenuContent,
@@ -55,12 +56,14 @@ const ProjectFilterSection = ({
   lng,
   currentCityId,
   organizationId,
+  onClose,
 }: {
   t: TFunction;
   projectsData: ProjectWithCitiesResponse;
   lng: string;
   currentCityId?: string;
   organizationId?: string;
+  onClose: () => void;
 }) => {
   const router = useRouter();
   const navigateToCity = useCitySwitchNavigation(lng);
@@ -326,13 +329,14 @@ const ProjectFilterSection = ({
           <Box w="full" display="flex" justifyContent="flex-start">
             <Button
               variant="outline"
-              onClick={() =>
+              onClick={() => {
                 router.push(
                   organizationId
                     ? `/${lng}/organization/${organizationId}/project`
                     : `/${lng}/cities`,
-                )
-              }
+                );
+                onClose();
+              }}
               rounded="pill"
               borderColor="interactive.secondary"
               border="sm"
@@ -376,8 +380,16 @@ const ProjectFilterSection = ({
             height="300px"
             t={t}
             label={t("city")}
+            disabled={!selectedProject}
+            disabledTooltip={t("select-project-first")}
           />
-          <Box w="full" display="flex" gap={3}>
+          <Box
+            w="full"
+            display="grid"
+            gridAutoFlow="column"
+            gridAutoColumns="minmax(0, 1fr)"
+            gap={3}
+          >
             {/* Only show add city button for ORG_ADMIN and PROJECT_ADMIN */}
             {(userAccessStatus?.isOrgOwner ||
               userAccessStatus?.isProjectAdmin) && (
@@ -387,6 +399,7 @@ const ProjectFilterSection = ({
                   router.push(
                     `/${lng}/cities/onboarding?project=${selectedProject}`,
                   );
+                  onClose();
                 }}
                 rounded="pill"
                 borderColor="interactive.secondary"
@@ -421,41 +434,57 @@ const ProjectFilterSection = ({
               </Button>
             )}
             {/* Go to the selected city's dashboard */}
-            <Button
-              variant="outline"
-              onClick={() => router.push(getDashboardPath(lng, selectedCity))}
-              disabled={!selectedCity}
-              rounded="pill"
-              borderColor="interactive.secondary"
-              border="sm"
-              minH="12"
-              h="auto"
-              py={2}
-              px={5}
-              gap={2}
-              flex={1}
-              minW={0}
-              bg="base.light"
-              _hover={{ bg: "background.neutral" }}
+            <Tooltip
+              content={t("select-city-first")}
+              disabled={!!selectedCity}
+              positioning={{ placement: "top" }}
+              showArrow
             >
-              <Icon
-                as={MdInsertChart}
-                color="interactive.secondary"
-                boxSize={5}
-                flexShrink={0}
-              />
-              <Text
-                fontSize="body.sm"
-                lineHeight="1.2"
-                fontWeight="bold"
-                color="interactive.secondary"
-                whiteSpace="normal"
-                textAlign="center"
-                lineClamp={2}
+              <Box
+                display="flex"
+                cursor={selectedCity ? undefined : "not-allowed"}
               >
-                {t("dashboard")}
-              </Text>
-            </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    router.push(getDashboardPath(lng, selectedCity));
+                    onClose();
+                  }}
+                  disabled={!selectedCity}
+                  rounded="pill"
+                  borderColor="interactive.secondary"
+                  border="sm"
+                  minH="12"
+                  h="auto"
+                  py={2}
+                  px={5}
+                  gap={2}
+                  w="full"
+                  pointerEvents={selectedCity ? "auto" : "none"}
+                  minW={0}
+                  bg="base.light"
+                  _hover={{ bg: "background.neutral" }}
+                >
+                  <Icon
+                    as={MdInsertChart}
+                    color="interactive.secondary"
+                    boxSize={5}
+                    flexShrink={0}
+                  />
+                  <Text
+                    fontSize="body.sm"
+                    lineHeight="1.2"
+                    fontWeight="bold"
+                    color="interactive.secondary"
+                    whiteSpace="normal"
+                    textAlign="center"
+                    lineClamp={2}
+                  >
+                    {t("dashboard")}
+                  </Text>
+                </Button>
+              </Box>
+            </Tooltip>
           </Box>
         </Box>
       </Box>
@@ -560,10 +589,9 @@ const JNDrawer = ({
 
   // Module data fetching
   const { data: allModules } = useGetModulesQuery();
-  const { data: projectModules } = useGetProjectModulesQuery(
-    selectedProject!,
-    { skip: !selectedProject },
-  );
+  const { data: projectModules } = useGetProjectModulesQuery(selectedProject!, {
+    skip: !selectedProject,
+  });
 
   // Initialize with current project and city based on currentCityId
   useEffect(() => {
@@ -615,7 +643,7 @@ const JNDrawer = ({
           justifyContent="space-between"
           bg="background.overlay"
           px={6}
-          py={5}
+          py={4}
           borderTopRightRadius="8px"
         >
           {hasMultipleOrganizations ? (
@@ -807,6 +835,7 @@ const JNDrawer = ({
                   lng={lng}
                   currentCityId={currentCityId}
                   organizationId={resolvedOrganizationId}
+                  onClose={onClose}
                 />
               </Box>
               {/* Dynamic Module Accordions - based on HomePage logic */}

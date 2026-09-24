@@ -201,6 +201,8 @@
   "project": "Proyecto",
   "select-project": "Selecciona un Proyecto",
   "select-city": "Selecciona una ciudad",
+  "select-project-first": "Selecciona primero un proyecto",
+  "select-city-first": "Selecciona primero una ciudad",
   "search-by-city-or-project": "Buscar por ciudad o proyecto",
   "add-new-city": "Agregar nueva ciudad",
   "city": "Ciudad",

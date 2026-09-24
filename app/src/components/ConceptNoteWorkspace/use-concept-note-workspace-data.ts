@@ -2,25 +2,26 @@
 
 import { useState } from "react";
 
+import { useConceptNoteWorkspaceEvents } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-events";
 import { useTranslation } from "@/i18n/client";
+import { useAppDispatch } from "@/lib/hooks";
 import { api } from "@/services/api";
 import type { ConceptNoteUploadResponse } from "@/util/types";
 import {
   getConceptNoteContextState,
   getConceptNoteContextPresentation,
-} from "./context-status";
+} from "@/components/ConceptNoteWorkspace/context-status";
 
 import {
   getConceptNoteBundleProgress,
   getConceptNoteDraftProgress,
   normalizePopulationData,
-} from "../ConceptNoteDashboard/utils";
-import { isDraftingInProgress } from "./drafting-progress-card";
+} from "@/components/ConceptNoteDashboard/utils";
 import {
   conceptNoteSourceLabel,
   shouldPollConceptNoteUpload,
   validateConceptNoteSourceFile,
-} from "../ConceptNoteWiringHarness/utils";
+} from "@/components/ConceptNoteWiringHarness/utils";
 
 interface WorkspaceDataOptions {
   cityId: string;
@@ -36,6 +37,7 @@ export function useConceptNoteWorkspaceData({
   runId,
 }: WorkspaceDataOptions) {
   const { t } = useTranslation(lng, "concept-notes");
+  const dispatch = useAppDispatch();
   const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
   const [uploadDetails, setUploadDetails] =
     useState<ConceptNoteUploadResponse | null>(null);
@@ -48,7 +50,11 @@ export function useConceptNoteWorkspaceData({
     refetch: refetchRun,
   } = api.useGetConceptNoteRunQuery(
     { cityId, runId },
-    { pollingInterval: 15_000, skipPollingIfUnfocused: true },
+    {
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    },
   );
   const { data: city } = api.useGetCityQuery(cityId);
   const {
@@ -57,22 +63,16 @@ export function useConceptNoteWorkspaceData({
     isLoading: applicationContextLoading,
     refetch: refetchApplicationContext,
   } = api.useGetConceptNoteApplicationContextQuery(runId);
-  // Poll the draft quickly while chapters are being written so the chat rail
-  // and Draft tab follow the backend chapter by chapter, not in 15 s batches.
-  const [draftActive, setDraftActive] = useState(false);
   const {
     data: draft,
     isError: draftQueryFailed,
     isLoading: draftLoading,
     refetch: refetchDraft,
   } = api.useGetConceptNoteDraftQuery(runId, {
-    pollingInterval: draftActive ? 3_000 : 15_000,
-    skipPollingIfUnfocused: true,
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
   });
-  const draftInProgress = isDraftingInProgress(draft);
-  if (draftInProgress !== draftActive) {
-    setDraftActive(draftInProgress);
-  }
   const {
     data: population,
     isError: populationFailed,
@@ -102,14 +102,9 @@ export function useConceptNoteWorkspaceData({
       { runId, uploadId: selectedUploadId ?? "" },
       {
         skip: !selectedUploadId,
-        pollingInterval:
-          selectedUploadId &&
-          shouldPollConceptNoteUpload(
-            persistedUploadStatus ?? uploadDetails?.status ?? null,
-          )
-            ? 2_000
-            : 0,
-        skipPollingIfUnfocused: true,
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
       },
     );
 
@@ -188,6 +183,18 @@ export function useConceptNoteWorkspaceData({
     ? t("draft-start-error")
     : null;
   const isDraftRunning = draft?.status === "running";
+  const isUploadActive = shouldPollConceptNoteUpload(
+    effectiveUpload?.status ?? persistedUploadStatus,
+  );
+
+  useConceptNoteWorkspaceEvents({
+    cityId,
+    runId,
+    uploadId: selectedUploadId,
+    observeDraft: isDraftRunning || draftQueryFailed,
+    observeUpload: isUploadActive || uploadRefreshFailed,
+    observeRun: bundle.status === "building" || runFailed,
+  });
 
   async function uploadSource(file: File): Promise<void> {
     setUploadError(null);
@@ -208,7 +215,6 @@ export function useConceptNoteWorkspaceData({
       }).unwrap();
       setActiveUploadId(upload.uploadId);
       setUploadDetails(upload);
-      void refetchRun();
     } catch {
       setUploadError(t("upload-source-error"));
     }
@@ -225,7 +231,6 @@ export function useConceptNoteWorkspaceData({
       }).unwrap();
       setActiveUploadId(uploadId);
       setUploadDetails(upload);
-      await refetchRun();
     } catch {
       setUploadError(t("conversion-retry-error"));
     }
@@ -234,7 +239,6 @@ export function useConceptNoteWorkspaceData({
   async function retryContextBundle(): Promise<void> {
     try {
       await retryBundle(runId).unwrap();
-      await refetchRun();
     } catch {
       setUploadError(t("context-retry-error"));
     }
@@ -243,8 +247,16 @@ export function useConceptNoteWorkspaceData({
   async function startDrafting(): Promise<void> {
     if (!canStartDrafting || isDraftRunning) return;
     try {
-      await startDraftMutation(runId).unwrap();
-      await Promise.all([refetchDraft(), refetchRun()]);
+      const startedDraft = await startDraftMutation(runId).unwrap();
+      dispatch(
+        api.util.upsertQueryEntries([
+          {
+            endpointName: "getConceptNoteDraft",
+            arg: runId,
+            value: startedDraft,
+          },
+        ]),
+      );
     } catch {
       return;
     }
@@ -258,7 +270,6 @@ export function useConceptNoteWorkspaceData({
       runId,
       manualPopulation: value,
     }).unwrap();
-    await refetchRun();
   }
 
   return {

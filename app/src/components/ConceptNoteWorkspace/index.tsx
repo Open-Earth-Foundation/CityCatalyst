@@ -360,7 +360,6 @@ export function ConceptNoteWorkspace({
         expectedRevision: chapter.revision_number,
         idempotencyKey: crypto.randomUUID(),
       }).unwrap();
-      await refetchDraft();
     } catch {
       setWorkspaceMutationError(t("chapter-confirm-error"));
     }

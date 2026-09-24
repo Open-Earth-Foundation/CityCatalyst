@@ -505,7 +505,11 @@ function errorHandler(err: unknown) {
   ) {
     return NextResponse.json(err.data, { status: 409 });
   } else if (createHttpError.isHttpError(err) && err.expose) {
-    const details = err as typeof err & { code?: unknown; data?: unknown };
+    const details = err as typeof err & {
+      code?: unknown;
+      data?: unknown;
+      retryAfter?: unknown;
+    };
     return NextResponse.json(
       {
         error: {
@@ -514,7 +518,13 @@ function errorHandler(err: unknown) {
           data: details.data || undefined,
         },
       },
-      { status: err.statusCode },
+      {
+        status: err.statusCode,
+        headers:
+          err.statusCode === 429 && typeof details.retryAfter === "string"
+            ? { "Retry-After": details.retryAfter }
+            : undefined,
+      },
     );
   } else if (err instanceof ZodError) {
     return NextResponse.json(

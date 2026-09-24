@@ -627,7 +627,7 @@ export function ConceptNoteWorkspace({
                   )}
                 </Flex>
               </Flex>
-              {(reviewProposal || editFeedbackKey(edits)) && (
+              {reviewProposal && (
                 // Proposal review gets its own row so it never squeezes the title.
                 <Flex
                   data-testid="concept-note-review-bar"

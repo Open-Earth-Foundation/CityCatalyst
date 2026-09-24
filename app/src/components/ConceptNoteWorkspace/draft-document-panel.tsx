@@ -538,7 +538,9 @@ export function DraftDocumentPanel({
                             ? "chapter-status-needs-review"
                             : getChapterDisplayStatus(chapter) === "ready"
                               ? "chapter-status-ready"
-                              : "chapter-status-draft",
+                              : getChapterDisplayStatus(chapter) === "empty"
+                                ? "chapter-status-empty"
+                                : "chapter-status-draft",
                         )}
                       </Text>
                       {chapter.open_gap_count > 0 && (

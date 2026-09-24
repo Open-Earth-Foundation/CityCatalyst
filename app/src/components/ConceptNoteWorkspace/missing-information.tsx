@@ -16,6 +16,15 @@ import {
   MISSING_INFORMATION_LINK,
 } from "./draft-markdown";
 
+const MARKER_PREFIX = /^information needed:\s*/i;
+
+/** Short inline label so a gap reads as text, not as a bare icon; the full
+ * message stays in the tooltip. */
+function markerLabel(message: string): string {
+  const body = message.replace(MARKER_PREFIX, "").trim();
+  return body.length > 72 ? `${body.slice(0, 69).trimEnd()}…` : body;
+}
+
 function MissingInformationMarker({ message }: { message: string }) {
   const [open, setOpen] = useState(false);
   return (
@@ -41,12 +50,21 @@ function MissingInformationMarker({ message }: { message: string }) {
         aria-label={message}
         display="inline-flex"
         alignItems="center"
-        justifyContent="center"
-        boxSize="18px"
+        gap={1}
+        maxW="100%"
+        minH="18px"
+        px={1.5}
+        py="1px"
         mx={1}
         borderRadius="full"
+        border="1px solid"
+        borderColor="sentiment.warningDefault/50"
         bg="sentiment.warningOverlay"
         color="sentiment.warningDefault"
+        fontSize="11px"
+        lineHeight="16px"
+        fontWeight="medium"
+        textAlign="left"
         verticalAlign="text-bottom"
         cursor="pointer"
         onClick={() => setOpen(!open)}
@@ -57,7 +75,15 @@ function MissingInformationMarker({ message }: { message: string }) {
           outlineOffset: "1px",
         }}
       >
-        <Icon as={LuCircleAlert} boxSize="12px" />
+        <Icon as={LuCircleAlert} boxSize="12px" flexShrink={0} />
+        <chakra.span
+          overflow="hidden"
+          textOverflow="ellipsis"
+          whiteSpace="nowrap"
+          data-testid="concept-note-missing-information-label"
+        >
+          {markerLabel(message)}
+        </chakra.span>
       </chakra.button>
     </Tooltip>
   );

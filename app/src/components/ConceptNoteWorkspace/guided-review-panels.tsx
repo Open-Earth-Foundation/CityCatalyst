@@ -471,7 +471,7 @@ export function GuidedReviewExportPanel({
         warningCount={review.warningCount}
       />
       {controller.hasCriticalGap && (
-        <Text role="alert" color="sentiment.negativeDefault">
+        <Text role="status" color="sentiment.warningDefault">
           {t("draft-preflight-critical-gap-description")}
         </Text>
       )}

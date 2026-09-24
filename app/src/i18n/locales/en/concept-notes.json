@@ -546,7 +546,7 @@
   "draft-preflight-empty": "No draft to export",
   "draft-preflight-empty-description": "Generate at least one chapter before exporting this concept note.",
   "draft-preflight-critical-gap": "Critical information is still missing",
-  "draft-preflight-critical-gap-description": "Critical information is still missing. You can export now, but the document will be incomplete; missing-information notes are left out of the file.",
+  "draft-preflight-critical-gap-description": "Critical gaps are still open. You can export now: the gaps stay flagged in this workspace and their placeholders are left out of the file.",
   "missing-information-export-confirmation_one": "I understand that 1 unresolved information item will be omitted from the exported document.",
   "missing-information-export-confirmation_other": "I understand that {{count}} unresolved information items will be omitted from the exported document.",
   "review-incomplete-export-confirmation": "I understand that missing information, blocking conflicts, or incomplete chapter reviews may remain in the workspace and will not be included in the exported document.",

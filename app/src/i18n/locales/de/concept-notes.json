@@ -491,7 +491,7 @@
   "chapter-caveats_one": "1 Vorbehalt",
   "chapter-caveats_other": "{{count}} Vorbehalte",
   "draft-preflight-critical-gap": "Wichtige Informationen fehlen noch",
-  "draft-preflight-critical-gap-description": "Es fehlen noch kritische Informationen. Sie können jetzt exportieren, aber das Dokument ist unvollständig; Hinweise auf fehlende Informationen werden nicht in die Datei übernommen.",
+  "draft-preflight-critical-gap-description": "Es gibt noch offene kritische Lücken. Sie können jetzt exportieren: Die Lücken bleiben in diesem Arbeitsbereich markiert, und ihre Platzhalter werden nicht in die Datei übernommen.",
   "edit-review-title": "Vorgeschlagene Änderungen überprüfen",
   "edit-review-in-document": "Überprüfung im Dokument",
   "edit-inline-stale": "Der Entwurf wurde geändert oder eine Bearbeitung konnte nicht sicher platziert werden. Aktualisieren und verfeinern Sie die Anforderung, bevor Sie diese annehmen.",

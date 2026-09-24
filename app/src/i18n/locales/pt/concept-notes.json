@@ -491,7 +491,7 @@
   "chapter-caveats_one": "1 advertência",
   "chapter-caveats_other": "{{count}} ressalvas",
   "draft-preflight-critical-gap": "Ainda falta informação crítica",
-  "draft-preflight-critical-gap-description": "Ainda falta informação crítica. Você pode exportar agora, mas o documento ficará incompleto; as notas de informação em falta não são incluídas no arquivo.",
+  "draft-preflight-critical-gap-description": "Ainda há lacunas críticas em aberto. Você pode exportar agora: as lacunas continuam sinalizadas neste espaço de trabalho e seus marcadores não são incluídos no arquivo.",
   "edit-review-title": "Revisar edições propostas",
   "edit-review-in-document": "Revisão no documento",
   "edit-inline-stale": "O rascunho foi alterado ou uma edição não pôde ser colocada com segurança. Atualize e refine a solicitação antes de aceitar.",

@@ -71,16 +71,20 @@ export function GuidedReviewRunningPanel({
     ? "review-draft-load-error"
     : reviewError === "template_unavailable"
       ? "guided-review-template-unavailable"
-      : reviewError === "draft_unavailable"
-        ? "guided-review-draft-unavailable"
-        : "guided-review-failed";
+      : reviewError === "template_invalid"
+        ? "guided-review-template-invalid"
+        : reviewError === "draft_unavailable"
+          ? "guided-review-draft-unavailable"
+          : "guided-review-failed";
   const errorDescriptionKey = draftError
     ? "review-draft-load-error-description"
     : reviewError === "template_unavailable"
       ? "guided-review-template-unavailable-description"
-      : reviewError === "draft_unavailable"
-        ? "guided-review-draft-unavailable-description"
-        : "guided-review-failed-description";
+      : reviewError === "template_invalid"
+        ? "guided-review-template-invalid-description"
+        : reviewError === "draft_unavailable"
+          ? "guided-review-draft-unavailable-description"
+          : "guided-review-failed-description";
 
   return (
     <Flex h="full" minH="440px" align="center" justify="center">
@@ -117,7 +121,8 @@ export function GuidedReviewRunningPanel({
               </Button>
               {draftError ? (
                 <Button onClick={onRetryDraft}>{t("try-again")}</Button>
-              ) : reviewError === "template_unavailable" ? (
+              ) : reviewError === "template_unavailable" ||
+                reviewError === "template_invalid" ? (
                 <Button onClick={onReviewSetup}>
                   {t("review-application-setup")}
                 </Button>
@@ -189,22 +194,22 @@ export function GuidedReviewRunningPanel({
 
 export function GuidedReviewFindingsPanel({
   chapterTitles,
+  incomplete,
   lng,
   mode,
   onBack,
   onNext,
   onOpenFinding,
   review,
-  uncheckedCount,
 }: {
   chapterTitles: Record<string, string>;
+  incomplete: boolean;
   lng: string;
   mode: "missing_information" | "conflicts_logic";
   onBack?: () => void;
   onNext: () => void;
   onOpenFinding: (entry: DocumentReviewFinding) => void;
   review: GuidedReviewController["review"];
-  uncheckedCount: number;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const isMissing = mode === "missing_information";
@@ -217,8 +222,8 @@ export function GuidedReviewFindingsPanel({
       <ReviewStageHeader
         description={
           // A "found N" summary would read as a conclusion for unchecked chapters.
-          uncheckedCount > 0
-            ? t("review-step-incomplete", { count: uncheckedCount })
+          incomplete
+            ? t("review-step-incomplete")
             : t(
                 isMissing
                   ? "review-missing-description"
@@ -248,7 +253,7 @@ export function GuidedReviewFindingsPanel({
         entries={entries}
         lng={lng}
         onOpenFinding={onOpenFinding}
-        uncheckedCount={uncheckedCount}
+        incomplete={incomplete}
       />
       {isMissing && (
         <Box borderTop="1px solid" borderColor="border.neutral" pt={5}>
@@ -262,8 +267,8 @@ export function GuidedReviewFindingsPanel({
             {t("review-evidence-title")}
           </Text>
           <Text mt={1} fontSize="body.sm" color="content.secondary">
-            {uncheckedCount > 0
-              ? t("review-step-incomplete", { count: uncheckedCount })
+            {incomplete
+              ? t("review-step-incomplete")
               : t("review-evidence-description", {
                   count: review.evidenceCount,
                 })}
@@ -274,7 +279,7 @@ export function GuidedReviewFindingsPanel({
             entries={review.groups.evidence}
             lng={lng}
             onOpenFinding={onOpenFinding}
-            uncheckedCount={uncheckedCount}
+            incomplete={incomplete}
           />
         </Box>
       )}

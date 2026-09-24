@@ -157,7 +157,6 @@ export function ExportDialog({
                 reviewedCount={controller.reviewedChapters.length}
                 onRerun={controller.rerunReview}
                 onRetryFailed={controller.retryFailedChapters}
-                onReviewSetup={handleReviewSetup}
               />
             )}
             {controller.stage === "running" && (
@@ -181,7 +180,7 @@ export function ExportDialog({
                 lng={lng}
                 mode="missing_information"
                 review={controller.review}
-                uncheckedCount={controller.uncheckedChapterCount}
+                incomplete={controller.failedChapters.length > 0}
                 onNext={() => controller.setStage("conflicts_logic")}
                 onOpenFinding={handleOpenFinding}
               />
@@ -192,7 +191,7 @@ export function ExportDialog({
                 lng={lng}
                 mode="conflicts_logic"
                 review={controller.review}
-                uncheckedCount={controller.uncheckedChapterCount}
+                incomplete={controller.failedChapters.length > 0}
                 onBack={() => controller.setStage("missing_information")}
                 onNext={() => controller.setStage("decision")}
                 onOpenFinding={handleOpenFinding}

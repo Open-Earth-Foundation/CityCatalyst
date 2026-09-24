@@ -10,10 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import type { ConceptNoteChapterValidationStatus } from "@/util/types";
 
-import {
-  isRetryableChapterReviewError,
-  type DocumentReviewFinding,
-} from "./chapter-validation";
+import type { DocumentReviewFinding } from "./chapter-validation";
 import type { FailedChapterReview } from "./use-guided-review";
 import { ValidationEvidence } from "./validation-evidence";
 
@@ -29,53 +26,40 @@ export function ReviewFindingList({
   chapterTitles,
   emptyKey,
   entries,
+  incomplete = false,
   lng,
   onOpenFinding,
-  uncheckedCount = 0,
 }: {
   chapterTitles: Record<string, string>;
   emptyKey: string;
   entries: DocumentReviewFinding[];
+  incomplete?: boolean;
   lng: string;
   onOpenFinding: (entry: DocumentReviewFinding) => void;
-  uncheckedCount?: number;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
 
-  // Unchecked chapters make an empty list unknown, never a positive result.
-  const uncheckedNotice = uncheckedCount > 0 && (
-    <HStack
-      gap={2}
-      py={entries.length === 0 ? 5 : 3}
-      color="content.secondary"
-      data-testid="concept-note-review-unchecked"
-    >
-      <Icon as={LuCircleAlert} />
-      <Text fontSize="body.sm">
-        {t(
-          entries.length === 0
-            ? "review-results-unchecked"
-            : "review-results-partial",
-          { count: uncheckedCount },
-        )}
-      </Text>
-    </HStack>
-  );
+  // With unchecked chapters an empty list is unknown, not a positive result.
+  if (entries.length === 0 && incomplete) {
+    return (
+      <HStack gap={2} py={5} color="content.secondary">
+        <Icon as={LuCircleAlert} />
+        <Text fontSize="body.sm">{t("review-results-unchecked")}</Text>
+      </HStack>
+    );
+  }
 
   if (entries.length === 0) {
     return (
-      uncheckedNotice || (
-        <HStack gap={2} py={5} color="sentiment.positiveDefault">
-          <Icon as={LuCheck} />
-          <Text fontSize="body.sm">{t(emptyKey)}</Text>
-        </HStack>
-      )
+      <HStack gap={2} py={5} color="sentiment.positiveDefault">
+        <Icon as={LuCheck} />
+        <Text fontSize="body.sm">{t(emptyKey)}</Text>
+      </HStack>
     );
   }
 
   return (
     <VStack align="stretch" gap={0}>
-      {uncheckedNotice}
       {entries.map((entry, index) => {
         const relatedChapters = entry.finding.involved_chapter_ids
           .filter((chapterId) => chapterId !== entry.chapterId)
@@ -228,7 +212,6 @@ export function SavedReviewSummary({
   lng,
   onRerun,
   onRetryFailed,
-  onReviewSetup,
   reviewedCount,
 }: {
   failedChapters: FailedChapterReview[];
@@ -236,15 +219,9 @@ export function SavedReviewSummary({
   lng: string;
   onRerun: () => void;
   onRetryFailed: () => void;
-  onReviewSetup: () => void;
   reviewedCount: number;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
-  // Template setup failures are deterministic; retrying cannot fix them.
-  const retryableCount = failedChapters.filter(({ errorKind }) =>
-    isRetryableChapterReviewError(errorKind),
-  ).length;
-  const templateFailureCount = failedChapters.length - retryableCount;
 
   return (
     <VStack align="stretch" gap={3} mb={6}>
@@ -302,30 +279,9 @@ export function SavedReviewSummary({
           <Text mt={2} fontSize="label.sm" color="content.secondary">
             {failedChapters.map(({ chapter }) => chapter.title).join(", ")}
           </Text>
-          {templateFailureCount > 0 && (
-            <Text
-              mt={3}
-              fontSize="label.sm"
-              color="content.primary"
-              data-testid="concept-note-review-template-invalid"
-            >
-              {t("guided-review-template-invalid-description", {
-                count: templateFailureCount,
-              })}
-            </Text>
-          )}
-          <HStack mt={4} gap={2} flexWrap="wrap">
-            {templateFailureCount > 0 && (
-              <Button size="xs" onClick={onReviewSetup}>
-                {t("review-application-setup")}
-              </Button>
-            )}
-            {retryableCount > 0 && (
-              <Button size="xs" variant="outline" onClick={onRetryFailed}>
-                {t("review-retry-failed", { count: retryableCount })}
-              </Button>
-            )}
-          </HStack>
+          <Button mt={4} size="xs" variant="outline" onClick={onRetryFailed}>
+            {t("review-retry-failed", { count: failedChapters.length })}
+          </Button>
         </Box>
       )}
     </VStack>

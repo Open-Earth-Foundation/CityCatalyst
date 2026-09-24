@@ -14,7 +14,6 @@ import {
   type ChapterReviewErrorKind,
   getChapterReviewErrorKind,
   isChapterValidationCurrent,
-  isRetryableChapterReviewError,
   type ReviewedConceptNoteChapter,
 } from "./chapter-validation";
 import {
@@ -117,10 +116,6 @@ export function useGuidedReview({
     canExportConceptNote(chapters, acceptedIncompleteReview) &&
     (!requiresExportAcknowledgement || acceptedIncompleteReview) &&
     !exportingFormat;
-  const uncheckedChapterCount = Math.max(
-    chapters.length - reviewedChapters.length,
-    0,
-  );
   const progressPercent = chapters.length
     ? Math.round((completedChapterCount / chapters.length) * 100)
     : 0;
@@ -146,11 +141,9 @@ export function useGuidedReview({
 
   const runReview = useCallback(
     async ({
-      preservedFailures = [],
       preservedResults,
       targetChapters,
     }: {
-      preservedFailures?: FailedChapterReview[];
       preservedResults: ReviewedConceptNoteChapter[];
       targetChapters: ConceptNoteDraftChapter[];
     }) => {
@@ -158,11 +151,9 @@ export function useGuidedReview({
       activeRequestRef.current = requestId;
       setStage("running");
       setReviewedChapters(preservedResults);
-      setFailedChapters(preservedFailures);
+      setFailedChapters([]);
       setReviewError(null);
-      setCompletedChapterCount(
-        preservedResults.length + preservedFailures.length,
-      );
+      setCompletedChapterCount(preservedResults.length);
       setAcceptedIncompleteReview(false);
       setExportError(false);
 
@@ -170,8 +161,8 @@ export function useGuidedReview({
         preservedResults.map((result) => [result.chapter.chapter_id, result]),
       );
       let nextChapterIndex = 0;
-      let completedCount = preservedResults.length + preservedFailures.length;
-      const failures: FailedChapterReview[] = [...preservedFailures];
+      let completedCount = preservedResults.length;
+      const failures: FailedChapterReview[] = [];
 
       function publishResults(): void {
         setReviewedChapters(
@@ -222,6 +213,11 @@ export function useGuidedReview({
         Array.from({ length: workerCount }, () => validateNextChapters()),
       );
       if (activeRequestRef.current !== requestId) return;
+      // An invalid template fails every chapter the same way; retrying cannot help.
+      if (failures.some(({ errorKind }) => errorKind === "template_invalid")) {
+        setReviewError("template_invalid");
+        return;
+      }
       try {
         await onReviewComplete();
       } catch {
@@ -303,13 +299,8 @@ export function useGuidedReview({
 
   function retryFailedChapters(): void {
     void runReview({
-      preservedFailures: failedChapters.filter(
-        ({ errorKind }) => !isRetryableChapterReviewError(errorKind),
-      ),
       preservedResults: reviewedChapters,
-      targetChapters: failedChapters
-        .filter(({ errorKind }) => isRetryableChapterReviewError(errorKind))
-        .map(({ chapter }) => chapter),
+      targetChapters: failedChapters.map(({ chapter }) => chapter),
     });
   }
 
@@ -355,7 +346,6 @@ export function useGuidedReview({
     setAcceptedIncompleteReview,
     setStage,
     stage,
-    uncheckedChapterCount,
     unresolvedCount,
   };
 }

@@ -595,6 +595,68 @@ async def test_chats_stay_attached_to_their_run_and_can_be_switched() -> None:
         )
 
 
+async def test_delete_hands_a_shared_chat_to_the_note_still_using_it() -> None:
+    """Deleting a note keeps chats another note has open and moves them there."""
+    async with _ca_session() as session:
+        shared_thread_id = uuid4()
+        keeper = _run(run_id=uuid4(), thread_id=shared_thread_id, city_id=uuid4())
+        deleted = _run(run_id=uuid4(), thread_id=shared_thread_id, city_id=uuid4())
+        session.add_all([keeper, deleted])
+        # Both notes started from one chat; the later start claimed it.
+        session.add(
+            Thread(
+                thread_id=shared_thread_id,
+                user_id=deleted.user_id,
+                concept_note_run_id=deleted.run_id,
+                context={"concept_note_run_id": str(deleted.run_id)},
+            )
+        )
+        session.add(
+            Message(
+                message_id=uuid4(),
+                thread_id=shared_thread_id,
+                user_id=deleted.user_id,
+                role=MessageRole.USER,
+                text="Shared history",
+            )
+        )
+        await session.commit()
+        service = ConceptNoteLifecycleService(session, workspace=AsyncMock())
+        service.run_service.get_authorized_run = AsyncMock(return_value=deleted)
+        service._unshared_source_upload_ids = AsyncMock(return_value=[])
+
+        # The note being deleted moves on to its own chat first.
+        started = await service.start_chat(
+            run_id=deleted.run_id,
+            requested_user_id=deleted.user_id,
+            authorization="Bearer token",
+        )
+        await service.delete_run(
+            run_id=deleted.run_id,
+            requested_user_id=deleted.user_id,
+            authorization="Bearer token",
+        )
+
+        assert await session.get(Thread, started.thread_id) is None
+        shared = await session.get(Thread, shared_thread_id)
+        assert shared is not None
+        assert shared.concept_note_run_id == keeper.run_id
+        assert shared.context["concept_note_run_id"] == str(keeper.run_id)
+        assert (
+            await session.scalar(
+                select(Message).where(Message.thread_id == shared_thread_id)
+            )
+            is not None
+        )
+        service.run_service.get_authorized_run = AsyncMock(return_value=keeper)
+        listing = await service.list_chat_threads(
+            run_id=keeper.run_id,
+            requested_user_id=keeper.user_id,
+            authorization="Bearer token",
+        )
+        assert [thread.thread_id for thread in listing.threads] == [shared_thread_id]
+
+
 @pytest.mark.parametrize("value", ["", "   ", "x" * 121])
 def test_rename_validation_rejects_invalid_names(value: str) -> None:
     with pytest.raises(ValidationError):

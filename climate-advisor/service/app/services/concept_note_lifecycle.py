@@ -220,11 +220,31 @@ class ConceptNoteLifecycleService:
             ) from exc
 
         # Remove attached chats through the session so their messages cascade
-        # and the identity map stays consistent with the database.
-        for thread in await self.session.scalars(
-            select(Thread).where(Thread.concept_note_run_id == run.run_id)
-        ):
-            await self.session.delete(thread)
+        # and the identity map stays consistent with the database. A chat that
+        # another note still has open moves to that note instead.
+        threads = list(
+            await self.session.scalars(
+                select(Thread).where(Thread.concept_note_run_id == run.run_id)
+            )
+        )
+        heirs = await self._other_runs_by_thread(
+            run_id=run.run_id,
+            thread_ids=[thread.thread_id for thread in threads],
+        )
+        for thread in threads:
+            heir_run_id = heirs.get(thread.thread_id)
+            if heir_run_id is None:
+                await self.session.delete(thread)
+                continue
+            thread.concept_note_run_id = heir_run_id
+            thread.context = bind_workflow_context(
+                thread.context,
+                workflow_key=CONCEPT_NOTE_RUN_ID_KEY,
+                run_id=heir_run_id,
+            )
+        # Flush the hand-offs before the run row goes, or its FK cascade
+        # would still remove those chats.
+        await self.session.flush()
         await self.session.delete(run)
         await self.session.commit()
 
@@ -509,6 +529,28 @@ class ConceptNoteLifecycleService:
                 )
             )
         return destination
+
+    async def _other_runs_by_thread(
+        self,
+        *,
+        run_id: UUID,
+        thread_ids: list[UUID],
+    ) -> dict[UUID, UUID]:
+        """Map each chat to the most recently updated other run it is open on."""
+        if not thread_ids:
+            return {}
+        rows = await self.session.execute(
+            select(ConceptNoteRun.thread_id, ConceptNoteRun.run_id)
+            .where(
+                ConceptNoteRun.thread_id.in_(thread_ids),
+                ConceptNoteRun.run_id != run_id,
+            )
+            .order_by(ConceptNoteRun.updated_at.desc(), ConceptNoteRun.run_id)
+        )
+        heirs: dict[UUID, UUID] = {}
+        for thread_id, other_run_id in rows:
+            heirs.setdefault(thread_id, other_run_id)
+        return heirs
 
     async def _thread_is_dedicated(self, run: ConceptNoteRun) -> bool:
         """Return whether no other run references the chat thread."""

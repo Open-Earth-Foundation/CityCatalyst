@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import { BsPlus } from "react-icons/bs";
-import React, { FC, useState, use } from "react";
+import { FC, useState, use } from "react";
 import CreateOrganizationModal from "@/app/[lng]/admin/CreateOrganizationModal";
 import OAuthClientList from "@/app/[lng]/admin/OAuthClientList";
 import ManageModulesList from "@/app/[lng]/admin/ManageModulesList";
@@ -44,6 +44,7 @@ import { isFetchBaseQueryError } from "@/util/helpers";
 import { toaster } from "@/components/ui/toaster";
 import ProgressLoader from "@/components/ProgressLoader";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import type { TFunction } from "i18next";
 
 interface OrgData {
   contactEmail: string;
@@ -53,6 +54,53 @@ interface OrgData {
   organizationId: string;
   status: "accepted" | "invite sent" | "frozen";
 }
+
+const BulkActionsTabTrigger: FC<{
+  title: string;
+  disabled?: boolean;
+  t: TFunction;
+}> = ({ title, disabled, t }) => {
+  return (
+    <Tabs.Trigger
+      disabled={disabled}
+      value={title}
+      _selected={{
+        fontFamily: "heading",
+        fontWeight: "600",
+        color: "content.link",
+        shadow: "none !important",
+        border: "1px solid !important",
+        bg: "background.neutral",
+        borderRadius: "8px",
+      }}
+      css={{
+        padding: "24px !important",
+        mb: "12px",
+        textAlign: "left",
+        textWrap: "nowrap",
+        fontFamily: "heading",
+      }}
+    >
+      {t(title)}
+    </Tabs.Trigger>
+  );
+};
+
+const TabTrigger: FC<{ title: string; t: TFunction }> = ({ title, t }) => {
+  return (
+    <Tabs.Trigger
+      value={title}
+      _selected={{
+        fontFamily: "heading",
+        fontWeight: "600",
+        color: "content.link",
+        shadow: "none !important",
+      }}
+    >
+      {t(title)}
+    </Tabs.Trigger>
+  );
+};
 
 const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
   const { lng } = use(props.params);
@@ -91,23 +139,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
   const { data: organizationData, isLoading: isOrgDataLoading } =
     api.useGetOrganizationsQuery({});
   const orgData = organizationData as OrgData[];
-  const TabTrigger: FC<{ title: string }> = ({ title }) => {
-    return (
-      <Tabs.Trigger
-        value={title}
-        _selected={{
-          fontFamily: "heading",
-          fontWeight: "600",
-          color: "content.link",
-          shadow: "none !important",
-        }}
-      >
-        {t(title)}
-      </Tabs.Trigger>
-    );
-  };
-  const [createOrganizationInvite] =
-    api.useCreateOrganizationInviteMutation();
+  const [createOrganizationInvite] = api.useCreateOrganizationInviteMutation();
 
   const [updateOrganizationActiveStatus] =
     api.useUpdateOrganizationActiveStatusMutation();
@@ -186,35 +218,6 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
     });
   };
 
-  const BulkActionsTabTrigger: FC<{ title: string; disabled?: boolean }> = ({
-    title,
-    disabled,
-  }) => {
-    return (
-      <Tabs.Trigger
-        disabled={disabled}
-        value={title}
-        _selected={{
-          fontFamily: "heading",
-          fontWeight: "600",
-          color: "content.link",
-          shadow: "none !important",
-          border: "1px solid !important",
-          bg: "background.neutral",
-          borderRadius: "8px",
-        }}
-        css={{
-          padding: "24px !important",
-          mb: "12px",
-          textAlign: "left",
-          textWrap: "nowrap",
-          fontFamily: "heading",
-        }}
-      >
-        {t(title)}
-      </Tabs.Trigger>
-    );
-  };
   return (
     <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
       <Link href={`/${lng}`} _hover={{ textDecoration: "none" }}>
@@ -248,12 +251,12 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
       <Box>
         <Tabs.Root defaultValue="organizations" variant="line">
           <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
-            <TabTrigger title="organizations" />
-            <TabTrigger title="bulk-actions" />
-            <TabTrigger title="manage-modules" />
-            <TabTrigger title="manage-webhooks" />
+            <TabTrigger title="organizations" t={t} />
+            <TabTrigger title="bulk-actions" t={t} />
+            <TabTrigger title="manage-modules" t={t} />
+            <TabTrigger title="manage-webhooks" t={t} />
             {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
-              <TabTrigger title="oauth-clients" />
+              <TabTrigger title="oauth-clients" t={t} />
             )}
             <Tabs.Indicator rounded="l2" />
           </Tabs.List>
@@ -531,15 +534,24 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
               onValueChange={(details) => setBulkActionsTab(details.value)}
             >
               <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
-                <BulkActionsTabTrigger title="bulk-inventory-creation" />
-                <BulkActionsTabTrigger title="bulk-data-download" />
-                <BulkActionsTabTrigger title="bulk-data-connection" disabled />
-                <BulkActionsTabTrigger title="bulk-user-creation" disabled />
+                <BulkActionsTabTrigger title="bulk-inventory-creation" t={t} />
+                <BulkActionsTabTrigger title="bulk-data-download" t={t} />
                 <BulkActionsTabTrigger
-                  title="bulk-inventory-removing"
+                  title="bulk-data-connection"
+                  t={t}
                   disabled
                 />
-                <BulkActionsTabTrigger title="bulk-hiap-prioritization" />
+                <BulkActionsTabTrigger
+                  title="bulk-user-creation"
+                  t={t}
+                  disabled
+                />
+                <BulkActionsTabTrigger
+                  title="bulk-inventory-removing"
+                  t={t}
+                  disabled
+                />
+                <BulkActionsTabTrigger title="bulk-hiap-prioritization" t={t} />
                 <Tabs.Indicator rounded="l2" />
               </Tabs.List>
               <BulkInventoryCreationTabContent

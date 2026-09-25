@@ -39,6 +39,7 @@ import {
 } from "@/util/concept-note-initial-uploads";
 
 import {
+  CONCEPT_NOTE_MAX_UPLOADS,
   conceptNoteSourceLabel,
   formatFileSize,
   validateConceptNoteSourceFile,
@@ -138,6 +139,15 @@ export function NewConceptNoteDialog({
   }
 
   function onFileSelect(details: FileUploadFileChangeDetails): void {
+    // The dropzone rejects a selection that would pass the per-note limit.
+    if (
+      details.rejectedFiles.some((rejection) =>
+        rejection.errors.includes("TOO_MANY_FILES"),
+      )
+    ) {
+      setError(t("upload-limit-select", { max: CONCEPT_NOTE_MAX_UPLOADS }));
+      return;
+    }
     void updateFiles(details.acceptedFiles);
   }
 
@@ -416,7 +426,7 @@ export function NewConceptNoteDialog({
                     accept:
                       "application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md",
                   }}
-                  maxFiles={100}
+                  maxFiles={CONCEPT_NOTE_MAX_UPLOADS}
                   onFileChange={onFileSelect}
                 >
                   <FileUploadDropzone
@@ -438,7 +448,9 @@ export function NewConceptNoteDialog({
                         </Text>
                       </VStack>
                     }
-                    description={t("pdf-limit")}
+                    description={t("pdf-limit-files", {
+                      max: CONCEPT_NOTE_MAX_UPLOADS,
+                    })}
                   />
                 </FileUploadRoot>
               </Field>

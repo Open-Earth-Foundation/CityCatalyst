@@ -1296,6 +1296,8 @@ export interface ConceptNoteDraftState {
   current_chapter_id: string | null;
   error_code: string | null;
   overview_pending?: boolean;
+  /** Files added after the last drafting run are in context but unreviewed. */
+  source_review_pending?: boolean;
   chapters: ConceptNoteDraftChapter[];
 }
 

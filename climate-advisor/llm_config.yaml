@@ -99,6 +99,8 @@ prompts:
   cnb_chat_edit_review: "prompts/cnb/chat_edit_review.md"
   # Hidden first chat turn summarising a finished drafting pass
   cnb_draft_overview: "prompts/cnb/draft_overview.md"
+  # Hidden chat turn checking files uploaded after drafting against open gaps
+  cnb_source_review: "prompts/cnb/source_review.md"
   cnb_chapter_validation_completeness: "prompts/cnb/chapter_validation_completeness.md"
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 

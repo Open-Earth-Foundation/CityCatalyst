@@ -158,7 +158,6 @@
   "supporting-pdfs": "Fuentes de apoyo",
   "supporting-pdfs-help": "Recomendado para respuestas fundamentadas, pero no es obligatorio. Los PDF utilizan OCR; Markdown se entrega directamente. Puedes agregar fuentes desde la pestaña Contexto más tarde.",
   "drop-pdfs": "Suelta los archivos PDF o Markdown aquí o selecciona archivos",
-  "pdf-limit": "PDF o Markdown · máximo 20 MiB por archivo",
   "remove-file": "Eliminar {{name}}",
   "cancel": "Cancelar",
   "connecting-chat": "Conectando chat...",

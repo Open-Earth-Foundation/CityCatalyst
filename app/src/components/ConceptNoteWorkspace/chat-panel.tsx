@@ -54,6 +54,9 @@ interface ConceptNoteChatPanelProps {
   onOpenDraft?: () => void;
   onOpenFundingSetup?: () => void;
   onDraftOverviewComplete?: () => void;
+  /** Files added after drafting are in context and not yet checked by Clima. */
+  sourceReviewPending?: boolean;
+  onSourceReviewComplete?: () => void;
   activeTab?: "draft" | "structure" | "context";
   suggestionRevision?: string;
   hasDocument?: boolean;
@@ -214,6 +217,8 @@ export function ConceptNoteChatPanel({
   onOpenDraft,
   onOpenFundingSetup,
   onDraftOverviewComplete,
+  sourceReviewPending = false,
+  onSourceReviewComplete,
   activeTab = "draft",
   suggestionRevision = "",
   hasDocument = false,
@@ -230,6 +235,7 @@ export function ConceptNoteChatPanel({
     messages,
     sendMessage: sendChatMessage,
     requestDraftOverview,
+    requestSourceReview,
   } = useConceptNoteChat({
     lng,
     runId,
@@ -237,6 +243,7 @@ export function ConceptNoteChatPanel({
     editScope,
     onProposal: edits.loadProposal,
     onDraftOverviewComplete,
+    onSourceReviewComplete,
   });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const followLatestRef = useRef(true);
@@ -247,6 +254,7 @@ export function ConceptNoteChatPanel({
   const chatDisabled =
     contextBlocked || !threadId || historyLoading || isGenerating;
   const requestedOverviewThreadRef = useRef<string | null>(null);
+  const requestedSourceReviewThreadRef = useRef<string | null>(null);
 
   // Ask Clima once for the drafting overview; the service claims it per build.
   useEffect(() => {
@@ -260,6 +268,30 @@ export function ConceptNoteChatPanel({
     requestedOverviewThreadRef.current = threadId;
     void requestDraftOverview();
   }, [chatDisabled, draftOverviewPending, requestDraftOverview, threadId]);
+
+  // Once new files reach Clima's context, ask it once to check them against
+  // open gaps. The drafting overview goes first when both are pending.
+  useEffect(() => {
+    if (!sourceReviewPending) {
+      requestedSourceReviewThreadRef.current = null;
+      return;
+    }
+    if (
+      draftOverviewPending ||
+      chatDisabled ||
+      requestedSourceReviewThreadRef.current === threadId
+    ) {
+      return;
+    }
+    requestedSourceReviewThreadRef.current = threadId;
+    void requestSourceReview();
+  }, [
+    chatDisabled,
+    draftOverviewPending,
+    requestSourceReview,
+    sourceReviewPending,
+    threadId,
+  ]);
 
   useEffect(() => {
     if (

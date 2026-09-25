@@ -13,6 +13,7 @@ import {
 import { act } from "react";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { createRoot, type Root } from "react-dom/client";
+import { TextDecoder } from "node:util";
 import type { ConceptNoteRun, ConceptNoteUploadResponse } from "@/util/types";
 
 let contextScenario: Pick<
@@ -45,10 +46,12 @@ const dispatch = jest.fn();
 const upsertQueryEntries = jest.fn((entries: unknown) => ({ entries }));
 const startedDraft = { run_id: "run-1", status: "running", chapters: [] };
 const startDraft = jest.fn(() => ({ unwrap: async () => startedDraft }));
+const refetchApplicationContext = jest.fn(async () => undefined);
 const getApplicationContext = jest.fn(() => ({
   data: undefined as unknown,
   isError: false,
   isLoading: false,
+  refetch: refetchApplicationContext,
 }));
 jest.unstable_mockModule("@/lib/hooks", () => ({
   useAppDispatch: () => dispatch,
@@ -94,6 +97,13 @@ const getUploadQuery = jest.fn(() => ({
 }));
 const updateManualPopulation = jest.fn(() => ({
   unwrap: async () => undefined,
+}));
+const uploadSourceMutation = jest.fn(() => ({
+  unwrap: async (): Promise<unknown> => ({
+    uploadId: "new",
+    status: "queued",
+    filename: "budget.pdf",
+  }),
 }));
 const retryUpload = jest.fn(() => ({
   unwrap: async () => ({
@@ -156,13 +166,14 @@ jest.unstable_mockModule("@/services/api", () => ({
       { isError: false, isLoading: false },
     ],
     useUploadConceptNoteSourceMutation: () => [
-      jest.fn(),
+      uploadSourceMutation,
       { isLoading: uploading },
     ],
   },
 }));
 
 let useConceptNoteWorkspaceData: typeof import("@/components/ConceptNoteWorkspace/use-concept-note-workspace-data").useConceptNoteWorkspaceData;
+let listConceptNoteUploads: typeof import("@/components/ConceptNoteWorkspace/use-concept-note-workspace-data").listConceptNoteUploads;
 let container: HTMLDivElement;
 let root: Root;
 let Panel: typeof import("@/components/ConceptNoteWorkspace/chat-panel").ConceptNoteChatPanel;
@@ -240,7 +251,7 @@ function ContextHarness() {
         populationLabel="population-unavailable"
         populationLoading={false}
         populationMissing={true}
-        upload={data.effectiveUpload}
+        uploads={data.uploads}
         uploadError={null}
       />
     </ChakraProvider>
@@ -294,6 +305,96 @@ function PopulationHarness() {
   );
 }
 
+function UploadHarness({ file }: { file: File }) {
+  const { effectiveUploadError, uploadSource } = useConceptNoteWorkspaceData({
+    cityId: "city-1",
+    lng: "en",
+    runId: "run-1",
+  });
+  return (
+    <button onClick={() => void uploadSource(file)}>
+      {effectiveUploadError ?? "no-error"}
+    </button>
+  );
+}
+
+function TrackingHarness({ initialUploadId }: { initialUploadId?: string }) {
+  const { contextStatus, uploads } = useConceptNoteWorkspaceData({
+    cityId: "city-1",
+    initialUploadId,
+    lng: "en",
+    runId: "run-1",
+  });
+  return (
+    <p data-state={contextStatus.state}>
+      {uploads.map((upload) => upload.filename).join(",")}
+    </p>
+  );
+}
+
+const onSourceReviewComplete = jest.fn();
+function SourceReviewHarness({
+  overviewPending,
+  sourceReviewPending,
+}: {
+  overviewPending: boolean;
+  sourceReviewPending: boolean;
+}) {
+  const { contextStatus } = useConceptNoteWorkspaceData({
+    cityId: "city-1",
+    lng: "en",
+    runId: "run-1",
+  });
+  return (
+    <ChakraProvider value={defaultSystem}>
+      <Panel
+        contextStatus={contextStatus}
+        composerRequest={null}
+        draftOverviewPending={overviewPending}
+        sourceReviewPending={sourceReviewPending}
+        onSourceReviewComplete={onSourceReviewComplete}
+        lng="en"
+        onOpenContext={() => {}}
+        runId="run-1"
+        threadId="thread-1"
+        editScope={{ kind: "auto", focused_chapter_id: "budget" }}
+        edits={{ loadProposal: async () => {} } as never}
+      />
+    </ChakraProvider>
+  );
+}
+
+const readyEvidence = {
+  context_bundle: {
+    status: "ready",
+    document_grounding: "uploaded_evidence",
+    source_counts: { ready: 1 },
+  },
+};
+
+function pdf(name = "budget.pdf"): File {
+  const file = new File(["%PDF-1.7 budget"], name, {
+    type: "application/pdf",
+  });
+  // jsdom blobs cannot be read; serve the PDF signature validation checks.
+  return Object.assign(file, {
+    slice: () => ({
+      arrayBuffer: async () => Uint8Array.from(Buffer.from("%PDF-")).buffer,
+    }),
+  });
+}
+
+function streamBody(index: number): {
+  context: Record<string, unknown>;
+  options?: { concept_note_turn?: string };
+} {
+  const call = startStream.mock.calls[index] as unknown as [
+    string,
+    { body: string },
+  ];
+  return JSON.parse(call[1].body);
+}
+
 function DraftStartHarness() {
   const { startDrafting } = useConceptNoteWorkspaceData({
     cityId: "city-1",
@@ -305,10 +406,13 @@ function DraftStartHarness() {
 
 beforeAll(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  // Source validation reads the PDF signature; jsdom lacks both APIs.
+  Object.assign(globalThis, { TextDecoder });
+  HTMLElement.prototype.scrollTo = jest.fn() as never;
   // Chakra recipes are JSON-compatible; jsdom does not provide structuredClone.
   globalThis.structuredClone = (value) =>
     value === undefined ? value : JSON.parse(JSON.stringify(value));
-  ({ useConceptNoteWorkspaceData } =
+  ({ useConceptNoteWorkspaceData, listConceptNoteUploads } =
     await import("@/components/ConceptNoteWorkspace/use-concept-note-workspace-data"));
   ({ ConceptNoteChatPanel: Panel } =
     await import("@/components/ConceptNoteWorkspace/chat-panel"));
@@ -587,6 +691,71 @@ describe("useConceptNoteWorkspaceData", () => {
     expect(container.textContent).toBe("uploading");
   });
 
+  it("keeps watching the run while the ready bundle lags behind a finished upload", async () => {
+    const readyUpload = (id: string) => ({
+      completed_at: "2026-09-25T10:00:00Z",
+      filename: `${id}.md`,
+      page_count: null,
+      received_at: "2026-09-25T09:59:00Z",
+      run_id: "run-1",
+      source_format: "markdown",
+      source_label: id,
+      status: "ready",
+      upload_id: id,
+    });
+    // The new upload is ready but the rebuild has not started yet.
+    contextScenario = {
+      progress_summary: {
+        context_bundle: {
+          status: "ready",
+          build_id: "build-1",
+          document_grounding: "uploaded_evidence",
+          source_counts: { ready: 1 },
+        },
+      },
+      uploads: [readyUpload("new"), readyUpload("old")],
+    } as never;
+    await act(async () => root.render(<Harness />));
+
+    expect(container.textContent).toBe("processing");
+    expect(observeWorkspace).toHaveBeenLastCalledWith(
+      expect.objectContaining({ observeRun: true }),
+    );
+  });
+
+  it("refetches the draft when a rebuild finishes so a new file's review can start", async () => {
+    const refetchDraft = jest.fn(async () => undefined);
+    getDraftQuery.mockReturnValue({
+      data: undefined,
+      isError: false,
+      isLoading: false,
+      refetch: refetchDraft,
+    });
+    const readyBuild = (buildId: string) => ({
+      context_bundle: {
+        status: "ready",
+        build_id: buildId,
+        document_grounding: "uploaded_evidence",
+        source_counts: { ready: 1 },
+      },
+    });
+    contextScenario = { progress_summary: readyBuild("build-1"), uploads: [] };
+    await act(async () => root.render(<Harness />));
+    expect(refetchDraft).not.toHaveBeenCalled();
+
+    contextScenario = { progress_summary: readyBuild("build-2"), uploads: [] };
+    await act(async () => root.render(<Harness />));
+    expect(refetchDraft).toHaveBeenCalledTimes(1);
+    expect(refetchApplicationContext).toHaveBeenCalledTimes(1);
+    getDraftQuery.mockReset();
+    getDraftQuery.mockImplementation(() => ({
+      data: undefined,
+      isError: false,
+      isLoading: false,
+      refetch: jest.fn(async () => undefined),
+    }));
+  });
+
   it("retries a failed upload restored from the persisted run", async () => {
     await act(async () => root.render(<Harness />));
 
@@ -606,5 +775,188 @@ describe("useConceptNoteWorkspaceData", () => {
       uploadId: persistedUploadId,
     });
     expect(refetchRun).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [
+      "problem body",
+      {
+        code: "concept_note_upload_limit_reached",
+        detail: "A concept note can have at most 10 files",
+        status: 409,
+      },
+    ],
+    [
+      "nested detail",
+      { detail: { code: "concept_note_upload_limit_reached" } },
+    ],
+  ])(
+    "tells the user when Climate Advisor rejects a file over the limit (%s)",
+    async (_shape, data) => {
+      contextScenario = {
+        progress_summary: readyEvidence,
+        uploads: Array.from({ length: 9 }, (_, index) =>
+          source("ready", `file-${index}`),
+        ),
+      };
+      uploadSourceMutation.mockReturnValueOnce({
+        unwrap: async () => {
+          throw { status: 409, data };
+        },
+      });
+      await act(async () => root.render(<UploadHarness file={pdf()} />));
+      await act(async () => container.querySelector("button")!.click());
+      expect(uploadSourceMutation).toHaveBeenCalledTimes(1);
+      expect(container.textContent).toBe("upload-limit-reached");
+    },
+  );
+
+  it("keeps the generic message for other upload failures", async () => {
+    contextScenario = { progress_summary: {}, uploads: [] };
+    uploadSourceMutation.mockReturnValueOnce({
+      unwrap: async () => {
+        throw { status: 409, data: { detail: { code: "other_conflict" } } };
+      },
+    });
+    await act(async () => root.render(<UploadHarness file={pdf()} />));
+    await act(async () => container.querySelector("button")!.click());
+    expect(container.textContent).toBe("upload-source-error");
+  });
+
+  it("does not send an 11th file once the note has 10 uploads", async () => {
+    contextScenario = {
+      progress_summary: readyEvidence,
+      uploads: Array.from({ length: 10 }, (_, index) =>
+        source(index ? "ready" : "failed", `file-${index}`),
+      ),
+    };
+    await act(async () => root.render(<UploadHarness file={pdf()} />));
+    await act(async () => container.querySelector("button")!.click());
+    expect(uploadSourceMutation).not.toHaveBeenCalled();
+    expect(container.textContent).toBe("upload-limit-reached");
+  });
+
+  it("stops tracking ?uploadId once the run lists it and drops it from the URL", async () => {
+    window.history.replaceState(
+      null,
+      "",
+      "/en/cities/city-1/concept-notes/run-1?uploadId=A&chapterId=ch-1",
+    );
+    contextScenario = {
+      progress_summary: readyEvidence,
+      uploads: [source("ready", "B"), source("failed", "A")],
+    };
+    await act(async () => root.render(<TrackingHarness initialUploadId="A" />));
+
+    // The newest upload drives status; the stale failed first file does not.
+    expect(getUploadQuery).toHaveBeenLastCalledWith(
+      { runId: "run-1", uploadId: "B" },
+      expect.anything(),
+    );
+    const view = container.querySelector("p")!;
+    expect(view.dataset.state).toBe("ready");
+    expect(view.textContent).toBe("B.pdf,A.pdf");
+    expect(window.location.pathname).toBe(
+      "/en/cities/city-1/concept-notes/run-1",
+    );
+    expect(window.location.search).toBe("?chapterId=ch-1");
+  });
+
+  it("tracks a new note's first upload until the run lists it", async () => {
+    window.history.replaceState(
+      null,
+      "",
+      "/en/cities/city-1/concept-notes/run-1?uploadId=A",
+    );
+    contextScenario = { progress_summary: {}, uploads: [] };
+    await act(async () => root.render(<TrackingHarness initialUploadId="A" />));
+
+    expect(getUploadQuery).toHaveBeenLastCalledWith(
+      { runId: "run-1", uploadId: "A" },
+      expect.anything(),
+    );
+    expect(container.querySelector("p")!.dataset.state).toBe("processing");
+    expect(window.location.search).toBe("?uploadId=A");
+  });
+
+  it("asks Clima to review new files once, after the drafting overview", async () => {
+    contextScenario = {
+      progress_summary: readyEvidence,
+      uploads: [source("ready", "B")],
+    };
+    const render = async (
+      overviewPending: boolean,
+      sourceReviewPending: boolean,
+    ) => {
+      await act(async () =>
+        root.render(
+          <SourceReviewHarness
+            overviewPending={overviewPending}
+            sourceReviewPending={sourceReviewPending}
+          />,
+        ),
+      );
+      await act(async () => {
+        await new Promise(requestAnimationFrame);
+      });
+    };
+    const turns = () =>
+      startStream.mock.calls.map(
+        (_, index) => streamBody(index).options?.concept_note_turn,
+      );
+
+    await render(true, true);
+    expect(turns()).toEqual(["draft_overview"]);
+    await act(async () => streamOptions.onComplete?.());
+
+    await render(false, true);
+    expect(turns()).toEqual(["draft_overview", "source_review"]);
+    expect(streamBody(1).context.concept_note_edit).toEqual({
+      scope: { kind: "auto", focused_chapter_id: "budget" },
+      idempotency_key: expect.any(String),
+    });
+    // The hidden request never shows up as a user message.
+    expect(container.textContent).not.toContain("source_review");
+
+    await act(async () => streamOptions.onComplete?.());
+    expect(onSourceReviewComplete).toHaveBeenCalledTimes(1);
+    // Still pending until the draft refetch lands: no second request.
+    await render(false, true);
+    expect(turns()).toHaveLength(2);
+
+    // A later upload makes a new review pending.
+    await render(false, false);
+    await render(false, true);
+    expect(turns()).toEqual([
+      "draft_overview",
+      "source_review",
+      "source_review",
+    ]);
+  });
+
+  it("merges the tracked upload into the list and leads with a file the run has not listed", () => {
+    const runUploads = [source("processing", "A")];
+    expect(
+      listConceptNoteUploads(runUploads, {
+        uploadId: "A",
+        status: "ready",
+        pageCount: 4,
+        canRetry: false,
+      }),
+    ).toEqual([
+      expect.objectContaining({
+        uploadId: "A",
+        filename: "A.pdf",
+        status: "ready",
+        pageCount: 4,
+      }),
+    ]);
+    expect(
+      listConceptNoteUploads(runUploads, {
+        uploadId: "new",
+        status: "queued",
+        filename: "new.pdf",
+      }).map((upload) => upload.uploadId),
+    ).toEqual(["new", "A"]);
   });
 });

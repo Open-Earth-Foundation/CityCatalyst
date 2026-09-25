@@ -17,6 +17,7 @@ from app.models.cnb.concept_note_markdown import (
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.markdown import (
+    MAX_UPLOADS_PER_RUN,
     ConceptNoteMarkdownRepositoryError,
     SqlAlchemyConceptNoteMarkdownRepository,
 )
@@ -152,5 +153,79 @@ async def test_repository_persists_nullable_then_immutable_pointer(
                 ),
             )
         assert conflict.value.code == "markdown_identity_conflict"
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_repository_limits_uploads_per_run_but_allows_replays(
+    tmp_path,
+) -> None:
+    engine = create_async_engine(
+        f"sqlite+aiosqlite:///{(tmp_path / 'cnb.db').as_posix()}"
+    )
+    try:
+        async with engine.begin() as connection:
+            await connection.run_sync(
+                lambda sync_connection: Base.metadata.create_all(
+                    sync_connection,
+                    tables=[
+                        ConceptNoteRun.__table__,
+                        ConceptNoteUpload.__table__,
+                    ],
+                )
+            )
+        session_factory = async_sessionmaker(engine, expire_on_commit=False)
+        run_id = uuid4()
+        async with session_factory() as session, session.begin():
+            session.add(
+                ConceptNoteRun(
+                    run_id=run_id,
+                    user_id="owner-user",
+                    name="Test run",
+                    city_id=str(uuid4()),
+                    idempotency_key=uuid4(),
+                    request_fingerprint="a" * 64,
+                    context_summary={},
+                    permission_summary={},
+                )
+            )
+        repository = SqlAlchemyConceptNoteMarkdownRepository(session_factory)
+
+        def request(upload_id: UUID, index: int) -> ConceptNoteUploadCreateRequest:
+            return ConceptNoteUploadCreateRequest(
+                upload_id=upload_id,
+                user_id="owner-user",
+                filename=f"file-{index}.pdf",
+                source_label=f"File {index}",
+            )
+
+        upload_ids = [uuid4() for _ in range(MAX_UPLOADS_PER_RUN)]
+        for index, upload_id in enumerate(upload_ids):
+            await repository.create_upload(
+                user_id="owner-user", run_id=run_id, payload=request(upload_id, index)
+            )
+        # A failed upload keeps its slot: there is no per-file delete.
+        await repository.mark_failed(
+            user_id="owner-user",
+            run_id=run_id,
+            upload_id=upload_ids[0],
+            error_code="ocr_failed",
+        )
+
+        with pytest.raises(ConceptNoteMarkdownRepositoryError) as error:
+            await repository.create_upload(
+                user_id="owner-user",
+                run_id=run_id,
+                payload=request(uuid4(), MAX_UPLOADS_PER_RUN),
+            )
+        assert error.value.code == "concept_note_upload_limit_reached"
+        assert error.value.status_code == 409
+
+        # Replaying an existing upload is idempotent and never hits the limit.
+        replay = await repository.create_upload(
+            user_id="owner-user", run_id=run_id, payload=request(upload_ids[-1], 9)
+        )
+        assert replay.upload_id == upload_ids[-1]
     finally:
         await engine.dispose()

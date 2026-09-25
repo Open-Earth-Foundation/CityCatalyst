@@ -10,6 +10,8 @@ from app.services.cnb.ui_context import build_ui_state, load_ui_state
 def test_active_critical_gaps_require_acknowledgement_without_blocking_export():
     """Critical gaps permit export after acknowledgement; browser state is unknown."""
     chapter = SimpleNamespace(
+        position=1,
+        title="Summary",
         status="needs_review",
         body_markdown="Current draft",
         gaps=[
@@ -19,7 +21,9 @@ def test_active_critical_gaps_require_acknowledgement_without_blocking_export():
             SimpleNamespace(severity="warning", state="open"),
         ],
     )
-    deleted = SimpleNamespace(status="deleted", body_markdown="Old", gaps=chapter.gaps)
+    deleted = SimpleNamespace(
+        position=2, title="Old", status="deleted", body_markdown="Old", gaps=chapter.gaps
+    )
     state = build_ui_state([chapter, deleted])
     assert state["draft"] == {
         "exists": True,
@@ -44,7 +48,9 @@ def test_active_critical_gaps_require_acknowledgement_without_blocking_export():
 
 def test_empty_template_is_not_a_generated_draft():
     """Template chapter metadata alone must not imply generated content."""
-    chapter = SimpleNamespace(status="empty", body_markdown="  ", gaps=[])
+    chapter = SimpleNamespace(
+        position=1, title="Summary", status="empty", body_markdown="  ", gaps=[]
+    )
     state = build_ui_state([chapter])
     assert state["draft"] == {
         "exists": False,
@@ -59,10 +65,10 @@ def test_empty_template_is_not_a_generated_draft():
 def test_partial_draft_separates_template_sections_from_generated_content():
     """Empty template sections must not be reported as drafted chapters."""
     chapters = [
-        SimpleNamespace(status="needs_review", body_markdown="Generated", gaps=[]),
-        SimpleNamespace(status="empty", body_markdown=None, gaps=[]),
-        SimpleNamespace(status="empty", body_markdown=" \n ", gaps=[]),
-        SimpleNamespace(status="deleted", body_markdown="Removed", gaps=[]),
+        SimpleNamespace(position=1, title="C1", status="needs_review", body_markdown="Generated", gaps=[]),
+        SimpleNamespace(position=2, title="C2", status="empty", body_markdown=None, gaps=[]),
+        SimpleNamespace(position=3, title="C3", status="empty", body_markdown=" \n ", gaps=[]),
+        SimpleNamespace(position=4, title="C4", status="deleted", body_markdown="Removed", gaps=[]),
     ]
     assert build_ui_state(chapters)["draft"] == {
         "exists": True,
@@ -78,3 +84,26 @@ async def test_unavailable_workspace_does_not_become_empty_draft():
         side_effect=RuntimeError("Unavailable"),
     ):
         assert await load_ui_state(uuid4()) is None
+
+
+def test_open_gaps_are_counted_per_chapter_in_document_order():
+    """The status points the agent at chapters with gaps without listing them."""
+    gaps = [
+        SimpleNamespace(severity="critical", state="open"),
+        SimpleNamespace(severity="noncritical", state="processing"),
+        SimpleNamespace(severity="critical", state="resolved"),
+    ]
+    chapters = [
+        SimpleNamespace(
+            position=2, title="Commitments", status="draft", body_markdown="x", gaps=gaps
+        ),
+        SimpleNamespace(
+            position=1, title="Applicant", status="draft", body_markdown="x", gaps=[]
+        ),
+        SimpleNamespace(
+            position=3, title="Removed", status="deleted", body_markdown="x", gaps=gaps
+        ),
+    ]
+    assert build_ui_state(chapters)["open_gaps_by_chapter"] == [
+        {"chapter_position": 2, "chapter": "Commitments", "open": 2, "critical": 1}
+    ]

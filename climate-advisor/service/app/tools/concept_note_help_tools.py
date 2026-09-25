@@ -12,6 +12,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
+# Help lists files for navigation; summaries stay in the injected context bundle.
+_UPLOADED_FILE_KEYS = ("source_index", "filename", "uploaded_at", "newest")
+
 
 def build_concept_note_help_tools(
     *,
@@ -33,7 +36,8 @@ def build_concept_note_help_tools(
 
         Call when the user asks about capabilities, finding the draft, changing
         funding, uploading files, how to edit/save, or downloading/export blockers.
-        Returns the UI guide and fresh draft/export state; does not change anything.
+        Returns the UI guide, fresh draft/export state with open gaps per chapter,
+        and the uploaded files (newest flagged); does not change anything.
         Do not call for project facts, source research, or actual edit requests.
         No arguments: the service binds the authorized project and user.
         """
@@ -57,6 +61,10 @@ def build_concept_note_help_tools(
                     "ui_locale": locale,
                     "guide": guide,
                     "ui_state": state,
+                    "uploaded_files": [
+                        {key: source.get(key) for key in _UPLOADED_FILE_KEYS}
+                        for source in context.get("selected_sources", [])
+                    ],
                 },
                 ensure_ascii=False,
             )

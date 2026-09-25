@@ -185,4 +185,6 @@ class ConceptNoteDraftResponse(BaseModel):
     error_code: str | None = None
     # True once a drafting build finishes and its chat overview is not yet posted.
     overview_pending: bool = False
+    # True while files uploaded after drafting wait for their chat source review.
+    source_review_pending: bool = False
     chapters: list[ConceptNoteDraftChapterResponse] = Field(default_factory=list)

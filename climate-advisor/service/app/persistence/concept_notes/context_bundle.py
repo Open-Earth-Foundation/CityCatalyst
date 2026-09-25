@@ -589,6 +589,9 @@ async def load_agent_context(
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
             )
+            # Upload times let the agent tell which file the user just added.
+            uploaded_at = await _source_upload_times(session, bundle.selected_sources)
+            newest = max(uploaded_at.values(), default=None)
             return omit_context_identifiers(
                 {
                     "workflow_step": run.workflow_step,
@@ -604,6 +607,9 @@ async def load_agent_context(
                             "source_format": source.source_format,
                             "summary": source.summary,
                             "topics": source.topics,
+                            "uploaded_at": _iso(uploaded_at.get(source.upload_id)),
+                            "newest": newest is not None
+                            and uploaded_at.get(source.upload_id) == newest,
                         }
                         for source_index, source in enumerate(
                             bundle.selected_sources, start=1
@@ -629,6 +635,26 @@ async def load_agent_context(
             503,
             "Concept Note context storage is unavailable",
         ) from exc
+
+
+async def _source_upload_times(
+    session: AsyncSession,
+    sources: list[SelectedSource],
+) -> dict[UUID, datetime]:
+    """Map each bundled source to the time its upload was received."""
+    if not sources:
+        return {}
+    rows = await session.execute(
+        select(ConceptNoteUpload.upload_id, ConceptNoteUpload.received_at).where(
+            ConceptNoteUpload.upload_id.in_([source.upload_id for source in sources])
+        )
+    )
+    return {upload_id: received_at for upload_id, received_at in rows.all()}
+
+
+def _iso(value: datetime | None) -> str | None:
+    """Serialize an optional timestamp for model-facing context."""
+    return value.isoformat() if value is not None else None
 
 
 async def _require_owned_run(

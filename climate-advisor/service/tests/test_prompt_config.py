@@ -54,6 +54,7 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "cnb_source_question_reading": prompts.cnb_source_question_reading,
         "cnb_chapter_drafting": prompts.cnb_chapter_drafting,
         "cnb_draft_overview": prompts.cnb_draft_overview,
+        "cnb_source_review": prompts.cnb_source_review,
         "cnb_chapter_validation_completeness": (
             prompts.cnb_chapter_validation_completeness
         ),

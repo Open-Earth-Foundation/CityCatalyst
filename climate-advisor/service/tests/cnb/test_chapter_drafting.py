@@ -92,6 +92,8 @@ async def test_load_state_uses_lightweight_template_fingerprint_lookup() -> None
     )
     service._workspace = workspace
     service._application_context = application_context
+    # A run without a finished draft never reads uploads for source review.
+    service._ca_session_factory = MagicMock(side_effect=AssertionError("no query"))
     run = cast(
         ConceptNoteRun,
         SimpleNamespace(run_id=RUN_ID, context_summary={}),

@@ -840,6 +840,7 @@ Operationally:
   city, project, GHGI, CCRA, HIAP, and uploaded-document presence independently.
   `city_population` reports the `{population, year}` the bundle's city profile
   gives the models, or `null`, so the Context tab shows what the run can cite.
+  A rebuild whose population-only lookup fails keeps the previous figure.
   PDFs remain page-cited and native Markdown remains anchor-cited. Optional
   GHGI/HIAP failures do not block readiness, stale builds cannot win, and chat
   keeps the last completed bundle during rebuilds. Unchanged source analyses are

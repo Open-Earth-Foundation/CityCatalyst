@@ -918,5 +918,31 @@ async def test_progress_reports_the_city_population_the_models_receive(
             "population": 1_000_000,
             "year": 2025,
         }
+
+        # A forced rebuild whose population-only lookup fails keeps the figure.
+        fourth = await build(
+            {
+                **city,
+                "name": "Kraków (renamed)",
+                "population": None,
+                "population_year": None,
+                "population_lookup_failed": True,
+            }
+        )
+        assert fourth["ready"]["city_population"] == {
+            "population": 1_000_000,
+            "year": 2025,
+        }
+        async with session_factory() as session:
+            stored = await session.get(ConceptNoteContextBundle, run_id)
+            stored_city = stored.context_bundle["cc_context"]["city"]
+        assert stored_city["name"] == "Kraków (renamed)"
+        assert stored_city["population"] == 1_000_000
+        assert stored_city["population_year"] == 2025
+        assert "population_lookup_failed" not in stored_city
+
+        # A genuine no-population response still clears the stored figure.
+        fifth = await build({**city, "population": None, "population_year": None})
+        assert fifth["ready"]["city_population"] is None
     finally:
         await engine.dispose()

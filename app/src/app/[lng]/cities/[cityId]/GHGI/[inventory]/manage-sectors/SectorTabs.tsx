@@ -191,7 +191,9 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   const [cardInputs, setCardInputs] = useState<Record<string, CardInputs>>({});
   // State for unsaved changes detection dialog
   const [isDirty, setIsDirty] = useState(false);
-  const [showDialog, setShowDialog] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(
+    null,
+  );
   const pathname = usePathname();
   const [prevPathname, setPrevPathname] = useState(pathname);
   const [selectedSector, setSelectedSector] = useState<SectorReference>("I");
@@ -213,8 +215,8 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         return scopes.map((scope: ScopeData) => [
           scope.subCategory?.subcategoryId,
           {
-            notationKey: scope.inventoryValue?.unavailableReason,
-            explanation: scope.inventoryValue?.unavailableExplanation,
+            notationKey: scope.inventoryValue?.unavailableReason ?? "",
+            explanation: scope.inventoryValue?.unavailableExplanation ?? "",
           },
         ]);
       });
@@ -240,26 +242,75 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     setIsDirty(hasChanges);
   }, [cardInputs, originalCardInputs]);
 
-  // Listen to Next.js route changes for in-app navigation
+  // Number of cards with unsaved edits, shown on the save button
+  const pendingChangesCount = useMemo(
+    () =>
+      Object.entries(cardInputs).filter(([id, currentValue]) => {
+        const originalValue = originalCardInputs[id];
+        return (
+          currentValue.notationKey !== originalValue?.notationKey ||
+          currentValue.explanation !== originalValue?.explanation
+        );
+      }).length,
+    [cardInputs, originalCardInputs],
+  );
+
+  // Set right before an intentional navigation so the guards let it through
+  const allowNavigationRef = useRef(false);
+
+  // In-app links: intercept clicks and ask before leaving with unsaved changes
   useEffect(() => {
-    if (pathname !== prevPathname) {
-      if (isDirty) {
-        setShowDialog(true);
-        // Prevent navigation by pushing back to previous path
-        router.replace(prevPathname);
-      } else {
-        setPrevPathname(pathname);
+    if (!isDirty) return;
+    const handleClick = (e: MouseEvent) => {
+      if (
+        allowNavigationRef.current ||
+        e.defaultPrevented ||
+        e.button !== 0 ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.shiftKey ||
+        e.altKey
+      ) {
+        return;
       }
+      const anchor = (e.target as Element | null)?.closest?.("a[href]");
+      if (!anchor || anchor.hasAttribute("download")) return;
+      const target = anchor.getAttribute("target");
+      if (target && target !== "_self") return;
+      const url = new URL(
+        (anchor as HTMLAnchorElement).href,
+        window.location.href,
+      );
+      if (url.origin !== window.location.origin) return;
+      if (url.pathname === pathname && url.search === window.location.search) {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      setPendingNavigation(url.pathname + url.search + url.hash);
+    };
+    document.addEventListener("click", handleClick, true);
+    return () => document.removeEventListener("click", handleClick, true);
+  }, [isDirty, pathname]);
+
+  // Fallback for navigation that isn't a link click (e.g. browser back)
+  useEffect(() => {
+    if (pathname === prevPathname) return;
+    if (isDirty && !allowNavigationRef.current) {
+      setPendingNavigation(pathname);
+      // Prevent navigation by pushing back to previous path
+      router.replace(prevPathname);
+    } else {
+      setPrevPathname(pathname);
     }
   }, [pathname, prevPathname, isDirty, router]);
 
-  // beforeunload event for refresh/close scenarios
+  // Refresh/close: browsers only allow their own native confirmation here
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty) {
+      if (isDirty && !allowNavigationRef.current) {
         e.preventDefault();
-        setShowDialog(true);
-        return "";
+        e.returnValue = "";
       }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -269,7 +320,9 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   // update notation keys for subsectors from api service
   const [createNotationKeys, { isLoading, isError }] =
     api.useUpdateOrCreateNotationKeysMutation();
-  const handleUpdateNotationKeys = async (subCategoryId?: string) => {
+  const handleUpdateNotationKeys = async (
+    subCategoryId?: string,
+  ): Promise<boolean> => {
     // Valid enum values for unavailableReason
     const validReasons = [
       "no-occurrance",
@@ -286,7 +339,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     if (subCategoryId) {
       // Update a single card
       const cardData = cardInputs[subCategoryId];
-      if (!cardData) return;
+      if (!cardData) return false;
 
       // Validate that both fields are filled
       if (
@@ -299,7 +352,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
           title: t("error"),
           description: t("error-updating-notation-keys"),
         });
-        return;
+        return false;
       }
 
       notationKeys = [
@@ -358,7 +411,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         title: t("error"),
         description: t("error-updating-notation-keys"),
       });
-      return;
+      return false;
     }
 
     try {
@@ -366,6 +419,19 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         inventoryId: inventoryId!,
         notationKeys: notationKeys,
       }).unwrap();
+      // Saved values become the new baseline, so clearing unsaved changes
+      // later restores what was just saved (the scopes query isn't refetched)
+      const savedInputs = Object.fromEntries(
+        notationKeys.map((key) => [
+          key.subCategoryId,
+          {
+            notationKey: key.unavailableReason,
+            explanation: key.unavailableExplanation,
+          },
+        ]),
+      );
+      setOriginalCardInputs((prev) => ({ ...prev, ...savedInputs }));
+      setCardInputs((prev) => ({ ...prev, ...savedInputs }));
       // clear dirty state on success
       setIsDirty(false);
       // show success toast
@@ -376,6 +442,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
           duration: 5000,
         });
       }
+      return true;
     } catch (error: unknown) {
       // Check if error is about emissions data
       type NotationKeyErrorData = {
@@ -414,7 +481,28 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         });
       }
       logger.error({ err: error }, "Failed to update notation keys");
+      return false;
     }
+  };
+
+  const leaveTo = (href: string) => {
+    allowNavigationRef.current = true;
+    setPendingNavigation(null);
+    router.push(href);
+  };
+
+  const handleSaveAndLeave = async () => {
+    if (!pendingNavigation) return;
+    if (await handleUpdateNotationKeys()) {
+      leaveTo(pendingNavigation);
+    }
+  };
+
+  const handleDiscardAndLeave = () => {
+    if (!pendingNavigation) return;
+    const href = pendingNavigation;
+    resetFormData();
+    leaveTo(href);
   };
 
   const resetFormData = (): void => {
@@ -423,7 +511,6 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     setIsDirty(false);
     setQuickActionValues({});
     setSelectedCardsBySector({});
-    setShowDialog(false);
 
     // Force a re-render of the form by resetting the selected sector
     setSelectedSector(selectedSector);
@@ -502,7 +589,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     toaster.create({
       title: t("success"),
       description: t("changes-undone"),
-      type: "info",
+      type: "success",
     });
   };
   // sector tab content - subsectors
@@ -876,11 +963,14 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                 <Box display="flex" gap="16px">
                   <Button
                     height="xxl-2"
-                    width="150px"
+                    minWidth="150px"
+                    width="fit-content"
+                    px="l"
+                    whiteSpace="nowrap"
                     variant="outline"
                     onClick={() => isDirty && handleUndoChanges()}
                   >
-                    {t("cancel")}
+                    {t("clear-all-changes")}
                   </Button>
                   <Button
                     height="xxl-2"
@@ -900,6 +990,9 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                     }}
                   >
                     {t("save-all-changes")}
+                    {isDirty && pendingChangesCount > 0
+                      ? ` (${pendingChangesCount})`
+                      : ""}
                   </Button>
                 </Box>
               </StickyActionBar>
@@ -925,10 +1018,11 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       </Tabs.Root>
       <RouteChangeDialog
         t={t}
-        showDialog={showDialog}
-        setShowDialog={setShowDialog}
-        confirmNavigation={resetFormData}
-        cancelNavigation={() => setShowDialog(false)}
+        showDialog={pendingNavigation !== null}
+        isSaving={isLoading}
+        onSave={handleSaveAndLeave}
+        onDiscard={handleDiscardAndLeave}
+        onStay={() => setPendingNavigation(null)}
       />
     </>
   );

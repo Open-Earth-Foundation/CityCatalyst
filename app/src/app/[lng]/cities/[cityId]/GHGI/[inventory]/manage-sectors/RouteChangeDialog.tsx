@@ -9,41 +9,45 @@ import { PiWarningCircleFill } from "react-icons/pi";
 
 interface RouteChangeDialogProps {
   showDialog: boolean;
-  setShowDialog: (showDialog: boolean) => void;
+  isSaving?: boolean;
   t: TFunction;
-  confirmNavigation: () => void;
-  cancelNavigation: () => void;
+  onSave: () => void;
+  onDiscard: () => void;
+  onStay: () => void;
 }
 
 const RouteChangeDialog: FC<RouteChangeDialogProps> = ({
   t,
   showDialog,
-  setShowDialog,
-  cancelNavigation,
-  confirmNavigation,
+  isSaving = false,
+  onSave,
+  onDiscard,
+  onStay,
 }) => {
   return (
     <Dialog.Root
       lazyMount
       open={showDialog}
-      onOpenChange={(e) => setShowDialog(e.open)}
+      onOpenChange={(e) => {
+        if (!e.open) onStay();
+      }}
       placement="center"
     >
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <Dialog.Content>
-            <Dialog.Header>
+          <Dialog.Content p="xl" gap="l">
+            <Dialog.Header p={0}>
               <Dialog.Title
                 textAlign="center"
                 fontWeight="bold"
                 fontFamily="heading"
                 fontSize="headline.sm"
               >
-                {t("changes-can-be-lost")}
+                {t("unsaved-changes-title")}
               </Dialog.Title>
             </Dialog.Header>
-            <Dialog.Body>
+            <Dialog.Body p={0}>
               <Box
                 display="flex"
                 justifyContent="center"
@@ -68,32 +72,37 @@ const RouteChangeDialog: FC<RouteChangeDialogProps> = ({
                 fontWeight="400"
                 letterSpacing="wide"
               >
-                {t("changes-can-be-lost-description")}
+                {t("unsaved-changes-leave-description")}
               </Text>
             </Dialog.Body>
-            <Dialog.Footer>
-              <Dialog.ActionTrigger asChild>
-                <Button
-                  variant="outline"
-                  display="flex"
-                  flex="1"
-                  py="24px"
-                  onClick={confirmNavigation}
-                >
-                  {t("discard-changes")}
-                </Button>
-              </Dialog.ActionTrigger>
-              <Dialog.ActionTrigger asChild>
-                <Button
-                  display="flex"
-                  variant="solid"
-                  flex="1"
-                  py="24px"
-                  onClick={cancelNavigation}
-                >
-                  {t("keep-editing")}
-                </Button>
-              </Dialog.ActionTrigger>
+            <Dialog.Footer p={0} flexDirection="column" gap="12px">
+              <Button
+                variant="solid"
+                w="full"
+                py="24px"
+                onClick={onSave}
+                loading={isSaving}
+              >
+                {t("save-and-leave")}
+              </Button>
+              <Button
+                variant="outline"
+                w="full"
+                py="24px"
+                onClick={onDiscard}
+                disabled={isSaving}
+              >
+                {t("discard-changes")}
+              </Button>
+              <Button
+                variant="ghost"
+                w="full"
+                py="24px"
+                onClick={onStay}
+                disabled={isSaving}
+              >
+                {t("keep-editing")}
+              </Button>
             </Dialog.Footer>
             <Dialog.CloseTrigger asChild>
               <CloseButton size="sm" />

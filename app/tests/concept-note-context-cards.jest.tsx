@@ -20,10 +20,17 @@ import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWor
 import type {
   CityDashboardResponse,
   ConceptNoteApplicationContext,
+  ConceptNoteUploadResponse,
+  ConceptNoteUploadStatus,
 } from "@/util/types";
 
 jest.unstable_mockModule("@/i18n/client", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, values?: Record<string, unknown>) =>
+      key === "uploaded-files-count" && values
+        ? `${values.uploaded} of ${values.max} files`
+        : key,
+  }),
 }));
 jest.unstable_mockModule("next/link", () => ({
   default: ({
@@ -146,7 +153,7 @@ async function renderTab(overrides: Partial<ContextTabProps> = {}) {
     populationLabel: "population",
     populationLoading: false,
     populationMissing: false,
-    upload: null,
+    uploads: [],
     uploadError: null,
     ...overrides,
   };
@@ -415,5 +422,94 @@ describe("Context tab missing-state cards", () => {
     expect(container.textContent).toContain("funder-why");
     await act(async () => control("template-choose")?.click());
     expect(onSelectFunding).toHaveBeenCalledTimes(1);
+  });
+});
+
+function uploaded(
+  id: string,
+  status: ConceptNoteUploadStatus,
+  extra: Partial<ConceptNoteUploadResponse> = {},
+): ConceptNoteUploadResponse {
+  return { uploadId: id, status, filename: `${id}.pdf`, ...extra };
+}
+
+function fileRows(): HTMLLIElement[] {
+  return Array.from(
+    container.querySelectorAll<HTMLLIElement>('ul[aria-label="your-files"] li'),
+  );
+}
+
+function uploadButton(): HTMLButtonElement {
+  return control("upload-pdf") as HTMLButtonElement;
+}
+
+describe("Context tab uploaded files", () => {
+  const evidenceBundle = bundle({
+    documentGrounding: "uploaded_evidence",
+    readySources: 1,
+  });
+
+  it("lists every uploaded file with its own status, newest first", async () => {
+    const onRetryUpload = jest.fn();
+    await renderTab({
+      bundle: evidenceBundle,
+      onRetryUpload,
+      uploads: [
+        uploaded("budget", "processing"),
+        uploaded("baseline", "failed", { canRetry: true }),
+        uploaded("plan", "ready", { pageCount: 12 }),
+      ],
+    });
+
+    const rows = fileRows();
+    expect(rows.map((row) => row.querySelector("p")?.textContent)).toEqual([
+      "budget.pdf",
+      "baseline.pdf",
+      "plan.pdf",
+    ]);
+    expect(rows[0].textContent).toContain("status-converting");
+    expect(rows[1].textContent).toContain("status-failed");
+    expect(rows[2].textContent).toContain("status-ready");
+    expect(rows[2].textContent).toContain("pages-count");
+    expect(
+      container.querySelector('[data-testid="concept-note-upload-count"]')
+        ?.textContent,
+    ).toBe("3 of 10 files");
+
+    // Only the failed file offers a retry.
+    expect(rows[1].querySelector("button")?.textContent).toContain("retry");
+    expect(rows[0].querySelector("button")).toBeNull();
+    expect(rows[2].querySelector("button")).toBeNull();
+    await act(async () => rows[1].querySelector("button")!.click());
+    expect(onRetryUpload).toHaveBeenCalledTimes(1);
+    expect(uploadButton().disabled).toBe(false);
+    expect(container.textContent).not.toContain("upload-limit-reason");
+  });
+
+  it("keeps the fallback row when the note has no uploads", async () => {
+    await renderTab({ uploads: [] });
+
+    expect(fileRows()).toHaveLength(0);
+    expect(container.textContent).toContain("no-run-sources");
+    expect(container.textContent).toContain("upload-source-help");
+    expect(container.textContent).toContain("0 of 10 files");
+  });
+
+  it("disables uploading at 10 files, whatever their status, and says why", async () => {
+    await renderTab({
+      bundle: evidenceBundle,
+      uploads: Array.from({ length: 10 }, (_, index) =>
+        uploaded(`file-${index}`, index === 0 ? "failed" : "ready"),
+      ),
+    });
+
+    expect(fileRows()).toHaveLength(10);
+    expect(container.textContent).toContain("10 of 10 files");
+    const button = uploadButton();
+    expect(button.disabled).toBe(true);
+    const reason = document.getElementById(
+      button.getAttribute("aria-describedby") ?? "",
+    );
+    expect(reason?.textContent).toBe("upload-limit-reason");
   });
 });

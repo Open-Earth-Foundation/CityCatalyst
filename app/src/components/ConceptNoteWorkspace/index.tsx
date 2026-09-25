@@ -149,7 +149,6 @@ export function ConceptNoteWorkspace({
     draftLoading,
     draftProgress,
     draftStartError,
-    effectiveUpload,
     effectiveUploadError,
     files,
     hasApplicationTemplate,
@@ -180,6 +179,7 @@ export function ConceptNoteWorkspace({
     selectInventory,
     startDrafting,
     startDraftState,
+    uploads,
     uploadSource,
     uploadState,
   } = useConceptNoteWorkspaceData({ cityId, initialUploadId, lng, runId });
@@ -503,6 +503,8 @@ export function ConceptNoteWorkspace({
               composerRequest={composerRequest}
               draftOverviewPending={Boolean(draft?.overview_pending)}
               onDraftOverviewComplete={() => void refetchDraft()}
+              sourceReviewPending={Boolean(draft?.source_review_pending)}
+              onSourceReviewComplete={() => void refetchDraft()}
               lng={lng}
               onOpenContext={() => {
                 setTab("context");
@@ -862,7 +864,7 @@ export function ConceptNoteWorkspace({
                   populationLabel={populationLabel}
                   populationLoading={populationLoading}
                   populationMissing={populationMissing}
-                  upload={effectiveUpload}
+                  uploads={uploads}
                   uploadError={effectiveUploadError}
                   uploadPickerRequest={uploadPickerRequest}
                 />

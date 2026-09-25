@@ -11,6 +11,7 @@ let streamOptions: SSEStreamOptions;
 const startStream = jest.fn(async () => {});
 const stopStream = jest.fn();
 const refreshDraft = jest.fn();
+const refreshAfterSourceReview = jest.fn();
 const t = (key: string) => key;
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t }),
@@ -35,7 +36,9 @@ function Harness() {
     lng: "en",
     runId: "run",
     threadId: "thread",
+    editScope: { kind: "auto", focused_chapter_id: "budget" },
     onDraftOverviewComplete: refreshDraft,
+    onSourceReviewComplete: refreshAfterSourceReview,
   });
   useEffect(() => {
     chat = current;
@@ -44,6 +47,7 @@ function Harness() {
 }
 beforeEach(async () => {
   refreshDraft.mockClear();
+  refreshAfterSourceReview.mockClear();
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   globalThis.structuredClone = (value) => JSON.parse(JSON.stringify(value));
   globalThis.fetch = jest.fn(async () => ({
@@ -230,4 +234,58 @@ it("drops an already-claimed drafting overview without showing an error", async 
   expect(chat.error).toBeNull();
   expect(chat.isGenerating).toBe(false);
   expect(refreshDraft).toHaveBeenCalledTimes(1);
+});
+
+it("requests the source review as a hidden turn that may propose edits", async () => {
+  startStream.mockClear();
+  await act(async () => chat.requestSourceReview());
+  expect(chat.messages.map((message) => message.role)).toEqual(["assistant"]);
+  const [url, request] = startStream.mock.calls.at(-1) as unknown as [
+    string,
+    { body: string },
+  ];
+  expect(url).toBe("/api/v1/chat/messages");
+  const body = JSON.parse(request.body);
+  expect(body.content).toBe("source_review");
+  expect(body.options).toEqual({ concept_note_turn: "source_review" });
+  expect(body.context).toEqual({
+    concept_note_run_id: "run",
+    ui_locale: "en",
+    concept_note_edit: {
+      scope: { kind: "auto", focused_chapter_id: "budget" },
+      idempotency_key: expect.any(String),
+    },
+  });
+  expect(chat.progress).toEqual({ stage: "reviewing_sources" });
+  await act(async () => streamOptions.onProgress?.({ stage: "preparing" }));
+  expect(chat.progress).toEqual({ stage: "reviewing_sources" });
+  await act(async () =>
+    streamOptions.onMessage?.("The budget file answers one gap.", 0),
+  );
+  expect(chat.progress).toEqual({ stage: "reviewing_sources" });
+  await act(async () => streamOptions.onComplete?.());
+  expect(chat.messages.at(-1)?.text).toBe("The budget file answers one gap.");
+  expect(refreshAfterSourceReview).toHaveBeenCalledTimes(1);
+  expect(refreshDraft).not.toHaveBeenCalled();
+});
+
+it("drops an already-run source review without showing an error", async () => {
+  await act(async () => chat.requestSourceReview());
+  await act(async () =>
+    streamOptions.onError?.(
+      "Nothing to review",
+      "concept_note_source_review_unavailable",
+    ),
+  );
+  expect(chat.messages).toEqual([]);
+  expect(chat.error).toBeNull();
+  expect(chat.isGenerating).toBe(false);
+  expect(refreshAfterSourceReview).toHaveBeenCalledTimes(1);
+});
+
+it("reports other source review failures like any failed turn", async () => {
+  await act(async () => chat.requestSourceReview());
+  await act(async () => streamOptions.onError?.("Failed", "upstream_error"));
+  expect(chat.error).toBe("chat-send-error");
+  expect(refreshAfterSourceReview).not.toHaveBeenCalled();
 });

@@ -14,9 +14,17 @@ import {
   readConceptNoteThreadMessages,
 } from "./chat-utils";
 
-// The service replaces this content with its own hidden overview trigger.
-const DRAFT_OVERVIEW_CONTENT = "draft_overview";
-const DRAFT_OVERVIEW_UNAVAILABLE = "concept_note_draft_overview_unavailable";
+// Hidden turns: the service replaces this content with its own trigger text
+// and answers 409 with the code when nothing is waiting (another tab ran it).
+type HiddenTurn = "draft_overview" | "source_review";
+const HIDDEN_TURN_UNAVAILABLE: Record<HiddenTurn, string> = {
+  draft_overview: "concept_note_draft_overview_unavailable",
+  source_review: "concept_note_source_review_unavailable",
+};
+const HIDDEN_TURN_STAGE: Record<HiddenTurn, ConceptNoteProgress["stage"]> = {
+  draft_overview: "summarizing_draft",
+  source_review: "reviewing_sources",
+};
 
 interface UseConceptNoteChatOptions {
   lng: string;
@@ -25,6 +33,7 @@ interface UseConceptNoteChatOptions {
   editScope?: EditScope;
   onProposal?: (proposalId: string) => Promise<void>;
   onDraftOverviewComplete?: () => void;
+  onSourceReviewComplete?: () => void;
 }
 
 interface ConceptNoteChatController {
@@ -36,6 +45,7 @@ interface ConceptNoteChatController {
   messages: ConceptNoteChatMessage[];
   sendMessage: (content: string) => Promise<void>;
   requestDraftOverview: () => Promise<void>;
+  requestSourceReview: () => Promise<void>;
 }
 
 export function useConceptNoteChat({
@@ -45,6 +55,7 @@ export function useConceptNoteChat({
   editScope,
   onProposal,
   onDraftOverviewComplete,
+  onSourceReviewComplete,
 }: UseConceptNoteChatOptions): ConceptNoteChatController {
   const { t } = useTranslation(lng, "concept-notes");
   const [messages, setMessages] = useState<ConceptNoteChatMessage[]>([]);
@@ -55,8 +66,13 @@ export function useConceptNoteChat({
   const [error, setError] = useState<string | null>(null);
   const assistantMessageIdRef = useRef<string | null>(null);
   const pendingUserMessageIdRef = useRef<string | null>(null);
-  // The overview turn keeps its own label instead of the request-based stages.
-  const draftOverviewTurnRef = useRef(false);
+  // Hidden turns keep their own label instead of the request-based stages.
+  const hiddenTurnRef = useRef<HiddenTurn | null>(null);
+
+  function completeHiddenTurn(turn: HiddenTurn | null): void {
+    if (turn === "draft_overview") onDraftOverviewComplete?.();
+    if (turn === "source_review") onSourceReviewComplete?.();
+  }
 
   const { startStream, stopStream } = useSSEStream({
     forceEventStream: true,
@@ -79,11 +95,7 @@ export function useConceptNoteChat({
     },
     onProgress: (value) => {
       const update = readConceptNoteProgress(value);
-      if (
-        assistantMessageIdRef.current &&
-        update &&
-        !draftOverviewTurnRef.current
-      ) {
+      if (assistantMessageIdRef.current && update && !hiddenTurnRef.current) {
         setProgress(update);
       }
     },
@@ -105,7 +117,7 @@ export function useConceptNoteChat({
       if (!assistantMessageId) {
         return;
       }
-      if (!draftOverviewTurnRef.current) {
+      if (!hiddenTurnRef.current) {
         setProgress((current) =>
           current?.stage === "responding" ? current : { stage: "responding" },
         );
@@ -119,19 +131,20 @@ export function useConceptNoteChat({
       );
     },
     onComplete: () => {
-      // Draft observation ends at chapter completion; refresh the consumed overview.
-      if (draftOverviewTurnRef.current) onDraftOverviewComplete?.();
-      draftOverviewTurnRef.current = false;
+      // Refresh the draft so the consumed overview or review stops pending.
+      completeHiddenTurn(hiddenTurnRef.current);
+      hiddenTurnRef.current = null;
       setReasoning([]);
       assistantMessageIdRef.current = null;
       pendingUserMessageIdRef.current = null;
       setIsGenerating(false);
     },
     onError: (_message, code) => {
-      if (draftOverviewTurnRef.current && code === DRAFT_OVERVIEW_UNAVAILABLE) {
-        onDraftOverviewComplete?.();
-      }
-      draftOverviewTurnRef.current = false;
+      const hiddenTurn = hiddenTurnRef.current;
+      const hiddenTurnUnavailable =
+        hiddenTurn !== null && code === HIDDEN_TURN_UNAVAILABLE[hiddenTurn];
+      if (hiddenTurnUnavailable) completeHiddenTurn(hiddenTurn);
+      hiddenTurnRef.current = null;
       setReasoning([]);
       const assistantMessageId = assistantMessageIdRef.current;
       const rejectedUserMessageId =
@@ -151,8 +164,8 @@ export function useConceptNoteChat({
       assistantMessageIdRef.current = null;
       pendingUserMessageIdRef.current = null;
       setIsGenerating(false);
-      // Another tab or an earlier visit already posted this overview.
-      if (code === DRAFT_OVERVIEW_UNAVAILABLE) {
+      // Another tab or an earlier visit already ran this hidden turn.
+      if (hiddenTurnUnavailable) {
         return;
       }
       setError(
@@ -216,28 +229,45 @@ export function useConceptNoteChat({
     await streamReply({
       userMessage: { id: userMessageId, role: "user", text: normalizedContent },
       content: normalizedContent,
-      context: editScope
-        ? {
-            concept_note_edit: {
-              scope: editScope,
-              idempotency_key: crypto.randomUUID(),
-            },
-          }
-        : {},
+      context: editContext(),
+    });
+  }
+
+  // Lets Clima propose reviewable edits within the current edit scope.
+  function editContext(): Record<string, unknown> {
+    return editScope
+      ? {
+          concept_note_edit: {
+            scope: editScope,
+            idempotency_key: crypto.randomUUID(),
+          },
+        }
+      : {};
+  }
+
+  async function requestHiddenTurn(
+    turn: HiddenTurn,
+    context: Record<string, unknown>,
+  ): Promise<void> {
+    if (!threadId || isGenerating) {
+      return;
+    }
+    hiddenTurnRef.current = turn;
+    await streamReply({
+      content: turn,
+      context,
+      options: { concept_note_turn: turn },
     });
   }
 
   // Starts the hidden first turn that summarises a finished drafting pass.
   async function requestDraftOverview(): Promise<void> {
-    if (!threadId || isGenerating) {
-      return;
-    }
-    draftOverviewTurnRef.current = true;
-    await streamReply({
-      content: DRAFT_OVERVIEW_CONTENT,
-      context: {},
-      options: { concept_note_turn: "draft_overview" },
-    });
+    await requestHiddenTurn("draft_overview", {});
+  }
+
+  // Starts the hidden turn that checks newly added files against open gaps.
+  async function requestSourceReview(): Promise<void> {
+    await requestHiddenTurn("source_review", editContext());
   }
 
   async function streamReply({
@@ -262,7 +292,9 @@ export function useConceptNoteChat({
     setIsGenerating(true);
     setReasoning([]);
     setProgress({
-      stage: draftOverviewTurnRef.current ? "summarizing_draft" : "preparing",
+      stage: hiddenTurnRef.current
+        ? HIDDEN_TURN_STAGE[hiddenTurnRef.current]
+        : "preparing",
     });
 
     try {
@@ -283,7 +315,7 @@ export function useConceptNoteChat({
       });
     } catch (requestError) {
       if (requestError instanceof Error && requestError.name === "AbortError") {
-        draftOverviewTurnRef.current = false;
+        hiddenTurnRef.current = null;
         assistantMessageIdRef.current = null;
         setIsGenerating(false);
         setReasoning([]);
@@ -300,5 +332,6 @@ export function useConceptNoteChat({
     messages: messagesThreadId === threadId ? messages : [],
     sendMessage,
     requestDraftOverview,
+    requestSourceReview,
   };
 }

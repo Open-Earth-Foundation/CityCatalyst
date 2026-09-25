@@ -1,4 +1,7 @@
-import { getConceptNoteContextState } from "@/components/ConceptNoteWorkspace/context-status";
+import {
+  getConceptNoteContextState,
+  getConceptNoteUploadRowPresentation,
+} from "@/components/ConceptNoteWorkspace/context-status";
 import { describe, expect, it } from "@jest/globals";
 
 import { readConceptNoteThreadMessages } from "@/components/ConceptNoteWorkspace/chat-utils";
@@ -145,5 +148,80 @@ describe("Concept Note chat helpers", () => {
       },
     ]);
     expect(readConceptNoteThreadMessages({})).toEqual([]);
+  });
+
+  it("hides the stored triggers of hidden source review and overview turns", () => {
+    expect(
+      readConceptNoteThreadMessages({
+        messages: [
+          {
+            message_id: "review-request",
+            role: "user",
+            text: "CONCEPT_NOTE_SOURCE_REVIEW_REQUEST\nupload_ids: a, b",
+          },
+          {
+            message_id: "overview-request",
+            role: "user",
+            text: "CONCEPT_NOTE_DRAFT_OVERVIEW_REQUEST",
+          },
+          {
+            message_id: "review-reply",
+            role: "assistant",
+            text: "The new budget file answers two open gaps.",
+          },
+          {
+            message_id: "user-question",
+            role: "user",
+            text: "What does CONCEPT_NOTE_SOURCE_REVIEW_REQUEST mean?",
+          },
+        ],
+      }),
+    ).toEqual([
+      {
+        id: "review-reply",
+        role: "assistant",
+        text: "The new budget file answers two open gaps.",
+      },
+      {
+        id: "user-question",
+        role: "user",
+        text: "What does CONCEPT_NOTE_SOURCE_REVIEW_REQUEST mean?",
+      },
+    ]);
+  });
+});
+
+describe("uploaded file rows", () => {
+  const readyBundle = getConceptNoteBundleProgress({
+    context_bundle: {
+      status: "ready",
+      document_grounding: "uploaded_evidence",
+      source_counts: { ready: 2 },
+    },
+  });
+
+  it("marks a converted file ready only once the bundle holds every converted file", () => {
+    expect(
+      getConceptNoteUploadRowPresentation("ready", readyBundle, 2),
+    ).toEqual({ labelKey: "status-ready", tone: "positive" });
+    expect(
+      getConceptNoteUploadRowPresentation("ready", readyBundle, 3),
+    ).toEqual({ labelKey: "status-processing", tone: "neutral" });
+    expect(
+      getConceptNoteUploadRowPresentation(
+        "ready",
+        { ...readyBundle, status: "failed" },
+        2,
+      ),
+    ).toEqual({ labelKey: "status-failed", tone: "warning" });
+  });
+
+  it("uses the raw upload status for files that are not converted", () => {
+    expect(
+      getConceptNoteUploadRowPresentation("processing", readyBundle, 2),
+    ).toEqual({ labelKey: "status-converting", tone: "neutral" });
+    expect(
+      getConceptNoteUploadRowPresentation("failed", readyBundle, 2),
+    ).toEqual({ labelKey: "status-failed", tone: "warning" });
   });
 });

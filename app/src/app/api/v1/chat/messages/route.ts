@@ -44,7 +44,7 @@
  *       401:
  *         description: Unauthorized
  *       409:
- *         description: Concept Note document context is not ready (concept_note_context_not_ready), or no finished draft is waiting for its chat overview (concept_note_draft_overview_unavailable)
+ *         description: Concept Note document context is not ready (concept_note_context_not_ready), no finished draft is waiting for its chat overview (concept_note_draft_overview_unavailable), or no newly added file is waiting for its source review (concept_note_source_review_unavailable)
  *       502:
  *         description: Climate Advisor transport or gateway failure
  *       503:
@@ -68,6 +68,7 @@ import { apiHandler } from "@/util/api";
 const FORWARDED_CONFLICT_CODES = new Set([
   "concept_note_context_not_ready",
   "concept_note_draft_overview_unavailable",
+  "concept_note_source_review_unavailable",
 ]);
 
 export const POST = apiHandler(async (req, { session }) => {

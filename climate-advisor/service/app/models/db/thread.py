@@ -77,3 +77,5 @@ class Thread(Base):
 
 
 from app.models.db.message import Message  # noqa: E402  (circular import resolution)
+# Register the concept_note_run_id foreign-key target on Base.metadata.
+from app.models.db.concept_note import ConceptNoteRun  # noqa: E402,F401

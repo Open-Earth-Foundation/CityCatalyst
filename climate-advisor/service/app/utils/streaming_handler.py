@@ -28,6 +28,7 @@ from app.services.stationary_energy.stationary_energy_chat_context import (
     build_stationary_energy_context_payload,
     build_stationary_energy_ui_context,
     format_stationary_energy_context_message,
+    format_stationary_energy_run_not_started_message,
 )
 from app.services.stationary_energy.stationary_energy_draft_repository import (
     StationaryEnergyDraftRepository,
@@ -67,7 +68,10 @@ from app.utils.prompt_budget import (
     trim_messages_to_budget,
 )
 from app.utils.sse import format_sse
-from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
+from app.utils.stationary_energy_context import (
+    extract_stationary_energy_draft_run_id,
+    is_stationary_energy_resume_turn,
+)
 from app.utils.token_handler import TokenHandler
 from app.utils.tool_handler import persist_assistant_message
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -106,6 +110,9 @@ class StreamingHandler:
         self.draft_overview_claim = draft_overview_claim
         self.thread_identifier = str(thread_id)
         self.workflow_context = ChatWorkflowContext()
+        # Set per request once the Stationary Energy page markers are resolved.
+        self.stationary_energy_surface = False
+        self.stationary_energy_city_id: Optional[str] = None
         self.agent_model: Optional[str] = None
         self.request_identifier: Optional[str] = None
 
@@ -225,6 +232,8 @@ class StreamingHandler:
                     stationary_energy_city_id = str(source.get("city_id"))
                 if source.get("stationary_energy_interaction_mode"):
                     stationary_energy_surface = True
+            self.stationary_energy_surface = stationary_energy_surface
+            self.stationary_energy_city_id = stationary_energy_city_id
 
             # Create agent service
             native_input_catalog_context = self._native_input_catalog_request(payload)
@@ -465,7 +474,11 @@ class StreamingHandler:
                         ),
                     )
                 )
-            if not self._history_contains_current_user_message(
+            # A resume turn repeats the user's pre-run request, which history
+            # already holds before the "starting the run" reply, so re-add it.
+            if is_stationary_energy_resume_turn(
+                payload.options
+            ) or not self._history_contains_current_user_message(
                 conversation_history,
                 payload.content,
             ):
@@ -492,10 +505,22 @@ class StreamingHandler:
         self,
         payload: MessageCreateRequest,
     ) -> Optional[Dict[str, str]]:
-        """Load the persisted Stationary Energy draft snapshot for chat grounding."""
+        """Load the persisted Stationary Energy draft snapshot for chat grounding.
+
+        On the Stationary Energy page before any run exists, this returns the
+        run-not-started message instead so the agent starts a run first.
+        """
         draft_run_id_text = self.workflow_context.stationary_energy_draft_run_id
         if not draft_run_id_text:
-            return None
+            if not self.stationary_energy_surface:
+                return None
+            request_context = payload.context if isinstance(payload.context, dict) else {}
+            return format_stationary_energy_run_not_started_message(
+                city_id=self.stationary_energy_city_id,
+                inventory_id=self.inventory_id,
+                city_name=request_context.get("city_name"),
+                inventory_year=request_context.get("inventory_year"),
+            )
         draft_run_id = UUID(draft_run_id_text)
 
         if not self.session_factory:

@@ -121,22 +121,28 @@ def build_stationary_energy_start_draft_tools(
 
     @function_tool
     async def stationary_energy_start_draft() -> str:
-        """Start a new Stationary Energy draft for the active inventory.
+        """Start a new Stationary Energy run (draft) for the active inventory.
 
         This tool is only registered on the pre-draft Stationary Energy surface
         when the active inventory has no loaded Stationary Energy draft. It takes
         no arguments because city, inventory, user, and thread scope are supplied
         by runtime.
 
-        Generates source-backed values for every empty Stationary Energy row using
-        the third-party datasets already connected to this inventory. Proposals
-        generate in the background and then appear in the review pane for the user
-        to confirm before any inventory write.
+        The run searches the third-party datasets connected to this inventory and
+        prepares source-backed proposals for every empty Stationary Energy row.
+        Proposals generate in the background and then appear in the review pane
+        for the user to confirm before any inventory write. Until a run exists,
+        no city data, connected sources, or row proposals are available.
 
-        Use this when the user asks to draft, generate, fill, or start the empty
-        Stationary Energy rows (for example "draft the empty rows", "fill it in",
-        "go ahead", or an affirmative reply about drafting). Answer other
-        questions normally. This does not write to the CityCatalyst inventory.
+        Use this whenever the user's request needs this inventory's Stationary
+        Energy data: drafting or filling rows ("draft the empty rows", "go
+        ahead"), using or adding data from a named source ("add all SEEG data"),
+        which sources are available, or what is missing. After it succeeds, tell
+        the user in one short sentence that you are searching the connected
+        sources and will continue with their request when the run is ready; do
+        not claim that any source was already chosen. Answer general questions
+        that need no inventory data normally. This does not write to the
+        CityCatalyst inventory.
         """
         return await _run_start_draft()
 

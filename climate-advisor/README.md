@@ -446,6 +446,17 @@ and no draft run is already under review. It starts deterministic draft
 generation from the scoped city and inventory, then the browser loads the new
 draft for review.
 
+The whole Stationary Energy page uses the `stationary_energy_review` prompt.
+Before a run exists, the draft snapshot is replaced by a
+`STATIONARY_ENERGY_RUN_NOT_STARTED` system message that names the selected
+inventory and tells the agent to call `stationary_energy_start_draft` before
+answering data or source requests, so it never asks for the city or year. When
+the agent starts a run for a request (for example "add all SEEG data"), the page
+re-sends that request once the run is ready with the
+`stationary_energy_resume_after_draft_start` option. That resume turn is not
+stored as a second user message and runs with the new draft context and review
+tools, so the agent can answer it, for example with a bulk confirmation card.
+
 **Added for active Stationary Energy draft review chat**
 
 - `stationary_energy_list_review_options`

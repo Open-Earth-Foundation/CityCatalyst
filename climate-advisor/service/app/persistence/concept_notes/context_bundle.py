@@ -11,7 +11,11 @@ from typing import Any
 from uuid import UUID
 
 from app.models.cnb.concept_note_markdown import source_format_from_filename
-from app.models.cnb.context_bundle import ConceptNoteContextBundle, SelectedSource
+from app.models.cnb.context_bundle import (
+    ConceptNoteContextBundle,
+    SelectedSource,
+    SourceTextContext,
+)
 from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
@@ -178,6 +182,7 @@ async def complete_build(
     optional_sources: dict[str, str],
     warnings: list[str],
     city: dict[str, Any] | None = None,
+    source_text: SourceTextContext | None = None,
 ) -> bool:
     """Commit only the active build's owned bundle sections.
 
@@ -233,6 +238,7 @@ async def complete_build(
                 session.add(bundle_row)
             bundle = normalize_bundle(bundle_row.context_bundle)
             bundle.selected_sources = selected_sources
+            bundle.source_text = source_text
             if city is not None:
                 bundle.cc_context.city = city
             bundle.cc_context.ghgi = ghgi
@@ -509,6 +515,7 @@ async def load_agent_context(
                     "funder_context": bundle.funder_context,
                     "similar_projects": bundle.similar_projects,
                     "document_context": bundle.document_context,
+                    "source_text": source_text_status(bundle.source_text),
                 }
             )
     except ContextBundlePersistenceError:
@@ -520,6 +527,46 @@ async def load_agent_context(
             503,
             "Concept Note context storage is unavailable",
         ) from exc
+
+
+def source_text_status(source_text: SourceTextContext | None) -> dict[str, Any]:
+    """Tell agents whether complete source text accompanies the summaries."""
+    if source_text is None:
+        return {"mode": "summary", "token_count": 0, "max_tokens": None}
+    return source_text.model_dump(mode="json", exclude={"documents"})
+
+
+def source_documents_for_model(
+    source_text: SourceTextContext | None,
+) -> list[dict[str, Any]]:
+    """Return identifier-free complete source text, or nothing in summary mode."""
+    if source_text is None or source_text.mode != "full_text":
+        return []
+    return [
+        document.model_dump(mode="json", exclude={"upload_id"})
+        for document in source_text.documents
+    ]
+
+
+async def load_source_documents(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    user_id: str,
+    run_id: UUID,
+) -> list[dict[str, Any]]:
+    """Load complete source text for an owned run when it fits the budget."""
+    async with session_factory() as session:
+        await _require_owned_run(
+            session=session,
+            user_id=user_id,
+            run_id=run_id,
+            lock=False,
+        )
+        bundle_row = await session.get(ConceptNoteContextBundleRow, run_id)
+        bundle = normalize_bundle(
+            bundle_row.context_bundle if bundle_row is not None else None
+        )
+        return source_documents_for_model(bundle.source_text)
 
 
 async def _require_owned_run(

@@ -35,6 +35,7 @@ from app.services.cnb.source_analysis import (
     prompt_token_count,
     query_document,
     render_partition,
+    render_source_text,
     source_analysis_contract_version,
     verify_source_artifact,
 )
@@ -544,3 +545,14 @@ async def test_coverage_recovery_has_a_finite_limit(analysis_dependencies) -> No
         )
     assert failure.value.reason == "reader_section_count_mismatch"
     assert len(runner.reader_tools) <= 7
+
+
+@pytest.mark.parametrize(
+    ("markdown", "parse"),
+    [
+        ("<!-- page: 1 -->\nIntro\n\n<!-- page: 2 -->\n| a | b |\n", parse_source_pages),
+        ("# Plan\n\nIntro\n\n## Costs\n\nTable\n", parse_markdown_blocks),
+    ],
+)
+def test_render_source_text_restores_the_verified_markdown(markdown, parse) -> None:
+    assert render_source_text(parse(markdown)) == markdown

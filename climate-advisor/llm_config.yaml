@@ -60,6 +60,9 @@ generation:
       max_key_excerpts: 8
       max_topics: 12
       max_question_chars: 2000
+      # Uploaded sources up to this many tokens in total are sent to the chapter
+      # drafter and chat as complete text; larger sets use summaries only.
+      full_text_max_tokens: 80000
     cnb_source_impact:
       max_prompt_tokens: 50000
       max_chapter_slice_tokens: 12000

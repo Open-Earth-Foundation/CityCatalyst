@@ -33,7 +33,11 @@ from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
 from app.models.db.concept_note import ConceptNoteRun
-from app.persistence.concept_notes.context_bundle import normalize_bundle
+from app.persistence.concept_notes.context_bundle import (
+    normalize_bundle,
+    source_documents_for_model,
+    source_text_status,
+)
 from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
     WorkspaceChapterSnapshot,
@@ -55,7 +59,10 @@ from app.services.cnb.source_impact_review import (
     RevalidationSource,
 )
 from app.services.openrouter_client import build_openrouter_client_options
-from app.utils.concept_note_context import omit_context_identifiers
+from app.utils.concept_note_context import (
+    omit_context_identifiers,
+    render_source_documents_message,
+)
 from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
 from openai import AsyncOpenAI
 from sqlalchemy import select
@@ -472,7 +479,7 @@ class ConceptNoteChapterDraftService:
             try:
                 result = await self._runner.run(
                     agent,
-                    json.dumps(payload, ensure_ascii=False),
+                    _chapter_input_messages(payload),
                 )
                 return ConceptNoteChapterDraftOutput.model_validate(result.final_output)
             finally:
@@ -553,7 +560,12 @@ class ConceptNoteChapterDraftService:
                     if isinstance(run.context_summary, dict)
                     else {}
                 ),
-                "context_bundle": bundle.model_dump(mode="json"),
+                # Complete source text travels as its own message, not in the JSON.
+                "context_bundle": bundle.model_dump(
+                    mode="json", exclude={"source_text"}
+                ),
+                "source_text": source_text_status(bundle.source_text),
+                "source_documents": source_documents_for_model(bundle.source_text),
                 "manual_population": (
                     {
                         **run.context_summary["manual_population"],
@@ -864,7 +876,7 @@ def _build_chapter_input(
     semantic_run_context = {
         key: value
         for key, value in run_context.items()
-        if key != "context_bundle_status"
+        if key not in {"context_bundle_status", "source_documents"}
     }
     payload = omit_context_identifiers(
         {
@@ -914,6 +926,7 @@ def _build_chapter_input(
                 if chapter.position < current.position
                 and chapter.body_markdown is not None
             ],
+            "source_documents": run_context.get("source_documents", []),
         }
     )
     for source in (
@@ -922,6 +935,18 @@ def _build_chapter_input(
         source.pop("page_count", None)
         source.pop("block_count", None)
     return payload
+
+
+def _chapter_input_messages(payload: dict[str, Any]) -> list[dict[str, str]]:
+    """Send the JSON payload, then any complete source text as its own message."""
+    documents = payload.get("source_documents") or []
+    body = {key: value for key, value in payload.items() if key != "source_documents"}
+    messages = [{"role": "user", "content": json.dumps(body, ensure_ascii=False)}]
+    if documents:
+        messages.append(
+            {"role": "user", "content": render_source_documents_message(documents)}
+        )
+    return messages
 
 
 def _build_state_response(

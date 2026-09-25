@@ -11,7 +11,11 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from app.db.session import get_session_factory
-from app.models.cnb.context_bundle import SelectedSource
+from app.models.cnb.context_bundle import (
+    SelectedSource,
+    SourceDocumentText,
+    SourceTextContext,
+)
 from app.persistence.concept_notes.context_bundle import (
     ContextBundleBuildSnapshot,
     begin_build,
@@ -31,6 +35,7 @@ from app.services.cnb.source_analysis import (
     SourceUnit,
     analyze_document,
     gather_all_or_raise,
+    render_source_text,
     source_analysis_contract_version,
     verify_source_artifact,
 )
@@ -42,6 +47,7 @@ from app.services.concept_note_city_context import (
     load_hiap_context,
 )
 from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
+from app.utils.prompt_budget import count_prompt_tokens
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import Settings, get_settings
@@ -126,6 +132,7 @@ class ContextBundleService:
                 selected_sources: list[SelectedSource] = []
                 uploads_to_analyze: list[ConceptNoteUploadSnapshot] = []
                 new_sources: list[RevalidationSource] = []
+                source_text: SourceTextContext | None = None
 
                 # Reuse unchanged source analyses and run the LLM only for new inputs.
                 if active.uploads:
@@ -172,6 +179,15 @@ class ContextBundleService:
                         selected_by_upload[upload.upload_id]
                         for upload in active.uploads
                     ]
+                    source_text = await self._build_source_text(
+                        uploads=active.uploads,
+                        analyzed_units={
+                            item.source.upload_id: item.units for item in new_sources
+                        },
+                        token=token,
+                        cc_client=cc_client,
+                        settings=analysis_settings,
+                    )
 
                 # Enrich every run with best-effort CityCatalyst context.
                 (
@@ -207,6 +223,7 @@ class ContextBundleService:
                     run_id=run_id,
                     build_id=active.build_id,
                     selected_sources=list(selected_sources),
+                    source_text=source_text,
                     city=city,
                     ghgi=ghgi,
                     hiap=hiap,
@@ -275,33 +292,10 @@ class ContextBundleService:
         contract_version: str,
     ) -> RevalidationSource:
         """Re-fetch, revalidate, and fully analyze one ready upload."""
-        # Require the immutable metadata needed for the declared source format.
-        if (
-            upload.markdown_s3_key is None
-            or upload.markdown_sha256 is None
-            or (upload.source_format == "pdf" and upload.page_count is None)
-        ):
-            raise SourceAnalysisError(
-                "incomplete_source_pointer",
-                "Ready upload is missing immutable source metadata",
-            )
-        # Read through CC, then verify identity before any LLM analysis.
-        try:
-            artifact = await cc_client.get_concept_note_markdown(
-                upload_id=str(upload.upload_id),
-                token=token,
-            )
-        except CityCatalystClientError as exc:
-            raise SourceAnalysisError(
-                "source_fetch_failed",
-                "Ready upload could not be fetched from CityCatalyst",
-            ) from exc
-        source_units = self.verify_source_artifact_fn(
-            artifact=artifact,
-            markdown_s3_key=upload.markdown_s3_key,
-            sha256=upload.markdown_sha256,
-            source_format=upload.source_format,
-            page_count=upload.page_count,
+        source_units = await self._load_source_units(
+            upload=upload,
+            token=token,
+            cc_client=cc_client,
         )
         # Analyze only the verified source units under the shared reader limit.
         analysis = await self.analyze_document_fn(
@@ -319,6 +313,111 @@ class ContextBundleService:
                 update={"analysis_contract_version": contract_version}
             ),
             units=source_units,
+        )
+
+    async def _load_source_units(
+        self,
+        *,
+        upload: ConceptNoteUploadSnapshot,
+        token: str,
+        cc_client: CityCatalystClient,
+    ) -> list[SourceUnit]:
+        """Fetch one ready upload through CC and verify its immutable identity."""
+        # Require the immutable metadata needed for the declared source format.
+        if (
+            upload.markdown_s3_key is None
+            or upload.markdown_sha256 is None
+            or (upload.source_format == "pdf" and upload.page_count is None)
+        ):
+            raise SourceAnalysisError(
+                "incomplete_source_pointer",
+                "Ready upload is missing immutable source metadata",
+            )
+        # Read through CC, then verify identity before any use of the text.
+        try:
+            artifact = await cc_client.get_concept_note_markdown(
+                upload_id=str(upload.upload_id),
+                token=token,
+            )
+        except CityCatalystClientError as exc:
+            raise SourceAnalysisError(
+                "source_fetch_failed",
+                "Ready upload could not be fetched from CityCatalyst",
+            ) from exc
+        return self.verify_source_artifact_fn(
+            artifact=artifact,
+            markdown_s3_key=upload.markdown_s3_key,
+            sha256=upload.markdown_sha256,
+            source_format=upload.source_format,
+            page_count=upload.page_count,
+        )
+
+    async def _build_source_text(
+        self,
+        *,
+        uploads: list[ConceptNoteUploadSnapshot],
+        analyzed_units: dict[UUID, list[SourceUnit]],
+        token: str,
+        cc_client: CityCatalystClient,
+        settings: Settings,
+    ) -> SourceTextContext:
+        """Keep complete source text for agents only while it fits the budget."""
+        budget = settings.llm.generation.prompt_budget
+        max_tokens = budget.cnb_sources.full_text_max_tokens
+        try:
+            # Reused analyses need their verified text fetched again; no LLM runs.
+            units_by_upload = dict(analyzed_units)
+            missing = [u for u in uploads if u.upload_id not in units_by_upload]
+            fetched = await gather_all_or_raise(
+                *(
+                    self._load_source_units(
+                        upload=upload, token=token, cc_client=cc_client
+                    )
+                    for upload in missing
+                )
+            )
+            units_by_upload.update(
+                {
+                    upload.upload_id: units
+                    for upload, units in zip(missing, fetched, strict=True)
+                }
+            )
+        except SourceAnalysisError as exc:
+            # Summaries stay usable, so a text fetch failure only drops full text.
+            logger.warning(
+                "Concept Note source text unavailable; using summaries code=%s",
+                exc.code,
+            )
+            return SourceTextContext(mode="summary", token_count=0, max_tokens=max_tokens)
+
+        documents = [
+            SourceDocumentText(
+                upload_id=upload.upload_id,
+                source_label=upload.source_label or upload.filename,
+                filename=upload.filename,
+                source_format=upload.source_format,
+                text=render_source_text(units_by_upload[upload.upload_id]),
+            )
+            for upload in uploads
+        ]
+        token_count = count_prompt_tokens(
+            [document.text for document in documents],
+            model=settings.llm.models.cnb_chapter_drafter.name,
+            fallback_encoding=budget.tokenizer_encoding,
+        ).tokens
+        full_text = token_count <= max_tokens
+        logger.info(
+            "Concept Note source text mode=%s tokens=%s max_tokens=%s sources=%s",
+            "full_text" if full_text else "summary",
+            token_count,
+            max_tokens,
+            len(documents),
+        )
+        return SourceTextContext(
+            mode="full_text" if full_text else "summary",
+            token_count=token_count,
+            max_tokens=max_tokens,
+            documents=documents if full_text else [],
         )
 
     async def _load_optional_context(

@@ -564,11 +564,33 @@ Recommended high-level shape:
   ],
   "funder_context": null,
   "similar_projects": [],
-  "document_context": null
+  "document_context": null,
+  "source_text": {
+    "mode": "full_text",
+    "token_count": 6308,
+    "max_tokens": 80000,
+    "documents": [
+      {
+        "upload_id": "uuid",
+        "source_label": "City climate plan",
+        "filename": "plan.pdf",
+        "source_format": "pdf",
+        "text": "<!-- page: 1 -->\nComplete verified page text"
+      }
+    ]
+  }
 }
 ```
 
-The bundle contains no raw source, storage key, credential, or derived chunk.
+`source_text` holds the complete verified text of every selected source only
+while the total stays within `cnb_sources.full_text_max_tokens` (80,000 by
+default). The chapter drafter and CNB chat receive it as a separate
+`CONCEPT_NOTE_SOURCE_DOCUMENTS` message. Above the limit, or when a reused
+source cannot be re-read, `mode` is `summary`, `documents` is empty, and agents
+rely on summaries and the source-query tool.
+
+Apart from `source_text`, the bundle contains no raw source, storage key,
+credential, or derived chunk.
 Its summary records build/fingerprint identity, mode, missing context, source and
 optional-context statuses, warnings, retryability, and completion. Only the
 active build may commit; later rebuilds or retryable failures keep serving the
@@ -1932,8 +1954,8 @@ Rules:
   refreshed similar projects, or user-confirmed facts.
 - Does not expose arbitrary context bundle replacement. Bundle edits must come
   from a known workflow trigger and preserve the rest of the assembled context.
-- Replaces only `selected_sources`, `cc_context.city` (when the lookup
-  succeeds), `cc_context.ghgi`, and `cc_context.hiap` on a source-triggered
+- Replaces only `selected_sources`, `source_text`, `cc_context.city` (when the
+  lookup succeeds), `cc_context.ghgi`, and `cc_context.hiap` on a source-triggered
   rebuild, preserving all unrelated sections populated later.
 - Does not register CC context loading or context bundle editing as
   agent-callable tools. The separate source-query capability is read-only.
@@ -1941,7 +1963,8 @@ Rules:
 ### Selected-document source query
 
 `concept_note.sources.query` is the only agent capability that can read uploaded
-source content. Climate Advisor registers its function-tool implementation
+source content on demand; complete text is otherwise supplied only through the
+budgeted `source_text` message described above. Climate Advisor registers its function-tool implementation
 `concept_note_sources_query` only for the authorized `concept_note_run_id`, only
 after the bundle is ready, and only during `interviewing`,
 `drafting_document`, or `editing_document`.

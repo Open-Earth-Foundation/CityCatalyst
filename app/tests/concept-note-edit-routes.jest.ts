@@ -76,8 +76,8 @@ const refine =
   await import("@/app/api/v1/concept-notes/[runId]/edit-proposals/[proposalId]/refine/route");
 const confirm =
   await import("@/app/api/v1/concept-notes/[runId]/chapters/[chapterId]/confirm/route");
-const reset =
-  await import("@/app/api/v1/concept-notes/[runId]/chat/reset/route");
+const startChat =
+  await import("@/app/api/v1/concept-notes/[runId]/chat/threads/route");
 const { editErrorCode } = await import("@/services/concept-note-edit-api");
 
 const proposalBody = {
@@ -156,10 +156,10 @@ const routes = [
     body: confirmBody,
   },
   {
-    name: "reset",
-    handler: reset.POST,
+    name: "start-chat",
+    handler: startChat.POST,
     method: "POST",
-    suffix: "/chat/reset",
+    suffix: "/chat/threads",
     body: undefined,
   },
 ];
@@ -243,7 +243,7 @@ describe.each(routes)("$name route boundary", (route) => {
         ([args]) => args.path === `/v1/concept-notes/${runId}` && !args.method,
       ),
     ).toBe(true);
-    if (route.name === "reset") expect(upstream).not.toHaveBeenCalled();
+    if (route.name === "start-chat") expect(upstream).not.toHaveBeenCalled();
   });
   test("forwards validated input using the authenticated user and request ID", async () => {
     const response = await request(route, {
@@ -350,7 +350,7 @@ test.each(["apply", "refine", "confirm"])(
   },
 );
 
-test.each(["apply", "refine", "confirm", "reset"])(
+test.each(["apply", "refine", "confirm", "start-chat"])(
   "%s preserves upstream error status, code and detail for the client",
   async (name) => {
     const payload = { code: "stale_base", detail: "The draft has changed" };
@@ -372,14 +372,14 @@ test.each(["apply", "refine", "confirm", "reset"])(
 );
 
 test.each(["", "city_id=bad"])(
-  "chat reset rejects missing/invalid city query %s",
+  "starting a chat rejects missing/invalid city query %s",
   async (query) => {
     expect((await request(routes.at(-1)!, { query })).status).toBe(400);
     expect(upstream).not.toHaveBeenCalled();
   },
 );
 
-test("chat reset rejects a successful response for a different city", async () => {
+test("starting a chat rejects a successful response for a different city", async () => {
   upstream.mockResolvedValueOnce(Response.json({ city_id: otherCity }));
   const response = await request(routes.at(-1)!);
   // The API wrapper masks non-public upstream failures as 500.

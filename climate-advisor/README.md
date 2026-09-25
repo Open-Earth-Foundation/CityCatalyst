@@ -966,23 +966,34 @@ creates a new run and empty chat. It copies current chapter content, context, an
 ready upload metadata with new mutable IDs while reusing immutable Markdown
 artifacts. Messages, revision history, and exports are not copied. `DELETE` on
 the run route removes its workspace (including edit proposals and applications),
-run data, and dedicated chat. It also deletes unreferenced uploaded source files,
+run data, and every attached chat. It also deletes unreferenced uploaded source files,
 OCR results, and OCR jobs through the service-authenticated CityCatalyst endpoint
 `DELETE /api/v1/internal/ca/concept-note-sources`. Source artifacts still referenced
 by another note are retained until the last note is deleted. City/project files
 remain outside this boundary. Cleanup failures leave the run available for retry;
 active OCR jobs must finish before cleanup can proceed. A legacy thread referenced
-by multiple notes cannot be deleted. `POST /v1/concept-notes/{run_id}/chat/reset` replaces the dedicated
-thread and permanently removes its messages while preserving the run, workspace,
-sources, context, and revision history. Duplicate, reset, and delete return HTTP
-`409` while context or drafting work is active.
+by multiple notes cannot be deleted.
+
+Each run can own several chats. `threads.concept_note_run_id` (Alembic
+revision `20260925_120000`, cascading on run deletion) attaches a thread to its
+run, and `concept_note_runs.thread_id` names the one active chat that message
+turns are scoped to. `GET /v1/concept-notes/{run_id}/chat/threads` lists the
+attached chats newest first with their message count, latest timestamp, and a
+preview of the first typed user message. `POST` on the same path opens a fresh
+chat and makes it active without deleting earlier ones, and
+`POST /v1/concept-notes/{run_id}/chat/threads/{thread_id}/activate` switches
+back to an earlier chat (404 unless the thread is attached to that run). The
+draft, workspace, sources, and context are shared by every chat of a run.
+Duplicate, delete, opening a chat, and switching chats return HTTP `409` while
+context or drafting work is active.
 
 The Alembic revision `20260729_120000` provisions `concept_note_runs`,
 `concept_note_context_bundles`, and `concept_note_uploads` in `CA_DATABASE_URL`.
 When `thread_id` is supplied, the start operation also requires that durable
 chat thread to belong to the authenticated user; it remains an integration
-identifier rather than a run-table foreign key. The authorized `run_id` is also
-persisted as `concept_note_run_id` in thread context so later chat turns can
+identifier rather than a run-table foreign key, while the thread row itself is
+attached to the run through `threads.concept_note_run_id`. The authorized
+`run_id` is also persisted as `concept_note_run_id` in thread context so later chat turns can
 scope their prompt and source capability without trusting an LLM-provided run.
 Binding either Concept Note or Stationary Energy context clears the competing
 workflow identifier while preserving tokens and unrelated thread context.
@@ -991,8 +1002,9 @@ CityCatalyst exposes authenticated proxy routes at
 `POST /api/v1/concept-notes/start`,
 `GET /api/v1/concept-notes?city_id=...`, and
 `GET|PATCH|DELETE /api/v1/concept-notes/{runId}?city_id=...`, plus
-`POST /api/v1/concept-notes/{runId}/duplicate?city_id=...` and
-`POST /api/v1/concept-notes/{runId}/chat/reset?city_id=...`. The proxy derives
+`POST /api/v1/concept-notes/{runId}/duplicate?city_id=...`,
+`GET|POST /api/v1/concept-notes/{runId}/chat/threads?city_id=...`, and
+`POST /api/v1/concept-notes/{runId}/chat/threads/{threadId}/activate?city_id=...`. The proxy derives
 `user_id` from the session, checks access to the requested city before issuing the
 scoped CA token, forwards the duplicate idempotency key, and preserves Climate
 Advisor response statuses. Climate Advisor remains authoritative for run ownership

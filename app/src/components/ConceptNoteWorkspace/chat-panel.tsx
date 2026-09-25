@@ -14,7 +14,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import type { IconType } from "react-icons";
-import { LuArrowUp, LuCircleAlert, LuMessageSquarePlus } from "react-icons/lu";
+import { LuArrowUp, LuCircleAlert } from "react-icons/lu";
 import { BsStars } from "react-icons/bs";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -23,6 +23,11 @@ import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-
 import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import { useConceptNoteChat } from "./use-concept-note-chat";
+import {
+  ChatThreadSwitcher,
+  OlderChatNotice,
+  useConceptNoteChatThreads,
+} from "./chat-threads";
 import { ChatProgress } from "./chat-progress";
 import { DraftingProgressCard } from "./drafting-progress-card";
 import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
@@ -33,12 +38,12 @@ import type { EditScope } from "@/util/concept-note-edit-types";
 import type { ConceptNoteDraftState } from "@/util/types";
 
 interface ConceptNoteChatPanelProps {
+  cityId: string;
   contextStatus: ConceptNoteContextPresentation;
   composerRequest: { content: string; id: string } | null;
   draftOverviewPending: boolean;
   lng: string;
   onOpenContext: () => void;
-  onStartNewChat?: () => void;
   runId: string;
   threadId: string | null;
   editScope: EditScope;
@@ -191,12 +196,12 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
 });
 
 export function ConceptNoteChatPanel({
+  cityId,
   contextStatus,
   composerRequest,
   draftOverviewPending,
   lng,
   onOpenContext,
-  onStartNewChat,
   runId,
   threadId,
   editScope,
@@ -232,6 +237,12 @@ export function ConceptNoteChatPanel({
     onProposal: edits.loadProposal,
     onDraftOverviewComplete,
   });
+  const chatThreads = useConceptNoteChatThreads({
+    cityId,
+    lng,
+    runId,
+    threadId,
+  });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const followLatestRef = useRef(true);
   const initiallyScrolledThreadRef = useRef<string | null>(null);
@@ -240,6 +251,9 @@ export function ConceptNoteChatPanel({
   const contextBlocked = contextStatus.blocked;
   const chatDisabled =
     contextBlocked || !threadId || historyLoading || isGenerating;
+  // Switching chats mid-turn or mid-drafting would strand the reply.
+  const threadSwitchDisabled =
+    historyLoading || isGenerating || draft?.status === "running";
   const requestedOverviewThreadRef = useRef<string | null>(null);
 
   // Ask Clima once for the drafting overview; the service claims it per build.
@@ -361,20 +375,12 @@ export function ConceptNoteChatPanel({
             {threadId ? t("connected") : t("not-connected")}
           </Text>
         </HStack>
-        {onStartNewChat && (
-          <Button
-            size="xs"
-            variant="ghost"
-            px={2}
-            aria-label={t("start-new-chat")}
-            title={t("start-new-chat")}
-            data-testid="concept-note-start-new-chat"
-            disabled={!threadId || historyLoading || isGenerating}
-            onClick={onStartNewChat}
-          >
-            <Icon as={LuMessageSquarePlus} boxSize={4} />
-          </Button>
-        )}
+        <ChatThreadSwitcher
+          controller={chatThreads}
+          disabled={threadSwitchDisabled}
+          lng={lng}
+          threadId={threadId}
+        />
       </Flex>
 
       <VStack
@@ -393,6 +399,7 @@ export function ConceptNoteChatPanel({
         bg="base.light"
         p={4}
       >
+        <OlderChatNotice controller={chatThreads} lng={lng} />
         <ContextStatusNotice
           key={contextState}
           busy={contextBlocked && contextState !== "failed"}

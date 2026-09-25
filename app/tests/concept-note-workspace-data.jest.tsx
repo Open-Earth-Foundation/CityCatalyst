@@ -113,6 +113,15 @@ jest.unstable_mockModule("@/services/api", () => ({
     util: { upsertQueryEntries },
     useGetCityQuery: () => ({ data: { name: "Test City" } }),
     useGetConceptNoteApplicationContextQuery: getApplicationContext,
+    useGetConceptNoteChatThreadsQuery: () => ({
+      data: undefined,
+      refetch: jest.fn(),
+    }),
+    useStartConceptNoteChatMutation: () => [jest.fn(), { isLoading: false }],
+    useActivateConceptNoteChatThreadMutation: () => [
+      jest.fn(),
+      { isLoading: false },
+    ],
     useGetConceptNoteDraftQuery: getDraftQuery,
     useGetConceptNoteRunQuery: getRunQuery,
     useGetConceptNoteUploadStatusQuery: getUploadQuery,

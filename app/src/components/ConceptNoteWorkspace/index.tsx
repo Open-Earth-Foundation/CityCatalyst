@@ -140,6 +140,9 @@ export function ConceptNoteWorkspace({
     canStartDrafting,
     contextStatus,
     city,
+    cityDashboard,
+    cityDashboardFailed,
+    cityDashboardLoading,
     cityName,
     draft,
     draftFailed,
@@ -151,6 +154,10 @@ export function ConceptNoteWorkspace({
     files,
     hasApplicationTemplate,
     inventory,
+    inventoryFailed,
+    inventoryLoading,
+    inventoryOptions,
+    inventorySelectionSaving,
     isDraftRunning,
     manualPopulation,
     manualPopulationSaving,
@@ -170,6 +177,7 @@ export function ConceptNoteWorkspace({
     runFailed,
     runLoading,
     saveManualPopulation,
+    selectInventory,
     startDrafting,
     startDraftState,
     uploadSource,
@@ -490,6 +498,8 @@ export function ConceptNoteWorkspace({
           >
             <ConceptNoteChatPanel
               contextStatus={contextStatus}
+              contextBuildId={bundle.buildId}
+              contextChanges={bundle.contextChanges}
               composerRequest={composerRequest}
               draftOverviewPending={Boolean(draft?.overview_pending)}
               onDraftOverviewComplete={() => void refetchDraft()}
@@ -821,10 +831,22 @@ export function ConceptNoteWorkspace({
                   bundle={bundle}
                   contextStatus={contextStatus}
                   cityFilesCount={files.length}
+                  cityId={cityId}
                   cityName={cityName}
+                  cityDashboard={cityDashboard ?? null}
+                  cityDashboardFailed={cityDashboardFailed}
+                  cityDashboardLoading={cityDashboardLoading}
                   country={city?.country ?? null}
                   firstCityFile={files[0]?.fileName ?? null}
+                  inventoryAvailable={Boolean(inventory)}
+                  inventoryFailed={inventoryFailed}
+                  inventoryHasData={inventory?.totalEmissions != null}
+                  inventoryId={inventory?.inventoryId ?? null}
+                  inventoryLoading={inventoryLoading}
+                  inventoryOptions={inventoryOptions}
+                  inventorySelectionSaving={inventorySelectionSaving}
                   inventoryYear={inventory?.year ?? null}
+                  onSelectInventory={selectInventory}
                   isDraftRunning={isDraftRunning}
                   isRetryingBundle={retryBundleState.isLoading}
                   isRetryingUpload={retryUploadState.isLoading}

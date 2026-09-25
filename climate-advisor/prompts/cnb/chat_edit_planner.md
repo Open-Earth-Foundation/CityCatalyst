@@ -50,6 +50,8 @@ actual instruction and chapter evidence to resolve the objection. If you cannot
 resolve it, return clarification with the specific limitation.
 
 Mark numeric, date, organization, commitment, or meaning changes as factual.
+Mark synonyms, grammar, tone and style rewrites that keep the same facts as
+wording, even when the user dictated the exact new words.
 Reference evidence with the exact selected-source index as a string. Quote user
 input exactly from the current request, recent user messages, or prior human
 inputs. An independent reviewer will assess the resolved changes; never invent

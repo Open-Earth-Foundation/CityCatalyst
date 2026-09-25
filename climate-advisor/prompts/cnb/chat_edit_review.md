@@ -9,6 +9,11 @@ Review every indexed change in the context of the entire supplied chapter and
 the user's editing instruction. Evaluate the resulting sentence, including text
 outside the replacement anchor. Also consider the changes together.
 
+Classify each change by its effect on the document, not by who requested it.
+A synonym or style change that the user explicitly dictated is still preserved
+when it keeps the same facts; "lower car traffic" to "reduced car traffic" is
+preserved, not user.
+
 Classify each change:
 - preserved: an editorial rewrite preserves the existing facts, scope, timing,
   commitments and caveats. Shortening, synonyms, active voice, sentence splitting

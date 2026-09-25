@@ -264,6 +264,24 @@ def protected_reason(
     return None
 
 
+TOKEN_JOINERS = frozenset(".,:/-'’")
+
+
+def is_token_char(text: str, index: int) -> bool:
+    """Treat letters, digits and joiners between them as one reviewable token."""
+    if not 0 <= index < len(text):
+        return False
+    char = text[index]
+    if char.isalnum():
+        return True
+    return (
+        char in TOKEN_JOINERS
+        and 0 < index < len(text) - 1
+        and text[index - 1].isalnum()
+        and text[index + 1].isalnum()
+    )
+
+
 def resolve_change(
     match: DraftMatch, replacement: DraftReplacement
 ) -> PlannedTextChange:
@@ -285,22 +303,19 @@ def resolve_change(
             and before[-suffix - 1] == after[-suffix - 1]
         ):
             suffix += 1
-        # Keep complete words/numbers readable in the review, even with shared letters.
+        # Keep complete words, numbers and dates (1.0.1.2029) readable in review.
         while (
             prefix
-            and before[prefix - 1].isalnum()
-            and (
-                before[prefix : prefix + 1].isalnum()
-                or after[prefix : prefix + 1].isalnum()
-            )
+            and is_token_char(before, prefix - 1)
+            and (is_token_char(before, prefix) or is_token_char(after, prefix))
         ):
             prefix -= 1
         while (
             suffix
-            and before[-suffix].isalnum()
+            and is_token_char(before, len(before) - suffix)
             and (
-                before[-suffix - 1 : -suffix].isalnum()
-                or after[-suffix - 1 : -suffix].isalnum()
+                is_token_char(before, len(before) - suffix - 1)
+                or is_token_char(after, len(after) - suffix - 1)
             )
         ):
             suffix -= 1

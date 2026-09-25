@@ -59,6 +59,12 @@ const getDraftQuery = jest.fn(() => ({
   isLoading: false,
   refetch: jest.fn(async () => undefined),
 }));
+const getCityYearsQuery = jest.fn(
+  (_cityId: string, _options?: Record<string, unknown>) => ({
+    data: undefined,
+    isLoading: false,
+  }),
+);
 const getRunQuery = jest.fn(() => ({
   data: contextScenario ?? {
     progress_summary: {},
@@ -118,6 +124,16 @@ jest.unstable_mockModule("@/services/api", () => ({
     useGetConceptNoteRunQuery: getRunQuery,
     useGetConceptNoteUploadStatusQuery: getUploadQuery,
     useGetInventoryByCityIdQuery: () => ({ data: undefined }),
+    useGetCityDashboardQuery: () => ({ data: undefined }),
+    useGetCityYearsQuery: getCityYearsQuery,
+    useRefreshConceptNoteContextBundleMutation: () => [
+      jest.fn(() => ({ unwrap: async () => ({ status: "current" }) })),
+      { isLoading: false },
+    ],
+    useSelectConceptNoteInventoryMutation: () => [
+      jest.fn(),
+      { isLoading: false },
+    ],
     useGetMostRecentCityPopulationQuery: () => ({
       data: cityPopulation,
       isError: false,
@@ -193,11 +209,23 @@ function ContextHarness() {
         onRetryFunding={() => {}}
         bundle={data.bundle}
         contextStatus={data.contextStatus}
+        cityDashboard={null}
+        cityDashboardFailed={false}
+        cityDashboardLoading={false}
         cityFilesCount={0}
+        cityId="city-1"
         cityName="Test City"
         country={null}
         firstCityFile={null}
+        inventoryAvailable={false}
+        inventoryFailed={false}
+        inventoryHasData={false}
+        inventoryId={null}
+        inventoryLoading={false}
+        inventoryOptions={[]}
+        inventorySelectionSaving={false}
         inventoryYear={null}
+        onSelectInventory={async () => {}}
         isDraftRunning={false}
         isRetryingBundle={false}
         isRetryingUpload={false}
@@ -317,6 +345,15 @@ afterEach(async () => {
 });
 
 describe("useConceptNoteWorkspaceData", () => {
+  it("reloads the city's inventories on focus so the picker sees new ones", async () => {
+    await act(async () => root.render(<DraftStartHarness />));
+
+    expect(getCityYearsQuery).toHaveBeenCalledWith(
+      "city-1",
+      expect.objectContaining({ refetchOnFocus: true }),
+    );
+  });
+
   it("seeds running state from the start response even when the status GET failed", async () => {
     getApplicationContext.mockReturnValueOnce({
       data: { funder: {}, opportunity: {}, template: { chapter_schema: [{}] } },

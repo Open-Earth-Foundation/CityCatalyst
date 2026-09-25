@@ -39,6 +39,7 @@ export type ChapterReviewErrorKind =
   | "draft_unavailable"
   | "generic"
   | "service_unavailable"
+  | "template_invalid"
   | "template_unavailable";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -54,6 +55,12 @@ export function getChapterReviewErrorKind(
     payload.code === "chapter_validation_template_unavailable"
   ) {
     return "template_unavailable";
+  }
+  if (
+    isRecord(payload) &&
+    payload.code === "chapter_validation_template_invalid"
+  ) {
+    return "template_invalid";
   }
   const status = isRecord(error) ? error.status : null;
   if (

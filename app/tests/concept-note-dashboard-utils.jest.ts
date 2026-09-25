@@ -178,12 +178,27 @@ describe("Concept Note dashboard presentation helpers", () => {
           source_counts: { ready: 2, queued: 1, failed: -1 },
           optional_sources: { ghgi: "included", hiap: "unavailable" },
           city_population: { population: "1000000", year: 2025 },
+          source_provenance: {
+            ghgi: {
+              inventory_id: "00000000-0000-4000-8000-000000000024",
+              inventory_year: 2024,
+            },
+            hiap: { inventory_id: "00000000-0000-4000-8000-000000000024" },
+          },
+          build_id: "build-2",
+          context_changes: [
+            { source: "ghgi", change: "added", inventory_year: 2024 },
+            { source: "hiap", change: "removed" },
+            { source: "unknown", change: "added" },
+          ],
           retryable: false,
           warnings: ["One optional source was unavailable", 12],
         },
+        selected_inventory_id: "00000000-0000-4000-8000-000000000024",
       }),
     ).toEqual({
       status: "ready",
+      buildId: "build-2",
       documentGrounding: "uploaded_evidence",
       availableContext: {
         city: true,
@@ -201,6 +216,17 @@ describe("Concept Note dashboard presentation helpers", () => {
       cityPopulation: { population: 1_000_000, year: 2025 },
       ghgiStatus: "included",
       hiapStatus: "unavailable",
+      sourceProvenance: {
+        ghgi: {
+          inventoryId: "00000000-0000-4000-8000-000000000024",
+          inventoryYear: 2024,
+        },
+      },
+      contextChanges: [
+        { source: "ghgi", change: "added", inventoryYear: 2024 },
+        { source: "hiap", change: "removed", inventoryYear: null },
+      ],
+      selectedInventoryId: "00000000-0000-4000-8000-000000000024",
       retryable: false,
     });
     expect(

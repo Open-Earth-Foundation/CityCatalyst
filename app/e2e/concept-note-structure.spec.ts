@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { encode } from "next-auth/jwt";
 import JSZip from "jszip";
+import type { CityDashboardResponse } from "@/util/types";
 
 // Real workspace UI/RTK requests with deterministic API responses. The companion
 // PostgreSQL tests verify actual persistence, concurrency, ownership and acceptance.
@@ -110,11 +111,27 @@ async function setup(page: Page, chat = false, chapterCount = 2) {
       return route.fulfill({
         json: { data: { cityId, name: "Krakow", country: "Poland" } },
       });
+    if (path === `/api/v1/city/${cityId}/dashboard`)
+      return route.fulfill({
+        json: {
+          data: {
+            city: { cityId, name: "Krakow", country: "Poland" },
+            inventories: [],
+            population: null,
+            organization: null,
+            widgets: { ghgi: null, hiap: null, ccra: null },
+          } satisfies CityDashboardResponse,
+        },
+      });
+    if (path === `/api/v1/city/${cityId}/years`)
+      return route.fulfill({ json: { data: { city: { cityId }, years: [] } } });
     if (path === "/api/v1/user/projects") return route.fulfill({ json: [] });
     if (path.includes("/modules/") && path.endsWith("/access"))
       return route.fulfill({ json: { data: { hasAccess: true } } });
     if (!path.includes(`/concept-notes/${runId}`))
       return route.fulfill({ json: { data: [] } });
+    if (path.endsWith("/context-bundle/refresh"))
+      return route.fulfill({ json: { run_id: runId, status: "current" } });
     if (path.endsWith("/structure")) {
       if (route.request().method() === "PUT") {
         if (failure) {

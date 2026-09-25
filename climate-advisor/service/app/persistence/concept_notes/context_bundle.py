@@ -52,6 +52,18 @@ class ContextBundleBuildSnapshot:
     already_current: bool
     previous_sources: list[SelectedSource] = field(default_factory=list)
     thread_id: UUID | None = None
+    selected_inventory_id: UUID | None = None
+
+
+@dataclass(frozen=True)
+class ContextBundleRefreshState:
+    """Persisted inputs for deciding whether city sources changed."""
+
+    city_id: str
+    status: str | None
+    selected_inventory_id: UUID | None
+    inventory_candidate: dict[str, Any] | None
+    draft_running: bool = False
 
 
 @dataclass(frozen=True)
@@ -130,6 +142,12 @@ async def begin_build(
                         "city_population": _city_population_from_bundle(
                             previous_bundle
                         ),
+                        "source_provenance": _source_provenance_from_bundle(
+                            previous_bundle
+                        ),
+                        # Keep the checked inventory version so completion can
+                        # report an inventory whose data changed as "updated".
+                        "inventory_candidate": previous.get("inventory_candidate"),
                         "missing_context": (
                             previous.get("missing_context")
                             if isinstance(previous.get("missing_context"), list)
@@ -161,6 +179,7 @@ async def begin_build(
                 already_current=already_current,
                 previous_sources=previous_sources,
                 thread_id=run.thread_id,
+                selected_inventory_id=_selected_inventory_id(run.context_summary),
             )
     except ContextBundlePersistenceError:
         raise
@@ -185,11 +204,13 @@ async def complete_build(
     optional_sources: dict[str, str],
     warnings: list[str],
     city: dict[str, Any] | None = None,
+    inventory_candidate: dict[str, Any] | None = None,
 ) -> bool:
     """Commit only the active build's owned bundle sections.
 
     ``city`` replaces the city profile only when provided, so a failed lookup
-    keeps the last usable profile.
+    keeps the last usable profile. ``inventory_candidate`` identifies the
+    inventory version this build checked, so a later refresh can detect changes.
     """
     try:
         async with session_factory() as session, session.begin():
@@ -232,6 +253,11 @@ async def complete_build(
                 run_id,
                 with_for_update=True,
             )
+            previous_bundle = (
+                normalize_bundle(bundle_row.context_bundle)
+                if bundle_row is not None
+                else None
+            )
             if bundle_row is None:
                 bundle_row = ConceptNoteContextBundleRow(
                     run_id=run_id,
@@ -255,6 +281,18 @@ async def complete_build(
                 ),
                 "available_context": _available_context_from_bundle(bundle),
                 "city_population": _city_population_from_bundle(bundle),
+                "source_provenance": _source_provenance_from_bundle(bundle),
+                "inventory_candidate": inventory_candidate,
+                "context_changes": (
+                    _context_changes(
+                        previous_bundle,
+                        bundle,
+                        previous_candidate=progress.get("inventory_candidate"),
+                        candidate=inventory_candidate,
+                    )
+                    if previous_bundle is not None
+                    else []
+                ),
                 "missing_context": [] if selected_sources else ["source_documents"],
                 "optional_sources": optional_sources,
                 "warnings": warnings,
@@ -275,6 +313,77 @@ async def complete_build(
         raise
     except (OSError, SQLAlchemyError, ValueError) as exc:
         logger.exception("Failed to complete Concept Note context-bundle build")
+        raise ContextBundlePersistenceError(
+            "cnb_storage_unavailable",
+            503,
+            "Concept Note context storage is unavailable",
+        ) from exc
+
+
+async def set_selected_inventory(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    user_id: str,
+    run_id: UUID,
+    inventory_id: UUID | None,
+) -> None:
+    """Persist the run's chosen inventory; ``None`` means use the newest."""
+    try:
+        async with session_factory() as session, session.begin():
+            run = await _require_owned_run(
+                session=session,
+                user_id=user_id,
+                run_id=run_id,
+            )
+            # Drafting reads the context mid-run, so it must finish first.
+            if _draft_running(run.context_summary):
+                raise ContextBundlePersistenceError("draft_running", 409, "Busy")
+            summary = dict(run.context_summary or {})
+            if inventory_id is None:
+                summary.pop("selected_inventory_id", None)
+            else:
+                summary["selected_inventory_id"] = str(inventory_id)
+            run.context_summary = summary
+            run.updated_at = datetime.now(timezone.utc)
+    except ContextBundlePersistenceError:
+        raise
+    except (OSError, SQLAlchemyError) as exc:
+        logger.exception("Failed to save the Concept Note inventory selection")
+        raise ContextBundlePersistenceError(
+            "cnb_storage_unavailable",
+            503,
+            "Concept Note context storage is unavailable",
+        ) from exc
+
+
+async def load_refresh_state(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    user_id: str,
+    run_id: UUID,
+) -> ContextBundleRefreshState:
+    """Read the owned run's bundle status and last checked inventory version."""
+    try:
+        async with session_factory() as session:
+            run = await _require_owned_run(
+                session=session,
+                user_id=user_id,
+                run_id=run_id,
+                lock=False,
+            )
+            progress = _bundle_progress(run.context_summary)
+            candidate = progress.get("inventory_candidate")
+            return ContextBundleRefreshState(
+                city_id=run.city_id,
+                status=progress.get("status"),
+                selected_inventory_id=_selected_inventory_id(run.context_summary),
+                inventory_candidate=candidate if isinstance(candidate, dict) else None,
+                draft_running=_draft_running(run.context_summary),
+            )
+    except ContextBundlePersistenceError:
+        raise
+    except (OSError, SQLAlchemyError) as exc:
+        logger.exception("Failed to read Concept Note context refresh state")
         raise ContextBundlePersistenceError(
             "cnb_storage_unavailable",
             503,
@@ -657,6 +766,75 @@ def _city_population_from_bundle(
     if population is None or year is None:
         return None
     return {"population": population, "year": year}
+
+
+def _source_provenance_from_bundle(
+    bundle: ConceptNoteContextBundle,
+) -> dict[str, dict[str, str | int | None]]:
+    """Expose only persisted source identity, never a newer city-level candidate."""
+    ghgi = bundle.cc_context.ghgi
+    inventory = ghgi.get("inventory") if isinstance(ghgi, dict) else None
+    if not isinstance(inventory, dict) or not isinstance(inventory.get("id"), str):
+        return {}
+    year = inventory.get("year")
+    return {
+        "ghgi": {
+            "inventory_id": inventory["id"],
+            "inventory_year": year if isinstance(year, int) else None,
+        }
+    }
+
+
+def _draft_running(summary: Any) -> bool:
+    """Return whether chapter drafting is in progress for the run."""
+    draft = summary.get("draft_document") if isinstance(summary, dict) else None
+    return isinstance(draft, dict) and draft.get("status") == "running"
+
+
+def _selected_inventory_id(summary: Any) -> UUID | None:
+    """Read the run's chosen inventory, ignoring malformed values."""
+    value = summary.get("selected_inventory_id") if isinstance(summary, dict) else None
+    try:
+        return UUID(str(value)) if value else None
+    except ValueError:
+        return None
+
+
+def _context_changes(
+    previous: ConceptNoteContextBundle,
+    current: ConceptNoteContextBundle,
+    *,
+    previous_candidate: Any,
+    candidate: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    """Describe city sources a rebuild added, replaced, refreshed, or dropped."""
+    before = _source_provenance_from_bundle(previous).get("ghgi")
+    after = _source_provenance_from_bundle(current).get("ghgi")
+    ghgi_change = None
+    if before is None or after is None:
+        ghgi_change = "added" if after else ("removed" if before else None)
+    elif after["inventory_id"] != before["inventory_id"]:
+        ghgi_change = "changed"
+    elif (
+        isinstance(previous_candidate, dict)
+        and candidate is not None
+        and previous_candidate.get("inventory_id") == candidate["inventory_id"]
+        and previous_candidate.get("updated_at") != candidate["updated_at"]
+    ):
+        ghgi_change = "updated"
+    changes: list[dict[str, Any]] = []
+    if ghgi_change:
+        year = (after or before or {}).get("inventory_year")
+        changes.append(
+            {"source": "ghgi", "change": ghgi_change, "inventory_year": year}
+        )
+
+    # Climate risk is not shown in concept notes, so only HIAP is announced.
+    had_hiap = _available_context_from_bundle(previous)["hiap"]
+    has_hiap = _available_context_from_bundle(current)["hiap"]
+    if had_hiap != has_hiap:
+        changes.append({"source": "hiap", "change": "added" if has_hiap else "removed"})
+    return changes
 
 
 def _replace_bundle_progress(summary: Any, progress: dict[str, Any]) -> dict[str, Any]:

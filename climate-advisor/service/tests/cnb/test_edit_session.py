@@ -150,6 +150,13 @@ def test_partial_marker_edit_is_rejected_but_complete_gap_fill_is_supported():
         ("Budget: 10 schools.", "Budget: 14 schools.", ("10", "14")),
         ("A B", "A new B", (" ", " new ")),
         ("Keep. Remove.", "Keep.", (" Remove.", "")),
+        (
+            "The opening date is 1.0.1.2029; no critical path.",
+            "The opening date is 1 January 2029; no critical path.",
+            ("1.0.1.2029", "1 January 2029"),
+        ),
+        ("Cost: 1,200 EUR.", "Cost: 1,500 EUR.", ("1,200", "1,500")),
+        ("Opens 2029. Next.", "Opens 2030. Next.", ("2029", "2030")),
     ],
 )
 def test_context_trimming_preserves_the_requested_replacement(before, after, expected):

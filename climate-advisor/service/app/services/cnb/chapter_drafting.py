@@ -49,6 +49,7 @@ from app.services.cnb.application_context import (
     included_sources_from_bundle,
 )
 from app.services.cnb.draft_overview import overview_pending
+from app.services.cnb.source_review import load_source_review_pending
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.concept_note_context import omit_context_identifiers
 from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
@@ -123,6 +124,9 @@ class ConceptNoteChapterDraftService:
             run_id=run.run_id,
             progress=_draft_progress(run.context_summary),
             chapters=chapters,
+            source_review_pending=await load_source_review_pending(
+                self._ca_session_factory, run
+            ),
         )
 
     async def start(
@@ -733,6 +737,7 @@ def _build_state_response(
     run_id: UUID,
     progress: dict[str, Any],
     chapters: list[WorkspaceChapterSnapshot],
+    source_review_pending: bool = False,
 ) -> ConceptNoteDraftResponse:
     completed = _completed_count(chapters)
     stored_status = progress.get("status")
@@ -752,6 +757,7 @@ def _build_state_response(
         current_chapter_id=_as_uuid(progress.get("current_chapter_id")),
         error_code=_as_text(progress.get("error_code")),
         overview_pending=overview_pending(progress),
+        source_review_pending=source_review_pending,
         chapters=[
             ConceptNoteDraftChapterResponse(
                 chapter_id=chapter.chapter_id,

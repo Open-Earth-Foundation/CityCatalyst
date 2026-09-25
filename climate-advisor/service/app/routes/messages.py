@@ -21,6 +21,12 @@ from app.services.cnb.draft_overview import (
     is_draft_overview_turn,
     release_draft_overview,
 )
+from app.services.cnb.source_review import (
+    claim_source_review,
+    is_source_review_turn,
+    prepare_source_review,
+    release_source_review,
+)
 from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
@@ -117,6 +123,16 @@ async def post_message(
         overview_turn = is_draft_overview_turn(payload.options)
         if overview_turn:
             payload = payload.model_copy(update={"content": DRAFT_OVERVIEW_REQUEST})
+        # The hidden source review turn names the new files in server-owned text;
+        # it is claimed right before streaming, like the overview.
+        source_review = None
+        if is_source_review_turn(payload.options):
+            source_review = await prepare_source_review(
+                session_factory=session_factory,
+                thread_id=resolved_thread_id,
+                user_id=payload.user_id,
+            )
+            payload = payload.model_copy(update={"content": source_review.content})
         
         # 2. Load CC token - check payload first, then thread context
         cc_access_token: Optional[str] = None
@@ -253,6 +269,14 @@ async def post_message(
                 user_id=payload.user_id,
             )
 
+        source_review_claim = None
+        if source_review is not None:
+            source_review_claim = await claim_source_review(
+                session_factory=session_factory,
+                request=source_review,
+                user_id=payload.user_id,
+            )
+
         # 5. Create streaming handler and stream response. Once the handler
         # exists its own cleanup releases the claim; before that, release here.
         try:
@@ -266,6 +290,7 @@ async def post_message(
                 request_context=payload.context,
                 request_options=payload.options,
                 draft_overview_claim=draft_overview_claim,
+                source_review_claim=source_review_claim,
             )
         except BaseException:
             if draft_overview_claim is not None:
@@ -275,6 +300,14 @@ async def post_message(
                     run_id=run_id,
                     user_id=payload.user_id,
                     build_id=build_id,
+                )
+            if source_review_claim is not None:
+                run_id, upload_ids = source_review_claim
+                await release_source_review(
+                    session_factory=session_factory,
+                    run_id=run_id,
+                    user_id=payload.user_id,
+                    upload_ids=upload_ids,
                 )
             raise
 

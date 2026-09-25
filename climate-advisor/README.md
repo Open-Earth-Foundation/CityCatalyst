@@ -63,7 +63,24 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      export state from the CNB workspace. Ordinary turns do not load UI state.
      Browser-only state remains unknown; unavailable workspace storage preserves
      the guide without implying an empty draft. Funding and source facts remain
-     in the existing context bundle.
+     in the existing context bundle. The result also carries
+     `ui_state.open_gaps_by_chapter` (open and critical counts per chapter) and
+     `uploaded_files` (every ready upload with `uploaded_at` and `newest`).
+   - Exposes read-only `concept_note_gaps` alongside `concept_note_help`. It
+     reauthorizes the run and lists missing-information gaps with their
+     chapter, question, reason, severity, and state, filtered by
+     `chapter_position`, `severity`, or `include_closed`. Each gap gets a `G#`
+     handle numbered in creation order, so handles stay stable across filters.
+   - Injected `selected_sources` include `uploaded_at` and a `newest` flag, so
+     Clima can identify the file a user just uploaded.
+   - After files are uploaded to a drafted note, the frontend requests one hidden
+     `concept_note_turn: "source_review"` turn (while
+     `GET /draft` reports `source_review_pending`). The server writes the request
+     naming the new files, claims them in `context_summary.source_review`, and
+     composes `prompts/cnb/source_review.md` into the chat instructions. Clima
+     lists gaps, queries the new files, and, when the turn carries an edit scope,
+     creates one reviewable proposal from the request. A failed turn releases
+     its claim; a repeat returns 409 `concept_note_source_review_unavailable`.
    - Treats vague requests as sufficient intent, uses the already bound run and
      available chapter order, and asks one focused question when the next step
      cannot be derived

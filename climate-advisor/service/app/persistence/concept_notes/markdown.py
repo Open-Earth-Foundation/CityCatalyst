@@ -20,6 +20,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
+# Every upload stays attached to its run (there is no per-file delete), so failed
+# uploads also count toward the limit.
+MAX_UPLOADS_PER_RUN = 10
+
 
 class ConceptNoteMarkdownRepositoryError(Exception):
     """Base error with a stable public code and HTTP status."""
@@ -198,7 +202,11 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         run_id: UUID,
         payload: ConceptNoteUploadCreateRequest,
     ) -> ConceptNoteUploadSnapshot:
-        """Create or idempotently replay one pre-conversion upload."""
+        """Create or idempotently replay one pre-conversion upload.
+
+        Replays of an existing upload ID always succeed. A new upload raises 409
+        `concept_note_upload_limit_reached` once the run has `MAX_UPLOADS_PER_RUN`.
+        """
         try:
             async with self._session_factory() as session, session.begin():
                 run = await _require_owned_run(
@@ -221,6 +229,20 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                         source_format=payload.source_format,
                     )
                     return _snapshot(existing)
+
+                # The run row is locked above, so concurrent uploads cannot both
+                # pass this count.
+                upload_count = await session.scalar(
+                    select(func.count())
+                    .select_from(ConceptNoteUpload)
+                    .where(ConceptNoteUpload.run_id == run_id)
+                )
+                if (upload_count or 0) >= MAX_UPLOADS_PER_RUN:
+                    raise ConceptNoteMarkdownRepositoryError(
+                        "concept_note_upload_limit_reached",
+                        409,
+                        f"A concept note can have at most {MAX_UPLOADS_PER_RUN} files",
+                    )
 
                 upload = ConceptNoteUpload(
                     upload_id=payload.upload_id,

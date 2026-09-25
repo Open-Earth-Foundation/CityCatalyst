@@ -43,6 +43,7 @@ import {
   getCitySourceState,
   inventorySourceAction,
   isSourceLookupFailure,
+  type ContextSourceState,
 } from "./context-source-status";
 import {
   ConceptNoteLifecycleDialog,
@@ -170,10 +171,17 @@ export function ConceptNoteDashboard({
         cityId,
         inventoryId: inventory?.inventoryId ?? null,
       });
-  const inventoryAction =
-    inventoryNext?.href !== undefined ? inventoryNext : undefined;
+  const inventoryAction = inventoryNext?.href
+    ? { label: t(inventoryNext.labelKey), href: inventoryNext.href }
+    : undefined;
   const actionPlanState = getCitySourceState(hiapAvailable, modulesFailed);
   const filesState = getCitySourceState(cityFiles.length > 0, filesFailed);
+  // Status badge, tone, and help text shared by every city source tile.
+  const sourceTile = (state: ContextSourceState, loading: boolean) => ({
+    help: loading ? undefined : t(contextSourceHelpKey(state, "city")),
+    status: t(contextSourceStatusKey(state, loading)),
+    statusTone: contextSourceTone(state),
+  });
   const exportBundle = exportRun
     ? getConceptNoteBundleProgress(exportRun.progress_summary)
     : null;
@@ -325,17 +333,7 @@ export function ConceptNoteDashboard({
               <ContextTile
                 icon={LuBuilding2}
                 label={t("city-context")}
-                help={
-                  populationLoading
-                    ? undefined
-                    : t(contextSourceHelpKey(populationState, "city"))
-                }
-                status={t(
-                  populationLoading
-                    ? "status-processing"
-                    : contextSourceStatusKey(populationState),
-                )}
-                statusTone={contextSourceTone(populationState)}
+                {...sourceTile(populationState, populationLoading)}
                 value={cityLoading ? <Skeleton h="20px" /> : cityLocation}
                 detail={
                   populationLoading ? <Skeleton h="16px" /> : populationLabel
@@ -344,44 +342,17 @@ export function ConceptNoteDashboard({
               <ContextTile
                 icon={LuLandmark}
                 label={t("ghg-inventory")}
-                action={
-                  inventoryAction && {
-                    label: t(inventoryAction.labelKey),
-                    href: inventoryAction.href,
-                  }
-                }
-                help={
-                  inventoryLoading
-                    ? undefined
-                    : t(contextSourceHelpKey(inventoryState, "city"))
-                }
-                status={t(
-                  inventoryLoading
-                    ? "status-processing"
-                    : contextSourceStatusKey(inventoryState),
-                )}
-                statusTone={contextSourceTone(inventoryState)}
+                action={inventoryAction}
+                {...sourceTile(inventoryState, inventoryLoading)}
                 value={
                   inventoryLoading ? <Skeleton h="20px" /> : inventoryLabel
                 }
-                detail={
-                  inventoryLoading ? "" : inventory ? t("inventory-detail") : ""
-                }
+                detail={inventory ? t("inventory-detail") : ""}
               />
               <ContextTile
                 icon={LuListChecks}
                 label={t("hiap-context")}
-                help={
-                  modulesLoading
-                    ? undefined
-                    : t(contextSourceHelpKey(actionPlanState, "city"))
-                }
-                status={t(
-                  modulesLoading
-                    ? "status-processing"
-                    : contextSourceStatusKey(actionPlanState),
-                )}
-                statusTone={contextSourceTone(actionPlanState)}
+                {...sourceTile(actionPlanState, modulesLoading)}
                 value={
                   modulesLoading ? (
                     <Skeleton h="20px" />
@@ -404,13 +375,7 @@ export function ConceptNoteDashboard({
               <ContextTile
                 icon={LuFolderOpen}
                 label={t("city-files")}
-                help={t(contextSourceHelpKey(filesState, "city"))}
-                status={t(
-                  filesLoading
-                    ? "status-processing"
-                    : contextSourceStatusKey(filesState),
-                )}
-                statusTone={contextSourceTone(filesState)}
+                {...sourceTile(filesState, filesLoading)}
                 value={filesLoading ? <Skeleton h="20px" /> : fileName}
                 detail={t("file-count", { count: cityFiles.length })}
               />

@@ -71,7 +71,7 @@ function bundle(
     cityPopulation: null,
     ghgiStatus: null,
     hiapStatus: null,
-    sourceProvenance: { ghgi: null, hiap: null },
+    sourceProvenance: { ghgi: null },
     buildId: null,
     contextChanges: [],
     selectedInventoryId: null,
@@ -281,7 +281,6 @@ describe("Context tab missing-state cards", () => {
           selectedInventoryId: "inv-old",
           sourceProvenance: {
             ghgi: { inventoryId: "inv-old", inventoryYear: 2023 },
-            hiap: null,
           },
         },
         { ghgi: true },
@@ -310,7 +309,6 @@ describe("Context tab missing-state cards", () => {
         {
           sourceProvenance: {
             ghgi: { inventoryId: "inv-1", inventoryYear: 2023 },
-            hiap: null,
           },
         },
         { ghgi: true },

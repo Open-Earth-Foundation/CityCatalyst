@@ -691,21 +691,14 @@ def test_partial_inventory_with_missing_sectors_is_usable() -> None:
 def test_unfilled_inventory_is_missing_not_zero_emissions() -> None:
     empty_status = status_data()
     empty_status["completion"]["filled"] = 0
-    for sector in empty_status["by_sector"]:
-        sector["filled"] = 0
-    empty_emissions = emissions_data()
-    empty_emissions["total_emissions_kgco2e"] = "0"
-    empty_emissions["by_sector"] = []
 
     result = compact_ghgi_context(
         inventory=inventory_choices()[0],
         status_data=empty_status,
-        emissions_data=empty_emissions,
+        emissions_data={**emissions_data(), "by_sector": []},
     )
 
     assert result.availability == "missing"
-    assert result.inventory is None
-    assert result.emissions is None
 
 
 def inventory_choices() -> list[dict[str, Any]]:

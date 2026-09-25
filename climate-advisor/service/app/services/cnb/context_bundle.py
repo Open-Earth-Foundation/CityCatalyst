@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping
 from contextvars import Context
 from datetime import datetime, timedelta, timezone
 from typing import Any, Literal
@@ -394,26 +394,18 @@ class ContextBundleService:
         )
         if state.status == "building":
             return "building"
-        # Drafting reads the context mid-run; the next open checks again.
-        if state.draft_running:
+        # Failed builds recover through retry, and drafting reads the context
+        # mid-run; the next open checks again.
+        if state.status != "ready" or state.draft_running:
             return "current"
-        # Failed builds recover through retry; unknown states are left alone.
-        if state.status != "ready":
-            return "current"
-        cc_client = self.cc_client_factory()
         try:
-            inventory = await load_accessible_inventory(
-                cc_client=cc_client,
-                user_id=user_id,
-                city_id=UUID(state.city_id),
-                token=token,
-                inventory_id=state.selected_inventory_id,
+            candidate = inventory_candidate(
+                await self._load_inventory(
+                    user_id, state.city_id, token, state.selected_inventory_id
+                )
             )
-            candidate = inventory_candidate(inventory)
         except (CityCatalystClientError, ConceptNoteCityContextDataError):
             return "current"
-        finally:
-            await cc_client.close()
         if candidate == state.inventory_candidate:
             return "current"
         await self._queue_rebuild(user_id=user_id, run_id=run_id, token=token)
@@ -434,14 +426,9 @@ class ContextBundleService:
             run_id=run_id,
         )
         if inventory_id is not None:
-            cc_client = self.cc_client_factory()
             try:
-                inventory = await load_accessible_inventory(
-                    cc_client=cc_client,
-                    user_id=user_id,
-                    city_id=UUID(state.city_id),
-                    token=token,
-                    inventory_id=inventory_id,
+                inventory = await self._load_inventory(
+                    user_id, state.city_id, token, inventory_id
                 )
             except (CityCatalystClientError, ConceptNoteCityContextDataError) as exc:
                 raise ContextBundlePersistenceError(
@@ -449,8 +436,6 @@ class ContextBundleService:
                     503,
                     "City inventories are temporarily unavailable",
                 ) from exc
-            finally:
-                await cc_client.close()
             if inventory is None or inventory_uuid(inventory) != inventory_id:
                 raise ContextBundlePersistenceError(
                     "inventory_not_accessible",
@@ -464,6 +449,22 @@ class ContextBundleService:
             inventory_id=inventory_id,
         )
         await self._queue_rebuild(user_id=user_id, run_id=run_id, token=token)
+
+    async def _load_inventory(
+        self, user_id: str, city_id: str, token: str, inventory_id: UUID | None
+    ) -> Mapping[str, Any] | None:
+        """Load the chosen, else newest, inventory the user can access."""
+        cc_client = self.cc_client_factory()
+        try:
+            return await load_accessible_inventory(
+                cc_client=cc_client,
+                user_id=user_id,
+                city_id=UUID(city_id),
+                token=token,
+                inventory_id=inventory_id,
+            )
+        finally:
+            await cc_client.close()
 
     async def _queue_rebuild(self, *, user_id: str, run_id: UUID, token: str) -> None:
         """Start a forced background rebuild that reuses unchanged analyses."""

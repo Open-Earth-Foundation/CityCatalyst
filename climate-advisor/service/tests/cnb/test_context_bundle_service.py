@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
@@ -514,13 +515,7 @@ async def test_refresh_rebuilds_only_when_the_city_inventory_changed(
     assert queue.await_count == 1
 
     # Drafting reads the context mid-run, so a changed inventory waits.
-    state = ContextBundleRefreshState(
-        city_id=state.city_id,
-        status="ready",
-        selected_inventory_id=None,
-        inventory_candidate=None,
-        draft_running=True,
-    )
+    state = replace(state, status="ready", draft_running=True)
     assert await service.refresh_if_stale(
         user_id="owner", run_id=uuid4(), token="token"
     ) == "current"

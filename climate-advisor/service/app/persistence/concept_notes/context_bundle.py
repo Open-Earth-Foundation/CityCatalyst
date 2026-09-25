@@ -329,11 +329,7 @@ async def set_selected_inventory(
             )
             # Drafting reads the context mid-run, so it must finish first.
             if _draft_running(run.context_summary):
-                raise ContextBundlePersistenceError(
-                    "draft_running",
-                    409,
-                    "Wait for drafting to finish before changing the inventory",
-                )
+                raise ContextBundlePersistenceError("draft_running", 409, "Busy")
             summary = dict(run.context_summary or {})
             if inventory_id is None:
                 summary.pop("selected_inventory_id", None)
@@ -760,19 +756,17 @@ def _source_provenance_from_bundle(
     bundle: ConceptNoteContextBundle,
 ) -> dict[str, dict[str, str | int | None]]:
     """Expose only persisted source identity, never a newer city-level candidate."""
-    provenance: dict[str, dict[str, str | int | None]] = {}
     ghgi = bundle.cc_context.ghgi
     inventory = ghgi.get("inventory") if isinstance(ghgi, dict) else None
-    if isinstance(inventory, dict) and isinstance(inventory.get("id"), str):
-        year = inventory.get("year")
-        provenance["ghgi"] = {
+    if not isinstance(inventory, dict) or not isinstance(inventory.get("id"), str):
+        return {}
+    year = inventory.get("year")
+    return {
+        "ghgi": {
             "inventory_id": inventory["id"],
             "inventory_year": year if isinstance(year, int) else None,
         }
-    hiap = bundle.cc_context.hiap
-    if isinstance(hiap, dict) and isinstance(hiap.get("inventory_id"), str):
-        provenance["hiap"] = {"inventory_id": hiap["inventory_id"]}
-    return provenance
+    }
 
 
 def _draft_running(summary: Any) -> bool:
@@ -798,37 +792,33 @@ def _context_changes(
     candidate: dict[str, Any] | None,
 ) -> list[dict[str, Any]]:
     """Describe city sources a rebuild added, replaced, refreshed, or dropped."""
-    changes: list[dict[str, Any]] = []
     before = _source_provenance_from_bundle(previous).get("ghgi")
     after = _source_provenance_from_bundle(current).get("ghgi")
-    if after is not None and before is None:
-        changes.append({"source": "ghgi", "change": "added", **_year(after)})
-    elif after is None and before is not None:
-        changes.append({"source": "ghgi", "change": "removed", **_year(before)})
-    elif after is not None and before is not None:
-        if after["inventory_id"] != before["inventory_id"]:
-            changes.append({"source": "ghgi", "change": "changed", **_year(after)})
-        elif (
-            isinstance(previous_candidate, dict)
-            and candidate is not None
-            and previous_candidate.get("inventory_id") == candidate["inventory_id"]
-            and previous_candidate.get("updated_at") != candidate["updated_at"]
-        ):
-            changes.append({"source": "ghgi", "change": "updated", **_year(after)})
+    ghgi_change = None
+    if before is None or after is None:
+        ghgi_change = "added" if after else ("removed" if before else None)
+    elif after["inventory_id"] != before["inventory_id"]:
+        ghgi_change = "changed"
+    elif (
+        isinstance(previous_candidate, dict)
+        and candidate is not None
+        and previous_candidate.get("inventory_id") == candidate["inventory_id"]
+        and previous_candidate.get("updated_at") != candidate["updated_at"]
+    ):
+        ghgi_change = "updated"
+    changes: list[dict[str, Any]] = []
+    if ghgi_change:
+        year = (after or before or {}).get("inventory_year")
+        changes.append(
+            {"source": "ghgi", "change": ghgi_change, "inventory_year": year}
+        )
 
-    previous_available = _available_context_from_bundle(previous)
-    current_available = _available_context_from_bundle(current)
     # Climate risk is not shown in concept notes, so only HIAP is announced.
-    if current_available["hiap"] and not previous_available["hiap"]:
-        changes.append({"source": "hiap", "change": "added"})
-    elif previous_available["hiap"] and not current_available["hiap"]:
-        changes.append({"source": "hiap", "change": "removed"})
+    had_hiap = _available_context_from_bundle(previous)["hiap"]
+    has_hiap = _available_context_from_bundle(current)["hiap"]
+    if had_hiap != has_hiap:
+        changes.append({"source": "hiap", "change": "added" if has_hiap else "removed"})
     return changes
-
-
-def _year(provenance: dict[str, Any]) -> dict[str, Any]:
-    """Keep only the inventory year a user-facing change notice needs."""
-    return {"inventory_year": provenance.get("inventory_year")}
 
 
 def _replace_bundle_progress(summary: Any, progress: dict[str, Any]) -> dict[str, Any]:

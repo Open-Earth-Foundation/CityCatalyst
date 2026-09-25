@@ -219,7 +219,6 @@ describe("Concept Note dashboard presentation helpers", () => {
           inventoryId: "00000000-0000-4000-8000-000000000024",
           inventoryYear: 2024,
         },
-        hiap: { inventoryId: "00000000-0000-4000-8000-000000000024" },
       },
       contextChanges: [
         { source: "ghgi", change: "added", inventoryYear: 2024 },

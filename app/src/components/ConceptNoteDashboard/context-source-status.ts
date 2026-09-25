@@ -53,55 +53,52 @@ export function getRunSourceState({
   return getCitySourceState(cityAvailable);
 }
 
+// Help text per state; states that read differently per scope split it.
+const HELP_KEYS: Record<
+  ContextSourceState,
+  string | { city: string; run: string }
+> = {
+  unavailable: {
+    city: "source-help-city-unavailable",
+    run: "source-help-run-unavailable",
+  },
+  available: {
+    city: "source-help-city-available",
+    run: "source-help-run-available",
+  },
+  empty: { city: "inventory-empty-detail-city", run: "inventory-empty-detail" },
+  selected: "source-help-selected",
+  processing: "source-help-processing",
+  included: "source-help-included",
+  partial: "inventory-partial",
+  failed: "source-help-failed",
+};
+
+const STATUS_KEYS: Record<ContextSourceState, string> = {
+  available: "available-in-city",
+  empty: "inventory-empty",
+  selected: "selected-for-run",
+  processing: "status-processing",
+  included: "included-in-run",
+  partial: "included-partial",
+  failed: "status-failed",
+  unavailable: "not-available",
+};
+
 export function contextSourceHelpKey(
   state: ContextSourceState,
   scope: "city" | "run",
 ): string {
-  switch (state) {
-    case "unavailable":
-      return scope === "city"
-        ? "source-help-city-unavailable"
-        : "source-help-run-unavailable";
-    case "available":
-      return scope === "city"
-        ? "source-help-city-available"
-        : "source-help-run-available";
-    case "empty":
-      return scope === "city"
-        ? "inventory-empty-detail-city"
-        : "inventory-empty-detail";
-    case "selected":
-      return "source-help-selected";
-    case "processing":
-      return "source-help-processing";
-    case "included":
-      return "source-help-included";
-    case "partial":
-      return "inventory-partial";
-    case "failed":
-      return "source-help-failed";
-  }
+  const key = HELP_KEYS[state];
+  return typeof key === "string" ? key : key[scope];
 }
 
-export function contextSourceStatusKey(state: ContextSourceState): string {
-  switch (state) {
-    case "available":
-      return "available-in-city";
-    case "empty":
-      return "inventory-empty";
-    case "selected":
-      return "selected-for-run";
-    case "processing":
-      return "status-processing";
-    case "included":
-      return "included-in-run";
-    case "partial":
-      return "included-partial";
-    case "failed":
-      return "status-failed";
-    case "unavailable":
-      return "not-available";
-  }
+/** A source still loading shows as processing whatever its last state. */
+export function contextSourceStatusKey(
+  state: ContextSourceState,
+  loading = false,
+): string {
+  return loading ? "status-processing" : STATUS_KEYS[state];
 }
 
 export function contextSourceTone(
@@ -123,8 +120,6 @@ export function isSourceLookupFailure(error: unknown): boolean {
   );
 }
 
-export type InventoryActionKind = "create" | "fill" | "choose";
-
 /**
  * The inventory card's next step: create an inventory when the city has none,
  * fill an empty one, otherwise choose which inventory a run uses. Create and
@@ -137,7 +132,9 @@ export function inventorySourceAction(
     cityId,
     inventoryId,
   }: { lng: string; cityId: string; inventoryId: string | null },
-): { kind: InventoryActionKind; labelKey: string; href?: string } | undefined {
+):
+  | { kind: "create" | "fill" | "choose"; labelKey: string; href?: string }
+  | undefined {
   if (state === "failed" || state === "processing") return undefined;
   if (!inventoryId) {
     return {

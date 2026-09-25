@@ -235,7 +235,6 @@ export interface ConceptNoteBundleProgress {
   hiapStatus: string | null;
   sourceProvenance: {
     ghgi: { inventoryId: string; inventoryYear: number | null } | null;
-    hiap: { inventoryId: string } | null;
   };
   /** City sources the latest rebuild added, replaced, refreshed, or dropped. */
   contextChanges: ConceptNoteContextChange[];
@@ -262,35 +261,27 @@ function stringValue(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value : null;
 }
 
-const CONTEXT_CHANGE_SOURCES = new Set(["ghgi", "hiap"]);
-const CONTEXT_CHANGE_KINDS = new Set([
-  "added",
-  "changed",
-  "updated",
-  "removed",
-]);
+function yearValue(value: unknown): number | null {
+  return typeof value === "number" ? value : null;
+}
+
+const CONTEXT_CHANGE_SOURCES = ["ghgi", "hiap"];
+const CONTEXT_CHANGE_KINDS = ["added", "changed", "updated", "removed"];
 
 function contextChangesValue(value: unknown): ConceptNoteContextChange[] {
   if (!Array.isArray(value)) return [];
-  return value.flatMap((item) => {
-    const change = recordValue(item);
-    if (
-      !CONTEXT_CHANGE_SOURCES.has(String(change.source)) ||
-      !CONTEXT_CHANGE_KINDS.has(String(change.change))
-    ) {
-      return [];
-    }
-    return [
-      {
-        source: change.source as ConceptNoteContextChange["source"],
-        change: change.change as ConceptNoteContextChange["change"],
-        inventoryYear:
-          typeof change.inventory_year === "number"
-            ? change.inventory_year
-            : null,
-      },
-    ];
-  });
+  return value
+    .map(recordValue)
+    .filter(
+      (change) =>
+        CONTEXT_CHANGE_SOURCES.includes(String(change.source)) &&
+        CONTEXT_CHANGE_KINDS.includes(String(change.change)),
+    )
+    .map((change) => ({
+      source: change.source as ConceptNoteContextChange["source"],
+      change: change.change as ConceptNoteContextChange["change"],
+      inventoryYear: yearValue(change.inventory_year),
+    }));
 }
 
 function documentGroundingValue(
@@ -315,9 +306,10 @@ export function getConceptNoteBundleProgress(
   const sourceCounts = recordValue(bundle.source_counts);
   const optionalSources = recordValue(bundle.optional_sources);
   const availableContext = recordValue(bundle.available_context);
-  const sourceProvenance = recordValue(bundle.source_provenance);
-  const ghgiProvenance = recordValue(sourceProvenance.ghgi);
-  const hiapProvenance = recordValue(sourceProvenance.hiap);
+  const ghgiProvenance = recordValue(
+    recordValue(bundle.source_provenance).ghgi,
+  );
+  const usedInventoryId = stringValue(ghgiProvenance.inventory_id);
   const documentGrounding = documentGroundingValue(bundle);
 
   return {
@@ -347,17 +339,11 @@ export function getConceptNoteBundleProgress(
     ghgiStatus: stringValue(optionalSources.ghgi),
     hiapStatus: stringValue(optionalSources.hiap),
     sourceProvenance: {
-      ghgi: stringValue(ghgiProvenance.inventory_id)
+      ghgi: usedInventoryId
         ? {
-            inventoryId: String(ghgiProvenance.inventory_id),
-            inventoryYear:
-              typeof ghgiProvenance.inventory_year === "number"
-                ? ghgiProvenance.inventory_year
-                : null,
+            inventoryId: usedInventoryId,
+            inventoryYear: yearValue(ghgiProvenance.inventory_year),
           }
-        : null,
-      hiap: stringValue(hiapProvenance.inventory_id)
-        ? { inventoryId: String(hiapProvenance.inventory_id) }
         : null,
     },
     contextChanges: contextChangesValue(bundle.context_changes),

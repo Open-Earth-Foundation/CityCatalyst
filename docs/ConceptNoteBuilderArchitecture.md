@@ -1861,7 +1861,7 @@ the city. The run's Context tab uses the same status terms for its own bundle:
 available city data can still be absent from a run, while selected, processing,
 included, and failed are distinct run states. Bundle progress exposes
 `source_provenance` from the saved bundle, including the GHGI inventory ID and
-year and the HIAP inventory ID when present. The Context tab uses that saved
+year. The Context tab uses that saved
 identity for included sources, rather than the city's latest inventory. Older
 bundles without provenance display that the used inventory was not recorded.
 An optional source reported as `unavailable` by bundle progress appears as

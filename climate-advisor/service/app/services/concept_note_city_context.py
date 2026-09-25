@@ -55,18 +55,11 @@ async def load_accessible_inventory(
         token=token,
     )
     data = capability_data(inventory_payload)
+    # A chosen inventory that is no longer accessible falls back to the newest.
     if inventory_id is not None:
-        chosen = next(
-            (
-                inventory
-                for inventory in city_inventories(data, city_id=city_id)
-                if inventory_uuid(inventory) == inventory_id
-            ),
-            None,
-        )
-        # A chosen inventory that is no longer accessible falls back to the newest.
-        if chosen is not None:
-            return chosen
+        for inventory in city_inventories(data, city_id=city_id):
+            if inventory_uuid(inventory) == inventory_id:
+                return inventory
     return select_newest_inventory(data, city_id=city_id)
 
 
@@ -292,8 +285,7 @@ def compact_ghgi_context(
 
     status_by_sector = records_by_reference(status_data.get("by_sector"))
     emissions_by_sector = records_by_reference(emissions_data.get("by_sector"))
-    # A new, unfilled inventory has no data to ground a note; reporting it as
-    # zero emissions would mislead drafting, so treat it as missing.
+    # An unfilled inventory is missing data, not zero emissions.
     if count(completion.get("filled")) == 0 and not emissions_by_sector:
         return GhgiContext(availability="missing", inventory=None, emissions=None)
 

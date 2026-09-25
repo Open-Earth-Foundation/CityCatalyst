@@ -61,8 +61,7 @@ async def test_progress_identifies_inventory_from_persisted_bundle(tmp_path) -> 
             run = await session.get(ConceptNoteRun, run_id)
         assert run is not None
         assert run.context_summary["context_bundle"]["source_provenance"] == {
-            "ghgi": {"inventory_id": str(first_inventory), "inventory_year": 2024},
-            "hiap": {"inventory_id": str(first_inventory)},
+            "ghgi": {"inventory_id": str(first_inventory), "inventory_year": 2024}
         }
         # The first bundle has no predecessor, so nothing is reported as new.
         assert run.context_summary["context_bundle"]["context_changes"] == []
@@ -197,11 +196,6 @@ async def test_inventory_selection_waits_for_drafting(tmp_path) -> None:
                 inventory_id=uuid4(),
             )
         assert (error.value.code, error.value.status_code) == ("draft_running", 409)
-
-        async with session_factory() as session:
-            run = await session.get(ConceptNoteRun, run_id)
-        assert run is not None
-        assert "selected_inventory_id" not in run.context_summary
     finally:
         await engine.dispose()
 

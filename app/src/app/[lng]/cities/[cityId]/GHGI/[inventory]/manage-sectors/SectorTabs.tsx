@@ -310,16 +310,17 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         },
       ];
     } else {
-      // Bulk update all cards that have been edited
-      const currentSectorSubCategoryIds =
-        (sectorData?.result[selectedSector] as ScopeData[] | undefined)?.map(
-          (scope) => scope.subCategory?.subcategoryId,
-        ) || [];
+      // Bulk update cards across all sector tabs
+      const allSubCategoryIds = new Set(
+        Object.values(sectorData?.result ?? {})
+          .flat()
+          .map((scope) => (scope as ScopeData).subCategory?.subcategoryId),
+      );
 
       notationKeys = Object.entries(cardInputs)
         .filter(([id, value]) => {
-          // Only include cards in the current sector
-          if (!currentSectorSubCategoryIds.includes(id)) {
+          // Include cards from every sector tab
+          if (!allSubCategoryIds.has(id)) {
             return false;
           }
           // Validate that the value exists and has required fields
@@ -743,22 +744,42 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                         <CheckboxCard.Control>
                           <CheckboxCard.Content>
                             <CheckboxCard.Label my="24px">
-                              <Text
-                                overflow="hidden"
-                                textOverflow="ellipsis"
-                                color="content.primary"
-                                fontFamily="heading"
-                                fontSize="overline"
-                                fontWeight="semibold"
-                                lineHeight="16"
-                                letterSpacing="widest"
-                                textTransform="uppercase"
-                                lineClamp={2}
-                              >
-                                {t(item.subCategoryReferenceNumber!)}{" "}
-                                {t(item.subSectorName)} –{" "}
-                                {t(item.subCategoryName)}
-                              </Text>
+                              <Box display="flex" alignItems="center" gap="s">
+                                <Box
+                                  flexShrink={0}
+                                  px="s"
+                                  py="xs"
+                                  bg="background.graySubtle"
+                                  borderRadius="rounded"
+                                >
+                                  <Text
+                                    color="content.primary"
+                                    fontFamily="heading"
+                                    fontSize="overline"
+                                    fontWeight="semibold"
+                                    lineHeight="16"
+                                    letterSpacing="widest"
+                                    textTransform="uppercase"
+                                  >
+                                    {t(item.subCategoryReferenceNumber!)}
+                                  </Text>
+                                </Box>
+                                <Text
+                                  overflow="hidden"
+                                  textOverflow="ellipsis"
+                                  color="content.primary"
+                                  fontFamily="heading"
+                                  fontSize="overline"
+                                  fontWeight="semibold"
+                                  lineHeight="16"
+                                  letterSpacing="widest"
+                                  textTransform="uppercase"
+                                  lineClamp={2}
+                                >
+                                  {t(item.subSectorName)} –{" "}
+                                  {t(item.subCategoryName)}
+                                </Text>
+                              </Box>
                             </CheckboxCard.Label>
                             <CheckboxCard.Description
                               w="full"
@@ -819,6 +840,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                                       borderRadius="md"
                                       shadow="1dp"
                                       height="96px"
+                                      resize="none"
                                       value={cardValue.explanation}
                                       onChange={(e) =>
                                         setCardInputs((prev) => ({
@@ -862,7 +884,10 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                   </Button>
                   <Button
                     height="xxl-2"
-                    width="150px"
+                    minWidth="150px"
+                    width="fit-content"
+                    px="l"
+                    whiteSpace="nowrap"
                     variant="solid"
                     onClick={() => handleUpdateNotationKeys()}
                     loading={isLoading}
@@ -874,7 +899,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                       _hover: { bg: "gray.medium" },
                     }}
                   >
-                    {t("save-changes")}
+                    {t("save-all-changes")}
                   </Button>
                 </Box>
               </StickyActionBar>

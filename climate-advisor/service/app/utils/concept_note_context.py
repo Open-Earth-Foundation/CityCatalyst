@@ -62,6 +62,12 @@ def omit_context_identifiers(value: Any) -> Any:
     return value
 
 
+def manual_population_context(summary: Any) -> dict[str, Any] | None:
+    """Label the run's user-entered population so models never mistake its source."""
+    population = summary.get("manual_population") if isinstance(summary, dict) else None
+    return {**population, "source": "user_entered"} if population else None
+
+
 def readable_source_heading(anchor: str) -> str:
     """Keep document headings while removing generated block fingerprints."""
     return re.sub(r"/?block-[0-9a-f]+(?:-s\d+)?$", "", anchor).strip("/") or "Document"

@@ -15,9 +15,13 @@ Rules:
   or `previous_chapters`
 - treat `run_context.context_bundle.selected_sources` as source evidence when
   it is present
+- `run_context.context_bundle.cc_context.city.population` and
+  `population_year`, when non-null, are the city's most recent CityCatalyst
+  population record; use them where the chapter needs the city's population
 - `run_context.manual_population`, when present, is a user-entered population
   and year for this concept note only. It is not verified CityCatalyst data or
-  a selected-source citation
+  a selected-source citation. When present, use it instead of the CityCatalyst
+  population
 - never invent names, dates, amounts, targets, approvals, or evidence
 - if a material fact is missing, place a concise, actionable `[Information
   needed: ...]` marker where that fact belongs and return the same question in

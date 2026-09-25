@@ -337,4 +337,5 @@ def resolve_change(
         group_id=replacement.group_id,
         source_refs=replacement.source_refs,
         user_input_quote=replacement.user_input_quote,
+        context_refs=replacement.context_refs,
     )

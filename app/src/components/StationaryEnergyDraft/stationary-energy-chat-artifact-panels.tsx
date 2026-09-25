@@ -75,6 +75,7 @@ type ClimaChatPanelProps = {
     StationaryEnergyChatArtifactControllerState,
     | "canPersistDraftReview"
     | "canSaveToInventory"
+    | "chatActivityLabel"
     | "chatInput"
     | "chatMessages"
     | "counts"
@@ -372,6 +373,7 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
     lastChatMessage?.kind,
     lastChatMessageIsUser,
     lastChatMessageText,
+    state.chatActivityLabel,
     state.chatMessages.length,
     state.loadingAction,
   ]);
@@ -590,23 +592,16 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                 return <UserBubble key={message.id} text={message.text} />;
               }
 
-              const isActiveThinkingMessage =
-                state.loadingAction === "chat" &&
-                message.id === lastChatMessage?.id;
-              if (!message.text.trim() && !isActiveThinkingMessage) {
+              if (!message.text.trim()) {
                 return null;
               }
 
-              return (
-                <AgentBubble
-                  key={message.id}
-                  text={
-                    message.text ||
-                    (isActiveThinkingMessage ? t("chat-panel-thinking") : "")
-                  }
-                />
-              );
+              return <AgentBubble key={message.id} text={message.text} />;
             })}
+            {/* Thinking or the running tool, so the chat never looks idle. */}
+            {state.chatActivityLabel ? (
+              <AgentBubble text={state.chatActivityLabel} />
+            ) : null}
           </>
         )}
       </VStack>

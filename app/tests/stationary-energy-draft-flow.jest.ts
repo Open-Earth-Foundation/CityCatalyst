@@ -19,9 +19,11 @@ import {
 import {
   buildFocusedDecisionStatePayload,
   buildStationaryEnergyChatRequest,
+  resolveChatActivityLabel,
   resolveInventorySaveConfirmationRequest,
   resolveStationaryEnergyStartDraftFailureMessage,
   resolveStationaryEnergyToolMessage,
+  toolStartedEventName,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
 import {
   draftRunStatusLabel,
@@ -994,6 +996,57 @@ describe("Stationary Energy draft flow", () => {
     );
   });
 
+  it("names the selected inventory so the pre-run agent never asks for it", () => {
+    const request = buildStationaryEnergyChatRequest({
+      cityId: "city-1",
+      cityName: "Caxias do Sul",
+      content: "add all seeg data",
+      decisionReviewContext: [],
+      draftState: null,
+      inventoryId: "inventory-1",
+      inventoryYear: 2022,
+      threadId: "thread-1",
+    });
+
+    expect(request.context).toEqual(
+      expect.objectContaining({
+        city_name: "Caxias do Sul",
+        inventory_year: 2022,
+      }),
+    );
+  });
+
+  it("marks a re-sent pre-run request so the agent answers it with the run", () => {
+    const draft = draftFixture();
+    const request = buildStationaryEnergyChatRequest({
+      cityId: "city-1",
+      content: "add all seeg data",
+      decisionReviewContext: [],
+      draftState: draft,
+      inventoryId: "inventory-1",
+      resumeAfterDraftStart: true,
+      threadId: "thread-1",
+    });
+    const normalRequest = buildStationaryEnergyChatRequest({
+      cityId: "city-1",
+      content: "add all seeg data",
+      decisionReviewContext: [],
+      draftState: draft,
+      inventoryId: "inventory-1",
+      threadId: "thread-1",
+    });
+
+    expect(request.options).toEqual(
+      expect.objectContaining({
+        stationary_energy_draft_run_id: draft.draft_run_id,
+        stationary_energy_resume_after_draft_start: true,
+      }),
+    );
+    expect(normalRequest.options).not.toHaveProperty(
+      "stationary_energy_resume_after_draft_start",
+    );
+  });
+
   it("does not send hidden default source choices as focused chat selections", () => {
     const draft = draftFixture();
     const decisionReviewContext = buildDecisionReviewContext({
@@ -1064,5 +1117,70 @@ describe("Stationary Energy draft flow", () => {
       message: "Please confirm before writing inventory data.",
       showConfirmation: true,
     });
+  });
+
+  it("only treats executing tool events without a UI payload as tool starts", () => {
+    expect(
+      toolStartedEventName({
+        name: "stationary_energy_start_draft",
+        status: "executing",
+        arguments: {},
+      }),
+    ).toBe("stationary_energy_start_draft");
+    expect(
+      toolStartedEventName({
+        name: "stationary_energy_start_draft",
+        status: "success",
+      }),
+    ).toBeNull();
+    expect(
+      toolStartedEventName({
+        name: "stationary_energy_start_draft",
+        status: "executing",
+        ui_event: "stationary_energy_draft_started",
+      }),
+    ).toBeNull();
+  });
+
+  it("shows the running tool, then thinking, then the wait for a started run", () => {
+    const t = ((key: string) => key) as Parameters<
+      typeof resolveChatActivityLabel
+    >[0];
+    const idle = {
+      activeToolName: null,
+      awaitingDraftStartResume: false,
+      isChatStreaming: false,
+      replyTextVisible: false,
+    };
+
+    expect(
+      resolveChatActivityLabel(t, {
+        ...idle,
+        activeToolName: "stationary_energy_start_draft",
+        isChatStreaming: true,
+        replyTextVisible: true,
+      }),
+    ).toBe("chat-activity-start-run");
+    expect(
+      resolveChatActivityLabel(t, {
+        ...idle,
+        activeToolName: "some_other_tool",
+        isChatStreaming: true,
+      }),
+    ).toBe("chat-activity-running-tool");
+    expect(
+      resolveChatActivityLabel(t, { ...idle, isChatStreaming: true }),
+    ).toBe("chat-panel-thinking");
+    expect(
+      resolveChatActivityLabel(t, {
+        ...idle,
+        isChatStreaming: true,
+        replyTextVisible: true,
+      }),
+    ).toBeNull();
+    expect(
+      resolveChatActivityLabel(t, { ...idle, awaitingDraftStartResume: true }),
+    ).toBe("chat-activity-run-loading");
+    expect(resolveChatActivityLabel(t, idle)).toBeNull();
   });
 });

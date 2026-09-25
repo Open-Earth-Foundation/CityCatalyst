@@ -23,10 +23,12 @@ import {
   isStationaryEnergyStartDraftToolResult,
   mergeDecisionReviewMessages,
   nextDecisionState,
+  resolveChatActivityLabel,
   resolveInventorySaveConfirmationRequest,
   resolveStationaryEnergyStartDraftFailureMessage,
   resolveStationaryEnergyToolMessage,
   removeResolvedProposalId,
+  toolStartedEventName,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
 import {
   buildSourcePreferenceLabel,
@@ -53,6 +55,7 @@ import {
   buildReviewDecisionPayload,
   buildSourcePreferenceOptions,
   canPersistDraftReview,
+  canReviewDraftStatus,
   canSaveToInventory,
   countDraftProposals,
   deriveDraftStage,
@@ -87,9 +90,11 @@ type ErrorRecoveryAction = "start_draft";
 
 type UseStationaryEnergyChatArtifactControllerParams = {
   cityId: string;
+  cityName?: string | null;
   featureEnabled: boolean;
   initialStage: DraftStage;
   inventoryId: string;
+  inventoryYear?: number | null;
   lng: string;
   queryDraftRunId: string | null;
   t: TFunction;
@@ -100,6 +105,8 @@ export type StationaryEnergyChatArtifactControllerState = {
   activeProposalId: string | null;
   canPersistDraftReview: boolean;
   canSaveToInventory: boolean;
+  // What the agent is doing right now, shown as a chat bubble while it works.
+  chatActivityLabel: string | null;
   chatInput: string;
   chatMessages: ChatMessage[];
   counts: DraftCounts;
@@ -528,9 +535,11 @@ export function useStationaryEnergyChatArtifactController(
 ): StationaryEnergyChatArtifactController {
   const {
     cityId,
+    cityName,
     featureEnabled,
     initialStage,
     inventoryId,
+    inventoryYear,
     lng,
     queryDraftRunId,
     t,
@@ -562,6 +571,14 @@ export function useStationaryEnergyChatArtifactController(
     string | null | undefined
   >(undefined);
   const pendingDraftStatusRefreshCountRef = useRef(0);
+  const lastUserChatContentRef = useRef<string | null>(null);
+  // A request the agent started a run for; re-sent once that run is ready.
+  const [pendingDraftStartResume, setPendingDraftStartResume] = useState<{
+    draftRunId: string;
+    content: string;
+  } | null>(null);
+  // The tool the agent is running in the current chat turn, if any.
+  const [activeToolName, setActiveToolName] = useState<string | null>(null);
   const canSaveAcceptedRowsToInventoryRef = useRef(false);
   const [focusedProposalId, setFocusedProposalId] = useState<string | null>(
     null,
@@ -966,6 +983,13 @@ export function useStationaryEnergyChatArtifactController(
 
   const handleToolResult = useCallback(
     (tool: unknown): void => {
+      const startedToolName = toolStartedEventName(tool);
+      if (startedToolName) {
+        setActiveToolName(startedToolName);
+        return;
+      }
+      setActiveToolName(null);
+
       const signature = stationaryEnergyToolResultSignature(tool);
       removeEmptyAssistantTail();
       if (signature) {
@@ -1010,6 +1034,13 @@ export function useStationaryEnergyChatArtifactController(
         }
 
         clearError();
+        const pendingContent = lastUserChatContentRef.current;
+        if (pendingContent) {
+          setPendingDraftStartResume({
+            draftRunId: toolDraftRunId,
+            content: pendingContent,
+          });
+        }
         void refreshDraftStatusSilently(toolDraftRunId).catch((error) => {
           showError(
             resolveErrorMessage(
@@ -1200,10 +1231,12 @@ export function useStationaryEnergyChatArtifactController(
     onToolResult: handleToolResult,
     onComplete: () => {
       removeEmptyAssistantTail();
+      setActiveToolName(null);
       setLoadingAction(null);
     },
     onError: (error) => {
       removeEmptyAssistantTail();
+      setActiveToolName(null);
       showError(
         translateMessage(t, error) || t("error-failed-to-send-message"),
       );
@@ -1490,17 +1523,31 @@ export function useStationaryEnergyChatArtifactController(
   const sendChatMessage = useCallback(
     async (
       rawContent: string,
-      confirmedBulkReviewChoices?: StationaryEnergyToolChoiceSummary[],
-      confirmedRollbackReviewChoices?: StationaryEnergyToolChoiceSummary[],
+      options: {
+        confirmedBulkReviewChoices?: StationaryEnergyToolChoiceSummary[];
+        confirmedRollbackReviewChoices?: StationaryEnergyToolChoiceSummary[];
+        // Re-send an earlier request without showing it again in the chat.
+        resumeAfterDraftStart?: boolean;
+      } = {},
     ): Promise<void> => {
+      const {
+        confirmedBulkReviewChoices,
+        confirmedRollbackReviewChoices,
+        resumeAfterDraftStart = false,
+      } = options;
       const content = rawContent.trim();
       if (!content || loadingAction === "chat") {
         return;
       }
 
       clearError();
-      setChatInput("");
-      appendTextMessage("user", content);
+      // Sending anything settles a pending resume: this is it, or a newer request.
+      setPendingDraftStartResume(null);
+      if (!resumeAfterDraftStart) {
+        setChatInput("");
+        appendTextMessage("user", content);
+        lastUserChatContentRef.current = content;
+      }
 
       appendTextMessage("assistant", "");
       setLoadingAction("chat");
@@ -1513,6 +1560,7 @@ export function useStationaryEnergyChatArtifactController(
           body: JSON.stringify(
             buildStationaryEnergyChatRequest({
               cityId,
+              cityName,
               content,
               confirmedBulkReviewChoices: confirmedBulkReviewChoicePayload(
                 confirmedBulkReviewChoices ?? [],
@@ -1526,6 +1574,8 @@ export function useStationaryEnergyChatArtifactController(
               focusedDecisionState,
               focusedProposalId: effectiveFocusedProposalId,
               inventoryId,
+              inventoryYear,
+              resumeAfterDraftStart,
               threadId: nextThreadId,
             }),
           ),
@@ -1543,6 +1593,7 @@ export function useStationaryEnergyChatArtifactController(
     [
       appendTextMessage,
       cityId,
+      cityName,
       clearError,
       decisionReviewContext,
       focusedDecisionState,
@@ -1550,6 +1601,7 @@ export function useStationaryEnergyChatArtifactController(
       effectiveFocusedProposalId,
       ensureThreadId,
       inventoryId,
+      inventoryYear,
       loadingAction,
       removeEmptyAssistantTail,
       showError,
@@ -1566,11 +1618,61 @@ export function useStationaryEnergyChatArtifactController(
     [chatInput, sendChatMessage],
   );
 
+  // When the agent started a run for a request, re-send that request once the
+  // run is ready and the start turn has finished streaming, so the agent
+  // answers it with the new run data and review tools. The existing review
+  // cards appear as usual when the run loads.
+  const draftStatus = draftState?.status;
+  // A run that failed or finished elsewhere has nothing left to resume.
+  const awaitingDraftStartResume = Boolean(
+    pendingDraftStartResume &&
+    draftRunId === pendingDraftStartResume.draftRunId &&
+    draftStatus &&
+    !hasTerminalDraftStatus(draftStatus),
+  );
+  useEffect(() => {
+    const pending = pendingDraftStartResume;
+    if (
+      !pending ||
+      !awaitingDraftStartResume ||
+      !draftStatus ||
+      !canReviewDraftStatus(draftStatus) ||
+      loadingAction === "chat"
+    ) {
+      return;
+    }
+    // Send from a timer like the status poller; sendChatMessage clears the
+    // pending resume, and a changed input cancels this attempt.
+    const timeout = window.setTimeout(() => {
+      void sendChatMessage(pending.content, { resumeAfterDraftStart: true });
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [
+    awaitingDraftStartResume,
+    draftStatus,
+    loadingAction,
+    pendingDraftStartResume,
+    sendChatMessage,
+  ]);
+
+  const lastChatMessage = chatMessages[chatMessages.length - 1];
+  const chatActivityLabel = resolveChatActivityLabel(t, {
+    activeToolName,
+    awaitingDraftStartResume,
+    isChatStreaming: loadingAction === "chat",
+    replyTextVisible:
+      lastChatMessage?.kind === "text" &&
+      lastChatMessage.role === "assistant" &&
+      lastChatMessage.text.trim().length > 0,
+  });
+
   const confirmBulkReviewChanges = useCallback(
     (choices: StationaryEnergyToolChoiceSummary[]): void => {
       removeBulkReviewConfirmationMessages();
       removeStagedReviewUpdateConfirmationMessages();
-      void sendChatMessage(t("chat-bulk-review-confirmed"), choices);
+      void sendChatMessage(t("chat-bulk-review-confirmed"), {
+        confirmedBulkReviewChoices: choices,
+      });
     },
     [
       removeBulkReviewConfirmationMessages,
@@ -1597,11 +1699,9 @@ export function useStationaryEnergyChatArtifactController(
   const confirmStagedReviewRollback = useCallback(
     (choices: StationaryEnergyToolChoiceSummary[]): void => {
       removeStagedReviewUpdateConfirmationMessages();
-      void sendChatMessage(
-        t("chat-staged-review-rollback-confirmed"),
-        undefined,
-        choices,
-      );
+      void sendChatMessage(t("chat-staged-review-rollback-confirmed"), {
+        confirmedRollbackReviewChoices: choices,
+      });
     },
     [removeStagedReviewUpdateConfirmationMessages, sendChatMessage, t],
   );
@@ -1672,6 +1772,7 @@ export function useStationaryEnergyChatArtifactController(
       activeProposalId: activeDecision?.proposal_id ?? null,
       canPersistDraftReview: canPersistDraft,
       canSaveToInventory: canSaveAcceptedRowsToInventory,
+      chatActivityLabel,
       chatInput,
       chatMessages,
       counts,

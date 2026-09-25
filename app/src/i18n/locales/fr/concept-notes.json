@@ -751,5 +751,22 @@
   "context-change-ghgi-updated": "Inventaire de GES {{year}} mis à jour avec de nouvelles données",
   "context-change-ghgi-removed": "L'inventaire de GES {{year}} n'est plus utilisé",
   "context-change-hiap-added": "Plan d'action climatique ajouté",
-  "context-change-hiap-removed": "Le plan d'action climatique n'est plus utilisé"
+  "context-change-hiap-removed": "Le plan d'action climatique n'est plus utilisé",
+  "included-partial": "Données partielles incluses",
+  "source-help-run-unavailable": "Ajoutez cette source dans CityCatalyst. Cette note la récupère automatiquement lorsque vous y revenez.",
+  "source-help-run-unavailable-existing": "Cette source existe dans la ville mais n'a pas pu être chargée pour cette note. Vérifiez ses données dans CityCatalyst; la note vérifie à nouveau lorsque vous y revenez.",
+  "ghgi-why": "Les données sur les émissions établissent le point de départ et les chapitres sur l'atténuation.",
+  "hiap-why": "Les actions climatiques prioritaires façonnent le projet proposé.",
+  "create-inventory": "Créer un inventaire",
+  "inventory-empty": "Inventaire vide",
+  "inventory-empty-detail-city": "Cet inventaire ne contient pas encore de données sur les émissions. Ajoutez des données afin que les notes conceptuelles puissent les utiliser.",
+  "hiap-no-actions": "Aucune action prioritaire",
+  "inventory-empty-detail": "Cet inventaire n'a pas encore de données sur les émissions, il ne peut donc pas informer le brouillon. Ajoutez des données ; cette note les récupère automatiquement lorsque vous y revenez.",
+  "add-inventory-data": "Ajouter des données d'inventaire",
+  "context-action-draft-running": "Attendez que la rédaction du chapitre soit terminée avant de modifier l'inventaire.",
+  "context-action-rebuilding": "Le contexte d'exécution est en cours de mise à jour. Cela prend un moment.",
+  "funder-why": "Les priorités du bailleur de fonds façonnent la manière dont chaque chapitre est structuré.",
+  "template-why": "Le modèle du programme définit les chapitres que Clima rédige.",
+  "template-choose": "Choisissez le programme",
+  "inventory-open-in-ghgi": "Ouvrir cet inventaire dans GHGI"
 }

@@ -751,5 +751,22 @@
   "context-change-ghgi-updated": "THG-Inventar {{year}} mit neuen Daten aktualisiert",
   "context-change-ghgi-removed": "THG-Inventar {{year}} wird nicht mehr verwendet",
   "context-change-hiap-added": "Klimaaktionsplan hinzugefügt",
-  "context-change-hiap-removed": "Klimaaktionsplan wird nicht mehr verwendet"
+  "context-change-hiap-removed": "Klimaaktionsplan wird nicht mehr verwendet",
+  "included-partial": "Inklusive, teilweise Daten",
+  "source-help-run-unavailable": "Fügen Sie diese Quelle in CityCatalyst hinzu. Diese Notiz erfasst sie automatisch, wenn Sie darauf zurückkommen.",
+  "source-help-run-unavailable-existing": "Diese Quelle existiert in der Stadt, konnte jedoch für diese Notiz nicht geladen werden. Überprüfen Sie ihre Daten in CityCatalyst; die Notiz prüft erneut, wenn Sie zu ihr zurückkehren.",
+  "ghgi-why": "Die Emissionsdaten bilden die Grundlage für die Baseline- und Minderungskapitel.",
+  "hiap-why": "Priorisierte Klimaschutzmaßnahmen prägen das vorgeschlagene Projekt.",
+  "create-inventory": "Inventar erstellen",
+  "inventory-empty": "Leeres Inventar",
+  "inventory-empty-detail-city": "Dieses Inventar hat noch keine Emissionsdaten. Fügen Sie Daten hinzu, damit Konzeptnotizen sie nutzen können.",
+  "hiap-no-actions": "Keine priorisierten Maßnahmen",
+  "inventory-empty-detail": "Dieses Inventar verfügt noch über keine Emissionsdaten, daher kann es den Entwurf nicht informieren. Fügen Sie Daten hinzu; diese Notiz erfasst sie automatisch, wenn Sie zu ihr zurückkehren.",
+  "add-inventory-data": "Inventardaten hinzufügen",
+  "context-action-draft-running": "Warten Sie darauf, dass das Entwerfen des Kapitels abgeschlossen ist, bevor Sie das Inventar ändern.",
+  "context-action-rebuilding": "Der Ausführungskontext wird aktualisiert. Dies dauert einen Moment.",
+  "funder-why": "Die Prioritäten des Geldgebers bestimmen, wie jedes Kapitel gestaltet wird.",
+  "template-why": "Die Vorlage des Programms legt die Kapitel fest, die Clima entwirft.",
+  "template-choose": "Programm auswählen",
+  "inventory-open-in-ghgi": "Öffnen Sie dieses Inventar in GHGI"
 }

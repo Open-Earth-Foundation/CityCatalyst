@@ -751,5 +751,22 @@
   "context-change-ghgi-updated": "Inventário de GEE {{year}} atualizado com novos dados",
   "context-change-ghgi-removed": "O inventário de GEE {{year}} não é mais usado",
   "context-change-hiap-added": "Plano de ação climática adicionado",
-  "context-change-hiap-removed": "O plano de ação climática não é mais usado"
+  "context-change-hiap-removed": "O plano de ação climática não é mais usado",
+  "included-partial": "Dados incluídos, parciais",
+  "source-help-run-unavailable": "Adicione esta fonte no CityCatalyst. Esta nota a reconhece automaticamente quando você retorna a ela.",
+  "source-help-run-unavailable-existing": "Esta fonte existe na cidade, mas não pôde ser carregada para esta nota. Verifique os seus dados no CityCatalyst; a nota verifica novamente quando você volta para ela.",
+  "ghgi-why": "Os dados de emissões fundamentam os capítulos de linha de base e mitigação.",
+  "hiap-why": "As ações climáticas prioritárias moldam o projeto proposto.",
+  "create-inventory": "Criar inventário",
+  "inventory-empty": "Inventário vazio",
+  "inventory-empty-detail-city": "Este inventário ainda não possui dados de emissões. Adicione dados para que as notas conceituais possam usá-lo.",
+  "hiap-no-actions": "Sem ações priorizadas",
+  "inventory-empty-detail": "Este inventário ainda não tem dados de emissões, portanto, não pode contribuir para o rascunho. Adicione dados; esta nota os registra automaticamente quando você retornar a ela.",
+  "add-inventory-data": "Adicionar dados de inventário",
+  "context-action-draft-running": "Aguarde o rascunho do capítulo terminar antes de alterar o inventário.",
+  "context-action-rebuilding": "O contexto de execução está sendo atualizado. Isso leva um momento.",
+  "funder-why": "As prioridades do financiador moldam como cada capítulo é estruturado.",
+  "template-why": "O modelo do programa define os capítulos que a Clima rascunha.",
+  "template-choose": "Escolha o programa",
+  "inventory-open-in-ghgi": "Abra este inventário no GHGI"
 }

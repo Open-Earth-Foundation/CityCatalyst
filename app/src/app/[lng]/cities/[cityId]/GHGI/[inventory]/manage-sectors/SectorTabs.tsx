@@ -180,6 +180,10 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   const [cardInputs, setCardInputs] = useState<Record<string, CardInputs>>({});
   // State for unsaved changes detection dialog
   const [isDirty, setIsDirty] = useState(false);
+  // Fields flagged as missing after a save attempt, keyed by subCategoryId
+  const [cardErrors, setCardErrors] = useState<
+    Record<string, { notationKey?: boolean; explanation?: boolean }>
+  >({});
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(
     null,
   );
@@ -193,7 +197,9 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     error,
   } = api.useGetNotationKeyScopesQuery(
     { inventoryId: inventoryId! },
-    { skip: !inventoryId },
+    // The save mutation doesn't invalidate this query, so refetch on mount
+    // to avoid showing stale values after saving and coming back
+    { skip: !inventoryId, refetchOnMountOrArgChange: true },
   );
 
   useEffect(() => {
@@ -320,6 +326,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       "included-elsewhere",
     ];
 
+    let incompleteCount = 0;
     let notationKeys: {
       subCategoryId: string;
       unavailableReason: string;
@@ -359,43 +366,44 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
           .map((scope) => (scope as ScopeData).subCategory?.subcategoryId),
       );
 
-      notationKeys = Object.entries(cardInputs)
-        .filter(([id, value]) => {
-          // Include cards from every sector tab
-          if (!allSubCategoryIds.has(id)) {
-            return false;
-          }
-          // Validate that the value exists and has required fields
-          if (!value || typeof value !== "object") {
-            return false;
-          }
-          // Check that notationKey is a valid enum value
-          if (
-            !value.notationKey ||
-            typeof value.notationKey !== "string" ||
-            !validReasons.includes(value.notationKey)
-          ) {
-            return false;
-          }
-          // Check that explanation is a non-empty string
-          if (
-            !value.explanation ||
-            typeof value.explanation !== "string" ||
-            value.explanation.trim().length === 0
-          ) {
-            return false;
-          }
-          return true;
-        })
-        .map(([id, value]) => ({
-          subCategoryId: id,
-          unavailableReason: value.notationKey as string,
-          unavailableExplanation: value.explanation.trim(),
-        }));
+      const errors: typeof cardErrors = {};
+      Object.entries(cardInputs).forEach(([id, value]) => {
+        // Include cards from every sector tab
+        if (!allSubCategoryIds.has(id) || !value) return;
+        const original = originalCardInputs[id];
+        const isEdited =
+          value.notationKey !== original?.notationKey ||
+          value.explanation !== original?.explanation;
+        if (!isEdited) return;
+
+        const hasKey = validReasons.includes(value.notationKey);
+        const hasExplanation = value.explanation?.trim().length > 0;
+        if (hasKey && hasExplanation) {
+          notationKeys.push({
+            subCategoryId: id,
+            unavailableReason: value.notationKey,
+            unavailableExplanation: value.explanation.trim(),
+          });
+        } else {
+          // Partially filled cards can't be saved; flag what's missing
+          errors[id] = { notationKey: !hasKey, explanation: !hasExplanation };
+        }
+      });
+      setCardErrors(errors);
+      incompleteCount = Object.keys(errors).length;
     }
 
     // Check if we have any valid notation keys to update
     if (notationKeys.length === 0) {
+      if (incompleteCount > 0) {
+        toaster.create({
+          title: t("warning"),
+          description: t("notation-keys-partially-saved"),
+          type: "warning",
+          duration: 7000,
+        });
+        return false;
+      }
       toaster.error({
         title: t("error"),
         description: t("error-updating-notation-keys"),
@@ -423,6 +431,16 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       setCardInputs((prev) => ({ ...prev, ...savedInputs }));
       // clear dirty state on success
       setIsDirty(false);
+      if (incompleteCount > 0) {
+        // Some cards were saved, the incomplete ones stay flagged
+        toaster.create({
+          title: t("warning"),
+          description: t("notation-keys-partially-saved"),
+          type: "warning",
+          duration: 7000,
+        });
+        return false;
+      }
       // show success toast
       if (!isLoading && !isError) {
         toaster.success({
@@ -474,6 +492,20 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     }
   };
 
+  const clearCardError = (
+    subCategoryId: string,
+    field: "notationKey" | "explanation",
+  ) => {
+    setCardErrors((prev) =>
+      prev[subCategoryId]?.[field]
+        ? {
+            ...prev,
+            [subCategoryId]: { ...prev[subCategoryId], [field]: false },
+          }
+        : prev,
+    );
+  };
+
   const leaveTo = (href: string) => {
     allowNavigationRef.current = true;
     setPendingNavigation(null);
@@ -484,6 +516,9 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     if (!pendingNavigation) return;
     if (await handleUpdateNotationKeys()) {
       leaveTo(pendingNavigation);
+    } else {
+      // Stay on the page so the flagged fields are visible
+      setPendingNavigation(null);
     }
   };
 
@@ -497,6 +532,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   const resetFormData = (): void => {
     // Reset all form data to original values
     setCardInputs(originalCardInputs);
+    setCardErrors({});
     setIsDirty(false);
     setQuickActionValues({});
     setSelectedCardsBySector({});
@@ -809,7 +845,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                       <CheckboxCard.Root
                         width="full"
                         key={item.subCategoryId}
-                        height="344px"
+                        minHeight="344px"
                         p={0}
                         borderCollapse="border.neutral"
                         boxShadow="1dp"
@@ -888,7 +924,16 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                                     )}
                                     options={notationKeyOptions}
                                     value={cardValue.notationKey}
-                                    onValueChange={(value) =>
+                                    invalid={
+                                      !!cardErrors[item.subCategoryId]
+                                        ?.notationKey
+                                    }
+                                    errorText={t("select-an-option")}
+                                    onValueChange={(value) => {
+                                      clearCardError(
+                                        item.subCategoryId,
+                                        "notationKey",
+                                      );
                                       setCardInputs((prev) => ({
                                         ...prev,
                                         [item.subCategoryId]: {
@@ -898,10 +943,17 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                                             prev[item.subCategoryId]
                                               ?.explanation || "",
                                         },
-                                      }))
-                                    }
+                                      }));
+                                    }}
                                   />
-                                  <Field.Root orientation="vertical" required>
+                                  <Field.Root
+                                    orientation="vertical"
+                                    required
+                                    invalid={
+                                      !!cardErrors[item.subCategoryId]
+                                        ?.explanation
+                                    }
+                                  >
                                     <Field.Label>
                                       <Text
                                         fontFamily="heading"
@@ -916,13 +968,22 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                                         "explanation-input-placeholder",
                                       )}
                                       borderWidth="1px"
-                                      borderColor="border.neutral"
+                                      borderColor={
+                                        cardErrors[item.subCategoryId]
+                                          ?.explanation
+                                          ? "sentiment.negativeDefault"
+                                          : "border.neutral"
+                                      }
                                       borderRadius="md"
                                       shadow="1dp"
                                       height="96px"
                                       resize="none"
                                       value={cardValue.explanation}
-                                      onChange={(e) =>
+                                      onChange={(e) => {
+                                        clearCardError(
+                                          item.subCategoryId,
+                                          "explanation",
+                                        );
                                         setCardInputs((prev) => ({
                                           ...prev,
                                           [item.subCategoryId]: {
@@ -932,10 +993,12 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                                               prev[item.subCategoryId]
                                                 ?.notationKey || "",
                                           },
-                                        }))
-                                      }
+                                        }));
+                                      }}
                                     />
-                                    <Field.ErrorText></Field.ErrorText>
+                                    <Field.ErrorText>
+                                      {t("type-in-a-justification")}
+                                    </Field.ErrorText>
                                   </Field.Root>
                                 </Box>
                               </Box>

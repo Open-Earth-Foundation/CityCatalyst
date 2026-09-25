@@ -92,20 +92,11 @@ const RouteChangeDialog: FC<RouteChangeDialogProps> = ({
                 onClick={onDiscard}
                 disabled={isSaving}
               >
-                {t("discard-changes")}
-              </Button>
-              <Button
-                variant="ghost"
-                w="full"
-                py="24px"
-                onClick={onStay}
-                disabled={isSaving}
-              >
-                {t("keep-editing")}
+                {t("discard-unsaved-changes")}
               </Button>
             </Dialog.Footer>
             <Dialog.CloseTrigger asChild>
-              <CloseButton size="sm" />
+              <CloseButton size="sm" color="content.secondary" />
             </Dialog.CloseTrigger>
           </Dialog.Content>
         </Dialog.Positioner>

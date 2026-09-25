@@ -19,7 +19,7 @@ import {
   MdOutlineVisibility,
 } from "react-icons/md";
 import { DeleteIcon } from "@/components/icons";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/ui/toaster";
 import { useTranslation } from "@/i18n/client";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
@@ -542,8 +542,6 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
           </DialogFooter>
         </DialogContent>
       </DialogRoot>
-
-      <Toaster />
     </>
   );
 };

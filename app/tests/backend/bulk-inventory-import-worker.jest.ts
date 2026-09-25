@@ -4,7 +4,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { randomUUID } from "node:crypto";
-import env from "@next/env";
+import { loadEnvConfig } from "@next/env";
 import { db } from "@/models";
 import { Roles } from "@/util/types";
 import {
@@ -44,7 +44,7 @@ describe("Bulk inventory import worker", () => {
   let createdScopeId: string | null = null;
 
   beforeAll(async () => {
-    env.loadEnvConfig(process.cwd());
+    loadEnvConfig(process.cwd());
     await db.initialize();
     await db.models.User.upsert({
       userId: testUserID,
@@ -265,5 +265,66 @@ describe("Bulk inventory import worker", () => {
     expect(job?.status).toBe("completed");
     expect(job?.importedCount).toBe(2);
     expect(job?.failedCount).toBe(1);
+  });
+
+  it("claims pending items atomically so two workers cannot import the same file", async () => {
+    const nameA = `${PREFIX}_ClaimA`;
+    const nameB = `${PREFIX}_ClaimB`;
+
+    const cityA = await db.models.City.create({
+      cityId: randomUUID(),
+      name: nameA,
+      projectId: DEFAULT_PROJECT_ID,
+    });
+    const cityB = await db.models.City.create({
+      cityId: randomUUID(),
+      name: nameB,
+      projectId: DEFAULT_PROJECT_ID,
+    });
+    createdCityIds.push(cityA.cityId, cityB.cityId);
+
+    for (const city of [cityA, cityB]) {
+      await db.models.Inventory.create({
+        inventoryId: randomUUID(),
+        cityId: city.cityId,
+        inventoryName: `${city.name} 2023`,
+        year: 2023,
+        inventoryType: InventoryTypeEnum.GPC_BASIC,
+        globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+      });
+    }
+
+    const zip = await createBulkInventoryImportZip({
+      [`${nameA}_CRFFormat_2023_20260917.csv`]: ecrfCsv(1),
+      [`${nameB}_CRFFormat_2023_20260917.csv`]: ecrfCsv(2),
+    });
+    const enqueued = await BulkInventoryImportEnqueueService.enqueue({
+      projectId: DEFAULT_PROJECT_ID,
+      year: 2023,
+      zipBuffer: zip,
+      zipFileName: "imp006-claim.zip",
+      userId: testUserID,
+    });
+    const claimJobId = enqueued.jobId;
+    expect(enqueued.itemCount).toBe(2);
+
+    const [batch1, batch2] = await Promise.all([
+      BulkInventoryImportWorkerService.claimPendingItems(10, claimJobId),
+      BulkInventoryImportWorkerService.claimPendingItems(10, claimJobId),
+    ]);
+
+    const ids1 = new Set(batch1.map((item) => item.id));
+    const ids2 = new Set(batch2.map((item) => item.id));
+    for (const id of ids1) {
+      expect(ids2.has(id)).toBe(false);
+    }
+    expect(ids1.size + ids2.size).toBe(2);
+    expect(
+      [...batch1, ...batch2].every((item) => item.status === "importing"),
+    ).toBe(true);
+
+    await db.models.BulkInventoryImportJob.destroy({
+      where: { id: claimJobId },
+    });
   });
 });

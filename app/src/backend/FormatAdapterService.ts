@@ -77,7 +77,7 @@ export default class FormatAdapterService {
       );
     }
 
-    // ── Adapter D (near-ecrf): GPC ref + totals (notation optional; Chile MEED CSVs omit it)
+    // ── Adapter D (near-ecrf): GPC ref + totals (+ notation, or Chile MEED markers)
     if (this.isNearECRF(headersLower)) {
       return { adapterType: "near-ecrf", isMultiCity, warnings };
     }
@@ -306,13 +306,49 @@ export default class FormatAdapterService {
 
   // ── Private: detection helpers ─────────────────────────────────────────────
 
-  /** Adapter D: GPC reference + total emissions. Notation is optional. */
+  /**
+   * Adapter D: GPC reference + total emissions.
+   * Notation key is required for the generic CRFFormat path. Chile MEED CSVs
+   * omit notation — only those packs may match without it (scoped markers).
+   */
   private static isNearECRF(headersLower: string[]): boolean {
     const hasGpcRef = headersLower.some((h) => /gpc.*(ref|reference)/i.test(h));
     const hasEmissions = headersLower.some((h) =>
       /total.*emission|total.*co2e|ghg.*emission/i.test(h),
     );
-    return hasGpcRef && hasEmissions;
+    if (!hasGpcRef || !hasEmissions) {
+      return false;
+    }
+
+    const hasNotation = headersLower.some((h) =>
+      /notation(\s*key)?/i.test(h),
+    );
+    if (hasNotation) {
+      return true;
+    }
+
+    // Do not loosen detection for every GPC+totals sheet — only Chile MEED-like packs.
+    return this.isChileMeedNearEcrfWithoutNotation(headersLower);
+  }
+
+  /** Chile MEED / similar: inventory + subsector metadata without a notation column. */
+  private static isChileMeedNearEcrfWithoutNotation(
+    headersLower: string[],
+  ): boolean {
+    const hasInventoryRef = headersLower.some((h) =>
+      /inventory\s*reference/i.test(h),
+    );
+    const hasSubsectorName = headersLower.some((h) =>
+      /subsector\s*name/i.test(h),
+    );
+    const hasEmissionUnits = headersLower.some((h) =>
+      /total\s*emission\s*units|emission\s*units/i.test(h),
+    );
+    // Require ≥2 Chile-specific markers so coincident GPC+totals sheets stay out.
+    return (
+      [hasInventoryRef, hasSubsectorName, hasEmissionUnits].filter(Boolean)
+        .length >= 2
+    );
   }
 
   /** Adapter B: 3+ headers contain a 4-digit calendar year. */

@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import { db } from "@/models";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import {
@@ -62,10 +62,7 @@ async function processItem(
   item: BulkInventoryImportItem,
   job: BulkInventoryImportJob,
 ): Promise<"completed" | "failed" | "skipped"> {
-  await item.update({
-    status: BulkInventoryImportItemStatus.IMPORTING,
-    lastUpdated: new Date(),
-  });
+  // Status is already IMPORTING from claimPendingItems (atomic claim).
 
   if (!job.userId) {
     await failItem(item, "missing_inventory", "Job has no user");
@@ -151,6 +148,67 @@ async function processItem(
 }
 
 export class BulkInventoryImportWorkerService {
+  /**
+   * Atomically claim the next pending items for this worker.
+   * SELECT … FOR UPDATE SKIP LOCKED + status flip to importing prevents
+   * cron and post-enqueue workers from importing the same file twice.
+   */
+  static async claimPendingItems(
+    batchSize = BULK_INVENTORY_IMPORT_WORKER_BATCH_SIZE,
+    jobId?: string,
+  ): Promise<BulkInventoryImportItem[]> {
+    if (!db.sequelize) {
+      throw new Error("Database not initialized");
+    }
+
+    return db.sequelize.transaction(async (transaction) => {
+      const locked = await db.sequelize!.query<{ id: string }>(
+        `
+        SELECT id
+        FROM "BulkInventoryImportItem"
+        WHERE status = :pending
+          ${jobId ? "AND job_id = :jobId" : ""}
+        ORDER BY created ASC
+        LIMIT :batchSize
+        FOR UPDATE SKIP LOCKED
+        `,
+        {
+          replacements: {
+            pending: BulkInventoryImportItemStatus.PENDING,
+            batchSize,
+            ...(jobId ? { jobId } : {}),
+          },
+          type: QueryTypes.SELECT,
+          transaction,
+        },
+      );
+
+      if (locked.length === 0) {
+        return [];
+      }
+
+      const ids = locked.map((row) => row.id);
+      const now = new Date();
+      await db.models.BulkInventoryImportItem.update(
+        {
+          status: BulkInventoryImportItemStatus.IMPORTING,
+          lastUpdated: now,
+        },
+        {
+          where: { id: { [Op.in]: ids } },
+          transaction,
+        },
+      );
+
+      return db.models.BulkInventoryImportItem.findAll({
+        where: { id: { [Op.in]: ids } },
+        include: [{ model: db.models.BulkInventoryImportJob, as: "job" }],
+        order: [["created", "ASC"]],
+        transaction,
+      });
+    });
+  }
+
   static async processDueJobs(
     batchSize = BULK_INVENTORY_IMPORT_WORKER_BATCH_SIZE,
     jobId?: string,
@@ -163,14 +221,7 @@ export class BulkInventoryImportWorkerService {
       itemsSkipped: 0,
     };
 
-    const items = await db.models.BulkInventoryImportItem.findAll({
-      where: jobId
-        ? { status: BulkInventoryImportItemStatus.PENDING, jobId }
-        : { status: BulkInventoryImportItemStatus.PENDING },
-      include: [{ model: db.models.BulkInventoryImportJob, as: "job" }],
-      order: [["created", "ASC"]],
-      limit: batchSize,
-    });
+    const items = await this.claimPendingItems(batchSize, jobId);
 
     if (items.length === 0) {
       return result;

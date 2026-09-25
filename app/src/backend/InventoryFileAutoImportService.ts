@@ -43,7 +43,7 @@ function fileTypeOf(filename: string): "xlsx" | "csv" | "pdf" | "unknown" {
 }
 
 /**
- * Chile MEED CSVs and CRFFormat packs detect as Adapter D (near-ecrf).
+ * Chile MEED CSVs (scoped header markers) and CRFFormat packs detect as Adapter D (near-ecrf).
  * Bulk import accepts Path A eCRF and Adapter D; everything that needs OpenAI is not_ecrf.
  */
 export function classifyBulkInventoryFile(validation: ValidationResult): {

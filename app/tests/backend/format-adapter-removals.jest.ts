@@ -112,4 +112,29 @@ describe("FormatAdapterService Adapter D removals", () => {
     expect(rows[0].gpcRefNo).toBe("I.1.1");
     expect(rows[0].totalCO2e).toBe(-12.5);
   });
+
+  it("does not treat bare GPC ref + totals (no notation, no Chile markers) as near-ecrf", () => {
+    const headers = ["GPC Reference Number", "Total Emissions", "Sector"];
+    const sheet = {
+      name: "Sheet1",
+      headers,
+      rows: [
+        {
+          "GPC Reference Number": "I.1.1",
+          "Total Emissions": 10,
+          Sector: "Stationary Energy",
+        },
+      ],
+      rowCount: 2,
+      columnCount: headers.length,
+    };
+    const parsed: ParsedFileData = {
+      sheets: [sheet],
+      primarySheet: sheet,
+      fileType: "csv",
+    };
+    expect(FormatAdapterService.detect(parsed).adapterType).not.toBe(
+      "near-ecrf",
+    );
+  });
 });

@@ -4,7 +4,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { randomUUID } from "node:crypto";
-import { loadEnvConfig } from "@next/env";
+import env from "@next/env";
 import { db } from "@/models";
 import { Roles } from "@/util/types";
 import {
@@ -44,7 +44,7 @@ describe("Bulk inventory import worker", () => {
   let createdScopeId: string | null = null;
 
   beforeAll(async () => {
-    loadEnvConfig(process.cwd());
+    env.loadEnvConfig(process.cwd());
     await db.initialize();
     await db.models.User.upsert({
       userId: testUserID,

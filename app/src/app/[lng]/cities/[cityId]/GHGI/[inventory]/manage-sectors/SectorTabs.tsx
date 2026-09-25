@@ -11,7 +11,14 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, {
+  FC,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { StationaryEnergyIcon } from "@/components/icons";
 
 import { MdInfoOutline } from "react-icons/md";
@@ -72,6 +79,55 @@ const groupScopesBySector = (
   });
 };
 
+// Action bar that sticks to the bottom of the card. It slides in once the user
+// scrolls down (or right away when the whole list already fits on screen).
+const StickyActionBar: FC<{ children: ReactNode }> = ({ children }) => {
+  const barRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const update = () => {
+      const grid =
+        barRef.current?.parentElement?.querySelector("[data-cards-grid]");
+      const cards = grid ? Array.from(grid.children) : [];
+      if (cards.length === 0) return;
+      const lastBottom = cards[cards.length - 1].getBoundingClientRect().bottom;
+      setVisible(window.scrollY > 0 || lastBottom <= window.innerHeight);
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
+  return (
+    <Box
+      ref={barRef}
+      position="sticky"
+      bottom={0}
+      zIndex={1}
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="flex-end"
+      alignSelf="stretch"
+      gap="10px"
+      p="xl"
+      borderBottomRadius="rounded"
+      bg="background.default"
+      boxShadow="shadow-lg-top"
+      transition="transform 400ms ease-out"
+      transform={visible ? "translateY(0)" : "translateY(calc(100% + 16px))"}
+      pointerEvents={visible ? "auto" : "none"}
+    >
+      {children}
+    </Box>
+  );
+};
+
 // convert sector reference number (roman numeral) to GPC sector name
 const getGPCSectorName = (sectorRef: SectorReference, t: TFunction): string => {
   const mapping: Record<string, string> = {
@@ -124,7 +180,13 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   const [cardInputs, setCardInputs] = useState<Record<string, CardInputs>>({});
   // State for unsaved changes detection dialog
   const [isDirty, setIsDirty] = useState(false);
-  const [showDialog, setShowDialog] = useState(false);
+  // Fields flagged as missing after a save attempt, keyed by subCategoryId
+  const [cardErrors, setCardErrors] = useState<
+    Record<string, { notationKey?: boolean; explanation?: boolean }>
+  >({});
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(
+    null,
+  );
   const pathname = usePathname();
   const [prevPathname, setPrevPathname] = useState(pathname);
   const [selectedSector, setSelectedSector] = useState<SectorReference>("I");
@@ -135,7 +197,9 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     error,
   } = api.useGetNotationKeyScopesQuery(
     { inventoryId: inventoryId! },
-    { skip: !inventoryId },
+    // The save mutation doesn't invalidate this query, so refetch on mount
+    // to avoid showing stale values after saving and coming back
+    { skip: !inventoryId, refetchOnMountOrArgChange: true },
   );
 
   useEffect(() => {
@@ -146,8 +210,8 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         return scopes.map((scope: ScopeData) => [
           scope.subCategory?.subcategoryId,
           {
-            notationKey: scope.inventoryValue?.unavailableReason,
-            explanation: scope.inventoryValue?.unavailableExplanation,
+            notationKey: scope.inventoryValue?.unavailableReason ?? "",
+            explanation: scope.inventoryValue?.unavailableExplanation ?? "",
           },
         ]);
       });
@@ -173,26 +237,75 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     setIsDirty(hasChanges);
   }, [cardInputs, originalCardInputs]);
 
-  // Listen to Next.js route changes for in-app navigation
+  // Number of cards with unsaved edits, shown on the save button
+  const pendingChangesCount = useMemo(
+    () =>
+      Object.entries(cardInputs).filter(([id, currentValue]) => {
+        const originalValue = originalCardInputs[id];
+        return (
+          currentValue.notationKey !== originalValue?.notationKey ||
+          currentValue.explanation !== originalValue?.explanation
+        );
+      }).length,
+    [cardInputs, originalCardInputs],
+  );
+
+  // Set right before an intentional navigation so the guards let it through
+  const allowNavigationRef = useRef(false);
+
+  // In-app links: intercept clicks and ask before leaving with unsaved changes
   useEffect(() => {
-    if (pathname !== prevPathname) {
-      if (isDirty) {
-        setShowDialog(true);
-        // Prevent navigation by pushing back to previous path
-        router.replace(prevPathname);
-      } else {
-        setPrevPathname(pathname);
+    if (!isDirty) return;
+    const handleClick = (e: MouseEvent) => {
+      if (
+        allowNavigationRef.current ||
+        e.defaultPrevented ||
+        e.button !== 0 ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.shiftKey ||
+        e.altKey
+      ) {
+        return;
       }
+      const anchor = (e.target as Element | null)?.closest?.("a[href]");
+      if (!anchor || anchor.hasAttribute("download")) return;
+      const target = anchor.getAttribute("target");
+      if (target && target !== "_self") return;
+      const url = new URL(
+        (anchor as HTMLAnchorElement).href,
+        window.location.href,
+      );
+      if (url.origin !== window.location.origin) return;
+      if (url.pathname === pathname && url.search === window.location.search) {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      setPendingNavigation(url.pathname + url.search + url.hash);
+    };
+    document.addEventListener("click", handleClick, true);
+    return () => document.removeEventListener("click", handleClick, true);
+  }, [isDirty, pathname]);
+
+  // Fallback for navigation that isn't a link click (e.g. browser back)
+  useEffect(() => {
+    if (pathname === prevPathname) return;
+    if (isDirty && !allowNavigationRef.current) {
+      setPendingNavigation(pathname);
+      // Prevent navigation by pushing back to previous path
+      router.replace(prevPathname);
+    } else {
+      setPrevPathname(pathname);
     }
   }, [pathname, prevPathname, isDirty, router]);
 
-  // beforeunload event for refresh/close scenarios
+  // Refresh/close: browsers only allow their own native confirmation here
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty) {
+      if (isDirty && !allowNavigationRef.current) {
         e.preventDefault();
-        setShowDialog(true);
-        return "";
+        e.returnValue = "";
       }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -202,7 +315,9 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   // update notation keys for subsectors from api service
   const [createNotationKeys, { isLoading, isError }] =
     api.useUpdateOrCreateNotationKeysMutation();
-  const handleUpdateNotationKeys = async (subCategoryId?: string) => {
+  const handleUpdateNotationKeys = async (
+    subCategoryId?: string,
+  ): Promise<boolean> => {
     // Valid enum values for unavailableReason
     const validReasons = [
       "no-occurrance",
@@ -211,6 +326,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       "included-elsewhere",
     ];
 
+    let incompleteCount = 0;
     let notationKeys: {
       subCategoryId: string;
       unavailableReason: string;
@@ -219,7 +335,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     if (subCategoryId) {
       // Update a single card
       const cardData = cardInputs[subCategoryId];
-      if (!cardData) return;
+      if (!cardData) return false;
 
       // Validate that both fields are filled
       if (
@@ -232,7 +348,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
           title: t("error"),
           description: t("error-updating-notation-keys"),
         });
-        return;
+        return false;
       }
 
       notationKeys = [
@@ -243,54 +359,56 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         },
       ];
     } else {
-      // Bulk update all cards that have been edited
-      const currentSectorSubCategoryIds =
-        (sectorData?.result[selectedSector] as ScopeData[] | undefined)?.map(
-          (scope) => scope.subCategory?.subcategoryId,
-        ) || [];
+      // Bulk update cards across all sector tabs
+      const allSubCategoryIds = new Set(
+        Object.values(sectorData?.result ?? {})
+          .flat()
+          .map((scope) => (scope as ScopeData).subCategory?.subcategoryId),
+      );
 
-      notationKeys = Object.entries(cardInputs)
-        .filter(([id, value]) => {
-          // Only include cards in the current sector
-          if (!currentSectorSubCategoryIds.includes(id)) {
-            return false;
-          }
-          // Validate that the value exists and has required fields
-          if (!value || typeof value !== "object") {
-            return false;
-          }
-          // Check that notationKey is a valid enum value
-          if (
-            !value.notationKey ||
-            typeof value.notationKey !== "string" ||
-            !validReasons.includes(value.notationKey)
-          ) {
-            return false;
-          }
-          // Check that explanation is a non-empty string
-          if (
-            !value.explanation ||
-            typeof value.explanation !== "string" ||
-            value.explanation.trim().length === 0
-          ) {
-            return false;
-          }
-          return true;
-        })
-        .map(([id, value]) => ({
-          subCategoryId: id,
-          unavailableReason: value.notationKey as string,
-          unavailableExplanation: value.explanation.trim(),
-        }));
+      const errors: typeof cardErrors = {};
+      Object.entries(cardInputs).forEach(([id, value]) => {
+        // Include cards from every sector tab
+        if (!allSubCategoryIds.has(id) || !value) return;
+        const original = originalCardInputs[id];
+        const isEdited =
+          value.notationKey !== original?.notationKey ||
+          value.explanation !== original?.explanation;
+        if (!isEdited) return;
+
+        const hasKey = validReasons.includes(value.notationKey);
+        const hasExplanation = value.explanation?.trim().length > 0;
+        if (hasKey && hasExplanation) {
+          notationKeys.push({
+            subCategoryId: id,
+            unavailableReason: value.notationKey,
+            unavailableExplanation: value.explanation.trim(),
+          });
+        } else {
+          // Partially filled cards can't be saved; flag what's missing
+          errors[id] = { notationKey: !hasKey, explanation: !hasExplanation };
+        }
+      });
+      setCardErrors(errors);
+      incompleteCount = Object.keys(errors).length;
     }
 
     // Check if we have any valid notation keys to update
     if (notationKeys.length === 0) {
+      if (incompleteCount > 0) {
+        toaster.create({
+          title: t("warning"),
+          description: t("notation-keys-partially-saved"),
+          type: "warning",
+          duration: 7000,
+        });
+        return false;
+      }
       toaster.error({
         title: t("error"),
         description: t("error-updating-notation-keys"),
       });
-      return;
+      return false;
     }
 
     try {
@@ -298,8 +416,31 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         inventoryId: inventoryId!,
         notationKeys: notationKeys,
       }).unwrap();
+      // Saved values become the new baseline, so clearing unsaved changes
+      // later restores what was just saved (the scopes query isn't refetched)
+      const savedInputs = Object.fromEntries(
+        notationKeys.map((key) => [
+          key.subCategoryId,
+          {
+            notationKey: key.unavailableReason,
+            explanation: key.unavailableExplanation,
+          },
+        ]),
+      );
+      setOriginalCardInputs((prev) => ({ ...prev, ...savedInputs }));
+      setCardInputs((prev) => ({ ...prev, ...savedInputs }));
       // clear dirty state on success
       setIsDirty(false);
+      if (incompleteCount > 0) {
+        // Some cards were saved, the incomplete ones stay flagged
+        toaster.create({
+          title: t("warning"),
+          description: t("notation-keys-partially-saved"),
+          type: "warning",
+          duration: 7000,
+        });
+        return false;
+      }
       // show success toast
       if (!isLoading && !isError) {
         toaster.success({
@@ -308,6 +449,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
           duration: 5000,
         });
       }
+      return true;
     } catch (error: unknown) {
       // Check if error is about emissions data
       type NotationKeyErrorData = {
@@ -346,16 +488,54 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         });
       }
       logger.error({ err: error }, "Failed to update notation keys");
+      return false;
     }
+  };
+
+  const clearCardError = (
+    subCategoryId: string,
+    field: "notationKey" | "explanation",
+  ) => {
+    setCardErrors((prev) =>
+      prev[subCategoryId]?.[field]
+        ? {
+            ...prev,
+            [subCategoryId]: { ...prev[subCategoryId], [field]: false },
+          }
+        : prev,
+    );
+  };
+
+  const leaveTo = (href: string) => {
+    allowNavigationRef.current = true;
+    setPendingNavigation(null);
+    router.push(href);
+  };
+
+  const handleSaveAndLeave = async () => {
+    if (!pendingNavigation) return;
+    if (await handleUpdateNotationKeys()) {
+      leaveTo(pendingNavigation);
+    } else {
+      // Stay on the page so the flagged fields are visible
+      setPendingNavigation(null);
+    }
+  };
+
+  const handleDiscardAndLeave = () => {
+    if (!pendingNavigation) return;
+    const href = pendingNavigation;
+    resetFormData();
+    leaveTo(href);
   };
 
   const resetFormData = (): void => {
     // Reset all form data to original values
     setCardInputs(originalCardInputs);
+    setCardErrors({});
     setIsDirty(false);
     setQuickActionValues({});
     setSelectedCardsBySector({});
-    setShowDialog(false);
 
     // Force a re-render of the form by resetting the selected sector
     setSelectedSector(selectedSector);
@@ -434,7 +614,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     toaster.create({
       title: t("success"),
       description: t("changes-undone"),
-      type: "info",
+      type: "success",
     });
   };
   // sector tab content - subsectors
@@ -518,298 +698,360 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
             bg="base.light"
             borderRadius="rounded"
             boxShadow="1dp"
-            p="l"
             display="flex"
             flexDirection="column"
           >
-            {/* Heading */}
-            <Box mb="48px" display="flex" flexDirection="column" gap="16px">
-              <Box display="flex" alignItems="center" gap="16px">
-                <Icon as={StationaryEnergyIcon} color="interactive.control" />
+            {/* Main content */}
+            <Box as="section" p="l">
+              {/* Heading */}
+              <Box mb="48px" display="flex" flexDirection="column" gap="16px">
+                <Box display="flex" alignItems="center" gap="16px">
+                  <Icon as={StationaryEnergyIcon} color="interactive.control" />
+                  <Text
+                    fontSize="title.lg"
+                    fontFamily="heading"
+                    fontWeight="bold"
+                  >
+                    {getGPCSectorName(group.sectorRef, t)}
+                  </Text>
+                </Box>
                 <Text
-                  fontSize="title.lg"
-                  fontFamily="heading"
-                  fontWeight="bold"
+                  fontSize="body.lg"
+                  fontFamily="body"
+                  color="content.tertiary"
                 >
-                  {getGPCSectorName(group.sectorRef, t)}
+                  {t("content-description")}
                 </Text>
               </Box>
-              <Text
-                fontSize="body.lg"
-                fontFamily="body"
-                color="content.tertiary"
+              {/* Quick Action Form */}
+              <Box
+                mb="48px"
+                display="flex"
+                flexDirection="column"
+                gap="16px"
+                bg="background.alternativeLight"
+                borderWidth="1px"
+                borderColor="border.neutral"
+                borderRadius="rounded"
+                p="16px"
               >
-                {t("content-description")}
-              </Text>
-            </Box>
-            {/* Quick Action Form */}
-            <Box
-              mb="48px"
-              display="flex"
-              flexDirection="column"
-              gap="16px"
-              bg="background.alternativeLight"
-              borderWidth="1px"
-              borderColor="border.neutral"
-              borderRadius="rounded"
-              p="16px"
-            >
-              <Box display="flex" alignItems="center" gap="8px">
-                <Checkbox
-                  checked={
-                    unfinishedItems.length > 0 &&
-                    selectedForThisSector.length === unfinishedItems.length
-                  }
-                  onCheckedChange={handleSelectAll}
-                >
-                  <Text
-                    color="content.primary"
-                    fontFamily="body"
-                    fontSize="body.md"
-                    fontWeight="medium"
-                    lineHeight="20"
+                <Box display="flex" alignItems="center" gap="8px">
+                  <Checkbox
+                    css={{
+                      "& [data-part=control]:not([data-state=checked]):not([data-state=indeterminate])":
+                        { bg: "background.default" },
+                    }}
+                    checked={
+                      unfinishedItems.length > 0 &&
+                      selectedForThisSector.length === unfinishedItems.length
+                    }
+                    onCheckedChange={handleSelectAll}
                   >
-                    {t("select-all-subsectors")}
-                  </Text>
-                </Checkbox>
-              </Box>
-              <Separator borderColor="border.neutral" />
-              <Box display="flex" gap="16px" alignItems="end">
-                <Dropdown
-                  maxW="340px"
-                  label={t("notation-key")}
-                  labelIcon={MdInfoOutline}
-                  labelIconTooltip={t("notation-key-tooltip")}
-                  placeholder={t("notation-key-input-placeholder")}
-                  options={notationKeyOptions}
-                  value={quickValues.notationKey}
-                  onValueChange={(newValue) =>
-                    setQuickActionValues((prev) => ({
-                      ...prev,
-                      [group.sector.sectorId]: {
-                        ...prev[group.sector.sectorId],
-                        notationKey: newValue,
-                        explanation:
-                          prev[group.sector.sectorId]?.explanation || "",
-                      },
-                    }))
-                  }
-                />
-                <Field.Root orientation="vertical" flex="1">
-                  <Field.Label>
                     <Text
-                      fontFamily="heading"
-                      color="content.secondary"
-                      fontSize="label.lg"
+                      color="content.primary"
+                      fontFamily="body"
+                      fontSize="body.md"
                       fontWeight="medium"
                       lineHeight="20"
-                      letterSpacing="wide"
                     >
-                      {t("justification")}
+                      {t("select-all-subsectors")}
                     </Text>
-                  </Field.Label>
-                  <Input
-                    placeholder={t("explanation-input-placeholder")}
-                    borderWidth="1px"
-                    borderColor="border.neutral"
-                    borderRadius="minimal"
-                    bg="background.default"
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                    color="content.tertiary"
-                    fontFamily="body"
-                    fontSize="body.lg"
-                    fontWeight="regular"
-                    lineHeight="24"
-                    letterSpacing="wide"
-                    value={quickValues.explanation}
-                    onChange={(e) =>
+                  </Checkbox>
+                </Box>
+                <Separator borderColor="border.neutral" />
+                <Box display="flex" gap="16px" alignItems="end">
+                  <Dropdown
+                    maxW="340px"
+                    label={t("notation-key")}
+                    labelIcon={MdInfoOutline}
+                    labelIconTooltip={t("notation-key-tooltip")}
+                    placeholder={t("notation-key-input-placeholder")}
+                    options={notationKeyOptions}
+                    value={quickValues.notationKey}
+                    onValueChange={(newValue) =>
                       setQuickActionValues((prev) => ({
                         ...prev,
                         [group.sector.sectorId]: {
                           ...prev[group.sector.sectorId],
-                          explanation: e.target.value,
-                          notationKey:
-                            prev[group.sector.sectorId]?.notationKey || "",
+                          notationKey: newValue,
+                          explanation:
+                            prev[group.sector.sectorId]?.explanation || "",
                         },
                       }))
                     }
                   />
-                  <Field.ErrorText></Field.ErrorText>
-                </Field.Root>
-                <Button variant="outline" onClick={handleApplyToAll}>
-                  {t("apply-to-all")}
-                </Button>
-              </Box>
-            </Box>
-            {/* Checkbox Cards for each item */}
-            {unfinishedItems.length > 0 ? (
-              <Box
-                display="grid"
-                gridTemplateColumns="repeat(auto-fill, minmax(450px, 1fr))"
-                gap="xxl-2"
-              >
-                {unfinishedItems.map((item) => {
-                  // Use the subCategoryId as the unique key for each card
-                  const cardValue = cardInputs[item.subCategoryId] || {
-                    notationKey: "",
-                    explanation: "",
-                  };
-                  return (
-                    <CheckboxCard.Root
-                      width="full"
-                      key={item.subCategoryId}
-                      height="344px"
-                      p={0}
-                      borderCollapse="border.neutral"
-                      boxShadow="1dp"
-                      checked={selectedForThisSector.includes(
-                        item.subCategoryId,
-                      )}
-                      onCheckedChange={() =>
-                        handleToggleCard(item.subCategoryId)
+                  <Field.Root orientation="vertical" flex="1">
+                    <Field.Label>
+                      <Text
+                        fontFamily="heading"
+                        color="content.secondary"
+                        fontSize="label.lg"
+                        fontWeight="medium"
+                        lineHeight="20"
+                        letterSpacing="wide"
+                      >
+                        {t("justification")}
+                      </Text>
+                    </Field.Label>
+                    <Input
+                      placeholder={t("explanation-input-placeholder")}
+                      borderWidth="1px"
+                      borderColor="border.neutral"
+                      borderRadius="minimal"
+                      bg="background.default"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      color="content.tertiary"
+                      fontFamily="body"
+                      fontSize="body.lg"
+                      fontWeight="regular"
+                      lineHeight="24"
+                      letterSpacing="wide"
+                      value={quickValues.explanation}
+                      onChange={(e) =>
+                        setQuickActionValues((prev) => ({
+                          ...prev,
+                          [group.sector.sectorId]: {
+                            ...prev[group.sector.sectorId],
+                            explanation: e.target.value,
+                            notationKey:
+                              prev[group.sector.sectorId]?.notationKey || "",
+                          },
+                        }))
                       }
-                    >
-                      <CheckboxCard.HiddenInput />
-                      <CheckboxCard.Control>
-                        <CheckboxCard.Content>
-                          <CheckboxCard.Label my="24px">
-                            <Text
-                              overflow="hidden"
-                              textOverflow="ellipsis"
-                              color="content.primary"
-                              fontFamily="heading"
-                              fontSize="overline"
-                              fontWeight="semibold"
-                              lineHeight="16"
-                              letterSpacing="widest"
-                              textTransform="uppercase"
-                              lineClamp={2}
-                            >
-                              {t(item.subCategoryReferenceNumber!)}{" "}
-                              {t(item.subSectorName)} –{" "}
-                              {t(item.subCategoryName)}
-                            </Text>
-                          </CheckboxCard.Label>
-                          <CheckboxCard.Description
-                            w="full"
-                            color="content.secondary"
-                            opacity="1"
-                          >
-                            <Box
-                              mb="48px"
-                              display="flex"
-                              flexDirection="column"
-                              gap="32px"
+                    />
+                    <Field.ErrorText></Field.ErrorText>
+                  </Field.Root>
+                  <Button variant="outline" onClick={handleApplyToAll}>
+                    {t("apply-to-all")}
+                  </Button>
+                </Box>
+              </Box>
+              {/* Checkbox Cards for each item */}
+              {unfinishedItems.length > 0 ? (
+                <Box
+                  display="grid"
+                  data-cards-grid
+                  gridTemplateColumns="repeat(auto-fill, minmax(450px, 1fr))"
+                  gap="l"
+                >
+                  {unfinishedItems.map((item) => {
+                    // Use the subCategoryId as the unique key for each card
+                    const cardValue = cardInputs[item.subCategoryId] || {
+                      notationKey: "",
+                      explanation: "",
+                    };
+                    return (
+                      <CheckboxCard.Root
+                        width="full"
+                        key={item.subCategoryId}
+                        minHeight="344px"
+                        p={0}
+                        borderCollapse="border.neutral"
+                        boxShadow="1dp"
+                        checked={selectedForThisSector.includes(
+                          item.subCategoryId,
+                        )}
+                        onCheckedChange={() =>
+                          handleToggleCard(item.subCategoryId)
+                        }
+                      >
+                        <CheckboxCard.HiddenInput />
+                        <CheckboxCard.Control>
+                          <CheckboxCard.Content>
+                            <CheckboxCard.Label my="24px">
+                              <Box display="flex" alignItems="center" gap="s">
+                                <Box
+                                  flexShrink={0}
+                                  px="s"
+                                  py="xs"
+                                  bg="background.graySubtle"
+                                  borderRadius="rounded"
+                                >
+                                  <Text
+                                    color="content.primary"
+                                    fontFamily="heading"
+                                    fontSize="overline"
+                                    fontWeight="semibold"
+                                    lineHeight="16"
+                                    letterSpacing="widest"
+                                    textTransform="uppercase"
+                                  >
+                                    {t(item.subCategoryReferenceNumber!)}
+                                  </Text>
+                                </Box>
+                                <Text
+                                  overflow="hidden"
+                                  textOverflow="ellipsis"
+                                  color="content.primary"
+                                  fontFamily="heading"
+                                  fontSize="overline"
+                                  fontWeight="semibold"
+                                  lineHeight="16"
+                                  letterSpacing="widest"
+                                  textTransform="uppercase"
+                                  lineClamp={2}
+                                >
+                                  {t(item.subSectorName)} –{" "}
+                                  {t(item.subCategoryName)}
+                                </Text>
+                              </Box>
+                            </CheckboxCard.Label>
+                            <CheckboxCard.Description
                               w="full"
+                              color="content.secondary"
+                              opacity="1"
                             >
                               <Box
+                                mb="48px"
                                 display="flex"
-                                flexDir="column"
-                                gap="16px"
+                                flexDirection="column"
+                                gap="32px"
                                 w="full"
                               >
-                                <Dropdown
-                                  width="full"
-                                  label={t("notation-key")}
-                                  required
-                                  placeholder={t(
-                                    "notation-key-input-placeholder",
-                                  )}
-                                  options={notationKeyOptions}
-                                  value={cardValue.notationKey}
-                                  onValueChange={(value) =>
-                                    setCardInputs((prev) => ({
-                                      ...prev,
-                                      [item.subCategoryId]: {
-                                        ...prev[item.subCategoryId],
-                                        notationKey: value,
-                                        explanation:
-                                          prev[item.subCategoryId]
-                                            ?.explanation || "",
-                                      },
-                                    }))
-                                  }
-                                />
-                                <Field.Root orientation="vertical" required>
-                                  <Field.Label>
-                                    <Text
-                                      fontFamily="heading"
-                                      color="content.secondary"
-                                    >
-                                      {t("justification")}
-                                    </Text>
-                                    <Field.RequiredIndicator />
-                                  </Field.Label>
-                                  <Textarea
+                                <Box
+                                  display="flex"
+                                  flexDir="column"
+                                  gap="16px"
+                                  w="full"
+                                >
+                                  <Dropdown
+                                    width="full"
+                                    label={t("notation-key")}
+                                    required
                                     placeholder={t(
-                                      "explanation-input-placeholder",
+                                      "notation-key-input-placeholder",
                                     )}
-                                    borderWidth="1px"
-                                    borderColor="border.neutral"
-                                    borderRadius="md"
-                                    shadow="1dp"
-                                    height="96px"
-                                    value={cardValue.explanation}
-                                    onChange={(e) =>
+                                    options={notationKeyOptions}
+                                    value={cardValue.notationKey}
+                                    invalid={
+                                      !!cardErrors[item.subCategoryId]
+                                        ?.notationKey
+                                    }
+                                    errorText={t("select-an-option")}
+                                    onValueChange={(value) => {
+                                      clearCardError(
+                                        item.subCategoryId,
+                                        "notationKey",
+                                      );
                                       setCardInputs((prev) => ({
                                         ...prev,
                                         [item.subCategoryId]: {
                                           ...prev[item.subCategoryId],
-                                          explanation: e.target.value,
-                                          notationKey:
+                                          notationKey: value,
+                                          explanation:
                                             prev[item.subCategoryId]
-                                              ?.notationKey || "",
+                                              ?.explanation || "",
                                         },
-                                      }))
-                                    }
+                                      }));
+                                    }}
                                   />
-                                  <Field.ErrorText></Field.ErrorText>
-                                </Field.Root>
+                                  <Field.Root
+                                    orientation="vertical"
+                                    required
+                                    invalid={
+                                      !!cardErrors[item.subCategoryId]
+                                        ?.explanation
+                                    }
+                                  >
+                                    <Field.Label>
+                                      <Text
+                                        fontFamily="heading"
+                                        color="content.secondary"
+                                      >
+                                        {t("justification")}
+                                      </Text>
+                                      <Field.RequiredIndicator />
+                                    </Field.Label>
+                                    <Textarea
+                                      placeholder={t(
+                                        "explanation-input-placeholder",
+                                      )}
+                                      borderWidth="1px"
+                                      borderColor={
+                                        cardErrors[item.subCategoryId]
+                                          ?.explanation
+                                          ? "sentiment.negativeDefault"
+                                          : "border.neutral"
+                                      }
+                                      borderRadius="md"
+                                      shadow="1dp"
+                                      height="96px"
+                                      resize="none"
+                                      value={cardValue.explanation}
+                                      onChange={(e) => {
+                                        clearCardError(
+                                          item.subCategoryId,
+                                          "explanation",
+                                        );
+                                        setCardInputs((prev) => ({
+                                          ...prev,
+                                          [item.subCategoryId]: {
+                                            ...prev[item.subCategoryId],
+                                            explanation: e.target.value,
+                                            notationKey:
+                                              prev[item.subCategoryId]
+                                                ?.notationKey || "",
+                                          },
+                                        }));
+                                      }}
+                                    />
+                                    <Field.ErrorText>
+                                      {t("type-in-a-justification")}
+                                    </Field.ErrorText>
+                                  </Field.Root>
+                                </Box>
                               </Box>
-                            </Box>
-                          </CheckboxCard.Description>
-                        </CheckboxCard.Content>
-                        <CheckboxCard.Indicator />
-                      </CheckboxCard.Control>
-                    </CheckboxCard.Root>
-                  );
-                })}
-              </Box>
-            ) : (
-              <Text>{t("no-unfinished-subsectors")}</Text>
-            )}
+                            </CheckboxCard.Description>
+                          </CheckboxCard.Content>
+                          <CheckboxCard.Indicator />
+                        </CheckboxCard.Control>
+                      </CheckboxCard.Root>
+                    );
+                  })}
+                </Box>
+              ) : (
+                <Text>{t("no-unfinished-subsectors")}</Text>
+              )}
+            </Box>
             {unfinishedItems.length > 0 && (
-              <Box
-                pt="48px"
-                display="flex"
-                justifyContent="flex-end"
-                gap="16px"
-              >
-                <Button
-                  height="xxl-2"
-                  width="150px"
-                  variant="outline"
-                  onClick={handleUndoChanges}
-                  disabled={!isDirty}
-                >
-                  {t("cancel")}
-                </Button>
-                <Button
-                  height="xxl-2"
-                  width="150px"
-                  variant="solid"
-                  onClick={() => handleUpdateNotationKeys()}
-                  loading={isLoading}
-                  disabled={!isDirty}
-                  _disabled={{
-                    bg: "gray.medium",
-                    _hover: { bg: "gray.medium" },
-                  }}
-                >
-                  {t("update")}
-                </Button>
-              </Box>
+              <StickyActionBar>
+                <Box display="flex" gap="16px">
+                  <Button
+                    height="xxl-2"
+                    minWidth="150px"
+                    width="fit-content"
+                    px="l"
+                    whiteSpace="nowrap"
+                    variant="outline"
+                    onClick={() => isDirty && handleUndoChanges()}
+                  >
+                    {t("discard-unsaved-changes")}
+                  </Button>
+                  <Button
+                    height="xxl-2"
+                    minWidth="150px"
+                    width="fit-content"
+                    px="l"
+                    whiteSpace="nowrap"
+                    variant="solid"
+                    onClick={() => handleUpdateNotationKeys()}
+                    loading={isLoading}
+                    disabled={!isDirty}
+                    _disabled={{
+                      borderRadius: "full",
+                      bg: "gray.medium",
+                      color: "base.light",
+                      _hover: { bg: "gray.medium" },
+                    }}
+                  >
+                    {t("save-all-changes")}
+                    {isDirty && pendingChangesCount > 0
+                      ? ` (${pendingChangesCount})`
+                      : ""}
+                  </Button>
+                </Box>
+              </StickyActionBar>
             )}
           </Box>
         </Tabs.Content>
@@ -832,10 +1074,11 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       </Tabs.Root>
       <RouteChangeDialog
         t={t}
-        showDialog={showDialog}
-        setShowDialog={setShowDialog}
-        confirmNavigation={resetFormData}
-        cancelNavigation={() => setShowDialog(false)}
+        showDialog={pendingNavigation !== null}
+        isSaving={isLoading}
+        onSave={handleSaveAndLeave}
+        onDiscard={handleDiscardAndLeave}
+        onStay={() => setPendingNavigation(null)}
       />
     </>
   );

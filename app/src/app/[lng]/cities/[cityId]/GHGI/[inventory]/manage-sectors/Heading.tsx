@@ -88,18 +88,11 @@ const Heading: FC<HeadingProps> = ({ t }) => {
         <Button
           variant="ghost"
           color="content.link"
-          px={1}
           onClick={() => router.push(inventoryHomePath)}
         >
           <Icon as={MdArrowBack} />
           {t("go-back")}
         </Button>
-        <Box
-          h="24px"
-          borderRightWidth={1}
-          borderColor="border.neutral"
-          w="24px"
-        />
       </Box>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Box>

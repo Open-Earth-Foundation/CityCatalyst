@@ -647,7 +647,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
               <Box
                 display="grid"
                 gridTemplateColumns="repeat(auto-fill, minmax(450px, 1fr))"
-                gap="xxl-2"
+                gap="l"
               >
                 {unfinishedItems.map((item) => {
                   // Use the subCategoryId as the unique key for each card
@@ -803,11 +803,13 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                   loading={isLoading}
                   disabled={!isDirty}
                   _disabled={{
+                    borderRadius: "full",
                     bg: "gray.medium",
+                    color: "base.light",
                     _hover: { bg: "gray.medium" },
                   }}
                 >
-                  {t("update")}
+                  {t("save-changes")}
                 </Button>
               </Box>
             )}

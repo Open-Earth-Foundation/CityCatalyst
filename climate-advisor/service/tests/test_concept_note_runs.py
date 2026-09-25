@@ -28,6 +28,96 @@ from app.services.concept_note_runs import (
 )
 
 
+async def test_initial_uploads_survive_reload_and_partial_receipt() -> None:
+    from app.models.cnb.concept_note_runs import InitialConceptNoteUpload
+    from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteUpload
+
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:", poolclass=StaticPool)
+    factory = async_sessionmaker(engine, expire_on_commit=False)
+    payload = _start_request()
+    first_id, second_id = uuid4(), uuid4()
+    payload.initial_uploads = [
+        InitialConceptNoteUpload(
+            upload_id=first_id, filename="first.md", sha256="a" * 64
+        ),
+        InitialConceptNoteUpload(
+            upload_id=second_id, filename="second.md", sha256="b" * 64
+        ),
+    ]
+    client = AsyncMock(spec=CityCatalystClient)
+    client.validate_user_identity.return_value = payload.user_id
+    client.get_city.return_value = {}
+    validator = AsyncMock(spec=FundingReferenceValidator)
+    try:
+        async with engine.begin() as connection:
+            for model in (ConceptNoteRun, ConceptNoteContextBundle, ConceptNoteUpload):
+                await connection.run_sync(model.__table__.create)
+        async with factory() as session:
+            service = ConceptNoteRunService(
+                session, cc_client=client, funding_reference_validator=validator
+            )
+            run = await service.start_run(payload, authorization="Bearer test")
+            await session.commit()
+            run_id = run.run_id
+        async with factory() as session:
+            service = ConceptNoteRunService(
+                session, cc_client=client, funding_reference_validator=validator
+            )
+            listing = await service.list_runs(
+                requested_user_id=payload.user_id,
+                city_id=payload.city_id,
+                authorization="Bearer test",
+            )
+            assert len(listing.runs) == 1
+            sources = listing.runs[0].progress_summary["initial_uploads"]
+            assert len(sources) == 2
+            assert not any(source.get("accepted") for source in sources)
+            session.add(
+                ConceptNoteUpload(
+                    upload_id=first_id,
+                    run_id=run_id,
+                    uploaded_by_user_id=payload.user_id,
+                    filename="first.md",
+                    ingest_status="queued",
+                )
+            )
+            await session.commit()
+            for _ in range(2):
+                await service.accept_initial_upload(
+                    run_id=run_id,
+                    upload_id=first_id,
+                    requested_user_id=payload.user_id,
+                    authorization="Bearer test",
+                )
+            with pytest.raises(HTTPException) as missing:
+                await service.accept_initial_upload(
+                    run_id=run_id,
+                    upload_id=second_id,
+                    requested_user_id=payload.user_id,
+                    authorization="Bearer test",
+                )
+            assert missing.value.status_code == 404
+        async with factory() as session:
+            service = ConceptNoteRunService(
+                session, cc_client=client, funding_reference_validator=validator
+            )
+            run = await service.get_run(
+                run_id=run_id,
+                requested_user_id=payload.user_id,
+                authorization="Bearer test",
+            )
+            sources = run.progress_summary["initial_uploads"]
+            assert sources[0]["accepted"] is True
+            assert not sources[1].get("accepted")
+            assert len(run.uploads) == 1
+            replay = await service.start_run(payload, authorization="Bearer test")
+            assert not replay.created
+            assert replay.run_id == run_id
+            assert replay.progress_summary["initial_uploads"][0]["accepted"] is True
+    finally:
+        await engine.dispose()
+
+
 def _start_request(
     *,
     user_id: str = "owner-1",

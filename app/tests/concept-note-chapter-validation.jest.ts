@@ -67,6 +67,12 @@ describe("chapter-validation presentation", () => {
         data: { code: "chapter_validation_template_unavailable" },
       }),
     ).toBe("template_unavailable");
+    expect(
+      getChapterReviewErrorKind({
+        status: 409,
+        data: { code: "chapter_validation_template_invalid" },
+      }),
+    ).toBe("template_invalid");
     expect(getChapterReviewErrorKind({ status: 503 })).toBe(
       "service_unavailable",
     );

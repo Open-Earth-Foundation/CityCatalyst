@@ -4,7 +4,7 @@ import { logger } from "@/services/logger";
 /**
  * Server-side reader for the Global API endpoints the MEED+ module consumes.
  *
- * The prototype called these six endpoints directly from the browser (16 call
+ * The prototype called these endpoints directly from the browser (16 call
  * sites — see docs/MeedModuleMigration-Inventory.md §1); routing them through
  * here gives the module one API boundary and keeps filtering consistent with
  * what `hiap-meed` reads server-side.
@@ -64,31 +64,5 @@ export class MeedGlobalApiService {
       `/api/v1/cities/${encodeURIComponent(locode)}/action-policy-scores`,
       { top_evidence_limit: String(topEvidenceLimit) },
     );
-  }
-
-  /** Climate-finance feasibility rows per action. */
-  public static async fetchFinanceFeasibility(
-    locode: string,
-    countryCode: string,
-  ): Promise<unknown | null> {
-    return this.fetchJson(
-      `/api/v1/cities/${encodeURIComponent(locode)}/climate-finance/feasibility`,
-      { country_code: countryCode },
-    );
-  }
-
-  /**
-   * Follow a relative link returned inside a Global API response
-   * (`links.projects` / `links.opportunities` on finance feasibility rows).
-   * Only Global-API city paths are allowed.
-   */
-  public static async followLink(relativePath: string): Promise<unknown | null> {
-    if (!relativePath.startsWith("/api/v1/cities/")) {
-      logger.warn(
-        `MeedGlobalApiService.followLink rejected path: ${relativePath}`,
-      );
-      return null;
-    }
-    return this.fetchJson(relativePath);
   }
 }

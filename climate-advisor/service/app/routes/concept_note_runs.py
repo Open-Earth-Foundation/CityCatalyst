@@ -2,10 +2,17 @@
 
 from __future__ import annotations
 
+import asyncio
+from contextlib import suppress
 from typing import Annotated
 from uuid import UUID
 
+from app.config.settings import get_settings
 from app.db.session import get_session
+from app.models.cnb.chat_suggestions import (
+    ChatSuggestionsRequest,
+    ChatSuggestionsResponse,
+)
 from app.models.cnb.concept_note_application_context import (
     ConceptNoteApplicationContextResponse,
 )
@@ -20,6 +27,11 @@ from app.models.cnb.concept_note_runs import (
     ConceptNoteRunResponse,
     ConceptNoteStartRequest,
 )
+from app.models.cnb.funding_catalogue import (
+    FundingCatalogueResponse,
+    FundingSelectionRequest,
+)
+from app.models.db.concept_note import ConceptNoteContextBundle as ContextBundleRow
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
 )
@@ -29,27 +41,95 @@ from app.services.cnb.chapter_drafting import (
     get_chapter_draft_service,
     schedule_chapter_drafting,
 )
+from app.services.cnb.chat_suggestions import (
+    build_suggestion_context,
+    generate_chat_suggestions,
+)
 from app.services.cnb.context_bundle import (
     ContextBundleService,
     get_context_bundle_service,
 )
-from app.services.concept_note_runs import ConceptNoteRunService
+from app.services.cnb.funding_catalogue import load_funding_catalogue
+from app.services.cnb.funding_selection import save_funding_selection
 from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
+from app.services.concept_note_runs import ConceptNoteRunService
+from app.services.message_service import MessageService
 from app.utils.cnb_observability import CNBInteraction
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
     log_tags,
     set_span_outputs,
-    start_run as start_mlflow_run,
     start_trace_span,
     update_current_trace_context,
 )
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
+from app.utils.mlflow_logging import (
+    start_run as start_mlflow_run,
+)
+from fastapi import (
+    APIRouter,
+    Depends,
+    Header,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    status,
+)
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
+
+
+@router.post(
+    "/concept-notes/{run_id}/chat/suggestions",
+    response_model=ChatSuggestionsResponse,
+)
+async def propose_chat_questions(
+    run_id: UUID,
+    payload: ChatSuggestionsRequest,
+    request: Request,
+    draft_service: Annotated[
+        ConceptNoteChapterDraftService | None, Depends(get_chapter_draft_service)
+    ],
+    session: Annotated[AsyncSession, Depends(get_session)],
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+) -> ChatSuggestionsResponse:
+    """Suggest questions for the authorized chat; stop generation on disconnect."""
+    # Authorize before reading any document, bundle, or conversation content.
+    run = await ConceptNoteRunService(session).get_authorized_run(
+        run_id=run_id, requested_user_id=user_id, authorization=authorization
+    )
+    draft = await draft_service.load_state(run) if draft_service else None
+    bundle = await session.get(ContextBundleRow, run_id)
+    messages = (
+        await MessageService(session).get_thread_messages(
+            thread_id=run.thread_id, limit=6
+        )
+        if run.thread_id
+        else []
+    )
+    context = build_suggestion_context(
+        payload, run, draft, bundle.context_bundle if bundle else {}, messages
+    )
+    generation = asyncio.create_task(generate_chat_suggestions(get_settings(), context))
+
+    async def cancel_on_disconnect() -> None:
+        while not generation.done():
+            if await request.is_disconnected():
+                generation.cancel()
+                return
+            await asyncio.sleep(0.1)
+
+    disconnect_watcher = asyncio.create_task(cancel_on_disconnect())
+    try:
+        return await generation
+    finally:
+        disconnect_watcher.cancel()
+        with suppress(asyncio.CancelledError):
+            await disconnect_watcher
 
 
 @router.get(
@@ -148,6 +228,26 @@ async def get_concept_note_run(
     service = ConceptNoteRunService(session)
     return await service.get_run(
         run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
+@router.post(
+    "/concept-notes/{run_id}/initial-uploads/{upload_id}/accepted",
+    response_model=ConceptNoteRunResponse,
+)
+async def accept_initial_upload(
+    run_id: UUID,
+    upload_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunResponse:
+    """Record CC's durable source handoff for an authorized initial upload."""
+    return await ConceptNoteRunService(session).accept_initial_upload(
+        run_id=run_id,
+        upload_id=upload_id,
         requested_user_id=user_id,
         authorization=authorization,
     )
@@ -281,6 +381,44 @@ async def get_concept_note_application_context(
         workflow_session=session
     )
     return await application_context_service.load_for_run(run)
+
+
+@router.get(
+    "/concept-notes/{run_id}/funding-catalogue", response_model=FundingCatalogueResponse
+)
+async def get_concept_note_funding_catalogue(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> FundingCatalogueResponse:
+    """Browse all existing funders after checking run ownership and city access."""
+    await ConceptNoteRunService(session).get_authorized_run(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+    return await load_funding_catalogue()
+
+
+@router.patch(
+    "/concept-notes/{run_id}/application-context",
+    response_model=ConceptNoteApplicationContextResponse,
+)
+async def update_concept_note_application_context(
+    run_id: UUID,
+    payload: FundingSelectionRequest,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteApplicationContextResponse:
+    """Save a compatible funding selection on an authorized concept-note run."""
+    run = await ConceptNoteRunService(session).get_authorized_run(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+    return await save_funding_selection(session, run, payload)
 
 
 @router.get(

@@ -239,7 +239,7 @@
   "preferences-updated": "Preferences updated",
   "preferences-info-update-title": "You can now configure your preferences",
   "preferences-info-update-description": "In the preference section you will now find the language selection and numerical formats.",
-  "invite-collaborators-title": "Invite collaborators to your team",
+  "invite-collaborators-title": "Invite team members",
   "search-by-project": "Search by project name",
   "search-by-name-or-email": "Search by name or email address",
   "select-a-project": "Select a project",
@@ -266,5 +266,7 @@
   "two-factor-disable-button": "Disable",
   "two-factor-disable-confirm-message": "After disabling two-factor authentication you can configure another app or device",
   "two-factor-disable-password-message": "Confirm your password to disable two-factor authentication for your account",
-  "two-factor-disabled": "Successfully disabled two-factor authentication"
+  "two-factor-disabled": "Successfully disabled two-factor authentication",
+  "two-factor-recovery-codes-message": "These are your single-use recovery codes. <1>Please write them down or save them to your password manager as they will not be displayed again.</1> Use these instead of a security code in case you lose access to your authenticator app or device.",
+  "two-factor-copy-recovery-codes-label": "Copy recovery codes to clipboard"
 }

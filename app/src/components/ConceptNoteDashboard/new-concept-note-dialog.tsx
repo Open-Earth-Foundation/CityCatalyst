@@ -31,6 +31,12 @@ import {
 } from "@/components/ui/file-upload";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
+import type { ConceptNoteRun, InitialConceptNoteUpload } from "@/util/types";
+import {
+  initialConceptNoteUploads,
+  sourceFileSha256,
+  uploadWithRecovery,
+} from "@/util/concept-note-initial-uploads";
 
 import {
   conceptNoteSourceLabel,
@@ -39,10 +45,12 @@ import {
 } from "../ConceptNoteWiringHarness/utils";
 
 interface NewConceptNoteDialogProps {
+  retryRun?: ConceptNoteRun;
   cityId: string;
   cityName: string;
   lng: string;
   onOpenChange: (open: boolean) => void;
+  onUploadingRunChange?: (runId: string | null) => void;
   open: boolean;
   projectId?: string | null;
   projectName?: string | null;
@@ -62,10 +70,12 @@ function fileIdentity(file: File): string {
 }
 
 export function NewConceptNoteDialog({
+  retryRun,
   cityId,
   cityName,
   lng,
   onOpenChange,
+  onUploadingRunChange,
   open,
   projectId,
   projectName,
@@ -73,11 +83,17 @@ export function NewConceptNoteDialog({
   const { t } = useTranslation(lng, "concept-notes");
   const router = useRouter();
   const idempotencyKeyRef = useRef(crypto.randomUUID());
-  const createdRunIdRef = useRef<string | null>(null);
+  const [createdRunId, setCreatedRunId] = useState<string | null>(
+    retryRun?.run_id ?? null,
+  );
   const createdThreadIdRef = useRef<string | null>(null);
   const latestUploadIdRef = useRef<string | null>(null);
-  const uploadedFileIdentitiesRef = useRef(new Set<string>());
-  const [name, setName] = useState("");
+  const [initialUploads, setInitialUploads] = useState<
+    InitialConceptNoteUpload[]
+  >(initialConceptNoteUploads(retryRun).map((source) => ({ ...source })));
+  const submittingRef = useRef(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [name, setName] = useState(retryRun?.name ?? "");
   const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [startRun, startState] = api.useStartConceptNoteRunMutation();
@@ -85,7 +101,10 @@ export function NewConceptNoteDialog({
   const [uploadSource, uploadState] = api.useUploadConceptNoteSourceMutation();
 
   const isBusy =
-    chatState.isLoading || startState.isLoading || uploadState.isLoading;
+    submitting ||
+    chatState.isLoading ||
+    startState.isLoading ||
+    uploadState.isLoading;
   const optionalText = (
     <Text
       as="span"
@@ -135,18 +154,50 @@ export function NewConceptNoteDialog({
     setFiles([]);
     setError(null);
     idempotencyKeyRef.current = crypto.randomUUID();
-    createdRunIdRef.current = null;
+    setInitialUploads([]);
+    setCreatedRunId(null);
     createdThreadIdRef.current = null;
     latestUploadIdRef.current = null;
-    uploadedFileIdentitiesRef.current.clear();
   }
 
   async function submit(event: FormEvent): Promise<void> {
     event.preventDefault();
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+    setSubmitting(true);
     setError(null);
 
+    let targetRunId = createdRunId;
     try {
-      let targetRunId = createdRunIdRef.current;
+      let sources = initialUploads;
+      const selected = await Promise.all(
+        files.map(async (file) => ({
+          file,
+          sha256: await sourceFileSha256(file),
+        })),
+      );
+      if (!sources.length && !targetRunId) {
+        sources = selected.map(({ file, sha256 }) => ({
+          upload_id: crypto.randomUUID(),
+          filename: file.name.trim(),
+          sha256,
+        }));
+        setInitialUploads(sources);
+      }
+      const pending = sources.filter((source) => !source.accepted);
+      if (
+        pending.some(
+          (source) =>
+            !selected.some(
+              ({ file, sha256 }) =>
+                file.name.trim() === source.filename &&
+                sha256 === source.sha256,
+            ),
+        )
+      ) {
+        setError(t("upload-select-originals"));
+        return;
+      }
       if (!targetRunId) {
         const runName =
           name.trim() ||
@@ -159,29 +210,42 @@ export function NewConceptNoteDialog({
         }
         const run = await startRun({
           cityId,
+          initialUploads: sources,
           idempotencyKey: idempotencyKeyRef.current,
           name: runName,
           projectId: projectId ?? null,
           threadId: targetThreadId,
         }).unwrap();
         targetRunId = run.run_id;
-        createdRunIdRef.current = targetRunId;
+        setCreatedRunId(targetRunId);
       }
+      // Stays set on success: the dashboard should not flash the retry state
+      // for this run while the router navigates to the workspace.
+      onUploadingRunChange?.(targetRunId);
 
-      for (const file of files) {
-        const identity = fileIdentity(file);
-        if (uploadedFileIdentitiesRef.current.has(identity)) {
-          continue;
-        }
-        const formData = new FormData();
-        formData.set("file", file);
-        formData.set("sourceLabel", conceptNoteSourceLabel(file.name));
-        const upload = await uploadSource({
-          cityId,
-          formData,
-          runId: targetRunId,
-        }).unwrap();
-        uploadedFileIdentitiesRef.current.add(identity);
+      for (const source of pending) {
+        const file = selected.find(
+          (entry) =>
+            entry.file.name.trim() === source.filename &&
+            entry.sha256 === source.sha256,
+        )!.file;
+        const upload = await uploadWithRecovery(() => {
+          const formData = new FormData();
+          formData.set("file", file);
+          formData.set("sourceLabel", conceptNoteSourceLabel(file.name));
+          formData.set("initialUploadId", source.upload_id);
+          return uploadSource({
+            cityId,
+            formData,
+            runId: targetRunId!,
+          }).unwrap();
+        });
+        sources = sources.map((entry) =>
+          entry.upload_id === source.upload_id
+            ? { ...entry, accepted: true }
+            : entry,
+        );
+        setInitialUploads(sources);
         latestUploadIdRef.current = upload.uploadId;
       }
 
@@ -195,7 +259,13 @@ export function NewConceptNoteDialog({
       resetDraft();
       onOpenChange(false);
     } catch {
-      setError(t("create-note-error"));
+      onUploadingRunChange?.(null);
+      setError(
+        t(targetRunId ? "upload-incomplete-message" : "create-note-error"),
+      );
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
     }
   }
 
@@ -241,7 +311,7 @@ export function NewConceptNoteDialog({
               fontSize="title.lg"
               color="content.primary"
             >
-              {t("create-dialog-title")}
+              {t(retryRun ? "retry-upload" : "create-dialog-title")}
             </DialogTitle>
             <Text mt={1} fontSize="body.sm" color="content.tertiary">
               {t("create-dialog-description")}
@@ -251,6 +321,15 @@ export function NewConceptNoteDialog({
 
           <DialogBody minH={0} overflowY="auto" px={6} py={5}>
             <VStack align="stretch" gap={5}>
+              {retryRun && (
+                <Text>
+                  {t("upload-select-originals")}{" "}
+                  {initialUploads
+                    .filter((source) => !source.accepted)
+                    .map((source) => source.filename)
+                    .join(", ")}
+                </Text>
+              )}
               <Field
                 width="full"
                 label={t("application-name")}
@@ -258,6 +337,7 @@ export function NewConceptNoteDialog({
                 helperText={t("application-name-help")}
               >
                 <Input
+                  disabled={Boolean(createdRunId) || isBusy}
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   maxLength={120}
@@ -336,7 +416,7 @@ export function NewConceptNoteDialog({
                     accept:
                       "application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md",
                   }}
-                  maxFiles={Number.MAX_SAFE_INTEGER}
+                  maxFiles={100}
                   onFileChange={onFileSelect}
                 >
                   <FileUploadDropzone
@@ -454,7 +534,7 @@ export function NewConceptNoteDialog({
                     : t("uploading-sources")
               }
             >
-              {t("create-and-open")}
+              {t(createdRunId ? "retry-upload" : "create-and-open")}
             </Button>
           </DialogFooter>
         </Box>

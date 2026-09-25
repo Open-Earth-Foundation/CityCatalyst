@@ -250,7 +250,7 @@
   "preferences": "Preferências",
   "preferences-updated": "Preferências atualizadas",
   "inventories": "Inventários",
-  "invite-collaborators-title": "Convide colaboradores para a sua equipe",
+  "invite-collaborators-title": "Convidar membros da equipe",
   "search-by-project": "Pesquisar por nome do projeto",
   "search-by-name-or-email": "Pesquisar por nome ou endereço de e-mail",
   "select-a-project": "Selecione um projeto",
@@ -277,5 +277,7 @@
   "two-factor-disable-button": "Desativar",
   "two-factor-disable-confirm-message": "Após desativar a autenticação de dois fatores, você pode configurar outro aplicativo ou dispositivo",
   "two-factor-disable-password-message": "Confirme sua senha para desativar a autenticação de dois fatores para sua conta",
-  "two-factor-disabled": "Desativação bem-sucedida da autenticação de dois fatores"
+  "two-factor-disabled": "Desativação bem-sucedida da autenticação de dois fatores",
+  "two-factor-recovery-codes-message": "Estes são os seus códigos de recuperação de uso único. <1>Por favor, anote-os ou salve-os no seu gerenciador de senhas, pois eles não serão exibidos novamente.</1> Use-os em vez de um código de segurança caso você perca o acesso ao seu aplicativo autenticador ou dispositivo.",
+  "two-factor-copy-recovery-codes-label": "Copie os códigos de recuperação para a área de transferência"
 }

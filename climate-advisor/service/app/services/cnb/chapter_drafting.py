@@ -48,6 +48,7 @@ from app.services.cnb.application_context import (
     calculate_application_template_fingerprint,
     included_sources_from_bundle,
 )
+from app.services.cnb.draft_overview import overview_pending
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.concept_note_context import omit_context_identifiers
 from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
@@ -129,32 +130,33 @@ class ConceptNoteChapterDraftService:
         run: ConceptNoteRun,
     ) -> tuple[ConceptNoteDraftResponse, UUID | None]:
         """Materialize chapters and acquire a new resumable drafting lease."""
-        _, included_sources = await self._load_run_context(run.run_id, run.user_id)
-        application_context = await self._application_context.load_for_run(
-            run,
-            included_sources=included_sources,
-        )
-        template, template_chapters = _require_template(application_context)
-        template_fingerprint = calculate_application_template_fingerprint(template)
-        await self._workspace.ensure_template_chapters(
-            run_id=run.run_id,
-            chapters=template_chapters,
-        )
-        chapters = await self._workspace.list_chapters(
-            run_id=run.run_id,
-            template_fingerprint=template_fingerprint,
-        )
-        build_id = await self._begin_draft(
-            run_id=run.run_id,
-            user_id=run.user_id,
-            chapters=chapters,
-        )
-        progress = await self._load_progress(run.run_id, run.user_id)
+        # Hold the workflow lock from template lookup through lease creation so
+        # a funding switch cannot seed chapters from one template and draft another.
+        async with self._ca_session_factory() as session, session.begin():
+            current_run = await _require_owned_run(
+                session, run.run_id, run.user_id, lock=True
+            )
+            bundle_row = await session.get(ConceptNoteContextBundleRow, run.run_id)
+            bundle = normalize_bundle(bundle_row.context_bundle if bundle_row else None)
+            application_context = await self._application_context.load_for_run(
+                current_run,
+                included_sources=included_sources_from_bundle(bundle),
+            )
+            template, template_chapters = _require_template(application_context)
+            template_fingerprint = calculate_application_template_fingerprint(template)
+            await self._workspace.ensure_template_chapters(
+                run_id=run.run_id,
+                chapters=template_chapters,
+            )
+            chapters = await self._workspace.list_chapters(
+                run_id=run.run_id,
+                template_fingerprint=template_fingerprint,
+            )
+            build_id = self._begin_draft(run=current_run, chapters=chapters)
+            progress = _draft_progress(current_run.context_summary)
         return (
             _build_state_response(
-                run_id=run.run_id,
-                progress=progress,
-                chapters=chapters,
+                run_id=run.run_id, progress=progress, chapters=chapters
             ),
             build_id,
         )
@@ -335,46 +337,44 @@ class ConceptNoteChapterDraftService:
         except Exception as exc:
             raise ChapterDraftingError("Chapter generation failed") from exc
 
-    async def _begin_draft(
+    def _begin_draft(
         self,
         *,
-        run_id: UUID,
-        user_id: str,
+        run: ConceptNoteRun,
         chapters: list[WorkspaceChapterSnapshot],
     ) -> UUID | None:
+        """Update drafting progress while the caller holds the workflow row lock."""
         completed = _completed_count(chapters)
-        async with self._ca_session_factory() as session, session.begin():
-            run = await _require_owned_run(session, run_id, user_id, lock=True)
-            if chapters and completed == len(chapters):
-                run.workflow_step = "editing_document"
-                run.context_summary = _replace_draft_progress(
-                    run.context_summary,
-                    {
-                        "status": "complete",
-                        "build_id": None,
-                        "current_chapter_id": None,
-                        "completed_chapters": completed,
-                        "total_chapters": len(chapters),
-                        "error_code": None,
-                    },
-                )
-                return None
-
-            build_id = uuid4()
-            run.workflow_step = "drafting_document"
+        if chapters and completed == len(chapters):
+            run.workflow_step = "editing_document"
             run.context_summary = _replace_draft_progress(
                 run.context_summary,
                 {
-                    "status": "running",
-                    "build_id": str(build_id),
+                    "status": "complete",
+                    "build_id": None,
                     "current_chapter_id": None,
                     "completed_chapters": completed,
                     "total_chapters": len(chapters),
                     "error_code": None,
-                    "started_at": datetime.now(UTC).isoformat(),
                 },
             )
-            return build_id
+            return None
+
+        build_id = uuid4()
+        run.workflow_step = "drafting_document"
+        run.context_summary = _replace_draft_progress(
+            run.context_summary,
+            {
+                "status": "running",
+                "build_id": str(build_id),
+                "current_chapter_id": None,
+                "completed_chapters": completed,
+                "total_chapters": len(chapters),
+                "error_code": None,
+                "started_at": datetime.now(UTC).isoformat(),
+            },
+        )
+        return build_id
 
     async def _load_owned_run(self, run_id: UUID, user_id: str) -> ConceptNoteRun:
         async with self._ca_session_factory() as session:
@@ -410,7 +410,10 @@ class ConceptNoteChapterDraftService:
                 ),
                 "context_bundle": bundle.model_dump(mode="json"),
                 "manual_population": (
-                    {**run.context_summary["manual_population"], "source": "user_entered"}
+                    {
+                        **run.context_summary["manual_population"],
+                        "source": "user_entered",
+                    }
                     if (run.context_summary or {}).get("manual_population")
                     else None
                 ),
@@ -697,11 +700,11 @@ def _build_chapter_input(
             "chapter": {
                 "chapter_ref": current.chapter_ref,
                 "title": current.title,
-                "description": (
-                    template_chapter.description
-                    if template_chapter is not None
-                    else None
-                ),
+                "description": current.description
+                if current.description is not None
+                else template_chapter.description
+                if template_chapter
+                else None,
                 "position": current.position,
                 "required": current.required,
             },
@@ -733,7 +736,9 @@ def _build_state_response(
 ) -> ConceptNoteDraftResponse:
     completed = _completed_count(chapters)
     stored_status = progress.get("status")
-    if stored_status in {"running", "failed", "complete"}:
+    if stored_status == "complete" and completed < len(chapters):
+        status = "not_started"
+    elif stored_status in {"running", "failed", "complete"}:
         status = stored_status
     elif chapters and completed == len(chapters):
         status = "complete"
@@ -746,10 +751,12 @@ def _build_state_response(
         total_chapters=len(chapters),
         current_chapter_id=_as_uuid(progress.get("current_chapter_id")),
         error_code=_as_text(progress.get("error_code")),
+        overview_pending=overview_pending(progress),
         chapters=[
             ConceptNoteDraftChapterResponse(
                 chapter_id=chapter.chapter_id,
                 template_section_id=chapter.chapter_ref,
+                description=chapter.description or "",
                 title=chapter.title,
                 position=chapter.position,
                 status=chapter.status,

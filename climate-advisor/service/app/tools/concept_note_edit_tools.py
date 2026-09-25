@@ -4,15 +4,15 @@ from __future__ import annotations
 
 import json
 import logging
+from typing import Any
 from uuid import UUID
 
 from agents import function_tool
+from app.models.cnb.concept_note_edits import EditProposalRequest
+from app.services.cnb.edits import get_edit_service
+from app.services.concept_note_runs import ConceptNoteRunService
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from app.models.cnb.concept_note_edits import EditProposalRequest
-from app.services.cnb.edits import get_edit_service, load_edit_context
-from app.services.concept_note_runs import ConceptNoteRunService
 
 logger = logging.getLogger(__name__)
 CONCEPT_NOTE_EDIT_PROPOSE_CAPABILITY = "concept_note.edit.propose"
@@ -39,9 +39,16 @@ def build_concept_note_edit_tools(
         automatic scope, optional focused-chapter hint, and idempotency key are
         already bound by the UI.
         When status is "proposed", tell the user to review the inline document
-        changes. When status is "clarification_required", ask the returned
+        changes, or the structural before/after preview when proposal_kind is structure.
+        Structural proposals cover chapter titles, descriptions, insertion, removal and order.
+        When status is "clarification_required", ask the returned
         clarification directly in chat. Never refer to a proposal or clarification
         card.
+        Report any returned exclusions: those protected matches remain unchanged.
+        An unsupported_edit error means independent semantic review still rejected
+        the candidate after the configured repair attempts. Explain that the
+        proposal could not pass review and the draft is unchanged; it does not
+        mean bulk edits are unavailable. Do not invent the reviewer's objections.
         This tool NEVER applies, undoes or restores text, even if asked to do so.
         Do not promise that the draft changed. Do not fabricate proposal IDs.
         """
@@ -61,11 +68,9 @@ def build_concept_note_edit_tools(
                         requested_user_id=user_id,
                         authorization=f"Bearer {token}",
                     )
-                    context = await load_edit_context(session, run_uuid)
                     proposal = await service.propose(
                         run,
                         request,
-                        context,
                         recent_messages=recent_messages,
                     )
                 finally:
@@ -75,10 +80,13 @@ def build_concept_note_edit_tools(
                 "proposed",
                 "clarification_required",
             }
-            data = {
+            data: dict[str, Any] = {
                 "proposal_id": str(proposal.proposal_id),
                 "run_id": str(run_uuid),
                 "status": proposal.status,
+                "change_count": len(proposal.changes),
+                "proposal_kind": "structure" if proposal.structure else "text",
+                "notices": [notice.model_dump() for notice in proposal.notices],
             }
             if proposal.status == "clarification_required" and proposal.clarification:
                 data["clarification"] = proposal.clarification
@@ -106,7 +114,7 @@ def build_concept_note_edit_tools(
 
 
 def tool_result(
-    success: bool, *, data: dict[str, str] | None = None, code: str | None = None
+    success: bool, *, data: dict[str, Any] | None = None, code: str | None = None
 ) -> str:
     """Serialize only typed proposal correlation metadata for chat transport."""
     return json.dumps(

@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
+from app.models.cnb.concept_note_structure import StructureProposal
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 
 EditStatus = Literal[
@@ -46,7 +47,7 @@ class EditProposalRequest(BaseModel):
 
 
 class ChapterPlannedTextChange(BaseModel):
-    """One exact replacement anchor returned for the supplied chapter."""
+    """One resolved replacement anchor in a chapter snapshot."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
     start: int = Field(ge=0, le=50_000)
@@ -97,23 +98,40 @@ class ChapterEditReview(BaseModel):
     decisions: list[EditSemanticDecision] = Field(min_length=1, max_length=100)
 
 
-class ChapterEditPlanOutput(BaseModel):
-    """Model output for one independently evaluated chapter."""
+class EditNotice(BaseModel):
+    """Server-counted exclusions retained with the reviewable proposal."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
-    intent: Literal["edit", "question", "clarification", "no_change"]
-    changes: list[ChapterPlannedTextChange] = Field(
-        default_factory=list, max_length=100
-    )
+    code: Literal["protected_markers", "locked_chapters", "template_headings"]
+    count: int = Field(ge=1)
+
+
+class DraftReplacement(BaseModel):
+    """Agent-selected replacements over an exact, server-owned search result."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    search_id: str
+    replacement: str = Field(max_length=50_000)
+    replace_all: bool = False
+    match_ids: list[str] = Field(default_factory=list, max_length=100)
+    kind: Literal["wording", "factual"]
+    group_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,80}$")
+    source_refs: list[str] = Field(default_factory=list, max_length=20)
+    user_input_quote: str | None = Field(default=None, max_length=8_000)
+
+
+class EditAgentOutput(BaseModel):
+    """End the tool loop; successful changes come only from the proposal tool."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    intent: Literal["edit", "question", "clarification"]
     clarification: str | None = Field(default=None, min_length=1, max_length=2_000)
 
     @model_validator(mode="after")
-    def validate_intent(self) -> ChapterEditPlanOutput:
-        """Keep edits, questions, clarifications, and unaffected chapters distinct."""
-        if (self.intent == "edit") != bool(self.changes):
-            raise ValueError("only edit intent may contain changes, and requires them")
+    def validate_clarification(self) -> EditAgentOutput:
+        """Require an explanation only when an edit cannot be proposed."""
         if (self.intent == "clarification") != (self.clarification is not None):
-            raise ValueError("clarification intent requires exactly one question")
+            raise ValueError("clarification intent requires exactly one explanation")
         return self
 
 
@@ -122,13 +140,17 @@ class EditPlanOutput(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
     intent: Literal["edit", "question", "clarification"]
+    structure: StructureProposal | None = None
     changes: list[PlannedTextChange] = Field(default_factory=list, max_length=100)
+    notices: list[EditNotice] = Field(default_factory=list)
     clarification: str | None = Field(default=None, min_length=1, max_length=2_000)
 
     @model_validator(mode="after")
     def validate_intent(self) -> EditPlanOutput:
         """Keep ordinary questions and clarification separate from edit proposals."""
-        if (self.intent == "edit") != bool(self.changes):
+        if self.structure is not None and self.changes:
+            raise ValueError("Propose structure and text changes separately")
+        if (self.intent == "edit") != bool(self.changes or self.structure):
             raise ValueError("only edit intent may contain changes, and requires them")
         if (self.intent == "clarification") != (self.clarification is not None):
             raise ValueError("clarification intent requires exactly one question")
@@ -157,7 +179,9 @@ class EditApplyRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
     idempotency_key: UUID
-    expected_revisions: dict[UUID, PositiveInt] = Field(min_length=1, max_length=100)
+    expected_revisions: dict[UUID, PositiveInt] = Field(
+        default_factory=dict, max_length=100
+    )
     selected_change_ids: list[UUID] | None = Field(
         default=None, min_length=1, max_length=100
     )
@@ -191,7 +215,9 @@ class EditProposalResponse(BaseModel):
     scope: EditScope
     status: EditStatus
     base_revisions: dict[UUID, PositiveInt] = Field(default_factory=dict)
+    structure: StructureProposal | None = None
     changes: list[EditChange] = Field(default_factory=list)
+    notices: list[EditNotice] = Field(default_factory=list)
     clarification: str | None = None
     error_code: str | None = None
     result: EditApplicationResult | None = None

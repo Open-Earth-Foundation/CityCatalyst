@@ -97,9 +97,9 @@ const LogoUploadCard = ({
                 data-testid="activity-more-icon"
                 aria-label="more-icon"
                 variant="ghost"
-                ml={2}
                 position="absolute"
-                left="100%"
+                top={1}
+                right={1}
                 color="content.tertiary"
                 onClick={(e) => {
                   e.stopPropagation();

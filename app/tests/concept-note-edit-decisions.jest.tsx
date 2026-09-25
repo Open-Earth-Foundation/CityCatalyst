@@ -19,6 +19,11 @@ import type {
 } from "@/util/concept-note-edit-types";
 import type { ConceptNoteDraftChapter } from "@/util/types";
 
+const observeWorkspace = jest.fn();
+jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/use-concept-note-workspace-events",
+  () => ({ useConceptNoteWorkspaceEvents: observeWorkspace }),
+);
 const chapterId = "11111111-1111-4111-8111-111111111111";
 const ids = [1, 2, 3].map((n) => `22222222-2222-4222-8222-22222222222${n}`);
 const proposal: EditProposal = {
@@ -58,26 +63,41 @@ const applyRequest =
 const rejectRequest = jest.fn<() => Promise<EditProposal>>();
 const onApplied = jest.fn<(chapterIds: string[]) => Promise<void>>();
 const refresh = jest.fn<() => Promise<void>>();
+const reloadCollection = jest.fn<() => Promise<EditProposal[]>>();
+const initiateCollection = jest.fn(() => ({ unwrap: reloadCollection }));
+let collectionFailed = false;
 
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({
-    t: (key: string) => translations[key as keyof typeof translations] ?? key,
+    t: (key: string, options?: { count?: number }) => {
+      const plural =
+        options?.count === undefined
+          ? key
+          : `${key}_${options.count === 1 ? "one" : "other"}`;
+      return (translations[plural as keyof typeof translations] ?? key).replace(
+        "{{count}}",
+        String(options?.count ?? ""),
+      );
+    },
   }),
 }));
 jest.unstable_mockModule("@/lib/hooks", () => ({
-  useAppDispatch: () => () => {},
+  useAppDispatch: () => (action: unknown) => action,
 }));
 jest.unstable_mockModule("@/services/concept-note-edit-api", () => ({
   editErrorCode: () => "edit_request_failed",
   editApi: {
     endpoints: {
-      listEditProposals: { useQueryState: () => ({ currentData: proposals }) },
+      listEditProposals: { initiate: initiateCollection },
     },
     useListEditProposalsQuery: () => ({
       currentData: proposals,
+      isError: collectionFailed,
       refetch: () => ({ unwrap: refresh }),
     }),
-    useLazyGetEditProposalQuery: () => [jest.fn()],
+    useLazyGetEditProposalQuery: () => [
+      () => ({ unwrap: async () => proposal }),
+    ],
     useApplyEditProposalMutation: () => [
       (args: { body: EditApplyRequest }) => ({
         unwrap: () => applyRequest(args),
@@ -148,6 +168,13 @@ beforeAll(() => {
 });
 beforeEach(async () => {
   proposals = [proposal];
+  collectionFailed = false;
+  initiateCollection.mockClear();
+  reloadCollection.mockReset().mockImplementation(async () => {
+    proposals = [];
+    collectionFailed = false;
+    return proposals;
+  });
   sessionStorage.clear();
   applyRequest.mockReset().mockImplementation(async ({ body }) => ({
     ...proposal,
@@ -180,6 +207,42 @@ async function click(label: string) {
   expect(button!.disabled).toBe(false);
   await act(async () => button!.click());
 }
+
+it("recovers an errored collection before showing a successful chat proposal", async () => {
+  proposals = undefined as never;
+  collectionFailed = true;
+  await act(async () => root.render(<Harness />));
+  expect(observeWorkspace).toHaveBeenCalledWith(
+    expect.objectContaining({ observeEdits: true }),
+  );
+  await act(async () => controller.loadProposal(proposal.proposal_id));
+  expect(initiateCollection).toHaveBeenCalledWith("run-1", {
+    subscribe: false,
+    forceRefetch: true,
+  });
+  expect(proposals).toEqual([proposal]);
+});
+
+it("merges chat results without refetching an already loaded collection", async () => {
+  await act(async () => controller.loadProposal(proposal.proposal_id));
+  expect(initiateCollection).not.toHaveBeenCalled();
+  expect(proposals).toEqual([proposal]);
+});
+
+it("shows persisted protected-match exclusions alongside the proposal", async () => {
+  proposals = [
+    { ...proposal, notices: [{ code: "protected_markers", count: 55 }] },
+  ];
+  await act(async () => root.render(<Harness />));
+  expect(
+    container.querySelector('[data-testid="concept-note-edit-exclusion"]')
+      ?.textContent,
+  ).toContain("55");
+  expect(
+    container.querySelector('[data-testid="concept-note-edit-exclusion"]')
+      ?.textContent,
+  ).toContain("preserved");
+});
 
 it("accepts remaining changes without applying a manually rejected change", async () => {
   await act(async () => review.decide(proposal, [ids[0]], "rejected"));
@@ -287,4 +350,17 @@ it("does not show a previous run's draft recovery in another run", async () => {
   await act(async () => root.render(<Harness runId="run-2" />));
   expect(controller.needsDraftReload).toBe(false);
   expect(container.querySelector('[role="alert"]')).toBeNull();
+});
+
+it("observes a processing proposal after reload and stops once it is proposed", async () => {
+  proposals = [{ ...proposal, status: "processing" }];
+  await act(async () => root.render(<Harness />));
+  expect(observeWorkspace).toHaveBeenLastCalledWith(
+    expect.objectContaining({ observeEdits: true }),
+  );
+  proposals = [proposal];
+  await act(async () => root.render(<Harness />));
+  expect(observeWorkspace).toHaveBeenLastCalledWith(
+    expect.objectContaining({ observeEdits: false }),
+  );
 });

@@ -9,6 +9,15 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from app.models.cnb.concept_note_markdown import ConceptNoteUploadStatusResponse
 
 
+class InitialConceptNoteUpload(BaseModel):
+    """Immutable expected source identity, persisted before file transfer."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    upload_id: UUID
+    filename: str = Field(min_length=1, max_length=255)
+    sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+
+
 class ConceptNoteStartRequest(BaseModel):
     """Authenticated request to create one Concept Note Builder run."""
 
@@ -22,6 +31,9 @@ class ConceptNoteStartRequest(BaseModel):
     selected_funding_opportunity_id: UUID | None = None
     thread_id: UUID | None = None
     idempotency_key: UUID
+    initial_uploads: list[InitialConceptNoteUpload] = Field(
+        default_factory=list, max_length=100
+    )
 
     @field_validator("name")
     @classmethod
@@ -46,6 +58,10 @@ class ConceptNoteStartRequest(BaseModel):
     @model_validator(mode="after")
     def validate_scope_references(self) -> "ConceptNoteStartRequest":
         """Require a funder whenever a funding opportunity is supplied."""
+        if len({source.upload_id for source in self.initial_uploads}) != len(
+            self.initial_uploads
+        ):
+            raise ValueError("Initial upload IDs must be unique")
         if self.selected_funding_opportunity_id is not None and self.funder_id is None:
             raise ValueError(
                 "funder_id is required when selected_funding_opportunity_id is provided"

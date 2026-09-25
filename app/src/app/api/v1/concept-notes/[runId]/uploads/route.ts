@@ -4,7 +4,7 @@
  *   post:
  *     operationId: createConceptNoteUpload
  *     summary: Register and process an authorized Concept Note source upload
- *     description: Each accepted request receives a new UUID v4 upload identity before PDF OCR or direct Markdown delivery begins.
+ *     description: Initial uploads replay a persisted identity bound to the original file bytes; a failed replay is re-queued before the handoff is acknowledged. Other uploads receive a new UUID v4.
  *     tags:
  *       - concept-notes
  *     parameters:
@@ -25,6 +25,10 @@
  *               file:
  *                 type: string
  *                 format: binary
+ *               initialUploadId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: Persisted creation-manifest identity; retries must contain the original file bytes.
  *               sourceLabel:
  *                 type: string
  *                 maxLength: 255
@@ -74,14 +78,14 @@
  *       503:
  *         description: Source storage or OCR queueing is unavailable
  */
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import {
-  loadConceptNoteRunCity,
+  loadConceptNoteUploadRun,
   updateConceptNoteUpload,
 } from "@/backend/ConceptNoteUploadService";
 import { triggerConceptNoteSourceProcessing } from "@/backend/ConceptNoteSourceProcessingService";
@@ -92,6 +96,7 @@ import {
   normalizeConceptNoteMarkdown,
   normalizeConceptNotePdfOcrStatus,
   registerConceptNoteMarkdownUpload,
+  retryConceptNotePdfOcr,
 } from "@/backend/PdfOcrService";
 import {
   callConceptNoteApi,
@@ -159,7 +164,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
   const currentRequestId = requestId(req);
 
   // Authenticate the run and city before consuming the multipart file body.
-  const cityId = await loadConceptNoteRunCity({
+  const { cityId, initialUploads } = await loadConceptNoteUploadRun({
     runId,
     userId,
     requestId: currentRequestId,
@@ -227,7 +232,24 @@ export const POST = apiHandler(async (req, { session, params }) => {
     throw new createHttpError.UnprocessableEntity("Source label is too long");
   }
 
-  const uploadId = randomUUID();
+  // Only persisted creation identities may be replayed; bind them to file bytes.
+  const requestedUploadId = formData.get("initialUploadId");
+  const initialUpload =
+    requestedUploadId === null
+      ? undefined
+      : initialUploads.find((source) => source.upload_id === requestedUploadId);
+  if (
+    requestedUploadId !== null &&
+    (!initialUpload ||
+      initialUpload.filename !== filename ||
+      initialUpload.sha256 !==
+        createHash("sha256").update(fileBuffer).digest("hex"))
+  ) {
+    throw new createHttpError.Conflict(
+      "Select the original source file to retry this upload",
+    );
+  }
+  const uploadId = initialUpload?.upload_id ?? randomUUID();
   const createResponse = await callConceptNoteApi({
     path: `/v1/concept-notes/${runId}/uploads`,
     userId,
@@ -259,6 +281,16 @@ export const POST = apiHandler(async (req, { session, params }) => {
       "Climate Advisor returned an invalid upload identity",
     );
   }
+  // Idempotent create keeps a failed row failed; re-queue it before replaying.
+  if (created.data.status === "failed") {
+    await updateConceptNoteUpload({
+      runId,
+      uploadId,
+      userId,
+      action: "retry",
+      requestId: currentRequestId,
+    });
+  }
 
   let failureCode = "source_storage_failed";
   let job:
@@ -280,6 +312,10 @@ export const POST = apiHandler(async (req, { session, params }) => {
         markdownText ?? "",
       );
     }
+    // A replay can find the job from an earlier failed attempt.
+    if (normalizeConceptNotePdfOcrStatus(job).status === "failed") {
+      await retryConceptNotePdfOcr(job);
+    }
   } catch (error) {
     if (createHttpError.isHttpError(error)) {
       throw error;
@@ -297,6 +333,20 @@ export const POST = apiHandler(async (req, { session, params }) => {
     );
   }
 
+  if (initialUpload) {
+    const receipt = await callConceptNoteApi({
+      path: `/v1/concept-notes/${runId}/initial-uploads/${uploadId}/accepted`,
+      userId,
+      method: "POST",
+      requestId: currentRequestId,
+      searchParams: { user_id: userId },
+    });
+    if (!receipt.ok) {
+      throw new createHttpError.ServiceUnavailable(
+        "Source handoff confirmation is unavailable",
+      );
+    }
+  }
   triggerConceptNoteSourceProcessing();
   const state = normalizeConceptNotePdfOcrStatus(job);
 

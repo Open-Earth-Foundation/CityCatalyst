@@ -250,7 +250,7 @@
   "preferences": "Einstellungen",
   "preferences-updated": "Einstellungen aktualisiert",
   "inventories": "Inventar",
-  "invite-collaborators-title": "Laden Sie Mitarbeitende in Ihr Team ein",
+  "invite-collaborators-title": "Teammitglieder einladen",
   "search-by-project": "Suche nach Projektname",
   "search-by-name-or-email": "Suche nach Name oder E-Mail-Adresse",
   "select-a-project": "Wählen Sie ein Projekt",
@@ -277,5 +277,7 @@
   "two-factor-disable-button": "Deaktivieren",
   "two-factor-disable-confirm-message": "Nach der Deaktivierung der Zwei-Faktor-Authentifizierung können Sie eine andere App oder ein anderes Gerät konfigurieren",
   "two-factor-disable-password-message": "Bestätigen Sie Ihr Passwort, um die Zwei-Faktor-Authentifizierung für Ihr Konto zu deaktivieren",
-  "two-factor-disabled": "Erfolgreich die Zwei-Faktor-Authentifizierung deaktiviert"
+  "two-factor-disabled": "Erfolgreich die Zwei-Faktor-Authentifizierung deaktiviert",
+  "two-factor-recovery-codes-message": "Dies sind Ihre Einmal-Wiederherstellungscodes. <1>Bitte notieren Sie sie oder speichern Sie sie in Ihrem Passwortmanager, da sie nicht erneut angezeigt werden.</1> Verwenden Sie diese anstelle eines Sicherheitscodes, falls Sie den Zugriff auf Ihre Authenticator-App oder Ihr Gerät verlieren.",
+  "two-factor-copy-recovery-codes-label": "Kopieren Sie die Wiederherstellungscodes in die Zwischenablage"
 }

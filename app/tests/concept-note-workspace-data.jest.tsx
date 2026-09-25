@@ -40,6 +40,58 @@ jest.unstable_mockModule("@/hooks/useSSEStream", () => ({
 
 const persistedUploadId = "persisted-upload";
 const refetchRun = jest.fn(async () => undefined);
+const observeWorkspace = jest.fn();
+const dispatch = jest.fn();
+const upsertQueryEntries = jest.fn((entries: unknown) => ({ entries }));
+const startedDraft = { run_id: "run-1", status: "running", chapters: [] };
+const startDraft = jest.fn(() => ({ unwrap: async () => startedDraft }));
+const getApplicationContext = jest.fn(() => ({
+  data: undefined as unknown,
+  isError: false,
+  isLoading: false,
+}));
+jest.unstable_mockModule("@/lib/hooks", () => ({
+  useAppDispatch: () => dispatch,
+}));
+const getDraftQuery = jest.fn(() => ({
+  data: undefined,
+  isError: false,
+  isLoading: false,
+  refetch: jest.fn(async () => undefined),
+}));
+const getCityYearsQuery = jest.fn(
+  (_cityId: string, _options?: Record<string, unknown>) => ({
+    data: undefined,
+    isLoading: false,
+  }),
+);
+const getRunQuery = jest.fn(() => ({
+  data: contextScenario ?? {
+    progress_summary: {},
+    uploads: [
+      {
+        completed_at: "2026-09-03T09:59:00Z",
+        error_code: "OCR_FAILED",
+        filename: "evidence.pdf",
+        page_count: null,
+        received_at: "2026-09-03T09:50:00Z",
+        run_id: "run-1",
+        source_format: "pdf",
+        source_label: "evidence.pdf",
+        status: "failed",
+        upload_id: persistedUploadId,
+      },
+    ],
+  },
+  isError: false,
+  isLoading: false,
+  refetch: refetchRun,
+}));
+const getUploadQuery = jest.fn(() => ({
+  currentData: currentUpload,
+  data: undefined,
+  isError: false,
+}));
 const updateManualPopulation = jest.fn(() => ({
   unwrap: async () => undefined,
 }));
@@ -57,49 +109,30 @@ const retryUpload = jest.fn(() => ({
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t }),
 }));
+jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/use-concept-note-workspace-events",
+  () => ({ useConceptNoteWorkspaceEvents: observeWorkspace }),
+);
 
 jest.unstable_mockModule("@/services/api", () => ({
   api: {
+    util: { upsertQueryEntries },
     useGetCityQuery: () => ({ data: { name: "Test City" } }),
-    useGetConceptNoteApplicationContextQuery: () => ({
-      data: undefined,
-      isError: false,
-      isLoading: false,
-    }),
-    useGetConceptNoteDraftQuery: () => ({
-      data: undefined,
-      isError: false,
-      isLoading: false,
-      refetch: jest.fn(async () => undefined),
-    }),
-    useGetConceptNoteRunQuery: () => ({
-      data: contextScenario ?? {
-        progress_summary: {},
-        uploads: [
-          {
-            completed_at: "2026-09-03T09:59:00Z",
-            error_code: "OCR_FAILED",
-            filename: "evidence.pdf",
-            page_count: null,
-            received_at: "2026-09-03T09:50:00Z",
-            run_id: "run-1",
-            source_format: "pdf",
-            source_label: "evidence.pdf",
-            status: "failed",
-            upload_id: persistedUploadId,
-          },
-        ],
-      },
-      isError: false,
-      isLoading: false,
-      refetch: refetchRun,
-    }),
-    useGetConceptNoteUploadStatusQuery: () => ({
-      currentData: currentUpload,
-      data: undefined,
-      isError: false,
-    }),
+    useGetConceptNoteApplicationContextQuery: getApplicationContext,
+    useGetConceptNoteDraftQuery: getDraftQuery,
+    useGetConceptNoteRunQuery: getRunQuery,
+    useGetConceptNoteUploadStatusQuery: getUploadQuery,
     useGetInventoryByCityIdQuery: () => ({ data: undefined }),
+    useGetCityDashboardQuery: () => ({ data: undefined }),
+    useGetCityYearsQuery: getCityYearsQuery,
+    useRefreshConceptNoteContextBundleMutation: () => [
+      jest.fn(() => ({ unwrap: async () => ({ status: "current" }) })),
+      { isLoading: false },
+    ],
+    useSelectConceptNoteInventoryMutation: () => [
+      jest.fn(),
+      { isLoading: false },
+    ],
     useGetMostRecentCityPopulationQuery: () => ({
       data: cityPopulation,
       isError: false,
@@ -119,7 +152,7 @@ jest.unstable_mockModule("@/services/api", () => ({
       { isLoading: false },
     ],
     useStartConceptNoteDraftMutation: () => [
-      jest.fn(),
+      startDraft,
       { isError: false, isLoading: false },
     ],
     useUploadConceptNoteSourceMutation: () => [
@@ -133,6 +166,7 @@ let useConceptNoteWorkspaceData: typeof import("@/components/ConceptNoteWorkspac
 let container: HTMLDivElement;
 let root: Root;
 let Panel: typeof import("@/components/ConceptNoteWorkspace/chat-panel").ConceptNoteChatPanel;
+let ContextTab: typeof import("@/components/ConceptNoteWorkspace/context-tab").ContextTab;
 const composerRequest = { id: "draft", content: "Use the new document" };
 
 function ChatHarness() {
@@ -146,12 +180,68 @@ function ChatHarness() {
       <Panel
         contextStatus={contextStatus}
         composerRequest={composerRequest}
+        draftOverviewPending={false}
         lng="en"
         onOpenContext={() => {}}
         runId="run-1"
         threadId="thread-1"
         editScope={{ kind: "auto" }}
         edits={{ loadProposal: async () => {} } as never}
+      />
+    </ChakraProvider>
+  );
+}
+
+function ContextHarness() {
+  const data = useConceptNoteWorkspaceData({
+    cityId: "city-1",
+    lng: "en",
+    runId: "run-1",
+  });
+  return (
+    <ChakraProvider value={defaultSystem}>
+      <ContextTab
+        applicationContext={null}
+        onSelectFunding={() => {}}
+        fundingLoading={false}
+        fundingError={false}
+        onRetryFunding={() => {}}
+        bundle={data.bundle}
+        contextStatus={data.contextStatus}
+        cityDashboard={null}
+        cityDashboardFailed={false}
+        cityDashboardLoading={false}
+        cityFilesCount={0}
+        cityId="city-1"
+        cityName="Test City"
+        country={null}
+        firstCityFile={null}
+        inventoryAvailable={false}
+        inventoryFailed={false}
+        inventoryHasData={false}
+        inventoryId={null}
+        inventoryLoading={false}
+        inventoryOptions={[]}
+        inventorySelectionSaving={false}
+        inventoryYear={null}
+        onSelectInventory={async () => {}}
+        isDraftRunning={false}
+        isRetryingBundle={false}
+        isRetryingUpload={false}
+        isUploading={false}
+        lng="en"
+        manualPopulation={null}
+        manualPopulationSaving={false}
+        onRetryBundle={() => {}}
+        onRetryUpload={() => {}}
+        onSaveManualPopulation={async () => {}}
+        onUploadFile={async () => {}}
+        populationFailed={false}
+        populationLabel="population-unavailable"
+        populationLoading={false}
+        populationMissing={true}
+        upload={data.effectiveUpload}
+        uploadError={null}
       />
     </ChakraProvider>
   );
@@ -204,6 +294,15 @@ function PopulationHarness() {
   );
 }
 
+function DraftStartHarness() {
+  const { startDrafting } = useConceptNoteWorkspaceData({
+    cityId: "city-1",
+    lng: "en",
+    runId: "run-1",
+  });
+  return <button onClick={startDrafting}>{t("start-draft")}</button>;
+}
+
 beforeAll(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   // Chakra recipes are JSON-compatible; jsdom does not provide structuredClone.
@@ -213,6 +312,8 @@ beforeAll(async () => {
     await import("@/components/ConceptNoteWorkspace/use-concept-note-workspace-data"));
   ({ ConceptNoteChatPanel: Panel } =
     await import("@/components/ConceptNoteWorkspace/chat-panel"));
+  ({ ContextTab } =
+    await import("@/components/ConceptNoteWorkspace/context-tab"));
 });
 
 afterAll(() => {
@@ -221,6 +322,7 @@ afterAll(() => {
 });
 
 beforeEach(() => {
+  jest.clearAllMocks();
   contextScenario = null;
   cityPopulation = undefined;
   updateManualPopulation.mockClear();
@@ -241,6 +343,128 @@ afterEach(async () => {
 });
 
 describe("useConceptNoteWorkspaceData", () => {
+  it("reloads the city's inventories on focus so the picker sees new ones", async () => {
+    await act(async () => root.render(<DraftStartHarness />));
+
+    expect(getCityYearsQuery).toHaveBeenCalledWith(
+      "city-1",
+      expect.objectContaining({ refetchOnFocus: true }),
+    );
+  });
+
+  it("seeds running state from the start response even when the status GET failed", async () => {
+    getApplicationContext.mockReturnValueOnce({
+      data: { funder: {}, opportunity: {}, template: { chapter_schema: [{}] } },
+      isError: false,
+      isLoading: false,
+    });
+    getDraftQuery.mockReturnValueOnce({
+      data: undefined,
+      isError: true,
+      isLoading: false,
+      refetch: jest.fn(async () => undefined),
+    });
+    await act(async () => root.render(<DraftStartHarness />));
+    await act(async () => container.querySelector("button")!.click());
+    expect(upsertQueryEntries).toHaveBeenCalledWith([
+      {
+        endpointName: "getConceptNoteDraft",
+        arg: "run-1",
+        value: startedDraft,
+      },
+    ]);
+  });
+
+  it("observes a failed initial draft read even without cached running state", async () => {
+    getDraftQuery.mockReturnValueOnce({
+      data: undefined,
+      isError: true,
+      isLoading: false,
+      refetch: jest.fn(async () => undefined),
+    });
+    await act(async () => root.render(<Harness />));
+    expect(observeWorkspace).toHaveBeenCalledWith(
+      expect.objectContaining({ observeDraft: true }),
+    );
+  });
+
+  it("observes a failed run read so the first successful snapshot can initialize the cache", async () => {
+    getRunQuery.mockReturnValueOnce({
+      data: undefined as never,
+      isError: true,
+      isLoading: false,
+      refetch: refetchRun,
+    });
+    await act(async () => root.render(<Harness />));
+    expect(observeWorkspace).toHaveBeenCalledWith(
+      expect.objectContaining({ observeRun: true }),
+    );
+  });
+
+  it("uses initial reads without recurring workspace polling", async () => {
+    await act(async () => root.render(<Harness />));
+
+    const revalidation = {
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    };
+    expect(getRunQuery).toHaveBeenCalledWith(
+      {
+        cityId: "city-1",
+        runId: "run-1",
+      },
+      revalidation,
+    );
+    expect(getDraftQuery).toHaveBeenCalledWith("run-1", revalidation);
+    expect(getUploadQuery).toHaveBeenCalledWith(
+      { runId: "run-1", uploadId: persistedUploadId },
+      { skip: false, ...revalidation },
+    );
+    expect(observeWorkspace).toHaveBeenCalledWith(
+      expect.objectContaining({
+        observeDraft: false,
+        observeRun: false,
+        observeUpload: false,
+      }),
+    );
+  });
+
+  it("keeps both file labels processing until OCR evidence reaches the chat context", async () => {
+    contextScenario = {
+      uploads: [source("ready", "A")],
+      progress_summary: { context_bundle: { status: "building" } },
+    };
+    await act(async () => root.render(<ContextHarness />));
+    expect(container.textContent).toContain("A.pdf");
+    expect(container.textContent?.match(/status-processing/g)).toHaveLength(2);
+    expect(container.textContent).not.toContain("status-ready");
+
+    contextScenario.progress_summary = {
+      context_bundle: {
+        status: "ready",
+        document_grounding: "uploaded_evidence",
+        source_counts: { ready: 1 },
+      },
+    };
+    await act(async () => root.render(<ContextHarness />));
+    expect(container.textContent?.match(/status-ready/g)).toHaveLength(2);
+    expect(container.textContent).not.toContain("status-processing");
+
+    contextScenario.progress_summary = { context_bundle: { status: "failed" } };
+    await act(async () => root.render(<ContextHarness />));
+    expect(container.textContent?.match(/status-failed/g)).toHaveLength(2);
+    expect(container.textContent).not.toContain("status-ready");
+  });
+  it("labels a file that is still converting as converting, not processing", async () => {
+    contextScenario = {
+      uploads: [source("processing", "A")],
+      progress_summary: { context_bundle: { status: "building" } },
+    };
+    await act(async () => root.render(<ContextHarness />));
+    expect(container.textContent).toContain("status-converting");
+    expect(container.textContent).not.toContain("status-processing");
+  });
   it("shows a run-scoped manual population when the city source has no value", async () => {
     cityPopulation = { cityId: "city-1" };
     contextScenario = {
@@ -303,6 +527,7 @@ describe("useConceptNoteWorkspaceData", () => {
       content: composerRequest.content,
       context: {
         concept_note_run_id: "run-1",
+        ui_locale: "en",
         concept_note_edit: {
           scope: { kind: "auto" },
           idempotency_key: expect.any(String),
@@ -380,6 +605,6 @@ describe("useConceptNoteWorkspaceData", () => {
       runId: "run-1",
       uploadId: persistedUploadId,
     });
-    expect(refetchRun).toHaveBeenCalledTimes(1);
+    expect(refetchRun).not.toHaveBeenCalled();
   });
 });

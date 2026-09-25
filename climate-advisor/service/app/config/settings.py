@@ -130,6 +130,7 @@ class ResearchModelConfig(BaseModel):
 
 
 class ModelsConfig(BaseModel):
+    cnb_chat_suggestions: ResearchModelConfig | None = None
     orchestrator: RoleModelConfig
     agentic_flow: Optional[RoleModelConfig] = None
     cnb_chat: Optional[RoleModelConfig] = None
@@ -165,10 +166,14 @@ class CnbSourcePromptBudgetConfig(BaseModel):
 
 
 class CnbEditPromptBudgetConfig(BaseModel):
-    """Limits for concurrent, chapter-bounded Concept Note edit planning."""
+    """Limits for the edit tool loop and concurrent chapter semantic reviews."""
 
     max_prompt_tokens: int = Field(default=50000, ge=2000)
     max_concurrency: int = Field(default=5, ge=1, le=5)
+    max_agent_turns: int = Field(default=12, ge=3, le=30)
+    max_review_repairs: int = Field(default=2, ge=0, le=3)
+    max_searches: int = Field(default=100, ge=1, le=1000)
+    timeout_seconds: int = Field(default=300, ge=30, le=600)
 
 
 class CnbValidationPromptBudgetConfig(BaseModel):
@@ -202,6 +207,8 @@ class GenerationConfig(BaseModel):
 class PromptsConfig(BaseModel):
     """Configured prompt entry points and include-aware prompt loading."""
 
+    cnb_chat_suggestions: str = "prompts/cnb/chat_suggestions.md"
+
     core: str
     chat: str
     stationary_energy_review: Optional[str] = None
@@ -215,6 +222,7 @@ class PromptsConfig(BaseModel):
     cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
     cnb_chat_edit_planner: str = "prompts/cnb/chat_edit_planner.md"
     cnb_chat_edit_review: str = "prompts/cnb/chat_edit_review.md"
+    cnb_draft_overview: str = "prompts/cnb/draft_overview.md"
     cnb_chapter_validation_completeness: str = (
         "prompts/cnb/chapter_validation_completeness.md"
     )

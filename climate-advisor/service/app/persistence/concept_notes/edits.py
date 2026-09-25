@@ -5,20 +5,23 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
-
-from pydantic import BaseModel
-from sqlalchemy import func, or_, select, text, update
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.models.cnb.concept_note_edits import (
     EditApplicationResult,
     EditApplyRequest,
     EditChange,
+    EditNotice,
     EditProposalRequest,
     EditProposalResponse,
+    PlannedTextChange,
+)
+from app.models.cnb.concept_note_structure import (
+    StructureProposal,
+    StructureSaveRequest,
+    StructureState,
 )
 from app.models.db.cnb_edit import ConceptNoteEditApplication, ConceptNoteEditProposal
 from app.models.db.cnb_workspace import (
@@ -34,6 +37,10 @@ from app.utils.cnb_information_markers import (
     marker_replacement_text,
     removed_information_markers,
 )
+from pydantic import BaseModel
+from sqlalchemy import func, or_, select, text, update
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +61,16 @@ class ConceptNoteEditRepository:
     def __init__(self, sessions: async_sessionmaker[AsyncSession]) -> None:
         """Use the existing managed CNB session factory."""
         self._sessions = sessions
+
+    async def save_structure(
+        self, run_id: UUID, request: StructureSaveRequest
+    ) -> StructureState:
+        """Save explicit direct structure edits within the shared run transaction."""
+        from app.persistence.concept_notes.structure import save_structure
+
+        async with self._sessions() as session, session.begin():
+            await lock_run(session, run_id)
+            return await save_structure(session, run_id, request)
 
     async def start(
         self,
@@ -107,6 +124,8 @@ class ConceptNoteEditRepository:
         changes: list[EditChange],
         clarification: str | None = None,
         error_code: str | None = None,
+        notices: list[EditNotice] | None = None,
+        structure: StructureProposal | None = None,
     ) -> EditProposalResponse:
         """Finalize a processing proposal without reviving a concurrent rejection."""
         async with self._sessions() as session, session.begin():
@@ -119,6 +138,8 @@ class ConceptNoteEditRepository:
                 str(key): value for key, value in base_revisions.items()
             }
             row.changes = [change.model_dump(mode="json") for change in changes]
+            row.notices = [notice.model_dump(mode="json") for notice in (notices or [])]
+            row.structure = structure.model_dump(mode="json") if structure else None
             row.clarification = clarification
             row.error_code = error_code
             row.status = (
@@ -196,7 +217,12 @@ class ConceptNoteEditRepository:
             return [to_response(row) for row in rows]
 
     async def mark_stale(
-        self, *, run_id: UUID, user_id: str, proposal_id: UUID
+        self,
+        *,
+        run_id: UUID,
+        user_id: str,
+        proposal_id: UUID,
+        error_code: str = "source_changed",
     ) -> EditProposalResponse:
         """Invalidate a pending proposal after its immutable source context changed."""
         async with self._sessions() as session, session.begin():
@@ -205,7 +231,7 @@ class ConceptNoteEditRepository:
             )
             if row.status == "proposed":
                 row.status = "stale"
-                row.error_code = "source_changed"
+                row.error_code = error_code
                 row.updated_at = datetime.now(UTC)
             return to_response(row)
 
@@ -250,6 +276,20 @@ class ConceptNoteEditRepository:
                         "This apply key was already used for different acceptance decisions.",
                     )
                 return to_response(row)
+            # Structural applications also reserve the key across the run, even
+            # when no body revision or text-application history is created.
+            other_application = await session.scalar(
+                select(ConceptNoteEditProposal.proposal_id).where(
+                    ConceptNoteEditProposal.run_id == run_id,
+                    ConceptNoteEditProposal.apply_key == request.idempotency_key,
+                    ConceptNoteEditProposal.proposal_id != proposal_id,
+                )
+            )
+            if other_application is not None:
+                raise EditOperationError(
+                    "idempotency_key_reused",
+                    "This acceptance key already belongs to another proposal.",
+                )
             if row.status != "proposed":
                 raise EditOperationError(
                     "proposal_not_pending",
@@ -270,6 +310,28 @@ class ConceptNoteEditRepository:
                     "revision_vector_mismatch",
                     "Reload the proposal before accepting its exact revisions.",
                 )
+            if proposal.structure is not None:
+                # Use the same transaction/lock as content edits, with a full snapshot check.
+                from app.persistence.concept_notes.structure import save_structure
+
+                if request.selected_change_ids is not None:
+                    raise EditOperationError(
+                        "invalid_selection", "Accept the complete structural proposal."
+                    )
+                await save_structure(
+                    session,
+                    run_id,
+                    StructureSaveRequest(
+                        expected_fingerprint=proposal.structure.before.fingerprint,
+                        chapters=proposal.structure.after,
+                    ),
+                    proposal_id=proposal_id,
+                )
+                row.status = "applied"
+                row.apply_key = request.idempotency_key
+                row.apply_fingerprint = fingerprint
+                row.updated_at = datetime.now(UTC)
+                return to_response(row)
             selected = accepted_changes(proposal.changes, request.selected_change_ids)
             locked = await locked_revisions(session, run_id, proposal.base_revisions)
             if locked is None:
@@ -653,7 +715,7 @@ async def latest_revision(
     )
 
 
-def replace_anchors(body: str, changes: list[EditChange]) -> str:
+def replace_anchors(body: str, changes: Sequence[PlannedTextChange]) -> str:
     """Replace exact, non-overlapping anchors and preserve all unrelated bytes."""
     cursor = 0
     pieces: list[str] = []
@@ -686,6 +748,8 @@ def to_response(row: ConceptNoteEditProposal) -> EditProposalResponse:
             "status": row.status,
             "base_revisions": row.base_revisions,
             "changes": row.changes,
+            "notices": row.notices,
+            "structure": row.structure,
             "clarification": row.clarification,
             "error_code": row.error_code,
             "result": row.applied_result,

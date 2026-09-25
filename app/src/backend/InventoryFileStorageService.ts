@@ -262,8 +262,21 @@ export default class InventoryFileStorageService {
               Delete: { Objects: objects, Quiet: true },
             }),
           );
-          if (result.Errors?.length)
+          if (result.Errors?.length) {
+            logger.error(
+              {
+                uploadId,
+                bucket: BUCKET,
+                prefix,
+                errors: result.Errors.map(({ Code, Message }) => ({
+                  Code,
+                  Message,
+                })),
+              },
+              "Concept Note source cleanup failed",
+            );
             throw new Error("Concept Note source cleanup failed");
+          }
         }
         continuationToken = page.NextContinuationToken;
       } while (continuationToken);

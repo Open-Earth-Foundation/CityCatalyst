@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
@@ -12,7 +13,10 @@ from app.config import get_settings
 from app.models.cnb.context_bundle import SelectedSource
 from app.persistence.concept_notes.context_bundle import ContextBundleBuildSnapshot
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
-from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
+from app.services.citycatalyst_client import (
+    CityCatalystClientError,
+    ConceptNoteMarkdownArtifact,
+)
 from app.services.cnb.context_bundle import (
     ContextBundleService,
     run_context_bundle_reconciler,
@@ -139,6 +143,11 @@ async def test_source_build_completes_with_null_optional_sources(
         "app.services.cnb.context_bundle.load_accessible_inventory",
         AsyncMock(return_value=None),
     )
+    city_profile = {"name": "Kraków", "population": 800000, "population_year": 2024}
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_city_profile",
+        AsyncMock(return_value=city_profile),
+    )
     monkeypatch.setattr(
         "app.services.cnb.context_bundle.begin_build",
         begin_build,
@@ -167,9 +176,11 @@ async def test_source_build_completes_with_null_optional_sources(
     )
     fail_build.assert_not_awaited()
     completed = complete_build.await_args.kwargs
+    assert completed["city"] == city_profile
     assert completed["ghgi"] is None
     assert completed["hiap"] is None
     assert completed["optional_sources"] == {
+        "city": "available",
         "ghgi": "missing",
         "hiap": "missing",
     }
@@ -306,6 +317,10 @@ async def test_build_without_uploads_completes_without_document_evidence(
         AsyncMock(return_value=None),
     )
     monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_city_profile",
+        AsyncMock(side_effect=CityCatalystClientError("denied", status_code=403)),
+    )
+    monkeypatch.setattr(
         "app.services.cnb.context_bundle.begin_build",
         AsyncMock(return_value=snapshot),
     )
@@ -327,12 +342,16 @@ async def test_build_without_uploads_completes_without_document_evidence(
     fail_build.assert_not_awaited()
     completed = complete_build.await_args.kwargs
     assert completed["selected_sources"] == []
+    # A failed city lookup is optional: it warns and keeps any stored profile.
+    assert completed["city"] is None
     assert completed["optional_sources"] == {
+        "city": "unavailable",
         "ghgi": "missing",
         "hiap": "missing",
     }
     assert completed["warnings"] == [
-        "No source document is attached; responses use limited context until a source is added."
+        "No source document is attached; responses use limited context until a source is added.",
+        "City profile was unavailable.",
     ]
     client.close.assert_awaited_once_with()
 
@@ -373,7 +392,7 @@ async def test_partial_ghgi_and_usable_hiap_are_retained(monkeypatch) -> None:
             )
         ),
     )
-    ghgi, hiap, statuses, warnings = await service._load_optional_context(
+    ghgi, hiap, statuses, warnings, candidate = await service._load_optional_context(
         user_id="owner",
         city_id=uuid4(),
         token="token",
@@ -382,6 +401,7 @@ async def test_partial_ghgi_and_usable_hiap_are_retained(monkeypatch) -> None:
     assert ghgi == {"availability": "partial", "emissions": {}}
     assert hiap == {"availability": "available", "actions": [1]}
     assert statuses == {"ghgi": "partial", "hiap": "available"}
+    assert candidate == {"inventory_id": inventory["inventory_id"], "updated_at": None}
     assert warnings == []
 
 
@@ -393,7 +413,7 @@ async def test_optional_source_errors_do_not_fail_source_readiness(monkeypatch) 
         "app.services.cnb.context_bundle.load_accessible_inventory",
         AsyncMock(side_effect=RuntimeError("optional service unavailable")),
     )
-    ghgi, hiap, statuses, warnings = await service._load_optional_context(
+    ghgi, hiap, statuses, warnings, candidate = await service._load_optional_context(
         user_id="owner",
         city_id=uuid4(),
         token="token",
@@ -402,6 +422,7 @@ async def test_optional_source_errors_do_not_fail_source_readiness(monkeypatch) 
     assert ghgi is None and hiap is None
     assert statuses == {"ghgi": "unavailable", "hiap": "unavailable"}
     assert warnings
+    assert candidate is None
 
 
 @pytest.mark.asyncio
@@ -436,3 +457,66 @@ async def test_source_failure_preserves_safe_diagnostics_without_source_text(
     assert "private document text" not in caplog.text
     assert "secret" not in caplog.text
     client.close.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_refresh_rebuilds_only_when_the_city_inventory_changed(
+    monkeypatch,
+) -> None:
+    from app.persistence.concept_notes.context_bundle import (
+        ContextBundleRefreshState,
+    )
+
+    client = SimpleNamespace(close=AsyncMock())
+    service = ContextBundleService(
+        None,  # type: ignore[arg-type]
+        cc_client_factory=lambda: client,  # type: ignore[arg-type,return-value]
+    )
+    inventory_id = str(uuid4())
+    checked = {"inventory_id": inventory_id, "updated_at": "2026-09-01T10:00:00Z"}
+    state = ContextBundleRefreshState(
+        city_id=str(uuid4()),
+        status="ready",
+        selected_inventory_id=None,
+        inventory_candidate=checked,
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_refresh_state",
+        AsyncMock(side_effect=lambda **_: state),
+    )
+    inventory = {"inventory_id": inventory_id, "updated_at": checked["updated_at"]}
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_accessible_inventory",
+        AsyncMock(side_effect=lambda **_: inventory),
+    )
+    queue = AsyncMock()
+    monkeypatch.setattr(service, "_queue_rebuild", queue)
+
+    assert await service.refresh_if_stale(
+        user_id="owner", run_id=uuid4(), token="token"
+    ) == "current"
+    queue.assert_not_awaited()
+
+    inventory = {"inventory_id": str(uuid4()), "year": 2024, "updated_at": None}
+    assert await service.refresh_if_stale(
+        user_id="owner", run_id=uuid4(), token="token"
+    ) == "queued"
+    queue.assert_awaited_once()
+
+    state = ContextBundleRefreshState(
+        city_id=state.city_id,
+        status="building",
+        selected_inventory_id=None,
+        inventory_candidate=None,
+    )
+    assert await service.refresh_if_stale(
+        user_id="owner", run_id=uuid4(), token="token"
+    ) == "building"
+    assert queue.await_count == 1
+
+    # Drafting reads the context mid-run, so a changed inventory waits.
+    state = replace(state, status="ready", draft_running=True)
+    assert await service.refresh_if_stale(
+        user_id="owner", run_id=uuid4(), token="token"
+    ) == "current"
+    assert queue.await_count == 1

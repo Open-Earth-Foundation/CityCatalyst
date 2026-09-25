@@ -50,11 +50,39 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
    - Composes `prompts.core` with `prompts.cnb_chat`, injects ready-source
      summaries, and exposes the step-scoped read-only source query
    - Uses source evidence for answers; chat suggestions do not persist document edits
+   - Exposes `concept_note_help` only to CNB chat with an authorized, ready context.
+     The model calls it for capability/navigation questions, not project-content
+     questions or actual edit requests. Its guide lives in
+     `service/app/tools/concept_note_ui_guide.txt`, outside the always-on prompt.
+     The CNB chat sends its active UI language as `context.ui_locale`; the guide
+     quotes control labels from `concept_note_ui_labels.py` for that language
+     (English fallback). A test keeps those labels equal to the frontend
+     `concept-notes.json` translations. `ui_state.draft` separates
+     `total_sections` from `sections_with_content`.
+     Each invocation reauthorizes the run and loads current draft/critical-gap
+     export state from the CNB workspace. Ordinary turns do not load UI state.
+     Browser-only state remains unknown; unavailable workspace storage preserves
+     the guide without implying an empty draft. Funding and source facts remain
+     in the existing context bundle.
    - Treats vague requests as sufficient intent, uses the already bound run and
      available chapter order, and asks one focused question when the next step
      cannot be derived
    - Uses the detailed contract in
      [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
+
+### Concept Note chapter structure
+
+All chapter titles, descriptions and ordering can be edited in the Structure tab
+or proposed through Clima for explicit confirmation. Changes belong to the run;
+shared template identities and required fields remain protected. Custom chapters
+can be inserted or removed. Compatible funding switches preserve these run-owned
+labels, guidance and ordering, and match template requirements by stable reference.
+Opening Structure alone does not lock the funding choice: untouched, empty template
+chapters are replaced on a funding switch. Saved structure edits and draft text
+retain the existing review and template-compatibility protections.
+Apply CNB migration `20260921_120000` before using the
+structure API. See [structure rules and persistence](../docs/ConceptNoteBuilderArchitecture.md#run-owned-chapter-structure-cc-864)
+for concurrency, review invalidation, and regression tests.
 
 ### Concept Note chapter validation
 
@@ -586,26 +614,42 @@ orchestrator and agentic-flow model settings, provider base URLs, retry and
 timeout settings, Stationary Energy review chat-context prompt budgets, and the
 CNB source reader/synthesizer roles, chapter drafter, gap-impact reviewer,
 chat-edit planner, and partition/prompt/concurrency limits. Chat-edit planning
-runs one model call per unlocked chapter with at most five calls concurrently,
-then combines and validates one review proposal. The chapter drafter uses GPT-5.6
+uses one document agent with `search_draft`, `read_chapter`, and `propose_edits`.
+Each proposal permits up to 100 draft searches, shared across repair attempts,
+configured by `generation.prompt_budget.cnb_edits.max_searches`.
+The tools resolve exact occurrences and validate replacements immediately so the
+agent can correct a failed selection. Independent semantic review then checks
+only affected chapters, with at most five reviews concurrently. Rejections feed
+the indexed review explanations and complete candidate back to the editor for
+up to two repair attempts (`generation.prompt_budget.cnb_edits.max_review_repairs`).
+Each attempt must submit a complete proposal against the unchanged snapshot;
+every revised candidate receives a fresh independent review. Unsupported edits
+still fail after exhaustion, and no draft changes are applied before acceptance.
+Each editor attempt is limited to 12 model turns, while the complete operation,
+including repairs and reviews, shares one 300-second deadline configured by
+`generation.prompt_budget.cnb_edits.max_agent_turns` and `timeout_seconds`.
+The chapter drafter uses GPT-5.6
 Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra and the
 chat-edit planner uses GPT-5.6 Sol, both with medium reasoning.
 
 Current CA model defaults:
 
 - General chat: `openai/gpt-5.6-terra`, reasoning `medium`.
-- CNB chat: `openai/gpt-5.6-sol`, reasoning `medium`.
+- CNB chat: `openai/gpt-5.6-sol`, reasoning `high`.
 - Stationary Energy chat: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Funding research and similar-project selection: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `low`.
 - Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `low`.
 - Document-summary synthesis: `openai/gpt-5.6-terra`, reasoning `medium`.
 
-Chat keeps the existing OpenRouter Chat Completions tool loop and explicitly sets
-reasoning to `medium`. The configured chat and source-worker requests omit
-`temperature`. Research keeps its Responses API path and existing reasoning
-settings. Source partition budgets,
-concurrency limits, and embedding models are unchanged. Stored summaries are not
+General and Stationary Energy chat use the OpenRouter Chat Completions tool loop
+with medium reasoning. CNB chat and source workers use OpenRouter's Responses API
+with detailed reasoning summaries and `store: false`, retaining each role's
+configured reasoning effort. CNB edit planner/reviewer calls use Chat Completions
+with detailed summaries and `exclude: false`. The configured chat and
+source-worker requests omit `temperature`. Research keeps its Responses API path
+and existing reasoning settings. Source partition budgets, concurrency limits,
+and embedding models are unchanged. Stored summaries are not
 automatically rebuilt by changing the model configuration.
 Stationary Energy draft proposals are generated deterministically from bounded
 CityCatalyst context, not by an LLM prompt. The environment is only for secrets
@@ -632,9 +676,10 @@ Prompt paths are also configured in `llm_config.yaml`:
 CNB document mapping and question-focused source readers use
 `models.cnb_source_reader`: `openai/gpt-5.6-terra` with low reasoning. Document
 summary synthesis uses `models.cnb_source_synthesizer`: `openai/gpt-5.6-terra` with
-medium reasoning. These tool-free workers retain the OpenRouter Chat Completions
-route and structured-output schemas, and omit `temperature`. The 50,000-token
-partition budget and maximum three concurrent readers are unchanged. Existing
+medium reasoning. These tool-free workers use OpenRouter's Responses API with
+detailed summaries, `store: false`, and structured-output schemas, and omit
+`temperature`. The 50,000-token partition budget and maximum three concurrent
+readers are unchanged. Existing
 stored summaries are not automatically regenerated by changing model settings.
 
 At runtime, CA composes the final system instructions as:
@@ -727,7 +772,12 @@ language, or client-side fallback behavior. The boundary is:
   Concept Note Builder workspace and validation flow and used for its
   funding-reference tables; the repository migrates it through the independent
   CNB Alembic chain, never the CA chain. The reviewed-reference importer,
-  similar-project reader, and runtime funding-reference validation also use it
+  similar-project reader, runtime funding-reference validation, and the workspace's
+  searchable funder/programme/template catalogue also use it. Funding selection
+  does not run research or call an LLM. See the
+  [workspace funding-selection contract](../docs/ConceptNoteBuilderArchitecture.md#funding-selection-in-the-workspace)
+  for compatible-template checks, draft review invalidation, serialized edit
+  registration/application, and focused tests
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
 - `OPENAI_API_KEY` - OpenAI API key for embeddings
@@ -841,10 +891,16 @@ the chapter is saved; mismatches fail generation rather than producing a chapter
 that can be incorrectly marked Ready.
 
 Chat creates durable edit proposals; only explicit web review applies changes.
-The LLM planner and independent LLM reviewer determine meaning, factual support,
-and which occurrences belong together. Python verifies exact anchors, source
-identities, user quotes, required headings, and gap markers; it does not compare
-numeric tokens, override semantic judgments, or add replacements after review.
+The LLM planner selects contextual matches or an explicit all-match replacement;
+Python owns occurrence IDs, revision-bound offsets, and the minimal displayed
+diff. Ambiguous selections and structural failures return to the agent for
+correction before independent LLM review of meaning and factual support. Python
+verifies exact anchors, source identities, user quotes, required headings, and
+gap markers; it does not compare numeric tokens, override semantic judgments,
+or add replacements after review. All-match operations exclude locked chapters,
+template headings, and protected information markers and persist visible counts
+with the proposal. Filling a complete, matching information gap still uses the
+existing provenance and gap-resolution rules.
 Review supports inline decisions and Accept all / Reject all, with source links
 and refinement. Clarification questions, processing, failed, and stale responses
 remain visible in the review area, including after reload; users can refine or
@@ -853,7 +909,8 @@ exposed. Internal revision/application records remain for auditing and safe retr
 No new provider credentials are required. CNB migration `20260907_120000`
 provisions the gap and edit storage.
 Merge revision `20260909_120000` joins that migration with chapter validation
-revision `20260828_120000`. Run `alembic -c cnb-alembic.ini upgrade head` from
+revision `20260828_120000`. Revision `20260917_120000` adds the proposal's
+persisted exclusion notices. Run `alembic -c cnb-alembic.ini upgrade head` from
 `service/` to apply both branches from either existing head or a fresh database.
 The original migrations remain unchanged.
 
@@ -1369,16 +1426,19 @@ Notes:
 
 ## Kubernetes CNB Database Deployment
 
-GitHub Actions is the credential source of truth. Configure
-`CNB_DATABASE_URL_DEV` and `CNB_DATABASE_URL_PROD` as repository Secrets; the
-test deployment intentionally reuses the development value until a distinct
-test database is available. Rotate any credential shared in chat or ticket text
-before saving it, and URL-encode reserved password characters in the DSN.
+CNB database connections are configured in the environment-specific database
+ConfigMaps under `k8s/`. The test ConfigMap sets `CNB_DATABASE_URL` to the
+`cnb_test` database and user on
+`dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com`, port `5432`.
+Both the test Deployment and CNB migration Job consume
+`climate-advisor-db-configmap-test` through `envFrom`, following the existing
+Kubernetes configuration pattern. The CA, development, and production database
+configurations are unchanged.
 
-Each deployment workflow reconciles an environment-specific Kubernetes Secret
-containing only `CNB_DATABASE_URL`. The Climate Advisor Deployment and CNB
-migration Job consume that Secret with `secretRef`; CNB credentials do not
-belong in the existing database ConfigMaps or in checked-in Secret manifests.
+After deployment, verify that the runtime connection uses database and user
+`cnb_test`, the CNB migration Job completes, and required test funding/reference
+data is present before running a full CNB smoke flow. This configuration change
+does not copy development data or seed the new database.
 
 Each deployment workflow launches the existing CA migration Job, then the CNB
 Job (`alembic -c cnb-alembic.ini upgrade head`). The workflow waits for the CNB
@@ -1681,3 +1741,64 @@ uv run --directory service pytest tests/ -v
 ## License
 
 See `LICENSE.md` for details.
+
+## CNB reasoning summary streaming (CC-907)
+
+CNB chat emits separate `progress` and `reasoning` SSE events. Progress includes
+an explicit workflow stage and optional chapter title/completion counts. Reasoning
+includes a model stream/item/part `id`, stage, optional chapter title, and text
+`delta`; `replace: true` corrects a previously displayed summary.
+
+Main chat and source workers use OpenRouter's Responses API with detailed
+summaries and `store: false`. Edit planner/reviewer calls use Chat Completions
+with detailed summaries and `exclude: false`. Settings are centralized in
+`app/utils/cnb_model_settings.py`; each role retains its configured effort.
+Document workers outside a live chat retain non-streaming execution.
+
+A bounded request-local queue delivers worker events before tools finish,
+independently of transport heartbeats (CC-827). The adapter reconciles deltas and
+completed snapshots without duplicates. Providers may omit readable summaries;
+the app never generates substitutes. Encrypted content is excluded, and summary
+text is not added to message history or reload responses. Provider calls follow
+the shared Clima telemetry and credential-redaction contract described above;
+the SSE adapter does not create separate summary artifacts.
+
+The expandable Reasoning section opens during generation and shows current
+workflow progress separately, with a progress bar when chapter counts are available.
+Summaries use consistent muted italic typography and a subtle vertical divider;
+Markdown headings and emphasis retain this styling instead of looking like final
+answers. The section can be collapsed using its disclosure row. Before a summary arrives, it shows
+a neutral thinking indicator. Summaries clear on completion, failure, or
+cancellation. Interrupted streams without a terminal event restore controls
+through the error path. This does not provide durable reconnect/restart recovery.
+
+See [validation and reproduction](docs/cnb-reasoning-validation.md) for focused
+checks, manual verification steps, and remaining limitations.
+
+### Concept Note chat suggestions
+
+`POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
+for the authorized run and its active conversation. Questions target 3–7 words
+and are limited to 80 characters each. The UI keeps them directly above the
+chat input, outside the scrolling message history. The `cnb_chat_suggestions`
+model uses `openai/gpt-5.6-luna` through the existing `OPENROUTER_API_KEY`, with
+medium reasoning. Its prompt is `prompts/cnb/chat_suggestions.md`.
+
+The model receives the first 20,000 `o200k_base` tokens of the created document
+(in chapter order), up to six recent messages (2,000 tokens each), and compact
+workspace metadata. Uploaded source bodies and internal identifiers are excluded.
+The call has a 20-second deadline, no retries, and a 4,096-token completion cap.
+Invalid output or provider failure returns an empty list so the UI uses two
+translated deterministic questions. Suggestions never write messages or edit
+the document; selecting one fills and focuses the composer. Suggestions refresh
+after replies, tab changes, or run/draft revisions; the UI cancels stale requests.
+The CityCatalyst proxy forwards that cancellation to Climate Advisor, which
+cancels an in-flight model request when the client disconnects.
+
+### Initial concept-note upload recovery
+
+The creation request can include `initial_uploads` (up to 100 file identities: upload UUID, filename, SHA-256). These are saved in the run's existing JSON context before transfer. CC validates retried file bytes against this manifest and reuses the upload UUID and OCR/delivery job. After durable storage and queueing, CC records an idempotent receipt at `POST /v1/concept-notes/{run_id}/initial-uploads/{upload_id}/accepted` with the authenticated user and city scope.
+
+The creation dialog automatically retries one transient network/server failure. Persistent failures leave an **Upload incomplete** workspace with optional retry/delete actions; no progress percentage is shown. Reopening retry asks for the original outstanding files and preserves already accepted files. Runs created without initial sources follow the existing workflow. Existing runs without a manifest are not retroactively classified. No database migration or new environment variable is required; deploy the CA contract before the frontend that sends manifests.
+
+Regression coverage: `service/tests/test_concept_note_runs.py` verifies manifest and partial-receipt persistence across database sessions; `app/tests/concept-note-upload.jest.ts` checks identity replay and byte mismatch rejection; `app/e2e/concept-note-upload-recovery.spec.ts` exercises browser failure, reload, partial retry and lost-response recovery with controlled API responses.

@@ -260,7 +260,7 @@ afterEach(async () => {
 });
 
 describe("guided review before export", () => {
-  it("keeps critical gaps blocked even after choosing export anyway", async () => {
+  it("warns on critical gaps and enables export once acknowledged", async () => {
     const savedDraft = draft(1, true);
     savedDraft.chapters[0].gaps[0].severity = "critical";
     await renderDialog({ draft: savedDraft });
@@ -271,12 +271,21 @@ describe("guided review before export", () => {
     expect(document.body.textContent).toContain(
       translations["draft-preflight-critical-gap-description"],
     );
-    const downloads = [...document.body.querySelectorAll("button")].filter(
-      (button) => /Export (DOCX|PDF)/.test(button.textContent ?? ""),
+    const downloads = () =>
+      [...document.body.querySelectorAll("button")].filter((button) =>
+        /Export (DOCX|PDF)/.test(button.textContent ?? ""),
+      );
+    expect(downloads()).toHaveLength(2);
+    // Export warns, never blocks: disabled only until the user acknowledges.
+    expect(downloads().every((button) => button.disabled)).toBe(true);
+    const acknowledgement = document.body.querySelector<HTMLInputElement>(
+      'input[type="checkbox"]',
     );
-    expect(downloads).toHaveLength(2);
-    expect(downloads.every((button) => button.disabled)).toBe(true);
-    expect(document.body.querySelector('input[type="checkbox"]')).toBeNull();
+    expect(acknowledgement).not.toBeNull();
+    await act(async () => {
+      acknowledgement?.click();
+    });
+    expect(downloads().every((button) => !button.disabled)).toBe(true);
   });
 
   it("limits validation concurrency to three chapters", async () => {
@@ -345,6 +354,51 @@ describe("guided review before export", () => {
     expect(
       validateChapter.mock.calls.map(([request]) => request.chapterId),
     ).toEqual(["chapter-1", "chapter-2", "chapter-2"]);
+  });
+
+  it("sends an invalid application template to setup instead of retry", async () => {
+    validateChapter.mockImplementation(() => ({
+      unwrap: async () => {
+        throw { data: { code: "chapter_validation_template_invalid" } };
+      },
+    }));
+    const onReviewSetup = jest.fn();
+
+    await renderDialog({ onReviewSetup });
+    await settle();
+
+    expect(document.body.textContent).toContain(
+      translations["guided-review-template-invalid"],
+    );
+    expect(document.body.textContent).not.toContain(translations["try-again"]);
+    await click(translations["review-application-setup"]);
+    expect(onReviewSetup).toHaveBeenCalledTimes(1);
+  });
+
+  it("marks steps with unchecked chapters as not checked instead of clear", async () => {
+    validateChapter.mockImplementation((request) => ({
+      unwrap: async () => {
+        if (request.chapterId === "chapter-2") {
+          throw Object.assign(new Error("Unavailable"), { status: 503 });
+        }
+        return result(request.chapterId);
+      },
+    }));
+
+    await renderDialog();
+    await settle();
+    await settle();
+
+    expect(document.body.textContent).toContain(
+      translations["review-step-incomplete"],
+    );
+    await click("Continue to conflicts & logic");
+    expect(document.body.textContent).toContain(
+      translations["review-results-unchecked"],
+    );
+    expect(document.body.textContent).not.toContain(
+      translations["review-no-conflicts"],
+    );
   });
 
   it("shows missing information before requiring an explicit export decision", async () => {

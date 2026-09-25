@@ -7,9 +7,9 @@ import inspect
 import json
 import logging
 import time
-from contextlib import suppress
-from typing import Any, AsyncIterator, Dict, List, Optional, Union
-from uuid import UUID
+from contextlib import aclosing, suppress
+from typing import Any, AsyncGenerator, AsyncIterator, Dict, List, Optional, Union
+from uuid import UUID, uuid4
 
 from agents import RunConfig, Runner, gen_trace_id
 from app.middleware import get_request_id
@@ -17,6 +17,11 @@ from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.requests import MessageCreateRequest
 from app.persistence.concept_notes.context_bundle import load_agent_context
 from app.services.agent_service import AgentService
+from app.services.cnb.draft_overview import (
+    draft_overview_instructions,
+    load_draft_overview_message,
+    release_draft_overview,
+)
 from app.services.native_input_catalog_service import ActiveRequestContext
 from app.services.stationary_energy.stationary_energy_chat_context import (
     build_minimal_stationary_energy_context_payload,
@@ -32,6 +37,7 @@ from app.services.stationary_energy.stationary_energy_tool_events import (
 )
 from app.services.thread_service import ThreadService
 from app.utils.chat_workflow_context import ChatWorkflowContext
+from app.utils.cnb_progress import emit_cnb_progress, emit_cnb_reasoning, stream_cnb_events
 from app.utils.concept_note_context import (
     clean_cnb_history,
     extract_concept_note_run_id,
@@ -84,9 +90,11 @@ class StreamingHandler:
         inventory_id: Optional[str] = None,
         request_context: Optional[Any] = None,
         request_options: Optional[dict] = None,
+        draft_overview_claim: Optional[tuple[UUID, str]] = None,
     ) -> None:
         """Initialize per-request state for streaming one agent response."""
         self.thread_id = thread_id
+        self.reasoning_stream_id = str(uuid4())
         self.user_id = user_id
         self.session_factory = session_factory
         self.cc_access_token = cc_access_token
@@ -94,6 +102,8 @@ class StreamingHandler:
         self.inventory_id = inventory_id
         self.request_context = request_context
         self.request_options = request_options
+        # (run_id, build_id) when this is the hidden CNB drafting-overview turn.
+        self.draft_overview_claim = draft_overview_claim
         self.thread_identifier = str(thread_id)
         self.workflow_context = ChatWorkflowContext()
         self.agent_model: Optional[str] = None
@@ -115,7 +125,18 @@ class StreamingHandler:
         self,
         payload: MessageCreateRequest,
         history_warning: Optional[str] = None,
-    ) -> AsyncIterator[bytes]:
+    ) -> AsyncGenerator[bytes, None]:
+        """Forward answer and request-local worker events on the existing stream."""
+        events = stream_cnb_events(self._stream_response(payload, history_warning))
+        async with aclosing(events) as stream:
+            async for chunk in stream:
+                yield chunk
+
+    async def _stream_response(
+        self,
+        payload: MessageCreateRequest,
+        history_warning: Optional[str] = None,
+    ) -> AsyncGenerator[bytes, None]:
         """Stream AI responses using OpenAI Agents SDK.
 
         Args:
@@ -129,6 +150,8 @@ class StreamingHandler:
         settings = get_settings()
         started_at = time.perf_counter()
         await self._resolve_workflow_context(payload)
+        if self.workflow_context.concept_note_run_id:
+            await emit_cnb_progress("preparing")
 
         with (
             start_run(
@@ -218,6 +241,12 @@ class StreamingHandler:
                 else None
             )
             self.concept_note_edit_request = edit_request
+            # The CNB frontend sends its active language so help quotes visible labels.
+            concept_note_ui_locale = (
+                payload.context.get("ui_locale")
+                if concept_note_run_id and isinstance(payload.context, dict)
+                else None
+            )
 
             # Load the effective chat input before tool registration so the edit
             # planner can resolve short follow-ups from a bounded visible window.
@@ -245,6 +274,7 @@ class StreamingHandler:
                 native_input_catalog_context=native_input_catalog_context,
                 concept_note_edit_request=edit_request,
                 concept_note_edit_history=concept_note_edit_history,
+                concept_note_ui_locale=concept_note_ui_locale,
             )
 
             # Get model override from options
@@ -281,7 +311,14 @@ class StreamingHandler:
                 }
             )
 
-            agent = await self.agent_service.create_agent(model=self.agent_model)
+            agent = await self.agent_service.create_agent(
+                model=self.agent_model,
+                instructions=(
+                    draft_overview_instructions(settings.llm.prompts)
+                    if self.draft_overview_claim
+                    else None
+                ),
+            )
 
             log_json_artifact(
                 "chat/conversation_history.json", {"messages": conversation_history}
@@ -365,6 +402,15 @@ class StreamingHandler:
             yield self._format_completion_event(req_id, ok=False)
 
         finally:
+            # A failed overview turn stays retryable for the same drafting build.
+            if self.draft_overview_claim and not self.history_saved:
+                run_id, build_id = self.draft_overview_claim
+                await release_draft_overview(
+                    session_factory=self.session_factory,
+                    run_id=run_id,
+                    user_id=self.user_id,
+                    build_id=build_id,
+                )
             # Clean up agent service
             if self.agent_service:
                 await self.agent_service.close()
@@ -405,6 +451,20 @@ class StreamingHandler:
 
         if context_message:
             conversation_history = [context_message, *conversation_history]
+            if self.draft_overview_claim and self.session_factory:
+                # Fail the turn rather than let the overview run without draft facts.
+                conversation_history.append(
+                    await load_draft_overview_message(
+                        session_factory=self.session_factory,
+                        run_id=self.draft_overview_claim[0],
+                        user_id=self.user_id,
+                        ui_locale=(
+                            payload.context.get("ui_locale")
+                            if isinstance(payload.context, dict)
+                            else None
+                        ),
+                    )
+                )
             if not self._history_contains_current_user_message(
                 conversation_history,
                 payload.content,
@@ -929,6 +989,12 @@ class StreamingHandler:
             return
 
         response_type = getattr(response_event, "type", "")
+        if self.workflow_context.concept_note_run_id:
+            if response_type == "response.created":
+                self.reasoning_stream_id = str(uuid4())
+            await emit_cnb_reasoning(
+                response_event, stream_id=self.reasoning_stream_id, stage="chat"
+            )
 
         # Stream text/refusal deltas as message events and preserve token order.
         if response_type in {"response.output_text.delta", "response.refusal.delta"}:

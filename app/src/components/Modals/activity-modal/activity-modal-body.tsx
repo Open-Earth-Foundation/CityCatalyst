@@ -26,6 +26,7 @@ import { ActivityDataSection } from "./sections/ActivityDataSection";
 import { DirectMeasureSection } from "./sections/DirectMeasureSection";
 import { EmissionFactorsSection } from "./sections/EmissionFactorsSection";
 import { DataQualitySection } from "./sections/DataQualitySection";
+import { api } from "@/services/api";
 
 interface AddActivityModalBodyProps {
   t: TFunction;
@@ -118,6 +119,10 @@ const ActivityModalBody = ({
 
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
     useState<boolean>(true);
+
+  const { data: inventory } = api.useGetInventoryQuery(inventoryId!, {
+    skip: !inventoryId,
+  });
 
   // Function to determine default units based on methodology type
   const getDefaultUnits = (methodologyId: string): string => {
@@ -334,6 +339,7 @@ const ActivityModalBody = ({
           errors={errors}
           setValue={setValue}
           fields={fields}
+          gwp={inventory?.gwp}
         />
       </form>
     </DialogBody>

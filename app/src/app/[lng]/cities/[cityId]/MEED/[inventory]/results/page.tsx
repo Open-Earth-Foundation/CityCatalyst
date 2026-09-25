@@ -19,7 +19,15 @@ import { ResultsHeader } from "./components/ResultsHeader";
 import { TopPicks } from "./components/TopPicks";
 import { CoBenefitStrip } from "./components/CoBenefitStrip";
 import { ContextCardGrid } from "./components/ContextCardGrid";
-import { NextStepsBanner } from "./components/NextStepsBanner";
+import type { MeedContextArea } from "./components/contextAreas";
+import { MeedScoreLegend } from "../../components/MeedScoreComposition";
+import { MeedRankingSummary } from "../../components/MeedRankingSummary";
+import { MeedRankingConfig } from "../../components/MeedRankingConfig";
+import { rankingInsights } from "./components/rankingInsights";
+import { sectorTagLabel } from "./components/actionCatalog";
+import { SECTORS } from "@/util/constants";
+import { meedContextVisual } from "../../components/meedContextVisuals";
+import { useMeedContextFacts } from "../../useMeedContextFacts";
 import { buildActionIndex } from "./components/actionCatalog";
 import { buildRankingCsv } from "./components/rankingCsv";
 import { downloadCsv } from "@/util/csv";
@@ -27,10 +35,10 @@ import { useMeedRanking } from "../../useMeedRanking";
 import { tallyCoBenefits } from "./components/coBenefits";
 import {
   excludedActionCount,
+  legalFunnel,
   policyBacking,
   readRankingWeights,
 } from "./components/rankingFacts";
-import { PILLAR_WEIGHTS } from "../../scoringWeights";
 import { MeedCardSkeleton } from "../../components/MeedSkeletons";
 import { MeedErrorCard } from "../../components/MeedErrorCard";
 import {
@@ -46,7 +54,12 @@ export default function Page(props: {
 }) {
   const { lng, cityId, inventory: inventoryId } = React.use(props.params);
   const { t } = useTranslation(lng, "meed-results");
+  const { t: tContext } = useTranslation(lng, "meed-context");
   const router = useRouter();
+  const sectorLabelFor = useCallback(
+    (name: string) => t(`sector-short-${name}`),
+    [t],
+  );
 
   // Read through the shared hook so this screen and the landing screen can
   // never disagree about whether a ranking exists.
@@ -67,8 +80,8 @@ export default function Page(props: {
 
   // The weights the backend actually scored with, so the printed formula in the
   // detail drawer matches the final score beside it.
-  const scoreWeights: ScoreWeights = useMemo(
-    () => readRankingWeights(ranking, PILLAR_WEIGHTS),
+  const scoreWeights: ScoreWeights | null = useMemo(
+    () => readRankingWeights(ranking),
     [ranking],
   );
   const [selected, setSelected] = useState<MeedRankedActionResult | null>(null);
@@ -112,8 +125,9 @@ export default function Page(props: {
   const emissions = inventory?.totalEmissions
     ? formatEmissions(inventory.totalEmissions)
     : undefined;
+  // `unit` already carries the CO₂e suffix (e.g. "MtCO₂e").
   const emissionsText = emissions
-    ? `${emissions.value} ${emissions.unit}CO2e`.trim()
+    ? `${emissions.value} ${emissions.unit}`.trim()
     : undefined;
 
   // The city and inventory year live on this screen, not in the table, so the
@@ -224,6 +238,18 @@ export default function Page(props: {
     pdf.save(`meed-action-report-${inventoryId}.pdf`);
   }, [generate, selectedIds, index, t, lng, inventory, inventoryId, cityId]);
 
+  // A ranking exists, so emissions were retrieved; the context queries are the
+  // same ones the detail pages use and are already cached for them.
+  const context = useMeedContextFacts({
+    lng,
+    cityId,
+    inventoryId,
+    includeEmissions: true,
+  });
+  const funnel = useMemo(
+    () => legalFunnel(ranking, index.size),
+    [ranking, index.size],
+  );
   const facts = {
     emissionsText,
     inventoryYear: inventory?.year ?? undefined,
@@ -231,7 +257,60 @@ export default function Page(props: {
     excludedCount,
     strongPolicyBacking: backing.strong,
     states,
+    hasRanking: true,
+    sectorsWithData: context.sectorsWithData,
+    indicatorCount: context.indicatorCount,
+    finance: context.finance,
+    legalFunnel: funnel,
+    nationalPolicy: context.policy?.national ?? null,
   };
+  const visualFor = (area: MeedContextArea) =>
+    meedContextVisual(area, {
+      bySector: context.bySector,
+      showEmissions: true,
+      keyIndicators: context.keyIndicators,
+      funnel,
+      finance: context.finance,
+      policy: context.policy,
+      t,
+      tContext,
+      sectorLabelFor,
+    });
+  const insights = useMemo(
+    () =>
+      rankingInsights({
+        ranked,
+        index,
+        weights: scoreWeights,
+        bySector: context.bySector,
+        financeRoutes: context.financeRoutes,
+      }),
+    [ranked, index, scoreWeights, context.bySector, context.financeRoutes],
+  );
+  const inventoryYear = inventory?.year;
+  const summaryInputs = useMemo(
+    () =>
+      [
+        inventoryYear && emissionsText
+          ? t("summary-input-inventory", {
+              year: inventoryYear,
+              emissions: emissionsText,
+            })
+          : null,
+        context.sectorsWithData !== null
+          ? t("summary-input-sectors", {
+              n: context.sectorsWithData,
+              total: SECTORS.length,
+            })
+          : null,
+        context.indicatorCount
+          ? t("summary-input-indicators", { n: context.indicatorCount })
+          : null,
+        context.cityProfileLabel,
+        index.size ? t("summary-input-catalog", { n: index.size }) : null,
+      ].filter((x): x is string => Boolean(x)),
+    [inventoryYear, emissionsText, context, index.size, t],
+  );
 
   // Rationale deep links come back here, not into the wizard.
   const hrefFor = (segment: string) =>
@@ -311,9 +390,35 @@ export default function Page(props: {
               behind a "Context" tab, which put the explanation of the ranking
               somewhere most users never opened.
             */}
+            <MeedRankingSummary
+              insights={insights}
+              funnel={funnel}
+              backing={backing}
+              nationalPolicy={context.policy?.national ?? null}
+              inputs={summaryInputs}
+              sectorLabelFor={(tag) => sectorTagLabel(tag, t)}
+              inventorySectorLabelFor={sectorLabelFor}
+              t={t}
+              config={
+                <MeedRankingConfig
+                  inventoryId={inventoryId}
+                  weights={scoreWeights}
+                  isStale={isStale}
+                  editHref={stepHref(
+                    lng,
+                    cityId,
+                    inventoryId,
+                    "preferences",
+                    "results",
+                  )}
+                  lng={lng}
+                />
+              }
+            />
             <TopPicks
               actions={topPicks}
               index={index}
+              weights={scoreWeights}
               t={t}
               isCatalogLoading={isCatalogLoading}
               selectedIds={selectedIds}
@@ -321,6 +426,7 @@ export default function Page(props: {
               onOpenDetail={setSelected}
               onBrowseFullRanking={showFullRanking}
             />
+            {scoreWeights && <MeedScoreLegend weights={scoreWeights} t={t} />}
             <CoBenefitStrip
               benefits={coBenefits}
               total={topPicks.length}
@@ -331,18 +437,14 @@ export default function Page(props: {
               backing={backing}
               t={t}
               hrefFor={hrefFor}
-              onShowFullRanking={showFullRanking}
-            />
-            <NextStepsBanner
-              selectedCount={selectedIds.length}
-              onBrowseFullRanking={showFullRanking}
-              t={t}
+              visualFor={visualFor}
             />
 
             <FullRanking
               ref={rankingRef}
               actions={ranked}
               index={index}
+              weights={scoreWeights}
               t={t}
               onSelect={setSelected}
               selectedIds={selectedIds}
@@ -359,6 +461,11 @@ export default function Page(props: {
             weights={scoreWeights}
             t={t}
             onClose={() => setSelected(null)}
+            rank={selected.rank}
+            total={ranked.length}
+            isSelected={selectedIds.includes(selected.action_id)}
+            onToggleSelect={toggleSelect}
+            finance={{ cityId, lng, financeHref: hrefFor("finance") }}
           />
         )}
       </>

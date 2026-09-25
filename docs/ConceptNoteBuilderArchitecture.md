@@ -48,6 +48,18 @@ record or become CC context. Removing it clears only the run-scoped value.
 The editor and API reject changes while chapter drafting is running because the
 drafting worker uses a single population snapshot for all chapters.
 
+Missing Context cards offer the next step. The GHG inventory card links to GHGI
+onboarding when the city has no inventory, and to adding data when the inventory
+has no recorded values (**Empty inventory**); otherwise the inventory year is a
+chip beside the status badge that opens the inventory picker ("Choose
+different"), disabled with a reason while drafting runs or the bundle is
+building, and a small icon opens that inventory in GHGI. GHGI links open in a
+new tab. Run context refreshes
+automatically (see below), so there is no manual refresh control. The Climate
+Action Plan card has no module link because not every project enables HIAP. A
+missing application template opens funding selection. The climate risk
+assessment card and tile are hidden until CCRA data feeds concept notes.
+
 In scope:
 
 - A Climate Advisor workflow for concept-note runs.
@@ -170,6 +182,15 @@ not driven through chat: starting a draft invokes a dedicated persisted process.
 Afterwards, chat supports user-led questions, clarification, and reviewable edit
 proposals. Only explicit review actions mutate the persisted document.
 
+The workspace renders one edit-review toolbar in a dedicated row below the
+document header. Funding saves navigate to Draft only when the action is labelled
+"Save and go to drafting". Ready-to-draft guidance follows the current funding,
+source, and draft state regardless of their loading order; it hides during source
+processing or when the template is cleared, and does not duplicate the setup
+panel's Start drafting button. Dismissed guidance stays dismissed. Completion
+guidance clears when drafting resumes. Draft progress uses workspace events, and
+finishing the chat overview refreshes the draft's consumed-overview state.
+
 ### Implemented chat revision boundary (CC-732)
 
 The workspace shows red/green changes at each affected passage.
@@ -189,19 +210,29 @@ Confirming a chapter refreshes both its run's draft and edit proposals, so the
 review state updates even when no proposal is processing and polling is stopped.
 
 The proposal-only CA tool uses authorized evidence and explicit user input.
-Bounded chapter workers use an LLM planner and an independent LLM reviewer for
-meaning, factual support, and related occurrences. Python checks exact anchors,
+One bounded document agent searches exact text and reads chapters on demand.
+It proposes contextual matches, selected server-issued match IDs, or explicit
+all-match replacements. Python resolves offsets from the captured revisions and
+returns structural errors to the agent for correction. An independent LLM
+reviewer checks meaning and factual support for each affected chapter. Python checks exact anchors,
 source identity, user quotes, required headings and unresolved markers. It does
 not infer meaning from numeric/entity tokens, merge groups based on shared values,
 or expand replacements after semantic review. Scope is automatic; chapter focus is
 only a navigation hint. Parsed-Markdown redlines preserve source offsets and fail
 closed on stale or overlapping anchors. No edit is applied before acceptance.
+Unchanged matching context is trimmed from the displayed diff. All-match edits
+exclude protected markers, template headings, and locked chapters; server-counted
+exclusions appear in the proposal and chat response. Complete, grounded gap fills
+retain the existing marker-resolution contract. The agent has a 12-turn limit;
+planning plus review has a 180-second deadline, configurable in `llm_config.yaml`.
 
 CNB migration `20260907_120000` provisions proposals and
 immutable application records. Apply locks the run and affected chapters, checks
 the expected revision vector, and appends accepted changes atomically. Records
 remain for audit, sequencing and idempotent retries; public history, undo and
 restore endpoints are not exposed. Inline decisions select the exact applied subset.
+Migration `20260917_120000` adds persisted proposal exclusion notices after the
+`20260909_120000` merge revision.
 
 A grounded marker replacement resolves the matching gap in the same transaction.
 Wording-only edits preserve Ready only when exact confirmation and current gap,
@@ -1756,6 +1787,63 @@ Always-on context should include:
 This is crucial because the agent should never need to ask a tool what state the
 workflow is in before deciding what to do next.
 
+### Funding selection in the workspace
+
+The Context tab's **Browse funders** / **Change** action in the funder card's upper-right corner opens a
+searchable catalogue of every managed funder, including profiles without programmes
+or templates. Search matches funder names, countries, regions, and programme names,
+regions, sectors, and summaries; IDs and template JSON are excluded. The inspector
+shows stated and derived profile facts, programme
+eligibility and award information, and the associated template's ordered chapters
+and required fields. The managed schema has one template per programme; selecting
+a programme selects that compatible template. Changing the funder clears the
+pending programme and template before saving.
+
+`GET /v1/concept-notes/{run_id}/funding-catalogue` reads the shared CNB reference
+database after run ownership and current city-access checks. It returns the complete
+curated catalogue for client-side search, without ranking or omitting incomplete
+profiles. `PATCH /v1/concept-notes/{run_id}/application-context` validates the full
+selection and expected previous identifiers, then persists the IDs on the CA run
+and replaces the bundle's funding context. City and uploaded-source context remain
+available. The corresponding CityCatalyst proxy routes and RTK cache invalidation
+refresh the selection, draft review state, and pending proposals.
+
+Funding changes are rejected during active context assembly, drafting, or edit
+planning. For an existing draft, the user must acknowledge another review: chapter
+text and revision history are retained, confirmations and prior validation results
+are cleared, pending edit proposals become stale, and previous project matches are
+removed. An existing draft can switch to a template when its template chapter
+references match, regardless of document order or added custom chapters.
+Incompatible switches are rejected without changing the selected funding or draft;
+the user is directed to start a new note for that template. Compatible switches
+update required flags by reference while preserving run-owned titles, descriptions,
+order and revision history. Clearing funding, or selecting a funder without a
+template, preserves the draft for a later compatible selection.
+
+Edit registration snapshots context while holding the same CA run-row lock as
+funding selection, and commits its processing proposal before releasing that
+lock. Funding changes reject processing proposals; completed proposals are
+invalidated on a switch. Edit application also takes the CA lock before CNB
+proposal/chapter locks, so acceptance cannot race funding invalidation. HTTP and
+chat callers cannot supply an earlier context snapshot to the edit service.
+Reference-store review invalidation commits before the CA selection; a failed CA
+commit keeps the old choice but conservatively requires another draft review.
+
+Focused verification:
+
+```bash
+# From climate-advisor/service
+python -m pytest tests/cnb/test_funding_selection.py tests/cnb/test_application_context.py
+# With a disposable PostgreSQL test database, also exercise real row-lock ordering
+CNB_TEST_DATABASE_URL=postgresql://localhost/cnb_test python -m pytest tests/cnb/test_funding_selection_postgres.py
+# From app, against a running local app and authenticated test-user storage state
+CNB_TEST_URL=http://localhost:3000 CNB_AUTH_STATE=playwright/.auth/user.json npx playwright test --config e2e/funding.playwright.config.ts
+```
+
+The browser test exercises the real workspace with controlled API responses;
+the Python tests exercise catalogue joins, persistence, and invalidation in test
+databases. Neither test starts an LLM request.
+
 ### Context Bundle Build Responsibilities
 
 Context bundle building is not an agent tool group. `ContextBundleService`
@@ -1768,12 +1856,55 @@ persisted `cc_context` sections. The workspace uses those flags for its status
 badges; it does not infer that city or project context is included merely
 because the corresponding record is available elsewhere in CityCatalyst.
 
+The concept-note list labels each city source as available or unavailable in
+the city. The run's Context tab uses the same status terms for its own bundle:
+available city data can still be absent from a run, while selected, processing,
+included, and failed are distinct run states. Bundle progress exposes
+`source_provenance` from the saved bundle, including the GHGI inventory ID and
+year. The Context tab uses that saved
+identity for included sources, rather than the city's latest inventory. Older
+bundles without provenance display that the used inventory was not recorded.
+An optional source reported as `unavailable` by bundle progress appears as
+**Not available** in Run Context, even if it exists in the city; an actual
+bundle or source failure appears as **Failed**.
+A GHG inventory with no recorded values is **Empty inventory** in both places;
+one the run uses with sectors still missing is **Included, partial data**.
+The note-list tiles and the Context cards share one implementation: the
+`context-source-status` module derives state, label, tone and help text, the
+same status badge renders it (**Processing** while data loads), and
+`context-source-action` renders the next step (Create inventory or Add inventory
+data in both; Choose different only in the run). A city with no inventory
+answers 404, which reads as unavailable; other lookup errors read as failed.
+
+GHGI uses the newest accessible inventory (year, then last update, then ID),
+the same order `GET /api/v1/city/{city}/ghgi` uses; that route returns 404 when
+the city has none. A partially filled inventory is still used: sectors missing
+from CityCatalyst's status or emissions data, including IV and V in BASIC
+inventories, count as zero and the source is marked `partial`. "Choose
+different" on the GHGI card calls `PUT /concept-notes/{run}/inventory-selection`,
+which stores `context_summary.selected_inventory_id` (null restores the newest)
+and rebuilds the bundle. A chosen inventory that is no longer accessible falls
+back to the newest with a warning.
+
+Each build records the inventory version it checked as
+`context_bundle.inventory_candidate`. Opening the workspace, and returning to
+its tab (at most every 10 seconds), calls
+`POST /concept-notes/{run}/context-bundle/refresh`. That compares the
+city's current inventory ID and `updated_at` with the recorded version and
+queues a forced rebuild only when they differ, so an inventory created or
+edited after the note started is picked up without a user action. A rebuild
+stores `context_changes` (GHGI added, changed, updated, or removed; HIAP added
+or removed), and the chat shows them once per build as a
+"New context available" notice.
+
 Context loaded:
 
 - Every ready upload's identity, summary, topics, and bounded exact excerpts,
   using pages for PDFs and deterministic heading/block anchors for Markdown.
   Queued and failed uploads are excluded.
-- City profile summary if another workflow has populated it.
+- City profile from the CityCatalyst city page: name, LOCODE, country, region,
+  area (km²), and the most recent population and year. The boundary geometry
+  is omitted. A failed lookup warns and keeps the last stored profile.
 - Project summary if another workflow has populated it.
 - GHGI summary if available.
 - CCRA risk summary if available.
@@ -1844,8 +1975,9 @@ Rules:
   refreshed similar projects, or user-confirmed facts.
 - Does not expose arbitrary context bundle replacement. Bundle edits must come
   from a known workflow trigger and preserve the rest of the assembled context.
-- Replaces only `selected_sources`, `cc_context.ghgi`, and `cc_context.hiap` on a
-  source-triggered rebuild, preserving all unrelated sections populated later.
+- Replaces only `selected_sources`, `cc_context.city` (when the lookup
+  succeeds), `cc_context.ghgi`, and `cc_context.hiap` on a source-triggered
+  rebuild, preserving all unrelated sections populated later.
 - Does not register CC context loading or context bundle editing as
   agent-callable tools. The separate source-query capability is read-only.
 
@@ -2601,7 +2733,7 @@ flowchart LR
 Export preflight should check:
 
 - Required chapters present or intentionally skipped.
-- Critical gaps resolved.
+- Critical gaps resolved or explicitly acknowledged for export.
 - Budget, partners, match funding, and commitments are confirmed or intentionally
   left blank.
 - Custom chapters are allowed by the export mode.
@@ -2617,10 +2749,11 @@ the user can explicitly choose **Export as is**. Existing unresolved-information
 acknowledgement remains authoritative for every validation state, including
 Needs re-validation, `needs_review`, and `incomplete`.
 
-Open or processing critical structured gaps still block both export formats;
-acknowledging validation findings cannot override that gate. Noncritical gaps
-can be acknowledged. The draft panel combines validation-finding navigation
-with inline edit decisions and chapter confirmation. Accepting an edit refreshes
+Open or processing structured gaps, including critical gaps, require explicit
+acknowledgement before either export format becomes available. The chat help
+state reports critical gaps separately from hard blockers and leaves browser
+button availability unknown when a draft exists. The draft panel combines
+validation-finding navigation with inline edit decisions and chapter confirmation. Accepting an edit refreshes
 the current draft and its validation freshness before the next guided review.
 
 ## Planned Routes
@@ -2798,3 +2931,96 @@ Minimum test surface:
 - Should available risk assessments and GreenStep actions be transformed into
   the current CityCatalyst CCRA/action format, or remain source evidence that is
   summarized only inside the context bundle?
+
+
+## Run-owned chapter structure (CC-864)
+
+The Structure tab edits persisted `concept_note_chapters`, not shared funder
+reference templates. `GET /v1/concept-notes/{run_id}/structure` initializes the
+selected template once and returns ordered chapter metadata and a fingerprint.
+`PUT` accepts the complete ordered list and its `expected_fingerprint`. Both
+routes recheck run ownership and city access; writes are serialized with drafting,
+funding changes, and chat acceptance. Apply the CNB migration
+`20260921_120000` before deploying this feature.
+
+| Operation | Template chapters, including required chapters | Custom chapters |
+| --- | --- | --- |
+| Rename title | Allowed | Allowed |
+| Edit description | Allowed | Allowed |
+| Reorder | Allowed, preserving template references | Allowed |
+| Insert | Cannot invent or change template identities | Allowed |
+| Remove | Blocked with an actionable explanation | Soft-delete |
+
+Titles must be nonblank single lines, at most 255 characters. Descriptions are
+editable generation/validation guidance, at most 4,000 characters; they do not
+replace the chapter body. An empty description is an explicit cleared value.
+Existing chapters with an unset description copy template guidance on first
+structure load or draft start. Chapter IDs, template references, required flags,
+body paragraphs, revisions, evidence and missing-information records retain their
+identity. Renames append a revision, updating the matching chapter heading while
+retaining all body content. Duplicate notes copy the current descriptions and order.
+Navigation and DOCX/PDF export consume the same saved chapter titles/positions.
+Compatible funding changes compare template reference membership independently of
+chapter order and custom chapters. They preserve run-owned titles, descriptions,
+order and body revisions, while updating required flags by template reference.
+Before any drafting or structure edits, funding changes may discard the empty
+materialized chapters without draft acknowledgement. This requires an exact match
+to the previous template's titles, descriptions, order, references and required
+flags, with no revisions or locks. The next structure load or draft start seeds
+the newly selected template. Saved structure edits and draft revisions retain
+the acknowledgement and template-membership guards.
+
+Any structural mutation resets drafted chapters to `needs_review`, clears their
+confirmation/lock and invalidates document validation because order and guidance
+can affect cross-chapter checks. Existing gaps, answers and evidence remain intact.
+Descriptions participate in validation fingerprints, preventing an in-flight
+validation from marking an older description ready. New custom chapters start
+empty and are drafted by the existing start/resume action.
+
+Direct edits stay local until **Save structure**. Drag handles, keyboard Up/Down,
+and arrow buttons use the same reorder operation. Failed saves retain the local
+form and show a retry message. A stale fingerprint requires reviewing local edits
+and explicitly discarding/reloading the latest snapshot before reapplying them.
+Unsaved edits are recovered from session storage when returning to the note in
+the same browser tab, including unfinished titles. Recovery retains the original
+fingerprint, so newer server changes still require explicit stale-state resolution.
+Saving or discarding clears recovery data. An unload warning also protects edits
+when closing or reloading the page. Browser storage restrictions can disable recovery.
+Adding an empty custom chapter keeps existing saved chapter bodies visible in
+Draft, including after reload. A compact **Continue drafting** action lets the
+user generate the new chapters while the run is marked `not_started`.
+
+Chat uses `propose_structure` to stage a durable `StructureProposal` in the
+existing edit-proposal lifecycle. The model addresses existing chapters by
+catalogue position; the server supplies their identities. Structural proposals
+show complete before/after lists in a bounded, scrollable review dialog and
+require **Confirm structure changes**. The dialog keeps its action buttons
+visible on desktop and mobile; closing it leaves the Structure editor and
+**Save structure** available while the proposal is pending.
+Text and structural changes are separate proposals. Required chapter rename and
+description edits are allowed; attempts to remove template chapters receive a
+specific explanation. Acceptance runs the same transaction as direct saves,
+checks a fingerprint covering metadata/content revisions, and replays the same
+acceptance key without another mutation. Structure changes invalidate pending
+text/structure proposals. No model tool applies a structure automatically.
+
+Regression coverage:
+- `service/tests/cnb/test_chapter_structure.py`: isolated PostgreSQL persistence,
+  concurrent saves, stable identity/content/gaps, duplication, protected removal,
+  durable chat preview, ownership and idempotent acceptance.
+- `app/e2e/concept-note-structure.spec.ts`: actual workspace components and RTK
+  requests with deterministic API fixtures for dragging, keyboard, all-chapter
+  editing, reload, failed/stale saves, and explicit structural confirmation.
+- `app/tests/concept-note-edit-routes.jest.ts`: authenticated proxy boundaries,
+  payload validation and upstream errors; export tests cover document ordering.
+
+
+For the browser contract suite, start a local app with
+`CONCEPT_NOTE_BUILDER,CA_SERVICE_INTEGRATION` in `NEXT_PUBLIC_FEATURE_FLAGS`.
+Set `CNB_BROWSER_TEST_URL` to that local server and `CNB_BROWSER_TEST_SECRET` to
+its local test `NEXTAUTH_SECRET`; the fixture signs a test-user cookie and mocks
+application API responses. From `app`, run
+`npx playwright test --config playwright.concept-note-structure.config.ts`.
+These browser tests do not call a live model or prove deployment. For real
+persistence tests, set `CNB_TEST_DATABASE_URL` to a disposable PostgreSQL database
+with pgvector; the structure tests create and remove their own UUID-named schemas.

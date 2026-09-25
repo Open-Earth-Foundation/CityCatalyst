@@ -66,6 +66,8 @@ import {
   Authz,
   CityDashboardResponse,
   ConceptNoteApplicationContext,
+  ConceptNoteFunder,
+  ConceptNoteFundingSelection,
   ConfirmConceptNoteChapterRequest,
   ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
@@ -74,6 +76,7 @@ import {
   ConceptNoteUploadRequest,
   ConceptNoteUploadResponse,
   ConceptNoteUploadStatusRequest,
+  ConceptNoteContextBundleRefreshResponse,
   ConceptNoteContextBundleRetryResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
@@ -212,6 +215,8 @@ export const api = createApi({
     "ConceptNoteDraft",
     "ConceptNoteEdits",
     "BulkInventoryImport",
+    "ConceptNoteApplicationContext",
+    "ConceptNoteFundingCatalogue",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -305,21 +310,6 @@ export const api = createApi({
         transformResponse: (response: { data: unknown }) => response.data,
         providesTags: ["Meed"],
       }),
-      getMeedFinanceFeasibility: builder.query<unknown, { cityId: string }>({
-        query: ({ cityId }) =>
-          `city/${cityId}/modules/meed/finance/feasibility`,
-        transformResponse: (response: { data: unknown }) => response.data,
-        providesTags: ["Meed"],
-      }),
-      getMeedFinanceLink: builder.query<
-        unknown,
-        { cityId: string; link: string }
-      >({
-        query: ({ cityId, link }) =>
-          `city/${cityId}/modules/meed/finance/follow?link=${encodeURIComponent(link)}`,
-        transformResponse: (response: { data: unknown }) => response.data,
-        providesTags: ["Meed"],
-      }),
       /**
        * The stored ranking for one inventory. Separate cache tag from "Meed"
        * so running a ranking does not invalidate the catalog and reference
@@ -341,9 +331,7 @@ export const api = createApi({
       // pass-throughs to hiap-meed, so unlike the ranking route their payloads
       // are snake_case with a `meta`/`warnings` envelope — see the contract
       // types. The older proxies stay until their consumers are migrated;
-      // that migration also retires `finance/follow`, whose guard only permits
-      // `/api/v1/cities/` while the real links are `/api/v1/climate-finance/`,
-      // so both of its calls 400 and the cards silently render "no data".
+      // finance already reads through these.
       getMeedReferenceActions: builder.query<
         MeedReferenceActionsResponse,
         { cityId: string }
@@ -937,7 +925,7 @@ export const api = createApi({
         }) => response.data,
       }),
       verifySecondFactorAuth: builder.mutation<
-        { success: boolean },
+        { success: boolean; recoveryCodes: string[] },
         { token: string }
       >({
         query: ({ token }) => ({
@@ -945,8 +933,9 @@ export const api = createApi({
           method: "POST",
           body: { token },
         }),
-        transformResponse: (response: { data: { success: boolean } }) =>
-          response.data,
+        transformResponse: (response: {
+          data: { success: boolean; recoveryCodes: string[] };
+        }) => response.data,
         invalidatesTags: ["UserInfo"],
       }),
       disableSecondFactorAuth: builder.mutation<
@@ -2580,6 +2569,32 @@ export const api = createApi({
         string
       >({
         query: (runId) => `concept-notes/${runId}/application-context/`,
+        providesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteApplicationContext", id: runId },
+        ],
+      }),
+      getConceptNoteFundingCatalogue: builder.query<
+        { funders: ConceptNoteFunder[] },
+        string
+      >({
+        query: (runId) => `concept-notes/${runId}/funding-catalogue/`,
+        providesTags: ["ConceptNoteFundingCatalogue"],
+      }),
+      updateConceptNoteFundingSelection: builder.mutation<
+        ConceptNoteApplicationContext,
+        { runId: string; selection: ConceptNoteFundingSelection }
+      >({
+        query: ({ runId, selection }) => ({
+          url: `concept-notes/${runId}/application-context/`,
+          method: "PATCH",
+          body: selection,
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteApplicationContext", id: runId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
+        ],
       }),
       getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
         query: (runId) => `concept-notes/${runId}/draft/`,
@@ -2599,10 +2614,12 @@ export const api = createApi({
           funderId,
           selectedFundingOpportunityId,
           threadId,
+          initialUploads,
         }) => ({
           url: "concept-notes/start/",
           method: "POST",
           body: {
+            initial_uploads: initialUploads,
             city_id: cityId,
             idempotency_key: idempotencyKey,
             name,
@@ -2698,8 +2715,9 @@ export const api = createApi({
           method: "POST",
           body: formData,
         }),
-        invalidatesTags: (_result, _error, { cityId }) => [
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
           { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
         ],
       }),
       getConceptNoteUploadStatus: builder.query<
@@ -2734,6 +2752,29 @@ export const api = createApi({
         }),
         invalidatesTags: ["ConceptNoteRuns"],
       }),
+      refreshConceptNoteContextBundle: builder.mutation<
+        ConceptNoteContextBundleRefreshResponse,
+        string
+      >({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/context-bundle/refresh/`,
+          method: "POST",
+        }),
+        // Only a queued rebuild changes the run; skip needless refetches.
+        invalidatesTags: (result) =>
+          result?.status === "queued" ? ["ConceptNoteRuns"] : [],
+      }),
+      selectConceptNoteInventory: builder.mutation<
+        ConceptNoteContextBundleRetryResponse,
+        { runId: string; inventoryId: string | null }
+      >({
+        query: ({ runId, inventoryId }) => ({
+          url: `concept-notes/${runId}/inventory-selection/`,
+          method: "PUT",
+          body: { inventory_id: inventoryId },
+        }),
+        invalidatesTags: ["ConceptNoteRuns"],
+      }),
       startConceptNoteDraft: builder.mutation<ConceptNoteDraftState, string>({
         query: (runId) => ({
           url: `concept-notes/${runId}/draft/`,
@@ -2741,6 +2782,7 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, runId) => [
           { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteRuns", id: runId },
         ],
       }),
       confirmConceptNoteChapter: builder.mutation<
@@ -2848,8 +2890,6 @@ export const {
   useGetMeedActionsQuery,
   useGetMeedCityAttributesQuery,
   useGetMeedPolicyScoresQuery,
-  useGetMeedFinanceFeasibilityQuery,
-  useGetMeedFinanceLinkQuery,
   useGetMeedRankingQuery,
   useRunMeedRankingMutation,
   useGetMeedPlanQuery,

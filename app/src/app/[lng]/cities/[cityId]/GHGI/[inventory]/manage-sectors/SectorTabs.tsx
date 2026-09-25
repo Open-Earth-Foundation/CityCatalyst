@@ -1026,7 +1026,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                     variant="outline"
                     onClick={() => isDirty && handleUndoChanges()}
                   >
-                    {t("clear-all-changes")}
+                    {t("discard-unsaved-changes")}
                   </Button>
                   <Button
                     height="xxl-2"

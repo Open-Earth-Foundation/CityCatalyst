@@ -766,5 +766,15 @@
   "funder-why": "Die Prioritäten des Geldgebers bestimmen, wie jedes Kapitel gestaltet wird.",
   "template-why": "Die Vorlage des Programms legt die Kapitel fest, die Clima entwirft.",
   "template-choose": "Programm auswählen",
-  "inventory-open-in-ghgi": "Öffnen Sie dieses Inventar in GHGI"
+  "inventory-open-in-ghgi": "Öffnen Sie dieses Inventar in GHGI",
+  "population-refresh": "Aktualisieren",
+  "population-refresh-hint": "Clima kann diese Zahl noch nicht verwenden. Aktualisieren Sie, um sie dieser Konzeptnotiz hinzuzufügen.",
+  "population-refresh-outdated": "CityCatalyst hat jetzt eine andere Zahl. Aktualisieren Sie, um sie in diesem Konzeptvermerk zu verwenden.",
+  "edit-context-sources": "Unterstützende Konzeptnotiz Kontext: {{Quellen}}",
+  "edit-context-city": "CityCatalyst Stadtprofil",
+  "edit-context-project": "CityCatalyst-Projekt",
+  "edit-context-ghgi": "CityCatalyst Treibhausgas-Inventar",
+  "edit-context-ccra": "CityCatalyst Klimarisikobewertung",
+  "edit-context-hiap": "CityCatalyst priorisierte Klimaschutzmaßnahmen",
+  "edit-context-manual-population": "Bevölkerungszahl für diese Konzeptnotiz eingegeben"
 }

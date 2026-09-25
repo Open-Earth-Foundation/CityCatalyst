@@ -766,5 +766,15 @@
   "funder-why": "As prioridades do financiador moldam como cada capítulo é estruturado.",
   "template-why": "O modelo do programa define os capítulos que a Clima rascunha.",
   "template-choose": "Escolha o programa",
-  "inventory-open-in-ghgi": "Abra este inventário no GHGI"
+  "inventory-open-in-ghgi": "Abra este inventário no GHGI",
+  "population-refresh": "Atualizar",
+  "population-refresh-hint": "O Clima ainda não pode usar essa figura. Atualize para adicioná-la a esta nota conceitual.",
+  "population-refresh-outdated": "O CityCatalyst agora tem um número diferente. Atualize para usá-lo nesta nota conceitual.",
+  "edit-context-sources": "Suporte à nota conceitual de contexto: {{fontes}}",
+  "edit-context-city": "Perfil da cidade CityCatalyst",
+  "edit-context-project": "Projeto CityCatalyst",
+  "edit-context-ghgi": "Inventário de GEE CityCatalyst",
+  "edit-context-ccra": "Avaliação de risco climático CityCatalyst",
+  "edit-context-hiap": "CityCatalyst priorizou ações climáticas",
+  "edit-context-manual-population": "População inserida para esta nota conceitual"
 }

@@ -766,5 +766,15 @@
   "funder-why": "Les priorités du bailleur de fonds façonnent la manière dont chaque chapitre est structuré.",
   "template-why": "Le modèle du programme définit les chapitres que Clima rédige.",
   "template-choose": "Choisissez le programme",
-  "inventory-open-in-ghgi": "Ouvrir cet inventaire dans GHGI"
+  "inventory-open-in-ghgi": "Ouvrir cet inventaire dans GHGI",
+  "population-refresh": "Rafraîchir",
+  "population-refresh-hint": "Clima ne peut pas encore utiliser ce chiffre. Actualisez pour l'ajouter à cette note conceptuelle.",
+  "population-refresh-outdated": "CityCatalyst a maintenant une figure différente. Actualisez pour l'utiliser dans cette note conceptuelle.",
+  "edit-context-sources": "Note de concept de soutien contexte: {{sources}}",
+  "edit-context-city": "Profil de ville CityCatalyst",
+  "edit-context-project": "Projet CityCatalyst",
+  "edit-context-ghgi": "Inventaire de GES CityCatalyst",
+  "edit-context-ccra": "Évaluation des risques climatiques de CityCatalyst",
+  "edit-context-hiap": "CityCatalyst a priorisé les actions climatiques",
+  "edit-context-manual-population": "Population entrée pour cette note conceptuelle"
 }

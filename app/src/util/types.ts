@@ -1365,3 +1365,8 @@ export interface ConceptNoteContextBundleRetryResponse {
   run_id: string;
   status: "queued";
 }
+
+export interface ConceptNoteContextBundleRefreshResponse {
+  run_id: string;
+  status: "queued" | "current" | "building";
+}

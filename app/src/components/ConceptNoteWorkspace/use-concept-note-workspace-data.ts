@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { isSourceLookupFailure } from "@/components/ConceptNoteDashboard/context-source-status";
 import { useConceptNoteWorkspaceEvents } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-events";
 import { useTranslation } from "@/i18n/client";
 import { useAppDispatch } from "@/lib/hooks";
@@ -22,6 +23,8 @@ import {
   shouldPollConceptNoteUpload,
   validateConceptNoteSourceFile,
 } from "@/components/ConceptNoteWiringHarness/utils";
+
+const REFRESH_ON_RETURN_MS = 10_000;
 
 interface WorkspaceDataOptions {
   cityId: string;
@@ -57,6 +60,13 @@ export function useConceptNoteWorkspaceData({
     },
   );
   const { data: city } = api.useGetCityQuery(cityId);
+  // Context cards link to GHGI in a new tab; refetch city sources on focus so
+  // the cards reflect work done there without a page reload.
+  const {
+    data: cityDashboard,
+    isError: cityDashboardFailed,
+    isLoading: cityDashboardLoading,
+  } = api.useGetCityDashboardQuery({ cityId, lng }, { refetchOnFocus: true });
   const {
     data: applicationContext,
     isError: applicationContextFailed,
@@ -80,7 +90,26 @@ export function useConceptNoteWorkspaceData({
   } = api.useGetMostRecentCityPopulationQuery({ cityId });
   const [updateManualPopulation, manualPopulationState] =
     api.useUpdateConceptNotePopulationMutation();
-  const { data: inventory } = api.useGetInventoryByCityIdQuery(cityId);
+  // Refetch on open and on focus so an inventory created or filled in another
+  // tab shows up on return.
+  const {
+    data: inventory,
+    error: inventoryError,
+    isLoading: inventoryLoading,
+  } = api.useGetInventoryByCityIdQuery(cityId, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+  });
+  const inventoryFailed = isSourceLookupFailure(inventoryError);
+  // Same refetch rules as the inventory, so the picker lists an inventory
+  // created in another tab.
+  const { data: cityYears } = api.useGetCityYearsQuery(cityId, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+  });
+  const inventoryOptions = [...(cityYears?.years ?? [])].sort(
+    (a, b) => b.year - a.year,
+  );
   const { data: cityFiles } = api.useGetUserFilesQuery(cityId);
   const [uploadSourceMutation, uploadState] =
     api.useUploadConceptNoteSourceMutation();
@@ -88,6 +117,9 @@ export function useConceptNoteWorkspaceData({
     api.useRetryConceptNoteUploadMutation();
   const [retryBundle, retryBundleState] =
     api.useRetryConceptNoteContextBundleMutation();
+  const [refreshBundle] = api.useRefreshConceptNoteContextBundleMutation();
+  const [selectInventoryMutation, selectInventoryState] =
+    api.useSelectConceptNoteInventoryMutation();
   const [startDraftMutation, startDraftState] =
     api.useStartConceptNoteDraftMutation();
 
@@ -109,6 +141,49 @@ export function useConceptNoteWorkspaceData({
     );
 
   const bundle = getConceptNoteBundleProgress(run?.progress_summary ?? {});
+
+  // On open, and when the user returns to the tab (e.g. after creating or
+  // filling an inventory in GHGI), rebuild context if the city's inventory
+  // changed since the last build. The server skips the rebuild when nothing
+  // changed; returns are throttled so tab switching stays cheap.
+  const refreshedRunRef = useRef<string | null>(null);
+  const lastRefreshRef = useRef(0);
+  useEffect(() => {
+    function refresh(): void {
+      lastRefreshRef.current = Date.now();
+      void refreshBundle(runId);
+    }
+    if (refreshedRunRef.current !== runId) {
+      refreshedRunRef.current = runId;
+      refresh();
+    }
+    function onReturn(): void {
+      if (document.visibilityState !== "visible") return;
+      if (Date.now() - lastRefreshRef.current < REFRESH_ON_RETURN_MS) return;
+      refresh();
+    }
+    window.addEventListener("focus", onReturn);
+    document.addEventListener("visibilitychange", onReturn);
+    return () => {
+      window.removeEventListener("focus", onReturn);
+      document.removeEventListener("visibilitychange", onReturn);
+    };
+  }, [refreshBundle, runId]);
+
+  // A finished rebuild can change which sources the application context lists.
+  const completedBuildRef = useRef<string | null>(null);
+  const completedBuild =
+    bundle.status === "ready" ? `${runId}:${bundle.buildId}` : null;
+  useEffect(() => {
+    if (!completedBuild) return;
+    if (
+      completedBuildRef.current &&
+      completedBuildRef.current !== completedBuild
+    ) {
+      void refetchApplicationContext();
+    }
+    completedBuildRef.current = completedBuild;
+  }, [completedBuild, refetchApplicationContext]);
   const draftProgress = getConceptNoteDraftProgress(
     run?.progress_summary ?? {},
   );
@@ -244,6 +319,10 @@ export function useConceptNoteWorkspaceData({
     }
   }
 
+  async function selectInventory(inventoryId: string | null): Promise<void> {
+    await selectInventoryMutation({ runId, inventoryId }).unwrap();
+  }
+
   async function startDrafting(): Promise<void> {
     if (!canStartDrafting || isDraftRunning) return;
     try {
@@ -281,6 +360,9 @@ export function useConceptNoteWorkspaceData({
     canStartDrafting,
     contextStatus: getConceptNoteContextPresentation(contextState, bundle, t),
     city,
+    cityDashboard,
+    cityDashboardFailed,
+    cityDashboardLoading,
     cityName,
     draft,
     draftFailed,
@@ -292,6 +374,10 @@ export function useConceptNoteWorkspaceData({
     files,
     hasApplicationTemplate,
     inventory,
+    inventoryFailed,
+    inventoryLoading,
+    inventoryOptions,
+    inventorySelectionSaving: selectInventoryState.isLoading,
     isDraftRunning,
     manualPopulation,
     manualPopulationSaving: manualPopulationState.isLoading,
@@ -310,6 +396,7 @@ export function useConceptNoteWorkspaceData({
     runFailed,
     runLoading,
     saveManualPopulation,
+    selectInventory,
     startDrafting,
     startDraftState,
     uploadSource,

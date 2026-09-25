@@ -48,6 +48,18 @@ record or become CC context. Removing it clears only the run-scoped value.
 The editor and API reject changes while chapter drafting is running because the
 drafting worker uses a single population snapshot for all chapters.
 
+Missing Context cards offer the next step. The GHG inventory card links to GHGI
+onboarding when the city has no inventory, and to adding data when the inventory
+has no recorded values (**Empty inventory**); otherwise the inventory year is a
+chip beside the status badge that opens the inventory picker ("Choose
+different"), disabled with a reason while drafting runs or the bundle is
+building, and a small icon opens that inventory in GHGI. GHGI links open in a
+new tab. Run context refreshes
+automatically (see below), so there is no manual refresh control. The Climate
+Action Plan card has no module link because not every project enables HIAP. A
+missing application template opens funding selection. The climate risk
+assessment card and tile are hidden until CCRA data feeds concept notes.
+
 In scope:
 
 - A Climate Advisor workflow for concept-note runs.
@@ -1844,6 +1856,47 @@ persisted `cc_context` sections. The workspace uses those flags for its status
 badges; it does not infer that city or project context is included merely
 because the corresponding record is available elsewhere in CityCatalyst.
 
+The concept-note list labels each city source as available or unavailable in
+the city. The run's Context tab uses the same status terms for its own bundle:
+available city data can still be absent from a run, while selected, processing,
+included, and failed are distinct run states. Bundle progress exposes
+`source_provenance` from the saved bundle, including the GHGI inventory ID and
+year. The Context tab uses that saved
+identity for included sources, rather than the city's latest inventory. Older
+bundles without provenance display that the used inventory was not recorded.
+An optional source reported as `unavailable` by bundle progress appears as
+**Not available** in Run Context, even if it exists in the city; an actual
+bundle or source failure appears as **Failed**.
+A GHG inventory with no recorded values is **Empty inventory** in both places;
+one the run uses with sectors still missing is **Included, partial data**.
+The note-list tiles and the Context cards share one implementation: the
+`context-source-status` module derives state, label, tone and help text, the
+same status badge renders it (**Processing** while data loads), and
+`context-source-action` renders the next step (Create inventory or Add inventory
+data in both; Choose different only in the run). A city with no inventory
+answers 404, which reads as unavailable; other lookup errors read as failed.
+
+GHGI uses the newest accessible inventory (year, then last update, then ID),
+the same order `GET /api/v1/city/{city}/ghgi` uses; that route returns 404 when
+the city has none. A partially filled inventory is still used: sectors missing
+from CityCatalyst's status or emissions data, including IV and V in BASIC
+inventories, count as zero and the source is marked `partial`. "Choose
+different" on the GHGI card calls `PUT /concept-notes/{run}/inventory-selection`,
+which stores `context_summary.selected_inventory_id` (null restores the newest)
+and rebuilds the bundle. A chosen inventory that is no longer accessible falls
+back to the newest with a warning.
+
+Each build records the inventory version it checked as
+`context_bundle.inventory_candidate`. Opening the workspace, and returning to
+its tab (at most every 10 seconds), calls
+`POST /concept-notes/{run}/context-bundle/refresh`. That compares the
+city's current inventory ID and `updated_at` with the recorded version and
+queues a forced rebuild only when they differ, so an inventory created or
+edited after the note started is picked up without a user action. A rebuild
+stores `context_changes` (GHGI added, changed, updated, or removed; HIAP added
+or removed), and the chat shows them once per build as a
+"New context available" notice.
+
 Context loaded:
 
 - Every ready upload's identity, summary, topics, and bounded exact excerpts,
@@ -2680,7 +2733,7 @@ flowchart LR
 Export preflight should check:
 
 - Required chapters present or intentionally skipped.
-- Critical gaps resolved.
+- Critical gaps resolved or explicitly acknowledged for export.
 - Budget, partners, match funding, and commitments are confirmed or intentionally
   left blank.
 - Custom chapters are allowed by the export mode.
@@ -2696,10 +2749,11 @@ the user can explicitly choose **Export as is**. Existing unresolved-information
 acknowledgement remains authoritative for every validation state, including
 Needs re-validation, `needs_review`, and `incomplete`.
 
-Open or processing critical structured gaps still block both export formats;
-acknowledging validation findings cannot override that gate. Noncritical gaps
-can be acknowledged. The draft panel combines validation-finding navigation
-with inline edit decisions and chapter confirmation. Accepting an edit refreshes
+Open or processing structured gaps, including critical gaps, require explicit
+acknowledgement before either export format becomes available. The chat help
+state reports critical gaps separately from hard blockers and leaves browser
+button availability unknown when a draft exists. The draft panel combines
+validation-finding navigation with inline edit decisions and chapter confirmation. Accepting an edit refreshes
 the current draft and its validation freshness before the next guided review.
 
 ## Planned Routes

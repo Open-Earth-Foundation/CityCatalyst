@@ -213,6 +213,11 @@ export function useGuidedReview({
         Array.from({ length: workerCount }, () => validateNextChapters()),
       );
       if (activeRequestRef.current !== requestId) return;
+      // An invalid template fails every chapter the same way; retrying cannot help.
+      if (failures.some(({ errorKind }) => errorKind === "template_invalid")) {
+        setReviewError("template_invalid");
+        return;
+      }
       try {
         await onReviewComplete();
       } catch {

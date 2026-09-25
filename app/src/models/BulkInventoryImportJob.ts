@@ -38,6 +38,10 @@ export interface BulkInventoryImportJobAttributes {
    * failed/superseded. Inventory.hasOne(ImportedInventoryFile) is unchanged.
    */
   replaceExisting: boolean;
+  /** Current coarse stage for the admin progress UI (nullable when idle/done). */
+  progressStage?: string | null;
+  /** Locode / filename context for progressStage. */
+  progressDetail?: string | null;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -60,6 +64,8 @@ export type BulkInventoryImportJobOptionalAttributes =
   | "inventoryType"
   | "globalWarmingPotentialType"
   | "replaceExisting"
+  | "progressStage"
+  | "progressDetail"
   | "created"
   | "lastUpdated";
 export type BulkInventoryImportJobCreationAttributes = Optional<
@@ -90,6 +96,8 @@ export class BulkInventoryImportJob
   declare inventoryType: InventoryTypeEnum;
   declare globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum;
   declare replaceExisting: boolean;
+  declare progressStage?: string | null;
+  declare progressDetail?: string | null;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -221,6 +229,16 @@ export class BulkInventoryImportJob
           allowNull: false,
           defaultValue: false,
           field: "replace_existing",
+        },
+        progressStage: {
+          type: DataTypes.STRING(64),
+          allowNull: true,
+          field: "progress_stage",
+        },
+        progressDetail: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "progress_detail",
         },
         created: {
           type: DataTypes.DATE,

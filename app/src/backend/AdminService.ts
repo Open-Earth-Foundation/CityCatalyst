@@ -66,6 +66,8 @@ export interface FindOrCreateCityAndInventoryProps {
   inventoryType: GhgiInventoryTypeEnum;
   gwp: GlobalWarmingPotentialTypeEnum;
   userId?: string | null;
+  /** Optional UI progress hook (e.g. bulk import job stage). */
+  onProgress?: (stage: string, detail?: string) => Promise<void>;
 }
 
 export interface FindOrCreateCityAndInventoryResult {
@@ -294,6 +296,10 @@ export default class AdminService {
     }
 
     if (storedLocode) {
+      await props.onProgress?.(
+        "enriching_population",
+        storedLocode,
+      );
       await this.enrichCityBestEffort(
         storedLocode,
         props.year,
@@ -660,8 +666,12 @@ export default class AdminService {
         await CityBoundaryService.getCityBoundary(cityLocode);
       area = boundaryData.area;
     } catch (err) {
+      // Expected for many Chile locodes / Global API gaps — keep the warning short.
       logger.warn(
-        { err, locode: cityLocode },
+        {
+          locode: cityLocode,
+          message: err instanceof Error ? err.message : String(err),
+        },
         "City boundary lookup failed (best-effort)",
       );
     }

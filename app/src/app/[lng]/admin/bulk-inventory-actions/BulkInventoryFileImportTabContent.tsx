@@ -4,7 +4,6 @@ import { toaster } from "@/components/ui/toaster";
 import { api } from "@/services/api";
 import {
   Box,
-  Checkbox,
   Field,
   FieldRoot,
   Fieldset,
@@ -15,11 +14,14 @@ import {
   Table,
   Tabs,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { FiUpload } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup } from "@/components/ui/custom-radio";
 import CustomSelectableButton from "@/components/custom-selectable-buttons";
 import {
@@ -40,9 +42,6 @@ interface BulkFileImportInputs {
   year: number;
   inventoryType: string;
   gwp: string;
-  createMissingCities: boolean;
-  replaceExisting: boolean;
-  dryRun: boolean;
   countryLocode: string;
 }
 
@@ -76,6 +75,22 @@ const ITEM_STATUS_KEYS: Record<string, string> = {
   skipped: "bulk-import-item-status-skipped",
 };
 
+const STAGE_KEYS: Record<string, string> = {
+  matching_files: "bulk-import-stage-matching-files",
+  creating_city: "bulk-import-stage-creating-city",
+  enriching_population: "bulk-import-stage-enriching-population",
+  validating_file: "bulk-import-stage-validating-file",
+  replacing_existing: "bulk-import-stage-replacing-existing",
+  importing_emissions: "bulk-import-stage-importing-emissions",
+  importing_files: "bulk-import-stage-importing-files",
+};
+
+function stageLabel(t: TFunction, stage: string | null | undefined): string {
+  if (!stage) return "";
+  const key = STAGE_KEYS[stage];
+  return key ? t(key) : stage;
+}
+
 function statusPalette(status: string): string {
   if (status === "completed") return "green";
   if (status === "failed") return "red";
@@ -91,27 +106,30 @@ const BulkInventoryFileImportTabContent: FC<
   const currentYear = new Date().getFullYear();
   const yearOptions = useMemo(() => {
     const years: number[] = [];
-    for (let year = currentYear + 1; year >= 2000; year -= 1) {
+    for (let year = currentYear; year >= 2000; year -= 1) {
       years.push(year);
     }
     return years;
   }, [currentYear]);
 
-  const { control, register, handleSubmit, watch, setValue } =
+  const { control, register, handleSubmit, watch } =
     useForm<BulkFileImportInputs>({
       defaultValues: {
         year: currentYear,
         inventoryType: InventoryTypeEnum.GPC_BASIC,
         gwp: "AR6",
-        createMissingCities: false,
-        replaceExisting: false,
-        dryRun: false,
         countryLocode: "",
       },
     });
 
+  // Keep flags in useState — Chakra Checkbox + RHF setValue was not reliably
+  // posting replaceExisting=true (digest skip kept firing).
+  const [createMissingCities, setCreateMissingCities] = useState(false);
+  const [replaceExisting, setReplaceExisting] = useState(false);
+  const [dryRun, setDryRun] = useState(false);
+
   const [zipFile, setZipFile] = useState<File | null>(null);
-  const [submittedJobId, setSubmittedJobId] = useState<string | null>(null);
+  const [trackedJobId, setTrackedJobId] = useState<string | null>(null);
   const [inventoryGoalValue, setInventoryGoalValue] = useState<string>(
     InventoryTypeEnum.GPC_BASIC,
   );
@@ -122,32 +140,58 @@ const BulkInventoryFileImportTabContent: FC<
   const [enqueueImport, { isLoading: isEnqueueing }] =
     api.useEnqueueBulkInventoryImportMutation();
 
+  // Poll while enqueue runs so matching / population stages appear before POST returns.
   const { data: latestJob } = api.useGetLatestBulkInventoryImportJobQuery(
     projectId,
-    { skip: !projectId },
+    {
+      skip: !projectId,
+      pollingInterval: isEnqueueing ? 2000 : 0,
+    },
   );
-  const activeJobId = submittedJobId ?? latestJob?.id ?? null;
+
+  // Switching projects must not keep showing another project's job.
+  useEffect(() => {
+    setTrackedJobId(null);
+  }, [projectId]);
+
+  // Attach to a job only when the user starts one this session, or when the
+  // latest job for the project is still running (so a mid-import refresh resumes).
+  // Also attach while enqueueing — the job row exists before POST returns, so
+  // matching / population stages can stream into the progress panel.
+  // Finished jobs from prior visits stay hidden.
+  useEffect(() => {
+    if (trackedJobId) {
+      return;
+    }
+    if (latestJob && JOB_IN_PROGRESS.has(latestJob.status)) {
+      setTrackedJobId(latestJob.id);
+    }
+  }, [latestJob, trackedJobId]);
+
   const [pollingInterval, setPollingInterval] = useState(0);
-  const { data: job } = api.useGetBulkInventoryImportJobQuery(activeJobId!, {
-    skip: !activeJobId,
+  const { data: job } = api.useGetBulkInventoryImportJobQuery(trackedJobId!, {
+    skip: !trackedJobId,
     pollingInterval,
   });
 
   useEffect(() => {
-    if (!activeJobId) {
+    if (!trackedJobId) {
       setPollingInterval(0);
       return;
     }
     if (
-      job?.id !== activeJobId ||
+      job?.id !== trackedJobId ||
       !job.status ||
-      JOB_IN_PROGRESS.has(job.status)
+      JOB_IN_PROGRESS.has(job.status) ||
+      isEnqueueing
     ) {
-      setPollingInterval(5000);
+      setPollingInterval(2000);
       return;
     }
     setPollingInterval(0);
-  }, [activeJobId, job?.id, job?.status]);
+  }, [trackedJobId, job?.id, job?.status, isEnqueueing]);
+
+  const dismissProgress = () => setTrackedJobId(null);
 
   const onSubmit = async (data: BulkFileImportInputs) => {
     if (!zipFile) {
@@ -157,14 +201,20 @@ const BulkInventoryFileImportTabContent: FC<
       });
       return;
     }
+    // Drop any prior job panel so polling can latch onto the new enqueue job.
+    setTrackedJobId(null);
+
     const formData = new FormData();
     formData.append("projectId", data.projectId);
     formData.append("year", String(data.year));
     formData.append("inventoryType", data.inventoryType);
     formData.append("gwp", data.gwp);
-    formData.append("createMissingCities", String(data.createMissingCities));
-    formData.append("replaceExisting", String(data.replaceExisting));
-    formData.append("dryRun", String(data.dryRun));
+    formData.append(
+      "createMissingCities",
+      createMissingCities ? "true" : "false",
+    );
+    formData.append("replaceExisting", replaceExisting ? "true" : "false");
+    formData.append("dryRun", dryRun ? "true" : "false");
     if (data.countryLocode?.trim()) {
       formData.append("countryLocode", data.countryLocode.trim().toUpperCase());
     }
@@ -172,7 +222,7 @@ const BulkInventoryFileImportTabContent: FC<
 
     try {
       const result = await enqueueImport(formData).unwrap();
-      setSubmittedJobId(result.jobId);
+      setTrackedJobId(result.jobId);
       toaster.create({
         type: "success",
         description: t("bulk-inventory-file-import-enqueued", {
@@ -376,66 +426,116 @@ const BulkInventoryFileImportTabContent: FC<
             <FileUploadRoot
               maxFiles={1}
               accept={{ "application/zip": [".zip"] }}
+              w="full"
+              alignItems="stretch"
               onFileChange={(details) => {
                 setZipFile(details.acceptedFiles[0] ?? null);
               }}
             >
-              <FileUploadDropzone
-                label={
-                  <Box
-                    border="1px dashed"
-                    borderColor="border.neutral"
-                    borderRadius="md"
-                    px={6}
-                    py={8}
-                    w="full"
-                  >
-                    <Text color="content.secondary">
-                      {t("bulk-inventory-file-import-dropzone")}
-                    </Text>
-                  </Box>
-                }
-                description={t("bulk-inventory-file-import-dropzone-caption")}
-              />
-              <FileUploadList clearable showSize />
+              <VStack
+                w="full"
+                h="206px"
+                justifyContent="center"
+                alignItems="center"
+                borderWidth={2}
+                borderStyle="dashed"
+                borderRadius="md"
+                borderColor="border.neutral"
+                backgroundColor="background.transparentGrey"
+                _hover={{
+                  borderColor: "content.link",
+                  bg: "background.neutral",
+                }}
+              >
+                <FileUploadDropzone
+                  w="full"
+                  cursor="pointer"
+                  label={
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      justifyContent="center"
+                      w="full"
+                      px={6}
+                    >
+                      <Box
+                        color="base.light"
+                        h="48px"
+                        w="48px"
+                        bg="content.link"
+                        borderRadius="full"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        mb="12px"
+                      >
+                        <FiUpload size="20px" />
+                      </Box>
+                      <HStack gap={1} flexWrap="wrap" justifyContent="center">
+                        <Text
+                          fontSize="title.md"
+                          fontFamily="heading"
+                          color="content.link"
+                          textDecoration="underline"
+                          fontWeight="semibold"
+                        >
+                          {t("bulk-inventory-file-import-dropzone-click")}
+                        </Text>
+                        <Text
+                          fontSize="title.md"
+                          fontWeight="semibold"
+                          fontFamily="heading"
+                          color="content.primary"
+                        >
+                          {t("bulk-inventory-file-import-dropzone-drag")}
+                        </Text>
+                      </HStack>
+                      <Text
+                        fontSize="body.sm"
+                        color="content.tertiary"
+                        mt="8px"
+                        textAlign="center"
+                      >
+                        {t("bulk-inventory-file-import-dropzone-caption")}
+                      </Text>
+                    </Box>
+                  }
+                />
+              </VStack>
+              <FileUploadList clearable showSize mt={3} />
             </FileUploadRoot>
           </FieldRoot>
 
           <Box display="flex" flexDir="column" gap="12px">
-            <Checkbox.Root
-              checked={watch("createMissingCities")}
-              onCheckedChange={(e) =>
-                setValue("createMissingCities", Boolean(e.checked))
+            <Checkbox
+              checked={createMissingCities}
+              onCheckedChange={(details) =>
+                setCreateMissingCities(!!details.checked)
               }
+              fontSize="body.lg"
+              color="content.secondary"
             >
-              <Checkbox.HiddenInput />
-              <Checkbox.Control />
-              <Checkbox.Label fontSize="body.lg" color="content.secondary">
-                {t("bulk-inventory-file-import-create-missing")}
-              </Checkbox.Label>
-            </Checkbox.Root>
-            <Checkbox.Root
-              checked={watch("replaceExisting")}
-              onCheckedChange={(e) =>
-                setValue("replaceExisting", Boolean(e.checked))
+              {t("bulk-inventory-file-import-create-missing")}
+            </Checkbox>
+            <Checkbox
+              checked={replaceExisting}
+              onCheckedChange={(details) =>
+                setReplaceExisting(!!details.checked)
               }
+              fontSize="body.lg"
+              color="content.secondary"
             >
-              <Checkbox.HiddenInput />
-              <Checkbox.Control />
-              <Checkbox.Label fontSize="body.lg" color="content.secondary">
-                {t("bulk-inventory-file-import-replace-existing")}
-              </Checkbox.Label>
-            </Checkbox.Root>
-            <Checkbox.Root
-              checked={watch("dryRun")}
-              onCheckedChange={(e) => setValue("dryRun", Boolean(e.checked))}
+              {t("bulk-inventory-file-import-replace-existing")}
+            </Checkbox>
+            <Checkbox
+              checked={dryRun}
+              onCheckedChange={(details) => setDryRun(!!details.checked)}
+              fontSize="body.lg"
+              color="content.secondary"
             >
-              <Checkbox.HiddenInput />
-              <Checkbox.Control />
-              <Checkbox.Label fontSize="body.lg" color="content.secondary">
-                {t("bulk-inventory-file-import-dry-run")}
-              </Checkbox.Label>
-            </Checkbox.Root>
+              {t("bulk-inventory-file-import-dry-run")}
+            </Checkbox>
           </Box>
         </Fieldset.Content>
 
@@ -460,11 +560,36 @@ const BulkInventoryFileImportTabContent: FC<
         </Box>
       </Fieldset.Root>
 
+      {isEnqueueing && !job && (
+        <Box
+          mt="24px"
+          p="16px"
+          borderRadius="md"
+          bg="background.neutral"
+          borderWidth="1px"
+          borderColor="border.neutral"
+        >
+          <Text fontWeight="semibold" color="content.secondary" mb={2}>
+            {t("bulk-inventory-file-import-enqueue-progress")}
+          </Text>
+          <Text fontSize="body.sm" color="content.tertiary">
+            {t("bulk-inventory-file-import-enqueue-progress-detail")}
+          </Text>
+        </Box>
+      )}
+
       {job && (
         <Box mt="48px">
-          <Heading fontSize="title.md" mb={4} color="content.secondary">
-            {t("bulk-inventory-file-import-progress")}
-          </Heading>
+          <HStack justifyContent="space-between" alignItems="center" mb={4}>
+            <Heading fontSize="title.md" color="content.secondary">
+              {t("bulk-inventory-file-import-progress")}
+            </Heading>
+            {!JOB_IN_PROGRESS.has(job.status) && !isEnqueueing && (
+              <Button variant="ghost" onClick={dismissProgress}>
+                {t("bulk-inventory-file-import-dismiss-progress")}
+              </Button>
+            )}
+          </HStack>
           <HStack gap="8px" flexWrap="wrap" mb={4}>
             <Tag size="lg" colorPalette={statusPalette(job.status)}>
               {t(JOB_STATUS_KEYS[job.status] ?? JOB_STATUS_KEYS.pending)}
@@ -474,7 +599,25 @@ const BulkInventoryFileImportTabContent: FC<
                 {t("bulk-inventory-file-import-dry-run")}
               </Tag>
             )}
+            {job.replaceExisting && (
+              <Tag size="lg" colorPalette="orange">
+                {t("bulk-inventory-file-import-replace-existing")}
+              </Tag>
+            )}
           </HStack>
+          {(isEnqueueing ||
+            job.progressStage ||
+            job.items?.some((item) => item.status === "importing")) && (
+            <Text fontSize="body.md" color="content.secondary" mb={4}>
+              {job.progressStage
+                ? `${stageLabel(t, job.progressStage)}${
+                    job.progressDetail ? ` — ${job.progressDetail}` : ""
+                  }`
+                : isEnqueueing
+                  ? t("bulk-inventory-file-import-enqueue-progress")
+                  : t("bulk-import-stage-importing-files")}
+            </Text>
+          )}
           {counts && (
             <HStack gap="12px" flexWrap="wrap" mb={6}>
               {Object.entries(COUNT_LABEL_KEYS).map(([key, labelKey]) => (
@@ -497,6 +640,9 @@ const BulkInventoryFileImportTabContent: FC<
                   {t("bulk-import-column-status")}
                 </Table.ColumnHeader>
                 <Table.ColumnHeader>
+                  {t("bulk-import-column-stage")}
+                </Table.ColumnHeader>
+                <Table.ColumnHeader>
                   {t("bulk-import-column-error")}
                 </Table.ColumnHeader>
               </Table.Row>
@@ -513,6 +659,11 @@ const BulkInventoryFileImportTabContent: FC<
                           ITEM_STATUS_KEYS.pending,
                       )}
                     </Tag>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Text fontSize="body.sm" color="content.tertiary">
+                      {stageLabel(t, item.stage)}
+                    </Text>
                   </Table.Cell>
                   <Table.Cell>
                     <Text fontSize="body.sm" color="content.tertiary">

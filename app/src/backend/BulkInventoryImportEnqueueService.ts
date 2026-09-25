@@ -27,10 +27,14 @@ import {
   BulkInventoryImportItemStatus,
   BulkInventoryImportJobStatus,
   BulkInventoryImportMatchError,
+  BulkInventoryImportStage,
   GlobalWarmingPotentialTypeEnum,
   InventoryTypeEnum,
 } from "@/util/enums";
-import { rollupItemCounts } from "@/backend/BulkInventoryImportJobService";
+import {
+  BulkInventoryImportJobService,
+  rollupItemCounts,
+} from "@/backend/BulkInventoryImportJobService";
 
 export interface EnqueueBulkInventoryImportInput {
   projectId: string;
@@ -311,7 +315,18 @@ export class BulkInventoryImportEnqueueService {
       inventoryType,
       globalWarmingPotentialType: gwp,
       replaceExisting: input.replaceExisting ?? false,
+      progressStage: BulkInventoryImportStage.MATCHING_FILES,
     });
+
+    logger.info(
+      {
+        jobId,
+        replaceExisting: input.replaceExisting ?? false,
+        createMissingCities,
+        dryRun,
+      },
+      "Bulk inventory import job created",
+    );
 
     const itemRows = [];
     const enrichedKeys = new Set<string>();
@@ -377,6 +392,17 @@ export class BulkInventoryImportEnqueueService {
         if (needsCity || needsInventory) {
           try {
             const inventoryYear = result.year ?? input.year;
+            const progressDetail =
+              result.parsed.cityName ??
+              result.parsed.locode ??
+              result.parsed.ineCode ??
+              locode ??
+              entry.basename;
+            await BulkInventoryImportJobService.setProgress(
+              jobId,
+              BulkInventoryImportStage.CREATING_CITY,
+              progressDetail,
+            );
             const shell = await AdminService.findOrCreateCityAndInventory({
               projectId: input.projectId,
               year: inventoryYear,
@@ -385,6 +411,13 @@ export class BulkInventoryImportEnqueueService {
               inventoryType,
               gwp,
               userId: input.userId,
+              onProgress: async (stage, detail) => {
+                await BulkInventoryImportJobService.setProgress(
+                  jobId,
+                  stage,
+                  detail,
+                );
+              },
             });
             cityId = shell.cityId;
             resolvedInventoryId = shell.inventoryId;
@@ -429,6 +462,11 @@ export class BulkInventoryImportEnqueueService {
         const enrichKey = `${locode}|${inventoryYear}|${cityId}`;
         if (!enrichedKeys.has(enrichKey)) {
           enrichedKeys.add(enrichKey);
+          await BulkInventoryImportJobService.setProgress(
+            jobId,
+            BulkInventoryImportStage.ENRICHING_POPULATION,
+            locode,
+          );
           await AdminService.enrichCityBestEffort(
             locode,
             inventoryYear,
@@ -468,6 +506,11 @@ export class BulkInventoryImportEnqueueService {
       failedCount: counts.failed,
       skippedCount: counts.skipped,
       status: jobStatus,
+      progressStage:
+        counts.pending > 0
+          ? BulkInventoryImportStage.IMPORTING_FILES
+          : null,
+      progressDetail: null,
     });
 
     logger.info(

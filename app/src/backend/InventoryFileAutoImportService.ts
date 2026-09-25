@@ -18,6 +18,7 @@ import {
   syncGHGIImportedInventorySource,
   syncGHGIInventory,
 } from "@/backend/GHGINativeInputCatalogService";
+import { logger } from "@/services/logger";
 
 export class BulkInventoryImportAutoImportError extends Error {
   constructor(
@@ -229,6 +230,7 @@ export class InventoryFileAutoImportService {
       .update(input.buffer)
       .digest("hex");
 
+    // Same file bytes already imported: skip unless the admin asked to replace.
     const already = input.inventoryId
       ? await db.models.ImportedInventoryFile.findOne({
           where: {
@@ -238,7 +240,15 @@ export class InventoryFileAutoImportService {
           },
         })
       : null;
-    if (already) {
+    if (already && !input.replaceExisting) {
+      logger.info(
+        {
+          inventoryId: input.inventoryId,
+          importedFileId: already.id,
+          replaceExisting: input.replaceExisting ?? false,
+        },
+        "Skipping bulk import: same content digest already completed",
+      );
       return {
         importedFileId: already.id,
         importedRows: 0,
@@ -248,6 +258,15 @@ export class InventoryFileAutoImportService {
         contentDigest,
         dryRun: Boolean(input.dryRun),
       };
+    }
+    if (already && input.replaceExisting) {
+      logger.info(
+        {
+          inventoryId: input.inventoryId,
+          importedFileId: already.id,
+        },
+        "Replacing prior import with matching content digest",
+      );
     }
 
     if (input.dryRun) {

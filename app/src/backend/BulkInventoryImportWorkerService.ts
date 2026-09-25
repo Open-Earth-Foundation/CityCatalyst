@@ -10,6 +10,7 @@ import { logger } from "@/services/logger";
 import {
   BulkInventoryImportItemStatus,
   BulkInventoryImportJobStatus,
+  BulkInventoryImportStage,
 } from "@/util/enums";
 import type { BulkInventoryImportItem } from "@/models/BulkInventoryImportItem";
 import type { BulkInventoryImportJob } from "@/models/BulkInventoryImportJob";
@@ -52,8 +53,19 @@ async function failItem(
 ): Promise<void> {
   await item.update({
     status: BulkInventoryImportItemStatus.FAILED,
+    stage: null,
     errorCode: code,
     errorLog: message,
+    lastUpdated: new Date(),
+  });
+}
+
+async function setItemStage(
+  item: BulkInventoryImportItem,
+  stage: string | null,
+): Promise<void> {
+  await item.update({
+    stage,
     lastUpdated: new Date(),
   });
 }
@@ -77,6 +89,8 @@ async function processItem(
     return "failed";
   }
 
+  await setItemStage(item, BulkInventoryImportStage.VALIDATING_FILE);
+
   const buffer = await resolveItemBuffer(item);
   if (!buffer) {
     await failItem(
@@ -88,13 +102,19 @@ async function processItem(
   }
 
   try {
+    const shouldReplace = Boolean(job.replaceExisting);
+    if (shouldReplace) {
+      await setItemStage(item, BulkInventoryImportStage.REPLACING_EXISTING);
+    }
+    await setItemStage(item, BulkInventoryImportStage.IMPORTING_EMISSIONS);
+
     const result = await InventoryFileAutoImportService.importFile({
       buffer,
       originalFileName: item.originalFileName,
       cityId: item.cityId ?? undefined,
       inventoryId: item.inventoryId ?? undefined,
       userId: job.userId,
-      replaceExisting: job.replaceExisting,
+      replaceExisting: shouldReplace,
       dryRun: job.dryRun,
     });
 
@@ -105,6 +125,7 @@ async function processItem(
     ) {
       await item.update({
         status: BulkInventoryImportItemStatus.SKIPPED,
+        stage: null,
         errorCode: "already_imported",
         errorLog: "Same content digest already completed for this inventory",
         importedFileId: result.importedFileId,
@@ -117,6 +138,7 @@ async function processItem(
     if (result.dryRun) {
       await item.update({
         status: BulkInventoryImportItemStatus.SKIPPED,
+        stage: null,
         errorCode: "dry_run",
         errorLog:
           "Dry-run: file validated and matched; activities were not written",
@@ -128,6 +150,7 @@ async function processItem(
 
     await item.update({
       status: BulkInventoryImportItemStatus.COMPLETED,
+      stage: null,
       importedFileId: result.importedFileId,
       warnings: result.warnings.length ? result.warnings : item.warnings,
       errorCode: null,
@@ -212,13 +235,57 @@ export class BulkInventoryImportWorkerService {
   static async processDueJobs(
     batchSize = BULK_INVENTORY_IMPORT_WORKER_BATCH_SIZE,
     jobId?: string,
+    options?: { maxBatches?: number },
   ): Promise<BulkInventoryImportWorkerResult> {
+    // Cron (no jobId): one batch per tick so the request stays short.
+    // Post-enqueue (jobId set): drain that job so local `next dev` (no cron)
+    // and small zips finish without a manual cron poke.
+    const maxBatches =
+      options?.maxBatches ?? (jobId ? 64 : 1);
+
     const result: BulkInventoryImportWorkerResult = {
       jobsTouched: 0,
       itemsProcessed: 0,
       itemsCompleted: 0,
       itemsFailed: 0,
       itemsSkipped: 0,
+    };
+    const touchedJobs = new Set<string>();
+
+    for (let batch = 0; batch < maxBatches; batch += 1) {
+      const batchResult = await this.processOneBatch(batchSize, jobId);
+      if (batchResult.itemsProcessed === 0) {
+        break;
+      }
+      result.itemsProcessed += batchResult.itemsProcessed;
+      result.itemsCompleted += batchResult.itemsCompleted;
+      result.itemsFailed += batchResult.itemsFailed;
+      result.itemsSkipped += batchResult.itemsSkipped;
+      for (const id of batchResult.jobIds) {
+        touchedJobs.add(id);
+      }
+    }
+
+    result.jobsTouched = touchedJobs.size;
+    if (result.itemsProcessed > 0) {
+      logger.info(result, "Processed bulk inventory import batch(es)");
+    }
+    return result;
+  }
+
+  private static async processOneBatch(
+    batchSize: number,
+    jobId?: string,
+  ): Promise<
+    BulkInventoryImportWorkerResult & { jobIds: string[] }
+  > {
+    const result: BulkInventoryImportWorkerResult & { jobIds: string[] } = {
+      jobsTouched: 0,
+      itemsProcessed: 0,
+      itemsCompleted: 0,
+      itemsFailed: 0,
+      itemsSkipped: 0,
+      jobIds: [],
     };
 
     const items = await this.claimPendingItems(batchSize, jobId);
@@ -228,9 +295,13 @@ export class BulkInventoryImportWorkerService {
     }
 
     const jobIds = [...new Set(items.map((item) => item.jobId))];
+    result.jobIds = jobIds;
     result.jobsTouched = jobIds.length;
     await db.models.BulkInventoryImportJob.update(
-      { status: BulkInventoryImportJobStatus.IMPORTING },
+      {
+        status: BulkInventoryImportJobStatus.IMPORTING,
+        progressStage: BulkInventoryImportStage.IMPORTING_FILES,
+      },
       { where: { id: { [Op.in]: jobIds } } },
     );
 
@@ -249,11 +320,10 @@ export class BulkInventoryImportWorkerService {
       if (outcome === "skipped") result.itemsSkipped += 1;
     }
 
-    for (const jobId of jobIds) {
-      await BulkInventoryImportJobService.refreshJobCounts(jobId);
+    for (const id of jobIds) {
+      await BulkInventoryImportJobService.refreshJobCounts(id);
     }
 
-    logger.info(result, "Processed bulk inventory import batch");
     return result;
   }
 }

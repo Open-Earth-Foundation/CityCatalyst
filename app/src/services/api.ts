@@ -136,6 +136,8 @@ export interface BulkInventoryImportJobDto {
   inventoryType: string;
   globalWarmingPotentialType: string;
   replaceExisting: boolean;
+  progressStage: string | null;
+  progressDetail: string | null;
   counts: BulkInventoryImportItemCountsDto;
   created: string | null;
   lastUpdated: string | null;
@@ -146,6 +148,7 @@ export interface BulkInventoryImportItemDto {
   originalFileName: string;
   locode: string | null;
   status: string;
+  stage: string | null;
   errorCode: string | null;
   errorLog: string | null;
   warnings: string[];

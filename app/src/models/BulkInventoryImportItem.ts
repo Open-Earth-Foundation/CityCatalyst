@@ -27,6 +27,8 @@ export interface BulkInventoryImportItemAttributes {
   importedFileId?: string | null;
   resolvedYear?: number | null;
   status: BulkInventoryImportItemStatus;
+  /** Fine-grained phase while status is importing (validating, replacing, …). */
+  stage?: string | null;
   errorCode?: string | null;
   errorLog?: string | null;
   warnings?: string[] | null;
@@ -48,6 +50,7 @@ export type BulkInventoryImportItemOptionalAttributes =
   | "importedFileId"
   | "resolvedYear"
   | "status"
+  | "stage"
   | "errorCode"
   | "errorLog"
   | "warnings"
@@ -76,6 +79,7 @@ export class BulkInventoryImportItem
   declare importedFileId?: string | null;
   declare resolvedYear?: number | null;
   declare status: BulkInventoryImportItemStatus;
+  declare stage?: string | null;
   declare errorCode?: string | null;
   declare errorLog?: string | null;
   declare warnings?: string[] | null;
@@ -179,6 +183,10 @@ export class BulkInventoryImportItem
           allowNull: false,
           defaultValue: BulkInventoryImportItemStatus.PENDING,
           validate: { isIn: [BULK_INVENTORY_IMPORT_ITEM_STATUSES] },
+        },
+        stage: {
+          type: DataTypes.STRING(64),
+          allowNull: true,
         },
         errorCode: {
           type: DataTypes.STRING(64),

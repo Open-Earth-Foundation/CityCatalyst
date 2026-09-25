@@ -54,6 +54,17 @@ export enum BulkInventoryImportItemStatus {
   SKIPPED = "skipped",
 }
 
+/** Fine-grained phase for UI while an item/job is in flight. */
+export enum BulkInventoryImportStage {
+  MATCHING_FILES = "matching_files",
+  CREATING_CITY = "creating_city",
+  ENRICHING_POPULATION = "enriching_population",
+  VALIDATING_FILE = "validating_file",
+  REPLACING_EXISTING = "replacing_existing",
+  IMPORTING_EMISSIONS = "importing_emissions",
+  IMPORTING_FILES = "importing_files",
+}
+
 export enum BulkInventoryImportMatchError {
   UNMATCHED_CITY = "unmatched_city",
   AMBIGUOUS_CITY = "ambiguous_city",

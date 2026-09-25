@@ -191,8 +191,8 @@ export const POST = apiHandler(async (req, { session }) => {
     countryLocode: parsed.data.countryLocode,
   });
 
-  // k8s cron is every minute; local `next dev` has no cron. Start the first
-  // batch after the 202 so pending files do not sit idle.
+  // k8s cron is every minute; local `next dev` has no cron. Drain this job
+  // after the 202 so pending files do not sit idle waiting for a cron tick.
   after(async () => {
     try {
       await BulkInventoryImportWorkerService.processDueJobs(

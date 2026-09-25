@@ -56,6 +56,8 @@ export function serializeJob(
     inventoryType: job.inventoryType,
     globalWarmingPotentialType: job.globalWarmingPotentialType,
     replaceExisting: job.replaceExisting,
+    progressStage: job.progressStage ?? null,
+    progressDetail: job.progressDetail ?? null,
     counts: counts ?? {
       total: job.totalCount,
       pending: 0,
@@ -83,6 +85,7 @@ export function serializeItem(item: BulkInventoryImportItem) {
     importedFileId: item.importedFileId ?? null,
     resolvedYear: item.resolvedYear ?? null,
     status: item.status,
+    stage: item.stage ?? null,
     errorCode: item.errorCode ?? null,
     errorLog: item.errorLog ?? null,
     warnings: item.warnings ?? [],
@@ -92,6 +95,21 @@ export function serializeItem(item: BulkInventoryImportItem) {
 }
 
 export class BulkInventoryImportJobService {
+  static async setProgress(
+    jobId: string,
+    stage: string | null,
+    detail?: string | null,
+  ): Promise<void> {
+    await db.models.BulkInventoryImportJob.update(
+      {
+        progressStage: stage,
+        progressDetail: detail ?? null,
+        lastUpdated: new Date(),
+      },
+      { where: { id: jobId } },
+    );
+  }
+
   static async getLatestJobForProject(
     projectId: string,
   ): Promise<BulkInventoryImportJob | null> {
@@ -157,6 +175,9 @@ export class BulkInventoryImportJobService {
         failedCount: counts.failed,
         skippedCount: counts.skipped,
         status,
+        ...(pendingLeft === 0
+          ? { progressStage: null, progressDetail: null }
+          : {}),
       },
       { where: { id: jobId } },
     );

@@ -79,9 +79,8 @@ const groupScopesBySector = (
   });
 };
 
-// Action bar that sticks to the bottom of the card. It slides in once the first
-// row of cards has been scrolled halfway up the viewport (or the end of the list
-// is reached).
+// Action bar that sticks to the bottom of the card. It slides in once the user
+// scrolls down (or right away when the whole list already fits on screen).
 const StickyActionBar: FC<{ children: ReactNode }> = ({ children }) => {
   const barRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -92,17 +91,8 @@ const StickyActionBar: FC<{ children: ReactNode }> = ({ children }) => {
         barRef.current?.parentElement?.querySelector("[data-cards-grid]");
       const cards = grid ? Array.from(grid.children) : [];
       if (cards.length === 0) return;
-      const firstTop = cards[0].getBoundingClientRect().top;
-      const firstRowBottom = Math.max(
-        ...cards
-          .filter((c) => c.getBoundingClientRect().top === firstTop)
-          .map((c) => c.getBoundingClientRect().bottom),
-      );
       const lastBottom = cards[cards.length - 1].getBoundingClientRect().bottom;
-      setVisible(
-        firstRowBottom < window.innerHeight / 2 ||
-          lastBottom <= window.innerHeight,
-      );
+      setVisible(window.scrollY > 0 || lastBottom <= window.innerHeight);
     };
     update();
     window.addEventListener("scroll", update, { passive: true });
@@ -129,9 +119,8 @@ const StickyActionBar: FC<{ children: ReactNode }> = ({ children }) => {
       borderBottomRadius="rounded"
       bg="background.default"
       boxShadow="shadow-lg-top"
-      transition="transform 300ms ease-out, opacity 300ms ease-out"
-      transform={visible ? "translateY(0)" : "translateY(100%)"}
-      opacity={visible ? 1 : 0}
+      transition="transform 400ms ease-out"
+      transform={visible ? "translateY(0)" : "translateY(calc(100% + 16px))"}
       pointerEvents={visible ? "auto" : "none"}
     >
       {children}
@@ -712,6 +701,10 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
               >
                 <Box display="flex" alignItems="center" gap="8px">
                   <Checkbox
+                    css={{
+                      "& [data-part=control]:not([data-state=checked]):not([data-state=indeterminate])":
+                        { bg: "background.default" },
+                    }}
                     checked={
                       unfinishedItems.length > 0 &&
                       selectedForThisSector.length === unfinishedItems.length

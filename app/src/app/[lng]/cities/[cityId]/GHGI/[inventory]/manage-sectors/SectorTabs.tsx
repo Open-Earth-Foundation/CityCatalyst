@@ -11,7 +11,14 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, {
+  FC,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { StationaryEnergyIcon } from "@/components/icons";
 
 import { MdInfoOutline } from "react-icons/md";
@@ -70,6 +77,66 @@ const groupScopesBySector = (
       })),
     };
   });
+};
+
+// Action bar that sticks to the bottom of the card. It slides in once the first
+// row of cards has been scrolled halfway up the viewport (or the end of the list
+// is reached).
+const StickyActionBar: FC<{ children: ReactNode }> = ({ children }) => {
+  const barRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const update = () => {
+      const grid =
+        barRef.current?.parentElement?.querySelector("[data-cards-grid]");
+      const cards = grid ? Array.from(grid.children) : [];
+      if (cards.length === 0) return;
+      const firstTop = cards[0].getBoundingClientRect().top;
+      const firstRowBottom = Math.max(
+        ...cards
+          .filter((c) => c.getBoundingClientRect().top === firstTop)
+          .map((c) => c.getBoundingClientRect().bottom),
+      );
+      const lastBottom = cards[cards.length - 1].getBoundingClientRect().bottom;
+      setVisible(
+        firstRowBottom < window.innerHeight / 2 ||
+          lastBottom <= window.innerHeight,
+      );
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
+  return (
+    <Box
+      ref={barRef}
+      position="sticky"
+      bottom={0}
+      zIndex={1}
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="flex-end"
+      alignSelf="stretch"
+      gap="10px"
+      p="xl"
+      borderBottomRadius="rounded"
+      bg="background.default"
+      boxShadow="shadow-lg-top"
+      transition="transform 300ms ease-out, opacity 300ms ease-out"
+      transform={visible ? "translateY(0)" : "translateY(100%)"}
+      opacity={visible ? 1 : 0}
+      pointerEvents={visible ? "auto" : "none"}
+    >
+      {children}
+    </Box>
+  );
 };
 
 // convert sector reference number (roman numeral) to GPC sector name
@@ -518,300 +585,299 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
             bg="base.light"
             borderRadius="rounded"
             boxShadow="1dp"
-            p="l"
             display="flex"
             flexDirection="column"
           >
-            {/* Heading */}
-            <Box mb="48px" display="flex" flexDirection="column" gap="16px">
-              <Box display="flex" alignItems="center" gap="16px">
-                <Icon as={StationaryEnergyIcon} color="interactive.control" />
+            {/* Main content */}
+            <Box as="section" p="l">
+              {/* Heading */}
+              <Box mb="48px" display="flex" flexDirection="column" gap="16px">
+                <Box display="flex" alignItems="center" gap="16px">
+                  <Icon as={StationaryEnergyIcon} color="interactive.control" />
+                  <Text
+                    fontSize="title.lg"
+                    fontFamily="heading"
+                    fontWeight="bold"
+                  >
+                    {getGPCSectorName(group.sectorRef, t)}
+                  </Text>
+                </Box>
                 <Text
-                  fontSize="title.lg"
-                  fontFamily="heading"
-                  fontWeight="bold"
+                  fontSize="body.lg"
+                  fontFamily="body"
+                  color="content.tertiary"
                 >
-                  {getGPCSectorName(group.sectorRef, t)}
+                  {t("content-description")}
                 </Text>
               </Box>
-              <Text
-                fontSize="body.lg"
-                fontFamily="body"
-                color="content.tertiary"
+              {/* Quick Action Form */}
+              <Box
+                mb="48px"
+                display="flex"
+                flexDirection="column"
+                gap="16px"
+                bg="background.alternativeLight"
+                borderWidth="1px"
+                borderColor="border.neutral"
+                borderRadius="rounded"
+                p="16px"
               >
-                {t("content-description")}
-              </Text>
-            </Box>
-            {/* Quick Action Form */}
-            <Box
-              mb="48px"
-              display="flex"
-              flexDirection="column"
-              gap="16px"
-              bg="background.alternativeLight"
-              borderWidth="1px"
-              borderColor="border.neutral"
-              borderRadius="rounded"
-              p="16px"
-            >
-              <Box display="flex" alignItems="center" gap="8px">
-                <Checkbox
-                  checked={
-                    unfinishedItems.length > 0 &&
-                    selectedForThisSector.length === unfinishedItems.length
-                  }
-                  onCheckedChange={handleSelectAll}
-                >
-                  <Text
-                    color="content.primary"
-                    fontFamily="body"
-                    fontSize="body.md"
-                    fontWeight="medium"
-                    lineHeight="20"
+                <Box display="flex" alignItems="center" gap="8px">
+                  <Checkbox
+                    checked={
+                      unfinishedItems.length > 0 &&
+                      selectedForThisSector.length === unfinishedItems.length
+                    }
+                    onCheckedChange={handleSelectAll}
                   >
-                    {t("select-all-subsectors")}
-                  </Text>
-                </Checkbox>
-              </Box>
-              <Separator borderColor="border.neutral" />
-              <Box display="flex" gap="16px" alignItems="end">
-                <Dropdown
-                  maxW="340px"
-                  label={t("notation-key")}
-                  labelIcon={MdInfoOutline}
-                  labelIconTooltip={t("notation-key-tooltip")}
-                  placeholder={t("notation-key-input-placeholder")}
-                  options={notationKeyOptions}
-                  value={quickValues.notationKey}
-                  onValueChange={(newValue) =>
-                    setQuickActionValues((prev) => ({
-                      ...prev,
-                      [group.sector.sectorId]: {
-                        ...prev[group.sector.sectorId],
-                        notationKey: newValue,
-                        explanation:
-                          prev[group.sector.sectorId]?.explanation || "",
-                      },
-                    }))
-                  }
-                />
-                <Field.Root orientation="vertical" flex="1">
-                  <Field.Label>
                     <Text
-                      fontFamily="heading"
-                      color="content.secondary"
-                      fontSize="label.lg"
+                      color="content.primary"
+                      fontFamily="body"
+                      fontSize="body.md"
                       fontWeight="medium"
                       lineHeight="20"
-                      letterSpacing="wide"
                     >
-                      {t("justification")}
+                      {t("select-all-subsectors")}
                     </Text>
-                  </Field.Label>
-                  <Input
-                    placeholder={t("explanation-input-placeholder")}
-                    borderWidth="1px"
-                    borderColor="border.neutral"
-                    borderRadius="minimal"
-                    bg="background.default"
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                    color="content.tertiary"
-                    fontFamily="body"
-                    fontSize="body.lg"
-                    fontWeight="regular"
-                    lineHeight="24"
-                    letterSpacing="wide"
-                    value={quickValues.explanation}
-                    onChange={(e) =>
+                  </Checkbox>
+                </Box>
+                <Separator borderColor="border.neutral" />
+                <Box display="flex" gap="16px" alignItems="end">
+                  <Dropdown
+                    maxW="340px"
+                    label={t("notation-key")}
+                    labelIcon={MdInfoOutline}
+                    labelIconTooltip={t("notation-key-tooltip")}
+                    placeholder={t("notation-key-input-placeholder")}
+                    options={notationKeyOptions}
+                    value={quickValues.notationKey}
+                    onValueChange={(newValue) =>
                       setQuickActionValues((prev) => ({
                         ...prev,
                         [group.sector.sectorId]: {
                           ...prev[group.sector.sectorId],
-                          explanation: e.target.value,
-                          notationKey:
-                            prev[group.sector.sectorId]?.notationKey || "",
+                          notationKey: newValue,
+                          explanation:
+                            prev[group.sector.sectorId]?.explanation || "",
                         },
                       }))
                     }
                   />
-                  <Field.ErrorText></Field.ErrorText>
-                </Field.Root>
-                <Button variant="outline" onClick={handleApplyToAll}>
-                  {t("apply-to-all")}
-                </Button>
-              </Box>
-            </Box>
-            {/* Checkbox Cards for each item */}
-            {unfinishedItems.length > 0 ? (
-              <Box
-                display="grid"
-                gridTemplateColumns="repeat(auto-fill, minmax(450px, 1fr))"
-                gap="l"
-              >
-                {unfinishedItems.map((item) => {
-                  // Use the subCategoryId as the unique key for each card
-                  const cardValue = cardInputs[item.subCategoryId] || {
-                    notationKey: "",
-                    explanation: "",
-                  };
-                  return (
-                    <CheckboxCard.Root
-                      width="full"
-                      key={item.subCategoryId}
-                      height="344px"
-                      p={0}
-                      borderCollapse="border.neutral"
-                      boxShadow="1dp"
-                      checked={selectedForThisSector.includes(
-                        item.subCategoryId,
-                      )}
-                      onCheckedChange={() =>
-                        handleToggleCard(item.subCategoryId)
+                  <Field.Root orientation="vertical" flex="1">
+                    <Field.Label>
+                      <Text
+                        fontFamily="heading"
+                        color="content.secondary"
+                        fontSize="label.lg"
+                        fontWeight="medium"
+                        lineHeight="20"
+                        letterSpacing="wide"
+                      >
+                        {t("justification")}
+                      </Text>
+                    </Field.Label>
+                    <Input
+                      placeholder={t("explanation-input-placeholder")}
+                      borderWidth="1px"
+                      borderColor="border.neutral"
+                      borderRadius="minimal"
+                      bg="background.default"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      color="content.tertiary"
+                      fontFamily="body"
+                      fontSize="body.lg"
+                      fontWeight="regular"
+                      lineHeight="24"
+                      letterSpacing="wide"
+                      value={quickValues.explanation}
+                      onChange={(e) =>
+                        setQuickActionValues((prev) => ({
+                          ...prev,
+                          [group.sector.sectorId]: {
+                            ...prev[group.sector.sectorId],
+                            explanation: e.target.value,
+                            notationKey:
+                              prev[group.sector.sectorId]?.notationKey || "",
+                          },
+                        }))
                       }
-                    >
-                      <CheckboxCard.HiddenInput />
-                      <CheckboxCard.Control>
-                        <CheckboxCard.Content>
-                          <CheckboxCard.Label my="24px">
-                            <Text
-                              overflow="hidden"
-                              textOverflow="ellipsis"
-                              color="content.primary"
-                              fontFamily="heading"
-                              fontSize="overline"
-                              fontWeight="semibold"
-                              lineHeight="16"
-                              letterSpacing="widest"
-                              textTransform="uppercase"
-                              lineClamp={2}
-                            >
-                              {t(item.subCategoryReferenceNumber!)}{" "}
-                              {t(item.subSectorName)} –{" "}
-                              {t(item.subCategoryName)}
-                            </Text>
-                          </CheckboxCard.Label>
-                          <CheckboxCard.Description
-                            w="full"
-                            color="content.secondary"
-                            opacity="1"
-                          >
-                            <Box
-                              mb="48px"
-                              display="flex"
-                              flexDirection="column"
-                              gap="32px"
+                    />
+                    <Field.ErrorText></Field.ErrorText>
+                  </Field.Root>
+                  <Button variant="outline" onClick={handleApplyToAll}>
+                    {t("apply-to-all")}
+                  </Button>
+                </Box>
+              </Box>
+              {/* Checkbox Cards for each item */}
+              {unfinishedItems.length > 0 ? (
+                <Box
+                  display="grid"
+                  data-cards-grid
+                  gridTemplateColumns="repeat(auto-fill, minmax(450px, 1fr))"
+                  gap="l"
+                >
+                  {unfinishedItems.map((item) => {
+                    // Use the subCategoryId as the unique key for each card
+                    const cardValue = cardInputs[item.subCategoryId] || {
+                      notationKey: "",
+                      explanation: "",
+                    };
+                    return (
+                      <CheckboxCard.Root
+                        width="full"
+                        key={item.subCategoryId}
+                        height="344px"
+                        p={0}
+                        borderCollapse="border.neutral"
+                        boxShadow="1dp"
+                        checked={selectedForThisSector.includes(
+                          item.subCategoryId,
+                        )}
+                        onCheckedChange={() =>
+                          handleToggleCard(item.subCategoryId)
+                        }
+                      >
+                        <CheckboxCard.HiddenInput />
+                        <CheckboxCard.Control>
+                          <CheckboxCard.Content>
+                            <CheckboxCard.Label my="24px">
+                              <Text
+                                overflow="hidden"
+                                textOverflow="ellipsis"
+                                color="content.primary"
+                                fontFamily="heading"
+                                fontSize="overline"
+                                fontWeight="semibold"
+                                lineHeight="16"
+                                letterSpacing="widest"
+                                textTransform="uppercase"
+                                lineClamp={2}
+                              >
+                                {t(item.subCategoryReferenceNumber!)}{" "}
+                                {t(item.subSectorName)} –{" "}
+                                {t(item.subCategoryName)}
+                              </Text>
+                            </CheckboxCard.Label>
+                            <CheckboxCard.Description
                               w="full"
+                              color="content.secondary"
+                              opacity="1"
                             >
                               <Box
+                                mb="48px"
                                 display="flex"
-                                flexDir="column"
-                                gap="16px"
+                                flexDirection="column"
+                                gap="32px"
                                 w="full"
                               >
-                                <Dropdown
-                                  width="full"
-                                  label={t("notation-key")}
-                                  required
-                                  placeholder={t(
-                                    "notation-key-input-placeholder",
-                                  )}
-                                  options={notationKeyOptions}
-                                  value={cardValue.notationKey}
-                                  onValueChange={(value) =>
-                                    setCardInputs((prev) => ({
-                                      ...prev,
-                                      [item.subCategoryId]: {
-                                        ...prev[item.subCategoryId],
-                                        notationKey: value,
-                                        explanation:
-                                          prev[item.subCategoryId]
-                                            ?.explanation || "",
-                                      },
-                                    }))
-                                  }
-                                />
-                                <Field.Root orientation="vertical" required>
-                                  <Field.Label>
-                                    <Text
-                                      fontFamily="heading"
-                                      color="content.secondary"
-                                    >
-                                      {t("justification")}
-                                    </Text>
-                                    <Field.RequiredIndicator />
-                                  </Field.Label>
-                                  <Textarea
+                                <Box
+                                  display="flex"
+                                  flexDir="column"
+                                  gap="16px"
+                                  w="full"
+                                >
+                                  <Dropdown
+                                    width="full"
+                                    label={t("notation-key")}
+                                    required
                                     placeholder={t(
-                                      "explanation-input-placeholder",
+                                      "notation-key-input-placeholder",
                                     )}
-                                    borderWidth="1px"
-                                    borderColor="border.neutral"
-                                    borderRadius="md"
-                                    shadow="1dp"
-                                    height="96px"
-                                    value={cardValue.explanation}
-                                    onChange={(e) =>
+                                    options={notationKeyOptions}
+                                    value={cardValue.notationKey}
+                                    onValueChange={(value) =>
                                       setCardInputs((prev) => ({
                                         ...prev,
                                         [item.subCategoryId]: {
                                           ...prev[item.subCategoryId],
-                                          explanation: e.target.value,
-                                          notationKey:
+                                          notationKey: value,
+                                          explanation:
                                             prev[item.subCategoryId]
-                                              ?.notationKey || "",
+                                              ?.explanation || "",
                                         },
                                       }))
                                     }
                                   />
-                                  <Field.ErrorText></Field.ErrorText>
-                                </Field.Root>
+                                  <Field.Root orientation="vertical" required>
+                                    <Field.Label>
+                                      <Text
+                                        fontFamily="heading"
+                                        color="content.secondary"
+                                      >
+                                        {t("justification")}
+                                      </Text>
+                                      <Field.RequiredIndicator />
+                                    </Field.Label>
+                                    <Textarea
+                                      placeholder={t(
+                                        "explanation-input-placeholder",
+                                      )}
+                                      borderWidth="1px"
+                                      borderColor="border.neutral"
+                                      borderRadius="md"
+                                      shadow="1dp"
+                                      height="96px"
+                                      value={cardValue.explanation}
+                                      onChange={(e) =>
+                                        setCardInputs((prev) => ({
+                                          ...prev,
+                                          [item.subCategoryId]: {
+                                            ...prev[item.subCategoryId],
+                                            explanation: e.target.value,
+                                            notationKey:
+                                              prev[item.subCategoryId]
+                                                ?.notationKey || "",
+                                          },
+                                        }))
+                                      }
+                                    />
+                                    <Field.ErrorText></Field.ErrorText>
+                                  </Field.Root>
+                                </Box>
                               </Box>
-                            </Box>
-                          </CheckboxCard.Description>
-                        </CheckboxCard.Content>
-                        <CheckboxCard.Indicator />
-                      </CheckboxCard.Control>
-                    </CheckboxCard.Root>
-                  );
-                })}
-              </Box>
-            ) : (
-              <Text>{t("no-unfinished-subsectors")}</Text>
-            )}
+                            </CheckboxCard.Description>
+                          </CheckboxCard.Content>
+                          <CheckboxCard.Indicator />
+                        </CheckboxCard.Control>
+                      </CheckboxCard.Root>
+                    );
+                  })}
+                </Box>
+              ) : (
+                <Text>{t("no-unfinished-subsectors")}</Text>
+              )}
+            </Box>
             {unfinishedItems.length > 0 && (
-              <Box
-                pt="48px"
-                display="flex"
-                justifyContent="flex-end"
-                gap="16px"
-              >
-                <Button
-                  height="xxl-2"
-                  width="150px"
-                  variant="outline"
-                  onClick={handleUndoChanges}
-                  disabled={!isDirty}
-                >
-                  {t("cancel")}
-                </Button>
-                <Button
-                  height="xxl-2"
-                  width="150px"
-                  variant="solid"
-                  onClick={() => handleUpdateNotationKeys()}
-                  loading={isLoading}
-                  disabled={!isDirty}
-                  _disabled={{
-                    borderRadius: "full",
-                    bg: "gray.medium",
-                    color: "base.light",
-                    _hover: { bg: "gray.medium" },
-                  }}
-                >
-                  {t("save-changes")}
-                </Button>
-              </Box>
+              <StickyActionBar>
+                <Box display="flex" gap="16px">
+                  <Button
+                    height="xxl-2"
+                    width="150px"
+                    variant="outline"
+                    onClick={() => isDirty && handleUndoChanges()}
+                  >
+                    {t("cancel")}
+                  </Button>
+                  <Button
+                    height="xxl-2"
+                    width="150px"
+                    variant="solid"
+                    onClick={() => handleUpdateNotationKeys()}
+                    loading={isLoading}
+                    disabled={!isDirty}
+                    _disabled={{
+                      borderRadius: "full",
+                      bg: "gray.medium",
+                      color: "base.light",
+                      _hover: { bg: "gray.medium" },
+                    }}
+                  >
+                    {t("save-changes")}
+                  </Button>
+                </Box>
+              </StickyActionBar>
             )}
           </Box>
         </Tabs.Content>

@@ -50,7 +50,10 @@ from app.services.cnb.application_context import (
 )
 from app.services.cnb.draft_overview import overview_pending
 from app.services.openrouter_client import build_openrouter_client_options
-from app.utils.concept_note_context import omit_context_identifiers
+from app.utils.concept_note_context import (
+    manual_population_context,
+    omit_context_identifiers,
+)
 from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
 from openai import AsyncOpenAI
 from sqlalchemy import select
@@ -409,14 +412,7 @@ class ConceptNoteChapterDraftService:
                     else {}
                 ),
                 "context_bundle": bundle.model_dump(mode="json"),
-                "manual_population": (
-                    {
-                        **run.context_summary["manual_population"],
-                        "source": "user_entered",
-                    }
-                    if (run.context_summary or {}).get("manual_population")
-                    else None
-                ),
+                "manual_population": manual_population_context(run.context_summary),
             }
             return run_context, included_sources_from_bundle(bundle)
 

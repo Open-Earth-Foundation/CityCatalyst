@@ -17,7 +17,10 @@ from app.models.db.concept_note import (
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
-from app.utils.concept_note_context import omit_context_identifiers
+from app.utils.concept_note_context import (
+    manual_population_context,
+    omit_context_identifiers,
+)
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -136,6 +139,9 @@ async def begin_build(
                         "available_context": _available_context_from_bundle(
                             previous_bundle
                         ),
+                        "city_population": _city_population_from_bundle(
+                            previous_bundle
+                        ),
                         "source_provenance": _source_provenance_from_bundle(
                             previous_bundle
                         ),
@@ -154,6 +160,7 @@ async def begin_build(
                             "failed": status_counts.get("failed", 0),
                         },
                         "optional_sources": {
+                            "city": "pending",
                             "ghgi": "pending",
                             "hiap": "pending",
                         },
@@ -202,7 +209,8 @@ async def complete_build(
     """Commit only the active build's owned bundle sections.
 
     ``city`` replaces the city profile only when provided, so a failed lookup
-    keeps the last usable profile. ``inventory_candidate`` identifies the
+    keeps the last usable profile; a failed population-only lookup keeps the
+    last population the same way. ``inventory_candidate`` identifies the
     inventory version this build checked, so a later refresh can detect changes.
     """
     try:
@@ -260,7 +268,9 @@ async def complete_build(
             bundle = normalize_bundle(bundle_row.context_bundle)
             bundle.selected_sources = selected_sources
             if city is not None:
-                bundle.cc_context.city = city
+                bundle.cc_context.city = _keep_population_after_failed_lookup(
+                    city, bundle.cc_context.city
+                )
             bundle.cc_context.ghgi = ghgi
             bundle.cc_context.hiap = hiap
             bundle_row.context_bundle = bundle.model_dump(mode="json")
@@ -273,6 +283,7 @@ async def complete_build(
                     "uploaded_evidence" if selected_sources else "none"
                 ),
                 "available_context": _available_context_from_bundle(bundle),
+                "city_population": _city_population_from_bundle(bundle),
                 "source_provenance": _source_provenance_from_bundle(bundle),
                 "inventory_candidate": inventory_candidate,
                 "context_changes": (
@@ -610,11 +621,7 @@ async def load_agent_context(
                         )
                     ],
                     "cc_context": bundle.cc_context.model_dump(mode="json"),
-                    "manual_population": (
-                        {**run.context_summary["manual_population"], "source": "user_entered"}
-                        if (run.context_summary or {}).get("manual_population")
-                        else None
-                    ),
+                    "manual_population": manual_population_context(run.context_summary),
                     "funder_context": bundle.funder_context,
                     "similar_projects": bundle.similar_projects,
                     "document_context": bundle.document_context,
@@ -750,6 +757,33 @@ def _available_context_from_bundle(
         "hiap": context.hiap is not None,
         "uploaded_documents": bool(bundle.selected_sources),
     }
+
+
+def _keep_population_after_failed_lookup(
+    city: dict[str, Any],
+    previous_city: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Drop the lookup-failure flag, restoring the prior population it guards.
+
+    A genuine no-population response carries no flag and stays null.
+    """
+    profile = dict(city)
+    if profile.pop("population_lookup_failed", False) and previous_city:
+        profile["population"] = previous_city.get("population")
+        profile["population_year"] = previous_city.get("population_year")
+    return profile
+
+
+def _city_population_from_bundle(
+    bundle: ConceptNoteContextBundle,
+) -> dict[str, int] | None:
+    """Report the CityCatalyst population this bundle gives the models, if any."""
+    city = bundle.cc_context.city or {}
+    population = city.get("population")
+    year = city.get("population_year")
+    if population is None or year is None:
+        return None
+    return {"population": population, "year": year}
 
 
 def _source_provenance_from_bundle(

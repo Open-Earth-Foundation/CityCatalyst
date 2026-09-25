@@ -164,7 +164,7 @@ export function ConceptNoteWorkspace({
     populationFailed,
     populationLabel,
     populationLoading,
-    populationMissing,
+    populationData,
     refetchDraft,
     refetchApplicationContext,
     refetchRun,
@@ -851,6 +851,7 @@ export function ConceptNoteWorkspace({
                   isRetryingBundle={retryBundleState.isLoading}
                   isRetryingUpload={retryUploadState.isLoading}
                   isUploading={uploadState.isLoading}
+                  livePopulation={populationData}
                   lng={lng}
                   onRetryBundle={() => void retryContextBundle()}
                   onRetryUpload={() => void retryActiveUpload()}
@@ -861,7 +862,6 @@ export function ConceptNoteWorkspace({
                   populationFailed={populationFailed}
                   populationLabel={populationLabel}
                   populationLoading={populationLoading}
-                  populationMissing={populationMissing}
                   upload={effectiveUpload}
                   uploadError={effectiveUploadError}
                   uploadPickerRequest={uploadPickerRequest}

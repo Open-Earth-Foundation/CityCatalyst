@@ -43,8 +43,9 @@ and year for the current concept-note run. The authenticated CityCatalyst proxy
 forwards `PATCH /api/v1/concept-notes/{runId}/population` to Climate Advisor,
 which stores the value in that run's `context_summary.manual_population`. The
 value is shown in the workspace and passed to chat and chapter drafting with
-`user_entered` provenance. It does not update the CityCatalyst city population
-record or become CC context. Removing it clears only the run-scoped value.
+`user_entered` provenance, and chat edits may cite it as evidence
+(`context_refs: ["manual_population"]`). It does not update the CityCatalyst
+city population record or become CC context. Removing it clears only the run-scoped value.
 The editor and API reject changes while chapter drafting is running because the
 drafting worker uses a single population snapshot for all chapters.
 
@@ -54,8 +55,9 @@ has no recorded values (**Empty inventory**); otherwise the inventory year is a
 chip beside the status badge that opens the inventory picker ("Choose
 different"), disabled with a reason while drafting runs or the bundle is
 building, and a small icon opens that inventory in GHGI. GHGI links open in a
-new tab. Run context refreshes
-automatically (see below), so there is no manual refresh control. The Climate
+new tab. Inventory context refreshes automatically (see below), so the inventory
+card has no manual refresh control. The population card retains its explicit
+refresh when the stored population is missing or differs from CityCatalyst. The Climate
 Action Plan card has no module link because not every project enables HIAP. A
 missing application template opens funding selection. The climate risk
 assessment card and tile are hidden until CCRA data feeds concept notes.
@@ -210,12 +212,18 @@ Confirming a chapter refreshes both its run's draft and edit proposals, so the
 review state updates even when no proposal is processing and polling is stopped.
 
 The proposal-only CA tool uses authorized evidence and explicit user input.
+Evidence is an uploaded source (`source_refs`), a run context section
+(`context_refs`: CityCatalyst `city`, `project`, `ghgi`, `ccra`, `hiap`, or the
+user-entered `manual_population`), or an exact user quote. Each cited context
+section is stored as a fingerprinted `context_snapshots` entry; accepting a
+proposal after that section changes marks it stale, as for a changed upload.
 One bounded document agent searches exact text and reads chapters on demand.
 It proposes contextual matches, selected server-issued match IDs, or explicit
 all-match replacements. Python resolves offsets from the captured revisions and
 returns structural errors to the agent for correction. An independent LLM
 reviewer checks meaning and factual support for each affected chapter. Python checks exact anchors,
-source identity, user quotes, required headings and unresolved markers. It does
+source identity, that cited context sections exist in the run, user quotes,
+required headings and unresolved markers. It does
 not infer meaning from numeric/entity tokens, merge groups based on shared values,
 or expand replacements after semantic review. Scope is automatic; chapter focus is
 only a navigation hint. Parsed-Markdown redlines preserve source offsets and fail
@@ -536,9 +544,13 @@ The authorized run may advance with no ready source by recording
 `document_grounding: none` and `missing_context: [source_documents]`. A ready
 upload records `document_grounding: uploaded_evidence`; every other section has
 an explicit empty value. Independent `available_context` flags report the
-presence of city, project, GHGI, CCRA, HIAP, and uploaded-document context. A
-rebuild keeps the last completed bundle and flags available to chat and
-selected-source queries until the replacement is committed.
+presence of city, project, GHGI, CCRA, HIAP, and uploaded-document context.
+`city_population` holds the `{population, year}` from the stored city profile,
+or `null`. The Context tab labels the population "Included in run" only from
+this field. It offers a refresh (a forced rebuild) when CityCatalyst has a
+figure the run lacks or has since changed. A rebuild keeps the last completed
+bundle and flags available to chat and selected-source queries until the
+replacement is committed.
 
 ```mermaid
 flowchart TB

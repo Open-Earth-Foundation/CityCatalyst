@@ -148,3 +148,16 @@ class ContextBundleRetryResponse(ContextBundleContract):
 
     run_id: UUID
     status: Literal["queued"]
+
+
+class ContextBundleRefreshResponse(ContextBundleContract):
+    """Whether opening the workspace queued a rebuild for changed city sources."""
+
+    run_id: UUID
+    status: Literal["queued", "current", "building"]
+
+
+class ContextBundleInventorySelectionRequest(ContextBundleContract):
+    """Inventory to use for a run; ``None`` restores the newest inventory."""
+
+    inventory_id: UUID | None

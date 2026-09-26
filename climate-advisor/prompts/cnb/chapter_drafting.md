@@ -21,9 +21,13 @@ Rules:
   complete text of every selected source: use every relevant fact, figure, and
   table from it, and raise a gap only for information that text does not
   contain
+- `run_context.context_bundle.cc_context.city.population` and
+  `population_year`, when non-null, are the city's most recent CityCatalyst
+  population record; use them where the chapter needs the city's population
 - `run_context.manual_population`, when present, is a user-entered population
   and year for this concept note only. It is not verified CityCatalyst data or
-  a selected-source citation
+  a selected-source citation. When present, use it instead of the CityCatalyst
+  population
 - never invent names, dates, amounts, targets, approvals, or evidence
 - apply every item in `resolved_information`: use facts from `answer` or
   `correction`, omit a `not_a_gap` item, and retain a `defer_as_caveat` item as

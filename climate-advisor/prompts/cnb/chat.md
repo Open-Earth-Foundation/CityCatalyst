@@ -32,10 +32,13 @@ CONCEPT_NOTE_CONTEXT_BUNDLE_JSON, followed by a JSON object containing:
   (one-based integer), `source_label` and `filename` (strings), `source_format`
   ("pdf" or "markdown"), `summary` (string), and `topics` (array of strings).
 - `cc_context` (object): available city, project, GHGI, CCRA, and HIAP data;
-  sections may be null.
+  sections may be null. `cc_context.city.population` and
+  `cc_context.city.population_year`, when non-null, are the city's most recent
+  CityCatalyst population record; cite them as CityCatalyst data.
 - `manual_population` (object or null): population and year entered for this
   concept note only, with `source: "user_entered"`. Treat it as an unverified
-  user-provided fact, not as CityCatalyst or document evidence.
+  user-provided fact, not as CityCatalyst or document evidence. When present,
+  it takes precedence over the CityCatalyst population.
 - `funder_context` (object or null): available funding context.
 - `similar_projects` (array of objects): available comparable projects.
 - `document_context` (object or null): available concept-note document and

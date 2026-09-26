@@ -376,7 +376,8 @@ capability contract live in
 Operationally, run creation schedules guarded background assembly. A run with
 no uploaded source records `document_grounding: none`; a ready PDF or native
 Markdown source rebuilds it as `uploaded_evidence`. Separate
-`available_context` flags report CityCatalyst and uploaded-document presence.
+`available_context` flags report CityCatalyst and uploaded-document presence,
+and `city_population` reports the population the city profile gives the models.
 Evidence keeps page or heading/block locators, optional GHGI/HIAP failures do
 not block readiness, and eligible turns get one scoped read-only source query.
 During rebuilds, callers keep using the last completed bundle; unchanged

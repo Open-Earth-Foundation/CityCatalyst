@@ -208,8 +208,15 @@ export function conceptNoteResumeHref(
   return `${href}?${searchParams.toString()}`;
 }
 
+export interface ConceptNoteContextChange {
+  source: "ghgi" | "hiap";
+  change: "added" | "changed" | "updated" | "removed";
+  inventoryYear: number | null;
+}
+
 export interface ConceptNoteBundleProgress {
   status: string | null;
+  buildId: string | null;
   documentGrounding: "none" | "uploaded_evidence" | null;
   availableContext: {
     city: boolean;
@@ -224,8 +231,16 @@ export interface ConceptNoteBundleProgress {
   queuedSources: number;
   processingSources: number;
   failedSources: number;
+  cityPopulation: { population: number; year: number } | null;
   ghgiStatus: string | null;
   hiapStatus: string | null;
+  sourceProvenance: {
+    ghgi: { inventoryId: string; inventoryYear: number | null } | null;
+  };
+  /** City sources the latest rebuild added, replaced, refreshed, or dropped. */
+  contextChanges: ConceptNoteContextChange[];
+  /** Inventory the user chose for this run; null means the newest is used. */
+  selectedInventoryId: string | null;
   retryable: boolean;
   errorCode?: string;
   errorReason?: string;
@@ -245,6 +260,29 @@ function countValue(value: unknown): number {
 
 function stringValue(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value : null;
+}
+
+function yearValue(value: unknown): number | null {
+  return typeof value === "number" ? value : null;
+}
+
+const CONTEXT_CHANGE_SOURCES = ["ghgi", "hiap"];
+const CONTEXT_CHANGE_KINDS = ["added", "changed", "updated", "removed"];
+
+function contextChangesValue(value: unknown): ConceptNoteContextChange[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map(recordValue)
+    .filter(
+      (change) =>
+        CONTEXT_CHANGE_SOURCES.includes(String(change.source)) &&
+        CONTEXT_CHANGE_KINDS.includes(String(change.change)),
+    )
+    .map((change) => ({
+      source: change.source as ConceptNoteContextChange["source"],
+      change: change.change as ConceptNoteContextChange["change"],
+      inventoryYear: yearValue(change.inventory_year),
+    }));
 }
 
 function documentGroundingValue(
@@ -269,10 +307,15 @@ export function getConceptNoteBundleProgress(
   const sourceCounts = recordValue(bundle.source_counts);
   const optionalSources = recordValue(bundle.optional_sources);
   const availableContext = recordValue(bundle.available_context);
+  const ghgiProvenance = recordValue(
+    recordValue(bundle.source_provenance).ghgi,
+  );
+  const usedInventoryId = stringValue(ghgiProvenance.inventory_id);
   const documentGrounding = documentGroundingValue(bundle);
 
   return {
     status: stringValue(bundle.status),
+    buildId: stringValue(bundle.build_id),
     documentGrounding,
     availableContext: {
       city: availableContext.city === true,
@@ -294,8 +337,21 @@ export function getConceptNoteBundleProgress(
     queuedSources: countValue(sourceCounts.queued),
     processingSources: countValue(sourceCounts.processing),
     failedSources: countValue(sourceCounts.failed),
+    cityPopulation: normalizePopulationData(
+      recordValue(bundle.city_population) as CityPopulationSummary,
+    ),
     ghgiStatus: stringValue(optionalSources.ghgi),
     hiapStatus: stringValue(optionalSources.hiap),
+    sourceProvenance: {
+      ghgi: usedInventoryId
+        ? {
+            inventoryId: usedInventoryId,
+            inventoryYear: yearValue(ghgiProvenance.inventory_year),
+          }
+        : null,
+    },
+    contextChanges: contextChangesValue(bundle.context_changes),
+    selectedInventoryId: stringValue(summary.selected_inventory_id),
     retryable: bundle.retryable === true,
     errorCode: stringValue(bundle.error_code) || undefined,
     errorReason: stringValue(bundle.error_reason) || undefined,

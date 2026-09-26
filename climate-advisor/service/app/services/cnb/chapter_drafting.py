@@ -60,6 +60,7 @@ from app.services.cnb.source_impact_review import (
 )
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.concept_note_context import (
+    manual_population_context,
     omit_context_identifiers,
     render_source_documents_message,
 )
@@ -566,14 +567,7 @@ class ConceptNoteChapterDraftService:
                 ),
                 "source_text": source_text_status(bundle.source_text),
                 "source_documents": source_documents_for_model(bundle.source_text),
-                "manual_population": (
-                    {
-                        **run.context_summary["manual_population"],
-                        "source": "user_entered",
-                    }
-                    if (run.context_summary or {}).get("manual_population")
-                    else None
-                ),
+                "manual_population": manual_population_context(run.context_summary),
             }
             return run_context, included_sources_from_bundle(bundle)
 

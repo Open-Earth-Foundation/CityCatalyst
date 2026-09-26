@@ -126,6 +126,24 @@ class ConceptNoteRunListResponse(BaseModel):
     runs: list[ConceptNoteRunListItemResponse] = Field(default_factory=list)
 
 
+class ConceptNoteChatThreadResponse(BaseModel):
+    """One chat attached to a concept-note run, newest first in listings."""
+
+    thread_id: UUID
+    title: str | None = None
+    created_at: datetime
+    last_message_at: datetime | None = None
+    message_count: int = 0
+    preview: str | None = None
+
+
+class ConceptNoteChatThreadListResponse(BaseModel):
+    """Every chat attached to one run plus the run's currently active chat."""
+
+    active_thread_id: UUID | None = None
+    threads: list[ConceptNoteChatThreadResponse] = Field(default_factory=list)
+
+
 class ConceptNoteRunResponse(ConceptNoteRunListItemResponse):
     """Persisted concept-note run returned by start and detail endpoints."""
 

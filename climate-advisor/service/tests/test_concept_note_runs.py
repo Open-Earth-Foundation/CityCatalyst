@@ -752,6 +752,7 @@ async def test_thread_ownership_rejects_missing_and_wrong_user_threads() -> None
             await session.commit()
             stored_thread = await session.get(Thread, owned_thread_id)
             assert stored_thread is not None
+            assert stored_thread.concept_note_run_id == concept_note_run_id
             assert stored_thread.context["concept_note_run_id"] == str(
                 concept_note_run_id
             )

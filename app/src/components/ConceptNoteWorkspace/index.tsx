@@ -45,7 +45,6 @@ import { DraftTab } from "@/components/ConceptNoteWorkspace/draft-tab";
 import { ExportDialog } from "@/components/ConceptNoteWorkspace/export-dialog";
 import { ReviewButton } from "@/components/ConceptNoteWorkspace/review-button";
 import { StructureTab } from "@/components/ConceptNoteWorkspace/structure-tab";
-import { StartNewChatDialog } from "@/components/ConceptNoteWorkspace/start-new-chat-dialog";
 import { useConceptNoteEdits } from "@/components/ConceptNoteWorkspace/use-concept-note-edits";
 import {
   DocumentReviewToolbar,
@@ -93,13 +92,8 @@ export function ConceptNoteWorkspace({
   const { t } = useTranslation(lng, "concept-notes");
   const reducedMotion = useReducedMotion() ?? false;
   const [tab, setTab] = useState<WorkspaceTab>("draft");
-  const [startNewChatOpen, setStartNewChatOpen] = useState(false);
   const [fundingOpen, setFundingOpen] = useState(false);
   const [retryInitialUploadOpen, setRetryInitialUploadOpen] = useState(false);
-  const [resetThread, setResetThread] = useState<{
-    previousThreadId: string | null;
-    threadId: string;
-  } | null>(null);
   const [editScope, setEditScope] = useState<EditScope>({
     kind: "auto",
   });
@@ -409,10 +403,6 @@ export function ConceptNoteWorkspace({
     incompleteUploads ? "upload-incomplete" : status.translationKey,
   );
   const workflowLabel = t(getWorkflowStepTranslationKey(run.workflow_step));
-  const activeThreadId =
-    resetThread?.previousThreadId === run.thread_id
-      ? resetThread.threadId
-      : run.thread_id;
 
   return (
     <Box
@@ -497,6 +487,7 @@ export function ConceptNoteWorkspace({
             }}
           >
             <ConceptNoteChatPanel
+              cityId={cityId}
               contextStatus={contextStatus}
               contextBuildId={bundle.buildId}
               contextChanges={bundle.contextChanges}
@@ -510,9 +501,8 @@ export function ConceptNoteWorkspace({
                   setUploadPickerRequest((value) => value + 1);
                 }
               }}
-              onStartNewChat={() => setStartNewChatOpen(true)}
               runId={run.run_id}
-              threadId={activeThreadId}
+              threadId={run.thread_id}
               editScope={editScope}
               edits={edits}
               draft={draft ?? null}
@@ -904,23 +894,6 @@ export function ConceptNoteWorkspace({
             setTab("draft");
             setNextStep("start-drafting");
             setHighlightStartDrafting(true);
-          }}
-        />
-      )}
-      {startNewChatOpen && (
-        <StartNewChatDialog
-          cityId={cityId}
-          lng={lng}
-          runId={runId}
-          onClose={() => setStartNewChatOpen(false)}
-          onReset={(updatedRun) => {
-            if (updatedRun.thread_id) {
-              setResetThread({
-                previousThreadId: run.thread_id,
-                threadId: updatedRun.thread_id,
-              });
-            }
-            void refetchRun();
           }}
         />
       )}

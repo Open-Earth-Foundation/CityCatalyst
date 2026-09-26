@@ -71,6 +71,7 @@ import {
   ConfirmConceptNoteChapterRequest,
   ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
+  ConceptNoteChatThreadListResponse,
   ConceptNoteRun,
   ConceptNoteRunListResponse,
   ConceptNoteUploadRequest,
@@ -167,6 +168,7 @@ export const api = createApi({
     "MeedRanking",
     "MeedPlan",
     "ConceptNoteRuns",
+    "ConceptNoteChatThreads",
     "ConceptNoteUpload",
     "ConceptNoteDraft",
     "ConceptNoteEdits",
@@ -2603,17 +2605,83 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
-      resetConceptNoteChat: builder.mutation<
+      getConceptNoteChatThreads: builder.query<
+        ConceptNoteChatThreadListResponse,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}/chat/threads`,
+          params: { city_id: cityId },
+        }),
+        providesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteChatThreads", id: runId },
+        ],
+      }),
+      startConceptNoteChat: builder.mutation<
         ConceptNoteRun,
         { cityId: string; runId: string }
       >({
         query: ({ cityId, runId }) => ({
-          url: `concept-notes/${runId}/chat/reset`,
+          url: `concept-notes/${runId}/chat/threads`,
           method: "POST",
           params: { city_id: cityId },
         }),
-        invalidatesTags: (_result, _error, { cityId }) => [
+        // Swap the cached run to the new chat before the refetch lands.
+        async onQueryStarted({ cityId, runId }, { dispatch, queryFulfilled }) {
+          try {
+            const { data } = await queryFulfilled;
+            dispatch(
+              api.util.updateQueryData(
+                "getConceptNoteRun",
+                { cityId, runId },
+                (draft) => {
+                  draft.thread_id = data.thread_id;
+                },
+              ),
+            );
+          } catch {
+            // The mutation hook reports the failure; the cache stays as is.
+          }
+        },
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
           { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteChatThreads", id: runId },
+        ],
+      }),
+      activateConceptNoteChatThread: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; runId: string; threadId: string }
+      >({
+        query: ({ cityId, runId, threadId }) => ({
+          url: `concept-notes/${runId}/chat/threads/${threadId}/activate`,
+          method: "POST",
+          params: { city_id: cityId },
+        }),
+        // Switch the cached run immediately so the panel loads that history.
+        async onQueryStarted(
+          { cityId, runId, threadId },
+          { dispatch, queryFulfilled },
+        ) {
+          const patch = dispatch(
+            api.util.updateQueryData(
+              "getConceptNoteRun",
+              { cityId, runId },
+              (draft) => {
+                draft.thread_id = threadId;
+              },
+            ),
+          );
+          try {
+            await queryFulfilled;
+          } catch {
+            patch.undo();
+          }
+        },
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteChatThreads", id: runId },
         ],
       }),
       uploadConceptNoteSource: builder.mutation<
@@ -2896,7 +2964,9 @@ export const {
   useRenameConceptNoteRunMutation,
   useDuplicateConceptNoteRunMutation,
   useDeleteConceptNoteRunMutation,
-  useResetConceptNoteChatMutation,
+  useGetConceptNoteChatThreadsQuery,
+  useStartConceptNoteChatMutation,
+  useActivateConceptNoteChatThreadMutation,
   useStartConceptNoteDraftMutation,
   useConfirmConceptNoteChapterMutation,
   useValidateConceptNoteChapterMutation,

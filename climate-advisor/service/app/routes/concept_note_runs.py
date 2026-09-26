@@ -21,6 +21,7 @@ from app.models.cnb.concept_note_draft import (
     ConceptNoteDraftResponse,
 )
 from app.models.cnb.concept_note_runs import (
+    ConceptNoteChatThreadListResponse,
     ConceptNotePopulationRequest,
     ConceptNoteRenameRequest,
     ConceptNoteRunListResponse,
@@ -321,20 +322,61 @@ async def duplicate_concept_note_run(
     )
 
 
-@router.post(
-    "/concept-notes/{run_id}/chat/reset",
-    response_model=ConceptNoteRunResponse,
+@router.get(
+    "/concept-notes/{run_id}/chat/threads",
+    response_model=ConceptNoteChatThreadListResponse,
 )
-async def reset_concept_note_chat(
+async def list_concept_note_chat_threads(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteChatThreadListResponse:
+    """List every chat attached to one concept note, newest first."""
+    service = ConceptNoteLifecycleService(session)
+    return await service.list_chat_threads(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
+@router.post(
+    "/concept-notes/{run_id}/chat/threads",
+    response_model=ConceptNoteRunResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def start_concept_note_chat(
     run_id: UUID,
     user_id: str = Query(..., min_length=1),
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> ConceptNoteRunResponse:
-    """Replace one concept note's dedicated chat and remove its history."""
+    """Open a new chat on one concept note and make it active; history is kept."""
     service = ConceptNoteLifecycleService(session)
-    return await service.reset_chat(
+    return await service.start_chat(
         run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
+@router.post(
+    "/concept-notes/{run_id}/chat/threads/{thread_id}/activate",
+    response_model=ConceptNoteRunResponse,
+)
+async def activate_concept_note_chat_thread(
+    run_id: UUID,
+    thread_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunResponse:
+    """Switch one concept note back to a previously attached chat."""
+    service = ConceptNoteLifecycleService(session)
+    return await service.activate_chat_thread(
+        run_id=run_id,
+        thread_id=thread_id,
         requested_user_id=user_id,
         authorization=authorization,
     )

@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from sqlalchemy import DateTime, String, func
+from sqlalchemy import DateTime, ForeignKey, Index, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
@@ -19,6 +19,12 @@ class Thread(Base):
     thread_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True)
     user_id: Mapped[str] = mapped_column(String(255), index=True, nullable=False)
     inventory_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    concept_note_run_id: Mapped[Optional[UUID]] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("concept_note_runs.run_id", ondelete="CASCADE"),
+        nullable=True,
+        comment="Owning Concept Note run; NULL for general Climate Advisor chats",
+    )
     context: Mapped[Optional[dict]] = mapped_column(JSONBCompat(), nullable=True)
     title: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
@@ -38,6 +44,14 @@ class Thread(Base):
         back_populates="thread",
         cascade="all, delete-orphan",
         passive_deletes=True,
+    )
+
+    __table_args__ = (
+        Index(
+            "ix_threads_concept_note_run_created",
+            "concept_note_run_id",
+            "created_at",
+        ),
     )
 
     def get_access_token(self) -> Optional[str]:
@@ -63,3 +77,5 @@ class Thread(Base):
 
 
 from app.models.db.message import Message  # noqa: E402  (circular import resolution)
+# Register the concept_note_run_id foreign-key target on Base.metadata.
+from app.models.db.concept_note import ConceptNoteRun  # noqa: E402,F401

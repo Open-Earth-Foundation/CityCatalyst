@@ -1068,9 +1068,13 @@ their source records:
   restricted deletion.
 
 `concept_note_runs.thread_id` is a nullable integration identifier for the
-dedicated chat thread. It deliberately has no database foreign key so legacy
-thread bindings remain compatible. Rename updates the owned thread title and
-delete removes the dedicated thread. CityCatalyst validates thread ownership
+run's active chat thread. It deliberately has no database foreign key so legacy
+thread bindings remain compatible. The reverse link is enforced: every chat
+opened for a run carries `threads.concept_note_run_id` (cascading on run
+deletion), which is what the chat list, chat switching, and cleanup rely on. A
+run keeps every chat it has opened; only one is active at a time and message
+turns are validated against it. Rename updates the active thread title and
+delete removes every attached thread. CityCatalyst validates thread ownership
 before passing the identifier into the workflow.
 
 `concept_note_chapter_revisions` enforces a unique

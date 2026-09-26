@@ -629,17 +629,18 @@ Each editor attempt is limited to 12 model turns, while the complete operation,
 including repairs and reviews, shares one 300-second deadline configured by
 `generation.prompt_budget.cnb_edits.max_agent_turns` and `timeout_seconds`.
 The chapter drafter uses GPT-5.6
-Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra and the
-chat-edit planner uses GPT-5.6 Sol, both with medium reasoning.
+Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra with
+medium reasoning, and the chat-edit planner uses GPT-6 Sol with high reasoning.
 
 Current CA model defaults:
 
 - General chat: `openai/gpt-5.6-terra`, reasoning `medium`.
-- CNB chat: `openai/gpt-5.6-sol`, reasoning `high`.
+- CNB chat: `openai/gpt-6-sol`, reasoning `medium`.
 - Stationary Energy chat: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Funding research and similar-project selection: `openai/gpt-5.6-terra`, reasoning `medium`.
-- Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `low`.
-- Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `low`.
+- Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `medium`.
+- Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `medium`.
+- New-source chapter impact review: `openai/gpt-6-sol`, reasoning `medium`.
 - Document-summary synthesis: `openai/gpt-5.6-terra`, reasoning `medium`.
 
 General and Stationary Energy chat use the OpenRouter Chat Completions tool loop
@@ -666,6 +667,8 @@ Prompt paths are also configured in `llm_config.yaml`:
   still requires user acceptance in the document review controls
 - the three `prompts.cnb_source_*` entries map document partitions, reduce them
   to compact document summaries, and read focused questions for exact evidence
+- `prompts.cnb_source_impact_review` runs only after a new source is analyzed;
+  its single tool returns the chapter numbers that the source affects
 - `prompts.cnb_chat_edit_planner` creates bounded, grounded edit proposals from
   actual chapter text; its output cannot apply a revision without user review
 - `prompts.cnb_chat_edit_review` independently compares each proposed chapter edit
@@ -674,7 +677,7 @@ Prompt paths are also configured in `llm_config.yaml`:
   editing authority, not independent factual verification.
 
 CNB document mapping and question-focused source readers use
-`models.cnb_source_reader`: `openai/gpt-5.6-terra` with low reasoning. Document
+`models.cnb_source_reader`: `openai/gpt-5.6-terra` with medium reasoning. Document
 summary synthesis uses `models.cnb_source_synthesizer`: `openai/gpt-5.6-terra` with
 medium reasoning. These tool-free workers use OpenRouter's Responses API with
 detailed summaries, `store: false`, and structured-output schemas, and omit
@@ -704,6 +707,16 @@ same label and filename remain independently queryable, and omits IDs from its
 model-facing result. An authorized edit request adds the proposal-only edit tool;
 that tool invokes the separate `prompts.cnb_chat_edit_planner` prompt and typed
 output model. Durable chat-driven edits remain a separate workflow.
+
+When the verified text of every uploaded source totals at most
+`generation.prompt_budget.cnb_sources.full_text_max_tokens` (80,000 by default,
+counted with the drafter model's tokenizer), the context build stores that
+page-marked text in the bundle's `source_text` section. The chapter drafter and
+CNB chat then receive it as a second user-role `CONCEPT_NOTE_SOURCE_DOCUMENTS`
+message, after the JSON payload or bundle message, so every chapter is written
+from the complete documents instead of the compact summaries. Above the limit,
+or when a source cannot be re-read, `source_text.mode` is `summary` and agents
+use the summaries and `concept_note_sources_query` as before.
 
 The edit planner and semantic reviewer receive allowlisted source evidence with
 the same one-based `source_index` values. Their `source_refs` contain those indices
@@ -838,6 +851,9 @@ Operationally:
 - A new run records `document_grounding: none` when no uploaded source is ready;
   later uploads rebuild it as `uploaded_evidence`. `available_context` reports
   city, project, GHGI, CCRA, HIAP, and uploaded-document presence independently.
+  `city_population` reports the `{population, year}` the bundle's city profile
+  gives the models, or `null`, so the Context tab shows what the run can cite.
+  A rebuild whose population-only lookup fails keeps the previous figure.
   PDFs remain page-cited and native Markdown remains anchor-cited. Optional
   GHGI/HIAP failures do not block readiness, stale builds cannot win, and chat
   keeps the last completed bundle during rebuilds. Unchanged source analyses are
@@ -876,6 +892,30 @@ Operationally:
 - Chapter drafting reserves H1 for the final document title and generates each
   template chapter at H2. A separate reconciler marks drafting leases left
   `running` for more than one hour as retryable.
+- When a newly uploaded source finishes analysis, a background re-check
+  updates the chapters it affects. The re-check is a durable job stored in the
+  run's `context_summary.source_revalidation` and queued in the same transaction
+  that commits the bundle. One worker leases it at a time; a failed pass stays
+  pending and the context-bundle reconciler retries it (up to three attempts,
+  re-fetching source text with a service-minted token for the run owner), and
+  leases left `running` for more than one hour return to pending. A later
+  source re-queues an exhausted job. A review-only call
+  (`prompts.cnb_source_impact_review`) receives the new source summary and every
+  drafted chapter with its status and open gap questions, and returns only the
+  chapter numbers to redraft. Each open gap in those chapters is then asked of
+  the verified new source text with the focused source reader, capped by
+  `prompt_budget.cnb_source_impact.max_gap_queries`; cited answers reach the
+  drafter as `new_source_evidence`, together with the chapter's
+  `current_body_markdown`, which it edits in place so accepted user edits and
+  unaffected prose are kept; a contradicted existing fact is flagged with a new
+  marker instead of being overwritten. Each redraft appends a revision, resolves
+  only gaps with a cited answer as `evidence_update` by `system`, keeps deferred
+  caveats, and reopens resolved gaps it contradicts. A redraft that drops an
+  unanswered gap or mismatches its markers is rejected and logged. The last
+  confirmed revision is preserved, so an affected Ready chapter returns to
+  review. The drafter also receives the chapter's `resolved_information` and
+  `existing_open_gaps` so earlier answers stay applied and gap keys stay
+  stable.
 
 ### Concept Note draft review and chat editing
 
@@ -894,9 +934,13 @@ Chat creates durable edit proposals; only explicit web review applies changes.
 The LLM planner selects contextual matches or an explicit all-match replacement;
 Python owns occurrence IDs, revision-bound offsets, and the minimal displayed
 diff. Ambiguous selections and structural failures return to the agent for
-correction before independent LLM review of meaning and factual support. Python
-verifies exact anchors, source identities, user quotes, required headings, and
-gap markers; it does not compare numeric tokens, override semantic judgments,
+correction before independent LLM review of meaning and factual support.
+Factual evidence may be an uploaded source, a user quote, or a run context
+section cited in `context_refs` (CityCatalyst `city`, `project`, `ghgi`,
+`ccra`, `hiap`, or `manual_population`); cited sections are fingerprinted and a
+later change marks the proposal stale on acceptance. Python
+verifies exact anchors, source identities, cited context sections, user quotes,
+required headings, and gap markers; it does not compare numeric tokens, override semantic judgments,
 or add replacements after review. All-match operations exclude locked chapters,
 template headings, and protected information markers and persist visible counts
 with the proposal. Filling a complete, matching information gap still uses the
@@ -975,7 +1019,7 @@ active OCR jobs must finish before cleanup can proceed. A legacy thread referenc
 by multiple notes cannot be deleted.
 
 Each run can own several chats. `threads.concept_note_run_id` (Alembic
-revision `20260925_120000`, cascading on run deletion) attaches a thread to its
+revision `20260925_130000`, cascading on run deletion) attaches a thread to its
 run, and `concept_note_runs.thread_id` names the one active chat that message
 turns are scoped to. `GET /v1/concept-notes/{run_id}/chat/threads` lists the
 attached chats newest first with their message count, latest timestamp, and a

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
@@ -71,6 +72,11 @@ async def test_reconciler_runs_periodically_until_cancelled(monkeypatch) -> None
         "app.services.cnb.context_bundle.recover_stale_builds",
         recover_stale_builds,
     )
+    resume_source_revalidations = AsyncMock(return_value=0)
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.resume_source_revalidations",
+        resume_source_revalidations,
+    )
 
     with pytest.raises(asyncio.CancelledError):
         await run_context_bundle_reconciler(
@@ -80,6 +86,11 @@ async def test_reconciler_runs_periodically_until_cancelled(monkeypatch) -> None
 
     recover_stale_builds.assert_awaited_once()
     assert recover_stale_builds.await_args.kwargs["session_factory"] is session_factory
+    resume_source_revalidations.assert_awaited_once()
+    assert (
+        resume_source_revalidations.await_args.kwargs["session_factory"]
+        is session_factory
+    )
 
 
 @pytest.mark.asyncio
@@ -246,16 +257,25 @@ async def test_incremental_build_analyzes_only_the_new_upload(monkeypatch) -> No
     )
     analyze = AsyncMock(side_effect=fake_analyze_document)
     complete_build = AsyncMock(return_value=True)
+    artifacts = {
+        str(upload_id): ConceptNoteMarkdownArtifact(
+            markdown=markdown,
+            markdown_s3_key=f"{upload_id}.md",
+            sha256=digest,
+            source_format="pdf",
+            page_count=1,
+        )
+        for upload_id, markdown, digest in (
+            (old_upload_id, old_markdown, old_digest),
+            (new_upload_id, new_markdown, new_digest),
+        )
+    }
+
+    async def get_markdown(*, upload_id: str, token: str) -> ConceptNoteMarkdownArtifact:
+        return artifacts[upload_id]
+
     client = SimpleNamespace(
-        get_concept_note_markdown=AsyncMock(
-            return_value=ConceptNoteMarkdownArtifact(
-                markdown=new_markdown,
-                markdown_s3_key=f"{new_upload_id}.md",
-                sha256=new_digest,
-                source_format="pdf",
-                page_count=1,
-            )
-        ),
+        get_concept_note_markdown=AsyncMock(side_effect=get_markdown),
         close=AsyncMock(),
     )
     monkeypatch.setattr(
@@ -279,12 +299,19 @@ async def test_incremental_build_analyzes_only_the_new_upload(monkeypatch) -> No
 
     assert await service.build(user_id="owner", run_id=run_id, token="token")
 
+    # Only the new upload is analyzed; the reused one is re-read for its text.
     analyze.assert_awaited_once()
     assert analyze.await_args.kwargs["upload_id"] == new_upload_id
-    client.get_concept_note_markdown.assert_awaited_once_with(
-        upload_id=str(new_upload_id),
-        token="token",
-    )
+    assert sorted(
+        call.kwargs["upload_id"]
+        for call in client.get_concept_note_markdown.await_args_list
+    ) == sorted([str(old_upload_id), str(new_upload_id)])
+    source_text = complete_build.await_args.kwargs["source_text"]
+    assert source_text.mode == "full_text"
+    assert [document.upload_id for document in source_text.documents] == [
+        old_upload_id,
+        new_upload_id,
+    ]
     selected_sources = complete_build.await_args.kwargs["selected_sources"]
     assert [source.upload_id for source in selected_sources] == [
         old_upload_id,
@@ -391,7 +418,7 @@ async def test_partial_ghgi_and_usable_hiap_are_retained(monkeypatch) -> None:
             )
         ),
     )
-    ghgi, hiap, statuses, warnings = await service._load_optional_context(
+    ghgi, hiap, statuses, warnings, candidate = await service._load_optional_context(
         user_id="owner",
         city_id=uuid4(),
         token="token",
@@ -400,6 +427,7 @@ async def test_partial_ghgi_and_usable_hiap_are_retained(monkeypatch) -> None:
     assert ghgi == {"availability": "partial", "emissions": {}}
     assert hiap == {"availability": "available", "actions": [1]}
     assert statuses == {"ghgi": "partial", "hiap": "available"}
+    assert candidate == {"inventory_id": inventory["inventory_id"], "updated_at": None}
     assert warnings == []
 
 
@@ -411,7 +439,7 @@ async def test_optional_source_errors_do_not_fail_source_readiness(monkeypatch) 
         "app.services.cnb.context_bundle.load_accessible_inventory",
         AsyncMock(side_effect=RuntimeError("optional service unavailable")),
     )
-    ghgi, hiap, statuses, warnings = await service._load_optional_context(
+    ghgi, hiap, statuses, warnings, candidate = await service._load_optional_context(
         user_id="owner",
         city_id=uuid4(),
         token="token",
@@ -420,11 +448,13 @@ async def test_optional_source_errors_do_not_fail_source_readiness(monkeypatch) 
     assert ghgi is None and hiap is None
     assert statuses == {"ghgi": "unavailable", "hiap": "unavailable"}
     assert warnings
+    assert candidate is None
 
 
 @pytest.mark.asyncio
 async def test_source_failure_preserves_safe_diagnostics_without_source_text(
-    monkeypatch, caplog,
+    monkeypatch,
+    caplog,
 ) -> None:
     failure = SourceAnalysisError(
         "incomplete_source_coverage",
@@ -445,7 +475,10 @@ async def test_source_failure_preserves_safe_diagnostics_without_source_text(
     persist = AsyncMock(return_value=True)
     monkeypatch.setattr("app.services.cnb.context_bundle.fail_build", persist)
     assert not await service.build(
-        user_id="owner", run_id=snapshot.run_id, token="secret", snapshot=snapshot,
+        user_id="owner",
+        run_id=snapshot.run_id,
+        token="secret",
+        snapshot=snapshot,
     )
     assert persist.await_args.kwargs["error_reason"] == failure.reason
     assert persist.await_args.kwargs["error_details"] == failure.details
@@ -454,3 +487,205 @@ async def test_source_failure_preserves_safe_diagnostics_without_source_text(
     assert "private document text" not in caplog.text
     assert "secret" not in caplog.text
     client.close.assert_awaited_once()
+
+
+def _source_text_build(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    fail_reused_fetch: bool = False,
+) -> tuple[ContextBundleService, AsyncMock, UUID, list[UUID]]:
+    """Wire one reused and one new PDF upload for source-text budget tests."""
+    run_id = uuid4()
+    now = datetime.now(UTC)
+    contract_version = source_analysis_contract_version(get_settings())
+    uploads: list[ConceptNoteUploadSnapshot] = []
+    artifacts: dict[str, ConceptNoteMarkdownArtifact] = {}
+    for name in ("old.pdf", "new.pdf"):
+        upload_id = uuid4()
+        markdown = f"<!-- page: 1 -->\n{name} evidence"
+        digest = hashlib.sha256(markdown.encode()).hexdigest()
+        uploads.append(
+            ConceptNoteUploadSnapshot(
+                upload_id=upload_id,
+                run_id=run_id,
+                user_id="owner",
+                filename=name,
+                source_label=name,
+                markdown_s3_key=f"{upload_id}.md",
+                markdown_sha256=digest,
+                page_count=1,
+                status="ready",
+                error_code=None,
+                received_at=now,
+                completed_at=now,
+                source_format="pdf",
+            )
+        )
+        artifacts[str(upload_id)] = ConceptNoteMarkdownArtifact(
+            markdown=markdown,
+            markdown_s3_key=f"{upload_id}.md",
+            sha256=digest,
+            source_format="pdf",
+            page_count=1,
+        )
+    reused = SelectedSource(
+        upload_id=uploads[0].upload_id,
+        source_label="old.pdf",
+        filename="old.pdf",
+        sha256=uploads[0].markdown_sha256,
+        source_format="pdf",
+        page_count=1,
+        analysis_contract_version=contract_version,
+        summary="Accepted existing summary.",
+        topics=["existing"],
+        key_excerpts=[],
+    )
+
+    async def get_markdown(*, upload_id: str, token: str) -> ConceptNoteMarkdownArtifact:
+        # The reused upload is fetched only to recover its text.
+        if fail_reused_fetch and upload_id == str(uploads[0].upload_id):
+            raise CityCatalystClientError("unavailable", status_code=503)
+        return artifacts[upload_id]
+
+    complete_build = AsyncMock(return_value=True)
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_accessible_inventory",
+        AsyncMock(return_value=None),
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.begin_build",
+        AsyncMock(
+            return_value=ContextBundleBuildSnapshot(
+                run_id=run_id,
+                city_id=str(uuid4()),
+                build_id=uuid4(),
+                uploads=uploads,
+                already_current=False,
+                previous_sources=[reused],
+            )
+        ),
+    )
+    monkeypatch.setattr("app.services.cnb.context_bundle.complete_build", complete_build)
+    client = SimpleNamespace(
+        get_concept_note_markdown=AsyncMock(side_effect=get_markdown),
+        close=AsyncMock(),
+    )
+    service = ContextBundleService(
+        None,  # type: ignore[arg-type]
+        analyze_document_fn=fake_analyze_document,
+        verify_source_artifact_fn=fake_verify_source_artifact,
+        cc_client_factory=lambda: client,
+    )
+    return service, complete_build, run_id, [upload.upload_id for upload in uploads]
+
+
+@pytest.mark.asyncio
+async def test_source_text_keeps_complete_page_marked_text_within_budget(
+    monkeypatch,
+) -> None:
+    service, complete_build, run_id, upload_ids = _source_text_build(monkeypatch)
+
+    assert await service.build(user_id="owner", run_id=run_id, token="token")
+
+    source_text = complete_build.await_args.kwargs["source_text"]
+    assert source_text.mode == "full_text"
+    assert 0 < source_text.token_count <= source_text.max_tokens == 80000
+    assert [document.upload_id for document in source_text.documents] == upload_ids
+    assert source_text.documents[0].text == "<!-- page: 1 -->\nCity evidence"
+
+
+@pytest.mark.asyncio
+async def test_source_text_falls_back_to_summaries_above_the_budget(
+    monkeypatch,
+) -> None:
+    budget = get_settings().llm.generation.prompt_budget.cnb_sources
+    monkeypatch.setattr(budget, "full_text_max_tokens", 1)
+    service, complete_build, run_id, _ = _source_text_build(monkeypatch)
+
+    assert await service.build(user_id="owner", run_id=run_id, token="token")
+
+    source_text = complete_build.await_args.kwargs["source_text"]
+    assert source_text.mode == "summary"
+    assert source_text.token_count > source_text.max_tokens == 1
+    assert source_text.documents == []
+
+
+@pytest.mark.asyncio
+async def test_source_text_fetch_failure_keeps_the_summary_bundle(
+    monkeypatch,
+) -> None:
+    """A reused source that cannot be re-read must not fail the whole build."""
+    service, complete_build, run_id, upload_ids = _source_text_build(
+        monkeypatch,
+        fail_reused_fetch=True,
+    )
+
+    assert await service.build(user_id="owner", run_id=run_id, token="token")
+
+    completed = complete_build.await_args.kwargs
+    assert [source.upload_id for source in completed["selected_sources"]] == upload_ids
+    assert completed["source_text"].mode == "summary"
+    assert completed["source_text"].documents == []
+
+
+@pytest.mark.asyncio
+async def test_refresh_rebuilds_only_when_the_city_inventory_changed(
+    monkeypatch,
+) -> None:
+    from app.persistence.concept_notes.context_bundle import (
+        ContextBundleRefreshState,
+    )
+
+    client = SimpleNamespace(close=AsyncMock())
+    service = ContextBundleService(
+        None,  # type: ignore[arg-type]
+        cc_client_factory=lambda: client,  # type: ignore[arg-type,return-value]
+    )
+    inventory_id = str(uuid4())
+    checked = {"inventory_id": inventory_id, "updated_at": "2026-09-01T10:00:00Z"}
+    state = ContextBundleRefreshState(
+        city_id=str(uuid4()),
+        status="ready",
+        selected_inventory_id=None,
+        inventory_candidate=checked,
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_refresh_state",
+        AsyncMock(side_effect=lambda **_: state),
+    )
+    inventory = {"inventory_id": inventory_id, "updated_at": checked["updated_at"]}
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_accessible_inventory",
+        AsyncMock(side_effect=lambda **_: inventory),
+    )
+    queue = AsyncMock()
+    monkeypatch.setattr(service, "_queue_rebuild", queue)
+
+    assert await service.refresh_if_stale(
+        user_id="owner", run_id=uuid4(), token="token"
+    ) == "current"
+    queue.assert_not_awaited()
+
+    inventory = {"inventory_id": str(uuid4()), "year": 2024, "updated_at": None}
+    assert await service.refresh_if_stale(
+        user_id="owner", run_id=uuid4(), token="token"
+    ) == "queued"
+    queue.assert_awaited_once()
+
+    state = ContextBundleRefreshState(
+        city_id=state.city_id,
+        status="building",
+        selected_inventory_id=None,
+        inventory_candidate=None,
+    )
+    assert await service.refresh_if_stale(
+        user_id="owner", run_id=uuid4(), token="token"
+    ) == "building"
+    assert queue.await_count == 1
+
+    # Drafting reads the context mid-run, so a changed inventory waits.
+    state = replace(state, status="ready", draft_running=True)
+    assert await service.refresh_if_stale(
+        user_id="owner", run_id=uuid4(), token="token"
+    ) == "current"
+    assert queue.await_count == 1

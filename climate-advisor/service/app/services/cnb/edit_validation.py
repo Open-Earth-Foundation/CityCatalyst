@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 from collections.abc import Sequence
 from typing import Any
 from uuid import UUID, uuid4
 
 from app.models.cnb.concept_note_edits import (
+    EDIT_CONTEXT_LABELS,
     EditChange,
+    EditContextSnapshot,
     EditPlanOutput,
     EditProposalRequest,
     EditProposalResponse,
@@ -16,7 +20,7 @@ from app.models.cnb.concept_note_edits import (
     PlannedTextChange,
 )
 from app.persistence.concept_notes.edits import EditOperationError, replace_anchors
-from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.utils.cnb_information_markers import (
     information_marker_key,
     information_needed_markers,
@@ -122,10 +126,10 @@ def validated_change(
         )
     factual = (
         anchored.kind == "factual"
-        or anchored.semantic_support in {"user", "source"}
+        or anchored.semantic_support in {"user", "source", "context"}
         or fills_information_gap
     )
-    snapshots = validate_provenance(
+    snapshots, context_snapshots = validate_provenance(
         anchored,
         request.instruction,
         run_context,
@@ -141,6 +145,7 @@ def validated_change(
         chapter_title=chapter.title,
         base_revision=chapter.revision_number,
         source_snapshots=snapshots,
+        context_snapshots=context_snapshots,
     )
 
 
@@ -271,7 +276,7 @@ def validate_provenance(
     factual: bool,
     *,
     prior_inputs: list[str] | None = None,
-) -> list[EditSourceSnapshot]:
+) -> tuple[list[EditSourceSnapshot], list[EditContextSnapshot]]:
     """Verify provenance identities and exact user quotes; the LLM judges support."""
     inputs = [instruction, *(prior_inputs or [])]
     source_index = index_sources(context.get("selected_sources", []))
@@ -286,6 +291,18 @@ def validate_provenance(
             )
         snapshots.append(source_snapshot(source))
 
+    # Run context counts as evidence only when this run actually holds it.
+    context_snapshots: list[EditContextSnapshot] = []
+    for section in dict.fromkeys(change.context_refs):
+        snapshot = context_snapshot(context, section)
+        if snapshot is None:
+            raise EditOperationError(
+                "invalid_context",
+                "The proposal cites run context that this concept note does not have.",
+                status_code=422,
+            )
+        context_snapshots.append(snapshot)
+
     if change.user_input_quote is not None and (
         not change.user_input_quote.strip()
         or not any(change.user_input_quote in value for value in inputs)
@@ -296,7 +313,7 @@ def validate_provenance(
             status_code=422,
         )
     if not factual:
-        return snapshots
+        return snapshots, context_snapshots
 
     if change.semantic_support == "user" and not change.user_input_quote:
         raise EditOperationError(
@@ -311,13 +328,39 @@ def validate_provenance(
             status_code=422,
         )
 
-    if not (snapshots or change.user_input_quote):
+    if change.semantic_support == "context" and not context_snapshots:
+        raise EditOperationError(
+            "invalid_context",
+            "The reviewed edit has no cited run context.",
+            status_code=422,
+        )
+
+    if not (snapshots or context_snapshots or change.user_input_quote):
         raise EditOperationError(
             "clarification_required",
             "What source or explicit factual value should support this change?",
             status_code=422,
         )
-    return snapshots
+    return snapshots, context_snapshots
+
+
+def context_snapshot(
+    context: dict[str, Any], section: str
+) -> EditContextSnapshot | None:
+    """Fingerprint one non-empty run context section so later changes mark edits stale."""
+    value = (
+        context.get("manual_population")
+        if section == "manual_population"
+        else (context.get("cc_context") or {}).get(section)
+    )
+    if not value:
+        return None
+    canonical = json.dumps(value, sort_keys=True, separators=(",", ":"))
+    return EditContextSnapshot(
+        section=section,
+        label=EDIT_CONTEXT_LABELS[section],
+        sha256=hashlib.sha256(canonical.encode()).hexdigest(),
+    )
 
 
 def index_sources(sources: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:

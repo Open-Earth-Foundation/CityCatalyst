@@ -11,7 +11,7 @@ def load_migration() -> ModuleType:
         Path(__file__).parents[1]
         / "migrations"
         / "versions"
-        / "20260925_120000_thread_concept_note_run.py"
+        / "20260925_130000_thread_concept_note_run.py"
     )
     spec = importlib.util.spec_from_file_location("thread_run_migration", path)
     assert spec and spec.loader

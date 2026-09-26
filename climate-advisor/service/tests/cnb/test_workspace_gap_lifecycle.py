@@ -4,7 +4,10 @@ from uuid import UUID, uuid4
 
 import pytest
 from app.db.cnb import CnbBase
-from app.models.cnb.concept_note_draft import ConceptNoteDraftGapOutput
+from app.models.cnb.concept_note_draft import (
+    ConceptNoteChapterDraftOutput,
+    ConceptNoteDraftGapOutput,
+)
 from app.models.cnb.concept_note_edits import EditChange
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
@@ -292,3 +295,161 @@ async def test_legacy_gap_rationale_is_specific_to_the_missing_fact(
     assert "Implementation chapter" in rationale
     assert "grounded evidence" in rationale
     assert rationale != "This information is required to complete the chapter."
+
+
+async def test_source_revalidation_proposes_revisions_and_preserves_confirmed_text(
+    workspace,
+) -> None:
+    """New evidence closes and reopens gaps without replacing confirmed text."""
+    answered_body = (
+        "## Implementation\n\nLincoln Park Neighborhood Council will lead delivery."
+    )
+    changed = await workspace.save_revalidated_chapter(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=1,
+        generated=ConceptNoteChapterDraftOutput(body_markdown=answered_body),
+        source_refs=["implementation-plan.pdf"],
+        answered_gap_ids={GAP_ID},
+    )
+    assert changed is True
+    [filled] = await workspace.list_chapters(run_id=RUN_ID)
+    assert filled.status == "draft"
+    assert filled.revision_number == 2
+    assert filled.gaps[0].state == "resolved"
+    assert filled.gaps[0].resolution is not None
+    assert filled.gaps[0].resolution.action == "evidence_update"
+    assert filled.gaps[0].resolution.actor_user_id == "system"
+
+    await workspace.confirm_chapter(
+        run_id=RUN_ID,
+        chapter_id=CHAPTER_ID,
+        expected_revision=2,
+        idempotency_key=uuid4(),
+        user_id="owner",
+    )
+    changed = await workspace.save_revalidated_chapter(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=2,
+        generated=ConceptNoteChapterDraftOutput(
+            body_markdown=(
+                "## Implementation\n\nLincoln Park Neighborhood Council will lead "
+                "delivery with a newly evidenced municipal steering group."
+            ),
+        ),
+        source_refs=["New implementation plan"],
+        answered_gap_ids=set(),
+    )
+    assert changed is True
+    [proposal] = await workspace.list_chapters(run_id=RUN_ID)
+    assert proposal.status == "draft"
+    assert proposal.revision_number == 3
+    assert proposal.confirmed_revision_number == 2
+    assert proposal.confirmed_body_markdown == answered_body
+
+    changed = await workspace.save_revalidated_chapter(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=3,
+        generated=ConceptNoteChapterDraftOutput(
+            body_markdown=(
+                "## Implementation\n\n[Information needed: Which organization is "
+                "now accountable for delivery?]"
+            ),
+            missing_information=[
+                ConceptNoteDraftGapOutput(
+                    field_key="lead_partner",
+                    question="Which organization is now accountable for delivery?",
+                    why_asking="New evidence conflicts with the confirmed lead.",
+                    severity="critical",
+                )
+            ],
+        ),
+        source_refs=["Updated implementation plan"],
+        answered_gap_ids=set(),
+    )
+    assert changed is True
+    [reopened] = await workspace.list_chapters(run_id=RUN_ID)
+    assert reopened.status == "needs_review"
+    assert reopened.confirmed_revision_number == 2
+    assert reopened.gaps[0].state == "open"
+    assert reopened.gaps[0].version == 3
+
+    stale = await workspace.save_revalidated_chapter(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=3,
+        generated=ConceptNoteChapterDraftOutput(
+            body_markdown="## Implementation\n\nStale source rewrite.",
+        ),
+        source_refs=["Stale source"],
+        answered_gap_ids=set(),
+    )
+    assert stale is False
+    [unchanged] = await workspace.list_chapters(run_id=RUN_ID)
+    assert unchanged.revision_number == 4
+
+
+async def test_source_revalidation_rejects_dropping_an_unanswered_gap(
+    workspace,
+) -> None:
+    """A failed or capped evidence query must not silently resolve its gap."""
+    with pytest.raises(WorkspaceConflictError, match="did not answer"):
+        await workspace.save_revalidated_chapter(
+            chapter_id=CHAPTER_ID,
+            expected_revision_number=1,
+            generated=ConceptNoteChapterDraftOutput(
+                body_markdown="## Implementation\n\nA partner will lead delivery."
+            ),
+            source_refs=["implementation-plan.pdf"],
+            answered_gap_ids=set(),
+        )
+
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.revision_number == 1
+    assert chapter.gaps[0].state == "open"
+    assert chapter.gaps[0].resolution is None
+
+
+async def test_source_revalidation_keeps_deferred_caveat_gaps(workspace) -> None:
+    """Caveats have no marker by design, so their absence is not an answer."""
+    async with workspace._session_factory() as session, session.begin():
+        gap = await session.get(ConceptNoteGap, GAP_ID)
+        assert gap is not None
+        gap.status = "caveat"
+
+    changed = await workspace.save_revalidated_chapter(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=1,
+        generated=ConceptNoteChapterDraftOutput(
+            body_markdown=(
+                "## Implementation\n\nThe lead partner is not yet confirmed and "
+                "remains a delivery limitation."
+            )
+        ),
+        source_refs=["implementation-plan.pdf"],
+        answered_gap_ids=set(),
+    )
+
+    assert changed is True
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.revision_number == 2
+    assert chapter.gaps[0].state == "caveat"
+    assert chapter.gaps[0].resolution is None
+
+
+async def test_source_revalidation_rejects_marker_gap_mismatch(workspace) -> None:
+    """Every Information-needed marker must have a matching structured gap."""
+    with pytest.raises(WorkspaceConflictError, match="markers must match"):
+        await workspace.save_revalidated_chapter(
+            chapter_id=CHAPTER_ID,
+            expected_revision_number=1,
+            generated=ConceptNoteChapterDraftOutput(
+                body_markdown=(
+                    "## Implementation\n\n[Information needed: Confirm the lead "
+                    "partner.]"
+                ),
+            ),
+            source_refs=["implementation-plan.pdf"],
+            answered_gap_ids=set(),
+        )
+
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.revision_number == 1

@@ -1,8 +1,8 @@
 """Attach chat threads to their owning Concept Note run.
 
-Revision ID: 20260925_120000
-Revises: 20260811_120000
-Create Date: 2026-09-25 12:00:00.000000
+Revision ID: 20260925_130000
+Revises: 20260925_120000
+Create Date: 2026-09-25 13:00:00.000000
 """
 
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 
-revision = "20260925_120000"
-down_revision = "20260811_120000"
+revision = "20260925_130000"
+down_revision = "20260925_120000"
 branch_labels = None
 depends_on = None
 

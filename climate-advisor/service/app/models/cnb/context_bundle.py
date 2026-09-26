@@ -59,6 +59,25 @@ class SelectedSource(ContextBundleContract):
         return self
 
 
+class SourceDocumentText(ContextBundleContract):
+    """Complete verified text of one ready source, with PDF page markers."""
+
+    upload_id: UUID
+    source_label: str
+    filename: str
+    source_format: ConceptNoteSourceFormat = "pdf"
+    text: str
+
+
+class SourceTextContext(ContextBundleContract):
+    """Complete source text when it fits the budget, otherwise summaries only."""
+
+    mode: Literal["full_text", "summary"]
+    token_count: int = Field(ge=0)
+    max_tokens: int = Field(ge=0)
+    documents: list[SourceDocumentText] = Field(default_factory=list)
+
+
 class BundleCcContext(BaseModel):
     """CityCatalyst-owned sections with explicit nullable absence."""
 
@@ -81,6 +100,7 @@ class ConceptNoteContextBundle(BaseModel):
     funder_context: dict[str, Any] | None = None
     similar_projects: list[dict[str, Any]] = Field(default_factory=list)
     document_context: dict[str, Any] | None = None
+    source_text: SourceTextContext | None = None
 
 
 class SourcePartitionMap(ContextBundleContract):
@@ -128,3 +148,16 @@ class ContextBundleRetryResponse(ContextBundleContract):
 
     run_id: UUID
     status: Literal["queued"]
+
+
+class ContextBundleRefreshResponse(ContextBundleContract):
+    """Whether opening the workspace queued a rebuild for changed city sources."""
+
+    run_id: UUID
+    status: Literal["queued", "current", "building"]
+
+
+class ContextBundleInventorySelectionRequest(ContextBundleContract):
+    """Inventory to use for a run; ``None`` restores the newest inventory."""
+
+    inventory_id: UUID | None

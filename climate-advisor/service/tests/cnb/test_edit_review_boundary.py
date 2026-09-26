@@ -21,13 +21,13 @@ from app.models.cnb.concept_note_edits import (
     PlannedTextChange,
 )
 from app.persistence.concept_notes.edits import EditOperationError, replace_anchors
-from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_planner import (
     ConceptNoteEditPlanner,
     bind_semantic_review,
     build_planner_input,
 )
-from app.services.cnb.edit_validation import validate_edit_plan
+from app.services.cnb.edit_validation import context_snapshot, validate_edit_plan
 from app.utils.cnb_progress import bind_cnb_progress
 
 
@@ -789,3 +789,126 @@ def test_refinement_rebinds_snapshots_without_replaying_private_source_refs(
         ],
     ]:
         assert value not in encoded
+
+
+CITY_CONTEXT = {
+    "cc_context": {
+        "city": {"name": "Kraków", "population": 1_000_000, "population_year": 2025}
+    },
+    "manual_population": None,
+}
+POPULATION_SENTENCE = "Kraków is a large city."
+
+
+def population_fill(context_refs):
+    return {
+        "start": 0,
+        "before": POPULATION_SENTENCE,
+        "after": "Kraków has 1,000,000 residents (2025).",
+        "kind": "factual",
+        "group_id": "population",
+        "context_refs": context_refs,
+    }
+
+
+def test_citycatalyst_context_supports_a_factual_edit_without_user_values():
+    current = chapter(f"The city context. {POPULATION_SENTENCE}")
+    plan = reviewed_plan(current, [population_fill(["city"])], ["context"])
+
+    changes = validate_edit_plan(
+        EditProposalRequest(
+            instruction="Add the data about the population please",
+            idempotency_key=uuid4(),
+        ),
+        [current],
+        plan,
+        CITY_CONTEXT,
+    )
+
+    assert changes[0].kind == "factual"
+    assert changes[0].source_snapshots == []
+    snapshot = changes[0].context_snapshots[0]
+    assert snapshot.section == "city"
+    assert snapshot.label == "CityCatalyst city profile"
+    assert (
+        replace_anchors(current.body_markdown, changes)
+        == "The city context. Kraków has 1,000,000 residents (2025)."
+    )
+
+
+def test_user_entered_population_is_citable_run_context():
+    current = chapter(f"The city context. {POPULATION_SENTENCE}")
+    context = {
+        **CITY_CONTEXT,
+        "manual_population": {
+            "population": 1_000_000,
+            "year": 2025,
+            "source": "user_entered",
+        },
+    }
+    plan = reviewed_plan(current, [population_fill(["manual_population"])], ["context"])
+
+    changes = validate_edit_plan(
+        EditProposalRequest(instruction="Add the population", idempotency_key=uuid4()),
+        [current],
+        plan,
+        context,
+    )
+
+    assert changes[0].context_snapshots[0].section == "manual_population"
+
+
+@pytest.mark.parametrize(
+    "context_refs,supports,context,code",
+    [
+        # Citing a section the run does not hold is fabricated evidence.
+        (["ghgi"], ["context"], CITY_CONTEXT, "invalid_context"),
+        (["city"], ["context"], {"cc_context": {"city": None}}, "invalid_context"),
+        # Context support without a cited section cannot pass review.
+        ([], ["context"], CITY_CONTEXT, "invalid_context"),
+    ],
+)
+def test_context_provenance_guards(context_refs, supports, context, code):
+    current = chapter(f"The city context. {POPULATION_SENTENCE}")
+    change = population_fill(context_refs)
+    if not context_refs:
+        change["user_input_quote"] = "Add the population"
+    plan = reviewed_plan(current, [change], supports)
+
+    with pytest.raises(EditOperationError) as error:
+        validate_edit_plan(
+            EditProposalRequest(
+                instruction="Add the population", idempotency_key=uuid4()
+            ),
+            [current],
+            plan,
+            context,
+        )
+    assert error.value.code == code
+
+
+def test_planner_input_exposes_manual_population_and_context_refs():
+    current = chapter("We serve 10 schools.")
+    request = EditProposalRequest(instruction="Add population", idempotency_key=uuid4())
+    manual = {"population": 900_000, "year": 2024, "source": "user_entered"}
+
+    payload = build_planner_input(
+        request, current, {**CITY_CONTEXT, "manual_population": manual}
+    )
+
+    assert payload["run_context"]["manual_population"] == manual
+    assert payload["run_context"]["cc_context"]["city"]["population"] == 1_000_000
+
+
+def test_context_snapshot_changes_when_citycatalyst_data_changes():
+    # Accepting an edit compares this fingerprint with the current run context.
+    before = context_snapshot(CITY_CONTEXT, "city")
+    updated = {
+        "cc_context": {
+            "city": {**CITY_CONTEXT["cc_context"]["city"], "population_year": 2026}
+        }
+    }
+
+    assert before == context_snapshot(CITY_CONTEXT, "city")
+    assert before != context_snapshot(updated, "city")
+    assert context_snapshot(CITY_CONTEXT, "manual_population") is None

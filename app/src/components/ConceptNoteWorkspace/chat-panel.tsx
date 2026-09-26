@@ -30,6 +30,8 @@ import { DraftingProgressCard } from "./drafting-progress-card";
 import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
 import { ChatSuggestions } from "./chat-suggestions";
 import type { ConceptNoteContextPresentation } from "./context-status";
+import { ContextChangesNotice } from "./context-changes-notice";
+import type { ConceptNoteContextChange } from "@/components/ConceptNoteDashboard/utils";
 import type { EditController } from "./document-review";
 import type { EditScope } from "@/util/concept-note-edit-types";
 import type { ConceptNoteDraftState } from "@/util/types";
@@ -39,6 +41,8 @@ const COMPOSER_MAX_HEIGHT_PX = 190;
 
 interface ConceptNoteChatPanelProps {
   contextStatus: ConceptNoteContextPresentation;
+  contextBuildId?: string | null;
+  contextChanges?: ConceptNoteContextChange[];
   composerRequest: { content: string; id: string } | null;
   draftOverviewPending: boolean;
   lng: string;
@@ -197,6 +201,8 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
 
 export function ConceptNoteChatPanel({
   contextStatus,
+  contextBuildId = null,
+  contextChanges = [],
   composerRequest,
   draftOverviewPending,
   lng,
@@ -423,6 +429,15 @@ export function ConceptNoteChatPanel({
           onOpenContext={onOpenContext}
           status={contextStatus}
         />
+        {!contextBlocked && (
+          <ContextChangesNotice
+            buildId={contextBuildId}
+            changes={contextChanges}
+            lng={lng}
+            onOpenContext={onOpenContext}
+            runId={runId}
+          />
+        )}
 
         {welcomeStage &&
           threadId &&

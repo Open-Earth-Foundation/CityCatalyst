@@ -42,8 +42,9 @@ async def load_accessible_inventory(
     user_id: str,
     city_id: UUID,
     token: str,
+    inventory_id: UUID | None = None,
 ) -> Mapping[str, Any] | None:
-    """Select the newest inventory after revalidating live city access."""
+    """Select the chosen, else newest, inventory after revalidating city access."""
     # Load the exact city's complete accessible inventory list.
     inventory_payload = await cc_client.load_inventory_list_accessible(
         request_payload={
@@ -53,10 +54,13 @@ async def load_accessible_inventory(
         },
         token=token,
     )
-    return select_newest_inventory(
-        capability_data(inventory_payload),
-        city_id=city_id,
-    )
+    data = capability_data(inventory_payload)
+    # A chosen inventory that is no longer accessible falls back to the newest.
+    if inventory_id is not None:
+        for inventory in city_inventories(data, city_id=city_id):
+            if inventory_uuid(inventory) == inventory_id:
+                return inventory
+    return select_newest_inventory(data, city_id=city_id)
 
 
 async def load_city_profile(
@@ -69,7 +73,9 @@ async def load_city_profile(
     """Build the compact city profile the CityCatalyst city page shows.
 
     The boundary geometry is omitted. A population lookup failure keeps the
-    rest of the profile, with population fields left null.
+    rest of the profile, with population fields left null and a transient
+    ``population_lookup_failed`` flag so the bundle can keep its prior figure.
+    A city without a recorded population returns null fields and no flag.
     """
     city_payload = await cc_client.get_city(
         city_id=str(city_id), token=token, user_id=user_id
@@ -77,6 +83,7 @@ async def load_city_profile(
     city = city_payload.get("data") if isinstance(city_payload, Mapping) else None
     if not isinstance(city, Mapping) or str(city.get("cityId")) != str(city_id):
         raise ConceptNoteCityContextDataError("City profile response is invalid")
+    population_lookup_failed = False
     try:
         population_payload = await cc_client.get_city_population(
             city_id=str(city_id), token=token, user_id=user_id
@@ -84,10 +91,11 @@ async def load_city_profile(
         population = population_payload.get("data")
     except CityCatalystClientError:
         population = None
+        population_lookup_failed = True
     if not isinstance(population, Mapping):
         population = {}
     area = city.get("area")
-    return {
+    profile: dict[str, Any] = {
         "name": optional_string(city.get("name")),
         "locode": optional_string(city.get("locode")),
         "country": optional_string(city.get("country")),
@@ -99,6 +107,9 @@ async def load_city_profile(
         "population_year": optional_int(population.get("year")),
         "source": "citycatalyst",
     }
+    if population_lookup_failed:
+        profile["population_lookup_failed"] = True
+    return profile
 
 
 async def load_ghgi_context(
@@ -200,12 +211,12 @@ def missing_hiap_context(*, language: str) -> HiapContext:
     )
 
 
-def select_newest_inventory(
+def city_inventories(
     data: Mapping[str, Any],
     *,
     city_id: UUID,
-) -> Mapping[str, Any] | None:
-    """Choose by year desc, update time desc, then inventory UUID asc."""
+) -> list[Mapping[str, Any]]:
+    """Return the accessible inventory rows listed for one city."""
     cities = data.get("cities")
     if not isinstance(cities, list):
         raise ConceptNoteCityContextDataError(
@@ -221,14 +232,23 @@ def select_newest_inventory(
         None,
     )
     if matching_city is None:
-        return None
+        return []
 
     inventories = matching_city.get("inventories")
     if not isinstance(inventories, list):
         raise ConceptNoteCityContextDataError(
             "Accessible inventory response is missing inventories"
         )
-    candidates = [item for item in inventories if isinstance(item, Mapping)]
+    return [item for item in inventories if isinstance(item, Mapping)]
+
+
+def select_newest_inventory(
+    data: Mapping[str, Any],
+    *,
+    city_id: UUID,
+) -> Mapping[str, Any] | None:
+    """Choose by year desc, update time desc, then inventory UUID asc."""
+    candidates = city_inventories(data, city_id=city_id)
     if not candidates:
         return None
 
@@ -238,6 +258,18 @@ def select_newest_inventory(
         raise ConceptNoteCityContextDataError(
             "Accessible inventory metadata is invalid"
         ) from exc
+
+
+def inventory_candidate(
+    inventory: Mapping[str, Any] | None,
+) -> dict[str, str | None] | None:
+    """Identify an inventory version so later changes can trigger a rebuild."""
+    if inventory is None:
+        return None
+    return {
+        "inventory_id": str(inventory_uuid(inventory)),
+        "updated_at": optional_string(inventory.get("updated_at")),
+    }
 
 
 def compact_ghgi_context(
@@ -260,11 +292,15 @@ def compact_ghgi_context(
 
     status_by_sector = records_by_reference(status_data.get("by_sector"))
     emissions_by_sector = records_by_reference(emissions_data.get("by_sector"))
+    # An unfilled inventory is missing data, not zero emissions.
+    if count(completion.get("filled")) == 0 and not emissions_by_sector:
+        return GhgiContext(availability="missing", inventory=None, emissions=None)
 
     sectors: list[GhgiSector] = []
     for reference, name in SECTORS:
-        status = status_by_sector[reference]
-        emissions = emissions_by_sector[reference]
+        # Unfilled sectors, and IV/V in BASIC inventories, are reported as zero.
+        status = status_by_sector.get(reference, {})
+        emissions = emissions_by_sector.get(reference, {})
         data_state = status.get("data_state")
         if not isinstance(data_state, Mapping):
             data_state = {}
@@ -383,7 +419,7 @@ def parse_timestamp(value: Any) -> datetime:
 
 
 def records_by_reference(value: Any) -> dict[str, Mapping[str, Any]]:
-    """Require and index each canonical GPC sector exactly once."""
+    """Index canonical GPC sectors, allowing sectors a partial inventory lacks."""
     if not isinstance(value, list):
         raise ConceptNoteCityContextDataError("Sector data must be an array")
     indexed: dict[str, Mapping[str, Any]] = {}
@@ -402,10 +438,6 @@ def records_by_reference(value: Any) -> dict[str, Mapping[str, Any]]:
                 "Sector data contains a duplicate GPC reference"
             )
         indexed[reference] = item
-    if set(indexed) != SECTOR_REFERENCES:
-        raise ConceptNoteCityContextDataError(
-            "Sector data must contain each GPC reference I through V"
-        )
     return indexed
 
 

@@ -4,21 +4,28 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping
 from contextvars import Context
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID, uuid4
 
 from app.db.session import get_session_factory
-from app.models.cnb.context_bundle import SelectedSource
+from app.models.cnb.context_bundle import (
+    SelectedSource,
+    SourceDocumentText,
+    SourceTextContext,
+)
 from app.persistence.concept_notes.context_bundle import (
     ContextBundleBuildSnapshot,
+    ContextBundlePersistenceError,
     begin_build,
     complete_build,
     fail_build,
+    load_refresh_state,
     load_source_revalidation_inputs,
     recover_stale_builds,
+    set_selected_inventory,
 )
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.persistence.concept_notes.source_revalidation import (
@@ -35,17 +42,21 @@ from app.services.cnb.source_analysis import (
     SourceUnit,
     analyze_document,
     gather_all_or_raise,
+    render_source_text,
     source_analysis_contract_version,
     verify_source_artifact,
 )
 from app.services.concept_note_city_context import (
     ConceptNoteCityContextDataError,
+    inventory_candidate,
+    inventory_uuid,
     load_accessible_inventory,
     load_city_profile,
     load_ghgi_context,
     load_hiap_context,
 )
 from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
+from app.utils.prompt_budget import count_prompt_tokens
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import Settings, get_settings
@@ -135,6 +146,7 @@ class ContextBundleService:
                 selected_sources: list[SelectedSource] = []
                 uploads_to_analyze: list[ConceptNoteUploadSnapshot] = []
                 new_sources: list[RevalidationSource] = []
+                source_text: SourceTextContext | None = None
 
                 # Reuse unchanged source analyses and run the LLM only for new inputs.
                 if active.uploads:
@@ -181,10 +193,19 @@ class ContextBundleService:
                         selected_by_upload[upload.upload_id]
                         for upload in active.uploads
                     ]
+                    source_text = await self._build_source_text(
+                        uploads=active.uploads,
+                        analyzed_units={
+                            item.source.upload_id: item.units for item in new_sources
+                        },
+                        token=token,
+                        cc_client=cc_client,
+                        settings=analysis_settings,
+                    )
 
                 # Enrich every run with best-effort CityCatalyst context.
                 (
-                    (ghgi, hiap, optional_statuses, warnings),
+                    (ghgi, hiap, optional_statuses, warnings, candidate),
                     (city, city_status, city_warning),
                 ) = await asyncio.gather(
                     self._load_optional_context(
@@ -192,6 +213,7 @@ class ContextBundleService:
                         city_id=UUID(active.city_id),
                         token=token,
                         cc_client=cc_client,
+                        selected_inventory_id=active.selected_inventory_id,
                     ),
                     self._try_load_city(
                         cc_client=cc_client,
@@ -216,6 +238,7 @@ class ContextBundleService:
                     run_id=run_id,
                     build_id=active.build_id,
                     selected_sources=list(selected_sources),
+                    source_text=source_text,
                     city=city,
                     ghgi=ghgi,
                     hiap=hiap,
@@ -226,6 +249,7 @@ class ContextBundleService:
                         if self.revalidate_fn is not None
                         else None
                     ),
+                    inventory_candidate=candidate,
                 )
                 # Start the persisted job now, reusing the verified source text.
                 if completed and new_sources and self.revalidate_fn is not None:
@@ -285,7 +309,7 @@ class ContextBundleService:
         contract_version: str,
     ) -> RevalidationSource:
         """Re-fetch, revalidate, and fully analyze one ready upload."""
-        source_units = await self._fetch_verified_units(
+        source_units = await self._load_source_units(
             upload=upload,
             token=token,
             cc_client=cc_client,
@@ -306,43 +330,6 @@ class ContextBundleService:
                 update={"analysis_contract_version": contract_version}
             ),
             units=source_units,
-        )
-
-    async def _fetch_verified_units(
-        self,
-        *,
-        upload: ConceptNoteUploadSnapshot,
-        token: str,
-        cc_client: CityCatalystClient,
-    ) -> list[SourceUnit]:
-        """Fetch one ready upload through CityCatalyst and verify its identity."""
-        # Require the immutable metadata needed for the declared source format.
-        if (
-            upload.markdown_s3_key is None
-            or upload.markdown_sha256 is None
-            or (upload.source_format == "pdf" and upload.page_count is None)
-        ):
-            raise SourceAnalysisError(
-                "incomplete_source_pointer",
-                "Ready upload is missing immutable source metadata",
-            )
-        # Read through CC, then verify identity before any LLM analysis.
-        try:
-            artifact = await cc_client.get_concept_note_markdown(
-                upload_id=str(upload.upload_id),
-                token=token,
-            )
-        except CityCatalystClientError as exc:
-            raise SourceAnalysisError(
-                "source_fetch_failed",
-                "Ready upload could not be fetched from CityCatalyst",
-            ) from exc
-        return self.verify_source_artifact_fn(
-            artifact=artifact,
-            markdown_s3_key=upload.markdown_s3_key,
-            sha256=upload.markdown_sha256,
-            source_format=upload.source_format,
-            page_count=upload.page_count,
         )
 
     async def run_source_revalidation(
@@ -392,7 +379,7 @@ class ContextBundleService:
                     cc_client = self.cc_client_factory()
                     token, _ = await cc_client.refresh_token(claim.user_id)
                     for upload, source in inputs:
-                        units = await self._fetch_verified_units(
+                        units = await self._load_source_units(
                             upload=upload,
                             token=token,
                             cc_client=cc_client,
@@ -431,6 +418,111 @@ class ContextBundleService:
                 )
         return succeeded
 
+    async def _load_source_units(
+        self,
+        *,
+        upload: ConceptNoteUploadSnapshot,
+        token: str,
+        cc_client: CityCatalystClient,
+    ) -> list[SourceUnit]:
+        """Fetch one ready upload through CC and verify its immutable identity."""
+        # Require the immutable metadata needed for the declared source format.
+        if (
+            upload.markdown_s3_key is None
+            or upload.markdown_sha256 is None
+            or (upload.source_format == "pdf" and upload.page_count is None)
+        ):
+            raise SourceAnalysisError(
+                "incomplete_source_pointer",
+                "Ready upload is missing immutable source metadata",
+            )
+        # Read through CC, then verify identity before any use of the text.
+        try:
+            artifact = await cc_client.get_concept_note_markdown(
+                upload_id=str(upload.upload_id),
+                token=token,
+            )
+        except CityCatalystClientError as exc:
+            raise SourceAnalysisError(
+                "source_fetch_failed",
+                "Ready upload could not be fetched from CityCatalyst",
+            ) from exc
+        return self.verify_source_artifact_fn(
+            artifact=artifact,
+            markdown_s3_key=upload.markdown_s3_key,
+            sha256=upload.markdown_sha256,
+            source_format=upload.source_format,
+            page_count=upload.page_count,
+        )
+
+    async def _build_source_text(
+        self,
+        *,
+        uploads: list[ConceptNoteUploadSnapshot],
+        analyzed_units: dict[UUID, list[SourceUnit]],
+        token: str,
+        cc_client: CityCatalystClient,
+        settings: Settings,
+    ) -> SourceTextContext:
+        """Keep complete source text for agents only while it fits the budget."""
+        budget = settings.llm.generation.prompt_budget
+        max_tokens = budget.cnb_sources.full_text_max_tokens
+        try:
+            # Reused analyses need their verified text fetched again; no LLM runs.
+            units_by_upload = dict(analyzed_units)
+            missing = [u for u in uploads if u.upload_id not in units_by_upload]
+            fetched = await gather_all_or_raise(
+                *(
+                    self._load_source_units(
+                        upload=upload, token=token, cc_client=cc_client
+                    )
+                    for upload in missing
+                )
+            )
+            units_by_upload.update(
+                {
+                    upload.upload_id: units
+                    for upload, units in zip(missing, fetched, strict=True)
+                }
+            )
+        except SourceAnalysisError as exc:
+            # Summaries stay usable, so a text fetch failure only drops full text.
+            logger.warning(
+                "Concept Note source text unavailable; using summaries code=%s",
+                exc.code,
+            )
+            return SourceTextContext(mode="summary", token_count=0, max_tokens=max_tokens)
+
+        documents = [
+            SourceDocumentText(
+                upload_id=upload.upload_id,
+                source_label=upload.source_label or upload.filename,
+                filename=upload.filename,
+                source_format=upload.source_format,
+                text=render_source_text(units_by_upload[upload.upload_id]),
+            )
+            for upload in uploads
+        ]
+        token_count = count_prompt_tokens(
+            [document.text for document in documents],
+            model=settings.llm.models.cnb_chapter_drafter.name,
+            fallback_encoding=budget.tokenizer_encoding,
+        ).tokens
+        full_text = token_count <= max_tokens
+        logger.info(
+            "Concept Note source text mode=%s tokens=%s max_tokens=%s sources=%s",
+            "full_text" if full_text else "summary",
+            token_count,
+            max_tokens,
+            len(documents),
+        )
+        return SourceTextContext(
+            mode="full_text" if full_text else "summary",
+            token_count=token_count,
+            max_tokens=max_tokens,
+            documents=documents if full_text else [],
+        )
+
     async def _load_optional_context(
         self,
         *,
@@ -438,29 +530,46 @@ class ContextBundleService:
         city_id: UUID,
         token: str,
         cc_client: CityCatalystClient,
+        selected_inventory_id: UUID | None = None,
     ) -> tuple[
         dict[str, Any] | None,
         dict[str, Any] | None,
         dict[str, str],
         list[str],
+        dict[str, Any] | None,
     ]:
-        """Attempt GHGI and HIAP without allowing either to block readiness."""
+        """Attempt GHGI and HIAP without allowing either to block readiness.
+
+        Also returns the checked inventory version, or ``None`` when the lookup
+        failed, so the next workspace open retries it.
+        """
         statuses = {"ghgi": "missing", "hiap": "missing"}
         warnings: list[str] = []
+        unavailable = ["GHGI and HIAP context were unavailable."]
         try:
             inventory = await load_accessible_inventory(
                 cc_client=cc_client,
                 user_id=user_id,
                 city_id=city_id,
                 token=token,
+                inventory_id=selected_inventory_id,
             )
+            candidate = inventory_candidate(inventory)
         except (CityCatalystClientError, ConceptNoteCityContextDataError):
             statuses = {"ghgi": "unavailable", "hiap": "unavailable"}
-            return None, None, statuses, ["GHGI and HIAP context were unavailable."]
+            return None, None, statuses, unavailable, None
         except Exception:
             logger.exception("Unexpected optional inventory lookup failure")
             statuses = {"ghgi": "unavailable", "hiap": "unavailable"}
-            return None, None, statuses, ["GHGI and HIAP context were unavailable."]
+            return None, None, statuses, unavailable, None
+        if (
+            selected_inventory_id is not None
+            and inventory is not None
+            and inventory_uuid(inventory) != selected_inventory_id
+        ):
+            warnings.append(
+                "The chosen inventory is no longer available; the newest was used."
+            )
 
         ghgi_result, hiap_result = await asyncio.gather(
             self._try_load_ghgi(
@@ -481,7 +590,110 @@ class ContextBundleService:
         ghgi, statuses["ghgi"], ghgi_warning = ghgi_result
         hiap, statuses["hiap"], hiap_warning = hiap_result
         warnings.extend(item for item in (ghgi_warning, hiap_warning) if item)
-        return ghgi, hiap, statuses, warnings
+        return ghgi, hiap, statuses, warnings, candidate
+
+    async def refresh_if_stale(
+        self,
+        *,
+        user_id: str,
+        run_id: UUID,
+        token: str,
+    ) -> Literal["queued", "current", "building"]:
+        """Rebuild a ready bundle only when its inventory changed in the city.
+
+        Called once per workspace open, so it compares cheap inventory list
+        metadata instead of reloading GHGI and HIAP.
+        """
+        state = await load_refresh_state(
+            session_factory=self.session_factory,
+            user_id=user_id,
+            run_id=run_id,
+        )
+        if state.status == "building":
+            return "building"
+        # Failed builds recover through retry, and drafting reads the context
+        # mid-run; the next open checks again.
+        if state.status != "ready" or state.draft_running:
+            return "current"
+        try:
+            candidate = inventory_candidate(
+                await self._load_inventory(
+                    user_id, state.city_id, token, state.selected_inventory_id
+                )
+            )
+        except (CityCatalystClientError, ConceptNoteCityContextDataError):
+            return "current"
+        if candidate == state.inventory_candidate:
+            return "current"
+        await self._queue_rebuild(user_id=user_id, run_id=run_id, token=token)
+        return "queued"
+
+    async def select_inventory(
+        self,
+        *,
+        user_id: str,
+        run_id: UUID,
+        token: str,
+        inventory_id: UUID | None,
+    ) -> None:
+        """Save the run's inventory choice after checking access, then rebuild."""
+        state = await load_refresh_state(
+            session_factory=self.session_factory,
+            user_id=user_id,
+            run_id=run_id,
+        )
+        if inventory_id is not None:
+            try:
+                inventory = await self._load_inventory(
+                    user_id, state.city_id, token, inventory_id
+                )
+            except (CityCatalystClientError, ConceptNoteCityContextDataError) as exc:
+                raise ContextBundlePersistenceError(
+                    "cc_inventory_unavailable",
+                    503,
+                    "City inventories are temporarily unavailable",
+                ) from exc
+            if inventory is None or inventory_uuid(inventory) != inventory_id:
+                raise ContextBundlePersistenceError(
+                    "inventory_not_accessible",
+                    404,
+                    "The inventory is not available for this city",
+                )
+        await set_selected_inventory(
+            session_factory=self.session_factory,
+            user_id=user_id,
+            run_id=run_id,
+            inventory_id=inventory_id,
+        )
+        await self._queue_rebuild(user_id=user_id, run_id=run_id, token=token)
+
+    async def _load_inventory(
+        self, user_id: str, city_id: str, token: str, inventory_id: UUID | None
+    ) -> Mapping[str, Any] | None:
+        """Load the chosen, else newest, inventory the user can access."""
+        cc_client = self.cc_client_factory()
+        try:
+            return await load_accessible_inventory(
+                cc_client=cc_client,
+                user_id=user_id,
+                city_id=UUID(city_id),
+                token=token,
+                inventory_id=inventory_id,
+            )
+        finally:
+            await cc_client.close()
+
+    async def _queue_rebuild(self, *, user_id: str, run_id: UUID, token: str) -> None:
+        """Start a forced background rebuild that reuses unchanged analyses."""
+        snapshot = await self.begin(user_id=user_id, run_id=run_id, force=True)
+        schedule_context_bundle_build(
+            service=self,
+            user_id=user_id,
+            run_id=run_id,
+            token=token,
+            force=True,
+            snapshot=snapshot,
+        )
 
     async def _try_load_city(
         self,

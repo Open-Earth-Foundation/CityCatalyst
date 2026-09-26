@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
@@ -38,6 +39,7 @@ from app.services.cnb.chapter_drafting import (
     ChapterDraftingRunUnavailableError,
     ChapterDraftingTemplateError,
     ConceptNoteChapterDraftService,
+    _chapter_input_messages,
     recover_stale_drafts,
     run_chapter_drafting_reconciler,
 )
@@ -648,3 +650,32 @@ async def test_drafting_errors_keep_their_http_status(
         )
 
     assert exc_info.value.status_code == expected_status
+
+
+def test_chapter_input_sends_complete_sources_as_a_second_message() -> None:
+    document = {
+        "source_label": "KST IV plan",
+        "filename": "plan.pdf",
+        "source_format": "pdf",
+        "text": "<!-- page: 7 -->\nPolsad tunnel 214",
+    }
+    payload = {
+        "chapter": {"title": "Project components"},
+        "source_documents": [document],
+    }
+
+    messages = _chapter_input_messages(payload)
+
+    assert json.loads(messages[0]["content"]) == {
+        "chapter": {"title": "Project components"}
+    }
+    assert messages[1]["role"] == "user"
+    assert messages[1]["content"].startswith("CONCEPT_NOTE_SOURCE_DOCUMENTS\n")
+    assert '<source index="1" label="KST IV plan"' in messages[1]["content"]
+    assert "<!-- page: 7 -->\nPolsad tunnel 214" in messages[1]["content"]
+
+
+def test_chapter_input_without_sources_is_one_json_message() -> None:
+    messages = _chapter_input_messages({"chapter": {}, "source_documents": []})
+
+    assert messages == [{"role": "user", "content": json.dumps({"chapter": {}})}]

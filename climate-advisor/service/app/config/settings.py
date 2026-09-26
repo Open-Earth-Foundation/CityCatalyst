@@ -164,6 +164,8 @@ class CnbSourcePromptBudgetConfig(BaseModel):
     max_key_excerpts: int = Field(default=8, ge=1, le=20)
     max_topics: int = Field(default=12, ge=1, le=30)
     max_question_chars: int = Field(default=2000, ge=1, le=10000)
+    # Above this total, agents fall back to compact summaries and source queries.
+    full_text_max_tokens: int = Field(default=80000, ge=0)
 
 
 class CnbSourceImpactPromptBudgetConfig(BaseModel):

@@ -458,7 +458,7 @@ describe("useConceptNoteWorkspaceData", () => {
       uploads: [source("failed", "A")],
     };
     await act(async () => root.render(<ChatHarness />));
-    expect(container.querySelector("input")!.disabled).toBe(true);
+    expect(container.querySelector("textarea")!.disabled).toBe(true);
 
     contextScenario = {
       uploads: [source("ready", "B"), source("failed", "A")],
@@ -471,14 +471,14 @@ describe("useConceptNoteWorkspaceData", () => {
       },
     };
     await act(async () => root.render(<ChatHarness />));
-    expect(container.querySelector("input")!.disabled).toBe(false);
+    expect(container.querySelector("textarea")!.disabled).toBe(false);
     await act(async () => root.unmount());
     root = createRoot(container);
     await act(async () => root.render(<ChatHarness />));
     await act(async () => {
       await new Promise(requestAnimationFrame);
     });
-    expect(container.querySelector("input")!.disabled).toBe(false);
+    expect(container.querySelector("textarea")!.disabled).toBe(false);
     const send = container.querySelector<HTMLButtonElement>(
       'button[type="submit"]',
     )!;
@@ -504,7 +504,7 @@ describe("useConceptNoteWorkspaceData", () => {
     );
     expect(container.textContent).toContain("chat-context-not-ready");
     expect(container.textContent).not.toContain(composerRequest.content);
-    expect(container.querySelector("input")!.disabled).toBe(false);
+    expect(container.querySelector("textarea")!.disabled).toBe(false);
   });
 
   it("keeps pending uploads and the latest failed upload blocked", async () => {
@@ -519,10 +519,10 @@ describe("useConceptNoteWorkspaceData", () => {
       },
     };
     await act(async () => root.render(<ChatHarness />));
-    expect(container.querySelector("input")!.disabled).toBe(true);
+    expect(container.querySelector("textarea")!.disabled).toBe(true);
     contextScenario.uploads = [source("failed", "B"), source("ready", "A")];
     await act(async () => root.render(<ChatHarness />));
-    expect(container.querySelector("input")!.disabled).toBe(true);
+    expect(container.querySelector("textarea")!.disabled).toBe(true);
   });
 
   it("blocks chat until upload processing and the context bundle are both ready", async () => {

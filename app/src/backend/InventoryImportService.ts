@@ -12,6 +12,10 @@ import {
 } from "@/util/form-schema";
 import manageSubsectorsEn from "@/i18n/locales/en/manage-subsectors.json";
 import { toCanonical } from "@/util/notation-keys";
+import {
+  hasSignedNumericValue,
+  parseNumericCell,
+} from "@/util/parse-numeric-cell";
 
 /** Options for import (e.g. PDF): default data source from file name. */
 export type ImportECRFDataOptions = {
@@ -315,31 +319,28 @@ export default class InventoryImportService {
 
         // If any of CO2, CH4, N2O exist: store totalCO2e and gas values together.
         // Otherwise: store only totalCO2e (no per-gas storage).
-        const co2Val =
-          row.co2 != null ? Number(row.co2) : undefined;
-        const ch4Val =
-          row.ch4 != null ? Number(row.ch4) : undefined;
-        const n2oVal =
-          row.n2o != null ? Number(row.n2o) : undefined;
+        const co2Val = parseNumericCell(row.co2);
+        const ch4Val = parseNumericCell(row.ch4);
+        const n2oVal = parseNumericCell(row.n2o);
         const hasAnyGas =
-          (typeof co2Val === "number" && !isNaN(co2Val)) ||
-          (typeof ch4Val === "number" && !isNaN(ch4Val)) ||
-          (typeof n2oVal === "number" && !isNaN(n2oVal));
+          hasSignedNumericValue(co2Val) ||
+          hasSignedNumericValue(ch4Val) ||
+          hasSignedNumericValue(n2oVal);
 
         const gasSum =
           (co2Val ?? 0) + (ch4Val ?? 0) + (n2oVal ?? 0);
 
         let totalCO2e: number | undefined;
         if (hasAnyGas) {
-          totalCO2e =
-            row.totalCO2e != null && !isNaN(Number(row.totalCO2e))
-              ? Number(row.totalCO2e)
-              : gasSum;
+          const parsedTotal = parseNumericCell(row.totalCO2e);
+          totalCO2e = hasSignedNumericValue(parsedTotal)
+            ? parsedTotal
+            : gasSum;
           console.log(
             `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e and gas values: totalCO2e=${totalCO2e}, CO2=${co2Val ?? "-"}, CH4=${ch4Val ?? "-"}, N2O=${n2oVal ?? "-"}`,
           );
         } else {
-          totalCO2e = row.totalCO2e;
+          totalCO2e = parseNumericCell(row.totalCO2e);
           console.log(
             `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e only (no gas values): ${totalCO2e}`,
           );
@@ -348,7 +349,7 @@ export default class InventoryImportService {
         // Priority: Emission values take precedence over notation keys
         // Only use notation keys if there are NO emission values
         // (negative totalCO2e is a valid value, e.g. emissions sinks/removals)
-        if (totalCO2e != null && !isNaN(totalCO2e) && totalCO2e !== 0) {
+        if (hasSignedNumericValue(totalCO2e)) {
           console.log(
             `[Import] GPC ${row.gpcRefNo} - Storing emissions: totalCO2e=${totalCO2e} tonnes -> ${new Decimal(totalCO2e).mul(1000)} kg`,
           );
@@ -456,7 +457,7 @@ export default class InventoryImportService {
 
           // Create ActivityValue if activity data or metadata is present, or when default data source from file is provided
           if (
-            row.activityAmount ||
+            row.activityAmount != null ||
             row.activityType ||
             row.activityUnit ||
             row.activityDataSource ||
@@ -670,10 +671,9 @@ export default class InventoryImportService {
 
               // Convert activity CO2e to kilograms (if available)
               // (negative totalCO2e is a valid value, e.g. emissions sinks/removals)
-              const activityCO2eq =
-                totalCO2e != null && !isNaN(totalCO2e) && totalCO2e !== 0
-                  ? decimalToBigInt(new Decimal(totalCO2e).mul(1000))
-                  : undefined;
+              const activityCO2eq = hasSignedNumericValue(totalCO2e)
+                ? decimalToBigInt(new Decimal(totalCO2e).mul(1000))
+                : undefined;
 
               await db.models.ActivityValue.create({
                 id: randomUUID(),

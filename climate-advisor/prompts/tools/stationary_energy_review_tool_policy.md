@@ -1,4 +1,9 @@
-Available Stationary Energy workflow tools:
+Available Stationary Energy workflow tools. Before a run exists only `stationary_energy_start_draft` is registered; once a run exists every tool below except it is registered.
+
+- `stationary_energy_start_draft`
+  - Use when the context is `STATIONARY_ENERGY_RUN_NOT_STARTED` and the request needs this inventory's Stationary Energy data, sources, values, or rows.
+  - It starts a run that searches the connected datasets and prepares proposals in the background. It takes no arguments and does not write to the inventory.
+  - Do not use it for general questions that need no inventory data.
 
 - `inventory_status_overview`
   - Use for overall inventory metadata, completion, and sector data-state questions.

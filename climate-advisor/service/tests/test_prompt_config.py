@@ -213,7 +213,11 @@ def test_compose_prompt_wraps_core_and_stationary_energy_review() -> None:
     assert "</tools>" in composed_prompt
     assert "`inventory_status_overview`" in composed_prompt
     assert "`inventory_emissions_context`" in composed_prompt
-    assert "`stationary_energy_start_draft`" not in composed_prompt
+    # The same prompt covers the page before a run exists and after it resumes.
+    assert "`STATIONARY_ENERGY_RUN_NOT_STARTED`" in composed_prompt
+    assert "call `stationary_energy_start_draft` first" in composed_prompt
+    assert "`ui_context.resumed_after_run_start` is true" in composed_prompt
+    assert "Never ask the user for the city, inventory, or year" in composed_prompt
     assert '"go ahead" when nothing is staged yet' not in composed_prompt
     assert "`proposal_id`" in composed_prompt
     assert "`selected_source_id`" in composed_prompt

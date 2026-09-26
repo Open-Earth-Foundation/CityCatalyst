@@ -285,6 +285,7 @@ export function buildFocusedDecisionStatePayload(params: {
 
 export function buildStationaryEnergyChatRequest(params: {
   cityId: string;
+  cityName?: string | null;
   content: string;
   confirmedBulkReviewChoices?: ConfirmedBulkReviewChoicePayload[];
   confirmedRollbackReviewChoices?: ConfirmedRollbackReviewChoicePayload[];
@@ -293,10 +294,13 @@ export function buildStationaryEnergyChatRequest(params: {
   focusedDecisionState?: FocusedDecisionStatePayload;
   focusedProposalId?: string | null;
   inventoryId: string;
+  inventoryYear?: number | null;
+  resumeAfterDraftStart?: boolean;
   threadId: string | null;
 }): Record<string, unknown> {
   const {
     cityId,
+    cityName,
     content,
     confirmedBulkReviewChoices,
     confirmedRollbackReviewChoices,
@@ -305,6 +309,8 @@ export function buildStationaryEnergyChatRequest(params: {
     focusedDecisionState,
     focusedProposalId,
     inventoryId,
+    inventoryYear,
+    resumeAfterDraftStart,
     threadId,
   } = params;
 
@@ -320,6 +326,9 @@ export function buildStationaryEnergyChatRequest(params: {
       city_id: cityId,
       inventory_id: inventoryId,
       stationary_energy_interaction_mode: "free_text",
+      // Lets the agent name the already-selected inventory before a run exists.
+      ...(cityName ? { city_name: cityName } : {}),
+      ...(inventoryYear ? { inventory_year: inventoryYear } : {}),
       ...(draftState
         ? {
             stationary_energy_draft_run_id: draftState.draft_run_id,
@@ -346,6 +355,10 @@ export function buildStationaryEnergyChatRequest(params: {
           stationary_energy_pending_decision_review_count:
             decisionReviewContext.length,
           stationary_energy_ui_surfaces: ["chat_text", "decision_review_card"],
+          // Re-sent pre-run request: the agent fulfils it with the new run data.
+          ...(resumeAfterDraftStart
+            ? { stationary_energy_resume_after_draft_start: true }
+            : {}),
         }
       : {
           stationary_energy_interaction_mode: "free_text",
@@ -379,4 +392,62 @@ export function resolveInventorySaveConfirmationRequest(params: {
       : blockedMessage,
     showConfirmation: false,
   };
+}
+
+// Chat activity labels for the tool the agent is running right now.
+const TOOL_ACTIVITY_LABEL_KEYS: Record<string, string> = {
+  stationary_energy_start_draft: "chat-activity-start-run",
+  stationary_energy_list_review_options: "chat-activity-checking-sources",
+  stationary_energy_list_notation_keys: "chat-activity-checking-sources",
+  stationary_energy_request_bulk_review_confirmation:
+    "chat-activity-preparing-choices",
+  stationary_energy_request_all_recommended_confirmation:
+    "chat-activity-preparing-choices",
+  stationary_energy_accept_one: "chat-activity-staging-choices",
+  stationary_energy_accept_multiple: "chat-activity-staging-choices",
+  stationary_energy_accept_all_recommended: "chat-activity-staging-choices",
+};
+
+/** Return the tool name of an SSE "tool started" event, or null for any other event. */
+export function toolStartedEventName(tool: unknown): string | null {
+  const event = tool as {
+    name?: unknown;
+    status?: unknown;
+    ui_event?: unknown;
+  };
+  if (event?.status !== "executing" || event.ui_event !== undefined) {
+    return null;
+  }
+  return typeof event.name === "string" ? event.name : null;
+}
+
+/**
+ * Pick the chat activity label so the chat never looks idle while the agent works:
+ * the running tool first, then "Thinking" until reply text streams, then the
+ * wait for a chat-started run before its request is re-sent.
+ */
+export function resolveChatActivityLabel(
+  t: TFunction,
+  params: {
+    activeToolName: string | null;
+    awaitingDraftStartResume: boolean;
+    isChatStreaming: boolean;
+    replyTextVisible: boolean;
+  },
+): string | null {
+  const {
+    activeToolName,
+    awaitingDraftStartResume,
+    isChatStreaming,
+    replyTextVisible,
+  } = params;
+  if (activeToolName) {
+    return t(
+      TOOL_ACTIVITY_LABEL_KEYS[activeToolName] ?? "chat-activity-running-tool",
+    );
+  }
+  if (isChatStreaming) {
+    return replyTextVisible ? null : t("chat-panel-thinking");
+  }
+  return awaitingDraftStartResume ? t("chat-activity-run-loading") : null;
 }

@@ -162,7 +162,7 @@ flowchart LR
     Pool --> Review
     Default --> Core
     Default --> Legacy
-    Default --> StartDraft
+    Review --> StartDraft
     Review --> ReviewTools
     Review --> SharedContext
 ```
@@ -170,8 +170,15 @@ flowchart LR
 `AgentService.create_agent()` selects instructions from the active chat mode:
 
 - General chat composes `prompts.core` with `prompts.chat`.
-- Stationary Energy draft-surface chat can register `stationary_energy_start_draft`
-  before a draft run exists, while staying on the composed general chat prompt.
+- Stationary Energy draft-surface chat composes `prompts.core` with
+  `prompts.stationary_energy_review` even before a draft run exists. In that
+  state the handler sends a `STATIONARY_ENERGY_RUN_NOT_STARTED` context message
+  instead of the draft snapshot, and the only workflow tool is
+  `stationary_energy_start_draft`.
+- After the agent starts a run for a request, the page re-sends that request
+  with `stationary_energy_resume_after_draft_start` once the run is ready. The
+  messages route does not store it again, and the handler re-adds it after the
+  "starting the run" reply so the review agent answers it with the new data.
 - Stationary Energy review chat composes `prompts.core` with
   `prompts.stationary_energy_review` and registers only tools scoped to the
   active draft review workflow. That pack includes read-only whole-inventory
@@ -235,8 +242,8 @@ workflow state in PostgreSQL.
 - `services/agent_service.py`
   - Selects the model for the current workflow context.
   - Composes `prompts.core` with `prompts.chat` for general chat.
-  - Composes `prompts.core` with `prompts.stationary_energy_review` for active
-    Stationary Energy review chat.
+  - Composes `prompts.core` with `prompts.stationary_energy_review` for the
+    Stationary Energy page, both before a run exists and during review.
   - Registers the pre-draft `stationary_energy_start_draft` tool only when the
     Stationary Energy surface is active and no draft run is loaded.
   - Keeps general inventory and vector-search tools out of active review chat.

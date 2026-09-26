@@ -426,7 +426,11 @@ export function ConceptNoteChatPanel({
         bg="base.light"
         p={4}
       >
-        <OlderChatNotice controller={chatThreads} lng={lng} />
+        <OlderChatNotice
+          controller={chatThreads}
+          disabled={threadSwitchDisabled}
+          lng={lng}
+        />
         <ContextStatusNotice
           key={contextState}
           busy={contextBlocked && contextState !== "failed"}

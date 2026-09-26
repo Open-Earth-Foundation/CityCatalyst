@@ -251,11 +251,16 @@ export function ChatThreadSwitcher({
 
 interface OlderChatNoticeProps {
   controller: ConceptNoteChatThreadsController;
+  disabled?: boolean;
   lng: string;
 }
 
 /** Shown above the messages while an earlier chat is active. */
-export function OlderChatNotice({ controller, lng }: OlderChatNoticeProps) {
+export function OlderChatNotice({
+  controller,
+  disabled = false,
+  lng,
+}: OlderChatNoticeProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const { threads, viewingOlderChat, busy, activateThread } = controller;
   if (!viewingOlderChat) {
@@ -299,6 +304,7 @@ export function OlderChatNotice({ controller, lng }: OlderChatNoticeProps) {
           variant="outline"
           textTransform="none"
           letterSpacing="normal"
+          disabled={disabled}
           loading={busy}
           onClick={() => void activateThread(threads[0].thread_id)}
           data-testid="concept-note-back-to-latest-chat"

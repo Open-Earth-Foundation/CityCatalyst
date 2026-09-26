@@ -61,7 +61,13 @@ jest.unstable_mockModule("@/services/api", () => ({
 const { ChatThreadSwitcher, OlderChatNotice, useConceptNoteChatThreads } =
   await import("@/components/ConceptNoteWorkspace/chat-threads");
 
-function Harness({ threadId }: { threadId: string | null }) {
+function Harness({
+  disabled = false,
+  threadId,
+}: {
+  disabled?: boolean;
+  threadId: string | null;
+}) {
   const controller = useConceptNoteChatThreads({
     cityId: "city",
     lng: "en",
@@ -72,21 +78,22 @@ function Harness({ threadId }: { threadId: string | null }) {
     <>
       <ChatThreadSwitcher
         controller={controller}
+        disabled={disabled}
         lng="en"
         threadId={threadId}
       />
-      <OlderChatNotice controller={controller} lng="en" />
+      <OlderChatNotice controller={controller} disabled={disabled} lng="en" />
     </>
   );
 }
 
 let root: Root;
 let container: HTMLDivElement;
-const render = async (threadId: string | null) =>
+const render = async (threadId: string | null, disabled = false) =>
   act(async () =>
     root.render(
       <ChakraProvider value={appTheme}>
-        <Harness threadId={threadId} />
+        <Harness disabled={disabled} threadId={threadId} />
       </ChakraProvider>,
     ),
   );
@@ -187,6 +194,17 @@ it("offers a way back to the latest chat while an earlier one is active", async 
     runId: "run",
     threadId: latestId,
   });
+});
+
+it("keeps the way back disabled while a reply or drafting is in flight", async () => {
+  await render(olderId, true);
+  const back = container.querySelector<HTMLButtonElement>(
+    '[data-testid="concept-note-back-to-latest-chat"]',
+  )!;
+  expect(back.disabled).toBe(true);
+  expect(trigger().disabled).toBe(true);
+  await act(async () => back.click());
+  expect(activateThread).not.toHaveBeenCalled();
 });
 
 it("explains a busy run instead of switching", async () => {

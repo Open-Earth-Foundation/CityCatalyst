@@ -244,7 +244,13 @@ class ActionFinancialFeasibilityScoresFetchResult(BaseModel):
 
 
 class ClimateFinanceOpportunityRecord(BaseModel):
-    """Report-ready climate-finance opportunity from the upstream catalogue."""
+    """
+    Report-ready climate-finance opportunity from the upstream catalogue.
+
+    Catalogue rows are screened by country, sector, route, and availability.
+    They are not matched to the selected action; report facts must label them
+    as contextual candidates.
+    """
 
     opportunity_name: str
     funder_name: str | None = None
@@ -260,7 +266,13 @@ class ClimateFinanceOpportunityRecord(BaseModel):
 
 
 class ClimateFinanceProjectRecord(BaseModel):
-    """Report-ready comparable climate project from the upstream catalogue."""
+    """
+    Report-ready comparable climate project from the upstream catalogue.
+
+    Projects are fetched by selected action and country. `action_matches`
+    is the canonical upstream rationale (action ID plus confidence) and must
+    not be replaced with a title-derived connection.
+    """
 
     project_name: str
     project_name_i18n: dict[str, str] = Field(default_factory=dict)

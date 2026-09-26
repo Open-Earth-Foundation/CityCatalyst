@@ -4,10 +4,8 @@ import logging
 from uuid import UUID
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
-from app.persistence.concept_notes.workspace import (
-    ConceptNoteWorkspaceRepository,
-    WorkspaceChapterSnapshot,
-)
+from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 
 logger = logging.getLogger(__name__)
 

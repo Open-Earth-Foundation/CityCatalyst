@@ -19,7 +19,7 @@ from app.models.cnb.concept_note_edits import (
     PlannedTextChange,
 )
 from app.persistence.concept_notes.edits import EditOperationError
-from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_session import DraftEditSession
 from app.services.cnb.edit_validation import prior_user_inputs, recent_user_inputs
 from app.services.openrouter_client import build_openrouter_client_options

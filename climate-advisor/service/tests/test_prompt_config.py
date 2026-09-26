@@ -102,7 +102,7 @@ def test_cnb_source_impact_review_is_tool_only_and_budgeted() -> None:
     prompt = config.prompts.get_prompt("cnb_source_impact_review")
     budget = config.generation.prompt_budget.cnb_source_impact
 
-    assert config.models.cnb_source_impact_reviewer.name == "openai/gpt-5.4"
+    assert config.models.cnb_source_impact_reviewer.name == "openai/gpt-6-sol"
     assert "call `select_chapters_to_update` exactly once" in prompt
     assert "return no prose" in prompt
     assert "`open_gaps`" in prompt
@@ -117,6 +117,8 @@ def test_cnb_chapter_drafting_prompt_applies_new_source_evidence() -> None:
 
     assert "`new_source_evidence` (array)" in prompt
     assert "for every item in `new_source_evidence`" in prompt
+    assert "`current_body_markdown` (string or null)" in prompt
+    assert "keep every other heading, sentence, and fact word for" in prompt
 
 
 def test_cnb_research_configuration_matches_runtime_contract() -> None:
@@ -153,7 +155,7 @@ def test_cnb_funder_identity_prompt_matches_runtime_contract() -> None:
     prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
 
     assert config.models.funder_identity.name == "openai/gpt-5.6-terra"
-    assert config.models.funder_identity.reasoning_effort == "low"
+    assert config.models.funder_identity.reasoning_effort == "medium"
     assert "`funded_projects`" in prompt_text
     assert "`canonical_funders`" in prompt_text
     assert "`project_name`" in prompt_text
@@ -260,7 +262,7 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
     budget = config.generation.prompt_budget.cnb_sources
 
     assert config.models.cnb_source_reader.name == "openai/gpt-5.6-terra"
-    assert config.models.cnb_source_reader.reasoning_effort == "low"
+    assert config.models.cnb_source_reader.reasoning_effort == "medium"
     assert config.models.cnb_source_synthesizer.name == "openai/gpt-5.6-terra"
     assert config.models.cnb_source_synthesizer.reasoning_effort == "medium"
     assert config.models.cnb_chapter_drafter.name == "openai/gpt-5.6-terra"

@@ -369,7 +369,7 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
         (
             "cnb_source_reader",
             "openai/gpt-5.6-terra",
-            "low",
+            "medium",
             QuestionReading,
             {"sections": [{"excerpts": [], "caveats": []}]},
         ),

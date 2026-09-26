@@ -27,10 +27,9 @@ from app.models.cnb.context_bundle import (
     SourceQueryResult,
 )
 from app.models.db.concept_note import ConceptNoteRun
-from app.persistence.concept_notes.workspace import (
-    WorkspaceChapterSnapshot,
-    WorkspaceGapSnapshot,
-)
+from app.persistence.concept_notes.gaps import WorkspaceGapSnapshot
+from app.persistence.concept_notes.workspace import WorkspaceConflictError
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.routes.concept_note_runs import start_concept_note_drafting
 from app.services.cnb.source_analysis import SourceAnalysisError
 from app.services.cnb.source_impact_review import RevalidationSource
@@ -211,6 +210,7 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         "Chapter 2",
     ]
     assert payloads[0]["previous_chapters"] == []
+    assert payloads[0]["current_body_markdown"] is None
     for payload in payloads:
         assert payload["run_context"]["context_bundle"]["selected_sources"] == [
             {
@@ -393,6 +393,7 @@ async def test_revalidation_redrafts_only_reviewer_selected_chapters_with_eviden
     )
 
     assert [payload["chapter"]["title"] for payload in payloads] == ["Chapter 2"]
+    assert payloads[0]["current_body_markdown"] == "Chapter 2 text"
     assert payloads[0]["new_source_evidence"] == [
         {
             "field_key": "new_stops",
@@ -410,6 +411,7 @@ async def test_revalidation_redrafts_only_reviewer_selected_chapters_with_eviden
     assert [item["chapter_id"] for item in saved] == [chapters[1].chapter_id]
     assert saved[0]["expected_revision_number"] == 3
     assert saved[0]["source_refs"] == ["Technical update"]
+    assert saved[0]["answered_gap_ids"] == {stops_gap.gap_id}
 
 
 async def test_revalidation_still_redrafts_when_a_gap_query_fails() -> None:
@@ -447,6 +449,50 @@ async def test_revalidation_still_redrafts_when_a_gap_query_fails() -> None:
 
     assert payloads[0]["new_source_evidence"] == []
     assert len(saved) == 1
+    assert saved[0]["answered_gap_ids"] == set()
+
+
+async def test_revalidation_skips_a_rejected_chapter_and_continues() -> None:
+    """A redraft rejected by storage must not block later impacted chapters."""
+    chapters = [
+        WorkspaceChapterSnapshot(
+            chapter_id=uuid4(),
+            chapter_ref=f"chapter-{number}",
+            title=f"Chapter {number}",
+            position=number - 1,
+            status="draft",
+            required=True,
+            user_locked=False,
+            body_markdown=f"Chapter {number} text",
+            revision_id=uuid4(),
+            revision_number=1,
+        )
+        for number in (1, 2)
+    ]
+    saved: list[dict[str, Any]] = []
+    service = _revalidation_service(
+        chapters,
+        selected=[1, 2],
+        query_document_fn=AsyncMock(),
+        payloads=[],
+        saved=saved,
+    )
+
+    async def save_revalidated_chapter(**kwargs: Any) -> bool:
+        if kwargs["chapter_id"] == chapters[0].chapter_id:
+            raise WorkspaceConflictError("dropped gap")
+        saved.append(kwargs)
+        return True
+
+    service._workspace.save_revalidated_chapter = save_revalidated_chapter
+
+    await service.revalidate_after_new_sources(
+        run_id=RUN_ID,
+        user_id="user-1",
+        new_sources=[RevalidationSource(source=NEW_SOURCE, units=[])],
+    )
+
+    assert [item["chapter_id"] for item in saved] == [chapters[1].chapter_id]
 
 
 async def test_recovery_marks_only_stale_running_drafts_retryable(tmp_path) -> None:

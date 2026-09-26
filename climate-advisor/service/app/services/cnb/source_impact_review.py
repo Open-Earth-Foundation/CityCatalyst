@@ -9,7 +9,7 @@ from typing import Any
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
 from app.config import Settings
 from app.models.cnb.context_bundle import SelectedSource
-from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.source_analysis import SourceUnit
 from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.concept_note_source_impact_tools import (

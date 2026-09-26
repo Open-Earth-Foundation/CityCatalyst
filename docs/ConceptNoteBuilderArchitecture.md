@@ -1523,10 +1523,20 @@ How it works:
   the chapters whose content or open gaps the source affects, and each of their
   open gaps is asked of the verified source text. Only those chapters are
   redrafted, with the cited answers, as a new revision; unaffected chapters
-  stay unchanged. Gaps the new evidence fills are resolved as
-  `evidence_update` by `system`, and previously resolved gaps that it
-  contradicts reopen. A confirmed revision is never replaced, so an affected
-  Ready chapter returns to review.
+  stay unchanged. The drafter edits the chapter's current text in place, so
+  accepted chat edits and unaffected prose survive, and a fact the new source
+  contradicts is flagged with a marker rather than overwritten. Only gaps with a
+  successful cited answer from the new source are resolved, as
+  `evidence_update` by `system`; previously resolved gaps that the evidence
+  contradicts reopen, and deferred caveats are left untouched. A redraft that
+  drops an unanswered gap, or whose markers disagree with its gap list, is
+  rejected and logged, and the remaining chapters still update. A confirmed
+  revision is never replaced, so an affected Ready chapter returns to review.
+- The impact review is a durable job in `context_summary.source_revalidation`,
+  queued atomically with the bundle commit. A worker leases it; failures stay
+  pending and the context-bundle reconciler retries them up to three times,
+  re-fetching verified source text with a service-minted token for the run
+  owner. Stale leases return to pending after one hour.
 - Evidence links are shown to the user to explain why a claim was grounded.
   They are review/audit UI only and are ignored by DOCX/PDF export.
 - Chapter-validation prompts reference evidence by one-based list position.
@@ -1883,7 +1893,7 @@ Rules:
   dropping content. For native Markdown, derives deterministic heading/block
   anchors from the stored UTF-8 bytes and partitions without inventing
   synthetic pagination.
-- Uses configured GPT-5.6 Terra readers with low reasoning and process-wide
+- Uses configured GPT-5.6 Terra readers with medium reasoning and process-wide
   concurrency no greater than three, then GPT-5.6 Terra with medium reasoning for
   final document synthesis. Both retain tool-free structured outputs through
   OpenRouter Chat Completions and omit temperature.
@@ -2562,7 +2572,7 @@ The configured prompt/model roles are:
 models:
   cnb_source_reader:
     name: openai/gpt-5.6-terra
-    reasoning_effort: low
+    reasoning_effort: medium
   cnb_source_synthesizer:
     name: openai/gpt-5.6-terra
     reasoning_effort: medium
@@ -2577,11 +2587,13 @@ prompts:
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 ```
 
-The main CNB chat uses `models.cnb_chat` (`openai/gpt-5.6-sol`) with explicit
-`reasoning_effort: medium` for its Chat Completions function-tool loop. Funding
-research and similar-project selection use Terra with medium reasoning on the
-existing Responses API path; canonical-funder identity matching uses Terra with
-low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
+The main CNB chat uses `models.cnb_chat` (`openai/gpt-6-sol`) with explicit
+`reasoning_effort: medium` for its Chat Completions function-tool loop. The
+chat-edit planner uses GPT-6 Sol with high reasoning, and the new-source impact
+reviewer uses GPT-6 Sol with medium reasoning. Funding research and
+similar-project selection use Terra with medium reasoning on the existing
+Responses API path; canonical-funder identity matching also uses Terra with
+medium reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
 
 Workspace responses combine current chapter text, exact confirmed revisions,
 structured gaps and their latest resolutions, and validation freshness. An accepted

@@ -17,6 +17,9 @@ from app.models.db.concept_note import (
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
+from app.persistence.concept_notes.source_revalidation import (
+    queue_source_revalidation,
+)
 from app.utils.concept_note_context import omit_context_identifiers
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
@@ -178,11 +181,13 @@ async def complete_build(
     optional_sources: dict[str, str],
     warnings: list[str],
     city: dict[str, Any] | None = None,
+    revalidation_upload_ids: list[UUID] | None = None,
 ) -> bool:
     """Commit only the active build's owned bundle sections.
 
     ``city`` replaces the city profile only when provided, so a failed lookup
-    keeps the last usable profile.
+    keeps the last usable profile. ``revalidation_upload_ids`` queues a durable
+    chapter revalidation job for newly analyzed sources in the same transaction.
     """
     try:
         async with session_factory() as session, session.begin():
@@ -258,6 +263,12 @@ async def complete_build(
                 run.context_summary,
                 next_progress,
             )
+            # Queue chapter revalidation atomically so a crash cannot drop it.
+            if revalidation_upload_ids:
+                run.context_summary = queue_source_revalidation(
+                    run.context_summary,
+                    revalidation_upload_ids,
+                )
             if run.workflow_step == "assembling_context":
                 run.workflow_step = "interviewing"
             run.status = "active"
@@ -386,6 +397,42 @@ async def recover_stale_builds(
             503,
             "Concept Note context storage is unavailable",
         ) from exc
+
+
+async def load_source_revalidation_inputs(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    run_id: UUID,
+    upload_ids: list[UUID],
+) -> list[tuple[ConceptNoteUploadSnapshot, SelectedSource]]:
+    """Pair still-ready uploads with their persisted analyses for a retry.
+
+    Uploads that were removed, are no longer ready, or whose analysis no longer
+    matches the stored digest are skipped; the current bundle is authoritative.
+    """
+    async with session_factory() as session:
+        uploads = list(
+            (
+                await session.scalars(
+                    select(ConceptNoteUpload).where(
+                        ConceptNoteUpload.run_id == run_id,
+                        ConceptNoteUpload.upload_id.in_(upload_ids),
+                        ConceptNoteUpload.ingest_status == "ready",
+                    )
+                )
+            ).all()
+        )
+        bundle_row = await session.get(ConceptNoteContextBundleRow, run_id)
+        bundle = normalize_bundle(
+            bundle_row.context_bundle if bundle_row is not None else None
+        )
+    sources = {source.upload_id: source for source in bundle.selected_sources}
+    inputs: list[tuple[ConceptNoteUploadSnapshot, SelectedSource]] = []
+    for upload in uploads:
+        source = sources.get(upload.upload_id)
+        if source is not None and source.sha256 == upload.markdown_sha256:
+            inputs.append((_upload_snapshot(upload), source))
+    return inputs
 
 
 async def load_query_source(

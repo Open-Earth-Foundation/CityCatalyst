@@ -386,9 +386,13 @@ CNB contracts live under `app/models/cnb`.
 
 When a new source finishes analysis, a review-only LLM call selects the chapters
 it affects, and each of their open gaps is asked of the verified source text.
-Only those chapters are redrafted with the cited answers. Each redraft appends a
+Only those chapters are redrafted with the cited answers, editing the current
+chapter text in place so accepted user edits survive. Each redraft appends a
 revision and reconciles gaps with the new evidence without replacing the last
-user-confirmed revision.
+user-confirmed revision. Only gaps backed by a cited answer close; a redraft
+that drops any other gap or mismatches its markers is rejected. The re-check is
+a durable job in `context_summary.source_revalidation`, queued with the bundle
+commit and retried by the context-bundle reconciler after failures or restarts.
 
 ## SSE Contract
 

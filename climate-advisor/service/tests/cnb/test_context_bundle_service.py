@@ -71,6 +71,11 @@ async def test_reconciler_runs_periodically_until_cancelled(monkeypatch) -> None
         "app.services.cnb.context_bundle.recover_stale_builds",
         recover_stale_builds,
     )
+    resume_source_revalidations = AsyncMock(return_value=0)
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.resume_source_revalidations",
+        resume_source_revalidations,
+    )
 
     with pytest.raises(asyncio.CancelledError):
         await run_context_bundle_reconciler(
@@ -80,6 +85,11 @@ async def test_reconciler_runs_periodically_until_cancelled(monkeypatch) -> None
 
     recover_stale_builds.assert_awaited_once()
     assert recover_stale_builds.await_args.kwargs["session_factory"] is session_factory
+    resume_source_revalidations.assert_awaited_once()
+    assert (
+        resume_source_revalidations.await_args.kwargs["session_factory"]
+        is session_factory
+    )
 
 
 @pytest.mark.asyncio
@@ -424,7 +434,8 @@ async def test_optional_source_errors_do_not_fail_source_readiness(monkeypatch) 
 
 @pytest.mark.asyncio
 async def test_source_failure_preserves_safe_diagnostics_without_source_text(
-    monkeypatch, caplog,
+    monkeypatch,
+    caplog,
 ) -> None:
     failure = SourceAnalysisError(
         "incomplete_source_coverage",
@@ -445,7 +456,10 @@ async def test_source_failure_preserves_safe_diagnostics_without_source_text(
     persist = AsyncMock(return_value=True)
     monkeypatch.setattr("app.services.cnb.context_bundle.fail_build", persist)
     assert not await service.build(
-        user_id="owner", run_id=snapshot.run_id, token="secret", snapshot=snapshot,
+        user_id="owner",
+        run_id=snapshot.run_id,
+        token="secret",
+        snapshot=snapshot,
     )
     assert persist.await_args.kwargs["error_reason"] == failure.reason
     assert persist.await_args.kwargs["error_details"] == failure.details

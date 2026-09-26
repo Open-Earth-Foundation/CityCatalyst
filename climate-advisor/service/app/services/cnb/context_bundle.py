@@ -17,14 +17,18 @@ from app.persistence.concept_notes.context_bundle import (
     begin_build,
     complete_build,
     fail_build,
+    load_source_revalidation_inputs,
     recover_stale_builds,
 )
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
-from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
-from app.services.cnb.chapter_drafting import (
-    ConceptNoteChapterDraftService,
-    schedule_chapter_revalidation,
+from app.persistence.concept_notes.source_revalidation import (
+    claim_source_revalidation,
+    finish_source_revalidation,
+    list_pending_source_revalidations,
+    recover_stale_source_revalidations,
 )
+from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
+from app.services.cnb.chapter_drafting import ConceptNoteChapterDraftService
 from app.services.cnb.source_impact_review import RevalidationSource
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
@@ -48,6 +52,7 @@ from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 _BACKGROUND_BUILDS: set[asyncio.Task[bool]] = set()
+_BACKGROUND_REVALIDATIONS: set[asyncio.Task[bool]] = set()
 CONTEXT_BUNDLE_RECONCILE_INTERVAL_SECONDS = 300
 CONTEXT_BUNDLE_STALE_AFTER = timedelta(hours=1)
 
@@ -66,14 +71,18 @@ class ContextBundleService:
             verify_source_artifact
         ),
         cc_client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
-        schedule_revalidation_fn: Callable[..., None] | None = None,
+        revalidate_fn: Callable[..., Awaitable[bool]] | None = None,
     ) -> None:
-        """Store dependencies so background resources are created inside the task."""
+        """Store dependencies so background resources are created inside the task.
+
+        ``revalidate_fn`` redrafts chapters affected by new sources and returns
+        whether the pass succeeded; without it no revalidation job is queued.
+        """
         self.session_factory = session_factory
         self.analyze_document_fn = analyze_document_fn
         self.verify_source_artifact_fn = verify_source_artifact_fn
         self.cc_client_factory = cc_client_factory
-        self.schedule_revalidation_fn = schedule_revalidation_fn
+        self.revalidate_fn = revalidate_fn
 
     async def begin(
         self,
@@ -212,17 +221,18 @@ class ContextBundleService:
                     hiap=hiap,
                     optional_sources=optional_statuses,
                     warnings=warnings,
+                    revalidation_upload_ids=(
+                        [item.source.upload_id for item in new_sources]
+                        if self.revalidate_fn is not None
+                        else None
+                    ),
                 )
-                # Hand the verified new source text to the chapter re-check.
-                if (
-                    completed
-                    and new_sources
-                    and self.schedule_revalidation_fn is not None
-                ):
-                    self.schedule_revalidation_fn(
+                # Start the persisted job now, reusing the verified source text.
+                if completed and new_sources and self.revalidate_fn is not None:
+                    schedule_source_revalidation(
+                        service=self,
                         run_id=run_id,
-                        user_id=user_id,
-                        new_sources=new_sources,
+                        preloaded={item.source.upload_id: item for item in new_sources},
                     )
                 finish_workflow_trace(span, {"completed": completed}, ok=completed)
                 return completed
@@ -275,6 +285,37 @@ class ContextBundleService:
         contract_version: str,
     ) -> RevalidationSource:
         """Re-fetch, revalidate, and fully analyze one ready upload."""
+        source_units = await self._fetch_verified_units(
+            upload=upload,
+            token=token,
+            cc_client=cc_client,
+        )
+        # Analyze only the verified source units under the shared reader limit.
+        analysis = await self.analyze_document_fn(
+            upload_id=upload.upload_id,
+            filename=upload.filename,
+            source_label=upload.source_label,
+            sha256=upload.markdown_sha256,
+            source_format=upload.source_format,
+            pages=source_units,
+            settings=analysis_settings,
+            reader_limit=reader_limit,
+        )
+        return RevalidationSource(
+            source=analysis.model_copy(
+                update={"analysis_contract_version": contract_version}
+            ),
+            units=source_units,
+        )
+
+    async def _fetch_verified_units(
+        self,
+        *,
+        upload: ConceptNoteUploadSnapshot,
+        token: str,
+        cc_client: CityCatalystClient,
+    ) -> list[SourceUnit]:
+        """Fetch one ready upload through CityCatalyst and verify its identity."""
         # Require the immutable metadata needed for the declared source format.
         if (
             upload.markdown_s3_key is None
@@ -296,30 +337,99 @@ class ContextBundleService:
                 "source_fetch_failed",
                 "Ready upload could not be fetched from CityCatalyst",
             ) from exc
-        source_units = self.verify_source_artifact_fn(
+        return self.verify_source_artifact_fn(
             artifact=artifact,
             markdown_s3_key=upload.markdown_s3_key,
             sha256=upload.markdown_sha256,
             source_format=upload.source_format,
             page_count=upload.page_count,
         )
-        # Analyze only the verified source units under the shared reader limit.
-        analysis = await self.analyze_document_fn(
-            upload_id=upload.upload_id,
-            filename=upload.filename,
-            source_label=upload.source_label,
-            sha256=upload.markdown_sha256,
-            source_format=upload.source_format,
-            pages=source_units,
-            settings=analysis_settings,
-            reader_limit=reader_limit,
+
+    async def run_source_revalidation(
+        self,
+        *,
+        run_id: UUID,
+        preloaded: dict[UUID, RevalidationSource] | None = None,
+    ) -> bool:
+        """Claim and run one persisted chapter-revalidation job.
+
+        ``preloaded`` holds verified source text from the build that queued the
+        job; any other queued upload is re-fetched with a service-minted token
+        for the run owner. The lease is always released, and a failed pass
+        stays queued for the reconciler to retry.
+        """
+        if self.revalidate_fn is None:
+            return False
+        claim = await claim_source_revalidation(
+            session_factory=self.session_factory,
+            run_id=run_id,
         )
-        return RevalidationSource(
-            source=analysis.model_copy(
-                update={"analysis_contract_version": contract_version}
-            ),
-            units=source_units,
-        )
+        if claim is None:
+            return False
+
+        succeeded = False
+        cc_client: CityCatalystClient | None = None
+        try:
+            # Reuse this build's verified text; re-fetch uploads it did not cover.
+            preloaded = preloaded or {}
+            sources = [
+                preloaded[upload_id]
+                for upload_id in claim.upload_ids
+                if upload_id in preloaded
+            ]
+            missing = [
+                upload_id
+                for upload_id in claim.upload_ids
+                if upload_id not in preloaded
+            ]
+            if missing:
+                inputs = await load_source_revalidation_inputs(
+                    session_factory=self.session_factory,
+                    run_id=run_id,
+                    upload_ids=missing,
+                )
+                if inputs:
+                    cc_client = self.cc_client_factory()
+                    token, _ = await cc_client.refresh_token(claim.user_id)
+                    for upload, source in inputs:
+                        units = await self._fetch_verified_units(
+                            upload=upload,
+                            token=token,
+                            cc_client=cc_client,
+                        )
+                        sources.append(RevalidationSource(source=source, units=units))
+
+            # Uploads removed since queueing leave nothing to revalidate.
+            succeeded = (
+                await self.revalidate_fn(
+                    run_id=run_id,
+                    user_id=claim.user_id,
+                    new_sources=sources,
+                )
+                if sources
+                else True
+            )
+        except Exception:
+            logger.exception(
+                "Concept Note source revalidation job failed run_id=%s", run_id
+            )
+        finally:
+            if cc_client is not None:
+                await cc_client.close()
+            # A failed release leaves the lease for stale-job recovery.
+            try:
+                await finish_source_revalidation(
+                    session_factory=self.session_factory,
+                    run_id=run_id,
+                    upload_ids=claim.upload_ids,
+                    succeeded=succeeded,
+                )
+            except Exception:
+                logger.exception(
+                    "Failed to release Concept Note source revalidation run_id=%s",
+                    run_id,
+                )
+        return succeeded
 
     async def _load_optional_context(
         self,
@@ -547,6 +657,36 @@ async def run_context_bundle_reconciler(
                 )
         except Exception:
             logger.exception("Concept Note context-bundle reconciliation failed")
+        try:
+            await resume_source_revalidations(
+                session_factory=get_session_factory(),
+                stale_before=datetime.now(timezone.utc) - stale_after,
+            )
+        except Exception:
+            logger.exception("Concept Note source-revalidation reconciliation failed")
+
+
+async def resume_source_revalidations(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    stale_before: datetime,
+) -> int:
+    """Release stale revalidation leases and schedule every pending job."""
+    recovered = await recover_stale_source_revalidations(
+        session_factory=session_factory,
+        stale_before=stale_before,
+    )
+    if recovered:
+        logger.warning(
+            "Recovered %s interrupted Concept Note source revalidations", recovered
+        )
+    pending = await list_pending_source_revalidations(session_factory=session_factory)
+    service = get_context_bundle_service() if pending else None
+    if service is None:
+        return 0
+    for run_id in pending:
+        schedule_source_revalidation(service=service, run_id=run_id)
+    return len(pending)
 
 
 def get_context_bundle_service() -> ContextBundleService | None:
@@ -554,22 +694,46 @@ def get_context_bundle_service() -> ContextBundleService | None:
     try:
         return ContextBundleService(
             get_session_factory(),
-            schedule_revalidation_fn=_schedule_source_revalidation,
+            revalidate_fn=_revalidate_with_chapter_service,
         )
     except Exception:
         logger.exception("Concept Note context-bundle storage is unavailable")
         return None
 
 
-def _schedule_source_revalidation(
+def schedule_source_revalidation(
+    *,
+    service: ContextBundleService,
+    run_id: UUID,
+    preloaded: dict[UUID, RevalidationSource] | None = None,
+) -> None:
+    """Retain one background revalidation job until it terminates."""
+    task = asyncio.create_task(
+        service.run_source_revalidation(run_id=run_id, preloaded=preloaded),
+        context=Context(),
+    )
+    _BACKGROUND_REVALIDATIONS.add(task)
+
+    def release(completed: asyncio.Task[bool]) -> None:
+        _BACKGROUND_REVALIDATIONS.discard(completed)
+        try:
+            completed.result()
+        except Exception:
+            logger.exception("Concept Note background source revalidation crashed")
+
+    task.add_done_callback(release)
+
+
+async def _revalidate_with_chapter_service(
     *,
     run_id: UUID,
     user_id: str,
     new_sources: list[RevalidationSource],
-) -> None:
-    """Queue source-impact revalidation with production database dependencies."""
-    schedule_chapter_revalidation(
-        service=ConceptNoteChapterDraftService(get_session_factory()),
+) -> bool:
+    """Run source-impact revalidation with production database dependencies."""
+    return await ConceptNoteChapterDraftService(
+        get_session_factory()
+    ).revalidate_after_new_sources(
         run_id=run_id,
         user_id=user_id,
         new_sources=new_sources,

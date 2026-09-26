@@ -34,14 +34,16 @@ from app.models.db.concept_note import (
 )
 from app.models.db.concept_note import ConceptNoteRun
 from app.persistence.concept_notes.context_bundle import normalize_bundle
+from app.persistence.concept_notes.gaps import WorkspaceGapSnapshot
 from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
-    WorkspaceChapterSnapshot,
     WorkspaceConflictError,
-    WorkspaceGapSnapshot,
     WorkspaceTemplateChapter,
-    WorkspaceValidationSnapshot,
     normalize_template_chapters,
+)
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_validation import (
+    WorkspaceValidationSnapshot,
 )
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
@@ -66,7 +68,6 @@ from app.config import Settings, get_settings
 logger = logging.getLogger(__name__)
 ChapterGenerator = Callable[[dict[str, Any]], Awaitable[ConceptNoteChapterDraftOutput]]
 _BACKGROUND_DRAFTS: set[asyncio.Task[None]] = set()
-_BACKGROUND_REVALIDATIONS: set[asyncio.Task[None]] = set()
 CHAPTER_DRAFT_RECONCILE_INTERVAL_SECONDS = 300
 CHAPTER_DRAFT_STALE_AFTER = timedelta(hours=1)
 
@@ -304,8 +305,12 @@ class ConceptNoteChapterDraftService:
         run_id: UUID,
         user_id: str,
         new_sources: list[RevalidationSource],
-    ) -> None:
-        """Redraft only chapters a reviewer ties to the new sources, with evidence."""
+    ) -> bool:
+        """Redraft only chapters a reviewer ties to the new sources, with evidence.
+
+        Returns False when the pass failed and should be retried; rejected
+        chapter redrafts are logged and count as handled.
+        """
         try:
             # Snapshot the rebuilt bundle and the persisted chapters.
             run = await self._load_owned_run(run_id, user_id)
@@ -339,7 +344,7 @@ class ConceptNoteChapterDraftService:
                 and chapter.revision_number is not None
             ]
             if not impacted:
-                return
+                return True
 
             # Ask each new source every open gap question before redrafting.
             evidence = await self._gather_gap_evidence(impacted, new_sources)
@@ -347,6 +352,7 @@ class ConceptNoteChapterDraftService:
 
             # Each proposal appends a revision and leaves confirmed text immutable.
             for current in impacted:
+                answered = [gap for gap in current.gaps if gap.gap_id in evidence]
                 generated = await self._generate_chapter(
                     _build_chapter_input(
                         application_context=application_context,
@@ -354,25 +360,33 @@ class ConceptNoteChapterDraftService:
                         current=current,
                         template_chapter=template_by_ref.get(current.chapter_ref or ""),
                         chapters=chapters,
-                        new_source_evidence=[
-                            evidence[gap.gap_id]
-                            for gap in current.gaps
-                            if gap.gap_id in evidence
-                        ],
+                        new_source_evidence=[evidence[gap.gap_id] for gap in answered],
                     )
                 )
                 generated = _sanitize_generated_output(generated, run_context)
-                await self._workspace.save_revalidated_chapter(
-                    chapter_id=current.chapter_id,
-                    expected_revision_number=current.revision_number,
-                    generated=generated,
-                    source_refs=source_refs,
-                )
+                # Only gaps with cited new-source answers may close. A rejected
+                # redraft is logged and skipped so later chapters still update.
+                try:
+                    await self._workspace.save_revalidated_chapter(
+                        chapter_id=current.chapter_id,
+                        expected_revision_number=current.revision_number,
+                        generated=generated,
+                        source_refs=source_refs,
+                        answered_gap_ids={gap.gap_id for gap in answered},
+                    )
+                except WorkspaceConflictError as exc:
+                    logger.warning(
+                        "Concept Note source revalidation rejected chapter_id=%s reason=%s",
+                        current.chapter_id,
+                        exc,
+                    )
+            return True
         except Exception:
             logger.exception(
                 "Concept Note source revalidation failed run_id=%s",
                 run_id,
             )
+            return False
 
     async def _gather_gap_evidence(
         self,
@@ -714,33 +728,6 @@ def schedule_chapter_drafting(
     task.add_done_callback(release)
 
 
-def schedule_chapter_revalidation(
-    *,
-    service: ConceptNoteChapterDraftService,
-    run_id: UUID,
-    user_id: str,
-    new_sources: list[RevalidationSource],
-) -> None:
-    """Retain one source-impact revalidation worker until it terminates."""
-    task = asyncio.create_task(
-        service.revalidate_after_new_sources(
-            run_id=run_id,
-            user_id=user_id,
-            new_sources=new_sources,
-        )
-    )
-    _BACKGROUND_REVALIDATIONS.add(task)
-
-    def release(completed: asyncio.Task[None]) -> None:
-        _BACKGROUND_REVALIDATIONS.discard(completed)
-        try:
-            completed.result()
-        except Exception:
-            logger.exception("Concept Note background source revalidation crashed")
-
-    task.add_done_callback(release)
-
-
 async def recover_stale_drafts(
     *,
     session_factory: async_sessionmaker[AsyncSession],
@@ -857,7 +844,11 @@ def _build_chapter_input(
     chapters: list[WorkspaceChapterSnapshot],
     new_source_evidence: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Build the exact prompt payload, including every earlier chapter body."""
+    """Build the exact prompt payload, including every earlier chapter body.
+
+    ``current_body_markdown`` carries the chapter's latest revision so a
+    source-driven redraft preserves accepted edits and unaffected prose.
+    """
     application_payload = application_context.model_dump(mode="json")
     if application_payload.get("template"):
         application_payload["template"].pop("chapter_schema", None)
@@ -881,6 +872,8 @@ def _build_chapter_input(
                 "position": current.position,
                 "required": current.required,
             },
+            # Null on a first draft; a redraft edits this text instead of rewriting.
+            "current_body_markdown": current.body_markdown,
             "resolved_information": [
                 {
                     "field_key": gap.field_key,

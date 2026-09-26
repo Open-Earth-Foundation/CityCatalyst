@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 from uuid import uuid4
 
 from app.models.cnb.context_bundle import SelectedSource
-from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.source_impact_review import (
     ConceptNoteSourceImpactReviewer,
     build_source_impact_review_partitions,

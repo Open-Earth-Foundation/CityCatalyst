@@ -309,6 +309,7 @@ async def test_source_revalidation_proposes_revisions_and_preserves_confirmed_te
         expected_revision_number=1,
         generated=ConceptNoteChapterDraftOutput(body_markdown=answered_body),
         source_refs=["implementation-plan.pdf"],
+        answered_gap_ids={GAP_ID},
     )
     assert changed is True
     [filled] = await workspace.list_chapters(run_id=RUN_ID)
@@ -336,6 +337,7 @@ async def test_source_revalidation_proposes_revisions_and_preserves_confirmed_te
             ),
         ),
         source_refs=["New implementation plan"],
+        answered_gap_ids=set(),
     )
     assert changed is True
     [proposal] = await workspace.list_chapters(run_id=RUN_ID)
@@ -362,6 +364,7 @@ async def test_source_revalidation_proposes_revisions_and_preserves_confirmed_te
             ],
         ),
         source_refs=["Updated implementation plan"],
+        answered_gap_ids=set(),
     )
     assert changed is True
     [reopened] = await workspace.list_chapters(run_id=RUN_ID)
@@ -377,7 +380,76 @@ async def test_source_revalidation_proposes_revisions_and_preserves_confirmed_te
             body_markdown="## Implementation\n\nStale source rewrite.",
         ),
         source_refs=["Stale source"],
+        answered_gap_ids=set(),
     )
     assert stale is False
     [unchanged] = await workspace.list_chapters(run_id=RUN_ID)
     assert unchanged.revision_number == 4
+
+
+async def test_source_revalidation_rejects_dropping_an_unanswered_gap(
+    workspace,
+) -> None:
+    """A failed or capped evidence query must not silently resolve its gap."""
+    with pytest.raises(WorkspaceConflictError, match="did not answer"):
+        await workspace.save_revalidated_chapter(
+            chapter_id=CHAPTER_ID,
+            expected_revision_number=1,
+            generated=ConceptNoteChapterDraftOutput(
+                body_markdown="## Implementation\n\nA partner will lead delivery."
+            ),
+            source_refs=["implementation-plan.pdf"],
+            answered_gap_ids=set(),
+        )
+
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.revision_number == 1
+    assert chapter.gaps[0].state == "open"
+    assert chapter.gaps[0].resolution is None
+
+
+async def test_source_revalidation_keeps_deferred_caveat_gaps(workspace) -> None:
+    """Caveats have no marker by design, so their absence is not an answer."""
+    async with workspace._session_factory() as session, session.begin():
+        gap = await session.get(ConceptNoteGap, GAP_ID)
+        assert gap is not None
+        gap.status = "caveat"
+
+    changed = await workspace.save_revalidated_chapter(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=1,
+        generated=ConceptNoteChapterDraftOutput(
+            body_markdown=(
+                "## Implementation\n\nThe lead partner is not yet confirmed and "
+                "remains a delivery limitation."
+            )
+        ),
+        source_refs=["implementation-plan.pdf"],
+        answered_gap_ids=set(),
+    )
+
+    assert changed is True
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.revision_number == 2
+    assert chapter.gaps[0].state == "caveat"
+    assert chapter.gaps[0].resolution is None
+
+
+async def test_source_revalidation_rejects_marker_gap_mismatch(workspace) -> None:
+    """Every Information-needed marker must have a matching structured gap."""
+    with pytest.raises(WorkspaceConflictError, match="markers must match"):
+        await workspace.save_revalidated_chapter(
+            chapter_id=CHAPTER_ID,
+            expected_revision_number=1,
+            generated=ConceptNoteChapterDraftOutput(
+                body_markdown=(
+                    "## Implementation\n\n[Information needed: Confirm the lead "
+                    "partner.]"
+                ),
+            ),
+            source_refs=["implementation-plan.pdf"],
+            answered_gap_ids=set(),
+        )
+
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.revision_number == 1

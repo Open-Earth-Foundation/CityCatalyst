@@ -61,7 +61,8 @@ interface ConceptNoteChatPanelProps {
   onDraftOverviewComplete?: () => void;
   /** Files added after drafting are in context and not yet checked by Clima. */
   sourceReviewPending?: boolean;
-  onSourceReviewComplete?: () => void;
+  /** Refreshes the draft; may return the refetch to wait for. */
+  onSourceReviewComplete?: () => unknown;
   activeTab?: "draft" | "structure" | "context";
   suggestionRevision?: string;
   hasDocument?: boolean;
@@ -232,6 +233,8 @@ export function ConceptNoteChatPanel({
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const { formRef, onKeyDown: submitOnEnter } = useEnterSubmit();
+  const requestedSourceReviewThreadRef = useRef<string | null>(null);
+  const [sourceReviewRound, setSourceReviewRound] = useState(0);
   const {
     error: chatError,
     historyLoading,
@@ -249,7 +252,17 @@ export function ConceptNoteChatPanel({
     editScope,
     onProposal: edits.loadProposal,
     onDraftOverviewComplete,
-    onSourceReviewComplete,
+    onSourceReviewComplete: (answered) => {
+      void (async () => {
+        await onSourceReviewComplete?.();
+        // Once the refreshed draft is in, a finished review lets files that
+        // reached Clima meanwhile get their own turn; an unavailable one keeps
+        // the guard so it cannot loop.
+        if (!answered) return;
+        requestedSourceReviewThreadRef.current = null;
+        setSourceReviewRound((round) => round + 1);
+      })();
+    },
   });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const followLatestRef = useRef(true);
@@ -262,7 +275,6 @@ export function ConceptNoteChatPanel({
   // Typing stays open while Clima responds; only sending waits for it.
   const composerDisabled = contextBlocked || !threadId;
   const requestedOverviewThreadRef = useRef<string | null>(null);
-  const requestedSourceReviewThreadRef = useRef<string | null>(null);
 
   // Ask Clima once for the drafting overview; the service claims it per build.
   useEffect(() => {
@@ -298,6 +310,7 @@ export function ConceptNoteChatPanel({
     draftOverviewPending,
     requestSourceReview,
     sourceReviewPending,
+    sourceReviewRound,
     threadId,
   ]);
 

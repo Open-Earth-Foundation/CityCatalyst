@@ -1,11 +1,13 @@
 """Hidden chat turn that checks files uploaded after drafting against open gaps.
 
-Uploading a file to a drafted note rebuilds the context bundle but leaves the
-draft untouched. The CNB frontend requests this turn once the new files are in
-the bundle; Clima then checks the open gaps against them and, when the turn
-carries an edit scope, proposes reviewable edits for the gaps they answer.
-The service owns the request text, and each upload is reviewed at most once:
-the claim records reviewed uploads on the run, and a failed turn releases them.
+Uploading a file to a drafted note rebuilds the context bundle and queues
+source revalidation, which redrafts the chapters the file affects and closes
+the gaps it answers. This turn waits until that job has finished, so it reads
+the updated chapters: Clima reports the gaps the files already filled and, when
+the turn carries an edit scope, proposes reviewable edits for open gaps they
+answer. The service owns the request text, and each upload is reviewed at most
+once: the claim records reviewed uploads on the run, and a turn that fails
+before proposing anything releases them.
 """
 
 from __future__ import annotations
@@ -23,6 +25,7 @@ from app.models.db.concept_note import (
     ConceptNoteUpload,
 )
 from app.persistence.concept_notes.context_bundle import normalize_bundle
+from app.persistence.concept_notes.source_revalidation import SOURCE_REVALIDATION_KEY
 from app.services.thread_service import ThreadService
 from app.utils.concept_note_context import extract_concept_note_run_id
 from fastapi import HTTPException
@@ -85,7 +88,8 @@ def build_source_review_content(sources: list[NewSource]) -> str:
     return (
         f"{SOURCE_REVIEW_REQUEST_MARKER}\n"
         f"New files were uploaded after this concept note was drafted: {files}. "
-        "Check the open missing-information gaps against these files. Where a file "
+        "Report the gaps these files already filled, then check the open "
+        "missing-information gaps against these files. Where a file "
         "supplies a missing fact, add it to the chapter that asks for it and cite "
         "the file. Change nothing the new files do not support."
     )
@@ -268,11 +272,21 @@ async def _thread_run(
 
 
 def _reviewable_since(run: ConceptNoteRun) -> datetime | None:
-    """Return when the finished draft began, or None while nothing is reviewable."""
+    """Return when the finished draft began, or None while nothing is reviewable.
+
+    A queued or running source revalidation is still changing the chapters, so
+    the review waits for it; a job that gave up no longer blocks the review.
+    """
     summary = run.context_summary if isinstance(run.context_summary, dict) else {}
     draft = summary.get("draft_document") or {}
     bundle_progress = summary.get("context_bundle") or {}
     if draft.get("status") != "complete" or bundle_progress.get("status") != "ready":
+        return None
+    revalidation = summary.get(SOURCE_REVALIDATION_KEY)
+    if isinstance(revalidation, dict) and revalidation.get("status") in {
+        "pending",
+        "running",
+    }:
         return None
     return _parse_time(draft.get("started_at"))
 

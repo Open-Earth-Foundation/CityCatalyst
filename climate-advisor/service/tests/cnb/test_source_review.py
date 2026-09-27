@@ -1,7 +1,7 @@
 """Verify the hidden turn that reviews files uploaded after drafting."""
 
 from datetime import UTC, datetime, timedelta
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 from uuid import uuid4
 
 import httpx
@@ -17,6 +17,7 @@ from app.models.db.concept_note import (
     ConceptNoteUpload,
 )
 from app.models.db.thread import Thread
+from app.models.requests import MessageCreateRequest
 from app.routes import messages
 from app.services.cnb.source_review import (
     SOURCE_REVIEW_REQUEST_MARKER,
@@ -24,6 +25,8 @@ from app.services.cnb.source_review import (
     release_source_review,
     source_review_instructions,
 )
+from app.utils.chat_workflow_context import ChatWorkflowContext
+from app.utils.streaming_handler import StreamingHandler
 from fastapi import FastAPI
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
@@ -202,6 +205,9 @@ async def test_review_request_is_server_owned_text_naming_the_new_file(
     [
         {"draft_document": {"status": "running", "started_at": DRAFTED_AT.isoformat()}},
         {"context_bundle": {"status": "building"}},
+        # Source revalidation is still redrafting chapters from the new file.
+        {"source_revalidation": {"status": "pending", "upload_ids": [], "attempts": 0}},
+        {"source_revalidation": {"status": "running", "upload_ids": [], "attempts": 1}},
         # A redraft after the upload already used the file.
         {
             "draft_document": {
@@ -219,6 +225,18 @@ async def test_nothing_is_pending_without_a_newer_file_on_a_finished_draft(
         run = await session.get(ConceptNoteRun, run_id)
         run.context_summary = {**run.context_summary, **summary_update}
     assert not await load_source_review_pending(factory, await _run(factory, run_id))
+
+
+@pytest.mark.asyncio
+async def test_a_revalidation_that_gave_up_no_longer_blocks_the_review(review_api):
+    _client, factory, run_id, _thread_id, _plan, _handler = review_api
+    async with factory() as session, session.begin():
+        run = await session.get(ConceptNoteRun, run_id)
+        run.context_summary = {
+            **run.context_summary,
+            "source_revalidation": {"status": "failed", "upload_ids": [], "attempts": 3},
+        }
+    assert await load_source_review_pending(factory, await _run(factory, run_id))
 
 
 @pytest.mark.asyncio
@@ -242,3 +260,55 @@ def test_turn_instructions_extend_the_chat_prompt():
     instructions = source_review_instructions(prompts)
     assert instructions.startswith(prompts.compose_prompt("cnb_chat"))
     assert prompts.get_prompt("cnb_source_review") in instructions
+
+
+async def _fail_review_stream(tool_invocations: list[dict]) -> AsyncMock:
+    """Stream a source review turn that fails, and return the release mock."""
+    run_id, upload_id = uuid4(), uuid4()
+    handler = StreamingHandler(
+        thread_id=str(uuid4()),
+        user_id="owner",
+        session_factory=MagicMock(),
+        source_review_claim=(run_id, (upload_id,)),
+    )
+    handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(run_id))
+    handler.tool_invocations = tool_invocations
+    release = AsyncMock()
+    with (
+        patch.object(
+            handler,
+            "_load_conversation_history",
+            new=AsyncMock(side_effect=RuntimeError("stream failed")),
+        ),
+        patch("app.utils.streaming_handler.release_source_review", new=release),
+    ):
+        async for _event in handler._stream_response_with_mlflow(
+            payload=MessageCreateRequest(user_id="owner", content="review"),
+            history_warning=None,
+            req_id="req",
+            settings=get_settings(),
+            started_at=0.0,
+        ):
+            pass
+    return release
+
+
+@pytest.mark.asyncio
+async def test_a_failed_review_without_a_proposal_releases_its_uploads():
+    release = await _fail_review_stream([])
+    release.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_a_review_that_already_proposed_keeps_its_claim():
+    # Releasing would let a reload start a second, duplicate proposal.
+    release = await _fail_review_stream(
+        [
+            {
+                "name": "concept_note_edit_propose",
+                "status": "success",
+                "result_json": {"success": True, "data": {"status": "proposed"}},
+            }
+        ]
+    )
+    release.assert_not_awaited()

@@ -33,7 +33,8 @@ interface UseConceptNoteChatOptions {
   editScope?: EditScope;
   onProposal?: (proposalId: string) => Promise<void>;
   onDraftOverviewComplete?: () => void;
-  onSourceReviewComplete?: () => void;
+  /** `answered` is false when another tab or visit already ran the review. */
+  onSourceReviewComplete?: (answered: boolean) => void;
 }
 
 interface ConceptNoteChatController {
@@ -69,9 +70,12 @@ export function useConceptNoteChat({
   // Hidden turns keep their own label instead of the request-based stages.
   const hiddenTurnRef = useRef<HiddenTurn | null>(null);
 
-  function completeHiddenTurn(turn: HiddenTurn | null): void {
+  function completeHiddenTurn(
+    turn: HiddenTurn | null,
+    answered: boolean,
+  ): void {
     if (turn === "draft_overview") onDraftOverviewComplete?.();
-    if (turn === "source_review") onSourceReviewComplete?.();
+    if (turn === "source_review") onSourceReviewComplete?.(answered);
   }
 
   const { startStream, stopStream } = useSSEStream({
@@ -132,7 +136,7 @@ export function useConceptNoteChat({
     },
     onComplete: () => {
       // Refresh the draft so the consumed overview or review stops pending.
-      completeHiddenTurn(hiddenTurnRef.current);
+      completeHiddenTurn(hiddenTurnRef.current, true);
       hiddenTurnRef.current = null;
       setReasoning([]);
       assistantMessageIdRef.current = null;
@@ -143,7 +147,7 @@ export function useConceptNoteChat({
       const hiddenTurn = hiddenTurnRef.current;
       const hiddenTurnUnavailable =
         hiddenTurn !== null && code === HIDDEN_TURN_UNAVAILABLE[hiddenTurn];
-      if (hiddenTurnUnavailable) completeHiddenTurn(hiddenTurn);
+      if (hiddenTurnUnavailable) completeHiddenTurn(hiddenTurn, false);
       hiddenTurnRef.current = null;
       setReasoning([]);
       const assistantMessageId = assistantMessageIdRef.current;

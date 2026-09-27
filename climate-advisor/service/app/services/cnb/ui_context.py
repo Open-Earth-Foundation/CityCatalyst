@@ -107,17 +107,24 @@ def build_gap_list(
                 continue
             if severity is not None and gap.severity != severity:
                 continue
-            gaps.append(
-                {
-                    "gap": handles[gap.gap_id],
-                    "chapter_position": chapter.position,
-                    "chapter": chapter.title,
-                    "question": gap.question,
-                    "why_asking": gap.why_asking,
-                    "severity": gap.severity,
-                    "state": gap.state,
-                }
-            )
+            item = {
+                "gap": handles[gap.gap_id],
+                "chapter_position": chapter.position,
+                "chapter": chapter.title,
+                "question": gap.question,
+                "why_asking": gap.why_asking,
+                "severity": gap.severity,
+                "state": gap.state,
+            }
+            # Name the files whose evidence filled a gap during source revalidation.
+            resolution = gap.resolution
+            if (
+                gap.state == "resolved"
+                and resolution is not None
+                and resolution.action == "evidence_update"
+            ):
+                item["filled_from"] = resolution.source_refs
+            gaps.append(item)
     return {
         "gaps": gaps,
         "open_total": sum(

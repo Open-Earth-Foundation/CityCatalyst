@@ -504,7 +504,7 @@ export function ConceptNoteWorkspace({
               draftOverviewPending={Boolean(draft?.overview_pending)}
               onDraftOverviewComplete={() => void refetchDraft()}
               sourceReviewPending={Boolean(draft?.source_review_pending)}
-              onSourceReviewComplete={() => void refetchDraft()}
+              onSourceReviewComplete={() => refetchDraft()}
               lng={lng}
               onOpenContext={() => {
                 setTab("context");

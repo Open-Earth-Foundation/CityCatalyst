@@ -27,6 +27,8 @@ import {
 } from "@/components/ConceptNoteWiringHarness/utils";
 
 const REFRESH_ON_RETURN_MS = 10_000;
+const CONTEXT_CATCH_UP_POLL_MS = 4_000;
+const CONTEXT_CATCH_UP_MAX_POLL_MS = 30_000;
 
 interface WorkspaceDataOptions {
   cityId: string;
@@ -297,6 +299,29 @@ export function useConceptNoteWorkspaceData({
       runFailed ||
       (contextState === "processing" && !isUploadActive),
   });
+
+  // The run stream stops at the first snapshot without a rebuild, so it can
+  // close while another file is still processing or before a finished file's
+  // rebuild starts. Until the context catches up, poll the run with backoff.
+  const waitingForContext =
+    contextState === "processing" &&
+    !isUploadActive &&
+    bundle.status !== "building" &&
+    !runFailed;
+  useEffect(() => {
+    if (!waitingForContext) return;
+    let delay = CONTEXT_CATCH_UP_POLL_MS;
+    let timer: number;
+    function poll(): void {
+      timer = window.setTimeout(() => {
+        void refetchRun();
+        delay = Math.min(delay * 2, CONTEXT_CATCH_UP_MAX_POLL_MS);
+        poll();
+      }, delay);
+    }
+    poll();
+    return () => window.clearTimeout(timer);
+  }, [waitingForContext, refetchRun]);
 
   async function uploadSource(file: File): Promise<void> {
     setUploadError(null);

@@ -193,12 +193,17 @@ panel's Start drafting button. Dismissed guidance stays dismissed. Completion
 guidance clears when drafting resumes. Draft progress uses workspace events, and
 finishing the chat overview refreshes the draft's consumed-overview state.
 
-Files uploaded after drafting began do not change the draft by themselves. Once
-they are in a ready context bundle, `GET /draft` reports `source_review_pending`
-and the chat starts one hidden source review turn (after any pending overview):
-Clima reads the open gaps with `concept_note_gaps`, queries the new files, and
-proposes reviewable edits for the gaps they answer. Each upload is reviewed once;
-the reviewed IDs live in `context_summary.source_review.reviewed_upload_ids`.
+Files uploaded after drafting began first go through source revalidation (see
+below), which redrafts the chapters they affect and closes the gaps their
+evidence answers. Once they are in a ready context bundle and no revalidation
+job is pending or running, `GET /draft` reports `source_review_pending` and the
+chat starts one hidden source review turn (after any pending overview): Clima
+reads the gaps with `concept_note_gaps` (gaps revalidation filled name the file
+in `filled_from`), reports them, queries the new files for the remaining open
+gaps, and proposes reviewable edits for the ones they answer. Each upload is
+reviewed once; the reviewed IDs live in
+`context_summary.source_review.reviewed_upload_ids`. A turn that fails before
+creating a proposal releases its uploads for another try.
 
 ### Implemented chat revision boundary (CC-732)
 

@@ -14,7 +14,7 @@ from app.tools.concept_note_gap_tools import build_concept_note_gap_tools
 START = datetime(2026, 9, 25, tzinfo=UTC)
 
 
-def gap(minute, question, *, severity="critical", state="open"):
+def gap(minute, question, *, severity="critical", state="open", resolution=None):
     return SimpleNamespace(
         gap_id=uuid4(),
         created_at=START + timedelta(minutes=minute),
@@ -22,6 +22,7 @@ def gap(minute, question, *, severity="critical", state="open"):
         why_asking=f"Needed for {question}",
         severity=severity,
         state=state,
+        resolution=resolution,
     )
 
 
@@ -80,6 +81,25 @@ def test_filters_keep_the_same_handles():
     ]
     # Totals describe the whole note, not the filtered slice.
     assert political["open_total"] == 3
+
+
+def test_closed_gaps_name_the_file_whose_evidence_filled_them():
+    filled = SimpleNamespace(action="evidence_update", source_refs=["plan.pdf"])
+    answered = SimpleNamespace(action="answer", source_refs=["chat"])
+    chapters = [
+        chapter(
+            1,
+            "Applicant",
+            [
+                gap(1, "Population", state="resolved", resolution=filled),
+                gap(2, "Budget", state="resolved", resolution=answered),
+            ],
+        )
+    ]
+    rows = build_gap_list(chapters, include_closed=True)["gaps"]
+    assert rows[0]["filled_from"] == ["plan.pdf"]
+    # Only source revalidation fills a gap from a file; user answers do not.
+    assert "filled_from" not in rows[1]
 
 
 def make_tool():

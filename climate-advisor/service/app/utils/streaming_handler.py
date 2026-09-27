@@ -424,8 +424,13 @@ class StreamingHandler:
                     user_id=self.user_id,
                     build_id=build_id,
                 )
-            # A failed source review leaves its uploads waiting for another try.
-            if self.source_review_claim and not self.history_saved:
+            # A failed source review leaves its uploads waiting for another try,
+            # unless it already created a proposal a retry would duplicate.
+            if (
+                self.source_review_claim
+                and not self.history_saved
+                and not self._concept_note_proposal_created()
+            ):
                 run_id, upload_ids = self.source_review_claim
                 await release_source_review(
                     session_factory=self.session_factory,
@@ -1317,6 +1322,14 @@ class StreamingHandler:
             tool_invocations=self._tool_invocations_for_persistence(),
         )
         return self.history_saved
+
+    def _concept_note_proposal_created(self) -> bool:
+        """Return whether this turn's edit tool created a CNB proposal."""
+        return any(
+            invocation.get("name") == "concept_note_edit_propose"
+            and (invocation.get("result_json") or {}).get("success") is True
+            for invocation in self.tool_invocations
+        )
 
     def _tool_invocations_for_persistence(self) -> list[dict] | None:
         """Add server-bound CNB edit arguments to the database audit record."""

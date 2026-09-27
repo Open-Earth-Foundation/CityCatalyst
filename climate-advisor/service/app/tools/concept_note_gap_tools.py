@@ -35,7 +35,9 @@ def build_concept_note_gap_tools(
         chapter, the question, why it is asked, severity, and state. Omit
         arguments to list every open gap; pass chapter_position to narrow to one
         chapter, severity to narrow to "critical" or "noncritical", and
-        include_closed=true to also see resolved, dismissed, or caveat gaps.
+        include_closed=true to also see resolved, dismissed, or caveat gaps. A
+        resolved gap filled from an uploaded file lists that file's source label
+        in filled_from.
         Read-only: it cannot resolve or change a gap.
         """
         # Reauthorize before reading the separately stored workspace.

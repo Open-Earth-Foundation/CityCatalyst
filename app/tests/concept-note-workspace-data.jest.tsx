@@ -788,6 +788,60 @@ describe("useConceptNoteWorkspaceData", () => {
     );
   });
 
+  it("polls the run with backoff while another file is still processing", async () => {
+    jest.useFakeTimers();
+    try {
+      // The run stream has closed: no rebuild runs and the tracked upload is
+      // done, but an older file is still being processed.
+      contextScenario = {
+        progress_summary: {
+          context_bundle: {
+            status: "ready",
+            build_id: "build-1",
+            document_grounding: "uploaded_evidence",
+            source_counts: { ready: 1 },
+          },
+        },
+        uploads: [
+          {
+            completed_at: "2026-09-25T10:00:00Z",
+            filename: "small.md",
+            page_count: null,
+            received_at: "2026-09-25T09:59:00Z",
+            run_id: "run-1",
+            source_format: "markdown",
+            source_label: "small",
+            status: "ready",
+            upload_id: "small",
+          },
+          {
+            completed_at: null,
+            filename: "large.pdf",
+            page_count: null,
+            received_at: "2026-09-25T09:58:00Z",
+            run_id: "run-1",
+            source_format: "pdf",
+            source_label: "large",
+            status: "processing",
+            upload_id: "large",
+          },
+        ],
+      } as never;
+      await act(async () => root.render(<Harness />));
+      expect(container.textContent).toBe("processing");
+      expect(refetchRun).not.toHaveBeenCalled();
+
+      await act(async () => jest.advanceTimersByTime(4_000));
+      expect(refetchRun).toHaveBeenCalledTimes(1);
+      await act(async () => jest.advanceTimersByTime(7_999));
+      expect(refetchRun).toHaveBeenCalledTimes(1);
+      await act(async () => jest.advanceTimersByTime(1));
+      expect(refetchRun).toHaveBeenCalledTimes(2);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it("refetches the draft when a rebuild finishes so a new file's review can start", async () => {
     const refetchDraft = jest.fn(async () => undefined);
     getDraftQuery.mockReturnValue({
@@ -983,20 +1037,43 @@ describe("useConceptNoteWorkspaceData", () => {
     // The hidden request never shows up as a user message.
     expect(container.textContent).not.toContain("source_review");
 
+    let finishRefetch: () => void = () => {};
+    onSourceReviewComplete.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finishRefetch = resolve;
+        }),
+    );
     await act(async () => streamOptions.onComplete?.());
     expect(onSourceReviewComplete).toHaveBeenCalledTimes(1);
     // Still pending until the draft refetch lands: no second request.
     await render(false, true);
     expect(turns()).toHaveLength(2);
 
-    // A later upload makes a new review pending.
-    await render(false, false);
+    // The refreshed draft still reports a file that reached Clima during the
+    // review, so it gets its own turn.
+    await act(async () => finishRefetch());
     await render(false, true);
     expect(turns()).toEqual([
       "draft_overview",
       "source_review",
       "source_review",
     ]);
+
+    // Another tab already ran it: the guard stays and nothing repeats.
+    await act(async () =>
+      streamOptions.onError?.(
+        "Nothing to review",
+        "concept_note_source_review_unavailable",
+      ),
+    );
+    await render(false, true);
+    expect(turns()).toHaveLength(3);
+
+    // A later upload makes a new review pending.
+    await render(false, false);
+    await render(false, true);
+    expect(turns()).toHaveLength(4);
   });
 
   it("merges the tracked upload into the list and leads with a file the run has not listed", () => {

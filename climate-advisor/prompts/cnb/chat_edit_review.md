@@ -26,6 +26,10 @@ Classify each change:
   supply or authorize the specific change, rather than just request better prose.
 - source: the changed claim is supported by a cited selected source's supplied
   content, with the same subject, qualifications and polarity.
+- context: the changed claim is supported by a run_context section named in the
+  change's context_refs: CityCatalyst data in cc_context (city, project, ghgi,
+  ccra, hiap) or the user-entered manual_population. The values, subject, unit
+  and year must match that section.
 - unsupported: the model invented a fact, changed an unrelated fact, lost a
   commitment/caveat, reversed a negation, filled an unknown without support, or
   exceeded the request. Generic "make it clearer" never authorizes those changes.
@@ -45,21 +49,24 @@ One JSON object:
 - recent_messages (array): previous visible user/assistant messages.
 - chapter (object): title, position, body_markdown, confirmed_body_markdown, gaps.
 - run_context (object): selected_sources and available contextual data, without
-  backend identities or fingerprints. Each source has a one-based source_index,
+  backend identities or fingerprints. cc_context holds CityCatalyst data
+  sections, which may be null; manual_population is a nullable user-entered
+  population and year. Each source has a one-based source_index,
   label, filename, format, summary, topics and key_excerpts with text and a PDF
   page or readable heading. Match source_refs to source_index encoded as a string,
   never to a label or filename; two documents may have identical names.
 - prior_proposal (object or null): earlier user inputs and unaccepted proposals.
 - is_focused_chapter (boolean): non-binding focus hint.
 - changes (array): indexed by zero-based position; exact start, before, after,
-  kind, group_id, source_refs, user_input_quote from the proposal.
+  kind, group_id, source_refs, user_input_quote and context_refs from the
+  proposal.
 </input>
 
 <output>
 Return only ChapterEditReview JSON:
 - decisions (array, 1–100): exactly one per input change.
   - change_index (integer, 0–99): position in changes.
-  - support (string): preserved, user, source, or unsupported.
+  - support (string): preserved, user, source, context, or unsupported.
   - explanation (string, 1–1000 characters): concise semantic justification.
 </output>
 

@@ -25,9 +25,10 @@ from app.persistence.concept_notes.edits import (
 )
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.cnb.edit_planner import ConceptNoteEditPlanner
-from app.services.cnb.edit_validation import validate_edit_plan
+from app.services.cnb.edit_validation import context_snapshot, validate_edit_plan
 from app.utils.cnb_observability import record_edit_outcome
 from app.utils.cnb_progress import emit_cnb_progress
+from app.utils.concept_note_context import manual_population_context
 from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -87,7 +88,15 @@ class ConceptNoteEditService:
                     "Wait for drafting to finish before changing the structure.",
                 )
             bundle = await session.get(ConceptNoteContextBundle, run.run_id)
-            yield current, bundle.context_bundle if bundle else {}
+            yield (
+                current,
+                {
+                    **(bundle.context_bundle if bundle else {}),
+                    "manual_population": manual_population_context(
+                        current.context_summary
+                    ),
+                },
+            )
 
     async def propose(
         self,
@@ -325,6 +334,10 @@ class ConceptNoteEditService:
                     sources.get(str(source.upload_id)) != source.sha256
                     for change in proposal.changes
                     for source in change.source_snapshots
+                ) or any(
+                    context_snapshot(run_context, cited.section) != cited
+                    for change in proposal.changes
+                    for cited in change.context_snapshots
                 )
                 if proposal.status == "proposed" and changed:
                     stale = await self.repository.mark_stale(

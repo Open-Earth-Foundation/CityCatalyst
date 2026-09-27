@@ -19,9 +19,185 @@ from app.persistence.concept_notes.context_bundle import (
     fail_build,
     load_agent_context,
     load_query_source,
+    load_refresh_state,
     recover_stale_builds,
+    set_selected_inventory,
 )
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
+
+@pytest.mark.asyncio
+async def test_progress_identifies_inventory_from_persisted_bundle(tmp_path) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    first_inventory = uuid4()
+    second_inventory = uuid4()
+    try:
+        async with session_factory() as session, session.begin():
+            session.add(concept_note_run(run_id))
+
+        first_build = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+        )
+        assert await complete_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=first_build.build_id,
+            selected_sources=[],
+            ghgi={"inventory": {"id": str(first_inventory), "year": 2024}},
+            hiap={"inventory_id": str(first_inventory)},
+            optional_sources={"ghgi": "included", "hiap": "included"},
+            warnings=[],
+            inventory_candidate={
+                "inventory_id": str(first_inventory),
+                "updated_at": "2026-09-01T10:00:00Z",
+            },
+        )
+        async with session_factory() as session:
+            run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        assert run.context_summary["context_bundle"]["source_provenance"] == {
+            "ghgi": {"inventory_id": str(first_inventory), "inventory_year": 2024}
+        }
+        # The first bundle has no predecessor, so nothing is reported as new.
+        assert run.context_summary["context_bundle"]["context_changes"] == []
+
+        await set_selected_inventory(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            inventory_id=second_inventory,
+        )
+        state = await load_refresh_state(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+        )
+        assert state.status == "ready"
+        assert state.selected_inventory_id == second_inventory
+        assert state.inventory_candidate == {
+            "inventory_id": str(first_inventory),
+            "updated_at": "2026-09-01T10:00:00Z",
+        }
+
+        next_build = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+            force=True,
+        )
+        async with session_factory() as session:
+            run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        assert (
+            run.context_summary["context_bundle"]["source_provenance"]["ghgi"]["inventory_id"]
+            == str(first_inventory)
+        )
+        assert next_build.selected_inventory_id == second_inventory
+        assert await complete_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=next_build.build_id,
+            selected_sources=[],
+            ghgi={"inventory": {"id": str(second_inventory), "year": 2025}},
+            hiap=None,
+            optional_sources={"ghgi": "included", "hiap": "missing"},
+            warnings=[],
+        )
+        async with session_factory() as session:
+            run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        assert run.context_summary["context_bundle"]["source_provenance"] == {
+            "ghgi": {"inventory_id": str(second_inventory), "inventory_year": 2025}
+        }
+        assert run.context_summary["context_bundle"]["context_changes"] == [
+            {"source": "ghgi", "change": "changed", "inventory_year": 2025},
+            {"source": "hiap", "change": "removed"},
+        ]
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_rebuild_reports_inventory_with_new_data_as_updated(tmp_path) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    inventory = uuid4()
+    ghgi = {"inventory": {"id": str(inventory), "year": 2024}}
+    try:
+        async with session_factory() as session, session.begin():
+            session.add(concept_note_run(run_id))
+
+        for updated_at in ("2026-09-01T10:00:00Z", "2026-09-02T10:00:00Z"):
+            build = await begin_build(
+                session_factory=session_factory,
+                user_id="owner",
+                run_id=run_id,
+                build_id=uuid4(),
+                force=True,
+            )
+            assert await complete_build(
+                session_factory=session_factory,
+                user_id="owner",
+                run_id=run_id,
+                build_id=build.build_id,
+                selected_sources=[],
+                ghgi=ghgi,
+                hiap=None,
+                optional_sources={"ghgi": "partial", "hiap": "missing"},
+                warnings=[],
+                inventory_candidate={
+                    "inventory_id": str(inventory),
+                    "updated_at": updated_at,
+                },
+            )
+
+        async with session_factory() as session:
+            run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        # Same inventory, newer data: the rebuild must announce it as updated.
+        assert run.context_summary["context_bundle"]["context_changes"] == [
+            {"source": "ghgi", "change": "updated", "inventory_year": 2024}
+        ]
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_inventory_selection_waits_for_drafting(tmp_path) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    try:
+        async with session_factory() as session, session.begin():
+            session.add(
+                concept_note_run(
+                    run_id,
+                    context_summary={"draft_document": {"status": "running"}},
+                )
+            )
+
+        state = await load_refresh_state(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+        )
+        assert state.draft_running is True
+        with pytest.raises(ContextBundlePersistenceError) as error:
+            await set_selected_inventory(
+                session_factory=session_factory,
+                user_id="owner",
+                run_id=run_id,
+                inventory_id=uuid4(),
+            )
+        assert (error.value.code, error.value.status_code) == ("draft_running", 409)
+    finally:
+        await engine.dispose()
 
 
 async def database(tmp_path):
@@ -202,6 +378,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
             "hiap": False,
             "uploaded_documents": True,
         }
+        assert progress["source_provenance"] == {}
         assert "context_mode" not in progress
         assert progress["missing_context"] == []
         assert progress["completion_event"] == "concept_note_context_bundle_ready"
@@ -669,5 +846,103 @@ async def test_recovery_marks_only_stale_building_runs_retryable(tmp_path) -> No
         assert old_progress["retryable"] is True
         assert stored_recent.context_summary["context_bundle"]["status"] == "building"
         assert stored_ready.context_summary["context_bundle"]["status"] == "ready"
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_progress_reports_the_city_population_the_models_receive(
+    tmp_path,
+) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    city = {"name": "Kraków", "population": 1_000_000, "population_year": 2025}
+
+    async def build(city_profile: dict | None) -> dict:
+        snapshot = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+            force=True,
+        )
+        async with session_factory() as session:
+            building = (await session.get(ConceptNoteRun, run_id)).context_summary
+        assert await complete_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=snapshot.build_id,
+            selected_sources=[],
+            city=city_profile,
+            ghgi=None,
+            hiap=None,
+            optional_sources={
+                "city": "available",
+                "ghgi": "missing",
+                "hiap": "missing",
+            },
+            warnings=[],
+        )
+        async with session_factory() as session:
+            ready = (await session.get(ConceptNoteRun, run_id)).context_summary
+        return {
+            "building": building["context_bundle"],
+            "ready": ready["context_bundle"],
+        }
+
+    try:
+        async with session_factory() as session, session.begin():
+            session.add(concept_note_run(run_id))
+
+        # A city profile without a population record reports no population.
+        first = await build({**city, "population": None})
+        assert first["building"]["city_population"] is None
+        assert first["building"]["optional_sources"]["city"] == "pending"
+        assert first["ready"]["available_context"]["city"] is True
+        assert first["ready"]["city_population"] is None
+
+        second = await build(city)
+        assert second["ready"]["city_population"] == {
+            "population": 1_000_000,
+            "year": 2025,
+        }
+
+        # A rebuild whose city lookup fails keeps reporting the stored figure.
+        third = await build(None)
+        assert third["building"]["city_population"] == {
+            "population": 1_000_000,
+            "year": 2025,
+        }
+        assert third["ready"]["city_population"] == {
+            "population": 1_000_000,
+            "year": 2025,
+        }
+
+        # A forced rebuild whose population-only lookup fails keeps the figure.
+        fourth = await build(
+            {
+                **city,
+                "name": "Kraków (renamed)",
+                "population": None,
+                "population_year": None,
+                "population_lookup_failed": True,
+            }
+        )
+        assert fourth["ready"]["city_population"] == {
+            "population": 1_000_000,
+            "year": 2025,
+        }
+        async with session_factory() as session:
+            stored = await session.get(ConceptNoteContextBundle, run_id)
+            stored_city = stored.context_bundle["cc_context"]["city"]
+        assert stored_city["name"] == "Kraków (renamed)"
+        assert stored_city["population"] == 1_000_000
+        assert stored_city["population_year"] == 2025
+        assert "population_lookup_failed" not in stored_city
+
+        # A genuine no-population response still clears the stored figure.
+        fifth = await build({**city, "population": None, "population_year": None})
+        assert fifth["ready"]["city_population"] is None
     finally:
         await engine.dispose()

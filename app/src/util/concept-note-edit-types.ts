@@ -62,12 +62,21 @@ export interface EditChange {
   group_id: string;
   source_refs: string[];
   user_input_quote: string | null;
+  context_refs?: EditContextSection[];
   source_snapshots?: Array<{
     upload_id: string;
     source_label: string;
     sha256: string;
   }>;
+  context_snapshots?: Array<{
+    section: EditContextSection;
+    label: string;
+    sha256: string;
+  }>;
 }
+
+export type EditContextSection =
+  "city" | "project" | "ghgi" | "ccra" | "hiap" | "manual_population";
 
 export interface EditApplicationResult {
   application_id: string;

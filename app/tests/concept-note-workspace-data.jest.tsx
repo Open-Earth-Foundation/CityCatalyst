@@ -46,12 +46,10 @@ const dispatch = jest.fn();
 const upsertQueryEntries = jest.fn((entries: unknown) => ({ entries }));
 const startedDraft = { run_id: "run-1", status: "running", chapters: [] };
 const startDraft = jest.fn(() => ({ unwrap: async () => startedDraft }));
-const refetchApplicationContext = jest.fn(async () => undefined);
 const getApplicationContext = jest.fn(() => ({
   data: undefined as unknown,
   isError: false,
   isLoading: false,
-  refetch: refetchApplicationContext,
 }));
 jest.unstable_mockModule("@/lib/hooks", () => ({
   useAppDispatch: () => dispatch,
@@ -333,38 +331,6 @@ function TrackingHarness({ initialUploadId }: { initialUploadId?: string }) {
   );
 }
 
-const onSourceReviewComplete = jest.fn();
-function SourceReviewHarness({
-  overviewPending,
-  sourceReviewPending,
-}: {
-  overviewPending: boolean;
-  sourceReviewPending: boolean;
-}) {
-  const { contextStatus } = useConceptNoteWorkspaceData({
-    cityId: "city-1",
-    lng: "en",
-    runId: "run-1",
-  });
-  return (
-    <ChakraProvider value={defaultSystem}>
-      <Panel
-        contextStatus={contextStatus}
-        composerRequest={null}
-        draftOverviewPending={overviewPending}
-        sourceReviewPending={sourceReviewPending}
-        onSourceReviewComplete={onSourceReviewComplete}
-        lng="en"
-        onOpenContext={() => {}}
-        runId="run-1"
-        threadId="thread-1"
-        editScope={{ kind: "auto", focused_chapter_id: "budget" }}
-        edits={{ loadProposal: async () => {} } as never}
-      />
-    </ChakraProvider>
-  );
-}
-
 const readyEvidence = {
   context_bundle: {
     status: "ready",
@@ -385,17 +351,6 @@ function pdf(name = "budget.pdf"): File {
   });
 }
 
-function streamBody(index: number): {
-  context: Record<string, unknown>;
-  options?: { concept_note_turn?: string };
-} {
-  const call = startStream.mock.calls[index] as unknown as [
-    string,
-    { body: string },
-  ];
-  return JSON.parse(call[1].body);
-}
-
 function DraftStartHarness() {
   const { startDrafting } = useConceptNoteWorkspaceData({
     cityId: "city-1",
@@ -407,9 +362,8 @@ function DraftStartHarness() {
 
 beforeAll(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-  // Source validation reads the PDF signature; jsdom lacks both APIs.
+  // Source validation reads the PDF signature; jsdom lacks TextDecoder.
   Object.assign(globalThis, { TextDecoder });
-  HTMLElement.prototype.scrollTo = jest.fn() as never;
   // Chakra recipes are JSON-compatible; jsdom does not provide structuredClone.
   globalThis.structuredClone = (value) =>
     value === undefined ? value : JSON.parse(JSON.stringify(value));
@@ -756,123 +710,28 @@ describe("useConceptNoteWorkspaceData", () => {
     expect(container.textContent).toBe("uploading");
   });
 
-  it("keeps watching the run while the ready bundle lags behind a finished upload", async () => {
-    const readyUpload = (id: string) => ({
-      completed_at: "2026-09-25T10:00:00Z",
-      filename: `${id}.md`,
-      page_count: null,
-      received_at: "2026-09-25T09:59:00Z",
-      run_id: "run-1",
-      source_format: "markdown",
-      source_label: id,
-      status: "ready",
-      upload_id: id,
-    });
-    // The new upload is ready but the rebuild has not started yet.
-    contextScenario = {
-      progress_summary: {
-        context_bundle: {
-          status: "ready",
-          build_id: "build-1",
-          document_grounding: "uploaded_evidence",
-          source_counts: { ready: 1 },
-        },
-      },
-      uploads: [readyUpload("new"), readyUpload("old")],
-    } as never;
-    await act(async () => root.render(<Harness />));
-
-    expect(container.textContent).toBe("processing");
-    expect(observeWorkspace).toHaveBeenLastCalledWith(
-      expect.objectContaining({ observeRun: true }),
-    );
-  });
-
-  it("polls the run with backoff while another file is still processing", async () => {
+  it("keeps watching the run until the context catches up with every upload", async () => {
     jest.useFakeTimers();
     try {
-      // The run stream has closed: no rebuild runs and the tracked upload is
-      // done, but an older file is still being processed.
+      // One file is ready and another still processing; no rebuild is running.
       contextScenario = {
-        progress_summary: {
-          context_bundle: {
-            status: "ready",
-            build_id: "build-1",
-            document_grounding: "uploaded_evidence",
-            source_counts: { ready: 1 },
-          },
-        },
-        uploads: [
-          {
-            completed_at: "2026-09-25T10:00:00Z",
-            filename: "small.md",
-            page_count: null,
-            received_at: "2026-09-25T09:59:00Z",
-            run_id: "run-1",
-            source_format: "markdown",
-            source_label: "small",
-            status: "ready",
-            upload_id: "small",
-          },
-          {
-            completed_at: null,
-            filename: "large.pdf",
-            page_count: null,
-            received_at: "2026-09-25T09:58:00Z",
-            run_id: "run-1",
-            source_format: "pdf",
-            source_label: "large",
-            status: "processing",
-            upload_id: "large",
-          },
-        ],
-      } as never;
+        progress_summary: readyEvidence,
+        uploads: [source("ready", "small"), source("processing", "large")],
+      };
       await act(async () => root.render(<Harness />));
       expect(container.textContent).toBe("processing");
-      expect(refetchRun).not.toHaveBeenCalled();
+      expect(observeWorkspace).toHaveBeenLastCalledWith(
+        expect.objectContaining({ observeRun: true }),
+      );
 
+      // The run stream may already have closed, so the run is polled with backoff.
       await act(async () => jest.advanceTimersByTime(4_000));
       expect(refetchRun).toHaveBeenCalledTimes(1);
-      await act(async () => jest.advanceTimersByTime(7_999));
-      expect(refetchRun).toHaveBeenCalledTimes(1);
-      await act(async () => jest.advanceTimersByTime(1));
+      await act(async () => jest.advanceTimersByTime(8_000));
       expect(refetchRun).toHaveBeenCalledTimes(2);
     } finally {
       jest.useRealTimers();
     }
-  });
-
-  it("refetches the draft when a rebuild finishes so a new file's review can start", async () => {
-    const refetchDraft = jest.fn(async () => undefined);
-    getDraftQuery.mockReturnValue({
-      data: undefined,
-      isError: false,
-      isLoading: false,
-      refetch: refetchDraft,
-    });
-    const readyBuild = (buildId: string) => ({
-      context_bundle: {
-        status: "ready",
-        build_id: buildId,
-        document_grounding: "uploaded_evidence",
-        source_counts: { ready: 1 },
-      },
-    });
-    contextScenario = { progress_summary: readyBuild("build-1"), uploads: [] };
-    await act(async () => root.render(<Harness />));
-    expect(refetchDraft).not.toHaveBeenCalled();
-
-    contextScenario = { progress_summary: readyBuild("build-2"), uploads: [] };
-    await act(async () => root.render(<Harness />));
-    expect(refetchDraft).toHaveBeenCalledTimes(1);
-    expect(refetchApplicationContext).toHaveBeenCalledTimes(1);
-    getDraftQuery.mockReset();
-    getDraftQuery.mockImplementation(() => ({
-      data: undefined,
-      isError: false,
-      isLoading: false,
-      refetch: jest.fn(async () => undefined),
-    }));
   });
 
   it("retries a failed upload restored from the persisted run", async () => {
@@ -996,84 +855,6 @@ describe("useConceptNoteWorkspaceData", () => {
     );
     expect(container.querySelector("p")!.dataset.state).toBe("processing");
     expect(window.location.search).toBe("?uploadId=A");
-  });
-
-  it("asks Clima to review new files once, after the drafting overview", async () => {
-    contextScenario = {
-      progress_summary: readyEvidence,
-      uploads: [source("ready", "B")],
-    };
-    const render = async (
-      overviewPending: boolean,
-      sourceReviewPending: boolean,
-    ) => {
-      await act(async () =>
-        root.render(
-          <SourceReviewHarness
-            overviewPending={overviewPending}
-            sourceReviewPending={sourceReviewPending}
-          />,
-        ),
-      );
-      await act(async () => {
-        await new Promise(requestAnimationFrame);
-      });
-    };
-    const turns = () =>
-      startStream.mock.calls.map(
-        (_, index) => streamBody(index).options?.concept_note_turn,
-      );
-
-    await render(true, true);
-    expect(turns()).toEqual(["draft_overview"]);
-    await act(async () => streamOptions.onComplete?.());
-
-    await render(false, true);
-    expect(turns()).toEqual(["draft_overview", "source_review"]);
-    expect(streamBody(1).context.concept_note_edit).toEqual({
-      scope: { kind: "auto", focused_chapter_id: "budget" },
-      idempotency_key: expect.any(String),
-    });
-    // The hidden request never shows up as a user message.
-    expect(container.textContent).not.toContain("source_review");
-
-    let finishRefetch: () => void = () => {};
-    onSourceReviewComplete.mockImplementationOnce(
-      () =>
-        new Promise<void>((resolve) => {
-          finishRefetch = resolve;
-        }),
-    );
-    await act(async () => streamOptions.onComplete?.());
-    expect(onSourceReviewComplete).toHaveBeenCalledTimes(1);
-    // Still pending until the draft refetch lands: no second request.
-    await render(false, true);
-    expect(turns()).toHaveLength(2);
-
-    // The refreshed draft still reports a file that reached Clima during the
-    // review, so it gets its own turn.
-    await act(async () => finishRefetch());
-    await render(false, true);
-    expect(turns()).toEqual([
-      "draft_overview",
-      "source_review",
-      "source_review",
-    ]);
-
-    // Another tab already ran it: the guard stays and nothing repeats.
-    await act(async () =>
-      streamOptions.onError?.(
-        "Nothing to review",
-        "concept_note_source_review_unavailable",
-      ),
-    );
-    await render(false, true);
-    expect(turns()).toHaveLength(3);
-
-    // A later upload makes a new review pending.
-    await render(false, false);
-    await render(false, true);
-    expect(turns()).toHaveLength(4);
   });
 
   it("merges the tracked upload into the list and leads with a file the run has not listed", () => {

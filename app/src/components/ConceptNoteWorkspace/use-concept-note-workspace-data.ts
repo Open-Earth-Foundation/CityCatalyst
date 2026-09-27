@@ -200,8 +200,7 @@ export function useConceptNoteWorkspaceData({
     };
   }, [refreshBundle, runId]);
 
-  // A finished rebuild can change which sources the application context lists,
-  // and a file added after drafting makes the draft report a pending review.
+  // A finished rebuild can change which sources the application context lists.
   const completedBuildRef = useRef<string | null>(null);
   const completedBuild =
     bundle.status === "ready" ? `${runId}:${bundle.buildId}` : null;
@@ -212,10 +211,9 @@ export function useConceptNoteWorkspaceData({
       completedBuildRef.current !== completedBuild
     ) {
       void refetchApplicationContext();
-      void refetchDraft();
     }
     completedBuildRef.current = completedBuild;
-  }, [completedBuild, refetchApplicationContext, refetchDraft]);
+  }, [completedBuild, refetchApplicationContext]);
   const draftProgress = getConceptNoteDraftProgress(
     run?.progress_summary ?? {},
   );

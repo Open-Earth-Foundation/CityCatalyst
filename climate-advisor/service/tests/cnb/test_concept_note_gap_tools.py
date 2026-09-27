@@ -40,7 +40,15 @@ def eucf_like_chapters():
             [
                 gap(1, "Tax identification number"),
                 gap(2, "Contact persons", severity="noncritical"),
-                gap(4, "Population", state="resolved"),
+                gap(
+                    4,
+                    "Population",
+                    state="resolved",
+                    # Source revalidation filled this gap from an uploaded file.
+                    resolution=SimpleNamespace(
+                        action="evidence_update", source_refs=["plan.pdf"]
+                    ),
+                ),
             ],
         ),
         chapter(3, "Old chapter", [gap(0, "Removed question")], status="deleted"),
@@ -79,27 +87,10 @@ def test_filters_keep_the_same_handles():
         ("G3", "open"),
         ("G5", "resolved"),
     ]
+    assert with_closed["gaps"][2]["filled_from"] == ["plan.pdf"]
+    assert "filled_from" not in with_closed["gaps"][0]
     # Totals describe the whole note, not the filtered slice.
     assert political["open_total"] == 3
-
-
-def test_closed_gaps_name_the_file_whose_evidence_filled_them():
-    filled = SimpleNamespace(action="evidence_update", source_refs=["plan.pdf"])
-    answered = SimpleNamespace(action="answer", source_refs=["chat"])
-    chapters = [
-        chapter(
-            1,
-            "Applicant",
-            [
-                gap(1, "Population", state="resolved", resolution=filled),
-                gap(2, "Budget", state="resolved", resolution=answered),
-            ],
-        )
-    ]
-    rows = build_gap_list(chapters, include_closed=True)["gaps"]
-    assert rows[0]["filled_from"] == ["plan.pdf"]
-    # Only source revalidation fills a gap from a file; user answers do not.
-    assert "filled_from" not in rows[1]
 
 
 def make_tool():

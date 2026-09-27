@@ -149,46 +149,6 @@ describe("Concept Note chat helpers", () => {
     ]);
     expect(readConceptNoteThreadMessages({})).toEqual([]);
   });
-
-  it("hides the stored triggers of hidden source review and overview turns", () => {
-    expect(
-      readConceptNoteThreadMessages({
-        messages: [
-          {
-            message_id: "review-request",
-            role: "user",
-            text: "CONCEPT_NOTE_SOURCE_REVIEW_REQUEST\nupload_ids: a, b",
-          },
-          {
-            message_id: "overview-request",
-            role: "user",
-            text: "CONCEPT_NOTE_DRAFT_OVERVIEW_REQUEST",
-          },
-          {
-            message_id: "review-reply",
-            role: "assistant",
-            text: "The new budget file answers two open gaps.",
-          },
-          {
-            message_id: "user-question",
-            role: "user",
-            text: "What does CONCEPT_NOTE_SOURCE_REVIEW_REQUEST mean?",
-          },
-        ],
-      }),
-    ).toEqual([
-      {
-        id: "review-reply",
-        role: "assistant",
-        text: "The new budget file answers two open gaps.",
-      },
-      {
-        id: "user-question",
-        role: "user",
-        text: "What does CONCEPT_NOTE_SOURCE_REVIEW_REQUEST mean?",
-      },
-    ]);
-  });
 });
 
 describe("uploaded file rows", () => {

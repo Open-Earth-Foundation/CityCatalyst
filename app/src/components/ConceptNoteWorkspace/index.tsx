@@ -503,8 +503,6 @@ export function ConceptNoteWorkspace({
               composerRequest={composerRequest}
               draftOverviewPending={Boolean(draft?.overview_pending)}
               onDraftOverviewComplete={() => void refetchDraft()}
-              sourceReviewPending={Boolean(draft?.source_review_pending)}
-              onSourceReviewComplete={() => refetchDraft()}
               lng={lng}
               onOpenContext={() => {
                 setTab("context");

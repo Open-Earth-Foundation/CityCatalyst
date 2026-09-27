@@ -54,17 +54,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-// Server-owned trigger text stored for hidden turns; never shown as user text.
-const HIDDEN_TURN_MARKERS = [
-  "CONCEPT_NOTE_DRAFT_OVERVIEW_REQUEST",
-  "CONCEPT_NOTE_SOURCE_REVIEW_REQUEST",
-];
-
-function isHiddenTurnRequest(text: string): boolean {
-  const trimmed = text.trimStart();
-  return HIDDEN_TURN_MARKERS.some((marker) => trimmed.startsWith(marker));
-}
-
 export function readConceptNoteThreadMessages(
   payload: unknown,
 ): ConceptNoteChatMessage[] {
@@ -79,9 +68,6 @@ export function readConceptNoteThreadMessages(
     const role = message.role;
     const text = message.text;
     if ((role !== "assistant" && role !== "user") || typeof text !== "string") {
-      return [];
-    }
-    if (role === "user" && isHiddenTurnRequest(text)) {
       return [];
     }
     return [
@@ -106,8 +92,8 @@ const stages = [
   "responding",
 ] as const;
 export interface ConceptNoteProgress {
-  // Client-only stages for the hidden drafting-overview and source-review turns.
-  stage: (typeof stages)[number] | "summarizing_draft" | "reviewing_sources";
+  // `summarizing_draft` is client-only: the hidden drafting-overview turn.
+  stage: (typeof stages)[number] | "summarizing_draft";
   chapterTitle?: string;
   completed?: number;
   total?: number;

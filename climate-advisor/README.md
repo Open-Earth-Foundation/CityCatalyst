@@ -73,17 +73,9 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      handle numbered in creation order, so handles stay stable across filters.
    - Injected `selected_sources` include `uploaded_at` and a `newest` flag, so
      Clima can identify the file a user just uploaded.
-   - After files are uploaded to a drafted note, the frontend requests one hidden
-     `concept_note_turn: "source_review"` turn (while
-     `GET /draft` reports `source_review_pending`, which waits for any pending
-     or running source revalidation). The server writes the request naming the
-     new files, claims them in `context_summary.source_review`, and composes
-     `prompts/cnb/source_review.md` into the chat instructions. Clima reports
-     the gaps revalidation already filled from the files, queries them for the
-     remaining open gaps, and, when the turn carries an edit scope, creates one
-     reviewable proposal from the request. A turn that fails before creating a
-     proposal releases its claim; a repeat returns 409
-     `concept_note_source_review_unavailable`.
+   - Resolved gaps that source revalidation filled from an uploaded file list
+     that file's source label in `filled_from`, so Clima can tell the user
+     which gaps a new file answered.
    - Treats vague requests as sufficient intent, uses the already bound run and
      available chapter order, and asks one focused question when the next step
      cannot be derived

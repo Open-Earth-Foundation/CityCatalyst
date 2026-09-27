@@ -25,10 +25,6 @@ from app.services.cnb.draft_overview import (
     load_draft_overview_message,
     release_draft_overview,
 )
-from app.services.cnb.source_review import (
-    release_source_review,
-    source_review_instructions,
-)
 from app.services.native_input_catalog_service import ActiveRequestContext
 from app.services.stationary_energy.stationary_energy_chat_context import (
     build_minimal_stationary_energy_context_payload,
@@ -99,7 +95,6 @@ class StreamingHandler:
         request_context: Optional[Any] = None,
         request_options: Optional[dict] = None,
         draft_overview_claim: Optional[tuple[UUID, str]] = None,
-        source_review_claim: Optional[tuple[UUID, tuple[UUID, ...]]] = None,
     ) -> None:
         """Initialize per-request state for streaming one agent response."""
         self.thread_id = thread_id
@@ -113,8 +108,6 @@ class StreamingHandler:
         self.request_options = request_options
         # (run_id, build_id) when this is the hidden CNB drafting-overview turn.
         self.draft_overview_claim = draft_overview_claim
-        # (run_id, upload_ids) when this is the hidden CNB new-source review turn.
-        self.source_review_claim = source_review_claim
         self.thread_identifier = str(thread_id)
         self.workflow_context = ChatWorkflowContext()
         self.agent_model: Optional[str] = None
@@ -327,8 +320,6 @@ class StreamingHandler:
                 instructions=(
                     draft_overview_instructions(settings.llm.prompts)
                     if self.draft_overview_claim
-                    else source_review_instructions(settings.llm.prompts)
-                    if self.source_review_claim
                     else None
                 ),
             )
@@ -423,20 +414,6 @@ class StreamingHandler:
                     run_id=run_id,
                     user_id=self.user_id,
                     build_id=build_id,
-                )
-            # A failed source review leaves its uploads waiting for another try,
-            # unless it already created a proposal a retry would duplicate.
-            if (
-                self.source_review_claim
-                and not self.history_saved
-                and not self._concept_note_proposal_created()
-            ):
-                run_id, upload_ids = self.source_review_claim
-                await release_source_review(
-                    session_factory=self.session_factory,
-                    run_id=run_id,
-                    user_id=self.user_id,
-                    upload_ids=upload_ids,
                 )
             # Clean up agent service
             if self.agent_service:
@@ -1322,14 +1299,6 @@ class StreamingHandler:
             tool_invocations=self._tool_invocations_for_persistence(),
         )
         return self.history_saved
-
-    def _concept_note_proposal_created(self) -> bool:
-        """Return whether this turn's edit tool created a CNB proposal."""
-        return any(
-            invocation.get("name") == "concept_note_edit_propose"
-            and (invocation.get("result_json") or {}).get("success") is True
-            for invocation in self.tool_invocations
-        )
 
     def _tool_invocations_for_persistence(self) -> list[dict] | None:
         """Add server-bound CNB edit arguments to the database audit record."""

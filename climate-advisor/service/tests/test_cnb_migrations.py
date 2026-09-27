@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -98,6 +99,119 @@ def test_ca_migration_chain_renames_selected_opportunity_reference() -> None:
         f"ALTER TABLE concept_note_runs RENAME {legacy_column} "
         "TO selected_funding_opportunity_id;"
     ) in sql
+
+
+def test_ca_migration_chain_backfills_run_city_population() -> None:
+    """Pre-CC-948 runs report the population their stored bundle already holds."""
+    sql = _render_offline_upgrade(
+        config="alembic.ini",
+        database_env="CA_DATABASE_URL",
+    )
+    assert "'{context_bundle,city_population}'" in sql
+    assert "FROM concept_note_context_bundles AS bundle" in sql
+
+
+@pytest.mark.skipif(
+    not CNB_DATABASE_URL,
+    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
+)
+def test_ca_city_population_backfill_derives_from_stored_bundle() -> None:
+    """Only legacy ready progress gains the field, with the bundle's population."""
+    assert CNB_DATABASE_URL is not None
+    engine = create_engine(CNB_DATABASE_URL)
+    populated, unpopulated, current, unbuilt = uuid4(), uuid4(), uuid4(), uuid4()
+    city = {"name": "Kraków", "population": 804237, "population_year": 2024}
+    runs = {
+        populated: ({"context_bundle": {"status": "ready"}}, city),
+        unpopulated: (
+            {"context_bundle": {"status": "ready"}},
+            {**city, "population": None, "population_year": None},
+        ),
+        current: (
+            {"context_bundle": {"status": "ready", "city_population": None}},
+            city,
+        ),
+        unbuilt: ({}, None),
+    }
+    try:
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "20260811_120000"],
+        )
+        # Seed runs as the pre-CC-948 build left them.
+        with engine.begin() as connection:
+            for run_id, (summary, bundle_city) in runs.items():
+                connection.execute(
+                    text(
+                        """
+                        INSERT INTO concept_note_runs (
+                            run_id, user_id, name, city_id, context_summary,
+                            idempotency_key, request_fingerprint
+                        )
+                        VALUES (
+                            :run_id, 'owner', 'Run', 'city',
+                            CAST(:summary AS jsonb), :key, 'fingerprint'
+                        )
+                        """
+                    ),
+                    {
+                        "run_id": run_id,
+                        "summary": json.dumps(summary),
+                        "key": uuid4(),
+                    },
+                )
+                if bundle_city is not None:
+                    connection.execute(
+                        text(
+                            """
+                            INSERT INTO concept_note_context_bundles
+                                (run_id, context_bundle)
+                            VALUES (:run_id, CAST(:bundle AS jsonb))
+                            """
+                        ),
+                        {
+                            "run_id": run_id,
+                            "bundle": json.dumps({"cc_context": {"city": bundle_city}}),
+                        },
+                    )
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "head"],
+        )
+
+        with engine.connect() as connection:
+            summaries = dict(
+                connection.execute(
+                    text("SELECT run_id, context_summary FROM concept_note_runs")
+                ).all()
+            )
+        assert summaries[populated]["context_bundle"]["city_population"] == {
+            "population": 804237,
+            "year": 2024,
+        }
+        assert summaries[unpopulated]["context_bundle"] == {
+            "status": "ready",
+            "city_population": None,
+        }
+        assert summaries[current] == runs[current][0]
+        assert summaries[unbuilt] == {}
+    finally:
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        # Leave no CA version table for the CNB table-set assertions.
+        with engine.begin() as connection:
+            connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
+        engine.dispose()
 
 
 def test_cnb_offline_migration_preserves_explicit_constraint_names() -> None:

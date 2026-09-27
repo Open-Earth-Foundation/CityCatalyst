@@ -34,8 +34,9 @@ export default function ProjectCard({
   ).size;
 
   return (
-    <Link href={projectPath}>
+    <Link href={projectPath} style={{ display: "block", height: "100%" }}>
       <Card.Root
+        h="full"
         _hover={{ shadow: "2dp" }}
         transition="box-shadow 0.2s ease-in-out"
         borderRadius="8px"
@@ -58,17 +59,21 @@ export default function ProjectCard({
               <Icon as={MdPublic} boxSize="24px" color="interactive.control" />
             </Tooltip>
             <BodyMedium>{totalCountries}</BodyMedium>
-            <Tooltip
-              content={t("states-provinces-tooltip-label")}
-              positioning={{ placement: "bottom" }}
-              showArrow
-            >
-              <GlobeLocationPinIcon
-                boxSize="24px"
-                color="interactive.control"
-              />
-            </Tooltip>
-            <BodyMedium>{totalStates}</BodyMedium>
+            {totalStates > 0 && (
+              <>
+                <Tooltip
+                  content={t("states-provinces-tooltip-label")}
+                  positioning={{ placement: "bottom" }}
+                  showArrow
+                >
+                  <GlobeLocationPinIcon
+                    boxSize="24px"
+                    color="interactive.control"
+                  />
+                </Tooltip>
+                <BodyMedium>{totalStates}</BodyMedium>
+              </>
+            )}
             <Tooltip
               content={t("cities-tooltip-label")}
               positioning={{ placement: "bottom" }}

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import type { CityDashboardResponse } from "@/util/types";
 
 // Browser contract tests use real components and RTK requests with deterministic
 // responses. Database persistence and authorization are covered by service/API tests.
@@ -110,12 +111,32 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
       return route.fulfill({
         json: { data: { cityId, name: "Krakow", country: "Poland" } },
       });
+    if (url.pathname === `/api/v1/city/${cityId}/dashboard/`)
+      return route.fulfill({
+        json: {
+          data: {
+            city: { cityId, name: "Krakow", country: "Poland" },
+            inventories: [],
+            population: null,
+            organization: null,
+            widgets: { ghgi: null, hiap: null, ccra: null },
+          } satisfies CityDashboardResponse,
+        },
+      });
+    if (url.pathname === `/api/v1/city/${cityId}/years/`)
+      return route.fulfill({ json: { data: { city: { cityId }, years: [] } } });
     if (url.pathname === "/api/v1/user/projects/")
       return route.fulfill({ json: [] });
     if (url.pathname.includes("/modules/") && url.pathname.endsWith("/access/"))
       return route.fulfill({ json: { data: { hasAccess: true } } });
     if (!url.pathname.includes(`/concept-notes/${runId}`))
       return route.fulfill({ json: { data: [] } });
+    if (url.pathname.endsWith("/context-bundle/refresh/"))
+      return route.fulfill({ json: { run_id: runId, status: "current" } });
+    if (url.pathname.endsWith("/structure/"))
+      return route.fulfill({
+        json: { fingerprint: "a".repeat(64), chapters: [] },
+      });
     if (url.pathname.endsWith("/funding-catalogue/"))
       return route.fulfill({ json: { funders } });
     if (url.pathname.endsWith("/application-context/")) {

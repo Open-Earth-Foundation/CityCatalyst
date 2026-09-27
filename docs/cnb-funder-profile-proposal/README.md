@@ -1,33 +1,38 @@
-# CNB funder profile creation · design proposal (CC-870)
+# CNB: add a funder from a document or by hand · design proposal (CC-870)
 
 Open [`index.html`](./index.html) in a browser. No build, no server, it is self-contained.
 
 ## What this is
 
-A click-through mockup and data-model proposal for
+A click-through mockup for
 [CC-870](https://linear.app/openearth/issue/CC-870/cnb-add-funder-profiles-through-a-form-or-document-upload):
-letting a Concept Note Builder user create a funder profile either through a
-structured form or by uploading a funder document and reviewing the extracted
-profile before saving.
+adding a funder that is not in the catalogue, either from an uploaded funder
+document or by hand, and reviewing it before it is added.
 
-Selecting an existing funder is already implemented on `develop` and is shown
-only as the entry point.
+The proposal adds **only a new ingestion path**:
+
+- **UI:** reuses the existing `FundingSelectionDialog` (rail and details pane),
+  the funding details views, the upload rows with retry, and the Context cards.
+  The add flow is a new state of the same dialog, not a new modal.
+- **Data:** no changes to `funders`, `funding_opportunities` or
+  `funder_templates`. The review form edits exactly those columns. Per-field
+  provenance goes in the existing `source_documents` and `funding_evidence`
+  tables.
+- **Extraction:** produces the existing `FundingOpportunityResearchBundle`
+  shape, so an added funder is an ordinary catalogue row.
 
 ## Contents
 
-- **Step 0** entry point inside the existing "Choose a funder" dialog
-- **Step 1** method choice (document or from scratch)
-- **Step 2A** structured form, including the validation state
-- **Step 2B** upload flow in four states: idle, processing, failed with retry, ready
-- **Step 3** review table with per-field provenance (entered / extracted / edited / missing),
-  evidence quotes and confidence
-- **Step 4** funder saved on the run, plus the reload state with a pending extraction
-- **Data model** extensions to `cnb.funders`, a new `funder_profile_extractions` job table,
-  the `profile_fields` provenance JSON, and Pydantic / TypeScript contracts
-- **API** run-scoped endpoints; only two are conceptually new
+1. Entry point in the funder list rail (also shown when search finds nothing)
+2. Choose between uploading a document and entering details by hand
+3. Reading the document: processing, failed with retry, and ready states, plus the Context card while an import is pending
+4. Review: funder, programme and application template, with where each value came from
+5. Added and selected through the existing application-context save; Context cards unchanged
+6. By-hand path and its validation
+7. Mapping of each reviewed field to an existing column, the pipeline, and four new endpoints
 
 ## Open decisions
 
-- User-created funders are scoped to the city rather than the global catalogue.
-- Only the funder name is required to save; other gaps surface in the drafting checklist.
-- The "other agreed fields" from the ticket still need confirming with the pilot cities.
+- `funders` has no city or owner column, so added funders join the shared catalogue unless we add scoping.
+- What happens when the document has no application template (enter chapters by hand, block, or use a generic template).
+- Whether editing an added funder later is in scope.

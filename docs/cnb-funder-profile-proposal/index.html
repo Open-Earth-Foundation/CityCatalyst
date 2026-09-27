@@ -3,671 +3,458 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CC-870 · Create funder profile via form or document upload · Mockup + data model</title>
+<title>CC-870 · Add a funder from a document or by hand · Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
+  /* Tokens copied from app/src/lib/theme/recipes/app-theme.ts (blue_theme + sentiment) */
   :root{
-    --brand:#2351DC; --brand-50:#EEF2FF; --brand-100:#DDE4FF;
-    --ink:#1F2937; --ink-2:#4B5563; --ink-3:#6B7280;
-    --line:#E5E7EB; --line-2:#D1D5DB; --bg:#F7F8FB; --card:#FFFFFF;
-    --ok:#15803D; --ok-bg:#DCFCE7; --warn:#B45309; --warn-bg:#FEF3C7;
-    --err:#B91C1C; --err-bg:#FEE2E2; --info:#1D4ED8; --info-bg:#DBEAFE;
-    --violet:#6D28D9; --violet-bg:#EDE9FE;
-    --radius:12px; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --content-primary:#00001F; --content-secondary:#232640; --content-tertiary:#4B4C63; --content-link:#2351DC;
+    --bg-neutral:#E8EAFB; --bg-alt-light:#F9FAFE; --bg-overlay:#C5CBF5; --bg-gray:#F4F4F5; --base-light:#FFFFFF;
+    --border-neutral:#D7D8FA; --border-overlay:#E6E7FF;
+    --positive:#24BE00; --positive-overlay:#EFFDE5; --warning:#F9A200; --warning-overlay:#FEF8E1; --warning-fg:#92310A;
+    --negative:#F23D33; --negative-overlay:#FFEAEE;
+    --radius:4px;
   }
   *{box-sizing:border-box}
-  body{margin:0;font:15px/1.5 -apple-system,"Segoe UI",Roboto,Inter,sans-serif;color:var(--ink);background:var(--bg)}
-  header.page{background:var(--card);border-bottom:1px solid var(--line);padding:28px 40px}
-  header.page h1{margin:0 0 6px;font-size:24px}
-  header.page p{margin:0;color:var(--ink-2)}
-  nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-  nav.toc a{font-size:13px;color:var(--brand);background:var(--brand-50);border:1px solid var(--brand-100);padding:4px 10px;border-radius:999px;text-decoration:none}
-  main{max-width:1180px;margin:0 auto;padding:32px 40px 80px}
-  section.step{margin:0 0 56px}
-  .step-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
-  .step-num{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
-  .step-head h2{margin:0;font-size:20px}
-  .step-note{color:var(--ink-2);margin:0 0 18px;max-width:820px}
-  .step-note b{color:var(--ink)}
-  .frame{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 1px 2px rgba(16,24,40,.05);overflow:hidden}
-  .frame + .frame{margin-top:20px}
-  .frame-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid var(--line);background:#FAFBFF;font-size:12px;color:var(--ink-3)}
-  .frame-bar b{color:var(--ink-2);font-weight:600}
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  @media (max-width:900px){.grid-2{grid-template-columns:1fr}}
+  body{margin:0;font:14px/1.5 "Open Sans",system-ui,sans-serif;color:var(--content-primary);background:#EDEEF6}
+  h1,h2,h3,h4{font-family:Poppins,system-ui,sans-serif;font-weight:600;margin:0}
+  /* Page chrome (not product UI) */
+  .doc-head{background:#fff;border-bottom:1px solid var(--border-neutral);padding:24px 40px}
+  .doc-head h1{font-size:22px}
+  .doc-head p{margin:6px 0 0;color:var(--content-tertiary);max-width:920px}
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .toc a{font-size:12px;color:var(--content-link);border:1px solid var(--border-neutral);background:var(--bg-alt-light);padding:3px 10px;border-radius:999px;text-decoration:none}
+  main{max-width:1180px;margin:0 auto;padding:28px 40px 80px}
+  section.frame{margin:0 0 56px}
+  .frame-label{font:600 11px/1 Poppins;letter-spacing:.1em;text-transform:uppercase;color:var(--content-link)}
+  .frame h2{font-size:18px;margin:6px 0 4px}
+  .frame-note{color:var(--content-tertiary);margin:0 0 16px;max-width:880px}
+  .frame-note b{color:var(--content-primary)}
+  .reuse{display:inline-block;font-size:11px;background:var(--positive-overlay);color:#1a7a00;border-radius:999px;padding:1px 8px;margin-left:6px;font-weight:600}
+  .new{display:inline-block;font-size:11px;background:var(--warning-overlay);color:var(--warning-fg);border-radius:999px;padding:1px 8px;margin-left:6px;font-weight:600}
 
-  /* workspace card (existing look) */
-  .workspace{padding:22px;display:grid;grid-template-columns:260px 1fr;gap:22px}
-  .side{display:flex;flex-direction:column;gap:12px}
-  .card{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--card)}
-  .card.empty{border-style:dashed;text-align:center;color:var(--ink-3)}
-  .card h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
-  .card .title{font-weight:600;color:var(--ink)}
-  .muted{color:var(--ink-3);font-size:13px}
-  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:8px;padding:9px 14px;font-weight:600;font-size:14px;border:1px solid transparent;cursor:default;white-space:nowrap}
-  .btn.primary{background:var(--brand);color:#fff}
-  .btn.secondary{background:#fff;color:var(--brand);border-color:var(--brand)}
-  .btn.ghost{background:transparent;color:var(--ink-2);border-color:var(--line-2)}
-  .btn.sm{padding:6px 10px;font-size:13px}
-  .btn.danger{background:var(--err);color:#fff}
-  .btn.disabled{opacity:.45}
-
-  /* dialog */
-  .dialog{padding:0}
-  .dialog-head{padding:20px 24px 14px;border-bottom:1px solid var(--line)}
-  .dialog-head h3{margin:0 0 4px;font-size:18px}
-  .dialog-head p{margin:0;color:var(--ink-2);font-size:14px}
-  .dialog-body{padding:20px 24px}
-  .dialog-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 24px;border-top:1px solid var(--line);background:#FAFAFB}
-  .dialog-foot .right{display:flex;gap:10px}
-  .search{border:1px solid var(--line-2);border-radius:8px;padding:9px 12px;color:var(--ink-3);background:#fff}
-  .list{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:12px}
-  .list .row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
-  .list .row:last-child{border-bottom:0}
-  .list .row.sel{background:var(--brand-50)}
-  .list .row .n{font-weight:600}
-  .list .row .m{font-size:12px;color:var(--ink-3)}
-  .divider{display:flex;align-items:center;gap:12px;color:var(--ink-3);font-size:12px;margin:18px 0 12px;text-transform:uppercase;letter-spacing:.06em}
-  .divider:before,.divider:after{content:"";flex:1;height:1px;background:var(--line)}
-  .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .choice{border:1px solid var(--line-2);border-radius:10px;padding:16px;display:flex;gap:12px;align-items:flex-start}
-  .choice.rec{border-color:var(--brand);background:var(--brand-50)}
-  .choice .ico{width:36px;height:36px;border-radius:8px;background:var(--brand-100);display:grid;place-items:center;color:var(--brand);font-weight:700;flex:none}
-  .choice .t{font-weight:600}
-  .choice .d{font-size:13px;color:var(--ink-2);margin-top:2px}
-
-  /* form */
-  .form{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
-  .form .full{grid-column:1/-1}
-  label.f{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:4px}
-  label.f .req{color:var(--err)}
-  label.f .opt{color:var(--ink-3);font-weight:400}
-  .in{border:1px solid var(--line-2);border-radius:8px;padding:9px 12px;background:#fff;min-height:40px;color:var(--ink)}
-  .in.ph{color:var(--ink-3)}
-  .in.ta{min-height:84px}
-  .in.err{border-color:var(--err)}
-  .help{font-size:12px;color:var(--ink-3);margin-top:4px}
-  .help.err{color:var(--err)}
-  .tags{display:flex;flex-wrap:wrap;gap:6px}
-  .tag{background:var(--brand-50);border:1px solid var(--brand-100);color:var(--brand);border-radius:999px;padding:2px 10px;font-size:13px}
-  .tag.plain{background:#F3F4F6;border-color:var(--line);color:var(--ink-2)}
-  .inline{display:flex;gap:8px}
-  .inline .in{flex:1}
-  .inline .in.cur{flex:0 0 90px}
-
-  /* badges */
-  .badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;line-height:1.5;white-space:nowrap}
-  .badge.entered{background:var(--info-bg);color:var(--info)}
-  .badge.extracted{background:var(--violet-bg);color:var(--violet)}
-  .badge.edited{background:var(--warn-bg);color:var(--warn)}
-  .badge.missing{background:#F3F4F6;color:var(--ink-3)}
-  .badge.ok{background:var(--ok-bg);color:var(--ok)}
-  .badge.err{background:var(--err-bg);color:var(--err)}
-  .badge.proc{background:var(--brand-50);color:var(--brand)}
-  .dot{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
-
-  /* upload */
-  .drop{border:2px dashed var(--line-2);border-radius:12px;padding:34px;text-align:center;color:var(--ink-2);background:#FAFAFB}
-  .drop b{color:var(--brand)}
-  .file{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:12px}
-  .file .fi{width:38px;height:44px;border-radius:6px;background:#F3F4F6;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ink-2);flex:none}
-  .file .fn{font-weight:600}
-  .file .fm{font-size:12px;color:var(--ink-3)}
-  .file .sp{margin-left:auto;display:flex;align-items:center;gap:10px}
-  .steps{display:flex;gap:0;margin-top:16px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-  .steps .s{flex:1;padding:12px 14px;border-right:1px solid var(--line);font-size:13px}
-  .steps .s:last-child{border-right:0}
-  .steps .s .l{font-weight:600;display:flex;align-items:center;gap:8px}
-  .steps .s .h{color:var(--ink-3);margin-top:2px;font-size:12px}
-  .steps .s.done{background:var(--ok-bg)}
-  .steps .s.now{background:var(--brand-50)}
-  .steps .s.fail{background:var(--err-bg)}
-  .bar{height:6px;background:#EEF0F4;border-radius:999px;overflow:hidden;margin-top:12px}
-  .bar i{display:block;height:100%;width:62%;background:var(--brand)}
-  .alert{border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;margin-top:14px}
-  .alert.err{background:var(--err-bg);color:#7F1D1D;border:1px solid #FCA5A5}
-  .alert.warn{background:var(--warn-bg);color:#78350F;border:1px solid #FCD34D}
-  .alert.info{background:var(--info-bg);color:#1E3A8A;border:1px solid #93C5FD}
+  /* ---------- Product UI: mirrors funding-selection-dialog.tsx ---------- */
+  .dialog{background:#fff;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,31,.14);max-width:1100px;overflow:hidden}
+  .d-head{padding:20px 24px 16px;border-bottom:1px solid var(--border-neutral);position:relative}
+  .d-head h3{font-size:20px}
+  .d-head p{margin:4px 0 0;color:var(--content-secondary);font-size:14px}
+  .d-close{position:absolute;right:18px;top:18px;color:var(--content-tertiary)}
+  .d-body{display:flex;min-height:560px}
+  .rail{width:34%;flex-shrink:0;background:var(--bg-alt-light);border-right:1px solid var(--border-neutral);display:flex;flex-direction:column}
+  .rail-search{padding:16px 16px 8px}
+  .input{display:flex;align-items:center;gap:8px;border:1px solid var(--border-neutral);border-radius:var(--radius);background:#fff;padding:0 12px;height:40px;color:var(--content-tertiary);font-size:14px}
+  .input.filled{color:var(--content-primary)}
+  .count{margin-top:8px;font-size:12px;color:var(--content-tertiary)}
+  .rail-list{padding:0 8px 12px;flex:1}
+  .f-row{display:flex;gap:12px;align-items:flex-start;min-height:76px;padding:12px;border-left:3px solid transparent;border-radius:var(--radius)}
+  .f-row.sel{background:#fff;border-left-color:var(--content-link)}
+  .f-row .ic{color:var(--content-link);flex-shrink:0;margin-top:2px}
+  .f-name{font-weight:600;font-size:14px}
+  .f-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px}
+  .pill{font-size:10px;line-height:16px;padding:0 6px;border-radius:999px;border:1px solid var(--border-neutral);color:var(--content-secondary);white-space:nowrap}
+  .lbl-sm{font-size:12px;color:var(--content-tertiary)}
+  .rail-foot{border-top:1px solid var(--border-neutral);padding:12px 16px}
+  .add-btn{display:flex;align-items:center;gap:8px;width:100%;border:1px dashed var(--content-link);color:var(--content-link);background:#fff;border-radius:var(--radius);padding:10px 12px;font-weight:600;font-size:14px}
+  .add-btn small{display:block;font-weight:400;color:var(--content-tertiary);font-size:12px}
+  .pane{flex:1;min-width:0;padding:24px;display:flex;flex-direction:column;gap:24px}
+  .pane h3{font-size:18px}
+  .sub{margin-top:4px;color:var(--content-tertiary);font-size:14px}
+  .sec{border-top:1px solid var(--border-neutral);padding-top:20px}
+  .sec h4{font-size:16px;margin-bottom:12px}
+  .sec-cap{font-size:12px;color:var(--content-tertiary);margin:-8px 0 12px}
+  .opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--border-neutral);border-radius:var(--radius);padding:12px;flex:1}
+  .opt.sel{border-color:var(--content-link)}
+  .opt .ic{color:var(--content-link);margin-top:2px}
+  .opt b{font-size:14px}
+  .opt p{margin:4px 0 0;font-size:12px;color:var(--content-tertiary)}
+  .dropzone{border:1px dashed var(--border-neutral);border-radius:var(--radius);min-height:116px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--content-secondary);background:var(--bg-alt-light)}
+  .dropzone a{color:var(--content-link);font-weight:600}
+  .file-row{display:flex;align-items:center;gap:10px;border:1px solid var(--border-neutral);border-radius:var(--radius);padding:10px 12px}
+  .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .file-row .fn{font-weight:600;font-size:14px}
+  .file-row .spacer{flex:1}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .badge i{width:6px;height:6px;border-radius:50%;display:inline-block}
+  .b-pos{background:var(--positive-overlay);color:#1a7a00}.b-pos i{background:var(--positive)}
+  .b-neu{background:var(--bg-neutral);color:var(--content-secondary)}.b-neu i{background:var(--content-link)}
+  .b-warn{background:var(--warning-overlay);color:var(--warning-fg)}.b-warn i{background:var(--warning)}
+  .b-neg{background:var(--negative-overlay);color:#b3261e}.b-neg i{background:var(--negative)}
+  .stages{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border-neutral);border-radius:var(--radius);overflow:hidden}
+  .stage{padding:10px 12px;font-size:12px;border-right:1px solid var(--border-neutral);color:var(--content-tertiary)}
+  .stage:last-child{border-right:0}
+  .stage b{display:block;font-size:13px;color:var(--content-primary)}
+  .stage.done{background:var(--positive-overlay)}
+  .stage.run{background:var(--bg-neutral)}
+  .stage.fail{background:var(--negative-overlay)}
+  .alert{display:flex;gap:10px;align-items:flex-start;border-radius:var(--radius);padding:12px;font-size:14px}
+  .alert.neg{background:var(--negative-overlay);color:#7a1a14}
+  .alert.warn{background:var(--warning-overlay)}
+  .alert.info{background:var(--bg-alt-light);border:1px solid var(--border-neutral)}
   .alert b{display:block}
-  .alert .acts{margin-left:auto;display:flex;gap:8px;flex:none}
-
-  /* review table */
-  .review{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-  .review th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:10px 12px;background:#FAFBFF;border-bottom:1px solid var(--line)}
-  .review td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
-  .review tr:last-child td{border-bottom:0}
-  .review .k{font-weight:600;white-space:nowrap}
-  .review .k small{display:block;color:var(--ink-3);font-weight:400}
-  .review .v .in{min-height:36px;padding:7px 10px}
-  .review .ev{font-size:12px;color:var(--ink-2);border-left:3px solid var(--violet-bg);padding-left:8px;margin-top:6px;font-style:italic}
-  .review .ev span{font-style:normal;color:var(--ink-3)}
-  .review .conf{font-size:12px;color:var(--ink-3)}
-  .legend{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 0;font-size:13px;color:var(--ink-2);align-items:center}
-  .summary-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-
-  /* saved profile */
-  .kv{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:14px}
-  .kv .k{color:var(--ink-3)}
-  .kv .v{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-
-  /* data model */
-  pre{background:#0F172A;color:#E2E8F0;border-radius:12px;padding:18px 20px;overflow:auto;font:13px/1.55 var(--mono);margin:0}
-  pre .c{color:#94A3B8}
-  pre .k{color:#7DD3FC}
-  pre .s{color:#FDE68A}
-  pre .t{color:#C4B5FD}
-  .dm-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  @media (max-width:1000px){.dm-grid{grid-template-columns:1fr}}
-  .dm h3{margin:0 0 8px;font-size:16px}
-  .dm p{margin:0 0 10px;color:var(--ink-2);font-size:14px}
-  table.api{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-  table.api th,table.api td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-  table.api th{background:#FAFBFF;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
-  table.api tr:last-child td{border-bottom:0}
-  code{font:12.5px var(--mono);background:#F3F4F6;padding:1px 6px;border-radius:5px}
-  .er{display:flex;gap:14px;flex-wrap:wrap}
-  .ent{border:1px solid var(--line);border-radius:10px;background:#fff;min-width:250px;flex:1}
-  .ent .eh{padding:8px 12px;font-weight:700;border-bottom:1px solid var(--line);background:#FAFBFF;display:flex;justify-content:space-between;align-items:center}
-  .ent .eh small{font-weight:500;color:var(--ink-3)}
-  .ent ul{list-style:none;margin:0;padding:8px 12px;font:12.5px/1.7 var(--mono)}
-  .ent li.new{color:var(--brand)}
-  .ent li.pk{font-weight:700}
-  .ent li.fk:after{content:" →";color:var(--ink-3)}
-  .ent.new .eh{background:var(--brand-50);border-color:var(--brand-100)}
-  .ent.new{border-color:var(--brand-100)}
-  .footer{color:var(--ink-3);font-size:13px;margin-top:40px}
+  .btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:var(--radius);font:600 13px "Open Sans";border:1px solid var(--border-neutral);background:#fff;color:var(--content-primary);white-space:nowrap}
+  .btn.solid{background:var(--content-link);border-color:var(--content-link);color:#fff}
+  .btn.solid.dis{opacity:.45}
+  .btn.link{border:0;background:none;color:var(--content-link);text-decoration:underline}
+  .btn.xs{height:26px;font-size:12px;padding:0 8px}
+  .d-foot{border-top:1px solid var(--border-neutral);padding:16px}
+  .foot-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .foot-row .who{flex:1;min-width:160px}
+  .foot-row .who b{font-size:14px;display:block}
+  /* review form */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px}
+  .field label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--content-tertiary);margin-bottom:4px}
+  .field .col{font-family:ui-monospace,Consolas,monospace;font-size:10px;color:var(--content-tertiary);opacity:.8;margin-left:auto}
+  .ctl{border:1px solid var(--border-neutral);border-radius:var(--radius);background:#fff;padding:8px 10px;font-size:14px;min-height:38px}
+  .ctl.empty{color:var(--content-tertiary);font-style:italic}
+  .ctl.area{min-height:64px}
+  .ctl.warn{border-color:var(--warning)}
+  .src{margin-top:6px;border-left:2px solid var(--border-neutral);padding-left:8px;font-size:12px;color:var(--content-tertiary)}
+  .src q{font-style:italic}
+  .tags{display:flex;flex-wrap:wrap;gap:6px}
+  .tag{font-size:12px;border:1px solid var(--border-neutral);background:var(--bg-alt-light);border-radius:999px;padding:1px 8px}
+  .full{grid-column:1/-1}
+  .facts{border:1px solid var(--border-neutral);border-radius:var(--radius)}
+  .fact{display:grid;grid-template-columns:180px 1fr auto;gap:12px;padding:10px 12px;border-top:1px solid var(--border-neutral);align-items:start}
+  .fact:first-child{border-top:0}
+  .fact .k{font-size:12px;color:var(--content-tertiary);font-family:ui-monospace,Consolas,monospace}
+  .chap{display:grid;grid-template-columns:28px 1fr auto;gap:10px;padding:10px 0;border-top:1px solid var(--border-neutral)}
+  .chap .n{font-weight:600;color:var(--content-tertiary)}
+  .chap b{font-size:14px}
+  .chap p{margin:2px 0 6px;font-size:13px;color:var(--content-secondary)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--content-tertiary);align-items:center}
+  dl.details{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;margin:0}
+  dl.details dt{font-size:12px;color:var(--content-tertiary)}
+  dl.details dd{margin:2px 0 0;font-size:14px}
+  /* context tab */
+  .ctx{background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,31,.08);padding:20px;max-width:1100px}
+  .ctx-label{font:600 10px/1 "Open Sans";letter-spacing:.12em;text-transform:uppercase;color:var(--content-tertiary);margin-bottom:10px}
+  .ctx-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .card{border:1px solid var(--border-neutral);border-radius:var(--radius);padding:12px;min-height:128px;display:flex;flex-direction:column;gap:6px}
+  .card-top{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--content-tertiary);font-weight:600}
+  .card .val{font-weight:600;font-size:14px}
+  .card .det{font-size:10px;color:var(--content-tertiary)}
+  /* doc tables */
+  table.map{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;font-size:13px;box-shadow:0 1px 3px rgba(0,0,31,.08)}
+  table.map th{text-align:left;font:600 11px Poppins;letter-spacing:.06em;text-transform:uppercase;color:var(--content-tertiary);background:var(--bg-alt-light);padding:10px 12px;border-bottom:1px solid var(--border-neutral)}
+  table.map td{padding:9px 12px;border-bottom:1px solid var(--border-overlay);vertical-align:top}
+  table.map code,.frame-note code,li code,p code{font:12px ui-monospace,Consolas,monospace;background:var(--bg-neutral);padding:1px 5px;border-radius:3px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .panel{background:#fff;border-radius:8px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,31,.08)}
+  .panel h3{font-size:15px;margin-bottom:8px}
+  .panel ul,.panel ol{margin:0;padding-left:18px}
+  .panel li{margin:4px 0}
+  pre{background:#0f1330;color:#dfe3ff;border-radius:8px;padding:14px 16px;font:12px/1.55 ui-monospace,Consolas,monospace;overflow:auto;margin:0}
+  svg.i{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+  svg.i.lg{width:32px;height:32px}
 </style>
 </head>
 <body>
-<header class="page">
-  <h1>CC-870 · Create a funder profile through a form or document upload</h1>
-  <p>Concept Note Builder (CNB). Click-through mockup of each step plus the proposed data model. Selecting an existing funder already exists in dev and is shown only as the entry point.</p>
+<!-- Lucide icons, same set the dialog imports (react-icons/lu) -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="landmark" viewBox="0 0 24 24"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></symbol>
+  <symbol id="file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+  <symbol id="refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+  <symbol id="alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></symbol>
+  <symbol id="plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="pencil" viewBox="0 0 24 24"><path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+</svg>
+
+<header class="doc-head">
+  <h1>CC-870 · Add a funder that isn't in the catalogue</h1>
+  <p>Mockup of the one new path: getting a funder, its programme and its application template <b>into the existing catalogue</b> from a document or by hand. Every screen reuses the funding dialog, Context cards and upload rows already on <code>develop</code> (the CC-873 / CC-858 / CC-871 implementation of Carlos's CNB screens). The funder, programme and template tables are <b>not changed</b>. The result is an ordinary catalogue row that the existing selection, application context and drafting already handle.</p>
   <nav class="toc">
-    <a href="#s0">0 · Entry point (existing)</a>
-    <a href="#s1">1 · Choose method</a>
-    <a href="#s2a">2A · Form</a>
-    <a href="#s2b">2B · Upload &amp; processing</a>
-    <a href="#s3">3 · Review extracted profile</a>
-    <a href="#s4">4 · Saved on the run</a>
-    <a href="#dm">Data model</a>
-    <a href="#api">API</a>
+    <a href="#f1">1 · Entry point</a><a href="#f2">2 · Choose how</a><a href="#f3">3 · Reading the document</a>
+    <a href="#f4">4 · Review before adding</a><a href="#f5">5 · Added and selected</a><a href="#f6">6 · By hand</a>
+    <a href="#map">Data: existing columns only</a><a href="#pipe">Ingestion pipeline</a><a href="#open">Open decisions</a>
   </nav>
 </header>
 
 <main>
 
-<!-- ───────────────────────── STEP 0 ───────────────────────── -->
-<section class="step" id="s0">
-  <div class="step-head"><span class="step-num">Step 0</span><h2>Entry point inside the existing funding dialog</h2></div>
-  <p class="step-note">Selecting an existing funder is already in dev. The only change here is a <b>“Create a new funder”</b> section at the bottom of that dialog, so the empty card leads to creation as well.</p>
-
-  <div class="frame">
-    <div class="frame-bar"><b>Workspace · Context tab</b><span>state: no funder yet</span></div>
-    <div class="workspace">
-      <div class="side">
-        <div class="card empty">
-          <h4>Funder</h4>
-          <div class="title" style="color:var(--ink-2)">No funder selected</div>
-          <div class="muted" style="margin:6px 0 12px">Needed before drafting can start.</div>
-          <span class="btn primary sm">Select or create funder</span>
+<!-- ===================== 1 ===================== -->
+<section class="frame" id="f1">
+  <div class="frame-label">Frame 1</div>
+  <h2>Entry point: bottom of the funder list <span class="new">new: rail footer</span></h2>
+  <p class="frame-note">Same <code>FundingSelectionDialog</code> as today (search, count, funder rows, empty "Explore a funder" pane). The only addition is a pinned footer in the left rail. It also shows when a search has no results, so a user who searched for the funder sees it straight away.</p>
+  <div class="dialog">
+    <div class="d-head"><h3>Choose funding for this concept note</h3><p>Browse funders, compare their programmes and preview the application template before saving.</p><svg class="i d-close"><use href="#x"/></svg></div>
+    <div class="d-body">
+      <div class="rail">
+        <div class="rail-search">
+          <div class="input filled"><svg class="i"><use href="#search"/></svg>Green Cities</div>
+          <div class="count">0 of 1 funders</div>
         </div>
-        <div class="card empty"><h4>Programme</h4><div class="muted">Pick a funder first</div></div>
-        <div class="card empty"><h4>Template</h4><div class="muted">Pick a programme first</div></div>
+        <div class="rail-list"><p style="padding:16px;margin:0;color:var(--content-secondary);font-size:14px">No funders match your search.</p></div>
+        <div class="rail-foot">
+          <div class="add-btn"><svg class="i"><use href="#plus"/></svg><span>Add a funder that isn't listed<small>From a call document, or by hand</small></span></div>
+        </div>
       </div>
-      <div class="frame dialog" style="box-shadow:0 10px 30px rgba(16,24,40,.12)">
-        <div class="dialog-head">
-          <h3>Choose a funder</h3>
-          <p>Pick a funder from the catalogue or create a new profile for this city.</p>
+      <div class="pane" style="justify-content:center">
+        <div><svg class="i lg" style="color:var(--content-link)"><use href="#landmark"/></svg>
+        <h3 style="margin-top:12px">Explore a funder</h3>
+        <p class="sub">Choose a funder from the list to see its profile, programmes and templates.</p></div>
+      </div>
+    </div>
+    <div class="d-foot"><div class="foot-row"><div class="who"><b>No funder selected</b><span class="lbl-sm">No application template selected</span></div><span class="btn link">Clear selection</span><span class="btn">Cancel</span><span class="btn solid dis">Save selection</span></div></div>
+  </div>
+</section>
+
+<!-- ===================== 2 ===================== -->
+<section class="frame" id="f2">
+  <div class="frame-label">Frame 2</div>
+  <h2>Choose how to add it: same dialog, right pane <span class="reuse">reuses dropzone</span></h2>
+  <p class="frame-note">No second modal. The rail shows a temporary <b>New funder</b> row, highlighted like any selected funder, and the right pane switches to the add flow. The two options use the same outline selection buttons as the programme picker. The dropzone is the <code>FileUploadDropzone</code> from the new-concept-note dialog, limited to one file.</p>
+  <div class="dialog">
+    <div class="d-head"><h3>Choose funding for this concept note</h3><p>Browse funders, compare their programmes and preview the application template before saving.</p><svg class="i d-close"><use href="#x"/></svg></div>
+    <div class="d-body">
+      <div class="rail">
+        <div class="rail-search"><div class="input"><svg class="i"><use href="#search"/></svg>Name, region, sector or programme</div><div class="count">1 of 1 funders</div></div>
+        <div class="rail-list">
+          <div class="f-row"><svg class="i ic"><use href="#landmark"/></svg><div><div class="f-name">European Union LIFE Programme</div><div class="f-meta"><span class="pill">Multilateral</span><span class="lbl-sm">EU</span></div><div class="lbl-sm" style="margin-top:4px">1 programme</div></div></div>
+          <div class="f-row sel"><svg class="i ic"><use href="#plus"/></svg><div><div class="f-name">New funder</div><div class="lbl-sm" style="margin-top:4px">Not added yet</div></div></div>
         </div>
-        <div class="dialog-body">
-          <div class="search">🔍 Search funders by name, country or type…</div>
-          <div class="list">
-            <div class="row"><div><div class="n">Green Climate Fund</div><div class="m">Multilateral · Global · 3 programmes</div></div><span class="btn ghost sm">Select</span></div>
-            <div class="row"><div><div class="n">Fundo Clima (BNDES)</div><div class="m">National development bank · Brazil · 2 programmes</div></div><span class="btn ghost sm">Select</span></div>
-            <div class="row"><div><div class="n">C40 Cities Finance Facility</div><div class="m">City network · Global · 1 programme</div></div><span class="btn ghost sm">Select</span></div>
+      </div>
+      <div class="pane">
+        <div><h3>Add a funder</h3><p class="sub">You'll add the funder, one of its programmes and the programme's application template. You review everything before it's added.</p></div>
+        <div style="display:flex;gap:8px">
+          <div class="opt sel"><svg class="i ic"><use href="#check"/></svg><div><b>From a document</b><p>Call for proposals, programme guide or application form. We fill in the details and show where each one came from.</p></div></div>
+          <div class="opt"><svg class="i ic"><use href="#pencil"/></svg><div><b>Enter details by hand</b><p>When you only have notes from a meeting or an email.</p></div></div>
+        </div>
+        <div class="dropzone"><svg class="i" style="width:22px;height:22px;color:var(--content-link)"><use href="#upload"/></svg><div>Drop a PDF or Markdown file here, or <a>browse</a></div><div class="lbl-sm">PDF or Markdown · maximum 20 MiB · one file</div></div>
+        <div class="alert info"><div><b style="font-size:13px">Works best with</b><span class="lbl-sm" style="font-size:13px">The official call or programme guide. It usually states eligibility, award size and the sections the application needs.</span></div></div>
+      </div>
+    </div>
+    <div class="d-foot"><div class="foot-row"><div class="who"><b>New funder</b><span class="lbl-sm">No application template selected</span></div><span class="btn">Back to funders</span><span class="btn solid dis">Continue</span></div></div>
+  </div>
+</section>
+
+<!-- ===================== 3 ===================== -->
+<section class="frame" id="f3">
+  <div class="frame-label">Frame 3</div>
+  <h2>Reading the document: processing, failed and ready <span class="reuse">reuses upload rows + retry</span></h2>
+  <p class="frame-note">The file row is the same as in <b>Your files</b> (dot, name, status · pages, status badge, <code>Retry</code> with the refresh icon). The first two stages are the existing concept-note upload pipeline (OCR to Markdown, with retry). Only the third stage is new: reading the funder, programme and template out of that Markdown. Closing the dialog doesn't lose the job. The Funder profile card shows "Reading document…" until it finishes.</p>
+  <div class="two">
+    <div class="dialog"><div class="pane" style="gap:14px">
+      <div class="lbl-sm" style="font-weight:600">Processing</div>
+      <div class="file-row"><span class="dot" style="background:var(--content-link)"></span><svg class="i" style="color:var(--content-tertiary)"><use href="#file"/></svg><div><div class="fn">Green_Cities_Call_2026.pdf</div><div class="lbl-sm">Converting · 38 pages</div></div><span class="spacer"></span><span class="badge b-neu"><i></i>Processing</span></div>
+      <div class="stages"><div class="stage done"><b>✓ Uploaded</b>2.4 MB</div><div class="stage done"><b>✓ Converted</b>38 pages to text</div><div class="stage run"><b>● Reading</b>funder, programme, template</div><div class="stage"><b>○ Ready</b>for your review</div></div>
+      <p class="lbl-sm" style="margin:0">Usually under a minute. You can close this and keep working.</p>
+    </div></div>
+    <div class="dialog"><div class="pane" style="gap:14px">
+      <div class="lbl-sm" style="font-weight:600">Failed</div>
+      <div class="file-row"><span class="dot" style="background:var(--negative)"></span><svg class="i" style="color:var(--content-tertiary)"><use href="#file"/></svg><div><div class="fn">Green_Cities_Call_2026.pdf</div><div class="lbl-sm">Failed · 38 pages</div></div><span class="spacer"></span><span class="badge b-neg"><i></i>Failed</span><span class="btn xs"><svg class="i" style="width:13px;height:13px"><use href="#refresh"/></svg>Retry</span></div>
+      <div class="alert neg"><svg class="i" style="margin-top:2px"><use href="#alert"/></svg><div><b>We couldn't read funder details from this file</b>The file is saved. Retry, upload a different file, or enter the details by hand.</div></div>
+      <div style="display:flex;gap:8px"><span class="btn">Upload a different file</span><span class="btn">Enter details by hand</span></div>
+    </div></div>
+    <div class="dialog"><div class="pane" style="gap:14px">
+      <div class="lbl-sm" style="font-weight:600">Ready</div>
+      <div class="file-row"><span class="dot" style="background:var(--positive)"></span><svg class="i" style="color:var(--content-tertiary)"><use href="#file"/></svg><div><div class="fn">Green_Cities_Call_2026.pdf</div><div class="lbl-sm">Ready · 38 pages</div></div><span class="spacer"></span><span class="badge b-pos"><i></i>Ready</span></div>
+      <div class="alert warn"><div><b>3 details weren't in the document</b>You can fill them in on the next step, or leave them for later.</div></div>
+      <div style="display:flex;justify-content:flex-end"><span class="btn solid">Review details</span></div>
+    </div></div>
+    <div class="ctx">
+      <div class="ctx-label">Funder &amp; similar projects · meanwhile in the Context tab</div>
+      <div class="card"><div class="card-top">Funder profile <span class="btn xs">Open</span></div><span class="badge b-neu" style="align-self:flex-start"><i></i>Reading document</span><div class="val">Green_Cities_Call_2026.pdf</div><div class="det">Funder details will be ready to review shortly</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 4 ===================== -->
+<section class="frame" id="f4">
+  <div class="frame-label">Frame 4</div>
+  <h2>Review before adding: the catalogue's own fields, editable <span class="new">new: edit mode of funding-details</span></h2>
+  <p class="frame-note">This pane is <code>FunderProfile</code> + <code>FundingOpportunityDetails</code> + <code>ApplicationTemplatePreview</code> with editable inputs, so the user checks exactly what the catalogue will show. The fields are the existing columns (grey mono labels are for review only, not product UI). Each value shows its source in the same indented style the dialog already uses for nested profile details. Nothing is saved until <b>Add funder</b>.</p>
+  <div class="dialog">
+    <div class="d-head"><h3>Choose funding for this concept note</h3><p>Browse funders, compare their programmes and preview the application template before saving.</p><svg class="i d-close"><use href="#x"/></svg></div>
+    <div class="d-body">
+      <div class="rail">
+        <div class="rail-search"><div class="input"><svg class="i"><use href="#search"/></svg>Name, region, sector or programme</div><div class="count">1 of 1 funders</div></div>
+        <div class="rail-list">
+          <div class="f-row"><svg class="i ic"><use href="#landmark"/></svg><div><div class="f-name">European Union LIFE Programme</div><div class="f-meta"><span class="pill">Multilateral</span><span class="lbl-sm">EU</span></div><div class="lbl-sm" style="margin-top:4px">1 programme</div></div></div>
+          <div class="f-row sel"><svg class="i ic"><use href="#plus"/></svg><div><div class="f-name">Green Cities Foundation</div><div class="f-meta"><span class="pill">Private foundation</span><span class="lbl-sm">United States</span></div><div class="lbl-sm" style="margin-top:4px">Not added yet · from document</div></div></div>
+        </div>
+      </div>
+      <div class="pane">
+        <div>
+          <h3>Review funder details</h3>
+          <p class="sub">From <b>Green_Cities_Call_2026.pdf</b>. Check each value; anything you change is marked as edited and the original quote is kept.</p>
+          <div class="legend" style="margin-top:10px"><span class="badge b-neu"><i></i>From document</span><span class="badge b-warn"><i></i>Edited</span><span class="badge b-pos"><i></i>Entered</span><span class="badge" style="background:var(--bg-gray);color:var(--content-tertiary)"><i style="background:var(--content-tertiary)"></i>Not in document</span></div>
+        </div>
+
+        <!-- Funder -->
+        <div class="sec" style="border-top:0;padding-top:0">
+          <h4>Funder</h4>
+          <div class="grid2">
+            <div class="field full"><label>Name <span class="badge b-neu"><i></i>From document</span><span class="col">funders.name</span></label><div class="ctl">Green Cities Foundation</div><div class="src">Cover page · p. 1</div></div>
+            <div class="field"><label>Type <span class="badge b-neu"><i></i>From document</span><span class="col">funder_type</span></label><div class="ctl">Private foundation</div><div class="src"><q>…an independent, non-profit private foundation…</q> · p. 2</div></div>
+            <div class="field"><label>Country <span class="badge b-neu"><i></i>From document</span><span class="col">country</span></label><div class="ctl">United States</div><div class="src"><q>…headquartered in Washington, DC…</q> · p. 38</div></div>
+            <div class="field full"><label>Region <span class="badge" style="background:var(--bg-gray);color:var(--content-tertiary)"><i style="background:var(--content-tertiary)"></i>Not in document</span><span class="col">region</span></label><div class="ctl empty">Not stated. Type it or leave empty</div></div>
           </div>
-          <div class="divider">or</div>
-          <div class="choices">
-            <div class="choice"><div class="ico">✎</div><div><div class="t">Fill out a form</div><div class="d">Enter name, priorities, eligibility, geography and typical award by hand.</div></div></div>
-            <div class="choice rec"><div class="ico">⤒</div><div><div class="t">Upload a funder document</div><div class="d">PDF, DOCX or a web page export. We extract a draft profile you review before saving.</div></div></div>
+          <p class="sec-cap" style="margin:16px 0 8px">Profile facts: what the funder says about itself (shown under the funder name in the catalogue) <span class="col" style="font-family:ui-monospace,Consolas,monospace;font-size:10px">profile.stated / profile.derived</span></p>
+          <div class="facts">
+            <div class="fact"><span class="k">purpose</span><div><div>Helps cities reduce climate risk through nature-based solutions.</div><div class="src"><q>…our mission is to help cities reduce climate risk with nature…</q> · p. 2</div></div><span class="badge b-neu"><i></i>Stated</span></div>
+            <div class="fact"><span class="k">focus_areas</span><div><div>Nature-based solutions; urban biodiversity; coastal protection</div><div class="src">Section 3 “Thematic areas” · p. 5</div></div><span class="badge b-neu"><i></i>Stated</span></div>
+            <div class="fact"><span class="k">city_fit</span><div><div>Suited to municipal nature-based pilots in Latin America.</div><div class="src">Derived from eligibility and geography sections · p. 6–8</div></div><span class="badge" style="background:var(--bg-gray);color:var(--content-tertiary)"><i style="background:var(--content-tertiary)"></i>Derived</span></div>
           </div>
         </div>
-        <div class="dialog-foot"><span class="muted">New funders are visible to this city only.</span><div class="right"><span class="btn ghost">Cancel</span></div></div>
+
+        <!-- Programme -->
+        <div class="sec">
+          <h4>Programme</h4>
+          <div class="grid2">
+            <div class="field full"><label>Programme name <span class="badge b-neu"><i></i>From document</span><span class="col">funding_opportunities.name</span></label><div class="ctl">Nature-Based Cities Call 2026</div><div class="src">Title · p. 1</div></div>
+            <div class="field full"><label>Summary <span class="badge b-neu"><i></i>From document</span><span class="col">summary</span></label><div class="ctl area">Grants for municipal projects that use nature-based solutions to reduce climate risk, with a mandatory biodiversity co-benefit.</div><div class="src">Section 1 “Purpose” · p. 3</div></div>
+            <div class="field"><label>Who can apply <span class="badge b-warn"><i></i>Edited</span><span class="col">applicant_type</span></label><div class="ctl warn">Municipalities; municipal consortia</div><div class="src"><q>Eligible applicants are municipal governments…</q> · p. 7 · <a style="color:var(--content-link)">Show original</a></div></div>
+            <div class="field"><label>Region <span class="badge b-neu"><i></i>From document</span><span class="col">region_scope</span></label><div class="ctl">Latin America and the Caribbean</div><div class="src"><q>…cities in Latin America and the Caribbean…</q> · p. 6</div></div>
+            <div class="field"><label>Sector <span class="badge b-neu"><i></i>From document</span><span class="col">sector</span></label><div class="ctl">Biodiversity and ecosystems</div><div class="src">p. 5</div></div>
+            <div class="field"><label>Category <span class="badge" style="background:var(--bg-gray);color:var(--content-tertiary)"><i style="background:var(--content-tertiary)"></i>Not in document</span><span class="col">category</span></label><div class="ctl empty">Not stated</div></div>
+            <div class="field"><label>Instrument <span class="badge b-neu"><i></i>From document</span><span class="col">instrument_type</span></label><div class="ctl">Grant</div><div class="src"><q>…non-repayable grant funding…</q> · p. 12</div></div>
+            <div class="field"><label>Finance route <span class="badge b-neu"><i></i>From document</span><span class="col">finance_route</span></label><div class="ctl">Direct to municipality</div><div class="src">p. 12</div></div>
+            <div class="field"><label>Award <span class="badge b-neu"><i></i>From document</span><span class="col">min_award · max_award · currency</span></label><div style="display:grid;grid-template-columns:1fr 1fr 80px;gap:6px"><div class="ctl">150 000</div><div class="ctl">600 000</div><div class="ctl">USD</div></div><div class="src"><q>…awards of USD 150,000 to 600,000 per project…</q> · p. 12</div></div>
+            <div class="field"><label>Status <span class="badge b-neu"><i></i>From document</span><span class="col">status</span></label><div class="ctl">Open · closes 30 Nov 2026</div><div class="src">Timeline · p. 14</div></div>
+            <div class="field"><label>Hazards <span class="badge b-neu"><i></i>From document</span><span class="col">hazards[]</span></label><div class="ctl tags"><span class="tag">Flooding ×</span><span class="tag">Heat ×</span><span class="tag">Landslides ×</span></div><div class="src">p. 5</div></div>
+            <div class="field"><label>Interventions <span class="badge b-neu"><i></i>From document</span><span class="col">interventions[]</span></label><div class="ctl tags"><span class="tag">Urban forests ×</span><span class="tag">Riparian restoration ×</span><span class="tag">Green roofs ×</span></div><div class="src">p. 5</div></div>
+          </div>
+          <div class="alert warn" style="margin-top:16px;display:block"><b style="font-size:14px">Information to verify <span class="col" style="font:10px ui-monospace,Consolas,monospace;color:var(--content-tertiary)">known_gaps[]</span></b><div style="margin-top:4px">Co-financing percentage is mentioned but not quantified (p. 13).</div><div>No category stated.</div></div>
+        </div>
+
+        <!-- Template -->
+        <div class="sec">
+          <h4>Application template</h4>
+          <div class="grid2">
+            <div class="field"><label>Template name <span class="badge b-neu"><i></i>From document</span><span class="col">funder_templates.template_name</span></label><div class="ctl">Proposal form · Call 2026</div><div class="src">Annex I · p. 20</div></div>
+            <div class="field"><label>Format <span class="badge b-neu"><i></i>From document</span><span class="col">output_format</span></label><div class="ctl">DOCX</div><div class="src">Annex I · p. 20</div></div>
+          </div>
+          <p class="sec-cap" style="margin:16px 0 4px">5 chapters <span class="col" style="font:10px ui-monospace,Consolas,monospace">chapter_schema[] · required_fields[]</span></p>
+          <div class="chap"><span class="n">01</span><div><b>Applicant details</b><p>Municipality, legal representative, technical lead.</p><div class="tags"><span class="tag">municipality_name</span><span class="tag">legal_representative</span></div></div><span class="lbl-sm">Required</span></div>
+          <div class="chap"><span class="n">02</span><div><b>Climate risk and problem statement</b><p>Climate risk the project addresses, with data.</p><div class="tags"><span class="tag">hazard_evidence</span><span class="tag">affected_population</span></div></div><span class="lbl-sm">Required</span></div>
+          <div class="chap"><span class="n">03</span><div><b>Proposed nature-based solution</b><p>Intervention, location, biodiversity co-benefit.</p><div class="tags"><span class="tag">intervention_description</span><span class="tag">biodiversity_cobenefit</span></div></div><span class="lbl-sm">Required</span></div>
+          <div class="chap"><span class="n">04</span><div><b>Budget and co-financing</b><p>Budget and co-financing.</p><div class="tags"><span class="tag">budget_total</span><span class="tag">cofinancing</span></div></div><span class="lbl-sm">Required</span></div>
+          <div class="chap"><span class="n">05</span><div><b>Monitoring</b><p>Indicators and reporting plan.</p><div class="tags"><span class="tag">indicators</span></div></div><span class="lbl-sm">Required</span></div>
+          <div style="margin-top:8px"><span class="btn xs"><svg class="i" style="width:13px;height:13px"><use href="#plus"/></svg>Add chapter</span></div>
+        </div>
       </div>
+    </div>
+    <div class="d-foot">
+      <div class="alert info" style="margin-bottom:12px;font-size:13px">Added funders appear in the funder list with their programme and template, like every other funder.</div>
+      <div class="foot-row"><div class="who"><b>Green Cities Foundation</b><span class="lbl-sm">Proposal form · Call 2026 · 5 chapters</span></div><span class="btn link">Discard</span><span class="btn">Back</span><span class="btn solid">Add funder and use it</span></div>
     </div>
   </div>
 </section>
 
-<!-- ───────────────────────── STEP 1 ───────────────────────── -->
-<section class="step" id="s1">
-  <div class="step-head"><span class="step-num">Step 1</span><h2>Create funder · pick a method</h2></div>
-  <p class="step-note">A dedicated “Create funder” dialog with a two-tab header. Both tabs converge on the same review form in step 3, so the user can start with a document and finish by hand, or start by hand and attach a document later.</p>
-
-  <div class="frame dialog">
-    <div class="dialog-head">
-      <h3>Create a funder profile</h3>
-      <p>Step 1 of 3 · Choose how you want to start</p>
-    </div>
-    <div class="dialog-body">
-      <div class="choices">
-        <div class="choice rec"><div class="ico">⤒</div><div><div class="t">From a document <span class="badge extracted">Recommended</span></div><div class="d">Upload a call for proposals, funder brochure or programme guide. Extracted fields are marked and stay editable.</div></div></div>
-        <div class="choice"><div class="ico">✎</div><div><div class="t">From scratch</div><div class="d">Type the profile yourself. Best when you only have notes from a meeting or an email.</div></div></div>
+<!-- ===================== 5 ===================== -->
+<section class="frame" id="f5">
+  <div class="frame-label">Frame 5</div>
+  <h2>Added: it is now an ordinary catalogue funder <span class="reuse">no new display code</span></h2>
+  <p class="frame-note">"Add funder and use it" writes the catalogue rows and then calls the existing <code>PATCH /application-context</code> with the new funder and programme. That gives the same draft warning, 409 handling and "Save and go to drafting" behaviour as today. The dialog shows the new funder through the unchanged <code>FunderProfile</code> view, and the Context cards update as for any other funder. The only extra is a one-line "Added from …" note.</p>
+  <div class="dialog" style="margin-bottom:20px">
+    <div class="d-head"><h3>Choose funding for this concept note</h3><p>Browse funders, compare their programmes and preview the application template before saving.</p><svg class="i d-close"><use href="#x"/></svg></div>
+    <div class="d-body" style="min-height:0">
+      <div class="rail">
+        <div class="rail-search"><div class="input"><svg class="i"><use href="#search"/></svg>Name, region, sector or programme</div><div class="count">2 of 2 funders</div></div>
+        <div class="rail-list">
+          <div class="f-row"><svg class="i ic"><use href="#landmark"/></svg><div><div class="f-name">European Union LIFE Programme</div><div class="f-meta"><span class="pill">Multilateral</span><span class="lbl-sm">EU</span></div><div class="lbl-sm" style="margin-top:4px">1 programme</div></div></div>
+          <div class="f-row sel"><svg class="i ic"><use href="#check"/></svg><div><div class="f-name">Green Cities Foundation</div><div class="f-meta"><span class="pill">Private foundation</span><span class="lbl-sm">United States</span></div><div class="lbl-sm" style="margin-top:4px">1 programme</div></div></div>
+        </div>
       </div>
-      <div class="alert info" style="margin-top:18px"><div><b>What is a funder profile?</b>Who the funder is, what they fund, who can apply, where, and how much. CNB uses it to shape every chapter and to flag missing eligibility information.</div></div>
+      <div class="pane">
+        <div><h3>Green Cities Foundation</h3><p class="sub">Private foundation · United States</p><p class="lbl-sm" style="margin:4px 0 0">Added from Green_Cities_Call_2026.pdf · 26 Sep 2026</p>
+          <dl class="details" style="margin-top:14px"><div><dt>purpose</dt><dd>Helps cities reduce climate risk through nature-based solutions.</dd></div><div><dt>focus_areas</dt><dd>Nature-based solutions; urban biodiversity; coastal protection</dd></div></dl>
+        </div>
+        <div class="sec"><h4>Choose a programme</h4>
+          <div class="opt sel"><svg class="i ic"><use href="#check"/></svg><div><b>Nature-Based Cities Call 2026</b><p>Proposal form · Call 2026</p><p style="color:var(--content-secondary)">USD 150,000–600,000 · Open</p></div></div>
+        </div>
+      </div>
     </div>
-    <div class="dialog-foot"><span class="btn ghost">← Back to funder list</span><div class="right"><span class="btn ghost">Cancel</span><span class="btn primary">Continue →</span></div></div>
+    <div class="d-foot"><div class="foot-row"><div class="who"><b>Green Cities Foundation</b><span class="lbl-sm">Proposal form · Call 2026</span></div><span class="btn link">Clear selection</span><span class="btn">Cancel</span><span class="btn solid">Save and go to drafting</span></div></div>
   </div>
-</section>
-
-<!-- ───────────────────────── STEP 2A ───────────────────────── -->
-<section class="step" id="s2a">
-  <div class="step-head"><span class="step-num">Step 2A</span><h2>Structured form</h2></div>
-  <p class="step-note">Field set from the ticket: name, priorities, eligibility, geography, typical award. Added the small set of identity fields the <code>funders</code> table already has (type, country, region) so the new funder looks like catalogue funders everywhere else. Only <b>name</b> is required to save; everything else can be completed later and shows up as a gap in the draft.</p>
-
-  <div class="frame dialog">
-    <div class="dialog-head"><h3>Create a funder profile</h3><p>Step 2 of 3 · Funder details</p></div>
-    <div class="dialog-body">
-      <div class="form">
-        <div class="full"><label class="f">Funder name <span class="req">*</span></label><div class="in">Fundação Grupo Boticário de Proteção à Natureza</div></div>
-        <div><label class="f">Funder type</label><div class="in">Private foundation ▾</div><div class="help">Multilateral, bilateral, development bank, national/state agency, private foundation, corporate, city network, other</div></div>
-        <div><label class="f">Country <span class="opt">(HQ)</span></label><div class="in">Brazil ▾</div></div>
-        <div class="full"><label class="f">Funding priorities</label><div class="in tags"><span class="tag">Nature-based solutions ×</span><span class="tag">Urban biodiversity ×</span><span class="tag">Coastal protection ×</span><span class="in ph" style="border:0;min-height:0;padding:2px 6px">Add priority…</span></div><div class="help">Free text tags. Suggestions come from the CNB hazard / intervention vocabularies.</div></div>
-        <div class="full"><label class="f">Eligibility</label><div class="in ta">Municipalities and civil-society organisations registered in Brazil. Consortia allowed if led by an eligible entity. Projects must show a biodiversity co-benefit and start within 12 months of award.</div></div>
-        <div><label class="f">Geographic focus</label><div class="in tags"><span class="tag">Brazil ×</span><span class="tag">Atlantic Forest biome ×</span><span class="tag">Coastal municipalities ×</span></div></div>
-        <div><label class="f">Typical award</label>
-          <div class="inline"><div class="in">150 000</div><div class="in ph">–</div><div class="in">600 000</div><div class="in cur">BRL ▾</div></div>
-          <div class="help">Min – max. Leave one side empty for “up to” / “from”.</div></div>
-        <div><label class="f">Application window <span class="opt">(optional)</span></label><div class="in ph">e.g. Rolling · Annual call in March · Closes 30 Nov 2026</div></div>
-        <div><label class="f">Website / source URL <span class="opt">(optional)</span></label><div class="in ph">https://</div></div>
-        <div class="full"><label class="f">Notes <span class="opt">(optional)</span></label><div class="in ta ph">Anything else CNB should know: co-financing rules, reporting expectations, contact person…</div></div>
-      </div>
-      <div class="legend"><span class="badge entered"><span class="dot"></span> Entered</span> Everything typed here is saved with provenance <code>entered</code>.</div>
-    </div>
-    <div class="dialog-foot"><span class="btn ghost">← Back</span><div class="right"><span class="btn secondary">Attach a document instead</span><span class="btn primary">Review &amp; save →</span></div></div>
-  </div>
-
-  <div class="frame dialog" style="margin-top:20px">
-    <div class="frame-bar"><b>Validation state</b><span>name missing · award min &gt; max</span></div>
-    <div class="dialog-body">
-      <div class="form">
-        <div class="full"><label class="f">Funder name <span class="req">*</span></label><div class="in err ph">&nbsp;</div><div class="help err">A funder name is required.</div></div>
-        <div><label class="f">Typical award</label><div class="inline"><div class="in err">600 000</div><div class="in ph">–</div><div class="in err">150 000</div><div class="in cur">BRL ▾</div></div><div class="help err">Minimum must be lower than or equal to maximum.</div></div>
-      </div>
+  <div class="ctx">
+    <div class="ctx-label">Funder &amp; similar projects · assembled for this note</div>
+    <div class="ctx-grid">
+      <div class="card"><div class="card-top">Funder profile <span class="btn xs">Change</span></div><span class="badge b-pos" style="align-self:flex-start"><i></i>Connected</span><div class="val">Green Cities Foundation</div><div class="det">Nature-Based Cities Call 2026</div></div>
+      <div class="card"><div class="card-top">Application template <span class="btn xs">View template</span></div><span class="badge b-pos" style="align-self:flex-start"><i></i>Template ready</span><div class="val">Proposal form · Call 2026</div><div class="det">5 chapters · DOCX</div></div>
+      <div class="card"><div class="card-top">Similar funded projects</div><span class="badge b-neu" style="align-self:flex-start"><i></i>Not connected</span><div class="det">Out of scope (CC-858)</div></div>
     </div>
   </div>
 </section>
 
-<!-- ───────────────────────── STEP 2B ───────────────────────── -->
-<section class="step" id="s2b">
-  <div class="step-head"><span class="step-num">Step 2B</span><h2>Document upload · processing, failure and retry</h2></div>
-  <p class="step-note">Reuses the existing concept-note upload pipeline (upload → markdown conversion) and adds one extraction job on top. Four visible states are required by the ticket: <b>uploading</b>, <b>processing</b>, <b>failed with retry</b>, <b>ready</b>. The user can always bail out to the blank form and keep what was already typed.</p>
-
-  <div class="grid-2">
-    <div class="frame dialog">
-      <div class="frame-bar"><b>State A · idle</b><span>nothing uploaded</span></div>
-      <div class="dialog-head"><h3>Create a funder profile</h3><p>Step 2 of 3 · Upload a funder document</p></div>
-      <div class="dialog-body">
-        <div class="drop">Drag a file here or <b>browse</b><div class="muted" style="margin-top:6px">PDF, DOCX, TXT, MD · up to 25 MB · one document per funder for now</div></div>
-        <div class="alert info" style="margin-top:14px"><div><b>Best results</b>Calls for proposals, programme guidelines, eligibility annexes. Annual reports work but give weaker eligibility data.</div></div>
-      </div>
-      <div class="dialog-foot"><span class="btn ghost">← Back</span><div class="right"><span class="btn ghost">Skip, fill form manually</span><span class="btn primary disabled">Extract profile</span></div></div>
+<!-- ===================== 6 ===================== -->
+<section class="frame" id="f6">
+  <div class="frame-label">Frame 6</div>
+  <h2>By hand: same review pane, starting empty</h2>
+  <p class="frame-note">"Enter details by hand" opens the Frame 4 pane with empty inputs. Everything typed is marked <b>Entered</b>. It has the same three sections, so a hand-made funder also gets a programme and a template (CC-858 requires both before drafting). Required to add: funder name, programme name, template name and at least one chapter. Everything else can stay empty and appears as <i>Not available</i>, as it does for catalogue funders today. <b>Attach a document</b> switches to the document path without losing what was typed.</p>
+  <div class="dialog"><div class="pane" style="gap:16px">
+    <div class="grid2">
+      <div class="field full"><label>Name * <span class="badge b-pos"><i></i>Entered</span><span class="col">funders.name</span></label><div class="ctl">Resilient Futures Fund</div></div>
+      <div class="field"><label>Programme name * <span class="badge b-pos"><i></i>Entered</span><span class="col">funding_opportunities.name</span></label><div class="ctl">Resilient Cities 2027</div></div>
+      <div class="field"><label>Template name * <span class="col">funder_templates.template_name</span></label><div class="ctl" style="border-color:var(--negative)"></div><div style="color:var(--negative);font-size:12px;margin-top:4px">Add a template name so drafting knows which chapters to write.</div></div>
     </div>
-
-    <div class="frame dialog">
-      <div class="frame-bar"><b>State B · processing</b><span>extraction_status = processing</span></div>
-      <div class="dialog-head"><h3>Create a funder profile</h3><p>Step 2 of 3 · Extracting profile…</p></div>
-      <div class="dialog-body">
-        <div class="file"><div class="fi">PDF</div><div><div class="fn">Edital_Boticario_2026_Cidades.pdf</div><div class="fm">2.4 MB · 38 pages</div></div><div class="sp"><span class="badge proc"><span class="dot"></span> Processing</span></div></div>
-        <div class="steps">
-          <div class="s done"><div class="l">✓ Uploaded</div><div class="h">2.4 MB stored</div></div>
-          <div class="s done"><div class="l">✓ Converted</div><div class="h">38 pages → text</div></div>
-          <div class="s now"><div class="l">● Extracting profile</div><div class="h">Reading eligibility &amp; award rules</div></div>
-          <div class="s"><div class="l">○ Ready for review</div><div class="h">&nbsp;</div></div>
-        </div>
-        <div class="bar"><i></i></div>
-        <div class="muted" style="margin-top:8px">Usually under a minute. You can close this dialog; we'll keep the job running and show it on the funder card.</div>
-      </div>
-      <div class="dialog-foot"><span class="btn ghost">← Back</span><div class="right"><span class="btn ghost">Cancel extraction</span><span class="btn primary disabled">Review →</span></div></div>
-    </div>
-
-    <div class="frame dialog">
-      <div class="frame-bar"><b>State C · failed</b><span>extraction_status = failed · attempts 1/3</span></div>
-      <div class="dialog-head"><h3>Create a funder profile</h3><p>Step 2 of 3 · Extraction failed</p></div>
-      <div class="dialog-body">
-        <div class="file"><div class="fi">PDF</div><div><div class="fn">Edital_Boticario_2026_Cidades.pdf</div><div class="fm">2.4 MB · 38 pages</div></div><div class="sp"><span class="badge err"><span class="dot"></span> Failed</span></div></div>
-        <div class="steps">
-          <div class="s done"><div class="l">✓ Uploaded</div><div class="h">2.4 MB stored</div></div>
-          <div class="s done"><div class="l">✓ Converted</div><div class="h">38 pages → text</div></div>
-          <div class="s fail"><div class="l">✕ Extracting profile</div><div class="h">Timed out after 120 s</div></div>
-          <div class="s"><div class="l">○ Ready for review</div><div class="h">&nbsp;</div></div>
-        </div>
-        <div class="alert err"><div><b>We couldn't extract a profile from this document</b>The extraction service timed out. Your file is safe. Retry, or continue with an empty form and attach the document as a source. <span class="muted">Error code: <code>extraction_timeout</code></span></div><div class="acts"><span class="btn danger sm">Retry</span></div></div>
-        <div class="alert warn" style="margin-top:10px"><div><b>Other failure copy</b><code>unsupported_file</code> “This file type isn't supported.” · <code>no_text</code> “The document has no readable text (scanned image?).” · <code>not_a_funder_document</code> “We couldn't find funder information in this document.” · <code>too_large</code> “Over 25 MB.”</div></div>
-      </div>
-      <div class="dialog-foot"><span class="btn ghost">← Back</span><div class="right"><span class="btn ghost">Upload a different file</span><span class="btn secondary">Continue with empty form</span><span class="btn primary">Retry extraction</span></div></div>
-    </div>
-
-    <div class="frame dialog">
-      <div class="frame-bar"><b>State D · ready</b><span>extraction_status = ready</span></div>
-      <div class="dialog-head"><h3>Create a funder profile</h3><p>Step 2 of 3 · Profile extracted</p></div>
-      <div class="dialog-body">
-        <div class="file"><div class="fi">PDF</div><div><div class="fn">Edital_Boticario_2026_Cidades.pdf</div><div class="fm">2.4 MB · 38 pages</div></div><div class="sp"><span class="badge ok"><span class="dot"></span> Ready</span></div></div>
-        <div class="steps">
-          <div class="s done"><div class="l">✓ Uploaded</div><div class="h">2.4 MB stored</div></div>
-          <div class="s done"><div class="l">✓ Converted</div><div class="h">38 pages → text</div></div>
-          <div class="s done"><div class="l">✓ Extracted</div><div class="h">7 of 9 fields found</div></div>
-          <div class="s done"><div class="l">✓ Ready for review</div><div class="h">2 fields need your input</div></div>
-        </div>
-        <div class="alert warn"><div><b>Review before saving</b>Extracted values are suggestions. Nothing is saved to the run until you confirm on the next screen.</div></div>
-      </div>
-      <div class="dialog-foot"><span class="btn ghost">← Back</span><div class="right"><span class="btn ghost">Upload a different file</span><span class="btn primary">Review extracted profile →</span></div></div>
-    </div>
-  </div>
+    <div class="foot-row" style="border-top:1px solid var(--border-neutral);padding-top:14px"><div class="who"></div><span class="btn"><svg class="i" style="width:13px;height:13px"><use href="#upload"/></svg>Attach a document</span><span class="btn">Back</span><span class="btn solid dis">Add funder and use it</span></div>
+  </div></div>
 </section>
 
-<!-- ───────────────────────── STEP 3 ───────────────────────── -->
-<section class="step" id="s3">
-  <div class="step-head"><span class="step-num">Step 3</span><h2>Review and edit the extracted profile</h2></div>
-  <p class="step-note">Same fields as the form, rendered as a review table. Every field carries a <b>provenance badge</b>, the <b>evidence quote</b> it came from, and a confidence hint. Editing an extracted value flips it to <b>edited</b> and keeps the original for audit. Missing fields are called out and can be typed directly.</p>
-
-  <div class="frame dialog">
-    <div class="dialog-head"><h3>Create a funder profile</h3><p>Step 3 of 3 · Review extracted profile · from <code>Edital_Boticario_2026_Cidades.pdf</code></p></div>
-    <div class="dialog-body">
-      <div class="summary-strip">
-        <span class="badge extracted"><span class="dot"></span> 6 extracted</span>
-        <span class="badge edited"><span class="dot"></span> 1 edited</span>
-        <span class="badge entered"><span class="dot"></span> 0 entered</span>
-        <span class="badge missing"><span class="dot"></span> 2 missing</span>
-        <span class="muted" style="margin-left:auto">Low-confidence fields are listed first</span>
-      </div>
-      <table class="review">
-        <thead><tr><th style="width:190px">Field</th><th>Value</th><th style="width:130px">Provenance</th><th style="width:110px">Confidence</th></tr></thead>
-        <tbody>
-          <tr>
-            <td class="k">Typical award<small>min – max · currency</small></td>
-            <td class="v"><div class="inline"><div class="in">150 000</div><div class="in">600 000</div><div class="in cur">BRL</div></div><div class="ev">“…apoio financeiro entre R$ 150 mil e R$ 600 mil por projeto…” <span>· p. 12</span></div></td>
-            <td><span class="badge extracted">Extracted</span></td>
-            <td class="conf">Medium · range parsed from prose</td>
-          </tr>
-          <tr>
-            <td class="k">Eligibility</td>
-            <td class="v"><div class="in ta">Municipalities and civil-society organisations registered in Brazil. Consortia allowed if led by an eligible entity. Projects must start within 12 months of award. <b>Biodiversity co-benefit is mandatory.</b></div><div class="ev">“Poderão se inscrever prefeituras municipais e organizações da sociedade civil…” <span>· p. 7–8</span></div><div class="help">You changed this field. <a href="#">Show original</a></div></td>
-            <td><span class="badge edited">Edited</span></td>
-            <td class="conf">High</td>
-          </tr>
-          <tr>
-            <td class="k">Funder name</td>
-            <td class="v"><div class="in">Fundação Grupo Boticário de Proteção à Natureza</div><div class="ev">Cover page <span>· p. 1</span></div></td>
-            <td><span class="badge extracted">Extracted</span></td>
-            <td class="conf">High</td>
-          </tr>
-          <tr>
-            <td class="k">Funder type</td>
-            <td class="v"><div class="in">Private foundation ▾</div><div class="ev">“…fundação privada sem fins lucrativos…” <span>· p. 2</span></div></td>
-            <td><span class="badge extracted">Extracted</span></td>
-            <td class="conf">High</td>
-          </tr>
-          <tr>
-            <td class="k">Funding priorities</td>
-            <td class="v"><div class="in tags"><span class="tag">Nature-based solutions ×</span><span class="tag">Urban biodiversity ×</span><span class="tag">Coastal protection ×</span><span class="tag">Environmental education ×</span></div><div class="ev">Section 3 “Linhas temáticas” <span>· p. 5</span></div></td>
-            <td><span class="badge extracted">Extracted</span></td>
-            <td class="conf">High</td>
-          </tr>
-          <tr>
-            <td class="k">Geographic focus</td>
-            <td class="v"><div class="in tags"><span class="tag">Brazil ×</span><span class="tag">Atlantic Forest biome ×</span></div><div class="ev">“…municípios inseridos no bioma Mata Atlântica…” <span>· p. 6</span></div></td>
-            <td><span class="badge extracted">Extracted</span></td>
-            <td class="conf">High</td>
-          </tr>
-          <tr>
-            <td class="k">Country (HQ)</td>
-            <td class="v"><div class="in">Brazil ▾</div><div class="ev">Inferred from address <span>· p. 38</span></div></td>
-            <td><span class="badge extracted">Extracted</span></td>
-            <td class="conf">Medium</td>
-          </tr>
-          <tr>
-            <td class="k">Application window</td>
-            <td class="v"><div class="in ph">Not found in document · type it or leave empty</div></td>
-            <td><span class="badge missing">Missing</span></td>
-            <td class="conf">—</td>
-          </tr>
-          <tr>
-            <td class="k">Website / source URL</td>
-            <td class="v"><div class="in ph">Not found in document</div></td>
-            <td><span class="badge missing">Missing</span></td>
-            <td class="conf">—</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="legend">
-        <span class="badge entered"><span class="dot"></span> Entered</span> typed by a person
-        <span class="badge extracted"><span class="dot"></span> Extracted</span> taken from the document, unchanged
-        <span class="badge edited"><span class="dot"></span> Edited</span> extracted, then changed by a person
-        <span class="badge missing"><span class="dot"></span> Missing</span> not in document, not entered
-      </div>
-    </div>
-    <div class="dialog-foot"><span class="btn ghost">← Back to upload</span><div class="right"><span class="btn ghost">Discard</span><span class="btn primary">Save funder &amp; use in this run</span></div></div>
-  </div>
-</section>
-
-<!-- ───────────────────────── STEP 4 ───────────────────────── -->
-<section class="step" id="s4">
-  <div class="step-head"><span class="step-num">Step 4</span><h2>Saved on the run · restored after reload</h2></div>
-  <p class="step-note">Saving does two things in one request: creates the funder (scoped to the city) and sets it as the run's funder via the existing selection endpoint. The card shows provenance chips, links to the source document and an <b>Edit profile</b> action that re-opens step 3. On reload, the card restores from the run's application context, and an unfinished extraction reappears as a processing state on the card.</p>
-
-  <div class="frame">
-    <div class="frame-bar"><b>Workspace · Context tab</b><span>state: funder saved · toast “Funder saved”</span></div>
-    <div class="workspace">
-      <div class="side">
-        <div class="card" style="border-color:var(--brand)">
-          <h4>Funder</h4>
-          <div class="title">Fundação Grupo Boticário de Proteção à Natureza</div>
-          <div class="muted">Private foundation · Brazil</div>
-          <div style="margin:8px 0 10px;display:flex;gap:6px;flex-wrap:wrap"><span class="badge extracted">Created from document</span><span class="badge missing">2 gaps</span></div>
-          <div style="display:flex;gap:8px"><span class="btn ghost sm">Edit profile</span><span class="btn ghost sm">Change funder</span></div>
-        </div>
-        <div class="card empty"><h4>Programme</h4><div class="muted">No programmes yet for this funder</div><span class="btn secondary sm" style="margin-top:8px">Add programme</span></div>
-        <div class="card empty"><h4>Template</h4><div class="muted">Pick a programme first</div></div>
-      </div>
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
-          <div><div class="title" style="font-size:17px">Funder profile</div><div class="muted">Source: <a href="#">Edital_Boticario_2026_Cidades.pdf</a> · created by Carlos M. · 25 Sep 2026</div></div>
-          <span class="btn ghost sm">Edit profile</span>
-        </div>
-        <hr style="border:0;border-top:1px solid var(--line);margin:12px 0">
-        <div class="kv">
-          <div class="k">Priorities</div><div class="v"><span class="tag plain">Nature-based solutions</span><span class="tag plain">Urban biodiversity</span><span class="tag plain">Coastal protection</span><span class="tag plain">Environmental education</span><span class="badge extracted">Extracted</span></div>
-          <div class="k">Eligibility</div><div class="v"><span>Municipalities and civil-society organisations registered in Brazil. Consortia allowed if led by an eligible entity. Projects must start within 12 months. Biodiversity co-benefit is mandatory.</span><span class="badge edited">Edited</span></div>
-          <div class="k">Geography</div><div class="v"><span class="tag plain">Brazil</span><span class="tag plain">Atlantic Forest biome</span><span class="badge extracted">Extracted</span></div>
-          <div class="k">Typical award</div><div class="v"><span>BRL 150 000 – 600 000</span><span class="badge extracted">Extracted</span></div>
-          <div class="k">Application window</div><div class="v"><span class="muted">Not provided</span><span class="badge missing">Missing</span><span class="btn ghost sm">Add</span></div>
-          <div class="k">Website</div><div class="v"><span class="muted">Not provided</span><span class="badge missing">Missing</span><span class="btn ghost sm">Add</span></div>
-        </div>
-        <div class="alert warn" style="margin-top:14px"><div><b>Drafting will flag 2 gaps</b>Missing application window and website. CNB continues but marks these as “needs information” in the checklist.</div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="frame" style="margin-top:20px">
-    <div class="frame-bar"><b>Workspace after reload · extraction still running</b><span>restored from run · extraction_status = processing</span></div>
-    <div class="workspace" style="grid-template-columns:260px 1fr">
-      <div class="side">
-        <div class="card" style="border-color:var(--brand-100)">
-          <h4>Funder</h4>
-          <div class="title" style="color:var(--ink-2)">Profile being extracted…</div>
-          <div class="muted">Edital_Boticario_2026_Cidades.pdf</div>
-          <div style="margin:8px 0 10px"><span class="badge proc"><span class="dot"></span> Processing · 40 s</span></div>
-          <div style="display:flex;gap:8px"><span class="btn ghost sm">Open</span><span class="btn ghost sm">Cancel</span></div>
-        </div>
-      </div>
-      <div class="muted" style="align-self:center">The pending extraction is attached to the run, so navigating away or reloading does not lose it. When it is ready the card switches to “Review extracted profile”.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ───────────────────────── DATA MODEL ───────────────────────── -->
-<section class="step" id="dm">
-  <div class="step-head"><span class="step-num">Data model</span><h2>Extend <code>cnb.funders</code>, add one extraction job table</h2></div>
-  <p class="step-note">Principle: keep the existing <code>funders</code> row shape so catalogue, selection, matching prompts and the funder card keep working. Add <b>origin/scope columns</b> and a <b>field-level provenance JSON</b> for user-created funders, and a separate <b>extraction job</b> table so processing / failure / retry state lives outside the funder row (the funder does not exist until the user confirms).</p>
-
-  <div class="er">
-    <div class="ent">
-      <div class="eh">funders <small>existing · cnb schema</small></div>
-      <ul>
-        <li class="pk">funder_id uuid</li>
-        <li>name varchar(255)</li>
-        <li>funder_type varchar(100)</li>
-        <li>country varchar(100)</li>
-        <li>region varchar(255)</li>
-        <li>profile jsonb  <span class="c">{stated[], derived[]}</span></li>
-        <li class="new">origin varchar(32)  <span class="c">research | user_form | user_document</span></li>
-        <li class="new">visibility_city_id uuid  <span class="c">null = global catalogue</span></li>
-        <li class="new">created_by_user_id uuid</li>
-        <li class="new">source_upload_id uuid  <span class="c">fk → concept_note_uploads</span></li>
-        <li class="new">profile_fields jsonb  <span class="c">provenance per field, see below</span></li>
-        <li class="new">created_at / updated_at timestamptz</li>
-      </ul>
-    </div>
-    <div class="ent new">
-      <div class="eh">funder_profile_extractions <small>new</small></div>
-      <ul>
-        <li class="pk">extraction_id uuid</li>
-        <li class="fk">run_id uuid  <span class="c">concept_note_runs</span></li>
-        <li class="fk">upload_id uuid  <span class="c">concept_note_uploads</span></li>
-        <li class="fk">funder_id uuid null  <span class="c">set once confirmed</span></li>
-        <li>status varchar(16)  <span class="c">queued|processing|ready|failed|confirmed|cancelled</span></li>
-        <li>attempts int · max_attempts int = 3</li>
-        <li>error_code varchar(64) · error_message text</li>
-        <li>extracted jsonb  <span class="c">FunderProfileDraft</span></li>
-        <li>model varchar(64) · prompt_version varchar(32)</li>
-        <li>started_at · finished_at · created_at · updated_at</li>
-        <li>created_by_user_id uuid</li>
-      </ul>
-    </div>
-    <div class="ent">
-      <div class="eh">concept_note_runs <small>existing · unchanged</small></div>
-      <ul>
-        <li class="pk">run_id uuid</li>
-        <li class="fk">funder_id uuid  <span class="c">already persisted + restored</span></li>
-        <li class="fk">selected_funding_opportunity_id uuid</li>
-        <li>…</li>
-      </ul>
-    </div>
-    <div class="ent">
-      <div class="eh">concept_note_uploads <small>existing · reused</small></div>
-      <ul>
-        <li class="pk">upload_id uuid</li>
-        <li class="fk">run_id uuid</li>
-        <li>status · markdown_ready · retry endpoint</li>
-        <li class="new">purpose varchar(32)  <span class="c">context | funder_profile</span></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="dm-grid" style="margin-top:22px">
-    <div class="dm">
-      <h3>Field-level provenance · <code>funders.profile_fields</code></h3>
-      <p>One entry per profile field. The <code>profile.stated</code> array is still written (values only) so existing consumers and prompts see the funder like any other.</p>
-<pre><span class="c">// FunderProfileField (stored as jsonb array)</span>
-{
-  <span class="k">"key"</span>: <span class="s">"eligibility"</span>,                 <span class="c">// see FIELD_KEYS below</span>
-  <span class="k">"value"</span>: <span class="s">"Municipalities and CSOs registered in Brazil…"</span>,
-  <span class="k">"provenance"</span>: <span class="s">"edited"</span>,             <span class="c">// entered | extracted | edited</span>
-  <span class="k">"extracted_value"</span>: <span class="s">"Municipalities and CSOs…"</span>, <span class="c">// original, null if entered</span>
-  <span class="k">"evidence"</span>: {
-    <span class="k">"upload_id"</span>: <span class="s">"c1a4…"</span>,
-    <span class="k">"quote"</span>: <span class="s">"Poderão se inscrever prefeituras municipais…"</span>,
-    <span class="k">"locator"</span>: <span class="s">"p. 7-8"</span>
-  },
-  <span class="k">"confidence"</span>: <span class="s">"high"</span>,               <span class="c">// high | medium | low | null</span>
-  <span class="k">"updated_by_user_id"</span>: <span class="s">"9f2e…"</span>,
-  <span class="k">"updated_at"</span>: <span class="s">"2026-09-25T10:14:02Z"</span>
-}
-
-<span class="c">// FIELD_KEYS (v1)</span>
-name · funder_type · country · region
-priorities[] · eligibility · geography[]
-typical_award {min, max, currency}
-application_window · website · notes</pre>
-    </div>
-    <div class="dm">
-      <h3>Pydantic contracts · Climate Advisor</h3>
-      <p>Draft = what the extractor returns and the review screen edits. Create = what the confirm endpoint accepts from both the form and the review screen.</p>
-<pre><span class="k">class</span> <span class="t">FunderProfileField</span>(BaseModel):
-    key: FieldKey
-    value: str | list[str] | AwardRange | None
-    provenance: Literal[<span class="s">"entered"</span>, <span class="s">"extracted"</span>, <span class="s">"edited"</span>]
-    extracted_value: … | None = None
-    evidence: FieldEvidence | None = None
-    confidence: Literal[<span class="s">"high"</span>,<span class="s">"medium"</span>,<span class="s">"low"</span>] | None = None
-
-<span class="k">class</span> <span class="t">FunderProfileDraft</span>(BaseModel):      <span class="c"># extractor output</span>
-    fields: list[FunderProfileField]
-    missing: list[FieldKey]
-    warnings: list[str] = []          <span class="c"># e.g. "several funders named"</span>
-
-<span class="k">class</span> <span class="t">FunderCreateRequest</span>(BaseModel):     <span class="c"># form + confirm</span>
-    model_config = ConfigDict(extra=<span class="s">"forbid"</span>)
-    fields: list[FunderProfileField]  <span class="c"># name required</span>
-    extraction_id: UUID | None = None <span class="c"># links upload + evidence</span>
-    select_for_run: bool = True
-
-<span class="k">class</span> <span class="t">FunderProfileExtraction</span>(BaseModel):  <span class="c"># job status</span>
-    extraction_id: UUID
-    status: Literal[<span class="s">"queued"</span>,<span class="s">"processing"</span>,<span class="s">"ready"</span>,
-                    <span class="s">"failed"</span>,<span class="s">"confirmed"</span>,<span class="s">"cancelled"</span>]
-    attempts: int
-    can_retry: bool
-    error_code: str | None
-    draft: FunderProfileDraft | None</pre>
-    </div>
-  </div>
-
-  <div class="dm" style="margin-top:22px">
-    <h3>Frontend type · <code>app/src/util/types.ts</code></h3>
-<pre><span class="k">export type</span> <span class="t">FunderProvenance</span> = <span class="s">"entered"</span> | <span class="s">"extracted"</span> | <span class="s">"edited"</span>;
-
-<span class="k">export interface</span> <span class="t">ConceptNoteFunder</span> {          <span class="c">// existing, extended</span>
-  id: string; name: string; funderType?: string; country?: string; region?: string;
-  profile: Record&lt;string, unknown&gt;;
-  origin?: <span class="s">"research"</span> | <span class="s">"user_form"</span> | <span class="s">"user_document"</span>;
-  profileFields?: FunderProfileField[];
-  sourceUpload?: { uploadId: string; filename: string };
-}
-
-<span class="k">export interface</span> <span class="t">ConceptNoteApplicationContext</span> {  <span class="c">// existing, extended</span>
-  funder: ConceptNoteFunder | null;
-  pendingFunderExtraction?: FunderProfileExtraction | null; <span class="c">// drives card state after reload</span>
-  …
-}</pre>
-  </div>
-</section>
-
-<!-- ───────────────────────── API ───────────────────────── -->
-<section class="step" id="api">
-  <div class="step-head"><span class="step-num">API</span><h2>Endpoints · Next.js proxies → Climate Advisor</h2></div>
-  <p class="step-note">Everything is run-scoped so existing auth (city membership via run) applies. Only the two <b>bold</b> rows are conceptually new; the rest reuses the upload and selection routes already on develop.</p>
-  <table class="api">
-    <thead><tr><th style="width:90px">Method</th><th>Route</th><th>Purpose</th><th style="width:220px">Notes</th></tr></thead>
-    <tbody>
-      <tr><td>POST</td><td><code>/api/v1/concept-notes/{runId}/uploads</code></td><td>Upload the funder document</td><td>existing · add <code>purpose=funder_profile</code></td></tr>
-      <tr><td><b>POST</b></td><td><code>/api/v1/concept-notes/{runId}/funder-extractions</code></td><td>Start extraction for an upload; returns <code>extraction_id</code>, status <code>queued</code></td><td>new · 409 if upload not converted yet</td></tr>
-      <tr><td>GET</td><td><code>/api/v1/concept-notes/{runId}/funder-extractions/{id}</code></td><td>Poll status; returns draft when <code>ready</code></td><td>new · RTK Query polling 2 s</td></tr>
-      <tr><td>POST</td><td><code>…/funder-extractions/{id}/retry</code></td><td>Re-run failed extraction</td><td>new · 409 when attempts exhausted</td></tr>
-      <tr><td>DELETE</td><td><code>…/funder-extractions/{id}</code></td><td>Cancel / discard a pending or ready draft</td><td>new</td></tr>
-      <tr><td><b>POST</b></td><td><code>/api/v1/concept-notes/{runId}/funders</code></td><td>Create funder from reviewed fields (form or draft) and, by default, select it on the run</td><td>new · returns application context · 422 on validation</td></tr>
-      <tr><td>PATCH</td><td><code>/api/v1/concept-notes/{runId}/funders/{funderId}</code></td><td>Edit profile fields of a user-created funder</td><td>new · only <code>origin != research</code></td></tr>
-      <tr><td>GET</td><td><code>/api/v1/concept-notes/{runId}/funding-catalogue</code></td><td>List funders</td><td>existing · include city-scoped user funders</td></tr>
-      <tr><td>PUT</td><td><code>/api/v1/concept-notes/{runId}/application-context/funding</code></td><td>Select funder / opportunity</td><td>existing · unchanged</td></tr>
-      <tr><td>GET</td><td><code>/api/v1/concept-notes/{runId}/application-context</code></td><td>Restore on reload</td><td>existing · add <code>pendingFunderExtraction</code></td></tr>
-    </tbody>
+<!-- ===================== DATA ===================== -->
+<section class="frame" id="map">
+  <div class="frame-label">Data</div>
+  <h2>Existing columns only: no changes to funders, programmes or templates</h2>
+  <p class="frame-note">The review form <i>is</i> the catalogue row. The extractor's output uses the shape the offline research script already produces (<code>FundingOpportunityResearchBundle</code> v3.0 in <code>models/cnb/research.py</code>: <code>funder</code>, one <code>funding_opportunity</code>, <code>funder_templates</code>, <code>funder_criteria</code>, <code>sources</code>, <code>evidence</code>, <code>gaps</code>). Saving inserts rows the same way reviewed research does.</p>
+  <table class="map">
+    <tr><th>What the user reviews</th><th>Existing table · column</th><th>Notes</th></tr>
+    <tr><td>Funder name, type, country, region</td><td><code>funders.name · funder_type · country · region</code></td><td>unchanged</td></tr>
+    <tr><td>Profile facts (stated / derived)</td><td><code>funders.profile {stated:{…}, derived:{…}}</code></td><td>same key/value shape the research prompt writes; shown by <code>FunderProfile</code> as-is</td></tr>
+    <tr><td>Programme fields</td><td><code>funding_opportunities.name · summary · applicant_type · region_scope · sector · category · instrument_type · finance_route · status · min_award · max_award · currency · hazards · interventions · known_gaps</code></td><td>unchanged</td></tr>
+    <tr><td>Where the row came from</td><td><code>funding_opportunities.source_run_id · source_record_ref</code></td><td>already required and unique; set to <code>cnb-upload:&lt;uploadId&gt;</code> or <code>cnb-manual:&lt;runId&gt;</code>, which gives the "Added from …" line</td></tr>
+    <tr><td>Template name, format, chapters, required info</td><td><code>funder_templates.template_name · output_format · chapter_schema · required_fields</code></td><td>one per programme (existing unique constraint); each required field must belong to a chapter (existing 409 rule)</td></tr>
+    <tr><td>Eligibility rules</td><td><code>funder_criteria</code></td><td>optional; the table exists and is filled by research today</td></tr>
+    <tr><td>The uploaded file as a source</td><td><code>source_documents</code> (<code>source_type</code>=<code>cnb_upload</code>, <code>url</code>, <code>title</code>, <code>content_hash</code>=Markdown SHA-256)</td><td>existing provenance table</td></tr>
+    <tr><td>Per-field source: From document / Edited / Entered</td><td><code>funding_evidence</code> (<code>claim</code>, <code>quote_or_summary</code>, <code>source_map</code> JSON)</td><td>one row per extracted field: <code>source_map = {"entity":"opportunity","field":"min_award","origin":"extracted"|"edited","original_value":…,"locator":"p. 12"}</code>. Entered values have no evidence row, so no source means entered.</td></tr>
   </table>
+</section>
 
-  <div class="dm" style="margin-top:22px">
-    <h3>Extraction prompt · <code>climate-advisor/prompts/cnb/funder_profile_extraction.md</code></h3>
-    <p>Input: converted markdown of the upload. Output: <code>FunderProfileDraft</code> JSON. Rules mirror the research prompt: quote evidence verbatim, never infer award bounds, put unknowns in <code>missing</code>, one funder per document (warn if several are named).</p>
+<section class="frame" id="pipe">
+  <div class="frame-label">Ingestion</div>
+  <h2>The one new thing: an ingestion path into the catalogue</h2>
+  <div class="two">
+    <div class="panel">
+      <h3>Pipeline</h3>
+      <ol>
+        <li><b>Upload</b>: existing <code>POST /concept-notes/{runId}/uploads</code> (OCR to Markdown, statuses, retry) <span class="reuse">reuse</span></li>
+        <li><b>Extract</b>: CA job reads the Markdown and returns a <code>FundingOpportunityResearchBundle</code>. The prompt is adapted from <code>prompts/cnb/funding_opportunity_research.md</code>: document text instead of web research, verbatim evidence, unknowns go to <code>gaps</code>/<code>known_gaps</code>. <span class="new">new</span></li>
+        <li><b>Review</b>: the bundle is shown in Frame 4, and edits change the bundle before saving</li>
+        <li><b>Add</b>: one transaction writes <code>funders</code>, <code>funding_opportunities</code>, <code>funder_templates</code>, <code>funder_criteria</code>, <code>source_documents</code> and <code>funding_evidence</code> <span class="new">new</span></li>
+        <li><b>Select</b>: existing <code>PATCH /application-context</code> <span class="reuse">reuse</span></li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>Endpoints (Next.js proxy → CA)</h3>
+      <table class="map" style="box-shadow:none">
+        <tr><th>Route</th><th></th></tr>
+        <tr><td><code>POST …/{runId}/funder-imports</code> <code>{uploadId}</code></td><td><span class="new">new</span> starts extraction</td></tr>
+        <tr><td><code>GET …/{runId}/funder-imports/current</code></td><td><span class="new">new</span> status + bundle when ready</td></tr>
+        <tr><td><code>POST …/{runId}/funder-imports/current/retry</code></td><td><span class="new">new</span></td></tr>
+        <tr><td><code>POST …/{runId}/funders</code> <code>{bundle}</code></td><td><span class="new">new</span> writes rows (upload or by-hand)</td></tr>
+        <tr><td><code>POST …/uploads</code>, <code>GET/PATCH …/application-context</code>, <code>GET …/funding-catalogue</code></td><td><span class="reuse">unchanged</span></td></tr>
+      </table>
+      <p class="lbl-sm" style="margin:10px 0 0">The pending import (status, error, bundle) lives in the run's existing <code>concept_note_context_bundles.context_bundle</code> JSON, next to <code>funder_context</code>. So it survives reload with no migration.</p>
+    </div>
   </div>
+</section>
 
-  <p class="footer">Mockup for Linear CC-870 · parent CC-858 (programme + template persistence) · related CC-873 (switching funders). Generated 25 Sep 2026.</p>
+<section class="frame" id="open">
+  <div class="frame-label">Open decisions</div>
+  <h2>Need an answer before implementation</h2>
+  <div class="panel">
+    <ol>
+      <li><b>Who sees an added funder?</b> <code>funders</code> has no city or owner column, so without a schema change an added funder joins the <b>shared catalogue</b> for every city. Is that acceptable for the pilot, or do we need scoping (which would mean one column after all)?</li>
+      <li><b>Document with no application form.</b> CC-858 requires every funder to have a programme and a template. If the document has no template, do we (a) let the user type the chapters (Frame 4 "Add chapter"), (b) block adding, or (c) offer a generic concept-note template?</li>
+      <li><b>Editing an added funder later.</b> Is it in scope for CC-870, or a follow-up? The catalogue has no edit path today.</li>
+    </ol>
+  </div>
 </section>
 
 </main>

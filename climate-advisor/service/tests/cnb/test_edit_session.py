@@ -9,7 +9,7 @@ import pytest
 from app.config.settings import CnbEditPromptBudgetConfig
 from app.models.cnb.concept_note_edits import DraftReplacement, EditProposalRequest
 from app.persistence.concept_notes.edits import replace_anchors
-from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_session import DraftEditSession
 
 

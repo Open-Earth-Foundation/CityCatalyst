@@ -23,9 +23,9 @@ from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationRequest,
     ChapterValidationTemplate,
 )
-from app.persistence.concept_notes.workspace import (
+from app.persistence.concept_notes.workspace import normalize_template_chapters
+from app.persistence.concept_notes.workspace_validation import (
     WorkspaceValidationContext,
-    normalize_template_chapters,
 )
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.prompt_budget import count_prompt_tokens

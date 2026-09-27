@@ -118,7 +118,7 @@ function DataTable<T extends object>({
         </Text>
       )}
 
-      <Flex mb={4} justifyContent="space-between" gap={6}>
+      <Flex mb={4} w="full" justifyContent="space-between" gap={20}>
         <Flex gap={2} alignItems="center" flex="1 0 0">
           {searchable && (
             <InputGroup

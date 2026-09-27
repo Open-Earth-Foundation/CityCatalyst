@@ -105,6 +105,7 @@ const uploadSourceMutation = jest.fn(() => ({
     filename: "budget.pdf",
   }),
 }));
+const retryBundle = jest.fn();
 const retryUpload = jest.fn(() => ({
   unwrap: async () => ({
     filename: "evidence.pdf",
@@ -240,17 +241,17 @@ function ContextHarness() {
         isRetryingBundle={false}
         isRetryingUpload={false}
         isUploading={false}
+        livePopulation={data.populationData}
         lng="en"
         manualPopulation={null}
         manualPopulationSaving={false}
-        onRetryBundle={() => {}}
+        onRetryBundle={retryBundle}
         onRetryUpload={() => {}}
         onSaveManualPopulation={async () => {}}
         onUploadFile={async () => {}}
         populationFailed={false}
         populationLabel="population-unavailable"
         populationLoading={false}
-        populationMissing={true}
         uploads={data.uploads}
         uploadError={null}
       />
@@ -430,6 +431,7 @@ beforeEach(() => {
   contextScenario = null;
   cityPopulation = undefined;
   updateManualPopulation.mockClear();
+  retryBundle.mockClear();
   currentUpload = undefined;
   uploading = false;
   globalThis.fetch = jest.fn(async () => ({
@@ -593,13 +595,76 @@ describe("useConceptNoteWorkspaceData", () => {
     });
   });
 
+  it("reports whether the city population reached the run context", async () => {
+    cityPopulation = { cityId: "city-1", population: 1_000_000, year: 2025 };
+    const readyBundle = { status: "ready", source_counts: { ready: 1 } };
+    const statusOf = () =>
+      ["not-included-in-run", "included-in-run", "bundle-source-pending"].find(
+        (key) => container.textContent?.includes(key),
+      );
+    const refreshButton = () =>
+      [...container.querySelectorAll("button")].find(
+        (button) => button.textContent === "population-refresh",
+      );
+
+    // A run built before the city profile existed must not claim it.
+    contextScenario = {
+      uploads: [source("ready", "A")],
+      progress_summary: { context_bundle: readyBundle },
+    };
+    await act(async () => root.render(<ContextHarness />));
+    expect(statusOf()).toBe("not-included-in-run");
+    expect(container.textContent).toContain("population-refresh-hint");
+    await act(async () => refreshButton()!.click());
+    expect(retryBundle).toHaveBeenCalledTimes(1);
+
+    contextScenario.progress_summary = {
+      context_bundle: { ...readyBundle, status: "building" },
+    };
+    await act(async () => root.render(<ContextHarness />));
+    expect(statusOf()).toBe("bundle-source-pending");
+    expect(refreshButton()).toBeUndefined();
+
+    contextScenario.progress_summary = {
+      context_bundle: {
+        ...readyBundle,
+        city_population: { population: 1_000_000, year: 2025 },
+      },
+    };
+    await act(async () => root.render(<ContextHarness />));
+    expect(statusOf()).toBe("included-in-run");
+    expect(refreshButton()).toBeUndefined();
+
+    // CityCatalyst changed after the build: keep the run figure, offer a refresh.
+    cityPopulation = { cityId: "city-1", population: 1_010_000, year: 2026 };
+    await act(async () => root.render(<ContextHarness />));
+    expect(statusOf()).toBe("included-in-run");
+    expect(container.textContent).toContain("population-refresh-outdated");
+  });
+
+  it("labels the population with the run figure before the live city record", async () => {
+    cityPopulation = { cityId: "city-1", population: 1_010_000, year: 2026 };
+    contextScenario = {
+      uploads: [],
+      progress_summary: {
+        context_bundle: {
+          status: "ready",
+          city_population: { population: 1_000_000, year: 2025 },
+        },
+      },
+      manual_population: null,
+    };
+    await act(async () => root.render(<PopulationHarness />));
+    expect(container.textContent).toBe("1,000,000 residents · 2025");
+  });
+
   it("enables the real chat composer after failed A is superseded by ready B, including reload", async () => {
     contextScenario = {
       progress_summary: {},
       uploads: [source("failed", "A")],
     };
     await act(async () => root.render(<ChatHarness />));
-    expect(container.querySelector("input")!.disabled).toBe(true);
+    expect(container.querySelector("textarea")!.disabled).toBe(true);
 
     contextScenario = {
       uploads: [source("ready", "B"), source("failed", "A")],
@@ -612,14 +677,14 @@ describe("useConceptNoteWorkspaceData", () => {
       },
     };
     await act(async () => root.render(<ChatHarness />));
-    expect(container.querySelector("input")!.disabled).toBe(false);
+    expect(container.querySelector("textarea")!.disabled).toBe(false);
     await act(async () => root.unmount());
     root = createRoot(container);
     await act(async () => root.render(<ChatHarness />));
     await act(async () => {
       await new Promise(requestAnimationFrame);
     });
-    expect(container.querySelector("input")!.disabled).toBe(false);
+    expect(container.querySelector("textarea")!.disabled).toBe(false);
     const send = container.querySelector<HTMLButtonElement>(
       'button[type="submit"]',
     )!;
@@ -645,7 +710,7 @@ describe("useConceptNoteWorkspaceData", () => {
     );
     expect(container.textContent).toContain("chat-context-not-ready");
     expect(container.textContent).not.toContain(composerRequest.content);
-    expect(container.querySelector("input")!.disabled).toBe(false);
+    expect(container.querySelector("textarea")!.disabled).toBe(false);
   });
 
   it("keeps pending uploads and the latest failed upload blocked", async () => {
@@ -660,10 +725,10 @@ describe("useConceptNoteWorkspaceData", () => {
       },
     };
     await act(async () => root.render(<ChatHarness />));
-    expect(container.querySelector("input")!.disabled).toBe(true);
+    expect(container.querySelector("textarea")!.disabled).toBe(true);
     contextScenario.uploads = [source("failed", "B"), source("ready", "A")];
     await act(async () => root.render(<ChatHarness />));
-    expect(container.querySelector("input")!.disabled).toBe(true);
+    expect(container.querySelector("textarea")!.disabled).toBe(true);
   });
 
   it("blocks chat until upload processing and the context bundle are both ready", async () => {

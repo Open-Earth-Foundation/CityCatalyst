@@ -152,7 +152,7 @@ async function renderTab(overrides: Partial<ContextTabProps> = {}) {
     populationFailed: false,
     populationLabel: "population",
     populationLoading: false,
-    populationMissing: false,
+    livePopulation: null,
     uploads: [],
     uploadError: null,
     ...overrides,
@@ -216,6 +216,31 @@ const withPlan = {
 };
 
 describe("Context tab missing-state cards", () => {
+  it("keeps population refresh disabled while drafting runs", async () => {
+    await renderTab({
+      livePopulation: { population: 1000000, year: 2025 },
+      isDraftRunning: true,
+    });
+
+    const refresh = control("population-refresh") as HTMLButtonElement;
+    expect(refresh.disabled).toBe(true);
+    expect(container.textContent).toContain("population-draft-running");
+    await act(async () => refresh.click());
+    expect(onRetryBundle).not.toHaveBeenCalled();
+  });
+
+  it("keeps population refresh disabled while a rebuild request is pending", async () => {
+    await renderTab({
+      livePopulation: { population: 1000000, year: 2025 },
+      isRetryingBundle: true,
+    });
+
+    const refresh = control("population-refresh") as HTMLButtonElement;
+    expect(refresh.disabled).toBe(true);
+    await act(async () => refresh.click());
+    expect(onRetryBundle).not.toHaveBeenCalled();
+  });
+
   it("hides the climate risk assessment card", async () => {
     await renderTab();
 

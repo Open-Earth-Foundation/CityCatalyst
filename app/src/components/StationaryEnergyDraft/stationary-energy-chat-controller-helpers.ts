@@ -52,6 +52,8 @@ export type StationaryEnergyStartDraftToolResult = {
   message_params?: unknown;
   draft_run_id?: string | null;
   error_code?: string | null;
+  // The agent wants the user's request re-sent once the run is ready.
+  continue_request?: boolean;
 };
 
 const GENERIC_START_DRAFT_FAILURE_KEYS = new Set([
@@ -111,6 +113,21 @@ export function isStationaryEnergyStartDraftToolResult(
       "stationary_energy_draft_started" &&
     typeof (tool as { success?: unknown }).success === "boolean"
   );
+}
+
+/**
+ * Return the request to re-send once a chat-started run is ready, or null when
+ * starting the run was the whole request.
+ */
+export function resolveDraftStartResume(
+  tool: StationaryEnergyStartDraftToolResult,
+  draftRunId: string,
+  lastUserContent: string | null,
+): { draftRunId: string; content: string } | null {
+  if (tool.continue_request !== true || !lastUserContent) {
+    return null;
+  }
+  return { draftRunId, content: lastUserContent };
 }
 
 export function resolveStationaryEnergyStartDraftFailureMessage(
@@ -174,8 +191,7 @@ export function nextDecisionState(
       manualUnit: current[proposalId]?.manualUnit ?? "",
       notationKey: current[proposalId]?.notationKey ?? "",
       unavailableReason: current[proposalId]?.unavailableReason ?? "",
-      unavailableExplanation:
-        current[proposalId]?.unavailableExplanation ?? "",
+      unavailableExplanation: current[proposalId]?.unavailableExplanation ?? "",
       note: current[proposalId]?.note ?? "",
     },
   };

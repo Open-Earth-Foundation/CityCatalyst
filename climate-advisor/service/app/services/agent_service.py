@@ -148,7 +148,7 @@ class AgentService:
         openai.max_retries = self.client.max_retries
 
         # The whole Stationary Energy page uses its workflow prompt; before a run
-        # exists the agent only gets the start-run tool (see create_agent).
+        # exists the agent gets the start-run and scoped inventory tools.
         self._uses_stationary_energy_review_prompt = bool(
             self._stationary_energy_surface
             and self.session_factory
@@ -359,7 +359,7 @@ class AgentService:
 
         # General chat can query CityCatalyst inventory data directly. The
         # Stationary Energy page uses the persisted draft snapshot and scoped
-        # review tools instead, or only the start-run tool before a run exists.
+        # review tools instead, or the start-run pack before a run exists.
         if (
             not self._uses_stationary_energy_review_prompt
             and not self._has_concept_note_context

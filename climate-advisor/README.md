@@ -449,10 +449,12 @@ draft for review.
 The whole Stationary Energy page uses the `stationary_energy_review` prompt.
 Before a run exists, the draft snapshot is replaced by a
 `STATIONARY_ENERGY_RUN_NOT_STARTED` system message that names the selected
-inventory and tells the agent to call `stationary_energy_start_draft` before
-answering data or source requests, so it never asks for the city or year. When
-the agent starts a run for a request (for example "add all SEEG data"), the page
-re-sends that request once the run is ready with the
+inventory, so the agent never asks for the city or year. In that state the agent
+answers whole-inventory questions with the read-only `inventory_status_overview`
+and `inventory_emissions_context` tools and calls `stationary_energy_start_draft`
+only when the user asks to draft rows or add source data. When the request asks
+for more than starting the run (for example "add all SEEG data"), the agent sets
+`continue_request` and the page re-sends that request once the run is ready with the
 `stationary_energy_resume_after_draft_start` option. That resume turn is not
 stored as a second user message and runs with the new draft context and review
 tools, so the agent can answer it, for example with a bulk confirmation card.

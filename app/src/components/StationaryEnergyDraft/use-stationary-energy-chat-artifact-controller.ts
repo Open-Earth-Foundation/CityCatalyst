@@ -24,6 +24,7 @@ import {
   mergeDecisionReviewMessages,
   nextDecisionState,
   resolveChatActivityLabel,
+  resolveDraftStartResume,
   resolveInventorySaveConfirmationRequest,
   resolveStationaryEnergyStartDraftFailureMessage,
   resolveStationaryEnergyToolMessage,
@@ -1034,12 +1035,13 @@ export function useStationaryEnergyChatArtifactController(
         }
 
         clearError();
-        const pendingContent = lastUserChatContentRef.current;
-        if (pendingContent) {
-          setPendingDraftStartResume({
-            draftRunId: toolDraftRunId,
-            content: pendingContent,
-          });
+        const resume = resolveDraftStartResume(
+          tool,
+          toolDraftRunId,
+          lastUserChatContentRef.current,
+        );
+        if (resume) {
+          setPendingDraftStartResume(resume);
         }
         void refreshDraftStatusSilently(toolDraftRunId).catch((error) => {
           showError(

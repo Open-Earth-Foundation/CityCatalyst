@@ -20,6 +20,7 @@ import {
   buildFocusedDecisionStatePayload,
   buildStationaryEnergyChatRequest,
   resolveChatActivityLabel,
+  resolveDraftStartResume,
   resolveInventorySaveConfirmationRequest,
   resolveStationaryEnergyStartDraftFailureMessage,
   resolveStationaryEnergyToolMessage,
@@ -1139,6 +1140,39 @@ describe("Stationary Energy draft flow", () => {
         status: "executing",
         ui_event: "stationary_energy_draft_started",
       }),
+    ).toBeNull();
+  });
+
+  it("resumes only requests that asked for more than starting the run", () => {
+    const started = {
+      success: true,
+      ui_event: "stationary_energy_draft_started" as const,
+      draft_run_id: "draft-1",
+    };
+
+    expect(
+      resolveDraftStartResume(
+        { ...started, continue_request: true },
+        "draft-1",
+        "add all seeg data",
+      ),
+    ).toEqual({ draftRunId: "draft-1", content: "add all seeg data" });
+    expect(
+      resolveDraftStartResume(started, "draft-1", "draft the empty rows"),
+    ).toBeNull();
+    expect(
+      resolveDraftStartResume(
+        { ...started, continue_request: false },
+        "draft-1",
+        "go ahead",
+      ),
+    ).toBeNull();
+    expect(
+      resolveDraftStartResume(
+        { ...started, continue_request: true },
+        "draft-1",
+        null,
+      ),
     ).toBeNull();
   });
 

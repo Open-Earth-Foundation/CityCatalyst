@@ -134,7 +134,7 @@ def test_ui_context_marks_resumed_requests_only():
 
 
 @patch("app.services.agent_service.get_settings")
-def test_pre_run_page_agent_uses_stationary_energy_prompt_and_start_tool_only(
+def test_pre_run_page_agent_uses_stationary_energy_prompt_and_pre_run_tools(
     mock_get_settings,
 ):
     mock_settings = MagicMock()
@@ -169,7 +169,12 @@ def test_pre_run_page_agent_uses_stationary_energy_prompt_and_start_tool_only(
     agent_kwargs = mock_agent_class.call_args.kwargs
     tool_names = [getattr(tool, "name", "") for tool in agent_kwargs["tools"]]
     assert agent_kwargs["instructions"] == "stationary_energy_review prompt"
-    assert tool_names == ["stationary_energy_start_draft"]
+    # Read-only inventory questions are answered without starting a run.
+    assert tool_names == [
+        "inventory_status_overview",
+        "inventory_emissions_context",
+        "stationary_energy_start_draft",
+    ]
     assert service.preferred_model_for_context() == "openai/agentic"
 
 

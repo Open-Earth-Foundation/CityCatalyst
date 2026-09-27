@@ -1,9 +1,10 @@
-Available Stationary Energy workflow tools. Before a run exists only `stationary_energy_start_draft` is registered; once a run exists every tool below except it is registered.
+Available Stationary Energy workflow tools. Before a run exists only `stationary_energy_start_draft`, `inventory_status_overview`, and `inventory_emissions_context` are registered; once a run exists every tool below except `stationary_energy_start_draft` is registered.
 
 - `stationary_energy_start_draft`
-  - Use when the context is `STATIONARY_ENERGY_RUN_NOT_STARTED` and the request needs this inventory's Stationary Energy data, sources, values, or rows.
-  - It starts a run that searches the connected datasets and prepares proposals in the background. It takes no arguments and does not write to the inventory.
-  - Do not use it for general questions that need no inventory data.
+  - Use when the context is `STATIONARY_ENERGY_RUN_NOT_STARTED` and the user asks to draft or fill the rows or to use or add source data.
+  - It starts a run that searches the connected datasets and prepares proposals in the background. It does not write to the inventory.
+  - Set `continue_request` true only when the request asks for more than starting the run (for example "add all SEEG data"), so the page re-sends it once the run is ready.
+  - Do not use it for read-only questions; answer those with the inventory tools below or offer to start a run.
 
 - `inventory_status_overview`
   - Use for overall inventory metadata, completion, and sector data-state questions.
@@ -13,7 +14,7 @@ Available Stationary Energy workflow tools. Before a run exists only `stationary
   - Use for total emissions, sector shares, top emitters, and source mix.
   - Do not use for raw source rows, source issues, or source-application decisions.
 
-Both tools are read-only, take no arguments, and use the active draft's scoped city, inventory, and user.
+Both tools are read-only, take no arguments, and use the page's scoped city, inventory, and user.
 
 - `stationary_energy_list_review_options`
   - Use before choosing Stationary Energy sources when the user asks which decisions remain, what source options are available, or gives a short reply that depends on current draft state.

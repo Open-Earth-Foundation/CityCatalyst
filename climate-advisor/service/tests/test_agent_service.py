@@ -805,7 +805,10 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 "pre-draft Stationary Energy surface",
                 start_draft_tool.description,
             )
-            self.assertIn("no arguments", start_draft_tool.description)
+            self.assertIn(
+                "continue_request",
+                start_draft_tool.params_json_schema["properties"],
+            )
 
         with patch("app.services.agent_service.AsyncOpenAI"), patch(
             "app.services.agent_service.Agent"

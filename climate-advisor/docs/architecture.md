@@ -173,9 +173,10 @@ flowchart LR
 - Stationary Energy draft-surface chat composes `prompts.core` with
   `prompts.stationary_energy_review` even before a draft run exists. In that
   state the handler sends a `STATIONARY_ENERGY_RUN_NOT_STARTED` context message
-  instead of the draft snapshot, and the only workflow tool is
-  `stationary_energy_start_draft`.
-- After the agent starts a run for a request, the page re-sends that request
+  instead of the draft snapshot, and the workflow tools are
+  `stationary_energy_start_draft` plus the read-only, page-scoped
+  `inventory_status_overview` and `inventory_emissions_context`.
+- When the agent starts a run with `continue_request` set, the page re-sends the request
   with `stationary_energy_resume_after_draft_start` once the run is ready. The
   messages route does not store it again, and the handler re-adds it after the
   "starting the run" reply so the review agent answers it with the new data.

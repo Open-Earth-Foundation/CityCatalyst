@@ -679,7 +679,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
             output = await start_tool.on_invoke_tool(  # type: ignore[attr-defined]
                 ctx,
-                json.dumps({}),
+                json.dumps({"continue_request": True}),
             )
             return json.loads(output)
 
@@ -690,6 +690,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             data = asyncio.run(exercise())
 
         self.assertTrue(data["success"], data)
+        # The page re-sends the request once the run is ready.
+        self.assertTrue(data["continue_request"])
         self._wait_for_draft_status(data["draft_run_id"], "ready")
         mock_client.refresh_token.assert_awaited_once_with("user-1")
         self.assertEqual(token_ref["value"], "fresh-token")

@@ -182,7 +182,11 @@ def test_compose_prompt_wraps_core_and_stationary_energy_review() -> None:
     assert "`inventory_emissions_context`" in composed_prompt
     # The same prompt covers the page before a run exists and after it resumes.
     assert "`STATIONARY_ENERGY_RUN_NOT_STARTED`" in composed_prompt
-    assert "call `stationary_energy_start_draft` first" in composed_prompt
+    assert (
+        "call `stationary_energy_start_draft` with `continue_request` true"
+        in composed_prompt
+    )
+    assert "Do not start a run for a read-only question" in composed_prompt
     assert "`ui_context.resumed_after_run_start` is true" in composed_prompt
     assert "Never ask the user for the city, inventory, or year" in composed_prompt
     assert '"go ahead" when nothing is staged yet' not in composed_prompt

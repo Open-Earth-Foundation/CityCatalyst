@@ -441,4 +441,31 @@ describe("Context tab missing-state cards", () => {
     await act(async () => control("template-choose")?.click());
     expect(onSelectFunding).toHaveBeenCalledTimes(1);
   });
+
+  it("follows a funder document while it is read", async () => {
+    const onOpenFunderImport = jest.fn();
+    await renderTab({
+      funderImport: { phase: "reading", filename: "Call.pdf" },
+      onOpenFunderImport,
+    });
+
+    expect(container.textContent).toContain("funder-import-card-reading");
+    expect(container.textContent).toContain("Call.pdf");
+    expect(container.textContent).not.toContain("funder-why");
+    await act(async () => control("funder-import-open")?.click());
+    expect(onOpenFunderImport).toHaveBeenCalledTimes(1);
+  });
+
+  it("opens the review when funder details are ready", async () => {
+    const onOpenFunderImport = jest.fn();
+    await renderTab({
+      funderImport: { phase: "ready", filename: "Call.pdf" },
+      onOpenFunderImport,
+    });
+
+    expect(container.textContent).toContain("funder-import-card-ready");
+    await act(async () => control("funder-review-details")?.click());
+    expect(onOpenFunderImport).toHaveBeenCalledTimes(1);
+    expect(onSelectFunding).not.toHaveBeenCalled();
+  });
 });

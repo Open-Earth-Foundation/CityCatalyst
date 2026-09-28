@@ -1152,7 +1152,107 @@ export interface ConceptNoteFundingOpportunity {
   hazards: string[];
   interventions: string[];
   known_gaps: string[];
+  /** Set for programmes a user added from a document or by hand. */
+  added_from?: ConceptNoteFundingAddedFrom | null;
   template: ConceptNoteApplicationContext["template"];
+}
+
+export interface ConceptNoteFundingAddedFrom {
+  kind: "document" | "manual";
+  filename: string | null;
+}
+
+export type ConceptNoteFunderImportStatus = "processing" | "ready" | "failed";
+
+/** Reviewable `funders` columns (Climate Advisor funder import contract). */
+export interface ConceptNoteFunderFields {
+  name: string;
+  funder_type: string | null;
+  country: string | null;
+  region: string | null;
+  profile: {
+    stated: Record<string, string>;
+    derived: Record<string, string>;
+  };
+}
+
+/** Reviewable `funding_opportunities` columns. Awards are decimals. */
+export interface ConceptNoteProgrammeFields {
+  name: string;
+  applicant_type: string | null;
+  category: string | null;
+  sector: string | null;
+  hazards: string[];
+  interventions: string[];
+  finance_route: string | null;
+  instrument_type: string | null;
+  region_scope: string | null;
+  min_award: string | number | null;
+  max_award: string | number | null;
+  currency: string | null;
+  status: string | null;
+  summary: string | null;
+  known_gaps: string[];
+}
+
+export interface ConceptNoteTemplateChapterFields {
+  /** Empty for new chapters; the server derives a reference from the title. */
+  chapter_ref: string;
+  title: string;
+  description: string | null;
+  required: boolean;
+  required_fields: string[];
+}
+
+export interface ConceptNoteTemplateFields {
+  template_name: string;
+  output_format: string | null;
+  chapter_schema: ConceptNoteTemplateChapterFields[];
+}
+
+/** A verbatim quote from the uploaded document supporting one field path. */
+export interface ConceptNoteFieldEvidence {
+  field: string;
+  quote: string;
+  page: number | null;
+}
+
+export interface ConceptNoteFunderImportDraft {
+  funder: ConceptNoteFunderFields;
+  opportunity: ConceptNoteProgrammeFields;
+  template: ConceptNoteTemplateFields;
+  evidence: ConceptNoteFieldEvidence[];
+  missing: string[];
+}
+
+export interface ConceptNoteFunderImport {
+  import_id: string;
+  upload_id: string;
+  filename: string;
+  status: ConceptNoteFunderImportStatus;
+  error_code: string | null;
+  draft: ConceptNoteFunderImportDraft | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConceptNoteFunderImportResponse {
+  funder_import: ConceptNoteFunderImport | null;
+}
+
+export interface ConceptNoteFunderCreateRequest {
+  funder: ConceptNoteFunderFields;
+  opportunity: Omit<ConceptNoteProgrammeFields, "min_award" | "max_award"> & {
+    min_award: number | null;
+    max_award: number | null;
+  };
+  template: ConceptNoteTemplateFields;
+  import_id: string | null;
+}
+
+export interface ConceptNoteFunderCreateResponse {
+  funder_id: string;
+  funding_opportunity_id: string;
 }
 
 export interface ConceptNoteFunder {

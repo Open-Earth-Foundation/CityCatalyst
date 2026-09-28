@@ -60,6 +60,7 @@ jest.unstable_mockModule("@/services/api", () => ({
       },
       isLoading: false,
       isError: false,
+      refetch: async () => undefined,
     }),
     useUpdateConceptNoteFundingSelectionMutation: () => [
       save,
@@ -262,3 +263,146 @@ it.each([
     expect(onClose).not.toHaveBeenCalled();
   },
 );
+
+it("adds a funder entered by hand and selects it", async () => {
+  const newFunderId = "added-funder";
+  const newProgrammeId = "added-programme";
+  const createFunder = jest.fn(async (request: unknown) => {
+    const body = request as {
+      funder: { name: string };
+      opportunity: { name: string };
+      template: { template_name: string };
+    };
+    funders = [
+      ...funders,
+      {
+        id: newFunderId,
+        name: body.funder.name,
+        country: null,
+        region: null,
+        funder_type: null,
+        profile: {},
+        opportunities: [
+          {
+            ...opportunity,
+            id: newProgrammeId,
+            name: body.opportunity.name,
+            added_from: { kind: "manual", filename: null },
+          },
+        ],
+      },
+    ];
+    return {
+      funder_id: newFunderId,
+      funding_opportunity_id: newProgrammeId,
+    };
+  });
+  const flow = {
+    phase: "idle" as const,
+    funderImport: null,
+    failure: null,
+    filename: null,
+    pageCount: null,
+    error: null,
+    retrying: false,
+    discarding: false,
+    creating: false,
+    uploadFile: jest.fn(async () => undefined),
+    retry: jest.fn(async () => undefined),
+    discard: jest.fn(async () => undefined),
+    chooseAnotherFile: jest.fn(),
+    createFunder,
+  };
+  await act(async () => {
+    root.render(
+      <ChakraProvider value={defaultSystem}>
+        <FundingSelectionDialog
+          applicationContext={{
+            run_id: "run",
+            city_id: "city",
+            funder: null,
+            opportunity: null,
+            template: null,
+            included_sources: {
+              city: true,
+              project: false,
+              ghgi: false,
+              ccra: false,
+              hiap: false,
+            },
+          }}
+          hasDraft={false}
+          busy={false}
+          lng="en"
+          runId="run"
+          onClose={onClose}
+          addFunder={flow}
+        />
+      </ChakraProvider>,
+    );
+  });
+  const button = (label: string) =>
+    [...document.querySelectorAll("button")].find((item) =>
+      item.textContent?.includes(label),
+    );
+  async function type(label: string, value: string) {
+    const labelElement = [...document.querySelectorAll("label")].find(
+      (item) => item.textContent === `${label} *`,
+    );
+    const input = document.getElementById(
+      labelElement!.htmlFor,
+    ) as HTMLInputElement;
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value",
+      )!.set!.call(input, value);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  }
+
+  await act(async () => button(translations["funder-add-entry"])!.click());
+  await act(async () => button(translations["funder-add-manual"])!.click());
+  const submit = () =>
+    document.querySelector<HTMLButtonElement>(
+      '[data-testid="concept-note-add-funder"]',
+    )!;
+  expect(submit().disabled).toBe(true);
+  await type(translations["funder-field-name"], "Resilient Futures Fund");
+  await type(translations["funder-field-programme-name"], "Resilient Cities");
+  await type(translations["funder-field-template-name"], "Concept note");
+  expect(submit().disabled).toBe(true);
+  await type(translations["funder-field-chapter-title"], "Summary");
+  expect(submit().disabled).toBe(false);
+  await act(async () => submit().click());
+
+  expect(createFunder).toHaveBeenCalledWith(
+    expect.objectContaining({
+      import_id: null,
+      funder: expect.objectContaining({ name: "Resilient Futures Fund" }),
+      opportunity: expect.objectContaining({
+        name: "Resilient Cities",
+        min_award: null,
+        max_award: null,
+      }),
+      template: expect.objectContaining({
+        template_name: "Concept note",
+        chapter_schema: [
+          expect.objectContaining({ chapter_ref: "", title: "Summary" }),
+        ],
+      }),
+    }),
+  );
+  const selected = [...document.querySelectorAll("nav button")].find(
+    (item) => item.getAttribute("aria-pressed") === "true",
+  );
+  expect(selected?.textContent).toContain("Resilient Futures Fund");
+  expect(
+    document.querySelector('[data-testid="concept-note-funder-added-from"]')
+      ?.textContent,
+  ).toBe(translations["funding-added-by-hand"]);
+  expect(
+    button(translations["funding-save-and-draft"]) ??
+      button(translations["funding-save"]),
+  ).toBeDefined();
+});

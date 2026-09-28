@@ -56,6 +56,7 @@ import {
 } from "@/components/ConceptNoteWorkspace/document-review";
 import { useInlineReviewDecisions } from "@/components/ConceptNoteWorkspace/use-inline-review-decisions";
 import { useConceptNoteWorkspaceData } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-data";
+import { useFunderImport } from "@/components/ConceptNoteWorkspace/use-funder-import";
 import {
   WorkspaceLoadingState,
   WorkspaceUnavailableState,
@@ -95,6 +96,8 @@ export function ConceptNoteWorkspace({
   const [tab, setTab] = useState<WorkspaceTab>("draft");
   const [startNewChatOpen, setStartNewChatOpen] = useState(false);
   const [fundingOpen, setFundingOpen] = useState(false);
+  // Opens the funding dialog straight into adding a funder.
+  const [fundingAddMode, setFundingAddMode] = useState(false);
   const [retryInitialUploadOpen, setRetryInitialUploadOpen] = useState(false);
   const [resetThread, setResetThread] = useState<{
     previousThreadId: string | null;
@@ -183,6 +186,8 @@ export function ConceptNoteWorkspace({
     uploadSource,
     uploadState,
   } = useConceptNoteWorkspaceData({ cityId, initialUploadId, lng, runId });
+  // Kept here so a funder document keeps progressing after the dialog closes.
+  const funderImport = useFunderImport({ cityId, runId });
   const edits = useConceptNoteEdits({
     runId,
     onApplied: async (chapterIds) => {
@@ -825,6 +830,18 @@ export function ConceptNoteWorkspace({
                 <ContextTab
                   applicationContext={applicationContext ?? null}
                   onSelectFunding={() => setFundingOpen(true)}
+                  funderImport={
+                    funderImport.phase === "idle"
+                      ? null
+                      : {
+                          phase: funderImport.phase,
+                          filename: funderImport.filename,
+                        }
+                  }
+                  onOpenFunderImport={() => {
+                    setFundingAddMode(true);
+                    void openFundingSetup();
+                  }}
                   fundingLoading={applicationContextLoading}
                   fundingError={applicationContextFailed}
                   onRetryFunding={() => void refetchApplicationContext()}
@@ -899,7 +916,12 @@ export function ConceptNoteWorkspace({
           busy={isDraftRunning || Boolean(edits.busy)}
           lng={lng}
           runId={runId}
-          onClose={() => setFundingOpen(false)}
+          addFunder={funderImport}
+          initialAddFunder={fundingAddMode}
+          onClose={() => {
+            setFundingOpen(false);
+            setFundingAddMode(false);
+          }}
           onSaved={() => {
             setTab("draft");
             setNextStep("start-drafting");

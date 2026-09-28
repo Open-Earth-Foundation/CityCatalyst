@@ -59,6 +59,13 @@ import { InventorySelectionDialog } from "./inventory-selection-dialog";
 interface ContextTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
   onSelectFunding: () => void;
+  /** A funder document being read or waiting for review, if any. */
+  funderImport?: {
+    phase: "uploading" | "converting" | "reading" | "ready" | "failed";
+    filename: string | null;
+  } | null;
+  /** Opens the funding dialog in its add-funder state. */
+  onOpenFunderImport?: () => void;
   fundingLoading: boolean;
   fundingError: boolean;
   onRetryFunding: () => void;
@@ -227,6 +234,8 @@ function ContextCard({
 export function ContextTab({
   applicationContext,
   onSelectFunding,
+  funderImport = null,
+  onOpenFunderImport,
   fundingLoading,
   fundingError,
   onRetryFunding,
@@ -702,38 +711,77 @@ export function ContextTab({
           gap={2}
           gridTemplateColumns={{ base: "1fr", lg: "repeat(3, minmax(0, 1fr))" }}
         >
-          <ContextCard
-            label={t("funder-profile")}
-            action={
-              fundingError
-                ? {
-                    label: t("try-again"),
-                    onClick: onRetryFunding,
-                    loading: fundingLoading,
-                  }
-                : {
-                    label: t(
-                      applicationContext?.funder
-                        ? "funding-view-change"
-                        : "funding-browse",
-                    ),
-                    onClick: onSelectFunding,
-                    loading: fundingLoading,
-                  }
-            }
-            value={
-              applicationContext?.funder?.name || t("funding-not-selected")
-            }
-            details={[
-              applicationContext?.funder
-                ? applicationContext.opportunity?.name || ""
-                : t("funder-why"),
-            ]}
-            status={t(
-              applicationContext?.funder ? "connected" : "not-connected",
-            )}
-            tone={applicationContext?.funder ? "positive" : "warning"}
-          />
+          {funderImport ? (
+            <ContextCard
+              label={t("funder-profile")}
+              action={{
+                label: t(
+                  funderImport.phase === "ready"
+                    ? "funder-review-details"
+                    : "funder-import-open",
+                ),
+                onClick: onOpenFunderImport ?? onSelectFunding,
+                loading: fundingLoading,
+              }}
+              value={funderImport.filename ?? undefined}
+              details={[
+                t(
+                  funderImport.phase === "ready"
+                    ? "funder-import-card-ready-detail"
+                    : funderImport.phase === "failed"
+                      ? "funder-import-card-failed-detail"
+                      : "funder-import-card-reading-detail",
+                ),
+              ]}
+              status={t(
+                funderImport.phase === "ready"
+                  ? "funder-import-card-ready"
+                  : funderImport.phase === "failed"
+                    ? "funder-import-card-failed"
+                    : "funder-import-card-reading",
+              )}
+              tone={
+                funderImport.phase === "ready"
+                  ? "positive"
+                  : funderImport.phase === "failed"
+                    ? "warning"
+                    : "neutral"
+              }
+            />
+          ) : (
+            <ContextCard
+              label={t("funder-profile")}
+              action={
+                fundingError
+                  ? {
+                      label: t("try-again"),
+                      onClick: onRetryFunding,
+                      loading: fundingLoading,
+                    }
+                  : {
+                      label: t(
+                        applicationContext?.funder
+                          ? "funding-view-change"
+                          : "funding-browse",
+                      ),
+                      onClick: onSelectFunding,
+                      loading: fundingLoading,
+                    }
+              }
+              value={
+                applicationContext?.funder?.name || t("funding-not-selected")
+              }
+              details={[
+                applicationContext?.funder
+                  ? applicationContext.opportunity?.name || ""
+                  : t("funder-why"),
+              ]}
+              status={t(
+                applicationContext?.funder ? "connected" : "not-connected",
+              )}
+              tone={applicationContext?.funder ? "positive" : "warning"}
+            />
+          )}
           <ContextCard
             label={t("funding-template-preview")}
             action={

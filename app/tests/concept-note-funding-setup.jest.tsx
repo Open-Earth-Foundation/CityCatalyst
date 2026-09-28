@@ -131,6 +131,12 @@ jest.unstable_mockModule(
   }),
 );
 jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/use-funder-import",
+  () => ({
+    useFunderImport: () => ({ phase: "idle", filename: null }),
+  }),
+);
+jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/use-inline-review-decisions",
   () => ({
     useInlineReviewDecisions: () => ({ decisions: {} }),

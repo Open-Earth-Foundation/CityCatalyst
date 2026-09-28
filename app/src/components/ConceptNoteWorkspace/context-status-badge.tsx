@@ -1,5 +1,5 @@
 import { Box, HStack, Text } from "@chakra-ui/react";
-export type ContextTone = "positive" | "neutral" | "warning";
+export type ContextTone = "positive" | "neutral" | "warning" | "negative";
 
 export function toneColor(tone: ContextTone): string {
   if (tone === "positive") {
@@ -7,6 +7,9 @@ export function toneColor(tone: ContextTone): string {
   }
   if (tone === "warning") {
     return "sentiment.warningDefault";
+  }
+  if (tone === "negative") {
+    return "sentiment.negativeDefault";
   }
   return "content.tertiary";
 }

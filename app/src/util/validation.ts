@@ -474,3 +474,80 @@ export const conceptNoteFundingSelectionRequest = z
       value.selected_funding_opportunity_id === null,
     { message: "A funding opportunity requires a funder" },
   );
+
+export const conceptNoteFunderImportStartRequest = z
+  .object({ uploadId: z.string().uuid() })
+  .strict();
+
+const funderText = (max: number) => z.string().max(max).nullable();
+const funderAward = z.number().finite().nonnegative().nullable();
+
+/** Reviewed funder, programme and template to add to the CNB catalogue. */
+export const conceptNoteFunderCreateRequest = z
+  .object({
+    funder: z
+      .object({
+        name: z.string().trim().min(1).max(255),
+        funder_type: funderText(100),
+        country: funderText(100),
+        region: funderText(255),
+        profile: z
+          .object({
+            stated: z.record(z.string(), z.string()),
+            derived: z.record(z.string(), z.string()),
+          })
+          .strict(),
+      })
+      .strict(),
+    opportunity: z
+      .object({
+        name: z.string().trim().min(1).max(255),
+        applicant_type: funderText(255),
+        category: funderText(255),
+        sector: funderText(255),
+        hazards: z.array(z.string()),
+        interventions: z.array(z.string()),
+        finance_route: funderText(255),
+        instrument_type: funderText(255),
+        region_scope: funderText(255),
+        min_award: funderAward,
+        max_award: funderAward,
+        currency: funderText(16),
+        status: funderText(64),
+        summary: z.string().nullable(),
+        known_gaps: z.array(z.string()),
+      })
+      .strict()
+      .refine(
+        (value) =>
+          value.min_award === null ||
+          value.max_award === null ||
+          value.min_award <= value.max_award,
+        { message: "min_award must not exceed max_award" },
+      ),
+    template: z
+      .object({
+        template_name: z.string().trim().min(1).max(255),
+        output_format: funderText(64),
+        chapter_schema: z
+          .array(
+            z
+              .object({
+                chapter_ref: z.string().max(255),
+                title: z.string().trim().min(1).max(255),
+                description: z.string().nullable(),
+                required: z.boolean(),
+                required_fields: z.array(z.string()),
+              })
+              .strict(),
+          )
+          .min(1),
+      })
+      .strict(),
+    import_id: z.string().uuid().nullable(),
+  })
+  .strict();
+
+export type ConceptNoteFunderCreateRequestBody = z.infer<
+  typeof conceptNoteFunderCreateRequest
+>;

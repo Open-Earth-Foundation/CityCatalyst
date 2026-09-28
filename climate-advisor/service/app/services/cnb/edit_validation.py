@@ -20,7 +20,7 @@ from app.models.cnb.concept_note_edits import (
     PlannedTextChange,
 )
 from app.persistence.concept_notes.edits import EditOperationError, replace_anchors
-from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.utils.cnb_information_markers import (
     information_marker_key,
     information_needed_markers,

@@ -62,6 +62,28 @@ def omit_context_identifiers(value: Any) -> Any:
     return value
 
 
+SOURCE_DOCUMENTS_MESSAGE_HEADER = "CONCEPT_NOTE_SOURCE_DOCUMENTS"
+
+
+def render_source_documents_message(documents: list[dict[str, Any]]) -> str:
+    """Render complete uploaded source text as one model-facing message body.
+
+    Source indices follow ``selected_sources`` order so citations and source
+    queries refer to the same document.
+    """
+    parts = [SOURCE_DOCUMENTS_MESSAGE_HEADER]
+    for index, document in enumerate(documents, start=1):
+        # JSON-quote metadata so labels cannot break the source wrapper.
+        label = json.dumps(document.get("source_label") or "", ensure_ascii=False)
+        filename = json.dumps(document.get("filename") or "", ensure_ascii=False)
+        source_format = json.dumps(document.get("source_format") or "")
+        parts.append(
+            f'<source index="{index}" label={label} filename={filename} '
+            f"format={source_format}>\n{document['text']}\n</source>"
+        )
+    return "\n\n".join(parts)
+
+
 def manual_population_context(summary: Any) -> dict[str, Any] | None:
     """Label the run's user-entered population so models never mistake its source."""
     population = summary.get("manual_population") if isinstance(summary, dict) else None

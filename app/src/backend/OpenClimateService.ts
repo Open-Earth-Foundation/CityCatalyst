@@ -1,6 +1,12 @@
 import { logger } from "@/services/logger";
 import { findClosestYear, PopulationEntry } from "@/util/helpers";
 import * as dotenv from "dotenv";
+import {
+  pickUniqueOpenClimateCity,
+  type OpenClimateCityResolveResult,
+  type OpenClimateCitySearchHit,
+} from "@/backend/openclimate-city-search";
+import { countryCodeFromLocode } from "@/backend/BulkInventoryImportMatcher";
 
 const numberOfYearsDisplayed = 10;
 
@@ -50,6 +56,49 @@ export default class OpenClimateService {
     return data.data.name;
   }
 
+  /**
+   * Same search onboarding uses (`GET /api/v1/search/city?q=`), city-type only.
+   * Network failures return [] so bulk matching can continue without OC.
+   */
+  public static async searchCities(
+    query: string,
+  ): Promise<OpenClimateCitySearchHit[]> {
+    const q = query.trim();
+    if (q.length < 2) return [];
+    const url = `${OPENCLIMATE_BASE_URL}/api/v1/search/city?q=${encodeURIComponent(q)}`;
+    try {
+      const request = await fetch(url);
+      if (!request.ok) {
+        logger.warn(
+          { status: request.status, query: q },
+          "OpenClimate city search returned a non-OK status",
+        );
+        return [];
+      }
+      const body = (await request.json()) as {
+        data?: Array<OpenClimateCitySearchHit & { type?: string }>;
+      };
+      const rows = Array.isArray(body?.data) ? body.data : [];
+      return rows.filter(
+        (item) =>
+          item?.type === "city" &&
+          typeof item.actor_id === "string" &&
+          typeof item.name === "string",
+      );
+    } catch (err) {
+      logger.warn({ err, query: q }, "OpenClimate city search failed");
+      return [];
+    }
+  }
+
+  public static async resolveCityByName(
+    name: string,
+    countryLocode?: string | null,
+  ): Promise<OpenClimateCityResolveResult> {
+    const hits = await this.searchCities(name);
+    return pickUniqueOpenClimateCity(hits, name, countryLocode);
+  }
+
   public static async getPopulationData(
     inventoryLocode: string,
     inventoryYear: number,
@@ -78,10 +127,7 @@ export default class OpenClimateService {
       }
       result.regionLocode = regionLocode;
 
-      const countryLocode =
-        inventoryLocode && inventoryLocode.length > 0
-          ? inventoryLocode.split(" ")[0]
-          : null;
+      const countryLocode = countryCodeFromLocode(inventoryLocode);
       if (!countryLocode) {
         result.error = `Invalid locode supplied, doesn\'t have a country locode: ${inventoryLocode}`;
         return result;
@@ -120,6 +166,36 @@ export default class OpenClimateService {
     }
 
     return result;
+  }
+
+  /**
+   * Population for a single OpenClimate actor (city, region, or country).
+   * Used for INE-only Chile cities where the city actor does not exist.
+   */
+  public static async getActorPopulation(
+    actorId: string,
+    inventoryYear: number,
+  ): Promise<{ population: number; year: number; name?: string } | null> {
+    const url = OPENCLIMATE_BASE_URL + "/api/v1/actor/";
+    try {
+      const result = await this.fetchPopulation(
+        actorId,
+        inventoryYear,
+        url,
+      );
+      if (!result) return null;
+      return {
+        population: result.population,
+        year: result.year,
+        name: result.data.data.name,
+      };
+    } catch (err) {
+      logger.warn(
+        { err, actorId, inventoryYear },
+        "OpenClimate actor population lookup failed (best-effort)",
+      );
+      return null;
+    }
   }
 
   private static async fetchPopulation(

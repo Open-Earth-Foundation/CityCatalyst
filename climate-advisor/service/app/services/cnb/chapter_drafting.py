@@ -33,15 +33,21 @@ from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
 from app.models.db.concept_note import ConceptNoteRun
-from app.persistence.concept_notes.context_bundle import normalize_bundle
+from app.persistence.concept_notes.context_bundle import (
+    normalize_bundle,
+    source_documents_for_model,
+    source_text_status,
+)
+from app.persistence.concept_notes.gaps import WorkspaceGapSnapshot
 from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
-    WorkspaceChapterSnapshot,
     WorkspaceConflictError,
-    WorkspaceGapSnapshot,
     WorkspaceTemplateChapter,
-    WorkspaceValidationSnapshot,
     normalize_template_chapters,
+)
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_validation import (
+    WorkspaceValidationSnapshot,
 )
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
@@ -49,10 +55,16 @@ from app.services.cnb.application_context import (
     included_sources_from_bundle,
 )
 from app.services.cnb.draft_overview import overview_pending
+from app.services.cnb.source_analysis import SourceAnalysisError, query_document
+from app.services.cnb.source_impact_review import (
+    ConceptNoteSourceImpactReviewer,
+    RevalidationSource,
+)
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.concept_note_context import (
     manual_population_context,
     omit_context_identifiers,
+    render_source_documents_message,
 )
 from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
 from openai import AsyncOpenAI
@@ -99,6 +111,8 @@ class ConceptNoteChapterDraftService:
         cnb_session_factory: async_sessionmaker[AsyncSession] | None = None,
         settings: Settings | None = None,
         generate_chapter: ChapterGenerator | None = None,
+        source_impact_reviewer: ConceptNoteSourceImpactReviewer | None = None,
+        query_document_fn: Callable[..., Awaitable[Any]] = query_document,
         runner: Any = Runner,
     ) -> None:
         self._ca_session_factory = ca_session_factory
@@ -111,6 +125,8 @@ class ConceptNoteChapterDraftService:
         )
         self._settings = settings or get_settings()
         self._generate_chapter_override = generate_chapter
+        self._source_impact_reviewer = source_impact_reviewer
+        self._query_document = query_document_fn
         self._runner = runner
 
     async def load_state(self, run: ConceptNoteRun) -> ConceptNoteDraftResponse:
@@ -291,6 +307,154 @@ class ConceptNoteChapterDraftService:
             raise ChapterDraftingError(str(exc)) from exc
         return await self.load_state(run)
 
+    async def revalidate_after_new_sources(
+        self,
+        *,
+        run_id: UUID,
+        user_id: str,
+        new_sources: list[RevalidationSource],
+    ) -> bool:
+        """Redraft only chapters a reviewer ties to the new sources, with evidence.
+
+        Returns False when the pass failed and should be retried; rejected
+        chapter redrafts are logged and count as handled.
+        """
+        try:
+            # Snapshot the rebuilt bundle and the persisted chapters.
+            run = await self._load_owned_run(run_id, user_id)
+            run_context, included_sources = await self._load_run_context(
+                run_id,
+                user_id,
+            )
+            application_context = await self._application_context.load_for_run(
+                run,
+                included_sources=included_sources,
+            )
+            _, templates = _require_template(application_context)
+            template_by_ref = {item.chapter_ref: item for item in templates}
+            chapters = await self._workspace.list_chapters(run_id=run_id)
+
+            # A review-only call picks the chapters the new sources affect.
+            reviewer = self._source_impact_reviewer or ConceptNoteSourceImpactReviewer(
+                self._settings,
+                runner=self._runner,
+            )
+            selected_numbers = set(
+                await reviewer.select_chapters(
+                    chapters=chapters,
+                    new_sources=[item.source for item in new_sources],
+                )
+            )
+            impacted = [
+                chapter
+                for chapter in chapters
+                if chapter.position + 1 in selected_numbers
+                and chapter.revision_number is not None
+            ]
+            if not impacted:
+                return True
+
+            # Ask each new source every open gap question before redrafting.
+            evidence = await self._gather_gap_evidence(impacted, new_sources)
+            source_refs = [item.source.source_label for item in new_sources]
+
+            # Each proposal appends a revision and leaves confirmed text immutable.
+            for current in impacted:
+                answered = [gap for gap in current.gaps if gap.gap_id in evidence]
+                generated = await self._generate_chapter(
+                    _build_chapter_input(
+                        application_context=application_context,
+                        run_context=run_context,
+                        current=current,
+                        template_chapter=template_by_ref.get(current.chapter_ref or ""),
+                        chapters=chapters,
+                        new_source_evidence=[evidence[gap.gap_id] for gap in answered],
+                    )
+                )
+                generated = _sanitize_generated_output(generated, run_context)
+                # Only gaps with cited new-source answers may close. A rejected
+                # redraft is logged and skipped so later chapters still update.
+                try:
+                    await self._workspace.save_revalidated_chapter(
+                        chapter_id=current.chapter_id,
+                        expected_revision_number=current.revision_number,
+                        generated=generated,
+                        source_refs=source_refs,
+                        answered_gap_ids={gap.gap_id for gap in answered},
+                    )
+                except WorkspaceConflictError as exc:
+                    logger.warning(
+                        "Concept Note source revalidation rejected chapter_id=%s reason=%s",
+                        current.chapter_id,
+                        exc,
+                    )
+            return True
+        except Exception:
+            logger.exception(
+                "Concept Note source revalidation failed run_id=%s",
+                run_id,
+            )
+            return False
+
+    async def _gather_gap_evidence(
+        self,
+        chapters: list[WorkspaceChapterSnapshot],
+        new_sources: list[RevalidationSource],
+    ) -> dict[UUID, dict[str, Any]]:
+        """Return cited new-source answers keyed by the open gap they address."""
+        budgets = self._settings.llm.generation.prompt_budget
+        open_gaps = [
+            gap for chapter in chapters for gap in chapter.gaps if gap.state == "open"
+        ]
+        max_queries = budgets.cnb_source_impact.max_gap_queries
+        planned = [(gap, item) for gap in open_gaps for item in new_sources]
+        if len(planned) > max_queries:
+            logger.warning(
+                "Concept Note gap evidence queries capped planned=%s max=%s",
+                len(planned),
+                max_queries,
+            )
+            planned = planned[:max_queries]
+        reader_limit = asyncio.Semaphore(budgets.cnb_sources.max_concurrency)
+
+        async def ask(gap: WorkspaceGapSnapshot, item: RevalidationSource) -> Any:
+            try:
+                return await self._query_document(
+                    upload_id=item.source.upload_id,
+                    source_label=item.source.source_label,
+                    question=gap.question,
+                    source_format=item.source.source_format,
+                    pages=item.units,
+                    settings=self._settings,
+                    reader_limit=reader_limit,
+                )
+            except SourceAnalysisError as exc:
+                # One unanswered gap must not block redrafting the chapter.
+                logger.warning(
+                    "Concept Note gap evidence query failed gap_id=%s code=%s",
+                    gap.gap_id,
+                    exc.code,
+                )
+                return None
+
+        results = await asyncio.gather(*(ask(gap, item) for gap, item in planned))
+        evidence: dict[UUID, dict[str, Any]] = {}
+        for (gap, _), result in zip(planned, results, strict=True):
+            if result is None or not result.found:
+                continue
+            entry = evidence.setdefault(
+                gap.gap_id,
+                {"field_key": gap.field_key, "question": gap.question, "excerpts": []},
+            )
+            entry["excerpts"].extend(
+                {
+                    "source_label": result.source_label,
+                    **excerpt.model_dump(mode="json", exclude_none=True),
+                }
+                for excerpt in result.excerpts
+            )
+        return evidence
+
     async def _generate_chapter(
         self,
         payload: dict[str, Any],
@@ -330,7 +494,7 @@ class ConceptNoteChapterDraftService:
             try:
                 result = await self._runner.run(
                     agent,
-                    json.dumps(payload, ensure_ascii=False),
+                    _chapter_input_messages(payload),
                 )
                 return ConceptNoteChapterDraftOutput.model_validate(result.final_output)
             finally:
@@ -411,7 +575,12 @@ class ConceptNoteChapterDraftService:
                     if isinstance(run.context_summary, dict)
                     else {}
                 ),
-                "context_bundle": bundle.model_dump(mode="json"),
+                # Complete source text travels as its own message, not in the JSON.
+                "context_bundle": bundle.model_dump(
+                    mode="json", exclude={"source_text"}
+                ),
+                "source_text": source_text_status(bundle.source_text),
+                "source_documents": source_documents_for_model(bundle.source_text),
                 "manual_population": manual_population_context(run.context_summary),
             }
             return run_context, included_sources_from_bundle(bundle)
@@ -679,15 +848,20 @@ def _build_chapter_input(
     current: WorkspaceChapterSnapshot,
     template_chapter: WorkspaceTemplateChapter | None,
     chapters: list[WorkspaceChapterSnapshot],
+    new_source_evidence: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Build the exact prompt payload, including every earlier chapter body."""
+    """Build the exact prompt payload, including every earlier chapter body.
+
+    ``current_body_markdown`` carries the chapter's latest revision so a
+    source-driven redraft preserves accepted edits and unaffected prose.
+    """
     application_payload = application_context.model_dump(mode="json")
     if application_payload.get("template"):
         application_payload["template"].pop("chapter_schema", None)
     semantic_run_context = {
         key: value
         for key, value in run_context.items()
-        if key != "context_bundle_status"
+        if key not in {"context_bundle_status", "source_documents"}
     }
     payload = omit_context_identifiers(
         {
@@ -704,6 +878,31 @@ def _build_chapter_input(
                 "position": current.position,
                 "required": current.required,
             },
+            # Null on a first draft; a redraft edits this text instead of rewriting.
+            "current_body_markdown": current.body_markdown,
+            "resolved_information": [
+                {
+                    "field_key": gap.field_key,
+                    "question": gap.question,
+                    "disposition": gap.state,
+                    "action": gap.resolution.action,
+                    "answer": gap.resolution.answer if gap.resolution else None,
+                }
+                for gap in current.gaps
+                if gap.state in {"resolved", "dismissed", "caveat", "processing"}
+                and gap.resolution is not None
+            ],
+            "existing_open_gaps": [
+                {
+                    "field_key": gap.field_key,
+                    "question": gap.question,
+                    "why_asking": gap.why_asking,
+                    "severity": gap.severity,
+                }
+                for gap in current.gaps
+                if gap.state == "open"
+            ],
+            "new_source_evidence": new_source_evidence or [],
             "previous_chapters": [
                 {
                     "chapter_ref": chapter.chapter_ref,
@@ -714,6 +913,7 @@ def _build_chapter_input(
                 if chapter.position < current.position
                 and chapter.body_markdown is not None
             ],
+            "source_documents": run_context.get("source_documents", []),
         }
     )
     for source in (
@@ -722,6 +922,18 @@ def _build_chapter_input(
         source.pop("page_count", None)
         source.pop("block_count", None)
     return payload
+
+
+def _chapter_input_messages(payload: dict[str, Any]) -> list[dict[str, str]]:
+    """Send the JSON payload, then any complete source text as its own message."""
+    documents = payload.get("source_documents") or []
+    body = {key: value for key, value in payload.items() if key != "source_documents"}
+    messages = [{"role": "user", "content": json.dumps(body, ensure_ascii=False)}]
+    if documents:
+        messages.append(
+            {"role": "user", "content": render_source_documents_message(documents)}
+        )
+    return messages
 
 
 def _build_state_response(

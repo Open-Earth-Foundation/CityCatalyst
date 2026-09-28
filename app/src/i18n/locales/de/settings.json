@@ -282,5 +282,9 @@
   "two-factor-copy-recovery-codes-label": "Kopieren Sie die Wiederherstellungscodes in die Zwischenablage",
   "2fa-security": "2FA-Sicherheit",
   "enabled": "Aktiviert",
-  "disabled": "Deaktiviert"
+  "disabled": "Deaktiviert",
+  "your-data": "Ihre Daten",
+  "your-data-description": "Laden Sie eine Kopie der persönlichen Daten herunter, die CityCatalyst über Ihr Konto gespeichert hat. Dies beinhaltet Ihr Profil, Einladungen, von Ihnen hochgeladene Dateien und Zustimmungsauswahlen. Passwörter und Sicherheitsgeheimnisse sind nicht enthalten.",
+  "download-json": "JSON herunterladen",
+  "personal-data-download-failed": "Ihre Daten konnten nicht heruntergeladen werden. Bitte versuchen Sie es erneut."
 }

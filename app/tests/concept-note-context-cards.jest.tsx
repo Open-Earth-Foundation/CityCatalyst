@@ -47,6 +47,20 @@ jest.unstable_mockModule("next/link", () => ({
   ),
 }));
 
+// Failed rows without retry eligibility look up their own upload status.
+const uploadStatusById = new Map<string, ConceptNoteUploadResponse>();
+const getUploadStatus = jest.fn(
+  (
+    { uploadId }: { runId: string; uploadId: string },
+    options: { skip: boolean },
+  ) => ({
+    currentData: options.skip ? undefined : uploadStatusById.get(uploadId),
+  }),
+);
+jest.unstable_mockModule("@/services/api", () => ({
+  api: { useGetConceptNoteUploadStatusQuery: getUploadStatus },
+}));
+
 let ContextTab: typeof import("@/components/ConceptNoteWorkspace/context-tab").ContextTab;
 let container: HTMLDivElement;
 let root: Root;
@@ -140,7 +154,7 @@ async function renderTab(overrides: Partial<ContextTabProps> = {}) {
     onSelectInventory: async () => {},
     isDraftRunning: false,
     isRetryingBundle: false,
-    isRetryingUpload: false,
+    retryingUploadId: null,
     isUploading: false,
     lng: "en",
     manualPopulation: null,
@@ -153,6 +167,7 @@ async function renderTab(overrides: Partial<ContextTabProps> = {}) {
     populationLabel: "population",
     populationLoading: false,
     livePopulation: null,
+    runId: "run-1",
     uploads: [],
     uploadError: null,
     ...overrides,
@@ -193,6 +208,7 @@ afterAll(() => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  uploadStatusById.clear();
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
@@ -507,8 +523,47 @@ describe("Context tab uploaded files", () => {
     expect(rows[2].querySelector("button")).toBeNull();
     await act(async () => rows[1].querySelector("button")!.click());
     expect(onRetryUpload).toHaveBeenCalledTimes(1);
+    expect(onRetryUpload).toHaveBeenCalledWith("baseline");
     expect(uploadButton().disabled).toBe(false);
     expect(container.textContent).not.toContain("upload-limit-reason");
+  });
+
+  it("offers retry on an older failed row by looking up its own status", async () => {
+    const onRetryUpload = jest.fn();
+    uploadStatusById.set(
+      "older",
+      uploaded("older", "failed", { canRetry: true }),
+    );
+    uploadStatusById.set(
+      "stuck",
+      uploaded("stuck", "failed", { canRetry: false }),
+    );
+    await renderTab({
+      bundle: evidenceBundle,
+      onRetryUpload,
+      retryingUploadId: "stuck",
+      uploads: [
+        // The newer tracked upload carries its own eligibility.
+        uploaded("newer", "processing", { canRetry: false }),
+        // Older rows come from the run list without retry eligibility.
+        uploaded("older", "failed"),
+        uploaded("stuck", "failed"),
+      ],
+    });
+
+    expect(getUploadStatus).toHaveBeenCalledWith(
+      { runId: "run-1", uploadId: "older" },
+      { skip: false },
+    );
+    const rows = fileRows();
+    expect(rows[0].querySelector("button")).toBeNull();
+    expect(rows[2].querySelector("button")).toBeNull();
+    const retry = rows[1].querySelector("button")!;
+    expect(retry.textContent).toContain("retry");
+    // Only the row whose retry is in flight shows as loading.
+    expect(retry.disabled).toBe(false);
+    await act(async () => retry.click());
+    expect(onRetryUpload).toHaveBeenCalledWith("older");
   });
 
   it("keeps the fallback row when the note has no uploads", async () => {

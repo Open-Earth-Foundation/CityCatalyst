@@ -8,6 +8,11 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 ConceptNoteSourceFormat = Literal["pdf", "markdown"]
 
+# Every upload stays attached to its run (there is no per-file delete), so failed
+# uploads also count toward the limit. Run creation applies the same cap to its
+# expected initial uploads so every one of them can be handed off.
+MAX_UPLOADS_PER_RUN = 10
+
 
 def source_format_from_filename(filename: str) -> ConceptNoteSourceFormat:
     """Return the immutable source format encoded by an upload filename."""

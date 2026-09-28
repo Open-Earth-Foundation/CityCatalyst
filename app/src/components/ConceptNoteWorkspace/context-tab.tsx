@@ -29,6 +29,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
+import { api } from "@/services/api";
 import { getGhgiInventoryPath } from "@/util/ghgi-routes";
 import type {
   CityDashboardResponse,
@@ -86,14 +87,15 @@ interface ContextTabProps {
   onSelectInventory: (inventoryId: string | null) => Promise<void>;
   isDraftRunning: boolean;
   isRetryingBundle: boolean;
-  isRetryingUpload: boolean;
+  /** The upload whose retry request is in flight, if any. */
+  retryingUploadId: string | null;
   isUploading: boolean;
   livePopulation: { population: number; year: number } | null;
   lng: string;
   manualPopulation: { population: number; year: number } | null;
   manualPopulationSaving: boolean;
   onRetryBundle: () => void;
-  onRetryUpload: () => void;
+  onRetryUpload: (uploadId: string) => void;
   onSaveManualPopulation: (
     value: { population: number; year: number } | null,
   ) => Promise<void>;
@@ -101,6 +103,7 @@ interface ContextTabProps {
   populationFailed: boolean;
   populationLabel: string;
   populationLoading: boolean;
+  runId: string;
   /** Every upload on the note, newest first. */
   uploads: ConceptNoteUploadResponse[];
   uploadPickerRequest?: number;
@@ -277,6 +280,37 @@ function FileRow({
   );
 }
 
+/**
+ * Retry for one failed row. Only the tracked upload carries worker retry
+ * eligibility, so other failed rows look up their own status.
+ */
+function UploadRetryButton({
+  label,
+  loading,
+  onRetry,
+  runId,
+  upload,
+}: {
+  label: string;
+  loading: boolean;
+  onRetry: () => void;
+  runId: string;
+  upload: ConceptNoteUploadResponse;
+}) {
+  const { currentData } = api.useGetConceptNoteUploadStatusQuery(
+    { runId, uploadId: upload.uploadId },
+    { skip: upload.canRetry !== undefined },
+  );
+  const canRetry = upload.canRetry ?? currentData?.canRetry;
+  if (!canRetry) return null;
+  return (
+    <Button size="xs" variant="outline" loading={loading} onClick={onRetry}>
+      <Icon as={LuRefreshCw} />
+      {label}
+    </Button>
+  );
+}
+
 export function ContextTab({
   applicationContext,
   onSelectFunding,
@@ -304,7 +338,7 @@ export function ContextTab({
   onSelectInventory,
   isDraftRunning,
   isRetryingBundle,
-  isRetryingUpload,
+  retryingUploadId,
   isUploading,
   livePopulation,
   lng,
@@ -317,6 +351,7 @@ export function ContextTab({
   populationFailed,
   populationLabel,
   populationLoading,
+  runId,
   uploads,
   uploadError,
   uploadPickerRequest,
@@ -922,16 +957,14 @@ export function ContextTab({
                   }`}
                   statusLabel={statusLabel}
                 >
-                  {upload.status === "failed" && upload.canRetry && (
-                    <Button
-                      size="xs"
-                      variant="outline"
-                      loading={isRetryingUpload}
-                      onClick={onRetryUpload}
-                    >
-                      <Icon as={LuRefreshCw} />
-                      {t("retry")}
-                    </Button>
+                  {upload.status === "failed" && (
+                    <UploadRetryButton
+                      label={t("retry")}
+                      loading={retryingUploadId === upload.uploadId}
+                      onRetry={() => onRetryUpload(upload.uploadId)}
+                      runId={runId}
+                      upload={upload}
+                    />
                   )}
                 </FileRow>
               );

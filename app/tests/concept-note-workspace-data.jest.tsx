@@ -88,11 +88,15 @@ const getRunQuery = jest.fn(() => ({
   isLoading: false,
   refetch: refetchRun,
 }));
-const getUploadQuery = jest.fn(() => ({
-  currentData: currentUpload,
-  data: undefined,
-  isError: false,
-}));
+// Per-upload status for rows other than the tracked one; others get currentUpload.
+const uploadStatusById = new Map<string, ConceptNoteUploadResponse>();
+const getUploadQuery = jest.fn(
+  ({ uploadId }: { runId: string; uploadId: string }) => ({
+    currentData: uploadStatusById.get(uploadId) ?? currentUpload,
+    data: undefined,
+    isError: false,
+  }),
+);
 const updateManualPopulation = jest.fn(() => ({
   unwrap: async () => undefined,
 }));
@@ -237,19 +241,20 @@ function ContextHarness() {
         onSelectInventory={async () => {}}
         isDraftRunning={false}
         isRetryingBundle={false}
-        isRetryingUpload={false}
+        retryingUploadId={data.retryingUploadId}
         isUploading={false}
         livePopulation={data.populationData}
         lng="en"
         manualPopulation={null}
         manualPopulationSaving={false}
         onRetryBundle={retryBundle}
-        onRetryUpload={() => {}}
+        onRetryUpload={(uploadId) => void data.retrySourceUpload(uploadId)}
         onSaveManualPopulation={async () => {}}
         onUploadFile={async () => {}}
         populationFailed={false}
         populationLabel="population-unavailable"
         populationLoading={false}
+        runId="run-1"
         uploads={data.uploads}
         uploadError={null}
       />
@@ -272,14 +277,17 @@ function source(
 }
 
 function Harness() {
-  const { retryActiveUpload, contextStatus } = useConceptNoteWorkspaceData({
+  const { retrySourceUpload, contextStatus } = useConceptNoteWorkspaceData({
     cityId: "city-1",
     lng: "en",
     runId: "run-1",
   });
 
   return (
-    <button data-testid="retry" onClick={retryActiveUpload}>
+    <button
+      data-testid="retry"
+      onClick={() => void retrySourceUpload(persistedUploadId)}
+    >
       {contextStatus.state}
     </button>
   );
@@ -387,6 +395,7 @@ beforeEach(() => {
   updateManualPopulation.mockClear();
   retryBundle.mockClear();
   currentUpload = undefined;
+  uploadStatusById.clear();
   uploading = false;
   globalThis.fetch = jest.fn(async () => ({
     ok: true,
@@ -754,6 +763,45 @@ describe("useConceptNoteWorkspaceData", () => {
     });
     expect(refetchRun).not.toHaveBeenCalled();
   });
+
+  it.each(["ready", "processing"] as const)(
+    "retries older failed A from its own row while newer %s B is tracked",
+    async (newerStatus) => {
+      contextScenario = {
+        progress_summary: readyEvidence,
+        uploads: [source(newerStatus, "B"), source("failed", "A")],
+      };
+      currentUpload = { uploadId: "B", status: newerStatus, canRetry: false };
+      uploadStatusById.set("A", {
+        uploadId: "A",
+        status: "failed",
+        canRetry: true,
+      });
+      await act(async () => root.render(<ContextHarness />));
+
+      const rows = Array.from(
+        container.querySelectorAll('ul[aria-label="your-files"] li'),
+      );
+      expect(rows.map((row) => row.querySelector("p")?.textContent)).toEqual([
+        "B.pdf",
+        "A.pdf",
+      ]);
+      expect(rows[0].querySelector("button")).toBeNull();
+      const retry = rows[1].querySelector("button");
+      expect(retry?.textContent).toContain("retry");
+
+      await act(async () => {
+        retry!.click();
+        await Promise.resolve();
+      });
+
+      expect(retryUpload).toHaveBeenCalledTimes(1);
+      expect(retryUpload).toHaveBeenCalledWith({
+        runId: "run-1",
+        uploadId: "A",
+      });
+    },
+  );
 
   it.each([
     [

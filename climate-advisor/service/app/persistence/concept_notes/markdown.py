@@ -8,6 +8,7 @@ from uuid import UUID
 
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_markdown import (
+    MAX_UPLOADS_PER_RUN,
     ConceptNoteMarkdownRequest,
     ConceptNoteSourceFormat,
     ConceptNoteUploadCreateRequest,
@@ -19,10 +20,6 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
-
-# Every upload stays attached to its run (there is no per-file delete), so failed
-# uploads also count toward the limit.
-MAX_UPLOADS_PER_RUN = 10
 
 
 class ConceptNoteMarkdownRepositoryError(Exception):

@@ -223,6 +223,9 @@ export function useConceptNoteWorkspaceData({
     (selectedRunUpload ? toUploadResponse(selectedRunUpload) : null);
   const uploads = listConceptNoteUploads(runUploads, effectiveUpload);
   const uploadLimitReached = uploads.length >= CONCEPT_NOTE_MAX_UPLOADS;
+  const retryingUploadId = retryUploadState.isLoading
+    ? (retryUploadState.originalArgs?.uploadId ?? null)
+    : null;
   const contextState = getConceptNoteContextState({
     bundle,
     uploads: run?.uploads,
@@ -355,9 +358,8 @@ export function useConceptNoteWorkspaceData({
     }
   }
 
-  async function retryActiveUpload(): Promise<void> {
-    const uploadId = selectedUploadId;
-    if (!uploadId) return;
+  /** Retry one failed upload and track it, whichever upload was selected. */
+  async function retrySourceUpload(uploadId: string): Promise<void> {
     setUploadError(null);
     try {
       const upload = await retryUpload({
@@ -447,10 +449,10 @@ export function useConceptNoteWorkspaceData({
     populationData,
     refetchDraft,
     refetchRun,
-    retryActiveUpload,
+    retrySourceUpload,
+    retryingUploadId,
     retryBundleState,
     retryContextBundle,
-    retryUploadState,
     reviewAvailabilityDescription,
     run,
     runFailed,

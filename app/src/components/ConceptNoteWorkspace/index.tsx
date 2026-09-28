@@ -167,10 +167,10 @@ export function ConceptNoteWorkspace({
     refetchDraft,
     refetchApplicationContext,
     refetchRun,
-    retryActiveUpload,
+    retrySourceUpload,
+    retryingUploadId,
     retryBundleState,
     retryContextBundle,
-    retryUploadState,
     reviewAvailabilityDescription,
     run,
     runFailed,
@@ -849,12 +849,12 @@ export function ConceptNoteWorkspace({
                   onSelectInventory={selectInventory}
                   isDraftRunning={isDraftRunning}
                   isRetryingBundle={retryBundleState.isLoading}
-                  isRetryingUpload={retryUploadState.isLoading}
+                  retryingUploadId={retryingUploadId}
                   isUploading={uploadState.isLoading}
                   livePopulation={populationData}
                   lng={lng}
                   onRetryBundle={() => void retryContextBundle()}
-                  onRetryUpload={() => void retryActiveUpload()}
+                  onRetryUpload={(uploadId) => void retrySourceUpload(uploadId)}
                   onUploadFile={uploadSource}
                   manualPopulation={manualPopulation}
                   manualPopulationSaving={manualPopulationSaving}
@@ -862,6 +862,7 @@ export function ConceptNoteWorkspace({
                   populationFailed={populationFailed}
                   populationLabel={populationLabel}
                   populationLoading={populationLoading}
+                  runId={runId}
                   uploads={uploads}
                   uploadError={effectiveUploadError}
                   uploadPickerRequest={uploadPickerRequest}

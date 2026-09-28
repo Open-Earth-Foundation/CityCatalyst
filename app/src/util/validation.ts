@@ -474,3 +474,12 @@ export const conceptNoteFundingSelectionRequest = z
       value.selected_funding_opportunity_id === null,
     { message: "A funding opportunity requires a funder" },
   );
+
+export const recordConsentRequest = z.object({
+  consentType: z.enum(["analytics", "marketing"]),
+  granted: z.boolean(),
+  subjectKey: z.string().uuid().optional(),
+  source: z.enum(["cookie_banner", "account_settings", "api"]).optional(),
+});
+
+export type RecordConsentRequest = z.infer<typeof recordConsentRequest>;

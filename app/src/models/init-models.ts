@@ -295,6 +295,16 @@ import {
   PersonalAccessTokenCreationAttributes,
   PersonalAccessTokenOptionalAttributes,
 } from "./PersonalAccessToken";
+import {
+  ConsentRecord as _ConsentRecord,
+  ConsentRecordAttributes,
+  ConsentRecordCreationAttributes,
+} from "./ConsentRecord";
+import {
+  RetentionActionLog as _RetentionActionLog,
+  RetentionActionLogAttributes,
+  RetentionActionLogCreationAttributes,
+} from "./RetentionActionLog";
 
 export {
   _ActionPlan as ActionPlan,
@@ -362,6 +372,8 @@ export {
   _OAuthClientI18N as OAuthClientI18N,
   _OAuthClientAuthz as OAuthClientAuthz,
   _PersonalAccessToken as PersonalAccessToken,
+  _ConsentRecord as ConsentRecord,
+  _RetentionActionLog as RetentionActionLog,
 };
 
 export type {
@@ -495,6 +507,10 @@ export type {
   PersonalAccessTokenAttributes,
   PersonalAccessTokenCreationAttributes,
   PersonalAccessTokenOptionalAttributes,
+  ConsentRecordAttributes,
+  ConsentRecordCreationAttributes,
+  RetentionActionLogAttributes,
+  RetentionActionLogCreationAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -568,6 +584,8 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
   const PersonalAccessToken = _PersonalAccessToken.initModel(sequelize);
+  const ConsentRecord = _ConsentRecord.initModel(sequelize);
+  const RetentionActionLog = _RetentionActionLog.initModel(sequelize);
 
   ActionPlan.belongsTo(HighImpactActionRankedModel, {
     foreignKey: "highImpactActionRankedId",
@@ -1414,6 +1432,17 @@ export function initModels(sequelize: Sequelize) {
     onUpdate: "CASCADE",
   });
 
+  ConsentRecord.belongsTo(User, {
+    as: "user",
+    foreignKey: "userId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(ConsentRecord, {
+    as: "consentRecords",
+    foreignKey: "userId",
+  });
+
   ImportMappingFeedback.belongsTo(City, {
     as: "city",
     foreignKey: "cityId",
@@ -1493,5 +1522,7 @@ export function initModels(sequelize: Sequelize) {
     OAuthClientI18N: OAuthClientI18N,
     OAuthClientAuthz: OAuthClientAuthz,
     PersonalAccessToken: PersonalAccessToken,
+    ConsentRecord: ConsentRecord,
+    RetentionActionLog: RetentionActionLog,
   };
 }

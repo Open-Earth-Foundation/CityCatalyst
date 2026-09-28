@@ -65,7 +65,11 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         if edit_enabled
         else None
     )
-    expected_tools = ["concept_note_help", "concept_note_sources_query"]
+    expected_tools = [
+        "concept_note_help",
+        "concept_note_gaps",
+        "concept_note_sources_query",
+    ]
     if edit_enabled:
         expected_tools.append("concept_note_edit_propose")
     try:
@@ -145,7 +149,10 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
             concept_note_edit_request=edit_request,
         )
         agent = await service.create_agent()
-        assert [tool.name for tool in agent.tools] == ["concept_note_help"]
+        assert [tool.name for tool in agent.tools] == [
+            "concept_note_help",
+            "concept_note_gaps",
+        ]
         await service.close()
     finally:
         await engine.dispose()

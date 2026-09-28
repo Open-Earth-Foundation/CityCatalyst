@@ -63,7 +63,19 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      export state from the CNB workspace. Ordinary turns do not load UI state.
      Browser-only state remains unknown; unavailable workspace storage preserves
      the guide without implying an empty draft. Funding and source facts remain
-     in the existing context bundle.
+     in the existing context bundle. The result also carries
+     `ui_state.open_gaps_by_chapter` (open and critical counts per chapter) and
+     `uploaded_files` (every ready upload with `uploaded_at` and `newest`).
+   - Exposes read-only `concept_note_gaps` alongside `concept_note_help`. It
+     reauthorizes the run and lists missing-information gaps with their
+     chapter, question, reason, severity, and state, filtered by
+     `chapter_position`, `severity`, or `include_closed`. Each gap gets a `G#`
+     handle numbered in creation order, so handles stay stable across filters.
+   - Injected `selected_sources` include `uploaded_at` and a `newest` flag, so
+     Clima can identify the file a user just uploaded.
+   - Resolved gaps that source revalidation filled from an uploaded file list
+     that file's source label in `filled_from`, so Clima can tell the user
+     which gaps a new file answered.
    - Treats vague requests as sufficient intent, uses the already bound run and
      available chapter order, and asks one focused question when the next step
      cannot be derived

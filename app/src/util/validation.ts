@@ -6,6 +6,7 @@ import {
 } from "./enums";
 import { OrganizationRole, LANGUAGES } from "@/util/types";
 import { WEBHOOK_EMITTED_EVENT_TYPES } from "@/backend/webhooks/events";
+import { CONCEPT_NOTE_MAX_UPLOADS } from "@/components/ConceptNoteWiringHarness/utils";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -382,7 +383,8 @@ export const conceptNoteStartRequest = z
           sha256: z.string().regex(/^[a-f0-9]{64}$/),
         }),
       )
-      .max(100)
+      // Each expected source must be accepted by the run's upload limit.
+      .max(CONCEPT_NOTE_MAX_UPLOADS)
       .optional(),
     idempotency_key: z.string().uuid(),
   })

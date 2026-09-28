@@ -775,7 +775,7 @@ export default class UserService {
       ],
     });
 
-    const invitedEmails = new Set(orgInvites.map((invite) => invite.email));
+    const adminEmails = new Set(orgAdmins.map((admin) => admin.user.email));
 
     const dedupedOrgAdmin: {
       email: string;
@@ -783,10 +783,7 @@ export default class UserService {
       status: InviteStatus;
       role: OrganizationRole;
     }[] = orgAdmins
-      .filter(
-        (orgAdmin) =>
-          !!orgAdmin.user.email && !invitedEmails.has(orgAdmin.user.email),
-      )
+      .filter((orgAdmin) => !!orgAdmin.user.email)
       .map((orgAdmin) => ({
         email: orgAdmin.user.email as string,
         name: orgAdmin.user.name ?? null,
@@ -797,7 +794,7 @@ export default class UserService {
 
     users.push(
       ...orgInvites
-        .filter((invite) => !!invite?.email)
+        .filter((invite) => !!invite?.email && !adminEmails.has(invite?.email)) // make sure accepted admin entries take precedent over invites
         .map((invite) => ({
           email: invite.email as string,
           name: null,

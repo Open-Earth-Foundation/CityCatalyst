@@ -775,5 +775,10 @@
   "edit-context-ghgi": "Inventaire de GES CityCatalyst",
   "edit-context-ccra": "Évaluation des risques climatiques de CityCatalyst",
   "edit-context-hiap": "CityCatalyst a priorisé les actions climatiques",
-  "edit-context-manual-population": "Population entrée pour cette note conceptuelle"
+  "edit-context-manual-population": "Population entrée pour cette note conceptuelle",
+  "pdf-limit-files": "PDF ou Markdown · jusqu'à {{max}} fichiers · maximum 20 MiB par fichier",
+  "upload-limit-select": "Une note conceptuelle peut contenir jusqu'à {{max}} fichiers. Choisissez {{max}} ou moins.",
+  "uploaded-files-count": "{{uploaded}} sur {{max}} fichiers",
+  "upload-limit-reason": "Cette note conceptuelle a atteint la limite de {{max}} fichiers.",
+  "upload-limit-reached": "Cette note conceptuelle a déjà {{max}} fichiers, le maximum qu'elle peut contenir, donc le fichier n'a pas été ajouté."
 }

@@ -775,5 +775,10 @@
   "edit-context-ghgi": "Inventario de GEI de CityCatalyst",
   "edit-context-ccra": "Evaluación de riesgo climático de CityCatalyst",
   "edit-context-hiap": "CityCatalyst priorizó acciones climáticas",
-  "edit-context-manual-population": "Población ingresada para esta nota conceptual"
+  "edit-context-manual-population": "Población ingresada para esta nota conceptual",
+  "pdf-limit-files": "PDF o Markdown · hasta {{max}} archivos · máximo 20 MiB por archivo",
+  "upload-limit-select": "Una nota conceptual puede tener hasta {{max}} archivos. Elija {{max}} o menos.",
+  "uploaded-files-count": "{{uploaded}} de {{max}} archivos",
+  "upload-limit-reason": "Esta nota conceptual ha alcanzado el límite de {{max}} archivos.",
+  "upload-limit-reached": "Esta nota conceptual ya tiene {{max}} archivos, la cantidad máxima que puede tener, por lo tanto, el archivo no se agregó."
 }

@@ -775,5 +775,10 @@
   "edit-context-ghgi": "Inventário de GEE CityCatalyst",
   "edit-context-ccra": "Avaliação de risco climático CityCatalyst",
   "edit-context-hiap": "CityCatalyst priorizou ações climáticas",
-  "edit-context-manual-population": "População inserida para esta nota conceitual"
+  "edit-context-manual-population": "População inserida para esta nota conceitual",
+  "pdf-limit-files": "PDF ou Markdown · até {{max}} arquivos · máximo de 20 MiB por arquivo",
+  "upload-limit-select": "Uma nota conceitual pode ter até {{max}} arquivos. Escolha {{max}} ou menos.",
+  "uploaded-files-count": "{{uploaded}} de {{max}} arquivos",
+  "upload-limit-reason": "Esta nota conceitual atingiu o limite de {{max}} arquivos.",
+  "upload-limit-reached": "Esta nota conceitual já possui {{max}} arquivos, o máximo que pode conter, então o arquivo não foi adicionado."
 }

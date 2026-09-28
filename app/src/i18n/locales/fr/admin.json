@@ -419,5 +419,8 @@
   "bulk-import-item-status-skipped": "Passé",
   "not-available": "Non disponible",
   "AR5": "AR5",
-  "AR6": "AR6"
+  "AR6": "AR6",
+  "2fa-security": "Sécurité 2FA",
+  "enabled": "Activé",
+  "disabled": "Désactivé"
 }

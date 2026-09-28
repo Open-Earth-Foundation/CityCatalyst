@@ -4,10 +4,8 @@ import logging
 from uuid import UUID
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
-from app.persistence.concept_notes.workspace import (
-    ConceptNoteWorkspaceRepository,
-    WorkspaceChapterSnapshot,
-)
+from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +26,6 @@ def build_ui_state(chapters: list[WorkspaceChapterSnapshot]) -> dict[str, object
     blockers = []
     if not has_draft:
         blockers.append("No generated draft")
-    if critical_gaps:
-        blockers.append(
-            f"{critical_gaps} critical gaps; fill through reviewed chat edits"
-        )
 
     # Browser acknowledgement, loading state, and selected tab are not persisted.
     return {
@@ -46,6 +40,8 @@ def build_ui_state(chapters: list[WorkspaceChapterSnapshot]) -> dict[str, object
         "export": {
             "enabled": False if blockers else None,
             "blockers": blockers,
+            "critical_gap_count": critical_gaps,
+            "requires_acknowledgement": True if critical_gaps else None,
             "missing_upload_blocks_export": False,
         },
         "review": {"failed_chapters": None, "failure_blocks_export": None},

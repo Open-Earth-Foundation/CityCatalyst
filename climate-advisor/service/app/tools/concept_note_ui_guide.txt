@@ -31,10 +31,16 @@ EXPORT_FLOW: "{review_and_export}" → "{review_missing}"
 → "{review_next_conflicts}" → "{review_conflicts}"
 → "{review_next_decision}" → "{review_decision}"
 → "{export_anyway}" (or "{continue_export}") → "{export_pdf}" / "{export_docx}".
+If missing information or unchecked chapters remain, tick the acknowledgement
+checkbox before selecting the export format. This also allows export with open
+critical gaps; filling those gaps through reviewed edits is optional for export.
 Use the returned `ui_state` for known current draft facts and export blockers. Null means
 unknown, not absent or disabled. `draft.total_sections` counts every active
 template section; only `draft.sections_with_content` have generated text, so
 never describe empty sections as drafted. An empty blockers list does not establish that
 the browser export button is enabled: acknowledgement/loading may still apply.
+`export.critical_gap_count` counts active critical gaps, not hard export blockers.
+`export.requires_acknowledgement` is true when critical gaps are known; null means
+other review findings and the browser acknowledgement state are unknown.
 Missing uploaded evidence alone does not block export. Do not infer that failed
 review checks block export. Never substitute invented setup/back/template controls.

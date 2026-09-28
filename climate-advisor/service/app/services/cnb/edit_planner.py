@@ -19,7 +19,7 @@ from app.models.cnb.concept_note_edits import (
     PlannedTextChange,
 )
 from app.persistence.concept_notes.edits import EditOperationError
-from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_session import DraftEditSession
 from app.services.cnb.edit_validation import prior_user_inputs, recent_user_inputs
 from app.services.openrouter_client import build_openrouter_client_options
@@ -154,6 +154,7 @@ class ConceptNoteEditPlanner:
             chapters,
             run_context,
             [*prior_user_inputs(prior_proposal), *recent_user_inputs(recent_messages)],
+            max_searches=budget.cnb_edits.max_searches,
         )
         options = build_openrouter_client_options(
             self._settings,
@@ -406,6 +407,7 @@ def build_planner_input(
         key: run_context[key]
         for key in (
             "cc_context",
+            "manual_population",
             "funder_context",
             "document_context",
             "similar_projects",
@@ -472,6 +474,7 @@ def build_planner_input(
                                 "kind",
                                 "group_id",
                                 "user_input_quote",
+                                "context_refs",
                             },
                         ),
                         # Rebind verified snapshots after source reordering; never replay IDs.

@@ -18,9 +18,9 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGapResolution,
 )
 from app.persistence.concept_notes.edits import append_revision
-from app.persistence.concept_notes import workspace as workspace_module
-from app.persistence.concept_notes.workspace import (
-    ConceptNoteWorkspaceRepository,
+from app.persistence.concept_notes import workspace_queries
+from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
+from app.persistence.concept_notes.workspace_validation import (
     WorkspaceValidationInputChangedError,
 )
 from sqlalchemy import DefaultClause, event, select, text, update
@@ -40,12 +40,12 @@ async def test_final_fingerprint_locks_target_gap_and_evidence_rows() -> None:
     session.scalars = AsyncMock(return_value=scalar_result)
     chapter_id = uuid4()
 
-    await workspace_module._gaps_by_chapter(
+    await workspace_queries._gaps_by_chapter(
         session,
         [chapter_id],
         lock=True,
     )
-    await workspace_module._evidence_by_chapter(
+    await workspace_queries._evidence_by_chapter(
         session,
         [chapter_id],
         lock=True,

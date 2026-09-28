@@ -180,6 +180,7 @@ export function ExportDialog({
                 lng={lng}
                 mode="missing_information"
                 review={controller.review}
+                incomplete={controller.failedChapters.length > 0}
                 onNext={() => controller.setStage("conflicts_logic")}
                 onOpenFinding={handleOpenFinding}
               />
@@ -190,6 +191,7 @@ export function ExportDialog({
                 lng={lng}
                 mode="conflicts_logic"
                 review={controller.review}
+                incomplete={controller.failedChapters.length > 0}
                 onBack={() => controller.setStage("missing_information")}
                 onNext={() => controller.setStage("decision")}
                 onOpenFinding={handleOpenFinding}

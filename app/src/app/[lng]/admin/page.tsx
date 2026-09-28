@@ -37,6 +37,7 @@ import {
 import { useRouter } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
 import BulkInventoryCreationTabContent from "./bulk-inventory-actions/BulkInventoryCreationTabContent";
+import BulkInventoryFileImportTabContent from "./bulk-inventory-actions/BulkInventoryFileImportTabContent";
 import BulkDownloadTabContent from "./bulk-inventory-actions/BulkDownloadTabContent";
 import BulkHiapPrioritizationTabContent from "./bulk-inventory-actions/BulkHiapPrioritizationTabContent";
 import { OrganizationRole } from "@/util/types";
@@ -537,6 +538,10 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                 <BulkActionsTabTrigger title="bulk-inventory-creation" t={t} />
                 <BulkActionsTabTrigger title="bulk-data-download" t={t} />
                 <BulkActionsTabTrigger
+                  title="bulk-inventory-file-import"
+                  t={t}
+                />
+                <BulkActionsTabTrigger
                   title="bulk-data-connection"
                   t={t}
                   disabled
@@ -558,6 +563,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                 t={t}
                 onTabReset={() => setBulkActionsTab("bulk-inventory-creation")}
               />
+              <BulkInventoryFileImportTabContent t={t} />
               <BulkDownloadTabContent t={t} />
               <Tabs.Content value="bulk-hiap-prioritization">
                 <BulkHiapPrioritizationTabContent t={t} lng={lng} />

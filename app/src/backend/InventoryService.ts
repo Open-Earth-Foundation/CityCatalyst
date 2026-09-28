@@ -1,3 +1,5 @@
+import createHttpError from "http-errors";
+
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
 import { PermissionService } from "./permissions/PermissionService";
@@ -18,10 +20,15 @@ export class InventoryService {
   static async getInventoryIdByCityId(cityId: string): Promise<string> {
     const inventory = await db.models.Inventory.findOne({
       where: { cityId },
-      order: [["year", "DESC"]], // get the most recent one
+      // Same newest-first order the Climate Advisor uses to build concept-note context.
+      order: [
+        ["year", "DESC NULLS LAST"],
+        ["lastUpdated", "DESC NULLS LAST"],
+        ["inventoryId", "ASC"],
+      ],
     });
     if (!inventory) {
-      throw new Error("Inventory not found");
+      throw new createHttpError.NotFound("Inventory not found");
     }
     return inventory.inventoryId;
   }

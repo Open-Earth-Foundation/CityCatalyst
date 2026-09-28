@@ -36,6 +36,7 @@ import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
 import type { VersionAttributes } from "@/models/Version";
 import type { BoundingBox } from "@/util/geojson";
+import type { EditProposal } from "@/util/concept-note-edit-types";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -1353,7 +1354,20 @@ export interface ConceptNoteUploadStatusRequest {
   uploadId: string;
 }
 
+export interface ConceptNoteWorkspaceSnapshot {
+  edits?: EditProposal[];
+  sequence: number;
+  run?: ConceptNoteRun;
+  draft?: ConceptNoteDraftState;
+  upload?: ConceptNoteUploadResponse;
+}
+
 export interface ConceptNoteContextBundleRetryResponse {
   run_id: string;
   status: "queued";
+}
+
+export interface ConceptNoteContextBundleRefreshResponse {
+  run_id: string;
+  status: "queued" | "current" | "building";
 }

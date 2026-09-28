@@ -600,7 +600,13 @@ export default class UserService {
           {
             model: db.models.City,
             as: "cities",
-            attributes: ["cityId", "name", "countryLocode", "country", "region"],
+            attributes: [
+              "cityId",
+              "name",
+              "countryLocode",
+              "country",
+              "region",
+            ],
             include: [
               {
                 model: db.models.Inventory,
@@ -693,7 +699,8 @@ export default class UserService {
         cities: (project.cities ?? []).map((city) => ({
           name: city.name as string,
           cityId: city.cityId as string,
-          inventories: city.inventories as unknown as CityResponse["inventories"],
+          inventories:
+            city.inventories as unknown as CityResponse["inventories"],
           country: city.country as string,
           countryLocode: city.countryLocode as string,
           locode: city.locode as string,
@@ -726,7 +733,8 @@ export default class UserService {
         projectsById[projectId].cities.push({
           name: city.name as string,
           cityId: city.cityId as string,
-          inventories: city.inventories as unknown as CityResponse["inventories"],
+          inventories:
+            city.inventories as unknown as CityResponse["inventories"],
           country: city.country as string,
           countryLocode: city.countryLocode as string,
           locode: city.locode as string,
@@ -767,7 +775,7 @@ export default class UserService {
       ],
     });
 
-    const invitedEmails = new Set(orgInvites.map((invite) => invite.email));
+    const adminEmails = new Set(orgAdmins.map((admin) => admin.user.email));
 
     const dedupedOrgAdmin: {
       email: string;
@@ -775,20 +783,18 @@ export default class UserService {
       status: InviteStatus;
       role: OrganizationRole;
     }[] = orgAdmins
-      .filter(
-        (orgAdmin) =>
-          !!orgAdmin.user.email && !invitedEmails.has(orgAdmin.user.email),
-      )
+      .filter((orgAdmin) => !!orgAdmin.user.email)
       .map((orgAdmin) => ({
         email: orgAdmin.user.email as string,
         name: orgAdmin.user.name ?? null,
         status: InviteStatus.ACCEPTED,
         role: OrganizationRole.ORG_ADMIN,
+        twoFactorEnabled: orgAdmin.user.twoFactorEnabled ?? false,
       }));
 
     users.push(
       ...orgInvites
-        .filter((invite) => !!invite?.email)
+        .filter((invite) => !!invite?.email && !adminEmails.has(invite?.email)) // make sure accepted admin entries take precedent over invites
         .map((invite) => ({
           email: invite.email as string,
           name: null,
@@ -834,6 +840,7 @@ export default class UserService {
         status: InviteStatus.ACCEPTED,
         role: OrganizationRole.COLLABORATOR,
         cityId: cityUser.cityId as string,
+        twoFactorEnabled: cityUser.user.twoFactorEnabled ?? false,
       }));
 
     const cityInvites = cities.flatMap((city) =>

@@ -213,3 +213,43 @@ def test_cnb_history_preserves_real_instructions_and_tool_protocol() -> None:
     original = deepcopy(messages)
     assert clean_cnb_history(messages) == original
     assert messages == original
+
+
+PLAN_DOCUMENT = {
+    "source_label": "Plan",
+    "filename": "plan.pdf",
+    "source_format": "pdf",
+    "text": "<!-- page: 1 -->\nCapex PLN 616 m",
+}
+
+
+@pytest.mark.parametrize("documents", [[], [PLAN_DOCUMENT]])
+async def test_cnb_complete_source_text_follows_the_bundle_message(documents) -> None:
+    handler = StreamingHandler(
+        thread_id=str(uuid4()), user_id="owner", session_factory=MagicMock()
+    )
+    handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(uuid4()))
+    payload = MessageCreateRequest(user_id="owner", content="What is the capex?")
+    with (
+        patch(
+            "app.utils.streaming_handler.load_conversation_history",
+            new=AsyncMock(return_value=[]),
+        ),
+        patch(
+            "app.utils.streaming_handler.load_agent_context",
+            new=AsyncMock(return_value={"workflow_step": "interviewing"}),
+        ),
+        patch(
+            "app.utils.streaming_handler.load_source_documents",
+            new=AsyncMock(return_value=documents),
+        ),
+    ):
+        messages = await handler._load_conversation_history(get_settings(), payload)
+
+    assert messages[0]["content"].startswith("CONCEPT_NOTE_CONTEXT_BUNDLE_JSON\n")
+    if documents:
+        assert messages[1]["role"] == "user"
+        assert messages[1]["content"].startswith("CONCEPT_NOTE_SOURCE_DOCUMENTS\n")
+        assert "Capex PLN 616 m" in messages[1]["content"]
+    assert len(messages) == 2 + len(documents)
+    assert messages[-1] == {"role": "user", "content": payload.content}

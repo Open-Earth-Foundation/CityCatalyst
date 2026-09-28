@@ -476,8 +476,6 @@
   "review-incomplete-export-confirmation": "Compreendo que informações ausentes, conflitos bloqueantes ou revisões de capítulo incompletas podem permanecer na área de trabalho e não serão incluídas no documento exportado.",
   "workspace-refresh-error-title": "Não foi possível atualizar esta nota conceitual",
   "workspace-refresh-error-description": "O CityCatalyst temporariamente não pôde atualizar esta execução. Aguarde um momento e tente novamente.",
-  "edit-review-scope_one": "{{count}} alteração proposta · Seções afetadas: {{chapters}}",
-  "edit-review-scope_other": "{{count}} alterações propostas · Seções afetadas: {{chapters}}",
   "edit-user-facts-notice": "Utiliza fatos de suas instruções; estes não foram verificados independentemente contra uma fonte enviada.",
   "start-new-chat": "Iniciar novo chat",
   "start-new-chat-dialog-title": "Iniciar uma nova conversa?",

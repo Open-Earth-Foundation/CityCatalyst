@@ -43,8 +43,9 @@ and year for the current concept-note run. The authenticated CityCatalyst proxy
 forwards `PATCH /api/v1/concept-notes/{runId}/population` to Climate Advisor,
 which stores the value in that run's `context_summary.manual_population`. The
 value is shown in the workspace and passed to chat and chapter drafting with
-`user_entered` provenance. It does not update the CityCatalyst city population
-record or become CC context. Removing it clears only the run-scoped value.
+`user_entered` provenance, and chat edits may cite it as evidence
+(`context_refs: ["manual_population"]`). It does not update the CityCatalyst
+city population record or become CC context. Removing it clears only the run-scoped value.
 The editor and API reject changes while chapter drafting is running because the
 drafting worker uses a single population snapshot for all chapters.
 
@@ -54,8 +55,9 @@ has no recorded values (**Empty inventory**); otherwise the inventory year is a
 chip beside the status badge that opens the inventory picker ("Choose
 different"), disabled with a reason while drafting runs or the bundle is
 building, and a small icon opens that inventory in GHGI. GHGI links open in a
-new tab. Run context refreshes
-automatically (see below), so there is no manual refresh control. The Climate
+new tab. Inventory context refreshes automatically (see below), so the inventory
+card has no manual refresh control. The population card retains its explicit
+refresh when the stored population is missing or differs from CityCatalyst. The Climate
 Action Plan card has no module link because not every project enables HIAP. A
 missing application template opens funding selection. The climate risk
 assessment card and tile are hidden until CCRA data feeds concept notes.
@@ -210,12 +212,18 @@ Confirming a chapter refreshes both its run's draft and edit proposals, so the
 review state updates even when no proposal is processing and polling is stopped.
 
 The proposal-only CA tool uses authorized evidence and explicit user input.
+Evidence is an uploaded source (`source_refs`), a run context section
+(`context_refs`: CityCatalyst `city`, `project`, `ghgi`, `ccra`, `hiap`, or the
+user-entered `manual_population`), or an exact user quote. Each cited context
+section is stored as a fingerprinted `context_snapshots` entry; accepting a
+proposal after that section changes marks it stale, as for a changed upload.
 One bounded document agent searches exact text and reads chapters on demand.
 It proposes contextual matches, selected server-issued match IDs, or explicit
 all-match replacements. Python resolves offsets from the captured revisions and
 returns structural errors to the agent for correction. An independent LLM
 reviewer checks meaning and factual support for each affected chapter. Python checks exact anchors,
-source identity, user quotes, required headings and unresolved markers. It does
+source identity, that cited context sections exist in the run, user quotes,
+required headings and unresolved markers. It does
 not infer meaning from numeric/entity tokens, merge groups based on shared values,
 or expand replacements after semantic review. Scope is automatic; chapter focus is
 only a navigation hint. Parsed-Markdown redlines preserve source offsets and fail
@@ -536,9 +544,13 @@ The authorized run may advance with no ready source by recording
 `document_grounding: none` and `missing_context: [source_documents]`. A ready
 upload records `document_grounding: uploaded_evidence`; every other section has
 an explicit empty value. Independent `available_context` flags report the
-presence of city, project, GHGI, CCRA, HIAP, and uploaded-document context. A
-rebuild keeps the last completed bundle and flags available to chat and
-selected-source queries until the replacement is committed.
+presence of city, project, GHGI, CCRA, HIAP, and uploaded-document context.
+`city_population` holds the `{population, year}` from the stored city profile,
+or `null`. The Context tab labels the population "Included in run" only from
+this field. It offers a refresh (a forced rebuild) when CityCatalyst has a
+figure the run lacks or has since changed. A rebuild keeps the last completed
+bundle and flags available to chat and selected-source queries until the
+replacement is committed.
 
 ```mermaid
 flowchart TB
@@ -576,11 +588,33 @@ Recommended high-level shape:
   ],
   "funder_context": null,
   "similar_projects": [],
-  "document_context": null
+  "document_context": null,
+  "source_text": {
+    "mode": "full_text",
+    "token_count": 6308,
+    "max_tokens": 80000,
+    "documents": [
+      {
+        "upload_id": "uuid",
+        "source_label": "City climate plan",
+        "filename": "plan.pdf",
+        "source_format": "pdf",
+        "text": "<!-- page: 1 -->\nComplete verified page text"
+      }
+    ]
+  }
 }
 ```
 
-The bundle contains no raw source, storage key, credential, or derived chunk.
+`source_text` holds the complete verified text of every selected source only
+while the total stays within `cnb_sources.full_text_max_tokens` (80,000 by
+default). The chapter drafter and CNB chat receive it as a separate
+`CONCEPT_NOTE_SOURCE_DOCUMENTS` message. Above the limit, or when a reused
+source cannot be re-read, `mode` is `summary`, `documents` is empty, and agents
+rely on summaries and the source-query tool.
+
+Apart from `source_text`, the bundle contains no raw source, storage key,
+credential, or derived chunk.
 Its summary records build/fingerprint identity, mode, missing context, source and
 optional-context statuses, warnings, retryability, and completion. Only the
 active build may commit; later rebuilds or retryable failures keep serving the
@@ -1529,6 +1563,26 @@ How it works:
   Revisions are an audit/history trail; they do not feed evidence links.
 - Missing facts are stored as gaps and surfaced to the user in the workspace.
   They do not create chapters by themselves.
+- Users answer gaps through chat: accepting a reviewed edit that fills a
+  gap's marker resolves that gap.
+- A newly processed source runs an impact review. A review-only LLM call picks
+  the chapters whose content or open gaps the source affects, and each of their
+  open gaps is asked of the verified source text. Only those chapters are
+  redrafted, with the cited answers, as a new revision; unaffected chapters
+  stay unchanged. The drafter edits the chapter's current text in place, so
+  accepted chat edits and unaffected prose survive, and a fact the new source
+  contradicts is flagged with a marker rather than overwritten. Only gaps with a
+  successful cited answer from the new source are resolved, as
+  `evidence_update` by `system`; previously resolved gaps that the evidence
+  contradicts reopen, and deferred caveats are left untouched. A redraft that
+  drops an unanswered gap, or whose markers disagree with its gap list, is
+  rejected and logged, and the remaining chapters still update. A confirmed
+  revision is never replaced, so an affected Ready chapter returns to review.
+- The impact review is a durable job in `context_summary.source_revalidation`,
+  queued atomically with the bundle commit. A worker leases it; failures stay
+  pending and the context-bundle reconciler retries them up to three times,
+  re-fetching verified source text with a service-minted token for the run
+  owner. Stale leases return to pending after one hour.
 - Evidence links are shown to the user to explain why a claim was grounded.
   They are review/audit UI only and are ignored by DOCX/PDF export.
 - Chapter-validation prompts reference evidence by one-based list position.
@@ -1926,7 +1980,7 @@ Rules:
   dropping content. For native Markdown, derives deterministic heading/block
   anchors from the stored UTF-8 bytes and partitions without inventing
   synthetic pagination.
-- Uses configured GPT-5.6 Terra readers with low reasoning and process-wide
+- Uses configured GPT-5.6 Terra readers with medium reasoning and process-wide
   concurrency no greater than three, then GPT-5.6 Terra with medium reasoning for
   final document synthesis. Both retain tool-free structured outputs through
   OpenRouter Chat Completions and omit temperature.
@@ -1975,8 +2029,8 @@ Rules:
   refreshed similar projects, or user-confirmed facts.
 - Does not expose arbitrary context bundle replacement. Bundle edits must come
   from a known workflow trigger and preserve the rest of the assembled context.
-- Replaces only `selected_sources`, `cc_context.city` (when the lookup
-  succeeds), `cc_context.ghgi`, and `cc_context.hiap` on a source-triggered
+- Replaces only `selected_sources`, `source_text`, `cc_context.city` (when the
+  lookup succeeds), `cc_context.ghgi`, and `cc_context.hiap` on a source-triggered
   rebuild, preserving all unrelated sections populated later.
 - Does not register CC context loading or context bundle editing as
   agent-callable tools. The separate source-query capability is read-only.
@@ -1984,7 +2038,8 @@ Rules:
 ### Selected-document source query
 
 `concept_note.sources.query` is the only agent capability that can read uploaded
-source content. Climate Advisor registers its function-tool implementation
+source content on demand; complete text is otherwise supplied only through the
+budgeted `source_text` message described above. Climate Advisor registers its function-tool implementation
 `concept_note_sources_query` only for the authorized `concept_note_run_id`, only
 after the bundle is ready, and only during `interviewing`,
 `drafting_document`, or `editing_document`.
@@ -2605,7 +2660,7 @@ The configured prompt/model roles are:
 models:
   cnb_source_reader:
     name: openai/gpt-5.6-terra
-    reasoning_effort: low
+    reasoning_effort: medium
   cnb_source_synthesizer:
     name: openai/gpt-5.6-terra
     reasoning_effort: medium
@@ -2620,11 +2675,13 @@ prompts:
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 ```
 
-The main CNB chat uses `models.cnb_chat` (`openai/gpt-5.6-sol`) with explicit
-`reasoning_effort: medium` for its Chat Completions function-tool loop. Funding
-research and similar-project selection use Terra with medium reasoning on the
-existing Responses API path; canonical-funder identity matching uses Terra with
-low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
+The main CNB chat uses `models.cnb_chat` (`openai/gpt-6-sol`) with explicit
+`reasoning_effort: medium` for its Chat Completions function-tool loop. The
+chat-edit planner uses GPT-6 Sol with high reasoning, and the new-source impact
+reviewer uses GPT-6 Sol with medium reasoning. Funding research and
+similar-project selection use Terra with medium reasoning on the existing
+Responses API path; canonical-funder identity matching also uses Terra with
+medium reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
 
 Workspace responses combine current chapter text, exact confirmed revisions,
 structured gaps and their latest resolutions, and validation freshness. An accepted

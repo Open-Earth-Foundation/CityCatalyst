@@ -53,6 +53,7 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "cnb_source_summary_synthesis": prompts.cnb_source_summary_synthesis,
         "cnb_source_question_reading": prompts.cnb_source_question_reading,
         "cnb_chapter_drafting": prompts.cnb_chapter_drafting,
+        "cnb_source_impact_review": prompts.cnb_source_impact_review,
         "cnb_draft_overview": prompts.cnb_draft_overview,
         "cnb_chapter_validation_completeness": (
             prompts.cnb_chapter_validation_completeness
@@ -85,7 +86,39 @@ def test_cnb_chapter_drafting_prompt_defines_missing_information_ui_contract() -
     assert "treat `[Information needed: ...]` as the UI contract" in prompt_text
     assert "use that exact English prefix and square-bracket format" in prompt_text
     assert "full message a user should" in prompt_text
-    assert "Include one matching entry for every `[Information needed:" in prompt_text
+    assert "one item for every marker" in prompt_text
+    assert "`field_key` (string)" in prompt_text
+    assert "`why_asking` (string)" in prompt_text
+    assert "generate `why_asking` alongside every gap question" in prompt_text
+    assert "never use a generic `why_asking` rationale" in prompt_text
+    assert "downstream" in prompt_text
+    assert "`critical` or `noncritical`" in prompt_text
+    assert "`source_refs`" in prompt_text
+
+
+def test_cnb_source_impact_review_is_tool_only_and_budgeted() -> None:
+    """Keep new-source chapter selection behind one bounded review-only tool."""
+    config = _load_llm_config()
+    prompt = config.prompts.get_prompt("cnb_source_impact_review")
+    budget = config.generation.prompt_budget.cnb_source_impact
+
+    assert config.models.cnb_source_impact_reviewer.name == "openai/gpt-6-sol"
+    assert "call `select_chapters_to_update` exactly once" in prompt
+    assert "return no prose" in prompt
+    assert "`open_gaps`" in prompt
+    assert budget.max_prompt_tokens == 50000
+    assert budget.max_chapter_slice_tokens == 12000
+    assert budget.max_gap_queries == 40
+
+
+def test_cnb_chapter_drafting_prompt_applies_new_source_evidence() -> None:
+    """Tell the drafter to fill gaps from cited new-source excerpts."""
+    prompt = _load_llm_config().prompts.get_prompt("cnb_chapter_drafting")
+
+    assert "`new_source_evidence` (array)" in prompt
+    assert "for every item in `new_source_evidence`" in prompt
+    assert "`current_body_markdown` (string or null)" in prompt
+    assert "keep every other heading, sentence, and fact word for" in prompt
 
 
 def test_cnb_research_configuration_matches_runtime_contract() -> None:
@@ -122,7 +155,7 @@ def test_cnb_funder_identity_prompt_matches_runtime_contract() -> None:
     prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
 
     assert config.models.funder_identity.name == "openai/gpt-5.6-terra"
-    assert config.models.funder_identity.reasoning_effort == "low"
+    assert config.models.funder_identity.reasoning_effort == "medium"
     assert "`funded_projects`" in prompt_text
     assert "`canonical_funders`" in prompt_text
     assert "`project_name`" in prompt_text
@@ -229,7 +262,7 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
     budget = config.generation.prompt_budget.cnb_sources
 
     assert config.models.cnb_source_reader.name == "openai/gpt-5.6-terra"
-    assert config.models.cnb_source_reader.reasoning_effort == "low"
+    assert config.models.cnb_source_reader.reasoning_effort == "medium"
     assert config.models.cnb_source_synthesizer.name == "openai/gpt-5.6-terra"
     assert config.models.cnb_source_synthesizer.reasoning_effort == "medium"
     assert config.models.cnb_chapter_drafter.name == "openai/gpt-5.6-terra"

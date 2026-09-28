@@ -85,6 +85,7 @@ interface ContextTabProps {
   isRetryingBundle: boolean;
   isRetryingUpload: boolean;
   isUploading: boolean;
+  livePopulation: { population: number; year: number } | null;
   lng: string;
   manualPopulation: { population: number; year: number } | null;
   manualPopulationSaving: boolean;
@@ -97,7 +98,6 @@ interface ContextTabProps {
   populationFailed: boolean;
   populationLabel: string;
   populationLoading: boolean;
-  populationMissing: boolean;
   upload: ConceptNoteUploadResponse | null;
   uploadPickerRequest?: number;
   uploadError: string | null;
@@ -253,6 +253,7 @@ export function ContextTab({
   isRetryingBundle,
   isRetryingUpload,
   isUploading,
+  livePopulation,
   lng,
   manualPopulation,
   manualPopulationSaving,
@@ -263,7 +264,6 @@ export function ContextTab({
   populationFailed,
   populationLabel,
   populationLoading,
-  populationMissing,
   upload,
   uploadError,
   uploadPickerRequest,
@@ -286,17 +286,26 @@ export function ContextTab({
   const hiapIncluded =
     bundle.availableContext.hiap ||
     (applicationContext?.included_sources.hiap ?? false);
-  const cityIncluded =
-    bundle.availableContext.city ||
-    (applicationContext?.included_sources.city ?? false);
-  const populationState = getRunSourceState({
-    cityAvailable: !populationMissing || Boolean(manualPopulation),
-    // The city profile can be included without a population value.
-    included: cityIncluded && !manualPopulation && !populationMissing,
-    bundleStatus: bundle.status,
-    sourceStatus: populationFailed ? "failed" : null,
-    selected: Boolean(manualPopulation),
-  });
+  const populationMissing = !livePopulation;
+  const runPopulation = bundle.cityPopulation;
+  // The run keeps the population from its last context build; offer a refresh
+  // when CityCatalyst has a figure the run is missing or has since changed.
+  const populationRefreshNeeded =
+    !manualPopulation &&
+    bundle.status !== "building" &&
+    livePopulation !== null &&
+    (runPopulation === null ||
+      runPopulation.population !== livePopulation.population ||
+      runPopulation.year !== livePopulation.year);
+  const populationStatus = manualPopulation
+    ? "population-manual-source"
+    : bundle.status === "building"
+      ? "bundle-source-pending"
+      : runPopulation
+        ? "included-in-run"
+        : populationMissing
+          ? "population-unavailable"
+          : "not-included-in-run";
   // The run uses the chosen inventory, else the newest one in the city.
   const chosenInventory =
     inventoryOptions.find(
@@ -475,15 +484,34 @@ export function ContextTab({
             value={populationLabel}
             details={[
               [cityName, country].filter(Boolean).join(", "),
-              manualPopulation
-                ? t("population-manual-source")
-                : populationState === "available"
-                  ? t("not-included-in-run")
-                  : "",
-              t(contextSourceHelpKey(populationState, "run")),
+              populationRefreshNeeded
+                ? t(
+                    runPopulation
+                      ? "population-refresh-outdated"
+                      : "population-refresh-hint",
+                  )
+                : "",
             ]}
-            status={t(contextSourceStatusKey(populationState))}
-            tone={contextSourceTone(populationState)}
+            status={t(populationStatus)}
+            tone={
+              populationStatus === "bundle-source-pending"
+                ? "neutral"
+                : manualPopulation || runPopulation
+                  ? "positive"
+                  : "warning"
+            }
+            action={
+              populationRefreshNeeded
+                ? {
+                    label: t("population-refresh"),
+                    onClick: onRetryBundle,
+                    loading: isRetryingBundle,
+                    disabledReason: isDraftRunning
+                      ? t("population-draft-running")
+                      : undefined,
+                  }
+                : undefined
+            }
           >
             {(populationMissing || Boolean(manualPopulation)) &&
               (!populationLoading || Boolean(manualPopulation)) && (

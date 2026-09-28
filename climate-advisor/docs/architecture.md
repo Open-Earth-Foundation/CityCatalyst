@@ -376,13 +376,24 @@ capability contract live in
 Operationally, run creation schedules guarded background assembly. A run with
 no uploaded source records `document_grounding: none`; a ready PDF or native
 Markdown source rebuilds it as `uploaded_evidence`. Separate
-`available_context` flags report CityCatalyst and uploaded-document presence.
+`available_context` flags report CityCatalyst and uploaded-document presence,
+and `city_population` reports the population the city profile gives the models.
 Evidence keeps page or heading/block locators, optional GHGI/HIAP failures do
 not block readiness, and eligible turns get one scoped read-only source query.
 During rebuilds, callers keep using the last completed bundle; unchanged
 document analyses are reused by digest and analysis-contract version. Reader
 and chapter-drafter configuration remains in `llm_config.yaml`, and the public
 CNB contracts live under `app/models/cnb`.
+
+When a new source finishes analysis, a review-only LLM call selects the chapters
+it affects, and each of their open gaps is asked of the verified source text.
+Only those chapters are redrafted with the cited answers, editing the current
+chapter text in place so accepted user edits survive. Each redraft appends a
+revision and reconciles gaps with the new evidence without replacing the last
+user-confirmed revision. Only gaps backed by a cited answer close; a redraft
+that drops any other gap or mismatches its markers is rejected. The re-check is
+a durable job in `context_summary.source_revalidation`, queued with the bundle
+commit and retried by the context-bundle reconciler after failures or restarts.
 
 ## SSE Contract
 

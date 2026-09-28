@@ -39,7 +39,9 @@ def build_concept_note_edit_tools(
         automatic scope, optional focused-chapter hint, and idempotency key are
         already bound by the UI.
         When status is "proposed", tell the user to review the inline document
-        changes. When status is "clarification_required", ask the returned
+        changes, or the structural before/after preview when proposal_kind is structure.
+        Structural proposals cover chapter titles, descriptions, insertion, removal and order.
+        When status is "clarification_required", ask the returned
         clarification directly in chat. Never refer to a proposal or clarification
         card.
         Report any returned exclusions: those protected matches remain unchanged.
@@ -83,6 +85,7 @@ def build_concept_note_edit_tools(
                 "run_id": str(run_uuid),
                 "status": proposal.status,
                 "change_count": len(proposal.changes),
+                "proposal_kind": "structure" if proposal.structure else "text",
                 "notices": [notice.model_dump() for notice in proposal.notices],
             }
             if proposal.status == "clarification_required" and proposal.clarification:

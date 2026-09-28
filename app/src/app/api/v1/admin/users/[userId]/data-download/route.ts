@@ -1,11 +1,11 @@
 /**
  * @swagger
- * /api/v1/admin/users/{userId}/dsar:
+ * /api/v1/admin/users/{userId}/data-download:
  *   get:
  *     tags:
  *       - gdpr
- *     operationId: getAdminUserDsar
- *     summary: Export personal data for a user
+ *     operationId: getAdminUserDataDownload
+ *     summary: Download personal data for a user
  *     parameters:
  *       - in: path
  *         name: userId

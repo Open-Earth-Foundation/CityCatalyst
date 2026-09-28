@@ -44,7 +44,7 @@ export const PERSONAL_DATA_INVENTORY: PersonalDataDataset[] = [
       "created",
       "lastUpdated",
     ],
-    redactedFields: [
+    omittedFields: [
       "passwordHash",
       "twoFactorSecret",
       "twoFactorRecoveryHashes",
@@ -217,7 +217,12 @@ export const PERSONAL_DATA_INVENTORY: PersonalDataDataset[] = [
       "created",
       "lastUpdated",
     ],
-    omittedFields: ["secretCiphertext", "secretIv", "secretAuthTag", "secretPrefix"],
+    omittedFields: [
+      "secretCiphertext",
+      "secretIv",
+      "secretAuthTag",
+      "secretPrefix",
+    ],
   },
   {
     table: "HighImpactActionRanking",
@@ -259,7 +264,7 @@ export const PERSONAL_DATA_INVENTORY: PersonalDataDataset[] = [
   },
   {
     table: "MeedRanking",
-    purpose: "MEED rankings the person requested.",
+    purpose: "MEED climate action rankings the person requested.",
     legalBasis: "Contract (Art. 6(1)(b)).",
     idFields: ["id"],
     fields: [
@@ -314,7 +319,8 @@ export const PERSONAL_DATA_INVENTORY: PersonalDataDataset[] = [
   {
     table: "RetentionActionLog",
     purpose: "Retention actions already taken for this person.",
-    legalBasis: "Legal obligation to demonstrate storage limitation (Art. 5(1)(e)).",
+    legalBasis:
+      "Legal obligation to demonstrate storage limitation (Art. 5(1)(e)).",
     idFields: ["retentionActionLogId"],
     fields: [
       "retentionActionLogId",

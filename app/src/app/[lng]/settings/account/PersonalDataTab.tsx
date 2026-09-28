@@ -18,7 +18,7 @@ function filenameFromResponse(
 }
 
 async function downloadPersonalData(format: DownloadFormat): Promise<void> {
-  const response = await fetch(`/api/v1/user/dsar?format=${format}`, {
+  const response = await fetch(`/api/v1/user/data-download?format=${format}`, {
     credentials: "include",
   });
   if (!response.ok) {

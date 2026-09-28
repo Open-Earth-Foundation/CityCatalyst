@@ -4,7 +4,9 @@ metadata:
   name: citycatalyst-prod-enforce-retention
   namespace: default
 spec:
+  # Quiet window, pinned to UTC so it does not follow the controller's local zone.
   schedule: "15 3 * * *"
+  timeZone: "UTC"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3

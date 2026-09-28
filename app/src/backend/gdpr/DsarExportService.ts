@@ -82,7 +82,14 @@ function inviteWhere(
  */
 export const dsarCollectors: Record<string, DsarCollector> = {
   User: async (subject) => {
-    const user = await db.models.User.findByPk(subject.userId);
+    const secrets =
+      PERSONAL_DATA_INVENTORY.find((dataset) => dataset.table === "User")
+        ?.omittedFields ?? [];
+    // Password and two-factor material stay in the database. The export
+    // never selects those columns.
+    const user = await db.models.User.findByPk(subject.userId, {
+      attributes: { exclude: secrets },
+    });
     return pack(user ? [user] : []);
   },
   CityUser: (subject) =>

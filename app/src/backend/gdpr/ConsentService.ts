@@ -37,6 +37,10 @@ export async function recordConsent(input: RecordConsentInput) {
     );
   }
 
+  // Cookie choices made before sign-in are stored with a browser subject key
+  // and no user id. Once the same browser is signed in, those older rows are
+  // linked to the account. This request is still a new event and is appended
+  // below; the update does not replace the history.
   if (input.userId && input.subjectKey) {
     await db.models.ConsentRecord.update(
       { userId: input.userId },

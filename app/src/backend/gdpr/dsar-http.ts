@@ -15,7 +15,7 @@ export function dsarAttachment(
       "Content-Type": isCsv
         ? "text/csv; charset=utf-8"
         : "application/json; charset=utf-8",
-      "Content-Disposition": `attachment; filename="dsar-${userId}.${extension}"`,
+      "Content-Disposition": `attachment; filename="personal-data-${userId}.${extension}"`,
       "Cache-Control": "no-store",
     },
   });

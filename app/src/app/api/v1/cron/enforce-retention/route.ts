@@ -6,7 +6,7 @@
  *       - cron
  *     operationId: enforceRetention
  *     summary: Apply configured personal-data retention policies
- *     description: Authenticated scheduler endpoint. Anonymizes long-inactive accounts, deletes stale pending invites, and revokes unused personal access tokens. Every action is written to RetentionActionLog. Ingress blocks this path from outside the cluster.
+ *     description: Authenticated scheduler endpoint. Does nothing unless GDPR_RETENTION_ENABLED=true. Anonymizes long-inactive accounts, deletes stale pending invites, and revokes unused personal access tokens. Every action is written to RetentionActionLog. Ingress blocks /api/v1/cron/ from outside the cluster (k8s/cc-ingress.yml).
  *     parameters:
  *       - in: header
  *         name: Authorization

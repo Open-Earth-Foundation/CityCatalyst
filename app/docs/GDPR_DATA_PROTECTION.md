@@ -24,14 +24,14 @@ Covered today:
 
 Greenhouse-gas inventories are data about a city, not a copy of the account holder's personal data. The export includes the fact of membership and of upload. It does not include emission values.
 
-Password hashes, two-factor secrets, and recovery-code hashes are replaced with `[redacted]` when a value is stored, and with null when it is not. The secret itself is not written into the file. Token hashes and webhook secrets are omitted entirely. This is a security limit on access: the person can see that a credential exists, not the credential.
+Password hashes, two-factor secrets, and recovery-code hashes are not selected and are not written into the file. Token hashes and webhook secrets are omitted the same way. The export still includes `twoFactorEnabled`, so the person can see that two-factor authentication is on without receiving the secret.
 
 ## Access (DSAR)
 
 | Who | Request |
 | --- | --- |
-| The signed-in person | Settings → Account → Your data, or `GET /api/v1/user/dsar?format=json` or `format=csv` |
-| An OEF administrator, for a user id | `GET /api/v1/admin/users/{userId}/dsar?format=json` or `format=csv` |
+| The signed-in person | Settings → Account → Your data, or `GET /api/v1/user/data-download?format=json` or `format=csv` |
+| An OEF administrator, for a user id | `GET /api/v1/admin/users/{userId}/data-download?format=json` or `format=csv` |
 
 JSON is one document: export time, privacy-policy version, the inventory, and one array per table. CSV is one file with columns `dataset`, `record_id`, `field`, `value`. Both are returned as downloads and are not cached.
 
@@ -69,7 +69,7 @@ If the user row is later deleted, consent rows remain and their user id is clear
 
 ## Retention
 
-A daily Kubernetes cron job calls `POST /api/v1/cron/enforce-retention` at 03:15 UTC. The call uses `Authorization: Bearer $CC_CRON_JOB_API_KEY`. The same ingress rule that blocks other `/api/v1/cron/` paths blocks this one from the public internet. Manifests:
+A daily Kubernetes cron job calls `POST /api/v1/cron/enforce-retention` at 03:15 UTC. The schedule sets `timeZone: UTC`, so it does not follow the cluster's local zone. The call uses `Authorization: Bearer $CC_CRON_JOB_API_KEY`. The job changes nothing unless `GDPR_RETENTION_ENABLED=true` on the web pod. The ingress in `k8s/cc-ingress.yml` denies every `/api/v1/cron/` path from the public internet; that file is the ingress for these environments. Manifests:
 
 - `k8s/cc-enforce-retention.yml`
 - `k8s/test/cc-test-enforce-retention.yml`
@@ -79,6 +79,7 @@ The windows are environment variables on the web pod. If a variable is unset, th
 
 | Variable | Default | Effect |
 | --- | --- | --- |
+| `GDPR_RETENTION_ENABLED` | unset | Must be `true` or the run logs a skip and changes nothing |
 | `GDPR_INACTIVE_ACCOUNT_DAYS` | 1095 (3 years) | Anonymize accounts with no recent activity |
 | `GDPR_STALE_INVITE_DAYS` | 180 | Delete pending invites older than this |
 | `GDPR_UNUSED_TOKEN_DAYS` | 365 | Delete personal access tokens with no recent use |

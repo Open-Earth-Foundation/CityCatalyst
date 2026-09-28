@@ -6,8 +6,6 @@ import {
   toDsarCsv,
 } from "@/backend/gdpr/dsar-format";
 import { PERSONAL_DATA_INVENTORY } from "@/util/gdpr/personal-data-inventory";
-import { REDACTED } from "@/util/gdpr/constants";
-
 const userDataset = PERSONAL_DATA_INVENTORY.find(
   (dataset) => dataset.table === "User",
 );
@@ -19,25 +17,31 @@ describe("DSAR coverage", () => {
     );
   });
 
-  it("replaces stored secrets and leaves empty secrets null", () => {
+  it("leaves password and two-factor secrets out of the user export", () => {
     expect(userDataset).toBeDefined();
+    expect(userDataset!.omittedFields).toEqual([
+      "passwordHash",
+      "twoFactorSecret",
+      "twoFactorRecoveryHashes",
+    ]);
     const [row] = shapeDataset(userDataset!, [
       {
         userId: "user-1",
         name: "Ada",
         email: "ada@example.com",
         passwordHash: "hashed-secret",
-        twoFactorSecret: null,
+        twoFactorSecret: "totp-secret",
         twoFactorRecoveryHashes: ["recovery-code"],
       },
     ]);
 
     expect(row.name).toBe("Ada");
-    expect(row.passwordHash).toBe(REDACTED);
-    expect(row.twoFactorSecret).toBeNull();
-    expect(row.twoFactorRecoveryHashes).toBe(REDACTED);
+    expect(row).not.toHaveProperty("passwordHash");
+    expect(row).not.toHaveProperty("twoFactorSecret");
+    expect(row).not.toHaveProperty("twoFactorRecoveryHashes");
     const serialized = JSON.stringify(row);
     expect(serialized).not.toContain("hashed-secret");
+    expect(serialized).not.toContain("totp-secret");
     expect(serialized).not.toContain("recovery-code");
   });
 

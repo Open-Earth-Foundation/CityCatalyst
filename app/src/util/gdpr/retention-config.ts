@@ -1,4 +1,6 @@
 export interface RetentionConfig {
+  /** Only the string "true" turns the job on. Anything else skips the run. */
+  enabled: boolean;
   inactiveAccountDays: number;
   staleInviteDays: number;
   unusedTokenDays: number;
@@ -29,13 +31,15 @@ function positiveInt(
 
 /**
  * Retention windows are read on each cron run.
- * Unset variables use the defaults. A set but invalid value fails the run
+ * The job stays off unless GDPR_RETENTION_ENABLED is the string "true".
+ * Unset window variables use the defaults. A set but invalid value fails the run
  * rather than falling through to a dangerous cutoff (for example 0 days).
  */
 export function readRetentionConfig(
   env: NodeJS.ProcessEnv = process.env,
 ): RetentionConfig {
   return {
+    enabled: env.GDPR_RETENTION_ENABLED === "true",
     inactiveAccountDays: positiveInt(
       "GDPR_INACTIVE_ACCOUNT_DAYS",
       DEFAULTS.inactiveAccountDays,

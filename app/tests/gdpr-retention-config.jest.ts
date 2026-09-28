@@ -5,12 +5,22 @@ describe("retention config", () => {
   it("uses the documented defaults when variables are unset", () => {
     const config = readRetentionConfig({});
     expect(config).toEqual({
+      enabled: false,
       inactiveAccountDays: 1095,
       staleInviteDays: 180,
       unusedTokenDays: 365,
       dryRun: false,
       batchSize: 200,
     });
+  });
+
+  it("enables retention only when the flag is the string true", () => {
+    expect(
+      readRetentionConfig({ GDPR_RETENTION_ENABLED: "true" }).enabled,
+    ).toBe(true);
+    expect(
+      readRetentionConfig({ GDPR_RETENTION_ENABLED: "false" }).enabled,
+    ).toBe(false);
   });
 
   it("treats only the string true as a dry run", () => {

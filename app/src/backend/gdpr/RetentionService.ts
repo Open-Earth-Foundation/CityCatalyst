@@ -16,6 +16,7 @@ export interface RetentionPolicyResult {
 
 export interface RetentionRunResult {
   runId: string;
+  enabled: boolean;
   dryRun: boolean;
   inactiveAccountAnonymize: RetentionPolicyResult;
   staleInviteDelete: RetentionPolicyResult;
@@ -279,8 +280,23 @@ async function revokeUnusedTokens(
   return result;
 }
 
+function skippedRun(
+  runId: string,
+  config: RetentionConfig,
+): RetentionRunResult {
+  return {
+    runId,
+    enabled: false,
+    dryRun: config.dryRun,
+    inactiveAccountAnonymize: emptyResult(),
+    staleInviteDelete: emptyResult(),
+    unusedTokenRevoke: emptyResult(),
+  };
+}
+
 /**
  * Apply configured retention policies once.
+ * The run changes nothing unless GDPR_RETENTION_ENABLED=true.
  * GDPR_RETENTION_DRY_RUN=true writes the log and changes no personal data.
  * Each policy stops after GDPR_RETENTION_BATCH_SIZE rows; the next run continues.
  */
@@ -289,6 +305,14 @@ export async function enforceRetentionPolicies(
 ): Promise<RetentionRunResult> {
   const config = readRetentionConfig();
   const runId = crypto.randomUUID();
+  if (!config.enabled) {
+    logger.info(
+      { runId },
+      "Retention run skipped; GDPR_RETENTION_ENABLED is not true",
+    );
+    return skippedRun(runId, config);
+  }
+
   const inviteCutoff = cutoffDate(now, config.staleInviteDays);
 
   const staleInviteDelete = emptyResult();
@@ -339,6 +363,7 @@ export async function enforceRetentionPolicies(
 
   return {
     runId,
+    enabled: true,
     dryRun: config.dryRun,
     inactiveAccountAnonymize,
     staleInviteDelete,

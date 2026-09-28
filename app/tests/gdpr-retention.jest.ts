@@ -59,6 +59,7 @@ jest.unstable_mockModule("@/services/logger", () => ({
   logger: { error: jest.fn(), info: jest.fn(), warn: jest.fn() },
 }));
 
+// Imported after the mocks. A top-level import would load the real models first.
 let enforceRetentionPolicies: typeof import("@/backend/gdpr/RetentionService").enforceRetentionPolicies;
 
 beforeAll(async () => {
@@ -70,11 +71,26 @@ describe("retention job", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     delete process.env.GDPR_RETENTION_DRY_RUN;
+    process.env.GDPR_RETENTION_ENABLED = "true";
     userFindAll.mockResolvedValue([user]);
     cityInviteFindAll.mockResolvedValue([invite]);
     emptyFindAll.mockResolvedValue([]);
     tokenFindAll.mockResolvedValue([token]);
     transaction.mockImplementation(async (work) => work({}));
+  });
+
+  it("skips every policy when retention is not enabled", async () => {
+    delete process.env.GDPR_RETENTION_ENABLED;
+    const result = await enforceRetentionPolicies(
+      new Date("2026-09-28T03:15:00.000Z"),
+    );
+
+    expect(result.enabled).toBe(false);
+    expect(userFindAll).not.toHaveBeenCalled();
+    expect(userUpdate).not.toHaveBeenCalled();
+    expect(inviteDestroy).not.toHaveBeenCalled();
+    expect(tokenDestroy).not.toHaveBeenCalled();
+    expect(logCreate).not.toHaveBeenCalled();
   });
 
   it("only selects accounts that have not already been anonymized", async () => {

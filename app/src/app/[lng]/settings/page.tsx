@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AccountSettingsTab from "./account";
+import PersonalDataTab from "./account/PersonalDataTab";
 import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
 import MyTokensTab from "@/app/[lng]/settings/my-tokens-tab";
@@ -197,6 +198,22 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                 </Text>
               </Tabs.Trigger>
               <Tabs.Trigger
+                value="your-data"
+                _selected={{
+                  borderColor: "content.link",
+                  borderBottomWidth: "2px",
+                  boxShadow: "none",
+                  fontWeight: "bold",
+                  borderRadius: "0",
+                  color: "content.link",
+                  backgroundColor: "background.backgroundLight",
+                }}
+              >
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24">
+                  {t("your-data")}
+                </Text>
+              </Tabs.Trigger>
+              <Tabs.Trigger
                 value="team"
                 _selected={{
                   borderColor: "content.link",
@@ -275,6 +292,9 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
             </Tabs.List>
             <Tabs.Content value="account">
               <AccountSettingsTab t={t} />
+            </Tabs.Content>
+            <Tabs.Content value="your-data">
+              <PersonalDataTab t={t} />
             </Tabs.Content>
             <Tabs.Content value="team">
               <TeamSettings

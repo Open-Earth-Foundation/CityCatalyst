@@ -14,7 +14,6 @@ import { UserRole } from "@/util/types";
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import SecurityTab from "./SecurityTab";
-import PersonalDataTab from "./PersonalDataTab";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const { organization: orgContext } = useOrganizationContext();
@@ -81,7 +80,6 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
               <TabTrigger value="manage-password">{t("password")}</TabTrigger>
               <TabTrigger value="security">{t("security")}</TabTrigger>
               <TabTrigger value="preferences">{t("preferences")}</TabTrigger>
-              <TabTrigger value="your-data">{t("your-data")}</TabTrigger>
             </Tabs.List>
             {userRole === UserRole.ORG_ADMIN && (
               <TabContent value="brand-settings" p={0}>
@@ -112,9 +110,6 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
             </TabContent>
             <TabContent value="preferences" p={0}>
               <PreferencesTab t={t} userInfo={userInfo} />
-            </TabContent>
-            <TabContent value="your-data" p={0}>
-              <PersonalDataTab t={t} />
             </TabContent>
           </Tabs.Root>
         </Box>

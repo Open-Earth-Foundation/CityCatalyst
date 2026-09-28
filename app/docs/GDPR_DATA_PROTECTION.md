@@ -30,7 +30,7 @@ Password hashes, two-factor secrets, and recovery-code hashes are replaced with 
 
 | Who | Request |
 | --- | --- |
-| The signed-in person | Settings → Account → Your data, or `GET /api/v1/user/dsar?format=json` or `format=csv` |
+| The signed-in person | Settings → Your data, or `GET /api/v1/user/dsar?format=json` or `format=csv` |
 | An OEF administrator, for a user id | `GET /api/v1/admin/users/{userId}/dsar?format=json` or `format=csv` |
 
 JSON is one document: export time, privacy-policy version, the inventory, and one array per table. CSV is one file with columns `dataset`, `record_id`, `field`, `value`. Both are returned as downloads and are not cached.
@@ -102,4 +102,4 @@ Each run processes at most the batch size per policy (and per invite table). The
 - It does not decide a lawful basis. The inventory states the basis the product is built around (contract for the account, consent for analytics cookies, legal obligation for access and for keeping proof). Counsel should confirm that.
 - It does not cover processors outside this database (for example the analytics vendor, email delivery, or object storage). File bytes in object storage are not included in the export and are not deleted by the retention job.
 - It does not replace the existing immediate account-deletion endpoint.
-- Consent history has no screen of its own. It is available from `GET /api/v1/user/consent`. The personal-data download is on Settings → Account → Your data.
+- Consent history has no screen of its own. It is available from `GET /api/v1/user/consent`. The personal-data download is on Settings → Your data.

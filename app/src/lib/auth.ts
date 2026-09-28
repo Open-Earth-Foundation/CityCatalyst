@@ -114,7 +114,7 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        if (!user || !user.passwordHash) {
+        if (!user || !user.passwordHash || user.anonymizedAt) {
           logger.error("No user found!");
           return null;
         }
@@ -147,6 +147,14 @@ export const authOptions: NextAuthOptions = {
             logger.error("Invalid securityToken for 2FA");
             return null;
           }
+        }
+
+        // Inactivity for retention is measured from a successful sign-in.
+        // A failed stamp must not block the login itself.
+        try {
+          await user.update({ lastActiveAt: new Date() });
+        } catch (err: unknown) {
+          logger.error({ err }, "Failed to record lastActiveAt");
         }
 
         return {

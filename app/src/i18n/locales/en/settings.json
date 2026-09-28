@@ -273,5 +273,8 @@
   "your-data-description": "Download a copy of the personal data CityCatalyst holds about your account. This includes your profile, invitations, files you uploaded, and consent choices. Passwords and security secrets are not included.",
   "download-json": "Download JSON",
   "download-csv": "Download CSV",
-  "personal-data-download-failed": "Could not download your data. Please try again."
+  "personal-data-download-failed": "Could not download your data. Please try again.",
+  "2fa-security": "2FA Security",
+  "enabled": "Enabled",
+  "disabled": "Disabled"
 }

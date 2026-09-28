@@ -374,10 +374,11 @@ async def async_start_run(
 
 
 async def run_mlflow_io(
-    operation: Callable[..., Any], *args: Any, **kwargs: Any
+    operation: Callable[..., Any], /, *args: Any, **kwargs: Any
 ) -> Any:
     """Await blocking telemetry off-loop, finishing its write before cancellation.
 
+    All keyword arguments, including ``operation``, belong to the wrapped callable.
     Cancelling a thread await cannot stop the underlying write. Waiting for it
     prevents run cleanup racing that write or its pending-operation registration.
     """

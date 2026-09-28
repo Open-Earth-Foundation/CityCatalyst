@@ -13,6 +13,7 @@ from anyio import CancelScope
 from app.models.requests import MessageCreateRequest
 from app.utils import mlflow_logging
 from app.utils.chat_workflow_context import ChatWorkflowContext
+from app.utils.cnb_observability import record_edit_outcome
 from app.utils.conversation_observability import conversation_trace
 from app.utils.streaming_handler import StreamingHandler
 
@@ -41,6 +42,26 @@ def client(monkeypatch):
         SimpleNamespace(tracking=SimpleNamespace(MlflowClient=lambda: recorded)),
     )
     return recorded
+
+
+@pytest.mark.asyncio
+async def test_async_edit_telemetry_forwards_operation_keyword(client):
+    run_id = uuid4()
+    await mlflow_logging.run_mlflow_io(
+        record_edit_outcome,
+        run_id=run_id,
+        operation="apply",
+        outcome="failed",
+        error_code="proposal_not_pending",
+    )
+
+    tags = client.create_run.call_args.kwargs["tags"]
+    assert tags["concept_note_run_id"] == str(run_id)
+    assert tags["operation"] == "apply"
+    assert tags["outcome"] == "failed"
+    assert tags["failure_category"] == "proposal_not_pending"
+    client.set_terminated.assert_called_once_with("run-1", status="FINISHED")
+    assert mlflow_logging._current_run() is None
 
 
 @pytest.mark.asyncio

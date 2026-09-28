@@ -300,6 +300,11 @@ import {
   ConsentRecordAttributes,
   ConsentRecordCreationAttributes,
 } from "./ConsentRecord";
+import {
+  RetentionActionLog as _RetentionActionLog,
+  RetentionActionLogAttributes,
+  RetentionActionLogCreationAttributes,
+} from "./RetentionActionLog";
 
 export {
   _ActionPlan as ActionPlan,
@@ -368,6 +373,7 @@ export {
   _OAuthClientAuthz as OAuthClientAuthz,
   _PersonalAccessToken as PersonalAccessToken,
   _ConsentRecord as ConsentRecord,
+  _RetentionActionLog as RetentionActionLog,
 };
 
 export type {
@@ -503,6 +509,8 @@ export type {
   PersonalAccessTokenOptionalAttributes,
   ConsentRecordAttributes,
   ConsentRecordCreationAttributes,
+  RetentionActionLogAttributes,
+  RetentionActionLogCreationAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -577,6 +585,7 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
   const PersonalAccessToken = _PersonalAccessToken.initModel(sequelize);
   const ConsentRecord = _ConsentRecord.initModel(sequelize);
+  const RetentionActionLog = _RetentionActionLog.initModel(sequelize);
 
   ActionPlan.belongsTo(HighImpactActionRankedModel, {
     foreignKey: "highImpactActionRankedId",
@@ -1514,5 +1523,6 @@ export function initModels(sequelize: Sequelize) {
     OAuthClientAuthz: OAuthClientAuthz,
     PersonalAccessToken: PersonalAccessToken,
     ConsentRecord: ConsentRecord,
+    RetentionActionLog: RetentionActionLog,
   };
 }

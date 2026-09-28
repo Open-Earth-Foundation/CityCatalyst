@@ -1221,7 +1221,10 @@ GET /health
 `GET /health` reports process liveness without contacting PostgreSQL. Deployment
 readiness probes use `GET /ready`, which returns `200` only after the database
 configured by `CA_DATABASE_URL` accepts a query. Missing configuration or a
-failed database query returns `503` without exposing connection details.
+failed database query returns `503` without exposing connection details. Connection
+acquisition and the query share a one-second deadline. Kubernetes liveness,
+readiness, and startup probes explicitly allow three seconds in dev, test, and
+production; MLflow and model availability are not liveness dependencies.
 
 ```http
 GET /ready
@@ -1285,6 +1288,26 @@ data: {"name": "climate_vector_search", "status": "executing", "arguments": {...
 
 event: done
 data: {}
+```
+
+Chat model calls retry early response-body read timeouts, read errors, and remote
+protocol disconnects using the Agents SDK's per-model retry guard. The
+`streaming` section in `llm_config.yaml` allows two retries with a jittered delay
+of up to 500 ms by default. Setting `retry_attempts: 0` disables this recovery.
+Pre-header connection/status failures keep the existing provider retry budget;
+the stream policy does not retry their exhausted OpenAI exceptions again.
+
+The runner stops retrying once the current model call emits non-replayable output,
+including text, reasoning, or tool-call events. A later model call can recover
+without rerunning already completed tools. Cancellation closes the provider stream
+without retrying. Exhausted or unsafe-to-replay failures still send an error and
+`done` with `ok: false`, `history_saved: false`; a partial reply is not saved as a
+completed answer. HTTP 200 alone does not indicate successful completion.
+
+Offline regression checks (from `climate-advisor/`):
+
+```bash
+uv run --directory service pytest tests/test_health.py tests/test_stream_resilience.py tests/test_mlflow_concurrency.py -q
 ```
 
 ## CityCatalyst Integration
@@ -1523,6 +1546,13 @@ always use that explicit ID, including across awaits. A failed or disabled run
 scope cannot log to an enclosing request. Nested runs carry an explicit parent
 tag; exceptions and cancellation mark only their own run failed. Queued writes
 are drained on exit, and late child tasks cannot write to a closed request.
+Async service flows use `async_start_run`, `async_workflow_trace`, and
+`run_mlflow_io` to await blocking MLflow initialization, run creation, artifact
+uploads, batch writes, and cleanup in worker threads. The request's run context
+is set and reset in its original task. Cancellation waits for in-flight telemetry
+before closing its run, so pending writes cannot race termination. Synchronous
+research entrypoints continue to use `start_run` and `workflow_trace`.
+`MLFLOW_ASYNC_LOGGING_ENABLED` alone does not offload artifact or run-lifecycle I/O.
 The shared trace experiment is configured once at initialization; trace metadata
 uses `mlflow.sourceRun`, `mlflow.trace.session`, and `mlflow.trace.user`, supported
 by the pinned MLflow 3.2 runtime.

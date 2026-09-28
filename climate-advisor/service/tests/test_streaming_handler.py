@@ -715,7 +715,9 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             )
         )
         discover_output = SimpleNamespace(
-            raw_item=SimpleNamespace(call_id="call-discover", name="native_input_discover"),
+            raw_item=SimpleNamespace(
+                call_id="call-discover", name="native_input_discover"
+            ),
             output=json.dumps(
                 {
                     "action": "native_input_discover",
@@ -761,13 +763,16 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         def fake_log_json_artifact(artifact_file: str, payload: object) -> None:
             logged.append((artifact_file, payload))
 
-        with patch(
-            "app.utils.streaming_handler.log_json_artifact",
-            side_effect=fake_log_json_artifact,
-        ), patch("app.utils.streaming_handler.log_metrics"), patch(
-            "app.utils.streaming_handler.log_tags"
-        ), patch("app.utils.streaming_handler.log_text_artifact"):
-            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+        with (
+            patch(
+                "app.utils.streaming_handler.log_json_artifact",
+                side_effect=fake_log_json_artifact,
+            ),
+            patch("app.utils.streaming_handler.log_metrics"),
+            patch("app.utils.streaming_handler.log_tags"),
+            patch("app.utils.streaming_handler.log_text_artifact"),
+        ):
+            await handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
 
         names = [record["tool_name"] for record in handler._tool_observation_records]
         outcomes = [record["outcome"] for record in handler._tool_observation_records]
@@ -786,7 +791,9 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             handler.tool_invocations[1]["arguments"]["catalogId"],
             "cat-secret-uuid",
         )
-        self.assertEqual(artifact["tool_invocations"], handler._tool_observation_records)
+        self.assertEqual(
+            artifact["tool_invocations"], handler._tool_observation_records
+        )
 
     async def test_agentic_mlflow_fallback_omits_raw_catalog_payloads(
         self,
@@ -829,12 +836,15 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             ),
         )
 
-        with patch(
-            "app.utils.streaming_handler.start_tool_observation",
-            side_effect=RuntimeError("mlflow span start failed"),
-        ), patch(
-            "app.utils.streaming_handler.finish_tool_observation",
-            side_effect=RuntimeError("mlflow span finish failed"),
+        with (
+            patch(
+                "app.utils.streaming_handler.start_tool_observation",
+                side_effect=RuntimeError("mlflow span start failed"),
+            ),
+            patch(
+                "app.utils.streaming_handler.finish_tool_observation",
+                side_effect=RuntimeError("mlflow span finish failed"),
+            ),
         ):
             sse_chunks = [chunk async for chunk in handler._handle_tool_called(called)]
             sse_chunks.extend(
@@ -854,16 +864,20 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         def fake_log_json_artifact(artifact_file: str, payload: object) -> None:
             logged.append((artifact_file, payload))
 
-        with patch(
-            "app.utils.streaming_handler.log_json_artifact",
-            side_effect=fake_log_json_artifact,
-        ), patch("app.utils.streaming_handler.log_metrics"), patch(
-            "app.utils.streaming_handler.log_tags"
-        ), patch("app.utils.streaming_handler.log_text_artifact"), patch(
-            "app.utils.streaming_handler.close_open_tool_observations",
-            side_effect=RuntimeError("mlflow close failed"),
+        with (
+            patch(
+                "app.utils.streaming_handler.log_json_artifact",
+                side_effect=fake_log_json_artifact,
+            ),
+            patch("app.utils.streaming_handler.log_metrics"),
+            patch("app.utils.streaming_handler.log_tags"),
+            patch("app.utils.streaming_handler.log_text_artifact"),
+            patch(
+                "app.utils.streaming_handler.close_open_tool_observations",
+                side_effect=RuntimeError("mlflow close failed"),
+            ),
         ):
-            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+            await handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
 
         artifact = next(
             payload
@@ -920,16 +934,20 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         def fake_log_json_artifact(artifact_file: str, payload: object) -> None:
             logged.append((artifact_file, payload))
 
-        with patch(
-            "app.utils.streaming_handler.log_json_artifact",
-            side_effect=fake_log_json_artifact,
-        ), patch("app.utils.streaming_handler.log_metrics"), patch(
-            "app.utils.streaming_handler.log_tags"
-        ), patch("app.utils.streaming_handler.log_text_artifact"), patch(
-            "app.utils.streaming_handler.close_open_tool_observations",
-            side_effect=RuntimeError("mlflow close failed"),
+        with (
+            patch(
+                "app.utils.streaming_handler.log_json_artifact",
+                side_effect=fake_log_json_artifact,
+            ),
+            patch("app.utils.streaming_handler.log_metrics"),
+            patch("app.utils.streaming_handler.log_tags"),
+            patch("app.utils.streaming_handler.log_text_artifact"),
+            patch(
+                "app.utils.streaming_handler.close_open_tool_observations",
+                side_effect=RuntimeError("mlflow close failed"),
+            ),
         ):
-            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+            await handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
 
         artifact = next(
             payload
@@ -1011,12 +1029,15 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
                 raise RuntimeError("mlflow span finish failed")
             return finish_tool_observation(pending, completed, **kwargs)
 
-        with patch(
-            "app.utils.streaming_handler.start_tool_observation",
-            side_effect=start_side_effect,
-        ), patch(
-            "app.utils.streaming_handler.finish_tool_observation",
-            side_effect=finish_side_effect,
+        with (
+            patch(
+                "app.utils.streaming_handler.start_tool_observation",
+                side_effect=start_side_effect,
+            ),
+            patch(
+                "app.utils.streaming_handler.finish_tool_observation",
+                side_effect=finish_side_effect,
+            ),
         ):
             _ = [chunk async for chunk in handler._handle_tool_called(discover_called)]
             _ = [chunk async for chunk in handler._handle_tool_called(read_called)]
@@ -1031,16 +1052,20 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         def fake_log_json_artifact(artifact_file: str, payload: object) -> None:
             logged.append((artifact_file, payload))
 
-        with patch(
-            "app.utils.streaming_handler.log_json_artifact",
-            side_effect=fake_log_json_artifact,
-        ), patch("app.utils.streaming_handler.log_metrics"), patch(
-            "app.utils.streaming_handler.log_tags"
-        ), patch("app.utils.streaming_handler.log_text_artifact"), patch(
-            "app.utils.streaming_handler.close_open_tool_observations",
-            side_effect=RuntimeError("mlflow close failed"),
+        with (
+            patch(
+                "app.utils.streaming_handler.log_json_artifact",
+                side_effect=fake_log_json_artifact,
+            ),
+            patch("app.utils.streaming_handler.log_metrics"),
+            patch("app.utils.streaming_handler.log_tags"),
+            patch("app.utils.streaming_handler.log_text_artifact"),
+            patch(
+                "app.utils.streaming_handler.close_open_tool_observations",
+                side_effect=RuntimeError("mlflow close failed"),
+            ),
         ):
-            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+            await handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
 
         artifact = next(
             payload

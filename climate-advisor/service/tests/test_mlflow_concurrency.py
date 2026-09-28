@@ -3,11 +3,13 @@
 import asyncio
 from contextlib import contextmanager
 from contextvars import ContextVar
+from threading import Event
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 from uuid import uuid4
 
 import pytest
+from anyio import CancelScope
 from app.models.requests import MessageCreateRequest
 from app.utils import mlflow_logging
 from app.utils.chat_workflow_context import ChatWorkflowContext
@@ -48,7 +50,9 @@ async def test_overlapping_requests_isolate_every_logging_operation(client, tmp_
     targets = {}
 
     async def request(name):
-        with mlflow_logging.start_run(run_name=name, experiment_name="Clima") as run:
+        async with mlflow_logging.async_start_run(
+            run_name=name, experiment_name="Clima"
+        ) as run:
             targets[name] = run.info.run_id
             if name == "first":
                 first_started.set()
@@ -139,7 +143,9 @@ async def test_cancelled_request_closes_only_its_run(client):
     started = asyncio.Event()
 
     async def request():
-        with mlflow_logging.start_run(run_name="cancelled", experiment_name="Clima"):
+        async with mlflow_logging.async_start_run(
+            run_name="cancelled", experiment_name="Clima"
+        ):
             started.set()
             await asyncio.Event().wait()
 
@@ -163,7 +169,9 @@ async def test_inherited_child_cannot_log_after_request_closes(client):
         await release_child.wait()
         mlflow_logging.log_tags({"late": "data"})
 
-    with mlflow_logging.start_run(run_name="request", experiment_name="Clima"):
+    async with mlflow_logging.async_start_run(
+        run_name="request", experiment_name="Clima"
+    ):
         task = asyncio.create_task(delayed_log())
     release_child.set()
     await task
@@ -251,7 +259,7 @@ async def test_real_mlflow_persists_isolated_runs_and_trace_links(
     release = asyncio.Event()
 
     async def request(name):
-        with mlflow_logging.start_run(
+        async with mlflow_logging.async_start_run(
             run_name=name, experiment_name="isolated-test"
         ) as run:
             assert run is not None
@@ -354,3 +362,61 @@ async def test_other_chat_modes_link_traces_before_model_start(monkeypatch, mode
         recorded["span"]["attributes"]["workflow"]
         == handler.workflow_context.telemetry()["workflow"]
     )
+
+
+@pytest.mark.parametrize("phase", ["create", "write"])
+@pytest.mark.parametrize("cancellation", ["task", "scope"])
+async def test_cancellation_waits_for_inflight_telemetry_before_closing(
+    client, phase, cancellation
+):
+    entered = Event()
+    release = Event()
+    order = []
+    scopes = []
+
+    def blocked():
+        entered.set()
+        release.wait(timeout=3)
+        order.append(phase)
+
+    if phase == "create":
+
+        def create(**kwargs):
+            blocked()
+            return SimpleNamespace(info=SimpleNamespace(run_id="cancelled-run"))
+
+        client.create_run.side_effect = create
+    else:
+        client.log_dict.side_effect = lambda *args: blocked()
+    client.set_terminated.side_effect = lambda *args, **kwargs: order.append("close")
+
+    async def request():
+        with CancelScope() as scope:
+            scopes.append(scope)
+            async with mlflow_logging.async_start_run(
+                run_name="request", experiment_name="Clima"
+            ):
+                await mlflow_logging.run_mlflow_io(
+                    mlflow_logging.log_json_artifact, "request.json", {}
+                )
+
+    task = asyncio.create_task(request())
+    try:
+        assert await asyncio.to_thread(entered.wait, 2)
+        if cancellation == "scope":
+            scopes[0].cancel()
+        else:
+            task.cancel()
+        await asyncio.sleep(0.01)
+        assert not task.done()
+        client.set_terminated.assert_not_called()
+    finally:
+        release.set()
+        if cancellation == "scope":
+            await asyncio.wait_for(task, timeout=2)
+        else:
+            with pytest.raises(asyncio.CancelledError):
+                await asyncio.wait_for(task, timeout=2)
+    assert order == [phase, "close"]
+    assert client.set_terminated.call_args.kwargs["status"] == "FAILED"
+    assert mlflow_logging._current_run() is None

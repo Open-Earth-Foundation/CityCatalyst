@@ -11,7 +11,9 @@ from contextlib import aclosing, suppress
 from typing import Any, AsyncGenerator, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID, uuid4
 
-from agents import RunConfig, Runner, gen_trace_id
+import httpx
+from agents import ModelSettings, RunConfig, Runner, gen_trace_id
+from agents.retry import ModelRetrySettings, RetryPolicyContext
 from app.middleware import get_request_id
 from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.requests import MessageCreateRequest
@@ -40,7 +42,11 @@ from app.services.stationary_energy.stationary_energy_tool_events import (
 )
 from app.services.thread_service import ThreadService
 from app.utils.chat_workflow_context import ChatWorkflowContext
-from app.utils.cnb_progress import emit_cnb_progress, emit_cnb_reasoning, stream_cnb_events
+from app.utils.cnb_progress import (
+    emit_cnb_progress,
+    emit_cnb_reasoning,
+    stream_cnb_events,
+)
 from app.utils.concept_note_context import (
     clean_cnb_history,
     extract_concept_note_run_id,
@@ -52,6 +58,7 @@ from app.utils.conversation_observability import (
 )
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
+    async_start_run,
     climate_advisor_experiment_name,
     close_open_tool_observations,
     finish_tool_observation,
@@ -60,7 +67,7 @@ from app.utils.mlflow_logging import (
     log_tags,
     log_text_artifact,
     merge_redacted_tool_records,
-    start_run,
+    run_mlflow_io,
     start_tool_observation,
     update_current_trace_context,
 )
@@ -157,30 +164,30 @@ class StreamingHandler:
         if self.workflow_context.concept_note_run_id:
             await emit_cnb_progress("preparing")
 
-        with (
-            start_run(
-                run_name=self.workflow_context.mlflow_run_name,
-                experiment_name=self._mlflow_experiment_name(payload),
-                tags=self._mlflow_tags(payload),
-                params=self._mlflow_params(payload),
-            ),
-            conversation_trace(
-                payload.content, attributes=self.workflow_context.telemetry()
-            ),
+        async with async_start_run(
+            run_name=self.workflow_context.mlflow_run_name,
+            experiment_name=self._mlflow_experiment_name(payload),
+            tags=self._mlflow_tags(payload),
+            params=self._mlflow_params(payload),
         ):
-            self._update_mlflow_trace_context(payload)
-            log_json_artifact(
-                "request/message_payload.json", payload.model_dump(mode="json")
-            )
-
-            async for event_bytes in self._stream_response_with_mlflow(
-                payload=payload,
-                history_warning=history_warning,
-                req_id=req_id,
-                settings=settings,
-                started_at=started_at,
+            with conversation_trace(
+                payload.content, attributes=self.workflow_context.telemetry()
             ):
-                yield event_bytes
+                self._update_mlflow_trace_context(payload)
+                await run_mlflow_io(
+                    log_json_artifact,
+                    "request/message_payload.json",
+                    payload.model_dump(mode="json"),
+                )
+
+                async for event_bytes in self._stream_response_with_mlflow(
+                    payload=payload,
+                    history_warning=history_warning,
+                    req_id=req_id,
+                    settings=settings,
+                    started_at=started_at,
+                ):
+                    yield event_bytes
 
     async def _stream_response_with_mlflow(
         self,
@@ -302,7 +309,8 @@ class StreamingHandler:
                 self.thread_id,
             )
             workflow_metadata = self.workflow_context.telemetry()
-            log_tags(
+            await run_mlflow_io(
+                log_tags,
                 {
                     "model": self.agent_model,
                     "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
@@ -312,7 +320,7 @@ class StreamingHandler:
                     "prompt_name": workflow_metadata["prompt_name"],
                     "stationary_energy_draft_run_id": draft_run_id,
                     "concept_note_run_id": concept_note_run_id,
-                }
+                },
             )
 
             agent = await self.agent_service.create_agent(
@@ -324,8 +332,10 @@ class StreamingHandler:
                 ),
             )
 
-            log_json_artifact(
-                "chat/conversation_history.json", {"messages": conversation_history}
+            await run_mlflow_io(
+                log_json_artifact,
+                "chat/conversation_history.json",
+                {"messages": conversation_history},
             )
 
             logger.info(
@@ -350,7 +360,7 @@ class StreamingHandler:
             await self.persist_message()
 
             # Send completion event
-            self._log_mlflow_stream_summary(
+            await self._log_mlflow_stream_summary(
                 ok=not self.streaming_error,
                 started_at=started_at,
             )
@@ -363,7 +373,8 @@ class StreamingHandler:
                 req_id,
             )
             self.streaming_error = True
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "errors/stream_cancelled.json",
                 {
                     "type": "CancelledError",
@@ -371,7 +382,7 @@ class StreamingHandler:
                     "thread_id": self.thread_identifier,
                 },
             )
-            self._log_mlflow_stream_summary(
+            await self._log_mlflow_stream_summary(
                 ok=False,
                 started_at=started_at,
                 status="cancelled",
@@ -380,14 +391,24 @@ class StreamingHandler:
 
         except Exception as exc:
             if self.workflow_context.concept_note_run_id:
-                logger.warning("CNB stream failed thread_id=%s", self.thread_identifier)
+                # Preserve diagnostic categories without logging source text or provider bodies.
+                logger.warning(
+                    "CNB stream failed thread_id=%s request_id=%s error_type=%s status_code=%s",
+                    self.thread_identifier,
+                    req_id,
+                    type(exc).__name__,
+                    getattr(exc, "status_code", None),
+                )
             else:
                 logger.exception("Unhandled exception in Agents SDK streaming")
             self.streaming_error = True
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "errors/stream_error.json",
                 {
                     "type": type(exc).__name__,
+                    "request_id": req_id,
+                    "status_code": getattr(exc, "status_code", None),
                     "message": (
                         "CNB stream failed"
                         if self.workflow_context.concept_note_run_id
@@ -395,7 +416,7 @@ class StreamingHandler:
                     ),
                 },
             )
-            self._log_mlflow_stream_summary(
+            await self._log_mlflow_stream_summary(
                 ok=False,
                 started_at=started_at,
                 status="error",
@@ -965,8 +986,21 @@ class StreamingHandler:
             trace_metadata["feature_flag"] = "CONCEPT_NOTE_BUILDER"
             trace_metadata["concept_note_run_id"] = str(concept_note_run_id)
 
-        # Disable tracing from central settings without changing stream behavior.
+        # Keep body recovery separate from the provider's pre-header retry budget.
         return RunConfig(
+            model_settings=ModelSettings(
+                retry=ModelRetrySettings(
+                    max_retries=settings.llm.streaming.retry_attempts,
+                    backoff={
+                        "initial_delay": settings.llm.streaming.retry_delay_ms / 1000,
+                        "max_delay": settings.llm.streaming.retry_delay_ms / 1000,
+                        "jitter": True,
+                    },
+                    policy=self._retry_stream_transport,
+                )
+                if settings.llm.streaming.retry_attempts
+                else None,
+            ),
             workflow_name=self.workflow_context.trace_workflow_name,
             trace_id=gen_trace_id(),
             group_id=self.thread_identifier,
@@ -975,6 +1009,28 @@ class StreamingHandler:
             or not settings.langsmith_tracing_enabled,
             trace_include_sensitive_data=not bool(concept_note_run_id),
         )
+
+    def _retry_stream_transport(self, context: RetryPolicyContext) -> bool:
+        """Recover early body disconnects inside the SDK's per-model replay guard.
+
+        The provider already retries connection/status failures before headers;
+        those arrive as OpenAI exceptions and must not multiply that budget here.
+        The runner vetoes replay after output, tool events, or cancellation and
+        retries only the current model call, never a completed tool invocation.
+        """
+        retry = context.stream and isinstance(
+            context.error,
+            (httpx.ReadTimeout, httpx.ReadError, httpx.RemoteProtocolError),
+        )
+        if retry:
+            logger.warning(
+                "Retrying chat stream transport thread_id=%s request_id=%s retry=%s error_type=%s",
+                self.thread_identifier,
+                self._request_id(),
+                context.attempt,
+                type(context.error).__name__,
+            )
+        return retry
 
     async def _fallback_stream(
         self, agent: Any, payload: MessageCreateRequest
@@ -1494,9 +1550,9 @@ class StreamingHandler:
             organization_id=first_value("organization_id"),
             project_id=first_value("project_id"),
             city_id=first_value("city_id"),
-            inventory_id=payload.inventory_id or self.inventory_id or first_value(
-                "inventory_id"
-            ),
+            inventory_id=payload.inventory_id
+            or self.inventory_id
+            or first_value("inventory_id"),
         )
 
     @staticmethod
@@ -1513,14 +1569,14 @@ class StreamingHandler:
             )
             return None
 
-    def _log_mlflow_stream_summary(
+    async def _log_mlflow_stream_summary(
         self,
         *,
         ok: bool,
         started_at: float,
         status: str | None = None,
     ) -> None:
-        """Log final chat artifacts and metrics for the active MLflow run."""
+        """Finalize task-local spans and offload final artifact and metric writes."""
         assistant_content = "".join(self.assistant_tokens)
         duration_ms = (time.perf_counter() - started_at) * 1000
         stream_status = status or ("ok" if ok else "error")
@@ -1530,8 +1586,9 @@ class StreamingHandler:
             history_saved=self.history_saved,
             chunks=len(self.assistant_tokens),
         )
-        log_tags({"stream_status": stream_status})
-        log_metrics(
+        await run_mlflow_io(log_tags, {"stream_status": stream_status})
+        await run_mlflow_io(
+            log_metrics,
             {
                 "duration_ms": duration_ms,
                 "assistant_characters": len(assistant_content),
@@ -1539,9 +1596,11 @@ class StreamingHandler:
                 "tool_invocations": len(self.tool_invocations),
                 "history_saved": int(self.history_saved),
                 "ok": int(ok),
-            }
+            },
         )
-        log_text_artifact("chat/assistant_response.txt", assistant_content)
+        await run_mlflow_io(
+            log_text_artifact, "chat/assistant_response.txt", assistant_content
+        )
         try:
             close_open_tool_observations(
                 self._pending_tool_observations,
@@ -1565,11 +1624,13 @@ class StreamingHandler:
             request_id=self._request_id(),
         )
         if records:
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "chat/tool_invocations.json",
                 {"tool_invocations": records},
             )
-        log_json_artifact(
+        await run_mlflow_io(
+            log_json_artifact,
             "response/stream_summary.json",
             {
                 "ok": ok,

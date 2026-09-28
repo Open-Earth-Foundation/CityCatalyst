@@ -29,7 +29,11 @@ from app.services.cnb.edit_validation import context_snapshot, validate_edit_pla
 from app.utils.cnb_observability import record_edit_outcome
 from app.utils.cnb_progress import emit_cnb_progress
 from app.utils.concept_note_context import manual_population_context
-from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
+from app.utils.conversation_observability import (
+    async_workflow_trace,
+    finish_workflow_trace,
+)
+from app.utils.mlflow_logging import run_mlflow_io
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -106,7 +110,7 @@ class ConceptNoteEditService:
         recent_messages: list[dict[str, str]] | None = None,
     ) -> EditProposalResponse:
         """Trace proposal inputs, model calls and the resulting proposed changes."""
-        with workflow_trace(
+        async with async_workflow_trace(
             name="cnb_chat_edit",
             inputs={"request": request, "recent_messages": recent_messages},
             session_id=getattr(run, "thread_id", None) or run.run_id,
@@ -125,7 +129,8 @@ class ConceptNoteEditService:
                     recent_messages=recent_messages,
                 )
             except EditOperationError as error:
-                record_edit_outcome(
+                await run_mlflow_io(
+                    record_edit_outcome,
                     run_id=run.run_id,
                     operation="propose",
                     outcome="failed",
@@ -133,7 +138,8 @@ class ConceptNoteEditService:
                 )
                 raise
             if result.status != "rejected" or result.changes:
-                record_edit_outcome(
+                await run_mlflow_io(
+                    record_edit_outcome,
                     run_id=run.run_id,
                     proposal_id=result.proposal_id,
                     operation="propose",
@@ -267,7 +273,8 @@ class ConceptNoteEditService:
                     error_code="planning_interrupted",
                 )
             )
-            record_edit_outcome(
+            await run_mlflow_io(
+                record_edit_outcome,
                 run_id=run.run_id,
                 proposal_id=proposal.proposal_id,
                 operation="propose",
@@ -362,7 +369,8 @@ class ConceptNoteEditService:
                     proposal_id=proposal_id,
                     error_code="stale_structure",
                 )
-            record_edit_outcome(
+            await run_mlflow_io(
+                record_edit_outcome,
                 run_id=run.run_id,
                 proposal_id=proposal_id,
                 operation="apply",
@@ -370,7 +378,8 @@ class ConceptNoteEditService:
                 error_code=error.code,
             )
             raise
-        record_edit_outcome(
+        await run_mlflow_io(
+            record_edit_outcome,
             run_id=run.run_id,
             proposal_id=proposal_id,
             revision_id=result.result.application_id if result.result else None,
@@ -387,7 +396,8 @@ class ConceptNoteEditService:
         result = await self.repository.reject(
             run_id=run.run_id, user_id=run.user_id, proposal_id=proposal_id
         )
-        record_edit_outcome(
+        await run_mlflow_io(
+            record_edit_outcome,
             run_id=run.run_id,
             proposal_id=proposal_id,
             operation="reject",

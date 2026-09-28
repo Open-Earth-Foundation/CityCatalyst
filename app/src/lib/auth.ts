@@ -149,6 +149,14 @@ export const authOptions: NextAuthOptions = {
           }
         }
 
+        // Inactivity for retention is measured from a successful sign-in.
+        // A failed stamp must not block the login itself.
+        try {
+          await user.update({ lastActiveAt: new Date() });
+        } catch (err: unknown) {
+          logger.error({ err }, "Failed to record lastActiveAt");
+        }
+
         return {
           id: user.userId,
           name: user.name,

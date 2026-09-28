@@ -114,7 +114,7 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        if (!user || !user.passwordHash) {
+        if (!user || !user.passwordHash || user.anonymizedAt) {
           logger.error("No user found!");
           return null;
         }

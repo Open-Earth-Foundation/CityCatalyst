@@ -4,6 +4,13 @@ from __future__ import annotations
 
 from typing import Any
 
+from app.modules.prioritizer.authority_scope import (
+    AUTHORITY_SCOPE_BLOCKED,
+    AUTHORITY_SCOPE_FULL_DIRECT,
+    AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY,
+    authority_scope_summary,
+    resolve_report_authority_scope,
+)
 from app.modules.prioritizer.internal_models import (
     Action,
     ActionFinancialFeasibilityScoreRecord,
@@ -40,53 +47,9 @@ from app.modules.prioritizer.scoring_config import (
     IMPACT_WEIGHT_TIMELINE,
 )
 
-AUTHORITY_SCOPE_FULL_DIRECT = "full_direct"
-AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY = "municipal_assets_only"
-AUTHORITY_SCOPE_QUALIFIED = "qualified"
-AUTHORITY_SCOPE_BLOCKED = "blocked"
-AUTHORITY_SCOPE_UNSPECIFIED = "unspecified"
 FINANCE_MATCH_DIRECT = "direct"
 FINANCE_MATCH_CONTEXTUAL = "contextual"
 FINANCE_MATCH_UNKNOWN = "unknown"
-_AUTHORITY_SCOPE_MUNICIPAL_LIMIT_MARKERS = (
-    "private stock",
-    "private building",
-    "private assets",
-    "private third-part",
-    "third-party",
-    "third party",
-    "facilitator",
-    "facilitation",
-    "without regulatory",
-    "stock privado",
-    "edificios privados",
-    "activos privados",
-    "facilitador",
-    "sin potestad regulatoria",
-    "does not authorize the municipality to regulate",
-    "no autoriza al municipio a regular",
-    "no habilita al municipio a regular",
-    "edificios de terceros",
-    "terceros privados",
-    "no puede imponer",
-)
-_AUTHORITY_SCOPE_QUALIFIED_MARKERS = (
-    "not fully direct",
-    "mediated",
-    "no es plenamente directa",
-    "no es plenamente directo",
-    "mediada por",
-    "mediado por",
-)
-_AUTHORITY_SCOPE_FULL_DIRECT_MARKERS = (
-    "act directly",
-    "lead directly",
-    "direct and full competence",
-    "direct municipal authority",
-    "actuar de forma directa",
-    "competencia directa",
-    "competencia plena",
-)
 
 
 def validate_report_snapshot(
@@ -1465,16 +1428,7 @@ def _legal_facts(context: ReportContext) -> dict[str, Any] | None:
             "legal_references": legal.legal_references,
         }
         facts.update(
-            _authority_scope_fields(
-                facts,
-                extra_source_text=_authority_scope_source_text(
-                    {
-                        "ownership_description": legal.ownership_description,
-                        "restrictions_description": legal.restrictions_description,
-                        "legal_justification": legal.legal_justification,
-                    }
-                ),
-            )
+            _authority_scope_fields(facts, legal_assessment=legal)
         )
         return facts
 
@@ -1487,89 +1441,75 @@ def _legal_facts(context: ReportContext) -> dict[str, Any] | None:
         "assessment_present": snapshot_legal.assessment_present,
         "assessment_missing": snapshot_legal.assessment_missing,
     }
-    facts.update(_authority_scope_fields(facts))
+    facts.update(_authority_scope_fields(facts, legal_assessment=None))
     return facts
 
 
 def _authority_scope_fields(
-    legal: dict[str, Any], extra_source_text: str = ""
+    legal: dict[str, Any],
+    *,
+    legal_assessment: LegalAssessmentRecord | None,
 ) -> dict[str, Any]:
-    """Return structured authority-scope fields derived from legal source text."""
-    scope = _classify_authority_scope(legal, extra_source_text=extra_source_text)
+    """Return structured authority-scope fields from release-validated labels."""
+    scope, status = _resolve_authority_scope(
+        legal,
+        legal_assessment=legal_assessment,
+    )
+    ownership_description = legal.get("ownership_description")
     return {
         "authority_scope": scope,
-        "authority_scope_summary": _authority_scope_summary(legal, scope),
+        "authority_scope_summary": authority_scope_summary(
+            scope,
+            ownership_description
+            if isinstance(ownership_description, str)
+            else None,
+            status=status,
+        ),
+        "authority_scope_status": status,
+        "authority_scope_validated": status == "release_validated"
+        and scope
+        in {
+            AUTHORITY_SCOPE_FULL_DIRECT,
+            AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY,
+            AUTHORITY_SCOPE_BLOCKED,
+        },
     }
 
 
-def _classify_authority_scope(
-    legal: dict[str, Any], extra_source_text: str = ""
-) -> str:
-    """Classify authority from limitation semantics, not from private-actor mentions."""
+def _resolve_authority_scope(
+    legal: dict[str, Any],
+    *,
+    legal_assessment: LegalAssessmentRecord | None,
+) -> tuple[str, str]:
+    """Resolve report scope from sidecar provenance plus structural guards.
+
+    Phrase/marker scanning is intentionally absent. Missing or uncertain labels
+    fail closed to qualified/unspecified wording.
+    """
     verdict = legal.get("verdict_category")
-    if verdict == "blocked":
-        return AUTHORITY_SCOPE_BLOCKED
-
-    source_text = " ".join(
-        part
-        for part in (_authority_scope_source_text(legal), extra_source_text)
-        if part.strip()
+    ownership = legal.get("ownership_category")
+    if legal_assessment is not None:
+        if legal_assessment.authority_scope_report_label:
+            return (
+                legal_assessment.authority_scope_report_label,
+                legal_assessment.authority_scope_status or "missing_sidecar",
+            )
+        return resolve_report_authority_scope(
+            verdict_category=verdict if isinstance(verdict, str) else None,
+            ownership_category=ownership if isinstance(ownership, str) else None,
+            selected_label=legal_assessment.authority_scope_selected_label,
+            label_accepted=bool(legal_assessment.authority_scope_selected_label),
+            confidence_passed=bool(
+                legal_assessment.authority_scope_confidence_passed
+            ),
+        )
+    return resolve_report_authority_scope(
+        verdict_category=verdict if isinstance(verdict, str) else None,
+        ownership_category=ownership if isinstance(ownership, str) else None,
+        selected_label=None,
+        label_accepted=False,
+        confidence_passed=False,
     )
-    ownership_enabled = legal.get("ownership_category") == "enabled"
-    if (
-        verdict == "enabled"
-        and ownership_enabled
-        and _source_text_contains_any(
-            source_text, _AUTHORITY_SCOPE_MUNICIPAL_LIMIT_MARKERS
-        )
-    ):
-        return AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY
-    if _source_text_contains_any(source_text, _AUTHORITY_SCOPE_QUALIFIED_MARKERS):
-        return AUTHORITY_SCOPE_QUALIFIED
-    if (
-        verdict == "enabled"
-        and ownership_enabled
-        and _source_text_contains_any(source_text, _AUTHORITY_SCOPE_FULL_DIRECT_MARKERS)
-    ):
-        return AUTHORITY_SCOPE_FULL_DIRECT
-    if verdict in {"enabled", "conditional"}:
-        return AUTHORITY_SCOPE_QUALIFIED
-    return AUTHORITY_SCOPE_UNSPECIFIED
-
-
-def _authority_scope_source_text(legal: dict[str, Any]) -> str:
-    """Join ownership, restriction, and justification text used for scope classification."""
-    return " ".join(
-        value
-        for value in (
-            legal.get("ownership_description"),
-            legal.get("restrictions_description"),
-            legal.get("legal_justification"),
-        )
-        if isinstance(value, str) and value.strip()
-    )
-
-
-def _source_text_contains_any(text: str, markers: tuple[str, ...]) -> bool:
-    """Return whether lowercase source text contains any classification marker."""
-    lowered = text.lower()
-    return any(marker in lowered for marker in markers)
-
-
-def _authority_scope_summary(legal: dict[str, Any], scope: str) -> str | None:
-    """Return a conservative reader-facing authority-scope sentence."""
-    if scope == AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY:
-        return (
-            "The legal review supports direct municipal authority over municipal "
-            "assets. Private or external assets require facilitation rather than "
-            "direct authority."
-        )
-    if scope == AUTHORITY_SCOPE_QUALIFIED:
-        return (
-            "The legal review finds that the city can pursue this action, but "
-            "the assessed asset scope is limited or conditional."
-        )
-    return legal.get("ownership_description")
 
 
 def _legal_delivery_facts(context: ReportContext) -> dict[str, Any] | None:
@@ -1623,6 +1563,8 @@ def _legal_delivery_facts(context: ReportContext) -> dict[str, Any] | None:
         "additional_approval": additional_approval,
         "authority_scope": scope,
         "authority_scope_summary": legal.get("authority_scope_summary"),
+        "authority_scope_status": legal.get("authority_scope_status"),
+        "authority_scope_validated": legal.get("authority_scope_validated"),
         "unresolved_checks": [
             "Whether permits or environmental review requirements apply has not been "
             "confirmed."
@@ -1645,6 +1587,14 @@ def _legal_limitations(context: ReportContext) -> list[str]:
     ]
     if context.legal_assessment is None:
         limitations.append("A legal review is not available for this action.")
+        return limitations
+    status = context.legal_assessment.authority_scope_status
+    if status and status != "release_validated":
+        limitations.append(
+            "Authority-scope classification is pending or uncertain for this "
+            "legal release; wording stays conservative until a matching "
+            "release-validated sidecar label is available."
+        )
     return limitations
 
 

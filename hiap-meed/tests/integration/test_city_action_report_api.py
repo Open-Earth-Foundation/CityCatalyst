@@ -308,6 +308,10 @@ class MixedScopeLegalDataApiClient:
                     "Municipality has explicit legal authority to act directly."
                 ),
                 legal_justification=_ICARE_0016_JUSTIFICATION,
+                authority_scope_selected_label="municipal_assets_only",
+                authority_scope_report_label="municipal_assets_only",
+                authority_scope_status="release_validated",
+                authority_scope_confidence_passed=True,
             )
         }
 

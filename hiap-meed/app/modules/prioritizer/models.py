@@ -1179,6 +1179,107 @@ class ActionLegalAssessmentS3CsvRow(BaseModel):
         return value
 
 
+AuthorityScopeSemanticLabel = Literal[
+    "full_direct",
+    "municipal_assets_only",
+    "qualified",
+    "unclassified",
+]
+AuthorityScopeReviewStatus = Literal[
+    "pending_human_review",
+    "human_accepted",
+    "human_rejected",
+]
+
+
+class AuthorityScopeSidecarRecordV1(BaseModel):
+    """One release-classified legal row inside an authority-scope-v1 sidecar."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    country_code: str = Field(min_length=2)
+    action_id: str = Field(min_length=1)
+    canonical_row_sha256: str = Field(min_length=64, max_length=64)
+    selected_label: AuthorityScopeSemanticLabel
+    probabilities: dict[AuthorityScopeSemanticLabel, float]
+    chosen_label_probability: float = Field(ge=0.0, le=1.0)
+    confidence: float = Field(ge=0.0, le=1.0)
+    confidence_threshold: float = Field(ge=0.0, le=1.0)
+    confidence_passed: bool
+    model_id: str = Field(min_length=1)
+    rubric_version: str = Field(min_length=1)
+    review_status: AuthorityScopeReviewStatus
+    classified_at_utc: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_probability_coverage(self) -> AuthorityScopeSidecarRecordV1:
+        """Reject incomplete probability maps or contradictory confidence fields."""
+        expected = {
+            "full_direct",
+            "municipal_assets_only",
+            "qualified",
+            "unclassified",
+        }
+        if set(self.probabilities) != expected:
+            raise ValueError(
+                "probabilities must include exactly the closed authority-scope labels"
+            )
+        if self.selected_label not in self.probabilities:
+            raise ValueError("selected_label missing from probabilities")
+        selected_probability = float(self.probabilities[self.selected_label])
+        if abs(selected_probability - self.chosen_label_probability) > 1e-9:
+            raise ValueError(
+                "chosen_label_probability must equal probabilities[selected_label]"
+            )
+        recomputed_passed = self.confidence >= self.confidence_threshold
+        if self.confidence_passed != recomputed_passed:
+            raise ValueError(
+                "confidence_passed must equal confidence >= confidence_threshold"
+            )
+        return self
+
+
+class AuthorityScopeSidecarV1(BaseModel):
+    """Versioned sidecar bound to one legal CSV release object."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    contract_version: Literal["authority-scope-v1"] = "authority-scope-v1"
+    rubric_version: str = Field(min_length=1)
+    model_id: str = Field(min_length=1)
+    confidence_threshold: float = Field(ge=0.0, le=1.0)
+    source_s3_bucket: str = Field(min_length=1)
+    source_s3_key: str = Field(min_length=1)
+    source_etag: str = Field(min_length=1)
+    source_last_modified: str | None = None
+    generated_at_utc: str = Field(min_length=1)
+    retention_keep_newest: int = Field(default=5, ge=1)
+    records: list[AuthorityScopeSidecarRecordV1] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_record_identity(self) -> AuthorityScopeSidecarV1:
+        """Reject duplicate action keys and mismatched sidecar metadata."""
+        seen: set[tuple[str, str]] = set()
+        for record in self.records:
+            key = (record.country_code.strip().upper(), record.action_id)
+            if key in seen:
+                raise ValueError(
+                    f"duplicate authority-scope record for {key[0]}/{key[1]}"
+                )
+            seen.add(key)
+            if record.model_id != self.model_id:
+                raise ValueError("record model_id must match sidecar model_id")
+            if record.rubric_version != self.rubric_version:
+                raise ValueError(
+                    "record rubric_version must match sidecar rubric_version"
+                )
+            if record.confidence_threshold != self.confidence_threshold:
+                raise ValueError(
+                    "record confidence_threshold must match sidecar threshold"
+                )
+        return self
+
+
 # ============================================================================
 # PRIORITIZATION RESPONSE MODELS (hiap-meed -> caller)
 # ----------------------------------------------------------------------------

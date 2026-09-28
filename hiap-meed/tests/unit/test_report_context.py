@@ -324,6 +324,10 @@ def test_snapshot_input_includes_defensible_ask_from_action_finance_and_legal() 
             ownership_description=(
                 "Municipality has explicit legal authority to act directly."
             ),
+            authority_scope_selected_label="full_direct",
+            authority_scope_report_label="full_direct",
+            authority_scope_status="release_validated",
+            authority_scope_confidence_passed=True,
         ),
         policy_score=None,
         mitigation_feasibility=None,
@@ -961,13 +965,54 @@ _PRIVATE_OPERATOR_JUSTIFICATION = (
 _LEGAL_MOCK_PATH = (
     Path(__file__).resolve().parents[2] / "data" / "mock" / "actions_legal_api_mock.json"
 )
+_AUTHORITY_SCOPE_CORPUS_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "data"
+    / "authority_scope"
+    / "evaluation_corpus_v1.json"
+)
+
+
+def _corpus_expected_report_scope(action_id: str) -> str:
+    """Return the reviewed expected report scope for one catalogue action."""
+    corpus = json.loads(_AUTHORITY_SCOPE_CORPUS_PATH.read_text(encoding="utf-8"))
+    for case in corpus["cases"]:
+        if case.get("action_id") == action_id and case.get("source") == "ssg_mock_catalogue":
+            return str(case["expected_report_scope"])
+    raise KeyError(action_id)
+
+
+def _with_release_validated_scope(
+    assessment: LegalAssessmentRecord,
+    *,
+    report_scope: str | None = None,
+) -> LegalAssessmentRecord:
+    """Attach a release-validated sidecar label used by report wording."""
+    scope = report_scope or _corpus_expected_report_scope(assessment.action_id)
+    if scope == "blocked":
+        return assessment.model_copy(
+            update={
+                "authority_scope_selected_label": None,
+                "authority_scope_report_label": "blocked",
+                "authority_scope_status": "release_validated",
+                "authority_scope_confidence_passed": True,
+            }
+        )
+    return assessment.model_copy(
+        update={
+            "authority_scope_selected_label": scope,
+            "authority_scope_report_label": scope,
+            "authority_scope_status": "release_validated",
+            "authority_scope_confidence_passed": True,
+        }
+    )
 
 
 def _legal_mock_assessment(action_id: str) -> LegalAssessmentRecord:
     """Load one real legal-catalogue row as an internal assessment record."""
     rows = json.loads(_LEGAL_MOCK_PATH.read_text(encoding="utf-8"))
     row = next(item for item in rows if item["srcActionId"] == action_id)
-    return LegalAssessmentRecord(
+    assessment = LegalAssessmentRecord(
         action_id=row["srcActionId"],
         country_code=row["countryCode"],
         gpc_sector=row.get("gpcSector"),
@@ -983,6 +1028,7 @@ def _legal_mock_assessment(action_id: str) -> LegalAssessmentRecord:
         restrictions_description_i18n=row.get("restrictionsDescriptionI18n") or {},
         legal_justification_i18n=row.get("legalJustificationI18n") or {},
     )
+    return _with_release_validated_scope(assessment)
 
 
 def _enabled_legal_report_context(
@@ -1091,6 +1137,10 @@ def _mixed_scope_report_context() -> ReportContext:
                 "Municipality has explicit legal authority to act directly."
             ),
             legal_justification=_ICARE_0016_JUSTIFICATION,
+            authority_scope_selected_label="municipal_assets_only",
+            authority_scope_report_label="municipal_assets_only",
+            authority_scope_status="release_validated",
+            authority_scope_confidence_passed=True,
         ),
         mitigation_feasibility=None,
         financial_feasibility=ActionFinancialFeasibilityScoreRecord(
@@ -1269,6 +1319,101 @@ def test_conditional_c40_0016_fixture_stays_qualified(language: str) -> None:
         "additional_approval"
     ]
     assert "conditions identified" in finance_legal["delivery_position"]
+
+
+def test_piotr_paraphrase_uses_sidecar_municipal_assets_only() -> None:
+    """Paraphrased municipal/private limits rely on the release label, not phrases."""
+    justification = (
+        "Municipality has explicit legal authority to act directly. It can install "
+        "solar thermal systems only in its own premises. For homes and businesses "
+        "it can only promote Ministry of Energy subsidies and cannot mandate owners."
+    )
+    chapters = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(
+            _enabled_legal_report_context(
+                legal_assessment=_with_release_validated_scope(
+                    LegalAssessmentRecord(
+                        action_id="adversarial_paraphrase_001",
+                        country_code="CL",
+                        verdict_category="enabled",
+                        ownership_category="enabled",
+                        restrictions_category="enabled",
+                        ownership_description=(
+                            "Municipality has explicit legal authority to act directly."
+                        ),
+                        legal_justification=justification,
+                    ),
+                    report_scope="municipal_assets_only",
+                )
+            )
+        )
+    }
+    legal_facts = chapters["legal_mandate_delivery"].facts["legal"]
+    finance_legal = chapters["financing_precedents_pathway"].facts["legal"]
+    assert legal_facts["authority_scope"] == "municipal_assets_only"
+    assert finance_legal["authority_scope"] == "municipal_assets_only"
+    assert "municipal assets" in chapters["snapshot"].facts["ask"]["legal_position"]
+
+
+def test_piotr_negation_uses_sidecar_full_direct() -> None:
+    """Negated third-party wording must not force municipal_assets_only without a label."""
+    justification = (
+        "Municipality has explicit legal authority to act directly. No legal "
+        "restrictions; no third-party authorization required. Public lighting is "
+        "an exclusive municipal function."
+    )
+    without_sidecar = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(
+            _enabled_legal_report_context(
+                ownership_description=(
+                    "Municipality has explicit legal authority to act directly."
+                ),
+                restrictions_description=(
+                    "No legal restrictions; no third-party authorization required."
+                ),
+                legal_justification=justification,
+            )
+        )
+    }
+    assert (
+        without_sidecar["legal_mandate_delivery"].facts["legal"]["authority_scope"]
+        == "qualified"
+    )
+
+    with_sidecar = {
+        chapter.key: chapter
+        for chapter in build_chapter_inputs(
+            _enabled_legal_report_context(
+                legal_assessment=_with_release_validated_scope(
+                    LegalAssessmentRecord(
+                        action_id="adversarial_negation_001",
+                        country_code="CL",
+                        verdict_category="enabled",
+                        ownership_category="enabled",
+                        restrictions_category="enabled",
+                        ownership_description=(
+                            "Municipality has explicit legal authority to act directly."
+                        ),
+                        restrictions_description=(
+                            "No legal restrictions; no third-party authorization "
+                            "required."
+                        ),
+                        legal_justification=justification,
+                    ),
+                    report_scope="full_direct",
+                )
+            )
+        )
+    }
+    legal_facts = with_sidecar["legal_mandate_delivery"].facts["legal"]
+    finance_legal = with_sidecar["financing_precedents_pathway"].facts["legal"]
+    assert legal_facts["authority_scope"] == "full_direct"
+    assert finance_legal["authority_scope"] == "full_direct"
+    assert with_sidecar["snapshot"].facts["ask"]["legal_position"] == (
+        "an action the city is legally empowered to lead directly"
+    )
 
 
 def test_snapshot_signals_include_row_level_source_refs() -> None:

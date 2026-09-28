@@ -67,6 +67,10 @@ HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE=api
 HIAP_MEED_TOP_N=20
 ACTIVITY_DATA_LEVEL_MAPPING=false
 OPENAI_API_KEY=
+# Release-job only. Do not inject into report-serving pods.
+# OPENROUTER_API_KEY=
+# HIAP_MEED_LEGAL_AUTHORITY_SCOPE_SIDECAR_PREFIX=
+# HIAP_MEED_LEGAL_AUTHORITY_SCOPE_SIDECAR_KEY=
 ```
 
 Variables:
@@ -99,6 +103,9 @@ Variables:
 - `HIAP_MEED_LEGAL_S3_BUCKET`: private S3 bucket for the legal classification CSV when `HIAP_MEED_LEGAL_DATA_SOURCE=s3`
 - `HIAP_MEED_LEGAL_S3_KEY`: private S3 object key for the legal classification CSV when `HIAP_MEED_LEGAL_DATA_SOURCE=s3`
 - `HIAP_MEED_LEGAL_S3_REGION`: optional explicit AWS region for the S3 client; leave blank to use the runtime AWS default region/provider chain
+- `HIAP_MEED_LEGAL_AUTHORITY_SCOPE_SIDECAR_PREFIX`: optional override for the authority-scope sidecar prefix. Default is the legal CSV parent directory plus `authority-scope/` (for the current release: `raw_data/cl_ssg/cl_ssg_legal_signals/release/v2/authority-scope/`)
+- `HIAP_MEED_LEGAL_AUTHORITY_SCOPE_SIDECAR_KEY`: optional exact sidecar object key; when unset, HIAP-MEED lists the prefix and uses the newest valid `authority-scope-v1-*.json` whose source ETag matches the CSV
+- `OPENROUTER_API_KEY`: required only by the release-time Jev authority-scope scripts (`generate_authority_scope_sidecar`, `evaluate_authority_scope_corpus --live`). Report-serving pods use `OPENAI_API_KEY` and must not receive this secret
 - `HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`: action catalog source (`api` or `mock`)
 - `HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE`: action policy scores input source (`api` or `mock`)
 - `HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`: mitigation feasibility scores input source (`api` or `mock`)
@@ -118,6 +125,11 @@ LLM-specific non-secret settings now live in `llm_config.yaml`, including:
 - `features.explanations_enabled`
 - `openai.timeout_seconds`
 - `openai.max_retries`
+- `jev.model_id` (pinned OpenRouter Decisions model, currently `typesafe/jev-1.13`)
+- `jev.confidence_threshold`
+- `jev.timeout_seconds`
+- `jev.max_retries`
+- `jev.retention_keep_newest` (S3 sidecar retention; default 5)
 
 When `MLFLOW_ENABLED=true`, the service best-effort logs request runs, direct request artifacts, and OpenAI traces to the configured MLflow server. MLflow initialization is lazy and happens only when a request enters an MLflow-backed run. If MLflow is down or unreachable, the API still completes normally and only emits warning logs. The MLflow client retries initialization on later requests after a fixed 60-second cooldown so transient failures do not disable logging for the lifetime of the worker.
 
@@ -146,6 +158,20 @@ MLflow usage modes:
 - Standard default: keep `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev` and write traces/artifacts to the shared hosted MLflow for all environments.
 - Fully local fallback: run `docker compose up --build` and override `MLFLOW_TRACKING_URI=http://mlflow:5000`.
 - Laptop + Kubernetes fallback: port-forward MLflow locally and override `MLFLOW_TRACKING_URI=http://localhost:5000`.
+
+### Legal authority-scope sidecar (release-time)
+
+Legal `authority_scope` for output-plan reports comes from a versioned S3 sidecar published beside the legal CSV, not from phrase matching and not from a per-report model call.
+
+- Owner: legal/SSG data release process (same controlled location as `HIAP_MEED_LEGAL_S3_KEY`)
+- Default prefix: `raw_data/cl_ssg/cl_ssg_legal_signals/release/v2/authority-scope/`
+- Object name pattern: `authority-scope-v1-YYYYMMDDTHHMMSSZ.json`
+- Report pods: `s3:GetObject` + `s3:ListBucket` on that prefix only; never write; never need `OPENROUTER_API_KEY`
+- Release job: may `PutObject` a new sidecar only when every record is `human_accepted`, the release covers every non-blocked CSV row, and source ETag is present; after read-back validation it may `DeleteObject` only older sidecars under that exact prefix while retaining the five newest. It must never delete the legal CSV or objects outside the prefix
+- Classification: generate with `uv run python -m app.scripts.generate_authority_scope_sidecar --output ...` using `OPENROUTER_API_KEY` and pinned Jev
+- Publish: after every record is marked `human_accepted`, publish the *same* file with `--publish --sidecar ...` (no second Jev call)
+- Evaluation: `uv run python -m app.scripts.evaluate_authority_scope_corpus` (offline) or `--live` (credentialed)
+- When a matching sidecar is missing, stale, pending/rejected, low-confidence, missing ETag, or structurally conflicting, reports use conservative `qualified`/`unspecified` wording and expose `authority_scope_status`
 
 ### 2. Install dependencies
 
@@ -355,7 +381,7 @@ The endpoint validates that the requested city and action exist in the supplied 
 
 The backend uses the supplied prioritization snapshot as the ranking basis and refetches additional city/action/policy/legal/feasibility data where the prioritize response does not carry enough detail for report writing. It fetches a broader finance catalogue and screens up to five active candidates by country, sector, municipal eligibility, climate relevance, municipal application route, and compatibility with the selected action's finance route; the upstream opportunities catalogue does not currently provide action-specific matching, so the report labels these as opportunities to assess. The action's financial-feasibility sector is required for this lookup; when it is missing, the backend skips the opportunities request and records a data gap instead of returning cross-sector programmes. Closed programmes are excluded from the current list, but up to five are retained in a separate monitoring list when the catalogue marks them as annual, periodic, recurring, or sporadic. Expired, cancelled, and non-recurring closed entries are omitted. Comparable projects are filtered by the selected `actionId` and capped at five. Financial feasibility scores, opportunities, and projects each use a dedicated upstream service and an independent failure boundary. A missing or unavailable projects response therefore produces an empty projects list and a project-specific data gap without discarding successfully fetched opportunities, and the inverse applies when only the opportunities lookup fails. A report request still produces exactly one action plan; multiple plans should be requested as separate calls so each selected action gets isolated LLM context.
 
-The Snapshot chapter starts with a prominent `**The ask:**` line. The backend derives that line from supplied action pathway, financial-feasibility, and legal-assessment facts so the wording stays defensible: for example, technical-assistance wording is used only when the finance route supports it, and unrestricted direct municipal-leadership wording is used only when the legal facts support `full_direct` authority.
+The Snapshot chapter starts with a prominent `**The ask:**` line. The backend derives that line from supplied action pathway, financial-feasibility, and legal-assessment facts so the wording stays defensible: for example, technical-assistance wording is used only when the finance route supports it, and unrestricted direct municipal-leadership wording is used only when a release-validated legal sidecar label supports `full_direct` authority. Missing, stale, low-confidence, or structurally conflicting authority-scope labels stay conservative (`qualified` / `unspecified`) and never fall back to English/Spanish phrase matching.
 
 The reader-facing Markdown follows the report template and is written as a standalone report for non-technical municipal users. The eight canonical English chapters are generated concurrently from isolated chapter inputs. After all English chapters pass schema, source-reference, and language validation, one structured translation call translates the complete report into every additional requested language. The translation stage must preserve chapter order, facts, qualifications, Markdown structure, URLs, and source references while applying deterministic recurring terminology from `app/modules/prioritizer/translations.yaml`. URLs in chapter Markdown and limitations are replaced with chapter-specific placeholders before the LLM call and restored afterward, so URL destinations are not model-generated. Translation output that still fails validation after one internal retry returns HTTP `502` with `error_code=report_translation_validation_failed` and `retryable=false`; transient provider connectivity, rate-limit, or server failures return `error_code=report_translation_provider_unavailable`, `retryable=true`, and `Retry-After: 5`. The response `language` list contains canonical `en` first followed by the caller's deduplicated non-English languages, and response validation rejects incomplete language coverage. Snapshot uses a six-row signal table; City Fit uses the dedicated local-fit assessment, groups repeated uses of the same city indicator into one row, separates supporting and limiting conditions, adds a mixed-effects table only when an indicator has both contribution signs, retains source units, and omits indicators without a measured city value or non-neutral contribution; Policy Backing explains how the displayed excerpts are ordered and lists document, page, signal, and excerpt; Legal Mandate separates municipal and external roles and names the lead; Financing uses finance-specific evidence plus reader-ready legal delivery facts, and distinguishes current programmes, recurring programmes to monitor, and action-matched project precedents; and Where The Information Comes From separates public source references, rounded analyst figures, and plain-language data gaps. Official programme, document, agency, law, legal-citation, and place names remain in their source form. Report prose must not narrate backend preparation or describe information as supplied to a model. Missing substantive evidence is never filled from model knowledge.
 

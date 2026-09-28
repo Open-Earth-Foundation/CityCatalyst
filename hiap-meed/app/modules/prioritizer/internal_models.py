@@ -159,6 +159,12 @@ class LegalAssessmentRecord(BaseModel):
     ownership_description_i18n: dict[str, str] = Field(default_factory=dict)
     restrictions_description_i18n: dict[str, str] = Field(default_factory=dict)
     legal_justification_i18n: dict[str, str] = Field(default_factory=dict)
+    authority_scope_selected_label: str | None = None
+    authority_scope_report_label: str | None = None
+    authority_scope_status: str | None = None
+    authority_scope_confidence_passed: bool | None = None
+    authority_scope_canonical_row_sha256: str | None = None
+    authority_scope_provenance: dict[str, Any] = Field(default_factory=dict)
     raw: dict[str, Any] = Field(default_factory=dict)
     source_metadata: dict[str, Any] = Field(default_factory=dict)
 

@@ -29,10 +29,10 @@ The proposal adds **only a new ingestion path**:
 4. Review: funder, programme and application template, with where each value came from
 5. Added and selected through the existing application-context save; Context cards unchanged
 6. By-hand path and its validation
-7. Mapping of each reviewed field to an existing column, the pipeline, and four new endpoints
+7. Mapping of each reviewed field to an existing column, the pipeline, and five new endpoints
 
-## Open decisions
+## Defaults taken in the implementation (can be revisited)
 
-- `funders` has no city or owner column, so added funders join the shared catalogue unless we add scoping.
-- What happens when the document has no application template (enter chapters by hand, block, or use a generic template).
-- Whether editing an added funder later is in scope.
+- Added funders join the shared catalogue: `funders` has no city or owner column.
+- A document without an application form still needs at least one chapter, which the user types in the review step.
+- Editing an added funder later is out of scope for CC-870.

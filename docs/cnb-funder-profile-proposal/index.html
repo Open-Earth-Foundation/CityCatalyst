@@ -170,7 +170,7 @@
   <nav class="toc">
     <a href="#f1">1 · Entry point</a><a href="#f2">2 · Choose how</a><a href="#f3">3 · Reading the document</a>
     <a href="#f4">4 · Review before adding</a><a href="#f5">5 · Added and selected</a><a href="#f6">6 · By hand</a>
-    <a href="#map">Data: existing columns only</a><a href="#pipe">Ingestion pipeline</a><a href="#open">Open decisions</a>
+    <a href="#map">Data: existing columns only</a><a href="#pipe">Ingestion pipeline</a><a href="#open">Defaults</a>
   </nav>
 </header>
 
@@ -342,7 +342,7 @@
     </div>
     <div class="d-foot">
       <div class="alert info" style="margin-bottom:12px;font-size:13px">Added funders appear in the funder list with their programme and template, like every other funder.</div>
-      <div class="foot-row"><div class="who"><b>Green Cities Foundation</b><span class="lbl-sm">Proposal form · Call 2026 · 5 chapters</span></div><span class="btn link">Discard</span><span class="btn">Back</span><span class="btn solid">Add funder and use it</span></div>
+      <div class="foot-row"><div class="who"><b>Green Cities Foundation</b><span class="lbl-sm">Proposal form · Call 2026 · 5 chapters</span></div><span class="btn link">Discard</span><span class="btn">Back</span><span class="btn solid">Add funder</span></div>
     </div>
   </div>
 </section>
@@ -351,7 +351,7 @@
 <section class="frame" id="f5">
   <div class="frame-label">Frame 5</div>
   <h2>Added: it is now an ordinary catalogue funder <span class="reuse">no new display code</span></h2>
-  <p class="frame-note">"Add funder and use it" writes the catalogue rows and then calls the existing <code>PATCH /application-context</code> with the new funder and programme. That gives the same draft warning, 409 handling and "Save and go to drafting" behaviour as today. The dialog shows the new funder through the unchanged <code>FunderProfile</code> view, and the Context cards update as for any other funder. The only extra is a one-line "Added from …" note.</p>
+  <p class="frame-note">"Add funder" writes the catalogue rows and selects the new funder and programme in the dialog. The user then saves through the existing <code>PATCH /application-context</code>, with the same draft warning, 409 handling and "Save and go to drafting" behaviour as today. The dialog shows the new funder through the unchanged <code>FunderProfile</code> view, and the Context cards update as for any other funder. The only extra is a one-line "Added from …" note.</p>
   <div class="dialog" style="margin-bottom:20px">
     <div class="d-head"><h3>Choose funding for this concept note</h3><p>Browse funders, compare their programmes and preview the application template before saving.</p><svg class="i d-close"><use href="#x"/></svg></div>
     <div class="d-body" style="min-height:0">
@@ -394,7 +394,7 @@
       <div class="field"><label>Programme name * <span class="badge b-pos"><i></i>Entered</span><span class="col">funding_opportunities.name</span></label><div class="ctl">Resilient Cities 2027</div></div>
       <div class="field"><label>Template name * <span class="col">funder_templates.template_name</span></label><div class="ctl" style="border-color:var(--negative)"></div><div style="color:var(--negative);font-size:12px;margin-top:4px">Add a template name so drafting knows which chapters to write.</div></div>
     </div>
-    <div class="foot-row" style="border-top:1px solid var(--border-neutral);padding-top:14px"><div class="who"></div><span class="btn"><svg class="i" style="width:13px;height:13px"><use href="#upload"/></svg>Attach a document</span><span class="btn">Back</span><span class="btn solid dis">Add funder and use it</span></div>
+    <div class="foot-row" style="border-top:1px solid var(--border-neutral);padding-top:14px"><div class="who"></div><span class="btn"><svg class="i" style="width:13px;height:13px"><use href="#upload"/></svg>Attach a document</span><span class="btn">Back</span><span class="btn solid dis">Add funder</span></div>
   </div></div>
 </section>
 
@@ -437,6 +437,7 @@
         <tr><td><code>POST …/{runId}/funder-imports</code> <code>{uploadId}</code></td><td><span class="new">new</span> starts extraction</td></tr>
         <tr><td><code>GET …/{runId}/funder-imports/current</code></td><td><span class="new">new</span> status + bundle when ready</td></tr>
         <tr><td><code>POST …/{runId}/funder-imports/current/retry</code></td><td><span class="new">new</span></td></tr>
+        <tr><td><code>DELETE …/{runId}/funder-imports/current</code></td><td><span class="new">new</span> discard the pending import</td></tr>
         <tr><td><code>POST …/{runId}/funders</code> <code>{bundle}</code></td><td><span class="new">new</span> writes rows (upload or by-hand)</td></tr>
         <tr><td><code>POST …/uploads</code>, <code>GET/PATCH …/application-context</code>, <code>GET …/funding-catalogue</code></td><td><span class="reuse">unchanged</span></td></tr>
       </table>
@@ -446,8 +447,8 @@
 </section>
 
 <section class="frame" id="open">
-  <div class="frame-label">Open decisions</div>
-  <h2>Need an answer before implementation</h2>
+  <div class="frame-label">Defaults</div>
+  <h2>Taken in the implementation (can be revisited)</h2>
   <div class="panel">
     <ol>
       <li><b>Who sees an added funder?</b> <code>funders</code> has no city or owner column, so without a schema change an added funder joins the <b>shared catalogue</b> for every city. Is that acceptable for the pilot, or do we need scoping (which would mean one column after all)?</li>

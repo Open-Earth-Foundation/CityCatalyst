@@ -11,7 +11,9 @@ from contextlib import aclosing, suppress
 from typing import Any, AsyncGenerator, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID, uuid4
 
-from agents import RunConfig, Runner, gen_trace_id
+import httpx
+from agents import ModelSettings, RunConfig, Runner, gen_trace_id
+from agents.retry import ModelRetrySettings, RetryPolicyContext
 from app.middleware import get_request_id
 from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.requests import MessageCreateRequest
@@ -385,7 +387,14 @@ class StreamingHandler:
 
         except Exception as exc:
             if self.workflow_context.concept_note_run_id:
-                logger.warning("CNB stream failed thread_id=%s", self.thread_identifier)
+                # Preserve diagnostic categories without logging source text or provider bodies.
+                logger.warning(
+                    "CNB stream failed thread_id=%s request_id=%s error_type=%s status_code=%s",
+                    self.thread_identifier,
+                    req_id,
+                    type(exc).__name__,
+                    getattr(exc, "status_code", None),
+                )
             else:
                 logger.exception("Unhandled exception in Agents SDK streaming")
             self.streaming_error = True
@@ -394,6 +403,8 @@ class StreamingHandler:
                 "errors/stream_error.json",
                 {
                     "type": type(exc).__name__,
+                    "request_id": req_id,
+                    "status_code": getattr(exc, "status_code", None),
                     "message": (
                         "CNB stream failed"
                         if self.workflow_context.concept_note_run_id
@@ -971,8 +982,21 @@ class StreamingHandler:
             trace_metadata["feature_flag"] = "CONCEPT_NOTE_BUILDER"
             trace_metadata["concept_note_run_id"] = str(concept_note_run_id)
 
-        # Disable tracing from central settings without changing stream behavior.
+        # Keep body recovery separate from the provider's pre-header retry budget.
         return RunConfig(
+            model_settings=ModelSettings(
+                retry=ModelRetrySettings(
+                    max_retries=settings.llm.streaming.retry_attempts,
+                    backoff={
+                        "initial_delay": settings.llm.streaming.retry_delay_ms / 1000,
+                        "max_delay": settings.llm.streaming.retry_delay_ms / 1000,
+                        "jitter": True,
+                    },
+                    policy=self._retry_stream_transport,
+                )
+                if settings.llm.streaming.retry_attempts
+                else None,
+            ),
             workflow_name=self.workflow_context.trace_workflow_name,
             trace_id=gen_trace_id(),
             group_id=self.thread_identifier,
@@ -981,6 +1005,28 @@ class StreamingHandler:
             or not settings.langsmith_tracing_enabled,
             trace_include_sensitive_data=not bool(concept_note_run_id),
         )
+
+    def _retry_stream_transport(self, context: RetryPolicyContext) -> bool:
+        """Recover early body disconnects inside the SDK's per-model replay guard.
+
+        The provider already retries connection/status failures before headers;
+        those arrive as OpenAI exceptions and must not multiply that budget here.
+        The runner vetoes replay after output, tool events, or cancellation and
+        retries only the current model call, never a completed tool invocation.
+        """
+        retry = context.stream and isinstance(
+            context.error,
+            (httpx.ReadTimeout, httpx.ReadError, httpx.RemoteProtocolError),
+        )
+        if retry:
+            logger.warning(
+                "Retrying chat stream transport thread_id=%s request_id=%s retry=%s error_type=%s",
+                self.thread_identifier,
+                self._request_id(),
+                context.attempt,
+                type(context.error).__name__,
+            )
+        return retry
 
     async def _fallback_stream(
         self, agent: Any, payload: MessageCreateRequest

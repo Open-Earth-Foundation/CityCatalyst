@@ -21,8 +21,20 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const MAX_TRANSLATION_ATTEMPTS = 3;
+
 function stripQuotes(s) {
   return s.replace(/^"(.*)"$/, "$1");
+}
+
+// i18next only interpolates {{name}} and <n></n> tags whose names match the
+// code, so a translated placeholder name renders as literal text.
+function markupSignature(s) {
+  const placeholders = (s.match(/\{\{[^}]+\}\}/g) || []).map((p) =>
+    p.replace(/\s/g, ""),
+  );
+  const tags = s.match(/<\/?\d+\s*\/?>/g) || [];
+  return [...placeholders, ...tags].sort().join("|");
 }
 
 async function translateString(
@@ -34,7 +46,7 @@ async function translateString(
   const messages = [
     {
       role: "system",
-      content: `You are a climate tech translator concentrating on ${sourceLanguage}-${targetLanguage} translations. You return only the translated strings, no explanations or excuses. If you cannot translate the text, you return an empty string.`,
+      content: `You are a climate tech translator concentrating on ${sourceLanguage}-${targetLanguage} translations. You return only the translated strings, no explanations or excuses. Copy every {{placeholder}} and numbered tag such as <1></1> exactly as written, never translating the names inside them. If you cannot translate the text, you return an empty string.`,
     },
     {
       role: "user",
@@ -154,15 +166,34 @@ async function synchData(
   for (const key in sourceData) {
     if (typeof sourceData[key] === "string") {
       if (!(key in targetData) || typeof targetData[key] !== "string") {
-        const result = await translateString(
-          sourceLanguage,
-          targetLanguage,
-          key,
-          sourceData[key],
-        );
-        targetData[key] = result.result;
-        totalInputTokens += result.inputTokens;
-        totalQueries += 1;
+        const expectedMarkup = markupSignature(sourceData[key]);
+        let translated = null;
+        for (
+          let attempt = 1;
+          attempt <= MAX_TRANSLATION_ATTEMPTS && translated === null;
+          attempt++
+        ) {
+          const result = await translateString(
+            sourceLanguage,
+            targetLanguage,
+            key,
+            sourceData[key],
+          );
+          totalInputTokens += result.inputTokens;
+          totalQueries += 1;
+          if (markupSignature(result.result) === expectedMarkup) {
+            translated = result.result;
+          }
+        }
+        if (translated === null) {
+          // Leave the key missing so the app falls back to English and the
+          // next run retries, instead of saving a broken placeholder.
+          console.error(
+            `Skipping ${targetLanguage} key ${key}: placeholders or tags changed in translation`,
+          );
+          continue;
+        }
+        targetData[key] = translated;
         console.log(
           "Tokens from translation",
           result.inputTokens,

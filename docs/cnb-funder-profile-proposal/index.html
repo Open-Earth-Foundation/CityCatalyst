@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CC-870 · Create funder profile via form or document upload · Mockup + data model</title>
+<style>
+  :root{
+    --brand:#2351DC; --brand-50:#EEF2FF; --brand-100:#DDE4FF;
+    --ink:#1F2937; --ink-2:#4B5563; --ink-3:#6B7280;
+    --line:#E5E7EB; --line-2:#D1D5DB; --bg:#F7F8FB; --card:#FFFFFF;
+    --ok:#15803D; --ok-bg:#DCFCE7; --warn:#B45309; --warn-bg:#FEF3C7;
+    --err:#B91C1C; --err-bg:#FEE2E2; --info:#1D4ED8; --info-bg:#DBEAFE;
+    --violet:#6D28D9; --violet-bg:#EDE9FE;
+    --radius:12px; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.5 -apple-system,"Segoe UI",Roboto,Inter,sans-serif;color:var(--ink);background:var(--bg)}
+  header.page{background:var(--card);border-bottom:1px solid var(--line);padding:28px 40px}
+  header.page h1{margin:0 0 6px;font-size:24px}
+  header.page p{margin:0;color:var(--ink-2)}
+  nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  nav.toc a{font-size:13px;color:var(--brand);background:var(--brand-50);border:1px solid var(--brand-100);padding:4px 10px;border-radius:999px;text-decoration:none}
+  main{max-width:1180px;margin:0 auto;padding:32px 40px 80px}
+  section.step{margin:0 0 56px}
+  .step-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+  .step-num{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+  .step-head h2{margin:0;font-size:20px}
+  .step-note{color:var(--ink-2);margin:0 0 18px;max-width:820px}
+  .step-note b{color:var(--ink)}
+  .frame{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 1px 2px rgba(16,24,40,.05);overflow:hidden}
+  .frame + .frame{margin-top:20px}
+  .frame-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid var(--line);background:#FAFBFF;font-size:12px;color:var(--ink-3)}
+  .frame-bar b{color:var(--ink-2);font-weight:600}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media (max-width:900px){.grid-2{grid-template-columns:1fr}}
+
+  /* workspace card (existing look) */
+  .workspace{padding:22px;display:grid;grid-template-columns:260px 1fr;gap:22px}
+  .side{display:flex;flex-direction:column;gap:12px}
+  .card{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--card)}
+  .card.empty{border-style:dashed;text-align:center;color:var(--ink-3)}
+  .card h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+  .card .title{font-weight:600;color:var(--ink)}
+  .muted{color:var(--ink-3);font-size:13px}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:8px;padding:9px 14px;font-weight:600;font-size:14px;border:1px solid transparent;cursor:default;white-space:nowrap}
+  .btn.primary{background:var(--brand);color:#fff}
+  .btn.secondary{background:#fff;color:var(--brand);border-color:var(--brand)}
+  .btn.ghost{background:transparent;color:var(--ink-2);border-color:var(--line-2)}
+  .btn.sm{padding:6px 10px;font-size:13px}
+  .btn.danger{background:var(--err);color:#fff}
+  .btn.disabled{opacity:.45}
+
+  /* dialog */
+  .dialog{padding:0}
+  .dialog-head{padding:20px 24px 14px;border-bottom:1px solid var(--line)}
+  .dialog-head h3{margin:0 0 4px;font-size:18px}
+  .dialog-head p{margin:0;color:var(--ink-2);font-size:14px}
+  .dialog-body{padding:20px 24px}
+  .dialog-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 24px;border-top:1px solid var(--line);background:#FAFAFB}
+  .dialog-foot .right{display:flex;gap:10px}
+  .search{border:1px solid var(--line-2);border-radius:8px;padding:9px 12px;color:var(--ink-3);background:#fff}
+  .list{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:12px}
+  .list .row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+  .list .row:last-child{border-bottom:0}
+  .list .row.sel{background:var(--brand-50)}
+  .list .row .n{font-weight:600}
+  .list .row .m{font-size:12px;color:var(--ink-3)}
+  .divider{display:flex;align-items:center;gap:12px;color:var(--ink-3);font-size:12px;margin:18px 0 12px;text-transform:uppercase;letter-spacing:.06em}
+  .divider:before,.divider:after{content:"";flex:1;height:1px;background:var(--line)}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .choice{border:1px solid var(--line-2);border-radius:10px;padding:16px;display:flex;gap:12px;align-items:flex-start}
+  .choice.rec{border-color:var(--brand);background:var(--brand-50)}
+  .choice .ico{width:36px;height:36px;border-radius:8px;background:var(--brand-100);display:grid;place-items:center;color:var(--brand);font-weight:700;flex:none}
+  .choice .t{font-weight:600}
+  .choice .d{font-size:13px;color:var(--ink-2);margin-top:2px}
+
+  /* form */
+  .form{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
+  .form .full{grid-column:1/-1}
+  label.f{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:4px}
+  label.f .req{color:var(--err)}
+  label.f .opt{color:var(--ink-3);font-weight:400}
+  .in{border:1px solid var(--line-2);border-radius:8px;padding:9px 12px;background:#fff;min-height:40px;color:var(--ink)}
+  .in.ph{color:var(--ink-3)}
+  .in.ta{min-height:84px}
+  .in.err{border-color:var(--err)}
+  .help{font-size:12px;color:var(--ink-3);margin-top:4px}
+  .help.err{color:var(--err)}
+  .tags{display:flex;flex-wrap:wrap;gap:6px}
+  .tag{background:var(--brand-50);border:1px solid var(--brand-100);color:var(--brand);border-radius:999px;padding:2px 10px;font-size:13px}
+  .tag.plain{background:#F3F4F6;border-color:var(--line);color:var(--ink-2)}
+  .inline{display:flex;gap:8px}
+  .inline .in{flex:1}
+  .inline .in.cur{flex:0 0 90px}
+
+  /* badges */
+  .badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;line-height:1.5;white-space:nowrap}
+  .badge.entered{background:var(--info-bg);color:var(--info)}
+  .badge.extracted{background:var(--violet-bg);color:var(--violet)}
+  .badge.edited{background:var(--warn-bg);color:var(--warn)}
+  .badge.missing{background:#F3F4F6;color:var(--ink-3)}
+  .badge.ok{background:var(--ok-bg);color:var(--ok)}
+  .badge.err{background:var(--err-bg);color:var(--err)}
+  .badge.proc{background:var(--brand-50);color:var(--brand)}
+  .dot{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+
+  /* upload */
+  .drop{border:2px dashed var(--line-2);border-radius:12px;padding:34px;text-align:center;color:var(--ink-2);background:#FAFAFB}
+  .drop b{color:var(--brand)}
+  .file{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:12px}
+  .file .fi{width:38px;height:44px;border-radius:6px;background:#F3F4F6;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ink-2);flex:none}
+  .file .fn{font-weight:600}
+  .file .fm{font-size:12px;color:var(--ink-3)}
+  .file .sp{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .steps{display:flex;gap:0;margin-top:16px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .steps .s{flex:1;padding:12px 14px;border-right:1px solid var(--line);font-size:13px}
+  .steps .s:last-child{border-right:0}
+  .steps .s .l{font-weight:600;display:flex;align-items:center;gap:8px}
+  .steps .s .h{color:var(--ink-3);margin-top:2px;font-size:12px}
+  .steps .s.done{background:var(--ok-bg)}
+  .steps .s.now{background:var(--brand-50)}
+  .steps .s.fail{background:var(--err-bg)}
+  .bar{height:6px;background:#EEF0F4;border-radius:999px;overflow:hidden;margin-top:12px}
+  .bar i{display:block;height:100%;width:62%;background:var(--brand)}
+  .alert{border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;margin-top:14px}
+  .alert.err{background:var(--err-bg);color:#7F1D1D;border:1px solid #FCA5A5}
+  .alert.warn{background:var(--warn-bg);color:#78350F;border:1px solid #FCD34D}
+  .alert.info{background:var(--info-bg);color:#1E3A8A;border:1px solid #93C5FD}
+  .alert b{display:block}
+  .alert .acts{margin-left:auto;display:flex;gap:8px;flex:none}
+
+  /* review table */
+  .review{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .review th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:10px 12px;background:#FAFBFF;border-bottom:1px solid var(--line)}
+  .review td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+  .review tr:last-child td{border-bottom:0}
+  .review .k{font-weight:600;white-space:nowrap}
+  .review .k small{display:block;color:var(--ink-3);font-weight:400}
+  .review .v .in{min-height:36px;padding:7px 10px}
+  .review .ev{font-size:12px;color:var(--ink-2);border-left:3px solid var(--violet-bg);padding-left:8px;margin-top:6px;font-style:italic}
+  .review .ev span{font-style:normal;color:var(--ink-3)}
+  .review .conf{font-size:12px;color:var(--ink-3)}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 0;font-size:13px;color:var(--ink-2);align-items:center}
+  .summary-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+
+  /* saved profile */
+  .kv{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:14px}
+  .kv .k{color:var(--ink-3)}
+  .kv .v{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+  /* data model */
+  pre{background:#0F172A;color:#E2E8F0;border-radius:12px;padding:18px 20px;overflow:auto;font:13px/1.55 var(--mono);margin:0}
+  pre .c{color:#94A3B8}
+  pre .k{color:#7DD3FC}
+  pre .s{color:#FDE68A}
+  pre .t{color:#C4B5FD}
+  .dm-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media (max-width:1000px){.dm-grid{grid-template-columns:1fr}}
+  .dm h3{margin:0 0 8px;font-size:16px}
+  .dm p{margin:0 0 10px;color:var(--ink-2);font-size:14px}
+  table.api{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  table.api th,table.api td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.api th{background:#FAFBFF;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
+  table.api tr:last-child td{border-bottom:0}
+  code{font:12.5px var(--mono);background:#F3F4F6;padding:1px 6px;border-radius:5px}
+  .er{display:flex;gap:14px;flex-wrap:wrap}
+  .ent{border:1px solid var(--line);border-radius:10px;background:#fff;min-width:250px;flex:1}
+  .ent .eh{padding:8px 12px;font-weight:700;border-bottom:1px solid var(--line);background:#FAFBFF;display:flex;justify-content:space-between;align-items:center}
+  .ent .eh small{font-weight:500;color:var(--ink-3)}
+  .ent ul{list-style:none;margin:0;padding:8px 12px;font:12.5px/1.7 var(--mono)}
+  .ent li.new{color:var(--brand)}
+  .ent li.pk{font-weight:700}
+  .ent li.fk:after{content:" →";color:var(--ink-3)}
+  .ent.new .eh{background:var(--brand-50);border-color:var(--brand-100)}
+  .ent.new{border-color:var(--brand-100)}
+  .footer{color:var(--ink-3);font-size:13px;margin-top:40px}
+</style>
+</head>
+<body>
+<header class="page">
+  <h1>CC-870 · Create a funder profile through a form or document upload</h1>
+  <p>Concept Note Builder (CNB). Click-through mockup of each step plus the proposed data model. Selecting an existing funder already exists in dev and is shown only as the entry point.</p>
+  <nav class="toc">
+    <a href="#s0">0 · Entry point (existing)</a>
+    <a href="#s1">1 · Choose method</a>
+    <a href="#s2a">2A · Form</a>
+    <a href="#s2b">2B · Upload &amp; processing</a>
+    <a href="#s3">3 · Review extracted profile</a>
+    <a href="#s4">4 · Saved on the run</a>
+    <a href="#dm">Data model</a>
+    <a href="#api">API</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ───────────────────────── STEP 0 ───────────────────────── -->
+<section class="step" id="s0">
+  <div class="step-head"><span class="step-num">Step 0</span><h2>Entry point inside the existing funding dialog</h2></div>
+  <p class="step-note">Selecting an existing funder is already in dev. The only change here is a <b>“Create a new funder”</b> section at the bottom of that dialog, so the empty card leads to creation as well.</p>
+
+  <div class="frame">
+    <div class="frame-bar"><b>Workspace · Context tab</b><span>state: no funder yet</span></div>
+    <div class="workspace">
+      <div class="side">
+        <div class="card empty">
+          <h4>Funder</h4>
+          <div class="title" style="color:var(--ink-2)">No funder selected</div>
+          <div class="muted" style="margin:6px 0 12px">Needed before drafting can start.</div>
+          <span class="btn primary sm">Select or create funder</span>
+        </div>
+        <div class="card empty"><h4>Programme</h4><div class="muted">Pick a funder first</div></div>
+        <div class="card empty"><h4>Template</h4><div class="muted">Pick a programme first</div></div>
+      </div>
+      <div class="frame dialog" style="box-shadow:0 10px 30px rgba(16,24,40,.12)">
+        <div class="dialog-head">
+          <h3>Choose a funder</h3>
+          <p>Pick a funder from the catalogue or create a new profile for this city.</p>
+        </div>
+        <div class="dialog-body">
+          <div class="search">🔍 Search funders by name, country or type…</div>
+          <div class="list">
+            <div class="row"><div><div class="n">Green Climate Fund</div><div class="m">Multilateral · Global · 3 programmes</div></div><span class="btn ghost sm">Select</span></div>
+            <div class="row"><div><div class="n">Fundo Clima (BNDES)</div><div class="m">National development bank · Brazil · 2 programmes</div></div><span class="btn ghost sm">Select</span></div>
+            <div class="row"><div><div class="n">C40 Cities Finance Facility</div><div class="m">City network · Global · 1 programme</div></div><span class="btn ghost sm">Select</span></div>
+          </div>
+          <div class="divider">or</div>
+          <div class="choices">
+            <div class="choice"><div class="ico">✎</div><div><div class="t">Fill out a form</div><div class="d">Enter name, priorities, eligibility, geography and typical award by hand.</div></div></div>
+            <div class="choice rec"><div class="ico">⤒</div><div><div class="t">Upload a funder document</div><div class="d">PDF, DOCX or a web page export. We extract a draft profile you review before saving.</div></div></div>
+          </div>
+        </div>
+        <div class="dialog-foot"><span class="muted">New funders are visible to this city only.</span><div class="right"><span class="btn ghost">Cancel</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── STEP 1 ───────────────────────── -->
+<section class="step" id="s1">
+  <div class="step-head"><span class="step-num">Step 1</span><h2>Create funder · pick a method</h2></div>
+  <p class="step-note">A dedicated “Create funder” dialog with a two-tab header. Both tabs converge on the same review form in step 3, so the user can start with a document and finish by hand, or start by hand and attach a document later.</p>
+
+  <div class="frame dialog">
+    <div class="dialog-head">
+      <h3>Create a funder profile</h3>
+      <p>Step 1 of 3 · Choose how you want to start</p>
+    </div>
+    <div class="dialog-body">
+      <div class="choices">
+        <div class="choice rec"><div class="ico">⤒</div><div><div class="t">From a document <span class="badge extracted">Recommended</span></div><div class="d">Upload a call for proposals, funder brochure or programme guide. Extracted fields are marked and stay editable.</div></div></div>
+        <div class="choice"><div class="ico">✎</div><div><div class="t">From scratch</div><div class="d">Type the profile yourself. Best when you only have notes from a meeting or an email.</div></div></div>
+      </div>
+      <div class="alert info" style="margin-top:18px"><div><b>What is a funder profile?</b>Who the funder is, what they fund, who can apply, where, and how much. CNB uses it to shape every chapter and to flag missing eligibility information.</div></div>
+    </div>
+    <div class="dialog-foot"><span class="btn ghost">← Back to funder list</span><div class="right"><span class="btn ghost">Cancel</span><span class="btn primary">Continue →</span></div></div>
+  </div>
+</section>
+
+<!-- ───────────────────────── STEP 2A ───────────────────────── -->
+<section class="step" id="s2a">
+  <div class="step-head"><span class="step-num">Step 2A</span><h2>Structured form</h2></div>
+  <p class="step-note">Field set from the ticket: name, priorities, eligibility, geography, typical award. Added the small set of identity fields the <code>funders</code> table already has (type, country, region) so the new funder looks like catalogue funders everywhere else. Only <b>name</b> is required to save; everything else can be completed later and shows up as a gap in the draft.</p>
+
+  <div class="frame dialog">
+    <div class="dialog-head"><h3>Create a funder profile</h3><p>Step 2 of 3 · Funder details</p></div>
+    <div class="dialog-body">
+      <div class="form">
+        <div class="full"><label class="f">Funder name <span class="req">*</span></label><div class="in">Fundação Grupo Boticário de Proteção à Natureza</div></div>
+        <div><label class="f">Funder type</label><div class="in">Private foundation ▾</div><div class="help">Multilateral, bilateral, development bank, national/state agency, private foundation, corporate, city network, other</div></div>
+        <div><label class="f">Country <span class="opt">(HQ)</span></label><div class="in">Brazil ▾</div></div>
+        <div class="full"><label class="f">Funding priorities</label><div class="in tags"><span class="tag">Nature-based solutions ×</span><span class="tag">Urban biodiversity ×</span><span class="tag">Coastal protection ×</span><span class="in ph" style="border:0;min-height:0;padding:2px 6px">Add priority…</span></div><div class="help">Free text tags. Suggestions come from the CNB hazard / intervention vocabularies.</div></div>
+        <div class="full"><label class="f">Eligibility</label><div class="in ta">Municipalities and civil-society organisations registered in Brazil. Consortia allowed if led by an eligible entity. Projects must show a biodiversity co-benefit and start within 12 months of award.</div></div>
+        <div><label class="f">Geographic focus</label><div class="in tags"><span class="tag">Brazil ×</span><span class="tag">Atlantic Forest biome ×</span><span class="tag">Coastal municipalities ×</span></div></div>
+        <div><label class="f">Typical award</label>
+          <div class="inline"><div class="in">150 000</div><div class="in ph">–</div><div class="in">600 000</div><div class="in cur">BRL ▾</div></div>
+          <div class="help">Min – max. Leave one side empty for “up to” / “from”.</div></div>
+        <div><label class="f">Application window <span class="opt">(optional)</span></label><div class="in ph">e.g. Rolling · Annual call in March · Closes 30 Nov 2026</div></div>
+        <div><label class="f">Website / source URL <span class="opt">(optional)</span></label><div class="in ph">https://</div></div>
+        <div class="full"><label class="f">Notes <span class="opt">(optional)</span></label><div class="in ta ph">Anything else CNB should know: co-financing rules, reporting expectations, contact person…</div></div>
+      </div>
+      <div class="legend"><span class="badge entered"><span class="dot"></span> Entered</span> Everything typed here is saved with provenance <code>entered</code>.</div>
+    </div>
+    <div class="dialog-foot"><span class="btn ghost">← Back</span><div class="right"><span class="btn secondary">Attach a document instead</span><span class="btn primary">Review &amp; save →</span></div></div>
+  </div>
+
+  <div class="frame dialog" style="margin-top:20px">
+    <div class="frame-bar"><b>Validation state</b><span>name missing · award min &gt; max</span></div>
+    <div class="dialog-body">
+      <div class="form">
+        <div class="full"><label class="f">Funder name <span class="req">*</span></label><div class="in err ph">&nbsp;</div><div class="help err">A funder name is required.</div></div>
+        <div><label class="f">Typical award</label><div class="inline"><div class="in err">600 000</div><div class="in ph">–</div><div class="in err">150 000</div><div class="in cur">BRL ▾</div></div><div class="help err">Minimum must be lower than or equal to maximum.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── STEP 2B ───────────────────────── -->
+<section class="step" id="s2b">
+  <div class="step-head"><span class="step-num">Step 2B</span><h2>Document upload · processing, failure and retry</h2></div>
+  <p class="step-note">Reuses the existing concept-note upload pipeline (upload → markdown conversion) and adds one extraction job on top. Four visible states are required by the ticket: <b>uploading</b>, <b>processing</b>, <b>failed with retry</b>, <b>ready</b>. The user can always bail out to the blank form and keep what was already typed.</p>
+
+  <div class="grid-2">
+    <div class="frame dialog">
+      <div class="frame-bar"><b>State A · idle</b><span>nothing uploaded</span></div>
+      <div class="dialog-head"><h3>Create a funder profile</h3><p>Step 2 of 3 · Upload a funder document</p></div>
+      <div class="dialog-body">
+        <div class="drop">Drag a file here or <b>browse</b><div class="muted" style="margin-top:6px">PDF, DOCX, TXT, MD · up to 25 MB · one document per funder for now</div></div>
+        <div class="alert info" style="margin-top:14px"><div><b>Best results</b>Calls for proposals, programme guidelines, eligibility annexes. Annual reports work but give weaker eligibility data.</div></div>
+      </div>
+      <div class="dialog-foot"><span class="btn ghost">← Back</span><div class="right"><span class="btn ghost">Skip, fill form manually</span><span class="btn primary disabled">Extract profile</span></div></div>
+    </div>
+
+    <div class="frame dialog">
+      <div class="frame-bar"><b>State B · processing</b><span>extraction_status = processing</span></div>
+      <div class="dialog-head"><h3>Create a funder profile</h3><p>Step 2 of 3 · Extracting profile…</p></div>
+      <div class="dialog-body">
+        <div class="file"><div class="fi">PDF</div><div><div class="fn">Edital_Boticario_2026_Cidades.pdf</div><div class="fm">2.4 MB · 38 pages</div></div><div class="sp"><span class="badge proc"><span class="dot"></span> Processing</span></div></div>
+        <div class="steps">
+          <div class="s done"><div class="l">✓ Uploaded</div><div class="h">2.4 MB stored</div></div>
+          <div class="s done"><div class="l">✓ Converted</div><div class="h">38 pages → text</div></div>
+          <div class="s now"><div class="l">● Extracting profile</div><div class="h">Reading eligibility &amp; award rules</div></div>
+          <div class="s"><div class="l">○ Ready for review</div><div class="h">&nbsp;</div></div>
+        </div>
+        <div class="bar"><i></i></div>
+        <div class="muted" style="margin-top:8px">Usually under a minute. You can close this dialog; we'll keep the job running and show it on the funder card.</div>
+      </div>
+      <div class="dialog-foot"><span class="btn ghost">← Back</span><div class="right"><span class="btn ghost">Cancel extraction</span><span class="btn primary disabled">Review →</span></div></div>
+    </div>
+
+    <div class="frame dialog">
+      <div class="frame-bar"><b>State C · failed</b><span>extraction_status = failed · attempts 1/3</span></div>
+      <div class="dialog-head"><h3>Create a funder profile</h3><p>Step 2 of 3 · Extraction failed</p></div>
+      <div class="dialog-body">
+        <div class="file"><div class="fi">PDF</div><div><div class="fn">Edital_Boticario_2026_Cidades.pdf</div><div class="fm">2.4 MB · 38 pages</div></div><div class="sp"><span class="badge err"><span class="dot"></span> Failed</span></div></div>
+        <div class="steps">
+          <div class="s done"><div class="l">✓ Uploaded</div><div class="h">2.4 MB stored</div></div>
+          <div class="s done"><div class="l">✓ Converted</div><div class="h">38 pages → text</div></div>
+          <div class="s fail"><div class="l">✕ Extracting profile</div><div class="h">Timed out after 120 s</div></div>
+          <div class="s"><div class="l">○ Ready for review</div><div class="h">&nbsp;</div></div>
+        </div>
+        <div class="alert err"><div><b>We couldn't extract a profile from this document</b>The extraction service timed out. Your file is safe. Retry, or continue with an empty form and attach the document as a source. <span class="muted">Error code: <code>extraction_timeout</code></span></div><div class="acts"><span class="btn danger sm">Retry</span></div></div>
+        <div class="alert warn" style="margin-top:10px"><div><b>Other failure copy</b><code>unsupported_file</code> “This file type isn't supported.” · <code>no_text</code> “The document has no readable text (scanned image?).” · <code>not_a_funder_document</code> “We couldn't find funder information in this document.” · <code>too_large</code> “Over 25 MB.”</div></div>
+      </div>
+      <div class="dialog-foot"><span class="btn ghost">← Back</span><div class="right"><span class="btn ghost">Upload a different file</span><span class="btn secondary">Continue with empty form</span><span class="btn primary">Retry extraction</span></div></div>
+    </div>
+
+    <div class="frame dialog">
+      <div class="frame-bar"><b>State D · ready</b><span>extraction_status = ready</span></div>
+      <div class="dialog-head"><h3>Create a funder profile</h3><p>Step 2 of 3 · Profile extracted</p></div>
+      <div class="dialog-body">
+        <div class="file"><div class="fi">PDF</div><div><div class="fn">Edital_Boticario_2026_Cidades.pdf</div><div class="fm">2.4 MB · 38 pages</div></div><div class="sp"><span class="badge ok"><span class="dot"></span> Ready</span></div></div>
+        <div class="steps">
+          <div class="s done"><div class="l">✓ Uploaded</div><div class="h">2.4 MB stored</div></div>
+          <div class="s done"><div class="l">✓ Converted</div><div class="h">38 pages → text</div></div>
+          <div class="s done"><div class="l">✓ Extracted</div><div class="h">7 of 9 fields found</div></div>
+          <div class="s done"><div class="l">✓ Ready for review</div><div class="h">2 fields need your input</div></div>
+        </div>
+        <div class="alert warn"><div><b>Review before saving</b>Extracted values are suggestions. Nothing is saved to the run until you confirm on the next screen.</div></div>
+      </div>
+      <div class="dialog-foot"><span class="btn ghost">← Back</span><div class="right"><span class="btn ghost">Upload a different file</span><span class="btn primary">Review extracted profile →</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── STEP 3 ───────────────────────── -->
+<section class="step" id="s3">
+  <div class="step-head"><span class="step-num">Step 3</span><h2>Review and edit the extracted profile</h2></div>
+  <p class="step-note">Same fields as the form, rendered as a review table. Every field carries a <b>provenance badge</b>, the <b>evidence quote</b> it came from, and a confidence hint. Editing an extracted value flips it to <b>edited</b> and keeps the original for audit. Missing fields are called out and can be typed directly.</p>
+
+  <div class="frame dialog">
+    <div class="dialog-head"><h3>Create a funder profile</h3><p>Step 3 of 3 · Review extracted profile · from <code>Edital_Boticario_2026_Cidades.pdf</code></p></div>
+    <div class="dialog-body">
+      <div class="summary-strip">
+        <span class="badge extracted"><span class="dot"></span> 6 extracted</span>
+        <span class="badge edited"><span class="dot"></span> 1 edited</span>
+        <span class="badge entered"><span class="dot"></span> 0 entered</span>
+        <span class="badge missing"><span class="dot"></span> 2 missing</span>
+        <span class="muted" style="margin-left:auto">Low-confidence fields are listed first</span>
+      </div>
+      <table class="review">
+        <thead><tr><th style="width:190px">Field</th><th>Value</th><th style="width:130px">Provenance</th><th style="width:110px">Confidence</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="k">Typical award<small>min – max · currency</small></td>
+            <td class="v"><div class="inline"><div class="in">150 000</div><div class="in">600 000</div><div class="in cur">BRL</div></div><div class="ev">“…apoio financeiro entre R$ 150 mil e R$ 600 mil por projeto…” <span>· p. 12</span></div></td>
+            <td><span class="badge extracted">Extracted</span></td>
+            <td class="conf">Medium · range parsed from prose</td>
+          </tr>
+          <tr>
+            <td class="k">Eligibility</td>
+            <td class="v"><div class="in ta">Municipalities and civil-society organisations registered in Brazil. Consortia allowed if led by an eligible entity. Projects must start within 12 months of award. <b>Biodiversity co-benefit is mandatory.</b></div><div class="ev">“Poderão se inscrever prefeituras municipais e organizações da sociedade civil…” <span>· p. 7–8</span></div><div class="help">You changed this field. <a href="#">Show original</a></div></td>
+            <td><span class="badge edited">Edited</span></td>
+            <td class="conf">High</td>
+          </tr>
+          <tr>
+            <td class="k">Funder name</td>
+            <td class="v"><div class="in">Fundação Grupo Boticário de Proteção à Natureza</div><div class="ev">Cover page <span>· p. 1</span></div></td>
+            <td><span class="badge extracted">Extracted</span></td>
+            <td class="conf">High</td>
+          </tr>
+          <tr>
+            <td class="k">Funder type</td>
+            <td class="v"><div class="in">Private foundation ▾</div><div class="ev">“…fundação privada sem fins lucrativos…” <span>· p. 2</span></div></td>
+            <td><span class="badge extracted">Extracted</span></td>
+            <td class="conf">High</td>
+          </tr>
+          <tr>
+            <td class="k">Funding priorities</td>
+            <td class="v"><div class="in tags"><span class="tag">Nature-based solutions ×</span><span class="tag">Urban biodiversity ×</span><span class="tag">Coastal protection ×</span><span class="tag">Environmental education ×</span></div><div class="ev">Section 3 “Linhas temáticas” <span>· p. 5</span></div></td>
+            <td><span class="badge extracted">Extracted</span></td>
+            <td class="conf">High</td>
+          </tr>
+          <tr>
+            <td class="k">Geographic focus</td>
+            <td class="v"><div class="in tags"><span class="tag">Brazil ×</span><span class="tag">Atlantic Forest biome ×</span></div><div class="ev">“…municípios inseridos no bioma Mata Atlântica…” <span>· p. 6</span></div></td>
+            <td><span class="badge extracted">Extracted</span></td>
+            <td class="conf">High</td>
+          </tr>
+          <tr>
+            <td class="k">Country (HQ)</td>
+            <td class="v"><div class="in">Brazil ▾</div><div class="ev">Inferred from address <span>· p. 38</span></div></td>
+            <td><span class="badge extracted">Extracted</span></td>
+            <td class="conf">Medium</td>
+          </tr>
+          <tr>
+            <td class="k">Application window</td>
+            <td class="v"><div class="in ph">Not found in document · type it or leave empty</div></td>
+            <td><span class="badge missing">Missing</span></td>
+            <td class="conf">—</td>
+          </tr>
+          <tr>
+            <td class="k">Website / source URL</td>
+            <td class="v"><div class="in ph">Not found in document</div></td>
+            <td><span class="badge missing">Missing</span></td>
+            <td class="conf">—</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="legend">
+        <span class="badge entered"><span class="dot"></span> Entered</span> typed by a person
+        <span class="badge extracted"><span class="dot"></span> Extracted</span> taken from the document, unchanged
+        <span class="badge edited"><span class="dot"></span> Edited</span> extracted, then changed by a person
+        <span class="badge missing"><span class="dot"></span> Missing</span> not in document, not entered
+      </div>
+    </div>
+    <div class="dialog-foot"><span class="btn ghost">← Back to upload</span><div class="right"><span class="btn ghost">Discard</span><span class="btn primary">Save funder &amp; use in this run</span></div></div>
+  </div>
+</section>
+
+<!-- ───────────────────────── STEP 4 ───────────────────────── -->
+<section class="step" id="s4">
+  <div class="step-head"><span class="step-num">Step 4</span><h2>Saved on the run · restored after reload</h2></div>
+  <p class="step-note">Saving does two things in one request: creates the funder (scoped to the city) and sets it as the run's funder via the existing selection endpoint. The card shows provenance chips, links to the source document and an <b>Edit profile</b> action that re-opens step 3. On reload, the card restores from the run's application context, and an unfinished extraction reappears as a processing state on the card.</p>
+
+  <div class="frame">
+    <div class="frame-bar"><b>Workspace · Context tab</b><span>state: funder saved · toast “Funder saved”</span></div>
+    <div class="workspace">
+      <div class="side">
+        <div class="card" style="border-color:var(--brand)">
+          <h4>Funder</h4>
+          <div class="title">Fundação Grupo Boticário de Proteção à Natureza</div>
+          <div class="muted">Private foundation · Brazil</div>
+          <div style="margin:8px 0 10px;display:flex;gap:6px;flex-wrap:wrap"><span class="badge extracted">Created from document</span><span class="badge missing">2 gaps</span></div>
+          <div style="display:flex;gap:8px"><span class="btn ghost sm">Edit profile</span><span class="btn ghost sm">Change funder</span></div>
+        </div>
+        <div class="card empty"><h4>Programme</h4><div class="muted">No programmes yet for this funder</div><span class="btn secondary sm" style="margin-top:8px">Add programme</span></div>
+        <div class="card empty"><h4>Template</h4><div class="muted">Pick a programme first</div></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+          <div><div class="title" style="font-size:17px">Funder profile</div><div class="muted">Source: <a href="#">Edital_Boticario_2026_Cidades.pdf</a> · created by Carlos M. · 25 Sep 2026</div></div>
+          <span class="btn ghost sm">Edit profile</span>
+        </div>
+        <hr style="border:0;border-top:1px solid var(--line);margin:12px 0">
+        <div class="kv">
+          <div class="k">Priorities</div><div class="v"><span class="tag plain">Nature-based solutions</span><span class="tag plain">Urban biodiversity</span><span class="tag plain">Coastal protection</span><span class="tag plain">Environmental education</span><span class="badge extracted">Extracted</span></div>
+          <div class="k">Eligibility</div><div class="v"><span>Municipalities and civil-society organisations registered in Brazil. Consortia allowed if led by an eligible entity. Projects must start within 12 months. Biodiversity co-benefit is mandatory.</span><span class="badge edited">Edited</span></div>
+          <div class="k">Geography</div><div class="v"><span class="tag plain">Brazil</span><span class="tag plain">Atlantic Forest biome</span><span class="badge extracted">Extracted</span></div>
+          <div class="k">Typical award</div><div class="v"><span>BRL 150 000 – 600 000</span><span class="badge extracted">Extracted</span></div>
+          <div class="k">Application window</div><div class="v"><span class="muted">Not provided</span><span class="badge missing">Missing</span><span class="btn ghost sm">Add</span></div>
+          <div class="k">Website</div><div class="v"><span class="muted">Not provided</span><span class="badge missing">Missing</span><span class="btn ghost sm">Add</span></div>
+        </div>
+        <div class="alert warn" style="margin-top:14px"><div><b>Drafting will flag 2 gaps</b>Missing application window and website. CNB continues but marks these as “needs information” in the checklist.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="frame" style="margin-top:20px">
+    <div class="frame-bar"><b>Workspace after reload · extraction still running</b><span>restored from run · extraction_status = processing</span></div>
+    <div class="workspace" style="grid-template-columns:260px 1fr">
+      <div class="side">
+        <div class="card" style="border-color:var(--brand-100)">
+          <h4>Funder</h4>
+          <div class="title" style="color:var(--ink-2)">Profile being extracted…</div>
+          <div class="muted">Edital_Boticario_2026_Cidades.pdf</div>
+          <div style="margin:8px 0 10px"><span class="badge proc"><span class="dot"></span> Processing · 40 s</span></div>
+          <div style="display:flex;gap:8px"><span class="btn ghost sm">Open</span><span class="btn ghost sm">Cancel</span></div>
+        </div>
+      </div>
+      <div class="muted" style="align-self:center">The pending extraction is attached to the run, so navigating away or reloading does not lose it. When it is ready the card switches to “Review extracted profile”.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── DATA MODEL ───────────────────────── -->
+<section class="step" id="dm">
+  <div class="step-head"><span class="step-num">Data model</span><h2>Extend <code>cnb.funders</code>, add one extraction job table</h2></div>
+  <p class="step-note">Principle: keep the existing <code>funders</code> row shape so catalogue, selection, matching prompts and the funder card keep working. Add <b>origin/scope columns</b> and a <b>field-level provenance JSON</b> for user-created funders, and a separate <b>extraction job</b> table so processing / failure / retry state lives outside the funder row (the funder does not exist until the user confirms).</p>
+
+  <div class="er">
+    <div class="ent">
+      <div class="eh">funders <small>existing · cnb schema</small></div>
+      <ul>
+        <li class="pk">funder_id uuid</li>
+        <li>name varchar(255)</li>
+        <li>funder_type varchar(100)</li>
+        <li>country varchar(100)</li>
+        <li>region varchar(255)</li>
+        <li>profile jsonb  <span class="c">{stated[], derived[]}</span></li>
+        <li class="new">origin varchar(32)  <span class="c">research | user_form | user_document</span></li>
+        <li class="new">visibility_city_id uuid  <span class="c">null = global catalogue</span></li>
+        <li class="new">created_by_user_id uuid</li>
+        <li class="new">source_upload_id uuid  <span class="c">fk → concept_note_uploads</span></li>
+        <li class="new">profile_fields jsonb  <span class="c">provenance per field, see below</span></li>
+        <li class="new">created_at / updated_at timestamptz</li>
+      </ul>
+    </div>
+    <div class="ent new">
+      <div class="eh">funder_profile_extractions <small>new</small></div>
+      <ul>
+        <li class="pk">extraction_id uuid</li>
+        <li class="fk">run_id uuid  <span class="c">concept_note_runs</span></li>
+        <li class="fk">upload_id uuid  <span class="c">concept_note_uploads</span></li>
+        <li class="fk">funder_id uuid null  <span class="c">set once confirmed</span></li>
+        <li>status varchar(16)  <span class="c">queued|processing|ready|failed|confirmed|cancelled</span></li>
+        <li>attempts int · max_attempts int = 3</li>
+        <li>error_code varchar(64) · error_message text</li>
+        <li>extracted jsonb  <span class="c">FunderProfileDraft</span></li>
+        <li>model varchar(64) · prompt_version varchar(32)</li>
+        <li>started_at · finished_at · created_at · updated_at</li>
+        <li>created_by_user_id uuid</li>
+      </ul>
+    </div>
+    <div class="ent">
+      <div class="eh">concept_note_runs <small>existing · unchanged</small></div>
+      <ul>
+        <li class="pk">run_id uuid</li>
+        <li class="fk">funder_id uuid  <span class="c">already persisted + restored</span></li>
+        <li class="fk">selected_funding_opportunity_id uuid</li>
+        <li>…</li>
+      </ul>
+    </div>
+    <div class="ent">
+      <div class="eh">concept_note_uploads <small>existing · reused</small></div>
+      <ul>
+        <li class="pk">upload_id uuid</li>
+        <li class="fk">run_id uuid</li>
+        <li>status · markdown_ready · retry endpoint</li>
+        <li class="new">purpose varchar(32)  <span class="c">context | funder_profile</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="dm-grid" style="margin-top:22px">
+    <div class="dm">
+      <h3>Field-level provenance · <code>funders.profile_fields</code></h3>
+      <p>One entry per profile field. The <code>profile.stated</code> array is still written (values only) so existing consumers and prompts see the funder like any other.</p>
+<pre><span class="c">// FunderProfileField (stored as jsonb array)</span>
+{
+  <span class="k">"key"</span>: <span class="s">"eligibility"</span>,                 <span class="c">// see FIELD_KEYS below</span>
+  <span class="k">"value"</span>: <span class="s">"Municipalities and CSOs registered in Brazil…"</span>,
+  <span class="k">"provenance"</span>: <span class="s">"edited"</span>,             <span class="c">// entered | extracted | edited</span>
+  <span class="k">"extracted_value"</span>: <span class="s">"Municipalities and CSOs…"</span>, <span class="c">// original, null if entered</span>
+  <span class="k">"evidence"</span>: {
+    <span class="k">"upload_id"</span>: <span class="s">"c1a4…"</span>,
+    <span class="k">"quote"</span>: <span class="s">"Poderão se inscrever prefeituras municipais…"</span>,
+    <span class="k">"locator"</span>: <span class="s">"p. 7-8"</span>
+  },
+  <span class="k">"confidence"</span>: <span class="s">"high"</span>,               <span class="c">// high | medium | low | null</span>
+  <span class="k">"updated_by_user_id"</span>: <span class="s">"9f2e…"</span>,
+  <span class="k">"updated_at"</span>: <span class="s">"2026-09-25T10:14:02Z"</span>
+}
+
+<span class="c">// FIELD_KEYS (v1)</span>
+name · funder_type · country · region
+priorities[] · eligibility · geography[]
+typical_award {min, max, currency}
+application_window · website · notes</pre>
+    </div>
+    <div class="dm">
+      <h3>Pydantic contracts · Climate Advisor</h3>
+      <p>Draft = what the extractor returns and the review screen edits. Create = what the confirm endpoint accepts from both the form and the review screen.</p>
+<pre><span class="k">class</span> <span class="t">FunderProfileField</span>(BaseModel):
+    key: FieldKey
+    value: str | list[str] | AwardRange | None
+    provenance: Literal[<span class="s">"entered"</span>, <span class="s">"extracted"</span>, <span class="s">"edited"</span>]
+    extracted_value: … | None = None
+    evidence: FieldEvidence | None = None
+    confidence: Literal[<span class="s">"high"</span>,<span class="s">"medium"</span>,<span class="s">"low"</span>] | None = None
+
+<span class="k">class</span> <span class="t">FunderProfileDraft</span>(BaseModel):      <span class="c"># extractor output</span>
+    fields: list[FunderProfileField]
+    missing: list[FieldKey]
+    warnings: list[str] = []          <span class="c"># e.g. "several funders named"</span>
+
+<span class="k">class</span> <span class="t">FunderCreateRequest</span>(BaseModel):     <span class="c"># form + confirm</span>
+    model_config = ConfigDict(extra=<span class="s">"forbid"</span>)
+    fields: list[FunderProfileField]  <span class="c"># name required</span>
+    extraction_id: UUID | None = None <span class="c"># links upload + evidence</span>
+    select_for_run: bool = True
+
+<span class="k">class</span> <span class="t">FunderProfileExtraction</span>(BaseModel):  <span class="c"># job status</span>
+    extraction_id: UUID
+    status: Literal[<span class="s">"queued"</span>,<span class="s">"processing"</span>,<span class="s">"ready"</span>,
+                    <span class="s">"failed"</span>,<span class="s">"confirmed"</span>,<span class="s">"cancelled"</span>]
+    attempts: int
+    can_retry: bool
+    error_code: str | None
+    draft: FunderProfileDraft | None</pre>
+    </div>
+  </div>
+
+  <div class="dm" style="margin-top:22px">
+    <h3>Frontend type · <code>app/src/util/types.ts</code></h3>
+<pre><span class="k">export type</span> <span class="t">FunderProvenance</span> = <span class="s">"entered"</span> | <span class="s">"extracted"</span> | <span class="s">"edited"</span>;
+
+<span class="k">export interface</span> <span class="t">ConceptNoteFunder</span> {          <span class="c">// existing, extended</span>
+  id: string; name: string; funderType?: string; country?: string; region?: string;
+  profile: Record&lt;string, unknown&gt;;
+  origin?: <span class="s">"research"</span> | <span class="s">"user_form"</span> | <span class="s">"user_document"</span>;
+  profileFields?: FunderProfileField[];
+  sourceUpload?: { uploadId: string; filename: string };
+}
+
+<span class="k">export interface</span> <span class="t">ConceptNoteApplicationContext</span> {  <span class="c">// existing, extended</span>
+  funder: ConceptNoteFunder | null;
+  pendingFunderExtraction?: FunderProfileExtraction | null; <span class="c">// drives card state after reload</span>
+  …
+}</pre>
+  </div>
+</section>
+
+<!-- ───────────────────────── API ───────────────────────── -->
+<section class="step" id="api">
+  <div class="step-head"><span class="step-num">API</span><h2>Endpoints · Next.js proxies → Climate Advisor</h2></div>
+  <p class="step-note">Everything is run-scoped so existing auth (city membership via run) applies. Only the two <b>bold</b> rows are conceptually new; the rest reuses the upload and selection routes already on develop.</p>
+  <table class="api">
+    <thead><tr><th style="width:90px">Method</th><th>Route</th><th>Purpose</th><th style="width:220px">Notes</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/api/v1/concept-notes/{runId}/uploads</code></td><td>Upload the funder document</td><td>existing · add <code>purpose=funder_profile</code></td></tr>
+      <tr><td><b>POST</b></td><td><code>/api/v1/concept-notes/{runId}/funder-extractions</code></td><td>Start extraction for an upload; returns <code>extraction_id</code>, status <code>queued</code></td><td>new · 409 if upload not converted yet</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/concept-notes/{runId}/funder-extractions/{id}</code></td><td>Poll status; returns draft when <code>ready</code></td><td>new · RTK Query polling 2 s</td></tr>
+      <tr><td>POST</td><td><code>…/funder-extractions/{id}/retry</code></td><td>Re-run failed extraction</td><td>new · 409 when attempts exhausted</td></tr>
+      <tr><td>DELETE</td><td><code>…/funder-extractions/{id}</code></td><td>Cancel / discard a pending or ready draft</td><td>new</td></tr>
+      <tr><td><b>POST</b></td><td><code>/api/v1/concept-notes/{runId}/funders</code></td><td>Create funder from reviewed fields (form or draft) and, by default, select it on the run</td><td>new · returns application context · 422 on validation</td></tr>
+      <tr><td>PATCH</td><td><code>/api/v1/concept-notes/{runId}/funders/{funderId}</code></td><td>Edit profile fields of a user-created funder</td><td>new · only <code>origin != research</code></td></tr>
+      <tr><td>GET</td><td><code>/api/v1/concept-notes/{runId}/funding-catalogue</code></td><td>List funders</td><td>existing · include city-scoped user funders</td></tr>
+      <tr><td>PUT</td><td><code>/api/v1/concept-notes/{runId}/application-context/funding</code></td><td>Select funder / opportunity</td><td>existing · unchanged</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/concept-notes/{runId}/application-context</code></td><td>Restore on reload</td><td>existing · add <code>pendingFunderExtraction</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="dm" style="margin-top:22px">
+    <h3>Extraction prompt · <code>climate-advisor/prompts/cnb/funder_profile_extraction.md</code></h3>
+    <p>Input: converted markdown of the upload. Output: <code>FunderProfileDraft</code> JSON. Rules mirror the research prompt: quote evidence verbatim, never infer award bounds, put unknowns in <code>missing</code>, one funder per document (warn if several are named).</p>
+  </div>
+
+  <p class="footer">Mockup for Linear CC-870 · parent CC-858 (programme + template persistence) · related CC-873 (switching funders). Generated 25 Sep 2026.</p>
+</section>
+
+</main>
+</body>
+</html>

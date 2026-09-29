@@ -345,5 +345,6 @@
   "removal": "Suppression",
   "removals-not-countable-footnote": "* Les sous-secteurs avec des suppressions ne sont pas comptabilisés comme des émissions",
   "no-cited-source": "Aucune source citée",
-  "hero-inventory-line": "{{year}} · {{value}} {{unit}}"
+  "hero-inventory-line": "{{year}} · {{value}} {{unit}}",
+  "default-organization": "Organisation par Défaut"
 }

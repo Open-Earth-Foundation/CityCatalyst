@@ -19,7 +19,12 @@ const initial = ids.map((id, index) => ({
   description: index ? "Budget guidance" : "Summary guidance",
 }));
 
-async function setup(page: Page, chat = false, chapterCount = 2) {
+async function setup(
+  page: Page,
+  chat = false,
+  chapterCount = 2,
+  draftStatus?: "running",
+) {
   const fixtureChapters = [
     ...initial,
     ...Array.from({ length: chapterCount - 2 }, (_, index) => ({
@@ -186,9 +191,10 @@ async function setup(page: Page, chat = false, chapterCount = 2) {
         json: {
           run_id: runId,
           status:
-            state.chapters.length > fixtureChapters.length
+            draftStatus ??
+            (state.chapters.length > fixtureChapters.length
               ? "not_started"
-              : "complete",
+              : "complete"),
           total_chapters: state.chapters.length,
           completed_chapters: fixtureChapters.length,
           chapters: state.chapters.map((c, position) => ({
@@ -585,4 +591,21 @@ test("mobile structure controls remain usable", async ({ page }) => {
     path: "test-results/cc864-mobile.png",
     fullPage: true,
   });
+});
+
+test("sections panel matches the preview height while drafting runs", async ({
+  page,
+}) => {
+  // The progress card leaves little room on a laptop viewport.
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await setup(page, false, 12, "running");
+  await expect(page.getByText("Draft progress", { exact: true })).toBeVisible();
+  const panel = page.getByRole("region", { name: "Sections", exact: true });
+  const preview = page.getByTestId("concept-note-draft-preview");
+  await expect(preview).toBeVisible();
+  const [panelBox, previewBox] = await Promise.all([
+    panel.boundingBox(),
+    preview.boundingBox(),
+  ]);
+  expect(panelBox!.height).toBeGreaterThanOrEqual(previewBox!.height - 1);
 });

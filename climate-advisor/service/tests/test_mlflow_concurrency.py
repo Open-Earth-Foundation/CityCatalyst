@@ -19,29 +19,8 @@ from app.utils.streaming_handler import StreamingHandler
 
 
 @pytest.fixture
-def client(monkeypatch):
-    recorded = MagicMock()
-    next_id = 0
-
-    def create_run(**kwargs):
-        nonlocal next_id
-        next_id += 1
-        return SimpleNamespace(info=SimpleNamespace(run_id=f"run-{next_id}"))
-
-    recorded.create_run.side_effect = create_run
-    recorded.log_batch.return_value = None
-    monkeypatch.setattr(mlflow_logging, "initialize_mlflow", lambda: True)
-    monkeypatch.setattr(mlflow_logging, "_experiment_id", lambda name: "experiment-1")
-    monkeypatch.setattr(
-        mlflow_logging, "_RUN_CONTEXT", ContextVar("test_run", default=None)
-    )
-    # There is deliberately no fluent API on this stub.
-    monkeypatch.setattr(
-        mlflow_logging,
-        "mlflow",
-        SimpleNamespace(tracking=SimpleNamespace(MlflowClient=lambda: recorded)),
-    )
-    return recorded
+def client(mlflow_client):
+    return mlflow_client
 
 
 @pytest.mark.asyncio
@@ -385,7 +364,7 @@ async def test_other_chat_modes_link_traces_before_model_start(monkeypatch, mode
     )
 
 
-@pytest.mark.parametrize("phase", ["create", "write"])
+@pytest.mark.parametrize("phase", ["create", "write", "close"])
 @pytest.mark.parametrize("cancellation", ["task", "scope", "repeated_task"])
 async def test_cancellation_waits_for_inflight_telemetry_before_closing(
     client, phase, cancellation
@@ -394,22 +373,21 @@ async def test_cancellation_waits_for_inflight_telemetry_before_closing(
     release = Event()
     order = []
     scopes = []
+    started = asyncio.Event()
 
-    def blocked():
+    def blocked(*args, **kwargs):
         entered.set()
         release.wait(timeout=3)
         order.append(phase)
+        return SimpleNamespace(info=SimpleNamespace(run_id="cancelled-run"))
 
-    if phase == "create":
-
-        def create(**kwargs):
-            blocked()
-            return SimpleNamespace(info=SimpleNamespace(run_id="cancelled-run"))
-
-        client.create_run.side_effect = create
-    else:
-        client.log_dict.side_effect = lambda *args: blocked()
     client.set_terminated.side_effect = lambda *args, **kwargs: order.append("close")
+    operation = {
+        "create": client.create_run,
+        "write": client.log_dict,
+        "close": client.set_terminated,
+    }[phase]
+    operation.side_effect = blocked
 
     async def request():
         with CancelScope() as scope:
@@ -420,9 +398,15 @@ async def test_cancellation_waits_for_inflight_telemetry_before_closing(
                 await mlflow_logging.run_mlflow_io(
                     mlflow_logging.log_json_artifact, "request.json", {}
                 )
+                if phase == "close":
+                    started.set()
+                    await asyncio.Event().wait()
 
     task = asyncio.create_task(request())
     try:
+        if phase == "close":
+            await asyncio.wait_for(started.wait(), timeout=2)
+            task.cancel()  # Enter termination with the run already marked FAILED.
         assert await asyncio.to_thread(entered.wait, 2)
         if cancellation == "scope":
             scopes[0].cancel()
@@ -434,53 +418,16 @@ async def test_cancellation_waits_for_inflight_telemetry_before_closing(
                 task.cancel()
                 await asyncio.sleep(0.01)
         assert not task.done()
-        client.set_terminated.assert_not_called()
+        if phase != "close":
+            client.set_terminated.assert_not_called()
     finally:
         release.set()
-        if cancellation == "scope":
+        if cancellation == "scope" and phase != "close":
             await asyncio.wait_for(task, timeout=2)
         else:
             with pytest.raises(asyncio.CancelledError):
                 await asyncio.wait_for(task, timeout=2)
-    assert order == [phase, "close"]
+    assert order == (["close"] if phase == "close" else [phase, "close"])
+    client.set_terminated.assert_called_once()
     assert client.set_terminated.call_args.kwargs["status"] == "FAILED"
-    assert mlflow_logging._current_run() is None
-
-
-async def test_repeated_cancellation_waits_for_run_termination(client):
-    started = asyncio.Event()
-    closing = Event()
-    release = Event()
-    finished = Event()
-
-    def terminate(*args, **kwargs):
-        closing.set()
-        release.wait(timeout=3)
-        finished.set()
-
-    client.set_terminated.side_effect = terminate
-
-    async def request():
-        async with mlflow_logging.async_start_run(
-            run_name="request", experiment_name="Clima"
-        ):
-            started.set()
-            await asyncio.Event().wait()
-
-    task = asyncio.create_task(request())
-    try:
-        await asyncio.wait_for(started.wait(), timeout=2)
-        task.cancel()
-        assert await asyncio.to_thread(closing.wait, 2)
-        for _ in range(3):
-            task.cancel()
-            await asyncio.sleep(0.01)
-        assert not task.done()
-        assert not finished.is_set()
-    finally:
-        release.set()
-        with pytest.raises(asyncio.CancelledError):
-            await asyncio.wait_for(task, timeout=2)
-    assert finished.is_set()
-    client.set_terminated.assert_called_once_with("run-1", status="FAILED")
     assert mlflow_logging._current_run() is None

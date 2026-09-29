@@ -2,21 +2,20 @@
 
 import asyncio
 import json
-from collections.abc import AsyncIterator, Callable
+from collections.abc import AsyncIterator
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import httpx
 import pytest
 from agents import Agent, FunctionTool, OpenAIResponsesModel
+from app.config import get_settings
 from app.models.requests import MessageCreateRequest
 from app.utils.streaming_handler import StreamingHandler
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from openai import AsyncOpenAI
-
-from app.config import get_settings
 
 
 def _event(kind: str, **fields: object) -> dict:
@@ -74,6 +73,17 @@ def _answer() -> list[dict]:
     ]
 
 
+def _tool_call(*, status: str = "completed", arguments: str = "{}") -> dict:
+    return {
+        "type": "function_call",
+        "id": "fc-test",
+        "call_id": "call-test",
+        "name": "update_note",
+        "arguments": arguments,
+        "status": status,
+    }
+
+
 class ProviderStream(httpx.AsyncByteStream):
     def __init__(self, events: list[dict], error: Exception | None = None) -> None:
         self.events = events
@@ -92,18 +102,25 @@ class ProviderStream(httpx.AsyncByteStream):
 
 
 @pytest.fixture
-def chat(monkeypatch):
+def chat(monkeypatch, chat_service):
     """Keep the application and SDK real; isolate HTTP, history, and persistence."""
 
-    async def run(provider: Callable, *, tools: list | None = None):
+    # Retain retry counts while removing backoff from deterministic local tests.
+    monkeypatch.setattr(get_settings().llm.streaming, "retry_delay_ms", 0)
+
+    async def run(*responses: ProviderStream | httpx.Response | Exception, tools=None):
         requests = []
         streams = []
 
         async def transport(request: httpx.Request) -> httpx.Response:
             requests.append(json.loads(request.content))
-            result = provider(len(requests))
+            # Repeat the final response when testing retry exhaustion.
+            result = responses[min(len(requests), len(responses)) - 1]
+            if isinstance(result, Exception):
+                raise result
             if isinstance(result, httpx.Response):
                 return result
+            result = type(result)(result.events, result.error)
             streams.append(result)
             return httpx.Response(
                 200,
@@ -125,18 +142,8 @@ def chat(monkeypatch):
             model=OpenAIResponsesModel(model="test-model", openai_client=client),
             tools=tools or [],
         )
-        service = MagicMock()
-        service.preferred_model_for_context.return_value = "test-model"
-        service.create_agent = AsyncMock(return_value=agent)
-        service.close = AsyncMock()
-        service.current_cc_token.return_value = None
+        chat_service.create_agent.return_value = agent
         persist = AsyncMock(return_value=True)
-        monkeypatch.setattr(
-            "app.utils.streaming_handler.AgentService", lambda **kwargs: service
-        )
-        monkeypatch.setattr(
-            StreamingHandler, "_load_conversation_history", AsyncMock(return_value=[])
-        )
         monkeypatch.setattr(
             "app.utils.streaming_handler.persist_assistant_message", persist
         )
@@ -149,16 +156,6 @@ def chat(monkeypatch):
             content="How do I get started?",
             context={"concept_note_run_id": str(uuid4())},
         )
-        original_config = handler._run_config
-
-        def config(payload):
-            result = original_config(payload)
-            if result.model_settings and result.model_settings.retry:
-                result.model_settings.retry.backoff.initial_delay = 0
-                result.model_settings.retry.backoff.max_delay = 0
-            return result
-
-        monkeypatch.setattr(handler, "_run_config", config)
         app = FastAPI()
 
         @app.post("/chat")
@@ -184,7 +181,7 @@ def chat(monkeypatch):
         assert response.status_code == 200
         assert [name for name, _ in events].count("done") == 1
         assert all(stream.closed for stream in streams)
-        service.close.assert_awaited_once()
+        chat_service.close.assert_awaited_once()
         return SimpleNamespace(
             requests=requests,
             events=events,
@@ -201,18 +198,11 @@ def chat(monkeypatch):
 )
 async def test_recovers_disconnect_after_headers_before_answer(chat, error_type):
     result = await chat(
-        lambda attempt: (
-            ProviderStream(
-                [
-                    _event(
-                        "response.created", response={"id": "resp-first", "output": []}
-                    )
-                ],
-                error_type("controlled disconnect"),
-            )
-            if attempt == 1
-            else ProviderStream(_answer())
-        )
+        ProviderStream(
+            [_event("response.created", response={"id": "resp-first", "output": []})],
+            error_type("controlled disconnect"),
+        ),
+        ProviderStream(_answer()),
     )
     assert len(result.requests) == 2
     assert result.done["ok"] is True
@@ -222,62 +212,46 @@ async def test_recovers_disconnect_after_headers_before_answer(chat, error_type)
     result.persist.assert_awaited_once()
 
 
-async def test_repeated_disconnect_exhausts_bounded_budget(chat):
-    result = await chat(
-        lambda attempt: ProviderStream([], httpx.ReadTimeout("offline"))
-    )
-    assert len(result.requests) == 3
-    assert result.done["ok"] is False
-    assert result.done["history_saved"] is False
-    assert result.text == ""
-    result.persist.assert_not_awaited()
+@pytest.mark.parametrize(
+    "responses, attempts, ok",
+    [
+        ((ProviderStream([], httpx.ReadTimeout("offline")),), 3, False),
+        ((httpx.ReadTimeout("before headers"),), 4, False),
+        ((httpx.Response(401, json={"error": {"message": "invalid key"}}),), 1, False),
+        (
+            (
+                httpx.Response(503, json={"error": {"message": "busy"}}),
+                ProviderStream(_answer()),
+            ),
+            2,
+            True,
+        ),
+    ],
+    ids=[
+        "body-retries-exhausted",
+        "provider-budget-preserved",
+        "authentication-not-retried",
+        "provider-status-recovers",
+    ],
+)
+async def test_retry_budget_and_completion(chat, responses, attempts, ok):
+    result = await chat(*responses)
+    assert len(result.requests) == attempts
+    assert result.done["ok"] is ok
+    assert result.done["history_saved"] is ok
+    assert result.text == ("Recovered answer" if ok else "")
+    assert result.persist.await_count == int(ok)
 
 
 async def test_partial_answer_is_not_replayed_or_reported_as_saved(chat):
     result = await chat(
-        lambda attempt: ProviderStream(
-            [_delta("Partial answer")], httpx.ReadTimeout("offline")
-        )
+        ProviderStream([_delta("Partial answer")], httpx.ReadTimeout("offline"))
     )
     assert len(result.requests) == 1
     assert result.text == "Partial answer"
     assert result.done["ok"] is False
     assert result.done["history_saved"] is False
     result.persist.assert_not_awaited()
-
-
-async def test_connection_failure_does_not_multiply_provider_retry_budget(chat):
-    def provider(attempt):
-        raise httpx.ReadTimeout("failed before response headers")
-
-    result = await chat(provider)
-    assert (
-        len(result.requests) == 4
-    )  # Initial request plus the existing SDK's three retries.
-    assert result.done["ok"] is False
-    result.persist.assert_not_awaited()
-
-
-async def test_authentication_error_is_not_retried(chat):
-    result = await chat(
-        lambda attempt: httpx.Response(401, json={"error": {"message": "invalid key"}})
-    )
-    assert len(result.requests) == 1
-    assert result.done["ok"] is False
-    result.persist.assert_not_awaited()
-
-
-async def test_provider_status_retry_still_recovers(chat):
-    result = await chat(
-        lambda attempt: (
-            httpx.Response(503, json={"error": {"message": "busy"}})
-            if attempt == 1
-            else ProviderStream(_answer())
-        )
-    )
-    assert len(result.requests) == 2
-    assert result.done["ok"] is True
-    result.persist.assert_awaited_once()
 
 
 async def test_retry_after_completed_tool_does_not_execute_tool_twice(chat):
@@ -298,35 +272,24 @@ async def test_retry_after_completed_tool_does_not_execute_tool_twice(chat):
         },
         on_invoke_tool=update_note,
     )
-    call = {
-        "type": "function_call",
-        "id": "fc-test",
-        "call_id": "call-test",
-        "name": "update_note",
-        "arguments": "{}",
-        "status": "completed",
-    }
+    call = _tool_call()
 
-    def provider(attempt):
-        if attempt == 1:
-            return ProviderStream(
-                [
-                    _event(
-                        "response.output_item.added",
-                        output_index=0,
-                        item={**call, "status": "in_progress"},
-                    ),
-                    _event("response.output_item.done", output_index=0, item=call),
-                    _completed([call]),
-                ]
-            )
-        if attempt == 2:
-            return ProviderStream(
-                [], httpx.ReadTimeout("disconnect on answer after tool")
-            )
-        return ProviderStream(_answer())
-
-    result = await chat(provider, tools=[tool])
+    result = await chat(
+        ProviderStream(
+            [
+                _event(
+                    "response.output_item.added",
+                    output_index=0,
+                    item={**call, "status": "in_progress"},
+                ),
+                _event("response.output_item.done", output_index=0, item=call),
+                _completed([call]),
+            ]
+        ),
+        ProviderStream([], httpx.ReadTimeout("disconnect on answer after tool")),
+        ProviderStream(_answer()),
+        tools=[tool],
+    )
     assert len(result.requests) == 3
     assert updates == ["{}"]
     assert result.requests[1]["input"] == result.requests[2]["input"]
@@ -336,16 +299,9 @@ async def test_retry_after_completed_tool_does_not_execute_tool_twice(chat):
 
 
 async def test_interrupted_tool_output_does_not_replay(chat):
-    call = {
-        "type": "function_call",
-        "id": "fc-test",
-        "call_id": "call-test",
-        "name": "update_note",
-        "arguments": "",
-        "status": "in_progress",
-    }
+    call = _tool_call(status="in_progress", arguments="")
     result = await chat(
-        lambda attempt: ProviderStream(
+        ProviderStream(
             [
                 _event("response.output_item.added", output_index=0, item=call),
             ],
@@ -363,12 +319,8 @@ async def test_disabled_stream_recovery_preserves_provider_retries(
 ):
     monkeypatch.setattr(get_settings().llm.streaming, "retry_attempts", 0)
 
-    def provider(attempt):
-        if before_headers:
-            raise httpx.ReadTimeout("failed before headers")
-        return ProviderStream([], httpx.ReadTimeout("failed after headers"))
-
-    result = await chat(provider)
+    error = httpx.ReadTimeout("offline")
+    result = await chat(error if before_headers else ProviderStream([], error))
     assert len(result.requests) == (4 if before_headers else 1)
     assert result.done["ok"] is False
 
@@ -380,6 +332,7 @@ async def test_cancelled_stream_closes_provider_without_retry(chat):
 
     class PendingStream(ProviderStream):
         async def __aiter__(self):
+            attempts.append(1)
             reading.set()
             await asyncio.Event().wait()
             yield b""
@@ -388,11 +341,7 @@ async def test_cancelled_stream_closes_provider_without_retry(chat):
             await super().aclose()
             closed.set()
 
-    def provider(attempt):
-        attempts.append(attempt)
-        return PendingStream([])
-
-    task = asyncio.create_task(chat(provider))
+    task = asyncio.create_task(chat(PendingStream([])))
     await asyncio.wait_for(reading.wait(), timeout=3)
     task.cancel()
     with pytest.raises(asyncio.CancelledError):

@@ -1,7 +1,6 @@
 import asyncio
 import time
 from contextlib import asynccontextmanager
-from contextvars import ContextVar
 from threading import Event
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -105,7 +104,9 @@ async def test_readiness_times_out_and_closes_session(monkeypatch, blocked_stage
 @pytest.mark.parametrize(
     "stage", ["initialize", "create", "batch", "json", "text", "wait", "close"]
 )
-async def test_health_responds_while_chat_telemetry_is_blocked(monkeypatch, stage):
+async def test_health_responds_while_chat_telemetry_is_blocked(
+    monkeypatch, mlflow_client, chat_service, stage
+):
     """Hold actual chat telemetry in a thread until an independent health request succeeds.
 
     The two-second escape avoids hanging the old implementation. Measure from
@@ -114,62 +115,27 @@ async def test_health_responds_while_chat_telemetry_is_blocked(monkeypatch, stag
     blocked = Event()
     release = Event()
     started_at = []
-    client = MagicMock()
+    client = mlflow_client
+    client.log_batch.return_value = SimpleNamespace(wait=MagicMock())
+    operation = {
+        "initialize": mlflow_logging.initialize_mlflow,
+        "create": client.create_run,
+        "batch": client.log_batch,
+        "json": client.log_dict,
+        "text": client.log_text,
+        "wait": client.log_batch.return_value.wait,
+        "close": client.set_terminated,
+    }[stage]
+    original = operation.side_effect
 
-    def slow_operation():
+    def slow_operation(*args, **kwargs):
         if not blocked.is_set():
             started_at.append(time.perf_counter())
             blocked.set()
             release.wait(timeout=2)
+        return original(*args, **kwargs) if original else operation.return_value
 
-    def initialize():
-        if stage == "initialize":
-            slow_operation()
-        return True
-
-    def create(**kwargs):
-        if stage == "create":
-            slow_operation()
-        return SimpleNamespace(info=SimpleNamespace(run_id="health-test"))
-
-    def batch(**kwargs):
-        if stage == "batch":
-            slow_operation()
-        return SimpleNamespace(wait=slow_operation if stage == "wait" else lambda: None)
-
-    client.create_run.side_effect = create
-    client.log_batch.side_effect = batch
-    for method, name in (
-        (client.log_dict, "json"),
-        (client.log_text, "text"),
-        (client.set_terminated, "close"),
-    ):
-        if stage == name:
-            method.side_effect = lambda *args, **kwargs: slow_operation()
-    monkeypatch.setattr(mlflow_logging, "initialize_mlflow", initialize)
-    monkeypatch.setattr(
-        mlflow_logging, "_experiment_id", lambda name: "experiment-test"
-    )
-    monkeypatch.setattr(
-        mlflow_logging, "_RUN_CONTEXT", ContextVar("health_test_run", default=None)
-    )
-    monkeypatch.setattr(
-        mlflow_logging,
-        "mlflow",
-        SimpleNamespace(tracking=SimpleNamespace(MlflowClient=lambda: client)),
-    )
-
-    service = MagicMock()
-    service.preferred_model_for_context.return_value = "test-model"
-    service.create_agent = AsyncMock(return_value=object())
-    service.close = AsyncMock()
-    service.current_cc_token.return_value = None
-    monkeypatch.setattr(
-        "app.utils.streaming_handler.AgentService", lambda **kwargs: service
-    )
-    monkeypatch.setattr(
-        StreamingHandler, "_load_conversation_history", AsyncMock(return_value=[])
-    )
+    operation.side_effect = slow_operation
 
     async def answer(self, *args):
         self.assistant_tokens.append("Answer")

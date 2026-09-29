@@ -52,6 +52,7 @@ from app.utils.conversation_observability import (
 )
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
+    async_start_run,
     climate_advisor_experiment_name,
     close_open_tool_observations,
     finish_tool_observation,
@@ -60,7 +61,7 @@ from app.utils.mlflow_logging import (
     log_tags,
     log_text_artifact,
     merge_redacted_tool_records,
-    start_run,
+    run_mlflow_io,
     start_tool_observation,
     update_current_trace_context,
 )
@@ -157,30 +158,30 @@ class StreamingHandler:
         if self.workflow_context.concept_note_run_id:
             await emit_cnb_progress("preparing")
 
-        with (
-            start_run(
-                run_name=self.workflow_context.mlflow_run_name,
-                experiment_name=self._mlflow_experiment_name(payload),
-                tags=self._mlflow_tags(payload),
-                params=self._mlflow_params(payload),
-            ),
-            conversation_trace(
-                payload.content, attributes=self.workflow_context.telemetry()
-            ),
+        async with async_start_run(
+            run_name=self.workflow_context.mlflow_run_name,
+            experiment_name=self._mlflow_experiment_name(payload),
+            tags=self._mlflow_tags(payload),
+            params=self._mlflow_params(payload),
         ):
-            self._update_mlflow_trace_context(payload)
-            log_json_artifact(
-                "request/message_payload.json", payload.model_dump(mode="json")
-            )
-
-            async for event_bytes in self._stream_response_with_mlflow(
-                payload=payload,
-                history_warning=history_warning,
-                req_id=req_id,
-                settings=settings,
-                started_at=started_at,
+            with conversation_trace(
+                payload.content, attributes=self.workflow_context.telemetry()
             ):
-                yield event_bytes
+                self._update_mlflow_trace_context(payload)
+                await run_mlflow_io(
+                    log_json_artifact,
+                    "request/message_payload.json",
+                    payload.model_dump(mode="json"),
+                )
+
+                async for event_bytes in self._stream_response_with_mlflow(
+                    payload=payload,
+                    history_warning=history_warning,
+                    req_id=req_id,
+                    settings=settings,
+                    started_at=started_at,
+                ):
+                    yield event_bytes
 
     async def _stream_response_with_mlflow(
         self,
@@ -302,7 +303,8 @@ class StreamingHandler:
                 self.thread_id,
             )
             workflow_metadata = self.workflow_context.telemetry()
-            log_tags(
+            await run_mlflow_io(
+                log_tags,
                 {
                     "model": self.agent_model,
                     "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
@@ -312,7 +314,7 @@ class StreamingHandler:
                     "prompt_name": workflow_metadata["prompt_name"],
                     "stationary_energy_draft_run_id": draft_run_id,
                     "concept_note_run_id": concept_note_run_id,
-                }
+                },
             )
 
             agent = await self.agent_service.create_agent(
@@ -324,8 +326,10 @@ class StreamingHandler:
                 ),
             )
 
-            log_json_artifact(
-                "chat/conversation_history.json", {"messages": conversation_history}
+            await run_mlflow_io(
+                log_json_artifact,
+                "chat/conversation_history.json",
+                {"messages": conversation_history},
             )
 
             logger.info(
@@ -350,7 +354,7 @@ class StreamingHandler:
             await self.persist_message()
 
             # Send completion event
-            self._log_mlflow_stream_summary(
+            await self._log_mlflow_stream_summary(
                 ok=not self.streaming_error,
                 started_at=started_at,
             )
@@ -363,7 +367,8 @@ class StreamingHandler:
                 req_id,
             )
             self.streaming_error = True
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "errors/stream_cancelled.json",
                 {
                     "type": "CancelledError",
@@ -371,7 +376,7 @@ class StreamingHandler:
                     "thread_id": self.thread_identifier,
                 },
             )
-            self._log_mlflow_stream_summary(
+            await self._log_mlflow_stream_summary(
                 ok=False,
                 started_at=started_at,
                 status="cancelled",
@@ -384,7 +389,8 @@ class StreamingHandler:
             else:
                 logger.exception("Unhandled exception in Agents SDK streaming")
             self.streaming_error = True
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "errors/stream_error.json",
                 {
                     "type": type(exc).__name__,
@@ -395,7 +401,7 @@ class StreamingHandler:
                     ),
                 },
             )
-            self._log_mlflow_stream_summary(
+            await self._log_mlflow_stream_summary(
                 ok=False,
                 started_at=started_at,
                 status="error",
@@ -1513,14 +1519,14 @@ class StreamingHandler:
             )
             return None
 
-    def _log_mlflow_stream_summary(
+    async def _log_mlflow_stream_summary(
         self,
         *,
         ok: bool,
         started_at: float,
         status: str | None = None,
     ) -> None:
-        """Log final chat artifacts and metrics for the active MLflow run."""
+        """Finalize task-local spans and offload final artifact and metric writes."""
         assistant_content = "".join(self.assistant_tokens)
         duration_ms = (time.perf_counter() - started_at) * 1000
         stream_status = status or ("ok" if ok else "error")
@@ -1530,8 +1536,9 @@ class StreamingHandler:
             history_saved=self.history_saved,
             chunks=len(self.assistant_tokens),
         )
-        log_tags({"stream_status": stream_status})
-        log_metrics(
+        await run_mlflow_io(log_tags, {"stream_status": stream_status})
+        await run_mlflow_io(
+            log_metrics,
             {
                 "duration_ms": duration_ms,
                 "assistant_characters": len(assistant_content),
@@ -1539,9 +1546,11 @@ class StreamingHandler:
                 "tool_invocations": len(self.tool_invocations),
                 "history_saved": int(self.history_saved),
                 "ok": int(ok),
-            }
+            },
         )
-        log_text_artifact("chat/assistant_response.txt", assistant_content)
+        await run_mlflow_io(
+            log_text_artifact, "chat/assistant_response.txt", assistant_content
+        )
         try:
             close_open_tool_observations(
                 self._pending_tool_observations,
@@ -1565,11 +1574,13 @@ class StreamingHandler:
             request_id=self._request_id(),
         )
         if records:
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "chat/tool_invocations.json",
                 {"tool_invocations": records},
             )
-        log_json_artifact(
+        await run_mlflow_io(
+            log_json_artifact,
             "response/stream_summary.json",
             {
                 "ok": ok,

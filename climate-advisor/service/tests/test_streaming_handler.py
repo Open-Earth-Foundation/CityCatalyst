@@ -767,7 +767,7 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         ), patch("app.utils.streaming_handler.log_metrics"), patch(
             "app.utils.streaming_handler.log_tags"
         ), patch("app.utils.streaming_handler.log_text_artifact"):
-            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+            await handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
 
         names = [record["tool_name"] for record in handler._tool_observation_records]
         outcomes = [record["outcome"] for record in handler._tool_observation_records]
@@ -863,7 +863,7 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             "app.utils.streaming_handler.close_open_tool_observations",
             side_effect=RuntimeError("mlflow close failed"),
         ):
-            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+            await handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
 
         artifact = next(
             payload
@@ -929,7 +929,7 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             "app.utils.streaming_handler.close_open_tool_observations",
             side_effect=RuntimeError("mlflow close failed"),
         ):
-            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+            await handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
 
         artifact = next(
             payload
@@ -1040,7 +1040,7 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             "app.utils.streaming_handler.close_open_tool_observations",
             side_effect=RuntimeError("mlflow close failed"),
         ):
-            handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
+            await handler._log_mlflow_stream_summary(ok=True, started_at=0.0)
 
         artifact = next(
             payload

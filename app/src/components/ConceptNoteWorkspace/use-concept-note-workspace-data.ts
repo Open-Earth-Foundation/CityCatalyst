@@ -7,7 +7,7 @@ import { useConceptNoteWorkspaceEvents } from "@/components/ConceptNoteWorkspace
 import { useTranslation } from "@/i18n/client";
 import { useAppDispatch } from "@/lib/hooks";
 import { api } from "@/services/api";
-import type { ConceptNoteUploadResponse } from "@/util/types";
+import type { ConceptNoteRun, ConceptNoteUploadResponse } from "@/util/types";
 import {
   getConceptNoteContextState,
   getConceptNoteContextPresentation,
@@ -19,12 +19,16 @@ import {
   normalizePopulationData,
 } from "@/components/ConceptNoteDashboard/utils";
 import {
+  CONCEPT_NOTE_MAX_UPLOADS,
   conceptNoteSourceLabel,
+  isConceptNoteUploadLimitError,
   shouldPollConceptNoteUpload,
   validateConceptNoteSourceFile,
 } from "@/components/ConceptNoteWiringHarness/utils";
 
 const REFRESH_ON_RETURN_MS = 10_000;
+const CONTEXT_CATCH_UP_POLL_MS = 4_000;
+const CONTEXT_CATCH_UP_MAX_POLL_MS = 30_000;
 
 interface WorkspaceDataOptions {
   cityId: string;
@@ -41,7 +45,8 @@ export function useConceptNoteWorkspaceData({
 }: WorkspaceDataOptions) {
   const { t } = useTranslation(lng, "concept-notes");
   const dispatch = useAppDispatch();
-  const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
+  // Set by uploads and retries in this session.
+  const [activeUploadId, setActiveUploadId] = useState<string | null>(null);
   const [uploadDetails, setUploadDetails] =
     useState<ConceptNoteUploadResponse | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -123,12 +128,24 @@ export function useConceptNoteWorkspaceData({
   const [startDraftMutation, startDraftState] =
     api.useStartConceptNoteDraftMutation();
 
-  const persistedUpload = run?.uploads?.[0];
-  const selectedUploadId = activeUploadId ?? persistedUpload?.upload_id ?? null;
-  const persistedUploadStatus =
-    persistedUpload?.upload_id === selectedUploadId
-      ? persistedUpload.status
-      : null;
+  const runUploads = run?.uploads ?? [];
+  const persistedUpload = runUploads[0];
+  // `?uploadId=` only tracks a just-created note's upload until the run lists
+  // it; after that the newest upload drives status like any other visit.
+  const initialUploadListed =
+    Boolean(initialUploadId) &&
+    runUploads.some((upload) => upload.upload_id === initialUploadId);
+  const pendingInitialUploadId =
+    initialUploadId && !initialUploadListed ? initialUploadId : null;
+  const selectedUploadId =
+    activeUploadId ??
+    pendingInitialUploadId ??
+    persistedUpload?.upload_id ??
+    null;
+  const selectedRunUpload = runUploads.find(
+    (upload) => upload.upload_id === selectedUploadId,
+  );
+  const persistedUploadStatus = selectedRunUpload?.status ?? null;
   const { currentData: refreshedUpload, isError: uploadRefreshFailed } =
     api.useGetConceptNoteUploadStatusQuery(
       { runId, uploadId: selectedUploadId ?? "" },
@@ -139,6 +156,19 @@ export function useConceptNoteWorkspaceData({
         refetchOnReconnect: true,
       },
     );
+
+  // Drop the served `?uploadId=` so a reload does not track a stale upload.
+  useEffect(() => {
+    if (!initialUploadListed) return;
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has("uploadId")) return;
+    url.searchParams.delete("uploadId");
+    window.history.replaceState(
+      null,
+      "",
+      `${url.pathname}${url.search}${url.hash}`,
+    );
+  }, [initialUploadListed]);
 
   const bundle = getConceptNoteBundleProgress(run?.progress_summary ?? {});
 
@@ -187,27 +217,20 @@ export function useConceptNoteWorkspaceData({
   const draftProgress = getConceptNoteDraftProgress(
     run?.progress_summary ?? {},
   );
-  const persistedUploadDetails: ConceptNoteUploadResponse | null =
-    persistedUpload
-      ? {
-          uploadId: persistedUpload.upload_id,
-          runId: persistedUpload.run_id,
-          status: persistedUpload.status,
-          filename: persistedUpload.filename,
-          sourceLabel: persistedUpload.source_label,
-          pageCount: persistedUpload.page_count,
-          errorCode: persistedUpload.error_code ?? undefined,
-          receivedAt: persistedUpload.received_at,
-          completedAt: persistedUpload.completed_at,
-        }
-      : null;
   const effectiveUpload =
-    refreshedUpload ?? uploadDetails ?? persistedUploadDetails;
+    refreshedUpload ??
+    uploadDetails ??
+    (selectedRunUpload ? toUploadResponse(selectedRunUpload) : null);
+  const uploads = listConceptNoteUploads(runUploads, effectiveUpload);
+  const uploadLimitReached = uploads.length >= CONCEPT_NOTE_MAX_UPLOADS;
+  const retryingUploadId = retryUploadState.isLoading
+    ? (retryUploadState.originalArgs?.uploadId ?? null)
+    : null;
   const contextState = getConceptNoteContextState({
     bundle,
     uploads: run?.uploads,
     activeUpload: effectiveUpload,
-    initialUploadId,
+    initialUploadId: pendingInitialUploadId ?? undefined,
     isUploading: uploadState.isLoading,
     isRetrying: retryUploadState.isLoading || retryBundleState.isLoading,
   });
@@ -270,11 +293,45 @@ export function useConceptNoteWorkspaceData({
     uploadId: selectedUploadId,
     observeDraft: isDraftRunning || draftQueryFailed,
     observeUpload: isUploadActive || uploadRefreshFailed,
-    observeRun: bundle.status === "building" || runFailed,
+    // A finished upload can be ready before its rebuild starts, leaving the
+    // last ready bundle behind the uploads; keep watching until it catches up.
+    observeRun:
+      bundle.status === "building" ||
+      runFailed ||
+      (contextState === "processing" && !isUploadActive),
   });
+
+  // The run stream stops at the first snapshot without a rebuild, so it can
+  // close while another file is still processing or before a finished file's
+  // rebuild starts. Until the context catches up, poll the run with backoff.
+  const waitingForContext =
+    contextState === "processing" &&
+    !isUploadActive &&
+    bundle.status !== "building" &&
+    !runFailed;
+  useEffect(() => {
+    if (!waitingForContext) return;
+    let delay = CONTEXT_CATCH_UP_POLL_MS;
+    let timer: number;
+    function poll(): void {
+      timer = window.setTimeout(() => {
+        void refetchRun();
+        delay = Math.min(delay * 2, CONTEXT_CATCH_UP_MAX_POLL_MS);
+        poll();
+      }, delay);
+    }
+    poll();
+    return () => window.clearTimeout(timer);
+  }, [waitingForContext, refetchRun]);
 
   async function uploadSource(file: File): Promise<void> {
     setUploadError(null);
+    if (uploadLimitReached) {
+      setUploadError(
+        t("upload-limit-reached", { max: CONCEPT_NOTE_MAX_UPLOADS }),
+      );
+      return;
+    }
     const validationError = await validateConceptNoteSourceFile(file);
     if (validationError) {
       setUploadError(t(validationError));
@@ -292,14 +349,17 @@ export function useConceptNoteWorkspaceData({
       }).unwrap();
       setActiveUploadId(upload.uploadId);
       setUploadDetails(upload);
-    } catch {
-      setUploadError(t("upload-source-error"));
+    } catch (error) {
+      setUploadError(
+        isConceptNoteUploadLimitError(error)
+          ? t("upload-limit-reached", { max: CONCEPT_NOTE_MAX_UPLOADS })
+          : t("upload-source-error"),
+      );
     }
   }
 
-  async function retryActiveUpload(): Promise<void> {
-    const uploadId = selectedUploadId;
-    if (!uploadId) return;
+  /** Retry one failed upload and track it, whichever upload was selected. */
+  async function retrySourceUpload(uploadId: string): Promise<void> {
     setUploadError(null);
     try {
       const upload = await retryUpload({
@@ -389,10 +449,10 @@ export function useConceptNoteWorkspaceData({
     populationData,
     refetchDraft,
     refetchRun,
-    retryActiveUpload,
+    retrySourceUpload,
+    retryingUploadId,
     retryBundleState,
     retryContextBundle,
-    retryUploadState,
     reviewAvailabilityDescription,
     run,
     runFailed,
@@ -401,7 +461,51 @@ export function useConceptNoteWorkspaceData({
     selectInventory,
     startDrafting,
     startDraftState,
+    uploads,
     uploadSource,
     uploadState,
   };
+}
+
+type RunUpload = NonNullable<ConceptNoteRun["uploads"]>[number];
+
+function toUploadResponse(upload: RunUpload): ConceptNoteUploadResponse {
+  return {
+    uploadId: upload.upload_id,
+    runId: upload.run_id,
+    status: upload.status,
+    filename: upload.filename,
+    sourceLabel: upload.source_label,
+    pageCount: upload.page_count,
+    errorCode: upload.error_code ?? undefined,
+    receivedAt: upload.received_at,
+    completedAt: upload.completed_at,
+  };
+}
+
+/**
+ * Every upload on the run, newest first. The tracked upload's fresher status
+ * replaces its row, or leads the list until the run lists it.
+ */
+export function listConceptNoteUploads(
+  runUploads: RunUpload[],
+  trackedUpload: ConceptNoteUploadResponse | null,
+): ConceptNoteUploadResponse[] {
+  const uploads = runUploads.map((upload) => {
+    const persisted = toUploadResponse(upload);
+    if (trackedUpload?.uploadId !== upload.upload_id) return persisted;
+    return {
+      ...persisted,
+      ...trackedUpload,
+      filename: trackedUpload.filename || persisted.filename,
+      pageCount: trackedUpload.pageCount ?? persisted.pageCount,
+    };
+  });
+  if (
+    trackedUpload &&
+    !runUploads.some((upload) => upload.upload_id === trackedUpload.uploadId)
+  ) {
+    uploads.unshift(trackedUpload);
+  }
+  return uploads;
 }

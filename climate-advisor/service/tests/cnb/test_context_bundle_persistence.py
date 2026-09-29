@@ -535,6 +535,51 @@ async def test_agent_projection_removes_ids_but_keeps_backend_identity(
 
 
 @pytest.mark.asyncio
+async def test_agent_context_marks_the_newest_uploaded_source(tmp_path) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    first_at = datetime(2026, 9, 25, 3, 27, tzinfo=timezone.utc)
+    brief = upload(
+        run_id=run_id, upload_id=uuid4(), status="ready", received_at=first_at
+    )
+    plan = upload(
+        run_id=run_id,
+        upload_id=uuid4(),
+        status="ready",
+        received_at=first_at + timedelta(minutes=33),
+    )
+    brief.filename = "project-brief.pdf"
+    plan.filename = "climate-action-plan.pdf"
+    try:
+        async with session_factory() as session, session.begin():
+            session.add_all([concept_note_run(run_id), brief, plan])
+        snapshot = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+        )
+        assert await commit_build(
+            session_factory, snapshot, [selected(brief), selected(plan)]
+        )
+
+        context = await load_agent_context(
+            session_factory=session_factory, user_id="owner", run_id=run_id
+        )
+        assert context is not None
+        sources = {
+            source["filename"]: source for source in context["selected_sources"]
+        }
+        assert sources["climate-action-plan.pdf"]["newest"] is True
+        assert sources["project-brief.pdf"]["newest"] is False
+        assert datetime.fromisoformat(
+            sources["project-brief.pdf"]["uploaded_at"]
+        ).replace(tzinfo=timezone.utc) == first_at
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
 async def test_source_index_lookup_disambiguates_duplicate_names(tmp_path) -> None:
     engine, session_factory = await database(tmp_path)
     run_id = uuid4()

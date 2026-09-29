@@ -193,6 +193,11 @@ panel's Start drafting button. Dismissed guidance stays dismissed. Completion
 guidance clears when drafting resumes. Draft progress uses workspace events, and
 finishing the chat overview refreshes the draft's consumed-overview state.
 
+Files uploaded after drafting began go through source revalidation (see
+below), which redrafts the chapters they affect and closes the gaps their
+evidence answers. In chat, `concept_note_gaps` lists those closed gaps with the
+file that filled them in `filled_from`, so Clima can say what a new file changed.
+
 ### Implemented chat revision boundary (CC-732)
 
 The workspace shows red/green changes at each affected passage.
@@ -1475,8 +1480,12 @@ same file again intentionally creates another source identity. Replaying the
 same CA create request with that ID and unchanged metadata is idempotent, while
 changing its immutable identity is rejected. PDF uploads use
 `source_type = concept_note_upload` and `source_id = upload_id` inside the shared
-OCR queue. A run may contain many distinct uploads. The shared 20 MiB upload
-limit applies to the uploaded source file, not to the final Markdown artifact.
+OCR queue. A run may contain up to 10 uploads (`MAX_UPLOADS_PER_RUN`); failed
+uploads keep their slot because files cannot be removed individually, replays of
+an existing `upload_id` never count, and an 11th upload returns 409
+`concept_note_upload_limit_reached`. The Context tab lists every upload. The
+shared 20 MiB upload limit applies to the uploaded source file, not to the final
+Markdown artifact.
 PDF-derived Markdown includes `page_count` metadata; native Markdown does not
 use page counts.
 

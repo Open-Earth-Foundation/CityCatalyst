@@ -1,6 +1,9 @@
 "use client";
 
-import type { ConceptNoteContextPresentation } from "./context-status";
+import {
+  getConceptNoteUploadRowPresentation,
+  type ConceptNoteContextPresentation,
+} from "./context-status";
 
 import type { ChangeEvent, FormEvent, ReactNode } from "react";
 import { useEffect, useId, useRef, useState } from "react";
@@ -26,6 +29,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
+import { api } from "@/services/api";
 import { getGhgiInventoryPath } from "@/util/ghgi-routes";
 import type {
   CityDashboardResponse,
@@ -52,7 +56,7 @@ import {
   inventorySourceAction,
   type ContextSourceState,
 } from "../ConceptNoteDashboard/context-source-status";
-import { uploadStatusTranslationKey } from "../ConceptNoteWiringHarness/utils";
+import { CONCEPT_NOTE_MAX_UPLOADS } from "../ConceptNoteWiringHarness/utils";
 import { ApplicationTemplateDialog } from "./application-template-dialog";
 import { InventorySelectionDialog } from "./inventory-selection-dialog";
 
@@ -83,14 +87,15 @@ interface ContextTabProps {
   onSelectInventory: (inventoryId: string | null) => Promise<void>;
   isDraftRunning: boolean;
   isRetryingBundle: boolean;
-  isRetryingUpload: boolean;
+  /** The upload whose retry request is in flight, if any. */
+  retryingUploadId: string | null;
   isUploading: boolean;
   livePopulation: { population: number; year: number } | null;
   lng: string;
   manualPopulation: { population: number; year: number } | null;
   manualPopulationSaving: boolean;
   onRetryBundle: () => void;
-  onRetryUpload: () => void;
+  onRetryUpload: (uploadId: string) => void;
   onSaveManualPopulation: (
     value: { population: number; year: number } | null,
   ) => Promise<void>;
@@ -98,7 +103,9 @@ interface ContextTabProps {
   populationFailed: boolean;
   populationLabel: string;
   populationLoading: boolean;
-  upload: ConceptNoteUploadResponse | null;
+  runId: string;
+  /** Every upload on the note, newest first. */
+  uploads: ConceptNoteUploadResponse[];
   uploadPickerRequest?: number;
   uploadError: string | null;
 }
@@ -224,6 +231,86 @@ function ContextCard({
   );
 }
 
+interface FileRowProps {
+  as?: "li";
+  children?: ReactNode;
+  detail: string;
+  statusLabel: string;
+  title: string;
+  tone: ContextTone;
+}
+
+function FileRow({
+  as,
+  children,
+  detail,
+  statusLabel,
+  title,
+  tone,
+}: FileRowProps) {
+  return (
+    <Flex
+      as={as}
+      align="center"
+      gap={3}
+      border="1px solid"
+      borderColor="border.neutral"
+      borderRadius="rounded"
+      bg="base.light"
+      px={3}
+      py={2.5}
+    >
+      <Box
+        boxSize="7px"
+        flexShrink={0}
+        borderRadius="full"
+        bg={toneColor(tone)}
+      />
+      <Box minW={0} flex={1}>
+        <Text truncate fontSize="body.sm" color="content.primary" title={title}>
+          {title}
+        </Text>
+        <Text fontSize="10px" color="content.tertiary">
+          {detail}
+        </Text>
+      </Box>
+      <ContextStatusBadge label={statusLabel} tone={tone} />
+      {children}
+    </Flex>
+  );
+}
+
+/**
+ * Retry for one failed row. Only the tracked upload carries worker retry
+ * eligibility, so other failed rows look up their own status.
+ */
+function UploadRetryButton({
+  label,
+  loading,
+  onRetry,
+  runId,
+  upload,
+}: {
+  label: string;
+  loading: boolean;
+  onRetry: () => void;
+  runId: string;
+  upload: ConceptNoteUploadResponse;
+}) {
+  const { currentData } = api.useGetConceptNoteUploadStatusQuery(
+    { runId, uploadId: upload.uploadId },
+    { skip: upload.canRetry !== undefined },
+  );
+  const canRetry = upload.canRetry ?? currentData?.canRetry;
+  if (!canRetry) return null;
+  return (
+    <Button size="xs" variant="outline" loading={loading} onClick={onRetry}>
+      <Icon as={LuRefreshCw} />
+      {label}
+    </Button>
+  );
+}
+
 export function ContextTab({
   applicationContext,
   onSelectFunding,
@@ -251,7 +338,7 @@ export function ContextTab({
   onSelectInventory,
   isDraftRunning,
   isRetryingBundle,
-  isRetryingUpload,
+  retryingUploadId,
   isUploading,
   livePopulation,
   lng,
@@ -264,12 +351,14 @@ export function ContextTab({
   populationFailed,
   populationLabel,
   populationLoading,
-  upload,
+  runId,
+  uploads,
   uploadError,
   uploadPickerRequest,
 }: ContextTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadLimitReasonId = useId();
   useEffect(() => {
     if (uploadPickerRequest) fileInputRef.current?.click();
   }, [uploadPickerRequest]);
@@ -387,26 +476,11 @@ export function ContextTab({
             : undefined,
       }
     : inventoryLinkAction;
-  // A converted file is not ready for chat until context assembly finishes.
-  // Kept separate from the raw "processing" status, which means converting.
-  const awaitingContext = upload?.status === "ready" && contextStatus.blocked;
-  const contextFailed = awaitingContext && contextStatus.state === "failed";
-  const uploadStatus = contextFailed
-    ? "failed"
-    : awaitingContext
-      ? null
-      : (upload?.status ?? "queued");
-  const uploadTone: ContextTone =
-    uploadStatus === "ready"
-      ? "positive"
-      : uploadStatus === "failed"
-        ? "warning"
-        : "neutral";
-  const uploadStatusLabel = t(
-    awaitingContext && !contextFailed
-      ? "status-processing"
-      : uploadStatusTranslationKey(uploadStatus),
-  );
+  // Every upload counts toward the cap: files cannot be removed from a note.
+  const uploadLimitReached = uploads.length >= CONCEPT_NOTE_MAX_UPLOADS;
+  const readyUploadCount = uploads.filter(
+    (upload) => upload.status === "ready",
+  ).length;
   function onFileChange(event: ChangeEvent<HTMLInputElement>): void {
     const file = event.target.files?.[0];
     if (file) {
@@ -807,7 +881,19 @@ export function ContextTab({
 
       <VStack align="stretch" gap={2}>
         <Flex align="center" justify="space-between" gap={3}>
-          <ContextSectionLabel>{t("your-files")}</ContextSectionLabel>
+          <HStack gap={2} minW={0}>
+            <ContextSectionLabel>{t("your-files")}</ContextSectionLabel>
+            <Text
+              fontSize="10px"
+              color="content.tertiary"
+              data-testid="concept-note-upload-count"
+            >
+              {t("uploaded-files-count", {
+                uploaded: uploads.length,
+                max: CONCEPT_NOTE_MAX_UPLOADS,
+              })}
+            </Text>
+          </HStack>
           <input
             ref={fileInputRef}
             type="file"
@@ -819,68 +905,91 @@ export function ContextTab({
             size="xs"
             variant="outline"
             loading={isUploading}
+            disabled={uploadLimitReached}
+            aria-describedby={
+              uploadLimitReached ? uploadLimitReasonId : undefined
+            }
             onClick={() => fileInputRef.current?.click()}
           >
             <Icon as={LuUpload} />
             {t("upload-pdf")}
           </Button>
         </Flex>
+        {uploadLimitReached && (
+          <Text
+            id={uploadLimitReasonId}
+            fontSize="xs"
+            color="content.secondary"
+          >
+            {t("upload-limit-reason", { max: CONCEPT_NOTE_MAX_UPLOADS })}
+          </Text>
+        )}
 
-        <Flex
-          align="center"
-          gap={3}
-          border="1px solid"
-          borderColor="border.neutral"
-          borderRadius="rounded"
-          bg="base.light"
-          px={3}
-          py={2.5}
-        >
-          <Box
-            boxSize="7px"
-            flexShrink={0}
-            borderRadius="full"
-            bg={toneColor(uploadTone)}
-          />
-          <Box minW={0} flex={1}>
-            <Text truncate fontSize="body.sm" color="content.primary">
-              {upload?.filename ||
-                firstCityFile ||
-                (bundle.readySources
-                  ? t("ready-run-sources", { count: bundle.readySources })
-                  : t("no-run-sources"))}
-            </Text>
-            <Text fontSize="10px" color="content.tertiary">
-              {upload
-                ? `${uploadStatusLabel}${
+        {uploads.length > 0 ? (
+          <VStack
+            as="ul"
+            align="stretch"
+            gap={2}
+            listStyleType="none"
+            aria-label={t("your-files")}
+          >
+            {uploads.map((upload) => {
+              const presentation = getConceptNoteUploadRowPresentation(
+                upload.status,
+                bundle,
+                readyUploadCount,
+              );
+              const statusLabel = t(presentation.labelKey);
+              return (
+                <FileRow
+                  as="li"
+                  key={upload.uploadId}
+                  tone={presentation.tone}
+                  title={
+                    upload.filename ||
+                    upload.sourceLabel ||
+                    t("recent-run-upload")
+                  }
+                  detail={`${statusLabel}${
                     upload.pageCount
                       ? ` · ${t("pages-count", { count: upload.pageCount })}`
                       : ""
-                  }`
-                : firstCityFile
-                  ? t("city-files-available", {
-                      count: cityFilesCount,
-                      file: firstCityFile,
-                    })
-                  : t("upload-source-help")}
-            </Text>
-          </Box>
-          <ContextStatusBadge
-            label={upload ? uploadStatusLabel : t("not-connected")}
-            tone={uploadTone}
+                  }`}
+                  statusLabel={statusLabel}
+                >
+                  {upload.status === "failed" && (
+                    <UploadRetryButton
+                      label={t("retry")}
+                      loading={retryingUploadId === upload.uploadId}
+                      onRetry={() => onRetryUpload(upload.uploadId)}
+                      runId={runId}
+                      upload={upload}
+                    />
+                  )}
+                </FileRow>
+              );
+            })}
+          </VStack>
+        ) : (
+          <FileRow
+            tone="neutral"
+            title={
+              firstCityFile ||
+              (bundle.readySources
+                ? t("ready-run-sources", { count: bundle.readySources })
+                : t("no-run-sources"))
+            }
+            detail={
+              firstCityFile
+                ? t("city-files-available", {
+                    count: cityFilesCount,
+                    file: firstCityFile,
+                  })
+                : t("upload-source-help")
+            }
+            statusLabel={t("not-connected")}
           />
-          {upload?.status === "failed" && upload.canRetry && (
-            <Button
-              size="xs"
-              variant="outline"
-              loading={isRetryingUpload}
-              onClick={onRetryUpload}
-            >
-              <Icon as={LuRefreshCw} />
-              {t("retry")}
-            </Button>
-          )}
-        </Flex>
+        )}
 
         {uploadError && (
           <HStack

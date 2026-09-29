@@ -6,7 +6,10 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from app.models.cnb.concept_note_markdown import ConceptNoteUploadStatusResponse
+from app.models.cnb.concept_note_markdown import (
+    MAX_UPLOADS_PER_RUN,
+    ConceptNoteUploadStatusResponse,
+)
 
 
 class InitialConceptNoteUpload(BaseModel):
@@ -32,7 +35,7 @@ class ConceptNoteStartRequest(BaseModel):
     thread_id: UUID | None = None
     idempotency_key: UUID
     initial_uploads: list[InitialConceptNoteUpload] = Field(
-        default_factory=list, max_length=100
+        default_factory=list, max_length=MAX_UPLOADS_PER_RUN
     )
 
     @field_validator("name")

@@ -39,6 +39,7 @@ import {
 } from "@/util/concept-note-initial-uploads";
 
 import {
+  CONCEPT_NOTE_MAX_UPLOADS,
   conceptNoteSourceLabel,
   formatFileSize,
   validateConceptNoteSourceFile,
@@ -50,6 +51,7 @@ interface NewConceptNoteDialogProps {
   cityName: string;
   lng: string;
   onOpenChange: (open: boolean) => void;
+  onUploadingRunChange?: (runId: string | null) => void;
   open: boolean;
   projectId?: string | null;
   projectName?: string | null;
@@ -74,6 +76,7 @@ export function NewConceptNoteDialog({
   cityName,
   lng,
   onOpenChange,
+  onUploadingRunChange,
   open,
   projectId,
   projectName,
@@ -136,6 +139,15 @@ export function NewConceptNoteDialog({
   }
 
   function onFileSelect(details: FileUploadFileChangeDetails): void {
+    // The dropzone rejects a selection that would pass the per-note limit.
+    if (
+      details.rejectedFiles.some((rejection) =>
+        rejection.errors.includes("TOO_MANY_FILES"),
+      )
+    ) {
+      setError(t("upload-limit-select", { max: CONCEPT_NOTE_MAX_UPLOADS }));
+      return;
+    }
     void updateFiles(details.acceptedFiles);
   }
 
@@ -217,6 +229,9 @@ export function NewConceptNoteDialog({
         targetRunId = run.run_id;
         setCreatedRunId(targetRunId);
       }
+      // Stays set on success: the dashboard should not flash the retry state
+      // for this run while the router navigates to the workspace.
+      onUploadingRunChange?.(targetRunId);
 
       for (const source of pending) {
         const file = selected.find(
@@ -254,6 +269,7 @@ export function NewConceptNoteDialog({
       resetDraft();
       onOpenChange(false);
     } catch {
+      onUploadingRunChange?.(null);
       setError(
         t(targetRunId ? "upload-incomplete-message" : "create-note-error"),
       );
@@ -410,7 +426,7 @@ export function NewConceptNoteDialog({
                     accept:
                       "application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md",
                   }}
-                  maxFiles={100}
+                  maxFiles={CONCEPT_NOTE_MAX_UPLOADS}
                   onFileChange={onFileSelect}
                 >
                   <FileUploadDropzone
@@ -432,7 +448,9 @@ export function NewConceptNoteDialog({
                         </Text>
                       </VStack>
                     }
-                    description={t("pdf-limit")}
+                    description={t("pdf-limit-files", {
+                      max: CONCEPT_NOTE_MAX_UPLOADS,
+                    })}
                   />
                 </FileUploadRoot>
               </Field>

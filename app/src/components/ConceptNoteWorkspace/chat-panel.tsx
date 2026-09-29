@@ -1,16 +1,17 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import {
   Box,
+  chakra,
   Flex,
   HStack,
   Icon,
-  Input,
   Spinner,
   Text,
+  Textarea,
   VStack,
 } from "@chakra-ui/react";
 import type { IconType } from "react-icons";
@@ -20,16 +21,28 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-components";
+import { useEnterSubmit } from "@/hooks/useEnterSubmit";
 import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import { useConceptNoteChat } from "./use-concept-note-chat";
 import { ChatProgress } from "./chat-progress";
+import { DraftingProgressCard } from "./drafting-progress-card";
+import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
+import { ChatSuggestions } from "./chat-suggestions";
 import type { ConceptNoteContextPresentation } from "./context-status";
+import { ContextChangesNotice } from "./context-changes-notice";
+import type { ConceptNoteContextChange } from "@/components/ConceptNoteDashboard/utils";
 import type { EditController } from "./document-review";
 import type { EditScope } from "@/util/concept-note-edit-types";
+import type { ConceptNoteDraftState } from "@/util/types";
+
+// About eight lines of composer text before it scrolls.
+const COMPOSER_MAX_HEIGHT_PX = 190;
 
 interface ConceptNoteChatPanelProps {
   contextStatus: ConceptNoteContextPresentation;
+  contextBuildId?: string | null;
+  contextChanges?: ConceptNoteContextChange[];
   composerRequest: { content: string; id: string } | null;
   draftOverviewPending: boolean;
   lng: string;
@@ -39,6 +52,16 @@ interface ConceptNoteChatPanelProps {
   threadId: string | null;
   editScope: EditScope;
   edits: EditController;
+  draft?: ConceptNoteDraftState | null;
+  draftStartedAt?: string | null;
+  draftCompletedAt?: string | null;
+  welcomeStage?: ChatWelcomeStage | null;
+  onOpenDraft?: () => void;
+  onOpenFundingSetup?: () => void;
+  onDraftOverviewComplete?: () => void;
+  activeTab?: "draft" | "structure" | "context";
+  suggestionRevision?: string;
+  hasDocument?: boolean;
 }
 
 interface ContextStatusNoticeProps {
@@ -178,6 +201,8 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
 
 export function ConceptNoteChatPanel({
   contextStatus,
+  contextBuildId = null,
+  contextChanges = [],
   composerRequest,
   draftOverviewPending,
   lng,
@@ -187,10 +212,21 @@ export function ConceptNoteChatPanel({
   threadId,
   editScope,
   edits,
+  draft = null,
+  draftStartedAt = null,
+  draftCompletedAt = null,
+  welcomeStage = null,
+  onOpenDraft,
+  onOpenFundingSetup,
+  onDraftOverviewComplete,
+  activeTab = "draft",
+  suggestionRevision = "",
+  hasDocument = false,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [input, setInput] = useState("");
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const { formRef, onKeyDown: submitOnEnter } = useEnterSubmit();
   const {
     error: chatError,
     historyLoading,
@@ -206,6 +242,7 @@ export function ConceptNoteChatPanel({
     threadId,
     editScope,
     onProposal: edits.loadProposal,
+    onDraftOverviewComplete,
   });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const followLatestRef = useRef(true);
@@ -215,6 +252,8 @@ export function ConceptNoteChatPanel({
   const contextBlocked = contextStatus.blocked;
   const chatDisabled =
     contextBlocked || !threadId || historyLoading || isGenerating;
+  // Typing stays open while Clima responds; only sending waits for it.
+  const composerDisabled = contextBlocked || !threadId;
   const requestedOverviewThreadRef = useRef<string | null>(null);
 
   // Ask Clima once for the drafting overview; the service claims it per build.
@@ -266,8 +305,21 @@ export function ConceptNoteChatPanel({
     return () => cancelAnimationFrame(frame);
   }, [composerRequest]);
 
+  // Grow the composer with its content, then scroll past the max height.
+  useLayoutEffect(() => {
+    const composer = inputRef.current;
+    if (!composer) {
+      return;
+    }
+    composer.style.height = "auto";
+    const height = Math.min(composer.scrollHeight, COMPOSER_MAX_HEIGHT_PX);
+    composer.style.height = `${height}px`;
+    composer.style.overflowY =
+      composer.scrollHeight > COMPOSER_MAX_HEIGHT_PX ? "auto" : "hidden";
+  }, [input]);
+
   async function submitMessage(
-    event: FormEvent<HTMLDivElement>,
+    event: FormEvent<HTMLFormElement>,
   ): Promise<void> {
     event.preventDefault();
     const content = input.trim();
@@ -377,6 +429,28 @@ export function ConceptNoteChatPanel({
           onOpenContext={onOpenContext}
           status={contextStatus}
         />
+        {!contextBlocked && (
+          <ContextChangesNotice
+            buildId={contextBuildId}
+            changes={contextChanges}
+            lng={lng}
+            onOpenContext={onOpenContext}
+            runId={runId}
+          />
+        )}
+
+        {welcomeStage &&
+          threadId &&
+          !historyLoading &&
+          messages.length === 0 &&
+          draft?.status !== "running" && (
+            <ChatWelcome
+              lng={lng}
+              stage={welcomeStage}
+              onOpenDraft={onOpenDraft}
+              onOpenFundingSetup={onOpenFundingSetup}
+            />
+          )}
 
         {messages.map((message) => (
           <Fragment key={message.id}>
@@ -424,6 +498,15 @@ export function ConceptNoteChatPanel({
           </Fragment>
         ))}
 
+        {draft && (
+          <DraftingProgressCard
+            draft={draft}
+            lng={lng}
+            startedAt={draftStartedAt}
+            completedAt={draftCompletedAt}
+          />
+        )}
+
         {edits.error && (
           <Text role="alert" fontSize="label.sm" color="content.primary">
             {t(
@@ -457,21 +540,40 @@ export function ConceptNoteChatPanel({
         )}
       </VStack>
 
-      <Box
-        as="form"
+      <chakra.form
+        ref={formRef}
         borderTop="1px solid"
         borderColor="border.neutral"
         p={4}
         flexShrink={0}
         onSubmit={submitMessage}
       >
-        <Flex align="center" gap={3}>
-          <Input
+        <Box mb={!chatDisabled && threadId ? 3 : 0}>
+          {!chatDisabled && threadId && (
+            <ChatSuggestions
+              runId={runId}
+              threadId={threadId}
+              lng={lng}
+              tab={activeTab}
+              revision={suggestionRevision}
+              lastMessageId={messages.at(-1)?.id}
+              hasDocument={hasDocument}
+              onSelect={(question) => {
+                setInput(question);
+                inputRef.current?.focus();
+              }}
+            />
+          )}
+        </Box>
+        <Flex align="flex-end" gap={3}>
+          <Textarea
             data-testid="concept-note-chat-input"
             aria-label={t("chat-input-placeholder")}
             ref={inputRef}
             value={input}
-            disabled={chatDisabled}
+            rows={1}
+            resize="none"
+            disabled={composerDisabled}
             aria-describedby={
               contextBlocked ? "concept-note-chat-blocked" : undefined
             }
@@ -487,9 +589,12 @@ export function ConceptNoteChatPanel({
             minH="52px"
             minW={0}
             flex={1}
+            py="15px"
             fontSize="14px"
+            lineHeight="20px"
             borderRadius="rounded"
             onChange={(event) => setInput(event.target.value)}
+            onKeyDown={submitOnEnter}
           />
           <Button
             type="submit"
@@ -541,7 +646,7 @@ export function ConceptNoteChatPanel({
             {t("chat-thread-unavailable")}
           </Text>
         )}
-      </Box>
+      </chakra.form>
     </VStack>
   );
 }

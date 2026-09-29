@@ -615,6 +615,16 @@ def parse_source_pages(markdown: str) -> list[SourcePage]:
     return pages
 
 
+def render_source_text(units: Sequence[SourceUnit]) -> str:
+    """Rebuild verified source text, restoring PDF page markers for citation."""
+    return "".join(
+        f"<!-- page: {unit.number} -->{unit.text}"
+        if isinstance(unit, SourcePage)
+        else unit.text
+        for unit in units
+    )
+
+
 def parse_markdown_blocks(markdown: str) -> list[SourceBlock]:
     """Split native Markdown losslessly into deterministically anchored blocks."""
     if not markdown.strip():

@@ -37,6 +37,7 @@ interface DraftSetupPanelProps {
   onOpenFundingSetup: () => void;
   onRetry: () => void;
   onStartDrafting: () => void;
+  highlightStartDrafting?: boolean;
 }
 
 function draftStatusKey(status: ConceptNoteDraftRunStatus): string {
@@ -154,30 +155,70 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
               <Icon as={LuRefreshCw} />
               {t("retry-context")}
             </Button>
-          ) : !isBuilding && !isFailed ? (
-            <HStack gap={2} flexWrap="wrap">
-              <Button size="sm" variant="outline" onClick={props.onOpenContext}>
-                <Icon as={LuDatabase} />
-                {t("review-context")}
-              </Button>
-              <Button
-                size="sm"
-                variant="solid"
-                aria-describedby={
-                  setupBlocked ? "drafting-setup-reason" : undefined
-                }
-                disabled={
-                  !props.canStartDrafting ||
-                  props.isDraftRunning ||
-                  draft?.status === "complete"
-                }
-                loading={props.isStartingDraft}
-                onClick={props.onStartDrafting}
-              >
-                <Icon as={LuSparkles} />
-                {t(draftStarted ? "continue-drafting" : "start-drafting")}
-              </Button>
-            </HStack>
+          ) : !isFailed ? (
+            <Box>
+              <HStack gap={2} flexWrap="wrap">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={props.onOpenContext}
+                >
+                  <Icon as={LuDatabase} />
+                  {t("review-context")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="solid"
+                  data-testid="concept-note-start-drafting"
+                  aria-describedby={
+                    isBuilding
+                      ? "drafting-blocked-reason"
+                      : setupBlocked
+                        ? "drafting-setup-reason"
+                        : undefined
+                  }
+                  disabled={
+                    isBuilding ||
+                    !props.canStartDrafting ||
+                    props.isDraftRunning ||
+                    draft?.status === "complete"
+                  }
+                  loading={props.isStartingDraft}
+                  onClick={props.onStartDrafting}
+                  css={
+                    props.highlightStartDrafting
+                      ? {
+                          "@keyframes cnb-start-pulse": {
+                            "0%": {
+                              boxShadow:
+                                "0 0 0 0 var(--chakra-colors-content-link)",
+                            },
+                            "100%": {
+                              boxShadow: "0 0 0 10px rgba(0, 30, 167, 0)",
+                            },
+                          },
+                          animation: "cnb-start-pulse 1.1s ease-out 3",
+                        }
+                      : undefined
+                  }
+                >
+                  <Icon as={LuSparkles} />
+                  {t(draftStarted ? "continue-drafting" : "start-drafting")}
+                </Button>
+              </HStack>
+              {isBuilding && (
+                <Text
+                  id="drafting-blocked-reason"
+                  mt={2}
+                  fontSize="label.sm"
+                  lineHeight="20px"
+                  color="content.secondary"
+                  data-testid="concept-note-start-drafting-reason"
+                >
+                  {t("drafting-blocked-context")}
+                </Text>
+              )}
+            </Box>
           ) : null}
         </Flex>
       )}

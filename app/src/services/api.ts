@@ -76,6 +76,7 @@ import {
   ConceptNoteUploadRequest,
   ConceptNoteUploadResponse,
   ConceptNoteUploadStatusRequest,
+  ConceptNoteContextBundleRefreshResponse,
   ConceptNoteContextBundleRetryResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
@@ -116,6 +117,50 @@ import type {
 } from "@/util/types/meed";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+export interface BulkInventoryImportItemCountsDto {
+  total: number;
+  pending: number;
+  matched: number;
+  unmatched: number;
+  importing: number;
+  completed: number;
+  failed: number;
+  skipped: number;
+}
+
+export interface BulkInventoryImportJobDto {
+  id: string;
+  projectId: string;
+  year: number;
+  status: string;
+  dryRun: boolean;
+  createMissingCities: boolean;
+  inventoryType: string;
+  globalWarmingPotentialType: string;
+  replaceExisting: boolean;
+  progressStage: string | null;
+  progressDetail: string | null;
+  counts: BulkInventoryImportItemCountsDto;
+  created: string | null;
+  lastUpdated: string | null;
+}
+
+export interface BulkInventoryImportItemDto {
+  id: string;
+  originalFileName: string;
+  locode: string | null;
+  status: string;
+  stage: string | null;
+  errorCode: string | null;
+  errorLog: string | null;
+  warnings: string[];
+  resolvedYear: number | null;
+}
+
+export interface BulkInventoryImportJobDetailDto extends BulkInventoryImportJobDto {
+  items: BulkInventoryImportItemDto[];
+}
 
 export const api = createApi({
   reducerPath: "api",
@@ -169,6 +214,7 @@ export const api = createApi({
     "ConceptNoteUpload",
     "ConceptNoteDraft",
     "ConceptNoteEdits",
+    "BulkInventoryImport",
     "ConceptNoteApplicationContext",
     "ConceptNoteFundingCatalogue",
   ],
@@ -1445,6 +1491,51 @@ export const api = createApi({
         }),
         transformResponse: (response: unknown) => response,
       }),
+      enqueueBulkInventoryImport: builder.mutation<
+        {
+          jobId: string;
+          itemCount: number;
+          unmatchedCount: number;
+        },
+        FormData
+      >({
+        query: (formData) => ({
+          url: `/admin/bulk-inventory-import`,
+          method: "POST",
+          body: formData,
+        }),
+        transformResponse: (response: {
+          data: {
+            jobId: string;
+            itemCount: number;
+            unmatchedCount: number;
+          };
+        }) => response.data,
+        invalidatesTags: ["BulkInventoryImport"],
+      }),
+      getLatestBulkInventoryImportJob: builder.query<
+        BulkInventoryImportJobDto | null,
+        string
+      >({
+        query: (projectId) =>
+          `/admin/bulk-inventory-import?projectId=${projectId}`,
+        transformResponse: (response: {
+          data: BulkInventoryImportJobDto | null;
+        }) => response.data,
+        providesTags: ["BulkInventoryImport"],
+      }),
+      getBulkInventoryImportJob: builder.query<
+        BulkInventoryImportJobDetailDto,
+        string
+      >({
+        query: (jobId) => `/admin/bulk-inventory-import/${jobId}`,
+        transformResponse: (response: {
+          data: BulkInventoryImportJobDetailDto;
+        }) => response.data,
+        providesTags: (_r, _e, jobId) => [
+          { type: "BulkInventoryImport", id: jobId },
+        ],
+      }),
       connectDataSources: builder.mutation({
         query: (data: {
           userEmail: string;
@@ -2661,6 +2752,29 @@ export const api = createApi({
         }),
         invalidatesTags: ["ConceptNoteRuns"],
       }),
+      refreshConceptNoteContextBundle: builder.mutation<
+        ConceptNoteContextBundleRefreshResponse,
+        string
+      >({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/context-bundle/refresh/`,
+          method: "POST",
+        }),
+        // Only a queued rebuild changes the run; skip needless refetches.
+        invalidatesTags: (result) =>
+          result?.status === "queued" ? ["ConceptNoteRuns"] : [],
+      }),
+      selectConceptNoteInventory: builder.mutation<
+        ConceptNoteContextBundleRetryResponse,
+        { runId: string; inventoryId: string | null }
+      >({
+        query: ({ runId, inventoryId }) => ({
+          url: `concept-notes/${runId}/inventory-selection/`,
+          method: "PUT",
+          body: { inventory_id: inventoryId },
+        }),
+        invalidatesTags: ["ConceptNoteRuns"],
+      }),
       startConceptNoteDraft: builder.mutation<ConceptNoteDraftState, string>({
         query: (runId) => ({
           url: `concept-notes/${runId}/draft/`,
@@ -2668,6 +2782,7 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, runId) => [
           { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteRuns", id: runId },
         ],
       }),
       confirmConceptNoteChapter: builder.mutation<
@@ -2805,6 +2920,9 @@ export const {
   useEditProjectMutation,
   useDeleteProjectMutation,
   useCreateBulkInventoriesMutation,
+  useEnqueueBulkInventoryImportMutation,
+  useGetLatestBulkInventoryImportJobQuery,
+  useGetBulkInventoryImportJobQuery,
   useConnectDataSourcesMutation,
   useGetDataSourcePreviewQuery,
   useConnectAllInventoryDataSourcesMutation,

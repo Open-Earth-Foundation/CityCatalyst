@@ -83,8 +83,11 @@ async def test_missing_or_failed_population_keeps_the_rest_of_the_profile():
 
     assert empty["population"] is None and empty["population_year"] is None
     assert empty["area_km2"] is None
+    # Only a failed lookup is flagged, so a rebuild can keep the prior figure.
+    assert "population_lookup_failed" not in empty
     assert failed["name"] == "Kraków"
     assert failed["population"] is None
+    assert failed["population_lookup_failed"] is True
 
 
 async def test_profile_for_a_different_city_is_rejected():

@@ -18,6 +18,7 @@ import {
   type DraftInlineReviewProps,
 } from "@/components/ConceptNoteWorkspace/draft-document-panel";
 import { DraftSetupPanel } from "@/components/ConceptNoteWorkspace/draft-setup-panel";
+import type { ReactNode } from "react";
 import { useDraftFocus } from "@/components/ConceptNoteWorkspace/use-draft-focus";
 
 interface DraftTabProps extends DraftInlineReviewProps {
@@ -41,6 +42,8 @@ interface DraftTabProps extends DraftInlineReviewProps {
   onOpenFundingSetup: () => void;
   onRetry: () => void;
   onStartDrafting: () => void;
+  highlightStartDrafting?: boolean;
+  nextStep?: ReactNode;
 }
 
 export function DraftTab(props: DraftTabProps) {
@@ -90,6 +93,7 @@ export function DraftTab(props: DraftTabProps) {
           {props.mutationError}
         </Text>
       )}
+      {props.nextStep}
       <DraftSetupPanel {...props} />
 
       {draftStarted && chapters.length > 0 && (

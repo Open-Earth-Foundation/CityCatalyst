@@ -1550,7 +1550,8 @@ Async service flows use `async_start_run`, `async_workflow_trace`, and
 `run_mlflow_io` to await blocking MLflow initialization, run creation, artifact
 uploads, batch writes, and cleanup in worker threads. The request's run context
 is set and reset in its original task. Cancellation waits for in-flight telemetry
-before closing its run, so pending writes cannot race termination. Synchronous
+before closing its run, including after repeated task cancellation, so pending
+writes cannot race termination or leave a newly created run unclosed. Synchronous
 research entrypoints continue to use `start_run` and `workflow_trace`.
 `MLFLOW_ASYNC_LOGGING_ENABLED` alone does not offload artifact or run-lifecycle I/O.
 The shared trace experiment is configured once at initialization; trace metadata

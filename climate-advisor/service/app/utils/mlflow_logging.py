@@ -353,8 +353,7 @@ async def async_start_run(
         try:
             run, context = await asyncio.shield(creation)
         except asyncio.CancelledError:
-            with CancelScope(shield=True):
-                _, context = await creation
+            _, context = await _await_mlflow_completion(creation)
             raise
         _RUN_CONTEXT.set(context)
         if params:
@@ -386,9 +385,25 @@ async def run_mlflow_io(
     try:
         return await asyncio.shield(task)
     except asyncio.CancelledError:
-        with CancelScope(shield=True):
-            await task
+        await _await_mlflow_completion(task)
         raise
+
+
+async def _await_mlflow_completion(task: asyncio.Task[Any]) -> Any:
+    """Collect worker completion despite repeated cancellation of its caller.
+
+    The caller re-raises its original cancellation after consuming the result.
+    AnyIO shielding handles scope cancellation; asyncio shielding must be renewed
+    after each direct task cancellation because the worker thread keeps running.
+    """
+    with CancelScope(shield=True):
+        # Keep ownership of the result until creation, writing or cleanup finishes.
+        while not task.done():
+            try:
+                await asyncio.shield(task)
+            except asyncio.CancelledError:
+                continue
+        return task.result()
 
 
 @contextmanager

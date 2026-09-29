@@ -386,7 +386,7 @@ async def test_other_chat_modes_link_traces_before_model_start(monkeypatch, mode
 
 
 @pytest.mark.parametrize("phase", ["create", "write"])
-@pytest.mark.parametrize("cancellation", ["task", "scope"])
+@pytest.mark.parametrize("cancellation", ["task", "scope", "repeated_task"])
 async def test_cancellation_waits_for_inflight_telemetry_before_closing(
     client, phase, cancellation
 ):
@@ -429,6 +429,10 @@ async def test_cancellation_waits_for_inflight_telemetry_before_closing(
         else:
             task.cancel()
         await asyncio.sleep(0.01)
+        if cancellation == "repeated_task":
+            for _ in range(3):
+                task.cancel()
+                await asyncio.sleep(0.01)
         assert not task.done()
         client.set_terminated.assert_not_called()
     finally:
@@ -440,4 +444,43 @@ async def test_cancellation_waits_for_inflight_telemetry_before_closing(
                 await asyncio.wait_for(task, timeout=2)
     assert order == [phase, "close"]
     assert client.set_terminated.call_args.kwargs["status"] == "FAILED"
+    assert mlflow_logging._current_run() is None
+
+
+async def test_repeated_cancellation_waits_for_run_termination(client):
+    started = asyncio.Event()
+    closing = Event()
+    release = Event()
+    finished = Event()
+
+    def terminate(*args, **kwargs):
+        closing.set()
+        release.wait(timeout=3)
+        finished.set()
+
+    client.set_terminated.side_effect = terminate
+
+    async def request():
+        async with mlflow_logging.async_start_run(
+            run_name="request", experiment_name="Clima"
+        ):
+            started.set()
+            await asyncio.Event().wait()
+
+    task = asyncio.create_task(request())
+    try:
+        await asyncio.wait_for(started.wait(), timeout=2)
+        task.cancel()
+        assert await asyncio.to_thread(closing.wait, 2)
+        for _ in range(3):
+            task.cancel()
+            await asyncio.sleep(0.01)
+        assert not task.done()
+        assert not finished.is_set()
+    finally:
+        release.set()
+        with pytest.raises(asyncio.CancelledError):
+            await asyncio.wait_for(task, timeout=2)
+    assert finished.is_set()
+    client.set_terminated.assert_called_once_with("run-1", status="FAILED")
     assert mlflow_logging._current_run() is None

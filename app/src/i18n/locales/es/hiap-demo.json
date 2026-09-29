@@ -154,7 +154,7 @@
   "not-ranked-title": "No está en el ranking ({{count}})",
   "not-ranked-description": "Enumerados con motivo. Ninguno de estos es una acción de baja prioridad, cada uno está aquí porque el método no puede calificarlo, o porque la ciudad eligió excluirlo.",
   "not-ranked-open": "Abierto",
-  "not-ranked-hazard": "Peligro: {{peligro}}",
+  "not-ranked-hazard": "Peligro: {{hazard}}",
   "reason-outside_coverage": "No evaluado para esta ciudad",
   "reason-outside_coverage-tag": "No evaluado",
   "reason-outside_coverage-body": "Ningún índice de riesgo municipal cubre este peligro, por lo que la acción no puede ser evaluada aquí. Permanece listada para que no se olvide.",
@@ -616,7 +616,7 @@
       "generate-report-hint": "Seleccione las acciones para incluir en el informe."
     }
   },
-  "policy-page-short": "p. {{página}}",
+  "policy-page-short": "p. {{page}}",
   "m-emissions-value": "{{value}} ktCO2e",
   "pref-sum-sectors_one": "{{count}} sector prioritario",
   "pref-sum-sectors_other": "{{count}} sectores prioritarios",

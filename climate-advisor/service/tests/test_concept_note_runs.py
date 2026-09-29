@@ -404,6 +404,31 @@ def test_manual_population_rejects_invalid_values(value: dict) -> None:
         ConceptNotePopulationRequest(manual_population=value)
 
 
+def test_start_request_caps_initial_uploads_at_the_run_limit() -> None:
+    """Accept 10 expected sources and reject 11 before the run is created."""
+    from app.models.cnb.concept_note_markdown import MAX_UPLOADS_PER_RUN
+    from app.models.cnb.concept_note_runs import InitialConceptNoteUpload
+
+    def request(count: int) -> ConceptNoteStartRequest:
+        return ConceptNoteStartRequest(
+            user_id="owner-1",
+            name="Resilient neighborhoods",
+            city_id=uuid4(),
+            idempotency_key=uuid4(),
+            initial_uploads=[
+                InitialConceptNoteUpload(
+                    upload_id=uuid4(), filename=f"{index}.md", sha256="a" * 64
+                )
+                for index in range(count)
+            ],
+        )
+
+    assert MAX_UPLOADS_PER_RUN == 10
+    assert len(request(10).initial_uploads) == 10
+    with pytest.raises(ValidationError):
+        request(11)
+
+
 async def test_get_run_hides_missing_or_unowned_run() -> None:
     """Return the same 404 for a missing run or one owned by another user."""
     service, repository, cc_client, _ = _run_service()

@@ -63,12 +63,38 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      export state from the CNB workspace. Ordinary turns do not load UI state.
      Browser-only state remains unknown; unavailable workspace storage preserves
      the guide without implying an empty draft. Funding and source facts remain
-     in the existing context bundle.
+     in the existing context bundle. The result also carries
+     `ui_state.open_gaps_by_chapter` (open and critical counts per chapter) and
+     `uploaded_files` (every ready upload with `uploaded_at` and `newest`).
+   - Exposes read-only `concept_note_gaps` alongside `concept_note_help`. It
+     reauthorizes the run and lists missing-information gaps with their
+     chapter, question, reason, severity, and state, filtered by
+     `chapter_position`, `severity`, or `include_closed`. Each gap gets a `G#`
+     handle numbered in creation order, so handles stay stable across filters.
+   - Injected `selected_sources` include `uploaded_at` and a `newest` flag, so
+     Clima can identify the file a user just uploaded.
+   - Resolved gaps that source revalidation filled from an uploaded file list
+     that file's source label in `filled_from`, so Clima can tell the user
+     which gaps a new file answered.
    - Treats vague requests as sufficient intent, uses the already bound run and
      available chapter order, and asks one focused question when the next step
      cannot be derived
    - Uses the detailed contract in
      [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
+
+### Concept Note chapter structure
+
+All chapter titles, descriptions and ordering can be edited in the Structure tab
+or proposed through Clima for explicit confirmation. Changes belong to the run;
+shared template identities and required fields remain protected. Custom chapters
+can be inserted or removed. Compatible funding switches preserve these run-owned
+labels, guidance and ordering, and match template requirements by stable reference.
+Opening Structure alone does not lock the funding choice: untouched, empty template
+chapters are replaced on a funding switch. Saved structure edits and draft text
+retain the existing review and template-compatibility protections.
+Apply CNB migration `20260921_120000` before using the
+structure API. See [structure rules and persistence](../docs/ConceptNoteBuilderArchitecture.md#run-owned-chapter-structure-cc-864)
+for concurrency, review invalidation, and regression tests.
 
 ### Concept Note chapter validation
 
@@ -593,6 +619,8 @@ timeout settings, Stationary Energy review chat-context prompt budgets, and the
 CNB source reader/synthesizer roles, chapter drafter, gap-impact reviewer,
 chat-edit planner, and partition/prompt/concurrency limits. Chat-edit planning
 uses one document agent with `search_draft`, `read_chapter`, and `propose_edits`.
+Each proposal permits up to 100 draft searches, shared across repair attempts,
+configured by `generation.prompt_budget.cnb_edits.max_searches`.
 The tools resolve exact occurrences and validate replacements immediately so the
 agent can correct a failed selection. Independent semantic review then checks
 only affected chapters, with at most five reviews concurrently. Rejections feed
@@ -602,20 +630,21 @@ Each attempt must submit a complete proposal against the unchanged snapshot;
 every revised candidate receives a fresh independent review. Unsupported edits
 still fail after exhaustion, and no draft changes are applied before acceptance.
 Each editor attempt is limited to 12 model turns, while the complete operation,
-including repairs and reviews, shares one 180-second deadline configured by
+including repairs and reviews, shares one 300-second deadline configured by
 `generation.prompt_budget.cnb_edits.max_agent_turns` and `timeout_seconds`.
 The chapter drafter uses GPT-5.6
-Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra and the
-chat-edit planner uses GPT-5.6 Sol, both with medium reasoning.
+Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra with
+medium reasoning, and the chat-edit planner uses GPT-6 Sol with high reasoning.
 
 Current CA model defaults:
 
 - General chat: `openai/gpt-5.6-terra`, reasoning `medium`.
-- CNB chat: `openai/gpt-5.6-sol`, reasoning `high`.
+- CNB chat: `openai/gpt-6-sol`, reasoning `medium`.
 - Stationary Energy chat: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Funding research and similar-project selection: `openai/gpt-5.6-terra`, reasoning `medium`.
-- Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `low`.
-- Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `low`.
+- Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `medium`.
+- Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `medium`.
+- New-source chapter impact review: `openai/gpt-6-sol`, reasoning `medium`.
 - Document-summary synthesis: `openai/gpt-5.6-terra`, reasoning `medium`.
 
 General and Stationary Energy chat use the OpenRouter Chat Completions tool loop
@@ -642,6 +671,8 @@ Prompt paths are also configured in `llm_config.yaml`:
   still requires user acceptance in the document review controls
 - the three `prompts.cnb_source_*` entries map document partitions, reduce them
   to compact document summaries, and read focused questions for exact evidence
+- `prompts.cnb_source_impact_review` runs only after a new source is analyzed;
+  its single tool returns the chapter numbers that the source affects
 - `prompts.cnb_chat_edit_planner` creates bounded, grounded edit proposals from
   actual chapter text; its output cannot apply a revision without user review
 - `prompts.cnb_chat_edit_review` independently compares each proposed chapter edit
@@ -650,7 +681,7 @@ Prompt paths are also configured in `llm_config.yaml`:
   editing authority, not independent factual verification.
 
 CNB document mapping and question-focused source readers use
-`models.cnb_source_reader`: `openai/gpt-5.6-terra` with low reasoning. Document
+`models.cnb_source_reader`: `openai/gpt-5.6-terra` with medium reasoning. Document
 summary synthesis uses `models.cnb_source_synthesizer`: `openai/gpt-5.6-terra` with
 medium reasoning. These tool-free workers use OpenRouter's Responses API with
 detailed summaries, `store: false`, and structured-output schemas, and omit
@@ -680,6 +711,16 @@ same label and filename remain independently queryable, and omits IDs from its
 model-facing result. An authorized edit request adds the proposal-only edit tool;
 that tool invokes the separate `prompts.cnb_chat_edit_planner` prompt and typed
 output model. Durable chat-driven edits remain a separate workflow.
+
+When the verified text of every uploaded source totals at most
+`generation.prompt_budget.cnb_sources.full_text_max_tokens` (80,000 by default,
+counted with the drafter model's tokenizer), the context build stores that
+page-marked text in the bundle's `source_text` section. The chapter drafter and
+CNB chat then receive it as a second user-role `CONCEPT_NOTE_SOURCE_DOCUMENTS`
+message, after the JSON payload or bundle message, so every chapter is written
+from the complete documents instead of the compact summaries. Above the limit,
+or when a source cannot be re-read, `source_text.mode` is `summary` and agents
+use the summaries and `concept_note_sources_query` as before.
 
 The edit planner and semantic reviewer receive allowlisted source evidence with
 the same one-based `source_index` values. Their `source_refs` contain those indices
@@ -814,6 +855,9 @@ Operationally:
 - A new run records `document_grounding: none` when no uploaded source is ready;
   later uploads rebuild it as `uploaded_evidence`. `available_context` reports
   city, project, GHGI, CCRA, HIAP, and uploaded-document presence independently.
+  `city_population` reports the `{population, year}` the bundle's city profile
+  gives the models, or `null`, so the Context tab shows what the run can cite.
+  A rebuild whose population-only lookup fails keeps the previous figure.
   PDFs remain page-cited and native Markdown remains anchor-cited. Optional
   GHGI/HIAP failures do not block readiness, stale builds cannot win, and chat
   keeps the last completed bundle during rebuilds. Unchanged source analyses are
@@ -852,6 +896,30 @@ Operationally:
 - Chapter drafting reserves H1 for the final document title and generates each
   template chapter at H2. A separate reconciler marks drafting leases left
   `running` for more than one hour as retryable.
+- When a newly uploaded source finishes analysis, a background re-check
+  updates the chapters it affects. The re-check is a durable job stored in the
+  run's `context_summary.source_revalidation` and queued in the same transaction
+  that commits the bundle. One worker leases it at a time; a failed pass stays
+  pending and the context-bundle reconciler retries it (up to three attempts,
+  re-fetching source text with a service-minted token for the run owner), and
+  leases left `running` for more than one hour return to pending. A later
+  source re-queues an exhausted job. A review-only call
+  (`prompts.cnb_source_impact_review`) receives the new source summary and every
+  drafted chapter with its status and open gap questions, and returns only the
+  chapter numbers to redraft. Each open gap in those chapters is then asked of
+  the verified new source text with the focused source reader, capped by
+  `prompt_budget.cnb_source_impact.max_gap_queries`; cited answers reach the
+  drafter as `new_source_evidence`, together with the chapter's
+  `current_body_markdown`, which it edits in place so accepted user edits and
+  unaffected prose are kept; a contradicted existing fact is flagged with a new
+  marker instead of being overwritten. Each redraft appends a revision, resolves
+  only gaps with a cited answer as `evidence_update` by `system`, keeps deferred
+  caveats, and reopens resolved gaps it contradicts. A redraft that drops an
+  unanswered gap or mismatches its markers is rejected and logged. The last
+  confirmed revision is preserved, so an affected Ready chapter returns to
+  review. The drafter also receives the chapter's `resolved_information` and
+  `existing_open_gaps` so earlier answers stay applied and gap keys stay
+  stable.
 
 ### Concept Note draft review and chat editing
 
@@ -870,9 +938,13 @@ Chat creates durable edit proposals; only explicit web review applies changes.
 The LLM planner selects contextual matches or an explicit all-match replacement;
 Python owns occurrence IDs, revision-bound offsets, and the minimal displayed
 diff. Ambiguous selections and structural failures return to the agent for
-correction before independent LLM review of meaning and factual support. Python
-verifies exact anchors, source identities, user quotes, required headings, and
-gap markers; it does not compare numeric tokens, override semantic judgments,
+correction before independent LLM review of meaning and factual support.
+Factual evidence may be an uploaded source, a user quote, or a run context
+section cited in `context_refs` (CityCatalyst `city`, `project`, `ghgi`,
+`ccra`, `hiap`, or `manual_population`); cited sections are fingerprinted and a
+later change marks the proposal stale on acceptance. Python
+verifies exact anchors, source identities, cited context sections, user quotes,
+required headings, and gap markers; it does not compare numeric tokens, override semantic judgments,
 or add replacements after review. All-match operations exclude locked chapters,
 template headings, and protected information markers and persist visible counts
 with the proposal. Filling a complete, matching information gap still uses the
@@ -1751,6 +1823,25 @@ through the error path. This does not provide durable reconnect/restart recovery
 See [validation and reproduction](docs/cnb-reasoning-validation.md) for focused
 checks, manual verification steps, and remaining limitations.
 
+### Concept Note chat suggestions
+
+`POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
+for the authorized run and its active conversation. Questions target 3–7 words
+and are limited to 80 characters each. The UI keeps them directly above the
+chat input, outside the scrolling message history. The `cnb_chat_suggestions`
+model uses `openai/gpt-5.6-luna` through the existing `OPENROUTER_API_KEY`, with
+medium reasoning. Its prompt is `prompts/cnb/chat_suggestions.md`.
+
+The model receives the first 20,000 `o200k_base` tokens of the created document
+(in chapter order), up to six recent messages (2,000 tokens each), and compact
+workspace metadata. Uploaded source bodies and internal identifiers are excluded.
+The call has a 20-second deadline, no retries, and a 4,096-token completion cap.
+Invalid output or provider failure returns an empty list so the UI uses two
+translated deterministic questions. Suggestions never write messages or edit
+the document; selecting one fills and focuses the composer. Suggestions refresh
+after replies, tab changes, or run/draft revisions; the UI cancels stale requests.
+The CityCatalyst proxy forwards that cancellation to Climate Advisor, which
+cancels an in-flight model request when the client disconnects.
 
 ### Initial concept-note upload recovery
 

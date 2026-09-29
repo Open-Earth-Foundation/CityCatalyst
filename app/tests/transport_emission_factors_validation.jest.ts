@@ -156,24 +156,60 @@ describe("Transport Emission Factor Validation Tests", () => {
   });
 });
 
-// Helper function to map CSV units to system units
-function mapCsvUnitsToSystemUnits(csvUnit: string): string {
-  const unitMapping: { [key: string]: string } = {
-    m3: "units-cubic-meters",
-    kg: "units-kilograms",
-    l: "units-liters",
-    t: "units-tonnes",
-    gallons: "units-gallons",
-    "cubic-meters": "units-cubic-meters",
-    kilograms: "units-kilograms",
-    liters: "units-liters",
-    tonnes: "units-tonnes",
-    "kg/m3": "units-kilograms-per-cubic-meter",
-    "kg/kg": "units-kilograms-per-kilogram",
-    kWh: "units-kilowatt-hours",
-  };
+/**
+ * Map emission-factor units from the CSV to the activity amount unit that
+ * matches those factors (volume for kg/m³, mass for kg/kg).
+ */
+function mapEmissionFactorUnitsToActivityUnits(efUnits: string): string {
+  if (efUnits === "kg/m3") return "units-cubic-meters";
+  if (efUnits === "kg/kg") return "units-kilograms";
+  return efUnits;
+}
 
-  return unitMapping[csvUnit] || csvUnit;
+/** CSV sometimes stores the activity id; CalculationService needs the methodology id. */
+function normalizeFuelSalesMethodologyId(methodologyId: string): string {
+  if (methodologyId === "fuel-sales-off-road-transport-activity") {
+    return "fuel-sales-off-road-transport-methodology";
+  }
+  return methodologyId;
+}
+
+/** Fuel-sales form field ids differ per transport subsector methodology. */
+function fuelSalesActivityFieldIds(methodologyId: string): {
+  fuelType: string;
+  vehicleType: string;
+} {
+  const normalized = normalizeFuelSalesMethodologyId(methodologyId);
+  const byMethodology: Record<string, { fuelType: string; vehicleType: string }> =
+    {
+      "fuel-sales-on-road-transport-methodology": {
+        fuelType: "on-road-transport-fuel-type",
+        vehicleType: "on-road-transport-vehicle-type",
+      },
+      "fuel-sales-railways-methodology": {
+        fuelType: "railways-fuel-type",
+        vehicleType: "railways-vehicle-type",
+      },
+      "fuel-sales-waterborne-navigation-methodology": {
+        fuelType: "waterborne-navigation-fuel-type",
+        vehicleType: "waterborne-navigation-vehicle-type",
+      },
+      "fuel-sales-aviation-methodology": {
+        fuelType: "aviation-fuel-type",
+        vehicleType: "aviation-vehicle-type",
+      },
+      "fuel-sales-off-road-transport-methodology": {
+        fuelType: "off-road-transport-fuel-type",
+        vehicleType: "off-road-transport-vehicle-type",
+      },
+    };
+
+  return (
+    byMethodology[normalized] ?? {
+      fuelType: "on-road-transport-fuel-type",
+      vehicleType: "on-road-transport-vehicle-type",
+    }
+  );
 }
 
 async function loadTransportTestData(): Promise<TransportTestData[]> {
@@ -211,9 +247,10 @@ async function loadTransportTestData(): Promise<TransportTestData[]> {
           return;
         }
 
+        const efUnits = row["Units Global API"] || "kg/m3";
         results.push({
           subsector: row.subsector,
-          methodology_id: row.methodology_id,
+          methodology_id: normalizeFuelSalesMethodologyId(row.methodology_id),
           methodology_name: row.methodology_name || "fuel-sales",
           methodology_status: row.methodology_status || "Active",
           fuel_type: row.fuel_type,
@@ -221,13 +258,14 @@ async function loadTransportTestData(): Promise<TransportTestData[]> {
           co2_global_api: parseFloat(row["CO2 Global API"]) || 0,
           ch4_global_api: parseFloat(row["CH4 Global API"]) || 0,
           n2o_global_api: parseFloat(row["N2O Global API"]) || 0,
-          units_in_global_api: row["Units Global API"] || "",
+          units_in_global_api: efUnits,
           // AR5 GWP100 values (match inventory GWP used by these fixtures)
           co2_gwp: 1,
           ch4_gwp: 28,
           n2o_gwp: 265,
           total_fuel_value: parseFloat(row["Test fuel value"]),
-          total_fuel_units: row["Units Global API"] || "kg/m3", // Use the same units as emission factors
+          // Activity amount unit must match EF dimension (m³ for kg/m³, kg for kg/kg)
+          total_fuel_units: mapEmissionFactorUnitsToActivityUnits(efUnits),
           expected_co2e_tonnes: parseFloat(
             row["Final emissions CO2e (prod) (tonnes)"],
           ),
@@ -317,18 +355,19 @@ async function performTransportCalculationTest(
       activityValue: testData.total_fuel_value,
     });
 
+    // Fuel-sales methodologies use activity-total-fuel-sales + sector-specific
+    // fuel/vehicle field ids (see manual-input-hierarchy.json).
+    const fieldIds = fuelSalesActivityFieldIds(testData.methodology_id);
     const activityValue = new db.models.ActivityValue({
       id: randomUUID(),
       activityData: {
-        "activity-total-fuel-consumption": testData.total_fuel_value,
-        "activity-total-fuel-consumption-unit": mapCsvUnitsToSystemUnits(
-          testData.total_fuel_units,
-        ),
-        "transport-fuel-type": testData.fuel_type,
-        "transport-vehicle-type": testData.vehicle_type,
+        "activity-total-fuel-sales": testData.total_fuel_value,
+        "activity-total-fuel-sales-unit": testData.total_fuel_units,
+        [fieldIds.fuelType]: testData.fuel_type,
+        [fieldIds.vehicleType]: testData.vehicle_type,
       },
       metadata: {
-        activityTitle: "activity-total-fuel-consumption",
+        activityTitle: "activity-total-fuel-sales",
       },
       inventoryValueId: inventoryValue.id,
     });

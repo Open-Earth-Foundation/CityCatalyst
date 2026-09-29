@@ -1,3 +1,5 @@
+import type Decimal from "decimal.js";
+import type { GeoJSON } from "geojson";
 import type {
   DataSourceWithRelations,
   GlobalAPISourceResponse,
@@ -22,7 +24,6 @@ import type {
   EmissionsFactorAttributes,
 } from "@/models/EmissionsFactor";
 import type { ActivityValue } from "@/models/ActivityValue";
-import type Decimal from "decimal.js";
 import {
   GlobalWarmingPotentialTypeEnum,
   OrganizationPlanType,
@@ -35,7 +36,7 @@ import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
 import type { VersionAttributes } from "@/models/Version";
 import type { BoundingBox } from "@/util/geojson";
-import type { GeoJSON } from "geojson";
+import type { EditProposal } from "@/util/concept-note-edit-types";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -556,6 +557,7 @@ export type ProjectUserResponse = {
   role: OrganizationRole;
   status: InviteStatus;
   cityId?: string;
+  twoFactorEnabled?: boolean;
 };
 
 export type UserAccessResponse = {
@@ -1269,6 +1271,7 @@ export interface ValidateConceptNoteChapterRequest {
 }
 
 export interface ConceptNoteDraftChapter {
+  description?: string;
   chapter_id: string;
   template_section_id: string | null;
   title: string;
@@ -1293,6 +1296,7 @@ export interface ConceptNoteDraftState {
   total_chapters: number;
   current_chapter_id: string | null;
   error_code: string | null;
+  overview_pending?: boolean;
   chapters: ConceptNoteDraftChapter[];
 }
 
@@ -1350,7 +1354,20 @@ export interface ConceptNoteUploadStatusRequest {
   uploadId: string;
 }
 
+export interface ConceptNoteWorkspaceSnapshot {
+  edits?: EditProposal[];
+  sequence: number;
+  run?: ConceptNoteRun;
+  draft?: ConceptNoteDraftState;
+  upload?: ConceptNoteUploadResponse;
+}
+
 export interface ConceptNoteContextBundleRetryResponse {
   run_id: string;
   status: "queued";
+}
+
+export interface ConceptNoteContextBundleRefreshResponse {
+  run_id: string;
+  status: "queued" | "current" | "building";
 }

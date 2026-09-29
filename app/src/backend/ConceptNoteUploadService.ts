@@ -67,14 +67,18 @@ const conceptNoteUploadWireSchema = z
     }),
   );
 
-function upstreamError(status: number, payload: unknown): Error {
+function upstreamError(
+  status: number,
+  payload: unknown,
+  retryAfter?: string | null,
+): Error {
   const detail =
     payload &&
     typeof payload === "object" &&
     typeof (payload as Record<string, unknown>).detail === "string"
       ? (payload as Record<string, string>).detail
       : "Climate Advisor rejected the Concept Note request";
-  return createHttpError(status, detail, { expose: status < 500 });
+  return createHttpError(status, detail, { expose: status < 500, retryAfter });
 }
 
 export async function loadConceptNoteUploadRun(args: {
@@ -89,7 +93,12 @@ export async function loadConceptNoteUploadRun(args: {
     searchParams: { user_id: args.userId },
   });
   const payload = await readConceptNoteApiPayload(response);
-  if (!response.ok) throw upstreamError(response.status, payload);
+  if (!response.ok)
+    throw upstreamError(
+      response.status,
+      payload,
+      response.headers.get("retry-after"),
+    );
   const parsed = runWireSchema.safeParse(payload);
   if (!parsed.success) {
     throw new createHttpError.BadGateway(
@@ -112,14 +121,21 @@ export async function loadConceptNoteUpload(args: {
   uploadId: string;
   userId: string;
   requestId?: string;
+  signal?: AbortSignal;
 }) {
   const response = await callConceptNoteApi({
     path: `/v1/concept-notes/${args.runId}/uploads/${args.uploadId}`,
     userId: args.userId,
     requestId: args.requestId,
+    ...(args.signal ? { signal: args.signal } : {}),
   });
   const payload = await readConceptNoteApiPayload(response);
-  if (!response.ok) throw upstreamError(response.status, payload);
+  if (!response.ok)
+    throw upstreamError(
+      response.status,
+      payload,
+      response.headers.get("retry-after"),
+    );
   const parsed = conceptNoteUploadWireSchema.safeParse(payload);
   if (!parsed.success) {
     throw new createHttpError.BadGateway(

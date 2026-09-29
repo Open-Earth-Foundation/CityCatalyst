@@ -15,8 +15,16 @@ from agents import RunConfig, Runner, gen_trace_id
 from app.middleware import get_request_id
 from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.requests import MessageCreateRequest
-from app.persistence.concept_notes.context_bundle import load_agent_context
+from app.persistence.concept_notes.context_bundle import (
+    load_agent_context,
+    load_source_documents,
+)
 from app.services.agent_service import AgentService
+from app.services.cnb.draft_overview import (
+    draft_overview_instructions,
+    load_draft_overview_message,
+    release_draft_overview,
+)
 from app.services.native_input_catalog_service import ActiveRequestContext
 from app.services.stationary_energy.stationary_energy_chat_context import (
     build_minimal_stationary_energy_context_payload,
@@ -36,6 +44,7 @@ from app.utils.cnb_progress import emit_cnb_progress, emit_cnb_reasoning, stream
 from app.utils.concept_note_context import (
     clean_cnb_history,
     extract_concept_note_run_id,
+    render_source_documents_message,
 )
 from app.utils.conversation_observability import (
     conversation_trace,
@@ -85,6 +94,7 @@ class StreamingHandler:
         inventory_id: Optional[str] = None,
         request_context: Optional[Any] = None,
         request_options: Optional[dict] = None,
+        draft_overview_claim: Optional[tuple[UUID, str]] = None,
     ) -> None:
         """Initialize per-request state for streaming one agent response."""
         self.thread_id = thread_id
@@ -96,6 +106,8 @@ class StreamingHandler:
         self.inventory_id = inventory_id
         self.request_context = request_context
         self.request_options = request_options
+        # (run_id, build_id) when this is the hidden CNB drafting-overview turn.
+        self.draft_overview_claim = draft_overview_claim
         self.thread_identifier = str(thread_id)
         self.workflow_context = ChatWorkflowContext()
         self.agent_model: Optional[str] = None
@@ -303,7 +315,14 @@ class StreamingHandler:
                 }
             )
 
-            agent = await self.agent_service.create_agent(model=self.agent_model)
+            agent = await self.agent_service.create_agent(
+                model=self.agent_model,
+                instructions=(
+                    draft_overview_instructions(settings.llm.prompts)
+                    if self.draft_overview_claim
+                    else None
+                ),
+            )
 
             log_json_artifact(
                 "chat/conversation_history.json", {"messages": conversation_history}
@@ -387,6 +406,15 @@ class StreamingHandler:
             yield self._format_completion_event(req_id, ok=False)
 
         finally:
+            # A failed overview turn stays retryable for the same drafting build.
+            if self.draft_overview_claim and not self.history_saved:
+                run_id, build_id = self.draft_overview_claim
+                await release_draft_overview(
+                    session_factory=self.session_factory,
+                    run_id=run_id,
+                    user_id=self.user_id,
+                    build_id=build_id,
+                )
             # Clean up agent service
             if self.agent_service:
                 await self.agent_service.close()
@@ -418,15 +446,38 @@ class StreamingHandler:
         if self.workflow_context.concept_note_run_id:
             conversation_history = clean_cnb_history(conversation_history)
         context_message = await self._load_stationary_energy_context_message(payload)
+        source_documents_message = None
         if context_message:
             context_message = self._stationary_energy_system_context_message(
                 context_message
             )
         else:
             context_message = await self._load_concept_note_context_message()
+            source_documents_message = (
+                await self._load_concept_note_source_documents_message()
+            )
 
         if context_message:
-            conversation_history = [context_message, *conversation_history]
+            # Complete source text, when within budget, follows the bundle JSON.
+            conversation_history = [
+                context_message,
+                *([source_documents_message] if source_documents_message else []),
+                *conversation_history,
+            ]
+            if self.draft_overview_claim and self.session_factory:
+                # Fail the turn rather than let the overview run without draft facts.
+                conversation_history.append(
+                    await load_draft_overview_message(
+                        session_factory=self.session_factory,
+                        run_id=self.draft_overview_claim[0],
+                        user_id=self.user_id,
+                        ui_locale=(
+                            payload.context.get("ui_locale")
+                            if isinstance(payload.context, dict)
+                            else None
+                        ),
+                    )
+                )
             if not self._history_contains_current_user_message(
                 conversation_history,
                 payload.content,
@@ -535,6 +586,31 @@ class StreamingHandler:
                 f"{json.dumps(context, ensure_ascii=False, default=str)}"
             ),
         }
+
+    async def _load_concept_note_source_documents_message(
+        self,
+    ) -> Optional[Dict[str, str]]:
+        """Load complete uploaded source text when it fits the configured budget."""
+        run_id_text = self.workflow_context.concept_note_run_id
+        if not run_id_text or not self.session_factory:
+            return None
+        try:
+            documents = await load_source_documents(
+                session_factory=self.session_factory,
+                user_id=self.user_id,
+                run_id=UUID(run_id_text),
+            )
+        except Exception as exc:
+            # Summaries in the bundle message still ground the turn.
+            logger.warning(
+                "Failed to load Concept Note source documents run_id=%s: %s",
+                run_id_text,
+                exc,
+            )
+            return None
+        if not documents:
+            return None
+        return {"role": "user", "content": render_source_documents_message(documents)}
 
     async def _load_thread_workflow_context(self) -> ChatWorkflowContext:
         """Load scoped workflow identifiers persisted on the current chat thread."""

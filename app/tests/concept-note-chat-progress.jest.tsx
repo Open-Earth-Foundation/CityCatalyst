@@ -10,6 +10,7 @@ import type { SSEStreamOptions } from "@/hooks/useSSEStream";
 let streamOptions: SSEStreamOptions;
 const startStream = jest.fn(async () => {});
 const stopStream = jest.fn();
+const refreshDraft = jest.fn();
 const t = (key: string) => key;
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t }),
@@ -34,6 +35,7 @@ function Harness() {
     lng: "en",
     runId: "run",
     threadId: "thread",
+    onDraftOverviewComplete: refreshDraft,
   });
   useEffect(() => {
     chat = current;
@@ -41,6 +43,7 @@ function Harness() {
   return null;
 }
 beforeEach(async () => {
+  refreshDraft.mockClear();
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   globalThis.structuredClone = (value) => JSON.parse(JSON.stringify(value));
   globalThis.fetch = jest.fn(async () => ({
@@ -121,6 +124,7 @@ it("keeps operational progress separate from the answer and resets for the next 
   expect(chat.messages.at(-1)?.text).toBe("Ready");
   await act(async () => streamOptions.onComplete?.());
   expect(chat.isGenerating).toBe(false);
+  expect(refreshDraft).not.toHaveBeenCalled();
   await act(async () => streamOptions.onProgress?.({ stage: "validating" }));
   expect(chat.progress?.stage).toBe("responding");
   await act(async () => chat.sendMessage("Another edit"));
@@ -187,4 +191,43 @@ it("groups live summaries and clears them on completion and failure", async () =
   expect(chat.reasoning).toHaveLength(1);
   await act(async () => streamOptions.onComplete?.());
   expect(chat.reasoning).toEqual([]);
+});
+
+it("requests the drafting overview as a hidden turn with only an assistant reply", async () => {
+  startStream.mockClear();
+  await act(async () => chat.requestDraftOverview());
+  expect(chat.messages.map((message) => message.role)).toEqual(["assistant"]);
+  const [, request] = startStream.mock.calls.at(-1) as unknown as [
+    string,
+    { body: string },
+  ];
+  const body = JSON.parse(request.body);
+  expect(body.options).toEqual({ concept_note_turn: "draft_overview" });
+  expect(body.context).toEqual({ concept_note_run_id: "run", ui_locale: "en" });
+  expect(chat.progress).toEqual({ stage: "summarizing_draft" });
+  await act(async () => streamOptions.onProgress?.({ stage: "preparing" }));
+  expect(chat.progress).toEqual({ stage: "summarizing_draft" });
+  await act(async () => streamOptions.onMessage?.("Your draft is ready.", 0));
+  expect(chat.progress).toEqual({ stage: "summarizing_draft" });
+  await act(async () => streamOptions.onComplete?.());
+  expect(chat.messages.at(-1)?.text).toBe("Your draft is ready.");
+  expect(refreshDraft).toHaveBeenCalledTimes(1);
+
+  // Later user turns use the regular request-based labels again.
+  await act(async () => chat.sendMessage("What is missing?"));
+  expect(chat.progress).toEqual({ stage: "preparing" });
+});
+
+it("drops an already-claimed drafting overview without showing an error", async () => {
+  await act(async () => chat.requestDraftOverview());
+  await act(async () =>
+    streamOptions.onError?.(
+      "No finished draft",
+      "concept_note_draft_overview_unavailable",
+    ),
+  );
+  expect(chat.messages).toEqual([]);
+  expect(chat.error).toBeNull();
+  expect(chat.isGenerating).toBe(false);
+  expect(refreshDraft).toHaveBeenCalledTimes(1);
 });

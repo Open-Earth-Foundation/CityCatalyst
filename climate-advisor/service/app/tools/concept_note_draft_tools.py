@@ -1,10 +1,20 @@
 """Request-local agent tools for reading, searching, and proposing draft edits."""
 
 from typing import Any
+from uuid import uuid4
 
 from agents import FunctionTool, function_tool
-
-from app.models.cnb.concept_note_edits import DraftReplacement
+from app.models.cnb.concept_note_edits import DraftReplacement, EditPlanOutput
+from app.models.cnb.concept_note_structure import (
+    StructureChapter,
+    StructurePlannedChapter,
+    StructureProposal,
+)
+from app.persistence.concept_notes.edits import EditOperationError
+from app.persistence.concept_notes.structure import (
+    structure_snapshot,
+    validate_structure,
+)
 from app.services.cnb.edit_session import DraftEditSession
 from app.utils.cnb_progress import emit_cnb_progress
 
@@ -45,4 +55,44 @@ def build_draft_tools(
         await emit_cnb_progress("validating")
         return session.propose_edits(replacements)
 
-    return [search_draft, read_chapter, propose_edits]
+    @function_tool
+    async def propose_structure(
+        chapters: list[StructurePlannedChapter],
+    ) -> dict[str, Any]:
+        """Preview complete chapter order/titles/descriptions; null positions insert custom chapters."""
+        # Resolve positions against the immutable server snapshot.
+        session.plan = None
+        before = structure_snapshot(list(session.chapters.values()))
+        after = []
+        try:
+            for item in chapters:
+                source = session.chapters.get(item.chapter_position)
+                if item.chapter_position is not None and source is None:
+                    raise EditOperationError(
+                        "invalid_target",
+                        "Use an existing catalogue position or null for a custom chapter.",
+                    )
+                after.append(
+                    StructureChapter(
+                        chapter_id=source.chapter_id if source else uuid4(),
+                        template_section_id=source.chapter_ref if source else None,
+                        required=source.required if source else False,
+                        title=item.title,
+                        description=item.description,
+                    )
+                )
+            # Reject protected membership changes before staging a preview.
+            validate_structure(before.chapters, after)
+            if before.chapters == after:
+                raise EditOperationError(
+                    "invalid_structure", "The proposal must change the structure."
+                )
+        except (EditOperationError, ValueError) as error:
+            return {"ok": False, "message": str(error)}
+        # Stage only; acceptance is a separate authorized operation.
+        session.plan = EditPlanOutput(
+            intent="edit", structure=StructureProposal(before=before, after=after)
+        )
+        return {"ok": True, "kind": "structure", "requires_confirmation": True}
+
+    return [search_draft, read_chapter, propose_edits, propose_structure]

@@ -42,6 +42,7 @@ from app.tools.cc_inventory_tool import CCInventoryTool
 from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from app.tools.climate_vector_sync import climate_vector_search
 from app.tools.concept_note_edit_tools import build_concept_note_edit_tools
+from app.tools.concept_note_gap_tools import build_concept_note_gap_tools
 from app.tools.concept_note_help_tools import build_concept_note_help_tools
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
 from app.tools.inventory_context_tools import build_inventory_capability_tools
@@ -447,6 +448,13 @@ class AgentService:
                         run_id=self.concept_note_run_id,
                         user_id=str(self.cc_user_id),
                         ui_locale=self.concept_note_ui_locale,
+                    )
+                )
+                tools.extend(
+                    build_concept_note_gap_tools(
+                        session_factory=self.session_factory,
+                        run_id=self.concept_note_run_id,
+                        user_id=str(self.cc_user_id),
                     )
                 )
             if (

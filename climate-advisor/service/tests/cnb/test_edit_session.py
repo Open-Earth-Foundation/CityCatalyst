@@ -6,9 +6,10 @@ from uuid import uuid4
 
 import pytest
 
+from app.config.settings import CnbEditPromptBudgetConfig
 from app.models.cnb.concept_note_edits import DraftReplacement, EditProposalRequest
 from app.persistence.concept_notes.edits import replace_anchors
-from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_session import DraftEditSession
 
 
@@ -29,12 +30,14 @@ def chapter(body: str, position: int = 0) -> WorkspaceChapterSnapshot:
 def session(
     chapters: list[WorkspaceChapterSnapshot],
     instruction: str = "Replace Kraków with Cracow.",
+    max_searches: int = CnbEditPromptBudgetConfig().max_searches,
 ) -> DraftEditSession:
     return DraftEditSession(
         EditProposalRequest(instruction=instruction, idempotency_key=uuid4()),
         chapters,
         {},
         [],
+        max_searches=max_searches,
     )
 
 
@@ -65,6 +68,15 @@ def test_ambiguous_replacement_can_be_repaired_using_an_exact_match_id():
         == "🌍 Kraków and Cracow."
     )
     assert current.body_markdown == "🌍 Kraków and Kraków."
+
+
+@pytest.mark.parametrize("max_searches", [2, 100])
+def test_configured_search_budget_allows_exactly_the_limit(max_searches: int) -> None:
+    edits = session([chapter("Kraków")], max_searches=max_searches)
+    assert edits.search_draft("")["code"] == "invalid_search"
+    for _ in range(max_searches):
+        assert edits.search_draft("Kraków")["ok"]
+    assert edits.search_draft("Kraków")["code"] == "context_limit"
 
 
 def test_replace_all_preserves_markers_headings_and_locked_chapters_with_counts():
@@ -138,6 +150,13 @@ def test_partial_marker_edit_is_rejected_but_complete_gap_fill_is_supported():
         ("Budget: 10 schools.", "Budget: 14 schools.", ("10", "14")),
         ("A B", "A new B", (" ", " new ")),
         ("Keep. Remove.", "Keep.", (" Remove.", "")),
+        (
+            "The opening date is 1.0.1.2029; no critical path.",
+            "The opening date is 1 January 2029; no critical path.",
+            ("1.0.1.2029", "1 January 2029"),
+        ),
+        ("Cost: 1,200 EUR.", "Cost: 1,500 EUR.", ("1,200", "1,500")),
+        ("Opens 2029. Next.", "Opens 2030. Next.", ("2029", "2030")),
     ],
 )
 def test_context_trimming_preserves_the_requested_replacement(before, after, expected):

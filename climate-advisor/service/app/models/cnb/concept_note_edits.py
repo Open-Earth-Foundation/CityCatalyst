@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
+from app.models.cnb.concept_note_structure import StructureProposal
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 
 EditStatus = Literal[
@@ -17,6 +18,19 @@ EditStatus = Literal[
     "rejected",
     "failed",
     "stale",
+]
+
+# Run context sections an edit may cite, with the label shown to the user.
+EDIT_CONTEXT_LABELS: dict[str, str] = {
+    "city": "CityCatalyst city profile",
+    "project": "CityCatalyst project",
+    "ghgi": "CityCatalyst GHG inventory",
+    "ccra": "CityCatalyst climate risk assessment",
+    "hiap": "CityCatalyst prioritized climate actions",
+    "manual_population": "Population entered for this concept note",
+}
+EditContextSection = Literal[
+    "city", "project", "ghgi", "ccra", "hiap", "manual_population"
 ]
 
 
@@ -60,14 +74,23 @@ class ChapterPlannedTextChange(BaseModel):
         description="One-based selected-source indices encoded as strings, never labels or IDs.",
     )
     user_input_quote: str | None = Field(default=None, max_length=8_000)
+    context_refs: list[EditContextSection] = Field(
+        default_factory=list,
+        max_length=len(EDIT_CONTEXT_LABELS),
+        description="Run context sections (CityCatalyst data or user-entered population) supporting the change.",
+    )
 
     @model_validator(mode="after")
     def validate_change(self) -> PlannedTextChange:
         """Reject no-ops and require a provenance claim for factual changes."""
         if self.before == self.after:
             raise ValueError("a change must alter the selected text")
-        if self.kind == "factual" and not (self.source_refs or self.user_input_quote):
-            raise ValueError("factual changes require evidence or explicit user input")
+        if self.kind == "factual" and not (
+            self.source_refs or self.user_input_quote or self.context_refs
+        ):
+            raise ValueError(
+                "factual changes require evidence, run context, or explicit user input"
+            )
         return self
 
 
@@ -76,7 +99,7 @@ class PlannedTextChange(ChapterPlannedTextChange):
 
     chapter_id: UUID
     # Assigned only by the independent review call, never by the edit planner.
-    semantic_support: Literal["preserved", "user", "source"] | None = Field(
+    semantic_support: Literal["preserved", "user", "source", "context"] | None = Field(
         default=None, exclude=True
     )
 
@@ -86,7 +109,7 @@ class EditSemanticDecision(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
     change_index: int = Field(ge=0, le=99)
-    support: Literal["preserved", "user", "source", "unsupported"]
+    support: Literal["preserved", "user", "source", "context", "unsupported"]
     explanation: str = Field(min_length=1, max_length=1000)
 
 
@@ -117,6 +140,9 @@ class DraftReplacement(BaseModel):
     group_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,80}$")
     source_refs: list[str] = Field(default_factory=list, max_length=20)
     user_input_quote: str | None = Field(default=None, max_length=8_000)
+    context_refs: list[EditContextSection] = Field(
+        default_factory=list, max_length=len(EDIT_CONTEXT_LABELS)
+    )
 
 
 class EditAgentOutput(BaseModel):
@@ -139,6 +165,7 @@ class EditPlanOutput(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
     intent: Literal["edit", "question", "clarification"]
+    structure: StructureProposal | None = None
     changes: list[PlannedTextChange] = Field(default_factory=list, max_length=100)
     notices: list[EditNotice] = Field(default_factory=list)
     clarification: str | None = Field(default=None, min_length=1, max_length=2_000)
@@ -146,7 +173,9 @@ class EditPlanOutput(BaseModel):
     @model_validator(mode="after")
     def validate_intent(self) -> EditPlanOutput:
         """Keep ordinary questions and clarification separate from edit proposals."""
-        if (self.intent == "edit") != bool(self.changes):
+        if self.structure is not None and self.changes:
+            raise ValueError("Propose structure and text changes separately")
+        if (self.intent == "edit") != bool(self.changes or self.structure):
             raise ValueError("only edit intent may contain changes, and requires them")
         if (self.intent == "clarification") != (self.clarification is not None):
             raise ValueError("clarification intent requires exactly one question")
@@ -161,6 +190,14 @@ class EditSourceSnapshot(BaseModel):
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
+class EditContextSnapshot(BaseModel):
+    """Server-verified run context section behind one factual replacement."""
+
+    section: EditContextSection
+    label: str
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
 class EditChange(PlannedTextChange):
     """A reviewed replacement with server-assigned identity and real chapter title."""
 
@@ -168,6 +205,7 @@ class EditChange(PlannedTextChange):
     chapter_title: str
     base_revision: PositiveInt
     source_snapshots: list[EditSourceSnapshot] = Field(default_factory=list)
+    context_snapshots: list[EditContextSnapshot] = Field(default_factory=list)
 
 
 class EditApplyRequest(BaseModel):
@@ -175,7 +213,9 @@ class EditApplyRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
     idempotency_key: UUID
-    expected_revisions: dict[UUID, PositiveInt] = Field(min_length=1, max_length=100)
+    expected_revisions: dict[UUID, PositiveInt] = Field(
+        default_factory=dict, max_length=100
+    )
     selected_change_ids: list[UUID] | None = Field(
         default=None, min_length=1, max_length=100
     )
@@ -209,6 +249,7 @@ class EditProposalResponse(BaseModel):
     scope: EditScope
     status: EditStatus
     base_revisions: dict[UUID, PositiveInt] = Field(default_factory=dict)
+    structure: StructureProposal | None = None
     changes: list[EditChange] = Field(default_factory=list)
     notices: list[EditNotice] = Field(default_factory=list)
     clarification: str | None = None

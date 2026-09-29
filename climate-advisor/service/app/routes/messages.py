@@ -13,6 +13,12 @@ from app.config import get_settings
 from app.db.session import get_session_factory, get_session_optional
 from app.models.requests import MessageCreateRequest
 from app.services.cnb.chat_readiness import require_chat_context_ready
+from app.services.cnb.draft_overview import (
+    DRAFT_OVERVIEW_REQUEST,
+    claim_draft_overview,
+    is_draft_overview_turn,
+    release_draft_overview,
+)
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
 from app.utils.agent_tracing import configure_agents_tracing
@@ -53,6 +59,7 @@ async def post_message(
     - Request-bearer authentication against Core before any write
     - Thread resolution/creation for the canonical subject
     - CNB readiness validation (409 concept_note_context_not_ready before saving a turn)
+    - Hidden drafting-overview claim (after auth, once per drafting build)
     - User message persistence
     - AI response streaming via SSE
 
@@ -114,6 +121,15 @@ async def post_message(
             options=authenticated_payload.options,
         )
 
+        # The hidden drafting-overview turn uses server-owned trigger text. It
+        # is claimed after authentication so a rejected request cannot use up
+        # the build's single overview.
+        overview_turn = is_draft_overview_turn(authenticated_payload.options)
+        if overview_turn:
+            authenticated_payload = authenticated_payload.model_copy(
+                update={"content": DRAFT_OVERVIEW_REQUEST}
+            )
+
         # 2. Persist user message and the validated request bearer.
         if session_factory:
             try:
@@ -146,12 +162,15 @@ async def post_message(
                                 resolved_thread_id,
                             )
 
-                        message_service = MessageService(db_session)
-                        await message_service.create_user_message(
-                            thread_id=resolved_thread_id,
-                            user_id=identity.user_id,
-                            text=authenticated_payload.content,
-                        )
+                        # The overview trigger is not a user message; keep it
+                        # out of the visible history.
+                        if not overview_turn:
+                            message_service = MessageService(db_session)
+                            await message_service.create_user_message(
+                                thread_id=resolved_thread_id,
+                                user_id=identity.user_id,
+                                text=authenticated_payload.content,
+                            )
                         await thread_service.touch_thread(thread)
                         await db_session.commit()
 
@@ -163,17 +182,40 @@ async def post_message(
                     "but your messages will not be saved."
                 )
 
-        # 3. Stream with the canonical subject and validated request bearer.
-        handler = StreamingHandler(
-            thread_id=resolved_thread_id,
-            user_id=identity.user_id,
-            session_factory=session_factory,
-            cc_access_token=identity.token,
-            catalog_user_id=identity.user_id,
-            inventory_id=authenticated_payload.inventory_id,
-            request_context=normalized_context,
-            request_options=authenticated_payload.options,
-        )
+        # 3. Claim the overview once per drafting build, right before streaming.
+        draft_overview_claim = None
+        if overview_turn:
+            draft_overview_claim = await claim_draft_overview(
+                session_factory=session_factory,
+                thread_id=resolved_thread_id,
+                user_id=identity.user_id,
+            )
+
+        # 4. Stream with the canonical subject and validated request bearer.
+        # Once the handler exists its own cleanup releases the claim; before
+        # that, release here.
+        try:
+            handler = StreamingHandler(
+                thread_id=resolved_thread_id,
+                user_id=identity.user_id,
+                session_factory=session_factory,
+                cc_access_token=identity.token,
+                catalog_user_id=identity.user_id,
+                inventory_id=authenticated_payload.inventory_id,
+                request_context=normalized_context,
+                request_options=authenticated_payload.options,
+                draft_overview_claim=draft_overview_claim,
+            )
+        except BaseException:
+            if draft_overview_claim is not None:
+                run_id, build_id = draft_overview_claim
+                await release_draft_overview(
+                    session_factory=session_factory,
+                    run_id=run_id,
+                    user_id=identity.user_id,
+                    build_id=build_id,
+                )
+            raise
 
         headers = {
             "Cache-Control": "no-cache",

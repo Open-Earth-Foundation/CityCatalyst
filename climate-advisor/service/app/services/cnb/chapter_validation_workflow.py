@@ -17,8 +17,8 @@ from app.models.cnb.concept_note_draft import (
     ConceptNoteValidationFindingResponse,
 )
 from app.models.db.concept_note import ConceptNoteRun
-from app.persistence.concept_notes.workspace import (
-    ConceptNoteWorkspaceRepository,
+from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
+from app.persistence.concept_notes.workspace_validation import (
     WorkspaceValidationContext,
     WorkspaceValidationInputChangedError,
     WorkspaceValidationSnapshot,

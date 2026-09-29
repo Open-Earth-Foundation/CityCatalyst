@@ -67,6 +67,20 @@
  *         description: Authentication required
  *       403:
  *         description: City or run access denied
+ *       409:
+ *         description: A retried initial upload does not match the original file, or the note already has the maximum of 10 uploads. Climate Advisor enforces the limit; its body is forwarded unchanged.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   enum: [concept_note_upload_limit_reached]
+ *                 detail:
+ *                   type: string
+ *                 status:
+ *                   type: integer
  *       413:
  *         description: Source exceeds the 20 MiB limit
  *       415:
@@ -264,6 +278,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     },
   });
   const createPayload = await readConceptNoteApiPayload(createResponse);
+  // Forward CA rejections unchanged, e.g. the 409 upload-limit code the UI reads.
   if (!createResponse.ok) {
     return NextResponse.json(createPayload, { status: createResponse.status });
   }

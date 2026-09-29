@@ -163,6 +163,8 @@ class LegalAssessmentRecord(BaseModel):
     authority_scope_report_label: str | None = None
     authority_scope_status: str | None = None
     authority_scope_confidence_passed: bool | None = None
+    authority_scope_review_status: str | None = None
+    authority_scope_classification_method: str | None = None
     authority_scope_canonical_row_sha256: str | None = None
     authority_scope_provenance: dict[str, Any] = Field(default_factory=dict)
     raw: dict[str, Any] = Field(default_factory=dict)

@@ -1,27 +1,37 @@
-"""Release-time authority-scope sidecar generation and five-object retention.
+"""
+Brief: Generate, optionally correct, and publish an authority-scope-v1 sidecar.
 
-Two-stage workflow (required):
+Inputs:
+- CLI args:
+  - `--csv`: Legal classification CSV for this release. Required.
+  - `--country-code`: Country stamped on classifier input and overrides. Default `CL`.
+  - `--source-bucket`, `--source-key`, `--source-etag`: S3 identity of that CSV.
+  - `--source-last-modified`: Optional CSV timestamp stored on a newly generated sidecar.
+  - `--output`: Local JSON path for generate mode, or for `--apply-override` without publish.
+  - `--sidecar`: Existing sidecar JSON for publish or override application. No Jev call.
+  - `--review`: Versioned `authority-scope-review-v1` JSON. Each decision is `accept`,
+    `reject`, or `direct_classify` for one country/action/row hash.
+  - `--review-status`: Initial status for newly generated records. Default `pending_human_review`.
+  - `--publish`: Publish `--sidecar` after CSV binding checks. Never reclassifies.
+    A review publication uses a new object key and does not overwrite the Jev sidecar.
+  - `--apply-review`: Apply `--review` to `--sidecar` and write `--output` without Jev or S3.
+  - `--retain-newest`: How many sidecar objects to keep under the exact prefix. Default from settings (5).
+  - `--log-level`: Logging level. Default `INFO`.
+- Files: the legal CSV, a generated sidecar, and an optional override file.
+- Env vars: `OPENROUTER_API_KEY` is required only when generating classifications.
+  Report-serving pods must not receive it.
 
-1. Generate a local sidecar for legal review (calls Jev once):
+Outputs:
+- Generate mode writes a local sidecar whose Jev rows are `ai_classified` and `pending_human_review`.
+- `--apply-review` writes a new sidecar revision. Accept keeps the Jev label, reject
+  keeps it without unlocking a broad scope, and direct classification drops Jev provenance.
+- `--publish` uploads the validated sidecar, reads it back, then deletes only older objects
+  under the exact sidecar prefix beyond the retained newest five.
 
-  uv run python -m app.scripts.generate_authority_scope_sidecar \\
-    --csv path/to/legal-classification-v2.csv \\
-    --source-bucket test-global-api \\
-    --source-key raw_data/.../legal-classification-v2.csv \\
-    --source-etag '"abc"' \\
-    --output /tmp/authority-scope-v1.json
-
-2. After the legal owner marks every record `human_accepted` in that file,
-   publish the *same* artifact without calling Jev again:
-
-  uv run python -m app.scripts.generate_authority_scope_sidecar \\
-    --publish \\
-    --sidecar /tmp/authority-scope-v1.json \\
-    --csv path/to/legal-classification-v2.csv \\
-    --source-bucket test-global-api \\
-    --source-key raw_data/.../legal-classification-v2.csv \\
-    --source-etag '"abc"' \\
-    --retain-newest 5
+Usage (from the hiap-meed project root):
+- uv run python -m app.scripts.generate_authority_scope_sidecar --csv legal.csv --source-bucket bucket --source-key key --source-etag '"abc"' --output /tmp/authority-scope-v1.json
+- uv run python -m app.scripts.generate_authority_scope_sidecar --apply-review --sidecar /tmp/authority-scope-v1.json --review /tmp/review.json --csv legal.csv --source-bucket bucket --source-key key --source-etag '"abc"' --output /tmp/authority-scope-v1-reviewed.json
+- uv run python -m app.scripts.generate_authority_scope_sidecar --publish --sidecar /tmp/authority-scope-v1-corrected.json --csv legal.csv --source-bucket bucket --source-key key --source-etag '"abc"' --retain-newest 5
 
 Report-serving pods must never run this command.
 """
@@ -38,14 +48,20 @@ from io import StringIO
 from pathlib import Path
 from typing import Any
 
+from botocore.exceptions import ClientError
+from pydantic import ValidationError
+
 from app.config.llm_settings import get_llm_settings
 from app.modules.prioritizer.authority_scope import (
+    AUTHORITY_SCOPE_CLASSIFICATION_AI,
     AUTHORITY_SCOPE_CONTRACT_VERSION,
     AUTHORITY_SCOPE_RUBRIC_VERSION,
     canonical_row_sha256,
 )
 from app.modules.prioritizer.models import (
     ActionLegalAssessmentS3CsvRow,
+    AuthorityScopeHumanDecisionV1,
+    AuthorityScopeReviewFileV1,
     AuthorityScopeSidecarRecordV1,
     AuthorityScopeSidecarV1,
 )
@@ -79,6 +95,123 @@ def eligible_action_ids(
 ) -> set[str]:
     """Return action IDs that must appear in a publishable sidecar."""
     return {row.action_id for row in rows if row.verdict_category != "blocked"}
+
+
+def load_review_file(path: Path) -> AuthorityScopeReviewFileV1:
+    """Load and schema-validate one versioned human-review artifact."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise RuntimeError(f"review file is not a JSON object: {path}")
+    try:
+        return AuthorityScopeReviewFileV1.model_validate(payload)
+    except ValidationError as error:
+        raise RuntimeError(
+            "authority-scope review file failed schema validation"
+        ) from error
+
+
+def _reviewed_record(
+    record: AuthorityScopeSidecarRecordV1,
+    entry: Any,
+) -> AuthorityScopeSidecarRecordV1:
+    """Return one record after accept, reject, or direct classification."""
+    decision = AuthorityScopeHumanDecisionV1(
+        editor_identity=entry.editor_identity,
+        edited_at_utc=entry.edited_at_utc,
+        rationale=entry.rationale,
+        chosen_label=(
+            record.selected_label
+            if entry.operation == "accept"
+            else entry.chosen_label
+        ),
+    )
+    if entry.operation == "accept":
+        if record.classification_method != "ai_classified":
+            raise RuntimeError(
+                "accept requires an ai_classified record for "
+                f"{record.country_code}/{record.action_id}"
+            )
+        return record.model_copy(
+            update={"review_status": "human_accepted", "human_decision": decision}
+        )
+    if entry.operation == "reject":
+        if record.classification_method != "ai_classified":
+            raise RuntimeError(
+                "reject requires an ai_classified record for "
+                f"{record.country_code}/{record.action_id}"
+            )
+        return record.model_copy(
+            update={"review_status": "human_rejected", "human_decision": decision}
+        )
+    return record.model_copy(
+        update={
+            "classification_method": "human_classified",
+            "review_status": "human_accepted",
+            "selected_label": entry.chosen_label,
+            "probabilities": None,
+            "chosen_label_probability": None,
+            "confidence": None,
+            "confidence_threshold": None,
+            "confidence_passed": None,
+            "model_id": None,
+            "rubric_version": None,
+            "classified_at_utc": entry.edited_at_utc,
+            "human_decision": decision,
+        }
+    )
+
+
+def apply_authority_scope_review(
+    *,
+    sidecar: AuthorityScopeSidecarV1,
+    review_file: AuthorityScopeReviewFileV1,
+    rows: list[ActionLegalAssessmentS3CsvRow],
+    country_code: str,
+) -> AuthorityScopeSidecarV1:
+    """Apply row-hash-bound decisions onto a new sidecar revision."""
+    normalized_country = country_code.strip().upper()
+    row_by_action = {
+        row.action_id: row for row in rows if row.verdict_category != "blocked"
+    }
+    records = list(sidecar.records)
+    index = {
+        (record.country_code.strip().upper(), record.action_id): position
+        for position, record in enumerate(records)
+    }
+    seen: set[tuple[str, str]] = set()
+    for entry in review_file.decisions:
+        entry_country = entry.country_code.strip().upper()
+        key = (entry_country, entry.action_id)
+        if key in seen:
+            raise RuntimeError(
+                f"duplicate review decision for {entry_country}/{entry.action_id}"
+            )
+        seen.add(key)
+        row = row_by_action.get(entry.action_id)
+        if row is None or entry_country != normalized_country:
+            raise RuntimeError(
+                "review country/action/row hash does not match the current "
+                f"legal CSV row: {entry_country}/{entry.action_id}"
+            )
+        expected_hash = canonical_row_sha256(
+            classifier_input_from_s3_row(row=row, country_code=normalized_country)
+        )
+        if entry.canonical_row_sha256 != expected_hash:
+            raise RuntimeError(
+                "review country/action/row hash does not match the current "
+                f"legal CSV row: {entry_country}/{entry.action_id}"
+            )
+        record_index = index.get(key)
+        if record_index is None or records[record_index].canonical_row_sha256 != expected_hash:
+            raise RuntimeError(
+                "review country/action/row hash does not match the current "
+                f"legal CSV row: {entry_country}/{entry.action_id}"
+            )
+        records[record_index] = _reviewed_record(records[record_index], entry)
+    reviewed_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+    return sidecar.model_copy(
+        update={"records": records, "generated_at_utc": reviewed_at}
+    )
 
 
 def load_sidecar_from_path(path: Path) -> AuthorityScopeSidecarV1:
@@ -201,6 +334,7 @@ def build_sidecar_from_rows(
                     "confidence_passed": confidence_passed,
                     "model_id": model_id,
                     "rubric_version": AUTHORITY_SCOPE_RUBRIC_VERSION,
+                    "classification_method": AUTHORITY_SCOPE_CLASSIFICATION_AI,
                     "review_status": review_status,
                     "classified_at_utc": generated_at,
                 }
@@ -249,15 +383,21 @@ def assert_sidecar_ready_for_publication(
             "refusing to publish sidecar with unexpected action_id values: "
             + ", ".join(unexpected)
         )
-    pending_or_rejected = [
+    invalid_pairs = [
         record.action_id
         for record in sidecar.records
-        if record.review_status != "human_accepted"
+        if (record.classification_method, record.review_status)
+        not in {
+            ("ai_classified", "pending_human_review"),
+            ("ai_classified", "human_accepted"),
+            ("ai_classified", "human_rejected"),
+            ("human_classified", "human_accepted"),
+        }
     ]
-    if pending_or_rejected:
+    if invalid_pairs:
         raise RuntimeError(
-            "refusing to publish sidecar until every record is human_accepted; "
-            f"unaccepted={pending_or_rejected}"
+            "refusing to publish sidecar with an invalid classification pair; "
+            f"invalid={invalid_pairs}"
         )
 
 
@@ -279,6 +419,17 @@ def publish_sidecar_and_retain(
         generated_at_utc=sidecar.generated_at_utc,
     )
     body = sidecar.model_dump_json(indent=2).encode("utf-8")
+    try:
+        s3_client.head_object(Bucket=sidecar.source_s3_bucket, Key=key)
+    except ClientError as error:
+        code = str(error.response.get("Error", {}).get("Code", ""))
+        if code not in {"404", "NoSuchKey", "NotFound"}:
+            raise
+    else:
+        raise RuntimeError(
+            "refusing to overwrite an existing sidecar key; "
+            "review publication must use a fresh key"
+        )
     s3_client.put_object(
         Bucket=sidecar.source_s3_bucket,
         Key=key,
@@ -319,12 +470,12 @@ def publish_sidecar_and_retain(
     return key
 
 
-def main(argv: list[str] | None = None) -> int:
-    """CLI entrypoint for release-time sidecar generation or publish-only."""
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """Parse the release-sidecar CLI."""
     parser = argparse.ArgumentParser(
         description=(
-            "Generate an authority-scope-v1 sidecar for legal review, or publish "
-            "an already reviewed sidecar without reclassifying."
+            "Generate an authority-scope-v1 sidecar, apply a row-bound human "
+            "override, or publish a validated sidecar without reclassifying."
         )
     )
     parser.add_argument("--csv", required=True, help="Path to the legal classification CSV")
@@ -336,40 +487,120 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--output",
         default=None,
-        help="Local sidecar JSON path for generate mode",
+        help="Local sidecar JSON path for generate or --apply-review",
     )
     parser.add_argument(
         "--sidecar",
         default=None,
-        help="Reviewed sidecar JSON path for publish mode (no Jev call)",
+        help="Existing sidecar JSON for publish or review application (no Jev call)",
+    )
+    parser.add_argument(
+        "--review",
+        default=None,
+        help=(
+            "authority-scope-review-v1 JSON. accept, reject, or direct_classify "
+            "one matching country/action/row hash."
+        ),
     )
     parser.add_argument(
         "--review-status",
         default="pending_human_review",
-        choices=["pending_human_review", "human_accepted", "human_rejected"],
-        help="Initial review_status for newly generated records only",
+        choices=["pending_human_review"],
+        help="Initial review_status for newly generated Jev records",
     )
     parser.add_argument(
         "--publish",
         action="store_true",
         help="Publish --sidecar after validating it against the CSV; never reclassifies",
     )
+    parser.add_argument(
+        "--apply-review",
+        action="store_true",
+        help="Apply --review to --sidecar and write --output; no Jev call and no S3 write",
+    )
     parser.add_argument("--retain-newest", type=int, default=None)
     parser.add_argument("--log-level", default="INFO")
-    args = parser.parse_args(argv)
+    return parser.parse_args(argv)
+
+
+def _with_review(
+    sidecar: AuthorityScopeSidecarV1,
+    *,
+    review_path: str | None,
+    rows: list[ActionLegalAssessmentS3CsvRow],
+    country_code: str,
+) -> AuthorityScopeSidecarV1:
+    """Apply a review artifact when one was provided."""
+    if not review_path:
+        return sidecar
+    return apply_authority_scope_review(
+        sidecar=sidecar,
+        review_file=load_review_file(Path(review_path)),
+        rows=rows,
+        country_code=country_code,
+    )
+
+
+def main(argv: list[str] | None = None) -> int:
+    """CLI entrypoint for release-time sidecar generation, override, or publish."""
+    args = parse_args(argv)
 
     logging.basicConfig(level=getattr(logging, args.log_level.upper(), logging.INFO))
     csv_text = Path(args.csv).read_text(encoding="utf-8-sig")
     rows = _load_csv_rows(csv_text)
     expected_ids = eligible_action_ids(rows)
 
+    if args.publish and args.apply_review:
+        raise SystemExit("use either --publish or --apply-review, not both")
+
+    if args.apply_review:
+        if not args.sidecar or not args.review or not args.output:
+            raise SystemExit(
+                "--apply-review requires --sidecar, --review, and --output"
+            )
+        sidecar = _with_review(
+            load_sidecar_from_path(Path(args.sidecar)),
+            review_path=args.review,
+            rows=rows,
+            country_code=args.country_code,
+        )
+        validate_sidecar_matches_csv_release(
+            sidecar=sidecar,
+            rows=rows,
+            country_code=args.country_code,
+            source_bucket=args.source_bucket,
+            source_key=args.source_key,
+            source_etag=args.source_etag,
+        )
+        output_path = Path(args.output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            sidecar.model_dump_json(indent=2) + "\n",
+            encoding="utf-8",
+        )
+        logger.info(
+            "Wrote overridden sidecar path=%s records=%s",
+            output_path,
+            len(sidecar.records),
+        )
+        return 0
+
     if args.publish:
         if not args.sidecar:
-            parser.error("--publish requires --sidecar pointing at the reviewed artifact")
+            raise SystemExit(
+                "--publish requires --sidecar pointing at the validated artifact"
+            )
         if args.output:
-            parser.error("--publish does not accept --output; publish the reviewed --sidecar")
+            raise SystemExit(
+                "--publish does not accept --output; publish the validated --sidecar"
+            )
         sidecar_path = Path(args.sidecar)
-        sidecar = load_sidecar_from_path(sidecar_path)
+        sidecar = _with_review(
+            load_sidecar_from_path(sidecar_path),
+            review_path=args.review,
+            rows=rows,
+            country_code=args.country_code,
+        )
         validate_sidecar_matches_csv_release(
             sidecar=sidecar,
             rows=rows,
@@ -390,14 +621,14 @@ def main(argv: list[str] | None = None) -> int:
             expected_action_ids=expected_ids,
         )
         logger.info(
-            "Published reviewed sidecar path=%s key=%s without reclassification",
+            "Published sidecar path=%s key=%s without reclassification",
             sidecar_path,
             published_key,
         )
         return 0
 
     if not args.output:
-        parser.error("generate mode requires --output")
+        raise SystemExit("generate mode requires --output")
     sidecar = build_sidecar_from_rows(
         rows=rows,
         country_code=args.country_code,
@@ -408,11 +639,17 @@ def main(argv: list[str] | None = None) -> int:
         jev_client=OpenRouterJevClient(),
         review_status=args.review_status,
     )
+    sidecar = _with_review(
+        sidecar,
+        review_path=args.review,
+        rows=rows,
+        country_code=args.country_code,
+    )
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(sidecar.model_dump_json(indent=2) + "\n", encoding="utf-8")
     logger.info(
-        "Wrote local sidecar for review path=%s records=%s contract=%s",
+        "Wrote local sidecar path=%s records=%s contract=%s",
         output_path,
         len(sidecar.records),
         sidecar.contract_version,

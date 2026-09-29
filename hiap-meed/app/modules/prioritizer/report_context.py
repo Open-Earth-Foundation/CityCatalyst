@@ -4,10 +4,14 @@ from __future__ import annotations
 
 from typing import Any
 
+from pydantic import ValidationError
+
 from app.modules.prioritizer.authority_scope import (
     AUTHORITY_SCOPE_BLOCKED,
     AUTHORITY_SCOPE_FULL_DIRECT,
     AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY,
+    AUTHORITY_SCOPE_QUALIFIED,
+    AUTHORITY_SCOPE_UNSPECIFIED,
     authority_scope_summary,
     resolve_report_authority_scope,
 )
@@ -22,6 +26,7 @@ from app.modules.prioritizer.internal_models import (
     LegalAssessmentRecord,
 )
 from app.modules.prioritizer.models import (
+    AuthorityScopeClassificationMetadata,
     CityActionReportApiRequest,
     PrioritizerApiCityResult,
     RankedActionResult,
@@ -1489,6 +1494,13 @@ def _resolve_authority_scope(
     verdict = legal.get("verdict_category")
     ownership = legal.get("ownership_category")
     if legal_assessment is not None:
+        review_status = legal_assessment.authority_scope_review_status
+        if review_status in {"pending_human_review", "human_rejected"}:
+            if verdict == "blocked":
+                return AUTHORITY_SCOPE_BLOCKED, "release_validated"
+            if verdict in {"enabled", "conditional"}:
+                return AUTHORITY_SCOPE_QUALIFIED, review_status
+            return AUTHORITY_SCOPE_UNSPECIFIED, review_status
         if legal_assessment.authority_scope_report_label:
             return (
                 legal_assessment.authority_scope_report_label,
@@ -1811,6 +1823,32 @@ def _source_summary_facts(context: ReportContext) -> dict[str, Any]:
         },
         "staleness_evaluated": False,
     }
+
+
+def authority_scope_classification_metadata(
+    legal: LegalAssessmentRecord | None,
+) -> AuthorityScopeClassificationMetadata | None:
+    """Build reader-safe classification metadata from a bound legal row."""
+    if legal is None:
+        return None
+    if not (
+        legal.authority_scope_classification_method
+        and legal.authority_scope_review_status
+        and legal.authority_scope_report_label
+        and legal.authority_scope_status
+    ):
+        return None
+    try:
+        return AuthorityScopeClassificationMetadata.model_validate(
+            {
+                "classification_method": legal.authority_scope_classification_method,
+                "review_status": legal.authority_scope_review_status,
+                "authority_scope": legal.authority_scope_report_label,
+                "authority_scope_status": legal.authority_scope_status,
+            }
+        )
+    except ValidationError:
+        return None
 
 
 def _source_chapter_limitations(context: ReportContext) -> list[str]:

@@ -11,7 +11,11 @@ import json
 from typing import Any, Literal
 
 AUTHORITY_SCOPE_CONTRACT_VERSION = "authority-scope-v1"
+AUTHORITY_SCOPE_REVIEW_CONTRACT_VERSION = "authority-scope-review-v1"
 AUTHORITY_SCOPE_RUBRIC_VERSION = "authority-scope-rubric-v1"
+AUTHORITY_SCOPE_CLASSIFICATION_AI = "ai_classified"
+AUTHORITY_SCOPE_CLASSIFICATION_HUMAN = "human_classified"
+BROAD_SCOPE_REVIEW_STATUSES: frozenset[str] = frozenset({"human_accepted"})
 AUTHORITY_SCOPE_FULL_DIRECT = "full_direct"
 AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY = "municipal_assets_only"
 AUTHORITY_SCOPE_QUALIFIED = "qualified"

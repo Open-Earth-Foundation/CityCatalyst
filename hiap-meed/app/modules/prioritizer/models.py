@@ -1190,6 +1190,62 @@ AuthorityScopeReviewStatus = Literal[
     "human_accepted",
     "human_rejected",
 ]
+AuthorityScopeClassificationMethod = Literal["ai_classified", "human_classified"]
+AUTHORITY_SCOPE_VALID_PAIRS: frozenset[
+    tuple[AuthorityScopeClassificationMethod, AuthorityScopeReviewStatus]
+] = frozenset(
+    {
+        ("ai_classified", "pending_human_review"),
+        ("ai_classified", "human_accepted"),
+        ("ai_classified", "human_rejected"),
+        ("human_classified", "human_accepted"),
+    }
+)
+AuthorityScopeReviewOperation = Literal["accept", "reject", "direct_classify"]
+
+
+class AuthorityScopeHumanDecisionV1(BaseModel):
+    """Audit facts for one human accept, reject, or direct classification."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    editor_identity: str = Field(min_length=1)
+    edited_at_utc: str = Field(min_length=1)
+    rationale: str = Field(min_length=1)
+    chosen_label: AuthorityScopeSemanticLabel | None = None
+
+
+class AuthorityScopeReviewFileEntryV1(BaseModel):
+    """One row-hash-bound decision in a versioned review artifact."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    country_code: str = Field(min_length=2)
+    action_id: str = Field(min_length=1)
+    canonical_row_sha256: str = Field(min_length=64, max_length=64)
+    operation: AuthorityScopeReviewOperation
+    rationale: str = Field(min_length=1)
+    editor_identity: str = Field(min_length=1)
+    edited_at_utc: str = Field(min_length=1)
+    chosen_label: AuthorityScopeSemanticLabel | None = None
+
+    @model_validator(mode="after")
+    def validate_operation_label(self) -> AuthorityScopeReviewFileEntryV1:
+        """Direct classification names a label; accept and reject do not replace one."""
+        if self.operation == "direct_classify" and self.chosen_label is None:
+            raise ValueError("direct_classify requires chosen_label")
+        if self.operation != "direct_classify" and self.chosen_label is not None:
+            raise ValueError("accept and reject must not set chosen_label")
+        return self
+
+
+class AuthorityScopeReviewFileV1(BaseModel):
+    """Versioned review artifact accepted by the release command."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    contract_version: Literal["authority-scope-review-v1"] = "authority-scope-review-v1"
+    decisions: list[AuthorityScopeReviewFileEntryV1] = Field(default_factory=list)
 
 
 class AuthorityScopeSidecarRecordV1(BaseModel):
@@ -1201,29 +1257,56 @@ class AuthorityScopeSidecarRecordV1(BaseModel):
     action_id: str = Field(min_length=1)
     canonical_row_sha256: str = Field(min_length=64, max_length=64)
     selected_label: AuthorityScopeSemanticLabel
-    probabilities: dict[AuthorityScopeSemanticLabel, float]
-    chosen_label_probability: float = Field(ge=0.0, le=1.0)
-    confidence: float = Field(ge=0.0, le=1.0)
-    confidence_threshold: float = Field(ge=0.0, le=1.0)
-    confidence_passed: bool
-    model_id: str = Field(min_length=1)
-    rubric_version: str = Field(min_length=1)
+    probabilities: dict[AuthorityScopeSemanticLabel, float] | None = None
+    chosen_label_probability: float | None = Field(default=None, ge=0.0, le=1.0)
+    confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    confidence_threshold: float | None = Field(default=None, ge=0.0, le=1.0)
+    confidence_passed: bool | None = None
+    model_id: str | None = None
+    rubric_version: str | None = None
+    classification_method: AuthorityScopeClassificationMethod
     review_status: AuthorityScopeReviewStatus
     classified_at_utc: str = Field(min_length=1)
+    human_decision: AuthorityScopeHumanDecisionV1 | None = None
 
     @model_validator(mode="after")
-    def validate_probability_coverage(self) -> AuthorityScopeSidecarRecordV1:
-        """Reject incomplete probability maps or contradictory confidence fields."""
+    def validate_pair_and_provenance(self) -> AuthorityScopeSidecarRecordV1:
+        """Reject invalid pairs, invented Jev provenance, and missing audit facts."""
+        pair = (self.classification_method, self.review_status)
+        if pair not in AUTHORITY_SCOPE_VALID_PAIRS:
+            raise ValueError(
+                "invalid classification_method/review_status pair: "
+                f"{self.classification_method}/{self.review_status}"
+            )
+        if self.classification_method == "ai_classified":
+            self._validate_ai_provenance()
+        else:
+            self._validate_human_provenance()
+        return self
+
+    def _validate_ai_provenance(self) -> None:
+        """Require Jev fields and the audit envelope for a human decision."""
         expected = {
             "full_direct",
             "municipal_assets_only",
             "qualified",
             "unclassified",
         }
-        if set(self.probabilities) != expected:
+        if self.probabilities is None or set(self.probabilities) != expected:
             raise ValueError(
                 "probabilities must include exactly the closed authority-scope labels"
             )
+        if self.model_id is None or not self.model_id.strip():
+            raise ValueError("ai_classified records require model_id")
+        if self.rubric_version is None or not self.rubric_version.strip():
+            raise ValueError("ai_classified records require rubric_version")
+        if (
+            self.chosen_label_probability is None
+            or self.confidence is None
+            or self.confidence_threshold is None
+            or self.confidence_passed is None
+        ):
+            raise ValueError("ai_classified records require confidence fields")
         if self.selected_label not in self.probabilities:
             raise ValueError("selected_label missing from probabilities")
         selected_probability = float(self.probabilities[self.selected_label])
@@ -1236,7 +1319,42 @@ class AuthorityScopeSidecarRecordV1(BaseModel):
             raise ValueError(
                 "confidence_passed must equal confidence >= confidence_threshold"
             )
-        return self
+        if self.review_status == "pending_human_review":
+            if self.human_decision is not None:
+                raise ValueError("pending AI records must not include a human decision")
+            return
+        if self.human_decision is None:
+            raise ValueError("accepted or rejected AI records require a human decision")
+        if self.review_status == "human_accepted":
+            if self.human_decision.chosen_label != self.selected_label:
+                raise ValueError("accept must keep the Jev selected label")
+        elif self.human_decision.chosen_label is not None:
+            raise ValueError("reject must not set a replacement label")
+
+    def _validate_human_provenance(self) -> None:
+        """Direct human classification carries audit data and no Jev fields."""
+        if any(
+            value is not None
+            for value in (
+                self.probabilities,
+                self.chosen_label_probability,
+                self.confidence,
+                self.confidence_threshold,
+                self.confidence_passed,
+                self.model_id,
+                self.rubric_version,
+            )
+        ):
+            raise ValueError(
+                "human_classified records must not include Jev provenance"
+            )
+        if (
+            self.human_decision is None
+            or self.human_decision.chosen_label != self.selected_label
+        ):
+            raise ValueError(
+                "human_classified records require a chosen label matching selected_label"
+            )
 
 
 class AuthorityScopeSidecarV1(BaseModel):
@@ -1267,13 +1385,22 @@ class AuthorityScopeSidecarV1(BaseModel):
                     f"duplicate authority-scope record for {key[0]}/{key[1]}"
                 )
             seen.add(key)
-            if record.model_id != self.model_id:
+            if (
+                record.model_id is not None
+                and record.model_id != self.model_id
+            ):
                 raise ValueError("record model_id must match sidecar model_id")
-            if record.rubric_version != self.rubric_version:
+            if (
+                record.rubric_version is not None
+                and record.rubric_version != self.rubric_version
+            ):
                 raise ValueError(
                     "record rubric_version must match sidecar rubric_version"
                 )
-            if record.confidence_threshold != self.confidence_threshold:
+            if (
+                record.confidence_threshold is not None
+                and record.confidence_threshold != self.confidence_threshold
+            ):
                 raise ValueError(
                     "record confidence_threshold must match sidecar threshold"
                 )
@@ -1960,6 +2087,29 @@ class CityActionReportSourceContext(BaseModel):
     )
 
 
+class AuthorityScopeClassificationMetadata(BaseModel):
+    """Reader-safe authority-scope provenance. No model text, identity, or paths."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    classification_method: AuthorityScopeClassificationMethod
+    review_status: AuthorityScopeReviewStatus
+    authority_scope: str = Field(min_length=1)
+    authority_scope_status: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_closed_pair(self) -> AuthorityScopeClassificationMetadata:
+        """Reject pairs that the sidecar contract does not allow."""
+        if (self.classification_method, self.review_status) not in (
+            AUTHORITY_SCOPE_VALID_PAIRS
+        ):
+            raise ValueError(
+                "invalid classification_method/review_status pair: "
+                f"{self.classification_method}/{self.review_status}"
+            )
+        return self
+
+
 class CityActionReportMetadata(BaseModel):
     """Metadata returned with one output-plan report."""
 
@@ -1980,6 +2130,13 @@ class CityActionReportMetadata(BaseModel):
     limitations: list[str] = Field(
         default_factory=list,
         description="Report-level diagnostic limitations for source-status handling.",
+    )
+    authority_scope_classification: AuthorityScopeClassificationMetadata | None = Field(
+        default=None,
+        description=(
+            "Backend classification method and human-review state for the bound "
+            "legal row. Absent when no sidecar record was bound."
+        ),
     )
 
 

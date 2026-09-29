@@ -312,6 +312,8 @@ class MixedScopeLegalDataApiClient:
                 authority_scope_report_label="municipal_assets_only",
                 authority_scope_status="release_validated",
                 authority_scope_confidence_passed=True,
+                authority_scope_classification_method="ai_classified",
+                authority_scope_review_status="human_accepted",
             )
         }
 
@@ -521,6 +523,15 @@ def test_output_plan_cl_iqq_icare_0016_keeps_legal_and_finance_scope(
     assert "legal" in snapshot_body["source_refs"]
     assert "policy_scores" in snapshot_body["source_refs"]
     assert "finance_catalogues" in finance_body["source_refs"]
+    classification = body["metadata"]["authority_scope_classification"]
+    assert classification["classification_method"] == "ai_classified"
+    assert classification["review_status"] == "human_accepted"
+    assert classification["authority_scope"] == "municipal_assets_only"
+    assert "editor_identity" not in classification
+    joined_limitations = " ".join(
+        snapshot_body["limitations"]["en"] + finance_body["limitations"]["en"]
+    )
+    assert "ai_classified" not in joined_limitations
 
 
 def _iqq_icare_report_payload() -> dict[str, object]:

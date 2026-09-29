@@ -17,9 +17,11 @@ from pydantic import ValidationError
 
 from app.config.llm_settings import get_llm_settings
 from app.modules.prioritizer.authority_scope import (
+    AUTHORITY_SCOPE_BLOCKED,
     AUTHORITY_SCOPE_CONTRACT_VERSION,
     AUTHORITY_SCOPE_QUALIFIED,
     AUTHORITY_SCOPE_UNSPECIFIED,
+    BROAD_SCOPE_REVIEW_STATUSES,
     canonical_row_sha256,
     classifier_input_from_legal_row,
     resolve_report_authority_scope,
@@ -238,73 +240,65 @@ def bind_sidecar_label_to_row(
             "authority_scope_provenance": provenance,
         }
 
-    if record.review_status == "pending_human_review":
-        unbound = _conservative_unbound_scope(
-            verdict_category=verdict_category,
-            ownership_category=ownership_category,
-            status="pending_human_review",
-        )
-        provenance.update(
-            {
-                "status": "pending_human_review",
-                "selected_label": record.selected_label,
-                "review_status": record.review_status,
-            }
-        )
-        return {
-            "authority_scope_selected_label": record.selected_label,
-            "authority_scope_report_label": unbound["authority_scope_report_label"],
-            "authority_scope_status": "pending_human_review",
-            "authority_scope_confidence_passed": record.confidence_passed,
-            "authority_scope_canonical_row_sha256": row_hash,
-            "authority_scope_provenance": provenance,
+    provenance.update(
+        {
+            "classification_method": record.classification_method,
+            "review_status": record.review_status,
+            "selected_label": record.selected_label,
         }
-    if record.review_status != "human_accepted":
-        unbound = _conservative_unbound_scope(
-            verdict_category=verdict_category,
-            ownership_category=ownership_category,
-            status="human_rejected",
-        )
-        provenance.update(
-            {
-                "status": "human_rejected",
-                "selected_label": record.selected_label,
-                "review_status": record.review_status,
-            }
-        )
+    )
+    if record.review_status not in BROAD_SCOPE_REVIEW_STATUSES:
+        if verdict_category == "blocked":
+            report_label = AUTHORITY_SCOPE_BLOCKED
+            status = "release_validated"
+        elif verdict_category in {"enabled", "conditional"}:
+            report_label = AUTHORITY_SCOPE_QUALIFIED
+            status = record.review_status
+        else:
+            report_label = AUTHORITY_SCOPE_UNSPECIFIED
+            status = record.review_status
+        provenance["status"] = status
         return {
             "authority_scope_selected_label": record.selected_label,
-            "authority_scope_report_label": unbound["authority_scope_report_label"],
-            "authority_scope_status": "human_rejected",
+            "authority_scope_report_label": report_label,
+            "authority_scope_status": status,
             "authority_scope_confidence_passed": record.confidence_passed,
+            "authority_scope_review_status": record.review_status,
+            "authority_scope_classification_method": record.classification_method,
             "authority_scope_canonical_row_sha256": row_hash,
             "authority_scope_provenance": provenance,
         }
 
-    recomputed_confidence_passed = record.confidence >= record.confidence_threshold
+    if record.classification_method == "human_classified":
+        confidence_passed = True
+    else:
+        confidence_passed = bool(
+            record.confidence is not None
+            and record.confidence_threshold is not None
+            and record.confidence >= record.confidence_threshold
+        )
     report_label, status = resolve_report_authority_scope(
         verdict_category=verdict_category,
         ownership_category=ownership_category,
         selected_label=record.selected_label,
         label_accepted=True,
-        confidence_passed=recomputed_confidence_passed,
+        confidence_passed=confidence_passed,
     )
     provenance.update(
         {
             "status": status,
-            "selected_label": record.selected_label,
             "confidence": record.confidence,
             "confidence_threshold": record.confidence_threshold,
-            "confidence_passed": recomputed_confidence_passed,
-            "review_status": record.review_status,
-            "probabilities": record.probabilities,
+            "confidence_passed": confidence_passed,
         }
     )
     return {
         "authority_scope_selected_label": record.selected_label,
         "authority_scope_report_label": report_label,
         "authority_scope_status": status,
-        "authority_scope_confidence_passed": recomputed_confidence_passed,
+        "authority_scope_confidence_passed": confidence_passed,
+        "authority_scope_review_status": record.review_status,
+        "authority_scope_classification_method": record.classification_method,
         "authority_scope_canonical_row_sha256": row_hash,
         "authority_scope_provenance": provenance,
     }

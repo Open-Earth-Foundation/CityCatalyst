@@ -3,7 +3,7 @@
   "rubric_version": "authority-scope-rubric-v1",
   "created_at_utc": "2026-09-28T13:25:45Z",
   "confidence_threshold": 0.55,
-  "notes": "Expected labels for the 48 SSG mock rows begin from the release that Piotr confirmed classified correctly, with product decisions for icare_0016/icare_0121/c40_0016/c40_0017 and reviewer labels for the two adversarial cases. Production publication still requires legal/data-owner adjudication of every unclassified/low-confidence row.",
+  "notes": "Expected labels for the 48 SSG mock rows begin from the release that Piotr confirmed classified correctly, with product decisions for icare_0016/icare_0121/c40_0016/c40_0017 and reviewer labels for the two adversarial cases. Publication uses schema and binding checks, Piotr paraphrase/negation cases, and deterministic low-confidence and structural-conflict guards. Full-corpus human adjudication is not a publication gate. ssg_c40_0029 and ssg_icare_0012 are recorded live-model outcomes, not release blockers.",
   "cases": [
     {
       "case_id": "ssg_c40_0010",
@@ -252,6 +252,7 @@
       "case_id": "ssg_c40_0029",
       "source": "ssg_mock_catalogue",
       "label_source": "legacy_keyword_snapshot_pending_legal_owner_review",
+      "live_comparison": "recorded_model_outcome",
       "country_code": "CL",
       "action_id": "c40_0029",
       "verdict_category": "enabled",
@@ -273,7 +274,7 @@
       "classifier_eligible": true,
       "expected_semantic_label": "full_direct",
       "expected_report_scope": "full_direct",
-      "notes": null
+      "notes": "Recorded live outcome, not a release blocker: Jev confidence 0.54 maps to conservative qualified; the interim legacy label was full_direct."
     },
     {
       "case_id": "ssg_c40_0034",
@@ -545,6 +546,7 @@
       "case_id": "ssg_icare_0012",
       "source": "ssg_mock_catalogue",
       "label_source": "legacy_keyword_snapshot_pending_legal_owner_review",
+      "live_comparison": "recorded_model_outcome",
       "country_code": "CL",
       "action_id": "icare_0012",
       "verdict_category": "enabled",
@@ -566,7 +568,7 @@
       "classifier_eligible": true,
       "expected_semantic_label": "full_direct",
       "expected_report_scope": "full_direct",
-      "notes": null
+      "notes": "Recorded live outcome, not a release blocker: Jev selected municipal_assets_only; the interim legacy label was full_direct."
     },
     {
       "case_id": "ssg_icare_0015",

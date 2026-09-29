@@ -167,11 +167,19 @@ Legal `authority_scope` for output-plan reports comes from a versioned S3 sideca
 - Default prefix: `raw_data/cl_ssg/cl_ssg_legal_signals/release/v2/authority-scope/`
 - Object name pattern: `authority-scope-v1-YYYYMMDDTHHMMSSZ.json`
 - Report pods: `s3:GetObject` + `s3:ListBucket` on that prefix only; never write; never need `OPENROUTER_API_KEY`
-- Release job: may `PutObject` a new sidecar only when every record is `human_accepted`, the release covers every non-blocked CSV row, and source ETag is present; after read-back validation it may `DeleteObject` only older sidecars under that exact prefix while retaining the five newest. It must never delete the legal CSV or objects outside the prefix
-- Classification: generate with `uv run python -m app.scripts.generate_authority_scope_sidecar --output ...` using `OPENROUTER_API_KEY` and pinned Jev
-- Publish: after every record is marked `human_accepted`, publish the *same* file with `--publish --sidecar ...` (no second Jev call)
-- Evaluation: `uv run python -m app.scripts.evaluate_authority_scope_corpus` (offline) or `--live` (credentialed)
-- When a matching sidecar is missing, stale, pending/rejected, low-confidence, missing ETag, or structurally conflicting, reports use conservative `qualified`/`unspecified` wording and expose `authority_scope_status`
+- Release job: may `PutObject` a new sidecar when every record is one of the four valid pairs (`ai_classified` with `pending_human_review`, `human_accepted`, or `human_rejected`; or `human_classified` with `human_accepted`), the release covers every non-blocked CSV row, and source ETag is present. Publication uses a fresh object key and refuses to overwrite an existing sidecar. After read-back validation it may `DeleteObject` only older sidecars under that exact prefix while retaining the five newest. It must never delete the legal CSV or objects outside the prefix.
+- Classification: generate with `uv run python -m app.scripts.generate_authority_scope_sidecar --output ...` using `OPENROUTER_API_KEY` and pinned Jev. A new Jev row is `ai_classified` + `pending_human_review`. Pending and rejected rows stay conservative `qualified` even when Jev's label and confidence would otherwise be broad.
+- Human review: prepare an `authority-scope-review-v1` JSON file. Each decision is `accept`, `reject`, or `direct_classify` for one `country_code`, `action_id`, and `canonical_row_sha256`, with rationale, editor identity, and edit time. `direct_classify` also sets `chosen_label`. Apply it without calling Jev or editing the legal CSV:
+
+  ```text
+  uv run python -m app.scripts.generate_authority_scope_sidecar --apply-review --sidecar /tmp/authority-scope-v1.json --review /tmp/review.json --csv legal.csv --source-bucket bucket --source-key key --source-etag '"abc"' --output /tmp/authority-scope-v1-reviewed.json
+  ```
+
+  A hash, country, or action that does not match the current CSV row is rejected. Accept keeps the Jev label and provenance. Reject keeps them and does not unlock a broad scope. Direct classification stores the human label and audit facts and does not invent Jev probabilities or a model id. Publishing that file creates a new sidecar key and leaves the original Jev object in place until retention drops older versions.
+- Publish: `uv run python -m app.scripts.generate_authority_scope_sidecar --publish --sidecar ...` validates the file and does not call Jev. `--review` may be passed at publish time instead of `--apply-review`.
+- Evaluation: `uv run python -m app.scripts.evaluate_authority_scope_corpus` checks schema and row binding for every corpus row, including Piotr's paraphrase and negation cases. `--live` records model differences. `ssg_c40_0029` and `ssg_icare_0012` are recorded outcomes, not release blockers. Low confidence and structural conflicts stay deterministic report guards.
+- Report metadata `authority_scope_classification` carries the two codes plus the safe scope and status. It does not include model reasoning, credentials, probabilities, editor identity, or S3 paths. CityCatalyst stores that object on `MeedActionReport` and the PDF prints a fixed status sentence from the codes. Chapter Markdown is not the source of that sentence.
+- When a matching sidecar is missing, stale, low-confidence, missing ETag, or structurally conflicting, reports use conservative `qualified`/`unspecified` wording. Pending and rejected classifications do the same.
 
 ### 2. Install dependencies
 

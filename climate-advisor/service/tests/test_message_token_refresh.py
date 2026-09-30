@@ -12,6 +12,7 @@ from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteRun
 from app.models.db.thread import Thread
 from app.models.requests import MessageCreateRequest
 from app.routes import messages as messages_route
+from app.utils import citycatalyst_auth
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
@@ -89,7 +90,7 @@ async def test_reopened_thread_uses_and_persists_current_message_token(
 
         monkeypatch.setattr(messages_route, "StreamingHandler", _StreamingHandlerStub)
         monkeypatch.setattr(
-            messages_route.CityCatalystClient,
+            citycatalyst_auth.CityCatalystClient,
             "validate_user_identity",
             AsyncMock(return_value="owner-1"),
         )
@@ -112,6 +113,7 @@ async def test_reopened_thread_uses_and_persists_current_message_token(
                 content="Mark the final chapter ready",
                 context={"access_token": "current-message-token"},
             ),
+            authorization="Bearer current-message-token",
             session=None,
             session_factory=session_factory,
         )

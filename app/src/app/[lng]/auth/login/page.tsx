@@ -24,7 +24,8 @@ export type LoginInputs = {
   securityToken: string;
 };
 
-const securityCodePattern = /^[0-9]{6}$/;
+// allow either 6-digit numerical codes or 10-digit hex codes separated by an optional - in the middle
+const securityCodePattern = /^([0-9]{6}|[0-9a-f]{5}-?[0-9a-f]{5})$/i;
 
 function VerifiedNotification({ t }: { t: TFunction }) {
   const searchParams = useSearchParams();
@@ -109,7 +110,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     const status = await run2FAStatusCheck();
-    if (status?.enabled && data.securityToken?.length != 6) {
+    if (status?.enabled && data.securityToken?.length < 6) {
       return;
     }
 

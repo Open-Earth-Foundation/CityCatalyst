@@ -80,5 +80,7 @@
   "confidence-verdict-moderate": "Moderado",
   "confidence-verdict-high": "Alto",
   "weight-value-text": "{{value}} por cento",
-  "gate-ready": "Pronto para gerar recomendações."
+  "gate-ready": "Pronto para gerar recomendações.",
+  "view-breakdown": "Ver detalhamento",
+  "view-breakdown-aria": "Veja o detalhamento das emissões"
 }

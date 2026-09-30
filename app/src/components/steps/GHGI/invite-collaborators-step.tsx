@@ -9,11 +9,12 @@ import {
 } from "react";
 import {
   Box,
-  chakra,
+  Checkbox as ChakraCheckbox,
   CheckboxGroup,
   CloseButton,
   createListCollection,
   Flex,
+  Heading,
   HStack,
   Icon,
   Input,
@@ -27,9 +28,15 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
+import {
+  MenuContent,
+  MenuItem,
+  MenuRoot,
+  MenuTrigger,
+} from "@/components/ui/menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { MdInfoOutline } from "react-icons/md";
+import { MdArrowDropDown, MdInfoOutline } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
 import {
   useGetUserProjectsQuery,
@@ -38,6 +45,9 @@ import {
 } from "@/services/api";
 import { z } from "zod";
 import { copyInviteUrlsToClipboard } from "@/util/copy-invite-urls";
+import { InfoOutlineIcon } from "@/components/icons";
+
+const ROLES = ["collaborator", "admin"] as const;
 
 interface InvitedMember {
   email: string;
@@ -56,8 +66,12 @@ const InviteCollaboratorsStep = forwardRef<
     lng: string;
     onValidityChange?: (canSubmit: boolean) => void;
     createdProjectId?: string | null;
+    // "modal" drops the page heading and the card around the form fields,
+    // since the dialog supplies its own title and container.
+    variant?: "page" | "modal";
   }
->(({ lng, onValidityChange, createdProjectId }, ref) => {
+>(({ lng, onValidityChange, createdProjectId, variant = "page" }, ref) => {
+  const isModal = variant === "modal";
   const { t } = useTranslation(lng, "onboarding");
   const { t: tSettings } = useTranslation(lng, "settings");
   const [emailInput, setEmailInput] = useState("");
@@ -69,36 +83,21 @@ const InviteCollaboratorsStep = forwardRef<
   const [selectedProject, setSelectedProject] = useState<string[]>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (invitedMembers.length === 0) {
-      setSelectedCities([]);
-    }
-  }, [invitedMembers.length]);
-
-  useEffect(() => {
-    onValidityChange?.(
-      invitedMembers.length > 0 &&
-        selectedProject.length > 0 &&
-        selectedCities.length > 0,
-    );
-  }, [
-    invitedMembers.length,
-    selectedProject.length,
-    selectedCities.length,
-    onValidityChange,
-  ]);
-
   const { data: projectsData } = useGetUserProjectsQuery({});
   const { data: accessStatus } = useGetUserAccessStatusQuery({});
   const [inviteUsers] = useInviteUsersMutation();
 
+  const hasSingleProject = projectsData?.length === 1;
+
   useEffect(() => {
+    if (selectedProject.length > 0 || !projectsData) return;
     if (
       createdProjectId &&
-      selectedProject.length === 0 &&
-      projectsData?.some((p) => p.projectId === createdProjectId)
+      projectsData.some((p) => p.projectId === createdProjectId)
     ) {
       setSelectedProject([createdProjectId]);
+    } else if (projectsData.length === 1) {
+      setSelectedProject([projectsData[0].projectId]);
     }
   }, [createdProjectId, projectsData, selectedProject.length]);
 
@@ -127,6 +126,36 @@ const InviteCollaboratorsStep = forwardRef<
     );
   }, [projectsData, selectedProject]);
 
+  // Admin invites grant project-wide access (ProjectAdmin) on accept, so
+  // cities only need choosing when at least one collaborator is invited.
+  const hasCollaboratorInvite = invitedMembers.some(
+    (m) => m.role === "collaborator",
+  );
+  // The invite API still requires city IDs, so admin-only batches are sent
+  // every city in the project.
+  const inviteCityIds = hasCollaboratorInvite
+    ? selectedCities
+    : cityData.map((c) => c.cityId);
+
+  useEffect(() => {
+    if (!hasCollaboratorInvite) {
+      setSelectedCities([]);
+    }
+  }, [hasCollaboratorInvite]);
+
+  useEffect(() => {
+    onValidityChange?.(
+      invitedMembers.length > 0 &&
+        selectedProject.length > 0 &&
+        inviteCityIds.length > 0,
+    );
+  }, [
+    invitedMembers.length,
+    selectedProject.length,
+    inviteCityIds.length,
+    onValidityChange,
+  ]);
+
   const validateEmail = (email: string) =>
     z.string().email().safeParse(email).success;
 
@@ -149,23 +178,17 @@ const InviteCollaboratorsStep = forwardRef<
     setEmailError("");
   };
 
-  const handleCityToggle = (id: string) => {
-    setSelectedCities((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
-    );
-  };
-
   useImperativeHandle(ref, () => ({
     sendInvites: async () => {
       if (
         !invitedMembers.length ||
         !selectedProject.length ||
-        !selectedCities.length
+        !inviteCityIds.length
       )
         return;
       const result = await inviteUsers({
         projectId: selectedProject[0],
-        cityIds: selectedCities,
+        cityIds: inviteCityIds,
         invites: invitedMembers.map((m) => ({ email: m.email, role: m.role })),
       }).unwrap();
 
@@ -182,224 +205,311 @@ const InviteCollaboratorsStep = forwardRef<
       gap={8}
       data-testid="invite-collaborators-step"
     >
-      <Box>
+      <Box display="flex" flexDirection="column" gap={6}>
+        {!isModal && (
+          <Heading
+            as="h1"
+            color="content.secondary"
+            fontFamily="heading"
+            fontSize="headline.lg"
+            fontStyle="normal"
+            fontWeight="semibold"
+            lineHeight="40"
+            data-testid="invite-collaborators-heading"
+          >
+            {t("invite-collaborators-title")}
+          </Heading>
+        )}
         <Text color="content.tertiary">
           {t("invite-collaborators-description")}
         </Text>
       </Box>
 
-      <Box>
-        <Text
-          fontFamily="heading"
-          fontWeight="semibold"
-          mb="16px"
-          fontSize="title.md"
-        >
-          {tSettings("select-a-project")}
-        </Text>
-        <SelectRoot
-          value={selectedProject}
-          onValueChange={(e) => {
-            setSelectedProject(e.value);
-            setSelectedCities([]);
-          }}
-          collection={projectCollection}
-          variant="subtle"
-          shadow="sm"
-          borderWidth="1px"
-          borderColor="border.default"
-          borderRadius="4px"
-          h="48px"
-        >
-          <SelectTrigger h="full">
-            <SelectValueText
-              placeholder={tSettings("select-a-project")}
-              mt={1}
-            />
-          </SelectTrigger>
-          <SelectContent portalled={false}>
-            {projectCollection.items.map((p) => (
-              <SelectItem key={p.value} item={p.value}>
-                {p.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </SelectRoot>
-      </Box>
-
-      <Box>
-        <Text
-          color="content.secondary"
-          fontFamily="heading"
-          fontSize="label.lg"
-          fontWeight="medium"
-          lineHeight="20px"
-          letterSpacing="0.5px"
-          mb={2}
-        >
-          {t("email")}
-          <Text as="span" color="sentiment.negativeDefault">
-            {" *"}
-          </Text>
-        </Text>
-        <HStack w="full" align="flex-start">
-          {/* Input with role selector inlined on the right */}
-          <Box
-            flex={1}
-            display="flex"
-            alignItems="center"
-            borderWidth="1px"
-            borderColor={
-              emailError ? "sentiment.negativeDefault" : "border.default"
-            }
-            borderRadius="md"
-            bg={emailError ? "sentiment.negativeOverlay" : "background.default"}
-            overflow="hidden"
-            h="40px"
-            _focusWithin={{
-              borderColor: "interactive.secondary",
-              boxShadow: "0 0 0 1px var(--chakra-colors-interactive-secondary)",
-            }}
-          >
-            <Input
-              flex={1}
-              bg="transparent"
-              border="none"
-              h="full"
-              borderRadius={0}
-              _focusVisible={{ boxShadow: "none" }}
-              value={emailInput}
-              onChange={(e) => {
-                setEmailInput(e.target.value);
-                if (emailError) setEmailError("");
-              }}
-              onKeyDown={(e) => e.key === "Enter" && addMember()}
-              placeholder={t("invite-collaborators-email-placeholder")}
-            />
-            {!isCollaborator && (
-              <chakra.select
-                value={selectedRole}
-                onChange={(e) =>
-                  setSelectedRole(e.target.value as "admin" | "collaborator")
-                }
-                bg="brand.light"
-                border="none"
-                borderRadius="md"
-                ps={2}
-                pe={1}
-                maxW="fit-content"
-                mx={2}
-                h="28px"
-                color="content.tertiary"
-                fontFamily="body"
-                fontSize="body.sm"
-                fontWeight="normal"
-                lineHeight="16px"
-                cursor="pointer"
-                flexShrink={0}
-                _focus={{ outline: "none", boxShadow: "none" }}
-              >
-                <option value="collaborator">{t("collaborator")}</option>
-                <option value="admin">{t("admin")}</option>
-              </chakra.select>
-            )}
-          </Box>
-          <Button
-            onClick={addMember}
-            disabled={!emailInput.trim()}
-            textTransform="uppercase"
-            letterSpacing="wider"
-            px="24px"
-            h="40px"
-            flexShrink={0}
-          >
-            {t("add-member")}
-          </Button>
-        </HStack>
-        {emailError ? (
-          <HStack mt={2}>
-            <Icon as={MdInfoOutline} color="sentiment.negativeDefault" />
-            <Text color="sentiment.negativeDefault" fontSize="body.md">
-              {t(emailError)}
-            </Text>
-          </HStack>
-        ) : (
-          <HStack mt={2}>
-            <Text fontSize="body.sm" color="content.tertiary">
-              {t("invite-collaborators-info")}
-            </Text>
-          </HStack>
-        )}
-        {invitedMembers.length > 0 && (
-          <Flex mt={3} flexWrap="wrap" gap={2}>
-            {invitedMembers.map((member) => (
-              <Box
-                key={member.email}
-                display="inline-flex"
-                alignItems="center"
-                bg="background.neutral"
-                borderRadius="9999px"
-                py={1}
-                px={3}
-                gap={2}
-                fontSize="body.lg"
-              >
-                <Text
-                  color="content.alternative"
-                  fontFamily="body"
-                  fontWeight="normal"
-                  lineHeight="24px"
-                  letterSpacing="0.5px"
-                >
-                  {member.email}
-                </Text>
-                <Text color="content.secondary">({t(member.role)})</Text>
-                <CloseButton
-                  w="24px"
-                  h="24px"
-                  minW="24px"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  color="content.alternative"
-                  onClick={() =>
-                    setInvitedMembers((prev) =>
-                      prev.filter((m) => m.email !== member.email),
-                    )
-                  }
-                />
-              </Box>
-            ))}
-          </Flex>
-        )}
-      </Box>
-
-      {invitedMembers.length > 0 && selectedProject.length > 0 && (
+      <Flex
+        direction="column"
+        gap={8}
+        {...(!isModal && {
+          bg: "background.default",
+          borderRadius: "rounded",
+          p: 6,
+          boxShadow: "1dp",
+        })}
+        data-testid="invite-collaborators-form-card"
+      >
         <Box>
           <Text
             fontFamily="heading"
-            fontWeight="bold"
-            fontSize="headline.sm"
+            fontWeight="semibold"
             mb={4}
-            color="content.tertiary"
+            fontSize="title.md"
           >
-            {t("invite-collaborators-select-cities")}
+            {t("project")}
           </Text>
+          {hasSingleProject ? (
+            <Input
+              readOnly
+              value={projectsData?.[0]?.name ?? ""}
+              h={12}
+              border="inputBox"
+              borderRadius="sm"
+              background="background.neutral"
+              color="content.tertiary"
+              data-testid="invite-collaborators-project-readonly"
+            />
+          ) : (
+            <SelectRoot
+              value={selectedProject}
+              onValueChange={(e) => {
+                setSelectedProject(e.value);
+                setSelectedCities([]);
+              }}
+              collection={projectCollection}
+              variant="outline"
+              h={12}
+              css={{
+                "& [data-part=trigger]": {
+                  h: "full",
+                  bg: "background.default",
+                  shadow: "sm",
+                  borderColor: "border.default",
+                  borderRadius: "sm",
+                },
+              }}
+            >
+              <SelectTrigger h="full">
+                <SelectValueText
+                  placeholder={tSettings("select-a-project")}
+                  mt={1}
+                />
+              </SelectTrigger>
+              <SelectContent portalled={false}>
+                {projectCollection.items.map((p) => (
+                  <SelectItem key={p.value} item={p.value}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </SelectRoot>
+          )}
+        </Box>
+
+        <Box>
+          <Text
+            color="content.secondary"
+            fontFamily="heading"
+            fontSize="label.lg"
+            fontWeight="medium"
+            lineHeight="20px"
+            letterSpacing="0.5px"
+            mb={1.5}
+          >
+            {t("email")}
+            <Text as="span" color="sentiment.negativeDefault">
+              {" *"}
+            </Text>
+          </Text>
+          <HStack w="full" align="flex-start" gap={3}>
+            {/* Input with role selector inlined on the right */}
+            <Box
+              flex={1}
+              display="flex"
+              alignItems="center"
+              borderWidth="1px"
+              borderColor={
+                emailError ? "sentiment.negativeDefault" : "border.default"
+              }
+              borderRadius="md"
+              bg="background.default"
+              overflow="hidden"
+              h={12}
+              _focusWithin={{
+                borderColor: "interactive.secondary",
+                boxShadow:
+                  "0 0 0 1px var(--chakra-colors-interactive-secondary)",
+              }}
+            >
+              <Input
+                flex={1}
+                bg={emailError ? "sentiment.negativeOverlay" : "transparent"}
+                border="none"
+                h="full"
+                borderRadius={0}
+                _focusVisible={{ boxShadow: "none" }}
+                value={emailInput}
+                onChange={(e) => {
+                  setEmailInput(e.target.value);
+                  if (emailError) setEmailError("");
+                }}
+                onKeyDown={(e) => e.key === "Enter" && addMember()}
+                placeholder={t("invite-collaborators-email-placeholder")}
+              />
+              {!isCollaborator && (
+                <MenuRoot>
+                  <MenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      mx={2}
+                      px={2}
+                      gap={1}
+                      flexShrink={0}
+                      bg="background.neutral"
+                      color="content.tertiary"
+                      fontFamily="body"
+                      fontSize="body.sm"
+                      fontWeight="normal"
+                      textTransform="none"
+                      letterSpacing="normal"
+                      _hover={{ bg: "background.controlHover" }}
+                      _expanded={{ bg: "background.controlHover" }}
+                      data-testid="invite-collaborators-role-select"
+                    >
+                      {t(selectedRole)}
+                      <Icon as={MdArrowDropDown} boxSize={5} />
+                    </Button>
+                  </MenuTrigger>
+                  <MenuContent
+                    w="auto"
+                    minW={44}
+                    display="inline-flex"
+                    flexDirection="column"
+                    alignItems="flex-start"
+                    py={4}
+                    px={0}
+                    borderRadius="rounded"
+                    bg="background.default"
+                    shadow="2dp"
+                  >
+                    {ROLES.map((role) => (
+                      <MenuItem
+                        key={role}
+                        value={role}
+                        w="full"
+                        py={3}
+                        px={4}
+                        gap={4}
+                        fontSize="body.lg"
+                        cursor="pointer"
+                        color="content.primary"
+                        _hover={{ bg: "content.link", color: "white" }}
+                        onClick={() => setSelectedRole(role)}
+                      >
+                        {t(role)}
+                      </MenuItem>
+                    ))}
+                  </MenuContent>
+                </MenuRoot>
+              )}
+            </Box>
+            <Button
+              onClick={addMember}
+              disabled={!emailInput.trim()}
+              textTransform="uppercase"
+              letterSpacing="wider"
+              px={6}
+              h={12}
+              flexShrink={0}
+            >
+              {t("add-member")}
+            </Button>
+          </HStack>
+          {emailError ? (
+            <HStack mt={1.5} gap={1.5}>
+              <Icon as={MdInfoOutline} color="sentiment.negativeDefault" />
+              <Text color="sentiment.negativeDefault" fontSize="body.sm">
+                {t(emailError)}
+              </Text>
+            </HStack>
+          ) : (
+            <HStack mt={1.5} gap={1.5}>
+              <InfoOutlineIcon boxSize={4} color="semantic.info" />
+              <Text fontSize="body.sm" color="content.tertiary">
+                {t("invite-collaborators-info")}
+              </Text>
+            </HStack>
+          )}
+          {invitedMembers.length > 0 && (
+            <Flex mt={4} flexWrap="wrap" gap={4}>
+              {invitedMembers.map((member) => (
+                <Box
+                  key={member.email}
+                  display="inline-flex"
+                  alignItems="center"
+                  bg="background.neutral"
+                  borderRadius="full"
+                  py={1}
+                  px={4}
+                  gap={2}
+                  fontSize="body.lg"
+                >
+                  <Text
+                    color="content.alternative"
+                    fontFamily="body"
+                    fontWeight="normal"
+                    lineHeight="24px"
+                    letterSpacing="0.5px"
+                  >
+                    {member.email}
+                  </Text>
+                  <Text color="content.secondary">({t(member.role)})</Text>
+                  <CloseButton
+                    w={6}
+                    h={6}
+                    minW={6}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    color="content.alternative"
+                    onClick={() =>
+                      setInvitedMembers((prev) =>
+                        prev.filter((m) => m.email !== member.email),
+                      )
+                    }
+                  />
+                </Box>
+              ))}
+            </Flex>
+          )}
+        </Box>
+      </Flex>
+
+      {hasCollaboratorInvite && selectedProject.length > 0 && (
+        <Box
+          {...(!isModal && {
+            bg: "background.default",
+            borderRadius: "rounded",
+            p: 6,
+            boxShadow: "1dp",
+          })}
+          data-testid="invite-collaborators-cities-card"
+        >
+          <Flex direction="column" gap={2} mb={isModal ? 4 : 6}>
+            <Text
+              fontFamily="heading"
+              fontWeight="bold"
+              fontSize="headline.sm"
+              color="content.tertiary"
+            >
+              {t("invite-collaborators-select-cities")}
+            </Text>
+            <Text color="content.tertiary" fontSize="body.md">
+              {t("invite-collaborators-select-cities-description")}
+            </Text>
+          </Flex>
           {selectedProject.length > 0 ? (
-            <Box bg="background.default" py={4}>
+            <Box>
               <Checkbox
                 checked={
                   cityData.length > 0 &&
                   selectedCities.length === cityData.length
                 }
-                onChange={() => {
-                  if (selectedCities.length === cityData.length) {
-                    setSelectedCities([]);
-                  } else {
-                    setSelectedCities(cityData.map((c) => c.cityId));
-                  }
-                }}
-                mb={4}
+                onCheckedChange={(e) =>
+                  setSelectedCities(
+                    e.checked === true ? cityData.map((c) => c.cityId) : [],
+                  )
+                }
+                py={3}
+                mb={2}
               >
                 <Text
                   color="content.secondary"
@@ -412,8 +522,11 @@ const InviteCollaboratorsStep = forwardRef<
                   {t("invite-collaborators-all-cities")}
                 </Text>
               </Checkbox>
-              <Separator borderColor="border.overlay" mb={4} />
-              <CheckboxGroup>
+              <Separator borderColor="border.overlay" mb={2} />
+              <CheckboxGroup
+                value={selectedCities}
+                onValueChange={setSelectedCities}
+              >
                 <Box
                   display="grid"
                   gridTemplateColumns={{
@@ -421,25 +534,27 @@ const InviteCollaboratorsStep = forwardRef<
                     sm: "repeat(2, 1fr)",
                     md: "repeat(3, 1fr)",
                   }}
-                  gap={4}
+                  columnGap={3}
                 >
                   {cityData.map(({ cityId, name }) => (
-                    <Checkbox
-                      key={cityId}
-                      checked={selectedCities.includes(cityId)}
-                      onChange={() => handleCityToggle(cityId)}
-                    >
-                      <Text
-                        color="content.secondary"
-                        fontFamily="body"
-                        fontSize="body.lg"
-                        fontWeight="normal"
-                        lineHeight="24px"
-                        letterSpacing="0.5px"
-                      >
-                        {name}
-                      </Text>
-                    </Checkbox>
+                    <ChakraCheckbox.Root key={cityId} value={cityId} py={3}>
+                      <ChakraCheckbox.HiddenInput />
+                      <ChakraCheckbox.Control>
+                        <ChakraCheckbox.Indicator cursor="pointer" />
+                      </ChakraCheckbox.Control>
+                      <ChakraCheckbox.Label>
+                        <Text
+                          color="content.secondary"
+                          fontFamily="body"
+                          fontSize="body.lg"
+                          fontWeight="normal"
+                          lineHeight="24px"
+                          letterSpacing="0.5px"
+                        >
+                          {name}
+                        </Text>
+                      </ChakraCheckbox.Label>
+                    </ChakraCheckbox.Root>
                   ))}
                 </Box>
               </CheckboxGroup>

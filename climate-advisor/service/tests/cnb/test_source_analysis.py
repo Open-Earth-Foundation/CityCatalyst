@@ -5,6 +5,7 @@ import hashlib
 import json
 from collections.abc import AsyncIterator
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import httpx
@@ -34,9 +35,37 @@ from app.services.cnb.source_analysis import (
     prompt_token_count,
     query_document,
     render_partition,
+    render_source_text,
     source_analysis_contract_version,
     verify_source_artifact,
 )
+from app.utils.cnb_progress import bind_cnb_progress
+
+
+@pytest.mark.asyncio
+async def test_source_worker_uses_live_stream_and_validates_result(
+    analysis_dependencies, monkeypatch
+):
+    settings, client = analysis_dependencies
+    stream = AsyncMock(return_value=SimpleNamespace(final_output={
+        "sections": [{"excerpts": ["Drainage upgrades"], "caveats": []}],
+    }))
+    monkeypatch.setattr("app.services.cnb.source_analysis.run_with_cnb_reasoning", stream)
+    with bind_cnb_progress(AsyncMock()):
+        result = await _run_agent(
+            name="Source reader",
+            prompt="Read source",
+            model_config=settings.llm.models.cnb_source_reader,
+            output_type=QuestionReading,
+            input_text="Drainage upgrades",
+            client=client,
+            runner=Runner,
+            expected_sections=1,
+        )
+    stream.assert_awaited_once()
+    assert stream.call_args.kwargs["stage"] == "reading"
+    assert stream.call_args.kwargs["run_config"].tracing_disabled
+    assert result.sections[0].excerpts == ["Drainage upgrades"]
 
 
 class FakeRunner:
@@ -341,7 +370,7 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
         (
             "cnb_source_reader",
             "openai/gpt-5.6-terra",
-            "low",
+            "medium",
             QuestionReading,
             {"sections": [{"excerpts": [], "caveats": []}]},
         ),
@@ -371,26 +400,29 @@ async def test_source_worker_serializes_terra_requests_without_temperature(
     captured = []
 
     def respond(request: httpx.Request) -> httpx.Response:
-        assert str(request.url) == "https://openrouter.ai/api/v1/chat/completions"
+        assert str(request.url) == "https://openrouter.ai/api/v1/responses"
         payload = json.loads(request.content)
         captured.append(payload)
         return httpx.Response(
             200,
             json={
-                "id": "chatcmpl-local-test",
-                "object": "chat.completion",
-                "created": 0,
+                "id": "resp-local-test",
+                "object": "response",
+                "created_at": 0,
+                "status": "completed",
                 "model": payload["model"],
-                "choices": [
+                "output": [
                     {
-                        "index": 0,
-                        "message": {"role": "assistant", "content": json.dumps(output)},
-                        "finish_reason": "stop",
+                        "id": "msg-local-test",
+                        "type": "message",
+                        "status": "completed",
+                        "role": "assistant",
+                        "content": [{"type": "output_text", "text": json.dumps(output), "annotations": []}],
                     }
                 ],
                 "usage": {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 10,
+                    "input_tokens": 10,
+                    "output_tokens": 10,
                     "total_tokens": 20,
                 },
             },
@@ -427,13 +459,14 @@ async def test_source_worker_serializes_terra_requests_without_temperature(
     assert len(captured) == 1
     request = captured[0]
     assert request["model"] == model_name
-    assert request["reasoning_effort"] == effort
+    assert request["reasoning"] == {"effort": effort, "summary": "detailed"}
+    assert request["store"] is False
     assert "temperature" not in request
     assert not request.get("tools")
-    assert request["response_format"]["type"] == "json_schema"
-    assert request["response_format"]["json_schema"]["strict"] is True
+    assert request["text"]["format"]["type"] == "json_schema"
+    assert request["text"]["format"]["strict"] is True
     if role == "cnb_source_reader":
-        sections = request["response_format"]["json_schema"]["schema"]["properties"]["sections"]
+        sections = request["text"]["format"]["schema"]["properties"]["sections"]
         assert sections["minItems"] == sections["maxItems"] == 1
 
 
@@ -512,3 +545,14 @@ async def test_coverage_recovery_has_a_finite_limit(analysis_dependencies) -> No
         )
     assert failure.value.reason == "reader_section_count_mismatch"
     assert len(runner.reader_tools) <= 7
+
+
+@pytest.mark.parametrize(
+    ("markdown", "parse"),
+    [
+        ("<!-- page: 1 -->\nIntro\n\n<!-- page: 2 -->\n| a | b |\n", parse_source_pages),
+        ("# Plan\n\nIntro\n\n## Costs\n\nTable\n", parse_markdown_blocks),
+    ],
+)
+def test_render_source_text_restores_the_verified_markdown(markdown, parse) -> None:
+    assert render_source_text(parse(markdown)) == markdown

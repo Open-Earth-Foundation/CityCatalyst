@@ -202,6 +202,8 @@
   "project": "Projekt",
   "select-project": "Wählen Sie ein Projekt",
   "select-city": "Stadt auswählen",
+  "select-project-first": "Wähle zuerst ein Projekt aus",
+  "select-city-first": "Wähle zuerst eine Stadt aus",
   "search-by-city-or-project": "Nach Stadt oder Projekt suchen",
   "add-new-city": "Neue Stadt hinzufügen",
   "city": "Stadt",
@@ -342,5 +344,7 @@
   "net-removal": "Netzentfernung",
   "removal": "Entfernung",
   "removals-not-countable-footnote": "* Teilsektoren mit Entfernungen sind nicht als Emissionen zählbar",
-  "no-cited-source": "Keine zitierte Quelle"
+  "no-cited-source": "Keine zitierte Quelle",
+  "hero-inventory-line": "{{year}} · {{value}} {{unit}}",
+  "default-organization": "Standardorganisation"
 }

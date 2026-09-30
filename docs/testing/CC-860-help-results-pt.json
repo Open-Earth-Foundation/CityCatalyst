@@ -1,0 +1,163 @@
+{
+  "scope": "Real model and production agent/tool; fixture persistence; no browser/deployment test",
+  "context": {
+    "workflow_step": "editing_document",
+    "document_context": null,
+    "selected_sources": [],
+    "funder_context": {
+      "funder": "European Union LIFE Programme",
+      "programme": "EUCF Call 7"
+    }
+  },
+  "ui_locale": "pt",
+  "ui_state": {
+    "version": "cnb-desktop-v1",
+    "active_tab": null,
+    "draft": {
+      "exists": true,
+      "total_sections": 4,
+      "sections_with_content": 4
+    },
+    "pending_proposal": null,
+    "export": {
+      "enabled": false,
+      "blockers": [
+        "25 critical gaps; fill through reviewed chat edits"
+      ],
+      "missing_upload_blocks_export": false
+    },
+    "review": {
+      "failed_chapters": null,
+      "failure_blocks_export": null
+    }
+  },
+  "results": [
+    {
+      "number": 1,
+      "prompt": "Sou novo aqui. Onde posso ver o rascunho que você gerou? Preciso baixá-lo primeiro?",
+      "answer": "O rascunho já existe e tem conteúdo nas 4 seções. Você pode vê-lo no painel à direita, na aba **“Visualização do rascunho”** — não precisa baixá-lo primeiro.\n\nQuando quiser exportar, use **“Revisar e exportar”**. No momento, a exportação está bloqueada por **25 lacunas críticas**, que precisam ser preenchidas por alterações propostas no chat e aceitas na revisão do documento.",
+      "tool_calls": [
+        "concept_note_help"
+      ],
+      "model": "openai/gpt-5.6-sol",
+      "usage": [
+        {
+          "input_tokens": 2266,
+          "output_tokens": 33
+        },
+        {
+          "input_tokens": 3035,
+          "output_tokens": 101
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "prompt": "Onde clico para mudar o financiador e o programa de financiamento desta nota?",
+      "answer": "No painel da direita:\n\n1. Abra a aba **“Contexto”**.\n2. Em **“Perfil do financiador”**, clique em **“Mudança”**.\n3. Escolha o novo financiador e depois o programa.\n4. Confira o modelo vinculado automaticamente.\n5. Clique em **“Guardar seleção”**.\n\nAtualmente, a nota está associada ao **European Union LIFE Programme — EUCF Call 7**.",
+      "tool_calls": [
+        "concept_note_help"
+      ],
+      "model": "openai/gpt-5.6-sol",
+      "usage": [
+        {
+          "input_tokens": 2258,
+          "output_tokens": 40
+        },
+        {
+          "input_tokens": 3034,
+          "output_tokens": 96
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "prompt": "Tenho um PDF com mais informações sobre o projeto. Onde faço o upload?",
+      "answer": "Na área à direita, abra a aba **“Contexto”**. Em **“Os seus arquivos”**, clique em **“Carregar arquivo”** e selecione o PDF. Também são aceitos arquivos Markdown.",
+      "tool_calls": [
+        "concept_note_help"
+      ],
+      "model": "openai/gpt-5.6-sol",
+      "usage": [
+        {
+          "input_tokens": 2257,
+          "output_tokens": 35
+        },
+        {
+          "input_tokens": 3028,
+          "output_tokens": 49
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "prompt": "Quero corrigir uma frase no rascunho. Onde digito a alteração e como a salvo?",
+      "answer": "Você não digita diretamente no rascunho. Faça assim:\n\n1. No chat à esquerda, em **“Pergunte ao Clima sobre esta nota conceitual”**, escreva qual frase deve ser substituída e o novo texto.\n2. Clique em **“Enviar mensagem”**.\n3. A proposta aparecerá em **“Revisão no documento”**.\n4. Escolha **“Aceite esta alteração”** para aplicá-la, ou **“Aceitar todos”** para aceitar todas as propostas pendentes.\n\nNão há um botão separado para salvar: ao aceitar a alteração, ela é aplicada ao rascunho. No momento, não há proposta pendente.",
+      "tool_calls": [
+        "concept_note_help"
+      ],
+      "model": "openai/gpt-5.6-sol",
+      "usage": [
+        {
+          "input_tokens": 2264,
+          "output_tokens": 31
+        },
+        {
+          "input_tokens": 3031,
+          "output_tokens": 147
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "prompt": "Como baixo esta nota em PDF e por que o botão de download pode estar desativado?",
+      "answer": "Para baixar em PDF:\n\n1. Clique em **“Revisar e exportar”**.\n2. Revise **“Informações em falta”**.\n3. Se necessário, corrija as lacunas por meio de alterações propostas no chat e aceite-as em **“Revisão no documento”**.\n4. Selecione **“Continue para conflitos & lógica”**.\n5. Em **“Conflitos e lógica”**, clique em **“Continuar para decisão”**.\n6. Em **“Decidir & exportar”**, avance com **“Exportar mesmo assim”** ou **“Continue a exportar”**, quando disponível.\n7. Clique em **“Exportar PDF”**.\n\nNo momento, a exportação está desativada porque foram identificadas **25 lacunas críticas** que precisam ser preenchidas por alterações revisadas no chat. A nota possui conteúdo nas quatro seções, mas ainda contém essas pendências. A ausência de arquivos enviados, por si só, **não bloqueia** a exportação.",
+      "tool_calls": [
+        "concept_note_help"
+      ],
+      "model": "openai/gpt-5.6-sol",
+      "usage": [
+        {
+          "input_tokens": 2261,
+          "output_tokens": 34
+        },
+        {
+          "input_tokens": 3031,
+          "output_tokens": 332
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "prompt": "O que você pode fazer neste construtor de notas conceituais?",
+      "answer": "Posso ajudar a:\n\n- Explicar o projeto, o financiador e o conteúdo atual da nota.\n- Analisar documentos selecionados e localizar evidências, citações e dados específicos.\n- Sugerir e propor alterações no texto. As mudanças aparecem em **“Revisão no documento”** para você aprovar com **“Aceite esta alteração”** ou **“Aceitar todos”**.\n- Identificar lacunas, incoerências e informações necessárias para fortalecer a proposta.\n- Orientar a revisão e exportação para PDF ou DOCX.\n\nNo estado atual, o rascunho tem conteúdo nas 4 seções, mas a exportação está bloqueada por **25 lacunas críticas**, que precisam ser tratadas por alterações revisadas.\n\nTambém posso orientar ações na interface, como mudar o financiador em **“Perfil do financiador” → “Mudança”**, carregar PDF/Markdown em **“Os seus arquivos” → “Carregar arquivo”**, ou usar **“Revisar e exportar”**. Eu posso propor edições, mas somente você pode aceitá-las e aplicá-las.",
+      "tool_calls": [
+        "concept_note_help"
+      ],
+      "model": "openai/gpt-5.6-sol",
+      "usage": [
+        {
+          "input_tokens": 2256,
+          "output_tokens": 31
+        },
+        {
+          "input_tokens": 3023,
+          "output_tokens": 367
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "prompt": "Qual financiador e programa estão selecionados para este projeto?",
+      "answer": "O financiador selecionado é o **Programa LIFE da União Europeia**, e o programa é o **EUCF Call 7**.",
+      "tool_calls": [],
+      "model": "openai/gpt-5.6-sol",
+      "usage": [
+        {
+          "input_tokens": 2254,
+          "output_tokens": 31
+        }
+      ]
+    }
+  ]
+}

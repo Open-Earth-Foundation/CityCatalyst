@@ -44,7 +44,10 @@ export const useLogin = (): UseLoginReturn => {
 
       if (result?.error) {
         logger.error({ err: result.error }, "Sign in failure:");
-        const errorMessage = "invalid-email-or-password";
+        const errorMessage =
+          result.error === "rate-limited"
+            ? "too-many-login-attempts"
+            : "invalid-email-or-password";
         setError(errorMessage);
         return { success: false, error: errorMessage };
       }

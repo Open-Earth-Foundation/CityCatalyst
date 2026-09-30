@@ -109,9 +109,9 @@ export function useGuidedReview({
     chapters.find((chapter) => countUnresolvedExportItems([chapter]) > 0) ??
     null;
   const firstMissingInformationFinding = blockingMissingInformation[0] ?? null;
-  const requiresExportAcknowledgement =
-    blockingIssueCount > 0 || failedChapters.length > 0;
   const hasCriticalGap = hasCriticalExportBlocker(chapters);
+  const requiresExportAcknowledgement =
+    blockingIssueCount > 0 || failedChapters.length > 0 || hasCriticalGap;
   const canExport =
     canExportConceptNote(chapters, acceptedIncompleteReview) &&
     (!requiresExportAcknowledgement || acceptedIncompleteReview) &&
@@ -213,6 +213,11 @@ export function useGuidedReview({
         Array.from({ length: workerCount }, () => validateNextChapters()),
       );
       if (activeRequestRef.current !== requestId) return;
+      // An invalid template fails every chapter the same way; retrying cannot help.
+      if (failures.some(({ errorKind }) => errorKind === "template_invalid")) {
+        setReviewError("template_invalid");
+        return;
+      }
       try {
         await onReviewComplete();
       } catch {

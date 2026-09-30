@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -100,6 +101,119 @@ def test_ca_migration_chain_renames_selected_opportunity_reference() -> None:
     ) in sql
 
 
+def test_ca_migration_chain_backfills_run_city_population() -> None:
+    """Pre-CC-948 runs report the population their stored bundle already holds."""
+    sql = _render_offline_upgrade(
+        config="alembic.ini",
+        database_env="CA_DATABASE_URL",
+    )
+    assert "'{context_bundle,city_population}'" in sql
+    assert "FROM concept_note_context_bundles AS bundle" in sql
+
+
+@pytest.mark.skipif(
+    not CNB_DATABASE_URL,
+    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
+)
+def test_ca_city_population_backfill_derives_from_stored_bundle() -> None:
+    """Only legacy ready progress gains the field, with the bundle's population."""
+    assert CNB_DATABASE_URL is not None
+    engine = create_engine(CNB_DATABASE_URL)
+    populated, unpopulated, current, unbuilt = uuid4(), uuid4(), uuid4(), uuid4()
+    city = {"name": "Kraków", "population": 804237, "population_year": 2024}
+    runs = {
+        populated: ({"context_bundle": {"status": "ready"}}, city),
+        unpopulated: (
+            {"context_bundle": {"status": "ready"}},
+            {**city, "population": None, "population_year": None},
+        ),
+        current: (
+            {"context_bundle": {"status": "ready", "city_population": None}},
+            city,
+        ),
+        unbuilt: ({}, None),
+    }
+    try:
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "20260811_120000"],
+        )
+        # Seed runs as the pre-CC-948 build left them.
+        with engine.begin() as connection:
+            for run_id, (summary, bundle_city) in runs.items():
+                connection.execute(
+                    text(
+                        """
+                        INSERT INTO concept_note_runs (
+                            run_id, user_id, name, city_id, context_summary,
+                            idempotency_key, request_fingerprint
+                        )
+                        VALUES (
+                            :run_id, 'owner', 'Run', 'city',
+                            CAST(:summary AS jsonb), :key, 'fingerprint'
+                        )
+                        """
+                    ),
+                    {
+                        "run_id": run_id,
+                        "summary": json.dumps(summary),
+                        "key": uuid4(),
+                    },
+                )
+                if bundle_city is not None:
+                    connection.execute(
+                        text(
+                            """
+                            INSERT INTO concept_note_context_bundles
+                                (run_id, context_bundle)
+                            VALUES (:run_id, CAST(:bundle AS jsonb))
+                            """
+                        ),
+                        {
+                            "run_id": run_id,
+                            "bundle": json.dumps({"cc_context": {"city": bundle_city}}),
+                        },
+                    )
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "head"],
+        )
+
+        with engine.connect() as connection:
+            summaries = dict(
+                connection.execute(
+                    text("SELECT run_id, context_summary FROM concept_note_runs")
+                ).all()
+            )
+        assert summaries[populated]["context_bundle"]["city_population"] == {
+            "population": 804237,
+            "year": 2024,
+        }
+        assert summaries[unpopulated]["context_bundle"] == {
+            "status": "ready",
+            "city_population": None,
+        }
+        assert summaries[current] == runs[current][0]
+        assert summaries[unbuilt] == {}
+    finally:
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        # Leave no CA version table for the CNB table-set assertions.
+        with engine.begin() as connection:
+            connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
+        engine.dispose()
+
+
 def test_cnb_offline_migration_preserves_explicit_constraint_names() -> None:
     """Prevent SQLAlchemy naming conventions from double-prefixing checks."""
     sql = _render_offline_upgrade(
@@ -178,13 +292,111 @@ def test_cnb_merge_upgrades_either_existing_head_without_losing_gaps(
         with engine.connect() as connection:
             assert connection.execute(
                 text("SELECT version_num FROM cnb_alembic_version")
-            ).scalars().all() == ["20260909_120000"]
+            ).scalars().all() == ["20260921_120000"]
             assert connection.execute(
                 text(
                     "SELECT question, status FROM concept_note_gaps WHERE gap_id = :gap_id"
                 ),
                 {"gap_id": gap_id},
             ).one() == ("Confirm the budget.", "open")
+    finally:
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        engine.dispose()
+
+
+@pytest.mark.skipif(
+    not CNB_DATABASE_URL,
+    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
+)
+def test_cnb_notices_upgrade_and_downgrade_preserve_existing_proposal() -> None:
+    assert CNB_DATABASE_URL is not None
+    engine = create_engine(CNB_DATABASE_URL)
+    try:
+        # Seed a proposal before notices existed, retaining every original field.
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["upgrade", "20260909_120000"],
+        )
+        with engine.begin() as connection:
+            original = dict(
+                connection.execute(
+                    text("""
+                        INSERT INTO concept_note_edit_proposals
+                            (proposal_id, run_id, actor_user_id, idempotency_key,
+                             request_fingerprint, instruction, scope, changes, status)
+                        VALUES (:proposal_id, :run_id, 'migration-test', :idempotency_key,
+                            'fingerprint', 'Rename the city.', '{"type": "document"}',
+                            '[{"before": "Old city", "after": "New city"}]', 'proposed')
+                        RETURNING *
+                    """),
+                    {
+                        "proposal_id": uuid4(),
+                        "run_id": uuid4(),
+                        "idempotency_key": uuid4(),
+                    },
+                )
+                .mappings()
+                .one()
+            )
+
+        # Test the notices revision independently of later schema additions.
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["upgrade", "20260917_120000"],
+        )
+        columns = {
+            column["name"]: column
+            for column in inspect(engine).get_columns("concept_note_edit_proposals")
+        }
+        assert columns["notices"]["nullable"] is False
+        assert columns["notices"]["default"] is not None
+        with engine.begin() as connection:
+            upgraded = dict(
+                connection.execute(text("SELECT * FROM concept_note_edit_proposals"))
+                .mappings()
+                .one()
+            )
+            assert upgraded.pop("notices") == []
+            assert upgraded == original
+            connection.execute(
+                text("""
+                    UPDATE concept_note_edit_proposals
+                    SET notices = '["A locked chapter was excluded."]'::jsonb
+                """)
+            )
+
+        # Downgrading removes populated notices while preserving the proposal.
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["downgrade", "20260909_120000"],
+        )
+        assert "notices" not in {
+            column["name"]
+            for column in inspect(engine).get_columns("concept_note_edit_proposals")
+        }
+        with engine.connect() as connection:
+            assert (
+                dict(
+                    connection.execute(
+                        text("SELECT * FROM concept_note_edit_proposals")
+                    )
+                    .mappings()
+                    .one()
+                )
+                == original
+            )
     finally:
         _run_alembic(
             config="cnb-alembic.ini",
@@ -393,7 +605,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         revision = connection.execute(
             text("SELECT version_num FROM cnb_alembic_version")
         ).scalar_one()
-    assert revision == "20260909_120000"
+    assert revision == "20260921_120000"
 
     _run_alembic(
         config="cnb-alembic.ini",

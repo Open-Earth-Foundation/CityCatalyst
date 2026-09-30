@@ -10,7 +10,13 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import { MdLink, MdMoreVert, MdOutlinePersonAddAlt } from "react-icons/md";
+import {
+  MdCheckCircle,
+  MdErrorOutline,
+  MdLink,
+  MdMoreVert,
+  MdOutlinePersonAddAlt,
+} from "react-icons/md";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
@@ -180,9 +186,7 @@ const TeamSettings = ({
             {
               email: item.email,
               role:
-                item.role === OrganizationRole.ADMIN
-                  ? "admin"
-                  : "collaborator",
+                item.role === OrganizationRole.ADMIN ? "admin" : "collaborator",
             },
           ],
         }).unwrap();
@@ -459,7 +463,12 @@ const TeamSettings = ({
                 { header: t("name"), accessor: "name", width: "30%" },
                 { header: t("email"), accessor: "email", width: "35%" },
                 { header: t("role"), accessor: "role", width: "20%" },
-                { header: "", accessor: null, width: "15%" },
+                {
+                  header: t("2fa-security"),
+                  accessor: "twoFactorEnabled",
+                  width: "5%",
+                },
+                { header: "", accessor: null, width: "10%" },
               ]}
               renderRow={(item, idx) => {
                 const displayName =
@@ -479,6 +488,26 @@ const TeamSettings = ({
                     </Table.Cell>
                     <Table.Cell title={item.role}>
                       <CustomTag role={item.role} t={t} />
+                    </Table.Cell>
+                    <Table.Cell maxW="0">
+                      <Text
+                        color={
+                          item.twoFactorEnabled
+                            ? "sentiment.positiveDefault"
+                            : "sentiment.negativeDefault"
+                        }
+                      >
+                        <Icon
+                          as={
+                            item.twoFactorEnabled
+                              ? MdCheckCircle
+                              : MdErrorOutline
+                          }
+                          boxSize={6}
+                          mr={1}
+                        />
+                        {item.twoFactorEnabled ? t("enabled") : t("disabled")}
+                      </Text>
                     </Table.Cell>
                     <Table.Cell textAlign="right">
                       {canManageTeam &&

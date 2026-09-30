@@ -72,8 +72,9 @@ export const POST = apiHandler(async (req, { session }) => {
     throw new createHttpError.BadRequest("Invalid password");
   }
 
-  user.twoFactorSecret = undefined;
+  user.twoFactorSecret = null;
   user.twoFactorEnabled = false;
+  user.twoFactorRecoveryHashes = [];
   await user.save();
 
   return NextResponse.json({ data: { success: true } });

@@ -44,7 +44,7 @@
  *       401:
  *         description: Unauthorized
  *       409:
- *         description: Concept Note document context is not ready (concept_note_context_not_ready)
+ *         description: Concept Note document context is not ready (concept_note_context_not_ready), or no finished draft is waiting for its chat overview (concept_note_draft_overview_unavailable)
  *       502:
  *         description: Climate Advisor transport or gateway failure
  *       503:
@@ -63,6 +63,12 @@ import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 import { buildClimateAdvisorMessagePayload } from "@/backend/chat/message-payload";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
+
+// Conflict codes the Concept Note chat handles; other CA errors stay opaque.
+const FORWARDED_CONFLICT_CODES = new Set([
+  "concept_note_context_not_ready",
+  "concept_note_draft_overview_unavailable",
+]);
 
 export const POST = apiHandler(async (req, { session }) => {
   if (!session?.user?.id) {
@@ -141,7 +147,8 @@ export const POST = apiHandler(async (req, { session }) => {
       detail &&
       typeof detail === "object" &&
       "code" in detail &&
-      detail.code === "concept_note_context_not_ready"
+      typeof detail.code === "string" &&
+      FORWARDED_CONFLICT_CODES.has(detail.code)
     ) {
       return NextResponse.json(detail, { status: 409 });
     }

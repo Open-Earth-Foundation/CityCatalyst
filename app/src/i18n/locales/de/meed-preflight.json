@@ -80,5 +80,7 @@
   "confidence-verdict-moderate": "Mäßig",
   "confidence-verdict-high": "Hoch",
   "weight-value-text": "{{value}} Prozent",
-  "gate-ready": "Bereit, Empfehlungen zu generieren."
+  "gate-ready": "Bereit, Empfehlungen zu generieren.",
+  "view-breakdown": "Aufschlüsselung anzeigen",
+  "view-breakdown-aria": "Die Emissionsaufteilung anzeigen"
 }

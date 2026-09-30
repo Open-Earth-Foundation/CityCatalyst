@@ -6,7 +6,38 @@ import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 let isInitialized = false;
 
 const CONSENT_COOKIE_NAME = "cc_analytics_consent";
+const CONSENT_SUBJECT_COOKIE = "cc_consent_subject";
 const CONSENT_EXPIRY_DAYS = 365;
+
+function consentSubjectKey(): string {
+  const existing = Cookies.get(CONSENT_SUBJECT_COOKIE);
+  if (existing) return existing;
+  const key = crypto.randomUUID();
+  Cookies.set(CONSENT_SUBJECT_COOKIE, key, {
+    expires: CONSENT_EXPIRY_DAYS,
+    sameSite: "Lax",
+    path: "/",
+  });
+  return key;
+}
+
+/** Best-effort server ledger write. The cookie remains the immediate analytics switch. */
+function persistAnalyticsConsent(granted: boolean) {
+  void fetch("/api/v1/consent", {
+    method: "POST",
+    credentials: "include",
+    keepalive: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      consentType: "analytics",
+      granted,
+      subjectKey: consentSubjectKey(),
+      source: "cookie_banner",
+    }),
+  }).catch((error: unknown) => {
+    console.warn("Failed to persist analytics consent", error);
+  });
+}
 
 export function initializeAnalytics() {
   if (
@@ -60,6 +91,7 @@ export function setAnalyticsConsent(consent: boolean) {
   Cookies.set(CONSENT_COOKIE_NAME, consent.toString(), {
     expires: CONSENT_EXPIRY_DAYS,
   });
+  persistAnalyticsConsent(consent);
 
   if (!isInitialized) return;
 
@@ -114,21 +146,23 @@ export function trackEvent(
   const enhancedProperties = {
     ...properties,
     environment: process.env.NODE_ENV,
-    deployment_env:
-       env('NEXT_PUBLIC_DEPLOYMENT_ENV') || process.env.NODE_ENV,
+    deployment_env: env("NEXT_PUBLIC_DEPLOYMENT_ENV") || process.env.NODE_ENV,
   };
 
   posthog.capture(eventName, enhancedProperties);
 }
 
-export function identifyUser(userId: string, properties?: Record<string, unknown>) {
+export function identifyUser(
+  userId: string,
+  properties?: Record<string, unknown>,
+) {
   if (!shouldTrack()) {
     return;
   }
   posthog.identify(userId, {
     ...properties,
     environment: process.env.NODE_ENV,
-      deployment_env: env('NEXT_PUBLIC_DEPLOYMENT_ENV') || process.env.NODE_ENV,
+    deployment_env: env("NEXT_PUBLIC_DEPLOYMENT_ENV") || process.env.NODE_ENV,
   });
 }
 
@@ -153,8 +187,7 @@ export function trackPageView(url?: string) {
   posthog.capture("$pageview", {
     $current_url: url || window.location.href,
     environment: process.env.NODE_ENV,
-    deployment_env:
-      env("NEXT_PUBLIC_DEPLOYMENT_ENV") || process.env.NODE_ENV,
+    deployment_env: env("NEXT_PUBLIC_DEPLOYMENT_ENV") || process.env.NODE_ENV,
   });
 }
 

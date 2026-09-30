@@ -1,6 +1,5 @@
 {
   "description": "Sagen Sie uns, welche Sektoren und Ziele für Ihre Stadt am wichtigsten sind, wie schnell Maßnahmen umsetzbar sein müssen und ob bestimmte Arten von Maßnahmen von der Rangliste ausgeschlossen werden sollen.",
-  "alignment-note": "Die Ausrichtung bestimmt 22% der Bewertung – Prioritätensektoren 15% · Zeitpräferenz 5% · strategische Prioritäten 5%",
   "required": "Erforderlich",
   "badge-alignment-15": "Ausrichtung · 15%",
   "badge-alignment-5": "Ausrichtung · 5%",

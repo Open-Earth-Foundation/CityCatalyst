@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { StructureProposal } from "@/util/concept-note-structure";
 
 export const editScopeSchema = z
   .object({
@@ -25,10 +26,7 @@ export const editApplyRequestSchema = z
     idempotency_key: z.string().uuid(),
     expected_revisions: z
       .record(z.string().uuid(), z.number().int().positive())
-      .refine(
-        (value) =>
-          Object.keys(value).length > 0 && Object.keys(value).length <= 100,
-      ),
+      .refine((value) => Object.keys(value).length <= 100),
     selected_change_ids: z
       .array(z.string().uuid())
       .min(1)
@@ -64,12 +62,21 @@ export interface EditChange {
   group_id: string;
   source_refs: string[];
   user_input_quote: string | null;
+  context_refs?: EditContextSection[];
   source_snapshots?: Array<{
     upload_id: string;
     source_label: string;
     sha256: string;
   }>;
+  context_snapshots?: Array<{
+    section: EditContextSection;
+    label: string;
+    sha256: string;
+  }>;
 }
+
+export type EditContextSection =
+  "city" | "project" | "ghgi" | "ccra" | "hiap" | "manual_population";
 
 export interface EditApplicationResult {
   application_id: string;
@@ -78,6 +85,7 @@ export interface EditApplicationResult {
 }
 
 export interface EditProposal {
+  structure?: StructureProposal | null;
   proposal_id: string;
   run_id: string;
   instruction: string;
@@ -85,6 +93,10 @@ export interface EditProposal {
   status: EditStatus;
   base_revisions: Record<string, number>;
   changes: EditChange[];
+  notices?: Array<{
+    code: "protected_markers" | "locked_chapters" | "template_headings";
+    count: number;
+  }>;
   clarification: string | null;
   error_code: string | null;
   result: EditApplicationResult | null;

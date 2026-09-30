@@ -9,7 +9,25 @@ import {
 import { Roles } from "@/util/types";
 import { logger } from "@/services/logger";
 import crypto from "node:crypto";
-import { verifyToken } from "./2fa";
+import {
+  recoveryTokenLength as recoveryTokenMinLength,
+  verifyRecoveryCode,
+  verifyToken,
+} from "./2fa";
+import { RateLimiter } from "@/util/rate-limiter";
+
+const isPlaywrightTest = process.env.PLAYWRIGHT_TEST === "1";
+// 5 attempts/15 minutes per email — brute-force throttle for the login path.
+// A 1-minute window barely slows an attacker (just wait it out between
+// bursts); 15 minutes is a standard OWASP-aligned balance between blocking
+// sustained guessing and not locking out a real user for long.
+// Per-email keying only (per CC-875): an attacker who knows a victim's email
+// could transiently lock out that victim's real logins by repeatedly guessing
+// their password. Combining with IP is a reasonable follow-up but out of
+// scope here — the ticket is explicit about per-email.
+const loginLimiter = isPlaywrightTest
+  ? null
+  : new RateLimiter(15 * 60 * 1000, 5);
 
 // extracted from next-auth/providers/credentials
 // added here since the node test runner/ tsx wouldn't properly import ESM modules
@@ -76,20 +94,27 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        const email = credentials.email.toLowerCase();
+
+        if (loginLimiter && !loginLimiter.checkLimit(email)) {
+          logger.error({ email }, "Login rate limit exceeded");
+          throw new Error("rate-limited");
+        }
+
         let user: User | null = null;
         try {
           if (!db.initialized) {
             await db.initialize();
           }
           user = await db.models.User.findOne({
-            where: { email: credentials.email.toLowerCase() },
+            where: { email },
           });
         } catch (err: unknown) {
           logger.error({ err: err }, "Failed to login:");
           return null;
         }
 
-        if (!user || !user.passwordHash) {
+        if (!user || !user.passwordHash || user.anonymizedAt) {
           logger.error("No user found!");
           return null;
         }
@@ -108,14 +133,28 @@ export const authOptions: NextAuthOptions = {
             logger.error("No securityToken passed for user with 2FA enabled");
             return null;
           }
-          const isValid = await verifyToken(
-            credentials.securityToken,
-            user.twoFactorSecret,
-          );
+          let isValid = false;
+          if (credentials.securityToken.length >= recoveryTokenMinLength) {
+            // allow using a single-use recovery code and delete it from user record if successful
+            isValid = await verifyRecoveryCode(user, credentials.securityToken);
+          } else {
+            isValid = await verifyToken(
+              credentials.securityToken,
+              user.twoFactorSecret,
+            );
+          }
           if (!isValid) {
             logger.error("Invalid securityToken for 2FA");
             return null;
           }
+        }
+
+        // Inactivity for retention is measured from a successful sign-in.
+        // A failed stamp must not block the login itself.
+        try {
+          await user.update({ lastActiveAt: new Date() });
+        } catch (err: unknown) {
+          logger.error({ err }, "Failed to record lastActiveAt");
         }
 
         return {

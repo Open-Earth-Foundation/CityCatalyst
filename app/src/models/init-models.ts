@@ -101,6 +101,16 @@ import type {
 } from "./ImportedInventoryFile";
 import { ImportedInventoryFile as _ImportedInventoryFile } from "./ImportedInventoryFile";
 import type {
+  BulkInventoryImportJobAttributes,
+  BulkInventoryImportJobCreationAttributes,
+} from "./BulkInventoryImportJob";
+import { BulkInventoryImportJob as _BulkInventoryImportJob } from "./BulkInventoryImportJob";
+import type {
+  BulkInventoryImportItemAttributes,
+  BulkInventoryImportItemCreationAttributes,
+} from "./BulkInventoryImportItem";
+import { BulkInventoryImportItem as _BulkInventoryImportItem } from "./BulkInventoryImportItem";
+import type {
   PdfOcrJobAttributes,
   PdfOcrJobCreationAttributes,
 } from "./PdfOcrJob";
@@ -285,6 +295,16 @@ import {
   PersonalAccessTokenCreationAttributes,
   PersonalAccessTokenOptionalAttributes,
 } from "./PersonalAccessToken";
+import {
+  ConsentRecord as _ConsentRecord,
+  ConsentRecordAttributes,
+  ConsentRecordCreationAttributes,
+} from "./ConsentRecord";
+import {
+  RetentionActionLog as _RetentionActionLog,
+  RetentionActionLogAttributes,
+  RetentionActionLogCreationAttributes,
+} from "./RetentionActionLog";
 
 export {
   _ActionPlan as ActionPlan,
@@ -309,6 +329,8 @@ export {
   _GHGs as GHGs,
   _Inventory as Inventory,
   _ImportedInventoryFile as ImportedInventoryFile,
+  _BulkInventoryImportJob as BulkInventoryImportJob,
+  _BulkInventoryImportItem as BulkInventoryImportItem,
   _PdfOcrJob as PdfOcrJob,
   _WebhookSubscription as WebhookSubscription,
   _WebhookDelivery as WebhookDelivery,
@@ -350,6 +372,8 @@ export {
   _OAuthClientI18N as OAuthClientI18N,
   _OAuthClientAuthz as OAuthClientAuthz,
   _PersonalAccessToken as PersonalAccessToken,
+  _ConsentRecord as ConsentRecord,
+  _RetentionActionLog as RetentionActionLog,
 };
 
 export type {
@@ -395,6 +419,10 @@ export type {
   InventoryCreationAttributes,
   ImportedInventoryFileAttributes,
   ImportedInventoryFileCreationAttributes,
+  BulkInventoryImportJobAttributes,
+  BulkInventoryImportJobCreationAttributes,
+  BulkInventoryImportItemAttributes,
+  BulkInventoryImportItemCreationAttributes,
   PdfOcrJobAttributes,
   PdfOcrJobCreationAttributes,
   WebhookSubscriptionAttributes,
@@ -479,6 +507,10 @@ export type {
   PersonalAccessTokenAttributes,
   PersonalAccessTokenCreationAttributes,
   PersonalAccessTokenOptionalAttributes,
+  ConsentRecordAttributes,
+  ConsentRecordCreationAttributes,
+  RetentionActionLogAttributes,
+  RetentionActionLogCreationAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -506,6 +538,8 @@ export function initModels(sequelize: Sequelize) {
   const GHGs = _GHGs.initModel(sequelize);
   const Inventory = _Inventory.initModel(sequelize);
   const ImportedInventoryFile = _ImportedInventoryFile.initModel(sequelize);
+  const BulkInventoryImportJob = _BulkInventoryImportJob.initModel(sequelize);
+  const BulkInventoryImportItem = _BulkInventoryImportItem.initModel(sequelize);
   const PdfOcrJob = _PdfOcrJob.initModel(sequelize);
   const WebhookSubscription = _WebhookSubscription.initModel(sequelize);
   const WebhookDelivery = _WebhookDelivery.initModel(sequelize);
@@ -550,6 +584,8 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
   const PersonalAccessToken = _PersonalAccessToken.initModel(sequelize);
+  const ConsentRecord = _ConsentRecord.initModel(sequelize);
+  const RetentionActionLog = _RetentionActionLog.initModel(sequelize);
 
   ActionPlan.belongsTo(HighImpactActionRankedModel, {
     foreignKey: "highImpactActionRankedId",
@@ -1341,6 +1377,72 @@ export function initModels(sequelize: Sequelize) {
     onUpdate: "CASCADE",
   });
 
+  BulkInventoryImportJob.belongsTo(Project, {
+    as: "project",
+    foreignKey: "projectId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  Project.hasMany(BulkInventoryImportJob, {
+    as: "bulkInventoryImportJobs",
+    foreignKey: "projectId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  BulkInventoryImportJob.belongsTo(User, {
+    as: "user",
+    foreignKey: "userId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(BulkInventoryImportJob, {
+    as: "bulkInventoryImportJobs",
+    foreignKey: "userId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  BulkInventoryImportItem.belongsTo(BulkInventoryImportJob, {
+    as: "job",
+    foreignKey: "jobId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  BulkInventoryImportJob.hasMany(BulkInventoryImportItem, {
+    as: "items",
+    foreignKey: "jobId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  BulkInventoryImportItem.belongsTo(City, {
+    as: "city",
+    foreignKey: "cityId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  BulkInventoryImportItem.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  BulkInventoryImportItem.belongsTo(ImportedInventoryFile, {
+    as: "importedFile",
+    foreignKey: "importedFileId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+
+  ConsentRecord.belongsTo(User, {
+    as: "user",
+    foreignKey: "userId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(ConsentRecord, {
+    as: "consentRecords",
+    foreignKey: "userId",
+  });
+
   ImportMappingFeedback.belongsTo(City, {
     as: "city",
     foreignKey: "cityId",
@@ -1376,6 +1478,8 @@ export function initModels(sequelize: Sequelize) {
     GHGs: GHGs,
     Inventory: Inventory,
     ImportedInventoryFile: ImportedInventoryFile,
+    BulkInventoryImportJob: BulkInventoryImportJob,
+    BulkInventoryImportItem: BulkInventoryImportItem,
     PdfOcrJob: PdfOcrJob,
     WebhookSubscription: WebhookSubscription,
     WebhookDelivery: WebhookDelivery,
@@ -1418,5 +1522,7 @@ export function initModels(sequelize: Sequelize) {
     OAuthClientI18N: OAuthClientI18N,
     OAuthClientAuthz: OAuthClientAuthz,
     PersonalAccessToken: PersonalAccessToken,
+    ConsentRecord: ConsentRecord,
+    RetentionActionLog: RetentionActionLog,
   };
 }

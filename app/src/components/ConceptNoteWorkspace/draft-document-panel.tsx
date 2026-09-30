@@ -198,6 +198,10 @@ const markdownComponents = {
   },
 };
 
+// Floor for the document area so the Sections column is never squeezed
+// shorter than the preview while the drafting progress card is showing.
+const DOCUMENT_MIN_HEIGHT = "360px";
+
 export function chapterTone(status: ChapterDisplayStatus): string {
   switch (status) {
     case "ready":
@@ -311,7 +315,12 @@ export function DraftDocumentPanel({
   }, [editFocus, chapterElements, previewElement, selectChapter]);
 
   return (
-    <VStack align="stretch" flex={1} minH={0} gap={2}>
+    <VStack
+      align="stretch"
+      flex={1}
+      minH={{ base: 0, lg: DOCUMENT_MIN_HEIGHT }}
+      gap={2}
+    >
       <Flex
         direction={{ base: "column", lg: "row" }}
         flex={1}
@@ -500,7 +509,7 @@ export function DraftDocumentPanel({
           tabIndex={-1}
           flex={1}
           minW={0}
-          minH="360px"
+          minH={DOCUMENT_MIN_HEIGHT}
           overflowY="auto"
           scrollBehavior="smooth"
           border="1px solid"

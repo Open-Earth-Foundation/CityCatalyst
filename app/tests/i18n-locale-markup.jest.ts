@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { fallbackLng, languages } from "@/i18n/settings";
 
-const LOCALES_DIR = path.resolve(__dirname, "../src/i18n/locales");
+const LOCALES_DIR = path.join(process.cwd(), "src/i18n/locales");
 
 type LocaleTree = { [key: string]: string | LocaleTree };
 

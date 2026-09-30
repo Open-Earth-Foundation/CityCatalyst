@@ -195,8 +195,8 @@ async function synchData(
         }
         targetData[key] = translated;
         console.log(
-          "Tokens from translation",
-          result.inputTokens,
+          "Translated",
+          key,
           "Total tokens",
           totalInputTokens,
           "Total queries",

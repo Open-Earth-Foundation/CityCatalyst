@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
+import time
 from types import SimpleNamespace
 from typing import Any, Dict, List, Optional
 import unittest
@@ -960,10 +961,11 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
     async def test_request_context_renews_inventory_before_one_capability_request(
         self,
     ) -> None:
-        """A canonical turn refresh happens before the capability and never retries it."""
+        """61 seconds left renews before a 90s request, which is never replayed."""
+        presented_token = _unsigned_jwt({"exp": int(time.time()) + 61})
         context = RequestTokenRefreshContext(
             canonical_user_id="canonical-user",
-            token="near-expiry-token",
+            token=presented_token,
         )
         client = CityCatalystClient(
             base_url="https://cc.example",
@@ -974,7 +976,6 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
         refresh_token = AsyncMock(return_value=("renewed-token", 3600))
 
         with (
-            patch("app.utils.request_token_refresh.is_token_expired", return_value=True),
             patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
             patch.object(client, "refresh_token", new=refresh_token),
         ):
@@ -993,6 +994,7 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
         refresh_token.assert_awaited_once_with("canonical-user")
         self.assertEqual(context.token_ref["value"], "renewed-token")
         self.assertEqual(len(stub.requests), 1)
+        self.assertEqual(stub.requests[0]["extra"]["timeout"], 90)
         self.assertEqual(
             stub.requests[0]["headers"]["Authorization"],
             "Bearer renewed-token",

@@ -290,7 +290,7 @@ read accepts a model-selected catalog/capability pair with finite bounded
 arguments, then calls Core for fresh authorization and execution. Core remains
 the final read-time authority; unavailable or invalid reads use the stable
 non-disclosing response. Before discovery or read, the server-owned request
-context renews a token that is expired or within the 60-second safety margin.
+context renews a token that is expired or within the 10-minute safety margin.
 The explicit `allow_token_refresh=False` contract remains for callers without
 that authenticated context. A 401/403 after preflight fails through the safe
 tool path without another refresh or replay. Refresh identity never comes from

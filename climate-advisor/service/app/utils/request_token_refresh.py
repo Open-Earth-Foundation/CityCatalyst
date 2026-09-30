@@ -11,7 +11,10 @@ from app.utils.token_manager import is_token_expired
 TokenRef = dict[str, Optional[str]]
 TokenRefresh = Callable[[str], Awaitable[tuple[str, int]]]
 
-_TOKEN_REFRESH_BUFFER_SECONDS = 60
+# Core capability and datasource calls can run for 90 seconds. Keep the turn's
+# bearer lifetime aligned with the 10-minute issuance margin so a supported
+# request cannot start with less remaining time than its maximum timeout.
+_TOKEN_REFRESH_BUFFER_SECONDS = 10 * 60
 
 
 class RequestTokenRefreshContext:

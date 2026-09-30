@@ -354,7 +354,7 @@ The validated request bearer is the only credential stored on the thread,
 always under `access_token`. Conflicting body `access_token` /
 `cc_access_token` values are discarded. Later writes do not fall back to a
 stored thread token. During an authenticated turn, internal Core tool calls may
-preflight-renew the bearer when it is expired or within 60 seconds of expiry.
+preflight-renew the bearer when it is expired or within 10 minutes of expiry.
 Renewal uses only the canonical subject validated for that write. The renewed
 bearer is shared with inventory, NativeInputCatalog, Stationary Energy, and
 Concept Note tool clients, then persisted under `access_token` after normal
@@ -1343,7 +1343,7 @@ revalidates the caller scope, catalog lifecycle, capability membership, module
 readiness, and bounded execution contract.
 
 The catalog tools use the authenticated turn's shared bearer. If it is expired
-or within the 60-second safety margin, the server-owned request context renews
+or within the 10-minute safety margin, the server-owned request context renews
 it before discovery/read. A 401/403 after preflight is returned through the
 existing safe tool failure path without another refresh or replay. Legacy
 internal inventory capabilities use the same canonical preflight context and

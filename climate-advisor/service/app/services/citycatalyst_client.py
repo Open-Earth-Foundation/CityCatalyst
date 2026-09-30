@@ -116,7 +116,6 @@ class CityCatalystClient:
         # Datasource aggregation pulls several upstream feeds and often exceeds the default 30s.
         self.datasource_timeout = max(self.timeout, 90)
         self._client: Optional[httpx.AsyncClient] = None
-        self.last_refreshed_token: Optional[str] = None
 
         if not self.base_url:
             logger.warning(
@@ -637,17 +636,20 @@ class CityCatalystClient:
     ) -> Dict[str, Any]:
         """POST to an internal capability without claimed-user token refresh.
 
-        ``allow_token_refresh`` is retained so NativeInputCatalog callers can
-        keep an explicit no-refresh contract. Internal 401s always fail closed
-        and never derive a refresh subject from ``json_data``.
+        ``allow_token_refresh`` stays so NativeInputCatalog callers can keep an
+        explicit no-refresh contract. ``True`` is rejected. Internal 401s fail
+        closed and never derive a refresh subject from ``json_data``.
         """
+        if allow_token_refresh:
+            raise ValueError(
+                "post_internal_capability does not refresh tokens. "
+                "Pass allow_token_refresh=False. Identity is never taken from the request payload."
+            )
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 
         url = f"{self.base_url.rstrip('/')}{path}"
         client = await self._get_client()
-        self.last_refreshed_token = None
-        del allow_token_refresh
 
         response = await client.post(
             url,

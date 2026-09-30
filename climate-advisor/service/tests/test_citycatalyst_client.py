@@ -347,7 +347,7 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(captured.exception.status_code, 401)
         refresh_token.assert_not_awaited()
-        self.assertIsNone(client.last_refreshed_token)
+        self.assertFalse(hasattr(client, "last_refreshed_token"))
         self.assertEqual(len(stub.requests), 1)
         self.assertEqual(
             stub.requests[0]["url"],
@@ -873,7 +873,7 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(captured.exception.status_code, 401)
         refresh_token.assert_not_awaited()
-        self.assertIsNone(client.last_refreshed_token)
+        self.assertFalse(hasattr(client, "last_refreshed_token"))
         self.assertEqual(len(stub.requests), 1)
         self.assertEqual(
             stub.requests[0]["headers"]["Authorization"], "Bearer invalid-token"
@@ -916,8 +916,44 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(captured.exception.status_code, 401)
         refresh_token.assert_not_awaited()
-        self.assertIsNone(client.last_refreshed_token)
+        self.assertFalse(hasattr(client, "last_refreshed_token"))
         self.assertEqual(len(stub.requests), 1)
+
+    async def test_post_internal_capability_rejects_refresh_without_using_payload_identity(
+        self,
+    ) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(
+                cc_base_url="https://cc.example",
+                cc_api_key="test-api-key",
+            ),
+        ):
+            client = CityCatalystClient()
+            stub = _StubAsyncClient(
+                [_response(200, json_data={"success": True})]
+            )
+            refresh_token = AsyncMock(return_value=("fresh-token", 3600))
+
+            with (
+                patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+                patch.object(client, "refresh_token", new=refresh_token),
+            ):
+                with self.assertRaises(ValueError) as captured:
+                    await client.post_internal_capability(
+                        "/api/v1/internal/ca/capabilities/ghgi/inventory/status-overview",
+                        json_data={
+                            "user_id": "claimed-user",
+                            "userId": "other-claimed-user",
+                        },
+                        token="presented-token",
+                        allow_token_refresh=True,
+                    )
+
+        self.assertIn("allow_token_refresh=False", str(captured.exception))
+        self.assertIn("request payload", str(captured.exception))
+        refresh_token.assert_not_awaited()
+        self.assertEqual(stub.requests, [])
 
     async def test_close_releases_the_client_used_by_catalog_calls(self) -> None:
         with patch(

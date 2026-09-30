@@ -3,16 +3,14 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Union
-from uuid import UUID
+from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, Header, HTTPException, Response
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import get_settings
 from app.db.session import get_session_factory, get_session_optional
-from app.middleware import get_request_id
 from app.models.requests import MessageCreateRequest
 from app.services.cnb.chat_readiness import require_chat_context_ready
 from app.services.cnb.draft_overview import (
@@ -21,14 +19,15 @@ from app.services.cnb.draft_overview import (
     is_draft_overview_turn,
     release_draft_overview,
 )
-from app.services.citycatalyst_client import (
-    CityCatalystClient,
-    CityCatalystClientError,
-)
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
 from app.utils.agent_tracing import configure_agents_tracing
 from app.utils.chat_workflow_context import STATIONARY_ENERGY_DRAFT_RUN_ID_KEY
+from app.utils.citycatalyst_auth import (
+    authenticate_write_request,
+    normalize_write_context,
+)
+from app.utils.request_token_refresh import RequestTokenRefreshContext
 from app.utils.sse_heartbeat import with_sse_heartbeats
 from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
 from app.utils.streaming_handler import StreamingHandler
@@ -37,9 +36,6 @@ from app.utils.thread_resolver import ThreadResolver
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
-_CC_AUTHENTICATION_FAILED = "CityCatalyst authentication failed"
-_CC_AUTH_REJECTION_STATUSES = frozenset({401, 403})
 
 # Configure LangSmith tracing for Agents SDK
 settings = get_settings()
@@ -54,35 +50,54 @@ async def options_messages() -> Response:
 @router.post("/messages")
 async def post_message(
     payload: MessageCreateRequest,
+    authorization: Annotated[str | None, Header()] = None,
     session: Optional[AsyncSession] = Depends(get_session_optional),
     session_factory: Optional[async_sessionmaker[AsyncSession]] = Depends(get_session_factory),
 ) -> StreamingResponse:
     """Create a message and stream AI response.
-    
+
     This endpoint handles:
-    - Thread resolution/creation
+    - Request-bearer authentication against Core before any write
+    - Thread resolution/creation for the canonical subject
     - CNB readiness validation (409 concept_note_context_not_ready before saving a turn)
+    - Hidden drafting-overview claim (after auth, once per drafting build)
     - User message persistence
     - AI response streaming via SSE
-    - Token management for inventory API access
-    
+
     Args:
         payload: Message creation request (user_id, content, optional thread_id, inventory_id)
+        authorization: Bearer token validated through Core before persistence
         session: Database session (optional, for graceful degradation)
         session_factory: Session factory for async operations
-        
+
     Returns:
         StreamingResponse with Server-Sent Events (SSE)
     """
+    # Authenticate before thread lookup, implicit creation, or tool registration.
+    identity = await authenticate_write_request(
+        authorization=authorization,
+        claimed_user_id=payload.user_id,
+    )
+    token_refresh_context = RequestTokenRefreshContext(
+        canonical_user_id=identity.user_id,
+        token=identity.token,
+    )
+    normalized_context = normalize_write_context(payload.context, identity.token)
+    authenticated_payload = payload.model_copy(
+        update={
+            "user_id": identity.user_id,
+            "context": normalized_context,
+        }
+    )
     logger.info(
         "POST /messages - user_id=%s, thread_id=%s, content_length=%d, inventory_id=%s, has_context=%s",
-        payload.user_id,
-        payload.thread_id,
-        len(payload.content),
-        payload.inventory_id,
-        bool(payload.context),
+        identity.user_id,
+        authenticated_payload.thread_id,
+        len(authenticated_payload.content),
+        authenticated_payload.inventory_id,
+        bool(normalized_context),
     )
-    
+
     # Base warnings for database unavailability
     history_warning: Optional[str] = None
     if session is None and session_factory is None:
@@ -90,128 +105,56 @@ async def post_message(
             "Chat history is temporarily unavailable. The conversation will continue, "
             "but your messages will not be saved."
         )
-    
+
     try:
-        # 1. Resolve or create thread
+        # 1. Resolve or create thread for the canonical subject only.
         resolved_thread_id = await ThreadResolver.resolve_thread(
-            thread_id=payload.thread_id,
-            payload=payload,
-            user_id=payload.user_id,
+            thread_id=authenticated_payload.thread_id,
+            payload=authenticated_payload,
+            user_id=identity.user_id,
             session_factory=session_factory,
         )
-        
+
         logger.info("Thread resolved: thread_id=%s", resolved_thread_id)
 
         # Reject unready CNB turns before saving a message or starting SSE.
         await require_chat_context_ready(
             session_factory=session_factory,
             thread_id=resolved_thread_id,
-            user_id=payload.user_id,
-            context=payload.context,
-            options=payload.options,
+            user_id=identity.user_id,
+            context=normalized_context,
+            options=authenticated_payload.options,
         )
 
         # The hidden drafting-overview turn uses server-owned trigger text. It
         # is claimed after authentication so a rejected request cannot use up
         # the build's single overview.
-        overview_turn = is_draft_overview_turn(payload.options)
+        overview_turn = is_draft_overview_turn(authenticated_payload.options)
         if overview_turn:
-            payload = payload.model_copy(update={"content": DRAFT_OVERVIEW_REQUEST})
-        
-        # 2. Load CC token - check payload first, then thread context
-        cc_access_token: Optional[str] = None
-        token_from_payload = None
-        
-        # Check if token is provided in the request payload context
-        if payload.context and isinstance(payload.context, dict):
-            # Check both "cc_access_token" (new) and "access_token" (standard) keys
-            token_from_payload = payload.context.get("cc_access_token") or payload.context.get("access_token")
-            if token_from_payload:
-                logger.info("Found CC token in request payload context")
-                cc_access_token = token_from_payload
-        
-        # If no token in payload, load from thread context
-        if not cc_access_token and session_factory:
-            from app.utils.token_handler import TokenHandler
-            token_handler = TokenHandler(
-                thread_id=resolved_thread_id,
-                user_id=payload.user_id,
-                session_factory=session_factory,
+            authenticated_payload = authenticated_payload.model_copy(
+                update={"content": DRAFT_OVERVIEW_REQUEST}
             )
-            logger.info("Attempting to load CC token from thread context for thread_id=%s", resolved_thread_id)
-            cc_access_token = await token_handler.load_token_from_thread()
-            if cc_access_token:
-                logger.info("Successfully loaded CC token from thread context")
-            else:
-                logger.info("No CC token found in thread context")
-        
-        # Log token status for debugging
-        logger.info(
-            "CC token status - from_payload=%s, final_token=%s",
-            "present" if token_from_payload else "absent",
-            "present" if cc_access_token else "absent"
-        )
 
-        # Validate the bearer itself before request JSON can establish catalog identity.
-        catalog_user_id: Optional[str] = None
-        if cc_access_token:
-            try:
-                async with CityCatalystClient() as core_client:
-                    catalog_user_id = await core_client.validate_user_identity(
-                        cc_access_token
-                    )
-            except CityCatalystClientError as exc:
-                catalog_user_id = None
-                # Only a request-supplied bearer that Core actively rejects is an
-                # authentication failure. Core outages and stale thread-stored
-                # tokens disable the catalog and leave the chat request intact.
-                if exc.status_code in _CC_AUTH_REJECTION_STATUSES and token_from_payload:
-                    logger.warning(
-                        "Rejected unvalidated CityCatalyst bearer status=%s",
-                        exc.status_code,
-                    )
-                    raise HTTPException(
-                        status_code=401,
-                        detail=_CC_AUTHENTICATION_FAILED,
-                    ) from exc
-                logger.warning(
-                    "Disabling catalog identity; CityCatalyst validation failed status=%s",
-                    exc.status_code,
-                )
-            else:
-                if catalog_user_id != payload.user_id:
-                    logger.warning("Rejected CityCatalyst bearer subject mismatch")
-                    raise HTTPException(
-                        status_code=401,
-                        detail=_CC_AUTHENTICATION_FAILED,
-                    )
-        
-        # 3. Persist user message and update token if needed
+        # 2. Persist user message and the validated request bearer.
         if session_factory:
             try:
                 async with session_factory() as db_session:
                     thread_service = ThreadService(db_session)
                     thread = await thread_service.get_thread(resolved_thread_id)
-                    
-                    if thread:
-                        # Only a bearer Core validated may enter thread context.
-                        # Thread-stored tokens take the lenient path on later
-                        # requests, so persisting an unvalidated one would
-                        # launder it out of the strict request-supplied class.
-                        context_update = {}
-                        if token_from_payload and catalog_user_id is not None:
-                            context_update["access_token"] = token_from_payload
-                            logger.info("Persisted CC token from payload to thread context")
 
-                        if context_update:
-                            await thread_service.update_context(
-                                thread=thread,
-                                context_update=context_update,
-                            )
+                    if thread:
+                        # Replace credentials so a stored cc_access_token cannot
+                        # survive the shallow merge in update_context.
+                        thread.context = normalize_write_context(
+                            thread.context,
+                            identity.token,
+                        )
+                        await db_session.flush()
+                        logger.info("Persisted validated CC token to thread context")
 
                         stationary_energy_draft_run_id = extract_stationary_energy_draft_run_id(
-                            payload.context,
-                            payload.options,
+                            normalized_context,
+                            authenticated_payload.options,
                         )
                         if stationary_energy_draft_run_id:
                             await thread_service.set_workflow_context(
@@ -223,19 +166,19 @@ async def post_message(
                                 "Persisted Stationary Energy draft context on thread_id=%s",
                                 resolved_thread_id,
                             )
-                        
+
                         # The overview trigger is not a user message; keep it
                         # out of the visible history.
                         if not overview_turn:
                             message_service = MessageService(db_session)
                             await message_service.create_user_message(
                                 thread_id=resolved_thread_id,
-                                user_id=payload.user_id,
-                                text=payload.content,
+                                user_id=identity.user_id,
+                                text=authenticated_payload.content,
                             )
                         await thread_service.touch_thread(thread)
                         await db_session.commit()
-                    
+
                     logger.info("User message persisted to thread_id=%s", resolved_thread_id)
             except Exception as e:
                 logger.warning("Failed to persist user message: %s", e)
@@ -243,28 +186,30 @@ async def post_message(
                     "Chat history is temporarily unavailable. The conversation will continue, "
                     "but your messages will not be saved."
                 )
-        
-        # 4. Claim the overview once per drafting build, right before streaming
+
+        # 3. Claim the overview once per drafting build, right before streaming.
         draft_overview_claim = None
         if overview_turn:
             draft_overview_claim = await claim_draft_overview(
                 session_factory=session_factory,
                 thread_id=resolved_thread_id,
-                user_id=payload.user_id,
+                user_id=identity.user_id,
             )
 
-        # 5. Create streaming handler and stream response. Once the handler
-        # exists its own cleanup releases the claim; before that, release here.
+        # 4. Stream with the canonical subject and validated request bearer.
+        # Once the handler exists its own cleanup releases the claim; before
+        # that, release here.
         try:
             handler = StreamingHandler(
                 thread_id=resolved_thread_id,
-                user_id=payload.user_id,
+                user_id=identity.user_id,
                 session_factory=session_factory,
-                cc_access_token=cc_access_token,
-                catalog_user_id=catalog_user_id,
-                inventory_id=payload.inventory_id,
-                request_context=payload.context,
-                request_options=payload.options,
+                cc_access_token=identity.token,
+                request_token_refresh_context=token_refresh_context,
+                catalog_user_id=identity.user_id,
+                inventory_id=authenticated_payload.inventory_id,
+                request_context=normalized_context,
+                request_options=authenticated_payload.options,
                 draft_overview_claim=draft_overview_claim,
             )
         except BaseException:
@@ -273,7 +218,7 @@ async def post_message(
                 await release_draft_overview(
                     session_factory=session_factory,
                     run_id=run_id,
-                    user_id=payload.user_id,
+                    user_id=identity.user_id,
                     build_id=build_id,
                 )
             raise
@@ -283,13 +228,15 @@ async def post_message(
             "Connection": "keep-alive",
             "X-Accel-Buffering": "no",
         }
-        
+
         return StreamingResponse(
-            with_sse_heartbeats(handler.stream_response(payload, history_warning)),
+            with_sse_heartbeats(
+                handler.stream_response(authenticated_payload, history_warning)
+            ),
             media_type="text/event-stream",
             headers=headers,
         )
-    
+
     except HTTPException:
         raise
     except Exception as e:

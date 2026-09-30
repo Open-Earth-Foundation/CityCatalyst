@@ -6,12 +6,11 @@ from uuid import uuid4
 import httpx
 import pytest
 from agents import RunConfig, Runner, function_tool
-from openai import AsyncOpenAI
-
 from app.config import get_settings
 from app.models.cnb.source_prompt import DocumentSummary, QuestionReading
 from app.services.agent_service import AgentService
 from app.services.cnb.source_analysis import _run_agent
+from openai import AsyncOpenAI
 
 
 def test_active_ca_model_defaults_preserve_cnb_roles():
@@ -165,18 +164,39 @@ async def test_source_roles_preserve_reasoning_and_structured_outputs(
     requests = []
 
     def respond(request: httpx.Request):
+        assert str(request.url) == "https://openrouter.ai/api/v1/responses"
         body = json.loads(request.content)
         requests.append(body)
         return httpx.Response(
-            200, json=completion(body["model"], content=json.dumps(output))
+            200,
+            json={
+                "id": "resp-local-test",
+                "object": "response",
+                "created_at": 0,
+                "status": "completed",
+                "model": body["model"],
+                "output": [
+                    {
+                        "id": "msg-local-test",
+                        "type": "message",
+                        "role": "assistant",
+                        "status": "completed",
+                        "content": [
+                            {
+                                "type": "output_text",
+                                "text": json.dumps(output),
+                                "annotations": [],
+                            }
+                        ],
+                    }
+                ],
+                "usage": {
+                    "input_tokens": 10,
+                    "output_tokens": 10,
+                    "total_tokens": 20,
+                },
+            },
         )
-
-    class LocalRunner:
-        @staticmethod
-        async def run(agent, input_text):
-            return await Runner.run(
-                agent, input_text, run_config=RunConfig(tracing_disabled=True)
-            )
 
     async with AsyncOpenAI(
         api_key="local-test-only",
@@ -194,14 +214,18 @@ async def test_source_roles_preserve_reasoning_and_structured_outputs(
             output_type=output_type,
             input_text="No budget is stated.",
             client=client,
-            runner=LocalRunner,
+            runner=Runner,
         )
     assert result == output_type.model_validate(output)
     assert len(requests) == 1
     body = requests[0]
     assert body["model"] == configured.name
-    assert body["reasoning_effort"] == configured.reasoning_effort
+    assert body["reasoning"] == {
+        "effort": configured.reasoning_effort,
+        "summary": "detailed",
+    }
+    assert body["store"] is False
     assert "temperature" not in body
     assert not body.get("tools")
-    assert body["response_format"]["type"] == "json_schema"
-    assert body["response_format"]["json_schema"]["strict"] is True
+    assert body["text"]["format"]["type"] == "json_schema"
+    assert body["text"]["format"]["strict"] is True

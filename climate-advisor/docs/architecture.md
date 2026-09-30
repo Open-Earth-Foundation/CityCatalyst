@@ -66,33 +66,22 @@ sequenceDiagram
     participant Client
     participant API as Climate Advisor API
     participant Thread as ThreadResolver
-    participant Token as TokenHandler
     participant DB as PostgreSQL
     participant Stream as StreamingHandler
     participant Agent as AgentService
     participant CC as CityCatalyst API
 
-    Client->>API: POST /v1/messages
-    API->>Thread: Resolve existing thread or create one
-    Thread-->>API: thread
-
-    API->>Token: Load token from request or thread context
-    opt CityCatalyst bearer is present
-        API->>CC: Validate bearer at /internal/ca/auth/identity
-        CC-->>API: Canonical user ID or identity error
-        alt subject differs, or request-supplied bearer rejected
-            API-->>Client: HTTP 401 (no catalog-enabled agent)
-        else Core unavailable or thread-stored bearer rejected
-            API-->>API: Continue with catalog identity disabled
-        end
+    Client->>API: POST /v1/threads or /v1/messages with Authorization Bearer
+    API->>CC: Validate bearer at /internal/ca/auth/identity
+    alt missing, malformed, rejected, or subject mismatch
+        API-->>Client: HTTP 401 (no write)
+    else Core identity unavailable
+        API-->>Client: HTTP 503 (no write)
+    else canonical subject matches body user_id
+        API->>Thread: Resolve existing thread or create one
+        Thread-->>API: thread
+        API->>Stream: Start streamed response with canonical user and validated bearer
     end
-    alt token expired
-        Token->>CC: Refresh token
-        CC-->>Token: New access token
-        Token->>DB: Persist refreshed token
-    end
-
-    API->>Stream: Start streamed response
     opt Stationary Energy draft run is present
         Stream->>DB: Load persisted draft snapshot and staged review state
         Stream-->>Stream: Build STATIONARY_ENERGY_DRAFT_CONTEXT_JSON + ui_context
@@ -263,34 +252,34 @@ not load Climate Advisor capabilities or execute full reads for candidates.
 `native_input_read` tools only when authenticated catalog context and the
 current Core credential are available. Registration makes no Core discovery
 request and does not accept a client-selected catalog/capability pair.
-Before constructing `StreamingHandler`, `/v1/messages` validates any supplied
-bearer at Core's `/api/v1/internal/ca/auth/identity` boundary. The request is
-rejected with the same HTTP 401 response when Core's canonical subject differs
-from body `user_id`, or when Core rejects a bearer that came from the request
-payload. Every other identity outcome — Core unavailable, `CC_BASE_URL` unset,
-a malformed identity response, or a rejected thread-stored bearer — leaves the
-chat request running with catalog identity disabled rather than returning 401.
-On that degraded path the route also skips the thread-context write for a
-request-supplied bearer: a token is persisted only after Core returned a
-canonical identity, so an unvalidated bearer cannot be laundered into the more
-permissive thread-stored class on subsequent requests.
-`StreamingHandler` accepts that canonical identity separately for catalog
-context, combines it with the safe request scope, and ignores caller-supplied
-identity and catalog selections. Missing token or validated catalog identity
-leaves the catalog tools disabled.
+Before persistence, `POST /v1/threads` and `POST /v1/messages`
+validate the request `Authorization` bearer at Core's
+`/api/v1/internal/ca/auth/identity` boundary. Missing, malformed, rejected, or
+subject-mismatched credentials return the same HTTP 401 problem response.
+Core identity unavailability returns HTTP 503. Neither case creates or mutates
+a thread, message, or stored credential. After validation, routes use Core's
+canonical user ID for ownership, readiness, persistence, streaming, and tool
+registration. Thread context stores only that validated bearer as
+`access_token`; conflicting body aliases and leftover persisted
+`cc_access_token` values are discarded on the write.
+`StreamingHandler` receives that canonical identity separately for catalog
+context and ignores caller-supplied identity. Missing authentication fails the
+write instead of disabling tools.
 
-Thread-stored bearers are never refreshed for the catalog path, and CA-issued
-tokens expire after one hour. After expiry the catalog tools stay unregistered
-for the thread; recovery is a new request-supplied bearer that Core identity
-validation accepts. Refreshing from the thread record's stored `user_id` is
-deliberately rejected as a recovery mechanism, because `POST /v1/threads` is
-unauthenticated and persists an arbitrary caller-supplied `user_id`.
+Write requests never refresh from a stored thread bearer or a claimed
+`user_id`. After each write is authenticated, the request-scoped token context
+may renew the current bearer before an authenticated Core tool call, using only
+the canonical subject returned by Core for that request. It replaces the shared
+token reference used by NativeInputCatalog, inventory, Stationary Energy, and
+Concept Note tools. Capability payloads cannot choose the refresh subject. A
+capability call is sent once after preflight renewal; a later 401/403 fails
+closed and is not replayed. A renewed bearer is persisted under `access_token`
+only after the streaming turn completes normally. Cancellation and failures do
+not persist it, and the next turn still has to present a bearer accepted by Core.
 
-This boundary is closed for request-supplied bearers and for all
-NativeInputCatalog paths, not for Climate Advisor as a whole. `POST /v1/threads`
-remains unauthenticated, and legacy non-catalog inventory tools may still
-derive a token refresh from the request body `user_id`; that residual is
-outside CC-737 scope.
+This boundary is the write-auth contract for Climate Advisor chat: thread
+creation, message writes, and the developer inventory check are authenticated
+and canonical-subject-bound. Read-only thread-history GET remains unchanged.
 
 At tool-call time, discovery returns only locally supported safe entries and
 may include an opaque Core continuation cursor so later authorized pages remain
@@ -300,9 +289,12 @@ A page or cursor is never cached as an authorization grant. A
 read accepts a model-selected catalog/capability pair with finite bounded
 arguments, then calls Core for fresh authorization and execution. Core remains
 the final read-time authority; unavailable or invalid reads use the stable
-non-disclosing response. NativeInputCatalog discovery and reads never exchange
-a 401 for a new user token and never derive refresh identity from request JSON.
-Unrelated legacy inventory tools retain their existing refresh behavior.
+non-disclosing response. Before discovery or read, the server-owned request
+context renews a token that is expired or within the 10-minute safety margin.
+The explicit `allow_token_refresh=False` contract remains for callers without
+that authenticated context. A 401/403 after preflight fails through the safe
+tool path without another refresh or replay. Refresh identity never comes from
+request JSON.
 
 - `services/stationary_energy/stationary_energy_review_resolver.py`
   - Resolves selectable sources, notation-key targets, pending review rows, and
@@ -334,8 +326,8 @@ Unrelated legacy inventory tools retain their existing refresh behavior.
 - `tools/inventory_context_tools.py`
   - The shared CityCatalyst inventory capability tools used by the general
     prompt and the scoped Stationary Energy review prompt.
-  - Updates the shared request token reference after a capability call refreshes
-    the CityCatalyst bearer token.
+  - Uses the authenticated turn's shared bearer and request-scoped canonical
+    preflight renewal context.
 - `tools/stationary_energy_review_tools.py`
   - The scoped Stationary Energy review tool pack backed by
     `StationaryEnergyAgentReviewService`.
@@ -366,7 +358,7 @@ Unrelated legacy inventory tools retain their existing refresh behavior.
 - `utils/history_manager.py`
   - Prunes older tool metadata for LLM context while keeping full DB audit data.
 - `utils/token_handler.py`
-  - Refreshes and persists CityCatalyst tokens.
+  - Persists the renewed request bearer after a successful streaming turn.
 
 ### Concept Note Source Context
 

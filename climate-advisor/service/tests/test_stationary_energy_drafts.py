@@ -58,6 +58,7 @@ from app.tools.stationary_energy_start_draft_tools import (
     build_stationary_energy_start_draft_tools,
 )
 from app.utils.streaming_handler import StreamingHandler
+from app.utils.token_manager import parse_jwt_claims
 
 
 def _unsigned_jwt(claims: dict[str, Any]) -> str:
@@ -264,6 +265,17 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             return_value=self.default_cc_client,
         )
         self.cc_client_patcher.start()
+        async def _identity(token: str) -> str:
+            claims = parse_jwt_claims(token)
+            if claims and claims.get("sub"):
+                return str(claims["sub"])
+            return token
+
+        self.identity_patcher = patch(
+            "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
+            new=AsyncMock(side_effect=_identity),
+        )
+        self.identity_patcher.start()
         self.background_session_factory_patcher = patch(
             "app.services.stationary_energy.stationary_energy_draft_service.get_session_factory",
             return_value=self.session_factory,
@@ -279,6 +291,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.background_task_patcher.stop()
         self._drain_background_futures()
         self.background_session_factory_patcher.stop()
+        self.identity_patcher.stop()
         self.cc_client_patcher.stop()
         self.app.dependency_overrides.clear()
         async with self.engine.begin() as conn:
@@ -664,6 +677,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                 user_id="user-1",
                 thread_id=thread_id,
                 token_ref=token_ref,
+                client_factory=lambda: mock_client,
             )
             start_tool = next(
                 tool
@@ -683,11 +697,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             )
             return json.loads(output)
 
-        with patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-            return_value=mock_client,
-        ):
-            data = asyncio.run(exercise())
+        data = asyncio.run(exercise())
 
         self.assertTrue(data["success"], data)
         # The page re-sends the request once the run is ready.
@@ -2394,7 +2404,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
         async def exercise() -> dict[str, Any]:
             async with self.session_factory() as session:
-                service = StationaryEnergyAgentReviewService(session)
+                service = StationaryEnergyAgentReviewService(
+                    session,
+                    cc_client=self._mock_cc_client(),
+                )
                 await service.accept_all_recommended(
                     draft_run_id=UUID(draft_run_id),
                     user_id="user-1",
@@ -2781,12 +2794,16 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
     def _create_thread(
         self, user_id: str, context: dict[str, Any] | None = None
     ) -> UUID:
+        token = _active_jwt(user_id)
+        if context and isinstance(context.get("access_token"), str):
+            token = str(context["access_token"])
         response = self.client.post(
             "/v1/threads",
             json={
                 "user_id": user_id,
-                "context": context or {"access_token": _active_jwt(user_id)},
+                "context": context or {"access_token": token},
             },
+            headers={"Authorization": f"Bearer {token}"},
         )
         self.assertEqual(response.status_code, 201, response.text)
         return UUID(response.json()["thread_id"])

@@ -118,6 +118,50 @@ import type {
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+export interface BulkInventoryImportItemCountsDto {
+  total: number;
+  pending: number;
+  matched: number;
+  unmatched: number;
+  importing: number;
+  completed: number;
+  failed: number;
+  skipped: number;
+}
+
+export interface BulkInventoryImportJobDto {
+  id: string;
+  projectId: string;
+  year: number;
+  status: string;
+  dryRun: boolean;
+  createMissingCities: boolean;
+  inventoryType: string;
+  globalWarmingPotentialType: string;
+  replaceExisting: boolean;
+  progressStage: string | null;
+  progressDetail: string | null;
+  counts: BulkInventoryImportItemCountsDto;
+  created: string | null;
+  lastUpdated: string | null;
+}
+
+export interface BulkInventoryImportItemDto {
+  id: string;
+  originalFileName: string;
+  locode: string | null;
+  status: string;
+  stage: string | null;
+  errorCode: string | null;
+  errorLog: string | null;
+  warnings: string[];
+  resolvedYear: number | null;
+}
+
+export interface BulkInventoryImportJobDetailDto extends BulkInventoryImportJobDto {
+  items: BulkInventoryImportItemDto[];
+}
+
 export const api = createApi({
   reducerPath: "api",
   tagTypes: [
@@ -170,6 +214,7 @@ export const api = createApi({
     "ConceptNoteUpload",
     "ConceptNoteDraft",
     "ConceptNoteEdits",
+    "BulkInventoryImport",
     "ConceptNoteApplicationContext",
     "ConceptNoteFundingCatalogue",
   ],
@@ -1445,6 +1490,51 @@ export const api = createApi({
           body: data,
         }),
         transformResponse: (response: unknown) => response,
+      }),
+      enqueueBulkInventoryImport: builder.mutation<
+        {
+          jobId: string;
+          itemCount: number;
+          unmatchedCount: number;
+        },
+        FormData
+      >({
+        query: (formData) => ({
+          url: `/admin/bulk-inventory-import`,
+          method: "POST",
+          body: formData,
+        }),
+        transformResponse: (response: {
+          data: {
+            jobId: string;
+            itemCount: number;
+            unmatchedCount: number;
+          };
+        }) => response.data,
+        invalidatesTags: ["BulkInventoryImport"],
+      }),
+      getLatestBulkInventoryImportJob: builder.query<
+        BulkInventoryImportJobDto | null,
+        string
+      >({
+        query: (projectId) =>
+          `/admin/bulk-inventory-import?projectId=${projectId}`,
+        transformResponse: (response: {
+          data: BulkInventoryImportJobDto | null;
+        }) => response.data,
+        providesTags: ["BulkInventoryImport"],
+      }),
+      getBulkInventoryImportJob: builder.query<
+        BulkInventoryImportJobDetailDto,
+        string
+      >({
+        query: (jobId) => `/admin/bulk-inventory-import/${jobId}`,
+        transformResponse: (response: {
+          data: BulkInventoryImportJobDetailDto;
+        }) => response.data,
+        providesTags: (_r, _e, jobId) => [
+          { type: "BulkInventoryImport", id: jobId },
+        ],
       }),
       connectDataSources: builder.mutation({
         query: (data: {
@@ -2830,6 +2920,9 @@ export const {
   useEditProjectMutation,
   useDeleteProjectMutation,
   useCreateBulkInventoriesMutation,
+  useEnqueueBulkInventoryImportMutation,
+  useGetLatestBulkInventoryImportJobQuery,
+  useGetBulkInventoryImportJobQuery,
   useConnectDataSourcesMutation,
   useGetDataSourcePreviewQuery,
   useConnectAllInventoryDataSourcesMutation,

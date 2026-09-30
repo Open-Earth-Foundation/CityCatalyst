@@ -24,6 +24,7 @@ from app.services.agent_service import AgentService
 from app.services.native_input_catalog_service import (
     ActiveRequestContext,
 )
+from app.utils.request_token_refresh import RequestTokenRefreshContext
 
 
 def build_mock_settings(
@@ -448,6 +449,10 @@ class NativeInputCatalogCompositionTests(unittest.IsolatedAsyncioTestCase):
         context = self._context()
         catalog_service = MagicMock()
         catalog_service.discover = AsyncMock()
+        refresh_context = RequestTokenRefreshContext(
+            canonical_user_id="user-1",
+            token="jwt-token",
+        )
         stable_tools = [
             SimpleNamespace(name="native_input_discover"),
             SimpleNamespace(name="native_input_read"),
@@ -456,7 +461,7 @@ class NativeInputCatalogCompositionTests(unittest.IsolatedAsyncioTestCase):
         def build_tools(**kwargs):
             self.assertIs(kwargs["service"], catalog_service)
             self.assertIs(kwargs["context"], context)
-            self.assertIs(kwargs["token_ref"], service._token_ref)
+            self.assertIs(kwargs["token_ref"], refresh_context.token_ref)
             return stable_tools
 
         with (
@@ -475,10 +480,12 @@ class NativeInputCatalogCompositionTests(unittest.IsolatedAsyncioTestCase):
                 cc_user_id="user-1",
                 native_input_catalog_service=catalog_service,
                 native_input_catalog_context=context,
+                request_token_refresh_context=refresh_context,
             )
 
             await service.create_agent()
 
+        self.assertIs(service._token_ref, refresh_context.token_ref)
         mock_build_tools.assert_called_once()
         catalog_service.discover.assert_not_awaited()
         tool_names = [

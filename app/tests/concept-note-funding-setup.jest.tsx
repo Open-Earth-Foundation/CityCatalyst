@@ -117,7 +117,7 @@ jest.unstable_mockModule(
           blocked: workspaceState.contextState === "processing",
         },
         retryBundleState: {},
-        retryUploadState: {},
+        retryingUploadId: null,
         startDraftState: {},
         uploadState: {},
       };

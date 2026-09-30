@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: citycatalyst-prod-enforce-retention
+  namespace: default
+spec:
+  # Quiet window, pinned to UTC so it does not follow the controller's local zone.
+  schedule: "15 3 * * *"
+  timeZone: "UTC"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels:
+            app: citycatalyst-prod-cron
+            job: enforce-retention
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: enforce-retention
+              image: curlimages/curl:latest
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  test -n "$CC_CRON_JOB_API_KEY"
+                  curl --fail --location --max-time 540 \
+                    --request POST \
+                    --header "Authorization: Bearer $CC_CRON_JOB_API_KEY" \
+                    http://cc-web:3000/api/v1/cron/enforce-retention

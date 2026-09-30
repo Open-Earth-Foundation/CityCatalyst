@@ -40,6 +40,9 @@ template section; only `draft.sections_with_content` have generated text, so
 never describe empty sections as drafted. An empty blockers list does not establish that
 the browser export button is enabled: acknowledgement/loading may still apply.
 `export.critical_gap_count` counts active critical gaps, not hard export blockers.
+`open_gaps_by_chapter` lists chapters with open gaps and their counts; use
+`concept_note_gaps` for the questions themselves. `uploaded_files` lists every
+ready upload; `newest` marks the latest one.
 `export.requires_acknowledgement` is true when critical gaps are known; null means
 other review findings and the browser acknowledgement state are unknown.
 Missing uploaded evidence alone does not block export. Do not infer that failed

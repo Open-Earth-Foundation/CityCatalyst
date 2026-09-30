@@ -1,6 +1,15 @@
 import { db } from "@/models";
-import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
+import { Op } from "sequelize";
+import {
+  resolveGpcRefNo,
+  splitSectorSubsectorLabels,
+} from "@/util/GHGI/gpc-ref-resolver";
+import {
+  hasSignedNumericValue,
+  parseNumericCell,
+} from "@/util/parse-numeric-cell";
 import { type ParsedFileData } from "./FileParserService";
+import type { ExtractedRow } from "./InventoryExtractionService";
 
 export interface ECRFRowData {
   gpcRefNo: string;
@@ -143,11 +152,7 @@ export default class ECRFImportService {
           const activityType = activityHeader
             ? row[activityHeader]?.toString().trim()
             : undefined;
-          let resolved = resolveGpcRefNo(
-            rawSector,
-            rawSubsector,
-            activityType,
-          );
+          let resolved = resolveGpcRefNo(rawSector, rawSubsector, activityType);
           // Fallback: if the right side of " > " didn't resolve, try the left side
           // e.g. "On-road > Other/uncategorized" → "Other/uncategorized" fails → try "On-road"
           if (!resolved && subsectorLeftFallback) {
@@ -320,16 +325,10 @@ export default class ECRFImportService {
               "activity value",
               "activity_value",
             ]);
-      // Extract activity amount value (convert to number like extractGasValue does)
+      // Extract activity amount (signed: AFOLU removals can be negative)
       let activityAmount: number | undefined = undefined;
       if (activityAmountHeader) {
-        const value = row[activityAmountHeader];
-        if (value !== null && value !== undefined && value !== "") {
-          const numValue = typeof value === "number" ? value : Number(value);
-          if (!isNaN(numValue)) {
-            activityAmount = numValue;
-          }
-        }
+        activityAmount = parseNumericCell(row[activityAmountHeader]);
       }
 
       // Get activity unit header (using detectedColumns index or findHeader)
@@ -491,8 +490,14 @@ export default class ECRFImportService {
           ? this.extractGasValue(row, headers, emissionFactorTotalCO2eIdx)
           : undefined;
 
-      // Validate that at least one gas value is present
-      if (!co2 && !ch4 && !n2o && !totalCO2e && !notationKey) {
+      // 0 is empty (notation-key behaviour); negatives are real removals
+      if (
+        !hasSignedNumericValue(co2) &&
+        !hasSignedNumericValue(ch4) &&
+        !hasSignedNumericValue(n2o) &&
+        !hasSignedNumericValue(totalCO2e) &&
+        !notationKey
+      ) {
         rowWarnings.push("No gas values or notation key found");
       }
 
@@ -636,6 +641,133 @@ export default class ECRFImportService {
   }
 
   /**
+   * Convert Adapter D / PDF extracted rows into the same shape processECRFFile
+   * produces so InventoryImportService.importECRFData can persist them.
+   * Shared by the approve route path and the bulk import worker.
+   */
+  public static async fromExtractedRows(
+    extractedRows: ExtractedRow[],
+  ): Promise<ECRFImportResult> {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    const rows: ECRFRowData[] = [];
+    let inferredYear: number | undefined;
+
+    const scopeByName = new Map<string, string>();
+    const scopeRecords = await db.models.Scope.findAll({
+      attributes: ["scopeId", "scopeName"],
+      where: { scopeName: { [Op.in]: ["1", "2", "3"] } },
+    });
+    for (const scope of scopeRecords) {
+      if (scope.scopeName) scopeByName.set(scope.scopeName, scope.scopeId);
+    }
+
+    for (let i = 0; i < extractedRows.length; i++) {
+      const row = extractedRows[i];
+      const { sector, subsector } = splitSectorSubsectorLabels(
+        row.sector?.trim() ?? "",
+        row.subsector?.trim() ?? "",
+      );
+      const activityHint =
+        row.activityType?.trim() || row.category?.trim() || undefined;
+      let gpcRefNo =
+        row.gpcRefNo?.trim() ||
+        resolveGpcRefNo(sector, subsector, activityHint) ||
+        null;
+      if (!gpcRefNo) {
+        const rawSub = row.subsector?.trim() ?? "";
+        if (rawSub.includes(" > ")) {
+          const leftPart = rawSub.split(" > ")[0].trim();
+          if (leftPart && leftPart !== subsector) {
+            gpcRefNo = resolveGpcRefNo(sector, leftPart, activityHint);
+          }
+        }
+      }
+
+      if (!gpcRefNo) {
+        errors.push(
+          `Row ${i + 1}: Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
+        );
+        rows.push({
+          gpcRefNo: "",
+          sectorId: "",
+          subsectorId: "",
+          subcategoryId: null,
+          scopeId: "",
+          rowIndex: i,
+          errors: [
+            `Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
+          ],
+        });
+        continue;
+      }
+
+      const gpcMapping = await this.lookupGPCReference(gpcRefNo);
+      if (!gpcMapping) {
+        errors.push(
+          `Row ${i + 1}: GPC reference "${gpcRefNo}" not in taxonomy`,
+        );
+        rows.push({
+          gpcRefNo,
+          sectorId: "",
+          subsectorId: "",
+          subcategoryId: null,
+          scopeId: "",
+          rowIndex: i,
+          errors: [`GPC reference "${gpcRefNo}" not found in taxonomy`],
+        });
+        continue;
+      }
+
+      const scopeFromFile = row.scope?.trim();
+      const resolvedScopeId =
+        scopeFromFile && scopeByName.has(scopeFromFile)
+          ? scopeByName.get(scopeFromFile)!
+          : gpcMapping.scopeId;
+
+      const num = (v: number | null | undefined): number | undefined =>
+        v != null && Number.isFinite(v) ? Number(v) : undefined;
+      if (row.year != null && Number.isFinite(row.year)) {
+        inferredYear = inferredYear ?? (row.year as number);
+      }
+
+      rows.push({
+        gpcRefNo,
+        sectorId: gpcMapping.sectorId,
+        subsectorId: gpcMapping.subsectorId,
+        subcategoryId: gpcMapping.subcategoryId,
+        scopeId: resolvedScopeId,
+        co2: num(row.co2),
+        ch4: num(row.ch4),
+        n2o: num(row.n2o),
+        totalCO2e: num(row.totalCO2e),
+        year:
+          row.year != null && Number.isFinite(row.year) ? row.year : undefined,
+        rowIndex: i,
+        methodology: row.methodology?.trim() || undefined,
+        activityAmount:
+          row.activityAmount != null && Number.isFinite(row.activityAmount)
+            ? row.activityAmount
+            : undefined,
+        activityUnit: row.activityUnit?.trim() || undefined,
+        activityType:
+          row.category?.trim() || row.activityType?.trim() || undefined,
+        activityDataSource: row.activityDataSource?.trim() || undefined,
+        activityDataQuality: row.activityDataQuality?.trim() || undefined,
+      });
+    }
+
+    return {
+      rows,
+      errors,
+      warnings,
+      rowCount: extractedRows.length,
+      validRowCount: rows.filter((r) => !r.errors?.length).length,
+      inferredYearFromFile: inferredYear,
+    };
+  }
+
+  /**
    * Extract gas value from row
    */
   private static extractGasValue(
@@ -650,18 +782,7 @@ export default class ECRFImportService {
     const header = headers[columnIndex];
     const value = row[header];
 
-    if (value === null || value === undefined || value === "") {
-      return undefined;
-    }
-
-    // Try to convert to number
-    const numValue = typeof value === "number" ? value : Number(value);
-
-    if (isNaN(numValue)) {
-      return undefined;
-    }
-
-    return numValue;
+    return parseNumericCell(value);
   }
 
   /**

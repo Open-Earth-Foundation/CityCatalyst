@@ -6,5 +6,6 @@
   "account-settings": "Kontoeinstellungen",
   "account-frozen-warning-text": "Ihr Konto ist eingefroren. Bitte wenden Sie sich an einen Administrator oder an <bold>{{ email }}</bold>, um es zu reaktivieren",
   "page-title-dashboard": "Dashboard",
-  "module-unavailable-for-city": "{{module}} ist für diese Stadt nicht verfügbar. Stattdessen wird die Stadtübersicht angezeigt."
+  "module-unavailable-for-city": "{{module}} ist für diese Stadt nicht verfügbar. Stattdessen wird die Stadtübersicht angezeigt.",
+  "default-organization": "Standardorganisation"
 }

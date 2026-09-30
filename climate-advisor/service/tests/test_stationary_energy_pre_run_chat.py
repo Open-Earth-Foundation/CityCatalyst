@@ -8,6 +8,7 @@ from uuid import uuid4
 import httpx
 import pytest
 import pytest_asyncio
+from agents.tool import ToolContext
 from app.config import get_settings
 from app.db import Base
 from app.db.session import get_session_factory, get_session_optional
@@ -15,9 +16,13 @@ from app.models.db.thread import Thread
 from app.models.requests import MessageCreateRequest
 from app.routes import messages
 from app.services.agent_service import AgentService
+from app.services.citycatalyst_client import CityCatalystClient
 from app.services.stationary_energy.stationary_energy_chat_context import (
     STATIONARY_ENERGY_RUN_NOT_STARTED_MARKER,
     build_stationary_energy_ui_context,
+)
+from app.tools.stationary_energy_start_draft_tools import (
+    build_stationary_energy_start_draft_tools,
 )
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.stationary_energy_context import (
@@ -28,6 +33,51 @@ from fastapi import FastAPI
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 RESUME_OPTIONS = {STATIONARY_ENERGY_RESUME_AFTER_DRAFT_START_OPTION: True}
+
+
+@pytest.mark.parametrize(
+    ("tool_name", "client_method"),
+    [
+        ("inventory_status_overview", "load_inventory_status_overview"),
+        ("inventory_emissions_context", "load_inventory_emissions_context"),
+    ],
+)
+async def test_pre_run_inventory_tools_use_the_active_client_factory(
+    tool_name: str,
+    client_method: str,
+) -> None:
+    client = MagicMock(spec=CityCatalystClient)
+    loader = getattr(client, client_method)
+    loader.return_value = {"success": True, "data": {"inventory_id": "inventory-1"}}
+    tools = build_stationary_energy_start_draft_tools(
+        session_factory=MagicMock(),
+        city_id="city-1",
+        inventory_id="inventory-1",
+        user_id="owner",
+        thread_id=None,
+        token_ref={"value": "request-token"},
+        client_factory=lambda: client,
+    )
+    tool = next(tool for tool in tools if tool.name == tool_name)
+    context = ToolContext(
+        context=None,
+        tool_call_id="test-call",
+        tool_name=tool_name,
+        tool_arguments="{}",
+    )
+
+    output = json.loads(await tool.on_invoke_tool(context, "{}"))
+
+    assert output == loader.return_value
+    loader.assert_awaited_once_with(
+        request_payload={
+            "user_id": "owner",
+            "city_id": "city-1",
+            "inventory_id": "inventory-1",
+        },
+        token="request-token",
+    )
+    client.close.assert_awaited_once()
 
 
 def _pre_run_handler(*, surface: bool) -> StreamingHandler:
@@ -180,6 +230,11 @@ def test_pre_run_page_agent_uses_stationary_energy_prompt_and_pre_run_tools(
 
 @pytest_asyncio.fixture
 async def se_chat_api(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        CityCatalystClient,
+        "validate_user_identity",
+        AsyncMock(return_value="owner"),
+    )
     engine = create_async_engine(
         f"sqlite+aiosqlite:///{(tmp_path / 'chat.db').as_posix()}"
     )
@@ -221,6 +276,7 @@ async def test_resume_turn_does_not_store_the_request_twice(
 
     response = await client.post(
         "/v1/messages",
+        headers={"Authorization": "Bearer request-token"},
         json={
             "user_id": "owner",
             "thread_id": str(thread_id),

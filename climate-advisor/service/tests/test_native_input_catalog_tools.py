@@ -325,8 +325,8 @@ async def test_discovery_rejects_unknown_or_invalid_cursor_arguments() -> None:
 
 
 @pytest.mark.asyncio
-async def test_discovery_updates_shared_token_reference() -> None:
-    """A refreshed discovery token is available to the subsequent bounded read."""
+async def test_discovery_keeps_presented_token_when_client_advertises_refresh() -> None:
+    """Discovery does not adopt a token the client claims to have refreshed."""
     service = _StubService(_discovery())
     service.core_client.last_refreshed_token = "fresh-token"
     tools, _, token_ref = _build(_StubClient(), service=service)
@@ -337,7 +337,7 @@ async def test_discovery_updates_shared_token_reference() -> None:
     )
 
     assert json.loads(output)["success"] is True
-    assert token_ref["value"] == "fresh-token"
+    assert token_ref["value"] == "jwt-token"
 
 
 @pytest.mark.asyncio
@@ -516,8 +516,8 @@ async def test_read_isolates_failures_without_rotating_tokens_and_closes_client(
 
 
 @pytest.mark.asyncio
-async def test_read_updates_token_after_successful_core_call() -> None:
-    """A Core refresh advances the shared token only after a completed read."""
+async def test_read_keeps_presented_token_when_client_advertises_refresh() -> None:
+    """A completed read does not replace the presented bearer with a stub refresh."""
     client = _StubClient(last_refreshed_token="fresh-token")
     tools, _, token_ref = _build(client)
     read = _tool(tools, "native_input_read")
@@ -527,7 +527,8 @@ async def test_read_updates_token_after_successful_core_call() -> None:
         json.dumps({"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview"}),
     )
 
-    assert token_ref["value"] == "fresh-token"
+    assert token_ref["value"] == "jwt-token"
+    assert client.requests[0]["token"] == "jwt-token"
     assert client.closed
 
 

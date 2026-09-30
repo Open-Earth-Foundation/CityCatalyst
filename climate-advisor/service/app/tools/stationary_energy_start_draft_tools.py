@@ -11,7 +11,7 @@ no run are answered without starting one.
 from __future__ import annotations
 
 import logging
-from typing import Dict, Optional, Sequence
+from typing import Callable, Dict, Optional, Sequence
 from uuid import UUID
 
 from agents import function_tool
@@ -20,6 +20,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.models.stationary_energy_drafts import StartStationaryEnergyDraftRequest
+from app.services.citycatalyst_client import CityCatalystClient
 from app.services.stationary_energy.stationary_energy_draft_service import (
     StationaryEnergyDraftService,
 )
@@ -54,9 +55,10 @@ def build_stationary_energy_start_draft_tools(
     user_id: str,
     thread_id: Optional[UUID],
     token_ref: Dict[str, Optional[str]],
+    client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
     locale: Optional[str] = None,
 ) -> Sequence[object]:
-    """Create the pre-draft Stationary Energy tools scoped to one city + inventory."""
+    """Create scoped pre-draft tools using the active Core client factory."""
 
     async def _resolve_inventory_scope() -> tuple[str, str]:
         """Return the page's city and inventory; the LLM never supplies scope ids."""
@@ -68,7 +70,10 @@ def build_stationary_energy_start_draft_tools(
             # Use a short-lived committed session, mirroring the review tools so the
             # draft-run row and its initial status updates persist atomically.
             async with session_factory() as session:
-                service = StationaryEnergyDraftService(session)
+                service = StationaryEnergyDraftService(
+                    session,
+                    cc_client=client_factory(),
+                )
                 token = await service.ensure_user_token(
                     user_id=user_id,
                     thread_id=thread_id,
@@ -163,6 +168,7 @@ def build_stationary_energy_start_draft_tools(
         resolve_scope=_resolve_inventory_scope,
         user_id=user_id,
         token_ref=token_ref,
+        client_factory=client_factory,
     )
 
     return [*inventory_context_tools, stationary_energy_start_draft]

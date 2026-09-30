@@ -239,5 +239,8 @@
   "percent-value": "{{value}}%",
   "legend-item": "{{label}} · {{value}}",
   "route-own-budget": "Viável com orçamento próprio",
-  "route-technical-assistance": "Precisa de assistência técnica"
+  "route-technical-assistance": "Precisa de assistência técnica",
+  "tradeoffs-title": "Efeitos adversos nessas ações",
+  "tradeoffs-description": "Onde uma ação prioritária poderia atrasar outro objetivo.",
+  "composition-weight-short": "× {{weight}}% peso"
 }

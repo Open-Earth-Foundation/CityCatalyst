@@ -9,9 +9,21 @@ import OpenClimateService from "./OpenClimateService";
 import { Op } from "sequelize";
 import { DEFAULT_PROJECT_ID, InventoryTypeEnum } from "@/util/constants";
 import { InventoryAttributes } from "@/models/Inventory";
-import { GlobalWarmingPotentialTypeEnum } from "@/util/enums";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum as GhgiInventoryTypeEnum,
+} from "@/util/enums";
 import CityBoundaryService from "./CityBoundaryService";
 import UserService from "./UserService";
+import {
+  formatStoredLocode,
+  isUnLocode,
+  locodeLookupValues,
+  normalizeCityName,
+  countryCodeFromLocode,
+} from "@/backend/BulkInventoryImportMatcher";
+import { lookupChileMeedCityByIne } from "@/backend/chile-meed-city-catalog";
+import { fetchGlobalApiCityPopulation } from "@/backend/global-api-city-population";
 export interface BulkInventoryCreateProps {
   cityLocodes: string[]; // List of city locodes
   emails: string[]; // Comma separated list of emails to invite to the all of the created inventories
@@ -31,6 +43,40 @@ export interface BulkInventoryUpdateProps {
 export interface CreateBulkInventoriesResponse {
   errors: { locode: string; error: unknown }[];
   results: { locode: string; result: string[] }[];
+}
+
+export type CityInventoryShellErrorCode =
+  "missing_city_identity" | "city_in_other_project";
+
+export class CityInventoryShellError extends Error {
+  constructor(
+    public readonly code: CityInventoryShellErrorCode,
+    message: string,
+  ) {
+    super(message);
+    this.name = "CityInventoryShellError";
+  }
+}
+
+export interface FindOrCreateCityAndInventoryProps {
+  projectId: string;
+  year: number;
+  cityName?: string | null;
+  locode?: string | null;
+  inventoryType: GhgiInventoryTypeEnum;
+  gwp: GlobalWarmingPotentialTypeEnum;
+  userId?: string | null;
+  /** Optional UI progress hook (e.g. bulk import job stage). */
+  onProgress?: (stage: string, detail?: string) => Promise<void>;
+}
+
+export interface FindOrCreateCityAndInventoryResult {
+  cityId: string;
+  inventoryId: string;
+  locode: string | null;
+  cityName: string;
+  createdCity: boolean;
+  createdInventory: boolean;
 }
 
 export default class AdminService {
@@ -169,11 +215,12 @@ export default class AdminService {
       }
 
       // Connect all data sources, rank them by priority, check if they connect
-      const sourceErrors = await DataSourceConnectService.connectAllForInventory(
-        inventory.inventoryId,
-        inventory.city.locode,
-        session?.user.id,
-      );
+      const sourceErrors =
+        await DataSourceConnectService.connectAllForInventory(
+          inventory.inventoryId,
+          inventory.city.locode,
+          session?.user.id,
+        );
       errors.push(...sourceErrors);
     }
 
@@ -216,6 +263,348 @@ export default class AdminService {
     return errors;
   }
 
+  /**
+   * Find or create a city in the project and an inventory for `year`.
+   * OpenClimate is enrichment only: a manifest/filename name is enough, including
+   * comunas with an INE key and no UN/LOCODE. Population/boundary must not fail
+   * the caller.
+   */
+  public static async findOrCreateCityAndInventory(
+    props: FindOrCreateCityAndInventoryProps,
+  ): Promise<FindOrCreateCityAndInventoryResult> {
+    const locodeInput = props.locode?.trim() || null;
+    const nameInput = props.cityName?.trim() || null;
+    if (!locodeInput && !nameInput) {
+      throw new CityInventoryShellError(
+        "missing_city_identity",
+        "File has no city name, locode, or INE code to create from",
+      );
+    }
+
+    const storedLocode = locodeInput ? formatStoredLocode(locodeInput) : null;
+    const city = await this.findOrCreateProjectCity({
+      projectId: props.projectId,
+      locode: storedLocode,
+      locodeInput,
+      nameInput,
+    });
+    const createdCity = city.created;
+    const cityName = city.record.name ?? nameInput ?? storedLocode ?? "";
+
+    if (props.userId) {
+      await this.ensureCityUser(city.record.cityId, props.userId);
+    }
+
+    if (storedLocode) {
+      await props.onProgress?.(
+        "enriching_population",
+        storedLocode,
+      );
+      await this.enrichCityBestEffort(
+        storedLocode,
+        props.year,
+        city.record.cityId,
+        props.projectId,
+      );
+    }
+
+    const inventory = await this.findOrCreateInventory({
+      cityId: city.record.cityId,
+      cityName,
+      year: props.year,
+      inventoryType: props.inventoryType,
+      gwp: props.gwp,
+    });
+
+    return {
+      cityId: city.record.cityId,
+      inventoryId: inventory.inventoryId,
+      locode: city.record.locode ?? storedLocode,
+      cityName,
+      createdCity,
+      createdInventory: inventory.created,
+    };
+  }
+
+  private static async findOrCreateProjectCity(input: {
+    projectId: string;
+    locode: string | null;
+    locodeInput: string | null;
+    nameInput: string | null;
+  }): Promise<{ record: City; created: boolean }> {
+    if (input.locodeInput) {
+      const existing = await db.models.City.findAll({
+        where: { locode: { [Op.in]: locodeLookupValues(input.locodeInput) } },
+      });
+      const inProject = existing.filter(
+        (row) => row.projectId === input.projectId,
+      );
+      if (inProject.length > 0) {
+        return { record: inProject[0], created: false };
+      }
+      const elsewhere = existing.find(
+        (row) => row.projectId && row.projectId !== input.projectId,
+      );
+      if (elsewhere) {
+        throw new CityInventoryShellError(
+          "city_in_other_project",
+          `Locode ${input.locode} already belongs to another project`,
+        );
+      }
+      if (existing.length > 0) {
+        const orphan = existing[0];
+        if (!orphan.projectId) {
+          await orphan.update({ projectId: input.projectId });
+        }
+        return { record: orphan, created: false };
+      }
+    }
+
+    if (input.nameInput) {
+      const projectCities = await db.models.City.findAll({
+        where: { projectId: input.projectId },
+        attributes: ["cityId", "name", "locode", "projectId"],
+      });
+      const key = normalizeCityName(input.nameInput);
+      const nameMatches = projectCities.filter(
+        (row) => row.name != null && normalizeCityName(row.name) === key,
+      );
+      if (nameMatches.length === 1) {
+        const record = nameMatches[0];
+        if (!record.locode && input.locode) {
+          try {
+            await record.update({ locode: input.locode });
+          } catch (err) {
+            logger.warn(
+              { err, locode: input.locode, cityId: record.cityId },
+              "Could not attach locode to existing city",
+            );
+          }
+        }
+        return { record, created: false };
+      }
+    }
+
+    const name = await this.resolveCityName(input.locode, input.nameInput);
+    if (!name) {
+      throw new CityInventoryShellError(
+        "missing_city_identity",
+        "File has no city name, locode, or INE code to create from",
+      );
+    }
+
+    const chile = input.locode
+      ? lookupChileMeedCityByIne(input.locode)
+      : undefined;
+    const countryLocode = input.locode
+      ? countryCodeFromLocode(input.locode)
+      : null;
+
+    try {
+      const record = await db.models.City.create({
+        cityId: randomUUID(),
+        name,
+        locode: input.locode ?? undefined,
+        projectId: input.projectId,
+        countryLocode: countryLocode ?? undefined,
+        country: countryLocode === "CL" ? "Chile" : undefined,
+        region: chile?.regionName,
+        regionLocode: chile?.regionCode,
+      });
+      return { record, created: true };
+    } catch (err) {
+      if (input.locodeInput) {
+        const raced = await db.models.City.findAll({
+          where: { locode: { [Op.in]: locodeLookupValues(input.locodeInput) } },
+        });
+        const inProject = raced.find(
+          (row) => row.projectId === input.projectId,
+        );
+        if (inProject) return { record: inProject, created: false };
+        if (raced.length > 0) {
+          throw new CityInventoryShellError(
+            "city_in_other_project",
+            `Locode ${input.locode} already belongs to another project`,
+          );
+        }
+      }
+      throw err;
+    }
+  }
+
+  private static async findOrCreateInventory(input: {
+    cityId: string;
+    cityName: string;
+    year: number;
+    inventoryType: GhgiInventoryTypeEnum;
+    gwp: GlobalWarmingPotentialTypeEnum;
+  }): Promise<{ inventoryId: string; created: boolean }> {
+    const existing = await db.models.Inventory.findOne({
+      where: { cityId: input.cityId, year: input.year },
+      attributes: ["inventoryId"],
+    });
+    if (existing) {
+      return { inventoryId: existing.inventoryId, created: false };
+    }
+
+    const created = await db.models.Inventory.create({
+      inventoryId: randomUUID(),
+      cityId: input.cityId,
+      inventoryName: `${input.cityName} ${input.year}`,
+      year: input.year,
+      inventoryType: input.inventoryType,
+      globalWarmingPotentialType: input.gwp,
+    });
+    return { inventoryId: created.inventoryId, created: true };
+  }
+
+  private static async ensureCityUser(
+    cityId: string,
+    userId: string,
+  ): Promise<void> {
+    const existing = await db.models.CityUser.findOne({
+      where: { cityId, userId },
+      attributes: ["cityUserId"],
+    });
+    if (existing) return;
+    await db.models.CityUser.create({
+      cityUserId: randomUUID(),
+      cityId,
+      userId,
+    });
+  }
+
+  private static async resolveCityName(
+    locode: string | null,
+    fallbackName: string | null,
+  ): Promise<string | null> {
+    if (locode && isUnLocode(locode)) {
+      try {
+        const ocName = await OpenClimateService.getCityName(locode);
+        if (ocName) return ocName;
+      } catch (err) {
+        logger.warn(
+          { err, locode },
+          "OpenClimate city name lookup failed (best-effort)",
+        );
+      }
+    }
+    if (locode) {
+      const chile = lookupChileMeedCityByIne(locode);
+      if (chile?.name) return chile.name;
+    }
+    return fallbackName || locode;
+  }
+
+  /**
+   * Pull population nearest to `year` (10-year window, same as onboarding)
+   * and Global API boundary. Never throws to the caller.
+   * UN/LOCODE uses OpenClimate; INE-only Chile uses Global API / census.
+   */
+  public static async enrichCityBestEffort(
+    locode: string,
+    year: number,
+    cityId: string,
+    projectId: string,
+  ): Promise<void> {
+    try {
+      if (isUnLocode(locode)) {
+        const errors = await this.createPopulationEntries(
+          locode,
+          year,
+          cityId,
+          projectId,
+        );
+        if (errors.length) {
+          logger.warn(
+            { locode, cityId, errors },
+            "OpenClimate population/boundary enrichment failed (best-effort)",
+          );
+        }
+        return;
+      }
+      const errors = await this.enrichIneCityBestEffort(
+        locode,
+        year,
+        cityId,
+        projectId,
+      );
+      if (errors.length) {
+        logger.warn(
+          { locode, cityId, errors },
+          "INE city population enrichment failed (best-effort)",
+        );
+      }
+    } catch (err) {
+      logger.warn(
+        { err, locode, cityId },
+        "OpenClimate enrichment threw (best-effort)",
+      );
+    }
+  }
+
+  /**
+   * INE-only comunas: city population from Global API, country from OpenClimate
+   * `CL`. Missing numbers must not fail the import.
+   */
+  private static async enrichIneCityBestEffort(
+    locode: string,
+    inventoryYear: number,
+    cityId: string,
+    projectId?: string,
+  ): Promise<{ locode: string; error: string }[]> {
+    const errors: { locode: string; error: string }[] = [];
+    const chile = lookupChileMeedCityByIne(locode);
+    const countryLocode = countryCodeFromLocode(locode) ?? "CL";
+    const actorIds = [
+      locode,
+      chile?.ineCode,
+      chile?.locode ? formatStoredLocode(chile.locode) : null,
+    ].filter((id): id is string => Boolean(id));
+
+    const cityPop = await fetchGlobalApiCityPopulation(
+      actorIds,
+      inventoryYear,
+    );
+    if (cityPop) {
+      await db.models.Population.upsert({
+        population: cityPop.population,
+        cityId,
+        year: cityPop.year,
+      });
+    } else {
+      errors.push({
+        locode,
+        error: `No Global API city population near inventory year ${inventoryYear} for ${locode}`,
+      });
+    }
+
+    const countryPop = await OpenClimateService.getActorPopulation(
+      countryLocode,
+      inventoryYear,
+    );
+    if (countryPop) {
+      await db.models.Population.upsert({
+        countryPopulation: countryPop.population,
+        cityId,
+        year: countryPop.year,
+      });
+    }
+
+    await db.models.City.update(
+      {
+        region: chile?.regionName,
+        regionLocode: chile?.regionCode,
+        country: countryPop?.name ?? (countryLocode === "CL" ? "Chile" : undefined),
+        countryLocode,
+        projectId: projectId ?? undefined,
+      },
+      { where: { cityId } },
+    );
+
+    return errors;
+  }
+
   private static async createPopulationEntries(
     cityLocode: string,
     inventoryYear: number,
@@ -232,49 +621,68 @@ export default class AdminService {
     if (populationData.error) {
       errors.push({ locode: cityLocode, error: populationData.error });
     }
+
+    // Persist whatever OC has nearest to the inventory year. City / region /
+    // country series often use different years; missing one must not drop the rest.
     if (
-      !populationData.cityPopulation ||
-      !populationData.cityPopulationYear ||
-      !populationData.countryPopulation ||
-      !populationData.countryPopulationYear ||
-      !populationData.regionPopulation ||
-      !populationData.regionPopulationYear
+      populationData.cityPopulation != null &&
+      populationData.cityPopulationYear != null
     ) {
+      await db.models.Population.upsert({
+        population: populationData.cityPopulation,
+        cityId,
+        year: populationData.cityPopulationYear,
+      });
+    } else {
       errors.push({
         locode: cityLocode,
-        error: `Population data incomplete for city ${cityLocode} and inventory year ${inventoryYear}`,
+        error: `No city population near inventory year ${inventoryYear} for ${cityLocode}`,
       });
-      return errors;
+    }
+    if (
+      populationData.countryPopulation != null &&
+      populationData.countryPopulationYear != null
+    ) {
+      await db.models.Population.upsert({
+        countryPopulation: populationData.countryPopulation,
+        cityId,
+        year: populationData.countryPopulationYear,
+      });
+    }
+    if (
+      populationData.regionPopulation != null &&
+      populationData.regionPopulationYear != null
+    ) {
+      await db.models.Population.upsert({
+        regionPopulation: populationData.regionPopulation,
+        cityId,
+        year: populationData.regionPopulationYear,
+      });
     }
 
-    // they might be for the same year, but that is not guaranteed (because of data availability)
-    await db.models.Population.upsert({
-      population: populationData.cityPopulation,
-      cityId,
-      year: populationData.cityPopulationYear,
-    });
-    await db.models.Population.upsert({
-      countryPopulation: populationData.countryPopulation,
-      cityId,
-      year: populationData.countryPopulationYear,
-    });
-    await db.models.Population.upsert({
-      regionPopulation: populationData.regionPopulation,
-      cityId,
-      year: populationData.regionPopulationYear,
-    });
+    let area: number | undefined;
+    try {
+      const boundaryData =
+        await CityBoundaryService.getCityBoundary(cityLocode);
+      area = boundaryData.area;
+    } catch (err) {
+      // Expected for many Chile locodes / Global API gaps — keep the warning short.
+      logger.warn(
+        {
+          locode: cityLocode,
+          message: err instanceof Error ? err.message : String(err),
+        },
+        "City boundary lookup failed (best-effort)",
+      );
+    }
 
-    const boundaryData = await CityBoundaryService.getCityBoundary(cityLocode);
-    const area = boundaryData.area;
-
-    // save context data to City table
     const { region, regionLocode, country, countryLocode } = populationData;
     await db.models.City.update(
       {
-        region,
-        regionLocode,
-        country,
-        countryLocode,
+        region: region ?? undefined,
+        regionLocode: regionLocode ?? undefined,
+        country: country ?? undefined,
+        countryLocode: countryLocode ?? undefined,
         area: area ? Math.round(area) : undefined,
         projectId: projectId ?? undefined,
       },
@@ -283,5 +691,4 @@ export default class AdminService {
 
     return errors;
   }
-
 }

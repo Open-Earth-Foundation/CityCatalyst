@@ -139,6 +139,12 @@ api:
     # Delay between retries (exponential backoff)
     retry_delay_ms: 1000
 
+# Transport recovery after stream headers, before any non-replayable model output.
+# Pre-header connection/status retries remain owned by the provider client.
+streaming:
+  retry_attempts: 2
+  retry_delay_ms: 500
+
 # Tool Configuration
 tools:
   # Offline Concept Note Builder web research

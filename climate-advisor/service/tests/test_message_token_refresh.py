@@ -61,6 +61,7 @@ async def test_reopened_thread_uses_and_persists_current_message_token(
                         user_id="owner-1",
                         name="Ready run",
                         city_id=str(uuid4()),
+                        thread_id=thread_id,
                         idempotency_key=uuid4(),
                         request_fingerprint="a" * 64,
                         permission_summary={},

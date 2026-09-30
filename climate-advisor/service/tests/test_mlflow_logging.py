@@ -614,7 +614,7 @@ def test_streaming_handler_wraps_stream_in_mlflow_run(monkeypatch) -> None:
     )
     monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "Clima")
     monkeypatch.setattr(
-        "app.utils.streaming_handler.start_run",
+        "app.utils.streaming_handler.async_start_run",
         fake_start_run,
     )
     monkeypatch.setattr(
@@ -664,7 +664,7 @@ def test_streaming_handler_tags_agentic_flow_from_thread_context(
     )
     monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "Clima")
     monkeypatch.setattr(
-        "app.utils.streaming_handler.start_run",
+        "app.utils.streaming_handler.async_start_run",
         fake_start_run,
     )
     monkeypatch.setattr(

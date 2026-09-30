@@ -16,7 +16,7 @@ import hashlib
 import logging
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 
 import httpx
 from app.config import get_settings
@@ -29,6 +29,9 @@ from app.utils.token_manager import (
 )
 
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from app.utils.request_token_refresh import RequestTokenRefreshContext
 
 _AUTHORIZATION_CACHE_TTL_SECONDS = 30.0
 _AUTHORIZATION_CACHE_MAX_ENTRIES = 1024
@@ -100,6 +103,7 @@ class CityCatalystClient:
         base_url: Optional[str] = None,
         api_key: Optional[str] = None,
         timeout: int = 30,
+        request_token_refresh_context: Optional["RequestTokenRefreshContext"] = None,
     ):
         """Initialize CityCatalyst client.
 
@@ -107,16 +111,18 @@ class CityCatalystClient:
             base_url: CityCatalyst base URL (defaults to settings.cc_base_url)
             api_key: CityCatalyst API key (defaults to settings.cc_api_key)
             timeout: Request timeout in seconds
+            request_token_refresh_context: Optional canonical turn context used
+                only for preflight renewal before authenticated requests
         """
         settings = get_settings()
         raw_base_url = base_url or settings.cc_base_url
         self.base_url = raw_base_url.rstrip("/") if raw_base_url else None
         self.api_key = api_key or settings.cc_api_key
         self.timeout = timeout
+        self.request_token_refresh_context = request_token_refresh_context
         # Datasource aggregation pulls several upstream feeds and often exceeds the default 30s.
         self.datasource_timeout = max(self.timeout, 90)
         self._client: Optional[httpx.AsyncClient] = None
-        self.last_refreshed_token: Optional[str] = None
 
         if not self.base_url:
             logger.warning(
@@ -129,6 +135,20 @@ class CityCatalystClient:
         if self._client is None:
             self._client = httpx.AsyncClient(timeout=self.timeout)
         return self._client
+
+    async def _request_token(self, token: str) -> str:
+        """Preflight-renew a bearer through the authenticated turn context."""
+        if self.request_token_refresh_context is None:
+            return token
+        try:
+            return await self.request_token_refresh_context.token_for_request(
+                self.refresh_token
+            )
+        except TokenRefreshError as exc:
+            raise CityCatalystClientError(
+                "Authenticated request token could not be renewed",
+                status_code=401,
+            ) from exc
 
     async def close(self) -> None:
         """Close HTTP client connection."""
@@ -304,7 +324,7 @@ class CityCatalystClient:
             token: Bearer token
             user_id: User ID (for token refresh context)
             thread_id: Thread ID (for token refresh context)
-            auto_refresh: Automatically refresh token on 401
+            auto_refresh: Refresh on expiry/401 when no request context is bound
 
         Returns:
             Response object
@@ -312,8 +332,15 @@ class CityCatalystClient:
         Raises:
             CityCatalystClientError: If request fails
         """
+        # Use only the authenticated turn's canonical identity when available.
+        token = await self._request_token(token)
+
         # Check if token is expired and refresh preemptively
-        if is_token_expired(token):
+        if (
+            auto_refresh
+            and self.request_token_refresh_context is None
+            and is_token_expired(token)
+        ):
             logger.debug("Token expired, refreshing preemptively")
             try:
                 token, _ = await self.refresh_token(user_id)
@@ -335,7 +362,11 @@ class CityCatalystClient:
             )
 
             # Handle 401 Unauthorized - try to refresh
-            if response.status_code == 401 and auto_refresh:
+            if (
+                response.status_code == 401
+                and auto_refresh
+                and self.request_token_refresh_context is None
+            ):
                 logger.debug("Got 401, attempting token refresh")
                 try:
                     token, _ = await self.refresh_token(user_id)
@@ -517,6 +548,8 @@ class CityCatalystClient:
                 status_code=503,
             )
 
+        token = await self._request_token(token)
+
         client = await self._get_client()
         try:
             async with client.stream(
@@ -632,54 +665,37 @@ class CityCatalystClient:
         json_data: Dict[str, Any],
         token: Optional[str] = None,
         request_timeout: Optional[float] = None,
-        refresh_user_id: Optional[str] = None,
-        allow_token_refresh: bool = True,
+        allow_token_refresh: bool = False,
         safe_selection_error: bool = False,
     ) -> Dict[str, Any]:
-        """POST to an internal capability, optionally refreshing legacy callers."""
+        """POST once to an internal capability, with optional canonical preflight.
+
+        ``allow_token_refresh`` stays so NativeInputCatalog callers can keep an
+        explicit no-refresh contract for callers without request context. ``True``
+        is rejected. A bound authenticated turn context may preflight-renew the
+        canonical bearer; a capability 401/403 is returned without replay.
+        Refresh identity is never derived from ``json_data``.
+        """
+        if allow_token_refresh:
+            raise ValueError(
+                "post_internal_capability does not refresh tokens. "
+                "Pass allow_token_refresh=False. Identity is never taken from the request payload."
+            )
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
+        if self.request_token_refresh_context is not None:
+            token = await self._request_token(token or "")
 
         url = f"{self.base_url.rstrip('/')}{path}"
         client = await self._get_client()
-        request_token = token
-        refresh_identity = None
-        if allow_token_refresh:
-            refresh_identity = refresh_user_id or self._refresh_user_id(json_data)
-        self.last_refreshed_token = None
 
         response = await client.post(
             url,
-            headers=self._internal_headers(request_token),
+            headers=self._internal_headers(token),
             json=json_data,
             follow_redirects=True,
             timeout=request_timeout or self.datasource_timeout,
         )
-
-        # Retry once on 401 with a fresh user token, matching the public POST path.
-        if (
-            allow_token_refresh
-            and response.status_code == 401
-            and request_token
-            and refresh_identity
-        ):
-            logger.debug("Internal capability got 401, attempting token refresh")
-            try:
-                request_token, _ = await self.refresh_token(refresh_identity)
-                self.last_refreshed_token = request_token
-                response = await client.post(
-                    url,
-                    headers=self._internal_headers(request_token),
-                    json=json_data,
-                    follow_redirects=True,
-                    timeout=request_timeout or self.datasource_timeout,
-                )
-            except TokenRefreshError as e:
-                logger.error("Failed to refresh internal capability token: %s", e)
-                raise CityCatalystClientError(
-                    f"Authentication failed: {e}",
-                    status_code=401,
-                ) from e
 
         if not response.is_success:
             if safe_selection_error and response.status_code == 404:
@@ -699,14 +715,6 @@ class CityCatalystClient:
             raise CityCatalystClientError(
                 f"Failed to parse CC capability response: {e}"
             ) from e
-
-    def _refresh_user_id(self, payload: Dict[str, Any]) -> Optional[str]:
-        """Return the user id available for internal capability token refresh."""
-        user_id = payload.get("userId") or payload.get("user_id")
-        if user_id is None:
-            return None
-        user_id_text = str(user_id).strip()
-        return user_id_text or None
 
     async def discover_native_inputs(
         self,
@@ -949,12 +957,15 @@ class CityCatalystClient:
         *,
         token: str,
         user_id: str,
+        auto_refresh: bool = True,
     ) -> Dict[str, Any]:
         """Fetch all inventories available to the authenticated user.
 
         Args:
             token: User access token
             user_id: User ID for token refresh context
+            auto_refresh: Refresh on expiry/401. Developer write-auth callers
+                pass False so the presented bearer is used as-is.
 
         Returns:
             Dictionary payload containing the list of inventories
@@ -971,6 +982,7 @@ class CityCatalystClient:
             token=token,
             user_id=user_id,
             thread_id="",  # Not used in new refresh method
+            auto_refresh=auto_refresh,
         )
 
         if not response.is_success:
@@ -982,7 +994,8 @@ class CityCatalystClient:
                 error_text,
             )
             raise CityCatalystClientError(
-                f"Failed to fetch user inventories: {response.status_code} - {error_text}"
+                f"Failed to fetch user inventories: {response.status_code} - {error_text}",
+                status_code=response.status_code,
             )
 
         try:

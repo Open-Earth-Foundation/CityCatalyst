@@ -66,7 +66,10 @@ from app.utils.concept_note_context import (
     omit_context_identifiers,
     render_source_documents_message,
 )
-from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
+from app.utils.conversation_observability import (
+    async_workflow_trace,
+    finish_workflow_trace,
+)
 from openai import AsyncOpenAI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -190,7 +193,7 @@ class ConceptNoteChapterDraftService:
         """Generate every missing chapter, persisting each before continuing."""
         try:
             run = await self._load_owned_run(run_id, user_id)
-            with workflow_trace(
+            async with async_workflow_trace(
                 name="cnb_chapter_drafting",
                 inputs={"run_id": str(run_id), "build_id": str(build_id)},
                 session_id=getattr(run, "thread_id", None) or run_id,

@@ -67,13 +67,19 @@ from app.services.stationary_energy.stationary_energy_proposal_builder import (
     build_deterministic_proposals,
 )
 from app.services.thread_service import ThreadService
-from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
+from app.utils.conversation_observability import (
+    async_workflow_trace,
+    finish_workflow_trace,
+    workflow_trace,
+)
+from app.utils.request_token_refresh import RequestTokenRefreshContext
 from app.utils.mlflow_logging import (
+    async_start_run,
     climate_advisor_experiment_name,
     log_json_artifact,
     log_metrics,
     log_tags,
-    start_run,
+    run_mlflow_io,
     update_current_trace_context,
 )
 from fastapi import HTTPException
@@ -219,8 +225,8 @@ class StationaryEnergyDraftService:
     ) -> StartStationaryEnergyDraftResponse:
         """Run Stationary Energy draft generation inside an MLflow request run."""
         started_at = time.perf_counter()
-        with (
-            start_run(
+        async with (
+            async_start_run(
                 run_name=f"stationary_energy_draft_{operation}_request",
                 experiment_name=climate_advisor_experiment_name(),
                 tags=self._mlflow_tags(
@@ -247,7 +253,7 @@ class StationaryEnergyDraftService:
                     ),
                 },
             ),
-            workflow_trace(
+            async_workflow_trace(
                 name=f"stationary_energy_draft_{operation}",
                 inputs={"operation": operation},
                 session_id=thread_id or draft_run.draft_run_id,
@@ -258,7 +264,8 @@ class StationaryEnergyDraftService:
                 },
             ) as span,
         ):
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "request/stationary_energy_draft_generation.json",
                 {
                     "operation": operation,
@@ -284,11 +291,13 @@ class StationaryEnergyDraftService:
                     trace_id=trace_id,
                     allowed_capabilities=allowed_capabilities,
                 )
-                log_json_artifact(
+                await run_mlflow_io(
+                    log_json_artifact,
                     "response/stationary_energy_draft_generation_response.json",
                     response,
                 )
-                self._log_mlflow_duration(
+                await run_mlflow_io(
+                    self._log_mlflow_duration,
                     started_at=started_at,
                     ok=True,
                     extra={"operation": operation},
@@ -296,7 +305,8 @@ class StationaryEnergyDraftService:
                 finish_workflow_trace(span, response)
                 return response
             except Exception as exc:
-                self._log_mlflow_error(
+                await run_mlflow_io(
+                    self._log_mlflow_error,
                     artifact_file="errors/stationary_energy_draft_generation_error.json",
                     exc=exc,
                     started_at=started_at,
@@ -355,7 +365,8 @@ class StationaryEnergyDraftService:
                 locale=locale,
                 token=token,
             )
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "draft/context_response.json",
                 context,
             )
@@ -376,7 +387,8 @@ class StationaryEnergyDraftService:
                 for candidate in stored_source_candidates
                 if candidate.get("applicability_status") == "applicable"
             ]
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "draft/source_candidates.json",
                 {
                     "all_candidates": stored_source_candidates,
@@ -484,8 +496,8 @@ class StationaryEnergyDraftService:
     ) -> None:
         """Run background proposal generation inside its own MLflow run."""
         started_at = time.perf_counter()
-        with (
-            start_run(
+        async with (
+            async_start_run(
                 run_name="stationary_energy_draft_generation_background",
                 experiment_name=climate_advisor_experiment_name(),
                 tags=self._mlflow_tags(
@@ -505,7 +517,7 @@ class StationaryEnergyDraftService:
                 },
                 nested=True,
             ),
-            workflow_trace(
+            async_workflow_trace(
                 name="stationary_energy_draft_generation",
                 inputs={
                     "context": context,
@@ -519,7 +531,8 @@ class StationaryEnergyDraftService:
                 },
             ) as span,
         ):
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "generation/background_input.json",
                 {
                     "draft_run_id": draft_run_id,
@@ -585,12 +598,13 @@ class StationaryEnergyDraftService:
                         draft_run_id,
                     )
                     return
-                log_tags(
+                await run_mlflow_io(
+                    log_tags,
                     {
                         "city_id": draft_run.city_id,
                         "inventory_id": draft_run.inventory_id,
                         "thread_id": draft_run.thread_id,
-                    }
+                    },
                 )
 
                 total = 0
@@ -600,7 +614,8 @@ class StationaryEnergyDraftService:
                     current_values=list(context.current_values),
                     inventory_year=getattr(context.inventory, "year", None),
                 )
-                log_json_artifact(
+                await run_mlflow_io(
+                    log_json_artifact,
                     "generation/proposals.json",
                     {
                         "draft_run_id": draft_run_id,
@@ -625,7 +640,8 @@ class StationaryEnergyDraftService:
                     source_candidates_count=source_candidates_count,
                     applicable_source_candidates_count=applicable_source_candidates_count,
                 )
-                log_json_artifact(
+                await run_mlflow_io(
+                    log_json_artifact,
                     "generation/context_summary.json",
                     summary,
                 )
@@ -659,7 +675,8 @@ class StationaryEnergyDraftService:
                     draft_run_id,
                     total,
                 )
-                self._log_mlflow_duration(
+                await run_mlflow_io(
+                    self._log_mlflow_duration,
                     started_at=started_at,
                     ok=True,
                     extra={
@@ -678,7 +695,8 @@ class StationaryEnergyDraftService:
                 draft_run_id,
                 exc,
             )
-            self._log_mlflow_error(
+            await run_mlflow_io(
+                self._log_mlflow_error,
                 artifact_file="errors/stationary_energy_background_generation_error.json",
                 exc=exc,
                 started_at=started_at,
@@ -808,8 +826,8 @@ class StationaryEnergyDraftService:
     ) -> ReviewStationaryEnergyDraftResponse:
         """Persist review decisions inside an MLflow Climate Advisor run."""
         started_at = time.perf_counter()
-        with (
-            start_run(
+        async with (
+            async_start_run(
                 run_name="stationary_energy_review_request",
                 experiment_name=climate_advisor_experiment_name(),
                 tags=self._mlflow_tags(
@@ -824,7 +842,7 @@ class StationaryEnergyDraftService:
                 ),
                 params={"decision_count": len(payload.decisions)},
             ),
-            workflow_trace(
+            async_workflow_trace(
                 name="stationary_energy_review",
                 inputs={"request": payload},
                 session_id=draft_run_id,
@@ -835,18 +853,24 @@ class StationaryEnergyDraftService:
                 },
             ) as span,
         ):
-            log_json_artifact("request/stationary_energy_review_payload.json", payload)
+            await run_mlflow_io(
+                log_json_artifact,
+                "request/stationary_energy_review_payload.json",
+                payload,
+            )
             try:
                 response = await self._review_draft_impl(
                     draft_run_id=draft_run_id,
                     payload=payload,
                     authorization=authorization,
                 )
-                log_json_artifact(
+                await run_mlflow_io(
+                    log_json_artifact,
                     "response/stationary_energy_review_response.json",
                     response,
                 )
-                self._log_mlflow_duration(
+                await run_mlflow_io(
+                    self._log_mlflow_duration,
                     started_at=started_at,
                     ok=True,
                     extra={"decision_count": len(payload.decisions)},
@@ -854,7 +878,8 @@ class StationaryEnergyDraftService:
                 finish_workflow_trace(span, response)
                 return response
             except Exception as exc:
-                self._log_mlflow_error(
+                await run_mlflow_io(
+                    self._log_mlflow_error,
                     artifact_file="errors/stationary_energy_review_error.json",
                     exc=exc,
                     started_at=started_at,
@@ -871,12 +896,13 @@ class StationaryEnergyDraftService:
     ) -> ReviewStationaryEnergyDraftResponse:
         """Persist a complete review decision set and finalize staged choices."""
         draft_run = await self._get_draft_run_or_404(draft_run_id)
-        log_tags(
+        await run_mlflow_io(
+            log_tags,
             {
                 "city_id": draft_run.city_id,
                 "inventory_id": draft_run.inventory_id,
                 "thread_id": draft_run.thread_id,
-            }
+            },
         )
         await self._require_scope_token_and_capabilities(
             requested_user_id=payload.user_id,
@@ -886,9 +912,7 @@ class StationaryEnergyDraftService:
             authorization=authorization,
         )
         if draft_run.user_id != payload.user_id:
-            raise HTTPException(
-                status_code=403, detail="Draft run does not belong to user"
-            )
+            raise HTTPException(status_code=403, detail="Draft run does not belong to user")
         update_current_trace_context(
             link_run=False,
             metadata={
@@ -924,7 +948,8 @@ class StationaryEnergyDraftService:
             candidate_by_datasource=candidate_by_datasource,
             next_review_versions=next_review_versions,
         )
-        log_json_artifact(
+        await run_mlflow_io(
+            log_json_artifact,
             "review/review_decisions.json",
             {
                 "draft_run_id": draft_run.draft_run_id,
@@ -960,8 +985,8 @@ class StationaryEnergyDraftService:
     ) -> SaveStationaryEnergyDraftResponse:
         """Commit reviewed rows inside an MLflow Climate Advisor run."""
         started_at = time.perf_counter()
-        with (
-            start_run(
+        async with (
+            async_start_run(
                 run_name="stationary_energy_save_request",
                 experiment_name=climate_advisor_experiment_name(),
                 tags=self._mlflow_tags(
@@ -976,7 +1001,7 @@ class StationaryEnergyDraftService:
                 ),
                 params={"has_authorization": bool(authorization)},
             ),
-            workflow_trace(
+            async_workflow_trace(
                 name="stationary_energy_save",
                 inputs={"request": payload},
                 session_id=draft_run_id,
@@ -987,22 +1012,30 @@ class StationaryEnergyDraftService:
                 },
             ) as span,
         ):
-            log_json_artifact("request/stationary_energy_save_payload.json", payload)
+            await run_mlflow_io(
+                log_json_artifact,
+                "request/stationary_energy_save_payload.json",
+                payload,
+            )
             try:
                 response = await self._save_draft_impl(
                     draft_run_id=draft_run_id,
                     payload=payload,
                     authorization=authorization,
                 )
-                log_json_artifact(
+                await run_mlflow_io(
+                    log_json_artifact,
                     "response/stationary_energy_save_response.json",
                     response,
                 )
-                self._log_mlflow_duration(started_at=started_at, ok=True)
+                await run_mlflow_io(
+                    self._log_mlflow_duration, started_at=started_at, ok=True
+                )
                 finish_workflow_trace(span, response)
                 return response
             except Exception as exc:
-                self._log_mlflow_error(
+                await run_mlflow_io(
+                    self._log_mlflow_error,
                     artifact_file="errors/stationary_energy_save_error.json",
                     exc=exc,
                     started_at=started_at,
@@ -1018,12 +1051,13 @@ class StationaryEnergyDraftService:
     ) -> SaveStationaryEnergyDraftResponse:
         """Commit accepted reviewed rows into CityCatalyst and persist the outcome."""
         draft_run = await self._get_draft_run_or_404(draft_run_id)
-        log_tags(
+        await run_mlflow_io(
+            log_tags,
             {
                 "city_id": draft_run.city_id,
                 "inventory_id": draft_run.inventory_id,
                 "thread_id": draft_run.thread_id,
-            }
+            },
         )
         token, _allowed_capabilities = await self._require_scope_token_and_capabilities(
             requested_user_id=payload.user_id,
@@ -1033,9 +1067,7 @@ class StationaryEnergyDraftService:
             authorization=authorization,
         )
         if draft_run.user_id != payload.user_id:
-            raise HTTPException(
-                status_code=403, detail="Draft run does not belong to user"
-            )
+            raise HTTPException(status_code=403, detail="Draft run does not belong to user")
         update_current_trace_context(
             link_run=False,
             metadata={
@@ -1107,7 +1139,8 @@ class StationaryEnergyDraftService:
                 "inventory_id": draft_run.inventory_id,
                 "rows": rows,
             }
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "save/cc_commit_payload.json",
                 commit_payload,
             )
@@ -1115,7 +1148,8 @@ class StationaryEnergyDraftService:
                 request_payload=commit_payload,
                 token=token,
             )
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "save/cc_commit_response.json",
                 commit_response,
             )
@@ -1140,7 +1174,8 @@ class StationaryEnergyDraftService:
                 "inventory_id": draft_run.inventory_id,
                 "rows": notation_rows,
             }
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "save/cc_notation_commit_payload.json",
                 notation_payload,
             )
@@ -1150,7 +1185,8 @@ class StationaryEnergyDraftService:
                     token=token,
                 )
             )
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "save/cc_notation_commit_response.json",
                 notation_response,
             )
@@ -1340,12 +1376,27 @@ class StationaryEnergyDraftService:
         thread_id: UUID | None,
         token: str | None,
     ) -> str:
-        """Return a usable CityCatalyst token, refreshing and persisting it when needed."""
+        """Return a usable CityCatalyst token, persisting direct-call refreshes.
+
+        Authenticated chat turns update their shared request token reference and
+        defer persistence to the successful streaming hand-off.
+        """
         if not token:
             raise HTTPException(
                 status_code=401,
                 detail="CityCatalyst access token is required",
             )
+        request_context = self.cc_client.request_token_refresh_context
+        if isinstance(request_context, RequestTokenRefreshContext):
+            try:
+                return await request_context.token_for_request(
+                    self.cc_client.refresh_token
+                )
+            except Exception as exc:
+                raise HTTPException(
+                    status_code=401,
+                    detail="CityCatalyst access token could not be renewed",
+                ) from exc
         if not needs_token_refresh(token):
             return token
 

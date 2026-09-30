@@ -287,13 +287,13 @@ persistence, or production UUIDs.
 
 ```http
 POST /v1/threads
+Authorization: Bearer <citycatalyst_user_token>
 Content-Type: application/json
 
 {
   "user_id": "user-123",
   "inventory_id": "inventory-456",
   "context": {
-    "cc_access_token": "jwt_token_from_citycatalyst",
     "city_name": "San Francisco",
     "other_data": "..."
   }
@@ -312,8 +312,10 @@ Content-Type: application/json
 
 **Processing:**
 
-- `ThreadService` creates a UUID-based thread
-- Stores thread with `user_id`, `inventory_id`, and `context` (`JSONB`)
+- `ThreadService` creates a UUID-based thread for Core's canonical user
+- Stores thread with canonical `user_id`, `inventory_id`, and normalized
+  `context` (`JSONB`) containing only the validated request bearer as
+  `access_token`
 - Returns `thread_id` for later `/v1/messages` calls
 
 ### 2. Send Message And Stream Response
@@ -322,6 +324,7 @@ Content-Type: application/json
 
 ```http
 POST /v1/messages
+Authorization: Bearer <citycatalyst_user_token>
 Content-Type: application/json
 
 {
@@ -329,9 +332,6 @@ Content-Type: application/json
   "content": "What are the top climate risks for San Francisco?",
   "thread_id": "550e8400-e29b-41d4-a716-446655440000",
   "inventory_id": "inventory-456",
-  "context": {
-    "cc_access_token": "jwt_token_from_citycatalyst"
-  },
   "options": {
     "model": "openai/gpt-5.6-terra"
   }
@@ -341,33 +341,31 @@ Content-Type: application/json
 If `thread_id` is omitted, Climate Advisor creates a new thread. If `thread_id`
 is supplied, it must already exist and belong to the requesting user.
 
-When the request or thread supplies a CityCatalyst bearer, Climate Advisor
-validates it through Core's `/api/v1/internal/ca/auth/identity` endpoint before
-persisting the message or constructing the catalog-enabled agent. Core's
-canonical user ID must equal body `user_id`; a subject mismatch, or a bearer
-supplied in the request that Core rejects, receives the same HTTP 401
-authentication failure. When Core is unavailable or misconfigured, or when the
-rejected bearer came from stored thread context, the chat request still
-succeeds and only the NativeInputCatalog tools are disabled. In that degraded
-case a request-supplied bearer is **not** persisted into thread context, so an
-unvalidated token cannot become a thread-stored token on later requests.
-Requests without a CityCatalyst bearer can continue, but NativeInputCatalog
-tools remain disabled.
+`POST /v1/threads` and `POST /v1/messages` require `Authorization: Bearer
+<token>`. Climate Advisor validates that bearer through Core's
+`/api/v1/internal/ca/auth/identity` endpoint **before** thread lookup,
+implicit thread creation, message persistence, or tool registration. Core's
+canonical user ID must equal body `user_id`. A missing, malformed, rejected,
+or subject-mismatched bearer returns the same HTTP 401 problem response and
+persists nothing. When Core identity validation is unavailable, the write
+returns HTTP 503 and persists nothing.
 
-CA-issued tokens expire after one hour, and Climate Advisor does not refresh a
-thread-stored bearer for the catalog path. Once the stored token expires, the
-NativeInputCatalog tools stay unregistered for the thread until the client
-sends a new bearer in the request that Core identity validation accepts; plain
-chat is unaffected. Refreshing from the thread record's `user_id` is
-deliberately not done, because `POST /v1/threads` is unauthenticated and
-accepts an arbitrary `user_id`, so that identity is not server-validated.
+The validated request bearer is the only credential stored on the thread,
+always under `access_token`. Conflicting body `access_token` /
+`cc_access_token` values are discarded. Later writes do not fall back to a
+stored thread token. During an authenticated turn, internal Core tool calls may
+preflight-renew the bearer when it is expired or within 10 minutes of expiry.
+Renewal uses only the canonical subject validated for that write. The renewed
+bearer is shared with inventory, NativeInputCatalog, Stationary Energy, and
+Concept Note tool clients, then persisted under `access_token` after normal
+stream completion. Cancellation and failed turns do not persist it. Each
+capability request is sent once after preflight; a following 401/403 fails
+closed without replay. Calls without the authenticated request context remain
+no-refresh, and no tool derives a refresh subject from request JSON.
 
-This boundary closes the claimed-identity escalation for request-supplied
-bearers and for every NativeInputCatalog path. It is not a general Climate
-Advisor authentication redesign: `POST /v1/threads` remains unauthenticated,
-and the legacy non-catalog inventory tools may still refresh a token from the
-request body `user_id`. That residual is outside CC-737 scope and is tracked
-separately.
+CA-issued tokens expire after one hour. Direct clients must send a current
+user-scoped bearer on every write. The CityCatalyst web proxy issues a fresh
+token and sends it as `Authorization` for both thread creation and messages.
 
 **Server Response (SSE Stream):**
 
@@ -1233,7 +1231,10 @@ GET /health
 `GET /health` reports process liveness without contacting PostgreSQL. Deployment
 readiness probes use `GET /ready`, which returns `200` only after the database
 configured by `CA_DATABASE_URL` accepts a query. Missing configuration or a
-failed database query returns `503` without exposing connection details.
+failed database query returns `503` without exposing connection details. Connection
+acquisition and the query share a one-second deadline. Kubernetes liveness,
+readiness, and startup probes explicitly allow three seconds in dev, test, and
+production; MLflow and model availability are not liveness dependencies.
 
 ```http
 GET /ready
@@ -1299,6 +1300,26 @@ event: done
 data: {}
 ```
 
+Chat model calls retry early response-body read timeouts, read errors, and remote
+protocol disconnects using the Agents SDK's per-model retry guard. The
+`streaming` section in `llm_config.yaml` allows two retries with a jittered delay
+of up to 500 ms by default. Setting `retry_attempts: 0` disables this recovery.
+Pre-header connection/status failures keep the existing provider retry budget;
+the stream policy does not retry their exhausted OpenAI exceptions again.
+
+The runner stops retrying once the current model call emits non-replayable output,
+including text, reasoning, or tool-call events. A later model call can recover
+without rerunning already completed tools. Cancellation closes the provider stream
+without retrying. Exhausted or unsafe-to-replay failures still send an error and
+`done` with `ok: false`, `history_saved: false`; a partial reply is not saved as a
+completed answer. HTTP 200 alone does not indicate successful completion.
+
+Offline regression checks (from `climate-advisor/`):
+
+```bash
+uv run --directory service pytest tests/test_health.py tests/test_stream_resilience.py tests/test_mlflow_concurrency.py -q
+```
+
 ## CityCatalyst Integration
 
 ### Token Management
@@ -1344,15 +1365,17 @@ grant. An empty page with a cursor is valid and must be retried. Every selected 
 revalidates the caller scope, catalog lifecycle, capability membership, module
 readiness, and bounded execution contract.
 
-The catalog tools use only the already validated bearer. A 401 from discovery
-or read is returned through the existing safe tool failure path without calling
-the user-token refresh endpoint or deriving a refresh identity from request
-JSON. This restriction is catalog-specific: the existing non-catalog inventory
-tools continue to refresh and persist expired tokens as documented above.
+The catalog tools use the authenticated turn's shared bearer. If it is expired
+or within the 10-minute safety margin, the server-owned request context renews
+it before discovery/read. A 401/403 after preflight is returned through the
+existing safe tool failure path without another refresh or replay. Legacy
+internal inventory capabilities use the same canonical preflight context and
+never derive a refresh identity from claimed `userId` / `user_id` request JSON.
 
-Because the catalog path never refreshes, an expired thread-stored bearer
-leaves both tools unregistered. Recovery requires a new request-supplied bearer
-that passes Core identity validation; there is no mid-thread refresh from a
+Because write requests require a current validated bearer, an expired stored
+thread token cannot register catalog or inventory tools. Each new turn still
+needs a request `Authorization` bearer that passes Core identity validation;
+mid-turn renewal uses only that turn's server-owned canonical subject, never a
 stored or claimed `user_id`.
 
 The v1 model-facing read arguments are limited to camelCase `catalogId`,
@@ -1535,6 +1558,14 @@ always use that explicit ID, including across awaits. A failed or disabled run
 scope cannot log to an enclosing request. Nested runs carry an explicit parent
 tag; exceptions and cancellation mark only their own run failed. Queued writes
 are drained on exit, and late child tasks cannot write to a closed request.
+Async service flows use `async_start_run`, `async_workflow_trace`, and
+`run_mlflow_io` to await blocking MLflow initialization, run creation, artifact
+uploads, batch writes, and cleanup in worker threads. The request's run context
+is set and reset in its original task. Cancellation waits for in-flight telemetry
+before closing its run, including after repeated task cancellation, so pending
+writes cannot race termination or leave a newly created run unclosed. Synchronous
+research entrypoints continue to use `start_run` and `workflow_trace`.
+`MLFLOW_ASYNC_LOGGING_ENABLED` alone does not offload artifact or run-lifecycle I/O.
 The shared trace experiment is configured once at initialization; trace metadata
 uses `mlflow.sourceRun`, `mlflow.trace.session`, and `mlflow.trace.user`, supported
 by the pinned MLflow 3.2 runtime.

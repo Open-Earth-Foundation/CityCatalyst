@@ -2,6 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 import { encode } from "next-auth/jwt";
 import JSZip from "jszip";
 import type { CityDashboardResponse } from "@/util/types";
+import { skipCookieConsent } from "./helpers";
+
+test.beforeEach(({ context }) => skipCookieConsent(context));
 
 // Real workspace UI/RTK requests with deterministic API responses. The companion
 // PostgreSQL tests verify actual persistence, concurrency, ownership and acceptance.

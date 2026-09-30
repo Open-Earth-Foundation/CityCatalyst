@@ -6,12 +6,11 @@ from uuid import uuid4
 import httpx
 import pytest
 from agents import RunConfig, Runner, function_tool
-from openai import AsyncOpenAI
-
 from app.config import get_settings
 from app.models.cnb.source_prompt import DocumentSummary, QuestionReading
 from app.services.agent_service import AgentService
 from app.services.cnb.source_analysis import _run_agent
+from openai import AsyncOpenAI
 
 
 def test_active_ca_model_defaults_preserve_cnb_roles():

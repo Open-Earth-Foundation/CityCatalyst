@@ -92,16 +92,34 @@ describe("CA token reuse", () => {
     });
   });
 
-  it("refreshes at the 60-second boundary, coalescing the refresh", async () => {
+  it("reissues inside the 10-minute turn margin and coalesces that refresh", async () => {
     fetchMock.mockImplementation(async () => tokenResponse());
     await issueClimateAdvisorUserToken(user);
-    jest.setSystemTime(Date.now() + 3_539_000);
-    expect((await issueClimateAdvisorUserToken(user)).expires_in).toBe(61);
+    // 3600s token; 601s remaining is just outside the margin and is reused.
+    jest.setSystemTime(Date.now() + 2_999_000);
+    expect((await issueClimateAdvisorUserToken(user)).expires_in).toBe(601);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    // One second later the token is inside the margin and must be reissued.
     jest.setSystemTime(Date.now() + 1_000);
     await Promise.all([
       issueClimateAdvisorUserToken(user),
       issueClimateAdvisorUserToken(user),
     ]);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("reissues a cached token that has only 61 seconds left", async () => {
+    fetchMock
+      .mockImplementationOnce(async () => tokenResponse("near-expiry"))
+      .mockImplementation(async () => tokenResponse("reissued"));
+    await issueClimateAdvisorUserToken(user);
+    jest.setSystemTime(Date.now() + 3_539_000);
+    const reissued = await issueClimateAdvisorUserToken(user);
+    expect(reissued).toEqual({
+      access_token: "reissued",
+      expires_in: 3600,
+      token_type: "Bearer",
+    });
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 

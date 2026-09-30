@@ -1,4 +1,9 @@
-import { APIRequestContext, expect, type Page } from "@playwright/test";
+import {
+  APIRequestContext,
+  expect,
+  type BrowserContext,
+  type Page,
+} from "@playwright/test";
 
 export async function expectText(page: Page, text: string) {
   await expect(page.getByText(text).first()).toBeVisible({ timeout: 10000 });
@@ -74,6 +79,17 @@ export async function dismissCookieConsent(page: Page) {
   } catch {
     // Consent banner not present, continue
   }
+}
+
+/**
+ * Pre-decline analytics consent so the fixed cookie banner never renders.
+ * With ANALYTICS_ENABLED (release CI) the banner covers bottom-of-viewport
+ * controls, especially on mobile viewports.
+ */
+export async function skipCookieConsent(context: BrowserContext) {
+  await context.addInitScript(() => {
+    document.cookie = "cc_analytics_consent=false; path=/";
+  });
 }
 
 /**

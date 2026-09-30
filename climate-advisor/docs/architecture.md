@@ -267,11 +267,15 @@ context and ignores caller-supplied identity. Missing authentication fails the
 write instead of disabling tools.
 
 Write requests never refresh from a stored thread bearer or a claimed
-`user_id`. After expiry the client must send a current `Authorization` bearer
-that Core identity validation accepts. NativeInputCatalog discovery and reads
-never exchange a 401 for a new user token. Legacy internal inventory
-capabilities fail closed the same way and do not derive refresh identity from
-request JSON.
+`user_id`. After each write is authenticated, the request-scoped token context
+may renew the current bearer before an authenticated Core tool call, using only
+the canonical subject returned by Core for that request. It replaces the shared
+token reference used by NativeInputCatalog, inventory, Stationary Energy, and
+Concept Note tools. Capability payloads cannot choose the refresh subject. A
+capability call is sent once after preflight renewal; a later 401/403 fails
+closed and is not replayed. A renewed bearer is persisted under `access_token`
+only after the streaming turn completes normally. Cancellation and failures do
+not persist it, and the next turn still has to present a bearer accepted by Core.
 
 This boundary is the write-auth contract for Climate Advisor chat: thread
 creation, message writes, and the developer inventory check are authenticated
@@ -285,8 +289,12 @@ A page or cursor is never cached as an authorization grant. A
 read accepts a model-selected catalog/capability pair with finite bounded
 arguments, then calls Core for fresh authorization and execution. Core remains
 the final read-time authority; unavailable or invalid reads use the stable
-non-disclosing response. NativeInputCatalog discovery and reads never exchange
-a 401 for a new user token and never derive refresh identity from request JSON.
+non-disclosing response. Before discovery or read, the server-owned request
+context renews a token that is expired or within the 60-second safety margin.
+The explicit `allow_token_refresh=False` contract remains for callers without
+that authenticated context. A 401/403 after preflight fails through the safe
+tool path without another refresh or replay. Refresh identity never comes from
+request JSON.
 
 - `services/stationary_energy/stationary_energy_review_resolver.py`
   - Resolves selectable sources, notation-key targets, pending review rows, and
@@ -318,8 +326,8 @@ a 401 for a new user token and never derive refresh identity from request JSON.
 - `tools/inventory_context_tools.py`
   - The shared CityCatalyst inventory capability tools used by the general
     prompt and the scoped Stationary Energy review prompt.
-  - Updates the shared request token reference after a capability call refreshes
-    the CityCatalyst bearer token.
+  - Uses the authenticated turn's shared bearer and request-scoped canonical
+    preflight renewal context.
 - `tools/stationary_energy_review_tools.py`
   - The scoped Stationary Energy review tool pack backed by
     `StationaryEnergyAgentReviewService`.
@@ -350,7 +358,7 @@ a 401 for a new user token and never derive refresh identity from request JSON.
 - `utils/history_manager.py`
   - Prunes older tool metadata for LLM context while keeping full DB audit data.
 - `utils/token_handler.py`
-  - Refreshes and persists CityCatalyst tokens.
+  - Persists the renewed request bearer after a successful streaming turn.
 
 ### Concept Note Source Context
 

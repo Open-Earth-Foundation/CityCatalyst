@@ -9,7 +9,7 @@ as "draft the empty rows" instead of relying on the UI button alone.
 from __future__ import annotations
 
 import logging
-from typing import Dict, Optional, Sequence
+from typing import Callable, Dict, Optional, Sequence
 from uuid import UUID
 
 from agents import function_tool
@@ -24,6 +24,7 @@ from app.services.stationary_energy.stationary_energy_draft_service import (
 from app.services.stationary_energy.stationary_energy_review_models import (
     MessageParamValue,
 )
+from app.services.citycatalyst_client import CityCatalystClient
 
 logger = logging.getLogger(__name__)
 
@@ -49,9 +50,10 @@ def build_stationary_energy_start_draft_tools(
     user_id: str,
     thread_id: Optional[UUID],
     token_ref: Dict[str, Optional[str]],
+    client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
     locale: Optional[str] = None,
 ) -> Sequence[object]:
-    """Create a Stationary Energy start-draft tool scoped to one city + inventory."""
+    """Create a scoped start-draft tool using the active Core client factory."""
 
     async def _run_start_draft() -> str:
         """Start a draft inside a committed database session."""
@@ -59,7 +61,10 @@ def build_stationary_energy_start_draft_tools(
             # Use a short-lived committed session, mirroring the review tools so the
             # draft-run row and its initial status updates persist atomically.
             async with session_factory() as session:
-                service = StationaryEnergyDraftService(session)
+                service = StationaryEnergyDraftService(
+                    session,
+                    cc_client=client_factory(),
+                )
                 token = await service.ensure_user_token(
                     user_id=user_id,
                     thread_id=thread_id,

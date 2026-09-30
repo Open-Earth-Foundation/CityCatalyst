@@ -27,6 +27,7 @@ from app.utils.citycatalyst_auth import (
     authenticate_write_request,
     normalize_write_context,
 )
+from app.utils.request_token_refresh import RequestTokenRefreshContext
 from app.utils.sse_heartbeat import with_sse_heartbeats
 from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
 from app.utils.streaming_handler import StreamingHandler
@@ -76,6 +77,10 @@ async def post_message(
     identity = await authenticate_write_request(
         authorization=authorization,
         claimed_user_id=payload.user_id,
+    )
+    token_refresh_context = RequestTokenRefreshContext(
+        canonical_user_id=identity.user_id,
+        token=identity.token,
     )
     normalized_context = normalize_write_context(payload.context, identity.token)
     authenticated_payload = payload.model_copy(
@@ -200,6 +205,7 @@ async def post_message(
                 user_id=identity.user_id,
                 session_factory=session_factory,
                 cc_access_token=identity.token,
+                request_token_refresh_context=token_refresh_context,
                 catalog_user_id=identity.user_id,
                 inventory_id=authenticated_payload.inventory_id,
                 request_context=normalized_context,

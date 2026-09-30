@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import base64
 import json
 from types import SimpleNamespace
@@ -16,6 +17,7 @@ from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
 )
+from app.utils.request_token_refresh import RequestTokenRefreshContext
 
 
 @pytest.mark.asyncio
@@ -954,6 +956,143 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("request payload", str(captured.exception))
         refresh_token.assert_not_awaited()
         self.assertEqual(stub.requests, [])
+
+    async def test_request_context_renews_inventory_before_one_capability_request(
+        self,
+    ) -> None:
+        """A canonical turn refresh happens before the capability and never retries it."""
+        context = RequestTokenRefreshContext(
+            canonical_user_id="canonical-user",
+            token="near-expiry-token",
+        )
+        client = CityCatalystClient(
+            base_url="https://cc.example",
+            api_key="test-api-key",
+            request_token_refresh_context=context,
+        )
+        stub = _StubAsyncClient([_response(401, json_data={"error": "Unauthorized"})])
+        refresh_token = AsyncMock(return_value=("renewed-token", 3600))
+
+        with (
+            patch("app.utils.request_token_refresh.is_token_expired", return_value=True),
+            patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+            patch.object(client, "refresh_token", new=refresh_token),
+        ):
+            with self.assertRaises(CityCatalystClientError) as captured:
+                await client.load_inventory_status_overview(
+                    request_payload={
+                        "user_id": "payload-user",
+                        "userId": "other-payload-user",
+                        "city_id": "city-1",
+                        "inventory_id": "inventory-1",
+                    },
+                    token="stale-caller-token",
+                )
+
+        self.assertEqual(captured.exception.status_code, 401)
+        refresh_token.assert_awaited_once_with("canonical-user")
+        self.assertEqual(context.token_ref["value"], "renewed-token")
+        self.assertEqual(len(stub.requests), 1)
+        self.assertEqual(
+            stub.requests[0]["headers"]["Authorization"],
+            "Bearer renewed-token",
+        )
+
+    async def test_request_context_renews_native_input_read_with_canonical_identity(
+        self,
+    ) -> None:
+        """Catalog reads renew through the validated turn context, never arguments."""
+        context = RequestTokenRefreshContext(
+            canonical_user_id="canonical-user",
+            token="near-expiry-token",
+        )
+        client = CityCatalystClient(
+            base_url="https://cc.example",
+            api_key="test-api-key",
+            request_token_refresh_context=context,
+        )
+        stub = _StubAsyncClient([_response(200, json_data={"success": True})])
+        refresh_token = AsyncMock(return_value=("renewed-token", 3600))
+
+        with (
+            patch("app.utils.request_token_refresh.is_token_expired", return_value=True),
+            patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+            patch.object(client, "refresh_token", new=refresh_token),
+        ):
+            result = await client.read_native_input(
+                request_payload={
+                    "userId": "payload-user",
+                    "catalogId": "catalog-1",
+                    "capabilityId": "ghgi.inventory.status_overview",
+                    "input": {},
+                },
+                token="stale-caller-token",
+                user_id="untrusted-argument-user",
+                thread_id="thread-1",
+            )
+
+        self.assertTrue(result["success"])
+        refresh_token.assert_awaited_once_with("canonical-user")
+        self.assertEqual(context.token_ref["value"], "renewed-token")
+        self.assertEqual(len(stub.requests), 1)
+        self.assertEqual(
+            stub.requests[0]["headers"]["Authorization"],
+            "Bearer renewed-token",
+        )
+
+    async def test_request_context_keeps_a_valid_token_without_refresh(self) -> None:
+        """A token outside the safety margin remains active for the capability call."""
+        context = RequestTokenRefreshContext(
+            canonical_user_id="canonical-user",
+            token="valid-request-token",
+        )
+        client = CityCatalystClient(
+            base_url="https://cc.example",
+            api_key="test-api-key",
+            request_token_refresh_context=context,
+        )
+        stub = _StubAsyncClient([_response(200, json_data={"success": True})])
+        refresh_token = AsyncMock(return_value=("unexpected-token", 3600))
+
+        with (
+            patch("app.utils.request_token_refresh.is_token_expired", return_value=False),
+            patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+            patch.object(client, "refresh_token", new=refresh_token),
+        ):
+            await client.load_inventory_status_overview(
+                request_payload={"user_id": "canonical-user"},
+                token="valid-request-token",
+            )
+
+        refresh_token.assert_not_awaited()
+        self.assertEqual(context.token_ref["value"], "valid-request-token")
+        self.assertEqual(
+            stub.requests[0]["headers"]["Authorization"],
+            "Bearer valid-request-token",
+        )
+
+    async def test_request_context_coalesces_concurrent_refreshes(self) -> None:
+        """Parallel tool calls share one refresh and observe the replacement token."""
+        context = RequestTokenRefreshContext(
+            canonical_user_id="canonical-user",
+            token="near-expiry-token",
+        )
+
+        async def refresh(user_id: str) -> tuple[str, int]:
+            self.assertEqual(user_id, "canonical-user")
+            await asyncio.sleep(0)
+            return "renewed-token", 3600
+
+        with patch(
+            "app.utils.request_token_refresh.is_token_expired",
+            side_effect=lambda token, buffer_seconds: token == "near-expiry-token",
+        ):
+            active_tokens = await asyncio.gather(
+                context.token_for_request(refresh),
+                context.token_for_request(refresh),
+            )
+
+        self.assertEqual(active_tokens, ["renewed-token", "renewed-token"])
 
     async def test_close_releases_the_client_used_by_catalog_calls(self) -> None:
         with patch(

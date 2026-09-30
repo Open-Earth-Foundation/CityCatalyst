@@ -68,6 +68,7 @@ from app.services.stationary_energy.stationary_energy_proposal_builder import (
 )
 from app.services.thread_service import ThreadService
 from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
+from app.utils.request_token_refresh import RequestTokenRefreshContext
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
     log_json_artifact,
@@ -1340,12 +1341,27 @@ class StationaryEnergyDraftService:
         thread_id: UUID | None,
         token: str | None,
     ) -> str:
-        """Return a usable CityCatalyst token, refreshing and persisting it when needed."""
+        """Return a usable CityCatalyst token, persisting direct-call refreshes.
+
+        Authenticated chat turns update their shared request token reference and
+        defer persistence to the successful streaming hand-off.
+        """
         if not token:
             raise HTTPException(
                 status_code=401,
                 detail="CityCatalyst access token is required",
             )
+        request_context = self.cc_client.request_token_refresh_context
+        if isinstance(request_context, RequestTokenRefreshContext):
+            try:
+                return await request_context.token_for_request(
+                    self.cc_client.refresh_token
+                )
+            except Exception as exc:
+                raise HTTPException(
+                    status_code=401,
+                    detail="CityCatalyst access token could not be renewed",
+                ) from exc
         if not needs_token_refresh(token):
             return token
 

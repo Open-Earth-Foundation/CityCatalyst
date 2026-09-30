@@ -353,9 +353,15 @@ returns HTTP 503 and persists nothing.
 The validated request bearer is the only credential stored on the thread,
 always under `access_token`. Conflicting body `access_token` /
 `cc_access_token` values are discarded. Later writes do not fall back to a
-stored thread token. Legacy internal inventory capabilities fail closed on 401
-and never derive a refresh user from request JSON. NativeInputCatalog
-discovery and reads remain explicitly no-refresh.
+stored thread token. During an authenticated turn, internal Core tool calls may
+preflight-renew the bearer when it is expired or within 60 seconds of expiry.
+Renewal uses only the canonical subject validated for that write. The renewed
+bearer is shared with inventory, NativeInputCatalog, Stationary Energy, and
+Concept Note tool clients, then persisted under `access_token` after normal
+stream completion. Cancellation and failed turns do not persist it. Each
+capability request is sent once after preflight; a following 401/403 fails
+closed without replay. Calls without the authenticated request context remain
+no-refresh, and no tool derives a refresh subject from request JSON.
 
 CA-issued tokens expire after one hour. Direct clients must send a current
 user-scoped bearer on every write. The CityCatalyst web proxy issues a fresh
@@ -1336,16 +1342,18 @@ grant. An empty page with a cursor is valid and must be retried. Every selected 
 revalidates the caller scope, catalog lifecycle, capability membership, module
 readiness, and bounded execution contract.
 
-The catalog tools use only the already validated bearer. A 401 from discovery
-or read is returned through the existing safe tool failure path without calling
-the user-token refresh endpoint or deriving a refresh identity from request
-JSON. Legacy internal inventory capabilities use the same fail-closed 401
-behavior and do not refresh from claimed `userId` / `user_id` request JSON.
+The catalog tools use the authenticated turn's shared bearer. If it is expired
+or within the 60-second safety margin, the server-owned request context renews
+it before discovery/read. A 401/403 after preflight is returned through the
+existing safe tool failure path without another refresh or replay. Legacy
+internal inventory capabilities use the same canonical preflight context and
+never derive a refresh identity from claimed `userId` / `user_id` request JSON.
 
 Because write requests require a current validated bearer, an expired stored
-thread token cannot register catalog or inventory tools. Recovery is a new
-request `Authorization` bearer that passes Core identity validation; there is
-no mid-thread refresh from a stored or claimed `user_id`.
+thread token cannot register catalog or inventory tools. Each new turn still
+needs a request `Authorization` bearer that passes Core identity validation;
+mid-turn renewal uses only that turn's server-owned canonical subject, never a
+stored or claimed `user_id`.
 
 The v1 model-facing read arguments are limited to camelCase `catalogId`,
 `capabilityId`, and optional `language`; `language` is accepted only for the

@@ -677,6 +677,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                 user_id="user-1",
                 thread_id=thread_id,
                 token_ref=token_ref,
+                client_factory=lambda: mock_client,
             )
             start_tool = next(
                 tool
@@ -696,11 +697,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             )
             return json.loads(output)
 
-        with patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-            return_value=mock_client,
-        ):
-            data = asyncio.run(exercise())
+        data = asyncio.run(exercise())
 
         self.assertTrue(data["success"], data)
         self._wait_for_draft_status(data["draft_run_id"], "ready")
@@ -2405,7 +2402,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
         async def exercise() -> dict[str, Any]:
             async with self.session_factory() as session:
-                service = StationaryEnergyAgentReviewService(session)
+                service = StationaryEnergyAgentReviewService(
+                    session,
+                    cc_client=self._mock_cc_client(),
+                )
                 await service.accept_all_recommended(
                     draft_run_id=UUID(draft_run_id),
                     user_id="user-1",

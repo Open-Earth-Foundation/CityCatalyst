@@ -198,6 +198,11 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
             streaming_handler.call_args.kwargs["cc_access_token"],
             "valid-token",
         )
+        refresh_context = streaming_handler.call_args.kwargs[
+            "request_token_refresh_context"
+        ]
+        self.assertEqual(refresh_context.canonical_user_id, "user-1")
+        self.assertEqual(refresh_context.token_ref["value"], "valid-token")
 
     async def test_message_rejects_invalid_core_token_before_catalog_agent_creation(
         self,

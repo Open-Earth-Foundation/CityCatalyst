@@ -70,6 +70,7 @@ from app.utils.prompt_budget import (
     get_stationary_energy_prompt_budget,
     trim_messages_to_budget,
 )
+from app.utils.request_token_refresh import RequestTokenRefreshContext
 from app.utils.sse import format_sse
 from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
 from app.utils.token_handler import TokenHandler
@@ -95,6 +96,7 @@ class StreamingHandler:
         request_context: Optional[Any] = None,
         request_options: Optional[dict] = None,
         draft_overview_claim: Optional[tuple[UUID, str]] = None,
+        request_token_refresh_context: Optional[RequestTokenRefreshContext] = None,
     ) -> None:
         """Initialize per-request state for streaming one agent response."""
         self.thread_id = thread_id
@@ -108,6 +110,7 @@ class StreamingHandler:
         self.request_options = request_options
         # (run_id, build_id) when this is the hidden CNB drafting-overview turn.
         self.draft_overview_claim = draft_overview_claim
+        self.request_token_refresh_context = request_token_refresh_context
         self.thread_identifier = str(thread_id)
         self.workflow_context = ChatWorkflowContext()
         self.agent_model: Optional[str] = None
@@ -267,6 +270,7 @@ class StreamingHandler:
             )
             self.agent_service = AgentService(
                 cc_access_token=self.cc_access_token,
+                request_token_refresh_context=self.request_token_refresh_context,
                 cc_thread_id=self.thread_id,
                 cc_user_id=self.user_id,
                 inventory_id=self.inventory_id,

@@ -435,7 +435,17 @@ def main() -> int:
 
             while attempts <= args.retries:
                 attempts += 1
-                response = client.post("/v1/messages", json=rendered_payload)
+                headers: Dict[str, str] = {}
+                context = rendered_payload.get("context")
+                if isinstance(context, dict):
+                    token = context.get("access_token") or context.get("cc_access_token")
+                    if isinstance(token, str) and token.strip():
+                        headers["Authorization"] = f"Bearer {token.strip()}"
+                response = client.post(
+                    "/v1/messages",
+                    json=rendered_payload,
+                    headers=headers,
+                )
                 events = _parse_sse_events(response.text)
                 done_payload = _get_done_payload(events)
                 assistant_text = _collect_assistant_text(events)

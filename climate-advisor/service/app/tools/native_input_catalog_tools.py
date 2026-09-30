@@ -148,7 +148,6 @@ def build_native_input_catalog_tools(
                 )
             else:
                 discovery = await service.discover(context=context, token=token)
-            _update_token_ref(getattr(service, "core_client", None), token_ref)
             return _discovery_success_payload(discovery)
         except Exception:
             logger.warning("NativeInputCatalog discovery failed")
@@ -213,7 +212,6 @@ def build_native_input_catalog_tools(
                 user_id=context.user_id,
                 thread_id=context.thread_id,
             )
-            _update_token_ref(client, token_ref)
             return _success_payload(capability_id, response)
         except CityCatalystClientError as error:
             if error.status_code == 404:
@@ -404,13 +402,6 @@ def _redact_result(value: Any) -> Any:
         for key, child in value.items()
         if key.lower() not in _FORBIDDEN_RESULT_KEYS
     }
-
-
-def _update_token_ref(client: object, token_ref: Dict[str, Optional[str]]) -> None:
-    """Copy a refreshed client token without exposing it in tool output."""
-    refreshed_token = getattr(client, "last_refreshed_token", None)
-    if isinstance(refreshed_token, str) and refreshed_token:
-        token_ref["value"] = refreshed_token
 
 
 async def _close_client(client: object) -> None:

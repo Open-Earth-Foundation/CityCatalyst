@@ -266,10 +266,12 @@ class InventoryContextToolTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data["error_code"], "invalid_arguments")
         self.assertEqual(stub_client.requests, [])
 
-    async def test_default_status_tool_updates_token_ref_after_refresh(self) -> None:
+    async def test_default_status_tool_keeps_presented_token_when_stub_advertises_refresh(
+        self,
+    ) -> None:
         stub_client = _StubInventoryContextClient()
         stub_client.last_refreshed_token = "fresh-token"
-        token_ref: Dict[str, Optional[str]] = {"value": "expired-token"}
+        token_ref: Dict[str, Optional[str]] = {"value": "presented-token"}
         tools = build_inventory_capability_tools(
             user_id="user-1",
             token_ref=token_ref,
@@ -284,7 +286,8 @@ class InventoryContextToolTests(unittest.IsolatedAsyncioTestCase):
         data = json.loads(output)
 
         self.assertTrue(data["success"])
-        self.assertEqual(token_ref["value"], "fresh-token")
+        self.assertEqual(token_ref["value"], "presented-token")
+        self.assertEqual(stub_client.requests[0]["token"], "presented-token")
 
 
 async def _resolve_scope() -> tuple[str, str]:

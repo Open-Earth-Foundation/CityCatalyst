@@ -124,7 +124,7 @@ both `CA_SERVICE_INTEGRATION` and `CONCEPT_NOTE_BUILDER` and sets
 
 CNB, chat, PDF OCR delivery, and Stationary Energy use the shared server-side
 `src/backend/climate-advisor-token.ts` client. It caches validated user tokens
-until 60 seconds before expiry and shares one pending issuance (including retries)
+until 10 minutes before expiry and shares one pending issuance (including retries)
 between concurrent calls for the same user. Tokens are user-scoped; inventory IDs
 remain request context. Returned `expires_in` is the remaining lifetime, including
 when a cached token is attached to a new chat thread.

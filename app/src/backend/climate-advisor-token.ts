@@ -9,7 +9,13 @@ import {
 } from "@/backend/climate-advisor-connection";
 import { logger } from "@/services/logger";
 
-const EXPIRY_MARGIN_MS = 60_000;
+/**
+ * Reissue a cached bearer once fewer than 10 minutes remain.
+ * Climate Advisor does not refresh tokens during a turn, and it must not
+ * renew one from an identity declared in a capability payload. A chat
+ * request therefore has to start with a bearer that can outlive the turn.
+ */
+const EXPIRY_MARGIN_MS = 10 * 60 * 1000;
 const MAX_CACHED_TOKENS = 1_000;
 const ATTEMPT_TIMEOUT_MS = 3_000;
 const MAX_ATTEMPTS = 3;

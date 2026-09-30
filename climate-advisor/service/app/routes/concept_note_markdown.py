@@ -8,6 +8,10 @@ from collections.abc import AsyncIterator
 from typing import Any
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, Request, status
+from fastapi.responses import JSONResponse
+from pydantic import ValidationError
+
 from app.config import get_settings
 from app.models.cnb.concept_note_markdown import (
     ConceptNoteMarkdownRequest,
@@ -33,9 +37,6 @@ from app.services.cnb.context_bundle import (
     get_context_bundle_service,
     schedule_context_bundle_build,
 )
-from fastapi import APIRouter, Depends, Request, status
-from fastapi.responses import JSONResponse
-from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -181,6 +182,7 @@ def status_response(
         filename=snapshot.filename,
         source_label=snapshot.source_label,
         source_format=snapshot.source_format,
+        source_role=snapshot.source_role,
         page_count=snapshot.page_count,
         error_code=snapshot.error_code,
         received_at=snapshot.received_at,

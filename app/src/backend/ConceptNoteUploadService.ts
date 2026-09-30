@@ -35,37 +35,43 @@ export const conceptNoteUploadSchema = z.object({
   status: z.enum(["queued", "processing", "ready", "failed"]),
   filename: z.string(),
   sourceLabel: z.string().nullable().optional(),
+  sourceRole: z.enum(["reference", "climate_action_plan"]).default("reference"),
   pageCount: z.number().int().positive().nullable().optional(),
   errorCode: z.string().nullable().optional(),
   receivedAt: z.string(),
   completedAt: z.string().nullable().optional(),
 });
 
-const conceptNoteUploadWireSchema = z
-  .object({
-    upload_id: z.string().uuid(),
-    run_id: z.string().uuid(),
-    status: z.enum(["queued", "processing", "ready", "failed"]),
-    filename: z.string(),
-    source_label: z.string().nullable().optional(),
-    page_count: z.number().int().positive().nullable().optional(),
-    error_code: z.string().nullable().optional(),
-    received_at: z.string(),
-    completed_at: z.string().nullable().optional(),
-  })
-  .transform((upload) =>
+export const conceptNoteUploadStatusWireSchema = z.object({
+  upload_id: z.string().uuid(),
+  run_id: z.string().uuid(),
+  status: z.enum(["queued", "processing", "ready", "failed"]),
+  filename: z.string(),
+  source_label: z.string().nullable().optional(),
+  source_role: z
+    .enum(["reference", "climate_action_plan"])
+    .default("reference"),
+  page_count: z.number().int().positive().nullable().optional(),
+  error_code: z.string().nullable().optional(),
+  received_at: z.string(),
+  completed_at: z.string().nullable().optional(),
+});
+
+const conceptNoteUploadWireSchema = conceptNoteUploadStatusWireSchema.transform(
+  (upload) =>
     conceptNoteUploadSchema.parse({
       uploadId: upload.upload_id,
       runId: upload.run_id,
       status: upload.status,
       filename: upload.filename,
       sourceLabel: upload.source_label,
+      sourceRole: upload.source_role,
       pageCount: upload.page_count,
       errorCode: upload.error_code,
       receivedAt: upload.received_at,
       completedAt: upload.completed_at,
     }),
-  );
+);
 
 function upstreamError(
   status: number,

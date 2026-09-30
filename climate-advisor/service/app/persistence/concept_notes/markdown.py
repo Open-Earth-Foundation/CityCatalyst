@@ -6,18 +6,20 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from uuid import UUID
 
+from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_markdown import (
     MAX_UPLOADS_PER_RUN,
     ConceptNoteMarkdownRequest,
     ConceptNoteSourceFormat,
+    ConceptNoteSourceRole,
     ConceptNoteUploadCreateRequest,
     source_format_from_filename,
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
-from sqlalchemy import func, select
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +61,7 @@ class ConceptNoteUploadSnapshot:
     received_at: datetime
     completed_at: datetime | None
     source_format: ConceptNoteSourceFormat = "pdf"
+    source_role: ConceptNoteSourceRole = "reference"
 
 
 class ConceptNoteMarkdownRepository(ABC):
@@ -224,6 +227,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                         filename=payload.filename,
                         source_label=payload.source_label,
                         source_format=payload.source_format,
+                        source_role=payload.source_role,
                     )
                     return _snapshot(existing)
 
@@ -247,6 +251,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                     uploaded_by_user_id=user_id,
                     filename=payload.filename,
                     source_label=payload.source_label,
+                    source_role=payload.source_role,
                     ingest_status="queued",
                 )
                 try:
@@ -268,6 +273,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                         filename=payload.filename,
                         source_label=payload.source_label,
                         source_format=payload.source_format,
+                        source_role=payload.source_role,
                     )
                     return _snapshot(existing)
 
@@ -571,6 +577,7 @@ def _validate_upload_identity(
     filename: str,
     source_label: str | None,
     source_format: ConceptNoteSourceFormat,
+    source_role: ConceptNoteSourceRole | None = None,
 ) -> None:
     _require_upload_binding(
         upload=existing,
@@ -581,6 +588,7 @@ def _validate_upload_identity(
         existing.filename != filename
         or existing.source_label != source_label
         or source_format_from_filename(existing.filename) != source_format
+        or (source_role is not None and existing.source_role != source_role)
     ):
         raise ConceptNoteMarkdownRepositoryError(
             "upload_identity_conflict",
@@ -616,6 +624,7 @@ def _snapshot(upload: ConceptNoteUpload) -> ConceptNoteUploadSnapshot:
         filename=upload.filename,
         source_label=upload.source_label,
         source_format=source_format_from_filename(upload.filename),
+        source_role=upload.source_role,
         markdown_s3_key=upload.markdown_s3_key,
         markdown_sha256=upload.markdown_sha256,
         page_count=upload.page_count,

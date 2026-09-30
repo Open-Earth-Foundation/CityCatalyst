@@ -36,6 +36,7 @@ import type {
   CityYearData,
   ConceptNoteApplicationContext,
   ConceptNoteUploadResponse,
+  ConceptNoteSourceRole,
 } from "@/util/types";
 
 import {
@@ -57,6 +58,7 @@ import {
   type ContextSourceState,
 } from "../ConceptNoteDashboard/context-source-status";
 import { CONCEPT_NOTE_MAX_UPLOADS } from "../ConceptNoteWiringHarness/utils";
+import { getClimateActionPlanState } from "../ConceptNoteDashboard/climate-action-plan-status";
 import { ApplicationTemplateDialog } from "./application-template-dialog";
 import { InventorySelectionDialog } from "./inventory-selection-dialog";
 
@@ -99,7 +101,10 @@ interface ContextTabProps {
   onSaveManualPopulation: (
     value: { population: number; year: number } | null,
   ) => Promise<void>;
-  onUploadFile: (file: File) => Promise<void>;
+  onUploadFile: (
+    file: File,
+    sourceRole?: ConceptNoteSourceRole,
+  ) => Promise<void>;
   populationFailed: boolean;
   populationLabel: string;
   populationLoading: boolean;
@@ -358,6 +363,8 @@ export function ContextTab({
 }: ContextTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const planFileInputRef = useRef<HTMLInputElement>(null);
+  const [planUploading, setPlanUploading] = useState(false);
   const uploadLimitReasonId = useId();
   useEffect(() => {
     if (uploadPickerRequest) fileInputRef.current?.click();
@@ -481,12 +488,34 @@ export function ContextTab({
   const readyUploadCount = uploads.filter(
     (upload) => upload.status === "ready",
   ).length;
+  const planUploads = uploads.filter(
+    (upload) => upload.sourceRole === "climate_action_plan",
+  );
+  const uploadedPlanState =
+    planUploading ||
+    planUploads.some((upload) => upload.uploadId === retryingUploadId)
+      ? "processing"
+      : getClimateActionPlanState(uploads, bundle);
+  const planState = uploadedPlanState ?? actionPlanState;
   function onFileChange(event: ChangeEvent<HTMLInputElement>): void {
     const file = event.target.files?.[0];
     if (file) {
       void onUploadFile(file);
     }
     event.target.value = "";
+  }
+  async function onPlanFileChange(
+    event: ChangeEvent<HTMLInputElement>,
+  ): Promise<void> {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setPlanUploading(true);
+    try {
+      await onUploadFile(file, "climate_action_plan");
+    } finally {
+      setPlanUploading(false);
+    }
   }
 
   function beginPopulationEdit(): void {
@@ -543,7 +572,7 @@ export function ContextTab({
     >
       <VStack align="stretch" gap={2}>
         <ContextSectionLabel>
-          {t("context-citycatalyst-sources")}
+          {t("context-city-and-plan-sources")}
         </ContextSectionLabel>
         <Grid
           gap={2}
@@ -748,23 +777,96 @@ export function ContextTab({
           />
           <ContextCard
             label={t("hiap-context")}
+            action={{
+              label: t("upload-climate-action-plan"),
+              onClick: () => planFileInputRef.current?.click(),
+              loading: planUploading,
+              disabledReason: uploadLimitReached
+                ? t("upload-limit-reason", { max: CONCEPT_NOTE_MAX_UPLOADS })
+                : isUploading || planUploading
+                  ? t("plan-upload-in-progress")
+                  : undefined,
+            }}
             value={
-              hiapIncluded
-                ? hiapStatusLabel
-                : actionPlanAvailable
-                  ? t("bundle-source-available")
-                  : t("hiap-no-actions")
+              planUploads.length > 0
+                ? planUploads
+                    .map((upload) => upload.filename || upload.sourceLabel)
+                    .join(", ")
+                : hiapIncluded
+                  ? hiapStatusLabel
+                  : actionPlanAvailable
+                    ? t("bundle-source-available")
+                    : t("hiap-no-actions")
             }
-            details={[
-              t("hiap-why"),
-              actionPlanState === "available" ? t("not-included-in-run") : "",
-              runHelp(actionPlanState, actionPlanAvailable),
-            ]}
+            details={
+              uploadedPlanState
+                ? [
+                    t("plan-upload-provenance"),
+                    t(
+                      planState === "included"
+                        ? "source-help-included"
+                        : planState === "failed"
+                          ? "plan-upload-failed-help"
+                          : "plan-upload-processing-help",
+                    ),
+                    ...planUploads
+                      .filter(
+                        (upload) =>
+                          upload.status === "failed" && upload.errorCode,
+                      )
+                      .map((upload) =>
+                        t("context-error-code", { code: upload.errorCode }),
+                      ),
+                    t("plan-upload-limits", { max: CONCEPT_NOTE_MAX_UPLOADS }),
+                  ]
+                : [
+                    t("hiap-why"),
+                    actionPlanState === "available"
+                      ? t("not-included-in-run")
+                      : "",
+                    runHelp(actionPlanState, actionPlanAvailable),
+                    t("plan-upload-limits", { max: CONCEPT_NOTE_MAX_UPLOADS }),
+                  ]
+            }
             status={t(
-              contextSourceStatusKey(actionPlanState, cityDashboardLoading),
+              contextSourceStatusKey(
+                planState,
+                !uploadedPlanState && cityDashboardLoading,
+              ),
             )}
-            tone={contextSourceTone(actionPlanState)}
-          />
+            tone={contextSourceTone(planState)}
+          >
+            <input
+              ref={planFileInputRef}
+              type="file"
+              accept="application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md"
+              hidden
+              onChange={(event) => void onPlanFileChange(event)}
+            />
+            {planUploads
+              .filter((upload) => upload.status === "failed")
+              .map((upload) => (
+                <UploadRetryButton
+                  key={upload.uploadId}
+                  label={t("retry")}
+                  loading={retryingUploadId === upload.uploadId}
+                  onRetry={() => onRetryUpload(upload.uploadId)}
+                  runId={runId}
+                  upload={upload}
+                />
+              ))}
+            {uploadedPlanState === "failed" &&
+              planUploads.every((upload) => upload.status === "ready") && (
+                <Button
+                  size="xs"
+                  variant="outline"
+                  onClick={onRetryBundle}
+                  loading={isRetryingBundle}
+                >
+                  {t("retry")}
+                </Button>
+              )}
+          </ContextCard>
         </Grid>
       </VStack>
 

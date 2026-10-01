@@ -46,6 +46,7 @@ export function ChatWelcome({
   return (
     <Box
       alignSelf="start"
+      minW={0}
       maxW="92%"
       border="1px solid"
       borderColor="border.neutral"
@@ -68,10 +69,28 @@ export function ChatWelcome({
         {t(`chat-welcome-${stage}`)}
       </Text>
       {action && (
-        <HStack mt={3}>
-          <Button size="sm" variant="outline" onClick={action.onClick}>
-            <Icon as={action.icon} />
-            {action.label}
+        <HStack mt={3} minW={0} maxW="full">
+          <Button
+            size="sm"
+            variant="outline"
+            maxW="full"
+            minW={0}
+            height="auto"
+            minH="36px"
+            py={2}
+            whiteSpace="normal"
+            onClick={action.onClick}
+          >
+            <Icon as={action.icon} flexShrink={0} />
+            <Text
+              as="span"
+              minW={0}
+              whiteSpace="normal"
+              overflowWrap="anywhere"
+              lineHeight="18px"
+            >
+              {action.label}
+            </Text>
           </Button>
         </HStack>
       )}

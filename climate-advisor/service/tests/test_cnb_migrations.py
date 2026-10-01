@@ -12,7 +12,9 @@ from uuid import uuid4
 import pytest
 from app.db.cnb import CnbBase
 from app.models.db import cnb_edit, cnb_reference, cnb_workspace  # noqa: F401
+from app.models.db.concept_note import ConceptNoteUpload
 from sqlalchemy import create_engine, inspect, text
+from sqlalchemy.exc import IntegrityError
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 CNB_DATABASE_URL = os.getenv("CNB_TEST_DATABASE_URL")
@@ -120,7 +122,16 @@ def test_ca_structured_upload_migration_keeps_explicit_constraint_name() -> None
     assert (
         "ADD CONSTRAINT ck_concept_note_uploads_structured_identity CHECK (" in sql
     )
+    assert "annotation_mode IS NOT NULL" in sql
+    assert "structured_size_bytes IS NOT NULL" in sql
     assert "ck_concept_note_uploads_ck_concept_note_uploads_structured_identity" not in sql
+    model_check = next(
+        constraint
+        for constraint in ConceptNoteUpload.__table__.constraints
+        if constraint.name == "ck_concept_note_uploads_structured_identity"
+    )
+    assert "annotation_mode IS NOT NULL" in str(model_check.sqltext)
+    assert "structured_size_bytes IS NOT NULL" in str(model_check.sqltext)
 
     environment = os.environ.copy()
     environment["CA_DATABASE_URL"] = "postgresql://unused:unused@localhost/unused"
@@ -508,6 +519,81 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas() -> No
             assert connection.execute(
                 text("SELECT version_num FROM alembic_version")
             ).scalar_one() == "20261001_120000"
+
+        run_id = uuid4()
+        upload_insert = text(
+            """
+            INSERT INTO concept_note_uploads (
+                upload_id, run_id, uploaded_by_user_id, filename, page_count,
+                annotation_mode, structured_s3_key, structured_sha256,
+                structured_size_bytes, structured_schema_version
+            ) VALUES (
+                :upload_id, :run_id, 'migration-test-user', 'fixture.pdf', 1,
+                :annotation_mode, :structured_s3_key, :structured_sha256,
+                :structured_size_bytes, :structured_schema_version
+            )
+            """
+        )
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO concept_note_runs (
+                        run_id, user_id, name, city_id, context_summary,
+                        permission_summary, idempotency_key, request_fingerprint
+                    ) VALUES (
+                        :run_id, 'migration-test-user', 'Migration test',
+                        'test-city', '{}'::jsonb, '{}'::jsonb, :idempotency_key,
+                        :request_fingerprint
+                    )
+                    """
+                ),
+                {
+                    "run_id": run_id,
+                    "idempotency_key": uuid4(),
+                    "request_fingerprint": "a" * 64,
+                },
+            )
+            connection.execute(
+                upload_insert,
+                {
+                    "upload_id": uuid4(),
+                    "run_id": run_id,
+                    "annotation_mode": None,
+                    "structured_s3_key": None,
+                    "structured_sha256": None,
+                    "structured_size_bytes": None,
+                    "structured_schema_version": None,
+                },
+            )
+            complete_identity = {
+                "run_id": run_id,
+                "annotation_mode": "none",
+                "structured_s3_key": "pdf-ocr/structured/complete.json",
+                "structured_sha256": "b" * 64,
+                "structured_size_bytes": 1,
+                "structured_schema_version": "citycatalyst.structured-document.1",
+            }
+            connection.execute(
+                upload_insert,
+                {"upload_id": uuid4(), **complete_identity},
+            )
+            for null_field in (
+                "annotation_mode",
+                "structured_s3_key",
+                "structured_sha256",
+                "structured_size_bytes",
+                "structured_schema_version",
+            ):
+                with pytest.raises(IntegrityError):
+                    with connection.begin_nested():
+                        connection.execute(
+                            upload_insert,
+                            {
+                                "upload_id": uuid4(),
+                                **{**complete_identity, null_field: None},
+                            },
+                        )
 
         _run_alembic(
             config="alembic.ini",

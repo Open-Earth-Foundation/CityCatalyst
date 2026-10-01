@@ -49,9 +49,11 @@ def upgrade() -> None:
         )
         OR
         (
-            annotation_mode IN ('none', 'visual_context')
+            annotation_mode IS NOT NULL
+            AND annotation_mode IN ('none', 'visual_context')
             AND structured_s3_key IS NOT NULL
             AND structured_sha256 IS NOT NULL
+            AND structured_size_bytes IS NOT NULL
             AND structured_size_bytes > 0
             AND structured_schema_version IS NOT NULL
         )

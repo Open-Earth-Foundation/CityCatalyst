@@ -16,6 +16,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.schema import conv
 
 from app.db import Base
 from app.models.db.types import JSONBCompat
@@ -248,14 +249,16 @@ class ConceptNoteUpload(Base):
             )
             OR
             (
-                annotation_mode IN ('none', 'visual_context')
+                annotation_mode IS NOT NULL
+                AND annotation_mode IN ('none', 'visual_context')
                 AND structured_s3_key IS NOT NULL
                 AND structured_sha256 IS NOT NULL
+                AND structured_size_bytes IS NOT NULL
                 AND structured_size_bytes > 0
                 AND structured_schema_version IS NOT NULL
             )
             """,
-            name="ck_concept_note_uploads_structured_identity",
+            name=conv("ck_concept_note_uploads_structured_identity"),
         ),
         Index(
             "ix_concept_note_uploads_run_status_received",

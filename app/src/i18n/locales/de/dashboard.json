@@ -36,7 +36,7 @@
   "view-site": "Seite anzeigen",
   "inventory-calculations-title": "Berechnung des Emissionsinventars",
   "inventory-results-title": "Ergebnisse des Emissionsinventars",
-  "gpc-inventory-description": "Verfolgen und überprüfen Sie Ihre {{Jahr}} Treibhausgas-Emissionsinventurdaten, die gemäß dem Greenhouse Gas Protocol for Cities (GPC) Framework erstellt wurden. <4>Erfahren Sie mehr</4> über das GPC-Framework für die Inventurberechnung.",
+  "gpc-inventory-description": "Verfolgen und überprüfen Sie Ihre {{year}} Treibhausgas-Emissionsinventurdaten, die gemäß dem Greenhouse Gas Protocol for Cities (GPC) Framework erstellt wurden. <4>Erfahren Sie mehr</4> über das GPC-Framework für die Inventurberechnung.",
   "gpc-inventory-description-public": "Überprüfen Sie die Ergebnisse des {{year}} Treibhausgas-Emissionsinventars, das gemäß dem GPC-Framework erstellt wurde. <4>Erfahren Sie mehr</4> über das GPC-Framework.",
   "coming-soon": "Demnächst",
   "learn-more": "Erfahren Sie mehr",

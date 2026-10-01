@@ -68,6 +68,8 @@ def generate_output_plan_chapters(
 
     Outputs:
     - ordered response chapters and provider I/O diagnostics
+    - public chapter `source_refs` always match the assembled chapter-input set;
+      unknown model refs are rejected, and omitted model refs are restored
 
     Side effects:
     - calls OpenAI when `use_llm=True`
@@ -126,7 +128,7 @@ def _generate_chapter(
     model_name: str,
     system_prompt: str,
 ) -> tuple[ReportChapterDraft, dict[str, object]]:
-    """Generate and validate one isolated report chapter."""
+    """Generate one isolated report chapter and restore its assembled source refs."""
     prompt = _build_chapter_prompt(chapter_input)
     logger.info(
         "Calling output-plan LLM API chapter=%s model=%s",
@@ -170,7 +172,7 @@ def _generate_chapter(
         key=chapter_input.key,
         title=chapter_input.title,
         markdown=parsed.markdown,
-        source_refs=parsed.source_refs,
+        source_refs=list(dict.fromkeys(chapter_input.source_refs)),
         limitations=parsed.limitations,
     )
     return draft, {
@@ -295,7 +297,7 @@ def aggregate_localized_chapters(
 def _validate_chapter_output(
     output: OutputPlanChapterResponse, chapter_input: ReportChapterInput
 ) -> None:
-    """Validate provenance and dominant language before exposing LLM output."""
+    """Reject invented provenance and wrong-language prose before exposing output."""
     unexpected_refs = set(output.source_refs) - set(chapter_input.source_refs)
     if unexpected_refs:
         raise ValueError(

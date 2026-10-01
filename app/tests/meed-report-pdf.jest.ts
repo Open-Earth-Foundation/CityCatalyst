@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from "@jest/globals";
 import { readFileSync } from "node:fs";
+import { inflateSync } from "node:zlib";
 import { buildReportPdf } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/report/meedReportPdf";
 
 // Serve the real logo from disk so the branded path is exercised, not skipped.
@@ -140,6 +141,30 @@ describe("report pdf", () => {
     expect(two.pdf.getNumberOfPages()).toBeGreaterThan(
       one.pdf.getNumberOfPages(),
     );
+  });
+
+  it("prints the classification status when chapter limitations omit it", async () => {
+    const { bytes } = await render([
+      {
+        ...document,
+        classificationStatus:
+          "AI-unreviewed. An AI model classified this authority scope and no person has accepted it.",
+        sections: document.sections.map((section) => ({
+          ...section,
+          limitations: [],
+        })),
+      },
+    ]);
+    const inflated = [...bytes.toString("latin1").matchAll(/stream\r?\n([\s\S]*?)\nendstream/g)]
+      .map((match) => {
+        try {
+          return inflateSync(Buffer.from(match[1], "latin1")).toString("latin1");
+        } catch {
+          return match[1];
+        }
+      })
+      .join("\n");
+    expect(inflated).toContain("AI-unreviewed");
   });
 
   it("survives a document with no sections", async () => {

@@ -4,6 +4,17 @@ from __future__ import annotations
 
 from typing import Any
 
+from pydantic import ValidationError
+
+from app.modules.prioritizer.authority_scope import (
+    AUTHORITY_SCOPE_BLOCKED,
+    AUTHORITY_SCOPE_FULL_DIRECT,
+    AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY,
+    AUTHORITY_SCOPE_QUALIFIED,
+    AUTHORITY_SCOPE_UNSPECIFIED,
+    authority_scope_summary,
+    resolve_report_authority_scope,
+)
 from app.modules.prioritizer.internal_models import (
     Action,
     ActionFinancialFeasibilityScoreRecord,
@@ -15,6 +26,7 @@ from app.modules.prioritizer.internal_models import (
     LegalAssessmentRecord,
 )
 from app.modules.prioritizer.models import (
+    AuthorityScopeClassificationMetadata,
     CityActionReportApiRequest,
     PrioritizerApiCityResult,
     RankedActionResult,
@@ -39,6 +51,12 @@ from app.modules.prioritizer.scoring_config import (
     IMPACT_WEIGHT_REDUCTION_SHARE,
     IMPACT_WEIGHT_TIMELINE,
 )
+
+FINANCE_MATCH_DIRECT = "direct"
+FINANCE_MATCH_CONTEXTUAL = "contextual"
+FINANCE_MATCH_UNKNOWN = "unknown"
+
+
 def validate_report_snapshot(
     request: CityActionReportApiRequest,
 ) -> tuple[PrioritizerApiCityResult, RankedActionResult, str]:
@@ -227,21 +245,27 @@ def _build_snapshot_input(context: ReportContext) -> ReportChapterInput:
 
     Implements Notion Snapshot. Uses ranking score/rank from the frontend
     snapshot plus live action/city labels. Builds a prominent, defensible ask
-    line from action, finance, and legal facts when available.
+    line from action, finance, and legal facts when available. Each signal row
+    carries the evidence domains it used; chapter `source_refs` are the union
+    of identity sources and those row-level references.
     """
+    signals = _snapshot_signal_rows(context)
     facts = {
         "city": _city_facts(context),
         "action": _action_identity_facts(context),
         "ask": _ask_facts(context),
         "ranking": _ranking_facts(context, include_explanation=True),
-        "signals": _snapshot_signal_rows(context),
+        "signals": signals,
     }
     return _chapter_input(
         key="snapshot",
         title=chapter_title("snapshot", context.language),
         context=context,
         facts=facts,
-        source_refs=["ranking_snapshot", "city", "action_pathways"],
+        source_refs=_unique_source_refs(
+            ["ranking_snapshot", "city", "action_pathways"],
+            *[row.get("source_refs", []) for row in signals],
+        ),
         limitations=_snapshot_limitations(context),
         notion_coverage=[
             "city and action identity",
@@ -251,7 +275,12 @@ def _build_snapshot_input(context: ReportContext) -> ReportChapterInput:
         ],
         notion_deferred=[],
         unsupported_claims=[
-            "Do not state project counts beyond the supplied finance evidence."
+            "Do not state project counts beyond the supplied finance evidence.",
+            "Do not claim legal authority over private or external assets when "
+            "authority_scope is municipal_assets_only.",
+            "Do not claim unrestricted direct authority when authority_scope "
+            "is qualified or unspecified.",
+            "Do not promote contextual finance candidates as confirmed action matches.",
         ],
     )
 
@@ -349,8 +378,9 @@ def _build_policy_backing_input(context: ReportContext) -> ReportChapterInput:
     """
     Build Policy Backing chapter input.
 
-    Implements policy alignment using live policy evidence. Page/quote quality is
-    limited to upstream policy evidence fields.
+    Implements policy alignment using live policy evidence. Rows without
+    document, signal relation, and a usable excerpt are omitted; missing page
+    numbers are kept as an explicit limitation.
     """
     return _chapter_input(
         key="policy_backing",
@@ -369,7 +399,10 @@ def _build_policy_backing_input(context: ReportContext) -> ReportChapterInput:
             "document, page, signal type, and policy excerpt",
         ],
         notion_deferred=["exact verbatim page citations where upstream evidence lacks them"],
-        unsupported_claims=["Do not quote policy text not present in policy_evidence."],
+        unsupported_claims=[
+            "Do not quote policy text not present in policy_evidence.",
+            "Do not treat omitted or incomplete excerpts as standalone quotations.",
+        ],
     )
 
 
@@ -400,7 +433,13 @@ def _build_legal_mandate_input(context: ReportContext) -> ReportChapterInput:
             "delivery lead",
         ],
         notion_deferred=["permits", "SEIA applicability"],
-        unsupported_claims=["Do not soften a blocked legal verdict."],
+        unsupported_claims=[
+            "Do not soften a blocked legal verdict.",
+            "Do not claim authority over private or external assets when "
+            "authority_scope is municipal_assets_only.",
+            "Do not claim unrestricted direct authority when authority_scope "
+            "is qualified or unspecified.",
+        ],
     )
 
 
@@ -409,7 +448,9 @@ def _build_financing_pathway_input(context: ReportContext) -> ReportChapterInput
     Build Financing, Precedents & Pathway chapter input.
 
     Implements funding route, named opportunities, comparable projects, and
-    conservative next steps from live financial and legal evidence.
+    conservative next steps from live financial and legal evidence. Catalogue
+    opportunities are labeled contextual; comparable projects carry upstream
+    action-match rationale.
     """
     return _chapter_input(
         key="financing_precedents_pathway",
@@ -437,7 +478,11 @@ def _build_financing_pathway_input(context: ReportContext) -> ReportChapterInput
             "suggested pathway",
         ],
         notion_deferred=[],
-        unsupported_claims=["Do not invent named funds or precedents."],
+        unsupported_claims=[
+            "Do not invent named funds or precedents.",
+            "Do not describe a contextual finance candidate as a confirmed action match.",
+            "Do not invent a comparable-project connection beyond match_rationale.",
+        ],
     )
 
 
@@ -599,6 +644,44 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
             else "A city-fit rating is not available."
         )
     )
+    city_fit_refs = (
+        ["mitigation_feasibility"]
+        if local_fit_score is not None
+        else ["ranking_snapshot"]
+    )
+    policy_refs = ["policy_scores"] if context.policy_score is not None else []
+    if context.legal_assessment is not None:
+        legal_refs = ["legal"]
+    elif legal:
+        legal_refs = ["ranking_snapshot"]
+    else:
+        legal_refs = []
+    funding_refs: list[str] = []
+    if context.financial_feasibility is not None:
+        funding_refs.append("financial_feasibility")
+    elif financial:
+        funding_refs.append("ranking_snapshot")
+    if context.finance_opportunities:
+        funding_refs.append("finance_catalogues")
+    track_refs: list[str] = []
+    if project_count is not None:
+        track_refs.append(
+            "financial_feasibility"
+            if context.financial_feasibility is not None
+            else "ranking_snapshot"
+        )
+    if context.comparable_projects:
+        track_refs.append("finance_catalogues")
+    # Prefer the conservative municipal-asset summary when that split is assessed.
+    # Otherwise keep the localized ownership or restrictions text from the source.
+    if legal.get("authority_scope") == AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY:
+        legal_detail = legal.get("authority_scope_summary")
+    else:
+        legal_detail = (
+            legal.get("ownership_description")
+            or legal.get("restrictions_description")
+            or legal.get("authority_scope_summary")
+        )
     return [
         {
             "what_we_checked": translate_term(
@@ -611,6 +694,7 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
                 if impact_band
                 else "A qualitative climate-benefit rating is not available."
             ),
+            "source_refs": ["ranking_snapshot", "action_pathways"],
         },
         {
             "what_we_checked": translate_term(
@@ -618,6 +702,7 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
             ),
             "reading": city_fit_label,
             "detail": city_fit_detail,
+            "source_refs": city_fit_refs,
         },
         {
             "what_we_checked": translate_term(
@@ -629,6 +714,7 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
                 "policy_support_score"
             ),
             "detail": _policy_snapshot_detail(policy),
+            "source_refs": policy_refs,
         },
         {
             "what_we_checked": translate_term(
@@ -637,7 +723,8 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
             "reading": translate_term(
                 "score_labels", legal.get("verdict_category"), context.language
             ),
-            "detail": ownership_description or restrictions_description,
+            "detail": legal_detail,
+            "source_refs": legal_refs,
         },
         {
             "what_we_checked": translate_term(
@@ -647,6 +734,7 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
                 "finance_routes", financial.get("route"), context.language
             ),
             "detail": _reader_finance_detail(financial),
+            "source_refs": funding_refs,
         },
         {
             "what_we_checked": translate_term(
@@ -659,6 +747,7 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
                 if project_count is not None and context.comparable_projects
                 else None
             ),
+            "source_refs": track_refs,
         },
     ]
 
@@ -784,8 +873,15 @@ def _ask_legal_position(context: ReportContext) -> str | None:
     legal = _legal_facts(context)
     if legal is None:
         return None
+    scope = legal.get("authority_scope")
     if legal.get("verdict_category") == "enabled":
-        if legal.get("ownership_category") == "enabled":
+        if scope == AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY:
+            return (
+                "an action the city can lead directly on municipal assets, while "
+                "private or external assets require facilitation rather than "
+                "direct authority"
+            )
+        if scope == AUTHORITY_SCOPE_FULL_DIRECT:
             return "an action the city is legally empowered to lead directly"
         return "an action the legal review finds the city can pursue"
     if legal.get("verdict_category") == "conditional":
@@ -1182,10 +1278,12 @@ def _reader_score_label(score: float | None, language: str) -> str | None:
 def _policy_facts(
     policy_score: ActionPolicyScoreRecord | None,
 ) -> dict[str, Any] | None:
-    """Return policy facts needed for policy-backing prose."""
+    """Return policy facts, keeping only reader-safe excerpts in the table."""
     if policy_score is None:
         return None
-    selected_evidence = _select_policy_evidence(policy_score.policy_evidence)
+    selected_evidence, omitted_incomplete = _select_policy_evidence(
+        policy_score.policy_evidence
+    )
     return {
         "action_id": policy_score.action_id,
         "policy_support_score": policy_score.policy_support_score,
@@ -1195,17 +1293,23 @@ def _policy_facts(
         "n_docs": policy_score.n_docs,
         "sum_strength": policy_score.sum_strength,
         "policy_evidence": selected_evidence,
+        "omitted_incomplete_evidence_count": omitted_incomplete,
         "evidence_selection_note": _policy_evidence_selection_note(
             available_evidence=len(policy_score.policy_evidence),
             selected_evidence=len(selected_evidence),
+            omitted_incomplete=omitted_incomplete,
         ),
     }
 
 
 def _select_policy_evidence(
     evidence_rows: list[dict[str, Any]], *, limit: int = 5
-) -> list[dict[str, Any]]:
-    """Select the strongest available policy excerpts for a reader-facing table."""
+) -> tuple[list[dict[str, Any]], int]:
+    """Select the strongest reader-safe policy excerpts for a display table."""
+    reader_safe_rows = [
+        row for row in evidence_rows if _policy_evidence_has_minimum_context(row)
+    ]
+    omitted_incomplete = len(evidence_rows) - len(reader_safe_rows)
 
     def priority(row: dict[str, Any]) -> tuple[int, int, int, float, int]:
         """Rank direct commitments ahead of broader governance context."""
@@ -1218,25 +1322,56 @@ def _select_policy_evidence(
             int(evidence_rank) if isinstance(evidence_rank, int) else 10_000,
         )
 
-    return sorted(evidence_rows, key=priority)[:limit]
+    return sorted(reader_safe_rows, key=priority)[:limit], omitted_incomplete
+
+
+def _policy_evidence_has_minimum_context(row: dict[str, Any]) -> bool:
+    """Return whether one policy row can be shown as a structured excerpt."""
+    document_name = row.get("document_name")
+    signal_relation = row.get("signal_relation")
+    has_document = isinstance(document_name, str) and bool(document_name.strip())
+    has_signal = isinstance(signal_relation, str) and bool(signal_relation.strip())
+    return has_document and has_signal and _usable_policy_excerpt(row.get("evidence_text"))
+
+
+def _usable_policy_excerpt(value: Any) -> bool:
+    """Return whether excerpt text has readable content beyond empty markup."""
+    if not isinstance(value, str):
+        return False
+    stripped = (
+        value.replace("<br>", " ")
+        .replace("<br/>", " ")
+        .replace("<br />", " ")
+        .replace("<p>", " ")
+        .replace("</p>", " ")
+        .strip()
+    )
+    return bool(stripped)
 
 
 def _policy_evidence_selection_note(
     *,
     available_evidence: int,
     selected_evidence: int,
+    omitted_incomplete: int,
 ) -> str:
     """Explain how aggregate policy counts relate to the displayed excerpts."""
-    if available_evidence <= selected_evidence:
+    omitted_note = (
+        f" {omitted_incomplete} incomplete excerpts were omitted because they "
+        "lacked document, signal, or quotation context."
+        if omitted_incomplete
+        else ""
+    )
+    if available_evidence - omitted_incomplete <= selected_evidence:
         return (
             f"The table presents the {selected_evidence} detailed excerpts available "
             "for review, ordered with direct commitments before broader governance "
-            "provisions."
+            f"provisions.{omitted_note}"
         )
     return (
         f"The {selected_evidence} excerpts below were selected from "
         f"{available_evidence} detailed references, prioritizing direct commitments, "
-        "explicit references, and stronger evidence."
+        f"explicit references, and stronger evidence.{omitted_note}"
     )
 
 
@@ -1246,14 +1381,29 @@ def _policy_limitations(context: ReportContext) -> list[str]:
         return ["Policy-backing information is not available for this action."]
     if not context.policy_score.policy_evidence:
         return ["Detailed policy excerpts are not available for this action."]
-    return []
+    selected_evidence, omitted_incomplete = _select_policy_evidence(
+        context.policy_score.policy_evidence
+    )
+    limitations: list[str] = []
+    if omitted_incomplete:
+        limitations.append(
+            "Some policy excerpts were omitted because they lacked document, signal, "
+            "or quotation context."
+        )
+    if not selected_evidence:
+        limitations.append("Detailed policy excerpts are not available for this action.")
+    elif any(row.get("page") in (None, "") for row in selected_evidence):
+        limitations.append(
+            "Some displayed policy excerpts do not include a page number."
+        )
+    return limitations
 
 
 def _legal_facts(context: ReportContext) -> dict[str, Any] | None:
-    """Return legal facts needed for legal-mandate prose."""
+    """Return legal facts including a conservative authority-scope classification."""
     if context.legal_assessment is not None:
         legal = context.legal_assessment
-        return {
+        facts = {
             "action_id": legal.action_id,
             "country_code": legal.country_code,
             "gpc_sector": translate_term(
@@ -1282,16 +1432,96 @@ def _legal_facts(context: ReportContext) -> dict[str, Any] | None:
             ),
             "legal_references": legal.legal_references,
         }
+        facts.update(
+            _authority_scope_fields(facts, legal_assessment=legal)
+        )
+        return facts
 
     snapshot_legal = context.ranked_action.evidence_summary.feasibility.legal
     if not snapshot_legal.assessment_present:
         return None
-    return {
+    facts = {
         "verdict_category": snapshot_legal.verdict_category,
         "component_score": snapshot_legal.component_score,
         "assessment_present": snapshot_legal.assessment_present,
         "assessment_missing": snapshot_legal.assessment_missing,
     }
+    facts.update(_authority_scope_fields(facts, legal_assessment=None))
+    return facts
+
+
+def _authority_scope_fields(
+    legal: dict[str, Any],
+    *,
+    legal_assessment: LegalAssessmentRecord | None,
+) -> dict[str, Any]:
+    """Return structured authority-scope fields from release-validated labels."""
+    scope, status = _resolve_authority_scope(
+        legal,
+        legal_assessment=legal_assessment,
+    )
+    ownership_description = legal.get("ownership_description")
+    return {
+        "authority_scope": scope,
+        "authority_scope_summary": authority_scope_summary(
+            scope,
+            ownership_description
+            if isinstance(ownership_description, str)
+            else None,
+            status=status,
+        ),
+        "authority_scope_status": status,
+        "authority_scope_validated": status == "release_validated"
+        and scope
+        in {
+            AUTHORITY_SCOPE_FULL_DIRECT,
+            AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY,
+            AUTHORITY_SCOPE_BLOCKED,
+        },
+    }
+
+
+def _resolve_authority_scope(
+    legal: dict[str, Any],
+    *,
+    legal_assessment: LegalAssessmentRecord | None,
+) -> tuple[str, str]:
+    """Resolve report scope from sidecar provenance plus structural guards.
+
+    Phrase/marker scanning is intentionally absent. Missing or uncertain labels
+    fail closed to qualified/unspecified wording.
+    """
+    verdict = legal.get("verdict_category")
+    ownership = legal.get("ownership_category")
+    if legal_assessment is not None:
+        review_status = legal_assessment.authority_scope_review_status
+        if review_status in {"pending_human_review", "human_rejected"}:
+            if verdict == "blocked":
+                return AUTHORITY_SCOPE_BLOCKED, "release_validated"
+            if verdict in {"enabled", "conditional"}:
+                return AUTHORITY_SCOPE_QUALIFIED, review_status
+            return AUTHORITY_SCOPE_UNSPECIFIED, review_status
+        if legal_assessment.authority_scope_report_label:
+            return (
+                legal_assessment.authority_scope_report_label,
+                legal_assessment.authority_scope_status or "missing_sidecar",
+            )
+        return resolve_report_authority_scope(
+            verdict_category=verdict if isinstance(verdict, str) else None,
+            ownership_category=ownership if isinstance(ownership, str) else None,
+            selected_label=legal_assessment.authority_scope_selected_label,
+            label_accepted=bool(legal_assessment.authority_scope_selected_label),
+            confidence_passed=bool(
+                legal_assessment.authority_scope_confidence_passed
+            ),
+        )
+    return resolve_report_authority_scope(
+        verdict_category=verdict if isinstance(verdict, str) else None,
+        ownership_category=ownership if isinstance(ownership, str) else None,
+        selected_label=None,
+        label_accepted=False,
+        confidence_passed=False,
+    )
 
 
 def _legal_delivery_facts(context: ReportContext) -> dict[str, Any] | None:
@@ -1300,10 +1530,16 @@ def _legal_delivery_facts(context: ReportContext) -> dict[str, Any] | None:
     if legal is None:
         return None
     verdict = legal.get("verdict_category")
-    ownership = legal.get("ownership_category")
     restrictions = legal.get("restrictions_description")
+    scope = legal.get("authority_scope")
 
-    if verdict == "enabled" and ownership == "enabled":
+    if scope == AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY:
+        delivery_position = (
+            "The legal review finds that the municipality can lead delivery "
+            "directly on municipal assets. For private or external assets, the "
+            "city facilitates rather than exercising direct authority."
+        )
+    elif scope == AUTHORITY_SCOPE_FULL_DIRECT:
         delivery_position = (
             "The legal review finds that the municipality can lead delivery directly."
         )
@@ -1319,7 +1555,13 @@ def _legal_delivery_facts(context: ReportContext) -> dict[str, Any] | None:
     else:
         delivery_position = "The city's legal delivery position is not yet confirmed."
 
-    if verdict == "enabled":
+    if scope == AUTHORITY_SCOPE_MUNICIPAL_ASSETS_ONLY:
+        additional_approval = (
+            "The legal review identifies no additional decision-making approval for "
+            "municipal assets. Private or external assets remain outside direct "
+            "municipal authority."
+        )
+    elif scope == AUTHORITY_SCOPE_FULL_DIRECT:
         additional_approval = (
             "The legal review identifies no additional decision-making approval."
         )
@@ -1331,6 +1573,10 @@ def _legal_delivery_facts(context: ReportContext) -> dict[str, Any] | None:
     return {
         "delivery_position": delivery_position,
         "additional_approval": additional_approval,
+        "authority_scope": scope,
+        "authority_scope_summary": legal.get("authority_scope_summary"),
+        "authority_scope_status": legal.get("authority_scope_status"),
+        "authority_scope_validated": legal.get("authority_scope_validated"),
         "unresolved_checks": [
             "Whether permits or environmental review requirements apply has not been "
             "confirmed."
@@ -1353,6 +1599,14 @@ def _legal_limitations(context: ReportContext) -> list[str]:
     ]
     if context.legal_assessment is None:
         limitations.append("A legal review is not available for this action.")
+        return limitations
+    status = context.legal_assessment.authority_scope_status
+    if status and status != "release_validated":
+        limitations.append(
+            "Authority-scope classification is pending or uncertain for this "
+            "legal release; wording stays conservative until a matching "
+            "release-validated sidecar label is available."
+        )
     return limitations
 
 
@@ -1394,7 +1648,7 @@ def _financial_facts(context: ReportContext) -> dict[str, Any] | None:
 def _finance_opportunity_facts(
     context: ReportContext, *, report_category: str
 ) -> list[dict[str, Any]]:
-    """Return reader-facing programme facts for one availability group."""
+    """Return programme facts labeled as contextual catalogue candidates."""
     rows: list[dict[str, Any]] = []
     for opportunity in context.finance_opportunities:
         if opportunity.report_category != report_category:
@@ -1416,16 +1670,20 @@ def _finance_opportunity_facts(
                 translate_term("application_routes", route, context.language)
                 for route in opportunity.city_application
             ],
+            "match_class": FINANCE_MATCH_CONTEXTUAL,
+            "match_label": "Contextual candidate",
         }
         if report_category == "monitor":
             row["reader_note"] = (
-                "This programme is closed but may recur. It is not currently available; "
-                "eligibility should be checked if it reopens."
+                "This is a contextual sector/route candidate, not a confirmed match "
+                "to this action. This programme is closed but may recur. It is not "
+                "currently available; eligibility should be checked if it reopens."
             )
         else:
             row["reader_note"] = (
-                "This programme may support municipal delivery. Current terms and "
-                "eligibility for this action should be confirmed."
+                "This is a contextual sector/route candidate, not a confirmed match "
+                "to this action. Current terms and eligibility for this action should "
+                "be confirmed."
             )
         rows.append(row)
     return rows
@@ -1436,6 +1694,9 @@ def _comparable_project_facts(context: ReportContext) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for project in context.comparable_projects:
         name = project.project_name_i18n.get(context.language) or project.project_name
+        match_facts = _comparable_project_match_facts(
+            project, selected_action_id=context.action.action_id
+        )
         rows.append(
             {
                 "project_name": name,
@@ -1444,9 +1705,56 @@ def _comparable_project_facts(context: ReportContext) -> list[dict[str, Any]]:
                     "lifecycle_stages", project.lifecycle_stage, context.language
                 ),
                 "funding_summary": _project_funding_summary(project),
+                "selected_action_id": context.action.action_id,
+                **match_facts,
             }
         )
     return rows
+
+
+def _comparable_project_match_facts(
+    project: ClimateFinanceProjectRecord, *, selected_action_id: str
+) -> dict[str, Any]:
+    """Derive a reader-safe match rationale from upstream action_matches only."""
+    selected_matches = [
+        match
+        for match in project.action_matches
+        if isinstance(match, dict)
+        and _normalize_key(str(match.get("action_id") or ""))
+        == _normalize_key(selected_action_id)
+    ]
+    selected_match = selected_matches[0] if selected_matches else None
+    confidence_value = (
+        selected_match.get("confidence") if selected_match is not None else None
+    )
+    confidence = (
+        str(confidence_value).strip()
+        if confidence_value not in (None, "")
+        else None
+    )
+    if confidence:
+        rationale = (
+            f"Matched to selected action {selected_action_id} with confidence "
+            f"{confidence}."
+        )
+        match_class = FINANCE_MATCH_DIRECT
+    elif selected_match is not None:
+        rationale = (
+            f"Matched to selected action {selected_action_id}, but no match "
+            "confidence is available."
+        )
+        match_class = FINANCE_MATCH_DIRECT
+    else:
+        rationale = (
+            f"Returned for selected action {selected_action_id}, but no "
+            "action-match confidence is available."
+        )
+        match_class = FINANCE_MATCH_UNKNOWN
+    return {
+        "match_class": match_class,
+        "match_confidence": confidence,
+        "match_rationale": rationale,
+    }
 
 
 def _project_funding_summary(project: ClimateFinanceProjectRecord) -> str | None:
@@ -1479,8 +1787,9 @@ def _finance_limitations(context: ReportContext) -> list[str]:
         limitations.append("Named financing opportunities are not available.")
     else:
         limitations.append(
-            "The programmes listed may support municipal delivery, but current terms "
-            "and eligibility for this action must be confirmed."
+            "The programmes listed are contextual sector/route candidates, not "
+            "confirmed matches to this action. Current terms and eligibility must "
+            "still be confirmed."
         )
     if not context.comparable_projects:
         limitations.append("Named comparable projects are not available.")
@@ -1514,6 +1823,32 @@ def _source_summary_facts(context: ReportContext) -> dict[str, Any]:
         },
         "staleness_evaluated": False,
     }
+
+
+def authority_scope_classification_metadata(
+    legal: LegalAssessmentRecord | None,
+) -> AuthorityScopeClassificationMetadata | None:
+    """Build reader-safe classification metadata from a bound legal row."""
+    if legal is None:
+        return None
+    if not (
+        legal.authority_scope_classification_method
+        and legal.authority_scope_review_status
+        and legal.authority_scope_report_label
+        and legal.authority_scope_status
+    ):
+        return None
+    try:
+        return AuthorityScopeClassificationMetadata.model_validate(
+            {
+                "classification_method": legal.authority_scope_classification_method,
+                "review_status": legal.authority_scope_review_status,
+                "authority_scope": legal.authority_scope_report_label,
+                "authority_scope_status": legal.authority_scope_status,
+            }
+        )
+    except ValidationError:
+        return None
 
 
 def _source_chapter_limitations(context: ReportContext) -> list[str]:
@@ -1678,6 +2013,16 @@ def _round_reader_numbers(value: Any) -> Any:
 def _first_present(*values: Any) -> Any:
     """Return the first non-null value while preserving valid zeroes."""
     return next((value for value in values if value is not None), None)
+
+
+def _unique_source_refs(*ref_groups: list[Any]) -> list[str]:
+    """Return source refs in first-seen order, skipping empty values."""
+    refs: list[str] = []
+    for group in ref_groups:
+        for ref in group:
+            if isinstance(ref, str) and ref and ref not in refs:
+                refs.append(ref)
+    return refs
 
 
 def _drop_empty_values(value: Any) -> Any:

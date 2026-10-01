@@ -769,7 +769,7 @@
   "population-refresh": "Atualizar",
   "population-refresh-hint": "O Clima ainda não pode usar essa figura. Atualize para adicioná-la a esta nota conceitual.",
   "population-refresh-outdated": "O CityCatalyst agora tem um número diferente. Atualize para usá-lo nesta nota conceitual.",
-  "edit-context-sources": "Suporte à nota conceitual de contexto: {{sources}}",
+  "edit-context-sources": "Contexto de apoio da nota conceitual: {{sources}}",
   "edit-context-city": "Perfil da cidade CityCatalyst",
   "edit-context-project": "Projeto CityCatalyst",
   "edit-context-ghgi": "Inventário de GEE CityCatalyst",

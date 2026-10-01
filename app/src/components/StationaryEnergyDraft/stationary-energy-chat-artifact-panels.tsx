@@ -4,6 +4,7 @@ import {
   Box,
   Flex,
   HStack,
+  Text,
   Textarea,
   VStack,
   chakra,
@@ -50,6 +51,7 @@ import { getParamValueRequired } from "@/util/helpers";
 type ClimaChatPanelProps = {
   actions: Pick<
     StationaryEnergyChatArtifactControllerActions,
+    | "cancelDraftStartResume"
     | "chooseDecision"
     | "choosePreference"
     | "continueStaleDraft"
@@ -88,6 +90,8 @@ type ClimaChatPanelProps = {
     | "hasSourceBackedProposals"
     | "loadingAction"
     | "pendingDecisionCount"
+    | "pendingDraftStartRequest"
+    | "draftStartResumeNotice"
     | "resolvedProposalIds"
     | "showStaleWarning"
     | "sourcePreference"
@@ -619,6 +623,27 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
         py={3}
         bg="background.backgroundGreyFlat"
       >
+        {state.pendingDraftStartRequest || state.draftStartResumeNotice ? (
+          <Box role="status" maxW="900px" mx="auto" mb={3}>
+            <Text color="content.secondary" fontSize="label.md">
+              {state.pendingDraftStartRequest
+                ? t("chat-pending-request-waiting", {
+                    request: state.pendingDraftStartRequest,
+                  })
+                : state.draftStartResumeNotice}
+            </Text>
+            {state.pendingDraftStartRequest ? (
+              <Button
+                variant="outline"
+                size="sm"
+                mt={2}
+                onClick={actions.cancelDraftStartResume}
+              >
+                {t("chat-pending-request-cancel")}
+              </Button>
+            ) : null}
+          </Box>
+        ) : null}
         <form
           onSubmit={(event) => {
             shouldFollowChatRef.current = true;

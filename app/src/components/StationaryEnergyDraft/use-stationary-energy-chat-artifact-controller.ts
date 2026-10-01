@@ -73,6 +73,7 @@ import {
 import { resolveStationaryEnergyDraftResume } from "@/components/StationaryEnergyDraft/resume";
 import {
   clearStoredDraftContext,
+  readStoredDraftContext,
   writeStoredDraftContext,
 } from "@/components/StationaryEnergyDraft/storage";
 import type {
@@ -124,6 +125,8 @@ export type StationaryEnergyChatArtifactControllerState = {
   hasSourceBackedProposals: boolean;
   loadingAction: LoadingAction;
   pendingDecisionCount: number;
+  pendingDraftStartRequest: string | null;
+  draftStartResumeNotice: string | null;
   resolvedProposalIds: Set<string>;
   rows: ArtifactRow[];
   showStaleWarning: boolean;
@@ -135,6 +138,7 @@ export type StationaryEnergyChatArtifactControllerState = {
 };
 
 export type StationaryEnergyChatArtifactControllerActions = {
+  cancelDraftStartResume: () => void;
   chooseDecision: (
     proposal: DraftProposal,
     action: DraftDecisionAction,
@@ -372,7 +376,10 @@ function enrichToolChoiceSummary(
           (choice.notation_key ? `Notation key ${choice.notation_key}` : null),
         source_meta: choice.source_meta ?? choice.unavailable_reason ?? null,
         value:
-          choice.value ?? choice.unavailable_explanation ?? choice.reason ?? null,
+          choice.value ??
+          choice.unavailable_explanation ??
+          choice.reason ??
+          null,
       };
     }
     return choice;
@@ -578,6 +585,35 @@ export function useStationaryEnergyChatArtifactController(
     draftRunId: string;
     content: string;
   } | null>(null);
+  const pendingDraftStartResumeRef = useRef(pendingDraftStartResume);
+  const [draftStartResumeNotice, setDraftStartResumeNotice] = useState<
+    string | null
+  >(null);
+  // Update storage at the same time as the queue, before polling or reload can
+  // observe it. Clearing the queue keeps the active run available for review.
+  const updatePendingDraftStartResume = useCallback(
+    (pending: typeof pendingDraftStartResume): void => {
+      const previous = pendingDraftStartResumeRef.current;
+      pendingDraftStartResumeRef.current = pending;
+      setPendingDraftStartResume(pending);
+      const stored = readStoredDraftContext(inventoryId);
+      if (pending) {
+        setDraftStartResumeNotice(null);
+        writeStoredDraftContext(inventoryId, {
+          draftRunId: pending.draftRunId,
+          threadId:
+            stored?.draftRunId === pending.draftRunId ? stored.threadId : null,
+          pendingRequest: pending.content,
+        });
+      } else if (previous && stored?.draftRunId === previous.draftRunId) {
+        writeStoredDraftContext(inventoryId, {
+          draftRunId: stored.draftRunId,
+          threadId: stored.threadId,
+        });
+      }
+    },
+    [inventoryId],
+  );
   // The tool the agent is running in the current chat turn, if any.
   const [activeToolName, setActiveToolName] = useState<string | null>(null);
   const canSaveAcceptedRowsToInventoryRef = useRef(false);
@@ -605,6 +641,26 @@ export function useStationaryEnergyChatArtifactController(
 
   const applyDraftState = useCallback(
     (payload: DraftStatusResponse) => {
+      const stored = readStoredDraftContext(inventoryId);
+      const pending =
+        pendingDraftStartResumeRef.current ??
+        (stored?.draftRunId === payload.draft_run_id && stored.pendingRequest
+          ? { draftRunId: stored.draftRunId, content: stored.pendingRequest }
+          : null);
+      if (pending && pending.draftRunId === payload.draft_run_id) {
+        if (hasTerminalDraftStatus(payload.status)) {
+          updatePendingDraftStartResume(null);
+          setDraftStartResumeNotice(
+            t(
+              payload.status === "failed"
+                ? "chat-pending-request-failed"
+                : "chat-pending-request-ended",
+            ),
+          );
+        } else if (!pendingDraftStartResumeRef.current) {
+          updatePendingDraftStartResume(pending);
+        }
+      }
       const nextDecisionState = buildInitialDecisionState(payload);
       const nextResolvedProposalIds = resolvedProposalIdsFromReview(payload);
       canSaveAcceptedRowsToInventoryRef.current = canSaveToInventory({
@@ -625,10 +681,14 @@ export function useStationaryEnergyChatArtifactController(
         writeStoredDraftContext(inventoryId, {
           draftRunId: payload.draft_run_id,
           threadId: payload.thread_id ?? null,
+          ...(pendingDraftStartResumeRef.current?.draftRunId ===
+          payload.draft_run_id
+            ? { pendingRequest: pendingDraftStartResumeRef.current.content }
+            : {}),
         });
       }
     },
-    [inventoryId],
+    [inventoryId, t, updatePendingDraftStartResume],
   );
 
   const loadDraftRuns = useCallback(async (): Promise<DraftListItem[]> => {
@@ -1041,7 +1101,7 @@ export function useStationaryEnergyChatArtifactController(
           lastUserChatContentRef.current,
         );
         if (resume) {
-          setPendingDraftStartResume(resume);
+          updatePendingDraftStartResume(resume);
         }
         void refreshDraftStatusSilently(toolDraftRunId).catch((error) => {
           showError(
@@ -1222,6 +1282,7 @@ export function useStationaryEnergyChatArtifactController(
       removeInventorySaveConfirmationMessages,
       showError,
       t,
+      updatePendingDraftStartResume,
     ],
   );
 
@@ -1284,6 +1345,8 @@ export function useStationaryEnergyChatArtifactController(
   );
 
   const startDraft = useCallback(async (): Promise<void> => {
+    updatePendingDraftStartResume(null);
+    setDraftStartResumeNotice(null);
     clearError();
     setLoadingAction("start");
     try {
@@ -1319,6 +1382,7 @@ export function useStationaryEnergyChatArtifactController(
     refreshDraftStatus,
     showError,
     t,
+    updatePendingDraftStartResume,
   ]);
 
   const choosePreference = useCallback(
@@ -1338,10 +1402,17 @@ export function useStationaryEnergyChatArtifactController(
   }, [draftState?.draft_run_id]);
 
   const resetConversationState = useCallback((): void => {
+    updatePendingDraftStartResume(null);
+    setDraftStartResumeNotice(null);
     setChatMessages([]);
     setSourcePreference(null);
     clearError();
-  }, [clearError]);
+  }, [clearError, updatePendingDraftStartResume]);
+
+  const cancelDraftStartResume = useCallback((): void => {
+    updatePendingDraftStartResume(null);
+    setDraftStartResumeNotice(t("chat-pending-request-canceled"));
+  }, [t, updatePendingDraftStartResume]);
 
   const startOver = useCallback((): void => {
     clearStoredDraftContext(inventoryId);
@@ -1543,8 +1614,14 @@ export function useStationaryEnergyChatArtifactController(
       }
 
       clearError();
-      // Sending anything settles a pending resume: this is it, or a newer request.
-      setPendingDraftStartResume(null);
+      // Follow-up messages do not cancel an earlier request. Only its automatic
+      // continuation or an explicit user action consumes the queue.
+      if (resumeAfterDraftStart) {
+        if (!pendingDraftStartResumeRef.current) {
+          return;
+        }
+        updatePendingDraftStartResume(null);
+      }
       if (!resumeAfterDraftStart) {
         setChatInput("");
         appendTextMessage("user", content);
@@ -1609,6 +1686,7 @@ export function useStationaryEnergyChatArtifactController(
       showError,
       startStream,
       t,
+      updatePendingDraftStartResume,
     ],
   );
 
@@ -1643,9 +1721,12 @@ export function useStationaryEnergyChatArtifactController(
     ) {
       return;
     }
-    // Send from a timer like the status poller; sendChatMessage clears the
-    // pending resume, and a changed input cancels this attempt.
+    // Wait for any follow-up chat turn to finish. The ref also guards a cancel
+    // action that happens before React cleans up this scheduled continuation.
     const timeout = window.setTimeout(() => {
+      if (pendingDraftStartResumeRef.current !== pending) {
+        return;
+      }
       void sendChatMessage(pending.content, { resumeAfterDraftStart: true });
     }, 0);
     return () => window.clearTimeout(timeout);
@@ -1745,6 +1826,7 @@ export function useStationaryEnergyChatArtifactController(
 
   return {
     actions: {
+      cancelDraftStartResume,
       chooseDecision,
       choosePreference,
       continueStaleDraft,
@@ -1791,6 +1873,8 @@ export function useStationaryEnergyChatArtifactController(
       hasSourceBackedProposals,
       loadingAction,
       pendingDecisionCount: pendingDecisionProposals.length,
+      pendingDraftStartRequest: pendingDraftStartResume?.content ?? null,
+      draftStartResumeNotice,
       resolvedProposalIds,
       rows,
       showStaleWarning,

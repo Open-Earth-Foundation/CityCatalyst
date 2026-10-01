@@ -1,3 +1,5 @@
+from app.utils.streaming_runner import stream_agent_events
+
 """Regression coverage for request-local MLflow runs without a remote backend."""
 
 import asyncio
@@ -349,14 +351,14 @@ async def test_other_chat_modes_link_traces_before_model_start(monkeypatch, mode
     monkeypatch.setattr(
         "app.utils.streaming_telemetry.update_current_trace_context", update_context
     )
-    monkeypatch.setattr("app.utils.streaming_handler.Runner.run_streamed", run_streamed)
+    monkeypatch.setattr("app.utils.streaming_runner.Runner.run_streamed", run_streamed)
     payload = MessageCreateRequest(user_id="user-1", content="Review the context")
     # Every chat owns its root around the entire request, including persistence.
     with conversation_trace(
         payload.content, attributes=handler.workflow_context.telemetry()
     ):
         assert [
-            chunk async for chunk in handler._stream_agent_events(object(), payload, [])
+            chunk async for chunk in stream_agent_events(handler, object(), payload, [])
         ] == []
     assert recorded["span"]["name"] == "Climate Advisor Turn"
     assert (

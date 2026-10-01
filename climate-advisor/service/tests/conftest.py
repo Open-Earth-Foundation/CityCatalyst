@@ -46,7 +46,7 @@ def chat_service(monkeypatch):
     service.close = AsyncMock()
     service.current_cc_token.return_value = None
     monkeypatch.setattr(
-        "app.utils.streaming_handler.AgentService", lambda **kw: service
+        "app.utils.streaming_agent.AgentService", lambda **kw: service
     )
     monkeypatch.setattr(
         StreamingHandler, "_load_conversation_history", AsyncMock(return_value=[])

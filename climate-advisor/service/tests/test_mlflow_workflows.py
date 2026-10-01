@@ -16,6 +16,7 @@ from app.utils.streaming_handler import (
     StreamingHandler,
     climate_advisor_experiment_name,
 )
+from app.utils.streaming_runner import stream_agent_events
 from app.utils.streaming_telemetry import mlflow_tags
 
 
@@ -216,7 +217,7 @@ def test_cnb_interaction_uses_visible_workflow_tag_on_run_and_trace(
         fake_start_trace_span,
     )
     monkeypatch.setattr(
-        "app.utils.streaming_handler.Runner.run_streamed",
+        "app.utils.streaming_runner.Runner.run_streamed",
         fake_run_streamed,
     )
     monkeypatch.setattr(
@@ -230,7 +231,8 @@ def test_cnb_interaction_uses_visible_workflow_tag_on_run_and_trace(
         ):
             return [
                 chunk
-                async for chunk in handler._stream_agent_events(
+                async for chunk in stream_agent_events(
+                    handler,
                     object(),
                     payload,
                     [],

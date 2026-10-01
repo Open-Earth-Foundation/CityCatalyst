@@ -8,7 +8,12 @@ from app.models.requests import MessageCreateRequest
 from app.services.native_input_catalog_service import ActiveRequestContext
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.sse import format_sse
+from app.utils.streaming_context import (
+    native_input_catalog_request,
+    resolve_workflow_context,
+)
 from app.utils.streaming_handler import StreamingHandler
+from app.utils.streaming_runner import build_stream_run_config
 from tests.streaming_fixtures import _parse_sse_payload
 
 
@@ -52,7 +57,7 @@ class StreamingHandlerTests(unittest.IsolatedAsyncioTestCase):
             options={"native_input_selection": {"catalog_id": "forged"}},
         )
 
-        context = handler._native_input_catalog_request(payload)
+        context = native_input_catalog_request(handler, payload)
 
         self.assertEqual(
             context,
@@ -82,7 +87,7 @@ class StreamingHandlerTests(unittest.IsolatedAsyncioTestCase):
             context={"organization_id": "organization-1"},
         )
 
-        self.assertIsNone(handler._native_input_catalog_request(payload))
+        self.assertIsNone(native_input_catalog_request(handler, payload))
 
     def test_native_input_catalog_context_requires_current_core_credential(
         self,
@@ -110,7 +115,7 @@ class StreamingHandlerTests(unittest.IsolatedAsyncioTestCase):
             options={"native_input_selection": {"catalog_id": "forged"}},
         )
 
-        context = handler._native_input_catalog_request(payload)
+        context = native_input_catalog_request(handler, payload)
 
         self.assertIsNone(context)
 
@@ -153,7 +158,7 @@ class StreamingHandlerTests(unittest.IsolatedAsyncioTestCase):
 
         with (
             patch(
-                "app.utils.streaming_handler.AgentService",
+                "app.utils.streaming_agent.AgentService",
                 return_value=fake_agent_service,
             ) as mock_agent_service,
             patch.object(
@@ -161,9 +166,8 @@ class StreamingHandlerTests(unittest.IsolatedAsyncioTestCase):
                 "_load_conversation_history",
                 AsyncMock(return_value=[]),
             ),
-            patch.object(
-                StreamingHandler,
-                "_stream_agent_events",
+            patch(
+                "app.utils.streaming_handler.stream_agent_events",
                 new=fake_stream_events,
             ),
             patch(
@@ -218,13 +222,12 @@ class StreamingHandlerTests(unittest.IsolatedAsyncioTestCase):
             )
         )
 
-        with patch.object(
-            handler,
-            "_load_thread_workflow_context",
+        with patch(
+            "app.utils.streaming_context.load_thread_workflow_context",
             thread_context_loader,
         ):
-            await handler._resolve_workflow_context(
-                MessageCreateRequest(user_id="user-1", content="hello")
+            await resolve_workflow_context(
+                handler, MessageCreateRequest(user_id="user-1", content="hello")
             )
 
         thread_context_loader.assert_awaited_once()
@@ -250,7 +253,7 @@ class StreamingHandlerTests(unittest.IsolatedAsyncioTestCase):
             stationary_energy_draft_run_id=draft_run_id
         )
 
-        run_config = handler._run_config(payload)
+        run_config = build_stream_run_config(handler, payload)
 
         self.assertEqual(
             run_config.workflow_name,

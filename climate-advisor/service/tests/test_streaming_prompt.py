@@ -9,6 +9,7 @@ from app.models.requests import MessageCreateRequest
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.streaming_handler import StreamingHandler
 from app.utils.streaming_prompt import stationary_energy_review_instruction_text
+from app.utils.streaming_runner import stream_agent_events
 from app.utils.streaming_telemetry import mlflow_tags
 
 
@@ -66,7 +67,7 @@ class StreamingPromptTests(unittest.IsolatedAsyncioTestCase):
 
         with (
             patch(
-                "app.utils.streaming_handler.Runner.run_streamed",
+                "app.utils.streaming_runner.Runner.run_streamed",
                 side_effect=fake_run_streamed,
             ),
             patch(
@@ -76,7 +77,8 @@ class StreamingPromptTests(unittest.IsolatedAsyncioTestCase):
         ):
             chunks = [
                 chunk
-                async for chunk in handler._stream_agent_events(
+                async for chunk in stream_agent_events(
+                    handler,
                     agent,
                     payload,
                     conversation_history,
@@ -146,12 +148,13 @@ class StreamingPromptTests(unittest.IsolatedAsyncioTestCase):
             raise RuntimeError("sdk stream unavailable")
 
         with patch(
-            "app.utils.streaming_handler.Runner.run_streamed",
+            "app.utils.streaming_runner.Runner.run_streamed",
             side_effect=fail_run_streamed,
         ):
             chunks = [
                 chunk
-                async for chunk in handler._stream_agent_events(
+                async for chunk in stream_agent_events(
+                    handler,
                     agent,
                     payload,
                     conversation_history,
@@ -188,12 +191,12 @@ class StreamingPromptTests(unittest.IsolatedAsyncioTestCase):
 
         agent.messages = Messages()
         with patch(
-            "app.utils.streaming_handler.Runner.run_streamed",
+            "app.utils.streaming_runner.Runner.run_streamed",
             side_effect=RuntimeError("unavailable"),
         ):
             chunks = [
                 chunk
-                async for chunk in handler._stream_agent_events(agent, payload, [])
+                async for chunk in stream_agent_events(handler, agent, payload, [])
             ]
         assert chunks == [b"No source context available"]
         assert recorded["instructions"] == instructions

@@ -139,7 +139,7 @@ async def test_all_chat_modes_export_complete_or_partial_turns(
         if cancelled and self.assistant_tokens:
             raise asyncio.CancelledError()
 
-    monkeypatch.setattr("app.utils.streaming_handler.process_chunk", process)
+    monkeypatch.setattr("app.utils.streaming_runner.process_chunk", process)
     for turn in range(2):
         handler = StreamingHandler(
             thread_id=thread_id, user_id="user-1", session_factory=None

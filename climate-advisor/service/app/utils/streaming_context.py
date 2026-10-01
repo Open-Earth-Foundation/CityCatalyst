@@ -12,6 +12,7 @@ from app.persistence.concept_notes.context_bundle import (
     load_agent_context,
     load_source_documents,
 )
+from app.services.native_input_catalog_service import ActiveRequestContext
 from app.services.stationary_energy.stationary_energy_chat_context import (
     build_stationary_energy_context_payload,
     build_stationary_energy_ui_context,
@@ -20,7 +21,13 @@ from app.services.stationary_energy.stationary_energy_chat_context import (
 from app.services.stationary_energy.stationary_energy_draft_repository import (
     StationaryEnergyDraftRepository,
 )
-from app.utils.concept_note_context import render_source_documents_message
+from app.services.thread_service import ThreadService
+from app.utils.chat_workflow_context import ChatWorkflowContext
+from app.utils.concept_note_context import (
+    extract_concept_note_run_id,
+    render_source_documents_message,
+)
+from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
 from app.utils.streaming_prompt import stationary_energy_context_message
 
 if TYPE_CHECKING:
@@ -197,3 +204,119 @@ def recent_concept_note_edit_messages(
             visible_messages.pop(index)
             break
     return visible_messages[-max(limit, 0) :]
+
+
+async def load_thread_workflow_context(
+    handler: StreamingHandler,
+) -> ChatWorkflowContext:
+    """Load scoped workflow identifiers persisted on the current chat thread."""
+    if not handler.session_factory:
+        return ChatWorkflowContext()
+    try:
+        async with handler.session_factory() as session:
+            thread = await ThreadService(session).get_thread(handler.thread_id)
+            if thread is None or thread.user_id != handler.user_id:
+                return ChatWorkflowContext()
+            return ChatWorkflowContext(
+                stationary_energy_draft_run_id=(
+                    extract_stationary_energy_draft_run_id(thread.context)
+                ),
+                concept_note_run_id=extract_concept_note_run_id(thread.context),
+            )
+    except Exception as exc:
+        logger.warning(
+            "Failed to load thread workflow context thread_id=%s: %s",
+            handler.thread_id,
+            exc,
+        )
+        return ChatWorkflowContext()
+
+
+async def resolve_workflow_context(
+    handler: StreamingHandler,
+    payload: MessageCreateRequest,
+) -> None:
+    """Resolve request or thread workflow IDs once for the shared stream."""
+    draft_run_id = (
+        handler.workflow_context.stationary_energy_draft_run_id
+        or extract_stationary_energy_draft_run_id(
+            payload.context,
+            payload.options,
+            handler.request_context,
+            handler.request_options,
+        )
+    )
+    concept_note_run_id = (
+        handler.workflow_context.concept_note_run_id
+        or extract_concept_note_run_id(
+            payload.context,
+            payload.options,
+            handler.request_context,
+            handler.request_options,
+        )
+    )
+    thread_context = ChatWorkflowContext()
+    if not draft_run_id or not concept_note_run_id:
+        thread_context = await load_thread_workflow_context(handler)
+
+    handler.workflow_context = ChatWorkflowContext(
+        stationary_energy_draft_run_id=normalize_workflow_run_id(
+            draft_run_id or thread_context.stationary_energy_draft_run_id,
+            "Stationary Energy draft_run_id",
+        ),
+        concept_note_run_id=normalize_workflow_run_id(
+            concept_note_run_id or thread_context.concept_note_run_id,
+            "Concept Note run id",
+        ),
+    )
+
+
+def native_input_catalog_request(
+    handler: StreamingHandler,
+    payload: MessageCreateRequest,
+) -> ActiveRequestContext | None:
+    """Resolve catalog scope only when the current request has a Core credential."""
+    if not handler.cc_access_token or not handler.catalog_user_id:
+        return None
+
+    sources = (
+        payload.context,
+        payload.options,
+        handler.request_context,
+        handler.request_options,
+    )
+
+    def first_value(field: str) -> Optional[str]:
+        """Return the first non-empty string within the request's scoped context."""
+        for source in sources:
+            if not isinstance(source, dict):
+                continue
+            value = source.get(field)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+        return None
+
+    return ActiveRequestContext(
+        user_id=handler.catalog_user_id,
+        thread_id=handler.thread_identifier,
+        organization_id=first_value("organization_id"),
+        project_id=first_value("project_id"),
+        city_id=first_value("city_id"),
+        inventory_id=payload.inventory_id
+        or handler.inventory_id
+        or first_value("inventory_id"),
+    )
+
+
+def normalize_workflow_run_id(value: object, label: str) -> str | None:
+    """Return a canonical UUID string, ignoring malformed workflow IDs."""
+    if not value:
+        return None
+    try:
+        return str(UUID(str(value)))
+    except ValueError:
+        logger.warning(
+            "Ignoring invalid %s before MLflow run",
+            label,
+        )
+        return None

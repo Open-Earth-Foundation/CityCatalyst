@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import pytest
 
+from app.utils.streaming_context import resolve_workflow_context
+
 pytest.importorskip("pgvector.sqlalchemy")
 import os
 from unittest.mock import patch
@@ -82,7 +84,7 @@ class StationaryEnergyChatContextTests(StationaryEnergyDraftCase):
             options={"stationary_energy_pending_decision_review_count": 1},
         )
 
-        await handler._resolve_workflow_context(payload)
+        await resolve_workflow_context(handler, payload)
         history = await handler._load_conversation_history(None, payload)
 
         self.assertGreaterEqual(len(history), 2)

@@ -38,7 +38,7 @@ class StreamingTelemetryTests(unittest.IsolatedAsyncioTestCase):
 
         with (
             patch(
-                "app.utils.streaming_handler.AgentService",
+                "app.utils.streaming_agent.AgentService",
                 return_value=fake_agent_service,
             ),
             patch.object(
@@ -46,13 +46,12 @@ class StreamingTelemetryTests(unittest.IsolatedAsyncioTestCase):
                 "_load_conversation_history",
                 AsyncMock(return_value=[]),
             ),
-            patch.object(
-                StreamingHandler,
-                "_stream_agent_events",
+            patch(
+                "app.utils.streaming_handler.stream_agent_events",
                 new=cancel_stream,
             ),
             patch(
-                "app.utils.streaming_handler.log_tags",
+                "app.utils.streaming_agent.log_tags",
                 side_effect=lambda tags: logged_tags.append(tags),
             ),
             patch(

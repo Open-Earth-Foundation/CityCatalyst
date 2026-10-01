@@ -1,3 +1,5 @@
+from app.utils.streaming_runner import stream_agent_events
+
 """Keep CNB runtime evidence below system instructions without changing history."""
 
 import json
@@ -107,11 +109,11 @@ async def test_cnb_evidence_uses_user_role_and_preserves_current_request(
                 yield None
 
     with patch(
-        "app.utils.streaming_handler.Runner.run_streamed", return_value=EmptyStream()
+        "app.utils.streaming_runner.Runner.run_streamed", return_value=EmptyStream()
     ) as runner:
         events = [
             event
-            async for event in handler._stream_agent_events(agent, payload, messages)
+            async for event in stream_agent_events(handler, agent, payload, messages)
         ]
 
     assert events == []
@@ -253,5 +255,6 @@ async def test_cnb_complete_source_text_follows_the_bundle_message(documents) ->
         assert "Capex PLN 616 m" in messages[1]["content"]
     assert len(messages) == 2 + len(documents)
     assert messages[-1] == {"role": "user", "content": payload.content}
+
 
 from app.utils.streaming_context import load_concept_note_context_message

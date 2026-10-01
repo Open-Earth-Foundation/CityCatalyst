@@ -42,7 +42,7 @@ type ToolResultParams = {
     string | null | undefined
   >;
   setAcknowledgedStaleDraftRunId: Dispatch<SetStateAction<string | null>>;
-  refreshDraftStatusSilently: (draftRunId: string) => Promise<void>;
+  refreshDraftStatusSilently: (draftRunId: string) => Promise<unknown>;
   clearError: () => void;
   showError: (message: string, recovery?: ErrorRecoveryAction | null) => void;
   updatePendingDraftStartResume: ReturnType<

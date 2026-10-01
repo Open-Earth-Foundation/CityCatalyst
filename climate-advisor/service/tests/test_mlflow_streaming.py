@@ -11,6 +11,7 @@ from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.streaming_handler import (
     StreamingHandler,
 )
+from app.utils.streaming_runner import stream_agent_events
 
 
 def test_streaming_handler_wraps_stream_in_mlflow_run(monkeypatch) -> None:
@@ -71,7 +72,9 @@ def test_streaming_handler_tags_agentic_flow_from_thread_context(
     async def fake_stream_response_with_mlflow(**kwargs):
         yield b'event: done\ndata: {"ok": true}\n\n'
 
-    async def fake_load_thread_workflow_context() -> ChatWorkflowContext:
+    async def fake_load_thread_workflow_context(
+        _handler: StreamingHandler,
+    ) -> ChatWorkflowContext:
         return ChatWorkflowContext(stationary_energy_draft_run_id=str(draft_run_id))
 
     handler = StreamingHandler(
@@ -90,8 +93,7 @@ def test_streaming_handler_tags_agentic_flow_from_thread_context(
         fake_stream_response_with_mlflow,
     )
     monkeypatch.setattr(
-        handler,
-        "_load_thread_workflow_context",
+        "app.utils.streaming_context.load_thread_workflow_context",
         fake_load_thread_workflow_context,
     )
 
@@ -146,7 +148,7 @@ def test_streaming_handler_assigns_mlflow_trace_session(monkeypatch) -> None:
         stationary_energy_draft_run_id=str(draft_run_id)
     )
     monkeypatch.setattr(
-        "app.utils.streaming_handler.Runner.run_streamed",
+        "app.utils.streaming_runner.Runner.run_streamed",
         fake_run_streamed,
     )
     monkeypatch.setattr(
@@ -163,7 +165,8 @@ def test_streaming_handler_assigns_mlflow_trace_session(monkeypatch) -> None:
     async def collect() -> list[bytes]:
         return [
             chunk
-            async for chunk in handler._stream_agent_events(
+            async for chunk in stream_agent_events(
+                handler,
                 object(),
                 payload,
                 [],

@@ -10,6 +10,7 @@ from uuid import uuid4
 
 import pytest
 from anyio import CancelScope
+
 from app.models.requests import MessageCreateRequest
 from app.utils import mlflow_logging
 from app.utils.chat_workflow_context import ChatWorkflowContext
@@ -346,7 +347,7 @@ async def test_other_chat_modes_link_traces_before_model_start(monkeypatch, mode
         "app.utils.conversation_observability.start_trace_span", span_context
     )
     monkeypatch.setattr(
-        "app.utils.streaming_handler.update_current_trace_context", update_context
+        "app.utils.streaming_telemetry.update_current_trace_context", update_context
     )
     monkeypatch.setattr("app.utils.streaming_handler.Runner.run_streamed", run_streamed)
     payload = MessageCreateRequest(user_id="user-1", content="Review the context")

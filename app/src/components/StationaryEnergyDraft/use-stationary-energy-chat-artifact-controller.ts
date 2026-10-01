@@ -1,542 +1,71 @@
 "use client";
 
-import type { TFunction } from "i18next";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
 import {
   createChatThread,
   fetchDraftRuns,
   fetchDraftStatus,
   fetchResumedDraft,
-  persistReviewDecisionPayload,
-  saveAcceptedDraftRows,
   startDraftRun,
 } from "@/components/StationaryEnergyDraft/stationary-energy-draft-api";
 import {
   addResolvedProposalId,
   buildFocusedDecisionStatePayload,
   buildStationaryEnergyChatRequest,
-  type ConfirmedBulkReviewChoicePayload,
-  type ConfirmedRollbackReviewChoicePayload,
   hasTerminalDraftStatus,
-  isStationaryEnergyStartDraftToolResult,
-  mergeDecisionReviewMessages,
   nextDecisionState,
   resolveChatActivityLabel,
-  resolveDraftStartResume,
-  resolveInventorySaveConfirmationRequest,
-  resolveStationaryEnergyStartDraftFailureMessage,
-  resolveStationaryEnergyToolMessage,
   removeResolvedProposalId,
-  toolStartedEventName,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
 import {
   buildSourcePreferenceLabel,
   buildSourcePreferenceReply,
   type SourcePreferenceCommand,
 } from "@/components/StationaryEnergyDraft/source-preference";
+import { type StationaryEnergyToolChoiceSummary } from "@/components/StationaryEnergyDraft/stationary-energy-chat-messages";
 import {
-  appendAssistantDeltaToMessages,
-  createBulkReviewConfirmationMessage,
-  createInventorySaveConfirmationMessage,
-  createStagedReviewUpdateConfirmationMessage,
-  createStationaryEnergyToolSummaryMessage,
-  createTextMessage,
-  removeEmptyAssistantTailFromMessages,
-  type ChatMessage,
-  type ChatTextMessage,
-  type StationaryEnergyToolChoiceSummary,
-} from "@/components/StationaryEnergyDraft/stationary-energy-chat-messages";
-import {
-  buildInventorySaveReviewDecisionPayload,
   buildArtifactRows,
   buildDecisionReviewContext,
   buildInitialDecisionState,
-  buildReviewDecisionPayload,
   buildSourcePreferenceOptions,
   canPersistDraftReview,
   canReviewDraftStatus,
   canSaveToInventory,
   countDraftProposals,
   deriveDraftStage,
-  hasInventorySaveReviewChanges,
   pendingDecisionReviewProposals,
   resolvedProposalIdsFromReview,
-  type ArtifactRow,
-  type DecisionOption,
-  type DecisionReviewContext,
-  type DraftCounts,
-  type DraftStage,
   unresolvedBlockingProposalIds,
 } from "@/components/StationaryEnergyDraft/flow";
 import { resolveStationaryEnergyDraftResume } from "@/components/StationaryEnergyDraft/resume";
-import {
-  clearStoredDraftContext,
-  readStoredDraftContext,
-  writeStoredDraftContext,
-} from "@/components/StationaryEnergyDraft/storage";
+import { clearStoredDraftContext } from "@/components/StationaryEnergyDraft/storage";
 import type {
   DraftDecisionAction,
   DraftDecisionState,
   DraftListItem,
   DraftProposal,
   DraftStatusResponse,
-  SaveResponse,
 } from "@/components/StationaryEnergyDraft/types";
+import { useStationaryEnergyChatMessages } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-messages";
+import { useStationaryEnergyPendingRequest } from "@/components/StationaryEnergyDraft/use-stationary-energy-pending-request";
+import { useStationaryEnergyToolResults } from "@/components/StationaryEnergyDraft/use-stationary-energy-tool-results";
+import { useStationaryEnergyReviewSave } from "@/components/StationaryEnergyDraft/use-stationary-energy-review-save";
 import { useSSEStream } from "@/hooks/useSSEStream";
-
-export type LoadingAction =
-  "start" | "refresh" | "save_draft" | "save_inventory" | "chat" | null;
-type ErrorRecoveryAction = "start_draft";
-
-type UseStationaryEnergyChatArtifactControllerParams = {
-  cityId: string;
-  cityName?: string | null;
-  featureEnabled: boolean;
-  initialStage: DraftStage;
-  inventoryId: string;
-  inventoryYear?: number | null;
-  lng: string;
-  queryDraftRunId: string | null;
-  t: TFunction;
-};
-
-export type StationaryEnergyChatArtifactControllerState = {
-  activeDraftRunId: string | null;
-  activeProposalId: string | null;
-  canPersistDraftReview: boolean;
-  canSaveToInventory: boolean;
-  // What the agent is doing right now, shown as a chat bubble while it works.
-  chatActivityLabel: string | null;
-  chatInput: string;
-  chatMessages: ChatMessage[];
-  counts: DraftCounts;
-  decisionReviewContext: DecisionReviewContext[];
-  decisionState: Record<string, DraftDecisionState>;
-  draftListLoading: boolean;
-  draftRuns: DraftListItem[];
-  draftState: DraftStatusResponse | null;
-  draftStatus: string;
-  errorMessage: string | null;
-  errorRecoveryAction: ErrorRecoveryAction | null;
-  focusedProposalId: string | null;
-  hasDraft: boolean;
-  hasSourceBackedProposals: boolean;
-  loadingAction: LoadingAction;
-  pendingDecisionCount: number;
-  pendingDraftStartRequest: string | null;
-  draftStartResumeNotice: string | null;
-  resolvedProposalIds: Set<string>;
-  rows: ArtifactRow[];
-  showStaleWarning: boolean;
-  sourcePreference: SourcePreferenceCommand | null;
-  sourcePreferenceOptions: string[];
-  stage: DraftStage;
-  staleDraft: DraftStatusResponse["staleness"];
-  unresolvedCount: number;
-};
-
-export type StationaryEnergyChatArtifactControllerActions = {
-  cancelDraftStartResume: () => void;
-  chooseDecision: (
-    proposal: DraftProposal,
-    action: DraftDecisionAction,
-    selectedSourceId?: string,
-    label?: string,
-  ) => void;
-  choosePreference: (preference: SourcePreferenceCommand) => void;
-  continueStaleDraft: () => void;
-  confirmBulkReviewChanges: (
-    choices: StationaryEnergyToolChoiceSummary[],
-  ) => void;
-  cancelBulkReviewChanges: () => void;
-  confirmStagedReviewRollback: (
-    choices: StationaryEnergyToolChoiceSummary[],
-  ) => void;
-  cancelStagedReviewUpdate: () => void;
-  confirmSaveToInventory: () => void;
-  requestSaveToInventoryConfirmation: () => void;
-  cancelSaveToInventoryConfirmation: () => void;
-  editDecision: (proposalId: string) => void;
-  refreshActiveDraft: () => void;
-  saveDraft: () => void;
-  saveToInventory: () => void;
-  selectDraft: (draftRunId: string) => void;
-  sendChatMessage: (content: string) => void;
-  setChatInput: (value: string) => void;
-  setFocusedProposal: (proposalId: string | null) => void;
-  startDraftFromArtifact: () => void;
-  startDraftFromChat: () => void;
-  startOver: () => void;
-  stopChat: () => void;
-  submitChat: (event: FormEvent<HTMLFormElement>) => void;
-};
-
-export type StationaryEnergyChatArtifactController = {
-  actions: StationaryEnergyChatArtifactControllerActions;
-  state: StationaryEnergyChatArtifactControllerState;
-};
+import type {
+  LoadingAction,
+  ErrorRecoveryAction,
+  UseStationaryEnergyChatArtifactControllerParams,
+  StationaryEnergyChatArtifactController,
+} from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-types";
+import {
+  confirmedBulkReviewChoicePayload,
+  confirmedRollbackReviewChoicePayload,
+  translateMessage,
+  resolveErrorMessage,
+} from "@/components/StationaryEnergyDraft/stationary-energy-chat-tool-helpers";
 
 const EMPTY_RESOLVED_PROPOSALS = new Set<string>();
-
-function isStationaryEnergyReviewToolResult(tool: unknown): tool is {
-  ui_event: string;
-  action?: string;
-  message_key?: string | null;
-  message_params?: unknown;
-  draft_run_id?: string;
-  selected_choices?: unknown[];
-  blocked_choices?: unknown[];
-} {
-  return (
-    typeof tool === "object" &&
-    tool !== null &&
-    (tool as { ui_event?: unknown }).ui_event ===
-      "stationary_energy_review_state_changed"
-  );
-}
-
-function isStationaryEnergyInventoryConfirmationToolResult(
-  tool: unknown,
-): tool is {
-  success: boolean;
-  ui_event: string;
-  message_key?: string | null;
-  message_params?: unknown;
-  error_code?: string | null;
-} {
-  return (
-    typeof tool === "object" &&
-    tool !== null &&
-    (tool as { ui_event?: unknown }).ui_event ===
-      "stationary_energy_inventory_save_confirmation_requested"
-  );
-}
-
-function isStationaryEnergyBulkReviewConfirmationToolResult(
-  tool: unknown,
-): tool is {
-  ui_event: string;
-  message_key?: string | null;
-  message_params?: unknown;
-  draft_run_id?: string;
-  pending_choices?: unknown[];
-  blocked_choices?: unknown[];
-} {
-  return (
-    typeof tool === "object" &&
-    tool !== null &&
-    (tool as { ui_event?: unknown }).ui_event ===
-      "stationary_energy_review_bulk_confirmation_requested"
-  );
-}
-
-function isStationaryEnergyStagedReviewUpdateConfirmationToolResult(
-  tool: unknown,
-): tool is {
-  ui_event: string;
-  message_key?: string | null;
-  message_params?: unknown;
-  draft_run_id?: string;
-  pending_choices?: unknown[];
-  blocked_choices?: unknown[];
-} {
-  if (typeof tool !== "object" || tool === null) {
-    return false;
-  }
-  const uiEvent = (tool as { ui_event?: unknown }).ui_event;
-  return (
-    uiEvent === "stationary_energy_review_change_confirmation_requested" ||
-    uiEvent === "stationary_energy_review_rollback_confirmation_requested"
-  );
-}
-
-function normalizeToolChoiceSummary(
-  choice: unknown,
-): StationaryEnergyToolChoiceSummary {
-  if (typeof choice !== "object" || choice === null) {
-    return {};
-  }
-  const record = choice as Record<string, unknown>;
-  return {
-    proposal_id:
-      typeof record.proposal_id === "string" ? record.proposal_id : null,
-    target_id: typeof record.target_id === "string" ? record.target_id : null,
-    candidate_id:
-      typeof record.candidate_id === "string" ? record.candidate_id : null,
-    selected_candidate_id:
-      typeof record.selected_candidate_id === "string"
-        ? record.selected_candidate_id
-        : null,
-    selected_source_id:
-      typeof record.selected_source_id === "string"
-        ? record.selected_source_id
-        : null,
-    target_label:
-      typeof record.target_label === "string" ? record.target_label : null,
-    source_label:
-      typeof record.source_label === "string" ? record.source_label : null,
-    source_short_label:
-      typeof record.source_short_label === "string"
-        ? record.source_short_label
-        : null,
-    source_meta:
-      typeof record.source_meta === "string" ? record.source_meta : null,
-    value: typeof record.value === "string" ? record.value : null,
-    action: typeof record.action === "string" ? record.action : null,
-    notation_key:
-      typeof record.notation_key === "string" ? record.notation_key : null,
-    unavailable_reason:
-      typeof record.unavailable_reason === "string"
-        ? record.unavailable_reason
-        : null,
-    unavailable_explanation:
-      typeof record.unavailable_explanation === "string"
-        ? record.unavailable_explanation
-        : null,
-    rationale: typeof record.rationale === "string" ? record.rationale : null,
-    reason: typeof record.reason === "string" ? record.reason : null,
-  };
-}
-
-function decisionOptionsForToolChoice(
-  context: DecisionReviewContext,
-): DecisionOption[] {
-  return [
-    ...(context.recommendedOption ? [context.recommendedOption] : []),
-    ...context.alternativeOptions,
-    context.leaveDraftOption,
-  ];
-}
-
-function optionForToolChoice(
-  choice: StationaryEnergyToolChoiceSummary,
-  context: DecisionReviewContext,
-): DecisionOption | null {
-  if (choice.action === "leave_draft") {
-    return context.leaveDraftOption;
-  }
-
-  const ids = new Set(
-    [
-      choice.selected_candidate_id,
-      choice.candidate_id,
-      choice.selected_source_id,
-    ].filter((value): value is string => Boolean(value)),
-  );
-  const options = decisionOptionsForToolChoice(context);
-
-  if (ids.size > 0) {
-    const matched = options.find((option) => {
-      const optionIds = [option.id, option.datasourceId].filter(
-        (value): value is string => Boolean(value),
-      );
-      return optionIds.some((value) => ids.has(value));
-    });
-    if (matched) {
-      return matched;
-    }
-  }
-
-  if (choice.action === "accept" && context.recommendedOption) {
-    return context.recommendedOption;
-  }
-
-  const sourceLabel = choice.source_label?.trim().toLowerCase();
-  if (sourceLabel) {
-    const matched = options.find((option) =>
-      [option.label, option.shortLabel]
-        .filter(Boolean)
-        .some((value) => value.trim().toLowerCase() === sourceLabel),
-    );
-    if (matched) {
-      return matched;
-    }
-  }
-
-  return null;
-}
-
-function enrichToolChoiceSummary(
-  choice: StationaryEnergyToolChoiceSummary,
-  decisionReviewContext: DecisionReviewContext[],
-): StationaryEnergyToolChoiceSummary {
-  const context = decisionReviewContext.find(
-    (candidate) => candidate.proposal_id === choice.proposal_id,
-  );
-  if (!context) {
-    if (choice.action === "set_notation_key") {
-      return {
-        ...choice,
-        source_short_label:
-          choice.source_short_label ?? choice.notation_key ?? null,
-        source_label:
-          choice.source_label ??
-          (choice.notation_key ? `Notation key ${choice.notation_key}` : null),
-        source_meta: choice.source_meta ?? choice.unavailable_reason ?? null,
-        value:
-          choice.value ??
-          choice.unavailable_explanation ??
-          choice.reason ??
-          null,
-      };
-    }
-    return choice;
-  }
-
-  const option = optionForToolChoice(choice, context);
-  const isLeaveDraft = option?.action === "leave_draft";
-  if (choice.action === "set_notation_key") {
-    return {
-      ...choice,
-      target_label: choice.target_label ?? context.label,
-      source_label:
-        choice.source_label ??
-        (choice.notation_key ? `Notation key ${choice.notation_key}` : null),
-      source_short_label:
-        choice.source_short_label ?? choice.notation_key ?? null,
-      source_meta: choice.source_meta ?? choice.unavailable_reason ?? null,
-      value: choice.value ?? choice.unavailable_explanation ?? null,
-    };
-  }
-
-  return {
-    ...choice,
-    target_label: choice.target_label ?? context.label,
-    source_label: choice.source_label ?? option?.label ?? null,
-    source_short_label:
-      choice.source_short_label ??
-      (isLeaveDraft
-        ? (choice.source_label ?? option?.label ?? null)
-        : (option?.shortLabel ?? null)),
-    source_meta:
-      choice.source_meta ?? (isLeaveDraft ? null : (option?.meta ?? null)),
-    value: choice.value ?? (isLeaveDraft ? null : (option?.value ?? null)),
-  };
-}
-
-function toolChoiceSignature(choice: unknown): Record<string, unknown> {
-  if (typeof choice !== "object" || choice === null) {
-    return {};
-  }
-  const record = choice as Record<string, unknown>;
-  return {
-    proposal_id: record.proposal_id,
-    target_id: record.target_id,
-    action: record.action,
-    candidate_id: record.candidate_id,
-    selected_source_id: record.selected_source_id,
-    selected_candidate_id: record.selected_candidate_id,
-    source_label: record.source_label,
-    target_label: record.target_label,
-    notation_key: record.notation_key,
-    unavailable_reason: record.unavailable_reason,
-    unavailable_explanation: record.unavailable_explanation,
-    rationale: record.rationale,
-    reason: record.reason,
-  };
-}
-
-function stationaryEnergyToolResultSignature(tool: unknown): string | null {
-  if (
-    !isStationaryEnergyStartDraftToolResult(tool) &&
-    !isStationaryEnergyReviewToolResult(tool) &&
-    !isStationaryEnergyInventoryConfirmationToolResult(tool) &&
-    !isStationaryEnergyBulkReviewConfirmationToolResult(tool) &&
-    !isStationaryEnergyStagedReviewUpdateConfirmationToolResult(tool)
-  ) {
-    return null;
-  }
-
-  const record = tool as Record<string, unknown>;
-  return JSON.stringify({
-    ui_event: record.ui_event,
-    action: record.action,
-    success: record.success,
-    draft_run_id: record.draft_run_id,
-    error_code: record.error_code,
-    message_key: record.message_key,
-    message_params: record.message_params,
-    selected_choices: Array.isArray(record.selected_choices)
-      ? record.selected_choices.map(toolChoiceSignature)
-      : [],
-    pending_choices: Array.isArray(record.pending_choices)
-      ? record.pending_choices.map(toolChoiceSignature)
-      : [],
-    blocked_choices: Array.isArray(record.blocked_choices)
-      ? record.blocked_choices.map(toolChoiceSignature)
-      : [],
-  });
-}
-
-function confirmedBulkReviewChoicePayload(
-  choices: StationaryEnergyToolChoiceSummary[],
-): ConfirmedBulkReviewChoicePayload[] {
-  return choices.reduce<ConfirmedBulkReviewChoicePayload[]>((acc, choice) => {
-    const proposalId = choice.proposal_id ?? "";
-    if (!proposalId) {
-      return acc;
-    }
-
-    acc.push({
-      proposal_id: proposalId,
-      ...(choice.target_id ? { target_id: choice.target_id } : {}),
-      ...(choice.selected_candidate_id || choice.candidate_id
-        ? {
-            candidate_id:
-              choice.selected_candidate_id ?? choice.candidate_id ?? "",
-          }
-        : {}),
-      ...(choice.selected_source_id
-        ? { selected_source_id: choice.selected_source_id }
-        : {}),
-      ...(choice.action ? { action: choice.action } : {}),
-      ...(choice.notation_key ? { notation_key: choice.notation_key } : {}),
-      ...(choice.unavailable_reason
-        ? { unavailable_reason: choice.unavailable_reason }
-        : {}),
-      ...(choice.unavailable_explanation
-        ? { unavailable_explanation: choice.unavailable_explanation }
-        : {}),
-      ...(choice.rationale ? { rationale: choice.rationale } : {}),
-    });
-    return acc;
-  }, []);
-}
-
-function confirmedRollbackReviewChoicePayload(
-  choices: StationaryEnergyToolChoiceSummary[],
-): ConfirmedRollbackReviewChoicePayload[] {
-  return choices.reduce<ConfirmedRollbackReviewChoicePayload[]>(
-    (acc, choice) => {
-      const proposalId = choice.proposal_id ?? "";
-      if (proposalId) {
-        acc.push({ proposal_id: proposalId });
-      }
-      return acc;
-    },
-    [],
-  );
-}
-
-function translateMessage(t: TFunction, message?: string | null): string {
-  if (!message) {
-    return "";
-  }
-
-  const translated = t(message);
-  return translated === message ? message : translated;
-}
-
-function resolveErrorMessage(
-  t: TFunction,
-  error: unknown,
-  fallbackKey: string,
-): string {
-  const message = error instanceof Error ? error.message : null;
-  return translateMessage(t, message) || t(fallbackKey);
-}
 
 export function useStationaryEnergyChatArtifactController(
   params: UseStationaryEnergyChatArtifactControllerParams,
@@ -564,58 +93,29 @@ export function useStationaryEnergyChatArtifactController(
   );
   const [threadId, setThreadId] = useState<string | null>(null);
   const [chatInput, setChatInput] = useState("");
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [errorRecoveryAction, setErrorRecoveryAction] =
     useState<ErrorRecoveryAction | null>(null);
   const [loadingAction, setLoadingAction] = useState<LoadingAction>(null);
   const [draftRuns, setDraftRuns] = useState<DraftListItem[]>([]);
   const [draftListLoading, setDraftListLoading] = useState(false);
-  const [resumeAttempted, setResumeAttempted] = useState(false);
+  const resumeAttemptedRef = useRef(false);
   const [sourcePreference, setSourcePreference] =
     useState<SourcePreferenceCommand | null>(null);
-  const handledToolResultSignaturesRef = useRef<Set<string>>(new Set());
   const pendingInventorySaveConfirmationMessageRef = useRef<
     string | null | undefined
   >(undefined);
-  const pendingDraftStatusRefreshCountRef = useRef(0);
   const lastUserChatContentRef = useRef<string | null>(null);
-  // A request the agent started a run for; re-sent once that run is ready.
-  const [pendingDraftStartResume, setPendingDraftStartResume] = useState<{
-    draftRunId: string;
-    content: string;
-  } | null>(null);
-  const pendingDraftStartResumeRef = useRef(pendingDraftStartResume);
-  const [draftStartResumeNotice, setDraftStartResumeNotice] = useState<
-    string | null
-  >(null);
-  // Update storage at the same time as the queue, before polling or reload can
-  // observe it. Clearing the queue keeps the active run available for review.
-  const updatePendingDraftStartResume = useCallback(
-    (pending: typeof pendingDraftStartResume): void => {
-      const previous = pendingDraftStartResumeRef.current;
-      pendingDraftStartResumeRef.current = pending;
-      setPendingDraftStartResume(pending);
-      const stored = readStoredDraftContext(inventoryId);
-      if (pending) {
-        setDraftStartResumeNotice(null);
-        writeStoredDraftContext(inventoryId, {
-          draftRunId: pending.draftRunId,
-          threadId:
-            stored?.draftRunId === pending.draftRunId ? stored.threadId : null,
-          pendingRequest: pending.content,
-        });
-      } else if (previous && stored?.draftRunId === previous.draftRunId) {
-        writeStoredDraftContext(inventoryId, {
-          draftRunId: stored.draftRunId,
-          threadId: stored.threadId,
-        });
-      }
-    },
-    [inventoryId],
-  );
+  const {
+    pendingDraftStartResume,
+    draftStartResumeNotice,
+    resetDraftStartResume,
+    updatePendingDraftStartResume,
+    applyDraftResumeContext,
+    cancelDraftStartResume,
+    isPendingDraftStartResume,
+  } = useStationaryEnergyPendingRequest(inventoryId, t);
   // The tool the agent is running in the current chat turn, if any.
-  const [activeToolName, setActiveToolName] = useState<string | null>(null);
   const canSaveAcceptedRowsToInventoryRef = useRef(false);
   const [focusedProposalId, setFocusedProposalId] = useState<string | null>(
     null,
@@ -641,26 +141,7 @@ export function useStationaryEnergyChatArtifactController(
 
   const applyDraftState = useCallback(
     (payload: DraftStatusResponse) => {
-      const stored = readStoredDraftContext(inventoryId);
-      const pending =
-        pendingDraftStartResumeRef.current ??
-        (stored?.draftRunId === payload.draft_run_id && stored.pendingRequest
-          ? { draftRunId: stored.draftRunId, content: stored.pendingRequest }
-          : null);
-      if (pending && pending.draftRunId === payload.draft_run_id) {
-        if (hasTerminalDraftStatus(payload.status)) {
-          updatePendingDraftStartResume(null);
-          setDraftStartResumeNotice(
-            t(
-              payload.status === "failed"
-                ? "chat-pending-request-failed"
-                : "chat-pending-request-ended",
-            ),
-          );
-        } else if (!pendingDraftStartResumeRef.current) {
-          updatePendingDraftStartResume(pending);
-        }
-      }
+      applyDraftResumeContext(payload);
       const nextDecisionState = buildInitialDecisionState(payload);
       const nextResolvedProposalIds = resolvedProposalIdsFromReview(payload);
       canSaveAcceptedRowsToInventoryRef.current = canSaveToInventory({
@@ -675,20 +156,8 @@ export function useStationaryEnergyChatArtifactController(
       if (!payload.staleness?.is_stale) {
         setAcknowledgedStaleDraftRunId(null);
       }
-      if (hasTerminalDraftStatus(payload.status)) {
-        clearStoredDraftContext(inventoryId);
-      } else {
-        writeStoredDraftContext(inventoryId, {
-          draftRunId: payload.draft_run_id,
-          threadId: payload.thread_id ?? null,
-          ...(pendingDraftStartResumeRef.current?.draftRunId ===
-          payload.draft_run_id
-            ? { pendingRequest: pendingDraftStartResumeRef.current.content }
-            : {}),
-        });
-      }
     },
-    [inventoryId, t, updatePendingDraftStartResume],
+    [applyDraftResumeContext],
   );
 
   const loadDraftRuns = useCallback(async (): Promise<DraftListItem[]> => {
@@ -739,11 +208,11 @@ export function useStationaryEnergyChatArtifactController(
     }, [applyDraftState, cityId, inventoryId, loadDraftRuns]);
 
   useEffect(() => {
-    if (!featureEnabled || resumeAttempted) {
+    if (!featureEnabled || resumeAttemptedRef.current) {
       return;
     }
 
-    setResumeAttempted(true);
+    resumeAttemptedRef.current = true;
     void resolveStationaryEnergyDraftResume({
       inventoryId,
       queryDraftRunId,
@@ -763,7 +232,6 @@ export function useStationaryEnergyChatArtifactController(
     inventoryId,
     queryDraftRunId,
     refreshDraftStatus,
-    resumeAttempted,
     resumeDraftFromServer,
     showError,
     t,
@@ -921,58 +389,18 @@ export function useStationaryEnergyChatArtifactController(
     acknowledgedStaleDraftRunId !== draftState?.draft_run_id,
   );
 
-  useEffect(() => {
-    setChatMessages((current) =>
-      mergeDecisionReviewMessages(current, decisionReviewContext),
-    );
-  }, [decisionReviewContext]);
-
-  const appendChatMessage = useCallback((message: ChatTextMessage): void => {
-    setChatMessages((current) => [...current, message]);
-  }, []);
-
-  const appendTextMessage = useCallback(
-    (role: ChatTextMessage["role"], text: string): void => {
-      appendChatMessage(createTextMessage(role, text));
-    },
-    [appendChatMessage],
-  );
-
-  const removeInventorySaveConfirmationMessages = useCallback((): void => {
-    setChatMessages((current) =>
-      current.filter(
-        (message) => message.kind !== "inventory_save_confirmation",
-      ),
-    );
-  }, []);
-
-  const removeBulkReviewConfirmationMessages = useCallback((): void => {
-    setChatMessages((current) =>
-      current.filter(
-        (message) =>
-          message.kind !== "stationary_energy_bulk_review_confirmation",
-      ),
-    );
-  }, []);
-
-  const removeStagedReviewUpdateConfirmationMessages = useCallback((): void => {
-    setChatMessages((current) =>
-      current.filter(
-        (message) =>
-          message.kind !==
-          "stationary_energy_staged_review_update_confirmation",
-      ),
-    );
-  }, []);
-
-  const appendInventorySaveConfirmation = useCallback((): void => {
-    setChatMessages((current) => [
-      ...current.filter(
-        (message) => message.kind !== "inventory_save_confirmation",
-      ),
-      createInventorySaveConfirmationMessage(),
-    ]);
-  }, []);
+  const chat = useStationaryEnergyChatMessages(decisionReviewContext);
+  const {
+    chatMessages,
+    setChatMessages,
+    appendTextMessage,
+    removeInventorySaveConfirmationMessages,
+    removeBulkReviewConfirmationMessages,
+    removeStagedReviewUpdateConfirmationMessages,
+    appendInventorySaveConfirmation,
+    appendAssistantDelta,
+    removeEmptyAssistantTail,
+  } = chat;
 
   useEffect(() => {
     if (!canSaveAcceptedRowsToInventory) {
@@ -995,296 +423,22 @@ export function useStationaryEnergyChatArtifactController(
     canSaveAcceptedRowsToInventory,
     removeInventorySaveConfirmationMessages,
   ]);
-
-  const appendBulkReviewConfirmation = useCallback(
-    (params: {
-      message?: string | null;
-      choices: StationaryEnergyToolChoiceSummary[];
-      blockedChoices: StationaryEnergyToolChoiceSummary[];
-    }): void => {
-      setChatMessages((current) => [
-        ...current.filter(
-          (message) =>
-            message.kind !== "stationary_energy_bulk_review_confirmation",
-        ),
-        createBulkReviewConfirmationMessage(params),
-      ]);
-    },
-    [],
-  );
-
-  const appendStagedReviewUpdateConfirmation = useCallback(
-    (params: {
-      mode: "change" | "rollback";
-      message?: string | null;
-      choices: StationaryEnergyToolChoiceSummary[];
-      blockedChoices: StationaryEnergyToolChoiceSummary[];
-    }): void => {
-      setChatMessages((current) => [
-        ...current.filter(
-          (message) =>
-            message.kind !==
-            "stationary_energy_staged_review_update_confirmation",
-        ),
-        createStagedReviewUpdateConfirmationMessage(params),
-      ]);
-    },
-    [],
-  );
-
-  const appendAssistantDelta = useCallback((delta: string): void => {
-    setChatMessages((current) =>
-      appendAssistantDeltaToMessages(current, delta),
-    );
-  }, []);
-
-  const removeEmptyAssistantTail = useCallback((): void => {
-    setChatMessages((current) => removeEmptyAssistantTailFromMessages(current));
-  }, []);
-
-  const handleToolResult = useCallback(
-    (tool: unknown): void => {
-      const startedToolName = toolStartedEventName(tool);
-      if (startedToolName) {
-        setActiveToolName(startedToolName);
-        return;
-      }
-      setActiveToolName(null);
-
-      const signature = stationaryEnergyToolResultSignature(tool);
-      removeEmptyAssistantTail();
-      if (signature) {
-        if (handledToolResultSignaturesRef.current.has(signature)) {
-          return;
-        }
-        handledToolResultSignaturesRef.current.add(signature);
-      }
-
-      const toolDraftRunId =
-        typeof (tool as { draft_run_id?: unknown } | null)?.draft_run_id ===
-        "string"
-          ? (tool as { draft_run_id: string }).draft_run_id
-          : draftState?.draft_run_id;
-      if (toolDraftRunId) {
-        setAcknowledgedStaleDraftRunId(toolDraftRunId);
-      }
-
-      // The agent started a draft from chat: load the newly created draft so the
-      // overview + review pane pick it up. Generation continues in the
-      // background and the status poller fills in proposals as they arrive.
-      const toolUiEvent =
-        typeof (tool as { ui_event?: unknown } | null)?.ui_event === "string"
-          ? (tool as { ui_event: string }).ui_event
-          : null;
-      if (toolUiEvent === "stationary_energy_draft_started") {
-        const failureMessage = resolveStationaryEnergyStartDraftFailureMessage(
-          t,
-          tool,
-        );
-        if (failureMessage) {
-          showError(failureMessage, "start_draft");
-          return;
-        }
-
-        if (!isStationaryEnergyStartDraftToolResult(tool) || !toolDraftRunId) {
-          showError(
-            t("error-failed-to-start-stationary-energy-draft-retry"),
-            "start_draft",
-          );
-          return;
-        }
-
-        clearError();
-        const resume = resolveDraftStartResume(
-          tool,
-          toolDraftRunId,
-          lastUserChatContentRef.current,
-        );
-        if (resume) {
-          updatePendingDraftStartResume(resume);
-        }
-        void refreshDraftStatusSilently(toolDraftRunId).catch((error) => {
-          showError(
-            resolveErrorMessage(
-              t,
-              error,
-              "error-failed-to-load-stationary-energy-draft-status",
-            ),
-          );
-        });
-        return;
-      }
-
-      if (isStationaryEnergyInventoryConfirmationToolResult(tool)) {
-        const canSaveAcceptedRowsToInventoryNow =
-          canSaveAcceptedRowsToInventory ||
-          canSaveAcceptedRowsToInventoryRef.current;
-        const toolMessage = resolveStationaryEnergyToolMessage(
-          t,
-          tool,
-          tool.success
-            ? "tool-message-inventory-save-confirm"
-            : "error-failed-to-save-accepted-stationary-energy-rows",
-        );
-        const confirmationRequest = resolveInventorySaveConfirmationRequest({
-          canSaveToInventory: canSaveAcceptedRowsToInventoryNow,
-          toolSuccess: tool.success,
-          toolMessage,
-          blockedMessage: t("chat-save-inventory-blocked"),
-        });
-        removeInventorySaveConfirmationMessages();
-        if (
-          tool.success &&
-          !canSaveAcceptedRowsToInventoryNow &&
-          pendingDraftStatusRefreshCountRef.current > 0
-        ) {
-          pendingInventorySaveConfirmationMessageRef.current =
-            toolMessage ?? null;
-          return;
-        }
-        if (confirmationRequest.message) {
-          appendTextMessage("assistant", confirmationRequest.message);
-        }
-        if (confirmationRequest.showConfirmation) {
-          appendInventorySaveConfirmation();
-        }
-        return;
-      }
-
-      if (isStationaryEnergyBulkReviewConfirmationToolResult(tool)) {
-        const choices = (tool.pending_choices ?? []).map((choice) =>
-          enrichToolChoiceSummary(
-            normalizeToolChoiceSummary(choice),
-            decisionReviewContext,
-          ),
-        );
-        const blockedChoices = (tool.blocked_choices ?? []).map((choice) =>
-          enrichToolChoiceSummary(
-            normalizeToolChoiceSummary(choice),
-            decisionReviewContext,
-          ),
-        );
-        const toolMessage = resolveStationaryEnergyToolMessage(
-          t,
-          tool,
-          "primitives-bulk-review-confirm-description",
-        );
-        appendBulkReviewConfirmation({
-          message: toolMessage,
-          choices,
-          blockedChoices,
-        });
-        return;
-      }
-
-      if (isStationaryEnergyStagedReviewUpdateConfirmationToolResult(tool)) {
-        const choices = (tool.pending_choices ?? []).map((choice) =>
-          enrichToolChoiceSummary(
-            normalizeToolChoiceSummary(choice),
-            decisionReviewContext,
-          ),
-        );
-        const blockedChoices = (tool.blocked_choices ?? []).map((choice) =>
-          enrichToolChoiceSummary(
-            normalizeToolChoiceSummary(choice),
-            decisionReviewContext,
-          ),
-        );
-        const mode =
-          tool.ui_event ===
-          "stationary_energy_review_rollback_confirmation_requested"
-            ? "rollback"
-            : "change";
-        const toolMessage = resolveStationaryEnergyToolMessage(
-          t,
-          tool,
-          mode === "rollback"
-            ? "primitives-staged-review-rollback-confirm-description"
-            : "primitives-staged-review-change-confirm-description",
-        );
-        appendStagedReviewUpdateConfirmation({
-          mode,
-          message: toolMessage,
-          choices,
-          blockedChoices,
-        });
-        return;
-      }
-
-      if (!isStationaryEnergyReviewToolResult(tool)) {
-        return;
-      }
-
-      const selectedChoices = (tool.selected_choices ?? []).map((choice) =>
-        enrichToolChoiceSummary(
-          normalizeToolChoiceSummary(choice),
-          decisionReviewContext,
-        ),
-      );
-      const blockedChoices = (tool.blocked_choices ?? []).map((choice) =>
-        enrichToolChoiceSummary(
-          normalizeToolChoiceSummary(choice),
-          decisionReviewContext,
-        ),
-      );
-      const toolMessage = resolveStationaryEnergyToolMessage(
-        t,
-        tool,
-        "tool-message-generic-summary",
-      );
-      if (
-        selectedChoices.length > 0 ||
-        blockedChoices.length > 0 ||
-        toolMessage
-      ) {
-        setChatMessages((current) => [
-          ...current,
-          createStationaryEnergyToolSummaryMessage({
-            action: tool.action ?? "stationary_energy_review_tool",
-            message: toolMessage,
-            selectedChoices,
-            blockedChoices,
-          }),
-        ]);
-      }
-
-      if (toolDraftRunId) {
-        pendingDraftStatusRefreshCountRef.current += 1;
-        void refreshDraftStatusSilently(toolDraftRunId)
-          .catch((error) => {
-            showError(
-              resolveErrorMessage(
-                t,
-                error,
-                "error-failed-to-load-stationary-energy-draft-status",
-              ),
-            );
-          })
-          .finally(() => {
-            pendingDraftStatusRefreshCountRef.current = Math.max(
-              0,
-              pendingDraftStatusRefreshCountRef.current - 1,
-            );
-          });
-      }
-    },
-    [
-      appendBulkReviewConfirmation,
-      appendInventorySaveConfirmation,
-      appendStagedReviewUpdateConfirmation,
-      appendTextMessage,
-      canSaveAcceptedRowsToInventory,
-      clearError,
-      decisionReviewContext,
-      draftState?.draft_run_id,
-      refreshDraftStatusSilently,
-      removeEmptyAssistantTail,
-      removeInventorySaveConfirmationMessages,
-      showError,
+  const { handleToolResult, activeToolName, setActiveToolName } =
+    useStationaryEnergyToolResults({
       t,
+      draftState,
+      decisionReviewContext,
+      canSaveAcceptedRowsToInventory,
+      canSaveAcceptedRowsToInventoryRef,
+      lastUserChatContentRef,
+      pendingInventorySaveConfirmationMessageRef,
+      setAcknowledgedStaleDraftRunId,
+      refreshDraftStatusSilently,
+      clearError,
+      showError,
       updatePendingDraftStartResume,
-    ],
-  );
+      messages: chat,
+    });
 
   const { startStream, stopStream } = useSSEStream({
     forceEventStream: true,
@@ -1341,12 +495,11 @@ export function useStationaryEnergyChatArtifactController(
         }
       }
     },
-    [draftState?.thread_id, inventoryId, showError, t, threadId],
+    [draftState, inventoryId, showError, t, threadId],
   );
 
   const startDraft = useCallback(async (): Promise<void> => {
-    updatePendingDraftStartResume(null);
-    setDraftStartResumeNotice(null);
+    resetDraftStartResume();
     clearError();
     setLoadingAction("start");
     try {
@@ -1382,7 +535,7 @@ export function useStationaryEnergyChatArtifactController(
     refreshDraftStatus,
     showError,
     t,
-    updatePendingDraftStartResume,
+    resetDraftStartResume,
   ]);
 
   const choosePreference = useCallback(
@@ -1399,20 +552,14 @@ export function useStationaryEnergyChatArtifactController(
       return;
     }
     setAcknowledgedStaleDraftRunId(draftState.draft_run_id);
-  }, [draftState?.draft_run_id]);
+  }, [draftState]);
 
   const resetConversationState = useCallback((): void => {
-    updatePendingDraftStartResume(null);
-    setDraftStartResumeNotice(null);
+    resetDraftStartResume();
     setChatMessages([]);
     setSourcePreference(null);
     clearError();
-  }, [clearError, updatePendingDraftStartResume]);
-
-  const cancelDraftStartResume = useCallback((): void => {
-    updatePendingDraftStartResume(null);
-    setDraftStartResumeNotice(t("chat-pending-request-canceled"));
-  }, [t, updatePendingDraftStartResume]);
+  }, [clearError, resetDraftStartResume, setChatMessages]);
 
   const startOver = useCallback((): void => {
     clearStoredDraftContext(inventoryId);
@@ -1451,113 +598,20 @@ export function useStationaryEnergyChatArtifactController(
     );
   }, []);
 
-  const persistReviewDecisions = useCallback(
-    async (targetDraftState: DraftStatusResponse): Promise<unknown> => {
-      return persistReviewDecisionPayload({
-        draftRunId: targetDraftState.draft_run_id,
-        inventoryId,
-        decisions: buildReviewDecisionPayload({
-          draftState: targetDraftState,
-          decisionState,
-        }),
-      });
-    },
-    [decisionState, inventoryId],
-  );
-
-  const saveDraft = useCallback(async (): Promise<void> => {
-    if (!draftState || !canPersistDraft) {
-      return;
-    }
-
-    clearError();
-    setLoadingAction("save_draft");
-    try {
-      await persistReviewDecisions(draftState);
-      appendTextMessage("assistant", t("chat-save-draft-success"));
-      await refreshDraftStatus(draftState.draft_run_id);
-    } catch (error) {
-      showError(
-        resolveErrorMessage(
-          t,
-          error,
-          "error-failed-to-save-stationary-energy-draft-decisions",
-        ),
-      );
-    } finally {
-      setLoadingAction(null);
-    }
-  }, [
-    appendTextMessage,
-    canPersistDraft,
-    clearError,
+  const { saveDraft, saveToInventory } = useStationaryEnergyReviewSave({
     draftState,
-    persistReviewDecisions,
-    refreshDraftStatus,
-    showError,
-    t,
-  ]);
-
-  const saveToInventory = useCallback(async (): Promise<void> => {
-    if (!draftState || !canSaveAcceptedRowsToInventory) {
-      return;
-    }
-
-    clearError();
-    setLoadingAction("save_inventory");
-    try {
-      if (
-        hasInventorySaveReviewChanges({
-          draftState,
-          decisionState,
-          resolvedProposalIds,
-        })
-      ) {
-        await persistReviewDecisionPayload({
-          draftRunId: draftState.draft_run_id,
-          inventoryId,
-          decisions: buildInventorySaveReviewDecisionPayload({
-            draftState,
-            decisionState,
-            resolvedProposalIds,
-          }),
-        });
-      }
-
-      const payload: SaveResponse = await saveAcceptedDraftRows({
-        draftRunId: draftState.draft_run_id,
-        inventoryId,
-      });
-      appendTextMessage(
-        "assistant",
-        payload.status === "saved"
-          ? t("chat-save-inventory-success")
-          : t("chat-save-inventory-status", { status: payload.status }),
-      );
-      await refreshDraftStatus(draftState.draft_run_id);
-    } catch (error) {
-      showError(
-        resolveErrorMessage(
-          t,
-          error,
-          "error-failed-to-save-accepted-stationary-energy-rows",
-        ),
-      );
-    } finally {
-      setLoadingAction(null);
-    }
-  }, [
-    appendTextMessage,
+    decisionState,
+    resolvedProposalIds,
+    inventoryId,
+    canPersistDraft,
     canSaveAcceptedRowsToInventory,
     clearError,
-    decisionState,
-    draftState,
-    inventoryId,
-    resolvedProposalIds,
-    refreshDraftStatus,
     showError,
+    setLoadingAction,
+    appendTextMessage,
+    refreshDraftStatus,
     t,
-  ]);
+  });
 
   const requestSaveToInventoryConfirmation = useCallback((): void => {
     if (!canSaveAcceptedRowsToInventory) {
@@ -1617,7 +671,7 @@ export function useStationaryEnergyChatArtifactController(
       // Follow-up messages do not cancel an earlier request. Only its automatic
       // continuation or an explicit user action consumes the queue.
       if (resumeAfterDraftStart) {
-        if (!pendingDraftStartResumeRef.current) {
+        if (!isPendingDraftStartResume()) {
           return;
         }
         updatePendingDraftStartResume(null);
@@ -1687,6 +741,7 @@ export function useStationaryEnergyChatArtifactController(
       startStream,
       t,
       updatePendingDraftStartResume,
+      isPendingDraftStartResume,
     ],
   );
 
@@ -1724,7 +779,7 @@ export function useStationaryEnergyChatArtifactController(
     // Wait for any follow-up chat turn to finish. The ref also guards a cancel
     // action that happens before React cleans up this scheduled continuation.
     const timeout = window.setTimeout(() => {
-      if (pendingDraftStartResumeRef.current !== pending) {
+      if (!isPendingDraftStartResume(pending)) {
         return;
       }
       void sendChatMessage(pending.content, { resumeAfterDraftStart: true });
@@ -1735,6 +790,7 @@ export function useStationaryEnergyChatArtifactController(
     draftStatus,
     loadingAction,
     pendingDraftStartResume,
+    isPendingDraftStartResume,
     sendChatMessage,
   ]);
 

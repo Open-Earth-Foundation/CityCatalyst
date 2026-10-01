@@ -9,6 +9,9 @@ import httpx
 import pytest
 import pytest_asyncio
 from agents.tool import ToolContext
+from fastapi import FastAPI
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
 from app.config import get_settings
 from app.db import Base
 from app.db.session import get_session_factory, get_session_optional
@@ -29,8 +32,6 @@ from app.utils.stationary_energy_context import (
     STATIONARY_ENERGY_RESUME_AFTER_DRAFT_START_OPTION,
 )
 from app.utils.streaming_handler import StreamingHandler
-from fastapi import FastAPI
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 RESUME_OPTIONS = {STATIONARY_ENERGY_RESUME_AFTER_DRAFT_START_OPTION: True}
 
@@ -159,9 +160,8 @@ async def test_resume_turn_repeats_the_pre_run_request_after_the_start_reply():
             "app.utils.streaming_handler.load_conversation_history",
             new=AsyncMock(return_value=list(stored_history)),
         ),
-        patch.object(
-            handler,
-            "_load_stationary_energy_context_message",
+        patch(
+            "app.utils.streaming_handler.load_stationary_energy_context_message",
             new=AsyncMock(return_value=draft_context),
         ),
     ):

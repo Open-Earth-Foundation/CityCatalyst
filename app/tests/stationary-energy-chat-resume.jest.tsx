@@ -13,7 +13,7 @@ import { createRoot, type Root } from "react-dom/client";
 import type { TFunction } from "i18next";
 import type { SSEStreamOptions } from "@/hooks/useSSEStream";
 import type { DraftStatusResponse } from "@/components/StationaryEnergyDraft/types";
-import type { StationaryEnergyChatArtifactController } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
+import type { StationaryEnergyChatArtifactController } from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-types";
 import {
   readStoredDraftContext,
   writeStoredDraftContext,

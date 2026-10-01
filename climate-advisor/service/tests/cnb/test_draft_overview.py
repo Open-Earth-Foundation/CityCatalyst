@@ -7,6 +7,9 @@ from uuid import uuid4
 import httpx
 import pytest
 import pytest_asyncio
+from fastapi import FastAPI
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
 from app.config import get_settings
 from app.config.settings import _load_llm_config
 from app.db import Base
@@ -30,8 +33,6 @@ from app.services.cnb.draft_overview import (
 )
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.streaming_handler import StreamingHandler
-from fastapi import FastAPI
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 BUILD_ID = str(uuid4())
 OVERVIEW_OPTIONS = {"concept_note_turn": "draft_overview"}
@@ -425,7 +426,7 @@ async def test_overview_turn_orders_context_facts_then_hidden_trigger():
             new=AsyncMock(return_value=[]),
         ),
         patch(
-            "app.utils.streaming_handler.load_agent_context",
+            "app.utils.streaming_context.load_agent_context",
             new=AsyncMock(return_value={"workflow_step": "editing_document"}),
         ),
         patch(

@@ -13,6 +13,8 @@ import httpx
 import mlflow
 import pytest
 from agents import FunctionTool
+from openai import AsyncOpenAI
+
 from app.models.requests import MessageCreateRequest
 from app.services.agent_service import AgentService
 from app.utils import mlflow_logging
@@ -24,7 +26,6 @@ from app.utils.conversation_observability import (
     workflow_trace,
 )
 from app.utils.streaming_handler import StreamingHandler
-from openai import AsyncOpenAI
 
 
 @pytest.fixture
@@ -128,7 +129,9 @@ async def test_all_chat_modes_export_complete_or_partial_turns(
         return True
 
     monkeypatch.setattr(StreamingHandler, "persist_message", persist)
-    original_process = StreamingHandler._process_chunk
+    from app.utils.streaming_events import process_chunk
+
+    original_process = process_chunk
 
     async def process(self, chunk):
         async for event in original_process(self, chunk):
@@ -136,7 +139,7 @@ async def test_all_chat_modes_export_complete_or_partial_turns(
         if cancelled and self.assistant_tokens:
             raise asyncio.CancelledError()
 
-    monkeypatch.setattr(StreamingHandler, "_process_chunk", process)
+    monkeypatch.setattr("app.utils.streaming_handler.process_chunk", process)
     for turn in range(2):
         handler = StreamingHandler(
             thread_id=thread_id, user_id="user-1", session_factory=None

@@ -94,6 +94,26 @@ export function getConceptNoteSourceFormat(job: {
   return job.model === DIRECT_MARKDOWN_MODEL ? "markdown" : "pdf";
 }
 
+/** Identify only pre-feature completed CNB PDFs with their original Markdown identity. */
+export function isLegacyMarkdownOnlyPdfJob(job: PdfOcrJob): boolean {
+  return (
+    job.sourceType === CONCEPT_NOTE_SOURCE_TYPE &&
+    job.status === "succeeded" &&
+    getConceptNoteSourceFormat(job) === "pdf" &&
+    job.annotationMode === "none" &&
+    job.resultS3Key != null &&
+    job.resultS3Key.trim().length > 0 &&
+    typeof job.resultSha256 === "string" &&
+    /^[0-9a-f]{64}$/.test(job.resultSha256) &&
+    Number.isInteger(job.pageCount) &&
+    (job.pageCount ?? 0) > 0 &&
+    job.structuredS3Key == null &&
+    job.structuredSha256 == null &&
+    job.structuredSizeBytes == null &&
+    job.structuredSchemaVersion == null
+  );
+}
+
 class PdfSourceError extends Error {
   constructor(
     public readonly code: string,

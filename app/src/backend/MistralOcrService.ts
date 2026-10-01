@@ -14,9 +14,89 @@ const responseSchema = z.object({
     z.object({
       index: z.number().int().nonnegative(),
       markdown: z.string(),
+      tables: z
+        .array(z.object({ id: z.string(), content: z.string() }))
+        .optional(),
     }),
   ),
 });
+
+const TABLE_PLACEHOLDER_PATTERN = /^tbl-[\w-]+\.md$/;
+
+function tableReferenceId(path: string): string | null {
+  return TABLE_PLACEHOLDER_PATTERN.test(path) ? path.slice(0, -3) : null;
+}
+
+function tableId(value: string): string | null {
+  return tableReferenceId(value.endsWith(".md") ? value : `${value}.md`);
+}
+
+function assemblePageMarkdown(
+  page: z.infer<typeof responseSchema>["pages"][number],
+  tablePages: Map<string, Set<number>>,
+): string {
+  const pageTables = new Map<string, string>();
+  for (const table of page.tables ?? []) {
+    const id = tableId(table.id);
+    if (!id || pageTables.has(id)) {
+      throw new MistralOcrError(
+        "invalid_table_reference",
+        true,
+        "Mistral OCR returned a duplicate or invalid table ID",
+      );
+    }
+    if (!table.content.trim()) {
+      throw new MistralOcrError(
+        "invalid_table_reference",
+        true,
+        "Mistral OCR returned a table without Markdown content",
+      );
+    }
+    pageTables.set(id, table.content);
+  }
+
+  const resolved = new Set<string>();
+  const markdown = page.markdown.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    (link, _label: string, target: string) => {
+      const id = tableReferenceId(target);
+      if (!id) return link;
+
+      const content = pageTables.get(id);
+      if (content === undefined) {
+        const matchingPages = tablePages.get(id);
+        const code = matchingPages?.size
+          ? "cross_page_table_reference"
+          : "missing_table_reference";
+        throw new MistralOcrError(
+          code,
+          true,
+          matchingPages?.size
+            ? "Mistral OCR table placeholder refers to a table on another page"
+            : "Mistral OCR table placeholder has no matching table",
+        );
+      }
+      if (resolved.has(id)) {
+        throw new MistralOcrError(
+          "invalid_table_reference",
+          true,
+          "Mistral OCR returned a duplicate table placeholder",
+        );
+      }
+      resolved.add(id);
+      return content;
+    },
+  );
+
+  if (resolved.size !== pageTables.size) {
+    throw new MistralOcrError(
+      "unplaced_table",
+      true,
+      "Mistral OCR returned a table without a Markdown placeholder",
+    );
+  }
+  return markdown;
+}
 
 export class MistralOcrError extends Error {
   constructor(
@@ -90,6 +170,32 @@ export function mergeMistralPages(
     );
   }
 
+  const tablePages = new Map<string, Set<number>>();
+  for (const page of pages) {
+    for (const table of page.tables ?? []) {
+      const id = tableId(table.id);
+      if (!id) continue;
+      const matchingPages = tablePages.get(id) ?? new Set<number>();
+      matchingPages.add(page.index);
+      tablePages.set(id, matchingPages);
+    }
+  }
+  if (
+    [...tablePages.values()].some((matchingPages) => matchingPages.size > 1)
+  ) {
+    throw new MistralOcrError(
+      "invalid_table_reference",
+      true,
+      "Mistral OCR returned duplicate table IDs across pages",
+    );
+  }
+  const markdown = pages
+    .map(
+      (page) =>
+        `<!-- page: ${page.index + 1} -->\n${assemblePageMarkdown(page, tablePages)}`,
+    )
+    .join("\n\n");
+
   let structured: StructuredDocument;
   try {
     structured = buildStructuredDocument(response, {
@@ -104,9 +210,7 @@ export function mergeMistralPages(
   }
 
   return {
-    markdown: pages
-      .map((page) => `<!-- page: ${page.index + 1} -->\n${page.markdown}`)
-      .join("\n\n"),
+    markdown,
     pageCount: pages.length,
     model: parsed.data.model || requestedModel,
     structured,

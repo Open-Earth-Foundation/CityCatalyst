@@ -355,14 +355,36 @@ async def ingest_concept_note_markdown(
         status_code = 409 if validation_error == "markdown_identity_conflict" else 422
         return problem(status_code, validation_error, "Markdown verification failed")
     if payload.source_format == "pdf":
-        structured_error = await _verify_structured_delivery(
-            cc_client=cc_client,
-            upload_id=upload_id,
-            token=authorization,
-            payload=payload,
+        structured_values = (
+            payload.annotation_mode,
+            payload.structured_s3_key,
+            payload.structured_sha256,
+            payload.structured_size_bytes,
+            payload.structured_schema_version,
         )
-        if isinstance(structured_error, JSONResponse):
-            return structured_error
+        is_legacy_candidate = all(value is None for value in structured_values)
+        if is_legacy_candidate:
+            if not artifact.legacy_markdown_only:
+                return problem(
+                    422,
+                    "structured_metadata_incomplete",
+                    "PDF delivery is missing structured artifact metadata",
+                )
+        else:
+            if artifact.legacy_markdown_only:
+                return problem(
+                    409,
+                    "structured_identity_conflict",
+                    "CC legacy Markdown identity cannot include a structured artifact",
+                )
+            structured_error = await _verify_structured_delivery(
+                cc_client=cc_client,
+                upload_id=upload_id,
+                token=authorization,
+                payload=payload,
+            )
+            if isinstance(structured_error, JSONResponse):
+                return structured_error
 
     try:
         snapshot = await repository.register_markdown(

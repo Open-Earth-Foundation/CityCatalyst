@@ -64,6 +64,7 @@ class ConceptNoteMarkdownArtifact:
     sha256: str
     source_format: ConceptNoteSourceFormat = "pdf"
     page_count: int | None = None
+    legacy_markdown_only: bool = False
 
 
 @dataclass(frozen=True)
@@ -589,6 +590,7 @@ class CityCatalystClient:
                 sha256 = response.headers.get("X-Markdown-SHA256")
                 source_format = response.headers.get("X-Source-Format")
                 page_count_header = response.headers.get("X-Page-Count")
+                legacy_header = response.headers.get("X-CC-Legacy-Pdf-Delivery")
         except httpx.HTTPError as exc:
             raise CityCatalystClientError(
                 "CC Markdown verification is unavailable",
@@ -612,6 +614,7 @@ class CityCatalystClient:
                 "CC Markdown artifact metadata is invalid",
                 status_code=502,
             )
+        legacy_markdown_only = False
         if source_format == "pdf":
             try:
                 page_count = int(page_count_header or "")
@@ -625,8 +628,14 @@ class CityCatalystClient:
                     "CC Markdown artifact metadata is invalid",
                     status_code=502,
                 )
+            if legacy_header not in (None, "pre-structured-pdf-v1"):
+                raise CityCatalystClientError(
+                    "CC Markdown artifact metadata is invalid",
+                    status_code=502,
+                )
+            legacy_markdown_only = legacy_header == "pre-structured-pdf-v1"
         else:
-            if page_count_header is not None:
+            if page_count_header is not None or legacy_header is not None:
                 raise CityCatalystClientError(
                     "CC Markdown artifact metadata is invalid",
                     status_code=502,
@@ -639,6 +648,7 @@ class CityCatalystClient:
             sha256=sha256,
             source_format=source_format,
             page_count=page_count,
+            legacy_markdown_only=legacy_markdown_only,
         )
 
     async def get_concept_note_structured(

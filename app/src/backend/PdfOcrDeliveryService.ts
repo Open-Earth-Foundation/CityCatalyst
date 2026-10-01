@@ -5,6 +5,7 @@ import type { PdfOcrJob } from "@/models/PdfOcrJob";
 import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 import {
   getConceptNoteSourceFormat,
+  isLegacyMarkdownOnlyPdfJob,
   type ConceptNoteSourceFormat,
 } from "@/backend/PdfOcrService";
 import {
@@ -45,9 +46,11 @@ export function serializeMarkdownDeliveryPayload(
   const sourceFormat = source.sourceFormat;
   if (
     !job.resultS3Key ||
-    !job.resultSha256 ||
+    typeof job.resultSha256 !== "string" ||
+    !/^[0-9a-f]{64}$/.test(job.resultSha256) ||
     sourceFormat !== jobSourceFormat ||
-    (sourceFormat === "pdf" && !job.pageCount) ||
+    (sourceFormat === "pdf" &&
+      (!Number.isInteger(job.pageCount) || (job.pageCount ?? 0) < 1)) ||
     (sourceFormat === "markdown" && job.pageCount != null)
   ) {
     throw new PdfOcrDeliveryError(
@@ -65,6 +68,8 @@ export function serializeMarkdownDeliveryPayload(
     sha256: job.resultSha256,
   };
   if (sourceFormat === "pdf") {
+    if (isLegacyMarkdownOnlyPdfJob(job)) return JSON.stringify(payload);
+
     const structuredSize = Number(job.structuredSizeBytes);
     if (
       (job.annotationMode !== "none" &&

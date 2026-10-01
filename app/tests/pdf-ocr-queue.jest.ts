@@ -114,6 +114,7 @@ let claimInventoryExtractionJobs: typeof import("@/backend/PdfOcrService").claim
 let getInventoryPdfOcrStatus: typeof import("@/backend/PdfOcrService").getInventoryPdfOcrStatus;
 let extractInventoryRowsFromStoredMarkdown: typeof import("@/backend/PdfOcrService").extractInventoryRowsFromStoredMarkdown;
 let processPdfOcrJobs: typeof import("@/backend/PdfOcrService").processPdfOcrJobs;
+let isLegacyMarkdownOnlyPdfJob: typeof import("@/backend/PdfOcrService").isLegacyMarkdownOnlyPdfJob;
 
 beforeAll(async () => {
   ({
@@ -129,6 +130,7 @@ beforeAll(async () => {
     getInventoryPdfOcrStatus,
     extractInventoryRowsFromStoredMarkdown,
     processPdfOcrJobs,
+    isLegacyMarkdownOnlyPdfJob,
   } = await import("@/backend/PdfOcrService"));
 });
 
@@ -142,6 +144,55 @@ describe("PdfOcrJob queue", () => {
     importedUpdate.mockResolvedValue([1]);
     resolveImportedFileBuffer.mockResolvedValue(null);
     findOne.mockResolvedValue(null);
+  });
+
+  it.each(["pending", "delivering", "failed"] as const)(
+    "recognizes a valid pre-feature PDF during %s delivery recovery",
+    (deliveryStatus) => {
+      expect(
+        isLegacyMarkdownOnlyPdfJob({
+          sourceType: "concept_note_upload",
+          status: "succeeded",
+          model: "mistral-ocr-latest",
+          annotationMode: "none",
+          resultS3Key: "original.md",
+          resultSha256: "a".repeat(64),
+          pageCount: 2,
+          structuredS3Key: null,
+          structuredSha256: null,
+          structuredSizeBytes: null,
+          structuredSchemaVersion: null,
+          deliveryStatus,
+        } as never),
+      ).toBe(true);
+    },
+  );
+
+  it.each([
+    { status: "failed" },
+    { sourceType: "inventory_import" },
+    { model: "direct_markdown" },
+    { annotationMode: "visual_context" },
+    { structuredSha256: "partial" },
+    { resultSha256: "invalid" },
+    { pageCount: 0 },
+  ])("does not classify ineligible PDF state as legacy: %o", (patch) => {
+    expect(
+      isLegacyMarkdownOnlyPdfJob({
+        sourceType: "concept_note_upload",
+        status: "succeeded",
+        model: "mistral-ocr-latest",
+        annotationMode: "none",
+        resultS3Key: "original.md",
+        resultSha256: "a".repeat(64),
+        pageCount: 2,
+        structuredS3Key: null,
+        structuredSha256: null,
+        structuredSizeBytes: null,
+        structuredSchemaVersion: null,
+        ...patch,
+      } as never),
+    ).toBe(false);
   });
 
   it("uses the composite source identity and idempotent find-or-create", async () => {
@@ -258,6 +309,16 @@ describe("PdfOcrJob queue", () => {
       status: "succeeded",
       attemptCount: 2,
       deliveryStatus: "failed",
+      sourceType: "concept_note_upload",
+      model: "mistral-ocr-latest",
+      annotationMode: "none",
+      resultS3Key: "original.md",
+      resultSha256: "a".repeat(64),
+      pageCount: 2,
+      structuredS3Key: null,
+      structuredSha256: null,
+      structuredSizeBytes: null,
+      structuredSchemaVersion: null,
       update,
     } as unknown as Parameters<typeof retryConceptNotePdfOcr>[0];
 
@@ -271,6 +332,9 @@ describe("PdfOcrJob queue", () => {
     );
     expect(update.mock.calls[0][0]).not.toHaveProperty("status");
     expect(update.mock.calls[0][0]).not.toHaveProperty("attemptCount");
+    expect(update.mock.calls[0][0]).not.toHaveProperty("resultS3Key");
+    expect(update.mock.calls[0][0]).not.toHaveProperty("resultSha256");
+    expect(update.mock.calls[0][0]).not.toHaveProperty("structuredS3Key");
   });
 
   it("distinguishes retryable OCR failure from retryable delivery failure", () => {
@@ -547,7 +611,12 @@ describe("PdfOcrJob queue", () => {
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([job])
       .mockResolvedValueOnce([]);
-    convertPdfUrlToMarkdown.mockResolvedValue(ocrResult());
+    const markdown =
+      "<!-- page: 1 -->\n# Plan\n\n| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |";
+    convertPdfUrlToMarkdown.mockResolvedValue({
+      ...ocrResult(),
+      markdown,
+    });
 
     await processPdfOcrJobs();
 
@@ -557,7 +626,7 @@ describe("PdfOcrJob queue", () => {
       "https://signed.example/source.pdf",
       "visual_context",
     );
-    expect(putTextFile).toHaveBeenNthCalledWith(1, markdownKey, "# Plan");
+    expect(putTextFile).toHaveBeenNthCalledWith(1, markdownKey, markdown);
     expect(putTextFile).toHaveBeenNthCalledWith(
       2,
       structuredKey,

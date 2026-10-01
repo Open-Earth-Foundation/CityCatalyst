@@ -642,6 +642,12 @@ def _validate_existing_markdown(
     )
     # Legacy ready rows stay Markdown-only. Do not backfill them in place.
     if all(value is None for value in existing_structured):
+        if any(value is not None for value in incoming_structured):
+            raise ConceptNoteMarkdownRepositoryError(
+                "structured_identity_conflict",
+                409,
+                "Legacy Markdown identity cannot acquire a structured artifact",
+            )
         return
     if existing_structured != incoming_structured:
         raise ConceptNoteMarkdownRepositoryError(

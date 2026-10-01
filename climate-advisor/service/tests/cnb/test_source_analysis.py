@@ -180,6 +180,24 @@ async def test_analysis_and_query_cover_every_page_with_exact_citations(
     assert all(tools == [] for tools in runner.reader_tools)
 
 
+def test_source_pages_keep_values_inserted_at_mistral_table_placeholders() -> None:
+    markdown = (
+        "<!-- page: 1 -->\n"
+        "# Emissions\n\n"
+        "| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |"
+    )
+
+    pages = parse_source_pages(markdown)
+
+    assert pages == [
+        SourcePage(
+            number=1,
+            text="\n# Emissions\n\n| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |",
+        )
+    ]
+    assert "12.50" in pages[0].text
+
+
 @pytest.mark.asyncio
 async def test_query_returns_explicit_not_found_after_full_coverage(
     analysis_dependencies,

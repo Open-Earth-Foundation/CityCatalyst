@@ -87,10 +87,11 @@ class ConceptNoteMarkdownRequest(BaseModel):
             raise ValueError("Markdown sources cannot declare structured artifacts")
         if self.source_format == "pdf" and any(
             value is None for value in structured_values
-        ):
-            raise ValueError("PDF sources require structured artifact metadata")
+        ) and any(value is not None for value in structured_values):
+            raise ValueError("PDF structured artifact metadata must be complete")
         if (
             self.source_format == "pdf"
+            and self.structured_schema_version is not None
             and self.structured_schema_version != STRUCTURED_DOCUMENT_SCHEMA_VERSION
         ):
             raise ValueError("Unsupported structured schema version")

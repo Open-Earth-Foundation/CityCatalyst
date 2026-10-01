@@ -849,7 +849,15 @@ pointer in `CA_DATABASE_URL`. New PDF deliveries also register
 upload can become ready. Exact excerpts stay on source Markdown. Visual
 annotations are projected to qualitative context only and stay labeled
 `quantitative_reliability: unverified`. Legacy ready rows with null structured
-columns remain readable and are not backfilled. PDFs retain page validation;
+columns remain readable and are not backfilled. The authenticated CC Markdown
+read marks only pre-structured succeeded CNB PDF jobs with
+`X-CC-Legacy-Pdf-Delivery: pre-structured-pdf-v1`; CA permits the all-null PDF
+metadata tuple only when this exact marker accompanies the verified original
+Markdown. These rows remain Markdown-only and produce no visual context. New
+PDF deliveries without complete structured metadata remain invalid. CC expands
+Mistral's page-local table bodies at their placeholders in canonical Markdown
+before hashing and storing it, so CA source analysis receives table values.
+PDFs retain page validation;
 native `.md` bypasses OCR, uses annotation mode `none`, and does not declare a
 structured artifact. Requests are idempotent,
 identity changes return `409`, and unavailable storage returns

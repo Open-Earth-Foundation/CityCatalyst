@@ -1,15 +1,15 @@
 """Store structured PDF artifact identity beside Concept Note Markdown.
 
-Revision ID: 20260922_120000
-Revises: 20260811_120000
-Create Date: 2026-09-22 12:00:00.000000
+Revision ID: 20261001_120000
+Revises: 20260925_120000
+Create Date: 2026-10-01 12:00:00.000000
 """
 
 import sqlalchemy as sa
 from alembic import op
 
-revision = "20260922_120000"
-down_revision = "20260811_120000"
+revision = "20261001_120000"
+down_revision = "20260925_120000"
 branch_labels = None
 depends_on = None
 
@@ -37,7 +37,7 @@ def upgrade() -> None:
         sa.Column("structured_schema_version", sa.String(length=64), nullable=True),
     )
     op.create_check_constraint(
-        "ck_concept_note_uploads_structured_identity",
+        op.f("ck_concept_note_uploads_structured_identity"),
         "concept_note_uploads",
         """
         (
@@ -62,7 +62,7 @@ def upgrade() -> None:
 def downgrade() -> None:
     """Remove structured artifact columns and leave Markdown pointers intact."""
     op.drop_constraint(
-        "ck_concept_note_uploads_structured_identity",
+        op.f("ck_concept_note_uploads_structured_identity"),
         "concept_note_uploads",
         type_="check",
     )

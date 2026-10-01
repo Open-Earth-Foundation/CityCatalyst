@@ -501,6 +501,18 @@ publish those objects: consumers see only the database pointers. The next claim
 uses a new `attempt_count`. An explicit OCR retry of a failed PDF clears both
 artifact pointers. Delivery retry does not.
 
+Mistral may return page-local table bodies separately from the Markdown page
+through `tables[].content` and links such as `[tbl-1.md](tbl-1.md)`. CC resolves
+those references within each page before hashing and storing canonical Markdown,
+so Climate Advisor's source analysis sees the exact table values. Missing,
+duplicate, cross-page, empty, or unplaced table bodies fail OCR explicitly.
+Pre-structured succeeded CNB PDFs can replay their original Markdown on delivery
+retry. CC attests that narrow state on its authenticated Markdown read with
+`X-CC-Legacy-Pdf-Delivery: pre-structured-pdf-v1`; CA accepts null structured
+metadata only with the exact attestation. Such legacy uploads remain
+Markdown-only, with no visual context, while new PDFs still require the
+structured artifact.
+
 ### Climate Advisor Workflow Database
 
 The `concept_note_uploads` table belongs to the existing Climate Advisor Alembic

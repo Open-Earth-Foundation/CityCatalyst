@@ -94,7 +94,79 @@ async def test_markdown_client_parses_pdf_and_native_markdown_artifacts(
     assert artifact.sha256 == digest
     assert artifact.source_format == source_format
     assert artifact.page_count == page_count
+    assert artifact.legacy_markdown_only is False
     assert stream.chunks_read == 2
+
+
+@pytest.mark.asyncio
+async def test_markdown_client_accepts_only_the_exact_legacy_pdf_marker() -> None:
+    markdown = b"<!-- page: 1 -->\n# Legacy plan"
+    digest = hashlib.sha256(markdown).hexdigest()
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            headers={
+                "X-Markdown-S3-Key": "results/upload/combined.md",
+                "X-Markdown-SHA256": digest,
+                "X-Source-Format": "pdf",
+                "X-Page-Count": "1",
+                "X-CC-Legacy-Pdf-Delivery": "pre-structured-pdf-v1",
+            },
+            content=markdown,
+        )
+
+    with patch(
+        "app.services.citycatalyst_client.get_settings",
+        return_value=settings(len(markdown)),
+    ):
+        client = CityCatalystClient(base_url="https://cc.example")
+        client._client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+        try:
+            artifact = await client.get_concept_note_markdown(
+                upload_id="upload-id",
+                token="user-token",
+            )
+        finally:
+            await client.close()
+
+    assert artifact.legacy_markdown_only is True
+
+
+@pytest.mark.asyncio
+async def test_markdown_client_rejects_unknown_legacy_marker() -> None:
+    markdown = b"<!-- page: 1 -->\n# Plan"
+    digest = hashlib.sha256(markdown).hexdigest()
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            headers={
+                "X-Markdown-S3-Key": "results/upload/combined.md",
+                "X-Markdown-SHA256": digest,
+                "X-Source-Format": "pdf",
+                "X-Page-Count": "1",
+                "X-CC-Legacy-Pdf-Delivery": "true",
+            },
+            content=markdown,
+        )
+
+    with patch(
+        "app.services.citycatalyst_client.get_settings",
+        return_value=settings(len(markdown)),
+    ):
+        client = CityCatalystClient(base_url="https://cc.example")
+        client._client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+        try:
+            with pytest.raises(CityCatalystClientError) as error:
+                await client.get_concept_note_markdown(
+                    upload_id="upload-id",
+                    token="user-token",
+                )
+        finally:
+            await client.close()
+
+    assert error.value.status_code == 502
 
 
 @pytest.mark.asyncio

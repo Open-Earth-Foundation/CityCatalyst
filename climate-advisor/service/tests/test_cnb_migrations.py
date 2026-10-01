@@ -111,6 +111,43 @@ def test_ca_migration_chain_backfills_run_city_population() -> None:
     assert "FROM concept_note_context_bundles AS bundle" in sql
 
 
+def test_ca_structured_upload_migration_keeps_explicit_constraint_name() -> None:
+    """The named check must not be prefixed twice by metadata conventions."""
+    sql = _render_offline_upgrade(
+        config="alembic.ini",
+        database_env="CA_DATABASE_URL",
+    )
+    assert (
+        "ADD CONSTRAINT ck_concept_note_uploads_structured_identity CHECK (" in sql
+    )
+    assert "ck_concept_note_uploads_ck_concept_note_uploads_structured_identity" not in sql
+
+    environment = os.environ.copy()
+    environment["CA_DATABASE_URL"] = "postgresql://unused:unused@localhost/unused"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "alembic",
+            "-c",
+            "alembic.ini",
+            "downgrade",
+            "20261001_120000:20260925_120000",
+            "--sql",
+        ],
+        cwd=SERVICE_ROOT,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert (
+        "DROP CONSTRAINT ck_concept_note_uploads_structured_identity;"
+        in completed.stdout
+    )
+
+
 @pytest.mark.skipif(
     not CNB_DATABASE_URL,
     reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
@@ -403,6 +440,97 @@ def test_cnb_notices_upgrade_and_downgrade_preserve_existing_proposal() -> None:
             database_env="CNB_DATABASE_URL",
             args=["downgrade", "base"],
         )
+        engine.dispose()
+
+
+@pytest.mark.skipif(
+    not CNB_DATABASE_URL,
+    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
+)
+def test_structured_upload_migration_upgrades_released_and_fresh_schemas() -> None:
+    """Upgrade the released CA head and a fresh database to structured uploads."""
+    assert CNB_DATABASE_URL is not None
+    engine = create_engine(CNB_DATABASE_URL)
+    expected_columns = {
+        "annotation_mode",
+        "structured_s3_key",
+        "structured_sha256",
+        "structured_size_bytes",
+        "structured_schema_version",
+    }
+    environment = os.environ.copy()
+    environment["CA_DATABASE_URL"] = CNB_DATABASE_URL
+    heads = subprocess.run(
+        [sys.executable, "-m", "alembic", "-c", "alembic.ini", "heads"],
+        cwd=SERVICE_ROOT,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert heads.returncode == 0, heads.stderr
+    assert heads.stdout.count(" (head)") == 1, heads.stdout
+    assert "20261001_120000" in heads.stdout
+
+    try:
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "20260925_120000"],
+        )
+        assert not expected_columns & {
+            column["name"]
+            for column in inspect(engine).get_columns("concept_note_uploads")
+        }
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "head"],
+        )
+        columns = {
+            column["name"]: column
+            for column in inspect(engine).get_columns("concept_note_uploads")
+        }
+        assert expected_columns <= set(columns)
+        assert all(columns[name]["nullable"] for name in expected_columns)
+        assert "ck_concept_note_uploads_structured_identity" in {
+            constraint["name"]
+            for constraint in inspect(engine).get_check_constraints(
+                "concept_note_uploads"
+            )
+        }
+        with engine.connect() as connection:
+            assert connection.execute(
+                text("SELECT version_num FROM alembic_version")
+            ).scalar_one() == "20261001_120000"
+
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "head"],
+        )
+        assert expected_columns <= {
+            column["name"]
+            for column in inspect(engine).get_columns("concept_note_uploads")
+        }
+    finally:
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        with engine.begin() as connection:
+            connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
         engine.dispose()
 
 

@@ -973,3 +973,32 @@ async def test_refresh_rebuilds_only_when_the_city_inventory_changed(
         user_id="owner", run_id=uuid4(), token="token"
     ) == "current"
     assert queue.await_count == 1
+
+
+@pytest.mark.asyncio
+async def test_legacy_markdown_only_upload_has_no_visual_context() -> None:
+    upload = ConceptNoteUploadSnapshot(
+        upload_id=uuid4(),
+        run_id=uuid4(),
+        user_id="owner",
+        filename="legacy.pdf",
+        source_label="Legacy plan",
+        markdown_s3_key="result.md",
+        markdown_sha256="a" * 64,
+        page_count=1,
+        status="ready",
+        error_code=None,
+        received_at=datetime.now(UTC),
+        completed_at=datetime.now(UTC),
+    )
+    client = SimpleNamespace(get_concept_note_structured=AsyncMock())
+    service = ContextBundleService(object())
+
+    visual_context = await service._verified_visual_context(
+        upload=upload,
+        token="user-token",
+        cc_client=client,
+    )
+
+    assert visual_context == []
+    client.get_concept_note_structured.assert_not_awaited()

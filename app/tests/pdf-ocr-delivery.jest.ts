@@ -11,6 +11,7 @@ import type { PdfOcrJob } from "@/models/PdfOcrJob";
 
 const issueToken = jest.fn<() => Promise<{ access_token: string }>>();
 const getSourceFormat = jest.fn<() => "pdf" | "markdown">();
+const isLegacyMarkdownOnlyPdfJobMock = jest.fn<(job: PdfOcrJob) => boolean>();
 
 jest.unstable_mockModule("@/models", () => ({
   db: { models: { PdfOcrJob: { findAll: jest.fn() } } },
@@ -20,6 +21,7 @@ jest.unstable_mockModule("@/backend/climate-advisor-token", () => ({
 }));
 jest.unstable_mockModule("@/backend/PdfOcrService", () => ({
   getConceptNoteSourceFormat: getSourceFormat,
+  isLegacyMarkdownOnlyPdfJob: isLegacyMarkdownOnlyPdfJobMock,
 }));
 jest.unstable_mockModule("@/services/logger", () => ({
   logger: { warn: jest.fn() },
@@ -60,6 +62,21 @@ beforeAll(async () => {
 describe("PDF OCR delivery", () => {
   beforeEach(() => {
     getSourceFormat.mockReturnValue("pdf");
+    isLegacyMarkdownOnlyPdfJobMock.mockImplementation(
+      (candidate) =>
+        candidate.sourceType === "concept_note_upload" &&
+        candidate.status === "succeeded" &&
+        candidate.annotationMode === "none" &&
+        candidate.resultS3Key != null &&
+        typeof candidate.resultSha256 === "string" &&
+        /^[0-9a-f]{64}$/.test(candidate.resultSha256) &&
+        candidate.pageCount === 1 &&
+        candidate.structuredS3Key == null &&
+        candidate.structuredSha256 == null &&
+        candidate.structuredSizeBytes == null &&
+        candidate.structuredSchemaVersion == null,
+    );
+    issueToken.mockResolvedValue({ access_token: "token" });
   });
 
   afterEach(() => {
@@ -102,6 +119,61 @@ describe("PDF OCR delivery", () => {
             }
           : {}),
       });
+    },
+  );
+
+  it("replays only a complete pre-feature CNB PDF as Markdown-only", () => {
+    const legacyJob = {
+      ...job,
+      sourceType: "concept_note_upload",
+      status: "succeeded",
+      model: "mistral-ocr-latest",
+      annotationMode: "none",
+      structuredS3Key: null,
+      structuredSha256: null,
+      structuredSizeBytes: null,
+      structuredSchemaVersion: null,
+    } as PdfOcrJob;
+    const legacyPayload = JSON.parse(
+      serializeMarkdownDeliveryPayload(legacyJob, source),
+    );
+
+    expect(legacyPayload).toEqual({
+      markdown_s3_key: "result.md",
+      filename: "plan.pdf",
+      source_label: "Plan",
+      source_format: "pdf",
+      page_count: 1,
+      sha256: "a".repeat(64),
+    });
+  });
+
+  it.each([
+    { status: "failed" },
+    { sourceType: "inventory_import" },
+    { annotationMode: "visual_context" },
+    { structuredSha256: "partial" },
+    { resultSha256: "invalid" },
+    { pageCount: 0 },
+  ])(
+    "does not classify incomplete legacy state as recoverable: %o",
+    (patch) => {
+      const candidate = {
+        ...job,
+        sourceType: "concept_note_upload",
+        model: "mistral-ocr-latest",
+        annotationMode: "none",
+        structuredS3Key: null,
+        structuredSha256: null,
+        structuredSizeBytes: null,
+        structuredSchemaVersion: null,
+        ...patch,
+      } as PdfOcrJob;
+
+      expect(isLegacyMarkdownOnlyPdfJobMock(candidate)).toBe(false);
+      expect(() =>
+        serializeMarkdownDeliveryPayload(candidate, source),
+      ).toThrow();
     },
   );
 

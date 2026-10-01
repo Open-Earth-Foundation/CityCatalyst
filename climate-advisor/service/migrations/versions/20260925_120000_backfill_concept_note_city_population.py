@@ -5,14 +5,14 @@ lack ``city_population`` in their progress summary, which the workspace reads
 as "not included in run". This backfills the field from the stored bundle.
 
 Revision ID: 20260925_120000
-Revises: 20260922_120000
+Revises: 20260811_120000
 Create Date: 2026-09-25 12:00:00.000000
 """
 
 from alembic import op
 
 revision = "20260925_120000"
-down_revision = "20260922_120000"
+down_revision = "20260811_120000"
 branch_labels = None
 depends_on = None
 

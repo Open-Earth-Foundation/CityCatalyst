@@ -58,6 +58,7 @@ class FakeCityCatalystClient:
             page_count=1,
         )
         self.markdown_error: CityCatalystClientError | None = None
+        self.structured_reads = 0
         self.structured = ConceptNoteStructuredArtifact(
             body=STRUCTURED_BODY,
             raw_bytes=STRUCTURED_BYTES,
@@ -91,6 +92,7 @@ class FakeCityCatalystClient:
         upload_id: str,
         token: str,
     ) -> ConceptNoteStructuredArtifact:
+        self.structured_reads += 1
         return replace(self.structured, upload_id=upload_id)
 
 
@@ -181,9 +183,28 @@ class FakeMarkdownRepository(ConceptNoteMarkdownRepository):
             if (
                 current.markdown_s3_key != payload.markdown_s3_key
                 or current.markdown_sha256 != payload.sha256
+                or current.page_count != payload.page_count
             ):
                 raise ConceptNoteMarkdownRepositoryError(
                     "markdown_identity_conflict", 409, "Markdown changed"
+                )
+            current_structured = (
+                current.annotation_mode,
+                current.structured_s3_key,
+                current.structured_sha256,
+                current.structured_size_bytes,
+                current.structured_schema_version,
+            )
+            incoming_structured = (
+                payload.annotation_mode,
+                payload.structured_s3_key,
+                payload.structured_sha256,
+                payload.structured_size_bytes,
+                payload.structured_schema_version,
+            )
+            if current_structured != incoming_structured:
+                raise ConceptNoteMarkdownRepositoryError(
+                    "structured_identity_conflict", 409, "Structured identity changed"
                 )
             return current
         updated = replace(
@@ -278,6 +299,22 @@ def pointer_payload(**overrides: object) -> dict[str, object]:
         "structured_schema_version": STRUCTURED_DOCUMENT_SCHEMA_VERSION,
     }
     payload.update(overrides)
+    return payload
+
+
+def legacy_pointer_payload(**overrides: object) -> dict[str, object]:
+    """Return a PDF delivery candidate with no structured artifact identity."""
+    payload = pointer_payload()
+    payload.update(
+        {
+            "annotation_mode": None,
+            "structured_s3_key": None,
+            "structured_sha256": None,
+            "structured_size_bytes": None,
+            "structured_schema_version": None,
+            **overrides,
+        }
+    )
     return payload
 
 
@@ -410,6 +447,83 @@ def test_pointer_delivery_verifies_cc_then_persists_ready(ingest_client) -> None
         run_id,
     ]
     assert all(item["token"] == "owner-user" for item in cc_client.scheduled_builds)
+
+
+def test_verified_legacy_pdf_delivery_is_markdown_only_and_idempotent(
+    ingest_client,
+) -> None:
+    client, repository, cc_client, run_id = ingest_client
+    upload_id = uuid4()
+    create_upload(client, run_id, upload_id)
+    cc_client.artifact = replace(
+        cc_client.artifact,
+        legacy_markdown_only=True,
+    )
+    path = f"/v1/concept-notes/{run_id}/uploads/{upload_id}/markdown"
+    payload = legacy_pointer_payload()
+
+    first = client.post(path, json=payload, headers=auth())
+    replay = client.post(path, json=payload, headers=auth())
+
+    assert first.status_code == replay.status_code == 202
+    stored = repository.uploads[upload_id]
+    assert stored.status == "ready"
+    assert stored.markdown_s3_key == S3_KEY
+    assert stored.markdown_sha256 == SHA256
+    assert stored.page_count == 1
+    assert stored.annotation_mode is None
+    assert stored.structured_s3_key is None
+    assert stored.structured_sha256 is None
+    assert stored.structured_size_bytes is None
+    assert stored.structured_schema_version is None
+    assert cc_client.structured_reads == 0
+
+
+@pytest.mark.parametrize("legacy_marker", [False, None])
+def test_pdf_without_structured_artifact_requires_cc_legacy_attestation(
+    ingest_client,
+    legacy_marker: bool | None,
+) -> None:
+    client, repository, cc_client, run_id = ingest_client
+    upload_id = uuid4()
+    create_upload(client, run_id, upload_id)
+    if legacy_marker is not None:
+        cc_client.artifact = replace(
+            cc_client.artifact,
+            legacy_markdown_only=legacy_marker,
+        )
+
+    response = client.post(
+        f"/v1/concept-notes/{run_id}/uploads/{upload_id}/markdown",
+        json=legacy_pointer_payload(),
+        headers=auth(),
+    )
+
+    assert response.status_code == 422
+    assert response.json()["code"] == "structured_metadata_incomplete"
+    assert repository.uploads[upload_id].status == "queued"
+    assert cc_client.structured_reads == 0
+
+
+def test_legacy_markdown_pointer_conflict_is_rejected_on_replay(ingest_client) -> None:
+    client, _, cc_client, run_id = ingest_client
+    upload_id = uuid4()
+    create_upload(client, run_id, upload_id)
+    cc_client.artifact = replace(cc_client.artifact, legacy_markdown_only=True)
+    path = f"/v1/concept-notes/{run_id}/uploads/{upload_id}/markdown"
+    assert (
+        client.post(path, json=legacy_pointer_payload(), headers=auth()).status_code
+        == 202
+    )
+
+    response = client.post(
+        path,
+        json=legacy_pointer_payload(page_count=2),
+        headers=auth(),
+    )
+
+    assert response.status_code == 409
+    assert response.json()["code"] == "markdown_identity_conflict"
 
 
 def test_native_markdown_delivery_has_no_synthetic_page_count(ingest_client) -> None:

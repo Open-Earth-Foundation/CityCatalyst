@@ -8,6 +8,7 @@ export interface MeedActionReportAttributes {
   actionId?: string;
   languages?: string[];
   chapters?: object;
+  authorityScopeClassification?: object | null;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -15,7 +16,12 @@ export interface MeedActionReportAttributes {
 export type MeedActionReportPk = "id";
 export type MeedActionReportId = MeedActionReport[MeedActionReportPk];
 export type MeedActionReportOptionalAttributes =
-  "actionId" | "languages" | "chapters" | "created" | "lastUpdated";
+  | "actionId"
+  | "languages"
+  | "chapters"
+  | "authorityScopeClassification"
+  | "created"
+  | "lastUpdated";
 export type MeedActionReportCreationAttributes = Optional<
   MeedActionReportAttributes,
   MeedActionReportOptionalAttributes
@@ -30,6 +36,7 @@ export class MeedActionReport
   declare actionId?: string;
   declare languages?: string[];
   declare chapters?: object;
+  declare authorityScopeClassification?: object | null;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -73,6 +80,11 @@ export class MeedActionReport
           type: DataTypes.JSONB,
           allowNull: false,
           defaultValue: {},
+        },
+        authorityScopeClassification: {
+          type: DataTypes.JSONB,
+          allowNull: true,
+          field: "authority_scope_classification",
         },
         created: {
           type: DataTypes.DATE,

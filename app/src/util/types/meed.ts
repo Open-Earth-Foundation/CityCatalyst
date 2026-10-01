@@ -573,4 +573,14 @@ export interface MeedPlanRouteReport {
   chapters?: MeedReportChapter[];
   created?: string;
   lastUpdated?: string;
+  /**
+   * Backend classification provenance. Absent on reports stored before this
+   * field existed; clients must not invent a reviewed status.
+   */
+  authorityScopeClassification?: {
+    classification_method: "ai_classified" | "human_classified";
+    review_status: "pending_human_review" | "human_accepted" | "human_rejected";
+    authority_scope: string;
+    authority_scope_status: string;
+  } | null;
 }

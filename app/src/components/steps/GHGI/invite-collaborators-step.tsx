@@ -267,6 +267,10 @@ const InviteCollaboratorsStep = forwardRef<
               variant="outline"
               h={12}
               css={{
+                "& [data-part=control]": {
+                  bg: "background.default",
+                  borderRadius: "sm",
+                },
                 "& [data-part=trigger]": {
                   h: "full",
                   bg: "background.default",

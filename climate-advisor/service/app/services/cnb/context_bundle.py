@@ -36,15 +36,6 @@ from app.persistence.concept_notes.source_revalidation import (
 )
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
 from app.services.cnb.chapter_drafting import ConceptNoteChapterDraftService
-from app.services.cnb.source_impact_review import RevalidationSource
-from app.services.cnb.visual_context import (
-    VISUAL_CONTEXT_CONTRACT_VERSION,
-    UnverifiedVisualAnnotationEnvelope,
-    VisualContextContractError,
-    is_full_envelope_visual_context,
-    project_visual_context,
-    validate_structured_delivery,
-)
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceUnit,
@@ -53,6 +44,15 @@ from app.services.cnb.source_analysis import (
     render_source_text,
     source_analysis_contract_version,
     verify_source_artifact,
+)
+from app.services.cnb.source_impact_review import RevalidationSource
+from app.services.cnb.visual_context import (
+    VISUAL_CONTEXT_CONTRACT_VERSION,
+    UnverifiedVisualAnnotationEnvelope,
+    VisualContextContractError,
+    is_full_envelope_visual_context,
+    project_visual_context,
+    validate_structured_delivery,
 )
 from app.services.concept_note_city_context import (
     ConceptNoteCityContextDataError,
@@ -63,7 +63,10 @@ from app.services.concept_note_city_context import (
     load_ghgi_context,
     load_hiap_context,
 )
-from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
+from app.utils.conversation_observability import (
+    async_workflow_trace,
+    finish_workflow_trace,
+)
 from app.utils.prompt_budget import count_prompt_tokens
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -137,7 +140,7 @@ class ContextBundleService:
         if active.already_current:
             return True
 
-        with workflow_trace(
+        async with async_workflow_trace(
             name="cnb_source_analysis",
             inputs={"run_id": str(run_id), "build_id": str(active.build_id)},
             session_id=active.thread_id or run_id,

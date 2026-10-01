@@ -7,6 +7,10 @@ from typing import Any
 
 from app.models.db.stationary_energy_draft import StationaryEnergyDraftRun
 from app.models.requests import MessageCreateRequest
+from app.utils.stationary_energy_context import is_stationary_energy_resume_turn
+
+STATIONARY_ENERGY_RUN_NOT_STARTED_MARKER = "STATIONARY_ENERGY_RUN_NOT_STARTED"
+STATIONARY_ENERGY_START_RUN_TOOL_NAME = "stationary_energy_start_draft"
 
 
 def build_stationary_energy_context_payload(
@@ -216,6 +220,8 @@ def build_stationary_energy_ui_context(
         "pending_decision_review_count": pending_count,
         "confirmed_bulk_review_choices": confirmed_bulk_choices,
         "confirmed_staged_review_rollback_choices": confirmed_rollback_choices,
+        # The page re-sent a request the user made before this run existed.
+        "resumed_after_run_start": is_stationary_energy_resume_turn(request_options),
     }
 
     # Omit empty UI context so generic chats do not receive irrelevant metadata.
@@ -242,6 +248,42 @@ def format_stationary_energy_context_message(
             "selected in that right-side pane. "
             "If ui_context.confirmed_staged_review_rollback_choices is present, "
             "it is the exact set of staged choices the user approved for rollback."
+        ),
+    }
+
+
+def format_stationary_energy_run_not_started_message(
+    *,
+    city_id: str | None,
+    inventory_id: str | None,
+    city_name: str | None = None,
+    inventory_year: int | str | None = None,
+) -> dict[str, str]:
+    """Format the system message for the Stationary Energy page before a run exists.
+
+    It takes the place of the draft snapshot so the agent knows the active
+    inventory is already selected but that no city data, connected sources, or
+    row proposals are loaded until it starts a run.
+    """
+    context_payload = {
+        "run_status": "RUN_NOT_STARTED",
+        "city_id": city_id,
+        "inventory_id": inventory_id,
+        "city_name": city_name,
+        "inventory_year": inventory_year,
+        "start_run_tool": STATIONARY_ENERGY_START_RUN_TOOL_NAME,
+    }
+    return {
+        "role": "system",
+        "content": (
+            f"{STATIONARY_ENERGY_RUN_NOT_STARTED_MARKER}\n"
+            f"{json.dumps(context_payload, ensure_ascii=False, default=str)}\n"
+            "RUN NOT STARTED. No Stationary Energy run exists yet for the active "
+            "inventory, so its city data, connected sources, and row proposals are "
+            f"not loaded. CALL TOOL {STATIONARY_ENERGY_START_RUN_TOOL_NAME} TO START "
+            "IT before answering any request about this inventory's data, sources, "
+            "values, or rows. The city and inventory are already selected on this "
+            "page; never ask the user for them."
         ),
     }
 

@@ -3,13 +3,15 @@
 Unlike the review tools, which operate on an already-generated draft run, this
 tool creates a brand-new draft run for the active city + inventory and kicks off
 proposal generation. It lets the chat agent fulfil natural-language requests such
-as "draft the empty rows" instead of relying on the UI button alone.
+as "draft the empty rows" instead of relying on the UI button alone. The pack
+also carries the read-only whole-inventory context tools so questions that need
+no run are answered without starting one.
 """
 
 from __future__ import annotations
 
 import logging
-from typing import Dict, Optional, Sequence
+from typing import Callable, Dict, Optional, Sequence
 from uuid import UUID
 
 from agents import function_tool
@@ -18,12 +20,14 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.models.stationary_energy_drafts import StartStationaryEnergyDraftRequest
+from app.services.citycatalyst_client import CityCatalystClient
 from app.services.stationary_energy.stationary_energy_draft_service import (
     StationaryEnergyDraftService,
 )
 from app.services.stationary_energy.stationary_energy_review_models import (
     MessageParamValue,
 )
+from app.tools.inventory_context_tools import build_inventory_context_tools
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +43,8 @@ class StationaryEnergyStartDraftToolResult(BaseModel):
     message_key: str | None = None
     message_params: dict[str, MessageParamValue] = Field(default_factory=dict)
     error_code: str | None = None
+    # The page re-sends the user's request once the run is ready when true.
+    continue_request: bool = False
 
 
 def build_stationary_energy_start_draft_tools(
@@ -49,17 +55,25 @@ def build_stationary_energy_start_draft_tools(
     user_id: str,
     thread_id: Optional[UUID],
     token_ref: Dict[str, Optional[str]],
+    client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
     locale: Optional[str] = None,
 ) -> Sequence[object]:
-    """Create a Stationary Energy start-draft tool scoped to one city + inventory."""
+    """Create scoped pre-draft tools using the active Core client factory."""
 
-    async def _run_start_draft() -> str:
+    async def _resolve_inventory_scope() -> tuple[str, str]:
+        """Return the page's city and inventory; the LLM never supplies scope ids."""
+        return city_id, inventory_id
+
+    async def _run_start_draft(continue_request: bool) -> str:
         """Start a draft inside a committed database session."""
         try:
             # Use a short-lived committed session, mirroring the review tools so the
             # draft-run row and its initial status updates persist atomically.
             async with session_factory() as session:
-                service = StationaryEnergyDraftService(session)
+                service = StationaryEnergyDraftService(
+                    session,
+                    cc_client=client_factory(),
+                )
                 token = await service.ensure_user_token(
                     user_id=user_id,
                     thread_id=thread_id,
@@ -92,6 +106,7 @@ def build_stationary_energy_start_draft_tools(
                     draft_run_id=response.draft_run_id,
                     status=response.status,
                     message_key="tool-message-draft-started",
+                    continue_request=continue_request,
                 )
                 return result.model_dump_json()
         except HTTPException as exc:
@@ -120,27 +135,43 @@ def build_stationary_energy_start_draft_tools(
             )
 
     @function_tool
-    async def stationary_energy_start_draft() -> str:
-        """Start a new Stationary Energy draft for the active inventory.
+    async def stationary_energy_start_draft(continue_request: bool = False) -> str:
+        """Start a new Stationary Energy run (draft) for the active inventory.
 
         This tool is only registered on the pre-draft Stationary Energy surface
-        when the active inventory has no loaded Stationary Energy draft. It takes
-        no arguments because city, inventory, user, and thread scope are supplied
-        by runtime.
+        when the active inventory has no loaded Stationary Energy draft. City,
+        inventory, user, and thread scope are supplied by runtime.
 
-        Generates source-backed values for every empty Stationary Energy row using
-        the third-party datasets already connected to this inventory. Proposals
-        generate in the background and then appear in the review pane for the user
-        to confirm before any inventory write.
+        The run searches the third-party datasets connected to this inventory and
+        prepares source-backed proposals for every empty Stationary Energy row.
+        Proposals generate in the background and then appear in the review pane
+        for the user to confirm before any inventory write. Until a run exists,
+        no city data, connected sources, or row proposals are available.
 
-        Use this when the user asks to draft, generate, fill, or start the empty
-        Stationary Energy rows (for example "draft the empty rows", "fill it in",
-        "go ahead", or an affirmative reply about drafting). Answer other
-        questions normally. This does not write to the CityCatalyst inventory.
+        Use this only when the user asks to draft or fill the Stationary Energy
+        rows ("draft the empty rows", "go ahead") or to use or add data from a
+        source ("add all SEEG data"). Do not start a run for read-only questions;
+        answer whole-inventory questions with `inventory_status_overview` or
+        `inventory_emissions_context`, and offer to start a run when a question
+        needs row or source data. This does not write to the CityCatalyst
+        inventory.
+
+        Args:
+            continue_request: True when the request asks for more than starting
+                the run (for example "add all SEEG data"), so the page re-sends
+                it once the run is ready. False when starting or drafting the
+                rows is the whole request.
         """
-        return await _run_start_draft()
+        return await _run_start_draft(continue_request)
 
-    return [stationary_energy_start_draft]
+    inventory_context_tools = build_inventory_context_tools(
+        resolve_scope=_resolve_inventory_scope,
+        user_id=user_id,
+        token_ref=token_ref,
+        client_factory=client_factory,
+    )
+
+    return [*inventory_context_tools, stationary_energy_start_draft]
 
 
 def _error_payload(

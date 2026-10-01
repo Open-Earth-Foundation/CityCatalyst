@@ -38,7 +38,7 @@
   "inventory-calculations-title": "Calcul de l'inventaire des émissions",
   "inventory-results-title": "Résultats de l'inventaire des émissions",
   "gpc-inventory-description": "Suivez et examinez vos données d'inventaire des émissions de GES de {{year}}, préparées selon le cadre du Protocole des gaz à effet de serre pour les villes (GPC). <4>En savoir plus</4> sur le cadre GPC pour le calcul de l'inventaire.",
-  "gpc-inventory-description-public": "Examinez les résultats de l'inventaire des émissions de GES de {{année}}, préparé selon le cadre GPC. <4>En savoir plus</4> sur le cadre GPC.",
+  "gpc-inventory-description-public": "Examinez les résultats de l'inventaire des émissions de GES de {{year}}, préparé selon le cadre GPC. <4>En savoir plus</4> sur le cadre GPC.",
   "coming-soon": "Bientôt Disponible",
   "learn-more": "En savoir plus",
   "completed": "terminé",
@@ -82,12 +82,12 @@
   "view-progress-in-each-sector": "Visualisez la progression de la collecte de données dans chaque secteur requis par le GPC.",
   "sector-emissions": "Émissions par Secteur",
   "sector-data": "Données du Secteur",
-  "total-emissions-tooltip": "Ici, vous pouvez voir les émissions totales en {{année}} lorsque l'inventaire est terminé.",
+  "total-emissions-tooltip": "Ici, vous pouvez voir les émissions totales en {{year}} lorsque l'inventaire est terminé.",
   "year": "Année",
   "population-year": "Année : {{year}}",
   "total-emissions": "Émissions Totales",
-  "total-ghg-emissions-in-year": "Émissions totales de GES en {{année}}",
-  "emissions-per-capita-in-year": "Émissions par habitant en {{année}}",
+  "total-ghg-emissions-in-year": "Émissions totales de GES en {{year}}",
+  "emissions-per-capita-in-year": "Émissions par habitant en {{year}}",
   "%-of-country's-emissions": "% des émissions du pays",
   "top-emissions": "Émissions Maximales",
   "ghg-by-sector-heading": "Historique des émissions de GES par secteurs",
@@ -345,5 +345,6 @@
   "removal": "Suppression",
   "removals-not-countable-footnote": "* Les sous-secteurs avec des suppressions ne sont pas comptabilisés comme des émissions",
   "no-cited-source": "Aucune source citée",
-  "hero-inventory-line": "{{year}} · {{value}} {{unit}}"
+  "hero-inventory-line": "{{year}} · {{value}} {{unit}}",
+  "default-organization": "Organisation par Défaut"
 }

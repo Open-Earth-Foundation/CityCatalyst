@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 import type { CityDashboardResponse } from "@/util/types";
+import { skipCookieConsent } from "./helpers";
+
+test.beforeEach(({ context }) => skipCookieConsent(context));
 
 // Browser contract tests use real components and RTK requests with deterministic
 // responses. Database persistence and authorization are covered by service/API tests.

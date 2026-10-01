@@ -314,5 +314,10 @@
   "tool-error-invalid-notation-choice": "La elección de la clave de notación de Energía Estacionaria fue inválida.",
   "tool-error-invalid-notation-choices": "Las opciones de la clave de notación de Energía Estacionaria eran inválidas.",
   "sector-card-draft-with-agent": "Borrador con agente",
-  "sector-card-draft-with-agent-tooltip": "Permite que Clima elabore este sector a partir de tus datos conectados (beta) — revisas cada valor antes de guardar."
+  "sector-card-draft-with-agent-tooltip": "Permite que Clima elabore este sector a partir de tus datos conectados (beta) — revisas cada valor antes de guardar.",
+  "chat-pending-request-waiting": "Continuaré con tu solicitud anterior cuando la ejecución esté lista: {{request}}. Para reemplazarla, primero cancélala y envía tu nueva solicitud.",
+  "chat-pending-request-cancel": "Cancelar solicitud anterior",
+  "chat-pending-request-canceled": "Tu solicitud anterior fue cancelada. Puedes enviar una nueva solicitud.",
+  "chat-pending-request-failed": "La ejecución falló, por lo que no pude continuar con tu solicitud anterior. Por favor intenta de nuevo el borrador y envía tu solicitud de nuevo.",
+  "chat-pending-request-ended": "La ejecución ha terminado, por lo que tu solicitud anterior no continuará automáticamente."
 }

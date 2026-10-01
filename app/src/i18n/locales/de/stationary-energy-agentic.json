@@ -314,5 +314,10 @@
   "tool-error-invalid-notation-choice": "Die Auswahl des Notationsschlüssels für stationäre Energie war ungültig.",
   "tool-error-invalid-notation-choices": "Die Auswahlmöglichkeiten für den Notationsschlüssel der stationären Energie waren ungültig.",
   "sector-card-draft-with-agent": "Entwurf mit Agent",
-  "sector-card-draft-with-agent-tooltip": "Lassen Sie Clima diesen Sektor aus Ihren verbundenen Daten entwerfen (beta) — Sie überprüfen jeden Wert vor dem Speichern."
+  "sector-card-draft-with-agent-tooltip": "Lassen Sie Clima diesen Sektor aus Ihren verbundenen Daten entwerfen (beta) — Sie überprüfen jeden Wert vor dem Speichern.",
+  "chat-pending-request-waiting": "Ich werde mit Ihrer früheren Anforderung fortfahren, sobald der Lauf bereit ist: {{request}}. Um es zu ersetzen, stornieren Sie es zuerst und senden Sie Ihre neue Anforderung.",
+  "chat-pending-request-cancel": "Frühere Anfrage abbrechen",
+  "chat-pending-request-canceled": "Ihre frühere Anfrage wurde storniert. Sie können eine neue Anfrage senden.",
+  "chat-pending-request-failed": "Der Durchlauf ist fehlgeschlagen, daher konnte ich Ihre frühere Anfrage nicht fortsetzen. Bitte versuchen Sie es erneut mit dem Entwurf und senden Sie Ihre Anfrage erneut.",
+  "chat-pending-request-ended": "Der Lauf ist beendet, daher wird Ihre frühere Anfrage nicht automatisch fortgesetzt."
 }

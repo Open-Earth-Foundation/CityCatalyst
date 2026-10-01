@@ -209,6 +209,20 @@ Setup: `npx playwright install --with-deps`
 
 Run: `npm run e2e:test`
 
+Concept Note Builder (CNB) tests use `e2e/concept-note-*.spec.ts` filenames.
+The default Playwright configuration excludes these files unless
+`NEXT_PUBLIC_FEATURE_FLAGS` contains both `CONCEPT_NOTE_BUILDER` and
+`CA_SERVICE_INTEGRATION`. Other E2E tests remain selected regardless of these flags.
+Keep new CNB feature tests under the same filename pattern.
+
+Playwright loads the app's test environment before selecting tests: shell variables
+take precedence over `.env.test.local`, `.env.test`, and `.env`, in that order.
+`.env.local` is not loaded in test mode. When reusing an existing local server,
+ensure its feature flags match the test runner's environment.
+
+From `app/`, inspect the selected tests with `npx playwright test --list`, or run
+only CNB tests with `npx playwright test concept-note-` when both flags are enabled.
+
 ### API unit tests
 
 Run: `npm run api:test`

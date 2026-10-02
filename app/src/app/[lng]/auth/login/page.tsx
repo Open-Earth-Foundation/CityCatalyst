@@ -10,7 +10,6 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, use, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import { useLogin } from "@/hooks/useLogin";
@@ -235,7 +234,6 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
       <Suspense>
         <VerifiedNotification t={t} />
       </Suspense>
-      <Toaster />
     </Box>
   );
 }

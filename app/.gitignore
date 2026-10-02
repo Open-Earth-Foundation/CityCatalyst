@@ -42,5 +42,9 @@ next-env.d.ts
 
 playwright/.auth
 
+# e2e (agentic tests) results; .e2e/cache holds replay recordings
+/.e2e/
+/.e2e-*/
+
 # generated files
 /public/openapi-spec.json

@@ -652,6 +652,37 @@ describe("PdfOcrJob queue", () => {
     expect(secondPut).toBeLessThan(successCall);
   });
 
+  it("stores page headers and footers in the Markdown and hashes that text", async () => {
+    const uploadId = "22222222-2222-4222-8222-222222222222";
+    const job = claimableJob({
+      sourceType: "concept_note_upload",
+      sourceId: uploadId,
+      annotationMode: "visual_context",
+    });
+    stubPdfSource();
+    findAll
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([job])
+      .mockResolvedValueOnce([]);
+    const markdown =
+      "<!-- page: 1 -->\nCity Plan\n\n# Plan\n\nFunded by grant 101036519";
+    convertPdfUrlToMarkdown.mockResolvedValue({ ...ocrResult(), markdown });
+
+    await processPdfOcrJobs();
+
+    const stored = putTextFile.mock.calls[0][1] as string;
+    expect(stored).toContain("City Plan");
+    expect(stored).toContain("grant 101036519");
+    expect(pdfOcrUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "succeeded",
+        resultSha256: createHash("sha256").update(markdown).digest("hex"),
+        resultSizeBytes: Buffer.byteLength(markdown),
+      }),
+      expect.anything(),
+    );
+  });
+
   it("keeps GHGI OCR non-annotated and extracts only from Markdown", async () => {
     const job = claimableJob({
       sourceType: "inventory_import",

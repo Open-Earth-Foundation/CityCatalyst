@@ -1492,6 +1492,11 @@ CityCatalyst owns both source-to-Markdown paths:
 The PDF-derived artifact follows these Markdown-shape requirements:
 
 - all pages are merged in source order into one UTF-8 Markdown document;
+- each page starts with its `<!-- page: N -->` marker, followed by Mistral's
+  separately extracted header, the body with table bodies inserted at their
+  placeholders, and the footer, in that order and joined by blank lines. Header
+  and footer text is verbatim plain text with no wrapper markup; blank or absent
+  fields add nothing, and repeated headers and footers are kept on each page;
 - tables retain Markdown structure, exact headers, aligned rows and columns,
   captions, totals, units, scale, and year context;
 - source rows are not merged, dropped, aggregated, or reordered;

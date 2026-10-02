@@ -14,6 +14,8 @@ const responseSchema = z.object({
     z.object({
       index: z.number().int().nonnegative(),
       markdown: z.string(),
+      header: z.string().nullish(),
+      footer: z.string().nullish(),
       tables: z
         .array(z.object({ id: z.string(), content: z.string() }))
         .optional(),
@@ -29,6 +31,10 @@ function tableReferenceId(path: string): string | null {
 
 function tableId(value: string): string | null {
   return tableReferenceId(value.endsWith(".md") ? value : `${value}.md`);
+}
+
+function hasText(value: string | null | undefined): value is string {
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 function assemblePageMarkdown(
@@ -56,37 +62,49 @@ function assemblePageMarkdown(
   }
 
   const resolved = new Set<string>();
-  const markdown = page.markdown.replace(
-    /\[([^\]]+)\]\(([^)]+)\)/g,
-    (link, _label: string, target: string) => {
-      const id = tableReferenceId(target);
-      if (!id) return link;
+  const resolveTables = (text: string): string =>
+    text.replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      (link, _label: string, target: string) => {
+        const id = tableReferenceId(target);
+        if (!id) return link;
 
-      const content = pageTables.get(id);
-      if (content === undefined) {
-        const matchingPages = tablePages.get(id);
-        const code = matchingPages?.size
-          ? "cross_page_table_reference"
-          : "missing_table_reference";
-        throw new MistralOcrError(
-          code,
-          true,
-          matchingPages?.size
-            ? "Mistral OCR table placeholder refers to a table on another page"
-            : "Mistral OCR table placeholder has no matching table",
-        );
-      }
-      if (resolved.has(id)) {
-        throw new MistralOcrError(
-          "invalid_table_reference",
-          true,
-          "Mistral OCR returned a duplicate table placeholder",
-        );
-      }
-      resolved.add(id);
-      return content;
-    },
-  );
+        const content = pageTables.get(id);
+        if (content === undefined) {
+          const matchingPages = tablePages.get(id);
+          const code = matchingPages?.size
+            ? "cross_page_table_reference"
+            : "missing_table_reference";
+          throw new MistralOcrError(
+            code,
+            true,
+            matchingPages?.size
+              ? "Mistral OCR table placeholder refers to a table on another page"
+              : "Mistral OCR table placeholder has no matching table",
+          );
+        }
+        if (resolved.has(id)) {
+          throw new MistralOcrError(
+            "invalid_table_reference",
+            true,
+            "Mistral OCR returned a duplicate table placeholder",
+          );
+        }
+        resolved.add(id);
+        return content;
+      },
+    );
+
+  // Header and footer are returned separately by Mistral (extract_header /
+  // extract_footer). Blank sections are skipped so a page without them keeps
+  // its body-only output byte for byte.
+  const hasHeaderOrFooter = hasText(page.header) || hasText(page.footer);
+  const markdown = hasHeaderOrFooter
+    ? [page.header, page.markdown, page.footer]
+        .filter(hasText)
+        .map(resolveTables)
+        .join("\n\n")
+    : resolveTables(page.markdown);
 
   if (resolved.size !== pageTables.size) {
     throw new MistralOcrError(
@@ -162,7 +180,12 @@ export function mergeMistralPages(
     }
   }
 
-  if (!pages.some((page) => page.markdown.trim().length > 0)) {
+  if (
+    !pages.some(
+      (page) =>
+        hasText(page.markdown) || hasText(page.header) || hasText(page.footer),
+    )
+  ) {
     throw new MistralOcrError(
       "empty_result",
       true,

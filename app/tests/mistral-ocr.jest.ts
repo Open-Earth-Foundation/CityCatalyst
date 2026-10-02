@@ -103,6 +103,148 @@ describe("Mistral OCR Markdown conversion", () => {
     },
   );
 
+  const grantFooter =
+    "This project has received funding from the EU (grant 101036519)";
+  const page = (fields: Record<string, unknown>) => ({
+    dimensions: { width: 100, height: 100 },
+    blocks: [],
+    ...fields,
+  });
+
+  it("orders page marker, header, body with tables, and footer on every page", () => {
+    const response = {
+      model: "mistral-ocr-2505",
+      pages: [
+        page({
+          index: 0,
+          header: "Action Plan | City of Kraków",
+          markdown: "Intro\n\n[tbl-0.md](tbl-0.md)",
+          footer: grantFooter,
+          tables: [
+            {
+              id: "tbl-0",
+              content: "| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |",
+            },
+          ],
+        }),
+        page({
+          index: 1,
+          header: "Action Plan | City of Kraków",
+          markdown: "Second page",
+          footer: "2",
+        }),
+      ],
+    };
+
+    const result = mergeMistralPages(response, "model");
+
+    expect(result.markdown).toBe(
+      "<!-- page: 1 -->\nAction Plan | City of Kraków\n\n" +
+        "Intro\n\n| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |\n\n" +
+        `${grantFooter}\n\n` +
+        "<!-- page: 2 -->\nAction Plan | City of Kraków\n\nSecond page\n\n2",
+    );
+    expect(
+      result.structured.document.pages.map((p) => [p.header, p.footer]),
+    ).toEqual([
+      ["Action Plan | City of Kraków", grantFooter],
+      ["Action Plan | City of Kraków", "2"],
+    ]);
+  });
+
+  it.each([
+    { name: "header only", fields: { header: "H" }, body: "H\n\nBody" },
+    { name: "footer only", fields: { footer: "F" }, body: "Body\n\nF" },
+    {
+      name: "null fields",
+      fields: { header: null, footer: null },
+      body: "Body",
+    },
+    { name: "absent fields", fields: {}, body: "Body" },
+    {
+      name: "blank strings",
+      fields: { header: " \n", footer: "  " },
+      body: "Body",
+    },
+  ])("handles $name", ({ fields, body }) => {
+    const result = mergeMistralPages(
+      { pages: [page({ index: 0, markdown: "Body", ...fields })] },
+      "model",
+    );
+
+    expect(result.markdown).toBe(`<!-- page: 1 -->\n${body}`);
+  });
+
+  it.each(["none", "visual_context"] as const)(
+    "resolves separated tables around header and footer in mode %s",
+    (annotationMode) => {
+      const result = mergeMistralPages(
+        {
+          pages: [
+            page({
+              index: 0,
+              header: "[tbl-0.md](tbl-0.md)",
+              markdown: "Body\n\n[tbl-1.md](tbl-1.md)",
+              footer: "Footer\n\n[tbl-2.md](tbl-2.md)",
+              tables: [
+                { id: "tbl-0", content: "| H |\n|---|\n| 1 |" },
+                { id: "tbl-1", content: "| B |\n|---|\n| 2 |" },
+                { id: "tbl-2", content: "| F |\n|---|\n| 3 |" },
+              ],
+            }),
+          ],
+        },
+        "model",
+        annotationMode,
+      );
+
+      expect(result.markdown).toBe(
+        "<!-- page: 1 -->\n| H |\n|---|\n| 1 |\n\nBody\n\n| B |\n|---|\n| 2 |\n\n" +
+          "Footer\n\n| F |\n|---|\n| 3 |",
+      );
+    },
+  );
+
+  it("still rejects an unplaced table when a header and footer are present", () => {
+    expect(() =>
+      mergeMistralPages(
+        {
+          pages: [
+            page({
+              index: 0,
+              header: "H",
+              markdown: "Body",
+              footer: "F",
+              tables: [{ id: "tbl-0", content: "| A |\n|---|" }],
+            }),
+          ],
+        },
+        "model",
+      ),
+    ).toThrow(expect.objectContaining({ code: "unplaced_table" }));
+  });
+
+  it.each([{ header: 5 }, { footer: { text: "x" } }])(
+    "rejects a non-string header or footer as malformed_response",
+    (fields) => {
+      expect(() =>
+        mergeMistralPages(
+          { pages: [page({ index: 0, markdown: "Body", ...fields })] },
+          "model",
+        ),
+      ).toThrow(expect.objectContaining({ code: "malformed_response" }));
+    },
+  );
+
+  it("accepts a document whose only text is a footer", () => {
+    const result = mergeMistralPages(
+      { pages: [page({ index: 0, markdown: "", footer: grantFooter })] },
+      "model",
+    );
+
+    expect(result.markdown).toBe(`<!-- page: 1 -->\n${grantFooter}`);
+  });
+
   it.each([
     {
       name: "missing table",

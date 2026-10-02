@@ -198,6 +198,30 @@ def test_source_pages_keep_values_inserted_at_mistral_table_placeholders() -> No
     assert "12.50" in pages[0].text
 
 
+def test_source_pages_keep_each_pages_header_and_footer_in_order() -> None:
+    footer = "This project has received funding from the EU (grant 101036519)"
+    markdown = (
+        "<!-- page: 1 -->\n"
+        "Action Plan | City of Krakow\n\n"
+        "# Emissions\n\n| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |\n\n"
+        f"{footer}\n\n"
+        "<!-- page: 2 -->\n"
+        "Action Plan | City of Krakow\n\n"
+        "Second page\n\n"
+        "2"
+    )
+
+    pages = parse_source_pages(markdown)
+
+    assert [page.number for page in pages] == [1, 2]
+    assert pages[0].text.index("Action Plan") < pages[0].text.index("12.50")
+    assert pages[0].text.index("12.50") < pages[0].text.index(footer)
+    assert "101036519" in pages[0].text
+    assert "101036519" not in pages[1].text
+    assert pages[1].text.startswith("\nAction Plan | City of Krakow")
+    assert render_source_text(pages) == markdown
+
+
 @pytest.mark.asyncio
 async def test_query_returns_explicit_not_found_after_full_coverage(
     analysis_dependencies,

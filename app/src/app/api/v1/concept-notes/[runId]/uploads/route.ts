@@ -33,6 +33,10 @@
  *                 type: string
  *                 maxLength: 255
  *                 nullable: true
+ *               sourceRole:
+ *                 type: string
+ *                 enum: [reference, climate_action_plan]
+ *                 default: reference
  *     responses:
  *       202:
  *         description: Upload registered and processing accepted
@@ -58,6 +62,9 @@
  *                 sourceLabel:
  *                   type: string
  *                   nullable: true
+ *                 sourceRole:
+ *                   type: string
+ *                   enum: [reference, climate_action_plan]
  *                 retryKind:
  *                   type: string
  *                   enum: [ocr, delivery]
@@ -245,6 +252,9 @@ export const POST = apiHandler(async (req, { session, params }) => {
   if (sourceLabel && sourceLabel.length > 255) {
     throw new createHttpError.UnprocessableEntity("Source label is too long");
   }
+  const sourceRole = z
+    .enum(["reference", "climate_action_plan"])
+    .parse(formData.get("sourceRole") ?? "reference");
 
   // Only persisted creation identities may be replayed; bind them to file bytes.
   const requestedUploadId = formData.get("initialUploadId");
@@ -275,6 +285,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
       filename,
       source_label: sourceLabel,
       source_format: isPdf ? "pdf" : "markdown",
+      source_role: sourceRole,
     },
   });
   const createPayload = await readConceptNoteApiPayload(createResponse);
@@ -373,6 +384,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
       canRetry: state.canRetry,
       filename,
       sourceLabel,
+      sourceRole,
       ...(state.retryKind ? { retryKind: state.retryKind } : {}),
     },
     { status: 202 },

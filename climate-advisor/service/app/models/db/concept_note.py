@@ -174,6 +174,9 @@ class ConceptNoteUpload(Base):
         nullable=False,
     )
     filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    source_role: Mapped[str] = mapped_column(
+        String(32), nullable=False, default="reference", server_default="reference"
+    )
     source_label: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,
@@ -225,6 +228,10 @@ class ConceptNoteUpload(Base):
         CheckConstraint(
             "page_count > 0",
             name="ck_concept_note_uploads_positive_page_count",
+        ),
+        CheckConstraint(
+            "source_role IN ('reference', 'climate_action_plan')",
+            name="ck_concept_note_uploads_source_role",
         ),
         Index(
             "ix_concept_note_uploads_run_status_received",

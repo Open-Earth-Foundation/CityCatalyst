@@ -7,7 +7,11 @@ import { useConceptNoteWorkspaceEvents } from "@/components/ConceptNoteWorkspace
 import { useTranslation } from "@/i18n/client";
 import { useAppDispatch } from "@/lib/hooks";
 import { api } from "@/services/api";
-import type { ConceptNoteRun, ConceptNoteUploadResponse } from "@/util/types";
+import type {
+  ConceptNoteRun,
+  ConceptNoteUploadResponse,
+  ConceptNoteSourceRole,
+} from "@/util/types";
 import {
   getConceptNoteContextState,
   getConceptNoteContextPresentation,
@@ -324,7 +328,10 @@ export function useConceptNoteWorkspaceData({
     return () => window.clearTimeout(timer);
   }, [waitingForContext, refetchRun]);
 
-  async function uploadSource(file: File): Promise<void> {
+  async function uploadSource(
+    file: File,
+    sourceRole: ConceptNoteSourceRole = "reference",
+  ): Promise<void> {
     setUploadError(null);
     if (uploadLimitReached) {
       setUploadError(
@@ -341,7 +348,15 @@ export function useConceptNoteWorkspaceData({
     try {
       const formData = new FormData();
       formData.set("file", file);
-      formData.set("sourceLabel", conceptNoteSourceLabel(file.name));
+      formData.set(
+        "sourceLabel",
+        conceptNoteSourceLabel(
+          sourceRole === "climate_action_plan"
+            ? `${t("hiap-context")}: ${file.name}`
+            : file.name,
+        ),
+      );
+      formData.set("sourceRole", sourceRole);
       const upload = await uploadSourceMutation({
         cityId,
         formData,
@@ -476,6 +491,7 @@ function toUploadResponse(upload: RunUpload): ConceptNoteUploadResponse {
     status: upload.status,
     filename: upload.filename,
     sourceLabel: upload.source_label,
+    sourceRole: upload.source_role ?? "reference",
     pageCount: upload.page_count,
     errorCode: upload.error_code ?? undefined,
     receivedAt: upload.received_at,

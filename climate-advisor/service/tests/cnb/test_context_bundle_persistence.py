@@ -6,6 +6,16 @@ from uuid import UUID, uuid4
 import pytest
 from app.db import Base
 from app.models.cnb.context_bundle import SelectedSource, SourceExcerpt
+from app.models.cnb.concept_note_markdown import (
+    ConceptNoteMarkdownRequest,
+    ConceptNoteUploadCreateRequest,
+)
+from app.persistence.concept_notes.markdown import (
+    SqlAlchemyConceptNoteMarkdownRepository,
+    ConceptNoteMarkdownRepositoryError,
+)
+from app.persistence.concept_notes.runs import ConceptNoteRunRepository
+from app.services.concept_note_runs import _to_list_item, _to_upload_response
 from app.models.db.concept_note import (
     ConceptNoteContextBundle,
     ConceptNoteRun,
@@ -24,6 +34,103 @@ from app.persistence.concept_notes.context_bundle import (
     set_selected_inventory,
 )
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
+
+@pytest.mark.asyncio
+async def test_plan_role_survives_standard_delivery_retry_reload_and_list(
+    tmp_path,
+) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id, upload_id = uuid4(), uuid4()
+    run = concept_note_run(run_id)
+    payload = ConceptNoteUploadCreateRequest(
+        upload_id=upload_id,
+        user_id="owner",
+        filename="climate-plan.pdf",
+        source_role="climate_action_plan",
+        source_label="Climate Action Plan",
+    )
+    repository = SqlAlchemyConceptNoteMarkdownRepository(session_factory)
+    try:
+        async with session_factory() as session, session.begin():
+            session.add(run)
+        created = await repository.create_upload(
+            user_id="owner", run_id=run_id, payload=payload
+        )
+        assert created.source_role == "climate_action_plan"
+        assert (
+            await repository.create_upload(
+                user_id="owner", run_id=run_id, payload=payload
+            )
+        ).source_role == "climate_action_plan"
+        with pytest.raises(ConceptNoteMarkdownRepositoryError) as conflict:
+            await repository.create_upload(
+                user_id="owner",
+                run_id=run_id,
+                payload=payload.model_copy(update={"source_role": "reference"}),
+            )
+        assert conflict.value.code == "upload_identity_conflict"
+
+        await repository.mark_failed(
+            user_id="owner", run_id=run_id, upload_id=upload_id, error_code="ocr_failed"
+        )
+        retried = await repository.retry_upload(
+            user_id="owner", run_id=run_id, upload_id=upload_id
+        )
+        assert (
+            retried.status == "queued" and retried.source_role == "climate_action_plan"
+        )
+        delivered = await repository.register_markdown(
+            user_id="owner",
+            run_id=run_id,
+            upload_id=upload_id,
+            payload=ConceptNoteMarkdownRequest(
+                markdown_s3_key=f"{upload_id}.md",
+                filename=payload.filename,
+                source_label=payload.source_label,
+                page_count=1,
+                sha256="a" * 64,
+            ),
+        )
+        assert (
+            delivered.status == "ready"
+            and delivered.source_role == "climate_action_plan"
+        )
+
+        snapshot = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+        )
+        assert snapshot.uploads[0].source_role == "climate_action_plan"
+        async with session_factory() as session:
+            building = await session.get(ConceptNoteRun, run_id)
+            row = await session.get(ConceptNoteUpload, upload_id)
+            assert (
+                building.context_summary["context_bundle"]["included_upload_ids"] == []
+            )
+            source = selected(row)
+        assert await commit_build(session_factory, snapshot, [source])
+
+        async with session_factory() as session:
+            listed = await ConceptNoteRunRepository(session).list_for_user_city(
+                user_id="owner", city_id=run.city_id
+            )
+            serialized = _to_list_item(listed[0], uploads=listed[0].uploads)
+            assert serialized.uploads[0].source_role == "climate_action_plan"
+            assert serialized.progress_summary["context_bundle"][
+                "included_upload_ids"
+            ] == [str(upload_id)]
+            persisted = await session.get(ConceptNoteUpload, upload_id)
+            assert _to_upload_response(persisted).source_role == "climate_action_plan"
+        assert (
+            await repository.get_upload(
+                user_id="owner", run_id=run_id, upload_id=upload_id
+            )
+        ).source_role == "climate_action_plan"
+    finally:
+        await engine.dispose()
 
 
 @pytest.mark.asyncio
@@ -94,10 +201,9 @@ async def test_progress_identifies_inventory_from_persisted_bundle(tmp_path) -> 
         async with session_factory() as session:
             run = await session.get(ConceptNoteRun, run_id)
         assert run is not None
-        assert (
-            run.context_summary["context_bundle"]["source_provenance"]["ghgi"]["inventory_id"]
-            == str(first_inventory)
-        )
+        assert run.context_summary["context_bundle"]["source_provenance"]["ghgi"][
+            "inventory_id"
+        ] == str(first_inventory)
         assert next_build.selected_inventory_id == second_inventory
         assert await complete_build(
             session_factory=session_factory,
@@ -522,8 +628,14 @@ async def test_agent_projection_removes_ids_but_keeps_backend_identity(
             assert (
                 bundle.context_bundle["selected_sources"][0]["sha256"] == source.sha256
             )
-            assert bundle.context_bundle["selected_sources"][0]["page_count"] == source.page_count
-            assert bundle.context_bundle["selected_sources"][0]["block_count"] == source.block_count
+            assert (
+                bundle.context_bundle["selected_sources"][0]["page_count"]
+                == source.page_count
+            )
+            assert (
+                bundle.context_bundle["selected_sources"][0]["block_count"]
+                == source.block_count
+            )
             assert (
                 bundle.context_bundle["cc_context"]["city"]["cityId"] == "internal-city"
             )
@@ -567,14 +679,15 @@ async def test_agent_context_marks_the_newest_uploaded_source(tmp_path) -> None:
             session_factory=session_factory, user_id="owner", run_id=run_id
         )
         assert context is not None
-        sources = {
-            source["filename"]: source for source in context["selected_sources"]
-        }
+        sources = {source["filename"]: source for source in context["selected_sources"]}
         assert sources["climate-action-plan.pdf"]["newest"] is True
         assert sources["project-brief.pdf"]["newest"] is False
-        assert datetime.fromisoformat(
-            sources["project-brief.pdf"]["uploaded_at"]
-        ).replace(tzinfo=timezone.utc) == first_at
+        assert (
+            datetime.fromisoformat(sources["project-brief.pdf"]["uploaded_at"]).replace(
+                tzinfo=timezone.utc
+            )
+            == first_at
+        )
     finally:
         await engine.dispose()
 
@@ -840,7 +953,10 @@ async def test_failed_build_is_retryable_and_keeps_bundle_unready(tmp_path) -> N
         assert progress["status"] == "failed"
         assert progress["retryable"] is True
         assert progress["error_reason"] == "reader_section_count_mismatch"
-        assert progress["error_details"] == {"expected_sections": 106, "returned_sections": 4}
+        assert progress["error_details"] == {
+            "expected_sections": 106,
+            "returned_sections": 4,
+        }
         assert progress["completion_event"] is None
     finally:
         await engine.dispose()

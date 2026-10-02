@@ -857,6 +857,15 @@ identity changes return `409`, and unavailable storage returns
 presigned URL. See the authoritative handoff contract in
 [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#pdf-conversion-and-native-markdown-handoff).
 
+Upload registration accepts `source_role: "reference" | "climate_action_plan"`
+(default `reference`). The role is immutable and survives CC OCR delivery,
+retry and reload. Apply CA migration `20260930_120000` before deploying this
+contract. The role does not change document processing: plan PDFs follow the
+same CC OCR and source-analysis pipeline as initial note PDFs. Run list/detail
+responses expose upload roles, and completed bundle progress publishes exact
+`included_upload_ids` for consistent plan readiness in both views. HIAP loading
+and refresh behavior are unchanged.
+
 CC uses the intentionally separate service-to-service route
 `GET /v1/concept-note-uploads/{upload_id}/delivery-context` with
 `X-CC-Service-Key` to recover the run and user scope for an opaque upload ID.

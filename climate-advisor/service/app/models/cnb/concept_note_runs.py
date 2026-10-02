@@ -119,6 +119,7 @@ class ConceptNoteRunListItemResponse(BaseModel):
     status: str = Field(min_length=1)
     workflow_step: str = Field(min_length=1)
     progress_summary: dict[str, Any] = Field(default_factory=dict)
+    uploads: list[ConceptNoteUploadStatusResponse] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
 
@@ -134,7 +135,6 @@ class ConceptNoteRunResponse(ConceptNoteRunListItemResponse):
 
     user_id: str
     manual_population: ManualConceptNotePopulation | None = None
-    uploads: list[ConceptNoteUploadStatusResponse] = Field(default_factory=list)
     next_action: Literal["load_context"] = "load_context"
     created: bool
     trace_id: str | None = None

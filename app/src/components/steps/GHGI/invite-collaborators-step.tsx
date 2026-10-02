@@ -39,6 +39,7 @@ import { Button } from "@/components/ui/button";
 import { MdArrowDropDown, MdInfoOutline } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
 import {
+  useGetProjectsQuery,
   useGetUserProjectsQuery,
   useGetUserAccessStatusQuery,
   useInviteUsersMutation,
@@ -57,6 +58,8 @@ interface InvitedMember {
 export interface InviteCollaboratorsStepRef {
   sendInvites: () => Promise<{
     inviteUrls?: Record<string, string>;
+    emailFailures?: string[];
+    copied?: boolean;
   } | void>;
 }
 
@@ -66,11 +69,16 @@ const InviteCollaboratorsStep = forwardRef<
     lng: string;
     onValidityChange?: (canSubmit: boolean) => void;
     createdProjectId?: string | null;
+    // Limits the project list to this organization (otherwise all of the
+    // current user's projects are offered, regardless of organization).
+    organizationId?: string;
     // "modal" drops the page heading and the card around the form fields,
     // since the dialog supplies its own title and container.
     variant?: "page" | "modal";
   }
->(({ lng, onValidityChange, createdProjectId, variant = "page" }, ref) => {
+>((props, ref) => {
+  const { lng, onValidityChange, createdProjectId, organizationId } = props;
+  const variant = props.variant ?? "page";
   const isModal = variant === "modal";
   const { t } = useTranslation(lng, "onboarding");
   const { t: tSettings } = useTranslation(lng, "settings");
@@ -83,7 +91,18 @@ const InviteCollaboratorsStep = forwardRef<
   const [selectedProject, setSelectedProject] = useState<string[]>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
 
-  const { data: projectsData } = useGetUserProjectsQuery({});
+  // With an organization in context only that organization's projects are
+  // offered. OEF admins are not members of the projects they manage, so they
+  // need the organization listing rather than their own memberships.
+  const { data: userProjects } = useGetUserProjectsQuery(
+    {},
+    { skip: !!organizationId },
+  );
+  const { data: organizationProjects } = useGetProjectsQuery(
+    { organizationId: organizationId ?? "" },
+    { skip: !organizationId },
+  );
+  const projectsData = organizationId ? organizationProjects : userProjects;
   const { data: accessStatus } = useGetUserAccessStatusQuery({});
   const [inviteUsers] = useInviteUsersMutation();
 
@@ -189,11 +208,14 @@ const InviteCollaboratorsStep = forwardRef<
       const result = await inviteUsers({
         projectId: selectedProject[0],
         cityIds: inviteCityIds,
-        invites: invitedMembers.map((m) => ({ email: m.email, role: m.role })),
+        invites: invitedMembers.map((m) => ({
+          email: m.email,
+          role: m.role,
+        })),
       }).unwrap();
 
-      await copyInviteUrlsToClipboard(result.inviteUrls);
-      return result;
+      const copied = await copyInviteUrlsToClipboard(result.inviteUrls);
+      return { ...result, copied };
     },
   }));
 

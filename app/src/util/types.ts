@@ -343,6 +343,8 @@ export interface UsersInvitesResponse {
   success: boolean;
   /** email -> invitation URL (returned so admins can copy if email delivery fails) */
   inviteUrls: Record<string, string>;
+  /** emails of invitees whose invitation email could not be sent */
+  emailFailures?: string[];
 }
 
 export interface OrganizationInviteResponse {

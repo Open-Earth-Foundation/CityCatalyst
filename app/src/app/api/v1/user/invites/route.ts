@@ -201,6 +201,7 @@ export const POST = apiHandler(async (req, { session }) => {
 
   const failedInvites: { email: string; cityIds: string[] }[] = [];
   const inviteUrls: Record<string, string> = {};
+  const emailFailures: string[] = [];
 
   await Promise.all(
     invites.map(async ({ email, role }) => {
@@ -291,6 +292,7 @@ export const POST = apiHandler(async (req, { session }) => {
             html,
           });
         } catch (error) {
+          emailFailures.push(email);
           logger.warn(
             { email, cityIds, error },
             "Invitation email could not be sent; invite was created and URL is available",
@@ -308,5 +310,6 @@ export const POST = apiHandler(async (req, { session }) => {
   return NextResponse.json({
     success: failedInvites.length === 0,
     inviteUrls,
+    emailFailures,
   });
 });

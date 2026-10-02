@@ -318,6 +318,10 @@ describe("MeedApiService output plan versioning", () => {
     );
 
     expect(reportModel.create).toHaveBeenCalledTimes(2);
+    expect(reportModel.create).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ catalogEligible: true }),
+    );
     expect(first.id).not.toBe(second.id);
     expect(reportModel.findOne).not.toHaveBeenCalled();
     expect(registerMEEDOutputPlan).toHaveBeenCalledTimes(2);

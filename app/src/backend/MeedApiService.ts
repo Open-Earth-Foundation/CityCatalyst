@@ -658,6 +658,7 @@ export default class MeedApiService {
       id: randomUUID(),
       inventoryId,
       actionId: result.action_id,
+      catalogEligible: true,
       languages: result.language,
       chapters: result.chapters,
       authorityScopeClassification,

@@ -67,7 +67,7 @@ jest.mock("@/backend/NativeInputCatalogService", () => ({
   withdrawNativeInput,
 }));
 jest.unstable_mockModule("@/services/logger", () => ({
-  logger: { error: jest.fn(), info: jest.fn() },
+  logger: { error: jest.fn(), info: jest.fn(), warn: jest.fn() },
 }));
 
 let registerMEEDRanking: typeof import("@/backend/meed/MeedNativeInputCatalogService").registerMEEDRanking;
@@ -148,6 +148,7 @@ const completedReport = {
   id: "report-1",
   inventoryId: "inventory-1",
   actionId: "action-1",
+  catalogEligible: true,
   languages: ["en"],
   chapters: [
     { key: "legal", markdown: { en: "Body" }, limitations: { en: [] } },
@@ -292,7 +293,7 @@ describe("MeedNativeInputCatalogService", () => {
     expect(sequelize.query).toHaveBeenCalledWith(
       "SELECT pg_advisory_xact_lock(hashtext($1))",
       expect.objectContaining({
-        replacements: ["citycatalyst:hiap-meed-ranking:inventory-1"],
+        bind: ["citycatalyst:hiap-meed-ranking:inventory-1"],
         transaction,
       }),
     );
@@ -622,6 +623,18 @@ describe("MeedNativeInputCatalogService", () => {
     expect(registerNativeInput).not.toHaveBeenCalled();
   });
 
+  it("rejects an output plan marked ineligible during persistence", async () => {
+    reportModel.findByPk.mockResolvedValueOnce({
+      ...completedReport,
+      catalogEligible: false,
+    });
+
+    await expect(registerMEEDOutputPlan("report-1")).rejects.toThrow(
+      "Only complete MEED output plans",
+    );
+    expect(registerNativeInput).not.toHaveBeenCalled();
+  });
+
   it("reuses the same catalog entry when the same output plan is retried", async () => {
     catalogModel.findOne.mockResolvedValueOnce({ id: "catalog-existing" });
     await expect(registerMEEDOutputPlan("report-1")).resolves.toEqual({
@@ -706,7 +719,7 @@ describe("MeedNativeInputCatalogService", () => {
     expect(sequelize.query).toHaveBeenCalledWith(
       "SELECT pg_advisory_xact_lock(hashtext($1))",
       expect.objectContaining({
-        replacements: [
+        bind: [
           "citycatalyst:hiap-meed-output-plan:inventory-1:action-1",
         ],
         transaction,
@@ -809,5 +822,62 @@ describe("MeedNativeInputCatalogService", () => {
       backfillMissingMEEDOutputPlansPage({ limit: 25, dryRun: false }),
     ).resolves.toMatchObject({ scanned: 1, repaired: 1, failed: 0 });
     expect(registerNativeInput).toHaveBeenCalledTimes(1);
+  });
+
+  it("advances past an ineligible report and repairs a later page", async () => {
+    const skippedReport = {
+      ...completedReport,
+      id: "report-debug",
+      catalogEligible: false,
+      created: new Date("2026-10-02T12:00:00.000Z"),
+    };
+    const laterReport = {
+      ...completedReport,
+      id: "report-later",
+      actionId: "action-later",
+      created: new Date("2026-10-02T13:00:00.000Z"),
+    };
+    reportModel.findAll
+      .mockResolvedValueOnce([skippedReport])
+      .mockResolvedValueOnce([laterReport]);
+    reportModel.findByPk.mockResolvedValueOnce(laterReport);
+
+    await expect(
+      backfillMissingMEEDOutputPlansPage({ limit: 1, dryRun: false }),
+    ).resolves.toEqual({
+      scanned: 1,
+      repaired: 0,
+      failed: 0,
+      hasMore: true,
+      nextCursor: {
+        created: skippedReport.created.toISOString(),
+        id: "report-debug",
+      },
+    });
+
+    await expect(
+      backfillMissingMEEDOutputPlansPage({
+        limit: 1,
+        dryRun: false,
+        cursor: {
+          created: skippedReport.created.toISOString(),
+          id: "report-debug",
+        },
+      }),
+    ).resolves.toEqual({
+      scanned: 1,
+      repaired: 1,
+      failed: 0,
+      hasMore: true,
+      nextCursor: {
+        created: laterReport.created.toISOString(),
+        id: "report-later",
+      },
+    });
+    expect(registerNativeInput).toHaveBeenCalledTimes(1);
+    expect(registerNativeInput).toHaveBeenCalledWith(
+      expect.objectContaining({ sourceId: "report-later" }),
+      transaction,
+    );
   });
 });

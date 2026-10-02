@@ -52,6 +52,7 @@ type MeedActionReportLike = {
   id: string;
   inventoryId?: string | null;
   actionId?: string | null;
+  catalogEligible?: boolean | null;
   languages?: string[] | null;
   chapters?: unknown;
   authorityScopeClassification?: unknown;
@@ -139,11 +140,13 @@ function hasChapters(chapters: unknown): boolean {
 }
 
 export function isCompleteMEEDOutputPlan(report: {
+  catalogEligible?: boolean | null;
   languages?: string[] | null;
   chapters?: unknown;
   requestedLanguages?: string[] | null;
   requiredSourcesOk?: boolean | null;
 }): boolean {
+  if (report.catalogEligible !== true) return false;
   if (!hasChapters(report.chapters)) return false;
   const languages = report.languages ?? [];
   if (languages.length === 0) return false;
@@ -290,6 +293,7 @@ export async function buildMEEDOutputPlanInput(
   }
   if (
     !isCompleteMEEDOutputPlan({
+      catalogEligible: report.catalogEligible,
       languages: report.languages,
       chapters: report.chapters,
     })
@@ -336,7 +340,7 @@ async function lockMEEDKey(
   }
 
   await db.sequelize.query("SELECT pg_advisory_xact_lock(hashtext($1))", {
-    replacements: [lockKey],
+    bind: [lockKey],
     transaction,
     type: QueryTypes.SELECT,
   });
@@ -637,6 +641,24 @@ export async function backfillMissingMEEDOutputPlansPage(
   let failed = 0;
 
   for (const report of reports) {
+    if (
+      !isCompleteMEEDOutputPlan({
+        catalogEligible: report.catalogEligible,
+        languages: report.languages,
+        chapters: report.chapters,
+      })
+    ) {
+      logger.warn(
+        {
+          reportId: report.id,
+          inventoryId: report.inventoryId,
+          actionId: report.actionId,
+        },
+        "Skipped ineligible MEED output plan during catalog backfill",
+      );
+      continue;
+    }
+
     try {
       if (options.dryRun) {
         await buildMEEDOutputPlanInput(report);

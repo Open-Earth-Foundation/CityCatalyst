@@ -114,57 +114,6 @@ export const POST = apiHandler(async (req, { session }) => {
   const inviteRequest = CreateUsersInvite.parse(await req.json());
   const { invites, cityIds, projectId } = inviteRequest;
 
-  // if the user is not an OEF admin, we want to make sure they have access to the city they are people inviting to
-  if (!(session.user.role === Roles.Admin)) {
-    // check for org admins
-    const orgAdmin = await db.models.OrganizationAdmin.findOne({
-      where: {
-        userId: session.user.id,
-      },
-      include: [
-        {
-          model: db.models.Organization,
-          as: "organization",
-          include: [
-            {
-              model: db.models.Project,
-              as: "projects",
-              include: [
-                {
-                  model: db.models.City,
-                  as: "cities",
-                  where: { cityId: { [Op.in]: cityIds } },
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    });
-
-    if (orgAdmin) {
-      const orgCities = orgAdmin.organization.projects.flatMap((project) =>
-        project.cities.map((city) => city.cityId),
-      );
-      const hasAccess = cityIds.every((cityId) => orgCities.includes(cityId));
-      if (!hasAccess) {
-        throw createHttpError.NotFound("City not found");
-      }
-    } else {
-      let userCities = [];
-      userCities = await db.models.CityUser.findAll({
-        where: {
-          userId: session.user.id,
-          cityId: { [Op.in]: cityIds },
-        },
-      });
-
-      if (userCities.length !== cityIds.length) {
-        throw new createHttpError.NotFound("City not found");
-      }
-    }
-  }
-
   const cities = await db.models.City.findAll({
     where: { cityId: { [Op.in]: cityIds } },
     include: [
@@ -187,6 +136,41 @@ export const POST = apiHandler(async (req, { session }) => {
       },
     ],
   });
+
+  const uniqueCityIds = [...new Set(cityIds)];
+  if (cities.length !== uniqueCityIds.length) {
+    throw new createHttpError.NotFound("City not found");
+  }
+
+  // every city must belong to the project the invite is issued for
+  if (cities.some((city) => city.projectId !== projectId)) {
+    throw new createHttpError.BadRequest("city-project-mismatch");
+  }
+
+  // Non-OEF admins need org admin rights over each city's organization, or a
+  // direct membership in the city. A user can administer several organizations.
+  if (session.user.role !== Roles.Admin) {
+    const [orgAdminships, cityMemberships] = await Promise.all([
+      db.models.OrganizationAdmin.findAll({
+        where: { userId: session.user.id },
+        attributes: ["organizationId"],
+      }),
+      db.models.CityUser.findAll({
+        where: { userId: session.user.id, cityId: { [Op.in]: uniqueCityIds } },
+        attributes: ["cityId"],
+      }),
+    ]);
+    const adminOrgIds = new Set(orgAdminships.map((a) => a.organizationId));
+    const memberCityIds = new Set(cityMemberships.map((m) => m.cityId));
+    const hasAccess = cities.every(
+      (city) =>
+        adminOrgIds.has(city.project?.organizationId) ||
+        memberCityIds.has(city.cityId),
+    );
+    if (!hasAccess) {
+      throw new createHttpError.NotFound("City not found");
+    }
+  }
 
   let emailBranding: { logoUrl: string; color: string } | null = null;
   const organizationIds = new Set(

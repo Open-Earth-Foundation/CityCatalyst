@@ -13,7 +13,7 @@ pydantic-settings==2.*
 pytest==9.1.1
 scipy==1.17.*
 shapely==2.1.2
-SQLAlchemy==2.0.51
+SQLAlchemy==2.0.52
 tqdm==4.68.*
 uvicorn==0.51.0
 xarray==2026.*

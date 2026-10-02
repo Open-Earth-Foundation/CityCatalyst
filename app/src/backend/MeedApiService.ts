@@ -6,11 +6,33 @@ import { InventoryService } from "./InventoryService";
 import { createHash, randomUUID } from "node:crypto";
 import { Op } from "sequelize";
 import { logger } from "@/services/logger";
-import { registerMEEDRanking } from "@/backend/meed/MeedNativeInputCatalogService";
+import { registerMEEDRanking, registerMEEDOutputPlan } from "@/backend/meed/MeedNativeInputCatalogService";
 import type { MeedStateCreationAttributes } from "@/models/MeedState";
 import { readAuthorityScopeClassification } from "@/util/authorityScopeClassification";
 
 const MEED_API_URL = process.env.HIAP_MEED_API_URL + "/v1/";
+
+function isCompleteOutputPlanResult(
+  result: {
+    language?: string[];
+    chapters?: unknown;
+    metadata?: { required_sources_ok?: boolean };
+  },
+  requestedLanguages: string[],
+): boolean {
+  const chapters = result.chapters;
+  const hasChapters = Array.isArray(chapters)
+    ? chapters.length > 0
+    : !!(chapters && typeof chapters === "object" && Object.keys(chapters).length > 0);
+  if (!hasChapters) return false;
+  const languages = result.language ?? [];
+  if (languages.length === 0) return false;
+  const present = new Set(languages);
+  if (!requestedLanguages.every((language) => present.has(language))) {
+    return false;
+  }
+  return result.metadata?.required_sources_ok === true;
+}
 
 type RunRankingFullRequest = {
   requestedLanguages: string[];
@@ -615,27 +637,39 @@ export default class MeedApiService {
       result.metadata?.authority_scope_classification,
     );
 
-    // save result to database, update existing report if it exists
-    let report = await db.models.MeedActionReport.findOne({
-      where: { inventoryId, actionId: result.action_id },
-    });
-    if (report) {
-      await report.update({
-        inventoryId,
-        actionId: result.action_id,
-        languages: result.language,
-        chapters: result.chapters,
-        authorityScopeClassification,
-      });
-    } else {
-      report = await db.models.MeedActionReport.create({
+    if (debugContextOnly) {
+      return {
         id: randomUUID(),
         inventoryId,
         actionId: result.action_id,
         languages: result.language,
         chapters: result.chapters,
         authorityScopeClassification,
-      });
+      };
+    }
+
+    if (!isCompleteOutputPlanResult(result, languages)) {
+      throw new createHttpError.BadGateway(
+        "MEED output plan is incomplete and was not stored",
+      );
+    }
+
+    const report = await db.models.MeedActionReport.create({
+      id: randomUUID(),
+      inventoryId,
+      actionId: result.action_id,
+      languages: result.language,
+      chapters: result.chapters,
+      authorityScopeClassification,
+    });
+
+    try {
+      await registerMEEDOutputPlan(report.id);
+    } catch (error) {
+      logger.error(
+        { error, reportId: report.id, inventoryId, actionId: report.actionId },
+        "Failed to register MEED output plan in NativeInputCatalog",
+      );
     }
 
     return report;
@@ -647,6 +681,10 @@ export default class MeedApiService {
         inventoryId,
         actionId,
       },
+      order: [
+        ["created", "DESC"],
+        ["id", "DESC"],
+      ],
     });
 
     if (!plan) {

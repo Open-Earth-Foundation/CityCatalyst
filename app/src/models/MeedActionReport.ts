@@ -111,6 +111,15 @@ export class MeedActionReport
             unique: true,
             fields: [{ name: "id" }],
           },
+          {
+            name: "idx_meed_action_report_inventory_action_created_id",
+            fields: [
+              { name: "inventory_id" },
+              { name: "action_id" },
+              { name: "created" },
+              { name: "id" },
+            ],
+          },
         ],
       },
     );

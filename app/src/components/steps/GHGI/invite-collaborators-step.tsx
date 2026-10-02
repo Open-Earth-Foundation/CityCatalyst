@@ -238,12 +238,18 @@ const InviteCollaboratorsStep = forwardRef<
       >
         <Box>
           <Text
+            color="content.secondary"
             fontFamily="heading"
-            fontWeight="semibold"
-            mb={4}
-            fontSize="title.md"
+            fontSize="label.lg"
+            fontWeight="medium"
+            lineHeight="20px"
+            letterSpacing="0.5px"
+            mb={1.5}
           >
             {t("project")}
+            <Text as="span" color="sentiment.negativeDefault">
+              {" *"}
+            </Text>
           </Text>
           {hasSingleProject ? (
             <Input

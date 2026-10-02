@@ -14,10 +14,12 @@ import { TFunction } from "i18next";
 import React, {
   FC,
   ReactNode,
+  createRef,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type RefObject,
 } from "react";
 import { StationaryEnergyIcon } from "@/components/icons";
 
@@ -81,17 +83,25 @@ const groupScopesBySector = (
 
 // Action bar that sticks to the bottom of the card. It slides in once the user
 // scrolls down (or right away when the whole list already fits on screen).
-const StickyActionBar: FC<{ children: ReactNode }> = ({ children }) => {
-  const barRef = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+// `contentRef` points at the element whose children the bar belongs to; without
+// it the bar is always visible.
+const StickyActionBar: FC<{
+  children: ReactNode;
+  contentRef?: RefObject<HTMLElement | null>;
+}> = ({ children, contentRef }) => {
+  const [visible, setVisible] = useState(!contentRef);
 
   useEffect(() => {
+    if (!contentRef) {
+      setVisible(true);
+      return;
+    }
     const update = () => {
-      const grid =
-        barRef.current?.parentElement?.querySelector("[data-cards-grid]");
-      const cards = grid ? Array.from(grid.children) : [];
-      if (cards.length === 0) return;
-      const lastBottom = cards[cards.length - 1].getBoundingClientRect().bottom;
+      const items = contentRef.current
+        ? Array.from(contentRef.current.children)
+        : [];
+      if (items.length === 0) return;
+      const lastBottom = items[items.length - 1].getBoundingClientRect().bottom;
       setVisible(window.scrollY > 0 || lastBottom <= window.innerHeight);
     };
     update();
@@ -101,11 +111,10 @@ const StickyActionBar: FC<{ children: ReactNode }> = ({ children }) => {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, []);
+  }, [contentRef]);
 
   return (
     <Box
-      ref={barRef}
       position="sticky"
       bottom={0}
       zIndex={1}
@@ -252,6 +261,11 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
 
   // Set right before an intentional navigation so the guards let it through
   const allowNavigationRef = useRef(false);
+
+  // One stable ref per sector tab, pointing at its cards grid
+  const gridRefs = useRef<Record<string, RefObject<HTMLDivElement | null>>>({});
+  const getGridRef = (sectorId: string) =>
+    (gridRefs.current[sectorId] ??= createRef<HTMLDivElement>());
 
   // In-app links: intercept clicks and ask before leaving with unsaved changes
   useEffect(() => {
@@ -831,7 +845,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
               {unfinishedItems.length > 0 ? (
                 <Box
                   display="grid"
-                  data-cards-grid
+                  ref={getGridRef(group.sector.sectorId)}
                   gridTemplateColumns="repeat(auto-fill, minmax(450px, 1fr))"
                   gap="l"
                 >
@@ -1015,7 +1029,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
               )}
             </Box>
             {unfinishedItems.length > 0 && (
-              <StickyActionBar>
+              <StickyActionBar contentRef={getGridRef(group.sector.sectorId)}>
                 <Box display="flex" gap="16px">
                   <Button
                     height="xxl-2"

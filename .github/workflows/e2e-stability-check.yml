@@ -1,0 +1,92 @@
+# TEMPORARY: proves the previously flaky Playwright specs are stable on a real
+# GitHub runner. Remove before merging.
+#
+# Same setup as the runTests job in web-develop.yml (fresh Postgres, seed,
+# catalogue sync, NODE_ENV=test build), without Jest/coverage, then runs the
+# specs 10 times per browser with retries disabled so any flake fails the job.
+name: E2E stability check (temporary)
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/e2e-stability-check.yml
+      - app/e2e/**
+      - app/playwright.config.ts
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-stability-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      NODE_ENV: test
+      NEXTAUTH_SECRET: "diTMz/XLX4edSmmfzwJtmzKjCJGRt81Gf0PdjO3IPs8="
+      NEXTAUTH_URL: "http://localhost:3000"
+      CDP_API_KEY: ${{ secrets.CDP_API_KEY_TEST }}
+      CDP_MODE: "test"
+      NEXT_PUBLIC_FEATURE_FLAGS: "ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,JN_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC"
+    defaults:
+      run:
+        working-directory: ./app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set up database
+        env:
+          GLOBAL_API_URL: https://ccglobal.openearth.dev
+        run: |
+          docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
+          sleep 10
+          createuser -w -h localhost -p 5432 -U postgres citycatalyst
+          createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
+          cp env.example .env
+          npm run db:migrate
+          npm run db:seed
+          npm run sync-catalogue
+          npm run sync-emissions-factors
+
+      - name: Setup Environment Variables
+        run: |
+          echo "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" >> .env && \
+          echo "GLOBAL_API_URL=https://ccglobal.openearth.dev" >> .env && \
+          echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env && \
+          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC" >> .env && \
+          echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env && \
+          echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env
+
+      - name: Run NextJS build
+        run: npm run build
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run previously flaky specs 10x per browser, no retries
+        run: >-
+          npx playwright test
+          e2e/dashboard.spec.ts
+          e2e/report-results.spec.ts
+          e2e/csv-download.spec.ts
+          e2e/concept-note-funding.spec.ts
+          --repeat-each=10 --retries=0 --reporter=list,html
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-stability
+          path: app/playwright-report/
+          retention-days: 14

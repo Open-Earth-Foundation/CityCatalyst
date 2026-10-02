@@ -1,10 +1,11 @@
 import { test, expect, type Page, type Locator } from "@playwright/test";
 import { parse } from "csv-parse/sync";
 import {
-  createCityAndInventoryThroughOnboarding,
+  createCityAndInventoryViaApi,
   dismissCookieConsent,
   dismissToasts,
   navigateToDataPage,
+  openAddEmissionModal,
 } from "./helpers";
 import * as fs from "fs";
 
@@ -247,9 +248,7 @@ async function addScope1ResidentialEmissions(
 
   await ensureMethodologySelected(page, scopeOnePanel);
 
-  await addActivityButton(page, scopeOnePanel).click();
-  const addEmissionModal = page.getByTestId("add-emission-modal");
-  await expect(addEmissionModal).toBeVisible();
+  const addEmissionModal = await openAddEmissionModal(page, scopeOnePanel);
 
   await addEmissionModal
     .getByLabel(/Building type/i)
@@ -275,18 +274,15 @@ test.describe("CSV Download", () => {
   let cityId: string;
   let inventoryId: string;
 
+  // A fresh inventory per run (and per retry) keeps the downloads independent
+  // of data other specs add to a shared onboarding city.
   test.beforeAll(async ({ browser }) => {
-    test.setTimeout(180000);
-
     const context = await browser.newContext({
       storageState: "playwright/.auth/user.json",
     });
-    const page = await context.newPage();
-
-    const result = await createCityAndInventoryThroughOnboarding(page);
-    cityId = result.cityId;
-    inventoryId = result.inventoryId;
-
+    ({ cityId, inventoryId } = await createCityAndInventoryViaApi(
+      context.request,
+    ));
     await context.close();
   });
 

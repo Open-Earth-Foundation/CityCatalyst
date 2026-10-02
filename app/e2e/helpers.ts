@@ -1,7 +1,10 @@
+import { randomUUID } from "node:crypto";
+
 import {
   APIRequestContext,
   expect,
   type BrowserContext,
+  type Locator,
   type Page,
 } from "@playwright/test";
 
@@ -114,6 +117,29 @@ export async function dismissToasts(page: Page) {
   await page.waitForTimeout(500);
 }
 
+/**
+ * Opens the add-activity modal from a scope panel. The panel remounts its
+ * suggested-activity cards (keyed by their prefills) while the methodology data
+ * loads, and a click that lands during that remount is dropped, so click again
+ * until the modal is open, as a user would.
+ */
+export async function openAddEmissionModal(
+  page: Page,
+  panel: Locator,
+): Promise<Locator> {
+  const modal = page.getByTestId("add-emission-modal");
+  await expect(async () => {
+    if (!(await modal.isVisible())) {
+      await panel
+        .getByLabel("activity-button")
+        .first()
+        .click({ timeout: 5000 });
+    }
+    await expect(modal).toBeVisible({ timeout: 3000 });
+  }).toPass({ timeout: 30_000 });
+  return modal;
+}
+
 export async function signup(
   request: APIRequestContext,
   email: string,
@@ -224,7 +250,6 @@ async function walkCitiesOnboardingWizard(
     throw new Error("Authentication failed - redirected to login page");
   }
 
-  await page.waitForTimeout(500);
   await dismissCookieConsent(page);
 
   await expect(page.getByTestId("start-page-title")).toBeVisible({
@@ -276,7 +301,7 @@ export async function completeThirdPartyDataOnboardingStep(
   options?: { waitForInventoryUrl?: boolean },
 ) {
   const step = page.getByTestId("third-party-data-step");
-  await expect(step).toBeVisible({ timeout: 10000 });
+  await expect(step).toBeVisible({ timeout: 30000 });
 
   const choiceTestId =
     choice === "yes"
@@ -340,7 +365,6 @@ export async function createInventoryThroughOnboarding(
     .locator('[data-testid="inventory-details-year"]')
     .locator("button");
   await yearSelectTrigger.click();
-  await page.waitForTimeout(500); // Wait for dropdown to open
   const yearOption = page.getByRole("option", { name: inventoryYear });
   await yearOption.click();
 
@@ -359,11 +383,9 @@ export async function createInventoryThroughOnboarding(
     await continueBtn.click();
   }
 
-  await page.waitForTimeout(2000);
-
   // Step 6: Set Population Data
   const populationHeading = page.getByTestId("add-population-data-heading");
-  await expect(populationHeading).toBeVisible({ timeout: 10000 });
+  await expect(populationHeading).toBeVisible({ timeout: 30000 });
 
   // Check if population data is populated, if not, fill it manually
   const cityPopulationInput = page.getByPlaceholder("City population number");
@@ -417,8 +439,6 @@ export async function createInventoryThroughOnboarding(
     await continueBtn.click();
   }
 
-  await page.waitForTimeout(3000);
-
   await completeThirdPartyDataOnboardingStep(page, "no", {
     waitForInventoryUrl: true,
   });
@@ -442,6 +462,68 @@ export async function createInventoryThroughOnboarding(
 
   // Return both the page and inventoryId
   return { page, inventoryId, inventoryYear };
+}
+
+/**
+ * Creates a city named Chicago with population data and a GPC Basic / AR6
+ * inventory through the API, for specs that test data entry or downloads
+ * rather than onboarding.
+ *
+ * `POST /city` returns the user's existing city for a known locode and the
+ * inventory endpoint returns the existing inventory for a year, so specs that
+ * onboard the real Chicago share one inventory across workers, browsers and
+ * retries. A unique locode gives every caller its own inventory.
+ */
+export async function createCityAndInventoryViaApi(
+  request: APIRequestContext,
+): Promise<{ cityId: string; inventoryId: string; inventoryYear: string }> {
+  const year = Number(pickE2EOnboardingInventoryYear());
+  const locode = `XX E2E${randomUUID().slice(0, 8).toUpperCase()}`;
+
+  const cityResponse = await request.post("/api/v1/city/", {
+    data: {
+      name: "Chicago",
+      locode,
+      region: "Illinois",
+      country: "United States of America",
+      regionLocode: "US-IL",
+      countryLocode: "US",
+    },
+  });
+  expect(cityResponse.ok(), await cityResponse.text()).toBeTruthy();
+  const { cityId } = (await cityResponse.json()).data;
+
+  const populationResponse = await request.post(
+    `/api/v1/city/${cityId}/population/`,
+    {
+      data: {
+        cityId,
+        cityPopulation: 2_700_000,
+        cityPopulationYear: year,
+        regionPopulation: 12_500_000,
+        regionPopulationYear: year,
+        countryPopulation: 335_000_000,
+        countryPopulationYear: year,
+      },
+    },
+  );
+  expect(populationResponse.ok(), await populationResponse.text()).toBeTruthy();
+
+  const inventoryResponse = await request.post(
+    `/api/v1/city/${cityId}/inventory/`,
+    {
+      data: {
+        inventoryName: `Chicago - ${year}`,
+        year,
+        inventoryType: "gpc_basic",
+        globalWarmingPotentialType: "ar6",
+      },
+    },
+  );
+  expect(inventoryResponse.ok(), await inventoryResponse.text()).toBeTruthy();
+  const { inventoryId } = (await inventoryResponse.json()).data;
+
+  return { cityId, inventoryId, inventoryYear: String(year) };
 }
 
 export async function createCityAndInventoryThroughOnboarding(

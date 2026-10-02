@@ -146,6 +146,36 @@ describe("Population API", () => {
     expectToBeLooselyEqual(populations[0].countryPopulation, 6);
   });
 
+  it("should save concurrent updates for the same city and year", async () => {
+    const update: CreatePopulationRequest = {
+      cityId,
+      cityPopulation: 7,
+      cityPopulationYear: 1341,
+      regionPopulation: 8,
+      regionPopulationYear: 1341,
+      countryPopulation: 9,
+      countryPopulationYear: 1341,
+    };
+    const responses = await Promise.all(
+      Array.from({ length: 4 }, () =>
+        savePopulations(mockRequest(update), {
+          params: Promise.resolve({ city: cityId }),
+        }),
+      ),
+    );
+    for (const res of responses) {
+      await expectStatusCode(res, 200);
+    }
+
+    const populations = await db.models.Population.findAll({
+      where: { cityId, year: 1341 },
+    });
+    expect(populations.length).toEqual(1);
+    expectToBeLooselyEqual(populations[0].population, 7);
+    expectToBeLooselyEqual(populations[0].regionPopulation, 8);
+    expectToBeLooselyEqual(populations[0].countryPopulation, 9);
+  });
+
   it("should not save invalid population information", async () => {
     const req = mockRequest(invalidPopulationUpdate);
     const res = await savePopulations(req, {

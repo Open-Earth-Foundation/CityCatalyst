@@ -6,6 +6,7 @@ export interface MeedActionReportAttributes {
   id: string;
   inventoryId?: string;
   actionId?: string;
+  catalogEligible?: boolean;
   languages?: string[];
   chapters?: object;
   authorityScopeClassification?: object | null;
@@ -17,6 +18,7 @@ export type MeedActionReportPk = "id";
 export type MeedActionReportId = MeedActionReport[MeedActionReportPk];
 export type MeedActionReportOptionalAttributes =
   | "actionId"
+  | "catalogEligible"
   | "languages"
   | "chapters"
   | "authorityScopeClassification"
@@ -34,6 +36,7 @@ export class MeedActionReport
   declare id: string;
   declare inventoryId?: string;
   declare actionId?: string;
+  declare catalogEligible?: boolean;
   declare languages?: string[];
   declare chapters?: object;
   declare authorityScopeClassification?: object | null;
@@ -70,6 +73,12 @@ export class MeedActionReport
           type: DataTypes.TEXT,
           field: "action_id",
           allowNull: false,
+        },
+        catalogEligible: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+          field: "catalog_eligible",
         },
         languages: {
           type: DataTypes.ARRAY(DataTypes.TEXT),
@@ -110,6 +119,15 @@ export class MeedActionReport
             name: "MeedActionReport_pkey",
             unique: true,
             fields: [{ name: "id" }],
+          },
+          {
+            name: "idx_meed_action_report_inventory_action_created_id",
+            fields: [
+              { name: "inventory_id" },
+              { name: "action_id" },
+              { name: "created" },
+              { name: "id" },
+            ],
           },
         ],
       },

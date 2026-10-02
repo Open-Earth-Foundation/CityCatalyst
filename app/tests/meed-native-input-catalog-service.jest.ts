@@ -17,6 +17,10 @@ const rankingModel = {
   findAll: jest.fn(),
   findByPk: jest.fn(),
 };
+const reportModel = {
+  findAll: jest.fn(),
+  findByPk: jest.fn(),
+};
 const rankedModel = {
   findAll: jest.fn(),
 };
@@ -40,6 +44,7 @@ const mockDb = {
   models: {
     NativeInputCatalog: catalogModel,
     MeedRanking: rankingModel,
+    MeedActionReport: reportModel,
     MeedActionRanked: rankedModel,
     MeedActionRemoved: removedModel,
     Inventory: inventoryModel,
@@ -62,17 +67,21 @@ jest.mock("@/backend/NativeInputCatalogService", () => ({
   withdrawNativeInput,
 }));
 jest.unstable_mockModule("@/services/logger", () => ({
-  logger: { error: jest.fn(), info: jest.fn() },
+  logger: { error: jest.fn(), info: jest.fn(), warn: jest.fn() },
 }));
 
 let registerMEEDRanking: typeof import("@/backend/meed/MeedNativeInputCatalogService").registerMEEDRanking;
+let registerMEEDOutputPlan: typeof import("@/backend/meed/MeedNativeInputCatalogService").registerMEEDOutputPlan;
 let backfillMissingMEEDRankingsPage: typeof import("@/backend/meed/MeedNativeInputCatalogService").backfillMissingMEEDRankingsPage;
+let backfillMissingMEEDOutputPlansPage: typeof import("@/backend/meed/MeedNativeInputCatalogService").backfillMissingMEEDOutputPlansPage;
 let withdrawMEEDCatalogForInventory: typeof import("@/backend/meed/MeedNativeInputCatalogService").withdrawMEEDCatalogForInventory;
 
 beforeAll(async () => {
   ({
     registerMEEDRanking,
+    registerMEEDOutputPlan,
     backfillMissingMEEDRankingsPage,
+    backfillMissingMEEDOutputPlansPage,
     withdrawMEEDCatalogForInventory,
   } = await import("@/backend/meed/MeedNativeInputCatalogService"));
 });
@@ -98,6 +107,8 @@ beforeEach(() => {
   });
   rankingModel.findByPk.mockResolvedValue(completedRanking);
   rankingModel.findAll.mockResolvedValue([]);
+  reportModel.findByPk.mockResolvedValue(completedReport);
+  reportModel.findAll.mockResolvedValue([]);
   rankedModel.findAll.mockResolvedValue([
     {
       id: "ranked-row-1",
@@ -131,6 +142,22 @@ const completedRanking = {
   requestedLanguages: ["en"],
   topN: 10,
   created: new Date("2026-08-24T12:00:00.000Z"),
+};
+
+const completedReport = {
+  id: "report-1",
+  inventoryId: "inventory-1",
+  actionId: "action-1",
+  catalogEligible: true,
+  languages: ["en"],
+  chapters: [
+    { key: "legal", markdown: { en: "Body" }, limitations: { en: [] } },
+  ],
+  authorityScopeClassification: {
+    classification_method: "ai_classified",
+    review_status: "pending_human_review",
+  },
+  created: new Date("2026-10-02T12:00:00.000Z"),
 };
 
 describe("MeedNativeInputCatalogService", () => {
@@ -266,7 +293,7 @@ describe("MeedNativeInputCatalogService", () => {
     expect(sequelize.query).toHaveBeenCalledWith(
       "SELECT pg_advisory_xact_lock(hashtext($1))",
       expect.objectContaining({
-        replacements: ["citycatalyst:hiap-meed-ranking:inventory-1"],
+        bind: ["citycatalyst:hiap-meed-ranking:inventory-1"],
         transaction,
       }),
     );
@@ -539,7 +566,318 @@ describe("MeedNativeInputCatalogService", () => {
     await expect(withdrawMEEDCatalogForInventory("inventory-1")).resolves.toBe(
       2,
     );
+    expect(catalogModel.findAll).toHaveBeenCalledWith({
+      where: {
+        owningModule: "hiap_meed",
+        sourceType: {
+          [Op.in]: ["hiap_meed_ranking", "hiap_meed_output_plan"],
+        },
+        inventoryId: "inventory-1",
+        availability: "active",
+      },
+    });
     expect(withdrawNativeInput).toHaveBeenNthCalledWith(1, "catalog-1");
     expect(withdrawNativeInput).toHaveBeenNthCalledWith(2, "catalog-2");
+  });
+
+  it("registers a completed output plan as a pointer-only catalog entry", async () => {
+    await registerMEEDOutputPlan("report-1");
+
+    expect(registerNativeInput).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: "hiap_meed_output_plan",
+        owningModule: "hiap_meed",
+        sourceType: "hiap_meed_output_plan",
+        sourceId: "report-1",
+        inventoryId: "inventory-1",
+        cityId: "city-1",
+        projectId: "project-1",
+        organizationId: "organization-1",
+        markdownReady: false,
+        labels: expect.objectContaining({
+          reportId: "report-1",
+          actionId: "action-1",
+          languages: ["en"],
+          chapterCount: 1,
+        }),
+      }),
+      transaction,
+    );
+    expect(registerNativeInput.mock.calls[0][0].contentDigest).toMatch(
+      /^[a-f0-9]{64}$/,
+    );
+    expect(registerNativeInput.mock.calls[0][0]).not.toHaveProperty("userId");
+    expect(JSON.stringify(registerNativeInput.mock.calls[0][0])).not.toContain(
+      "Body",
+    );
+  });
+
+  it("rejects incomplete output plans", async () => {
+    reportModel.findByPk.mockResolvedValueOnce({
+      ...completedReport,
+      chapters: [],
+    });
+    await expect(registerMEEDOutputPlan("report-1")).rejects.toThrow(
+      "Only complete MEED output plans",
+    );
+    expect(registerNativeInput).not.toHaveBeenCalled();
+  });
+
+  it("rejects an output plan marked ineligible during persistence", async () => {
+    reportModel.findByPk.mockResolvedValueOnce({
+      ...completedReport,
+      catalogEligible: false,
+    });
+
+    await expect(registerMEEDOutputPlan("report-1")).rejects.toThrow(
+      "Only complete MEED output plans",
+    );
+    expect(registerNativeInput).not.toHaveBeenCalled();
+  });
+
+  it("reuses the same catalog entry when the same output plan is retried", async () => {
+    catalogModel.findOne.mockResolvedValueOnce({ id: "catalog-existing" });
+    await expect(registerMEEDOutputPlan("report-1")).resolves.toEqual({
+      catalog: { id: "catalog-existing" },
+      created: false,
+    });
+    expect(registerNativeInput).not.toHaveBeenCalled();
+  });
+
+  it("supersedes the previous active plan for the same inventory and action", async () => {
+    const oldCatalog = {
+      id: "catalog-old",
+      sourceId: "report-old",
+      availability: "active",
+      update: jest.fn(),
+    };
+    catalogModel.findOne.mockResolvedValueOnce(null);
+    catalogModel.findAll.mockResolvedValueOnce([oldCatalog]);
+    reportModel.findByPk
+      .mockResolvedValueOnce(completedReport)
+      .mockResolvedValueOnce({
+        ...completedReport,
+        id: "report-old",
+        created: new Date("2026-10-02T11:00:00.000Z"),
+      });
+
+    await registerMEEDOutputPlan("report-1");
+
+    expect(oldCatalog.update).toHaveBeenCalledWith(
+      { availability: "superseded", supersededById: "catalog-new" },
+      { transaction },
+    );
+    expect(catalogModel.findAll).toHaveBeenCalledWith({
+      where: {
+        owningModule: "hiap_meed",
+        sourceType: "hiap_meed_output_plan",
+        inventoryId: "inventory-1",
+        availability: "active",
+        labels: { [Op.contains]: { actionId: "action-1" } },
+      },
+      transaction,
+    });
+  });
+
+  it("keeps a newer output plan active when an older registration is delayed", async () => {
+    const olderReport = {
+      ...completedReport,
+      id: "report-a",
+      created: new Date("2026-10-02T12:00:00.000Z"),
+    };
+    const newerReport = {
+      ...completedReport,
+      id: "report-b",
+      created: new Date("2026-10-02T13:00:00.000Z"),
+    };
+    const olderCatalog = {
+      id: "catalog-a",
+      availability: "active",
+      update: jest.fn(),
+    };
+    const newerCatalog = {
+      id: "catalog-b",
+      sourceId: "report-b",
+      availability: "active",
+      update: jest.fn(),
+    };
+
+    reportModel.findByPk
+      .mockResolvedValueOnce(olderReport)
+      .mockResolvedValueOnce(newerReport);
+    catalogModel.findOne.mockResolvedValueOnce(null);
+    catalogModel.findAll.mockResolvedValueOnce([newerCatalog]);
+    registerNativeInput.mockResolvedValueOnce({
+      catalog: olderCatalog,
+      created: true,
+    });
+
+    await expect(registerMEEDOutputPlan("report-a")).resolves.toEqual({
+      catalog: olderCatalog,
+      created: true,
+    });
+    expect(sequelize.query).toHaveBeenCalledWith(
+      "SELECT pg_advisory_xact_lock(hashtext($1))",
+      expect.objectContaining({
+        bind: [
+          "citycatalyst:hiap-meed-output-plan:inventory-1:action-1",
+        ],
+        transaction,
+      }),
+    );
+    expect(olderCatalog.update).toHaveBeenCalledWith(
+      { availability: "superseded", supersededById: "catalog-b" },
+      { transaction },
+    );
+    expect(newerCatalog.update).not.toHaveBeenCalled();
+  });
+
+  it("keeps only the newest output plan active across an A to B to C history with matching content", async () => {
+    reportModel.findByPk.mockImplementation(async (reportId) => ({
+      ...completedReport,
+      id: reportId,
+      created: new Date(
+        `2026-10-02T${reportId === "report-a" ? "12" : reportId === "report-b" ? "13" : "14"}:00:00.000Z`,
+      ),
+    }));
+    catalogModel.findOne.mockResolvedValue(null);
+    const catalogA = {
+      id: "catalog-a",
+      sourceId: "report-a",
+      availability: "active",
+      update: jest.fn(),
+    };
+    const catalogB = {
+      id: "catalog-b",
+      sourceId: "report-b",
+      availability: "active",
+      update: jest.fn(),
+    };
+    catalogModel.findAll
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([catalogA])
+      .mockResolvedValueOnce([catalogB]);
+    registerNativeInput
+      .mockResolvedValueOnce({ catalog: { id: "catalog-a" }, created: true })
+      .mockResolvedValueOnce({ catalog: { id: "catalog-b" }, created: true })
+      .mockResolvedValueOnce({ catalog: { id: "catalog-c" }, created: true });
+
+    await registerMEEDOutputPlan("report-a");
+    await registerMEEDOutputPlan("report-b");
+    await registerMEEDOutputPlan("report-c");
+
+    expect(
+      registerNativeInput.mock.calls.map(([input]) => input.sourceId),
+    ).toEqual(["report-a", "report-b", "report-c"]);
+    const digests = registerNativeInput.mock.calls.map(
+      ([input]) => input.contentDigest,
+    );
+    expect(digests[0]).toBe(digests[1]);
+    expect(digests[1]).toBe(digests[2]);
+    expect(catalogA.update).toHaveBeenCalledWith(
+      { availability: "superseded", supersededById: "catalog-b" },
+      { transaction },
+    );
+    expect(catalogB.update).toHaveBeenCalledWith(
+      { availability: "superseded", supersededById: "catalog-c" },
+      { transaction },
+    );
+  });
+
+  it("does not supersede output plans for a different action", async () => {
+    const otherActionCatalog = {
+      id: "catalog-other",
+      sourceId: "report-other",
+      availability: "active",
+      update: jest.fn(),
+    };
+    catalogModel.findOne.mockResolvedValueOnce(null);
+    catalogModel.findAll.mockResolvedValueOnce([]);
+    registerNativeInput.mockResolvedValueOnce({
+      catalog: { id: "catalog-new" },
+      created: true,
+    });
+
+    await registerMEEDOutputPlan("report-1");
+
+    expect(otherActionCatalog.update).not.toHaveBeenCalled();
+    expect(catalogModel.findAll).toHaveBeenCalledWith({
+      where: expect.objectContaining({
+        labels: { [Op.contains]: { actionId: "action-1" } },
+      }),
+      transaction,
+    });
+  });
+
+  it("backfills missing output plans with a dry run and repair path", async () => {
+    reportModel.findAll.mockResolvedValue([completedReport]);
+    catalogModel.findOne.mockResolvedValue(null);
+
+    await expect(
+      backfillMissingMEEDOutputPlansPage({ limit: 25, dryRun: true }),
+    ).resolves.toMatchObject({ scanned: 1, repaired: 1, failed: 0 });
+    expect(registerNativeInput).not.toHaveBeenCalled();
+
+    await expect(
+      backfillMissingMEEDOutputPlansPage({ limit: 25, dryRun: false }),
+    ).resolves.toMatchObject({ scanned: 1, repaired: 1, failed: 0 });
+    expect(registerNativeInput).toHaveBeenCalledTimes(1);
+  });
+
+  it("advances past an ineligible report and repairs a later page", async () => {
+    const skippedReport = {
+      ...completedReport,
+      id: "report-debug",
+      catalogEligible: false,
+      created: new Date("2026-10-02T12:00:00.000Z"),
+    };
+    const laterReport = {
+      ...completedReport,
+      id: "report-later",
+      actionId: "action-later",
+      created: new Date("2026-10-02T13:00:00.000Z"),
+    };
+    reportModel.findAll
+      .mockResolvedValueOnce([skippedReport])
+      .mockResolvedValueOnce([laterReport]);
+    reportModel.findByPk.mockResolvedValueOnce(laterReport);
+
+    await expect(
+      backfillMissingMEEDOutputPlansPage({ limit: 1, dryRun: false }),
+    ).resolves.toEqual({
+      scanned: 1,
+      repaired: 0,
+      failed: 0,
+      hasMore: true,
+      nextCursor: {
+        created: skippedReport.created.toISOString(),
+        id: "report-debug",
+      },
+    });
+
+    await expect(
+      backfillMissingMEEDOutputPlansPage({
+        limit: 1,
+        dryRun: false,
+        cursor: {
+          created: skippedReport.created.toISOString(),
+          id: "report-debug",
+        },
+      }),
+    ).resolves.toEqual({
+      scanned: 1,
+      repaired: 1,
+      failed: 0,
+      hasMore: true,
+      nextCursor: {
+        created: laterReport.created.toISOString(),
+        id: "report-later",
+      },
+    });
+    expect(registerNativeInput).toHaveBeenCalledTimes(1);
+    expect(registerNativeInput).toHaveBeenCalledWith(
+      expect.objectContaining({ sourceId: "report-later" }),
+      transaction,
+    );
   });
 });

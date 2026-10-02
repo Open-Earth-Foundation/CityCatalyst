@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: citycatalyst
+      POSTGRES_PASSWORD: development
+      POSTGRES_DB: citycatalyst
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./scripts/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U citycatalyst"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  global-api:
+    build: ./global-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: ccglobal
+      DB_USER: ccglobal
+      DB_PASSWORD: development
+    profiles:
+      - full
+
+volumes:
+  pgdata:

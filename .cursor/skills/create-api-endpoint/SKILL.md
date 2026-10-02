@@ -1,9 +1,15 @@
 ---
 name: create-api-endpoint
-description: Create a new REST API endpoint in CityCatalyst. Use when the user asks to create, add, or implement a new API route, endpoint, or backend handler.
+description: Create a single new REST API endpoint in CityCatalyst (route handler + validation + service + tests, plus an optional RTK consumer). Use when only the backend surface changes. For end-to-end work that also touches DB migrations, models, and UI, use `full-feature` instead.
 ---
 
 # Create API Endpoint
+
+> **When to use this skill:** the user is exposing a new API surface (e.g. an internal admin endpoint, a service-to-service route, a new query against existing data) and the change is **backend-only**.
+> **When NOT to use this skill:**
+> - You also need a DB migration / model / pages / components → use `full-feature`.
+> - You only need to add a new RTK endpoint against an existing route → use `add-rtk-endpoint`.
+> - You're working on Climate Advisor / HIAP Python services → use `python-fastapi` rule + `add-langgraph-tool` skill.
 
 ## Workflow
 

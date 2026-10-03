@@ -66,6 +66,21 @@ class MessageService:
             tools_used=tools_used,
         )
 
+    async def latest_message_is_user_text(
+        self,
+        *,
+        thread_id: Union[str, UUID],
+        text: str,
+    ) -> bool:
+        """Return whether the thread's newest message is this user text."""
+        latest = await self.get_thread_messages(
+            thread_id=thread_id if isinstance(thread_id, UUID) else UUID(str(thread_id)),
+            limit=1,
+        )
+        return bool(latest) and (
+            latest[-1].role == MessageRole.USER and latest[-1].text == text
+        )
+
     async def get_thread_messages(
         self,
         *,

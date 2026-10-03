@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { useSSEStream } from "@/hooks/useSSEStream";
+import {
+  STREAM_STALLED_CODE,
+  useSSEStream,
+  type SSEErrorDetails,
+} from "@/hooks/useSSEStream";
 import { useTranslation } from "@/i18n/client";
 import type { EditScope } from "@/util/concept-note-edit-types";
 import {
@@ -17,6 +21,37 @@ import {
 // The service replaces this content with its own hidden overview trigger.
 const DRAFT_OVERVIEW_CONTENT = "draft_overview";
 const DRAFT_OVERVIEW_UNAVAILABLE = "concept_note_draft_overview_unavailable";
+const CONTEXT_NOT_READY = "concept_note_context_not_ready";
+// Climate Advisor sends a heartbeat every 15 s, so 45 s of silence means the
+// connection or the service is gone rather than the model being slow.
+const CHAT_IDLE_TIMEOUT_MS = 45_000;
+
+export type ChatConnectionState =
+  "connecting" | "connected" | "retrying" | "error";
+
+interface ChatTurn {
+  content: string;
+  context: Record<string, unknown>;
+  options?: Record<string, unknown>;
+  overview: boolean;
+}
+
+function chatErrorKey(
+  code: string | undefined,
+  details: SSEErrorDetails | undefined,
+  turn: ChatTurn | null,
+): string {
+  if (code === STREAM_STALLED_CODE) return "chat-stream-stalled";
+  // No response, or a gateway error, before any stream: the service is down.
+  if (
+    details &&
+    !details.streamStarted &&
+    (details.status === undefined || details.status >= 500)
+  ) {
+    return "chat-service-unavailable";
+  }
+  return turn?.overview ? "chat-overview-error" : "chat-send-error";
+}
 
 interface UseConceptNoteChatOptions {
   lng: string;
@@ -28,7 +63,12 @@ interface UseConceptNoteChatOptions {
 }
 
 interface ConceptNoteChatController {
+  connection: ChatConnectionState;
   error: string | null;
+  /** True when the visible error can be recovered with `retry`. */
+  canRetry: boolean;
+  /** The drafting overview failed and has not been posted yet. */
+  overviewFailed: boolean;
   historyLoading: boolean;
   isGenerating: boolean;
   progress: ConceptNoteProgress | null;
@@ -36,6 +76,7 @@ interface ConceptNoteChatController {
   messages: ConceptNoteChatMessage[];
   sendMessage: (content: string) => Promise<void>;
   requestDraftOverview: () => Promise<void>;
+  retry: () => Promise<void>;
 }
 
 export function useConceptNoteChat({
@@ -53,6 +94,13 @@ export function useConceptNoteChat({
   const [reasoning, setReasoning] = useState<ConceptNoteReasoning[]>([]);
   const [progress, setProgress] = useState<ConceptNoteProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Connected only after Climate Advisor answers; any failed call flips it.
+  const [connectionFailed, setConnectionFailed] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+  const [failedTurn, setFailedTurn] = useState<ChatTurn | null>(null);
+  const [overviewFailed, setOverviewFailed] = useState(false);
+  const [historyAttempt, setHistoryAttempt] = useState(0);
+  const currentTurnRef = useRef<ChatTurn | null>(null);
   const assistantMessageIdRef = useRef<string | null>(null);
   const pendingUserMessageIdRef = useRef<string | null>(null);
   // The overview turn keeps its own label instead of the request-based stages.
@@ -60,6 +108,7 @@ export function useConceptNoteChat({
 
   const { startStream, stopStream } = useSSEStream({
     forceEventStream: true,
+    idleTimeoutMs: CHAT_IDLE_TIMEOUT_MS,
     onReasoning: (value) => {
       const update = readConceptNoteReasoning(value);
       const assistantId = assistantMessageIdRef.current;
@@ -120,24 +169,32 @@ export function useConceptNoteChat({
     },
     onComplete: () => {
       // Draft observation ends at chapter completion; refresh the consumed overview.
-      if (draftOverviewTurnRef.current) onDraftOverviewComplete?.();
+      if (draftOverviewTurnRef.current) {
+        onDraftOverviewComplete?.();
+        setOverviewFailed(false);
+      }
       draftOverviewTurnRef.current = false;
+      currentTurnRef.current = null;
+      setConnectionFailed(false);
+      setRetrying(false);
+      setFailedTurn(null);
       setReasoning([]);
       assistantMessageIdRef.current = null;
       pendingUserMessageIdRef.current = null;
       setIsGenerating(false);
     },
-    onError: (_message, code) => {
+    onError: (_message, code, details) => {
       if (draftOverviewTurnRef.current && code === DRAFT_OVERVIEW_UNAVAILABLE) {
         onDraftOverviewComplete?.();
       }
       draftOverviewTurnRef.current = false;
+      const turn = currentTurnRef.current;
+      currentTurnRef.current = null;
+      setRetrying(false);
       setReasoning([]);
       const assistantMessageId = assistantMessageIdRef.current;
       const rejectedUserMessageId =
-        code === "concept_note_context_not_ready"
-          ? pendingUserMessageIdRef.current
-          : null;
+        code === CONTEXT_NOT_READY ? pendingUserMessageIdRef.current : null;
       if (assistantMessageId) {
         setMessages((current) =>
           current.filter(
@@ -155,13 +212,15 @@ export function useConceptNoteChat({
       if (code === DRAFT_OVERVIEW_UNAVAILABLE) {
         return;
       }
-      setError(
-        t(
-          code === "concept_note_context_not_ready"
-            ? "chat-context-not-ready"
-            : "chat-send-error",
-        ),
-      );
+      // Clima answered and declined; the connection itself is fine.
+      if (code === CONTEXT_NOT_READY) {
+        setError(t("chat-context-not-ready"));
+        return;
+      }
+      setConnectionFailed(true);
+      setFailedTurn(turn);
+      if (turn?.overview) setOverviewFailed(true);
+      setError(t(chatErrorKey(code, details, turn)));
     },
   });
 
@@ -187,6 +246,9 @@ export function useConceptNoteChat({
         setMessages(readConceptNoteThreadMessages(payload));
         setMessagesThreadId(threadId);
         setError(null);
+        setConnectionFailed(false);
+        setFailedTurn(null);
+        setRetrying(false);
       } catch (requestError) {
         if (
           !(requestError instanceof Error) ||
@@ -195,13 +257,16 @@ export function useConceptNoteChat({
           setMessages([]);
           setMessagesThreadId(threadId);
           setError(t("chat-history-error"));
+          setConnectionFailed(true);
+          setFailedTurn(null);
+          setRetrying(false);
         }
       }
     }
 
     void loadHistory();
     return () => controller.abort();
-  }, [t, threadId]);
+  }, [t, threadId, historyAttempt]);
 
   useEffect(() => stopStream, [stopStream]);
 
@@ -213,18 +278,21 @@ export function useConceptNoteChat({
 
     const userMessageId = crypto.randomUUID();
     pendingUserMessageIdRef.current = userMessageId;
-    await streamReply({
-      userMessage: { id: userMessageId, role: "user", text: normalizedContent },
-      content: normalizedContent,
-      context: editScope
-        ? {
-            concept_note_edit: {
-              scope: editScope,
-              idempotency_key: crypto.randomUUID(),
-            },
-          }
-        : {},
-    });
+    await streamReply(
+      {
+        content: normalizedContent,
+        context: editScope
+          ? {
+              concept_note_edit: {
+                scope: editScope,
+                idempotency_key: crypto.randomUUID(),
+              },
+            }
+          : {},
+        overview: false,
+      },
+      { id: userMessageId, role: "user", text: normalizedContent },
+    );
   }
 
   // Starts the hidden first turn that summarises a finished drafting pass.
@@ -237,20 +305,40 @@ export function useConceptNoteChat({
       content: DRAFT_OVERVIEW_CONTENT,
       context: {},
       options: { concept_note_turn: "draft_overview" },
+      overview: true,
     });
   }
 
-  async function streamReply({
-    userMessage,
-    content,
-    context,
-    options,
-  }: {
-    userMessage?: ConceptNoteChatMessage;
-    content: string;
-    context: Record<string, unknown>;
-    options?: Record<string, unknown>;
-  }): Promise<void> {
+  // Repeats whatever failed: the history load, the overview, or the last turn.
+  async function retry(): Promise<void> {
+    if (!threadId || isGenerating || retrying || !connectionFailed) {
+      return;
+    }
+    if (!failedTurn) {
+      setRetrying(true);
+      setHistoryAttempt((attempt) => attempt + 1);
+      return;
+    }
+    if (failedTurn.overview) {
+      await requestDraftOverview();
+      return;
+    }
+    // The question is already on screen, and the service skips saving it again
+    // when it is still the latest stored message.
+    await streamReply({
+      ...failedTurn,
+      options: { ...failedTurn.options, concept_note_turn: "retry" },
+    });
+  }
+
+  async function streamReply(
+    turn: ChatTurn,
+    userMessage?: ConceptNoteChatMessage,
+  ): Promise<void> {
+    const { content, context, options } = turn;
+    currentTurnRef.current = turn;
+    // Anything sent after a failure is the attempt to reconnect.
+    if (connectionFailed) setRetrying(true);
     const assistantMessageId = crypto.randomUUID();
     assistantMessageIdRef.current = assistantMessageId;
     setMessages((current) => [
@@ -284,6 +372,8 @@ export function useConceptNoteChat({
     } catch (requestError) {
       if (requestError instanceof Error && requestError.name === "AbortError") {
         draftOverviewTurnRef.current = false;
+        currentTurnRef.current = null;
+        setRetrying(false);
         assistantMessageIdRef.current = null;
         setIsGenerating(false);
         setReasoning([]);
@@ -291,14 +381,28 @@ export function useConceptNoteChat({
     }
   }
 
+  const historyLoading = Boolean(threadId) && messagesThreadId !== threadId;
+  const visibleError = messagesThreadId === threadId ? error : null;
+  const connection: ChatConnectionState = retrying
+    ? "retrying"
+    : !threadId || historyLoading
+      ? "connecting"
+      : connectionFailed
+        ? "error"
+        : "connected";
+
   return {
-    error: messagesThreadId === threadId ? error : null,
-    historyLoading: Boolean(threadId) && messagesThreadId !== threadId,
+    connection,
+    error: visibleError,
+    canRetry: connection === "error" && Boolean(visibleError) && !isGenerating,
+    overviewFailed,
+    historyLoading,
     isGenerating,
     progress,
     reasoning,
     messages: messagesThreadId === threadId ? messages : [],
     sendMessage,
     requestDraftOverview,
+    retry,
   };
 }

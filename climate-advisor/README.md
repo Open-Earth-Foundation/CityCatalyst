@@ -1346,6 +1346,12 @@ without retrying. Exhausted or unsafe-to-replay failures still send an error and
 `done` with `ok: false`, `history_saved: false`; a partial reply is not saved as a
 completed answer. HTTP 200 alone does not indicate successful completion.
 
+`history_saved` covers the reply only: the user's question is stored before
+streaming starts. When the Concept Note chat retries a failed turn it sends
+`options.concept_note_turn: "retry"`, and `POST /v1/messages` skips storing the
+question again if it is still the thread's latest message. A retry after a
+request that never reached the service stores the question normally.
+
 Offline regression checks (from `climate-advisor/`):
 
 ```bash

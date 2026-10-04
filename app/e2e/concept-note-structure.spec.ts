@@ -612,3 +612,59 @@ test("sections panel matches the preview height while drafting runs", async ({
   ]);
   expect(panelBox!.height).toBeGreaterThanOrEqual(previewBox!.height - 1);
 });
+
+for (const viewport of [
+  { width: 1093, height: 506 }, // Effective viewport in the 125% zoom report.
+  { width: 388, height: 546 }, // Phone viewport in the scrolling report.
+]) {
+  test(`draft remains readable and scrolls to the last chapter at ${viewport.width}x${viewport.height}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await setup(page, false, 12);
+    const preview = page.getByTestId("concept-note-draft-preview");
+    const tab = page.getByRole("tabpanel", { name: "Draft preview" });
+    await expect(preview).toBeVisible();
+    // The regression left only 8px for the document on a phone.
+    expect(
+      await tab.evaluate((element) => element.clientHeight),
+    ).toBeGreaterThan(300);
+
+    await preview.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        page
+          .getByTestId("concept-note-workspace")
+          .evaluate((element) => element.scrollTop),
+      )
+      .toBeGreaterThan(0);
+    const point = await preview.evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      return {
+        x: Math.min(innerWidth - 20, bounds.right - 30),
+        y: Math.min(innerHeight - 30, bounds.bottom - 30),
+      };
+    });
+    await page.mouse.move(point.x, point.y);
+    await expect
+      .poll(
+        async () => {
+          await page.mouse.wheel(0, 600);
+          return preview.evaluate(
+            (element) =>
+              element.scrollTop >=
+              element.scrollHeight - element.clientHeight - 2,
+          );
+        },
+        { timeout: 15000 },
+      )
+      .toBe(true);
+    await expect(preview.locator("[data-chapter-id]").last()).toBeInViewport();
+
+    // Controls remain reachable after reading to the end.
+    const review = page.getByTestId("concept-note-export");
+    await review.focus();
+    await expect(review).toBeFocused();
+    await expect(review).toBeInViewport();
+  });
+}

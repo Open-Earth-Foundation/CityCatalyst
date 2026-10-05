@@ -156,6 +156,8 @@ export function FundingSelectionDialog({
     isFetchBaseQueryError(catalogueError) &&
     [401, 403, 404].includes(Number(catalogueError.status));
   const formErrors = validateFunderForm(form);
+  // The rail shows no selection while the add-funder pane is open.
+  const selectedFunderId = adding ? null : funderId;
   const addedFrom = funder?.opportunities.find(
     (item) => item.added_from,
   )?.added_from;
@@ -440,25 +442,23 @@ export function FundingSelectionDialog({
                       variant="ghost"
                       minH="76px"
                       gap={3}
-                      aria-pressed={!adding && item.id === funderId}
+                      aria-pressed={item.id === selectedFunderId}
                       disabled={saveState.isLoading}
                       bg={
-                        !adding && item.id === funderId
+                        item.id === selectedFunderId
                           ? "base.light"
                           : "transparent"
                       }
                       borderInlineStart="3px solid"
                       borderColor={
-                        !adding && item.id === funderId
+                        item.id === selectedFunderId
                           ? "content.link"
                           : "transparent"
                       }
                       onClick={() => chooseFunder(item.id)}
                     >
                       <Icon
-                        as={
-                          !adding && item.id === funderId ? LuCheck : LuLandmark
-                        }
+                        as={item.id === selectedFunderId ? LuCheck : LuLandmark}
                         flexShrink={0}
                         color="content.link"
                       />

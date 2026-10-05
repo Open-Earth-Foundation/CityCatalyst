@@ -82,6 +82,7 @@ export type FunderFormErrors = Record<string, string>;
 
 let nextRowId = 0;
 
+/** A blank required chapter with a row id unique to this page. */
 export function emptyChapter(): ChapterRow {
   nextRowId += 1;
   return {
@@ -125,6 +126,7 @@ export function parseAward(value: string): number | null | undefined {
   return /^\d+(\.\d{1,2})?$/.test(text) ? Number(text) : undefined;
 }
 
+/** Required names, at least one titled chapter and valid award amounts. */
 export function validateFunderForm(form: FunderForm): FunderFormErrors {
   const errors: FunderFormErrors = {};
   if (!form.funder.name.trim()) {

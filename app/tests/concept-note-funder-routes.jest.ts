@@ -127,12 +127,18 @@ describe("Funder API boundary", () => {
 
     callApi.mockResolvedValue(new Response(null, { status: 204 }));
     const discarded = await discardImport(
-      new Request("http://localhost", { method: "DELETE" }),
+      new Request("http://localhost", {
+        method: "DELETE",
+        body: JSON.stringify({ importId: uploadId }),
+      }),
       context,
     );
     expect(discarded.status).toBe(204);
     expect(callApi).toHaveBeenLastCalledWith(
-      expect.objectContaining({ method: "DELETE" }),
+      expect.objectContaining({
+        method: "DELETE",
+        body: { import_id: uploadId },
+      }),
     );
 
     const detail = { code: "funder_import_running", message: "No" };
@@ -157,6 +163,11 @@ describe("Funder API boundary", () => {
   });
 
   it.each([
+    ["a discard without an import id", () => discardImport(post({}), context)],
+    [
+      "an invalid discard import id",
+      () => discardImport(post({ importId: "invalid" }), context),
+    ],
     [
       "an invalid upload id",
       () => startImport(post({ uploadId: "x" }), context),

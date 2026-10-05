@@ -8,6 +8,7 @@ from app.db.session import get_session
 from app.models.cnb.funder_import import (
     FunderCreateRequest,
     FunderCreateResponse,
+    FunderImportDiscardRequest,
     FunderImportResponse,
     FunderImportStartRequest,
 )
@@ -76,13 +77,14 @@ async def start_concept_note_funder_import(
 )
 async def discard_concept_note_funder_import(
     run_id: UUID,
+    payload: FunderImportDiscardRequest,
     user_id: str = Query(..., min_length=1),
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> Response:
     """Discard the pending import without adding anything to the catalogue."""
     run = await _authorized_run(session, run_id, user_id, authorization)
-    await discard_funder_import(session, run)
+    await discard_funder_import(session, run, import_id=payload.import_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

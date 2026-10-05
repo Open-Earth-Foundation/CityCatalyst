@@ -2622,12 +2622,16 @@ export const api = createApi({
           { type: "ConceptNoteFunderImport", id: runId },
         ],
       }),
-      discardConceptNoteFunderImport: builder.mutation<void, string>({
-        query: (runId) => ({
+      discardConceptNoteFunderImport: builder.mutation<
+        void,
+        { runId: string; importId: string }
+      >({
+        query: ({ runId, importId }) => ({
           url: `concept-notes/${runId}/funder-imports/current/`,
           method: "DELETE",
+          body: { importId },
         }),
-        invalidatesTags: (_result, _error, runId) => [
+        invalidatesTags: (_result, _error, { runId }) => [
           { type: "ConceptNoteFunderImport", id: runId },
         ],
       }),

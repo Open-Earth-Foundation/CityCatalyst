@@ -129,7 +129,7 @@ describe("funder form", () => {
     "1,234",
     "9".repeat(400),
   ])("rejects an ambiguous or invalid award %s", (amount) => {
-    const form = typedForm();
+    const form = formFromDraft(draft);
     form.opportunity.min_award = amount;
     expect(validateFunderForm(form)["opportunity.min_award"]).toBe(
       "funder-error-award",

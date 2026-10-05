@@ -812,7 +812,9 @@ language, or client-side fallback behavior. The boundary is:
   searchable funder/programme/template catalogue also use it. Funding selection
   does not run research or call an LLM. Adding a funder from an uploaded
   document calls `cnb_funder_extractor` once and writes catalogue rows only after
-  the user reviews them; see
+  the user reviews them. Concurrent import starts are serialized, and discard
+  requires the observed import ID so it cannot remove a newer import. Duplicated
+  notes keep the source files but omit pending funder imports; see
   [adding a funder](../docs/ConceptNoteBuilderArchitecture.md#adding-a-funder-that-is-not-in-the-catalogue). See the
   [workspace funding-selection contract](../docs/ConceptNoteBuilderArchitecture.md#funding-selection-in-the-workspace)
   for compatible-template checks, draft review invalidation, serialized edit

@@ -2006,6 +2006,22 @@ filename as `source_record_ref`, so one upload cannot be added twice) or
 
 Added funders are visible to every city, because `funders` has no owner column.
 
+While an uploaded document converts, the browser keeps its upload ID and filename
+in session storage scoped to the city and run. Returning to the note or refreshing
+the same tab resumes the handoff to extraction after checking the current server
+import. Closing the tab ends this recovery window; browser storage must be enabled.
+Discarding or choosing another file invalidates outstanding upload/start callbacks
+and clears the recovery entry. If a discarded start already reached the server,
+the client removes only that response's import ID.
+
+Import starts lock the run before checking for an existing processing import, so
+concurrent requests schedule only one job. DELETE requires `{ importId }` at the
+CityCatalyst boundary (`{ import_id }` upstream); cleanup after catalogue creation
+uses the same ID-conditional removal to preserve any newer import. Duplicating a
+note copies its uploaded sources but omits the original run's pending import.
+Award provenance compares numeric values independent of decimal scale, so an
+unchanged `150000.0` extracted amount submitted as `150000` remains `extracted`.
+
 Errors return `detail = {code, message}` (for example `upload_not_ready`,
 `funder_import_running`, `funder_import_changed`, `funder_already_added`).
 Failed imports carry `error_code` (`document_too_long`, `source_fetch_failed`,

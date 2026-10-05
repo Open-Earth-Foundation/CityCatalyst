@@ -21,6 +21,26 @@ const POLL_MS = 2000;
 /** Climate Advisor can see a converted upload a moment after CityCatalyst. */
 const START_ATTEMPTS = 5;
 
+type PendingUpload = { uploadId: string; filename: string };
+
+function readPendingUpload(key: string): PendingUpload | null {
+  try {
+    const value: unknown = JSON.parse(sessionStorage.getItem(key) ?? "null");
+    if (
+      value &&
+      typeof value === "object" &&
+      "uploadId" in value &&
+      typeof value.uploadId === "string" &&
+      "filename" in value &&
+      typeof value.filename === "string"
+    )
+      return { uploadId: value.uploadId, filename: value.filename };
+  } catch {
+    // Storage may be disabled, or left with an invalid entry.
+  }
+  return null;
+}
+
 export type FunderImportPhase =
   "idle" | "uploading" | "converting" | "reading" | "ready" | "failed";
 
@@ -54,10 +74,11 @@ export function useFunderImport({
   runId: string;
 }): FunderImportFlow {
   // The upload being converted, until the server import tracks it.
-  const [pending, setPending] = useState<{
-    uploadId: string;
-    filename: string;
-  } | null>(null);
+  const [pending, setPending] = useState<PendingUpload | null>(null);
+  const storageKey = `cnb-funder-upload:${cityId}:${runId}`;
+  const [restoredKey, setRestoredKey] = useState<string | null>(null);
+  const generationRef = useRef(0);
+  const startPromiseRef = useRef<Promise<void> | null>(null);
   const [sendingFile, setSendingFile] = useState<string | null>(null);
   const [picking, setPicking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,8 +88,10 @@ export function useFunderImport({
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dispatch = useAppDispatch();
 
-  const { data } = api.useGetConceptNoteFunderImportQuery(runId);
-  const funderImport = data?.funder_import ?? null;
+  const importQuery = api.useGetConceptNoteFunderImportQuery(runId, {
+    refetchOnMountOrArgChange: true,
+  });
+  const funderImport = importQuery.currentData?.funder_import ?? null;
   api.useGetConceptNoteFunderImportQuery(runId, {
     skip: funderImport?.status !== "processing",
     pollingInterval: POLL_MS,
@@ -97,33 +120,104 @@ export function useFunderImport({
   const [discardImport, discardState] =
     api.useDiscardConceptNoteFunderImportMutation();
 
-  const startRead = useCallback(
-    async (uploadId: string) => {
-      const started = await startImport({ runId, uploadId }).unwrap();
-      // Show the new import at once instead of the previous one.
-      dispatch(
-        api.util.upsertQueryData("getConceptNoteFunderImport", runId, started),
-      );
+  const rememberPending = useCallback(
+    (value: PendingUpload | null) => {
+      try {
+        if (value) sessionStorage.setItem(storageKey, JSON.stringify(value));
+        else sessionStorage.removeItem(storageKey);
+      } catch {
+        // The current mount still works when browser storage is unavailable.
+      }
+      setPending(value);
     },
-    [dispatch, runId, startImport],
+    [storageKey],
+  );
+
+  useEffect(() => {
+    generationRef.current += 1;
+    startedRef.current = null;
+    notReadyRef.current = 0;
+    // Restore tab storage after hydration; also reset when navigating between runs.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPending(readPendingUpload(storageKey));
+    setRestoredKey(storageKey);
+    setSendingFile(null);
+    setPicking(false);
+    setError(null);
+    return () => {
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+    };
+  }, [storageKey]);
+
+  const startRead = useCallback(
+    async (uploadId: string, generation: number) => {
+      const promise = (async () => {
+        const started = await startImport({ runId, uploadId }).unwrap();
+        if (generation !== generationRef.current) {
+          // A discard/replacement can happen while POST is in flight. Remove
+          // only its result, never a newer import another request created.
+          if (started.funder_import) {
+            await discardImport({
+              runId,
+              importId: started.funder_import.import_id,
+            }).unwrap();
+          }
+          return;
+        }
+        dispatch(
+          api.util.upsertQueryData(
+            "getConceptNoteFunderImport",
+            runId,
+            started,
+          ),
+        );
+      })();
+      startPromiseRef.current = promise;
+      try {
+        await promise;
+      } finally {
+        if (startPromiseRef.current === promise) startPromiseRef.current = null;
+      }
+    },
+    [discardImport, dispatch, runId, startImport],
   );
 
   // Start reading funder details as soon as the file has been converted.
   const uploadReady = upload?.status === "ready";
   useEffect(() => {
-    if (!pending || !uploadReady || startedRef.current === pending.uploadId) {
+    if (
+      !pending ||
+      restoredKey !== storageKey ||
+      !importQuery.isSuccess ||
+      importQuery.isFetching
+    ) {
       return;
     }
+    // A previous mount may have completed the handoff before it disappeared.
+    if (funderImport?.upload_id === pending.uploadId) {
+      // Synchronize local recovery state with the refreshed server snapshot.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      rememberPending(null);
+      return;
+    }
+    if (!uploadReady || startedRef.current === pending.uploadId) {
+      return;
+    }
+    const generation = generationRef.current;
     startedRef.current = pending.uploadId;
-    startRead(pending.uploadId)
-      .then(() => setPending(null))
+    startRead(pending.uploadId, generation)
+      .then(() => {
+        if (generation === generationRef.current) rememberPending(null);
+      })
       .catch((cause: unknown) => {
+        if (generation !== generationRef.current) return;
         if (
           funderApiErrorCode(cause) === "upload_not_ready" &&
           notReadyRef.current < START_ATTEMPTS
         ) {
           notReadyRef.current += 1;
           retryTimerRef.current = setTimeout(() => {
+            if (generation !== generationRef.current) return;
             startedRef.current = null;
             setStartTick((tick) => tick + 1);
           }, POLL_MS);
@@ -131,14 +225,18 @@ export function useFunderImport({
         }
         setError(funderApiErrorKey(cause));
       });
-  }, [pending, uploadReady, startRead, startTick]);
-
-  useEffect(
-    () => () => {
-      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
-    },
-    [],
-  );
+  }, [
+    pending,
+    uploadReady,
+    startRead,
+    startTick,
+    funderImport,
+    importQuery.isSuccess,
+    importQuery.isFetching,
+    rememberPending,
+    restoredKey,
+    storageKey,
+  ]);
 
   let phase: FunderImportPhase = "idle";
   let failure: string | null = null;
@@ -164,14 +262,17 @@ export function useFunderImport({
   }
 
   function resetStart(): void {
+    if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
     startedRef.current = null;
     notReadyRef.current = 0;
     setError(null);
   }
 
   async function uploadFile(file: File): Promise<void> {
+    const generation = ++generationRef.current;
     setError(null);
     const validationError = await validateConceptNoteSourceFile(file);
+    if (generation !== generationRef.current) return;
     if (validationError) {
       setError(validationError);
       return;
@@ -183,42 +284,67 @@ export function useFunderImport({
       // The funder document also becomes an ordinary source of the note.
       formData.set("sourceLabel", conceptNoteSourceLabel(file.name));
       const created = await uploadSource({ cityId, formData, runId }).unwrap();
+      if (generation !== generationRef.current) return;
       resetStart();
       setPicking(false);
-      setPending({ uploadId: created.uploadId, filename: file.name });
+      rememberPending({ uploadId: created.uploadId, filename: file.name });
     } catch {
-      setError("upload-source-error");
+      if (generation === generationRef.current) setError("upload-source-error");
     } finally {
-      setSendingFile(null);
+      if (generation === generationRef.current) setSendingFile(null);
     }
   }
 
   async function retry(): Promise<void> {
+    const generation = generationRef.current;
     if (pending && upload?.status === "failed") {
       await retryUpload({ runId, uploadId: pending.uploadId })
         .unwrap()
-        .catch(() => setError("conversion-retry-error"));
+        .catch(() => {
+          if (generation === generationRef.current)
+            setError("conversion-retry-error");
+        });
     } else if (pending) {
       resetStart();
       setStartTick((tick) => tick + 1);
     } else if (funderImport) {
       // Starting again on the same upload replaces the failed import.
       setError(null);
-      await startRead(funderImport.upload_id).catch((cause: unknown) =>
-        setError(funderApiErrorKey(cause)),
+      await startRead(funderImport.upload_id, generation).catch(
+        (cause: unknown) => {
+          if (generation === generationRef.current)
+            setError(funderApiErrorKey(cause));
+        },
       );
     }
   }
 
   async function discard(): Promise<void> {
-    setPending(null);
-    setPicking(false);
+    const generation = ++generationRef.current;
+    rememberPending(null);
+    setSendingFile(null);
+    setPicking(true);
     resetStart();
-    if (funderImport) await discardImport(runId).unwrap();
+    // startRead cleans up an accepted response that arrives after cancellation.
+    const inFlight = startPromiseRef.current;
+    try {
+      if (funderImport)
+        await discardImport({
+          runId,
+          importId: funderImport.import_id,
+        }).unwrap();
+      if (inFlight) await inFlight;
+    } catch (cause) {
+      // Keep a failed discard visible so the user can retry it.
+      if (generation === generationRef.current) setPicking(false);
+      throw cause;
+    }
   }
 
   function chooseAnotherFile(): void {
-    setPending(null);
+    generationRef.current += 1;
+    rememberPending(null);
+    setSendingFile(null);
     resetStart();
     setPicking(true);
   }

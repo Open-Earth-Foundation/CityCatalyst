@@ -156,6 +156,9 @@ async def start_funder_import(
         raise conflict(
             "upload_not_ready", "Wait for the file to finish converting first."
         )
+    # Serialize starts before reading the current import, including runs whose
+    # context bundle has not been created yet. Bundle writes take their own lock.
+    await session.get(ConceptNoteRun, run.run_id, with_for_update=True)
     current = await load_funder_import(session, run)
     if current is not None and current.status == "processing":
         raise conflict(
@@ -186,11 +189,23 @@ async def start_funder_import(
     return funder_import
 
 
-async def discard_funder_import(session: AsyncSession, run: ConceptNoteRun) -> None:
-    """Forget the pending import; a running job's result is then ignored."""
-    await _write_import(session, run.run_id, None)
+async def discard_funder_import(
+    session: AsyncSession, run: ConceptNoteRun, *, import_id: UUID
+) -> None:
+    """Forget only the observed import; preserve a concurrent replacement."""
+    bundle = await session.get(
+        ConceptNoteContextBundle,
+        run.run_id,
+        with_for_update=True,
+        populate_existing=True,
+    )
+    current = _import_from_bundle(bundle)
+    if current is not None and current.import_id == import_id:
+        _set_import(bundle, None)
     await session.commit()
-    logger.info("Discarded CNB funder import run_id=%s", run.run_id)
+    logger.info(
+        "Discarded CNB funder import run_id=%s import_id=%s", run.run_id, import_id
+    )
 
 
 def schedule_funder_import(*, run_id: UUID, import_id: UUID, token: str) -> None:
@@ -619,9 +634,8 @@ async def create_funder(
         ) from exc
 
     # Step 4: the draft is now in the catalogue, so clear it from the run.
-    if draft is not None:
-        await _write_import(session, run.run_id, None)
-        await session.commit()
+    if payload.import_id is not None:
+        await discard_funder_import(session, run, import_id=payload.import_id)
     logger.info(
         "Added CNB funder run_id=%s funder_id=%s opportunity_id=%s from_document=%s",
         run.run_id,
@@ -648,7 +662,8 @@ def evidence_rows(
         if not saved:
             continue
         original = field_value(draft, item.field)
-        origin = "extracted" if _json(saved) == _json(original) else "edited"
+        # Decimal equality ignores scale lost in the browser's numeric payload.
+        origin = "extracted" if saved == original else "edited"
         source_map: dict[str, Any] = {
             "entity": item.field.split(".", 1)[0],
             "field": item.field,

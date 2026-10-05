@@ -125,6 +125,12 @@ class FunderImportResponse(FunderImportContract):
     funder_import: FunderImport | None = None
 
 
+class FunderImportDiscardRequest(FunderImportContract):
+    """Discard a specific observed import without removing its replacement."""
+
+    import_id: UUID
+
+
 class FunderImportStartRequest(FunderImportContract):
     """Start reading funder details from one ready run upload."""
 

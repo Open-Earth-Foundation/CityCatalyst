@@ -122,7 +122,8 @@ def _run(*, run_id: UUID, thread_id: UUID, city_id: UUID) -> ConceptNoteRun:
     )
 
 
-async def test_lifecycle_actions_keep_copies_independent() -> None:
+@pytest.mark.parametrize("import_status", ["processing", "ready", "failed"])
+async def test_lifecycle_actions_keep_copies_independent(import_status: str) -> None:
     """Exercise the complete service flow without lifecycle-operation tables."""
     source_run_id = uuid4()
     source_thread_id = uuid4()
@@ -155,6 +156,12 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
                 ConceptNoteContextBundle(
                     run_id=source_run_id,
                     context_bundle={
+                        "funder_import": {
+                            "import_id": str(uuid4()),
+                            "upload_id": str(source_upload_id),
+                            "status": import_status,
+                            "filename": "plan.pdf",
+                        },
                         "selected_sources": [
                             {
                                 "upload_id": str(source_upload_id),
@@ -167,7 +174,7 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
                                 "topics": ["heat"],
                                 "key_excerpts": [],
                             }
-                        ]
+                        ],
                     },
                 ),
                 ConceptNoteUpload(
@@ -240,6 +247,15 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
         assert destination_upload is not None
         assert destination_upload.upload_id != source_upload_id
         assert destination_upload.markdown_s3_key == "shared/plan.md"
+        destination_bundle = await session.get(
+            ConceptNoteContextBundle, destination.run_id
+        )
+        assert "funder_import" not in destination_bundle.context_bundle
+        assert destination_bundle.context_bundle["selected_sources"][0][
+            "upload_id"
+        ] == str(destination_upload.upload_id)
+        source_bundle = await session.get(ConceptNoteContextBundle, source_run_id)
+        assert source_bundle.context_bundle["funder_import"]["status"] == import_status
 
         async with workspace_sessions() as workspace_session:
             copied_chapter = await workspace_session.scalar(

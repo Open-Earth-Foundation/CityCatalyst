@@ -19,7 +19,7 @@
  *   delete:
  *     operationId: discardConceptNoteFunderImport
  *     summary: Discard the pending funder document import
- *     description: The uploaded file stays a source of the note; the result of a running extraction is ignored.
+ *     description: Discards only the specified import, preserving concurrent replacements. The uploaded file stays a source of the note.
  *     tags: [concept-notes]
  *     parameters:
  *       - in: path
@@ -31,6 +31,15 @@
  *       401: { description: Authentication required }
  *       403: { description: City or run access denied }
  *       404: { description: Concept note run not found }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [importId]
+ *             properties:
+ *               importId: { type: string, format: uuid }
  */
 import { z } from "zod";
 
@@ -49,9 +58,13 @@ export const GET = apiHandler(async (req, { session, params }) => {
 
 export const DELETE = apiHandler(async (req, { session, params }) => {
   const { runId } = paramsSchema.parse(params);
+  const { importId } = z
+    .object({ importId: z.string().uuid() })
+    .parse(await req.json());
   return proxyConceptNoteRunRequest(req, session, {
     runId,
     path: `/v1/concept-notes/${runId}/funder-imports/current`,
     method: "DELETE",
+    body: { import_id: importId },
   });
 });

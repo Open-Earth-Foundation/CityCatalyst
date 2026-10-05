@@ -444,6 +444,40 @@ async def test_create_rejects_an_import_that_is_not_ready():
 # --- Import lifecycle ----------------------------------------------------------------
 
 
+@pytest.mark.parametrize("amount, origin", [(150000, "extracted"), (150001, "edited")])
+def test_award_provenance_compares_values_across_browser_decimal_scales(amount, origin):
+    draft = build_draft(_extraction(), PAGES)
+    # JSON numbers from the form lose the model's trailing decimal zero.
+    reviewed = FunderCreateRequest.model_validate(
+        {
+            **_request(draft).model_dump(mode="json"),
+            "opportunity": {
+                **draft.opportunity.model_dump(mode="json"),
+                "min_award": amount,
+            },
+        }
+    )
+    rows = service.evidence_rows(
+        draft, reviewed, opportunity_id=uuid4(), source_document_id=uuid4()
+    )
+    award = next(row for row in rows if row.claim == "opportunity.min_award")
+    assert award.source_map["origin"] == origin
+    assert award.quote_or_summary == draft.evidence[1].quote
+
+
+async def test_discard_preserves_a_replacement_and_clears_only_its_own_import():
+    async with _ca_session() as session:
+        run, upload = await _run_with_upload(session)
+        current = _ready_import(upload)
+        await _store_import(session, run, current)
+        await service.discard_funder_import(session, run, import_id=uuid4())
+        assert (await load_funder_import(session, run)).import_id == current.import_id
+        await service.discard_funder_import(session, run, import_id=current.import_id)
+        assert await load_funder_import(session, run) is None
+        bundle = await session.get(ConceptNoteContextBundle, run.run_id)
+        assert bundle.context_bundle["cc_context"]["city"]["name"] == "X"
+
+
 async def test_start_requires_a_converted_upload_and_one_running_import():
     async with _ca_session() as session:
         run, upload = await _run_with_upload(session, ingest_status="processing")
@@ -563,6 +597,35 @@ async def test_background_job_stores_a_stable_failure_code():
 
 
 # --- HTTP ---------------------------------------------------------------------------
+
+
+def test_discard_requires_and_forwards_the_observed_import_id():
+    app = get_app()
+    app.dependency_overrides[get_session] = lambda: None
+    run = SimpleNamespace(run_id=uuid4(), user_id="owner")
+    import_id = uuid4()
+    with (
+        patch(
+            "app.routes.concept_note_funder_imports._authorized_run",
+            AsyncMock(return_value=run),
+        ),
+        patch(
+            "app.routes.concept_note_funder_imports.discard_funder_import", AsyncMock()
+        ) as discard,
+        TestClient(app) as client,
+    ):
+        path = f"/v1/concept-notes/{run.run_id}/funder-imports/current"
+        missing = client.delete(path, params={"user_id": "owner"})
+        assert missing.status_code == 422
+        discard.assert_not_awaited()
+        response = client.request(
+            "DELETE",
+            path,
+            params={"user_id": "owner"},
+            json={"import_id": str(import_id)},
+        )
+    assert response.status_code == 204
+    discard.assert_awaited_once_with(None, run, import_id=import_id)
 
 
 def test_structured_errors_keep_their_code_in_problem_responses():

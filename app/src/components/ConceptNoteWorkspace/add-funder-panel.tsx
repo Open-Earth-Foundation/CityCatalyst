@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-
 import type { FileUploadFileChangeDetails } from "@chakra-ui/react";
 import { Box, Flex, Heading, Icon, Text, VStack } from "@chakra-ui/react";
 import { LuCircleAlert, LuFile, LuRefreshCw, LuUpload } from "react-icons/lu";
@@ -60,7 +59,9 @@ export function AddFunderPanel({
 
   function onFileChange(details: FileUploadFileChangeDetails): void {
     setPickerKey((key) => key + 1);
-    const file = details.acceptedFiles[0];
+    // A rejected file still goes through validation so the user sees why.
+    const file =
+      details.acceptedFiles[0] ?? details.rejectedFiles[0]?.file ?? null;
     if (file) void flow.uploadFile(file);
   }
 

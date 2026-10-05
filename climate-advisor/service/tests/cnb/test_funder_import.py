@@ -5,7 +5,7 @@ from decimal import Decimal
 from hashlib import sha256
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 from app.db.session import get_session
@@ -62,7 +62,7 @@ PAGES = [
 ]
 
 
-def _extraction(**overrides) -> FunderDocumentExtraction:
+def _extraction(**overrides: object) -> FunderDocumentExtraction:
     """Model output with every field set to a neutral value."""
     values = {
         "funder_name": "Green Cities Foundation",
@@ -198,7 +198,9 @@ async def _run_with_upload(
     return run, upload
 
 
-async def _store_import(session: AsyncSession, run: ConceptNoteRun, value: FunderImport):
+async def _store_import(
+    session: AsyncSession, run: ConceptNoteRun, value: FunderImport
+) -> None:
     """Place an import in the run's bundle as the service would."""
     await service._write_import(session, run.run_id, value)
     await session.commit()
@@ -217,7 +219,9 @@ def _ready_import(upload: ConceptNoteUpload) -> FunderImport:
     )
 
 
-def _request(draft: FunderImportDraft, import_id=None) -> FunderCreateRequest:
+def _request(
+    draft: FunderImportDraft, import_id: UUID | None = None
+) -> FunderCreateRequest:
     return FunderCreateRequest(
         funder=draft.funder,
         opportunity=draft.opportunity,
@@ -493,7 +497,12 @@ async def test_abandoned_import_is_reported_failed_and_restarted_on_its_upload()
         schedule.assert_called_once()
 
 
-async def _run_job(session: AsyncSession, run, upload, extract) -> FunderImport | None:
+async def _run_job(
+    session: AsyncSession,
+    run: ConceptNoteRun,
+    upload: ConceptNoteUpload,
+    extract: AsyncMock,
+) -> FunderImport | None:
     """Run the background job against the in-memory run database."""
     factory = async_sessionmaker(session.bind, expire_on_commit=False)
     markdown = "<!-- page: 1 -->Green Cities Foundation<!-- page: 2 -->Call"

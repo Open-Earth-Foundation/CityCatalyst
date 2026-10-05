@@ -5,9 +5,7 @@ import {
   formToCreateRequest,
   funderApiErrorKey,
   parseAward,
-  textValue,
   validateFunderForm,
-  withTextValue,
   type FunderForm,
 } from "@/components/ConceptNoteWorkspace/funder-form";
 
@@ -19,9 +17,8 @@ function typedForm(): FunderForm {
   form.opportunity.min_award = "150000";
   form.opportunity.max_award = "600000.5";
   form.template.template_name = "Proposal form";
-  form.template.chapters[0]!.title = "Applicant details";
-  form.template.chapters[0]!.required_fields =
-    "municipality_name, contact_email";
+  form.chapters[0]!.title = "Applicant details";
+  form.chapters[0]!.required_fields = "municipality_name, contact_email";
   return form;
 }
 
@@ -33,16 +30,12 @@ describe("funder form", () => {
         "funder.name",
         "opportunity.name",
         "template.template_name",
-        `chapter.${form.template.chapters[0]!.id}.title`,
+        `chapter.${form.chapters[0]!.id}.title`,
       ].sort(),
     );
-    const noChapters = {
-      ...form,
-      template: { ...form.template, chapters: [] },
-    };
-    expect(validateFunderForm(noChapters)["template.chapters"]).toBe(
-      "funder-error-chapters",
-    );
+    expect(
+      validateFunderForm({ ...form, chapters: [] })["template.chapters"],
+    ).toBe("funder-error-chapters");
     expect(validateFunderForm(typedForm())).toEqual({});
   });
 
@@ -64,7 +57,7 @@ describe("funder form", () => {
     );
     expect(withAward("150 000,50", "600 000.50")).toEqual({});
     expect(parseAward("")).toBeNull();
-    expect(parseAward("1.234")).toBeUndefined();
+    expect(parseAward("1.234")).toBeNaN();
   });
 
   it.each(["150 000,50", "150\u00a0000,50", "150\u202f000.50", "150000.50"])(
@@ -90,14 +83,6 @@ describe("funder form", () => {
     expect(validateFunderForm(form)["opportunity.min_award"]).toBe(
       "funder-error-award",
     );
-  });
-
-  it("reads and replaces one text input without touching the original", () => {
-    const form = typedForm();
-    const edited = withTextValue(form, "template", "output_format", "DOCX");
-    expect(textValue(edited, "template", "output_format")).toBe("DOCX");
-    expect(textValue(form, "template", "output_format")).toBe("");
-    expect(edited.template.chapters).toBe(form.template.chapters);
   });
 
   it("builds the create request with numbers, lists and nulls", () => {

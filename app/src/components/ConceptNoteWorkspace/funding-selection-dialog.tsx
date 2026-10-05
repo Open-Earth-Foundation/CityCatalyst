@@ -114,6 +114,8 @@ export function FundingSelectionDialog({
   const [form, setForm] = useState(emptyFunderForm);
   const [showErrors, setShowErrors] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
+  // Shown in the footer, not as a toast, so it never covers the save button.
+  const [notice, setNotice] = useState<string | null>(null);
   const {
     data,
     isLoading,
@@ -173,13 +175,14 @@ export function FundingSelectionDialog({
       setOpportunityId(created.funding_opportunity_id);
       setAcknowledged(false);
       setError(null);
-      toaster.create({ title: t("funder-added"), type: "success" });
+      setNotice(t("funder-added"));
     } catch (cause) {
       setAddError(t(funderApiErrorKey(cause)));
     }
   }
 
   function chooseFunder(id: string): void {
+    setNotice(null);
     setAdding(false);
     if (id === funderId) return;
     const opportunities =
@@ -680,6 +683,16 @@ export function FundingSelectionDialog({
                 {t("funding-draft-acknowledge")}
               </Checkbox>
             </Box>
+          )}
+          {notice && (
+            <Text
+              role="status"
+              mb={3}
+              color="sentiment.positiveDefault"
+              fontSize="body.sm"
+            >
+              {notice}
+            </Text>
           )}
           {error && (
             <Text

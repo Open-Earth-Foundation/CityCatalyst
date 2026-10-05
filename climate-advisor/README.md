@@ -1041,6 +1041,18 @@ draft, workspace, sources, and context are shared by every chat of a run.
 Duplicate, delete, opening a chat, and switching chats return HTTP `409` while
 context or drafting work is active.
 
+Migration `20260925_130000` handles legacy chats referenced by multiple runs:
+the oldest run (then run ID as a tie-breaker) retains the original chat, and
+each other run receives a copy with new thread/message IDs. Message content,
+roles, tool metadata, timestamps, and thread metadata are preserved. Each
+chat's stored workflow context is rebound to its own run. Run/thread owner
+mismatches abort the transaction and require ownership repair before retrying.
+The migration locks runs, threads, and messages until commit; schedule it with
+chat traffic stopped. Downgrade removes the ownership column but keeps the
+separate chats and active pointers so history and subsequent replies survive.
+PostgreSQL regression coverage runs with `CNB_TEST_DATABASE_URL` configured:
+`python -m pytest tests/test_thread_concept_note_run_migration.py` from `service/`.
+
 The Alembic revision `20260729_120000` provisions `concept_note_runs`,
 `concept_note_context_bundles`, and `concept_note_uploads` in `CA_DATABASE_URL`.
 When `thread_id` is supplied, the start operation also requires that durable

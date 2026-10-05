@@ -1208,10 +1208,38 @@ export interface ConceptNoteTemplateFields {
   }>;
 }
 
+/** Values extracted from a funder document, awaiting review. */
+export interface ConceptNoteFunderImportDraft {
+  funder: ConceptNoteFunderFields;
+  opportunity: Omit<ConceptNoteProgrammeFields, "min_award" | "max_award"> & {
+    /** Decimal strings, e.g. "150000.00". */
+    min_award: string | null;
+    max_award: string | null;
+  };
+  template: ConceptNoteTemplateFields;
+  /** Field paths the document did not state, e.g. `funder.region`. */
+  missing: string[];
+}
+
+export interface ConceptNoteFunderImport {
+  import_id: string;
+  upload_id: string;
+  filename: string;
+  status: "processing" | "ready" | "failed";
+  error_code: string | null;
+  draft: ConceptNoteFunderImportDraft | null;
+}
+
+export interface ConceptNoteFunderImportResponse {
+  funder_import: ConceptNoteFunderImport | null;
+}
+
 export interface ConceptNoteFunderCreateRequest {
   funder: ConceptNoteFunderFields;
   opportunity: ConceptNoteProgrammeFields;
   template: ConceptNoteTemplateFields;
+  /** The ready import the values were reviewed from, or null when typed. */
+  import_id: string | null;
 }
 
 export interface ConceptNoteFunderCreateResponse {

@@ -69,6 +69,7 @@ import {
   ConceptNoteFunder,
   ConceptNoteFunderCreateRequest,
   ConceptNoteFunderCreateResponse,
+  ConceptNoteFunderImportResponse,
   ConceptNoteFundingSelection,
   ConfirmConceptNoteChapterRequest,
   ConceptNoteChapterValidationResponse,
@@ -219,6 +220,7 @@ export const api = createApi({
     "BulkInventoryImport",
     "ConceptNoteApplicationContext",
     "ConceptNoteFundingCatalogue",
+    "ConceptNoteFunderImport",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -2598,6 +2600,37 @@ export const api = createApi({
           { type: "ConceptNoteEdits", id: runId },
         ],
       }),
+      getConceptNoteFunderImport: builder.query<
+        ConceptNoteFunderImportResponse,
+        string
+      >({
+        query: (runId) => `concept-notes/${runId}/funder-imports/current/`,
+        providesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteFunderImport", id: runId },
+        ],
+      }),
+      startConceptNoteFunderImport: builder.mutation<
+        ConceptNoteFunderImportResponse,
+        { runId: string; uploadId: string }
+      >({
+        query: ({ runId, uploadId }) => ({
+          url: `concept-notes/${runId}/funder-imports/`,
+          method: "POST",
+          body: { uploadId },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteFunderImport", id: runId },
+        ],
+      }),
+      discardConceptNoteFunderImport: builder.mutation<void, string>({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/funder-imports/current/`,
+          method: "DELETE",
+        }),
+        invalidatesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteFunderImport", id: runId },
+        ],
+      }),
       createConceptNoteFunder: builder.mutation<
         ConceptNoteFunderCreateResponse,
         { runId: string; funder: ConceptNoteFunderCreateRequest }
@@ -2607,7 +2640,11 @@ export const api = createApi({
           method: "POST",
           body: funder,
         }),
-        invalidatesTags: ["ConceptNoteFundingCatalogue"],
+        // The server clears a reviewed import once its funder is added.
+        invalidatesTags: (_result, _error, { runId }) => [
+          "ConceptNoteFundingCatalogue",
+          { type: "ConceptNoteFunderImport", id: runId },
+        ],
       }),
       getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
         query: (runId) => `concept-notes/${runId}/draft/`,
@@ -3010,6 +3047,9 @@ export const {
   useGetConceptNoteUploadStatusQuery,
   useRetryConceptNoteUploadMutation,
   useRetryConceptNoteContextBundleMutation,
+  useGetConceptNoteFunderImportQuery,
+  useStartConceptNoteFunderImportMutation,
+  useDiscardConceptNoteFunderImportMutation,
   useCreateConceptNoteFunderMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

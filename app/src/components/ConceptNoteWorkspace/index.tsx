@@ -56,6 +56,7 @@ import {
 } from "@/components/ConceptNoteWorkspace/document-review";
 import { useInlineReviewDecisions } from "@/components/ConceptNoteWorkspace/use-inline-review-decisions";
 import { useConceptNoteWorkspaceData } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-data";
+import { useFunderImport } from "@/components/ConceptNoteWorkspace/use-funder-import";
 import {
   WorkspaceLoadingState,
   WorkspaceUnavailableState,
@@ -183,6 +184,8 @@ export function ConceptNoteWorkspace({
     uploadSource,
     uploadState,
   } = useConceptNoteWorkspaceData({ cityId, initialUploadId, lng, runId });
+  // Kept here so a funder document keeps converting after the dialog closes.
+  const funderImport = useFunderImport({ cityId, runId });
   const edits = useConceptNoteEdits({
     runId,
     onApplied: async (chapterIds) => {
@@ -900,6 +903,7 @@ export function ConceptNoteWorkspace({
           busy={isDraftRunning || Boolean(edits.busy)}
           lng={lng}
           runId={runId}
+          funderImport={funderImport}
           onClose={() => setFundingOpen(false)}
           onSaved={() => {
             setTab("draft");

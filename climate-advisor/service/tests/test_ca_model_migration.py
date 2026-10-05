@@ -27,6 +27,7 @@ def test_active_ca_model_defaults_preserve_cnb_roles():
         "cnb_source_synthesizer": ("openai/gpt-5.6-terra", "medium"),
         "cnb_chapter_drafter": ("openai/gpt-5.6-terra", "medium"),
         "cnb_chapter_validator": ("openai/gpt-5.6-terra", "medium"),
+        "cnb_funder_extractor": ("openai/gpt-5.6-terra", "medium"),
     }
     for role, (model, effort) in expected.items():
         configured = getattr(models, role)

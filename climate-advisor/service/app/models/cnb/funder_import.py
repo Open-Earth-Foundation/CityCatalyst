@@ -1,15 +1,19 @@
 """Contracts for adding a funder, programme and template to the CNB catalogue.
 
 Field names mirror the existing ``funders``, ``funding_opportunities`` and
-``funder_templates`` columns so an added funder is an ordinary catalogue row.
+``funder_templates`` columns so a reviewed import is an ordinary catalogue row.
 """
 
 from __future__ import annotations
 
+from datetime import datetime
 from decimal import Decimal
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+FunderImportStatus = Literal["processing", "ready", "failed"]
 
 
 class FunderImportContract(BaseModel):
@@ -84,12 +88,56 @@ class TemplateFields(FunderImportContract):
     chapter_schema: list[TemplateChapterFields] = Field(default_factory=list)
 
 
-class FunderCreateRequest(FunderImportContract):
-    """Reviewed values to add to the catalogue."""
+class FieldEvidence(FunderImportContract):
+    """A verbatim document quote supporting one extracted field."""
+
+    field: str = Field(min_length=1, max_length=255)
+    quote: str = Field(min_length=1)
+    page: int | None = Field(default=None, ge=1)
+
+
+class FunderImportDraft(FunderImportContract):
+    """Extracted values awaiting review, with verified evidence per field."""
 
     funder: FunderFields
     opportunity: ProgrammeFields
     template: TemplateFields
+    evidence: list[FieldEvidence] = Field(default_factory=list)
+    missing: list[str] = Field(default_factory=list)
+
+
+class FunderImport(FunderImportContract):
+    """The run's current document import, persisted in its context bundle."""
+
+    import_id: UUID
+    upload_id: UUID
+    filename: str
+    status: FunderImportStatus
+    error_code: str | None = None
+    draft: FunderImportDraft | None = None
+    created_at: datetime
+    updated_at: datetime
+
+
+class FunderImportResponse(FunderImportContract):
+    """Current import for a run, or null when none is pending."""
+
+    funder_import: FunderImport | None = None
+
+
+class FunderImportStartRequest(FunderImportContract):
+    """Start reading funder details from one ready run upload."""
+
+    upload_id: UUID
+
+
+class FunderCreateRequest(FunderImportContract):
+    """Reviewed values to add to the catalogue, by hand or from an import."""
+
+    funder: FunderFields
+    opportunity: ProgrammeFields
+    template: TemplateFields
+    import_id: UUID | None = None
 
     @model_validator(mode="after")
     def validate_required_values(self) -> FunderCreateRequest:
@@ -112,3 +160,57 @@ class FunderCreateResponse(FunderImportContract):
 
     funder_id: UUID
     funding_opportunity_id: UUID
+
+
+class ExtractedFact(FunderImportContract):
+    """Model-facing key/value profile fact."""
+
+    key: str
+    value: str
+
+
+class ExtractedChapter(FunderImportContract):
+    """Model-facing application-template chapter."""
+
+    chapter_ref: str
+    title: str
+    description: str | None
+    required: bool
+    required_fields: list[str]
+
+
+class ExtractedEvidence(FunderImportContract):
+    """Model-facing verbatim quote for one output field path."""
+
+    field: str
+    quote: str
+
+
+class FunderDocumentExtraction(FunderImportContract):
+    """Strict model output; code converts it into a ``FunderImportDraft``."""
+
+    funder_name: str | None
+    funder_type: str | None
+    country: str | None
+    region: str | None
+    stated_facts: list[ExtractedFact]
+    derived_facts: list[ExtractedFact]
+    programme_name: str | None
+    applicant_type: str | None
+    category: str | None
+    sector: str | None
+    hazards: list[str]
+    interventions: list[str]
+    finance_route: str | None
+    instrument_type: str | None
+    region_scope: str | None
+    min_award: float | None
+    max_award: float | None
+    currency: str | None
+    status: str | None
+    summary: str | None
+    known_gaps: list[str]
+    template_name: str | None
+    output_format: str | None
+    chapters: list[ExtractedChapter]
+    evidence: list[ExtractedEvidence]

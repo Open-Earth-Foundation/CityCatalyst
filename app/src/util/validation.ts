@@ -477,6 +477,10 @@ export const conceptNoteFundingSelectionRequest = z
     { message: "A funding opportunity requires a funder" },
   );
 
+export const conceptNoteFunderImportStartRequest = z
+  .object({ uploadId: z.string().uuid() })
+  .strict();
+
 const funderText = (max: number) => z.string().max(max).nullable();
 const funderAward = z.number().finite().nonnegative().nullable();
 
@@ -542,6 +546,7 @@ export const conceptNoteFunderCreateRequest = z
           .min(1),
       })
       .strict(),
+    import_id: z.string().uuid().nullable(),
   })
   .strict();
 

@@ -1,4 +1,8 @@
-import type { ConceptNoteFunderCreateRequest } from "@/util/types";
+import type {
+  ConceptNoteFunderCreateRequest,
+  ConceptNoteFunderImport,
+  ConceptNoteFunderImportDraft,
+} from "@/util/types";
 
 /**
  * Form state, validation and request building for adding a funder, one
@@ -84,6 +88,10 @@ export function emptyFunderForm(): FunderForm {
   };
 }
 
+function joinList(values: string[]): string {
+  return values.join(", ");
+}
+
 function splitList(value: string): string[] {
   const items = value.split(",").map((item) => item.trim());
   return [...new Set(items.filter(Boolean))];
@@ -91,6 +99,40 @@ function splitList(value: string): string[] {
 
 function optionalText(value: string): string | null {
   return value.trim() || null;
+}
+
+/** Fill a form with everything a ready document import extracted. */
+export function formFromDraft(draft: ConceptNoteFunderImportDraft): FunderForm {
+  const form = emptyFunderForm();
+  for (const field of FUNDER_FIELDS) {
+    form.funder[field] = draft.funder[field] ?? "";
+  }
+  for (const field of PROGRAMME_FIELDS) {
+    const value = draft.opportunity[field];
+    if (Array.isArray(value)) form.opportunity[field] = joinList(value);
+    else if (value !== null) form.opportunity[field] = String(value);
+  }
+  // Awards arrive as decimal strings such as "150000.00".
+  for (const field of ["min_award", "max_award"] as const) {
+    const award = Number(form.opportunity[field]);
+    if (form.opportunity[field] && Number.isFinite(award)) {
+      form.opportunity[field] = String(award);
+    }
+  }
+  form.template.template_name = draft.template.template_name;
+  form.template.output_format = draft.template.output_format ?? "";
+  // A document without chapters keeps one empty chapter to type into.
+  if (draft.template.chapter_schema.length) {
+    form.template.chapters = draft.template.chapter_schema.map((chapter) => ({
+      ...emptyChapter(),
+      chapter_ref: chapter.chapter_ref,
+      title: chapter.title,
+      description: chapter.description ?? "",
+      required: chapter.required,
+      required_fields: joinList(chapter.required_fields),
+    }));
+  }
+  return form;
 }
 
 /** Parse an award input: empty is null, invalid input is undefined. */
@@ -129,9 +171,14 @@ export function validateFunderForm(form: FunderForm): FunderFormErrors {
   return errors;
 }
 
-/** Build the create request; call only when `validateFunderForm` is empty. */
+/**
+ * Build the create request; call only when `validateFunderForm` is empty.
+ * Values the form does not edit (profile facts, known gaps) come from the
+ * reviewed document import, if any.
+ */
 export function formToCreateRequest(
   form: FunderForm,
+  source: ConceptNoteFunderImport | null,
 ): ConceptNoteFunderCreateRequest {
   const { opportunity } = form;
   return {
@@ -140,7 +187,7 @@ export function formToCreateRequest(
       funder_type: optionalText(form.funder.funder_type),
       country: optionalText(form.funder.country),
       region: optionalText(form.funder.region),
-      profile: { stated: {}, derived: {} },
+      profile: source?.draft?.funder.profile ?? { stated: {}, derived: {} },
     },
     opportunity: {
       name: opportunity.name.trim(),
@@ -157,7 +204,7 @@ export function formToCreateRequest(
       currency: optionalText(opportunity.currency),
       status: optionalText(opportunity.status),
       summary: optionalText(opportunity.summary),
-      known_gaps: [],
+      known_gaps: source?.draft?.opportunity.known_gaps ?? [],
     },
     template: {
       template_name: form.template.template_name.trim(),
@@ -170,11 +217,43 @@ export function formToCreateRequest(
         required_fields: splitList(chapter.required_fields),
       })),
     },
+    import_id: source?.import_id ?? null,
   };
 }
 
-/** Copy for a failed create request. */
+// --- Errors ------------------------------------------------------------------
+
+/** Copy for an import that finished with `status: "failed"`. */
+export function funderImportErrorKey(code: string | null): string {
+  switch (code) {
+    case "document_too_long":
+      return "funder-import-error-too-long";
+    case "extraction_interrupted":
+      return "funder-import-error-interrupted";
+    default:
+      return "funder-import-error-generic";
+  }
+}
+
+/** Machine-readable code from a Climate Advisor problem response, if any. */
+export function funderApiErrorCode(error: unknown): string | null {
+  const detail = (error as { data?: { detail?: { code?: unknown } } } | null)
+    ?.data?.detail;
+  return typeof detail?.code === "string" ? detail.code : null;
+}
+
+/** Copy for a failed funder import or create request. */
 export function funderApiErrorKey(error: unknown): string {
+  switch (funderApiErrorCode(error)) {
+    case "upload_not_ready":
+      return "funder-error-upload-not-ready";
+    case "funder_import_running":
+      return "funder-error-import-running";
+    case "funder_import_changed":
+      return "funder-error-import-changed";
+    case "funder_already_added":
+      return "funder-error-already-added";
+  }
   const status = (error as { status?: unknown } | null)?.status;
   if (status === 400 || status === 422) return "funder-error-invalid";
   if (status === 403) return "funding-permission-error";

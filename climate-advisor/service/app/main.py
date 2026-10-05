@@ -56,7 +56,7 @@ def create_problem_details(
     request: Request,
     status: int,
     title: str,
-    detail: str = "",
+    detail: str | dict[str, Any] = "",
     type_: str = "about:blank",
 ) -> dict[str, Any]:
     instance = str(request.url)
@@ -154,11 +154,16 @@ def get_app() -> FastAPI:
     @app.exception_handler(StarletteHTTPException)
     async def http_exception_handler(request: Request, exc: StarletteHTTPException):
         # Covers 404/400/etc raised via HTTPException
+        # Structured details ({"code", "message"}) stay machine-readable for callers.
+        if isinstance(exc.detail, dict):
+            title = str(exc.detail.get("message", "HTTP Error"))
+            detail: str | dict[str, Any] = exc.detail
+        elif isinstance(exc.detail, str):
+            title = detail = exc.detail
+        else:
+            title, detail = "HTTP Error", ""
         problem = create_problem_details(
-            request,
-            status=exc.status_code,
-            title=exc.detail if isinstance(exc.detail, str) else "HTTP Error",
-            detail=exc.detail if isinstance(exc.detail, str) else "",
+            request, status=exc.status_code, title=title, detail=detail
         )
         return JSONResponse(status_code=exc.status_code, content=problem, media_type="application/problem+json")
 

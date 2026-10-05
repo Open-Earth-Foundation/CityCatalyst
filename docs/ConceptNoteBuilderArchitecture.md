@@ -1961,20 +1961,55 @@ databases. Neither test starts an LLM request.
 
 The funding dialog's rail footer, **Add a funder that isn't listed**, adds a
 funder, one programme and that programme's application template to the shared
-catalogue from values the user types. The result is an ordinary `funders` /
-`funding_opportunities` / `funder_templates` row set; those tables are
-unchanged. Selecting it afterwards uses the normal `PATCH /application-context`
-flow above.
+catalogue, either from an uploaded funder document or typed by hand. The result
+is an ordinary `funders` / `funding_opportunities` / `funder_templates` row set;
+those tables are unchanged. Selecting it afterwards uses the normal
+`PATCH /application-context` flow above.
 
-`POST /v1/concept-notes/{run_id}/funders` writes the reviewed values in one CNB
-transaction. Chapter references are slugged uniquely, and template
-`required_fields` is built from chapter `required_fields`, so every inventory
-field has an owning chapter as chapter validation requires. List fields
-(hazards, interventions, chapter required fields) are edited as comma-separated
-text. `funding_opportunities.source_run_id` is `cnb-manual:<run_id>`; the
-catalogue exposes this as `added_from`.
+Document path:
+
+1. The file goes through the normal run upload (`POST /concept-notes/{run_id}/uploads`,
+   OCR to Markdown, retry). It is labelled "Funder document" and, like any
+   ready upload, also becomes a note source.
+2. `POST /v1/concept-notes/{run_id}/funder-imports {upload_id}` records a
+   `processing` import under the run context bundle's `funder_import` key and
+   reads the verified Markdown in one model call
+   (`cnb_funder_extractor`, prompt `prompts/cnb/funder_document_extraction.md`,
+   limit `prompt_budget.cnb_funder_import.max_document_tokens`). Code keeps only
+   evidence quotes found verbatim (whitespace-insensitive) in the document,
+   records their PDF page, slugs chapter references uniquely and lists empty
+   catalogue columns in `missing`. `GET .../funder-imports/current` returns the
+   import; `DELETE .../current` discards it. Starting again on the same upload
+   replaces a failed import under a new id, which is how the browser retries.
+   A job lost to a restart reads as `failed` (`extraction_interrupted`) after
+   15 minutes.
+3. `POST /v1/concept-notes/{run_id}/funders` writes the reviewed values in one
+   CNB transaction and clears the import. Template `required_fields` is built
+   from chapter `required_fields`, so every inventory field has an owning
+   chapter as chapter validation requires.
+
+The browser fills the review form from the draft and shows how many catalogue
+columns the document did not state. Profile facts and known gaps are not edited
+in the form; they are submitted as extracted. List fields (hazards,
+interventions, chapter required fields) are edited as comma-separated text.
+
+Provenance uses existing tables. The upload becomes one `source_documents` row
+(`source_type = cnb_upload`, Markdown SHA-256). Each document-backed field that
+still has a value gets a `funding_evidence` row on the new opportunity with
+`claim` = field path (for example `opportunity.min_award`), the verbatim quote and
+`source_map = {entity, field, origin: extracted | edited, page, original_value?}`.
+The server compares submitted values with the stored draft, so an edited value
+keeps its original document quote. Values typed by hand have no evidence row.
+`funding_opportunities.source_run_id` is `cnb-upload:<upload_id>` (with the
+filename as `source_record_ref`, so one upload cannot be added twice) or
+`cnb-manual:<run_id>`; the catalogue exposes this as `added_from`.
 
 Added funders are visible to every city, because `funders` has no owner column.
+
+Errors return `detail = {code, message}` (for example `upload_not_ready`,
+`funder_import_running`, `funder_import_changed`, `funder_already_added`).
+Failed imports carry `error_code` (`document_too_long`, `source_fetch_failed`,
+`extraction_failed`, `extraction_interrupted` or a source-verification code).
 
 ```bash
 # From climate-advisor/service

@@ -5,7 +5,9 @@ import {
   formToCreateRequest,
   funderApiErrorKey,
   parseAward,
+  textValue,
   validateFunderForm,
+  withTextValue,
   type FunderForm,
 } from "@/components/ConceptNoteWorkspace/funder-form";
 
@@ -63,6 +65,14 @@ describe("funder form", () => {
     expect(withAward("150,000", "600 000")).toEqual({});
     expect(parseAward("")).toBeNull();
     expect(parseAward("1.234")).toBeUndefined();
+  });
+
+  it("reads and replaces one text input without touching the original", () => {
+    const form = typedForm();
+    const edited = withTextValue(form, "template", "output_format", "DOCX");
+    expect(textValue(edited, "template", "output_format")).toBe("DOCX");
+    expect(textValue(form, "template", "output_format")).toBe("");
+    expect(edited.template.chapters).toBe(form.template.chapters);
   });
 
   it("builds the create request with numbers, lists and nulls", () => {

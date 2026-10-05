@@ -4,6 +4,7 @@
  *   get:
  *     operationId: getConceptNoteFunderImport
  *     summary: Get the pending funder document import, with its draft when ready
+ *     description: Returns null when the run has no pending import. Poll while the status is processing.
  *     tags: [concept-notes]
  *     parameters:
  *       - in: path
@@ -11,7 +12,7 @@
  *         required: true
  *         schema: { type: string, format: uuid }
  *     responses:
- *       200: { description: Current funder import, or null when none is pending }
+ *       200: { description: "Current funder import, or null when none is pending" }
  *       401: { description: Authentication required }
  *       403: { description: City or run access denied }
  *       404: { description: Concept note run not found }

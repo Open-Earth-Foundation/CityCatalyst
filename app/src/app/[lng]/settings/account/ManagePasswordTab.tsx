@@ -9,7 +9,6 @@ import { PasswordStrengthMeter } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { api } from "@/services/api";
-import { Toaster } from "@/components/ui/toaster";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import { getApiErrorMessage } from "@/util/helpers";
 import { isPasswordPatternValid } from "@/util/validation";
@@ -152,7 +151,6 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
           </Box>
         </form>
       </Box>
-      <Toaster />
     </Box>
   );
 };

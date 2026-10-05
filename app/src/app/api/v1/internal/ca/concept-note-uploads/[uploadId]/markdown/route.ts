@@ -32,6 +32,11 @@
  *           X-Page-Count:
  *             schema:
  *               type: integer
+ *           X-CC-Legacy-Pdf-Delivery:
+ *             description: Present only for a succeeded pre-structured PDF whose stored CC job has no structured artifact.
+ *             schema:
+ *               type: string
+ *               enum: [pre-structured-pdf-v1]
  *         content:
  *           text/markdown:
  *             schema:
@@ -52,6 +57,7 @@ import { requireClimateAdvisorServiceRequest } from "@/backend/agentic/ghgi/stat
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import {
   getConceptNotePdfOcrJob,
+  isLegacyMarkdownOnlyPdfJob,
   getConceptNoteSourceFormat,
 } from "@/backend/PdfOcrService";
 import { apiHandler } from "@/util/api";
@@ -105,6 +111,9 @@ export const GET = apiHandler(async (req, { session, params }) => {
       "X-Source-Format": sourceFormat,
       ...(sourceFormat === "pdf"
         ? { "X-Page-Count": String(job.pageCount) }
+        : {}),
+      ...(isLegacyMarkdownOnlyPdfJob(job)
+        ? { "X-CC-Legacy-Pdf-Delivery": "pre-structured-pdf-v1" }
         : {}),
       "Cache-Control": "private, no-store",
     },

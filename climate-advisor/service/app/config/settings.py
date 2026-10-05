@@ -451,11 +451,19 @@ class CacheConfig(BaseModel):
     max_size_mb: Optional[int] = None
 
 
+class StreamingConfig(BaseModel):
+    """Bound recovery for transport failures after a model opens its stream."""
+
+    retry_attempts: int = Field(default=2, ge=0, le=3)
+    retry_delay_ms: int = Field(default=500, ge=0, le=5000)
+
+
 class LLMConfig(BaseModel):
     models: ModelsConfig
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
     prompts: PromptsConfig
     api: APIConfig
+    streaming: StreamingConfig = Field(default_factory=StreamingConfig)
     conversation: Optional[ConversationConfig] = ConversationConfig()
     features: FeaturesConfig
     logging: LoggingConfig
@@ -537,6 +545,9 @@ class Settings(BaseModel):
     cc_oauth_token_url: str | None = os.getenv("CC_OAUTH_TOKEN_URL")
     cnb_markdown_request_max_bytes: int = _parse_int(
         os.getenv("CNB_MARKDOWN_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
+    )
+    cnb_structured_request_max_bytes: int = _parse_int(
+        os.getenv("CNB_STRUCTURED_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
     )
 
     def model_post_init(self, __context: Any) -> None:

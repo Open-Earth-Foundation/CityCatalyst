@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/ui/toaster";
 import { logger } from "@/services/logger";
 import { trackEvent } from "@/lib/analytics";
 
@@ -116,12 +116,7 @@ const DownloadButtons = ({
   };
 
   const handleDownload = (format: string) => {
-    showToast(
-      "preparing-dataset",
-      "wait-fetch-data",
-      STATUS.INFO,
-      null,
-    );
+    showToast("preparing-dataset", "wait-fetch-data", STATUS.INFO, null);
     fetch(
       `/api/v1/inventory/${inventoryId}/download?format=${format}&lng=${lng}`,
     )
@@ -169,16 +164,11 @@ const DownloadButtons = ({
             inventoryId,
             format,
             cityLocode,
-            inventoryYear
+            inventoryYear,
           },
-          "Failed to download inventory"
+          "Failed to download inventory",
         );
-        showToast(
-          "download-failed",
-          "download-error",
-          STATUS.ERROR,
-          null,
-        );
+        showToast("download-failed", "download-error", STATUS.ERROR, null);
       });
   };
 
@@ -189,78 +179,88 @@ const DownloadButtons = ({
 
   return (
     <Box display="flex" flexDirection="column" pb="l">
-      {Object.entries(DOWNLOAD_BUTTONS).map(([format, { isAvailable }], index) => (
-        <React.Fragment key={format}>
-          {index > 0 && <Separator borderColor="border.overlay" my="l" />}
-          <Checkbox.Root
-            mx="l"
-            alignItems="flex-start"
-            disabled={!isAvailable}
-            checked={selectedFormats.includes(format)}
-            onCheckedChange={(details) =>
-              toggleFormat(format, !!details.checked)
-            }
-            data-testid={`download-${format}-checkbox`}
-          >
-            <Checkbox.HiddenInput />
-            <Checkbox.Control
-              borderRadius="full"
-              mt="4px"
-              bg="transparent"
-              borderWidth="2px"
-              borderColor="border.neutral"
-              _checked={{
-                bg: "colorPalette.solid",
-                borderColor: "colorPalette.solid",
-              }}
+      {Object.entries(DOWNLOAD_BUTTONS).map(
+        ([format, { isAvailable }], index) => (
+          <React.Fragment key={format}>
+            {index > 0 && <Separator borderColor="border.overlay" my="l" />}
+            <Checkbox.Root
+              mx="l"
+              alignItems="flex-start"
+              disabled={!isAvailable}
+              checked={selectedFormats.includes(format)}
+              onCheckedChange={(details) =>
+                toggleFormat(format, !!details.checked)
+              }
+              data-testid={`download-${format}-checkbox`}
             >
-              {null}
-            </Checkbox.Control>
-            <Checkbox.Label>
-              <VStack align="flex-start" gap="4px" opacity={isAvailable ? 1 : 0.5}>
-                <HStack>
-                  <Text
-                    color="content.secondary"
-                    fontFamily="heading"
-                    fontSize="title.md"
-                    fontWeight="semibold"
-                    lineHeight="24"
-                  >
-                    {t(`download-${format}-format`)}
-                  </Text>
-                  {!isAvailable && (
-                    <Badge
-                      borderWidth="1px"
-                      borderColor="border.neutral"
-                      py="4px"
-                      px="8px"
-                      borderRadius="16px"
-                      color="content.secondary"
-                      fontSize="body.sm"
-                      bg="base.light"
-                    >
-                      <Text>{t("coming-soon")}</Text>
-                    </Badge>
-                  )}
-                </HStack>
-                <Text
-                  color="content.tertiary"
-                  fontFamily="body"
-                  fontSize="body.md"
-                  fontWeight="regular"
-                  lineHeight="20"
-                  letterSpacing="wide"
+              <Checkbox.HiddenInput />
+              <Checkbox.Control
+                borderRadius="full"
+                mt="4px"
+                bg="transparent"
+                borderWidth="2px"
+                borderColor="border.neutral"
+                _checked={{
+                  bg: "colorPalette.solid",
+                  borderColor: "colorPalette.solid",
+                }}
+              >
+                {null}
+              </Checkbox.Control>
+              <Checkbox.Label>
+                <VStack
+                  align="flex-start"
+                  gap="4px"
+                  opacity={isAvailable ? 1 : 0.5}
                 >
-                  {t(`download-${format}-format-description`)}
-                </Text>
-              </VStack>
-            </Checkbox.Label>
-          </Checkbox.Root>
-        </React.Fragment>
-      ))}
+                  <HStack>
+                    <Text
+                      color="content.secondary"
+                      fontFamily="heading"
+                      fontSize="title.md"
+                      fontWeight="semibold"
+                      lineHeight="24"
+                    >
+                      {t(`download-${format}-format`)}
+                    </Text>
+                    {!isAvailable && (
+                      <Badge
+                        borderWidth="1px"
+                        borderColor="border.neutral"
+                        py="4px"
+                        px="8px"
+                        borderRadius="16px"
+                        color="content.secondary"
+                        fontSize="body.sm"
+                        bg="base.light"
+                      >
+                        <Text>{t("coming-soon")}</Text>
+                      </Badge>
+                    )}
+                  </HStack>
+                  <Text
+                    color="content.tertiary"
+                    fontFamily="body"
+                    fontSize="body.md"
+                    fontWeight="regular"
+                    lineHeight="20"
+                    letterSpacing="wide"
+                  >
+                    {t(`download-${format}-format-description`)}
+                  </Text>
+                </VStack>
+              </Checkbox.Label>
+            </Checkbox.Root>
+          </React.Fragment>
+        ),
+      )}
       <Separator borderColor="border.overlay" my="l" />
       <HStack justify="flex-end" mx="l" gap="m">
-        <Button variant="outline" onClick={onClose} data-testid="download-cancel-button">
+        <Button
+          variant="outline"
+          onClick={onClose}
+          data-testid="download-cancel-button"
+        >
           {t("cancel")}
         </Button>
         <Button
@@ -272,7 +272,6 @@ const DownloadButtons = ({
           {t("download")}
         </Button>
       </HStack>
-      <Toaster />
     </Box>
   );
 };

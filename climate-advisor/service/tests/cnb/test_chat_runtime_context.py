@@ -1,3 +1,5 @@
+from app.utils.streaming_runner import stream_agent_events
+
 """Keep CNB runtime evidence below system instructions without changing history."""
 
 import json
@@ -7,12 +9,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 import pytest
+
+from app.config import get_settings
 from app.models.requests import MessageCreateRequest
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.concept_note_context import clean_cnb_history
 from app.utils.streaming_handler import StreamingHandler
-
-from app.config import get_settings
 
 
 async def test_regular_context_does_not_load_navigation_state() -> None:
@@ -22,12 +24,12 @@ async def test_regular_context_does_not_load_navigation_state() -> None:
     handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(uuid4()))
     with (
         patch(
-            "app.utils.streaming_handler.load_agent_context",
+            "app.utils.streaming_context.load_agent_context",
             new=AsyncMock(return_value={"document_context": None}),
         ),
         patch("app.services.cnb.ui_context.load_ui_state", new=AsyncMock()) as loader,
     ):
-        message = await handler._load_concept_note_context_message()
+        message = await load_concept_note_context_message(handler)
     assert "ui_state" not in json.loads(message["content"].split("\n", 1)[1])
     loader.assert_not_awaited()
 
@@ -75,7 +77,7 @@ async def test_cnb_evidence_uses_user_role_and_preserves_current_request(
             "app.utils.streaming_handler.load_conversation_history",
             new=AsyncMock(return_value=old_history),
         ),
-        patch("app.utils.streaming_handler.load_agent_context", new=context_loader),
+        patch("app.utils.streaming_context.load_agent_context", new=context_loader),
     ):
         messages = await handler._load_conversation_history(get_settings(), payload)
 
@@ -107,11 +109,11 @@ async def test_cnb_evidence_uses_user_role_and_preserves_current_request(
                 yield None
 
     with patch(
-        "app.utils.streaming_handler.Runner.run_streamed", return_value=EmptyStream()
+        "app.utils.streaming_runner.Runner.run_streamed", return_value=EmptyStream()
     ) as runner:
         events = [
             event
-            async for event in handler._stream_agent_events(agent, payload, messages)
+            async for event in stream_agent_events(handler, agent, payload, messages)
         ]
 
     assert events == []
@@ -132,7 +134,7 @@ async def test_cnb_unavailable_bundle_is_runtime_data() -> None:
             new=AsyncMock(return_value=[]),
         ),
         patch(
-            "app.utils.streaming_handler.load_agent_context",
+            "app.utils.streaming_context.load_agent_context",
             new=AsyncMock(return_value=None),
         ),
     ):
@@ -168,7 +170,7 @@ async def test_vague_cnb_request_uses_the_bound_run_context(content: str) -> Non
             "app.utils.streaming_handler.load_conversation_history",
             new=AsyncMock(return_value=[]),
         ),
-        patch("app.utils.streaming_handler.load_agent_context", new=context_loader),
+        patch("app.utils.streaming_context.load_agent_context", new=context_loader),
     ):
         messages = await handler._load_conversation_history(get_settings(), payload)
 
@@ -236,11 +238,11 @@ async def test_cnb_complete_source_text_follows_the_bundle_message(documents) ->
             new=AsyncMock(return_value=[]),
         ),
         patch(
-            "app.utils.streaming_handler.load_agent_context",
+            "app.utils.streaming_context.load_agent_context",
             new=AsyncMock(return_value={"workflow_step": "interviewing"}),
         ),
         patch(
-            "app.utils.streaming_handler.load_source_documents",
+            "app.utils.streaming_context.load_source_documents",
             new=AsyncMock(return_value=documents),
         ),
     ):
@@ -253,3 +255,6 @@ async def test_cnb_complete_source_text_follows_the_bundle_message(documents) ->
         assert "Capex PLN 616 m" in messages[1]["content"]
     assert len(messages) == 2 + len(documents)
     assert messages[-1] == {"role": "user", "content": payload.content}
+
+
+from app.utils.streaming_context import load_concept_note_context_message

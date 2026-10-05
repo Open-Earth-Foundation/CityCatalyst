@@ -8,6 +8,7 @@ import { Op } from "sequelize";
 import { logger } from "@/services/logger";
 import { registerMEEDRanking } from "@/backend/meed/MeedNativeInputCatalogService";
 import type { MeedStateCreationAttributes } from "@/models/MeedState";
+import { readAuthorityScopeClassification } from "@/util/authorityScopeClassification";
 
 const MEED_API_URL = process.env.HIAP_MEED_API_URL + "/v1/";
 
@@ -610,6 +611,9 @@ export default class MeedApiService {
       { inventoryId, languages, actionId, result, data },
       "MEED output plan route finished",
     );
+    const authorityScopeClassification = readAuthorityScopeClassification(
+      result.metadata?.authority_scope_classification,
+    );
 
     // save result to database, update existing report if it exists
     let report = await db.models.MeedActionReport.findOne({
@@ -621,6 +625,7 @@ export default class MeedApiService {
         actionId: result.action_id,
         languages: result.language,
         chapters: result.chapters,
+        authorityScopeClassification,
       });
     } else {
       report = await db.models.MeedActionReport.create({
@@ -629,6 +634,7 @@ export default class MeedApiService {
         actionId: result.action_id,
         languages: result.language,
         chapters: result.chapters,
+        authorityScopeClassification,
       });
     }
 

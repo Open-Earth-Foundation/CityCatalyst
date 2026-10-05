@@ -642,6 +642,7 @@ export function FundingSelectionDialog({
           </DialogFooter>
         ) : (
           <DialogFooter
+            display="block"
             flexShrink={0}
             p={4}
             borderTop="1px solid"

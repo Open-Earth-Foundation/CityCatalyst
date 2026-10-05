@@ -151,6 +151,15 @@ export async function buildGHGIOcrArtifactInput(job: PdfOcrJob) {
       pageCount: job.pageCount,
       resultSizeBytes: job.resultSizeBytes ?? null,
       model: job.model ?? null,
+      annotationMode: job.annotationMode ?? "none",
+      structuredReady: Boolean(
+        job.structuredS3Key &&
+          job.structuredSha256 &&
+          job.structuredSchemaVersion,
+      ),
+      structuredSchemaVersion: job.structuredSchemaVersion ?? null,
+      structuredSha256: job.structuredSha256 ?? null,
+      structuredSizeBytes: job.structuredSizeBytes ?? null,
     },
   } as const;
 }

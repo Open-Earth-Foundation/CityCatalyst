@@ -146,7 +146,7 @@
   "yes-i-understand": "Ja, ich verstehe",
   "enter-city-name-confirmation": "Bitte schreiben Sie \"{{name}}\" unten, um es zu löschen",
   "year-inventory_status": "{{year}} Inventarstatus",
-  "ghg-emissions-inventory-year": "Treibhausgas-Emissionsinventar {{Jahr}}",
+  "ghg-emissions-inventory-year": "Treibhausgas-Emissionsinventar {{year}}",
   "ghg-inventory-year": "{{year}} Inventar",
   "add-inventory": "Inventar hinzufügen",
   "open-inventory": "Inventar öffnen",

@@ -456,6 +456,19 @@ and no draft run is already under review. It starts deterministic draft
 generation from the scoped city and inventory, then the browser loads the new
 draft for review.
 
+The whole Stationary Energy page uses the `stationary_energy_review` prompt.
+Before a run exists, the draft snapshot is replaced by a
+`STATIONARY_ENERGY_RUN_NOT_STARTED` system message that names the selected
+inventory, so the agent never asks for the city or year. In that state the agent
+answers whole-inventory questions with the read-only `inventory_status_overview`
+and `inventory_emissions_context` tools and calls `stationary_energy_start_draft`
+only when the user asks to draft rows or add source data. When the request asks
+for more than starting the run (for example "add all SEEG data"), the agent sets
+`continue_request` and the page re-sends that request once the run is ready with the
+`stationary_energy_resume_after_draft_start` option. That resume turn is not
+stored as a second user message and runs with the new draft context and review
+tools, so the agent can answer it, for example with a bulk confirmation card.
+
 **Added for active Stationary Energy draft review chat**
 
 - `stationary_energy_list_review_options`
@@ -811,6 +824,9 @@ language, or client-side fallback behavior. The boundary is:
 - `CNB_MARKDOWN_REQUEST_MAX_BYTES` - Maximum Markdown artifact size CA will
   accept while verifying a CC-owned result (default `20971520`; independent
   from the source-PDF and page-count limits)
+- `CNB_STRUCTURED_REQUEST_MAX_BYTES` - Maximum structured JSON artifact size CA
+  will accept for a new PDF upload (default `20971520`; independent of the
+  Markdown limit). Oversized artifacts fail and are not truncated.
 - `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
 - `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
   `https://mlflow-dev.openearth.dev`
@@ -837,8 +853,24 @@ pre-conversion upload row. The Markdown delivery route receives only the stable
 CC key, digest, labels, and optional PDF page metadata. CA enforces the 16 KiB
 control limit and `CNB_MARKDOWN_REQUEST_MAX_BYTES`, fetches through authenticated
 CC, verifies identity, digest, and source-specific structure, then stores the
-pointer in `CA_DATABASE_URL`. PDFs retain page validation; native `.md` bypasses
-OCR and uses deterministic heading/block anchors. Requests are idempotent,
+pointer in `CA_DATABASE_URL`. New PDF deliveries also register
+`annotation_mode`, the structured object key, digest, size, and schema version
+`citycatalyst.structured-document.1`. CA verifies that artifact through
+`GET /api/v1/internal/ca/concept-note-uploads/{upload_id}/structured` before the
+upload can become ready. Exact excerpts stay on source Markdown. Visual
+annotations are projected to qualitative context only and stay labeled
+`quantitative_reliability: unverified`. Legacy ready rows with null structured
+columns remain readable and are not backfilled. The authenticated CC Markdown
+read marks only pre-structured succeeded CNB PDF jobs with
+`X-CC-Legacy-Pdf-Delivery: pre-structured-pdf-v1`; CA permits the all-null PDF
+metadata tuple only when this exact marker accompanies the verified original
+Markdown. These rows remain Markdown-only and produce no visual context. New
+PDF deliveries without complete structured metadata remain invalid. CC expands
+Mistral's page-local table bodies at their placeholders in canonical Markdown
+before hashing and storing it, so CA source analysis receives table values.
+PDFs retain page validation;
+native `.md` bypasses OCR, uses annotation mode `none`, and does not declare a
+structured artifact. Requests are idempotent,
 identity changes return `409`, and unavailable storage returns
 `503 cnb_storage_unavailable`. CA owns no OCR queue, bucket credential, or
 presigned URL. See the authoritative handoff contract in

@@ -24,6 +24,7 @@ from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.persistence.concept_notes.source_revalidation import (
     queue_source_revalidation,
 )
+from app.services.cnb.visual_context import VISUAL_CONTEXT_CONTRACT_VERSION
 from app.utils.concept_note_context import (
     manual_population_context,
     omit_context_identifiers,
@@ -123,11 +124,13 @@ async def begin_build(
             )
             previous_sources = list(previous_bundle.selected_sources)
 
-            # Reuse only a ready bundle built from this exact source set.
+            # Reuse only a ready bundle built from this exact source set whose
+            # visual projection already matches the current full-envelope contract.
             already_current = bool(
                 not force
                 and previous.get("status") == "ready"
                 and previous.get("source_fingerprint") == fingerprint
+                and _selected_sources_have_current_visual_contract(previous_sources)
             )
             if not already_current:
                 # Preserve the last completed context while its replacement builds.
@@ -672,6 +675,10 @@ async def load_agent_context(
                             "source_format": source.source_format,
                             "summary": source.summary,
                             "topics": source.topics,
+                            "visual_context": [
+                                item.model_dump(mode="json")
+                                for item in source.visual_context
+                            ],
                             "uploaded_at": _iso(uploaded_at.get(source.upload_id)),
                             "newest": newest is not None
                             and uploaded_at.get(source.upload_id) == newest,
@@ -795,11 +802,23 @@ def source_fingerprint(uploads: list[ConceptNoteUploadSnapshot]) -> str:
             "sha256": upload.markdown_sha256,
             "source_format": upload.source_format,
             "page_count": upload.page_count,
+            "structured_sha256": upload.structured_sha256,
+            "structured_schema_version": upload.structured_schema_version,
         }
         for upload in uploads
     ]
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _selected_sources_have_current_visual_contract(
+    sources: list[SelectedSource],
+) -> bool:
+    """Return whether every selected source already carries the full-envelope contract."""
+    return all(
+        source.visual_context_contract_version == VISUAL_CONTEXT_CONTRACT_VERSION
+        for source in sources
+    )
 
 
 async def _matches_current_source_fingerprint(
@@ -996,6 +1015,11 @@ def _upload_snapshot(upload: ConceptNoteUpload) -> ConceptNoteUploadSnapshot:
         markdown_s3_key=upload.markdown_s3_key,
         markdown_sha256=upload.markdown_sha256,
         page_count=upload.page_count,
+        annotation_mode=upload.annotation_mode,
+        structured_s3_key=upload.structured_s3_key,
+        structured_sha256=upload.structured_sha256,
+        structured_size_bytes=upload.structured_size_bytes,
+        structured_schema_version=upload.structured_schema_version,
         status=upload.ingest_status,
         error_code=upload.ingest_error_code,
         received_at=upload.received_at,

@@ -5,6 +5,7 @@ import type { PdfOcrJob } from "@/models/PdfOcrJob";
 import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 import {
   getConceptNoteSourceFormat,
+  isLegacyMarkdownOnlyPdfJob,
   type ConceptNoteSourceFormat,
 } from "@/backend/PdfOcrService";
 import {
@@ -45,9 +46,11 @@ export function serializeMarkdownDeliveryPayload(
   const sourceFormat = source.sourceFormat;
   if (
     !job.resultS3Key ||
-    !job.resultSha256 ||
+    typeof job.resultSha256 !== "string" ||
+    !/^[0-9a-f]{64}$/.test(job.resultSha256) ||
     sourceFormat !== jobSourceFormat ||
-    (sourceFormat === "pdf" && !job.pageCount) ||
+    (sourceFormat === "pdf" &&
+      (!Number.isInteger(job.pageCount) || (job.pageCount ?? 0) < 1)) ||
     (sourceFormat === "markdown" && job.pageCount != null)
   ) {
     throw new PdfOcrDeliveryError(
@@ -56,7 +59,7 @@ export function serializeMarkdownDeliveryPayload(
       "Source result metadata is incomplete",
     );
   }
-  const payload = {
+  const payload: Record<string, unknown> = {
     markdown_s3_key: job.resultS3Key,
     filename: source.filename,
     source_label: source.sourceLabel || null,
@@ -64,6 +67,31 @@ export function serializeMarkdownDeliveryPayload(
     page_count: sourceFormat === "pdf" ? job.pageCount : null,
     sha256: job.resultSha256,
   };
+  if (sourceFormat === "pdf") {
+    if (isLegacyMarkdownOnlyPdfJob(job)) return JSON.stringify(payload);
+
+    const structuredSize = Number(job.structuredSizeBytes);
+    if (
+      (job.annotationMode !== "none" &&
+        job.annotationMode !== "visual_context") ||
+      !job.structuredS3Key ||
+      !job.structuredSha256 ||
+      !Number.isInteger(structuredSize) ||
+      structuredSize < 1 ||
+      !job.structuredSchemaVersion
+    ) {
+      throw new PdfOcrDeliveryError(
+        "ocr_result_incomplete",
+        false,
+        "Structured PDF artifact metadata is incomplete",
+      );
+    }
+    payload.annotation_mode = job.annotationMode;
+    payload.structured_s3_key = job.structuredS3Key;
+    payload.structured_sha256 = job.structuredSha256;
+    payload.structured_size_bytes = structuredSize;
+    payload.structured_schema_version = job.structuredSchemaVersion;
+  }
   return JSON.stringify(payload);
 }
 

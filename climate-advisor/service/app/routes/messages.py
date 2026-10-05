@@ -29,7 +29,10 @@ from app.utils.citycatalyst_auth import (
 )
 from app.utils.request_token_refresh import RequestTokenRefreshContext
 from app.utils.sse_heartbeat import with_sse_heartbeats
-from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
+from app.utils.stationary_energy_context import (
+    extract_stationary_energy_draft_run_id,
+    is_stationary_energy_resume_turn,
+)
 from app.utils.streaming_handler import StreamingHandler
 from app.utils.thread_resolver import ThreadResolver
 
@@ -167,9 +170,12 @@ async def post_message(
                                 resolved_thread_id,
                             )
 
-                        # The overview trigger is not a user message; keep it
-                        # out of the visible history.
-                        if not overview_turn:
+                        # The overview trigger is not a user message, and a
+                        # Stationary Energy resume turn repeats a message that
+                        # is already stored; keep both out of the history.
+                        if not overview_turn and not is_stationary_energy_resume_turn(
+                            authenticated_payload.options
+                        ):
                             message_service = MessageService(db_session)
                             await message_service.create_user_message(
                                 thread_id=resolved_thread_id,

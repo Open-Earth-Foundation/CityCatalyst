@@ -7,14 +7,15 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
 from app.main import get_app
 from app.models.requests import MessageCreateRequest
 from app.routes import health
 from app.utils import mlflow_logging
 from app.utils.sse import format_sse
 from app.utils.streaming_handler import StreamingHandler
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
 
 
 def _client() -> TestClient:
@@ -141,7 +142,7 @@ async def test_health_responds_while_chat_telemetry_is_blocked(
         self.assistant_tokens.append("Answer")
         yield format_sse({"index": 0, "content": "Answer"}, event="message").encode()
 
-    monkeypatch.setattr(StreamingHandler, "_stream_agent_events", answer)
+    monkeypatch.setattr("app.utils.streaming_handler.stream_agent_events", answer)
     handler = StreamingHandler(
         thread_id="health-test", user_id="test-user", session_factory=None
     )

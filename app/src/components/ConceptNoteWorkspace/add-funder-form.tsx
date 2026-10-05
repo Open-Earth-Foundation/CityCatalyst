@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import {
   Box,
   Grid,
@@ -22,12 +23,22 @@ import type { ConceptNoteFunderImport } from "@/util/types";
 
 import {
   emptyChapter,
+  textValue,
+  withTextValue,
   type ChapterRow,
   type FunderForm,
   type FunderFormErrors,
+  type FunderTextFields,
 } from "./funder-form";
 
-type Section = "funder" | "opportunity" | "template";
+const sectionProps = {
+  align: "stretch",
+  gap: 4,
+  borderTop: "1px solid",
+  borderColor: "border.neutral",
+  pt: 5,
+} as const;
+const fieldGrid = { templateColumns: { base: "1fr", sm: "1fr 1fr" }, gap: 4 };
 
 interface TextFieldOptions {
   required?: boolean;
@@ -75,14 +86,13 @@ export function AddFunderForm({
     );
   }
 
-  const textField = (
-    section: Section,
-    field: string,
+  function textField<S extends keyof FunderTextFields>(
+    section: S,
+    field: FunderTextFields[S],
     labelKey: string,
     { required, full, multiline, help }: TextFieldOptions = {},
-  ) => {
+  ): ReactNode {
     const path = `${section}.${field}`;
-    const value = (form[section] as Record<string, unknown>)[field] as string;
     const Control = multiline ? Textarea : Input;
     return (
       <Field
@@ -96,33 +106,17 @@ export function AddFunderForm({
       >
         <Control
           size="sm"
-          value={value}
+          value={textValue(form, section, field)}
           disabled={disabled}
           onChange={(event) =>
-            onChange(
-              (current) =>
-                ({
-                  ...current,
-                  [section]: {
-                    ...current[section],
-                    [field]: event.target.value,
-                  },
-                }) as FunderForm,
+            onChange((current) =>
+              withTextValue(current, section, field, event.target.value),
             )
           }
         />
       </Field>
     );
-  };
-
-  const sectionProps = {
-    align: "stretch",
-    gap: 4,
-    borderTop: "1px solid",
-    borderColor: "border.neutral",
-    pt: 5,
-  } as const;
-  const grid = { templateColumns: { base: "1fr", sm: "1fr 1fr" }, gap: 4 };
+  }
 
   return (
     <VStack align="stretch" gap={6} data-testid="add-funder-form">
@@ -152,7 +146,7 @@ export function AddFunderForm({
         <Heading as="h4" fontSize="body.md">
           {t("funder-section-funder")}
         </Heading>
-        <Grid {...grid}>
+        <Grid {...fieldGrid}>
           {textField("funder", "name", "funder-field-name", {
             required: true,
             full: true,
@@ -167,7 +161,7 @@ export function AddFunderForm({
         <Heading as="h4" fontSize="body.md">
           {t("funder-section-programme")}
         </Heading>
-        <Grid {...grid}>
+        <Grid {...fieldGrid}>
           {textField("opportunity", "name", "funder-field-programme-name", {
             required: true,
             full: true,
@@ -203,7 +197,7 @@ export function AddFunderForm({
         <Heading as="h4" fontSize="body.md">
           {t("funding-template-preview")}
         </Heading>
-        <Grid {...grid}>
+        <Grid {...fieldGrid}>
           {textField(
             "template",
             "template_name",

@@ -550,10 +550,6 @@ export const conceptNoteFunderCreateRequest = z
   })
   .strict();
 
-export type ConceptNoteFunderCreateRequestBody = z.infer<
-  typeof conceptNoteFunderCreateRequest
->;
-
 export const recordConsentRequest = z.object({
   consentType: z.enum(["analytics", "marketing"]),
   granted: z.boolean(),

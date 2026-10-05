@@ -10,15 +10,10 @@ import type {
  * unit-testable. List fields are edited as comma-separated text.
  */
 
-export const FUNDER_FIELDS = [
-  "name",
-  "funder_type",
-  "country",
-  "region",
-] as const;
-export type FunderField = (typeof FUNDER_FIELDS)[number];
+const FUNDER_FIELDS = ["name", "funder_type", "country", "region"] as const;
+type FunderField = (typeof FUNDER_FIELDS)[number];
 
-export const PROGRAMME_FIELDS = [
+const PROGRAMME_FIELDS = [
   "name",
   "summary",
   "applicant_type",
@@ -34,7 +29,7 @@ export const PROGRAMME_FIELDS = [
   "hazards",
   "interventions",
 ] as const;
-export type ProgrammeField = (typeof PROGRAMME_FIELDS)[number];
+type ProgrammeField = (typeof PROGRAMME_FIELDS)[number];
 
 export interface ChapterRow {
   id: string;
@@ -54,6 +49,36 @@ export interface FunderForm {
     output_format: string;
     chapters: ChapterRow[];
   };
+}
+
+/** Text inputs of each form section, so field names are checked per section. */
+export interface FunderTextFields {
+  funder: FunderField;
+  opportunity: ProgrammeField;
+  template: "template_name" | "output_format";
+}
+
+/** Read one text input of the form. */
+export function textValue<S extends keyof FunderTextFields>(
+  form: FunderForm,
+  section: S,
+  field: FunderTextFields[S],
+): string {
+  const values = form[section] as unknown as Record<
+    FunderTextFields[S],
+    string
+  >;
+  return values[field];
+}
+
+/** A copy of the form with one text input changed. */
+export function withTextValue<S extends keyof FunderTextFields>(
+  form: FunderForm,
+  section: S,
+  field: FunderTextFields[S],
+  value: string,
+): FunderForm {
+  return { ...form, [section]: { ...form[section], [field]: value } };
 }
 
 /** Error keys (i18n) by field path; `chapter.<rowId>.title` for chapters. */

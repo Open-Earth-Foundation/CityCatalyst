@@ -7,7 +7,9 @@ import {
   funderApiErrorKey,
   funderImportErrorKey,
   parseAward,
+  textValue,
   validateFunderForm,
+  withTextValue,
 } from "@/components/ConceptNoteWorkspace/funder-form";
 import type {
   ConceptNoteFunderImport,
@@ -107,6 +109,14 @@ describe("funder form", () => {
     expect(withAward("150,000", "600 000")).toEqual({});
     expect(parseAward("")).toBeNull();
     expect(parseAward("1.234")).toBeUndefined();
+  });
+
+  it("reads and replaces one text input without touching the original", () => {
+    const form = emptyFunderForm();
+    const edited = withTextValue(form, "template", "output_format", "DOCX");
+    expect(textValue(edited, "template", "output_format")).toBe("DOCX");
+    expect(textValue(form, "template", "output_format")).toBe("");
+    expect(edited.template.chapters).toBe(form.template.chapters);
   });
 
   it("fills the form from a draft with lists as comma-separated text", () => {

@@ -7,9 +7,7 @@ import {
   funderApiErrorKey,
   funderImportErrorKey,
   parseAward,
-  textValue,
   validateFunderForm,
-  withTextValue,
 } from "@/components/ConceptNoteWorkspace/funder-form";
 import type {
   ConceptNoteFunderImport,
@@ -37,8 +35,8 @@ const draft: ConceptNoteFunderImportDraft = {
     finance_route: null,
     instrument_type: "Grant",
     region_scope: "Latin America",
-    min_award: "150000.00",
-    max_award: "600000.50",
+    min_award: 150000,
+    max_award: 600000.5,
     currency: "USD",
     status: "Open",
     summary: "Grants for nature-based solutions.",
@@ -77,16 +75,12 @@ describe("funder form", () => {
         "funder.name",
         "opportunity.name",
         "template.template_name",
-        `chapter.${form.template.chapters[0]!.id}.title`,
+        `chapter.${form.chapters[0]!.id}.title`,
       ].sort(),
     );
-    const noChapters = {
-      ...form,
-      template: { ...form.template, chapters: [] },
-    };
-    expect(validateFunderForm(noChapters)["template.chapters"]).toBe(
-      "funder-error-chapters",
-    );
+    expect(
+      validateFunderForm({ ...form, chapters: [] })["template.chapters"],
+    ).toBe("funder-error-chapters");
     expect(validateFunderForm(formFromDraft(draft))).toEqual({});
   });
 
@@ -108,7 +102,7 @@ describe("funder form", () => {
     );
     expect(withAward("150 000,50", "600 000.50")).toEqual({});
     expect(parseAward("")).toBeNull();
-    expect(parseAward("1.234")).toBeUndefined();
+    expect(parseAward("1.234")).toBeNaN();
   });
 
   it.each(["150 000,50", "150\u00a0000,50", "150\u202f000.50", "150000.50"])(
@@ -117,7 +111,9 @@ describe("funder form", () => {
       const form = formFromDraft(draft);
       form.opportunity.min_award = amount;
       expect(validateFunderForm(form)).toEqual({});
-      expect(formToCreateRequest(form, null).opportunity.min_award).toBe(150000.5);
+      expect(formToCreateRequest(form, null).opportunity.min_award).toBe(
+        150000.5,
+      );
     },
   );
 
@@ -136,21 +132,13 @@ describe("funder form", () => {
     );
   });
 
-  it("reads and replaces one text input without touching the original", () => {
-    const form = emptyFunderForm();
-    const edited = withTextValue(form, "template", "output_format", "DOCX");
-    expect(textValue(edited, "template", "output_format")).toBe("DOCX");
-    expect(textValue(form, "template", "output_format")).toBe("");
-    expect(edited.template.chapters).toBe(form.template.chapters);
-  });
-
   it("fills the form from a draft with lists as comma-separated text", () => {
     const form = formFromDraft(draft);
     expect(form.funder.region).toBe("");
     expect(form.opportunity.hazards).toBe("Flooding, Heat");
     expect(form.opportunity.min_award).toBe("150000");
     expect(form.opportunity.max_award).toBe("600000.5");
-    expect(form.template.chapters[0]).toMatchObject({
+    expect(form.chapters[0]).toMatchObject({
       chapter_ref: "applicant_details",
       required_fields: "municipality_name, contact_email",
     });

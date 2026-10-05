@@ -444,17 +444,13 @@ export function FundingSelectionDialog({
                       gap={3}
                       aria-pressed={item.id === selectedFunderId}
                       disabled={saveState.isLoading}
-                      bg={
-                        item.id === selectedFunderId
-                          ? "base.light"
-                          : "transparent"
-                      }
+                      bg="transparent"
                       borderInlineStart="3px solid"
-                      borderColor={
-                        item.id === selectedFunderId
-                          ? "content.link"
-                          : "transparent"
-                      }
+                      borderColor="transparent"
+                      _pressed={{
+                        bg: "base.light",
+                        borderColor: "content.link",
+                      }}
                       onClick={() => chooseFunder(item.id)}
                     >
                       <Icon
@@ -669,7 +665,7 @@ export function FundingSelectionDialog({
             </Flex>
           )}
         </DialogBody>
-        {adding && (
+        {adding ? (
           <DialogFooter
             flexShrink={0}
             flexWrap="wrap"
@@ -721,124 +717,130 @@ export function FundingSelectionDialog({
               </Button>
             )}
           </DialogFooter>
-        )}
-        {/* Hidden while adding a funder, which has its own actions above. */}
-        <DialogFooter
-          display={adding ? "none" : "block"}
-          flexShrink={0}
-          p={4}
-          borderTop="1px solid"
-          borderColor="border.neutral"
-        >
-          {busy && (
-            <Text
-              mb={3}
-              role="status"
-              fontSize="body.sm"
-              color="content.secondary"
-            >
-              {t("funding-busy")}
-            </Text>
-          )}
-          {hasDraft && changed && (
-            <Box
-              mb={3}
-              p={3}
-              bg="sentiment.warningOverlay"
-              borderRadius="rounded"
-            >
-              <Text mb={2} fontSize="body.sm">
-                {t("funding-draft-warning")}
-              </Text>
-              <Checkbox
-                checked={acknowledged}
-                onCheckedChange={({ checked }) =>
-                  setAcknowledged(checked === true)
-                }
-                disabled={saveState.isLoading}
+        ) : (
+          <DialogFooter
+            flexShrink={0}
+            p={4}
+            borderTop="1px solid"
+            borderColor="border.neutral"
+          >
+            {busy && (
+              <Text
+                mb={3}
+                role="status"
+                fontSize="body.sm"
+                color="content.secondary"
               >
-                {t("funding-draft-acknowledge")}
-              </Checkbox>
-            </Box>
-          )}
-          {notice && (
-            <Text
-              role="status"
-              mb={3}
-              color="sentiment.positiveDefault"
-              fontSize="body.sm"
-            >
-              {notice}
-            </Text>
-          )}
-          {error && (
-            <Text
-              role="alert"
-              mb={3}
-              color="sentiment.negativeDefault"
-              fontSize="body.sm"
-            >
-              {error}
-            </Text>
-          )}
-          <Flex align="center" gap={3} flexWrap="wrap" justify="space-between">
-            <Box flex={1} minW="160px">
-              <Text fontSize="body.sm" fontWeight="semibold">
-                {funder?.name ?? t("funding-not-selected")}
+                {t("funding-busy")}
               </Text>
-              <Text fontSize="label.sm" color="content.tertiary">
-                {opportunity?.template?.name ?? t("template-not-selected")}
+            )}
+            {hasDraft && changed && (
+              <Box
+                mb={3}
+                p={3}
+                bg="sentiment.warningOverlay"
+                borderRadius="rounded"
+              >
+                <Text mb={2} fontSize="body.sm">
+                  {t("funding-draft-warning")}
+                </Text>
+                <Checkbox
+                  checked={acknowledged}
+                  onCheckedChange={({ checked }) =>
+                    setAcknowledged(checked === true)
+                  }
+                  disabled={saveState.isLoading}
+                >
+                  {t("funding-draft-acknowledge")}
+                </Checkbox>
+              </Box>
+            )}
+            {notice && (
+              <Text
+                role="status"
+                mb={3}
+                color="sentiment.positiveDefault"
+                fontSize="body.sm"
+              >
+                {notice}
               </Text>
-            </Box>
-            <Button
-              variant="ghost"
-              color="content.link"
-              textDecoration="underline"
-              _hover={{
-                bg: "background.transparentGrey",
-                color: "content.link",
-              }}
-              size="sm"
-              disabled={!funderId || saveState.isLoading || isError}
-              onClick={() => {
-                setFunderId(null);
-                setOpportunityId(null);
-                setAcknowledged(false);
-              }}
+            )}
+            {error && (
+              <Text
+                role="alert"
+                mb={3}
+                color="sentiment.negativeDefault"
+                fontSize="body.sm"
+              >
+                {error}
+              </Text>
+            )}
+            <Flex
+              align="center"
+              gap={3}
+              flexWrap="wrap"
+              justify="space-between"
             >
-              {t("funding-clear")}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={saveState.isLoading}
-              onClick={onClose}
-            >
-              {t("cancel")}
-            </Button>
-            <Button
-              size="sm"
-              loading={saveState.isLoading}
-              disabled={
-                !changed ||
-                isLoading ||
-                isError ||
-                busy ||
-                (hasDraft && changed && !acknowledged) ||
-                (funderId !== null && !funder)
-              }
-              onClick={() => void save()}
-              data-testid="concept-note-funding-save"
-              title={
-                !hasDraft && opportunity?.template?.chapter_schema.length
-                  ? t("funding-next-step")
-                  : undefined
-              }
-            >
-              {t(savesIntoDrafting ? "funding-save-and-draft" : "funding-save")}
-            </Button>
-          </Flex>
-        </DialogFooter>
+              <Box flex={1} minW="160px">
+                <Text fontSize="body.sm" fontWeight="semibold">
+                  {funder?.name ?? t("funding-not-selected")}
+                </Text>
+                <Text fontSize="label.sm" color="content.tertiary">
+                  {opportunity?.template?.name ?? t("template-not-selected")}
+                </Text>
+              </Box>
+              <Button
+                variant="ghost"
+                color="content.link"
+                textDecoration="underline"
+                _hover={{
+                  bg: "background.transparentGrey",
+                  color: "content.link",
+                }}
+                size="sm"
+                disabled={!funderId || saveState.isLoading || isError}
+                onClick={() => {
+                  setFunderId(null);
+                  setOpportunityId(null);
+                  setAcknowledged(false);
+                }}
+              >
+                {t("funding-clear")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={saveState.isLoading}
+                onClick={onClose}
+              >
+                {t("cancel")}
+              </Button>
+              <Button
+                size="sm"
+                loading={saveState.isLoading}
+                disabled={
+                  !changed ||
+                  isLoading ||
+                  isError ||
+                  busy ||
+                  (hasDraft && changed && !acknowledged) ||
+                  (funderId !== null && !funder)
+                }
+                onClick={() => void save()}
+                data-testid="concept-note-funding-save"
+                title={
+                  !hasDraft && opportunity?.template?.chapter_schema.length
+                    ? t("funding-next-step")
+                    : undefined
+                }
+              >
+                {t(
+                  savesIntoDrafting ? "funding-save-and-draft" : "funding-save",
+                )}
+              </Button>
+            </Flex>
+          </DialogFooter>
+        )}
       </DialogContent>
     </DialogRoot>
   );

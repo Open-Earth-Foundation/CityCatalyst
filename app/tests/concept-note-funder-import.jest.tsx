@@ -28,12 +28,11 @@ const currentImport: ConceptNoteFunderImport = {
   upload_id: "upload-1",
   filename: "call.pdf",
   status: "processing",
+  stage: "converting",
   draft: null,
   error_code: null,
 };
 let serverImport: ConceptNoteFunderImport | null;
-let status: string;
-let fetching: boolean;
 let uploadResult: ReturnType<typeof deferred<{ uploadId: string }>>;
 let flow: FunderImportFlow;
 const start = jest.fn<() => Promise<ConceptNoteFunderImportResponse>>();
@@ -49,7 +48,6 @@ const retryUpload = jest.fn(() => ({ unwrap: async () => undefined }));
 
 jest.unstable_mockModule("@/components/ConceptNoteWiringHarness/utils", () => ({
   conceptNoteSourceLabel: (name: string) => name,
-  shouldPollConceptNoteUpload: (value: string) => value === "processing",
   validateConceptNoteSourceFile: async () => null,
 }));
 jest.unstable_mockModule("@/lib/hooks", () => ({
@@ -59,16 +57,6 @@ jest.unstable_mockModule("@/services/api", () => ({
   api: {
     useGetConceptNoteFunderImportQuery: () => ({
       currentData: { funder_import: serverImport },
-      isSuccess: true,
-      isFetching: fetching,
-    }),
-    useGetConceptNoteUploadStatusQuery: (
-      args: { uploadId: string },
-      options: { skip: boolean },
-    ) => ({
-      currentData: options.skip
-        ? undefined
-        : { uploadId: args.uploadId, status, canRetry: true },
     }),
     useUploadConceptNoteSourceMutation: () => [uploadSource, {}],
     useRetryConceptNoteUploadMutation: () => [
@@ -103,15 +91,13 @@ function Harness({ runId = "run" }: { runId?: string }) {
   }, [current]);
   return null;
 }
-async function remount(runId = "run") {
-  await act(async () => root.unmount());
-  root = createRoot(container);
+async function render(runId = "run") {
   await act(async () => root.render(<Harness runId={runId} />));
 }
-async function upload() {
+async function upload(name = "call.pdf", uploadId = "upload-1") {
   await act(async () => {
-    const pending = flow.uploadFile(new File(["pdf"], "call.pdf"));
-    uploadResult.resolve({ uploadId: "upload-1" });
+    const pending = flow.uploadFile(new File(["pdf"], name));
+    uploadResult.resolve({ uploadId });
     await pending;
   });
 }
@@ -125,104 +111,75 @@ beforeAll(async () => {
 });
 beforeEach(async () => {
   jest.clearAllMocks();
-  sessionStorage.clear();
   serverImport = null;
-  status = "processing";
-  fetching = false;
   uploadResult = deferred();
-  start.mockResolvedValue({ funder_import: currentImport });
+  // The accepted import replaces the cached query, as `upsertQueryData` does.
+  start.mockImplementation(async () => {
+    serverImport = currentImport;
+    return { funder_import: currentImport };
+  });
   discard.mockImplementation(async ({ importId }) => {
     if (serverImport?.import_id === importId) serverImport = null;
   });
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
-  await act(async () => root.render(<Harness />));
+  await render();
 });
 afterEach(async () => {
   await act(async () => root.unmount());
   container.remove();
-  jest.useRealTimers();
 });
 
-it("resumes a converting upload after remount and starts extraction once ready", async () => {
+it("starts the import as soon as the file is uploaded and follows its stage", async () => {
   await upload();
-  expect(flow.phase).toBe("converting");
-  await remount();
-  expect(flow.phase).toBe("converting");
-  status = "ready";
-  await act(async () => root.render(<Harness />));
-  expect(startImport).toHaveBeenCalledTimes(1);
   expect(startImport).toHaveBeenCalledWith({
     runId: "run",
     uploadId: "upload-1",
   });
-  expect(sessionStorage.length).toBe(0);
-});
-
-it("waits for the refreshed import before recovering an already accepted start", async () => {
-  await upload();
-  status = "ready";
-  fetching = true;
-  await remount();
-  expect(startImport).not.toHaveBeenCalled();
-  serverImport = currentImport;
-  fetching = false;
-  await act(async () => root.render(<Harness />));
+  expect(dispatch).toHaveBeenCalledWith({ funder_import: currentImport });
+  await render();
+  expect(flow.phase).toBe("converting");
+  serverImport = { ...currentImport, stage: "reading" };
+  await render();
   expect(flow.phase).toBe("reading");
-  expect(startImport).not.toHaveBeenCalled();
-  expect(sessionStorage.length).toBe(0);
 });
 
-it("does not recover another run's pending upload", async () => {
-  await upload();
-  status = "ready";
-  await remount("other-run");
-  expect(flow.phase).toBe("idle");
-  expect(startImport).not.toHaveBeenCalled();
-});
-
-it("does not start extraction or persist a late upload after discard", async () => {
+it("does not start an import for a late upload after discard", async () => {
   let pending!: Promise<void>;
   await act(async () => {
     pending = flow.uploadFile(new File(["pdf"], "call.pdf"));
   });
   expect(flow.phase).toBe("uploading");
   await act(async () => flow.discard());
-  status = "ready";
   await act(async () => {
     uploadResult.resolve({ uploadId: "upload-1" });
     await pending;
   });
   expect(flow.phase).toBe("idle");
   expect(startImport).not.toHaveBeenCalled();
-  expect(sessionStorage.length).toBe(0);
-  await remount();
-  expect(flow.phase).toBe("idle");
 });
 
 it("discards only the late accepted import when cancelled during POST", async () => {
   const accepted = deferred<ConceptNoteFunderImportResponse>();
   start.mockReturnValue(accepted.promise);
-  status = "ready";
-  await upload();
-  expect(startImport).toHaveBeenCalledTimes(1);
-  let cancelled!: Promise<void>;
+  let pending!: Promise<void>;
   await act(async () => {
-    cancelled = flow.discard();
+    pending = flow.uploadFile(new File(["pdf"], "call.pdf"));
+    uploadResult.resolve({ uploadId: "upload-1" });
   });
+  expect(startImport).toHaveBeenCalledTimes(1);
+  await act(async () => flow.discard());
   await act(async () => {
     accepted.resolve({ funder_import: currentImport });
-    await cancelled;
+    await pending;
   });
-  expect(discard).toHaveBeenCalledTimes(1);
-  expect(discard).toHaveBeenCalledWith({
+  expect(discardImport).toHaveBeenCalledWith({
     runId: "run",
     importId: "import-1",
   });
   expect(dispatch).not.toHaveBeenCalled();
   expect(flow.phase).toBe("idle");
-  expect(sessionStorage.length).toBe(0);
 });
 
 it("ignores a late old upload after choosing a replacement", async () => {
@@ -238,30 +195,66 @@ it("ignores a late old upload after choosing a replacement", async () => {
     oldResult.resolve({ uploadId: "old-upload" });
     await first;
   });
+  expect(startImport).toHaveBeenCalledTimes(1);
+  expect(startImport).toHaveBeenCalledWith({
+    runId: "run",
+    uploadId: "upload-1",
+  });
+  await render();
   expect(flow.filename).toBe("call.pdf");
+});
+
+it("keeps a failed start retryable on the same upload", async () => {
+  start.mockRejectedValueOnce({
+    data: { detail: { code: "funder_import_running" } },
+  });
+  await upload();
+  expect(flow.phase).toBe("failed");
+  expect(flow.error).toBe("funder-error-import-running");
+  await act(async () => flow.retry());
+  expect(startImport).toHaveBeenCalledTimes(2);
+  expect(startImport).toHaveBeenLastCalledWith({
+    runId: "run",
+    uploadId: "upload-1",
+  });
+  await render();
   expect(flow.phase).toBe("converting");
-  await remount();
-  expect(flow.filename).toBe("call.pdf");
+});
+
+it("retries the conversion before restarting an import whose upload failed", async () => {
+  serverImport = {
+    ...currentImport,
+    status: "failed",
+    error_code: "upload_failed",
+  };
+  await render();
+  expect(flow.phase).toBe("failed");
+  expect(flow.error).toBe("funder-upload-failed");
+  await act(async () => flow.retry());
+  expect(retryUpload).toHaveBeenCalledWith({
+    runId: "run",
+    uploadId: "upload-1",
+  });
+  expect(startImport).toHaveBeenCalledWith({
+    runId: "run",
+    uploadId: "upload-1",
+  });
 });
 
 it("keeps the server import visible when discard fails", async () => {
   serverImport = currentImport;
   discard.mockRejectedValue(new Error("unavailable"));
-  await act(async () => root.render(<Harness />));
+  await render();
   await act(async () => {
     await expect(flow.discard()).rejects.toThrow("unavailable");
   });
-  expect(flow.phase).toBe("reading");
+  expect(flow.phase).toBe("converting");
 });
 
-it("cancels a scheduled upload-not-ready retry on discard", async () => {
-  jest.useFakeTimers();
-  status = "ready";
-  start.mockRejectedValue({ data: { detail: { code: "upload_not_ready" } } });
+it("forgets browser-only progress when switching to another note", async () => {
+  start.mockRejectedValueOnce({ status: 500 });
   await upload();
-  expect(startImport).toHaveBeenCalledTimes(1);
-  await act(async () => flow.discard());
-  await act(async () => jest.advanceTimersByTime(10000));
-  expect(startImport).toHaveBeenCalledTimes(1);
+  expect(flow.phase).toBe("failed");
+  await render("other-run");
   expect(flow.phase).toBe("idle");
 });

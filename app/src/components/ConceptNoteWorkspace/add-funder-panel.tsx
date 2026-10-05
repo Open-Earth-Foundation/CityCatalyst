@@ -13,25 +13,20 @@ import {
 import { useTranslation } from "@/i18n/client";
 
 import { ContextStatusBadge } from "./context-status-badge";
-import type { FunderImportFlow, FunderImportPhase } from "./use-funder-import";
+import {
+  FUNDER_IMPORT_PHASE_LABEL,
+  type FunderImportFlow,
+} from "./use-funder-import";
 
-/** Status line key for each import phase, shared with the rail entry. */
-export function funderImportPhaseLabelKey(phase: FunderImportPhase): string {
-  switch (phase) {
-    case "uploading":
-      return "funder-import-uploading";
-    case "converting":
-      return "status-converting";
-    case "reading":
-      return "funder-import-reading";
-    case "ready":
-      return "funder-import-ready";
-    case "failed":
-      return "funder-import-failed";
-    default:
-      return "funder-add-entry-help";
-  }
-}
+/** Badge once a file has been chosen; every other phase is still processing. */
+const PHASE_BADGE = {
+  ready: { label: "status-ready", tone: "positive" },
+  failed: { label: "status-failed", tone: "warning" },
+} as const;
+const PROCESSING_BADGE = {
+  label: "status-processing",
+  tone: "neutral",
+} as const;
 
 interface AddFunderPanelProps {
   flow: FunderImportFlow;
@@ -54,6 +49,10 @@ export function AddFunderPanel({
   // Remount the dropzone after each pick so a rejected file can be replaced.
   const [pickerKey, setPickerKey] = useState(0);
   const { phase } = flow;
+  const badge =
+    phase === "ready" || phase === "failed"
+      ? PHASE_BADGE[phase]
+      : PROCESSING_BADGE;
   const working =
     phase === "uploading" || phase === "converting" || phase === "reading";
 
@@ -123,28 +122,11 @@ export function AddFunderPanel({
               {flow.filename}
             </Text>
             <Text fontSize="label.sm" color="content.tertiary" role="status">
-              {flow.pageCount
-                ? `${t(funderImportPhaseLabelKey(phase))} · ${t("pages-count", { count: flow.pageCount })}`
-                : t(funderImportPhaseLabelKey(phase))}
+              {t(FUNDER_IMPORT_PHASE_LABEL[phase])}
             </Text>
           </Box>
-          <ContextStatusBadge
-            label={t(
-              phase === "failed"
-                ? "status-failed"
-                : phase === "ready"
-                  ? "status-ready"
-                  : "status-processing",
-            )}
-            tone={
-              phase === "failed"
-                ? "warning"
-                : phase === "ready"
-                  ? "positive"
-                  : "neutral"
-            }
-          />
-          {flow.canRetry && (
+          <ContextStatusBadge label={t(badge.label)} tone={badge.tone} />
+          {phase === "failed" && (
             <Button
               size="xs"
               variant="outline"

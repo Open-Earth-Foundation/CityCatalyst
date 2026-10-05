@@ -1192,6 +1192,8 @@ export interface ConceptNoteFunderImport {
   upload_id: string;
   filename: string;
   status: "processing" | "ready" | "failed";
+  /** While processing: whether the upload is still converting to text. */
+  stage?: "converting" | "reading" | null;
   error_code: string | null;
   draft: ConceptNoteFunderImportDraft | null;
 }

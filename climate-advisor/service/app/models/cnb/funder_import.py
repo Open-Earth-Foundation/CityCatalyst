@@ -8,12 +8,18 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Literal
+from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, model_validator
 
 FunderImportStatus = Literal["processing", "ready", "failed"]
+# JSON carries awards as numbers, matching what the browser sends back.
+Award = Annotated[
+    Decimal,
+    Field(ge=0, max_digits=18, decimal_places=2),
+    PlainSerializer(float, return_type=float, when_used="json"),
+]
 
 
 class FunderImportContract(BaseModel):
@@ -51,8 +57,8 @@ class ProgrammeFields(FunderImportContract):
     finance_route: str | None = Field(default=None, max_length=255)
     instrument_type: str | None = Field(default=None, max_length=255)
     region_scope: str | None = Field(default=None, max_length=255)
-    min_award: Decimal | None = Field(default=None, ge=0, max_digits=18, decimal_places=2)
-    max_award: Decimal | None = Field(default=None, ge=0, max_digits=18, decimal_places=2)
+    min_award: Award | None = None
+    max_award: Award | None = None
     currency: str | None = Field(default=None, max_length=16)
     status: str | None = Field(default=None, max_length=64)
     summary: str | None = None
@@ -113,6 +119,8 @@ class FunderImport(FunderImportContract):
     upload_id: UUID
     filename: str
     status: FunderImportStatus
+    # Reported, not stored: a processing import waits for its upload to convert.
+    stage: Literal["converting", "reading"] | None = None
     error_code: str | None = None
     draft: FunderImportDraft | None = None
     created_at: datetime
@@ -132,7 +140,7 @@ class FunderImportDiscardRequest(FunderImportContract):
 
 
 class FunderImportStartRequest(FunderImportContract):
-    """Start reading funder details from one ready run upload."""
+    """Read funder details from one run upload once it has converted."""
 
     upload_id: UUID
 
@@ -192,16 +200,21 @@ class ExtractedEvidence(FunderImportContract):
     quote: str
 
 
-class FunderDocumentExtraction(FunderImportContract):
-    """Strict model output; code converts it into a ``FunderImportDraft``."""
+class ExtractedFunder(FunderImportContract):
+    """Model-facing ``funders`` columns and profile facts."""
 
-    funder_name: str | None
+    name: str | None
     funder_type: str | None
     country: str | None
     region: str | None
     stated_facts: list[ExtractedFact]
     derived_facts: list[ExtractedFact]
-    programme_name: str | None
+
+
+class ExtractedProgramme(FunderImportContract):
+    """Model-facing ``funding_opportunities`` columns."""
+
+    name: str | None
     applicant_type: str | None
     category: str | None
     sector: str | None
@@ -216,7 +229,24 @@ class FunderDocumentExtraction(FunderImportContract):
     status: str | None
     summary: str | None
     known_gaps: list[str]
+
+
+class ExtractedTemplate(FunderImportContract):
+    """Model-facing ``funder_templates`` columns."""
+
     template_name: str | None
     output_format: str | None
     chapters: list[ExtractedChapter]
+
+
+class FunderDocumentExtraction(FunderImportContract):
+    """Strict model output; code converts it into a ``FunderImportDraft``.
+
+    Every field is required (nullable instead) because structured outputs run
+    in strict mode, so these models cannot reuse the catalogue contracts above.
+    """
+
+    funder: ExtractedFunder
+    opportunity: ExtractedProgramme
+    template: ExtractedTemplate
     evidence: list[ExtractedEvidence]

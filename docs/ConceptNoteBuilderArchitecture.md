@@ -1971,9 +1971,13 @@ Document path:
 1. The file goes through the normal run upload (`POST /concept-notes/{run_id}/uploads`,
    OCR to Markdown, retry). It is labelled with its file name and, like any
    ready upload, also becomes a note source.
-2. `POST /v1/concept-notes/{run_id}/funder-imports {upload_id}` records a
-   `processing` import under the run context bundle's `funder_import` key and
-   reads the verified Markdown in one model call
+2. The browser calls `POST /v1/concept-notes/{run_id}/funder-imports {upload_id}`
+   right after the upload is accepted. It records a `processing` import under
+   the run context bundle's `funder_import` key. The background job polls the
+   upload until it is `ready` (up to 10 minutes; a failed conversion ends the
+   import with `upload_failed`), so `GET .../current` reports
+   `stage: converting` and then `stage: reading`. It then reads the verified
+   Markdown in one model call
    (`cnb_funder_extractor`, prompt `prompts/cnb/funder_document_extraction.md`,
    limit `prompt_budget.cnb_funder_import.max_document_tokens`). Code keeps only
    evidence quotes found verbatim (whitespace-insensitive) in the document,
@@ -1982,7 +1986,7 @@ Document path:
    import; `DELETE .../current` discards it. Starting again on the same upload
    replaces a failed import under a new id, which is how the browser retries.
    A job lost to a restart reads as `failed` (`extraction_interrupted`) after
-   15 minutes.
+   25 minutes (the conversion wait plus 15 minutes).
 3. `POST /v1/concept-notes/{run_id}/funders` writes the reviewed values in one
    CNB transaction and clears the import. Template `required_fields` is built
    from chapter `required_fields`, so every inventory field has an owning
@@ -2006,13 +2010,12 @@ filename as `source_record_ref`, so one upload cannot be added twice) or
 
 Added funders are visible to every city, because `funders` has no owner column.
 
-While an uploaded document converts, the browser keeps its upload ID and filename
-in session storage scoped to the city and run. Returning to the note or refreshing
-the same tab resumes the handoff to extraction after checking the current server
-import. Closing the tab ends this recovery window; browser storage must be enabled.
-Discarding or choosing another file invalidates outstanding upload/start callbacks
-and clears the recovery entry. If a discarded start already reached the server,
-the client removes only that response's import ID.
+Because the import starts before conversion finishes, the server import is the
+only state to recover: reopening the dialog or reloading the note shows it.
+Discarding or choosing another file invalidates outstanding upload/start
+callbacks in the browser. If a discarded start already reached the server, the
+client removes only that response's import ID. Retrying an `upload_failed`
+import retries the conversion first, then starts a new import on the same upload.
 
 Import starts lock the run before checking for an existing processing import, so
 concurrent requests schedule only one job. DELETE requires `{ importId }` at the
@@ -2022,10 +2025,12 @@ note copies its uploaded sources but omits the original run's pending import.
 Award provenance compares numeric values independent of decimal scale, so an
 unchanged `150000.0` extracted amount submitted as `150000` remains `extracted`.
 
-Errors return `detail = {code, message}` (for example `upload_not_ready`,
+Errors return `detail = {code, message}` (for example `upload_not_found`,
 `funder_import_running`, `funder_import_changed`, `funder_already_added`).
-Failed imports carry `error_code` (`document_too_long`, `source_fetch_failed`,
-`extraction_failed`, `extraction_interrupted` or a source-verification code).
+Failed imports carry `error_code` (`upload_failed`, `upload_not_ready`,
+`document_too_long`, `source_fetch_failed`, `extraction_failed`,
+`extraction_interrupted` or a source-verification code). Award amounts are JSON
+numbers in drafts and create requests.
 
 Award inputs accept a dot or comma as the decimal separator (up to two places)
 and spaces as thousands separators, for example `150 000,50`. Ambiguous comma

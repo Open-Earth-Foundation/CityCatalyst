@@ -31,23 +31,20 @@ import { api } from "@/services/api";
 import { isFetchBaseQueryError } from "@/util/helpers";
 import type {
   ConceptNoteApplicationContext,
+  ConceptNoteFunderCreateResponse,
   ConceptNoteFundingOpportunity,
   ConceptNoteFunder,
-  ConceptNoteFunderImport,
 } from "@/util/types";
-import { AddFunderForm } from "./add-funder-form";
-import { AddFunderPanel, funderImportPhaseLabelKey } from "./add-funder-panel";
 import {
-  emptyFunderForm,
-  formFromDraft,
-  formToCreateRequest,
-  funderApiErrorCode,
-  funderApiErrorKey,
-  validateFunderForm,
-  type FunderForm,
-} from "./funder-form";
+  AddFunderFooter,
+  AddFunderPane,
+  useAddFunder,
+} from "./add-funder-flow";
 import { FunderProfile, FundingOpportunityDetails } from "./funding-details";
-import type { FunderImportFlow } from "./use-funder-import";
+import {
+  FUNDER_IMPORT_PHASE_LABEL,
+  type FunderImportFlow,
+} from "./use-funder-import";
 
 interface FundingSelectionDialogProps {
   applicationContext: ConceptNoteApplicationContext;
@@ -118,12 +115,6 @@ export function FundingSelectionDialog({
   );
   const [acknowledged, setAcknowledged] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Adding an unlisted funder replaces the details pane and footer.
-  const [adding, setAdding] = useState<"choose" | "form" | null>(null);
-  const [form, setForm] = useState(emptyFunderForm);
-  const [source, setSource] = useState<ConceptNoteFunderImport | null>(null);
-  const [showErrors, setShowErrors] = useState(false);
-  const [addError, setAddError] = useState<string | null>(null);
   // Shown in the footer, not as a toast, so it never covers the save button.
   const [notice, setNotice] = useState<string | null>(null);
   const {
@@ -137,7 +128,6 @@ export function FundingSelectionDialog({
   });
   const [saveSelection, saveState] =
     api.useUpdateConceptNoteFundingSelectionMutation();
-  const [createFunder, createState] = api.useCreateConceptNoteFunderMutation();
   const funders = data?.funders ?? [];
   const visibleFunders = funders.filter((funder) =>
     matchesFundingSearch(funder, query),
@@ -155,81 +145,29 @@ export function FundingSelectionDialog({
   const forbidden =
     isFetchBaseQueryError(catalogueError) &&
     [401, 403, 404].includes(Number(catalogueError.status));
-  const formErrors = validateFunderForm(form);
+  // Adding an unlisted funder replaces the details pane and footer.
+  const add = useAddFunder({ runId, flow: funderImport, onAdded: selectAdded });
   // The rail shows no selection while the add-funder pane is open.
-  const selectedFunderId = adding ? null : funderId;
+  const selectedFunderId = add.mode ? null : funderId;
   const addedFrom = funder?.opportunities.find(
     (item) => item.added_from,
   )?.added_from;
 
-  function editForm(
-    next: FunderForm,
-    from: ConceptNoteFunderImport | null,
-  ): void {
-    setForm(next);
-    setSource(from);
-    setShowErrors(false);
-    setAddError(null);
-    setAdding("form");
-  }
-
-  function resetAdding(): void {
-    setAdding(null);
-    setForm(emptyFunderForm());
-    setSource(null);
-    setShowErrors(false);
-    setAddError(null);
-  }
-
-  function openReview(): void {
-    const ready = funderImport?.funderImport;
-    if (ready?.draft && ready.import_id !== source?.import_id) {
-      editForm(formFromDraft(ready.draft), ready);
-    } else {
-      setAdding("form");
-    }
-  }
-
-  async function discardAdding(): Promise<void> {
-    try {
-      await funderImport?.discard();
-      resetAdding();
-    } catch (cause) {
-      setAddError(t(funderApiErrorKey(cause)));
-    }
-  }
-
-  async function submitFunder(): Promise<void> {
-    setAddError(null);
-    if (Object.keys(formErrors).length) {
-      setShowErrors(true);
-      return;
-    }
-    try {
-      const created = await createFunder({
-        runId,
-        funder: formToCreateRequest(form, source),
-      }).unwrap();
-      await refetch();
-      resetAdding();
-      setQuery("");
-      setFunderId(created.funder_id);
-      setOpportunityId(created.funding_opportunity_id);
-      setAcknowledged(false);
-      setError(null);
-      setNotice(t("funder-added"));
-    } catch (cause) {
-      // A replaced or discarded import can still be added as typed.
-      if (funderApiErrorCode(cause) === "funder_import_changed") {
-        setSource(null);
-      }
-      setAddError(t(funderApiErrorKey(cause)));
-    }
+  async function selectAdded(
+    created: ConceptNoteFunderCreateResponse,
+  ): Promise<void> {
+    await refetch();
+    setQuery("");
+    setFunderId(created.funder_id);
+    setOpportunityId(created.funding_opportunity_id);
+    setAcknowledged(false);
+    setError(null);
+    setNotice(t("funder-added"));
   }
 
   function chooseFunder(id: string): void {
     setNotice(null);
-    setAdding(null);
+    add.close();
     if (id === funderId) return;
     const opportunities =
       funders.find((item) => item.id === id)?.opportunities ?? [];
@@ -517,11 +455,11 @@ export function FundingSelectionDialog({
                     w="full"
                     gap={3}
                     border="1px dashed"
-                    borderColor={adding ? "content.link" : "border.neutral"}
+                    borderColor={add.mode ? "content.link" : "border.neutral"}
                     bg="base.light"
-                    aria-pressed={Boolean(adding)}
+                    aria-pressed={Boolean(add.mode)}
                     disabled={saveState.isLoading}
-                    onClick={() => setAdding(funderImport ? "choose" : "form")}
+                    onClick={add.open}
                   >
                     <Icon as={LuPlus} flexShrink={0} color="content.link" />
                     <Box>
@@ -535,9 +473,9 @@ export function FundingSelectionDialog({
                         color="content.tertiary"
                       >
                         {t(
-                          funderImportPhaseLabelKey(
-                            funderImport?.phase ?? "idle",
-                          ),
+                          FUNDER_IMPORT_PHASE_LABEL[
+                            funderImport?.phase ?? "idle"
+                          ],
                         )}
                       </Text>
                     </Box>
@@ -553,22 +491,8 @@ export function FundingSelectionDialog({
                 overflowY={{ md: "auto" }}
                 aria-label={t("funding-details-label")}
               >
-                {adding === "form" ? (
-                  <AddFunderForm
-                    form={form}
-                    onChange={setForm}
-                    source={source}
-                    errors={showErrors ? formErrors : {}}
-                    disabled={createState.isLoading}
-                    lng={lng}
-                  />
-                ) : adding && funderImport ? (
-                  <AddFunderPanel
-                    flow={funderImport}
-                    lng={lng}
-                    onEnterManually={() => editForm(emptyFunderForm(), null)}
-                    onReview={openReview}
-                  />
+                {add.mode ? (
+                  <AddFunderPane add={add} flow={funderImport} lng={lng} />
                 ) : !funder ? (
                   <VStack align="start" justify="center" flex={1} gap={3}>
                     <Icon as={LuLandmark} boxSize={8} color="content.link" />
@@ -665,60 +589,11 @@ export function FundingSelectionDialog({
             </Flex>
           )}
         </DialogBody>
-        {adding ? (
-          <DialogFooter
-            flexShrink={0}
-            flexWrap="wrap"
-            gap={3}
-            p={4}
-            borderTop="1px solid"
-            borderColor="border.neutral"
-          >
-            {addError && (
-              <Text
-                role="alert"
-                flexBasis="100%"
-                color="sentiment.negativeDefault"
-                fontSize="body.sm"
-              >
-                {addError}
-              </Text>
-            )}
-            {funderImport &&
-              (adding === "form" || funderImport.phase !== "idle") && (
-                <Button
-                  variant="ghost"
-                  color="content.link"
-                  textDecoration="underline"
-                  size="sm"
-                  loading={funderImport.busy}
-                  onClick={() => void discardAdding()}
-                >
-                  {t("funder-discard")}
-                </Button>
-              )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setAdding(adding === "form" && funderImport ? "choose" : null)
-              }
-            >
-              {t("funder-back")}
-            </Button>
-            {adding === "form" && (
-              <Button
-                size="sm"
-                loading={createState.isLoading}
-                onClick={() => void submitFunder()}
-                data-testid="concept-note-add-funder"
-              >
-                {t("funder-add-submit")}
-              </Button>
-            )}
-          </DialogFooter>
+        {add.mode ? (
+          <AddFunderFooter add={add} flow={funderImport} lng={lng} />
         ) : (
           <DialogFooter
+            display="block"
             flexShrink={0}
             p={4}
             borderTop="1px solid"

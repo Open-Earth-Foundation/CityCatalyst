@@ -10,6 +10,7 @@ from uuid import UUID, uuid4
 import pytest
 from app.db.session import get_session
 from app.main import get_app
+from app.routes.dependencies import authorized_run
 from app.models.cnb.funder_import import (
     ExtractedChapter,
     ExtractedEvidence,
@@ -62,64 +63,74 @@ PAGES = [
 ]
 
 
-def _extraction(**overrides: object) -> FunderDocumentExtraction:
-    """Model output with every field set to a neutral value."""
-    values = {
-        "funder_name": "Green Cities Foundation",
-        "funder_type": "Private foundation",
-        "country": None,
-        "region": None,
-        "stated_facts": [ExtractedFact(key="purpose", value="Nature for cities")],
-        "derived_facts": [],
-        "programme_name": "Nature-Based Cities Call 2026",
-        "applicant_type": None,
-        "category": None,
-        "sector": None,
-        "hazards": ["Flooding", " Flooding ", ""],
-        "interventions": [],
-        "finance_route": None,
-        "instrument_type": None,
-        "region_scope": None,
-        "min_award": 150000,
-        "max_award": 600000,
-        "currency": "USD",
-        "status": None,
-        "summary": None,
-        "known_gaps": [],
-        "template_name": "Proposal form",
-        "output_format": None,
-        "chapters": [
-            ExtractedChapter(
-                chapter_ref="Applicant Details",
-                title="Applicant details",
-                description=None,
-                required=True,
-                required_fields=["municipality_name"],
-            ),
-            ExtractedChapter(
-                chapter_ref="applicant-details",
-                title="Budget",
-                description=None,
-                required=True,
-                required_fields=["budget_total", "municipality_name"],
-            ),
-        ],
-        "evidence": [
-            ExtractedEvidence(field="funder.name", quote="Green Cities Foundation"),
-            ExtractedEvidence(
-                field="opportunity.min_award",
-                quote="grants of USD 150,000 to 600,000 per project",
-            ),
-            ExtractedEvidence(field="funder.country", quote="Green Cities Foundation"),
-            ExtractedEvidence(field="opportunity.name", quote="Invented quote"),
-            ExtractedEvidence(
-                field="template.chapter_schema.Applicant Details",
-                quote="Section 1. Applicant details",
-            ),
-        ],
-    }
-    values.update(overrides)
-    return FunderDocumentExtraction(**values)
+def _extraction(
+    *, opportunity: dict | None = None, template: dict | None = None
+) -> FunderDocumentExtraction:
+    """Model output with every field set; section overrides replace keys."""
+    return FunderDocumentExtraction.model_validate(
+        {
+            "funder": {
+                "name": "Green Cities Foundation",
+                "funder_type": "Private foundation",
+                "country": None,
+                "region": None,
+                "stated_facts": [{"key": "purpose", "value": "Nature for cities"}],
+                "derived_facts": [],
+            },
+            "opportunity": {
+                "name": "Nature-Based Cities Call 2026",
+                "applicant_type": None,
+                "category": None,
+                "sector": None,
+                "hazards": ["Flooding", " Flooding ", ""],
+                "interventions": [],
+                "finance_route": None,
+                "instrument_type": None,
+                "region_scope": None,
+                "min_award": 150000,
+                "max_award": 600000,
+                "currency": "USD",
+                "status": None,
+                "summary": None,
+                "known_gaps": [],
+                **(opportunity or {}),
+            },
+            "template": {
+                "template_name": "Proposal form",
+                "output_format": None,
+                "chapters": [
+                    {
+                        "chapter_ref": "Applicant Details",
+                        "title": "Applicant details",
+                        "description": None,
+                        "required": True,
+                        "required_fields": ["municipality_name"],
+                    },
+                    {
+                        "chapter_ref": "applicant-details",
+                        "title": "Budget",
+                        "description": None,
+                        "required": True,
+                        "required_fields": ["budget_total", "municipality_name"],
+                    },
+                ],
+                **(template or {}),
+            },
+            "evidence": [
+                {"field": "funder.name", "quote": "Green Cities Foundation"},
+                {
+                    "field": "opportunity.min_award",
+                    "quote": "grants of USD 150,000 to 600,000 per project",
+                },
+                {"field": "funder.country", "quote": "Green Cities Foundation"},
+                {"field": "opportunity.name", "quote": "Invented quote"},
+                {
+                    "field": "template.chapter_schema.Applicant Details",
+                    "quote": "Section 1. Applicant details",
+                },
+            ],
+        }
+    )
 
 
 def _draft() -> FunderImportDraft:
@@ -258,7 +269,7 @@ def test_build_draft_maps_columns_and_keeps_only_verbatim_quotes():
 
 
 def test_build_draft_drops_inconsistent_award_range_and_flags_it():
-    draft = build_draft(_extraction(min_award=900, max_award=100), PAGES)
+    draft = build_draft(_extraction(opportunity={"min_award": 900, "max_award": 100}), PAGES)
     assert draft.opportunity.min_award is None
     assert draft.opportunity.max_award is None
     assert "The award range could not be read consistently." in (
@@ -268,7 +279,7 @@ def test_build_draft_drops_inconsistent_award_range_and_flags_it():
 
 def test_build_draft_reports_markdown_quotes_without_page():
     blocks = [SourceBlock(anchor="doc/block-1", text="Green Cities Foundation\n")]
-    draft = build_draft(_extraction(chapters=[]), blocks)
+    draft = build_draft(_extraction(template={"chapters": []}), blocks)
     assert FieldEvidence(field="funder.name", quote="Green Cities Foundation") in (
         draft.evidence
     )
@@ -478,18 +489,10 @@ async def test_discard_preserves_a_replacement_and_clears_only_its_own_import():
         assert bundle.context_bundle["cc_context"]["city"]["name"] == "X"
 
 
-async def test_start_requires_a_converted_upload_and_one_running_import():
+async def test_start_accepts_a_converting_upload_and_allows_one_running_import():
     async with _ca_session() as session:
-        run, upload = await _run_with_upload(session, ingest_status="processing")
+        run, upload = await _run_with_upload(session, ingest_status="queued")
         with patch.object(service, "schedule_funder_import") as schedule:
-            with pytest.raises(HTTPException) as not_ready:
-                await start_funder_import(
-                    session, run, upload_id=upload.upload_id, token="t"
-                )
-            assert not_ready.value.detail["code"] == "upload_not_ready"
-
-            upload.ingest_status = "ready"
-            await session.commit()
             started = await start_funder_import(
                 session, run, upload_id=upload.upload_id, token="t"
             )
@@ -497,11 +500,16 @@ async def test_start_requires_a_converted_upload_and_one_running_import():
             schedule.assert_called_once_with(
                 run_id=run.run_id, import_id=started.import_id, token="t"
             )
+            assert (await load_funder_import(session, run)).stage == "converting"
             with pytest.raises(HTTPException) as running:
                 await start_funder_import(
                     session, run, upload_id=upload.upload_id, token="t"
                 )
             assert running.value.detail["code"] == "funder_import_running"
+
+            upload.ingest_status = "ready"
+            await session.commit()
+            assert (await load_funder_import(session, run)).stage == "reading"
 
         bundle = await session.get(ConceptNoteContextBundle, run.run_id)
         assert bundle.context_bundle["cc_context"]["city"]["name"] == "X"
@@ -536,6 +544,8 @@ async def _run_job(
     run: ConceptNoteRun,
     upload: ConceptNoteUpload,
     extract: AsyncMock,
+    *,
+    closes: bool = True,
 ) -> FunderImport | None:
     """Run the background job against the in-memory run database."""
     factory = async_sessionmaker(session.bind, expire_on_commit=False)
@@ -561,7 +571,7 @@ async def _run_job(
         cc_client_factory=lambda: client,
         extract=extract,
     )
-    client.close.assert_awaited_once()
+    assert client.close.await_count == int(closes)
     return await load_funder_import(session, run)
 
 
@@ -596,19 +606,51 @@ async def test_background_job_stores_a_stable_failure_code():
         assert result.draft is None
 
 
+@pytest.mark.parametrize(
+    "converted_status, status, error_code",
+    [("ready", "ready", None), ("failed", "failed", "upload_failed")],
+)
+async def test_background_job_waits_for_the_upload_to_convert(
+    converted_status, status, error_code
+):
+    async with _ca_session() as session:
+        run, upload = await _run_with_upload(session, ingest_status="queued")
+        await _store_import(
+            session,
+            run,
+            _ready_import(upload).model_copy(update={"status": "processing", "draft": None}),
+        )
+        factory = async_sessionmaker(session.bind, expire_on_commit=False)
+
+        async def convert(_seconds: float) -> None:
+            """Finish converting while the job sleeps between polls."""
+            async with factory() as other:
+                converted = await other.get(ConceptNoteUpload, upload.upload_id)
+                converted.ingest_status = converted_status
+                await other.commit()
+
+        with patch.object(service.asyncio, "sleep", side_effect=convert) as sleep:
+            result = await _run_job(
+                session,
+                run,
+                upload,
+                AsyncMock(return_value=_draft()),
+                closes=status == "ready",
+            )
+        sleep.assert_awaited_once()
+        assert (result.status, result.error_code) == (status, error_code)
+
+
 # --- HTTP ---------------------------------------------------------------------------
 
 
 def test_discard_requires_and_forwards_the_observed_import_id():
     app = get_app()
-    app.dependency_overrides[get_session] = lambda: None
     run = SimpleNamespace(run_id=uuid4(), user_id="owner")
+    app.dependency_overrides[get_session] = lambda: None
+    app.dependency_overrides[authorized_run] = lambda: run
     import_id = uuid4()
     with (
-        patch(
-            "app.routes.concept_note_funder_imports._authorized_run",
-            AsyncMock(return_value=run),
-        ),
         patch(
             "app.routes.concept_note_funder_imports.discard_funder_import", AsyncMock()
         ) as discard,
@@ -630,18 +672,14 @@ def test_discard_requires_and_forwards_the_observed_import_id():
 
 def test_structured_errors_keep_their_code_in_problem_responses():
     app = get_app()
-    app.dependency_overrides[get_session] = lambda: None
     run = SimpleNamespace(run_id=uuid4(), user_id="owner")
+    app.dependency_overrides[get_session] = lambda: None
+    app.dependency_overrides[authorized_run] = lambda: run
     with (
-        patch(
-            "app.routes.concept_note_funder_imports.ConceptNoteRunService."
-            "get_authorized_run",
-            AsyncMock(return_value=run),
-        ),
         patch(
             "app.routes.concept_note_funder_imports.start_funder_import",
             AsyncMock(
-                side_effect=service.conflict("funder_import_running", "Busy")
+                side_effect=service.api_error("funder_import_running", "Busy")
             ),
         ),
         TestClient(app) as client,

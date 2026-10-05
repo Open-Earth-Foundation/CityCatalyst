@@ -466,7 +466,6 @@ test("read a funder document, review it and add the funder", async ({
   const catalogue: CatalogueFunder[] = [...funders];
   const filename = "Green_Cities_Call_2026.pdf";
   const created: Array<Record<string, unknown>> = [];
-  let uploadPolls = 0;
   let importPolls = 0;
   let funderImport: Record<string, unknown> | null = null;
   const draft = {
@@ -490,8 +489,8 @@ test("read a funder document, review it and add the funder", async ({
       finance_route: null,
       instrument_type: "Grant",
       region_scope: "Latin America",
-      min_award: "150000.00",
-      max_award: "600000.00",
+      min_award: 150000,
+      max_award: 600000,
       currency: "USD",
       status: "Open",
       summary: null,
@@ -537,21 +536,6 @@ test("read a funder document, review it and add the funder", async ({
             stage: "ocr",
             canRetry: false,
             filename,
-          },
-        });
-        return true;
-      }
-      if (url.pathname.endsWith(`/uploads/${uploadId}/`)) {
-        uploadPolls += 1;
-        await route.fulfill({
-          json: {
-            uploadId,
-            runId,
-            status: uploadPolls > 1 ? "ready" : "processing",
-            stage: uploadPolls > 1 ? "complete" : "ocr",
-            canRetry: false,
-            filename,
-            pageCount: 12,
           },
         });
         return true;

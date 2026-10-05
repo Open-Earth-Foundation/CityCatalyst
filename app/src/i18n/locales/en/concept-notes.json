@@ -836,7 +836,6 @@
   "funder-added": "Funder added. Save the selection to use it for this note.",
   "funder-error-generic": "The funder could not be added. Please try again.",
   "funder-error-invalid": "Some details are not valid. Check them and try again.",
-  "funder-error-upload-not-ready": "The file is still being converted. Retry in a moment.",
   "funder-error-import-running": "A funder document is already being read. Wait for it to finish.",
   "funder-error-import-changed": "The document import changed. Review the details again before adding.",
   "funder-error-already-added": "This funder was already added from this document.",

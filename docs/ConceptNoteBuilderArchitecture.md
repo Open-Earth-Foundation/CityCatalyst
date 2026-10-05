@@ -1969,7 +1969,7 @@ those tables are unchanged. Selecting it afterwards uses the normal
 Document path:
 
 1. The file goes through the normal run upload (`POST /concept-notes/{run_id}/uploads`,
-   OCR to Markdown, retry). It is labelled "Funder document" and, like any
+   OCR to Markdown, retry). It is labelled with its file name and, like any
    ready upload, also becomes a note source.
 2. `POST /v1/concept-notes/{run_id}/funder-imports {upload_id}` records a
    `processing` import under the run context bundle's `funder_import` key and

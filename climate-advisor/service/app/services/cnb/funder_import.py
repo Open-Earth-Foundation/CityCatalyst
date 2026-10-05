@@ -27,6 +27,7 @@ from app.db.session import get_session_factory
 from app.models.cnb.concept_note_markdown import source_format_from_filename
 from app.models.cnb.funding_catalogue import MANUAL_SOURCE_PREFIX, UPLOAD_SOURCE_PREFIX
 from app.models.cnb.funder_import import (
+    ExtractedFact,
     FieldEvidence,
     FunderCreateRequest,
     FunderCreateResponse,
@@ -201,6 +202,7 @@ def schedule_funder_import(*, run_id: UUID, import_id: UUID, token: str) -> None
     _BACKGROUND_IMPORTS.add(task)
 
     def release(completed: asyncio.Task[None]) -> None:
+        """Drop the finished task and log a crash the job did not handle."""
         _BACKGROUND_IMPORTS.discard(completed)
         try:
             completed.result()
@@ -532,7 +534,7 @@ async def create_funder(
     factory = reference_factory or get_cnb_reference_session_factory()
 
     # Step 1: resolve the import these values were reviewed from, if any.
-    funder_import: FunderImport | None = None
+    draft: FunderImportDraft | None = None
     upload: ConceptNoteUpload | None = None
     if payload.import_id is not None:
         funder_import = await load_funder_import(session, run)
@@ -546,6 +548,7 @@ async def create_funder(
                 "funder_import_changed",
                 "The document import changed. Reload and review it again.",
             )
+        draft = funder_import.draft
         upload = await session.get(ConceptNoteUpload, funder_import.upload_id)
         if upload is None or upload.markdown_sha256 is None:
             raise conflict("upload_not_found", "The uploaded file was not found.", 404)
@@ -560,7 +563,7 @@ async def create_funder(
 
     # Step 3: write funder, programme, template and provenance in one transaction.
     funder_id, opportunity_id = uuid4(), uuid4()
-    if funder_import is not None and upload is not None:
+    if upload is not None:
         source_run_id = f"{UPLOAD_SOURCE_PREFIX}{upload.upload_id}"
         source_record_ref = upload.filename[:255]
     else:
@@ -601,11 +604,10 @@ async def create_funder(
                     required_fields=template_required_fields(template),
                 )
             )
-            if funder_import is not None and upload is not None:
-                assert funder_import.draft is not None
+            if draft is not None and upload is not None:
                 document_id = await _source_document_id(reference, run, upload)
                 for row in evidence_rows(
-                    funder_import.draft,
+                    draft,
                     reviewed,
                     opportunity_id=opportunity_id,
                     source_document_id=document_id,
@@ -617,7 +619,7 @@ async def create_funder(
         ) from exc
 
     # Step 4: the draft is now in the catalogue, so clear it from the run.
-    if funder_import is not None:
+    if draft is not None:
         await _write_import(session, run.run_id, None)
         await session.commit()
     logger.info(
@@ -625,7 +627,7 @@ async def create_funder(
         run.run_id,
         funder_id,
         opportunity_id,
-        funder_import is not None,
+        draft is not None,
     )
     return FunderCreateResponse(
         funder_id=funder_id, funding_opportunity_id=opportunity_id
@@ -809,7 +811,7 @@ def _clean_list(values: Sequence[str]) -> list[str]:
     return cleaned
 
 
-def _facts(facts: Sequence[Any]) -> dict[str, str]:
+def _facts(facts: Sequence[ExtractedFact]) -> dict[str, str]:
     """Turn model key/value facts into a map, keeping the first of duplicates."""
     result: dict[str, str] = {}
     for fact in facts:

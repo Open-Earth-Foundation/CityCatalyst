@@ -19,6 +19,7 @@ from app.services.cnb.funder_import import (
     start_funder_import,
 )
 from app.services.concept_note_runs import ConceptNoteRunService
+from app.utils.citycatalyst_auth import extract_bearer_token
 from fastapi import APIRouter, Depends, Header, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -32,11 +33,6 @@ async def _authorized_run(
     return await ConceptNoteRunService(session).get_authorized_run(
         run_id=run_id, requested_user_id=user_id, authorization=authorization
     )
-
-
-def _bearer_token(authorization: str | None) -> str:
-    """Return the token already validated by ``get_authorized_run``."""
-    return (authorization or "").partition(" ")[2].strip()
 
 
 @router.get(
@@ -69,7 +65,7 @@ async def start_concept_note_funder_import(
     """Start reading funder details from a converted upload on this run."""
     run = await _authorized_run(session, run_id, user_id, authorization)
     funder_import = await start_funder_import(
-        session, run, upload_id=payload.upload_id, token=_bearer_token(authorization)
+        session, run, upload_id=payload.upload_id, token=extract_bearer_token(authorization)
     )
     return FunderImportResponse(funder_import=funder_import)
 

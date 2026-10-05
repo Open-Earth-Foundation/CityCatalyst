@@ -172,8 +172,11 @@ export function FundingSelectionDialog({
   }
 
   function resetAdding(): void {
-    editForm(emptyFunderForm(), null);
     setAdding(null);
+    setForm(emptyFunderForm());
+    setSource(null);
+    setShowErrors(false);
+    setAddError(null);
   }
 
   function openReview(): void {

@@ -152,8 +152,10 @@ def get_app() -> FastAPI:
         return JSONResponse(status_code=422, content=problem, media_type="application/problem+json")
 
     @app.exception_handler(StarletteHTTPException)
-    async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-        # Covers 404/400/etc raised via HTTPException
+    async def http_exception_handler(
+        request: Request, exc: StarletteHTTPException
+    ) -> JSONResponse:
+        """Return HTTP errors as problem details, keeping structured codes."""
         # Structured details ({"code", "message"}) stay machine-readable for callers.
         if isinstance(exc.detail, dict):
             title = str(exc.detail.get("message", "HTTP Error"))

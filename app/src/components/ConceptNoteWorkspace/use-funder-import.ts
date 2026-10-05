@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
+  conceptNoteSourceLabel,
   shouldPollConceptNoteUpload,
   validateConceptNoteSourceFile,
 } from "@/components/ConceptNoteWiringHarness/utils";
@@ -19,8 +20,6 @@ import {
 const POLL_MS = 2000;
 /** Climate Advisor can see a converted upload a moment after CityCatalyst. */
 const START_ATTEMPTS = 5;
-/** The funder document also becomes an ordinary source of the note. */
-export const FUNDER_DOCUMENT_SOURCE_LABEL = "Funder document";
 
 export type FunderImportPhase =
   "idle" | "uploading" | "converting" | "reading" | "ready" | "failed";
@@ -65,6 +64,7 @@ export function useFunderImport({
   const [startTick, setStartTick] = useState(0);
   const startedRef = useRef<string | null>(null);
   const notReadyRef = useRef(0);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dispatch = useAppDispatch();
 
   const { data } = api.useGetConceptNoteFunderImportQuery(runId);
@@ -123,7 +123,7 @@ export function useFunderImport({
           notReadyRef.current < START_ATTEMPTS
         ) {
           notReadyRef.current += 1;
-          setTimeout(() => {
+          retryTimerRef.current = setTimeout(() => {
             startedRef.current = null;
             setStartTick((tick) => tick + 1);
           }, POLL_MS);
@@ -132,6 +132,13 @@ export function useFunderImport({
         setError(funderApiErrorKey(cause));
       });
   }, [pending, uploadReady, startRead, startTick]);
+
+  useEffect(
+    () => () => {
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+    },
+    [],
+  );
 
   let phase: FunderImportPhase = "idle";
   let failure: string | null = null;
@@ -173,7 +180,8 @@ export function useFunderImport({
     try {
       const formData = new FormData();
       formData.set("file", file);
-      formData.set("sourceLabel", FUNDER_DOCUMENT_SOURCE_LABEL);
+      // The funder document also becomes an ordinary source of the note.
+      formData.set("sourceLabel", conceptNoteSourceLabel(file.name));
       const created = await uploadSource({ cityId, formData, runId }).unwrap();
       resetStart();
       setPicking(false);

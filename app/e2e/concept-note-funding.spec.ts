@@ -447,6 +447,9 @@ test("add a funder by hand and select it", async ({ page }) => {
   await expect(
     dialog.getByText("Added by hand", { exact: true }),
   ).toBeVisible();
+  await expect(
+    dialog.getByText("Funder added. Save the selection", { exact: false }),
+  ).toBeVisible();
   await dialog
     .getByRole("button", { name: "Save and go to drafting", exact: true })
     .click();

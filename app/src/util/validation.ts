@@ -531,6 +531,7 @@ export const conceptNoteFunderCreateRequest = z
           .array(
             z
               .object({
+                // Empty for new chapters; the server derives one from the title.
                 chapter_ref: z.string().max(255),
                 title: z.string().trim().min(1).max(255),
                 description: z.string().nullable(),

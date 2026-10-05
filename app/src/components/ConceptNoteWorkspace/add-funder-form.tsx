@@ -22,12 +22,10 @@ import { useTranslation } from "@/i18n/client";
 
 import {
   emptyChapter,
-  textValue,
-  withTextValue,
   type ChapterRow,
   type FunderForm,
   type FunderFormErrors,
-  type FunderTextFields,
+  type FunderTextSection,
 } from "./funder-form";
 
 const sectionProps = {
@@ -67,13 +65,7 @@ export function AddFunderForm({
   const errorText = (path: string) => (errors[path] ? t(errors[path]) : null);
 
   function setChapters(update: (rows: ChapterRow[]) => ChapterRow[]): void {
-    onChange((current) => ({
-      ...current,
-      template: {
-        ...current.template,
-        chapters: update(current.template.chapters),
-      },
-    }));
+    onChange((current) => ({ ...current, chapters: update(current.chapters) }));
   }
   function setChapter(id: string, patch: Partial<ChapterRow>): void {
     setChapters((rows) =>
@@ -81,14 +73,15 @@ export function AddFunderForm({
     );
   }
 
-  function textField<S extends keyof FunderTextFields>(
+  function textField<S extends FunderTextSection>(
     section: S,
-    field: FunderTextFields[S],
+    field: keyof FunderForm[S] & string,
     labelKey: string,
     { required, full, multiline, help }: TextFieldOptions = {},
   ): ReactNode {
     const path = `${section}.${field}`;
     const Control = multiline ? Textarea : Input;
+    const values: Record<string, string> = form[section];
     return (
       <Field
         key={path}
@@ -101,12 +94,13 @@ export function AddFunderForm({
       >
         <Control
           size="sm"
-          value={textValue(form, section, field)}
+          value={values[field]}
           disabled={disabled}
           onChange={(event) =>
-            onChange((current) =>
-              withTextValue(current, section, field, event.target.value),
-            )
+            onChange((current) => ({
+              ...current,
+              [section]: { ...current[section], [field]: event.target.value },
+            }))
           }
         />
       </Field>
@@ -204,7 +198,7 @@ export function AddFunderForm({
           </Text>
         )}
         <VStack as="ol" align="stretch" gap={0} listStyleType="none" m={0}>
-          {form.template.chapters.map((chapter, index) => {
+          {form.chapters.map((chapter, index) => {
             const titlePath = `chapter.${chapter.id}.title`;
             return (
               <VStack

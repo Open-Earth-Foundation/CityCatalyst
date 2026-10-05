@@ -1,5 +1,6 @@
 import type Decimal from "decimal.js";
 import type { GeoJSON } from "geojson";
+import type { z } from "zod";
 import type {
   DataSourceWithRelations,
   GlobalAPISourceResponse,
@@ -17,6 +18,7 @@ import {
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
+import type { conceptNoteFunderCreateRequest } from "@/util/validation";
 import type { CityAttributes } from "@/models/City";
 import type { GasValue, GasValueAttributes } from "@/models/GasValue";
 import type {
@@ -1163,56 +1165,18 @@ export interface ConceptNoteFundingAddedFrom {
   filename: string | null;
 }
 
+/** Reviewed funder, programme and template; see `conceptNoteFunderCreateRequest`. */
+export type ConceptNoteFunderCreateRequest = z.infer<
+  typeof conceptNoteFunderCreateRequest
+>;
 /** Reviewable `funders` columns. */
-export interface ConceptNoteFunderFields {
-  name: string;
-  funder_type: string | null;
-  country: string | null;
-  region: string | null;
-  profile: {
-    stated: Record<string, string>;
-    derived: Record<string, string>;
-  };
-}
-
+export type ConceptNoteFunderFields = ConceptNoteFunderCreateRequest["funder"];
 /** Reviewable `funding_opportunities` columns. */
-export interface ConceptNoteProgrammeFields {
-  name: string;
-  applicant_type: string | null;
-  category: string | null;
-  sector: string | null;
-  hazards: string[];
-  interventions: string[];
-  finance_route: string | null;
-  instrument_type: string | null;
-  region_scope: string | null;
-  min_award: number | null;
-  max_award: number | null;
-  currency: string | null;
-  status: string | null;
-  summary: string | null;
-  known_gaps: string[];
-}
-
+export type ConceptNoteProgrammeFields =
+  ConceptNoteFunderCreateRequest["opportunity"];
 /** Reviewable `funder_templates` columns; `required_fields` is derived. */
-export interface ConceptNoteTemplateFields {
-  template_name: string;
-  output_format: string | null;
-  chapter_schema: Array<{
-    /** Empty for new chapters; the server derives a reference from the title. */
-    chapter_ref: string;
-    title: string;
-    description: string | null;
-    required: boolean;
-    required_fields: string[];
-  }>;
-}
-
-export interface ConceptNoteFunderCreateRequest {
-  funder: ConceptNoteFunderFields;
-  opportunity: ConceptNoteProgrammeFields;
-  template: ConceptNoteTemplateFields;
-}
+export type ConceptNoteTemplateFields =
+  ConceptNoteFunderCreateRequest["template"];
 
 export interface ConceptNoteFunderCreateResponse {
   funder_id: string;

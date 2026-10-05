@@ -136,17 +136,13 @@ def normalize_chapters(
 
 def template_required_fields(template: TemplateFields) -> list[str]:
     """Build the template inventory from chapter fields so each has an owner."""
-    fields: list[str] = []
-    for chapter in template.chapter_schema:
-        fields.extend(field for field in chapter.required_fields if field not in fields)
-    return fields
+    return list(
+        dict.fromkeys(
+            field for chapter in template.chapter_schema for field in chapter.required_fields
+        )
+    )
 
 
 def _clean_list(values: Sequence[str]) -> list[str]:
     """Strip, drop blanks and keep the first copy of each value."""
-    cleaned: list[str] = []
-    for value in values:
-        stripped = value.strip()
-        if stripped and stripped not in cleaned:
-            cleaned.append(stripped)
-    return cleaned
+    return list(dict.fromkeys(stripped for value in values if (stripped := value.strip())))

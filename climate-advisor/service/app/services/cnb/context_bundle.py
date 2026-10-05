@@ -553,25 +553,7 @@ class ContextBundleService:
             )
             for upload in uploads
         ]
-        token_count = count_prompt_tokens(
-            [document.text for document in documents],
-            model=settings.llm.models.cnb_chapter_drafter.name,
-            fallback_encoding=budget.tokenizer_encoding,
-        ).tokens
-        full_text = token_count <= max_tokens
-        logger.info(
-            "Concept Note source text mode=%s tokens=%s max_tokens=%s sources=%s",
-            "full_text" if full_text else "summary",
-            token_count,
-            max_tokens,
-            len(documents),
-        )
-        return SourceTextContext(
-            mode="full_text" if full_text else "summary",
-            token_count=token_count,
-            max_tokens=max_tokens,
-            documents=documents if full_text else [],
-        )
+        return source_text_context(documents, settings)
 
     async def _verified_visual_context(
         self,
@@ -929,6 +911,34 @@ class ContextBundleService:
             error_reason=error_reason,
             error_details=error_details,
         )
+
+
+def source_text_context(
+    documents: list[SourceDocumentText],
+    settings: Settings,
+) -> SourceTextContext:
+    """Keep complete verified source text only while it fits the drafting budget."""
+    budget = settings.llm.generation.prompt_budget
+    max_tokens = budget.cnb_sources.full_text_max_tokens
+    token_count = count_prompt_tokens(
+        [document.text for document in documents],
+        model=settings.llm.models.cnb_chapter_drafter.name,
+        fallback_encoding=budget.tokenizer_encoding,
+    ).tokens
+    full_text = token_count <= max_tokens
+    logger.info(
+        "Concept Note source text mode=%s tokens=%s max_tokens=%s sources=%s",
+        "full_text" if full_text else "summary",
+        token_count,
+        max_tokens,
+        len(documents),
+    )
+    return SourceTextContext(
+        mode="full_text" if full_text else "summary",
+        token_count=token_count,
+        max_tokens=max_tokens,
+        documents=documents if full_text else [],
+    )
 
 
 def _can_reuse_source_analysis(

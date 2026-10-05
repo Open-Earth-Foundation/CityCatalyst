@@ -153,6 +153,64 @@ jobs:
           reporter: "java-junit"
           fail-on-error: false
 
+  # Live-model grounding evaluation; gates are documented in
+  # climate-advisor/service/tests/fixtures/cnb_golden_set/README.md.
+  cnbGoldenSet:
+    name: CNB grounding golden set
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      CA_LOG_LEVEL: info
+      CA_CORS_ORIGINS: "*"
+      CC_BASE_URL: http://localhost:3000
+      CA_DATABASE_URL: "sqlite+aiosqlite:///:memory:"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.7"
+          enable-cache: true
+          cache-dependency-glob: "climate-advisor/uv.lock"
+
+      - name: Sync dependencies
+        working-directory: climate-advisor
+        run: |
+          uv sync --locked
+
+      - name: Evaluate source analysis and chapter drafting
+        working-directory: climate-advisor
+        run: |
+          uv run --directory service python -m scripts.evaluate_cnb_golden_set \
+                 --repeats 2 \
+                 --output-dir ../output/cnb_golden_set
+
+      - name: Publish golden-set report
+        if: always()
+        working-directory: climate-advisor
+        run: |
+          if [ -f output/cnb_golden_set/report.md ]; then
+            cat output/cnb_golden_set/report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload golden-set outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cnb-golden-set
+          path: climate-advisor/output/cnb_golden_set
+          if-no-files-found: ignore
+
   pushToGHCR:
     needs: test
     runs-on: ubuntu-latest

@@ -1,0 +1,300 @@
+{
+  "fixture_id": "richfield-flood-risk",
+  "description": "PDF-derived Markdown of the public August 2025 City of Richfield, Minnesota stormwater model update and flood-risk prioritization study, drafted into an eight-section Minnesota DNR Flood Hazard Mitigation application.",
+  "source": {
+    "path": "source.md",
+    "filename": "Richfield_FloodRiskPrioritization.pdf",
+    "source_label": "Richfield Flood Risk Prioritization",
+    "source_format": "pdf",
+    "page_count": 55,
+    "sha256": "4e8241d596199264b6206ca65097177991494a89114f440075024d58391a3977",
+    "provenance": "Mistral OCR (mistral-ocr-latest) of the public Barr Engineering report, assembled with CityCatalyst page-marker, header/footer, and table rules. The certifying engineer, licence number, and private email correspondents are redacted."
+  },
+  "source_analysis": {
+    "facts": [
+      {
+        "id": "model-coverage",
+        "statement": "The stormwater model covers the entire City of Richfield and the adjacent areas that drain into Richfield.",
+        "match": {
+          "all_of": [
+            ["entire city", "whole city", "citywide", "city-wide", "all of richfield", "entire richfield"],
+            ["adjacent", "neighboring", "neighbouring", "drain into", "drains into"]
+          ]
+        },
+        "evidence": [
+          {
+            "text": "The model covers the entire city and the areas of adjacent cities that drain into Richfield.",
+            "locators": [{"page": 7}]
+          }
+        ]
+      },
+      {
+        "id": "lidar-update",
+        "statement": "Barr updated the PCSWMM model with LiDAR data collected in 2022 and published by the USGS.",
+        "match": {"all_of": [["lidar"], ["2022"]]},
+        "evidence": [
+          {
+            "text": "Barr updated the existing PCSWMM model to incorporate the Light Detection and Ranging (LiDAR) data collected in 2022 and published by the United States Geological Survey (USGS)",
+            "locators": [{"page": 9}]
+          }
+        ]
+      },
+      {
+        "id": "design-storms",
+        "statement": "The updated model simulates four design storm events, including the climate-adaptation MCE100-year event, using the MSE3 rainfall distribution.",
+        "match": {
+          "all_of": [
+            ["four design", "four storm", "four rainfall", "four 24-hour", "4 design"],
+            ["mse3", "midwest southeast", "mce100", "mid-21"]
+          ]
+        },
+        "evidence": [
+          {
+            "text": "The four design storm events use the Midwest Southeast 3 (MSE3) rainfall distribution",
+            "locators": [{"page": 14}]
+          },
+          {
+            "text": "The PCSWMM model was used to simulate four design rainfall events.",
+            "locators": [{"page": 14}]
+          }
+        ]
+      },
+      {
+        "id": "prioritization-criteria",
+        "statement": "Flood-risk areas were scored on storm system conditions, critical infrastructure, frequency of flooding, social vulnerability index, and number of flood-prone structures.",
+        "match": {
+          "all_of": [
+            ["storm system condition", "storm sewer condition"],
+            ["critical infrastructure"],
+            ["social vulnerab", "svi"]
+          ]
+        },
+        "evidence": [
+          {
+            "text": "The criteria selected to score the flood-risk areas are:\n\n- Storm system conditions\n- Critical infrastructure\n- Frequency of flooding\n- Social vulnerability index (SVI)\n- Number of flood-prone structures",
+            "locators": [{"page": 19}]
+          }
+        ]
+      },
+      {
+        "id": "flood-risk-area-count",
+        "statement": "746 flood-risk areas were evaluated, 601 of them within or primarily within the municipal boundary.",
+        "match": {"all_of": [["746"], ["601"]]},
+        "evidence": [
+          {
+            "text": "A total of 746 flood-risk areas were evaluated from the study area with 601 flood-risk areas located within or primarily within the municipal boundary.",
+            "locators": [{"page": 30}]
+          }
+        ]
+      },
+      {
+        "id": "selected-areas-and-concepts",
+        "statement": "The city selected three flood-risk areas, for which six mitigation concepts were identified and evaluated in the updated model.",
+        "match": {
+          "all_of": [
+            ["three"],
+            ["six mitigation", "six flood", "six concept", "six potential", "6 mitigation"]
+          ]
+        },
+        "evidence": [
+          {
+            "text": "Three flood-risk areas were selected by the city based on the project prioritization framework developed. For these three flood-risk areas a total of six mitigation concepts were identified and evaluated in the updated stormwater model.",
+            "locators": [{"page": 49}]
+          },
+          {
+            "text": "The prioritization by flood-risk area was reviewed by city staff who identified three locations for a planning-level evaluation.",
+            "locators": [{"page": 32}]
+          }
+        ]
+      },
+      {
+        "id": "selected-sites",
+        "statement": "The selected flood-risk areas are near Wilson Pond, northwest of Roosevelt Park, and near Woodlawn Terrace.",
+        "match": {
+          "all_of": [["wilson pond"], ["roosevelt park"], ["woodlawn terrace"]]
+        },
+        "evidence": [
+          {
+            "text": "The area around Wilson Pond is one of the locations with the largest risk of flooding in the city.",
+            "locators": [{"page": 32}]
+          },
+          {
+            "text": "The flood-risk area Northwest of Roosevelt Park was selected by the city for further evaluation.",
+            "locators": [{"page": 40}]
+          },
+          {
+            "text": "The flood-risk area near Woodlawn Terrace was selected by the city for further evaluation.",
+            "locators": [{"page": 43}]
+          }
+        ]
+      },
+      {
+        "id": "concept-level-costs",
+        "statement": "The Section 5 projects, model results, and cost estimates are concept-level designs.",
+        "match": {
+          "all_of": [
+            ["concept level", "concept-level", "planning-level", "planning level"],
+            ["cost"]
+          ]
+        },
+        "evidence": [
+          {
+            "text": "The projects, model results, and cost estimates presented in Section 5 are represent a concept level design.",
+            "locators": [{"page": 48}]
+          },
+          {
+            "text": "Based on the concept level design, a planning-level cost estimate was developed for city staff to consider when planning for further evaluation of each project.",
+            "locators": [{"page": 32}]
+          }
+        ]
+      },
+      {
+        "id": "cost-basis",
+        "statement": "All costs are presented in 2025 US dollars with an accuracy range of -30% to +50%.",
+        "required": false,
+        "match": {"all_of": [["2025"], ["dollar", "usd"]]},
+        "evidence": [
+          {
+            "text": "All costs are presented in 2025 US dollars.",
+            "locators": [{"page": 52}]
+          },
+          {
+            "text": "Note: Total project cost accuracy range is -30% to +50%.",
+            "locators": [{"page": 33}, {"page": 40}, {"page": 43}]
+          }
+        ]
+      },
+      {
+        "id": "concept-cost-figures",
+        "statement": "Concept cost estimates range from $1,540,000 near Woodlawn Terrace to $17,333,000 for Wilson Pond Concept C.",
+        "required": false,
+        "match": {
+          "all_of": [
+            [
+              "8,853,000", "8.85 million", "8.9 million",
+              "11,536,000", "11.5 million",
+              "17,333,000", "17.3 million",
+              "15,491,000", "15.5 million",
+              "1,540,000", "1.54 million", "1.5 million",
+              "7,440,000", "7.44 million", "7.4 million"
+            ]
+          ]
+        },
+        "evidence": [
+          {"text": "$8,853,000", "locators": [{"page": 33}]},
+          {"text": "$17,333,000", "locators": [{"page": 33}]},
+          {"text": "$15,491,000", "locators": [{"page": 40}]},
+          {"text": "$1,540,000", "locators": [{"page": 43}]}
+        ]
+      },
+      {
+        "id": "study-area-size",
+        "statement": "The model study area is approximately 8.8 square miles.",
+        "required": false,
+        "match": {"all_of": [["8.8"], ["square mile", "sq mi", "sq. mi"]]},
+        "evidence": [
+          {
+            "text": "The model study area covers the total watershed area included in the H&H model which is approximately 8.8 square miles",
+            "locators": [{"page": 7}]
+          }
+        ]
+      }
+    ],
+    "topics": [
+      {"id": "stormwater-model", "any_of": ["stormwater model", "pcswmm", "model update", "hydrologic", "h&h"]},
+      {"id": "flood-risk-prioritization", "any_of": ["prioriti", "ranking", "scoring"]},
+      {"id": "mitigation-concepts", "any_of": ["mitigation", "flood-risk reduction", "flood risk reduction", "alternative"]},
+      {"id": "cost-estimates", "any_of": ["cost"]},
+      {"id": "design-storms", "any_of": ["design storm", "rainfall", "precipitation", "climate", "mce100"]},
+      {"id": "social-vulnerability", "any_of": ["social vulnerab", "environmental justice", "svi", "equity"]}
+    ]
+  },
+  "drafting": {
+    "input": "drafting_input.json",
+    "facts": [
+      {
+        "id": "applicant-city",
+        "statement": "The applicant is the City of Richfield, Minnesota.",
+        "origin": "context_bundle",
+        "chapters": ["applicant_project_information"],
+        "match": {"all_of": [["richfield"], ["minnesota"]]}
+      },
+      {
+        "id": "funding-programme",
+        "statement": "The application targets the Minnesota DNR Flood Hazard Mitigation Grant Assistance Program.",
+        "origin": "application_context",
+        "match": {"all_of": [["flood hazard mitigation"]]}
+      },
+      {
+        "id": "city-population",
+        "statement": "Richfield has a recorded population of 36,994.",
+        "origin": "context_bundle",
+        "required": false,
+        "match": {"all_of": [["36,994"]]}
+      },
+      {
+        "id": "flood-risk-area-count",
+        "statement": "746 flood-risk areas were evaluated, 601 within or primarily within the municipal boundary.",
+        "origin": "document",
+        "chapters": ["flood_damages", "project_description", "project_analysis"],
+        "match": {"all_of": [["746"], ["601"]]}
+      },
+      {
+        "id": "selected-sites",
+        "statement": "The project addresses the flood-risk areas near Wilson Pond, northwest of Roosevelt Park, and near Woodlawn Terrace.",
+        "origin": "document",
+        "chapters": ["project_description", "project_activities"],
+        "match": {"all_of": [["wilson pond"], ["roosevelt park"], ["woodlawn terrace"]]}
+      },
+      {
+        "id": "wilson-pond-damages",
+        "statement": "At Wilson Pond the lowest structures are affected during the 2-year 24-hour rainfall event.",
+        "origin": "document",
+        "chapters": ["flood_damages"],
+        "match": {"all_of": [["wilson pond"], ["2-year", "two-year"]]}
+      },
+      {
+        "id": "concept-cost-figures",
+        "statement": "The concept cost estimates are carried into the funding or financing sections.",
+        "origin": "document",
+        "chapters": ["funding_breakout", "project_financing", "project_activities"],
+        "match": {
+          "all_of": [
+            [
+              "8,853,000", "11,536,000", "17,333,000", "15,491,000", "1,540,000", "7,440,000",
+              "8.85 million", "11.5 million", "17.3 million", "15.5 million", "1.54 million", "7.44 million"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "cost-basis",
+        "statement": "Costs are stated in 2025 US dollars.",
+        "origin": "document",
+        "chapters": ["funding_breakout", "project_financing"],
+        "match": {"all_of": [["2025"], ["dollar", "usd"]]}
+      },
+      {
+        "id": "cost-accuracy",
+        "statement": "Cost estimates carry a -30% to +50% accuracy range.",
+        "origin": "document",
+        "chapters": ["funding_breakout", "project_financing", "project_analysis"],
+        "match": {"all_of": [["30%", "30 percent"], ["50%", "50 percent"]]}
+      },
+      {
+        "id": "alternatives-not-pursued",
+        "statement": "Surface storage and underground storage near Wilson Pond were ruled out because of space and shallow groundwater.",
+        "origin": "document",
+        "chapters": ["project_analysis"],
+        "match": {"all_of": [["surface storage"], ["groundwater"]]}
+      },
+      {
+        "id": "social-vulnerability",
+        "statement": "The selected areas lie in parts of the city with a high social vulnerability index.",
+        "origin": "document",
+        "chapters": ["flood_damages", "project_analysis", "project_description"],
+        "match": {"all_of": [["social vulnerab"]]}
+      }
+    ]
+  }
+}

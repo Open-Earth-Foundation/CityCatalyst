@@ -1469,6 +1469,23 @@ uv run --directory service pytest tests/test_e2e_conversation.py -v
 uv run --directory service python -m scripts.run_ca_e2e
 ```
 
+### CNB Grounding Golden Set
+
+Checked-in fixtures under `service/tests/fixtures/cnb_golden_set/` score
+Concept Note source analysis (facts, exact excerpts, page/heading locators,
+unsupported claims, stability) and chapter drafting (fact carry-over, invented
+figures). The deterministic checks run with the CNB suite. The live evaluation
+calls the configured OpenRouter models, runs on every Climate Advisor pull
+request to `develop`, and fails when a documented gate fails:
+
+```bash
+uv run --directory service pytest tests/cnb/test_golden_set.py -q
+uv run --directory service python -m scripts.evaluate_cnb_golden_set
+```
+
+See the fixture README for gates, adding fixtures, and reviewing intentional
+baseline changes.
+
 ## Docker Deployment (Local Testing)
 
 This section is for local development and testing. It builds the Climate

@@ -1,0 +1,125 @@
+{
+  "fixture_id": "harbor-point-heat-resilience",
+  "description": "Native Markdown resilience plan for the fictional city of Harbor Point, exercising heading/block anchors, repeated subsection names, and a Markdown table.",
+  "source": {
+    "path": "source.md",
+    "filename": "harbor-point-resilience-plan.md",
+    "source_label": "Harbor Point Heat and Stormwater Resilience Plan",
+    "source_format": "markdown",
+    "page_count": null,
+    "sha256": "7c3ec022d7c2fd3f8b9cb936da99557cde50f71940753ebcc22dd0935872a84a",
+    "provenance": "Synthetic document written for this golden set. Every place, organisation, and figure is fictional."
+  },
+  "source_analysis": {
+    "facts": [
+      {
+        "id": "plan-adoption",
+        "statement": "The Harbor Point City Council adopted the plan on 14 March 2026.",
+        "match": {"all_of": [["council"], ["2026"]]},
+        "evidence": [
+          {
+            "text": "The plan was adopted by the Harbor Point City Council on 14 March 2026.",
+            "locators": [{"heading": "harbor-point-heat-and-stormwater-resilience-plan/summary"}]
+          }
+        ]
+      },
+      {
+        "id": "population",
+        "statement": "Harbor Point has 182,400 residents.",
+        "match": {"all_of": [["182,400"]]},
+        "evidence": [
+          {
+            "text": "Harbor Point has 182,400 residents.",
+            "locators": [{"heading": "harbor-point-heat-and-stormwater-resilience-plan/summary"}]
+          }
+        ]
+      },
+      {
+        "id": "extreme-heat-days",
+        "statement": "Harbor Point recorded 23 days above 35 °C in 2025, against a 1991-2020 average of 9 days per year.",
+        "match": {"all_of": [["23"], ["35"]]},
+        "evidence": [
+          {
+            "text": "Harbor Point recorded 23 days above 35 °C in 2025, compared with an average of 9 such days per year between 1991 and 2020.",
+            "locators": [{"heading": "harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat"}]
+          }
+        ]
+      },
+      {
+        "id": "flooded-intersections",
+        "statement": "Street flooding affects 37 intersections during a 10-year rainfall event.",
+        "match": {"all_of": [["37"], ["intersection"]]},
+        "evidence": [
+          {
+            "text": "Street flooding affects 37 intersections during a 10-year rainfall event.",
+            "locators": [{"heading": "harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding"}]
+          }
+        ]
+      },
+      {
+        "id": "cool-corridors",
+        "statement": "The plan will plant 4,800 street trees along 12 cool corridors in Eastside and Millbrook.",
+        "match": {"all_of": [["4,800"], ["tree"]]},
+        "evidence": [
+          {
+            "text": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook.",
+            "locators": [{"heading": "harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors"}]
+          }
+        ]
+      },
+      {
+        "id": "green-stormwater-infrastructure",
+        "statement": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards.",
+        "match": {"all_of": [["85"], ["bioretention"]]},
+        "evidence": [
+          {
+            "text": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas.",
+            "locators": [{"heading": "harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure"}]
+          }
+        ]
+      },
+      {
+        "id": "programme-financing",
+        "statement": "The programme costs USD 26.5 million, of which USD 18.6 million is sought from external grants.",
+        "match": {"all_of": [["26.5"], ["18.6"]]},
+        "evidence": [
+          {
+            "text": "The total programme cost is USD 26.5 million. Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding.",
+            "locators": [{"heading": "harbor-point-heat-and-stormwater-resilience-plan/financing"}]
+          }
+        ]
+      },
+      {
+        "id": "cool-corridor-cost",
+        "statement": "Cool corridors are estimated at USD 9.6 million.",
+        "required": false,
+        "match": {"all_of": [["9.6"]]},
+        "evidence": [
+          {
+            "text": "Cool corridor planting and three years of establishment watering are estimated at USD 9.6 million.",
+            "locators": [{"heading": "harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/costs"}]
+          }
+        ]
+      },
+      {
+        "id": "cooling-centres",
+        "statement": "The city will designate 18 community cooling centres.",
+        "required": false,
+        "match": {"all_of": [["18"], ["cooling"]]},
+        "evidence": [
+          {
+            "text": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C.",
+            "locators": [{"heading": "harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network"}]
+          }
+        ]
+      }
+    ],
+    "topics": [
+      {"id": "extreme-heat", "any_of": ["heat"]},
+      {"id": "stormwater-flooding", "any_of": ["stormwater", "flood", "drainage"]},
+      {"id": "tree-canopy", "any_of": ["tree", "canopy", "cool corridor"]},
+      {"id": "green-infrastructure", "any_of": ["green", "bioretention", "permeable"]},
+      {"id": "financing", "any_of": ["financ", "cost", "funding", "budget"]}
+    ]
+  }
+}

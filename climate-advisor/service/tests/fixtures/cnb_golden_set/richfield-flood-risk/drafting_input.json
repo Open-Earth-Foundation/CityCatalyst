@@ -1,0 +1,65 @@
+{
+  "run_name": "Richfield flood-risk mitigation concept note",
+  "funder": "Minnesota Department of Natural Resources",
+  "opportunity": "Flood Hazard Mitigation Grant Assistance Program",
+  "template_name": "Official Minnesota DNR FHM Grant Assistance Program Application (updated July 2024)",
+  "chapter_schema": [
+    {"chapter_ref": "applicant_project_information", "title": "Applicant and project information", "required": true, "description": "Submission date, applicant, project, contact and authorized agent."},
+    {"chapter_ref": "funding_breakout", "title": "Funding breakdown", "required": true, "description": "Current-phase cost and requested DNR, state, federal, local and prior FHM funding."},
+    {"chapter_ref": "project_activities", "title": "Project activities", "required": true, "description": "Selected activity types, approximate costs and quantifiable outputs."},
+    {"chapter_ref": "flood_damages", "title": "Summary of flood damages", "required": true, "description": "Nature, extent and severity of flooding, maps, photographs and presidential disaster declarations."},
+    {"chapter_ref": "existing_mitigation_regulation", "title": "Existing mitigation and regulatory measures", "required": true, "description": "Prior mitigation, floodplain ordinance standards, enforcement and violations."},
+    {"chapter_ref": "project_description", "title": "Project description", "required": true, "description": "Immediate-phase objective, later phases, partners and roles."},
+    {"chapter_ref": "project_analysis", "title": "Project analysis", "required": true, "description": "Alternatives, feasibility, environmental, social and economic effects, public input, environmental review, water-plan alignment and wetland-credit intent."},
+    {"chapter_ref": "project_financing", "title": "Project financing", "required": true, "description": "Budget, finance method, local or other assistance, financial capability and Red River funding where applicable."}
+  ],
+  "required_fields": [
+    "application submittal date", "local unit of government applicant", "project name", "local government contact",
+    "address, phone and email", "total current-phase cost", "DNR request", "other state, federal and local funding",
+    "prior FHM funding", "selected project activities and quantities", "flood damages and inundation evidence",
+    "county presidential disaster declarations", "prior mitigation", "floodplain ordinance compliance and enforcement",
+    "project and phase description", "partners and roles", "alternatives and effectiveness", "environmental effects",
+    "social and economic effects including underserved communities", "public input", "environmental review status",
+    "local water-plan reference", "wetland-replacement-credit intent", "financing plan and local financial capability"
+  ],
+  "cc_context": {
+    "city": {
+      "name": "Richfield",
+      "locode": null,
+      "country": "United States",
+      "country_locode": "US",
+      "region": "Minnesota",
+      "region_locode": "US-MN",
+      "area_km2": null,
+      "population": 36994,
+      "population_year": 2020,
+      "source": "citycatalyst"
+    },
+    "project": null,
+    "ghgi": null,
+    "ccra": null,
+    "hiap": null
+  },
+  "selected_source": {
+    "summary": "The Richfield Flood Risk Prioritization study states that the Richfield stormwater model covers the entire city and the areas of adjacent cities that drain into Richfield. Barr Engineering updated the Richfield PCSWMM model with LiDAR data collected in 2022 and published by the United States Geological Survey. The Richfield model simulates four design storm events that use the Midwest Southeast 3 (MSE3) rainfall distribution. The Richfield study scored flood-risk areas on storm system conditions, critical infrastructure, frequency of flooding, social vulnerability index (SVI), and number of flood-prone structures. The Richfield study evaluated 746 flood-risk areas, with 601 flood-risk areas located within or primarily within the municipal boundary. The City of Richfield selected three flood-risk areas based on the project prioritization framework, and six mitigation concepts were identified and evaluated in the updated stormwater model for those three areas. The Richfield study presents the Section 5 projects, model results, and cost estimates as a concept level design, with all costs presented in 2025 US dollars.",
+    "topics": [
+      "stormwater model update",
+      "2022 USGS LiDAR",
+      "design storm events",
+      "flood-risk prioritization criteria",
+      "social vulnerability index",
+      "flood mitigation concepts",
+      "concept-level cost estimates"
+    ],
+    "key_excerpts": [
+      {"text": "The model covers the entire city and the areas of adjacent cities that drain into Richfield.", "page": 7},
+      {"text": "Barr updated the existing PCSWMM model to incorporate the Light Detection and Ranging (LiDAR) data collected in 2022 and published by the United States Geological Survey (USGS)", "page": 9},
+      {"text": "The four design storm events use the Midwest Southeast 3 (MSE3) rainfall distribution", "page": 14},
+      {"text": "The criteria selected to score the flood-risk areas are:\n\n- Storm system conditions\n- Critical infrastructure\n- Frequency of flooding\n- Social vulnerability index (SVI)\n- Number of flood-prone structures", "page": 19},
+      {"text": "A total of 746 flood-risk areas were evaluated from the study area with 601 flood-risk areas located within or primarily within the municipal boundary.", "page": 30},
+      {"text": "Three flood-risk areas were selected by the city based on the project prioritization framework developed. For these three flood-risk areas a total of six mitigation concepts were identified and evaluated in the updated stormwater model.", "page": 49},
+      {"text": "The projects, model results, and cost estimates presented in Section 5 are represent a concept level design.", "page": 48},
+      {"text": "All costs are presented in 2025 US dollars.", "page": 52}
+    ]
+  }
+}

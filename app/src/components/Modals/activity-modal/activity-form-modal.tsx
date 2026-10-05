@@ -2,7 +2,7 @@
 
 import { api, useUpdateActivityValueMutation } from "@/services/api";
 import { Button, DialogOpenChangeDetails } from "@chakra-ui/react";
-import { Dispatch, FC, SetStateAction } from "react";
+import { Dispatch, FC, SetStateAction, useRef } from "react";
 import { Control, FieldValues, SubmitHandler } from "react-hook-form";
 import { TFunction } from "i18next";
 import { getInputMethodology } from "@/util/helpers";
@@ -119,8 +119,19 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     setFocus,
   });
 
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // wait for the errors to render, then bring the first one (in page order) into view
+  const scrollToFirstError = () => {
+    setTimeout(() => {
+      contentRef.current
+        ?.querySelector<HTMLElement>("[data-modal-error]")
+        ?.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, 50);
+  };
+
   const submit = () => {
-    handleSubmit(onSubmit)();
+    handleSubmit(onSubmit, scrollToFirstError)();
   };
 
   const [createActivityValue, { isLoading }] =
@@ -214,12 +225,15 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         activityId: activityId,
         activityTitle: title,
         ...(methodology.activitySelectionField && {
-          [methodology.activitySelectionField.id]: activityData[
-            methodology.activitySelectionField.id
-          ],
+          [methodology.activitySelectionField.id]:
+            activityData[methodology.activitySelectionField.id],
         }),
         dataQuality: activity.dataQuality,
         sourceExplanation: activity.dataComments,
+        dataYear: activity.dataYear ? Number(activity.dataYear) : undefined,
+        sourceDocument: activity.sourceDocument?.trim() || undefined,
+        sourcePage: activity.sourcePage?.trim() || undefined,
+        sourceUrl: activity.sourceUrl?.trim() || undefined,
         ...(activity.wasteCompositionType && {
           wasteCompositionType: activity.wasteCompositionType,
         }),
@@ -277,6 +291,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       const error = response.error as FetchBaseQueryError;
       const errorData = error.data as ActivityValueErrorResponse;
       if (errorData.error?.type === "ManualInputValidationError") {
+        scrollToFirstError();
         handleManalInputValidationError(errorData.error.issues);
       } else if (errorData.error?.data?.type === "CalculationError") {
         showErrorToast({
@@ -313,14 +328,19 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       >
         <DialogBackdrop />
         <DialogContent
+          ref={contentRef}
           data-testid="add-emission-modal"
           minH="300px"
           minW="768px"
+          maxH="90vh"
           marginTop="2%"
+          display="flex"
+          flexDirection="column"
         >
           <DialogHeader
             display="flex"
-            justifyContent="center"
+            justifyContent="flex-start"
+            flexShrink={0}
             fontWeight="semibold"
             fontSize="headline.sm"
             fontFamily="heading"
@@ -332,7 +352,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           >
             {edit ? t("update-emission-data") : t("add-emission-data")}
           </DialogHeader>
-          <DialogCloseTrigger />
+          <DialogCloseTrigger color="content.tertiary" />
           <ActivityModalBody
             emissionsFactorTypes={emissionsFactorTypes}
             inventoryId={inventoryId}
@@ -363,14 +383,26 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             display="flex"
             alignItems="center"
             p="24px"
-            justifyContent="center"
+            gap="16px"
+            flexShrink={0}
+            justifyContent="flex-end"
           >
+            <Button
+              data-testid="add-emission-modal-cancel"
+              variant="outline"
+              h="56px"
+              px="24px"
+              letterSpacing="widest"
+              textTransform="uppercase"
+              fontWeight="semibold"
+              fontSize="button.md"
+              onClick={() => setAddActivityDialogOpen(false)}
+            >
+              {t("cancel")}
+            </Button>
             <Button
               data-testid="add-emission-modal-submit"
               h="56px"
-              w="full"
-              paddingTop="16px"
-              paddingBottom="16px"
               px="24px"
               letterSpacing="widest"
               textTransform="uppercase"
@@ -379,8 +411,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
               type="submit"
               loading={isLoading || updateLoading}
               onClick={submit}
-              p={0}
-              m={0}
             >
               {edit ? t("update-emission-data") : t("add-emission-data")}
             </Button>

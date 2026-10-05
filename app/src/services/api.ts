@@ -67,6 +67,8 @@ import {
   CityDashboardResponse,
   ConceptNoteApplicationContext,
   ConceptNoteFunder,
+  ConceptNoteFunderCreateRequest,
+  ConceptNoteFunderCreateResponse,
   ConceptNoteFundingSelection,
   ConfirmConceptNoteChapterRequest,
   ConceptNoteChapterValidationResponse,
@@ -2596,6 +2598,17 @@ export const api = createApi({
           { type: "ConceptNoteEdits", id: runId },
         ],
       }),
+      createConceptNoteFunder: builder.mutation<
+        ConceptNoteFunderCreateResponse,
+        { runId: string; funder: ConceptNoteFunderCreateRequest }
+      >({
+        query: ({ runId, funder }) => ({
+          url: `concept-notes/${runId}/funders/`,
+          method: "POST",
+          body: funder,
+        }),
+        invalidatesTags: ["ConceptNoteFundingCatalogue"],
+      }),
       getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
         query: (runId) => `concept-notes/${runId}/draft/`,
         providesTags: (_result, _error, runId) => [
@@ -2997,5 +3010,6 @@ export const {
   useGetConceptNoteUploadStatusQuery,
   useRetryConceptNoteUploadMutation,
   useRetryConceptNoteContextBundleMutation,
+  useCreateConceptNoteFunderMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

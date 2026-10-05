@@ -1153,7 +1153,70 @@ export interface ConceptNoteFundingOpportunity {
   hazards: string[];
   interventions: string[];
   known_gaps: string[];
+  /** Set for programmes a user added from a document or by hand. */
+  added_from?: ConceptNoteFundingAddedFrom | null;
   template: ConceptNoteApplicationContext["template"];
+}
+
+export interface ConceptNoteFundingAddedFrom {
+  kind: "document" | "manual";
+  filename: string | null;
+}
+
+/** Reviewable `funders` columns. */
+export interface ConceptNoteFunderFields {
+  name: string;
+  funder_type: string | null;
+  country: string | null;
+  region: string | null;
+  profile: {
+    stated: Record<string, string>;
+    derived: Record<string, string>;
+  };
+}
+
+/** Reviewable `funding_opportunities` columns. */
+export interface ConceptNoteProgrammeFields {
+  name: string;
+  applicant_type: string | null;
+  category: string | null;
+  sector: string | null;
+  hazards: string[];
+  interventions: string[];
+  finance_route: string | null;
+  instrument_type: string | null;
+  region_scope: string | null;
+  min_award: number | null;
+  max_award: number | null;
+  currency: string | null;
+  status: string | null;
+  summary: string | null;
+  known_gaps: string[];
+}
+
+/** Reviewable `funder_templates` columns; `required_fields` is derived. */
+export interface ConceptNoteTemplateFields {
+  template_name: string;
+  output_format: string | null;
+  chapter_schema: Array<{
+    /** Empty for new chapters; the server derives a reference from the title. */
+    chapter_ref: string;
+    title: string;
+    description: string | null;
+    required: boolean;
+    required_fields: string[];
+  }>;
+}
+
+export interface ConceptNoteFunderCreateRequest {
+  funder: ConceptNoteFunderFields;
+  opportunity: ConceptNoteProgrammeFields;
+  template: ConceptNoteTemplateFields;
+}
+
+export interface ConceptNoteFunderCreateResponse {
+  funder_id: string;
+  funding_opportunity_id: string;
 }
 
 export interface ConceptNoteFunder {

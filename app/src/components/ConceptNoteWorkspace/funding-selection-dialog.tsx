@@ -12,7 +12,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { LuCheck, LuSearch, LuLandmark } from "react-icons/lu";
+import { LuCheck, LuSearch, LuLandmark, LuPlus } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -34,6 +34,13 @@ import type {
   ConceptNoteFundingOpportunity,
   ConceptNoteFunder,
 } from "@/util/types";
+import { AddFunderForm } from "./add-funder-form";
+import {
+  emptyFunderForm,
+  formToCreateRequest,
+  funderApiErrorKey,
+  validateFunderForm,
+} from "./funder-form";
 import { FunderProfile, FundingOpportunityDetails } from "./funding-details";
 
 interface FundingSelectionDialogProps {
@@ -102,6 +109,11 @@ export function FundingSelectionDialog({
   );
   const [acknowledged, setAcknowledged] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Adding an unlisted funder replaces the details pane and footer.
+  const [adding, setAdding] = useState(false);
+  const [form, setForm] = useState(emptyFunderForm);
+  const [showErrors, setShowErrors] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
   const {
     data,
     isLoading,
@@ -113,6 +125,7 @@ export function FundingSelectionDialog({
   });
   const [saveSelection, saveState] =
     api.useUpdateConceptNoteFundingSelectionMutation();
+  const [createFunder, createState] = api.useCreateConceptNoteFunderMutation();
   const funders = data?.funders ?? [];
   const visibleFunders = funders.filter((funder) =>
     matchesFundingSearch(funder, query),
@@ -130,8 +143,44 @@ export function FundingSelectionDialog({
   const forbidden =
     isFetchBaseQueryError(catalogueError) &&
     [401, 403, 404].includes(Number(catalogueError.status));
+  const formErrors = validateFunderForm(form);
+  const addedFrom = funder?.opportunities.find(
+    (item) => item.added_from,
+  )?.added_from;
+
+  function resetAdding(): void {
+    setAdding(false);
+    setForm(emptyFunderForm());
+    setShowErrors(false);
+    setAddError(null);
+  }
+
+  async function submitFunder(): Promise<void> {
+    setAddError(null);
+    if (Object.keys(formErrors).length) {
+      setShowErrors(true);
+      return;
+    }
+    try {
+      const created = await createFunder({
+        runId,
+        funder: formToCreateRequest(form),
+      }).unwrap();
+      await refetch();
+      resetAdding();
+      setQuery("");
+      setFunderId(created.funder_id);
+      setOpportunityId(created.funding_opportunity_id);
+      setAcknowledged(false);
+      setError(null);
+      toaster.create({ title: t("funder-added"), type: "success" });
+    } catch (cause) {
+      setAddError(t(funderApiErrorKey(cause)));
+    }
+  }
 
   function chooseFunder(id: string): void {
+    setAdding(false);
     if (id === funderId) return;
     const opportunities =
       funders.find((item) => item.id === id)?.opportunities ?? [];
@@ -283,6 +332,7 @@ export function FundingSelectionDialog({
                 gap={0}
                 w={{ base: "full", md: "34%" }}
                 flexShrink={0}
+                minH={0}
                 borderInlineEnd={{ md: "1px solid" }}
                 borderColor="border.neutral"
                 bg="background.alternativeLight"
@@ -329,6 +379,8 @@ export function FundingSelectionDialog({
                   aria-label={t("funding-list-label")}
                   align="stretch"
                   gap={0}
+                  flex={1}
+                  minH={0}
                   overflowY="auto"
                   maxH={{ base: "240px", md: "none" }}
                   px={2}
@@ -341,17 +393,25 @@ export function FundingSelectionDialog({
                       variant="ghost"
                       minH="76px"
                       gap={3}
-                      aria-pressed={item.id === funderId}
+                      aria-pressed={!adding && item.id === funderId}
                       disabled={saveState.isLoading}
-                      bg={item.id === funderId ? "base.light" : "transparent"}
+                      bg={
+                        !adding && item.id === funderId
+                          ? "base.light"
+                          : "transparent"
+                      }
                       borderInlineStart="3px solid"
                       borderColor={
-                        item.id === funderId ? "content.link" : "transparent"
+                        !adding && item.id === funderId
+                          ? "content.link"
+                          : "transparent"
                       }
                       onClick={() => chooseFunder(item.id)}
                     >
                       <Icon
-                        as={item.id === funderId ? LuCheck : LuLandmark}
+                        as={
+                          !adding && item.id === funderId ? LuCheck : LuLandmark
+                        }
                         flexShrink={0}
                         color="content.link"
                       />
@@ -407,6 +467,35 @@ export function FundingSelectionDialog({
                     </Text>
                   )}
                 </VStack>
+                <Box p={3} borderTop="1px solid" borderColor="border.neutral">
+                  <Button
+                    {...selectionButtonProps}
+                    variant="outline"
+                    w="full"
+                    gap={3}
+                    border="1px dashed"
+                    borderColor={adding ? "content.link" : "border.neutral"}
+                    bg="base.light"
+                    aria-pressed={adding}
+                    disabled={saveState.isLoading}
+                    onClick={() => setAdding(true)}
+                  >
+                    <Icon as={LuPlus} flexShrink={0} color="content.link" />
+                    <Box>
+                      <Text fontSize="body.sm" fontWeight="semibold">
+                        {t("funder-add-entry")}
+                      </Text>
+                      <Text
+                        mt={0.5}
+                        fontSize="label.sm"
+                        fontWeight="normal"
+                        color="content.tertiary"
+                      >
+                        {t("funder-add-entry-help")}
+                      </Text>
+                    </Box>
+                  </Button>
+                </Box>
               </VStack>
               <VStack
                 align="stretch"
@@ -417,7 +506,15 @@ export function FundingSelectionDialog({
                 overflowY={{ md: "auto" }}
                 aria-label={t("funding-details-label")}
               >
-                {!funder ? (
+                {adding ? (
+                  <AddFunderForm
+                    form={form}
+                    onChange={setForm}
+                    errors={showErrors ? formErrors : {}}
+                    disabled={createState.isLoading}
+                    lng={lng}
+                  />
+                ) : !funder ? (
                   <VStack align="start" justify="center" flex={1} gap={3}>
                     <Icon as={LuLandmark} boxSize={8} color="content.link" />
                     <Heading as="h3" fontSize="title.md">
@@ -429,7 +526,11 @@ export function FundingSelectionDialog({
                   </VStack>
                 ) : (
                   <>
-                    <FunderProfile funder={funder} lng={lng} />
+                    <FunderProfile
+                      funder={funder}
+                      addedFrom={addedFrom ?? null}
+                      lng={lng}
+                    />
                     <Box
                       borderTop="1px solid"
                       borderColor="border.neutral"
@@ -509,8 +610,41 @@ export function FundingSelectionDialog({
             </Flex>
           )}
         </DialogBody>
+        {adding && (
+          <DialogFooter
+            flexShrink={0}
+            flexWrap="wrap"
+            gap={3}
+            p={4}
+            borderTop="1px solid"
+            borderColor="border.neutral"
+          >
+            {addError && (
+              <Text
+                role="alert"
+                flexBasis="100%"
+                color="sentiment.negativeDefault"
+                fontSize="body.sm"
+              >
+                {addError}
+              </Text>
+            )}
+            <Button variant="outline" size="sm" onClick={resetAdding}>
+              {t("cancel")}
+            </Button>
+            <Button
+              size="sm"
+              loading={createState.isLoading}
+              onClick={() => void submitFunder()}
+              data-testid="concept-note-add-funder"
+            >
+              {t("funder-add-submit")}
+            </Button>
+          </DialogFooter>
+        )}
+        {/* Hidden while adding a funder, which has its own actions above. */}
         <DialogFooter
-          display="block"
+          display={adding ? "none" : "block"}
           flexShrink={0}
           p={4}
           borderTop="1px solid"

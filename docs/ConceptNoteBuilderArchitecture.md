@@ -1957,6 +1957,30 @@ The browser test exercises the real workspace with controlled API responses;
 the Python tests exercise catalogue joins, persistence, and invalidation in test
 databases. Neither test starts an LLM request.
 
+### Adding a funder that is not in the catalogue
+
+The funding dialog's rail footer, **Add a funder that isn't listed**, adds a
+funder, one programme and that programme's application template to the shared
+catalogue from values the user types. The result is an ordinary `funders` /
+`funding_opportunities` / `funder_templates` row set; those tables are
+unchanged. Selecting it afterwards uses the normal `PATCH /application-context`
+flow above.
+
+`POST /v1/concept-notes/{run_id}/funders` writes the reviewed values in one CNB
+transaction. Chapter references are slugged uniquely, and template
+`required_fields` is built from chapter `required_fields`, so every inventory
+field has an owning chapter as chapter validation requires. List fields
+(hazards, interventions, chapter required fields) are edited as comma-separated
+text. `funding_opportunities.source_run_id` is `cnb-manual:<run_id>`; the
+catalogue exposes this as `added_from`.
+
+Added funders are visible to every city, because `funders` has no owner column.
+
+```bash
+# From climate-advisor/service
+python -m pytest tests/cnb/test_funder_import.py
+```
+
 ### Context Bundle Build Responsibilities
 
 Context bundle building is not an agent tool group. `ContextBundleService`

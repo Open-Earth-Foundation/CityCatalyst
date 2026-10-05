@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import type {
   ConceptNoteApplicationContext,
   ConceptNoteFunder,
+  ConceptNoteFundingAddedFrom,
   ConceptNoteFundingOpportunity,
 } from "@/util/types";
 
@@ -104,9 +105,12 @@ function summaryFacts(
 
 export function FunderProfile({
   funder,
+  addedFrom = null,
   lng,
 }: {
   funder: ConceptNoteFunder;
+  /** Shown for funders a user added from a document or by hand. */
+  addedFrom?: ConceptNoteFundingAddedFrom | null;
   lng: string;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
@@ -123,6 +127,20 @@ export function FunderProfile({
             .filter(Boolean)
             .join(" · ") || t("funding-profile-location-missing")}
         </Text>
+        {addedFrom && (
+          <Text
+            mt={1}
+            fontSize="label.sm"
+            color="content.tertiary"
+            data-testid="concept-note-funder-added-from"
+          >
+            {addedFrom.kind === "manual"
+              ? t("funding-added-by-hand")
+              : addedFrom.filename
+                ? t("funding-added-from-file", { filename: addedFrom.filename })
+                : t("funding-added-from-document")}
+          </Text>
+        )}
       </Box>
       {facts.length > 0 && !showAll && (
         <Box

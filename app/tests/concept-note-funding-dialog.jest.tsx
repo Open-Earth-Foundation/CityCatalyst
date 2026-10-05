@@ -52,6 +52,7 @@ const save = jest.fn(() => ({
   },
 }));
 const onClose = jest.fn();
+const createFunder = jest.fn();
 jest.unstable_mockModule("@/services/api", () => ({
   api: {
     useGetConceptNoteFundingCatalogueQuery: () => ({
@@ -60,9 +61,14 @@ jest.unstable_mockModule("@/services/api", () => ({
       },
       isLoading: false,
       isError: false,
+      refetch: async () => undefined,
     }),
     useUpdateConceptNoteFundingSelectionMutation: () => [
       save,
+      { isLoading: false },
+    ],
+    useCreateConceptNoteFunderMutation: () => [
+      createFunder,
       { isLoading: false },
     ],
   },
@@ -262,3 +268,110 @@ it.each([
     expect(onClose).not.toHaveBeenCalled();
   },
 );
+
+it("adds a funder entered by hand and selects it", async () => {
+  createFunder.mockImplementation(() => ({
+    unwrap: async () => {
+      funders = [
+        ...funders,
+        {
+          id: "added-funder",
+          name: "Resilient Futures Fund",
+          country: null,
+          region: null,
+          funder_type: null,
+          profile: {},
+          opportunities: [
+            {
+              ...opportunity,
+              id: "added-programme",
+              added_from: { kind: "manual", filename: null },
+            },
+          ],
+        },
+      ];
+      return {
+        funder_id: "added-funder",
+        funding_opportunity_id: "added-programme",
+      };
+    },
+  }));
+  await act(async () => {
+    root.render(
+      <ChakraProvider value={defaultSystem}>
+        <FundingSelectionDialog
+          applicationContext={{
+            run_id: "run",
+            city_id: "city",
+            funder: null,
+            opportunity: null,
+            template: null,
+            included_sources: {
+              city: true,
+              project: false,
+              ghgi: false,
+              ccra: false,
+              hiap: false,
+            },
+          }}
+          hasDraft={false}
+          busy={false}
+          lng="en"
+          runId="run"
+          onClose={onClose}
+        />
+      </ChakraProvider>,
+    );
+  });
+  const button = (label: string) =>
+    [...document.querySelectorAll("button")].find((item) =>
+      item.textContent?.includes(label),
+    )!;
+  async function type(label: string, value: string) {
+    const labelElement = [...document.querySelectorAll("label")].find((item) =>
+      item.textContent?.startsWith(label),
+    )!;
+    const input = document.getElementById(labelElement.htmlFor)!;
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value",
+      )!.set!.call(input, value);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  }
+
+  await act(async () => button(translations["funder-add-entry"]).click());
+  await type(translations["funder-field-name"], "Resilient Futures Fund");
+  await type(translations["funder-field-programme-name"], "Resilient Cities");
+  await type(translations["funder-field-template-name"], "Concept note");
+  // A chapter without a title blocks the request and explains why.
+  await act(async () => button(translations["funder-add-submit"]).click());
+  expect(createFunder).not.toHaveBeenCalled();
+  expect(document.body.textContent).toContain(
+    translations["funder-error-chapter-title"],
+  );
+  await type("Chapter", "Summary");
+  await act(async () => button(translations["funder-add-submit"]).click());
+
+  expect(createFunder).toHaveBeenCalledWith({
+    runId: "run",
+    funder: expect.objectContaining({
+      funder: expect.objectContaining({ name: "Resilient Futures Fund" }),
+      template: expect.objectContaining({
+        template_name: "Concept note",
+        chapter_schema: [
+          expect.objectContaining({ chapter_ref: "", title: "Summary" }),
+        ],
+      }),
+    }),
+  });
+  const selected = [...document.querySelectorAll("nav button")].find(
+    (item) => item.getAttribute("aria-pressed") === "true",
+  );
+  expect(selected?.textContent).toContain("Resilient Futures Fund");
+  expect(
+    document.querySelector('[data-testid="concept-note-funder-added-from"]')
+      ?.textContent,
+  ).toBe(translations["funding-added-by-hand"]);
+});

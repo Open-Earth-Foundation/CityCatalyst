@@ -1085,6 +1085,11 @@ separate chats and active pointers so history and subsequent replies survive.
 PostgreSQL regression coverage runs with `CNB_TEST_DATABASE_URL` configured:
 `python -m pytest tests/test_thread_concept_note_run_migration.py` from `service/`.
 
+Merge revision `20261005_120000` joins chat ownership (`20260925_130000`)
+and structured uploads (`20261001_120000`) without changing either migration.
+Run `uv run --directory service alembic upgrade head` from `climate-advisor/`
+to apply both branches, including when either parent is already installed.
+
 The Alembic revision `20260729_120000` provisions `concept_note_runs`,
 `concept_note_context_bundles`, and `concept_note_uploads` in `CA_DATABASE_URL`.
 When `thread_id` is supplied, the start operation also requires that durable

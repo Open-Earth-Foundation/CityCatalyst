@@ -2011,6 +2011,10 @@ Errors return `detail = {code, message}` (for example `upload_not_ready`,
 Failed imports carry `error_code` (`document_too_long`, `source_fetch_failed`,
 `extraction_failed`, `extraction_interrupted` or a source-verification code).
 
+Award inputs accept a dot or comma as the decimal separator (up to two places)
+and spaces as thousands separators, for example `150 000,50`. Ambiguous comma
+or dot thousands grouping is rejected instead of silently changing the amount.
+
 ```bash
 # From climate-advisor/service
 python -m pytest tests/cnb/test_funder_import.py

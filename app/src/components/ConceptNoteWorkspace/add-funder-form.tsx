@@ -182,8 +182,12 @@ export function AddFunderForm({
           {textField("opportunity", "finance_route", "funding-finance-route")}
           {textField("opportunity", "status", "funding-status")}
           {textField("opportunity", "currency", "funder-field-currency")}
-          {textField("opportunity", "min_award", "funder-field-min-award")}
-          {textField("opportunity", "max_award", "funder-field-max-award")}
+          {textField("opportunity", "min_award", "funder-field-min-award", {
+            help: "funder-award-help",
+          })}
+          {textField("opportunity", "max_award", "funder-field-max-award", {
+            help: "funder-award-help",
+          })}
           {textField("opportunity", "hazards", "funding-hazards", {
             help: "funder-list-help",
           })}

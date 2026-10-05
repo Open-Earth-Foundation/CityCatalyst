@@ -106,9 +106,34 @@ describe("funder form", () => {
     expect(withAward("700", "600")["opportunity.max_award"]).toBe(
       "funder-error-award-range",
     );
-    expect(withAward("150,000", "600 000")).toEqual({});
+    expect(withAward("150 000,50", "600 000.50")).toEqual({});
     expect(parseAward("")).toBeNull();
     expect(parseAward("1.234")).toBeUndefined();
+  });
+
+  it.each(["150 000,50", "150\u00a0000,50", "150\u202f000.50", "150000.50"])(
+    "submits the exact award amount for %s",
+    (amount) => {
+      const form = formFromDraft(draft);
+      form.opportunity.min_award = amount;
+      expect(validateFunderForm(form)).toEqual({});
+      expect(formToCreateRequest(form, null).opportunity.min_award).toBe(150000.5);
+    },
+  );
+
+  it.each([
+    "150,000",
+    "150,000.50",
+    "150.000,50",
+    "1 2",
+    "1,234",
+    "9".repeat(400),
+  ])("rejects an ambiguous or invalid award %s", (amount) => {
+    const form = typedForm();
+    form.opportunity.min_award = amount;
+    expect(validateFunderForm(form)["opportunity.min_award"]).toBe(
+      "funder-error-award",
+    );
   });
 
   it("reads and replaces one text input without touching the original", () => {

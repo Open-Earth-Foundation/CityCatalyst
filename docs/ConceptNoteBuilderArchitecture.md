@@ -1976,6 +1976,10 @@ catalogue exposes this as `added_from`.
 
 Added funders are visible to every city, because `funders` has no owner column.
 
+Award inputs accept a dot or comma as the decimal separator (up to two places)
+and spaces as thousands separators, for example `150 000,50`. Ambiguous comma
+or dot thousands grouping is rejected instead of silently changing the amount.
+
 ```bash
 # From climate-advisor/service
 python -m pytest tests/cnb/test_funder_import.py

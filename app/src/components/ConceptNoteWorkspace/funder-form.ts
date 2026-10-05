@@ -119,11 +119,17 @@ function optionalText(value: string): string | null {
   return value.trim() || null;
 }
 
-/** Parse an award input: empty is null, invalid input is undefined. */
+/** Accept decimal dots/commas and space-grouped thousands; reject ambiguity. */
 export function parseAward(value: string): number | null | undefined {
-  const text = value.trim().replace(/[\s,]/g, "");
+  const text = value.trim();
   if (!text) return null;
-  return /^\d+(\.\d{1,2})?$/.test(text) ? Number(text) : undefined;
+  if (
+    !/^(?:\d+|\d{1,3}(?:[ \u00a0\u202f]\d{3})+)(?:[.,]\d{1,2})?$/.test(text)
+  ) {
+    return undefined;
+  }
+  const amount = Number(text.replace(/[ \u00a0\u202f]/g, "").replace(",", "."));
+  return Number.isFinite(amount) ? amount : undefined;
 }
 
 /** Required names, at least one titled chapter and valid award amounts. */

@@ -42,6 +42,8 @@ export default function SetInventoryDetailsStep({
   selectedGlobalWarmingPotentialValue,
   setSelectedInventoryGoalValue,
   setSelectedGlobalWarmingPotentialValue,
+  yearAlreadyExists,
+  selectedYear,
 }: {
   t: TFunction;
   register: UseFormRegister<GHGIFormInputs>;
@@ -55,6 +57,8 @@ export default function SetInventoryDetailsStep({
   setSelectedInventoryGoalValue: (value: string) => void;
   selectedGlobalWarmingPotentialValue?: string;
   setSelectedGlobalWarmingPotentialValue: (value: string) => void;
+  yearAlreadyExists?: boolean;
+  selectedYear?: number | null;
 }) {
   const inventoryGoalOptions: string[] = ["gpc_basic", "gpc_basic_plus"];
   const globalWarmingPotential: string[] = ["ar5", "ar6"];
@@ -148,6 +152,36 @@ export default function SetInventoryDetailsStep({
             </Field>
           </Box>
         </Box>
+        {yearAlreadyExists && selectedYear != null && (
+          <Box
+            mt="16px"
+            p="16px"
+            borderWidth="1px"
+            borderColor="sentiment.warningDefault"
+            bg="sentiment.warningOverlay"
+            borderRadius="md"
+            display="flex"
+            gap="8px"
+            alignItems="flex-start"
+          >
+            <Icon
+              as={MdWarning}
+              boxSize={5}
+              color="sentiment.warningDefault"
+              mt="2px"
+            />
+            <Box>
+              <Text fontWeight="bold" color="content.primary">
+                {t("inventory-year-already-exists-title")}
+              </Text>
+              <Text fontSize="body.md" color="content.secondary">
+                {t("inventory-year-already-exists-description", {
+                  year: selectedYear,
+                })}
+              </Text>
+            </Box>
+          </Box>
+        )}
       </Box>
       {/* Inventory Goal */}
       <Box

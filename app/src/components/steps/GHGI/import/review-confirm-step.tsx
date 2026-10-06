@@ -199,7 +199,7 @@ export default function ReviewConfirmStep({
                   {importSummary.fieldsMapped}
                 </Text>
                 <Text fontSize="body.sm" color="content.tertiary">
-                  {t("fields-mapped-in-file")}
+                  {t("columns-mapped-in-file")}
                 </Text>
               </VStack>
             </Box>

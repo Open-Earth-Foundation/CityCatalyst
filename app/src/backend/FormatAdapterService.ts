@@ -361,13 +361,22 @@ export default class FormatAdapterService {
     return yearMatches.length >= 3 ? yearMatches[0] : undefined;
   }
 
-  /** Adapter A: dedicated Year + Sector + numeric Emissions columns. */
+  /**
+   * Adapter A: dedicated Year + Sector + numeric Emissions columns.
+   * A GPC activity extract (gpc_ref_no / GPC ref + gases) is not this shape.
+   * Those files stay on the deterministic column mapper.
+   */
   private static detectLongTidy(
     sheet: ParsedSheet,
     headers: string[],
   ):
     | { yearCol: string; sectorCol: string; emissionsCol: string }
     | null {
+    const hasGpcRef = headers.some((header) =>
+      /gpc[_\s.-]*(ref|reference)/i.test(header),
+    );
+    if (hasGpcRef) return null;
+
     const yearIdx = this.col(headers, [
       "year",
       "calendar year",

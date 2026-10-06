@@ -8,6 +8,7 @@ import {
   hasSignedNumericValue,
   parseNumericCell,
 } from "@/util/parse-numeric-cell";
+import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
 import { type ParsedFileData } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
 
@@ -556,7 +557,9 @@ export default class ECRFImportService {
       errors.push("No valid rows found in file");
     }
 
-    const inferredYearFromFile = rows.find((r) => r.year != null)?.year;
+    const inferredYearFromFile =
+      rows.find((r) => r.year != null)?.year ??
+      inferInventoryYearFromSheets(parsedData.sheets);
 
     return {
       rows,

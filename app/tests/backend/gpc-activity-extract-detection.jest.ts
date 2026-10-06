@@ -7,6 +7,7 @@ import FormatAdapterService from "@/backend/FormatAdapterService";
 import type { ParsedFileData } from "@/backend/FileParserService";
 import FileValidatorService from "@/backend/FileValidatorService";
 import { countRowsWithEmptyEmissionCells } from "@/util/empty-emission-rows";
+import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
 
 const BUENOS_AIRES_HEADERS = [
   "gpc_ref_no",
@@ -122,5 +123,19 @@ describe("GPC activity extract detection", () => {
     );
 
     expect(count).toBe(2);
+  });
+
+  it("reads the inventory year from a details sheet label", () => {
+    const year = inferInventoryYearFromSheets([
+      {
+        headers: ["Field", "Value"],
+        rows: [
+          { Field: "City", Value: "Buenos Aires" },
+          { Field: "Inventory year", Value: 2018 },
+        ],
+      },
+    ]);
+
+    expect(year).toBe(2018);
   });
 });

@@ -98,10 +98,22 @@ function FormattedNumberInput<T extends FieldValues>({
         new RegExp(`[^0-9${decimalSeparator}-]`, "g"),
         "",
       ); // Keep only numbers and separators
-      const normalizedNumber = normalizedVal.replace(decimalSeparator, ".");
-      return isNaN(parseFloat(normalizedNumber))
-        ? ""
-        : normalizedNumber.toString();
+
+      // A leading "-" means the value is negative; any other "-" the user
+      // typed (e.g. pressing the minus key again) is just noise to drop,
+      // not a signal to wipe out what's already been entered.
+      const isNegative = normalizedVal.startsWith("-");
+      const digits = normalizedVal.replace(/-/g, "");
+      const normalizedNumber =
+        (isNegative ? "-" : "") + digits.replace(decimalSeparator, ".");
+
+      // A lone "-" is a valid in-progress value (the user is about to type
+      // a digit) and shouldn't be cleared.
+      if (normalizedNumber === "" || normalizedNumber === "-") {
+        return normalizedNumber;
+      }
+
+      return isNaN(parseFloat(normalizedNumber)) ? "" : normalizedNumber;
     },
     [decimalSeparator],
   );

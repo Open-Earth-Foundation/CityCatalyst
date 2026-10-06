@@ -10,6 +10,7 @@ import {
 } from "@/util/parse-numeric-cell";
 import { type ParsedFileData } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
+import type { ImportRowIssue } from "@/util/types";
 
 export interface ECRFRowData {
   gpcRefNo: string;
@@ -38,6 +39,12 @@ export interface ECRFRowData {
   emissionFactorTotalCO2e?: number;
   year?: number;
   rowIndex: number;
+  /** 1-based row number in the uploaded file, when known. */
+  sourceRowNumber?: number;
+  /** Sector / subsector text for rows whose GPC reference could not be resolved. */
+  sourceLabel?: string;
+  /** Why the row is rejected; set together with `errors`. */
+  issue?: ImportRowIssue;
   errors?: string[];
   warnings?: string[];
 }
@@ -103,6 +110,7 @@ export default class ECRFImportService {
     // Process each row
     for (let i = 0; i < sheet.rows.length; i++) {
       const row = sheet.rows[i];
+      const sourceRowNumber = sheet.rowNumbers?.[i];
       const rowErrors: string[] = [];
       const rowWarnings: string[] = [];
 
@@ -182,6 +190,9 @@ export default class ECRFImportService {
               subcategoryId: null,
               scopeId: "",
               rowIndex: i,
+              sourceRowNumber,
+              sourceLabel: `${rawSector} / ${rawSubsector}`,
+              issue: "gpc-reference-unresolved",
               errors: rowErrors,
               warnings: rowWarnings,
             });
@@ -191,7 +202,18 @@ export default class ECRFImportService {
       }
 
       if (!gpcRefNo) {
-        rowWarnings.push("No GPC reference number found");
+        // Keep the row (as rejected) so the mapping step can show why it is skipped.
+        rows.push({
+          gpcRefNo: "",
+          sectorId: "",
+          subsectorId: "",
+          subcategoryId: null,
+          scopeId: "",
+          rowIndex: i,
+          sourceRowNumber,
+          issue: "missing-gpc-reference",
+          errors: ["No GPC reference number found"],
+        });
         continue;
       }
 
@@ -208,6 +230,8 @@ export default class ECRFImportService {
           subcategoryId: null,
           scopeId: "",
           rowIndex: i,
+          sourceRowNumber,
+          issue: "gpc-reference-unknown",
           errors: rowErrors,
           warnings: rowWarnings,
         });
@@ -527,6 +551,7 @@ export default class ECRFImportService {
         emissionFactorN2O,
         emissionFactorTotalCO2e,
         rowIndex: i,
+        sourceRowNumber,
         errors: rowErrors.length > 0 ? rowErrors : undefined,
         warnings: rowWarnings.length > 0 ? rowWarnings : undefined,
       });
@@ -674,12 +699,23 @@ export default class ECRFImportService {
         row.gpcRefNo?.trim() ||
         resolveGpcRefNo(sector, subsector, activityHint) ||
         null;
+      // Fallback: if the right side of " > " didn't resolve, try the left side
+      // e.g. "On-road > Other/uncategorized" → retry with "On-road"
       if (!gpcRefNo) {
         const rawSub = row.subsector?.trim() ?? "";
         if (rawSub.includes(" > ")) {
           const leftPart = rawSub.split(" > ")[0].trim();
           if (leftPart && leftPart !== subsector) {
             gpcRefNo = resolveGpcRefNo(sector, leftPart, activityHint);
+          }
+        }
+      }
+      if (!gpcRefNo) {
+        const rawSec = row.sector?.trim() ?? "";
+        if (rawSec.includes(" > ")) {
+          const leftPart = rawSec.split(" > ")[0].trim();
+          if (leftPart && leftPart !== sector) {
+            gpcRefNo = resolveGpcRefNo(leftPart, subsector, activityHint);
           }
         }
       }
@@ -695,6 +731,9 @@ export default class ECRFImportService {
           subcategoryId: null,
           scopeId: "",
           rowIndex: i,
+          sourceLabel:
+            [sector, subsector].filter(Boolean).join(" / ") || undefined,
+          issue: "gpc-reference-unresolved",
           errors: [
             `Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
           ],
@@ -714,6 +753,7 @@ export default class ECRFImportService {
           subcategoryId: null,
           scopeId: "",
           rowIndex: i,
+          issue: "gpc-reference-unknown",
           errors: [`GPC reference "${gpcRefNo}" not found in taxonomy`],
         });
         continue;

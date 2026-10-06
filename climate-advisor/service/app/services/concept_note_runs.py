@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+from datetime import UTC, datetime
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -10,12 +11,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.middleware.request_context import get_request_id
 from app.models.cnb.concept_note_runs import (
+    ConceptNotePopulationRequest,
     ConceptNoteRunListItemResponse,
     ConceptNoteRunListResponse,
     ConceptNoteRunResponse,
     ConceptNoteStartRequest,
+    ManualConceptNotePopulation,
 )
-from app.models.db.concept_note import ConceptNoteRun
+from app.models.cnb.concept_note_markdown import (
+    ConceptNoteUploadStatusResponse,
+    source_format_from_filename,
+)
+from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.runs import ConceptNoteRunRepository
 from app.services.citycatalyst_client import (
     CityCatalystClient,
@@ -133,6 +140,15 @@ class ConceptNoteRunService:
             trace_id=get_request_id() or None,
         )
         _require_matching_fingerprint(run, fingerprint)
+        if created and payload.initial_uploads:
+            run.context_summary = {
+                **(run.context_summary or {}),
+                "initial_uploads": [
+                    source.model_dump(mode="json") for source in payload.initial_uploads
+                ],
+            }
+            run.updated_at = datetime.now(UTC)
+            await self.session.flush()
         if payload.thread_id is not None:
             await self.repository.bind_thread_context(
                 thread_id=payload.thread_id,
@@ -154,6 +170,85 @@ class ConceptNoteRunService:
             requested_user_id=requested_user_id,
             authorization=authorization,
         )
+        uploads = await self.repository.list_uploads_for_run(
+            run_id=run.run_id,
+            user_id=run.user_id,
+        )
+        return _to_response(run, created=False, uploads=uploads)
+
+    async def accept_initial_upload(
+        self,
+        *,
+        run_id: UUID,
+        upload_id: UUID,
+        requested_user_id: str,
+        authorization: str | None,
+    ) -> ConceptNoteRunResponse:
+        """Record successful source handoff without resetting other workflow state."""
+        run = await self.get_authorized_run(
+            run_id=run_id,
+            requested_user_id=requested_user_id,
+            authorization=authorization,
+        )
+        # Serialize concurrent receipts against background context updates.
+        await self.session.refresh(run, with_for_update=True)
+        summary = dict(run.context_summary or {})
+        sources = summary.get("initial_uploads", [])
+        matching = next(
+            (source for source in sources if source["upload_id"] == str(upload_id)),
+            None,
+        )
+        if matching is None:
+            raise HTTPException(status_code=404, detail="Initial upload not found")
+        upload = await self.session.get(ConceptNoteUpload, upload_id)
+        if (
+            upload is None
+            or upload.run_id != run_id
+            or upload.uploaded_by_user_id != run.user_id
+        ):
+            raise HTTPException(status_code=404, detail="Upload not found")
+        summary["initial_uploads"] = [
+            {**source, "accepted": True}
+            if source["upload_id"] == str(upload_id)
+            else source
+            for source in sources
+        ]
+        run.context_summary = summary
+        run.updated_at = datetime.now(UTC)
+        await self.session.commit()
+        logger.info("Initial source accepted run_id=%s upload_id=%s", run_id, upload_id)
+        return _to_response(run, created=False)
+
+    async def update_manual_population(
+        self,
+        *,
+        run_id: UUID,
+        payload: ConceptNotePopulationRequest,
+        requested_user_id: str,
+        authorization: str | None,
+    ) -> ConceptNoteRunResponse:
+        """Persist run-only population unless chapter drafting is active."""
+        run = await self.get_authorized_run(
+            run_id=run_id,
+            requested_user_id=requested_user_id,
+            authorization=authorization,
+        )
+        # Lock and refresh before checking draft state or updating run metadata.
+        await self.session.refresh(run, with_for_update=True)
+        summary = dict(run.context_summary or {})
+        draft = summary.get("draft_document")
+        if isinstance(draft, dict) and draft.get("status") == "running":
+            raise HTTPException(
+                status_code=409,
+                detail="Wait for chapter drafting to finish before changing population",
+            )
+        if payload.manual_population is None:
+            summary.pop("manual_population", None)
+        else:
+            summary["manual_population"] = payload.manual_population.model_dump()
+        run.context_summary = summary
+        run.updated_at = datetime.now(UTC)
+        await self.session.commit()
         return _to_response(run, created=False)
 
     async def get_authorized_run(
@@ -334,14 +429,40 @@ def _to_response(
     run: ConceptNoteRun,
     *,
     created: bool,
+    uploads: list[ConceptNoteUpload] | None = None,
 ) -> ConceptNoteRunResponse:
     """Serialize one persisted run into the public API contract."""
     list_item = _to_list_item(run)
+    population = (run.context_summary or {}).get("manual_population")
     return ConceptNoteRunResponse(
         **list_item.model_dump(),
         user_id=run.user_id,
+        manual_population=(
+            ManualConceptNotePopulation.model_validate(population)
+            if population is not None
+            else None
+        ),
+        uploads=[_to_upload_response(upload) for upload in uploads or []],
         created=created,
         trace_id=run.trace_id,
+    )
+
+
+def _to_upload_response(
+    upload: ConceptNoteUpload,
+) -> ConceptNoteUploadStatusResponse:
+    """Serialize persisted source metadata for workspace resume."""
+    return ConceptNoteUploadStatusResponse(
+        upload_id=upload.upload_id,
+        run_id=upload.run_id,
+        status=upload.ingest_status,
+        filename=upload.filename,
+        source_label=upload.source_label,
+        source_format=source_format_from_filename(upload.filename),
+        page_count=upload.page_count,
+        error_code=upload.ingest_error_code,
+        received_at=upload.received_at,
+        completed_at=upload.ingest_completed_at,
     )
 
 

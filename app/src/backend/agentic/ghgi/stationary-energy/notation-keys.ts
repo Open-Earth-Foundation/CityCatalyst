@@ -172,8 +172,13 @@ export async function listNotationKeyCandidateGroups(params: {
         sector.referenceNumber,
         entries.filter(({ inventoryValue }) => {
           const isFilled = inventoryValue != null;
+          const hasEmissionsData =
+            inventoryValue?.co2eq != null ||
+            inventoryValue?.co2eqYears != null;
           const hasNotationKey = inventoryValue?.unavailableReason != null;
-          return !isFilled || hasNotationKey;
+          // a lingering notation key from before real data was entered
+          // shouldn't keep a subsector on this screen
+          return !isFilled || (hasNotationKey && !hasEmissionsData);
         }),
       ];
     }),

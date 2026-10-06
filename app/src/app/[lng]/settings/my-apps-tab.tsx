@@ -25,7 +25,7 @@ const MyAppsTab: FC<MyAppsTabProps> = ({ lng }) => {
   return (
     <>
       <Tabs.Content value="my-apps">
-        <Box display="flex" flexDirection="column" gap="48px" marginTop="32px">
+        <Box display="flex" flexDirection="column" gap="12" marginTop="8">
           <Box>
             <HeadlineSmall text={t("my-apps")} />
             <BodyLarge text={t("my-apps-sub-title")} />

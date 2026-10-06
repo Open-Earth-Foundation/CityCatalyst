@@ -1,17 +1,18 @@
 import createHttpError from "http-errors";
 
 import {
-  type ClimateAdvisorTokenResponse,
   joinServiceUrl,
-  readClimateAdvisorTokenResponse,
   requireServiceEnv,
 } from "@/backend/climate-advisor-connection";
+
+import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 
 type QueryValue = string | number | boolean | null | undefined;
 
 type ClimateAdvisorRequest = {
+  signal?: AbortSignal;
   path: string;
-  method?: "GET" | "POST";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: Record<string, unknown>;
   headers?: HeadersInit;
   searchParams?: Record<string, QueryValue>;
@@ -92,51 +93,6 @@ function buildClimateAdvisorUrl(
 }
 
 /**
- * Issue a short-lived CA user token through the internal service endpoint.
- */
-export async function issueClimateAdvisorUserToken(params: {
-  userId: string;
-  inventoryId?: string;
-}): Promise<ClimateAdvisorTokenResponse> {
-  const serviceKey = requireEnv("CC_SERVICE_API_KEY");
-  const host = requireEnv("HOST");
-  let response: Response;
-  try {
-    response = await fetch(
-      joinServiceUrl(host, "/api/v1/internal/ca/user-token/"),
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CA-Service-Key": serviceKey,
-        },
-        body: JSON.stringify({
-          user_id: params.userId,
-          inventory_id: params.inventoryId,
-        }),
-      },
-    );
-  } catch (error) {
-    throw new createHttpError.BadGateway(
-      error instanceof Error
-        ? error.message
-        : "CA token issuance request failed",
-    );
-  }
-
-  if (!response.ok) {
-    const payload = await readClimateAdvisorResponsePayload(response);
-    throw createClimateAdvisorHttpError(
-      response.status,
-      payload,
-      "CA token issuance failed",
-    );
-  }
-
-  return readClimateAdvisorTokenResponse(response);
-}
-
-/**
  * Execute a direct request against the Climate Advisor API.
  */
 export async function callClimateAdvisorChat(
@@ -152,6 +108,7 @@ export async function callClimateAdvisorChat(
       buildClimateAdvisorUrl(params.path, params.searchParams),
       {
         method: params.method ?? "GET",
+        ...(params.signal ? { signal: params.signal } : {}),
         headers,
         body: params.body ? JSON.stringify(params.body) : undefined,
       },
@@ -191,6 +148,9 @@ export async function createClimateAdvisorThread(params: {
   const response = await callClimateAdvisorChat({
     path: "/v1/threads",
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${token.access_token}`,
+    },
     body: {
       user_id: params.userId,
       inventory_id: params.inventoryId,

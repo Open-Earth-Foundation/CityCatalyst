@@ -31,7 +31,11 @@ import {
 } from "react-icons/md";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
-import { api, useGetUserAccessStatusQuery } from "@/services/api";
+import {
+  api,
+  useGetModulesQuery,
+  useGetUserAccessStatusQuery,
+} from "@/services/api";
 import {
   MenuContent,
   MenuItem,
@@ -49,8 +53,14 @@ import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
 import { getCityHomePath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
+import { useCitySwitchNavigation } from "@/hooks/useCitySwitchNavigation";
 import { getParamValue } from "@/util/helpers";
 import { env } from "@/lib/runtime-env";
+import { getActiveModuleSegment } from "@/util/module-navigation";
+
+// Derived from the theme's navbar color so it follows every theme.
+const darkerNavbarBg =
+  "color-mix(in srgb, {colors.content.alternative}, black 20%)";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -92,6 +102,7 @@ export function NavigationBar({
 
   const { data: session, status } = useSession();
   const { data: userInfo } = api.useGetUserInfoQuery();
+  const { data: allModules } = useGetModulesQuery();
   const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
     undefined,
     {
@@ -105,7 +116,9 @@ export function NavigationBar({
     [rawOrganizations],
   );
   const [getProjects] = api.useLazyGetProjectsQuery();
+  const [getProjectModulesTrigger] = api.useLazyGetProjectModulesQuery();
   const router = useRouter();
+  const navigateToCity = useCitySwitchNavigation(lng);
 
   const onChangeLanguage = async (language: string) => {
     Cookies.set("i18next", language, { path: "/", sameSite: "strict" });
@@ -117,14 +130,15 @@ export function NavigationBar({
     router.refresh();
   };
 
-  // Derive the active module name from the current pathname
+  // Derive the active module name from the current pathname, using the
+  // Modules table as the source of truth so new modules work without code
+  // changes here.
   const moduleName = useMemo(() => {
-    if (!pathname) return null;
-    if (pathname.includes("/GHGI")) return t("page-title-ghg-inventories");
-    if (pathname.includes("/HIAP")) return t("page-title-hiap");
-    if (pathname.includes("/dashboard")) return t("page-title-dashboard");
-    return null;
-  }, [pathname, t]);
+    const active = getActiveModuleSegment(pathname, allModules ?? []);
+    if (!active) return null;
+    if (!active.moduleId) return t("page-title-dashboard");
+    return active.name?.[activeLng] || active.name?.en || null;
+  }, [pathname, allModules, activeLng, t]);
 
   // Memoize city to ensure it updates when route changes
   const currentCityId = useMemo(
@@ -147,22 +161,46 @@ export function NavigationBar({
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const currentOrganizationName = organizations?.find(
-    (org) => org.organizationId === organization?.organizationId,
+  // The org context is only populated on some pages (e.g. cities), so fall
+  // back to the org in the route, then to the user's first organization.
+  const routeOrganizationId = pathname?.includes("/organization/")
+    ? getParamValue(params.id)
+    : undefined;
+  const currentOrganizationId =
+    organization?.organizationId ??
+    routeOrganizationId ??
+    organizations?.[0]?.organizationId;
+  const currentOrganizationRawName = organizations?.find(
+    (org) => org.organizationId === currentOrganizationId,
   )?.name;
+  const currentOrganizationName =
+    currentOrganizationRawName === "cc_organization_default"
+      ? t("default-organization")
+      : currentOrganizationRawName;
 
   async function onChangeOrganization(organizationId: string) {
-    if (organizationId === organization?.organizationId) return;
+    if (organizationId === currentOrganizationId) return;
     setOrganization({ organizationId });
     const projects = await getProjects({ organizationId })
       .unwrap()
       .catch(() => []);
-    const cityId = projects
-      .flatMap((project) => project.cities)
-      .sort((a, b) => a.name.localeCompare(b.name))[0]?.cityId;
-    router.push(
-      cityId ? `/${lng}/cities/${cityId}` : `/${lng}/cities/onboarding`,
-    );
+
+    const targetProject = projects
+      .flatMap((project) => project.cities.map((city) => ({ project, city })))
+      .sort((a, b) => a.city.name.localeCompare(b.city.name))[0];
+
+    if (!targetProject) {
+      router.push(`/${lng}/cities/onboarding`);
+      return;
+    }
+
+    const projectModules = await getProjectModulesTrigger(
+      targetProject.project.projectId,
+    )
+      .unwrap()
+      .catch(() => []);
+
+    navigateToCity(targetProject.city.cityId, projectModules);
   }
 
   function logOut() {
@@ -257,6 +295,7 @@ export function NavigationBar({
               }}
               open={isLanguageMenuOpen}
               variant="solid"
+              positioning={{ placement: "bottom-end" }}
             >
               <MenuTrigger asChild>
                 <Button
@@ -269,13 +308,15 @@ export function NavigationBar({
                   justifyContent="space-between"
                   px="8px"
                   gap="16px"
+                  _hover={{ bg: darkerNavbarBg }}
+                  _open={{ bg: darkerNavbarBg }}
                 >
                   <Box display="flex" alignItems="center" gap="3">
                     <CircleFlag
                       countryCode={
-                        countryFromLanguage(i18next.language) === "pt"
+                        countryFromLanguage(activeLng) === "pt"
                           ? "br"
-                          : countryFromLanguage(i18next.language)
+                          : countryFromLanguage(activeLng)
                       }
                       width="24"
                     />
@@ -287,7 +328,7 @@ export function NavigationBar({
                       letterSpacing="wide"
                       lineHeight="20"
                     >
-                      {i18next.language.toUpperCase()}
+                      {activeLng.toUpperCase()}
                     </Text>
 
                     <Icon
@@ -304,7 +345,7 @@ export function NavigationBar({
                     onClick={() => onChangeLanguage(language)}
                     key={language}
                   >
-                    <Box display="flex" alignItems="center">
+                    <Box display="flex" alignItems="center" w="full">
                       <CircleFlag
                         countryCode={
                           countryFromLanguage(language) === "pt"
@@ -315,6 +356,17 @@ export function NavigationBar({
                         style={{ marginRight: "16px" }}
                       />
                       <Text fontSize="title.md">{language.toUpperCase()}</Text>
+                      {language === activeLng && (
+                        <Icon
+                          as={MdCheck}
+                          boxSize={5}
+                          ml="auto"
+                          color="interactive.secondary"
+                          css={{
+                            "[data-highlighted] &": { color: "base.light" },
+                          }}
+                        />
+                      )}
                     </Box>
                   </MenuItem>
                 ))}
@@ -328,6 +380,7 @@ export function NavigationBar({
                   }}
                   open={isOrgMenuOpen}
                   variant="solid"
+                  positioning={{ placement: "bottom-end" }}
                 >
                   <MenuTrigger asChild>
                     <Button
@@ -340,6 +393,8 @@ export function NavigationBar({
                       px="8px"
                       justifyContent="space-between"
                       gap="16px"
+                      _hover={{ bg: darkerNavbarBg }}
+                      _open={{ bg: darkerNavbarBg }}
                     >
                       <Box
                         display="flex"
@@ -389,14 +444,18 @@ export function NavigationBar({
                             textOverflow="ellipsis"
                             whiteSpace="nowrap"
                           >
-                            {org.name}
+                            {org.name === "cc_organization_default"
+                              ? t("default-organization")
+                              : org.name}
                           </Text>
-                          {org.organizationId ===
-                            organization?.organizationId && (
+                          {org.organizationId === currentOrganizationId && (
                             <Icon
                               as={MdCheck}
                               boxSize={5}
                               color="interactive.secondary"
+                              css={{
+                                "[data-highlighted] &": { color: "base.light" },
+                              }}
                             />
                           )}
                         </Box>
@@ -414,6 +473,7 @@ export function NavigationBar({
                   }}
                   open={isUserMenuOpen}
                   variant="solid"
+                  positioning={{ placement: "bottom-end" }}
                   onHighlightChange={(value) =>
                     setUserMenuHighlight(value.highlightedValue)
                   }
@@ -422,8 +482,9 @@ export function NavigationBar({
                     <Button
                       variant="ghost"
                       px="8px"
-                      minW={{ base: "auto", md: "220px" }}
                       minH="48px"
+                      _hover={{ bg: darkerNavbarBg }}
+                      _open={{ bg: darkerNavbarBg }}
                     >
                       <Box display="flex" alignItems="center" gap="4">
                         <Avatar
@@ -436,7 +497,8 @@ export function NavigationBar({
                         />
                         <Text
                           display={{ base: "none", md: "block" }}
-                          w="120px"
+                          maxW="56"
+                          color="base.light"
                           overflow="hidden"
                           textOverflow="ellipsis"
                           whiteSpace="nowrap"
@@ -450,6 +512,7 @@ export function NavigationBar({
                         <Icon
                           as={isUserMenuOpen ? MdArrowDropUp : MdArrowDropDown}
                           boxSize={6}
+                          color="base.light"
                         />
                       </Box>
                     </Button>

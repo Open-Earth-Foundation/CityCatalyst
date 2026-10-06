@@ -79,6 +79,10 @@ describe("Stationary Energy draft routes", () => {
   });
 
   beforeEach(() => {
+    Reflect.deleteProperty(
+      globalThis,
+      Symbol.for("citycatalyst.ca-user-token-cache.v1"),
+    );
     process.env.NEXT_PUBLIC_FEATURE_FLAGS =
       "CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC";
     process.env.CA_BASE_URL = "http://ca.example";
@@ -153,16 +157,19 @@ describe("Stationary Energy draft routes", () => {
     gasToCo2EqSpy.mockResolvedValue([
       db.models.GasToCO2Eq.build({
         gas: "CO2",
+        gwpVersion: "ar5",
         co2eqPerKg: 1,
         co2eqYears: 100,
       }),
       db.models.GasToCO2Eq.build({
         gas: "CH4",
+        gwpVersion: "ar5",
         co2eqPerKg: 28,
         co2eqYears: 100,
       }),
       db.models.GasToCO2Eq.build({
         gas: "N2O",
+        gwpVersion: "ar5",
         co2eqPerKg: 265,
         co2eqYears: 100,
       }),
@@ -449,7 +456,7 @@ describe("Stationary Energy draft routes", () => {
     }
   });
 
-  it("preserves JSON token-issuance errors from the shared CA helper", async () => {
+  it("preserves sanitized token-issuance errors from the shared CA helper", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
     fetchMock.mockResolvedValueOnce(
       jsonResponse(
@@ -475,11 +482,7 @@ describe("Stationary Energy draft routes", () => {
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toEqual({
       error: {
-        message: "service token rejected",
-        code: undefined,
-        data: {
-          detail: "service token rejected",
-        },
+        message: "Unable to obtain Climate Advisor access token",
       },
     });
     expect(fetchMock).toHaveBeenCalledTimes(1);

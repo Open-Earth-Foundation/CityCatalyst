@@ -1,7 +1,7 @@
 import { CityResponse, ProjectWithCities, UserRole } from "@/util/types";
 import React, { useMemo } from "react";
 import { Box, Button, HStack, Icon, Link, Text } from "@chakra-ui/react";
-import { MdAdd } from "react-icons/md";
+import { PlusIcon } from "@/components/icons";
 import { CircleFlag } from "react-circle-flags";
 import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
@@ -52,27 +52,61 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
     organizationId: organization?.organizationId,
   });
 
+  const addButton = view !== "inventory-view" &&
+    userRole == UserRole.ORG_ADMIN && (
+      <Button
+        onClick={() =>
+          isFrozenCheck()
+            ? null
+            : router.push(
+                `/${lng}/cities/onboarding/setup?project=${selectedProjectData?.projectId as string}${selectedCityData?.cityId ? `&city=${selectedCityData?.cityId}` : ""}`,
+              )
+        }
+        variant="outline"
+        ml="auto"
+        h="48px"
+      >
+        <Icon as={PlusIcon} h={6} w={6} />
+        {view === "project-view" ? t("add-city") : t("add-inventory")}
+      </Button>
+    );
+
   return (
-    <HStack justifyContent="space-between" alignItems="center" mb={6}>
-      <Box>
-        <Text
-          onClick={() => {
-            onSetSelectedCity(null);
-            setSelectedInventory(null);
-          }}
-          mb="6"
-          fontFamily="heading"
-          fontWeight="bold"
-          letterSpacing="widest"
-          fontSize="title.md"
-          color="content.secondary"
-          truncate
-          cursor="pointer"
+    <Box mb={6}>
+      <HStack justifyContent="space-between" alignItems="center" minH="48px">
+        <Box
+          display="flex"
+          alignItems="center"
+          h="48px"
+          flex={view === "project-view" ? "1" : undefined}
+          minW="0"
         >
-          {selectedProjectData?.name}
-        </Text>
-        {view !== "project-view" && (
-          <HStack mt={2} gap={2}>
+          <Text
+            onClick={() => {
+              onSetSelectedCity(null);
+              setSelectedInventory(null);
+            }}
+            fontFamily="heading"
+            fontWeight="bold"
+            letterSpacing="widest"
+            fontSize="title.md"
+            color="content.secondary"
+            truncate
+            cursor="pointer"
+          >
+            {selectedProjectData?.name}
+          </Text>
+        </Box>
+        {view === "project-view" && addButton}
+      </HStack>
+      {view !== "project-view" && (
+        <HStack
+          justifyContent="space-between"
+          alignItems="center"
+          minH="48px"
+          mt="6"
+        >
+          <HStack gap={2} alignItems="center">
             <CircleFlag
               countryCode={
                 selectedCityData?.countryLocode
@@ -98,27 +132,10 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
               )}
             </Text>
           </HStack>
-        )}
-      </Box>
-      {view !== "inventory-view" && userRole == UserRole.ORG_ADMIN && (
-        <Button
-          onClick={() =>
-            isFrozenCheck()
-              ? null
-              : router.push(
-                  `/${lng}/cities/onboarding/setup?project=${selectedProjectData?.projectId as string}${selectedCityData?.cityId ? `&city=${selectedCityData?.cityId}` : ""}`,
-                )
-          }
-          variant="outline"
-          ml="auto"
-          h="48px"
-          mt="auto"
-        >
-          <Icon as={MdAdd} h={8} w={8} />
-          {view === "project-view" ? t("add-city") : t("add-inventory")}
-        </Button>
+          {addButton}
+        </HStack>
       )}
-    </HStack>
+    </Box>
   );
 };
 

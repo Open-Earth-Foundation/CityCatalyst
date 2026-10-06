@@ -1,0 +1,110 @@
+import MeedApiService from "@/backend/MeedApiService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import { apiHandler } from "@/util/api";
+import { NextResponse } from "next/server";
+import z from "zod";
+
+/**
+ * @swagger
+ * /api/v1/city/{city}/meed/generate-plan:
+ *   post:
+ *     tags:
+ *       - meed
+ *       - city
+ *     operationId: generateMeedPlan
+ *     summary: Generates an report plan output
+ *     description: Uses the MEED service to create a plan output in structured markdown format
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [inventoryId, languages, actionId]
+ *             properties:
+ *               inventoryId:
+ *                 type: string
+ *                 format: uuid
+ *               languages:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               actionId:
+ *                 type: string
+ *               debugContextOnly:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Output plan generated
+ */
+
+const generatePlanRequest = z.object({
+  inventoryId: z.string().uuid(),
+  languages: z.array(z.string().min(2)),
+  actionId: z.string().min(1),
+  debugContextOnly: z.boolean().default(false),
+});
+
+export const POST = apiHandler(async (req, { session }) => {
+  const body = generatePlanRequest.parse(await req.json());
+  await PermissionService.canAccessInventory(session, body.inventoryId);
+
+  const result = await MeedApiService.generatePlan(
+    body.inventoryId,
+    body.languages,
+    body.actionId,
+    body.debugContextOnly,
+  );
+  return NextResponse.json({ data: result });
+});
+
+/**
+ * @swagger
+ * /api/v1/city/{city}/meed/generate-plan:
+ *   get:
+ *     tags:
+ *       - meed
+ *       - city
+ *     operationId: getMeedPlan
+ *     summary: Fetches saved MEED+ city action report for a given inventory from the database
+ *     description: Fetches saved MEED+ city action report for a given inventory from the database
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: actionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Plan retrieved
+ */
+const getRankingQuery = z.object({
+  inventoryId: z.string().uuid(),
+  actionId: z.string().min(1),
+});
+export const GET = apiHandler(async (_req, { session, searchParams }) => {
+  const { inventoryId, actionId } = getRankingQuery.parse(searchParams);
+  await PermissionService.canAccessInventory(session, inventoryId);
+
+  const result = await MeedApiService.getPlan(inventoryId, actionId);
+  return NextResponse.json({ data: result });
+});

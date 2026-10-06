@@ -5,6 +5,8 @@ import {
   OrganizationPlanType,
 } from "./enums";
 import { OrganizationRole, LANGUAGES } from "@/util/types";
+import { WEBHOOK_EMITTED_EVENT_TYPES } from "@/backend/webhooks/events";
+import { CONCEPT_NOTE_MAX_UPLOADS } from "@/components/ConceptNoteWiringHarness/utils";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -373,6 +375,17 @@ export const conceptNoteStartRequest = z
     funder_id: z.string().uuid().nullable().optional(),
     selected_funding_opportunity_id: z.string().uuid().nullable().optional(),
     thread_id: z.string().uuid().nullable().optional(),
+    initial_uploads: z
+      .array(
+        z.object({
+          upload_id: z.string().uuid(),
+          filename: z.string().trim().min(1).max(255),
+          sha256: z.string().regex(/^[a-f0-9]{64}$/),
+        }),
+      )
+      // Each expected source must be accepted by the run's upload limit.
+      .max(CONCEPT_NOTE_MAX_UPLOADS)
+      .optional(),
     idempotency_key: z.string().uuid(),
   })
   .superRefine((request, context) => {
@@ -407,6 +420,38 @@ export type NativeInputCatalogRegisterRequest = z.infer<
   typeof nativeInputCatalogRegisterRequest
 >;
 
+const webhookHttpsUrl = z
+  .string()
+  .url()
+  .refine((value) => value.toLowerCase().startsWith("https://"), {
+    message: "webhook-url-must-be-https",
+  });
+
+const webhookEmittedEvents = z
+  .array(z.enum(WEBHOOK_EMITTED_EVENT_TYPES))
+  .min(1);
+
+export const createWebhookSubscriptionRequest = z.object({
+  name: z.string().trim().min(1).max(255),
+  url: webhookHttpsUrl,
+  events: webhookEmittedEvents,
+});
+
+export type CreateWebhookSubscriptionRequest = z.infer<
+  typeof createWebhookSubscriptionRequest
+>;
+
+export const updateWebhookSubscriptionRequest = z.object({
+  name: z.string().trim().min(1).max(255).optional(),
+  url: webhookHttpsUrl.optional(),
+  events: webhookEmittedEvents.optional(),
+  enabled: z.boolean().optional(),
+});
+
+export type UpdateWebhookSubscriptionRequest = z.infer<
+  typeof updateWebhookSubscriptionRequest
+>;
+
 export const nativeInputCatalogReconciliationRequest = z.object({
   mode: z.enum(["dry-run", "apply"]),
   limit: z.number().int().min(1).max(1000).optional(),
@@ -416,3 +461,27 @@ export const nativeInputCatalogReconciliationRequest = z.object({
 export type NativeInputCatalogReconciliationRequest = z.infer<
   typeof nativeInputCatalogReconciliationRequest
 >;
+export const conceptNoteFundingSelectionRequest = z
+  .object({
+    funder_id: z.string().uuid().nullable(),
+    selected_funding_opportunity_id: z.string().uuid().nullable(),
+    expected_funder_id: z.string().uuid().nullable(),
+    expected_funding_opportunity_id: z.string().uuid().nullable(),
+    acknowledge_draft_review: z.boolean().default(false),
+  })
+  .strict()
+  .refine(
+    (value) =>
+      value.funder_id !== null ||
+      value.selected_funding_opportunity_id === null,
+    { message: "A funding opportunity requires a funder" },
+  );
+
+export const recordConsentRequest = z.object({
+  consentType: z.enum(["analytics", "marketing"]),
+  granted: z.boolean(),
+  subjectKey: z.string().uuid().optional(),
+  source: z.enum(["cookie_banner", "account_settings", "api"]).optional(),
+});
+
+export type RecordConsentRequest = z.infer<typeof recordConsentRequest>;

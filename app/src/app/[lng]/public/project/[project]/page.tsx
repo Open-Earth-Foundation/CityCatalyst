@@ -124,7 +124,7 @@ export default function ProjectPage(props: {
   const formattedEmissions = projectSummary?.totalEmissions
     ? formatEmissions(projectSummary?.totalEmissions)
     : { value: "N/A", unit: "" };
-  const totalEmissions = `${formattedEmissions.value} ${formattedEmissions.unit}CO2e`;
+  const totalEmissions = `${formattedEmissions.value} ${formattedEmissions.unit}`.trim();
 
   // Metrics section content
   const metricsProps = {

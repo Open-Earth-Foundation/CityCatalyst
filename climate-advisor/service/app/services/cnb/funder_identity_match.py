@@ -4,16 +4,14 @@ from __future__ import annotations
 
 import json
 import logging
-from uuid import UUID
-
-from openai import OpenAI
-from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.cnb.research import (
     CanonicalFunder,
     FundedProjectDraft,
     FunderIdentityCandidate,
 )
+from openai import OpenAI
+from pydantic import BaseModel, ConfigDict, Field
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +21,7 @@ class FunderIdentityLlmMatch(BaseModel):
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
-    funder_id: UUID
+    funder_name: str = Field(min_length=1)
     match_reason: str = Field(min_length=1)
 
 
@@ -32,7 +30,7 @@ class FunderIdentityLlmDecision(BaseModel):
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
-    funded_project_ref: str = Field(min_length=1)
+    project_name: str = Field(min_length=1)
     matches: list[FunderIdentityLlmMatch]
 
 
@@ -57,7 +55,7 @@ def propose_funder_identity_candidates(
 ) -> list[FundedProjectDraft]:
     """Use one structured LLM call to propose review-only canonical funders.
 
-    Source-reported funder names remain unchanged, model-returned IDs are
+    Source-reported funder names remain unchanged, model-returned names are
     checked against the supplied canonical list, and no candidate is selected
     automatically.
     """
@@ -73,12 +71,9 @@ def propose_funder_identity_candidates(
         matchable_projects.append(project)
         project_payloads.append(
             {
-                "funded_project_ref": project.funded_project_ref,
                 "identity_name": identity_name,
                 "identity_name_source": (
-                    "reported_funder_name"
-                    if reported_name
-                    else "dossier_funder_name"
+                    "reported_funder_name" if reported_name else "dossier_funder_name"
                 ),
                 "project_context": project.model_dump(
                     mode="json",
@@ -99,7 +94,7 @@ def propose_funder_identity_candidates(
         payload = {
             "funded_projects": project_payloads,
             "canonical_funders": [
-                funder.model_dump(mode="json") for funder in canonical_funders
+                {"name": funder.name} for funder in canonical_funders
             ],
         }
         logger.info(
@@ -124,7 +119,7 @@ def propose_funder_identity_candidates(
         )
 
     # Rebuild candidates from code-owned names and always require human selection.
-    funders_by_id = {funder.funder_id: funder for funder in canonical_funders}
+    funders_by_name = {funder.name.strip(): funder for funder in canonical_funders}
     updated_projects: list[FundedProjectDraft] = []
     for project in funded_projects:
         decision = decisions_by_project.get(project.funded_project_ref)
@@ -132,8 +127,8 @@ def propose_funder_identity_candidates(
         if decision is not None:
             candidates = [
                 FunderIdentityCandidate(
-                    funder_id=match.funder_id,
-                    name=funders_by_id[match.funder_id].name,
+                    funder_id=funders_by_name[match.funder_name].funder_id,
+                    name=funders_by_name[match.funder_name].name,
                     match_reason=match.match_reason,
                 )
                 for match in decision.matches
@@ -155,42 +150,31 @@ def _validate_decisions(
     canonical_funders: list[CanonicalFunder],
     decision_set: FunderIdentityLlmDecisionSet,
 ) -> dict[str, FunderIdentityLlmDecision]:
-    """Reject omitted records, duplicate matches, and model-invented identifiers."""
-    expected_project_refs = {
-        project.funded_project_ref for project in matchable_projects
-    }
-    canonical_funder_ids = {funder.funder_id for funder in canonical_funders}
+    """Validate ordered projects and uniquely resolvable funder names."""
+    if len(decision_set.decisions) != len(matchable_projects):
+        raise ValueError(
+            "Funder-identity matcher must return every project in input order"
+        )
+    canonical_names = [funder.name.strip() for funder in canonical_funders]
     decisions_by_project: dict[str, FunderIdentityLlmDecision] = {}
 
-    for decision in decision_set.decisions:
-        project_ref = decision.funded_project_ref
-        if project_ref not in expected_project_refs:
-            raise ValueError(
-                f"Funder-identity matcher returned unknown project {project_ref}"
-            )
-        if project_ref in decisions_by_project:
-            raise ValueError(
-                f"Funder-identity matcher returned duplicate project {project_ref}"
-            )
-        matched_funder_ids: set[UUID] = set()
+    for project, decision in zip(
+        matchable_projects, decision_set.decisions, strict=True
+    ):
+        if decision.project_name != project.name.strip():
+            raise ValueError("Funder-identity matcher changed project order or name")
+        matched_names: set[str] = set()
         for match in decision.matches:
-            if match.funder_id not in canonical_funder_ids:
+            if canonical_names.count(match.funder_name) != 1:
                 raise ValueError(
-                    "Funder-identity matcher returned unknown canonical funder "
-                    f"{match.funder_id}"
+                    "Funder-identity matcher returned unknown or ambiguous canonical funder "
+                    f"{match.funder_name}"
                 )
-            if match.funder_id in matched_funder_ids:
+            if match.funder_name in matched_names:
                 raise ValueError(
                     "Funder-identity matcher returned duplicate canonical funder "
-                    f"{match.funder_id} for project {project_ref}"
+                    f"{match.funder_name} for project {project.name}"
                 )
-            matched_funder_ids.add(match.funder_id)
-        decisions_by_project[project_ref] = decision
-
-    missing_project_refs = expected_project_refs - set(decisions_by_project)
-    if missing_project_refs:
-        raise ValueError(
-            "Funder-identity matcher omitted projects: "
-            f"{', '.join(sorted(missing_project_refs))}"
-        )
+            matched_names.add(match.funder_name)
+        decisions_by_project[project.funded_project_ref] = decision
     return decisions_by_project

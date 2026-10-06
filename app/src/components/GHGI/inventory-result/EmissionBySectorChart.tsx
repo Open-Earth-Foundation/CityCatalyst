@@ -117,7 +117,14 @@ function CustomCombinedBarLayer<D extends BarDatum>({
               // Assuming each segment’s value is stored with key === bar.id
               value: bar.data.value ?? 0,
               color: bar.color,
-              percentage: ((bar.data.value ?? 0) / totalEmission) * 100,
+              // totalEmission can be 0 (or, with AFOLU removals, negative) - guard
+              // against NaN/Infinity rather than dividing blindly. See CC-749; this
+              // stacked chart doesn't yet have a design for rendering negative
+              // (removal) segments, so it's left visually as-is beyond this guard.
+              percentage:
+                totalEmission > 0
+                  ? ((bar.data.value ?? 0) / totalEmission) * 100
+                  : 0,
             })),
           },
         };
@@ -394,7 +401,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: "CO2eq",
+            legend: "CO₂e",
             legendPosition: "middle",
             legendOffset: -100,
             format: (value) => convertKgToTonnes(value, numberFormat),

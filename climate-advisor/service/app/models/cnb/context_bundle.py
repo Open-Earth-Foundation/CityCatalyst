@@ -6,6 +6,11 @@ from typing import Any, Literal
 from uuid import UUID
 
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
+from app.services.cnb.visual_context import (
+    VISUAL_CONTEXT_CONTRACT_VERSION,
+    UnverifiedVisualAnnotationEnvelope,
+    is_full_envelope_visual_context,
+)
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
@@ -44,9 +49,39 @@ class SelectedSource(ContextBundleContract):
         default=None,
         pattern=r"^[0-9a-f]{64}$",
     )
+    visual_context_contract_version: str | None = None
     summary: str = Field(min_length=1, max_length=4000)
     topics: list[str] = Field(max_length=30)
     key_excerpts: list[SourceExcerpt] = Field(max_length=20)
+    structured_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    structured_schema_version: str | None = None
+    visual_context: list[UnverifiedVisualAnnotationEnvelope] = Field(
+        default_factory=list
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def drop_stale_reduced_visual_context(cls, data: Any) -> Any:
+        """Omit legacy filtered projections until an authorised refresh rebuilds them."""
+        if not isinstance(data, dict):
+            return data
+        version = data.get("visual_context_contract_version")
+        visual = data.get("visual_context")
+        if version != VISUAL_CONTEXT_CONTRACT_VERSION:
+            return {
+                **data,
+                "visual_context": [],
+                "visual_context_contract_version": None,
+            }
+        if not isinstance(visual, list) or any(
+            not is_full_envelope_visual_context(item) for item in visual
+        ):
+            return {
+                **data,
+                "visual_context": [],
+                "visual_context_contract_version": None,
+            }
+        return data
 
     @model_validator(mode="after")
     def validate_source_counts(self) -> SelectedSource:
@@ -57,6 +92,25 @@ class SelectedSource(ContextBundleContract):
         elif self.block_count is None or self.page_count is not None:
             raise ValueError("Markdown sources require only block_count")
         return self
+
+
+class SourceDocumentText(ContextBundleContract):
+    """Complete verified text of one ready source, with PDF page markers."""
+
+    upload_id: UUID
+    source_label: str
+    filename: str
+    source_format: ConceptNoteSourceFormat = "pdf"
+    text: str
+
+
+class SourceTextContext(ContextBundleContract):
+    """Complete source text when it fits the budget, otherwise summaries only."""
+
+    mode: Literal["full_text", "summary"]
+    token_count: int = Field(ge=0)
+    max_tokens: int = Field(ge=0)
+    documents: list[SourceDocumentText] = Field(default_factory=list)
 
 
 class BundleCcContext(BaseModel):
@@ -81,6 +135,7 @@ class ConceptNoteContextBundle(BaseModel):
     funder_context: dict[str, Any] | None = None
     similar_projects: list[dict[str, Any]] = Field(default_factory=list)
     document_context: dict[str, Any] | None = None
+    source_text: SourceTextContext | None = None
 
 
 class SourcePartitionMap(ContextBundleContract):
@@ -116,6 +171,9 @@ class SourceQueryResult(ContextBundleContract):
     source_label: str
     source_format: ConceptNoteSourceFormat
     excerpts: list[SourceExcerpt] = Field(default_factory=list, max_length=20)
+    visual_context: list[UnverifiedVisualAnnotationEnvelope] = Field(
+        default_factory=list
+    )
     units_processed: int = Field(ge=1)
     units_total: int = Field(ge=1)
     segments_processed: int = Field(ge=1)
@@ -128,3 +186,16 @@ class ContextBundleRetryResponse(ContextBundleContract):
 
     run_id: UUID
     status: Literal["queued"]
+
+
+class ContextBundleRefreshResponse(ContextBundleContract):
+    """Whether opening the workspace queued a rebuild for changed city sources."""
+
+    run_id: UUID
+    status: Literal["queued", "current", "building"]
+
+
+class ContextBundleInventorySelectionRequest(ContextBundleContract):
+    """Inventory to use for a run; ``None`` restores the newest inventory."""
+
+    inventory_id: UUID | None

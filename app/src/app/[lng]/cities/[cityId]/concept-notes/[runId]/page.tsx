@@ -6,7 +6,11 @@ export default async function ConceptNoteWorkspacePage({
   searchParams,
 }: {
   params: Promise<{ cityId: string; lng: string; runId: string }>;
-  searchParams: Promise<{ uploadId?: string | string[] }>;
+  searchParams: Promise<{
+    chapterId?: string | string[];
+    findingKey?: string | string[];
+    uploadId?: string | string[];
+  }>;
 }) {
   requireConceptNoteBuilderPageEnabled();
 
@@ -16,10 +20,18 @@ export default async function ConceptNoteWorkspacePage({
   ]);
   const initialUploadId =
     typeof query.uploadId === "string" ? query.uploadId : undefined;
+  const initialReviewChapterId =
+    typeof query.chapterId === "string" ? query.chapterId : undefined;
+  const initialReviewFindingKey =
+    initialReviewChapterId && typeof query.findingKey === "string"
+      ? query.findingKey
+      : undefined;
 
   return (
     <ConceptNoteWorkspace
       cityId={cityId}
+      initialReviewChapterId={initialReviewChapterId}
+      initialReviewFindingKey={initialReviewFindingKey}
       initialUploadId={initialUploadId}
       lng={lng}
       runId={runId}

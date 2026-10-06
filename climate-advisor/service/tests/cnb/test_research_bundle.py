@@ -1,12 +1,12 @@
 """Tests for CNB funder research bundle conversion and material paths."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.models.cnb.research import (
     FieldEvidence,
+    FundedProjectResearchResult,
     FunderCriterionResearchResult,
     FunderTemplateResearchResult,
-    FundedProjectResearchResult,
     ResearchConflictResult,
     ResearchRunMetadata,
     TemplateChapterDraft,
@@ -65,6 +65,7 @@ def test_material_paths_use_criterion_template_and_chapter_references() -> None:
                         TemplateChapterDraft(
                             chapter_ref="chapter-001",
                             title="Project summary",
+                            required_fields=["Objectives"],
                         )
                     ],
                 )
@@ -93,9 +94,14 @@ def test_material_paths_use_criterion_template_and_chapter_references() -> None:
     )
 
     assert "funder_templates[template-001].template_name" in paths
+    assert templates[0].model_dump()["chapter_schema"][0]["required_fields"] == [
+        "Objectives"
+    ]
     assert (
-        "funder_templates[template-001].chapter_schema[chapter-001].title" in paths
+        "funder_templates[template-001].chapter_schema[chapter-001].required_fields"
+        in paths
     )
+    assert "funder_templates[template-001].chapter_schema[chapter-001].title" in paths
     assert "funder_criteria[selection-002].label" in paths
     assert not any("funder_criteria[opportunity-001]" in path for path in paths)
 
@@ -117,7 +123,7 @@ def test_bundle_drops_prior_run_evidence_and_its_conflict_links() -> None:
     result = build_result().model_copy(
         update={"evidence": [evidence], "conflicts": [conflict]}
     )
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     metadata = ResearchRunMetadata(
         pipeline_version="3.0",
         model_name="test-model",

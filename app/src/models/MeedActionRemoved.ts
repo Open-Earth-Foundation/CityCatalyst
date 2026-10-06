@@ -5,6 +5,7 @@ import type { Inventory, InventoryId } from "./Inventory";
 export interface MeedActionRemovedAttributes {
   id: string;
   inventoryId?: string;
+  rankingId?: string | null;
   actionId?: string;
   actionName?: string;
   removalReason?: string;
@@ -43,6 +44,7 @@ export class MeedActionRemoved
 {
   declare id: string;
   declare inventoryId?: string;
+  declare rankingId?: string | null;
   declare actionId?: string;
   declare actionName?: string;
   declare removalReason?: string;
@@ -82,6 +84,12 @@ export class MeedActionRemoved
             key: "inventory_id",
           },
           field: "inventory_id",
+        },
+        rankingId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          field: "ranking_id",
+          references: { model: "MeedRanking", key: "id" },
         },
         actionId: {
           type: DataTypes.TEXT,

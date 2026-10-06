@@ -4,42 +4,111 @@ import { useEffect, useRef, useState } from "react";
 
 import { useSSEStream } from "@/hooks/useSSEStream";
 import { useTranslation } from "@/i18n/client";
-
+import type { EditScope } from "@/util/concept-note-edit-types";
 import {
+  readConceptNoteProgress,
+  readConceptNoteReasoning,
+  type ConceptNoteProgress,
+  type ConceptNoteReasoning,
   type ConceptNoteChatMessage,
   readConceptNoteThreadMessages,
 } from "./chat-utils";
 
+// The service replaces this content with its own hidden overview trigger.
+const DRAFT_OVERVIEW_CONTENT = "draft_overview";
+const DRAFT_OVERVIEW_UNAVAILABLE = "concept_note_draft_overview_unavailable";
+
 interface UseConceptNoteChatOptions {
   lng: string;
+  runId: string;
   threadId: string | null;
+  editScope?: EditScope;
+  onProposal?: (proposalId: string) => Promise<void>;
+  onDraftOverviewComplete?: () => void;
 }
 
 interface ConceptNoteChatController {
   error: string | null;
   historyLoading: boolean;
   isGenerating: boolean;
+  progress: ConceptNoteProgress | null;
+  reasoning: ConceptNoteReasoning[];
   messages: ConceptNoteChatMessage[];
   sendMessage: (content: string) => Promise<void>;
+  requestDraftOverview: () => Promise<void>;
 }
 
 export function useConceptNoteChat({
   lng,
+  runId,
   threadId,
+  editScope,
+  onProposal,
+  onDraftOverviewComplete,
 }: UseConceptNoteChatOptions): ConceptNoteChatController {
   const { t } = useTranslation(lng, "concept-notes");
   const [messages, setMessages] = useState<ConceptNoteChatMessage[]>([]);
-  const [historyLoading, setHistoryLoading] = useState(Boolean(threadId));
+  const [messagesThreadId, setMessagesThreadId] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [reasoning, setReasoning] = useState<ConceptNoteReasoning[]>([]);
+  const [progress, setProgress] = useState<ConceptNoteProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
   const assistantMessageIdRef = useRef<string | null>(null);
+  const pendingUserMessageIdRef = useRef<string | null>(null);
+  // The overview turn keeps its own label instead of the request-based stages.
+  const draftOverviewTurnRef = useRef(false);
 
   const { startStream, stopStream } = useSSEStream({
     forceEventStream: true,
+    onReasoning: (value) => {
+      const update = readConceptNoteReasoning(value);
+      const assistantId = assistantMessageIdRef.current;
+      if (!assistantId || !update) return;
+      setReasoning((current) => {
+        const previous = current.find((item) => item.id === update.id);
+        return [
+          ...current.filter((item) => item.id !== update.id),
+          {
+            ...update,
+            text: update.replace
+              ? update.text
+              : (previous?.text || "") + update.text,
+          },
+        ];
+      });
+    },
+    onProgress: (value) => {
+      const update = readConceptNoteProgress(value);
+      if (
+        assistantMessageIdRef.current &&
+        update &&
+        !draftOverviewTurnRef.current
+      ) {
+        setProgress(update);
+      }
+    },
+    onToolResult: (result) => {
+      const data = result.data;
+      if (
+        result.action === "concept_note.edit.propose" &&
+        typeof result.success === "boolean" &&
+        typeof data === "object" &&
+        data !== null &&
+        "proposal_id" in data &&
+        typeof data.proposal_id === "string"
+      ) {
+        void onProposal?.(data.proposal_id);
+      }
+    },
     onMessage: (content) => {
       const assistantMessageId = assistantMessageIdRef.current;
       if (!assistantMessageId) {
         return;
+      }
+      if (!draftOverviewTurnRef.current) {
+        setProgress((current) =>
+          current?.stage === "responding" ? current : { stage: "responding" },
+        );
       }
       setMessages((current) =>
         current.map((message) =>
@@ -50,22 +119,49 @@ export function useConceptNoteChat({
       );
     },
     onComplete: () => {
+      // Draft observation ends at chapter completion; refresh the consumed overview.
+      if (draftOverviewTurnRef.current) onDraftOverviewComplete?.();
+      draftOverviewTurnRef.current = false;
+      setReasoning([]);
       assistantMessageIdRef.current = null;
+      pendingUserMessageIdRef.current = null;
       setIsGenerating(false);
     },
-    onError: () => {
+    onError: (_message, code) => {
+      if (draftOverviewTurnRef.current && code === DRAFT_OVERVIEW_UNAVAILABLE) {
+        onDraftOverviewComplete?.();
+      }
+      draftOverviewTurnRef.current = false;
+      setReasoning([]);
       const assistantMessageId = assistantMessageIdRef.current;
+      const rejectedUserMessageId =
+        code === "concept_note_context_not_ready"
+          ? pendingUserMessageIdRef.current
+          : null;
       if (assistantMessageId) {
         setMessages((current) =>
           current.filter(
             (message) =>
-              message.id !== assistantMessageId || Boolean(message.text.trim()),
+              message.id !== rejectedUserMessageId &&
+              (message.id !== assistantMessageId ||
+                Boolean(message.text.trim())),
           ),
         );
       }
       assistantMessageIdRef.current = null;
-      setError(t("chat-send-error"));
+      pendingUserMessageIdRef.current = null;
       setIsGenerating(false);
+      // Another tab or an earlier visit already posted this overview.
+      if (code === DRAFT_OVERVIEW_UNAVAILABLE) {
+        return;
+      }
+      setError(
+        t(
+          code === "concept_note_context_not_ready"
+            ? "chat-context-not-ready"
+            : "chat-send-error",
+        ),
+      );
     },
   });
 
@@ -89,16 +185,16 @@ export function useConceptNoteChat({
         }
         const payload: unknown = await response.json();
         setMessages(readConceptNoteThreadMessages(payload));
+        setMessagesThreadId(threadId);
+        setError(null);
       } catch (requestError) {
         if (
           !(requestError instanceof Error) ||
           requestError.name !== "AbortError"
         ) {
+          setMessages([]);
+          setMessagesThreadId(threadId);
           setError(t("chat-history-error"));
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setHistoryLoading(false);
         }
       }
     }
@@ -115,35 +211,94 @@ export function useConceptNoteChat({
       return;
     }
 
+    const userMessageId = crypto.randomUUID();
+    pendingUserMessageIdRef.current = userMessageId;
+    await streamReply({
+      userMessage: { id: userMessageId, role: "user", text: normalizedContent },
+      content: normalizedContent,
+      context: editScope
+        ? {
+            concept_note_edit: {
+              scope: editScope,
+              idempotency_key: crypto.randomUUID(),
+            },
+          }
+        : {},
+    });
+  }
+
+  // Starts the hidden first turn that summarises a finished drafting pass.
+  async function requestDraftOverview(): Promise<void> {
+    if (!threadId || isGenerating) {
+      return;
+    }
+    draftOverviewTurnRef.current = true;
+    await streamReply({
+      content: DRAFT_OVERVIEW_CONTENT,
+      context: {},
+      options: { concept_note_turn: "draft_overview" },
+    });
+  }
+
+  async function streamReply({
+    userMessage,
+    content,
+    context,
+    options,
+  }: {
+    userMessage?: ConceptNoteChatMessage;
+    content: string;
+    context: Record<string, unknown>;
+    options?: Record<string, unknown>;
+  }): Promise<void> {
     const assistantMessageId = crypto.randomUUID();
     assistantMessageIdRef.current = assistantMessageId;
     setMessages((current) => [
       ...current,
-      { id: crypto.randomUUID(), role: "user", text: normalizedContent },
+      ...(userMessage ? [userMessage] : []),
       { id: assistantMessageId, role: "assistant", text: "" },
     ]);
     setError(null);
     setIsGenerating(true);
+    setReasoning([]);
+    setProgress({
+      stage: draftOverviewTurnRef.current ? "summarizing_draft" : "preparing",
+    });
 
     try {
       await startStream("/api/v1/chat/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ threadId, content: normalizedContent }),
+        body: JSON.stringify({
+          threadId,
+          content,
+          context: {
+            concept_note_run_id: runId,
+            // Lets Clima's help quote control labels in the visible UI language.
+            ui_locale: lng,
+            ...context,
+          },
+          ...(options ? { options } : {}),
+        }),
       });
     } catch (requestError) {
       if (requestError instanceof Error && requestError.name === "AbortError") {
+        draftOverviewTurnRef.current = false;
         assistantMessageIdRef.current = null;
         setIsGenerating(false);
+        setReasoning([]);
       }
     }
   }
 
   return {
-    error,
-    historyLoading,
+    error: messagesThreadId === threadId ? error : null,
+    historyLoading: Boolean(threadId) && messagesThreadId !== threadId,
     isGenerating,
-    messages,
+    progress,
+    reasoning,
+    messages: messagesThreadId === threadId ? messages : [],
     sendMessage,
+    requestDraftOverview,
   };
 }

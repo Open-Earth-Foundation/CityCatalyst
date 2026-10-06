@@ -194,9 +194,10 @@ Use `db/provenance.py` rather than re-implementing the join per route:
 - `resolve_release_ids(session, datasource_names=, version_label=, release_id=)` — applies the contract above and returns the release ids to query.
 - `build_datasources(session, release_ids)` / `provenance_for_rows(session, rows)` — return the `meta.datasources` block.
 
-`finance_opportunities.py` is the reference implementation. An optional view,
-`sql/dataset_provenance_view.sql` (`modelled.dataset_provenance`), exposes the
-same join for ad-hoc SQL and can be joined `USING (release_id)`.
+`routes/legacy/finance_opportunities.py` demonstrates the current release-resolution and
+provenance helpers, but it does not define the future v2 contract. An optional view,
+`sql/dataset_provenance_view.sql` (`modelled.dataset_provenance`), exposes the same join for
+ad-hoc SQL and can be joined `USING (release_id)`.
 
 ---
 

@@ -1,6 +1,11 @@
 import type { ConceptNoteUploadStatus } from "@/util/types";
 
 export const CONCEPT_NOTE_SOURCE_MAX_BYTES = 20 * 1024 * 1024;
+/** Files a concept note accepts in total, whatever their status. */
+export const CONCEPT_NOTE_MAX_UPLOADS = 10;
+/** Climate Advisor's 409 code when a note already has the maximum files. */
+export const CONCEPT_NOTE_UPLOAD_LIMIT_CODE =
+  "concept_note_upload_limit_reached";
 const markdownMimeTypes = new Set([
   "",
   "application/octet-stream",
@@ -107,4 +112,17 @@ export function shouldPollConceptNoteUpload(
   status: ConceptNoteUploadStatus | null,
 ): boolean {
   return status === "queued" || status === "processing";
+}
+
+/** Whether a failed upload request hit the per-note file limit. */
+export function isConceptNoteUploadLimitError(error: unknown): boolean {
+  if (!isRecord(error) || error.status !== 409 || !isRecord(error.data)) {
+    return false;
+  }
+  const detail = isRecord(error.data.detail) ? error.data.detail : error.data;
+  return detail.code === CONCEPT_NOTE_UPLOAD_LIMIT_CODE;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }

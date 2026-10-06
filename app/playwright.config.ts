@@ -1,10 +1,17 @@
 import { defineConfig, devices } from "@playwright/test";
+import nextEnv from "@next/env";
+import { fileURLToPath } from "node:url";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
+// Match the test server's environment, including flags supplied through .env files.
+process.env.NODE_ENV = "test";
+nextEnv.loadEnvConfig(fileURLToPath(new URL(".", import.meta.url)));
+
+const featureFlags = (process.env.NEXT_PUBLIC_FEATURE_FLAGS ?? "")
+  .split(",")
+  .map((flag) => flag.trim());
+const conceptNoteBuilderEnabled =
+  featureFlags.includes("CONCEPT_NOTE_BUILDER") &&
+  featureFlags.includes("CA_SERVICE_INTEGRATION");
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -28,12 +35,13 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: "http://127.0.0.1:3000",
+    baseURL: "http://localhost:3000",
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
   },
   testMatch: /.*\.spec.ts/,
+  testIgnore: conceptNoteBuilderEnabled ? [] : ["**/concept-note-*.spec.ts"],
 
   /* Configure projects for major browsers */
   projects: [
@@ -88,7 +96,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: "npm run start",
-    url: "http://127.0.0.1:3000",
+    url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     env: {
       NODE_ENV: "test",

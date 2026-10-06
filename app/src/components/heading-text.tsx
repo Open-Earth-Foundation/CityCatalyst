@@ -3,11 +3,17 @@ import React, { FC } from "react";
 
 interface HeadingTextProps {
   title: string;
+  "data-testid"?: string;
 }
 
-const HeadingText: FC<HeadingTextProps> = ({ title }) => {
+const HeadingText: FC<HeadingTextProps> = ({ title, "data-testid": testId }) => {
   return (
-    <Text fontFamily="heading" fontSize="title.lg" fontWeight="bold">
+    <Text
+      data-testid={testId}
+      fontFamily="heading"
+      fontSize="title.lg"
+      fontWeight="bold"
+    >
       {title}
     </Text>
   );

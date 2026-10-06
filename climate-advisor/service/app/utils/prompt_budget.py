@@ -48,8 +48,7 @@ def get_stationary_energy_prompt_budget(
         max_normalized_rows_per_candidate=max(
             0,
             int(
-                getattr(flow_budget, "max_normalized_rows_per_candidate", None)
-                or 3,
+                getattr(flow_budget, "max_normalized_rows_per_candidate", None) or 3,
             ),
         ),
         include_source_data=bool(
@@ -68,6 +67,26 @@ def count_prompt_tokens(
     encoder = _tokenizer_for_model(model, fallback_encoding)
     text = "\n".join(_prompt_part_to_text(part) for part in parts if part is not None)
     return TokenCount(tokens=len(encoder.encode(text)), tokenizer=encoder.name)
+
+
+def split_text_by_tokens(
+    text: str,
+    *,
+    max_tokens: int,
+    model: str | None,
+    fallback_encoding: str,
+) -> list[str]:
+    """Split text into lossless, deterministic slices within a token limit."""
+    if max_tokens < 1:
+        raise ValueError("max_tokens must be positive")
+    encoder = _tokenizer_for_model(model, fallback_encoding)
+    token_ids = encoder.encode(text)
+    if not token_ids:
+        return [""]
+    return [
+        encoder.decode(token_ids[index : index + max_tokens])
+        for index in range(0, len(token_ids), max_tokens)
+    ]
 
 
 def compact_stationary_energy_prompt_payload(

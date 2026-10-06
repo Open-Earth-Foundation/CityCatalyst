@@ -2,22 +2,24 @@ import React from "react";
 import { useTranslation } from "@/i18n/client";
 import { Box, Text, Link, HStack, Icon } from "@chakra-ui/react";
 import { BodyLarge } from "@/components/package/Texts/Body";
-import { TitleMedium } from "@/components/package/Texts/Title";
-import i18next from "i18next";
+import { TitleLarge } from "@/components/package/Texts/Title";
+import { useParams } from "next/navigation";
 import { OrganizationResponse } from "@/util/types";
 import { env } from "@/lib/runtime-env";
-import { BiFolder } from "react-icons/bi";
-import { CitiesBuildingIcon, CityLimitIcon } from "./icons";
+import { CitiesBuildingIcon, CityLimitIcon, PlanFolderIcon } from "./icons";
 import { PlanBadge } from "@/components/PlanBadge";
 import { getOrganizationPlanDisplay } from "@/util/plan-details";
 import { OrganizationPlanType } from "@/util/enums";
+import { getParamValue } from "@/util/helpers";
 
 interface PlanDetailsBoxProps {
   organization?: OrganizationResponse;
 }
 
 const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
-  const { t } = useTranslation(i18next.language, "settings");
+  const params = useParams();
+  const lng = getParamValue(params.lng) ?? "en";
+  const { t } = useTranslation(lng, "settings");
 
   if (!organization) return null;
 
@@ -34,11 +36,12 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
 
   return (
     <HStack
-      align="flex-start"
+      align="center"
       backgroundColor="white"
       p={6}
-      marginTop={4}
       gap="24px"
+      borderRadius="8px"
+      boxShadow="shadow-lg"
     >
       <PlanBadge
         planType={planType}
@@ -46,12 +49,12 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
         t={t}
       />
       <Box flex={1}>
-        <TitleMedium color="content.secondary" mb="16px">
+        <TitleLarge color="content.secondary" mb="16px">
           {organization.name}
-        </TitleMedium>
+        </TitleLarge>
         <HStack gap="24px" flexWrap="wrap">
           <HStack>
-            <Icon as={BiFolder} />
+            <Icon as={PlanFolderIcon} boxSize="24px" />
             <BodyLarge color="content.secondary">
               {projectCount} {t("projects")}
             </BodyLarge>
@@ -83,3 +86,4 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
 };
 
 export default PlanDetailsBox;
+

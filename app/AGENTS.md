@@ -19,7 +19,7 @@ npm run openapi:lint            # Spectral lint for OpenAPI spec
 
 # Testing
 npm run jest                    # All Jest tests (unit + API)
-npm run e2e:test                # All Playwright E2E tests
+npm run e2e:test                # Playwright E2E tests for enabled features
 npx jest --testPathPattern=path/to/file.jest.ts   # Single Jest test
 npx playwright test tests/path/to/file.spec.ts    # Single Playwright test
 
@@ -40,7 +40,7 @@ npm run i18n:update             # Auto-translate EN keys to de, es, pt
 
 ```
 app/src/
-├── app/                        # Next.js 15 App Router
+├── app/                        # Next.js 16 App Router
 │   ├── [lng]/                  # Locale-prefixed pages (en, de, es, fr, pt)
 │   │   ├── auth/               # Login, signup, password reset, invite acceptance
 │   │   ├── admin/              # OEF admin panel
@@ -126,7 +126,7 @@ app/src/
 | `UserService`                | User CRUD, invites, org/project scoping                        |
 | `InventoryService`           | Inventory lookups by city, locode, permissions                 |
 | `ActivityService`            | Activity/gas value CRUD, emissions factors, versioning         |
-| `CalculationService`         | Emissions math using methodology-specific formulas             |
+| `CalculationService`         | Emissions math using methodology-specific formulas; applies inventory GWP (AR5/AR6) via `GasToCO2Eq.gwp_version` |
 | `DataSourceService`          | Data source management per inventory                           |
 | `GPCService`                 | Resolves GPC reference numbers to sector/subsector/subcategory |
 | `PermissionService`          | `canAccessInventory`, `canCreateCity`, role-based checks       |
@@ -343,6 +343,8 @@ CCRA_MODULE, CA_SERVICE_INTEGRATION, HIGHLIGHT_ENABLED
 
 Replaces `next-runtime-env`. Injects allowlisted `NEXT_PUBLIC_*` vars into
 `window.__ENV` at request time so k8s/runtime values are not frozen at build time.
+`RuntimeEnvScript` uses `connection()` so the layout is not statically prerendered
+with an empty env from the Docker build.
 
 - Client/shared: `import { env } from "@/lib/runtime-env"` then `env("NEXT_PUBLIC_…")`
 - Add new browser-facing keys to `PUBLIC_RUNTIME_ENV_KEYS` in `keys.ts`
@@ -370,6 +372,8 @@ Replaces `next-runtime-env`. Injects allowlisted `NEXT_PUBLIC_*` vars into
 - File naming: `*.spec.ts`
 - Config: `playwright.config.ts`
 - Runs against a real dev/test server
+- CNB feature tests use `concept-note-*.spec.ts` and are excluded unless both `CONCEPT_NOTE_BUILDER` and `CA_SERVICE_INTEGRATION` are set in `NEXT_PUBLIC_FEATURE_FLAGS`.
+- The default config loads Next.js test-mode env files before selecting tests; `.env.local` is ignored. See `README.md` for precedence and CNB-only commands.
 
 ---
 
@@ -429,3 +433,13 @@ Replaces `next-runtime-env`. Injects allowlisted `NEXT_PUBLIC_*` vars into
 ---
 
 _This file is for agentic coding agents. Follow these rules for consistency and reliability._
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

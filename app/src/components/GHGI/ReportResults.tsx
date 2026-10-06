@@ -214,6 +214,9 @@ function SectorTabs({
                       inventoryId={inventory.inventoryId}
                       inventoryType={inventory.inventoryType}
                       data={sectorBreakdown!.byScope}
+                      grossTotalEmissions={
+                        new Decimal(sectorBreakdown!.grossTotalEmissions)
+                      }
                       tData={tData}
                       tDashboard={t}
                       sectorName={name}
@@ -316,7 +319,6 @@ export function EmissionPerSectors({
   const transformedYearOverYearData = useMemo(() => {
     if (yearlyGhgResult && targetYears && !isEmptyObject(targetYears)) {
       const yearlyMap: Record<string, SectorEmission[]> = {};
-      const totalInventoryEmissions: Record<string, bigint> = {};
       const response = Object.keys(yearlyGhgResult)
         .map((inventoryId) => {
           const year = targetYears[inventoryId]?.year;
@@ -326,7 +328,6 @@ export function EmissionPerSectors({
           }
           const totalEmissions = yearlyGhgResult[inventoryId].totalEmissions;
           yearlyMap[year] = totalEmissions.totalEmissionsBySector;
-          totalInventoryEmissions[year] = BigInt(totalEmissions.sumOfEmissions);
 
           return {
             bySector: [...totalEmissions.totalEmissionsBySector],
@@ -340,21 +341,9 @@ export function EmissionPerSectors({
       return response
         .map((data) => {
           const yearWithPercentageIncrease = data.bySector.map((sectorData) => {
-            const inventoryEmissions = totalInventoryEmissions[data.year];
-            if (!inventoryEmissions) {
-              logger.error(
-                "Total inventory emissions missing for year " + data.year,
-              );
-            }
-
-            const totalInventoryPercentage = inventoryEmissions
-              ? Number(
-                  new Decimal(sectorData.co2eq?.toString())
-                    .mul(100)
-                    .div(inventoryEmissions?.toString())
-                    .toFixed(3),
-                )
-              : null;
+            // % of gross emissions for this sector, already computed backend-side
+            // (ResultsService.ts's calculatePercentage) - see CC-749.
+            const totalInventoryPercentage = sectorData.percentage;
 
             let percentageChange: number | null = null;
             if (data.year - 1 in yearlyMap) {

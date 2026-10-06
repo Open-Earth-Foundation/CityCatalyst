@@ -273,9 +273,9 @@ async function fillDirectMeasureRequiredFields(
     await dataQuality.selectOption("high");
   }
 
-  const dataSource = addEmissionModal.getByLabel("Data source");
-  if (await dataSource.isVisible().catch(() => false)) {
-    await dataSource.fill("e2e test");
+  const dataProvider = addEmissionModal.getByTestId("data-provider-input");
+  if (await dataProvider.isVisible().catch(() => false)) {
+    await dataProvider.fill("e2e test");
   }
 
   if (options?.includeComments !== false) {
@@ -413,7 +413,7 @@ test.describe.serial("Manual Input", () => {
         await submitButton.click();
 
         await expect(
-          addEmissionModal.getByText(/Please add any relevant context/i),
+          addEmissionModal.getByText(/Add any relevant context/i),
         ).toBeVisible({ timeout: 10000 });
 
         await addEmissionModal

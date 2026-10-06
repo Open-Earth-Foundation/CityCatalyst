@@ -178,6 +178,7 @@ import UserService from "@/backend/UserService";
 import ImportMappingService from "@/backend/ImportMappingService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
+import { countRowsWithEmptyEmissionCells } from "@/util/empty-emission-rows";
 import FileValidatorService from "@/backend/FileValidatorService";
 import {
   syncGHGIImportedInventorySource,
@@ -606,12 +607,23 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
           }
         }
 
+        const detectedColumns = (importedFile.validationResults
+          ?.detectedColumns ?? {}) as Record<string, number | undefined>;
+        const sheet = parsedData.primarySheet;
+
         reviewStepData = {
           importSummary: {
             sourceFile: importedFile.originalFileName,
             formatDetected: importedFile.fileType.toUpperCase(),
             rowsFound: importedFile.rowCount || 0,
             fieldsMapped: fieldMappings.length,
+            rowsSkippedEmptyEmissions: sheet
+              ? countRowsWithEmptyEmissionCells(
+                  sheet.headers,
+                  sheet.rows,
+                  detectedColumns,
+                )
+              : 0,
           },
           fieldMappings,
           mappingPreview,

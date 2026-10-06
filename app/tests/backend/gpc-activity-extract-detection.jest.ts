@@ -6,6 +6,7 @@ import { describe, expect, it } from "@jest/globals";
 import FormatAdapterService from "@/backend/FormatAdapterService";
 import type { ParsedFileData } from "@/backend/FileParserService";
 import FileValidatorService from "@/backend/FileValidatorService";
+import { countRowsWithEmptyEmissionCells } from "@/util/empty-emission-rows";
 
 const BUENOS_AIRES_HEADERS = [
   "gpc_ref_no",
@@ -86,5 +87,40 @@ describe("GPC activity extract detection", () => {
     expect(FileValidatorService.hasDistinctRequiredECRFColumns(columns)).toBe(
       true,
     );
+  });
+
+  it("counts a row when any gas or total CO2e cell is blank", () => {
+    const columns = FileValidatorService.detectRequiredColumns(
+      BUENOS_AIRES_HEADERS,
+    );
+    const count = countRowsWithEmptyEmissionCells(
+      BUENOS_AIRES_HEADERS,
+      [
+        {
+          gpc_ref_no: "I.1.1",
+          co2: 1,
+          ch4: 2,
+          n2o: 3,
+          total_co2e: 6,
+        },
+        {
+          gpc_ref_no: "I.1.2",
+          co2: null,
+          ch4: null,
+          n2o: null,
+          total_co2e: 10,
+        },
+        {
+          gpc_ref_no: "I.1.3",
+          co2: 4,
+          ch4: 0,
+          n2o: 1,
+          total_co2e: "",
+        },
+      ],
+      columns,
+    );
+
+    expect(count).toBe(2);
   });
 });

@@ -538,6 +538,7 @@ export const appTheme = createSystem(defaultConfig, {
         gray: {
           focusRing: { value: "#A1A1AA" }, // gray-focusRing
           muted: { value: "#E4E4E7" }, // gray-muted
+          medium: { value: "#999999" }, // Neutral/Neutral Medium
         },
         divider: {
           neutral: { value: "#F0F0F0" },
@@ -714,10 +715,18 @@ export const appTheme = createSystem(defaultConfig, {
           value:
             "0 1px 3px 0 rgba(0, 0, 31, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10)",
         },
+        "shadow-lg-top": {
+          value:
+            "0 -1px 3px 0 rgba(0, 0, 31, 0.10), 0 -1px 2px -1px rgba(0, 0, 0, 0.10)",
+        },
       },
 
       radii: {
-        full: { value: "50%" },
+        // Chakra's `full` is a stadium/pill radius, not a percentage. Using 50%
+        // here made every wide, short element (progress tracks, sliders, pills)
+        // render as an ellipse. A square element rounds to the same circle
+        // either way, so this is safe for avatars, dots and icon buttons.
+        full: { value: "9999px" },
         minimal: { value: "4px" },
         rounded: { value: "8px" },
         "rounded-xl": { value: "16px" },

@@ -116,7 +116,10 @@ class RoleModelConfig(BaseModel):
     name: str
     description: Optional[str] = None
     supports_streaming: Optional[bool] = None
-    temperature: float
+    temperature: float | None = None
+    reasoning_effort: (
+        Literal["none", "low", "medium", "high", "xhigh", "max"] | None
+    ) = None
 
 
 class ResearchModelConfig(BaseModel):
@@ -127,13 +130,18 @@ class ResearchModelConfig(BaseModel):
 
 
 class ModelsConfig(BaseModel):
+    cnb_chat_suggestions: ResearchModelConfig | None = None
     orchestrator: RoleModelConfig
     agentic_flow: Optional[RoleModelConfig] = None
+    cnb_chat: Optional[RoleModelConfig] = None
     funding_research: ResearchModelConfig
     funder_identity: ResearchModelConfig
     cnb_source_reader: ResearchModelConfig
     cnb_source_synthesizer: ResearchModelConfig
     cnb_chapter_drafter: ResearchModelConfig | None = None
+    cnb_source_impact_reviewer: ResearchModelConfig | None = None
+    cnb_chat_edit_planner: ResearchModelConfig | None = None
+    cnb_chapter_validator: ResearchModelConfig
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -156,6 +164,33 @@ class CnbSourcePromptBudgetConfig(BaseModel):
     max_key_excerpts: int = Field(default=8, ge=1, le=20)
     max_topics: int = Field(default=12, ge=1, le=30)
     max_question_chars: int = Field(default=2000, ge=1, le=10000)
+    # Above this total, agents fall back to compact summaries and source queries.
+    full_text_max_tokens: int = Field(default=80000, ge=0)
+
+
+class CnbSourceImpactPromptBudgetConfig(BaseModel):
+    """Limits for choosing and grounding chapters affected by a new source."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=2000)
+    max_chapter_slice_tokens: int = Field(default=12000, ge=500)
+    max_gap_queries: int = Field(default=40, ge=0, le=200)
+
+
+class CnbEditPromptBudgetConfig(BaseModel):
+    """Limits for the edit tool loop and concurrent chapter semantic reviews."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=2000)
+    max_concurrency: int = Field(default=5, ge=1, le=5)
+    max_agent_turns: int = Field(default=12, ge=3, le=30)
+    max_review_repairs: int = Field(default=2, ge=0, le=3)
+    max_searches: int = Field(default=100, ge=1, le=1000)
+    timeout_seconds: int = Field(default=300, ge=30, le=600)
+
+
+class CnbValidationPromptBudgetConfig(BaseModel):
+    """Full-prompt limit for non-truncating chapter validation batches."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=1000)
 
 
 class PromptBudgetConfig(BaseModel):
@@ -165,6 +200,15 @@ class PromptBudgetConfig(BaseModel):
     )
     cnb_sources: CnbSourcePromptBudgetConfig = Field(
         default_factory=CnbSourcePromptBudgetConfig,
+    )
+    cnb_source_impact: CnbSourceImpactPromptBudgetConfig = Field(
+        default_factory=CnbSourceImpactPromptBudgetConfig,
+    )
+    cnb_edits: CnbEditPromptBudgetConfig = Field(
+        default_factory=CnbEditPromptBudgetConfig
+    )
+    cnb_validation: CnbValidationPromptBudgetConfig = Field(
+        default_factory=CnbValidationPromptBudgetConfig,
     )
 
 
@@ -177,9 +221,12 @@ class GenerationConfig(BaseModel):
 class PromptsConfig(BaseModel):
     """Configured prompt entry points and include-aware prompt loading."""
 
+    cnb_chat_suggestions: str = "prompts/cnb/chat_suggestions.md"
+
     core: str
     chat: str
     stationary_energy_review: Optional[str] = None
+    cnb_chat: str = "prompts/cnb/chat.md"
     cnb_funding_opportunity_research: str
     cnb_funder_identity_matching: str
     cnb_similar_project_matching: str
@@ -187,6 +234,16 @@ class PromptsConfig(BaseModel):
     cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
     cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
+    cnb_source_impact_review: str = "prompts/cnb/source_impact_review.md"
+    cnb_chat_edit_planner: str = "prompts/cnb/chat_edit_planner.md"
+    cnb_chat_edit_review: str = "prompts/cnb/chat_edit_review.md"
+    cnb_draft_overview: str = "prompts/cnb/draft_overview.md"
+    cnb_chapter_validation_completeness: str = (
+        "prompts/cnb/chapter_validation_completeness.md"
+    )
+    cnb_chapter_validation_consistency: str = (
+        "prompts/cnb/chapter_validation_consistency.md"
+    )
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""
@@ -203,11 +260,11 @@ class PromptsConfig(BaseModel):
         if workflow_prompt_type not in {
             "chat",
             "stationary_energy_review",
-            "concept_note",
+            "cnb_chat",
         }:
             raise ValueError(
                 "Workflow prompt type must be 'chat', 'stationary_energy_review', "
-                "or 'concept_note'"
+                "or 'cnb_chat'"
             )
 
         core_prompt = self.get_prompt("core").strip()
@@ -394,11 +451,19 @@ class CacheConfig(BaseModel):
     max_size_mb: Optional[int] = None
 
 
+class StreamingConfig(BaseModel):
+    """Bound recovery for transport failures after a model opens its stream."""
+
+    retry_attempts: int = Field(default=2, ge=0, le=3)
+    retry_delay_ms: int = Field(default=500, ge=0, le=5000)
+
+
 class LLMConfig(BaseModel):
     models: ModelsConfig
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
     prompts: PromptsConfig
     api: APIConfig
+    streaming: StreamingConfig = Field(default_factory=StreamingConfig)
     conversation: Optional[ConversationConfig] = ConversationConfig()
     features: FeaturesConfig
     logging: LoggingConfig
@@ -480,6 +545,9 @@ class Settings(BaseModel):
     cc_oauth_token_url: str | None = os.getenv("CC_OAUTH_TOKEN_URL")
     cnb_markdown_request_max_bytes: int = _parse_int(
         os.getenv("CNB_MARKDOWN_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
+    )
+    cnb_structured_request_max_bytes: int = _parse_int(
+        os.getenv("CNB_STRUCTURED_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
     )
 
     def model_post_init(self, __context: Any) -> None:

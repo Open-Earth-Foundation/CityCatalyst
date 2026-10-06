@@ -10,6 +10,7 @@ import { db } from "@/models";
 import { hiapServiceWrapper } from "./HiapService";
 import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import ActionPlanEmailService from "@/backend/ActionPlanEmailService";
+import WebhookService from "@/backend/webhooks/WebhookService";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 
@@ -368,6 +369,17 @@ const startActionPlanJobImpl = async ({
       { actionPlanId: actionPlan.id, created },
       `Action plan ${created ? "created" : "updated"} in database`,
     );
+
+    if (created) {
+      await WebhookService.emitForCity(cityId, "plan.generated", {
+        planId: actionPlan.id,
+        cityId,
+        rankingId: action.hiaRankingId,
+        actionName: action.name,
+        createdAt:
+          actionPlan.created?.toISOString() ?? new Date().toISOString(),
+      });
+    }
 
     // Email only after a successful first-time save (not on regenerate/update).
     if (created && createdBy) {

@@ -13,6 +13,8 @@ import BrandSettingsTab from "./BrandSettingsTab";
 import { UserRole } from "@/util/types";
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import SecurityTab from "./SecurityTab";
+import PersonalDataTab from "./PersonalDataTab";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const { organization: orgContext } = useOrganizationContext();
@@ -37,12 +39,12 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
         justifyContent="space-between"
       >
         <Box w="full">
-          <Box mb="48px">
+          <Box mb="12">
             <Heading
               fontSize="headline.sm"
               mb={4}
               fontWeight="semibold"
-              lineHeight="32px"
+              lineHeight="32"
               fontStyle="normal"
               textTransform="capitalize"
               color="content.secondary"
@@ -53,7 +55,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
               fontSize="body.lg"
               fontFamily="body"
               fontWeight="normal"
-              lineHeight="16px"
+              lineHeight="16"
               color="content.tertiary"
             >
               {t("account-description")}
@@ -64,10 +66,10 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
             w="full"
             flexDirection="row"
             variant="subtle"
-            gap="36px"
+            gap="9"
             defaultValue="account-details"
           >
-            <Tabs.List display="flex" flexDirection="column" gap="12px">
+            <Tabs.List display="flex" flexDirection="column" gap="3">
               <TabTrigger value="account-details">
                 {t("account-details")}
               </TabTrigger>
@@ -77,7 +79,9 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
                 </TabTrigger>
               )}
               <TabTrigger value="manage-password">{t("password")}</TabTrigger>
+              <TabTrigger value="security">{t("security")}</TabTrigger>
               <TabTrigger value="preferences">{t("preferences")}</TabTrigger>
+              <TabTrigger value="your-data">{t("your-data")}</TabTrigger>
             </Tabs.List>
             {userRole === UserRole.ORG_ADMIN && (
               <TabContent value="brand-settings" p={0}>
@@ -103,8 +107,14 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
                 <ManagePasswordTab t={t} />
               </Box>
             </TabContent>
+            <TabContent value="security" p={0}>
+              <SecurityTab t={t} userInfo={userInfo} />
+            </TabContent>
             <TabContent value="preferences" p={0}>
               <PreferencesTab t={t} userInfo={userInfo} />
+            </TabContent>
+            <TabContent value="your-data" p={0}>
+              <PersonalDataTab t={t} />
             </TabContent>
           </Tabs.Root>
         </Box>

@@ -178,9 +178,7 @@ const InventoryView = ({
                 <Text fontSize="headline.sm" fontWeight="bold">
                   {formattedEmissions.value}
                 </Text>
-                <Text fontSize="title.md">
-                  {formattedEmissions.unit} {"Co2e"}
-                </Text>
+                <Text fontSize="title.md">{formattedEmissions.unit}</Text>
               </HStack>
             </HStack>
             <Text fontSize="body.md" color="content.tertiary">

@@ -1,0 +1,966 @@
+{
+    "data": {
+        "rankedActions": [
+            {
+                "created": "2026-08-18T15:06:46.161Z",
+                "lastUpdated": "2026-08-18T15:06:46.161Z",
+                "id": "6b99dd21-3ac3-4b18-a47c-f7942b0848ba",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "ipcc_0052",
+                "rank": 1,
+                "finalScore": 0.6380092800609104,
+                "impactScore": 0.6263059637471097,
+                "alignmentScore": 0.6097250000000001,
+                "feasibilityScore": 0.69305,
+                "explanations": {
+                    "en": "The land subsector accounts for 82% of the city's inventory, giving this action a High impact driver. It has Strong policy support in Plan de Mitigación Sector Agricultura, but it does not match the city's selected priority sector. Legal feasibility is Neutral, so it is a caveat rather than a clear advantage; the legal assessment was incomplete and used a neutral fallback."
+                },
+                "evidenceSummary": {
+                    "impact": {
+                        "impact_block_score": 0.6263059637471097,
+                        "timeline_component_score": 0.5,
+                        "matched_city_subsector_keys_count": 1,
+                        "emissions_reduction_component_score": 0.6578824546838871
+                    },
+                    "alignment": {
+                        "alignment_score": 0.6097250000000001,
+                        "policy_component_score": 0.7463,
+                        "sector_component_score": 0,
+                        "timeframe_component_score": 0.5,
+                        "co_benefit_component_score": 0.5
+                    },
+                    "feasibility": {
+                        "legal": {
+                            "component_score": 0.5,
+                            "ownership_score": null,
+                            "component_source": "neutral_fallback",
+                            "legal_references": [],
+                            "verdict_category": null,
+                            "assessment_missing": false,
+                            "assessment_present": true,
+                            "ownership_category": null,
+                            "restrictions_score": null,
+                            "legal_justification": null,
+                            "ownership_description": null,
+                            "restrictions_category": null,
+                            "legal_justification_en": null,
+                            "ownership_description_es": null,
+                            "restrictions_description": null,
+                            "restrictions_description_es": null
+                        },
+                        "feasibility_score": 0.69305,
+                        "financial_feasibility": {
+                            "route": "own-budget feasible",
+                            "reason": "Within the city's own budget and capacity. 398 comparable project(s) on record.",
+                            "sector": "afolu",
+                            "score_missing": false,
+                            "score_present": true,
+                            "component_score": 0.85,
+                            "component_source": "action_financial_feasibility_score"
+                        },
+                        "mitigation_feasibility": {
+                            "score_missing": false,
+                            "score_present": true,
+                            "component_score": 0.735,
+                            "component_source": "action_mitigation_feasibility_score"
+                        }
+                    }
+                },
+                "weights": {
+                    "impact": 0.55,
+                    "alignment": 0.22,
+                    "feasibility": 0.23
+                }
+            },
+            {
+                "created": "2026-08-18T15:06:46.161Z",
+                "lastUpdated": "2026-08-18T15:06:46.161Z",
+                "id": "fbc9ead1-0b4e-400c-a7d3-cbe91b492ed7",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "ipcc_0053",
+                "rank": 2,
+                "finalScore": 0.6107347800609104,
+                "impactScore": 0.6263059637471097,
+                "alignmentScore": 0.5375000000000001,
+                "feasibilityScore": 0.6435500000000001,
+                "explanations": {
+                    "en": "The land subsector accounts for 82% of the city's inventory, giving this action a High impact driver. It has Medium policy support in Plan de Mitigación Sector Agricultura, but it does not match the city's selected priority sector. Legal feasibility is Neutral, so it is a caveat rather than a clear advantage; the legal assessment was incomplete and used a neutral fallback."
+                },
+                "evidenceSummary": {
+                    "impact": {
+                        "impact_block_score": 0.6263059637471097,
+                        "timeline_component_score": 0.5,
+                        "matched_city_subsector_keys_count": 1,
+                        "emissions_reduction_component_score": 0.6578824546838871
+                    },
+                    "alignment": {
+                        "alignment_score": 0.5375000000000001,
+                        "policy_component_score": 0.65,
+                        "sector_component_score": 0,
+                        "timeframe_component_score": 0.5,
+                        "co_benefit_component_score": 0.5
+                    },
+                    "feasibility": {
+                        "legal": {
+                            "component_score": 0.5,
+                            "ownership_score": null,
+                            "component_source": "neutral_fallback",
+                            "legal_references": [],
+                            "verdict_category": null,
+                            "assessment_missing": false,
+                            "assessment_present": true,
+                            "ownership_category": null,
+                            "restrictions_score": null,
+                            "legal_justification": null,
+                            "ownership_description": null,
+                            "restrictions_category": null,
+                            "legal_justification_en": null,
+                            "ownership_description_es": null,
+                            "restrictions_description": null,
+                            "restrictions_description_es": null
+                        },
+                        "feasibility_score": 0.6435500000000001,
+                        "financial_feasibility": {
+                            "route": "needs technical assistance",
+                            "reason": "Capacity is the constraint, not money; needs technical assistance. 9990 comparable project(s) on record.",
+                            "sector": "afolu",
+                            "score_missing": false,
+                            "score_present": true,
+                            "component_score": 0.7,
+                            "component_source": "action_financial_feasibility_score"
+                        },
+                        "mitigation_feasibility": {
+                            "score_missing": false,
+                            "score_present": true,
+                            "component_score": 0.735,
+                            "component_source": "action_mitigation_feasibility_score"
+                        }
+                    }
+                },
+                "weights": {
+                    "impact": 0.55,
+                    "alignment": 0.22,
+                    "feasibility": 0.23
+                }
+            },
+            {
+                "created": "2026-08-18T15:06:46.161Z",
+                "lastUpdated": "2026-08-18T15:06:46.161Z",
+                "id": "dca36655-9416-4fe4-a0c4-d07fc67749f1",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0045",
+                "rank": 3,
+                "finalScore": 0.5751855400304552,
+                "impactScore": 0.46315298187355486,
+                "alignmentScore": 0.6075,
+                "feasibilityScore": 0.8121800000000001,
+                "explanations": {
+                    "en": "The land subsector accounts for 82% of the city's inventory, but this action has a Low impact band. It has Strong policy support in Plan de Mitigación Sector Agricultura, does not match the city's selected priority sector, and matches the city's short-term timeframe preference. Legal feasibility is Neutral, so it is a caveat rather than a clear advantage; the legal assessment was incomplete and used a neutral fallback."
+                },
+                "evidenceSummary": {
+                    "impact": {
+                        "impact_block_score": 0.46315298187355486,
+                        "timeline_component_score": 1,
+                        "matched_city_subsector_keys_count": 1,
+                        "emissions_reduction_component_score": 0.32894122734194353
+                    },
+                    "alignment": {
+                        "alignment_score": 0.6075,
+                        "policy_component_score": 0.71,
+                        "sector_component_score": 0,
+                        "timeframe_component_score": 1,
+                        "co_benefit_component_score": 0.5
+                    },
+                    "feasibility": {
+                        "legal": {
+                            "component_score": 0.5,
+                            "ownership_score": null,
+                            "component_source": "neutral_fallback",
+                            "legal_references": [],
+                            "verdict_category": null,
+                            "assessment_missing": false,
+                            "assessment_present": true,
+                            "ownership_category": null,
+                            "restrictions_score": null,
+                            "legal_justification": null,
+                            "ownership_description": null,
+                            "restrictions_category": null,
+                            "legal_justification_en": null,
+                            "ownership_description_es": null,
+                            "restrictions_description": null,
+                            "restrictions_description_es": null
+                        },
+                        "feasibility_score": 0.8121800000000001,
+                        "financial_feasibility": {
+                            "route": "self-deliverable",
+                            "reason": "Low-capital action the city can deliver itself. 1 comparable project(s) on record.",
+                            "sector": "afolu",
+                            "score_missing": false,
+                            "score_present": true,
+                            "component_score": 1,
+                            "component_source": "action_financial_feasibility_score"
+                        },
+                        "mitigation_feasibility": {
+                            "score_missing": false,
+                            "score_present": true,
+                            "component_score": 0.946,
+                            "component_source": "action_mitigation_feasibility_score"
+                        }
+                    }
+                },
+                "weights": {
+                    "impact": 0.55,
+                    "alignment": 0.22,
+                    "feasibility": 0.23
+                }
+            },
+            {
+                "created": "2026-08-18T15:06:46.161Z",
+                "lastUpdated": "2026-08-18T15:06:46.161Z",
+                "id": "79f3aab1-3158-425a-b42c-ccd4cd972451",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0050",
+                "rank": 4,
+                "finalScore": 0.5627316100456828,
+                "impactScore": 0.4947294728103323,
+                "alignmentScore": 0.5237,
+                "feasibilityScore": 0.76268,
+                "explanations": {
+                    "en": "The land subsector accounts for 82% of the city's inventory, giving this action a Medium impact band. It has Medium policy support in Estrategia Climática de Largo Plazo, but it does not match the city's selected priority sector. Legal feasibility is Neutral, so it is a caveat rather than a clear advantage; the legal assessment was incomplete and used a neutral fallback."
+                },
+                "evidenceSummary": {
+                    "impact": {
+                        "impact_block_score": 0.4947294728103323,
+                        "timeline_component_score": 0.5,
+                        "matched_city_subsector_keys_count": 1,
+                        "emissions_reduction_component_score": 0.4934118410129153
+                    },
+                    "alignment": {
+                        "alignment_score": 0.5237,
+                        "policy_component_score": 0.6316,
+                        "sector_component_score": 0,
+                        "timeframe_component_score": 0.5,
+                        "co_benefit_component_score": 0.5
+                    },
+                    "feasibility": {
+                        "legal": {
+                            "component_score": 0.5,
+                            "ownership_score": null,
+                            "component_source": "neutral_fallback",
+                            "legal_references": [],
+                            "verdict_category": null,
+                            "assessment_missing": false,
+                            "assessment_present": true,
+                            "ownership_category": null,
+                            "restrictions_score": null,
+                            "legal_justification": null,
+                            "ownership_description": null,
+                            "restrictions_category": null,
+                            "legal_justification_en": null,
+                            "ownership_description_es": null,
+                            "restrictions_description": null,
+                            "restrictions_description_es": null
+                        },
+                        "feasibility_score": 0.76268,
+                        "financial_feasibility": {
+                            "route": "own-budget feasible",
+                            "reason": "Within the city's own budget and capacity.",
+                            "sector": "afolu",
+                            "score_missing": false,
+                            "score_present": true,
+                            "component_score": 0.85,
+                            "component_source": "action_financial_feasibility_score"
+                        },
+                        "mitigation_feasibility": {
+                            "score_missing": false,
+                            "score_present": true,
+                            "component_score": 0.946,
+                            "component_source": "action_mitigation_feasibility_score"
+                        }
+                    }
+                },
+                "weights": {
+                    "impact": 0.55,
+                    "alignment": 0.22,
+                    "feasibility": 0.23
+                }
+            },
+            {
+                "created": "2026-08-18T15:06:46.161Z",
+                "lastUpdated": "2026-08-18T15:06:46.161Z",
+                "id": "755e68d2-8d88-4ad6-b61f-067be1d6680b",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0069",
+                "rank": 5,
+                "finalScore": 0.5622495400304552,
+                "impactScore": 0.46315298187355486,
+                "alignmentScore": 0.5625000000000001,
+                "feasibilityScore": 0.79898,
+                "explanations": {
+                    "en": "The land subsector accounts for 82% of the city's inventory, but this action has a Low impact band. It has Medium policy support in Plan de Mitigación Sector Ciudades, does not match the city's selected priority sector, and matches the city's short-term timeframe preference. Legal feasibility is Neutral, so it is a caveat rather than a clear advantage; the legal assessment was incomplete and used a neutral fallback."
+                },
+                "evidenceSummary": {
+                    "impact": {
+                        "impact_block_score": 0.46315298187355486,
+                        "timeline_component_score": 1,
+                        "matched_city_subsector_keys_count": 1,
+                        "emissions_reduction_component_score": 0.32894122734194353
+                    },
+                    "alignment": {
+                        "alignment_score": 0.5625000000000001,
+                        "policy_component_score": 0.65,
+                        "sector_component_score": 0,
+                        "timeframe_component_score": 1,
+                        "co_benefit_component_score": 0.5
+                    },
+                    "feasibility": {
+                        "legal": {
+                            "component_score": 0.5,
+                            "ownership_score": null,
+                            "component_source": "neutral_fallback",
+                            "legal_references": [],
+                            "verdict_category": null,
+                            "assessment_missing": false,
+                            "assessment_present": true,
+                            "ownership_category": null,
+                            "restrictions_score": null,
+                            "legal_justification": null,
+                            "ownership_description": null,
+                            "restrictions_category": null,
+                            "legal_justification_en": null,
+                            "ownership_description_es": null,
+                            "restrictions_description": null,
+                            "restrictions_description_es": null
+                        },
+                        "feasibility_score": 0.79898,
+                        "financial_feasibility": {
+                            "route": "self-deliverable",
+                            "reason": "Low-capital action the city can deliver itself.",
+                            "sector": "afolu",
+                            "score_missing": false,
+                            "score_present": true,
+                            "component_score": 1,
+                            "component_source": "action_financial_feasibility_score"
+                        },
+                        "mitigation_feasibility": {
+                            "score_missing": false,
+                            "score_present": true,
+                            "component_score": 0.906,
+                            "component_source": "action_mitigation_feasibility_score"
+                        }
+                    }
+                },
+                "weights": {
+                    "impact": 0.55,
+                    "alignment": 0.22,
+                    "feasibility": 0.23
+                }
+            }
+        ],
+        "removedActions": [
+            {
+                "created": "2026-08-18T15:06:46.164Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "d56f1e32-d287-40cd-921f-f5c4171ff6de",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0008",
+                "actionName": "Enable smart grid integration and distributed energy storage through municipal collaboration and demonstration projects",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "Regulation of electrical networks and energy storage systems is a CNE and Ministry of Energy competence under Laws 20,936 and 18,410 (SEC Law). Municipalities have no regulatory competence over the electrical grid or third-party storage systems. The possible municipal role is limited to: (i) installing storage systems on their own assets, and (ii) participating as a pilot subject in demand flexibility projects in coordination with distribution companies and the CNE. Ownership score 0: no regulatory competence over the grid or storage. Restrictions score 0: regulation is entirely CNE and distributors. Alignment score 100: aligned with electricity system modernization policy.",
+                    "es": "La regulación de las redes eléctricas y los sistemas de almacenamiento energético es competencia de la CNE y el Ministerio de Energía conforme a la Ley 20.936 y la Ley 18.410 (Ley SEC). Los municipios no tienen competencia regulatoria sobre la red eléctrica ni sobre los sistemas de almacenamiento de terceros. El rol municipal posible se limita a: (i) instalar sistemas de almacenamiento en sus propios activos, y (ii) participar como sujeto piloto en proyectos de demanda flexible en coordinación con distribuidoras y la CNE. Titularidad 0: sin competencia regulatoria sobre la red ni el almacenamiento. Restricciones 0: la regulación es íntegramente de la CNE y distribuidoras. Alineación 100: plena con política de modernización del sistema eléctrico."
+                },
+                "legalReferences": [
+                    "Ley 20.936 Transmisión Eléctrica — BCN",
+                    "Ley 21.305 Eficiencia Energética — BCN",
+                    "Potestades Minenergia",
+                    "CNE — Regulación Energética",
+                    "CORFO Energía"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.164Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "a2fdb16d-fdc5-4680-bf84-e57d15300921",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0009",
+                "actionName": "Deploy cogeneration systems in industries",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "Industrial cogeneration is regulated by Law 20,936 and the CNE regulatory framework. Law 21,305 obliges large energy consumers (>500 TEP/year) to conduct audits and energy efficiency plans, administered by the CNE. Municipalities have no direct competence over private industries' internal energy operations. Their possible role is limited to: (i) promoting adoption through incentives in local ordinances, and (ii) convening working groups with the industrial sector. Ownership score 0: no competence over private industrial processes. Restrictions score 0: CNE regulation and private decisions. Alignment score 100: aligned with industrial efficiency policy but without a municipal role.",
+                    "es": "La cogeneración industrial está regulada por la Ley 20.936 y el marco regulatorio de la CNE. La Ley 21.305 obliga a los grandes consumidores energéticos (>500 TEP/año) a realizar auditorías y planes de eficiencia energética, administrada por la CNE. Los municipios no tienen competencia directa sobre la operación energética de industrias privadas. Su rol posible es: (i) promover la adopción mediante incentivos en ordenanzas locales, y (ii) articular mesas de trabajo con el sector industrial. Titularidad 0: sin competencia sobre operaciones industriales. Restricciones 0: regulación de la CNE y decisión privada. Alineación 100: alineada con política de eficiencia industrial pero sin rol municipal."
+                },
+                "legalReferences": [
+                    "Ley 20.936 Transmisión Eléctrica — BCN",
+                    "Ley 21.305 Eficiencia Energética — BCN",
+                    "Potestades Minenergia",
+                    "CNE — Cogeneración",
+                    "CORFO Eficiencia Energética Industrial"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.164Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "f3b1a78d-b175-4fe3-99ae-a9cfed2ebe8b",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0023",
+                "actionName": "Upgrade and maintain electrical substations",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "Electrical substations are infrastructure of transmission and distribution companies, regulated by the CNE and the SEC under Laws 20,936 and 18,410. Municipalities have no competence over electrical substations except in the very exceptional case of easements on their own land. Law 20,936 regulates the transmission system nationally without a municipal role. This action is outside municipal competence in the vast majority of cases. Ownership score 0: no competence over third-party electrical infrastructure. Restrictions score 0: regulation is entirely sectoral. Alignment score 100: aligned with energy policy but not municipally applicable.",
+                    "es": "Las subestaciones eléctricas son infraestructura de las empresas transmisoras y distribuidoras, reguladas por la CNE y la SEC conforme a la Ley 20.936 y la Ley 18.410. Los municipios no tienen ninguna competencia sobre subestaciones eléctricas salvo en el caso muy excepcional de servidumbres en terrenos propios. La Ley 20.936 regula el sistema de transmisión a nivel nacional sin rol municipal. Esta acción está fuera del ámbito de competencia municipal en la práctica totalidad de los casos. Titularidad 0: sin competencia sobre infraestructura eléctrica de terceros. Restricciones 0: regulación íntegramente sectorial. Alineación 100: alineada con política energética pero inaplicable municipalmente."
+                },
+                "legalReferences": [
+                    "Ley 18.410 SEC — BCN",
+                    "Ley 20.936 Transmisión Eléctrica — BCN",
+                    "Potestades Minenergia"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.164Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "b0e64809-4871-4859-a90a-13d2740c2e8b",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0025",
+                "actionName": "Promote energy-efficient and climate-resilient housing for low-income and informal settlements",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "conditional",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
+                    "es": "Riesgo jurídico moderado; puede requerir autorización previa o enfrentar un eventual desafío judicial."
+                },
+                "legalJustification": {
+                    "en": "Same analysis as c40_0015. LOCM art. 4°(f) authorizes participation in construction and housing enabling activities. DS No. 27 (Housing), 2016, fully regulates the Housing and Neighborhood Improvement Program with MINVU/SERVIU decision roles; the municipality may act as sponsoring entity without decision power over calls, technical conditions, or subsidy assignment. Law 21,305 frames energy poverty objectives; concrete EE mechanisms operate via DS 27 Chapter IV, administered by MINVU/SERVIU. Ownership score 0: no own competence—sponsoring role under MINVU norms. Restrictions score 50: only within open MINVU calls. Alignment score 100: full alignment with national EE and social housing policy.",
+                    "es": "La LOCM art. 4° letra f) habilita al municipio a participar en actividades de construcción y habilitación de viviendas — habilitación genérica de participación, no competencia sectorial propia. El DS N° 27 (V. y U.), de 2016, reglamenta íntegramente el Programa de Mejoramiento de Viviendas y Barrios: el MINVU convoca los llamados (art. 22), el SERVIU califica los proyectos (art. 27-28), el MINVU o SEREMI selecciona y asigna los subsidios (arts. 29-31), y los montos son fijados por resolución ministerial (art. 3). El municipio no tiene ningún rol decisional en el programa — puede actuar como Entidad Patrocinante (art. 34) bajo CRAT con la SEREMI, organizando demanda, formulando proyectos y acompañando técnicamente a las familias, pero sin potestad sobre apertura de llamados, condiciones técnicas ni asignación de subsidios. La Ley 21.305 fija objetivos de reducción de pobreza energética como marco de política; los mecanismos concretos de EE en vivienda operan vía DS 27 Cap. IV (Proyectos de Eficiencia Energética e Hídrica, art. 95-98: subsidio máximo 50-120 UF por vivienda), administrado íntegramente por MINVU/SERVIU. Titularidad 0: sin competencia propia — rol de Entidad Patrocinante bajo norma MINVU. Restricciones 50: la acción es posible solo dentro de llamados MINVU abiertos. Alineación 100: plena con política nacional de EE y vivienda social."
+                },
+                "legalReferences": [
+                    "DS 49/2011 MINVU Habitabilidad — BCN",
+                    "Ley 21.305 Eficiencia Energética — BCN",
+                    "Ley 18.695 (LOCM) — BCN",
+                    "Potestades Minenergia",
+                    "PMU SUBDERE"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.164Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "ae654182-8434-4f8c-9ce9-5aa9c0be71d6",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0026",
+                "actionName": "Implement time-of-use electricity tariffs to enhance demand-side flexibility and efficiency",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "Electricity tariffs are regulated exclusively by the CNE under Laws 20,936 and 18,410. Municipalities have no power to establish, modify, or influence electricity tariffs of any kind. Implementing time-of-use (TOU) tariffs is an exclusive CNE power upon proposals from distribution companies. The possible municipal role is limited to optimizing use of existing TOU tariffs in its own facilities (internal demand management), which requires no additional authorization. Ownership score 0: no tariff power. Restrictions score 0: tariff regulation is entirely the CNE's. Alignment score 100: aligned with efficiency policy but not applicable in its regulatory dimension.",
+                    "es": "Las tarifas eléctricas son reguladas exclusivamente por la CNE conforme a la Ley 20.936 y la Ley 18.410. Los municipios no tienen potestad para establecer, modificar o influir en las tarifas eléctricas de ningún tipo. La implementación de tarifas de tiempo de uso (TOU) es facultad exclusiva de la CNE a propuesta de las distribuidoras. El rol municipal posible se limita a optimizar el uso de las tarifas TOU vigentes en sus propias instalaciones (gestión de demanda interna), lo que no requiere ninguna habilitación adicional. Titularidad 0: sin potestad tarifaria. Restricciones 0: regulación tarifaria íntegramente de la CNE. Alineación 100: alineada con política de eficiencia pero inaplicable en su dimensión regulatoria."
+                },
+                "legalReferences": [
+                    "Ley 20.936 Transmisión Eléctrica — BCN",
+                    "Ley 18.410 SEC — BCN",
+                    "Potestades Minenergia",
+                    "CNE — Tarifas Eléctricas"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.164Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "88ebc55d-a2c5-4e92-a45a-cbb2b281a08e",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0031",
+                "actionName": "Capture & Use Biogas at Wastewater Treatment Plants'",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "Urban wastewater treatment plants are operated by concessioned sanitary companies, regulated by SISS under Law 18,902—the municipality has no role in their operation. The rural APR exception: municipalities may operate APR systems (Rural Potable Water, DFL 382/1988), but APR concerns drinking water, not wastewater. Fit with biogas capture from wastewater is analogous, with no express norm authorizing this municipal function. Laws 20,936 and 21,305 enable biogas use for generation, but direct municipal application is practically inapplicable under current law. Ownership score 0: no competence over wastewater treatment plants. Restrictions score 0: regulation is entirely SISS and sanitary companies. Alignment score 100: aligned with biogas policy but not municipally applicable.",
+                    "es": "Las plantas de tratamiento de aguas servidas urbanas son competencia de las empresas sanitarias concesionadas, reguladas por la SISS conforme a la Ley 18.902 — el municipio no tiene ningún rol en su operación. La excepción rural APR: los municipios pueden operar sistemas APR (Agua Potable Rural, DFL 382/1988), pero APR corresponde a agua potable, no a aguas servidas. El encaje con captura de biogás de aguas servidas es analógico, sin norma expresa que habilite esta función municipal. La Ley 20.936 y la Ley 21.305 habilitan el uso de biogás para generación, pero la aplicación municipal directa es prácticamente inaplicable en el marco normativo vigente. Titularidad 0: sin competencia sobre plantas de aguas servidas. Restricciones 0: regulación íntegra de SISS y sanitarias. Alineación 100: alineada con política de biogás pero inaplicable municipalmente."
+                },
+                "legalReferences": [
+                    "Ley 18.902 SISS — BCN",
+                    "Ley 20.936 Transmisión Eléctrica — BCN",
+                    "Ley 21.305 Eficiencia Energética — BCN",
+                    "Potestades Minenergia"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.164Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "276b789c-fb18-43f4-825e-2633fe3a2524",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0035",
+                "actionName": "Enhance industrial energy efficiency processes",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "conditional",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
+                    "es": "Riesgo jurídico moderado; puede requerir autorización previa o enfrentar un eventual desafío judicial."
+                },
+                "legalJustification": {
+                    "en": "Same analysis as c40_0013 and c40_0018. Improving industrial processes is a private company decision, regulated by Law 21,305 for large consumers, administered by the CNE. The municipality has no competence over private industries' internal processes. Its role is limited to promoting and facilitating compliance with national standards. Ownership score 0: no competence over private industrial processes. Restrictions score 50: the DOM may act on building permits for works. Alignment score 100: full alignment with industrial EE policy.",
+                    "es": "Idéntico análisis que c40_0013 y c40_0018. La mejora de procesos industriales es decisión de la empresa privada, regulada por la Ley 21.305 para grandes consumidores, administrada por la CNE. El municipio no tiene competencia sobre los procesos internos de las industrias privadas. Su rol se limita a la promoción y facilitación del cumplimiento de la norma nacional. Titularidad 0: sin competencia sobre procesos industriales privados. Restricciones 50: DOM puede actuar en permisos de edificación para obras. Alineación 100: plena con política de EE industrial."
+                },
+                "legalReferences": [
+                    "Ley 21.305 Eficiencia Energética — BCN",
+                    "Ley 18.695 (LOCM) — BCN",
+                    "Potestades Minenergia",
+                    "CNE — Eficiencia Energética"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.164Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "a8f5d7e3-fe61-41f1-b8d1-da536997bec6",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0049",
+                "actionName": "Develop regional hubs for renewable energy production",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "Laws 20,936 and 21,185 authorize renewable generation. However, regional-scale energy parks require SEIA entry (Law 19,300), authorization from the CNE and the SEC, and management of land rights and transmission. Municipalities have no regulatory competence over electricity generation at regional scale. They may act as landowner where a project is installed or as participants in associations with private parties, but they cannot lead projects of this magnitude. Under DFL 1/2005 arts. 17 and 18, this type of initiative corresponds to leadership by the GORE and the Ministry of Energy. Ownership score 0: no competence over generation at this scale. Restrictions score 0: regulation is national and SEIA is mandatory. Alignment score 100: aligned with NCRE policy but outside municipal scope.",
+                    "es": "La Ley 20.936 y la Ley 21.185 habilitan la generación renovable. Sin embargo, parques de energía de escala regional requieren ingreso al SEIA (Ley 19.300), autorización de la CNE y la SEC, y gestión de derechos de suelo y transmisión. Los municipios no tienen competencia regulatoria sobre la generación eléctrica a escala regional. Pueden actuar como propietarios del suelo en que se instale un proyecto o como participantes en asociaciones con privados, pero no pueden liderar proyectos de esta magnitud. Conforme al DFL 1/2005 art. 17 y 18, este tipo de iniciativas corresponde al liderazgo del GORE y el Ministerio de Energía. Titularidad 0: sin competencia sobre generación eléctrica a escala. Restricciones 0: regulación íntegramente nacional y SEIA obligatorio. Alineación 100: alineado con política de ERNC pero fuera del ámbito municipal."
+                },
+                "legalReferences": [
+                    "Ley 20.936 Transmisión Eléctrica — BCN",
+                    "Ley 19.300 SEIA — BCN",
+                    "Ley 21.185 Generación Distribuida — BCN",
+                    "Potestades Minenergia",
+                    "Potestades GORE RM"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.164Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "af692b0a-616f-4dab-8e50-e0f71d7f36e1",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0105",
+                "actionName": "Reduce technical losses in energy distribution networks",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "Electric distribution networks are operated by concessioned companies regulated by the CNE and the SEC under Law 18,410 (SEC Law) and Law 20,936. Municipalities have no competence over distribution networks. There is no legal authorization for a municipality to intervene in operation, maintenance, or planning of concessionaires' distribution networks. Reducing technical losses is exclusively the distributors' responsibility under SEC oversight. Ownership score 0: no municipal competence. Restrictions score 0: regulation is entirely SEC/CNE and distributors. Alignment score 100: aligned with efficiency policy but outside municipal scope.",
+                    "es": "Las redes de distribución eléctrica son operadas por empresas concesionarias reguladas por la CNE y la SEC conforme a la Ley 18.410 (Ley SEC) y la Ley 20.936. Los municipios no tienen ninguna competencia sobre las redes de distribución. No existe habilitación legal para que un municipio intervenga en la operación, mantenimiento o planificación de las redes de distribución de las empresas concesionarias. La reducción de pérdidas técnicas es responsabilidad exclusiva de las distribuidoras, bajo fiscalización de la SEC. Titularidad 0: sin competencia municipal. Restricciones 0: regulación íntegramente de SEC/CNE y distribuidoras. Alineación 100: alineado con política de eficiencia pero fuera del ámbito municipal."
+                },
+                "legalReferences": [
+                    "Ley 18.410 SEC — BCN",
+                    "Ley 20.936 Transmisión Eléctrica — BCN",
+                    "Potestades Minenergia",
+                    "CNE — Regulación"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.165Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "45973c63-99dc-4416-a4b6-384f095fbf56",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0111",
+                "actionName": "Strengthen Extended Producer Responsibility (EPR) Systems",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "Law 20.920 (REP) establishes the full legal framework for Extended Producer Responsibility in Chile. Regulatory competence over the system expressly belongs to the national level: the MMA Division of Natural Resources, Waste and Risk Assessment is responsible for designing policies and norms on waste (Art. 7°(c), Supreme Decree No. 8/2012 of the MMA), REP targets are set by the MMA through supreme decrees (DS 12/2020 for packaging), and the SMA supervises compliance.\n\nMMA Exempt Resolution No. 9 of 2022 approved a model municipal ordinance for packaging under DS 12/2020, requiring municipalities to incorporate in their ordinances the obligation to separate waste at source within the parameters defined by REP decrees. This confirms that the municipal role in the REP system is operational and local regulatory support—not regulation of the system itself. Recent administrative doctrine (CGR briefs 2023–2024 on REP implementation) reiterates that regulation of targets and obligations belongs to the central level and municipalities may only complement at the operational plane. Management Systems are private entities supervised by the SMA, entirely outside municipal regulatory reach.",
+                    "es": "La Ley REP 20.920 establece el marco legal completo para la Responsabilidad Extendida del Productor en Chile. La competencia regulatoria sobre el sistema corresponde expresamente al nivel nacional: la División de Recursos Naturales, Residuos y Evaluación de Riesgo del MMA tiene la atribución de diseñar políticas y normas en materia de residuos (Art. 7° letra c, D.S. N° 8/2012 del MMA), las metas REP son fijadas por el MMA mediante decretos supremos (DS 12/2020 para envases y embalajes), y la SMA fiscaliza el cumplimiento.\n\nLa Resolución Exenta N° 9 de 2022 del MMA aprobó un modelo de ordenanza municipal para envases y embalajes en el marco del DS 12/2020, estableciendo que las municipalidades deben incorporar en sus ordenanzas la obligación de separar residuos en origen dentro de los parámetros definidos por los decretos REP. Esto confirma que el rol municipal en el sistema REP es de apoyo operativo y reglamentario local —no de regulación del sistema en sí. Doctrina administrativa reciente (fichas CGR 2023-2024 sobre implementación REP) reitera que la regulación de metas y obligaciones corresponde al nivel central y los municipios solo pueden complementar en el plano operativo. Los Sistemas de Gestión son entidades privadas fiscalizadas por la SMA, completamente fuera del alcance regulatorio municipal."
+                },
+                "legalReferences": [
+                    "Ley 20.920 REP — BCN",
+                    "DS 12/2020 — Metas envases y embalajes — BCN",
+                    "Res. Ex. N°9/2022 MMA — Modelo Ordenanza REP",
+                    "D.S. 8/2012 MMA — Reglamento Orgánico — BCN",
+                    "DS 7/2017 MMA — Fondo para el Reciclaje",
+                    "Portal Economía Circular MMA — Ley REP"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.165Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "be23d735-9ccd-4fe3-9951-8ea852c44161",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0117",
+                "actionName": "Improve public transport systems to promote modal shift",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "conditional",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
+                    "es": "Riesgo jurídico moderado; puede requerir autorización previa o enfrentar un eventual desafío judicial."
+                },
+                "legalJustification": {
+                    "en": "Improving concessioned public transport service is an MTT competence under Law 18.696 and DFL No. 279/1960. The municipality cannot intervene in frequencies, routes, fares, or standards of concessioned services: that is the main action evaluated, and it does not correspond to the municipality. What the municipality may do, based on Law 18.695 art. 4°(b) (shared function on traffic and public transport within the communal territory) and art. 5°(j) (administration of municipal assets and spaces), is act on complementary infrastructure under its control: stops, signage, universal accessibility, local roadways, bike lanes, and public space. These are ancillary supportive actions for the system, not improvements to the transport service itself. Coordination with the MTT, SEREMI Transport, and DTPM (in the Metropolitan Region) is a condition for any large-scale action, but that coordination is collaborative, not decision-making for the municipality. The LMCC (Law 21.455) and the sectoral transport plan set modal-shift goals that politically frame municipal action, but they do not expand the municipality's legal competence over the service.",
+                    "es": "La mejora del servicio de transporte público concesionado es competencia del MTT conforme a la Ley 18.696 y al DFL N°279/1960. El municipio no puede intervenir sobre frecuencias, recorridos, tarifas ni estándares de los servicios concesionados: esa es la acción principal evaluada, y no le corresponde al municipio. Lo que el municipio sí puede hacer, con base en la Ley 18.695 art. 4° letra b) (función compartida en tránsito y transporte públicos dentro del territorio comunal) y art. 5° letra j) (administración de bienes y espacios municipales), es actuar sobre infraestructura complementaria de su dominio: paraderos, señalética, accesibilidad universal, vialidad local, ciclovías y espacio público. Estas son acciones accesorias de apoyo al sistema, no mejoras del servicio de transporte en sí. La coordinación con el MTT, SEREMI de Transportes y DTPM (en la RM) es condición para cualquier acción de escala, pero esa coordinación es de tipo colaborativo, no decisoria para el municipio. La LMCC (Ley 21.455) y el Plan Sectorial de Transporte establecen metas de cambio modal que enmarcan políticamente la acción municipal, pero no amplían la competencia jurídica del municipio sobre el servicio."
+                },
+                "legalReferences": [
+                    "Ley 18.696 — Transporte Público — BCN",
+                    "Ley 18.695 (LOCM) — BCN",
+                    "Potestades MTT — Subtrans",
+                    "LMCC — Ley 21.455 — BCN",
+                    "FNDR — SUBDERE"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.165Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "8475bd7a-0b42-43ec-a90e-8c2cd9a83ddc",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "icare_0139",
+                "actionName": "Implement congestion pricing and restrictions on high-polluting vehicles",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "This action groups three instruments of distinct legal nature, none of which is authorized for the municipality under current law: (i) Congestion pricing (urban toll): a charge for use of road infrastructure. Chile has no norm authorizing municipalities to charge congestion fees. Law 18.695 does not contain this power. Toll road concessions are an MOP competence (DFL No. 850/1997 MOP and Law 19,460 on public works concessions). It is a concession regime instrument, not a municipal one. (ii) License-plate-based vehicle restrictions: a national-level traffic environmental management measure. Under Law 18.290 art. 113, the MTT may establish circulation restrictions. In metropolitan practice, these restrictions currently operate under the Metropolitan Region Atmospheric Prevention and Decontamination Plan (PPDA, D.S. No. 20/2013 MMA), an environmental management instrument issued under arts. 43–50 of Law 19,300 (prevention and decontamination plans), not art. 32, which addresses primary and secondary ambient air quality standards—a different matter. Older vehicle restriction regimes, such as D.S. 63/1994 MINSEGPRES, were replaced by the current PPDA. The municipality has no competence to decree digit-based vehicle restrictions. (iii) Green tax on mobile sources: established in art. 8 ter of Law 19,300 (introduced by Law 20,780, modified by Law 21,210). It is a national tax administered by the SII and the MMA. Municipalities do not participate in its design, determination, or collection. Municipal taxing power is limited by Law 17,235 (property tax) and Law 18.695 art. 5°(b) (municipal fees), and does not include environmental taxes. What the municipality may do autonomously is implement traffic-calming measures (30 km/h speed limits, speed humps, signage) and regulated parking management through local traffic ordinances under Law 18.290 art. 165. These are traffic management measures, independent of the three instruments above and within direct municipal competence. Ownership score 0: no competence for the main instruments. Restrictions score 0: in public law, under the principle of legality in Law 18.575 art. 2°, absence of express legal authorization equals absence of competence. Alignment score 100: the action's objectives are coherent with national mitigation policy.",
+                    "es": "Esta acción agrupa tres instrumentos de naturaleza jurídica distinta, ninguno de los cuales está habilitado para el municipio en el marco legal vigente: (i) Tarifa de congestión (peaje urbano): es un cobro por uso de infraestructura vial. En Chile no existe norma que habilite a los municipios a cobrar tarifas de congestión. La Ley 18.695 no contiene esta potestad. Las concesiones viales con cobro de peaje son competencia del MOP (DFL N°850/1997 MOP y Ley 19.460 de Concesiones de Obras Públicas). Se trata de un instrumento de régimen concesional, no municipal. (ii) Restricción vehicular por dígito: es una medida de gestión ambiental del tránsito de competencia nacional. Conforme a la Ley 18.290 art. 113, el MTT puede establecer restricciones de circulación. En la práctica metropolitana, estas restricciones operan hoy en el marco del Plan de Prevención y Descontaminación Atmosférica de la RM (PPDA, D.S. N°20/2013 MMA), que es un instrumento de gestión ambiental dictado conforme a los arts. 43 a 50 de la Ley 19.300 (planes de prevención y descontaminación), no el art. 32, que regula las normas de calidad ambiental primarias y secundarias, materia distinta. Antiguos regímenes de restricción vehicular, como el D.S. 63/1994 MINSEGPRES, fueron reemplazados por el PPDA vigente. El municipio no tiene competencia para decretar restricciones vehiculares por dígito. (iii) Impuesto verde a fuentes móviles: establecido en el art. 8° ter de la Ley 19.300 (incorporado por Ley 20.780, modificado por Ley 21.210). Es un tributo de competencia nacional administrado por el SII y el MMA. Los municipios no participan en su diseño, determinación ni recaudación. La potestad tributaria municipal está tasada en la Ley 17.235 (contribuciones) y la Ley 18.695 art. 5° letra b) (derechos municipales), y no incluye tributos ambientales. Lo que el municipio sí puede hacer autónomamente es implementar medidas de tráfico calmado (velocidad máxima 30 km/h, reductores, señalética) y gestión del estacionamiento regulado mediante ordenanzas de tránsito local conforme a la Ley 18.290 art. 165. Estas son medidas de gestión del tránsito, independientes de los tres instrumentos anteriores y de competencia municipal directa. Titularidad 0: sin competencia para los instrumentos principales. Restricciones 0: en derecho público, conforme al principio de juridicidad consagrado en la Ley 18.575 art. 2°, la ausencia de habilitación legal expresa equivale a ausencia de competencia. Alineación 100: los objetivos de la acción son coherentes con la política nacional de mitigación."
+                },
+                "legalReferences": [
+                    "Ley 18.290 Tránsito — BCN",
+                    "Ley 18.695 (LOCM) — BCN",
+                    "Ley 18.575 — Bases Administración del Estado — BCN",
+                    "Ley 19.300 art. 8 ter — Impuesto Verde — BCN",
+                    "Ley 19.460 Concesiones Obras Públicas — BCN",
+                    "D.S. 20/2013 MMA — PPDA RM — BCN"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.165Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "ce830188-c9dd-4f57-9d1d-610e8e573a0d",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "c40_0013",
+                "actionName": "Support Implementation of Industrial Building Efficiency Standards.",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "conditional",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
+                    "es": "Riesgo jurídico moderado; puede requerir autorización previa o enfrentar un eventual desafío judicial."
+                },
+                "legalJustification": {
+                    "en": "Law 21,305 obliges large energy consumers (>500 TEP/year) to implement energy management systems, administered by the CNE, not by municipalities. The DOM may require compliance with the OGUC and habitability standards in new construction or industrial modifications requiring a building permit (General Urbanism and Construction Law). The municipality has a support and facilitation role for compliance with national standards, but cannot create additional industrial EE standards without express legal authorization. Ownership score 0: no competence over private industrial operations. Restrictions score 50: the DOM may require OGUC standards in building permits. Alignment score 100: full alignment with industrial EE policy.",
+                    "es": "La Ley 21.305 obliga a grandes consumidores energéticos (>500 TEP/año) a implementar sistemas de gestión de energía, administrado por la CNE, no por los municipios. El DOM puede exigir el cumplimiento de la OGUC y normas de habitabilidad en nuevas construcciones o modificaciones industriales que requieran permiso de edificación (Ley General de Urbanismo y Construcciones). El municipio tiene un rol de apoyo y facilitación del cumplimiento de la norma nacional, pero no puede crear estándares de eficiencia industrial adicionales sin habilitación legal expresa. Titularidad 0: sin competencia sobre operaciones industriales privadas. Restricciones 50: el DOM puede exigir normas OGUC en permisos de edificación. Alineación 100: plena con política de EE industrial."
+                },
+                "legalReferences": [
+                    "Ley 21.305 Eficiencia Energética — BCN",
+                    "LGUC — DFL 458/1975 MINVU — BCN",
+                    "Ley 18.695 (LOCM) — BCN",
+                    "Potestades Minenergia",
+                    "CORFO Eficiencia Energética Industrial"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.165Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "139f3fb6-2c27-43e9-820b-9507b2a0a1a8",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "c40_0015",
+                "actionName": "Retrofit residential buildings for energy efficiency",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "conditional",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
+                    "es": "Riesgo jurídico moderado; puede requerir autorización previa o enfrentar un eventual desafío judicial."
+                },
+                "legalJustification": {
+                    "en": "LOCM art. 4°(f) authorizes the municipality to participate in construction and housing enabling activities—a generic participation authorization, not a sectoral competence of its own. Supreme Decree No. 27 (Housing and Urbanism), 2016, fully regulates the Housing and Neighborhood Improvement Program: MINVU calls for applications (art. 22), SERVIU evaluates projects (arts. 27–28), MINVU or SEREMI selects and assigns subsidies (arts. 29–31), and amounts are set by ministerial resolution (art. 3). The municipality has no decisional role in the program—it may act as sponsoring entity (art. 34) under CRAT with SEREMI, organizing demand, preparing projects, and providing technical support to households, but without power over opening calls, technical conditions, or subsidy assignment. Law 21,305 sets energy poverty reduction objectives as policy framing; concrete EE mechanisms in housing operate via DS 27 Chapter IV (EE and water efficiency projects, arts. 95–98: maximum subsidy 50–120 UF per dwelling), administered entirely by MINVU/SERVIU. Ownership score 0: no own competence—sponsoring role under MINVU norms. Restrictions score 50: the action is only possible within open MINVU calls. Alignment score 100: full alignment with national EE and social housing policy.",
+                    "es": "La LOCM art. 4° letra f) habilita al municipio a participar en actividades de construcción y habilitación de viviendas — habilitación genérica de participación, no competencia sectorial propia. El DS N° 27 (V. y U.), de 2016, reglamenta íntegramente el Programa de Mejoramiento de Viviendas y Barrios: el MINVU convoca los llamados (art. 22), el SERVIU califica los proyectos (art. 27-28), el MINVU o SEREMI selecciona y asigna los subsidios (arts. 29-31), y los montos son fijados por resolución ministerial (art. 3). El municipio no tiene ningún rol decisional en el programa — puede actuar como Entidad Patrocinante (art. 34) bajo CRAT con la SEREMI, organizando demanda, formulando proyectos y acompañando técnicamente a las familias, pero sin potestad sobre apertura de llamados, condiciones técnicas ni asignación de subsidios. La Ley 21.305 fija objetivos de reducción de pobreza energética como marco de política; los mecanismos concretos de EE en vivienda operan vía DS 27 Cap. IV (Proyectos de Eficiencia Energética e Hídrica, art. 95-98: subsidio máximo 50-120 UF por vivienda), administrado íntegramente por MINVU/SERVIU. Titularidad 0: sin competencia propia — rol de Entidad Patrocinante bajo norma MINVU. Restricciones 50: la acción es posible solo dentro de llamados MINVU abiertos. Alineación 100: plena con política nacional de EE y vivienda social."
+                },
+                "legalReferences": [
+                    "Ley 21.305 Eficiencia Energética — BCN",
+                    "DS 49/2011 MINVU Habitabilidad — BCN",
+                    "Ley 18.695 (LOCM) — BCN",
+                    "Potestades Minenergia",
+                    "PMU SUBDERE"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.165Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "fdce0981-1906-404d-b51b-9c2361afcf36",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "c40_0018",
+                "actionName": "Optimize energy efficiency and sustainability standards for existing industrial infrastructure",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "conditional",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
+                    "es": "Riesgo jurídico moderado; puede requerir autorización previa o enfrentar un eventual desafío judicial."
+                },
+                "legalJustification": {
+                    "en": "Same legal analysis as c40_0013. Law 21,305 obliges large energy consumers to management plans administered by the CNE, not municipalities. The DOM may require OGUC standards in modification works requiring a building permit. The municipality cannot create additional industrial EE standards beyond those established by the CNE. Ownership score 0: no competence over industrial process optimization. Restrictions score 50: the DOM may act on works requiring a permit. Alignment score 100: full alignment with national industrial EE policy.",
+                    "es": "Idéntico análisis normativo que c40_0013. La Ley 21.305 obliga a grandes consumidores energéticos a planes de gestión administrados por la CNE, no por municipios. El DOM puede exigir normas OGUC en obras de modificación que requieran permiso de edificación. El municipio no puede crear estándares de eficiencia energética industrial adicionales a los establecidos por la CNE. Titularidad 0: sin competencia sobre la optimización de procesos industriales. Restricciones 50: el DOM puede actuar en obras que requieran permiso. Alineación 100: plena con política nacional de EE."
+                },
+                "legalReferences": [
+                    "Ley 21.305 Eficiencia Energética — BCN",
+                    "Ley 18.695 (LOCM) — BCN",
+                    "Potestades Minenergia",
+                    "CNE — Eficiencia Energética Industrial",
+                    "CORFO Eficiencia Energética"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.165Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "844d60bf-a471-4921-b2c1-050a76f7e211",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "c40_0023",
+                "actionName": "Adopt zero-emission bus fleets for public transport",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "Competence over concessioned urban public transport corresponds to the Ministry of Transport under Law 18.696 (art. 3°, which assigns regulation, authorization, and control of passenger transport to the Ministry) together with DFL No. 1/1996 (MTT organic structure) and DFL No. 279/1960 (powers of the Undersecretariat of Transport over concessioned passenger systems). The municipality has no competence to regulate concessioned bus fleets, nor to set technical or emission standards for those fleets. That power belongs exclusively to the MTT. What the municipality may do, based on Law 18.695 art. 5°(j) (administration of municipal assets) and art. 4°(b) (shared traffic function), is: (i) electrify its own municipal vehicle fleet if it operates its own transport services, and (ii) participate in transport planning instances convened by the MTT or the GORE. These are ancillary actions to the main action, which remains exclusively national in competence. The LMCC (Law 21.455) art. 9° and the sectoral mitigation plan for transport provide national policy alignment, but do not transfer regulatory competence to the municipality.",
+                    "es": "La competencia sobre el transporte público urbano concesionado corresponde al MTT conforme a la Ley 18.696 (art. 3°, que atribuye al Ministerio la regulación, autorización y control del transporte de pasajeros) y al DFL N°1/1996 (que fija la estructura orgánica del MTT como ministerio) en conjunto con el DFL N°279/1960 (que establece las potestades de la Subsecretaría de Transportes sobre los sistemas de transporte de pasajeros concesionados). El municipio no tiene competencia para regular flotas de buses concesionados, ni para fijar estándares técnicos ni de emisiones sobre dichas flotas. Esa potestad es del MTT con exclusividad. Lo que el municipio sí puede hacer, con fundamento en la Ley 18.695 art. 5° letra j) (administración de bienes municipales) y art. 4° letra b) (función compartida de tránsito), es: (i) electrificar su propia flota vehicular municipal si dispone de servicios de transporte propios, y (ii) participar en instancias de planificación de transporte convocadas por el MTT o el GORE. Estas son acciones accesorias a la acción principal, que sigue siendo de competencia nacional exclusiva. La LMCC (Ley 21.455) art. 9° y el Plan Sectorial de Mitigación de Transporte proveen alineación de política nacional, pero no transfieren competencia regulatoria al municipio."
+                },
+                "legalReferences": [
+                    "Ley 18.696 — Transporte Público — BCN",
+                    "Ley 18.695 (LOCM) — BCN",
+                    "Potestades Subtrans — MTT",
+                    "LMCC — Ley 21.455 — BCN",
+                    "CORFO Electromovilidad"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.165Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "2d1132ae-4dc4-48c8-af48-173c2d65af79",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "c40_0025",
+                "actionName": "Promote deployment of zero-emission freight fleets (trucks)",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "Regulation of private freight transport corresponds to the MTT under Law 18.696 and Supreme Decree No. 158/1980 MTT (Freight Transport Regulation). Municipalities have no direct competence to regulate private freight fleets or to impose emission standards on third parties. What the municipality may do reduces to two powers of different nature: (i) Contractual power: under Law 19.886 (Public Procurement) and its regulation (DS 250/2004), the municipality may include environmental sustainability criteria in its own bidding terms for freight or logistics services. This is not a general regulatory power over the private market, but a clause applicable only to its own procurement. (ii) Local traffic power: under Law 18.290 art. 165, the municipality may establish circulation restrictions in defined zones or roads, but this power concerns traffic management, not regulation of emission standards for private fleets. Low Emission Zones (LEZ) have no current legal authorization in Chile; their eventual implementation would require express enabling norms, so they cannot be cited as a current competence basis. The LMCC and sectoral transport plan provide policy alignment but do not authorize municipal regulation over private fleets.",
+                    "es": "La regulación del transporte de carga privado corresponde al MTT conforme a la Ley 18.696 y al D.S. N°158/1980 MTT (Reglamento del Transporte de Carga). Los municipios no tienen competencia directa para regular flotas privadas de carga ni para imponer estándares de emisiones sobre terceros. Lo que el municipio puede hacer se reduce a dos facultades de distinta naturaleza, que conviene separar: (i) Facultad contractual: conforme a la Ley 19.886 (Compras Públicas) y su Reglamento (DS 250/2004), el municipio puede incorporar criterios de sustentabilidad ambiental en sus propias bases de licitación de servicios de carga o logística. Esto no es una potestad regulatoria general sobre el mercado privado, sino una cláusula aplicable exclusivamente a sus propias contrataciones. (ii) Potestad de tránsito local: conforme a la Ley 18.290 art. 165, el municipio puede establecer restricciones de circulación en zonas o vías determinadas, pero esta facultad se refiere a la gestión del tránsito, no a la regulación de estándares de emisiones de flotas privadas. Las Zonas de Bajas Emisiones (ZBE) no tienen habilitación legal vigente en Chile; su eventual implementación requeriría norma habilitante expresa, por lo que no pueden citarse como fundamento de competencia actual. La LMCC y el Plan Sectorial de Transporte proveen alineación de política, pero no habilitan regulación municipal sobre flotas privadas."
+                },
+                "legalReferences": [
+                    "D.S. 158/1980 MTT — Transporte de Carga — BCN",
+                    "Ley 18.290 Tránsito — BCN",
+                    "Potestades MTT — Subtrans",
+                    "LMCC — Ley 21.455 — BCN",
+                    "CORFO Electromovilidad"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.165Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "ef891d7b-6572-4d5f-9a99-75f36c8ffdb3",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "c40_0036",
+                "actionName": "Upgrade Landfills to Engineered Sanitary Landfills with Gas Capture.",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "blocked",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority belongs to another level of government; municipality cannot act alone.",
+                    "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por sí solo."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "Sanitary landfills are final disposal facilities regulated exclusively at the national and regional level: authorization and oversight correspond to the health authority (SEREMI de Salud) under Supreme Decree No. 189/2005 of the Ministry of Health. SEREMI Health authorities exercise this authority under the Sanitary Code and Supreme Decree No. 136/2004 (MINSAL Organic Regulation, arts. 32° and 35°). The municipality has no competence to authorize, build, or operate sanitary landfills. Its possible role is coordination with SEREMI Health and the regional government (GORE) to identify suitable land and promote regional projects, but without decision-making power of its own.",
+                    "es": "Los rellenos sanitarios son instalaciones de disposición final reguladas exclusivamente por el nivel nacional y regional: la autorización y fiscalización corresponde a la Autoridad Sanitaria (SEREMI de Salud) conforme al D.S. N° 189/2005 del Ministerio de Salud. Las SEREMI de Salud ejercen esta autoridad conforme al Código Sanitario y al D.S. N° 136/2004 (Reglamento Orgánico del MINSAL, arts. 32° y 35°). El municipio no tiene competencia para autorizar, construir ni operar rellenos sanitarios. Su rol posible es de coordinación con la SEREMI Salud y el GORE para identificar terrenos aptos y promover proyectos regionales, pero sin poder de decisión propio."
+                },
+                "legalReferences": [
+                    "D.S. 189/2005 Ministerio de Salud — BCN",
+                    "Ley 18.695 (LOCM) — BCN",
+                    "Ley 19.300 Bases del Medio Ambiente (SEIA) — BCN",
+                    "D.S. 136/2004 Reglamento Orgánico MINSAL — BCN"
+                ]
+            },
+            {
+                "created": "2026-08-18T15:06:46.165Z",
+                "lastUpdated": "2026-08-18T15:06:46.164Z",
+                "id": "abad5848-013b-4973-9ad9-6453cfa2e6be",
+                "inventoryId": "27aaf288-a90b-4600-8e1f-7f8f3cc1c78a",
+                "actionId": "c40_0037",
+                "actionName": "Implement residential and business segregated collection of recyclables, organic, and residual waste",
+                "removalReason": "legal_verdict_blocked",
+                "removalSource": "legal_hard_filter",
+                "verdictCategory": "blocked",
+                "ownershipCategory": "conditional",
+                "restrictionsCategory": "blocked",
+                "ownershipDescription": {
+                    "en": "Authority exists but is conditional, ambiguous, or mediated by an enabling instrument.",
+                    "es": "Existe competencia legal, pero es condicional, ambigua o mediada por un instrumento habilitante."
+                },
+                "restrictionsDescription": {
+                    "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+                    "es": "Existe una prohibición o restricción legal, o se requiere una reforma legislativa."
+                },
+                "legalJustification": {
+                    "en": "Law 18.695 art. 3(d) establishes a clear municipal mandate on household collection. Law 20.920 (REP) and its packaging decree (DS 12/2020) define that recyclable flows are the responsibility of Management Systems, and that municipalities must coordinate selective collection with them in their territories. MMA Exempt Resolution No. 9/2022 approved a model municipal ordinance enabling municipalities to incorporate the obligation to separate waste at source—but within the parameters defined by REP decrees, not unilaterally.\n\nThe main barrier is the difficulty of imposing and enforcing separation at source without national sanctioning authority: the municipal ordinance may establish the obligation, but it lacks an effective coercive mechanism if residents do not comply, because there is no national household obligation that backs municipal sanctions. To date there is no court judgment or Comptroller opinion that expressly validates or invalidates a municipal ordinance imposing separation at source beyond the parameters of DS 12/2020.",
+                    "es": "La Ley 18.695 art. 3 d) establece un mandato municipal claro sobre la recolección domiciliaria. La Ley REP 20.920 y su decreto de envases y embalajes (DS 12/2020) definen que los flujos de reciclables son responsabilidad de los Sistemas de Gestión, y que los municipios deben articular con ellos la recolección selectiva en sus territorios. La Resolución Exenta N° 9/2022 del MMA aprobó un modelo de ordenanza municipal que habilita a los municipios para incorporar la obligación de separar residuos en origen —pero dentro de los parámetros definidos por los decretos REP, no de forma unilateral.\n\nLa barrera principal es la dificultad de imponer y fiscalizar la separación en origen sin habilitación sancionatoria nacional: la ordenanza municipal puede establecer la obligación, pero carece de mecanismo coercitivo efectivo si el ciudadano no cumple, ya que no existe una obligación legal nacional para hogares que respalde la sanción municipal. No existe a la fecha sentencia judicial o dictamen de Contraloría que valide o invalide expresamente una ordenanza municipal que imponga separación en origen más allá de los parámetros del DS 12/2020."
+                },
+                "legalReferences": [
+                    "Ley 18.695 (LOCM) — BCN",
+                    "Ley 20.920 REP — BCN",
+                    "DS 12/2020 — Metas envases y embalajes — BCN",
+                    "Res. Ex. N°9/2022 MMA — Modelo Ordenanza REP",
+                    "DS 7/2017 MMA — Fondo para el Reciclaje"
+                ]
+            }
+        ]
+    }
+}

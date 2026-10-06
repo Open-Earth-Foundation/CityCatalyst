@@ -16,7 +16,6 @@ import { AdaptationTabIcon, MitigationTabIcon } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { ClimateActionsSection } from "@/components/HIAP/ClimateActionsSection";
 import { HiapPageLayout } from "../HiapPageLayout";
-import i18next from "i18next";
 import { api } from "@/services/api";
 import {
   YearSelector,
@@ -29,7 +28,6 @@ export default function HIAPInventoryPage(props: {
   const { lng, cityId, inventory: inventoryId } = use(props.params);
   const { t } = useTranslation(lng, "hiap");
   const router = useRouter();
-  const lang = i18next.language as LANGUAGES;
 
   const [ignoreExisting, setIgnoreExisting] = useState(false);
   const [shouldRefetch, setShouldRefetch] = useState(false);
@@ -79,7 +77,7 @@ export default function HIAPInventoryPage(props: {
   } = useGetHiapQuery(
     {
       inventoryId: inventory?.inventoryId || "",
-      lng: lang,
+      lng: lng as LANGUAGES,
       actionType: ACTION_TYPES.Mitigation,
       ignoreExisting: ignoreExisting,
     },

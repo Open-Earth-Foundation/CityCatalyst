@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import json
+from hashlib import sha256
 from uuid import UUID
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
-from app.models.cnb.context_bundle import ConceptNoteContextBundle
 from app.models.cnb.concept_note_application_context import (
     ApplicationContextFunder,
     ApplicationContextIncludedSources,
@@ -11,6 +12,7 @@ from app.models.cnb.concept_note_application_context import (
     ApplicationContextTemplate,
     ConceptNoteApplicationContextResponse,
 )
+from app.models.cnb.context_bundle import ConceptNoteContextBundle
 from app.models.db.cnb_reference import (
     CnbFunder,
     CnbFunderTemplate,
@@ -88,14 +90,37 @@ class ConceptNoteApplicationContextService:
                 name=opportunity.name,
             )
         if template is not None:
-            response.template = ApplicationContextTemplate(
-                id=template.template_id,
-                name=template.template_name,
-                output_format=template.output_format,
-                chapter_schema=template.chapter_schema,
-                required_fields=template.required_fields,
-            )
+            response.template = _template_response(template)
         return response
+
+    async def load_template_fingerprint_for_run(
+        self,
+        run: ConceptNoteRun,
+    ) -> str | None:
+        """Load the current template fingerprint with one reference query."""
+        if run.funder_id is None or run.selected_funding_opportunity_id is None:
+            return None
+
+        statement = (
+            select(CnbFunderTemplate)
+            .join(
+                CnbFundingOpportunity,
+                CnbFundingOpportunity.funding_opportunity_id
+                == CnbFunderTemplate.funding_opportunity_id,
+            )
+            .where(
+                CnbFunderTemplate.funding_opportunity_id
+                == run.selected_funding_opportunity_id,
+                CnbFundingOpportunity.funder_id == run.funder_id,
+            )
+        )
+        session_factory = self._session_factory or get_cnb_reference_session_factory()
+        async with session_factory() as session:
+            template = await session.scalar(statement)
+
+        if template is None:
+            return None
+        return calculate_application_template_fingerprint(_template_response(template))
 
     async def _load_included_sources(
         self,
@@ -168,3 +193,27 @@ def included_sources_from_bundle(
         ccra=context.ccra is not None,
         hiap=context.hiap is not None,
     )
+
+
+def _template_response(template: CnbFunderTemplate) -> ApplicationContextTemplate:
+    """Convert a managed template row to the stable public model."""
+    return ApplicationContextTemplate(
+        id=template.template_id,
+        name=template.template_name,
+        output_format=template.output_format,
+        chapter_schema=template.chapter_schema,
+        required_fields=template.required_fields,
+    )
+
+
+def calculate_application_template_fingerprint(
+    template: ApplicationContextTemplate,
+) -> str:
+    """Hash every application-template field supplied to chapter validation."""
+    canonical = json.dumps(
+        template.model_dump(mode="json"),
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return sha256(canonical.encode("utf-8")).hexdigest()

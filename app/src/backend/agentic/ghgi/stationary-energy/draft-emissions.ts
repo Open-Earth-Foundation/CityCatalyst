@@ -5,6 +5,7 @@ type JsonObject = Record<string, unknown>;
 
 export async function enrichStationaryEnergyDraftCO2e(
   payload: unknown,
+  gwpVersion?: string | null,
 ): Promise<unknown> {
   if (!isObject(payload)) {
     return payload;
@@ -33,6 +34,7 @@ export async function enrichStationaryEnergyDraftCO2e(
 
   const results = await CalculationService.calculateCO2eqForGasGroups(
     rowGasGroups.map(({ gases }) => gases),
+    gwpVersion,
   );
   results.forEach(({ totalCO2e, totalCO2eYears }, index) => {
     const row = rowGasGroups[index].row;

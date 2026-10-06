@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import {
   Box,
@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { motion, useReducedMotion } from "framer-motion";
 import NextLink from "next/link";
+import { useRouter } from "next/navigation";
 import {
   LuArrowUpRight,
   LuBuilding2,
@@ -24,25 +25,41 @@ import {
   LuFolderOpen,
   LuLandmark,
   LuListChecks,
-  LuShieldAlert,
 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
+import { toaster } from "@/components/ui/toaster";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
+import { isFetchBaseQueryError } from "@/util/helpers";
+import type { ConceptNoteRun } from "@/util/types";
 
+import { ExportDialog } from "../ConceptNoteWorkspace/export-dialog";
 import { ContextTile } from "./context-tile";
+import {
+  contextSourceHelpKey,
+  contextSourceStatusKey,
+  contextSourceTone,
+  getCitySourceState,
+  inventorySourceAction,
+  isSourceLookupFailure,
+  type ContextSourceState,
+} from "./context-source-status";
+import {
+  ConceptNoteLifecycleDialog,
+  type ConceptNoteLifecycleAction,
+} from "./lifecycle-dialog";
 import { NewConceptNoteDialog } from "./new-concept-note-dialog";
 import { RunCard } from "./run-card";
 import { RunCardSkeleton } from "./run-card-skeleton";
-import { StatusBadge } from "./status-badge";
 import {
   conceptNoteResumeHref,
   formatRelativeTime,
+  getConceptNoteBundleProgress,
   getRunProgressPercent,
-  getRunStatusPresentation,
   getWorkflowStepTranslationKey,
   hasPrioritizedHiapActions,
+  normalizePopulationData,
 } from "./utils";
 
 interface ConceptNoteDashboardProps {
@@ -61,22 +78,60 @@ export function ConceptNoteDashboard({
   lng,
 }: ConceptNoteDashboardProps) {
   const { t } = useTranslation(lng, "concept-notes");
+  const router = useRouter();
   const reducedMotion = useReducedMotion() ?? false;
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [retryRun, setRetryRun] = useState<ConceptNoteRun | null>(null);
+  const [uploadingRunId, setUploadingRunId] = useState<string | null>(null);
+  const [lifecycleDialog, setLifecycleDialog] = useState<{
+    action: ConceptNoteLifecycleAction;
+    run: ConceptNoteRun;
+  } | null>(null);
+  const [exportRun, setExportRun] = useState<ConceptNoteRun | null>(null);
+  const [duplicatingRunId, setDuplicatingRunId] = useState<string | null>(null);
+  const duplicateKeysRef = useRef(new Map<string, string>());
+  const [duplicateConceptNote] = api.useDuplicateConceptNoteRunMutation();
   const {
     data: runList,
     isError: runsFailed,
     isLoading: runsLoading,
   } = api.useGetConceptNoteRunsQuery(cityId);
   const { data: city, isLoading: cityLoading } = api.useGetCityQuery(cityId);
-  const { data: population, isLoading: populationLoading } =
-    api.useGetMostRecentCityPopulationQuery({ cityId });
-  const { data: inventory, isLoading: inventoryLoading } =
-    api.useGetInventoryByCityIdQuery(cityId);
-  const { data: files, isLoading: filesLoading } =
-    api.useGetUserFilesQuery(cityId);
-  const { data: cityDashboard, isLoading: modulesLoading } =
-    api.useGetCityDashboardQuery({ cityId, lng });
+  const {
+    data: population,
+    isLoading: populationLoading,
+    isError: populationFailed,
+  } = api.useGetMostRecentCityPopulationQuery({ cityId });
+  const {
+    data: inventory,
+    isLoading: inventoryLoading,
+    error: inventoryError,
+  } = api.useGetInventoryByCityIdQuery(cityId);
+  const inventoryFailed = isSourceLookupFailure(inventoryError);
+  const {
+    data: files,
+    isLoading: filesLoading,
+    isError: filesFailed,
+  } = api.useGetUserFilesQuery(cityId);
+  const {
+    data: cityDashboard,
+    isLoading: modulesLoading,
+    isError: modulesFailed,
+  } = api.useGetCityDashboardQuery({ cityId, lng });
+  const {
+    currentData: exportDraft,
+    isError: exportDraftFailed,
+    isLoading: exportDraftLoading,
+    refetch: refetchExportDraft,
+  } = api.useGetConceptNoteDraftQuery(exportRun?.run_id ?? "", {
+    skip: !exportRun,
+  });
+  const {
+    currentData: exportApplicationContext,
+    isLoading: exportApplicationContextLoading,
+  } = api.useGetConceptNoteApplicationContextQuery(exportRun?.run_id ?? "", {
+    skip: !exportRun,
+  });
 
   const runs = runList?.runs ?? [];
   const cityFiles = files ?? [];
@@ -84,18 +139,85 @@ export function ConceptNoteDashboard({
   const cityLocation = city?.country
     ? t("city-location", { city: cityName, country: city.country })
     : cityName;
-  const populationLabel = population
+  const populationData = normalizePopulationData(population);
+  const populationLabel = populationData
     ? t("population", {
-        population: new Intl.NumberFormat(lng).format(population.population),
-        year: population.year,
+        population: new Intl.NumberFormat(lng).format(
+          populationData.population,
+        ),
+        year: populationData.year,
       })
     : t("population-unavailable");
   const inventoryLabel = inventory?.year
     ? t("inventory-year", { year: inventory.year })
     : t("no-inventory");
   const fileName = cityFiles[0]?.fileName ?? t("no-city-files");
-  const ccraConnected = Boolean(cityDashboard?.widgets.ccra);
-  const hiapConnected = hasPrioritizedHiapActions(cityDashboard?.widgets.hiap);
+  const hiapAvailable = hasPrioritizedHiapActions(cityDashboard?.widgets.hiap);
+  const populationState = getCitySourceState(
+    Boolean(populationData),
+    populationFailed,
+  );
+  // A city without an inventory answers 404; an inventory with no values is empty.
+  const inventoryState = getCitySourceState(
+    Boolean(inventory),
+    inventoryFailed,
+    inventory?.totalEmissions == null,
+  );
+  // Tiles link to GHGI to create or fill an inventory; choosing one is per note.
+  const inventoryNext = inventoryLoading
+    ? undefined
+    : inventorySourceAction(inventoryState, {
+        lng,
+        cityId,
+        inventoryId: inventory?.inventoryId ?? null,
+      });
+  const inventoryAction = inventoryNext?.href
+    ? { label: t(inventoryNext.labelKey), href: inventoryNext.href }
+    : undefined;
+  const actionPlanState = getCitySourceState(hiapAvailable, modulesFailed);
+  const filesState = getCitySourceState(cityFiles.length > 0, filesFailed);
+  // Status badge, tone, and help text shared by every city source tile.
+  const sourceTile = (state: ContextSourceState, loading: boolean) => ({
+    help: loading ? undefined : t(contextSourceHelpKey(state, "city")),
+    status: t(contextSourceStatusKey(state, loading)),
+    statusTone: contextSourceTone(state),
+  });
+  const exportBundle = exportRun
+    ? getConceptNoteBundleProgress(exportRun.progress_summary)
+    : null;
+
+  async function duplicateRun(run: ConceptNoteRun): Promise<void> {
+    const idempotencyKey =
+      duplicateKeysRef.current.get(run.run_id) ?? crypto.randomUUID();
+    duplicateKeysRef.current.set(run.run_id, idempotencyKey);
+    setDuplicatingRunId(run.run_id);
+    try {
+      await duplicateConceptNote({
+        cityId,
+        idempotencyKey,
+        runId: run.run_id,
+      }).unwrap();
+      duplicateKeysRef.current.delete(run.run_id);
+      toaster.create({
+        title: t("duplicate-success"),
+        description: t("duplicate-success-description"),
+        type: "success",
+        meta: { closable: true },
+      });
+    } catch (error) {
+      toaster.create({
+        title:
+          isFetchBaseQueryError(error) && error.status === 409
+            ? t("duplicate-conflict")
+            : t("duplicate-error"),
+        description: t("lifecycle-retry-description"),
+        type: "error",
+        meta: { closable: true },
+      });
+    } finally {
+      setDuplicatingRunId(null);
+    }
+  }
 
   return (
     <Box minH="calc(100vh - 80px)" bg="background.alternativeLight">
@@ -193,7 +315,6 @@ export function ConceptNoteDashboard({
                   </Text>
                 </Box>
               </Flex>
-              <StatusBadge label={t("connected")} tone="positive" />
               <Button asChild size="sm" variant="outline">
                 <NextLink href={`/${lng}/cities/${cityId}/dashboard`}>
                   {t("open-city-dashboard")}
@@ -206,12 +327,13 @@ export function ConceptNoteDashboard({
               gridTemplateColumns={{
                 base: "1fr",
                 sm: "repeat(2, minmax(0, 1fr))",
-                lg: "repeat(5, minmax(0, 1fr))",
+                lg: "repeat(4, minmax(0, 1fr))",
               }}
             >
               <ContextTile
                 icon={LuBuilding2}
                 label={t("city-context")}
+                {...sourceTile(populationState, populationLoading)}
                 value={cityLoading ? <Skeleton h="20px" /> : cityLocation}
                 detail={
                   populationLoading ? <Skeleton h="16px" /> : populationLabel
@@ -220,50 +342,40 @@ export function ConceptNoteDashboard({
               <ContextTile
                 icon={LuLandmark}
                 label={t("ghg-inventory")}
-                status={inventory ? t("connected") : t("not-available")}
-                statusTone={inventory ? "info" : "neutral"}
+                action={inventoryAction}
+                {...sourceTile(inventoryState, inventoryLoading)}
                 value={
                   inventoryLoading ? <Skeleton h="20px" /> : inventoryLabel
                 }
-                detail={t("inventory-detail")}
-              />
-              <ContextTile
-                icon={LuShieldAlert}
-                label={t("climate-risk-assessment")}
-                status={ccraConnected ? t("connected") : t("not-available")}
-                statusTone={ccraConnected ? "info" : "neutral"}
-                value={
-                  modulesLoading ? (
-                    <Skeleton h="20px" />
-                  ) : ccraConnected ? (
-                    t("context-ready")
-                  ) : (
-                    t("not-available")
-                  )
-                }
-                detail={t("ccra-detail")}
+                detail={inventory ? t("inventory-detail") : ""}
               />
               <ContextTile
                 icon={LuListChecks}
                 label={t("hiap-context")}
-                status={hiapConnected ? t("connected") : t("not-available")}
-                statusTone={hiapConnected ? "info" : "neutral"}
+                {...sourceTile(actionPlanState, modulesLoading)}
                 value={
                   modulesLoading ? (
                     <Skeleton h="20px" />
-                  ) : hiapConnected ? (
+                  ) : hiapAvailable ? (
                     t("context-ready")
                   ) : (
-                    t("not-available")
+                    t("hiap-no-actions")
                   )
                 }
-                detail={t(
-                  hiapConnected ? "hiap-detail" : "hiap-impact-missing-summary",
-                )}
+                detail={
+                  modulesLoading
+                    ? ""
+                    : t(
+                        hiapAvailable
+                          ? "hiap-detail"
+                          : "hiap-impact-missing-summary",
+                      )
+                }
               />
               <ContextTile
                 icon={LuFolderOpen}
                 label={t("city-files")}
+                {...sourceTile(filesState, filesLoading)}
                 value={filesLoading ? <Skeleton h="20px" /> : fileName}
                 detail={t("file-count", { count: cityFiles.length })}
               />
@@ -279,8 +391,6 @@ export function ConceptNoteDashboard({
           ) : runs.length ? (
             <Grid gap={5} gridTemplateColumns={runGridColumns}>
               {runs.map((run) => {
-                const status = getRunStatusPresentation(run.status);
-                const statusLabel = t(status.translationKey);
                 const workflowLabel = t(
                   getWorkflowStepTranslationKey(run.workflow_step),
                 );
@@ -301,9 +411,8 @@ export function ConceptNoteDashboard({
                   <RunCard
                     key={run.run_id}
                     run={run}
+                    t={t}
                     reducedMotion={reducedMotion}
-                    statusLabel={statusLabel}
-                    statusTone={status.tone}
                     scopeLabel={t("run-scope", {
                       city: cityName,
                       funding: runFundingLabel,
@@ -315,7 +424,18 @@ export function ConceptNoteDashboard({
                     progressLabel={t("run-progress", { progress })}
                     progress={progress}
                     resumeHref={conceptNoteResumeHref(lng, cityId, run.run_id)}
-                    resumeLabel={t("resume")}
+                    duplicateLoading={duplicatingRunId === run.run_id}
+                    lifecycleDisabled={Boolean(duplicatingRunId)}
+                    uploading={uploadingRunId === run.run_id}
+                    onRetryUpload={() => setRetryRun(run)}
+                    onRename={() =>
+                      setLifecycleDialog({ action: "rename", run })
+                    }
+                    onDuplicate={() => void duplicateRun(run)}
+                    onExport={() => setExportRun(run)}
+                    onDelete={() =>
+                      setLifecycleDialog({ action: "delete", run })
+                    }
                   />
                 );
               })}
@@ -380,9 +500,66 @@ export function ConceptNoteDashboard({
         lng={lng}
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
+        onUploadingRunChange={setUploadingRunId}
         projectId={city?.projectId ?? null}
         projectName={city?.project?.name ?? null}
       />
+      {retryRun && (
+        <NewConceptNoteDialog
+          key={retryRun.run_id}
+          retryRun={retryRun}
+          cityId={cityId}
+          cityName={cityName}
+          lng={lng}
+          open
+          onOpenChange={(open) => {
+            if (!open) setRetryRun(null);
+          }}
+          onUploadingRunChange={setUploadingRunId}
+        />
+      )}
+      {lifecycleDialog && (
+        <ConceptNoteLifecycleDialog
+          key={`${lifecycleDialog.action}-${lifecycleDialog.run.run_id}`}
+          action={lifecycleDialog.action}
+          cityId={cityId}
+          lng={lng}
+          run={lifecycleDialog.run}
+          onClose={() => setLifecycleDialog(null)}
+        />
+      )}
+      {exportRun && !exportApplicationContextLoading && !exportDraftLoading && (
+        <ExportDialog
+          draft={exportDraft ?? null}
+          draftError={exportDraftFailed && exportDraft === undefined}
+          hasApplicationTemplate={Boolean(exportApplicationContext?.template)}
+          hasUploadedEvidence={
+            exportBundle?.availableContext.uploadedDocuments ?? false
+          }
+          lng={lng}
+          noteName={exportRun.name}
+          open
+          runId={exportRun.run_id}
+          onAddInformation={(chapterId, findingKey) => {
+            const runId = exportRun.run_id;
+            setExportRun(null);
+            router.push(
+              conceptNoteResumeHref(lng, cityId, runId, {
+                chapterId,
+                findingKey,
+              }),
+            );
+          }}
+          onReviewSetup={() => {
+            const runId = exportRun.run_id;
+            setExportRun(null);
+            router.push(conceptNoteResumeHref(lng, cityId, runId));
+          }}
+          onOpenChange={(open) => !open && setExportRun(null)}
+          onRetryDraft={() => refetchExportDraft()}
+          onReviewComplete={() => refetchExportDraft()}
+        />
+      )}
     </Box>
   );
 }

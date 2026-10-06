@@ -2018,6 +2018,23 @@ export const ConfirmDocumentIcon = () => {
   );
 };
 
+export const PlanFolderIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        d="M4 20C3.45 20 2.97917 19.8042 2.5875 19.4125C2.19583 19.0208 2 18.55 2 18V6C2 5.45 2.19583 4.97917 2.5875 4.5875C2.97917 4.19583 3.45 4 4 4H10L12 6H20C20.55 6 21.0208 6.19583 21.4125 6.5875C21.8042 6.97917 22 7.45 22 8V18C22 18.55 21.8042 19.0208 21.4125 19.4125C21.0208 19.8042 20.55 20 20 20H4ZM4 18H20V8H11.175L9.175 6H4V18Z"
+        fill="#4B4C63"
+      />
+    </svg>
+  );
+};
+
 export const CitiesBuildingIcon = () => {
   return (
     <svg
@@ -2051,3 +2068,82 @@ export const CityLimitIcon = () => {
     </svg>
   );
 };
+
+export const AccountCircleFilledIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM18.36 16.83C16.93 15.09 13.46 14.5 12 14.5C10.54 14.5 7.07 15.09 5.64 16.83C4.62 15.49 4 13.82 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 13.82 19.38 15.49 18.36 16.83ZM8.5 9.5C8.5 7.56 10.06 6 12 6C13.94 6 15.5 7.56 15.5 9.5C15.5 11.44 13.94 13 12 13C10.06 13 8.5 11.44 8.5 9.5Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+export const DeleteIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M15 3V4H20V6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4V4H9V3H15ZM7 19H17V6H7V19ZM9 8H11V17H9V8ZM15 8H13V17H15V8Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+export const PlusIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M12 5V19"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5 12H19"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const InfoOutlineIcon = (props: IconProps) => (
+  <Icon viewBox="0 0 16 16" {...props}>
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill="currentColor"
+        d="M7.99968 14.6667C4.31767 14.6667 1.33301 11.682 1.33301 8.00004C1.33301 4.31804 4.31767 1.33337 7.99968 1.33337C11.6817 1.33337 14.6663 4.31804 14.6663 8.00004C14.6663 11.682 11.6817 14.6667 7.99968 14.6667ZM7.99968 13.3334C9.41416 13.3334 10.7707 12.7715 11.7709 11.7713C12.7711 10.7711 13.333 9.41453 13.333 8.00004C13.333 6.58555 12.7711 5.229 11.7709 4.2288C10.7707 3.22861 9.41416 2.66671 7.99968 2.66671C6.58519 2.66671 5.22863 3.22861 4.22844 4.2288C3.22824 5.229 2.66634 6.58555 2.66634 8.00004C2.66634 9.41453 3.22824 10.7711 4.22844 11.7713C5.22863 12.7715 6.58519 13.3334 7.99968 13.3334ZM7.33301 5.33337C7.33301 4.96518 7.63149 4.66671 7.99968 4.66671C8.36787 4.66671 8.66634 4.96518 8.66634 5.33337C8.66634 5.70156 8.36787 6.00004 7.99968 6.00004C7.63149 6.00004 7.33301 5.70156 7.33301 5.33337ZM7.33301 8.00004C7.33301 7.63185 7.63149 7.33337 7.99968 7.33337C8.36787 7.33337 8.66634 7.63185 8.66634 8.00004V10.6667C8.66634 11.0349 8.36787 11.3334 7.99968 11.3334C7.63149 11.3334 7.33301 11.0349 7.33301 10.6667V8.00004Z"
+      />
+    </svg>
+  </Icon>
+);

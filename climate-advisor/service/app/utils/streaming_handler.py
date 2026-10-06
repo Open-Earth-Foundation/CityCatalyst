@@ -1,57 +1,64 @@
-"""SSE Streaming handler for agent responses."""
+"""SSE orchestration for one authenticated agent response."""
 
 from __future__ import annotations
 
 import asyncio
-import inspect
-import json
 import logging
 import time
-from typing import Any, AsyncIterator, Dict, List, Optional, Union
-from uuid import UUID
+from contextlib import aclosing
+from typing import Any, AsyncGenerator, AsyncIterator, Dict, List, Optional, Union
+from uuid import UUID, uuid4
 
-from agents import RunConfig, Runner, gen_trace_id
+from agents import gen_trace_id
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.config import Settings, get_settings
 from app.middleware import get_request_id
+from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.requests import MessageCreateRequest
-from app.persistence.concept_notes.context_bundle import load_agent_context
 from app.services.agent_service import AgentService
-from app.services.stationary_energy.stationary_energy_chat_context import (
-    build_minimal_stationary_energy_context_payload,
-    build_stationary_energy_context_payload,
-    build_stationary_energy_ui_context,
-    format_stationary_energy_context_message,
+from app.services.cnb.draft_overview import (
+    load_draft_overview_message,
+    release_draft_overview,
 )
-from app.services.stationary_energy.stationary_energy_draft_repository import (
-    StationaryEnergyDraftRepository,
-)
-from app.services.stationary_energy.stationary_energy_tool_events import (
-    build_stationary_energy_tool_result_payload,
-)
-from app.services.thread_service import ThreadService
 from app.utils.chat_workflow_context import ChatWorkflowContext
-from app.utils.concept_note_context import extract_concept_note_run_id
+from app.utils.cnb_progress import emit_cnb_progress, stream_cnb_events
+from app.utils.concept_note_context import (
+    clean_cnb_history,
+)
+from app.utils.conversation_observability import conversation_trace
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
+    async_start_run,
     climate_advisor_experiment_name,
     log_json_artifact,
-    log_metrics,
-    log_tags,
-    log_text_artifact,
-    start_run,
-    update_current_trace_context,
+    run_mlflow_io,
 )
-from app.utils.prompt_budget import (
-    compact_stationary_energy_prompt_payload,
-    count_prompt_tokens,
-    get_stationary_energy_prompt_budget,
-    trim_messages_to_budget,
-)
+from app.utils.request_token_refresh import RequestTokenRefreshContext
 from app.utils.sse import format_sse
-from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
+from app.utils.stationary_energy_context import (
+    is_stationary_energy_resume_turn,
+)
+from app.utils.streaming_agent import prepare_stream_agent
+from app.utils.streaming_context import (
+    history_contains_current_user_message,
+    load_concept_note_context_message,
+    load_concept_note_source_documents_message,
+    load_stationary_energy_context_message,
+    resolve_workflow_context,
+)
+from app.utils.streaming_prompt import (
+    stationary_energy_system_context_message,
+)
+from app.utils.streaming_runner import stream_agent_events
+from app.utils.streaming_telemetry import (
+    log_mlflow_stream_summary,
+    mlflow_params,
+    mlflow_tags,
+    update_mlflow_trace_context,
+)
 from app.utils.token_handler import TokenHandler
 from app.utils.tool_handler import persist_assistant_message
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -65,37 +72,62 @@ class StreamingHandler:
         user_id: str,
         session_factory: Optional[async_sessionmaker[AsyncSession]],
         cc_access_token: Optional[str] = None,
+        catalog_user_id: Optional[str] = None,
         inventory_id: Optional[str] = None,
         request_context: Optional[Any] = None,
         request_options: Optional[dict] = None,
+        draft_overview_claim: Optional[tuple[UUID, str]] = None,
+        request_token_refresh_context: Optional[RequestTokenRefreshContext] = None,
     ) -> None:
         """Initialize per-request state for streaming one agent response."""
         self.thread_id = thread_id
+        self.reasoning_stream_id = str(uuid4())
         self.user_id = user_id
         self.session_factory = session_factory
         self.cc_access_token = cc_access_token
+        self.catalog_user_id = catalog_user_id
         self.inventory_id = inventory_id
         self.request_context = request_context
         self.request_options = request_options
+        # (run_id, build_id) when this is the hidden CNB drafting-overview turn.
+        self.draft_overview_claim = draft_overview_claim
+        self.request_token_refresh_context = request_token_refresh_context
         self.thread_identifier = str(thread_id)
         self.workflow_context = ChatWorkflowContext()
+        # Set per request once the Stationary Energy page markers are resolved.
+        self.stationary_energy_surface = False
+        self.stationary_energy_city_id: Optional[str] = None
         self.agent_model: Optional[str] = None
         self.request_identifier: Optional[str] = None
 
         # Response state
         self.assistant_tokens: List[str] = []
         self.tool_invocations: List[dict] = []
+        self._pending_tool_observations: dict[str, Any] = {}
+        self._tool_observation_records: List[dict] = []
         self.token_index = 0
         self.history_saved = False
         self.streaming_error = False
         self.agent_service: Optional[AgentService] = None
         self.token_handler: Optional[TokenHandler] = None
+        self.concept_note_edit_request: EditProposalRequest | None = None
 
     async def stream_response(
         self,
         payload: MessageCreateRequest,
         history_warning: Optional[str] = None,
-    ) -> AsyncIterator[bytes]:
+    ) -> AsyncGenerator[bytes, None]:
+        """Forward answer and request-local worker events on the existing stream."""
+        events = stream_cnb_events(self._stream_response(payload, history_warning))
+        async with aclosing(events) as stream:
+            async for chunk in stream:
+                yield chunk
+
+    async def _stream_response(
+        self,
+        payload: MessageCreateRequest,
+        history_warning: Optional[str] = None,
+    ) -> AsyncGenerator[bytes, None]:
         """Stream AI responses using OpenAI Agents SDK.
 
         Args:
@@ -108,27 +140,34 @@ class StreamingHandler:
         req_id = self._request_id()
         settings = get_settings()
         started_at = time.perf_counter()
-        await self._resolve_workflow_context(payload)
+        await resolve_workflow_context(self, payload)
+        if self.workflow_context.concept_note_run_id:
+            await emit_cnb_progress("preparing")
 
-        with start_run(
+        async with async_start_run(
             run_name=self.workflow_context.mlflow_run_name,
-            experiment_name=self._mlflow_experiment_name(payload),
-            tags=self._mlflow_tags(payload),
-            params=self._mlflow_params(payload),
+            experiment_name=climate_advisor_experiment_name(),
+            tags=mlflow_tags(self, payload),
+            params=mlflow_params(self, payload),
         ):
-            log_json_artifact(
-                "request/message_payload.json",
-                payload.model_dump(mode="json"),
-            )
-
-            async for event_bytes in self._stream_response_with_mlflow(
-                payload=payload,
-                history_warning=history_warning,
-                req_id=req_id,
-                settings=settings,
-                started_at=started_at,
+            with conversation_trace(
+                payload.content, attributes=self.workflow_context.telemetry()
             ):
-                yield event_bytes
+                update_mlflow_trace_context(self, payload)
+                await run_mlflow_io(
+                    log_json_artifact,
+                    "request/message_payload.json",
+                    payload.model_dump(mode="json"),
+                )
+
+                async for event_bytes in self._stream_response_with_mlflow(
+                    payload=payload,
+                    history_warning=history_warning,
+                    req_id=req_id,
+                    settings=settings,
+                    started_at=started_at,
+                ):
+                    yield event_bytes
 
     async def _stream_response_with_mlflow(
         self,
@@ -157,90 +196,14 @@ class StreamingHandler:
         )
 
         try:
-            draft_run_id = self.workflow_context.stationary_energy_draft_run_id
-            concept_note_run_id = self.workflow_context.concept_note_run_id
-
-            # Resolve the Stationary Energy draft surface scope (city + an explicit
-            # interaction-mode marker) so the agent can offer the start-draft tool
-            # even before any draft run exists. Only the SE draft page sends these.
-            stationary_energy_city_id: Optional[str] = None
-            stationary_energy_surface = bool(draft_run_id)
-            for source in (
-                payload.context,
-                payload.options,
-                self.request_context,
-                self.request_options,
-            ):
-                if not isinstance(source, dict):
-                    continue
-                if not stationary_energy_city_id and source.get("city_id"):
-                    stationary_energy_city_id = str(source.get("city_id"))
-                if source.get("stationary_energy_interaction_mode"):
-                    stationary_energy_surface = True
-
-            # Create agent service
-            self.agent_service = AgentService(
-                cc_access_token=self.cc_access_token,
-                cc_thread_id=self.thread_id,
-                cc_user_id=self.user_id,
-                inventory_id=self.inventory_id,
-                city_id=stationary_energy_city_id,
-                session_factory=self.session_factory,
-                stationary_energy_draft_run_id=draft_run_id,
-                stationary_energy_surface=stationary_energy_surface,
-                concept_note_run_id=concept_note_run_id,
-            )
-
-            # Get model override from options
-            options = payload.options or {}
-            model_override = options.get("model")
-
-            self.agent_model = (
-                model_override
-                or self.agent_service.preferred_model_for_context(
-                    stationary_energy_draft_run_id=draft_run_id,
-                    concept_note_run_id=concept_note_run_id,
-                )
-            )
-            logger.info(
-                "Selected chat model=%s stationary_energy_context=%s concept_note_context=%s thread_id=%s",
-                self.agent_model,
-                bool(draft_run_id),
-                bool(concept_note_run_id),
-                self.thread_id,
-            )
-            workflow_metadata = self.workflow_context.telemetry()
-            log_tags(
-                {
-                    "model": self.agent_model,
-                    "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
-                    "workflow": workflow_metadata["workflow"],
-                    "prompt_name": workflow_metadata["prompt_name"],
-                    "stationary_energy_draft_run_id": draft_run_id,
-                    "concept_note_run_id": concept_note_run_id,
-                }
-            )
-
-            agent = await self.agent_service.create_agent(model=self.agent_model)
-
-            # Load conversation history
-            conversation_history = await self._load_conversation_history(
-                settings, payload
-            )
-            log_json_artifact(
-                "chat/conversation_history.json",
-                {"messages": conversation_history},
-            )
-
-            logger.info(
-                "Starting Agents SDK streaming - thread_id=%s, user_id=%s, request_id=%s",
-                self.thread_id,
-                self.user_id,
-                req_id,
+            # Prepare scope, grounded history, and the request-specific agent.
+            agent, conversation_history = await prepare_stream_agent(
+                self, settings, payload, req_id
             )
 
             # Stream responses from the agent
-            async for event_bytes in self._stream_agent_events(
+            async for event_bytes in stream_agent_events(
+                self,
                 agent,
                 payload,
                 conversation_history,
@@ -254,7 +217,8 @@ class StreamingHandler:
             await self.persist_message()
 
             # Send completion event
-            self._log_mlflow_stream_summary(
+            await log_mlflow_stream_summary(
+                self,
                 ok=not self.streaming_error,
                 started_at=started_at,
             )
@@ -267,7 +231,8 @@ class StreamingHandler:
                 req_id,
             )
             self.streaming_error = True
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "errors/stream_cancelled.json",
                 {
                     "type": "CancelledError",
@@ -275,7 +240,8 @@ class StreamingHandler:
                     "thread_id": self.thread_identifier,
                 },
             )
-            self._log_mlflow_stream_summary(
+            await log_mlflow_stream_summary(
+                self,
                 ok=False,
                 started_at=started_at,
                 status="cancelled",
@@ -283,13 +249,34 @@ class StreamingHandler:
             raise
 
         except Exception as exc:
-            logger.exception("Unhandled exception in Agents SDK streaming")
+            if self.workflow_context.concept_note_run_id:
+                # Preserve diagnostic categories without logging source text or provider bodies.
+                logger.warning(
+                    "CNB stream failed thread_id=%s request_id=%s error_type=%s status_code=%s",
+                    self.thread_identifier,
+                    req_id,
+                    type(exc).__name__,
+                    getattr(exc, "status_code", None),
+                )
+            else:
+                logger.exception("Unhandled exception in Agents SDK streaming")
             self.streaming_error = True
-            log_json_artifact(
+            await run_mlflow_io(
+                log_json_artifact,
                 "errors/stream_error.json",
-                {"type": type(exc).__name__, "message": str(exc)},
+                {
+                    "type": type(exc).__name__,
+                    "request_id": req_id,
+                    "status_code": getattr(exc, "status_code", None),
+                    "message": (
+                        "CNB stream failed"
+                        if self.workflow_context.concept_note_run_id
+                        else str(exc)
+                    ),
+                },
             )
-            self._log_mlflow_stream_summary(
+            await log_mlflow_stream_summary(
+                self,
                 ok=False,
                 started_at=started_at,
                 status="error",
@@ -300,6 +287,15 @@ class StreamingHandler:
             yield self._format_completion_event(req_id, ok=False)
 
         finally:
+            # A failed overview turn stays retryable for the same drafting build.
+            if self.draft_overview_claim and not self.history_saved:
+                run_id, build_id = self.draft_overview_claim
+                await release_draft_overview(
+                    session_factory=self.session_factory,
+                    run_id=run_id,
+                    user_id=self.user_id,
+                    build_id=build_id,
+                )
             # Clean up agent service
             if self.agent_service:
                 await self.agent_service.close()
@@ -328,17 +324,46 @@ class StreamingHandler:
             user_id=self.user_id,
             session_factory=self.session_factory,
         )
-        context_message = await self._load_stationary_energy_context_message(payload)
+        if self.workflow_context.concept_note_run_id:
+            conversation_history = clean_cnb_history(conversation_history)
+        context_message = await load_stationary_energy_context_message(self, payload)
+        source_documents_message = None
         if context_message:
-            context_message = self._stationary_energy_system_context_message(
-                context_message
+            context_message = stationary_energy_system_context_message(
+                self, context_message
             )
         else:
-            context_message = await self._load_concept_note_context_message()
+            context_message = await load_concept_note_context_message(self)
+            source_documents_message = await load_concept_note_source_documents_message(
+                self
+            )
 
         if context_message:
-            conversation_history = [context_message, *conversation_history]
-            if not self._history_contains_current_user_message(
+            # Complete source text, when within budget, follows the bundle JSON.
+            conversation_history = [
+                context_message,
+                *([source_documents_message] if source_documents_message else []),
+                *conversation_history,
+            ]
+            if self.draft_overview_claim and self.session_factory:
+                # Fail the turn rather than let the overview run without draft facts.
+                conversation_history.append(
+                    await load_draft_overview_message(
+                        session_factory=self.session_factory,
+                        run_id=self.draft_overview_claim[0],
+                        user_id=self.user_id,
+                        ui_locale=(
+                            payload.context.get("ui_locale")
+                            if isinstance(payload.context, dict)
+                            else None
+                        ),
+                    )
+                )
+            # A resume turn repeats the user's pre-run request, which history
+            # already holds before the "starting the run" reply, so re-add it.
+            if is_stationary_energy_resume_turn(
+                payload.options
+            ) or not history_contains_current_user_message(
                 conversation_history,
                 payload.content,
             ):
@@ -361,667 +386,6 @@ class StreamingHandler:
 
         return conversation_history
 
-    async def _load_stationary_energy_context_message(
-        self,
-        payload: MessageCreateRequest,
-    ) -> Optional[Dict[str, str]]:
-        """Load the persisted Stationary Energy draft snapshot for chat grounding."""
-        draft_run_id_text = self.workflow_context.stationary_energy_draft_run_id
-        if not draft_run_id_text:
-            return None
-        draft_run_id = UUID(draft_run_id_text)
-
-        if not self.session_factory:
-            logger.debug(
-                "Session factory unavailable; Stationary Energy draft context skipped"
-            )
-            return None
-
-        # Load the CA-owned draft snapshot with source, proposal, and review rows.
-        try:
-            async with self.session_factory() as session:
-                repository = StationaryEnergyDraftRepository(session)
-                draft_run = await repository.get_draft_run(draft_run_id)
-        except Exception as exc:
-            logger.warning(
-                "Failed to load Stationary Energy draft context draft_run_id=%s: %s",
-                draft_run_id,
-                exc,
-            )
-            return None
-
-        # Return a system blocker when the requested draft is missing or not owned.
-        if draft_run is None or draft_run.user_id != self.user_id:
-            logger.warning(
-                "Stationary Energy draft context unavailable draft_run_id=%s user_id=%s",
-                draft_run_id,
-                self.user_id,
-            )
-            return {
-                "role": "system",
-                "content": (
-                    "STATIONARY_ENERGY_DRAFT_CONTEXT_UNAVAILABLE\n"
-                    "The requested Stationary Energy draft context is not available for this user."
-                ),
-            }
-
-        # Attach UI focus/confirmation state to the persisted draft snapshot.
-        context_payload = build_stationary_energy_context_payload(draft_run)
-        ui_context = build_stationary_energy_ui_context(payload)
-        if ui_context:
-            context_payload["ui_context"] = ui_context
-        return self._stationary_energy_context_message(context_payload)
-
-    async def _load_concept_note_context_message(self) -> Optional[Dict[str, str]]:
-        """Load compact bundle summaries for the authorized Concept Note run."""
-        run_id_text = self.workflow_context.concept_note_run_id
-        if not run_id_text or not self.session_factory:
-            return None
-        run_id = UUID(run_id_text)
-        try:
-            context = await load_agent_context(
-                session_factory=self.session_factory,
-                user_id=self.user_id,
-                run_id=run_id,
-            )
-        except Exception as exc:
-            logger.warning(
-                "Failed to load Concept Note agent context run_id=%s: %s",
-                run_id,
-                exc,
-            )
-            return None
-        if context is None:
-            return {
-                "role": "system",
-                "content": (
-                    "CONCEPT_NOTE_CONTEXT_BUNDLE_UNAVAILABLE\n"
-                    "The authorized Concept Note context bundle is not ready."
-                ),
-            }
-        return {
-            "role": "system",
-            "content": (
-                "CONCEPT_NOTE_CONTEXT_BUNDLE_JSON\n"
-                f"{json.dumps(context, ensure_ascii=False, default=str)}"
-            ),
-        }
-
-    async def _load_thread_workflow_context(self) -> ChatWorkflowContext:
-        """Load scoped workflow identifiers persisted on the current chat thread."""
-        if not self.session_factory:
-            return ChatWorkflowContext()
-        try:
-            async with self.session_factory() as session:
-                thread = await ThreadService(session).get_thread(self.thread_id)
-                if thread is None or thread.user_id != self.user_id:
-                    return ChatWorkflowContext()
-                return ChatWorkflowContext(
-                    stationary_energy_draft_run_id=(
-                        extract_stationary_energy_draft_run_id(thread.context)
-                    ),
-                    concept_note_run_id=extract_concept_note_run_id(thread.context),
-                )
-        except Exception as exc:
-            logger.warning(
-                "Failed to load thread workflow context thread_id=%s: %s",
-                self.thread_id,
-                exc,
-            )
-            return ChatWorkflowContext()
-
-    @staticmethod
-    def _history_contains_current_user_message(
-        conversation_history: List[Dict[str, str]],
-        content: str,
-    ) -> bool:
-        """Return whether recent history already contains the current user message."""
-        return any(
-            message.get("role") == "user" and message.get("content") == content
-            for message in conversation_history[-3:]
-        )
-
-    def _stationary_energy_context_message(
-        self,
-        context_payload: Dict[str, Any],
-    ) -> Dict[str, str]:
-        """Format a compact Stationary Energy draft snapshot as a system message."""
-        budget = get_stationary_energy_prompt_budget(get_settings(), "chat_context")
-        baseline_payload = compact_stationary_energy_prompt_payload(
-            context_payload,
-            budget=budget,
-            drop_source_data=True,
-        )
-        baseline_payload["prompt_budget_compaction"].update(
-            {
-                "chat_baseline": True,
-                "source_data_included": False,
-            },
-        )
-        initial_message = format_stationary_energy_context_message(
-            baseline_payload,
-        )
-        initial_system_content = self._stationary_energy_system_content(
-            initial_message["content"]
-        )
-        initial_count = count_prompt_tokens(
-            [initial_system_content],
-            model=self.agent_model,
-            fallback_encoding=budget.tokenizer_encoding,
-        )
-        if initial_count.tokens <= budget.max_prompt_tokens:
-            logger.info(
-                "Stationary Energy chat context tokens=%s max_prompt_tokens=%s tokenizer=%s compacted=%s",
-                initial_count.tokens,
-                budget.max_prompt_tokens,
-                initial_count.tokenizer,
-                True,
-            )
-            return initial_message
-
-        compacted_payload = build_minimal_stationary_energy_context_payload(
-            baseline_payload,
-            initial_tokens=initial_count.tokens,
-            compacted_tokens=initial_count.tokens,
-            max_prompt_tokens=budget.max_prompt_tokens,
-        )
-        compacted_message = format_stationary_energy_context_message(
-            compacted_payload,
-        )
-        compacted_system_content = self._stationary_energy_system_content(
-            compacted_message["content"]
-        )
-        compacted_count = count_prompt_tokens(
-            [compacted_system_content],
-            model=self.agent_model,
-            fallback_encoding=budget.tokenizer_encoding,
-        )
-
-        if compacted_count.tokens > budget.max_prompt_tokens:
-            compacted_message = format_stationary_energy_context_message(
-                build_minimal_stationary_energy_context_payload(
-                    baseline_payload,
-                    initial_tokens=initial_count.tokens,
-                    compacted_tokens=compacted_count.tokens,
-                    max_prompt_tokens=budget.max_prompt_tokens,
-                )
-            )
-            compacted_system_content = self._stationary_energy_system_content(
-                compacted_message["content"]
-            )
-            compacted_count = count_prompt_tokens(
-                [compacted_system_content],
-                model=self.agent_model,
-                fallback_encoding=budget.tokenizer_encoding,
-            )
-
-        logger.info(
-            "Stationary Energy chat context tokens=%s initial_tokens=%s max_prompt_tokens=%s tokenizer=%s compacted=%s",
-            compacted_count.tokens,
-            initial_count.tokens,
-            budget.max_prompt_tokens,
-            compacted_count.tokenizer,
-            True,
-        )
-        return compacted_message
-
-    def _stationary_energy_system_context_message(
-        self,
-        context_message: Dict[str, str],
-    ) -> Dict[str, str]:
-        """Append the draft snapshot to the active Stationary Energy instructions."""
-        return {
-            "role": "system",
-            "content": self._stationary_energy_system_content(
-                context_message.get("content", "")
-            ),
-        }
-
-    def _stationary_energy_system_content(self, context_content: str) -> str:
-        """Return Stationary Energy instructions followed by a context block."""
-        instruction_text = self._stationary_energy_review_instruction_text()
-        context_block = f"<context>\n{context_content.strip()}\n</context>"
-        if not instruction_text:
-            return context_block
-        return f"{instruction_text}\n\n{context_block}"
-
-    def _stationary_energy_review_instruction_text(self) -> str:
-        """Return the active Stationary Energy review prompt text."""
-        instruction_text = self._agent_instruction_text().strip()
-        if (
-            instruction_text
-            or not self.workflow_context.stationary_energy_draft_run_id
-        ):
-            return instruction_text
-        try:
-            return get_settings().llm.prompts.compose_prompt(
-                "stationary_energy_review"
-            ).strip()
-        except Exception as exc:
-            logger.warning(
-                "Failed to load Stationary Energy review prompt for embedded context: %s",
-                exc,
-            )
-            return ""
-
-    def _enforce_chat_prompt_budget(
-        self,
-        agent: Any,
-        runner_input: List[Dict[str, str]],
-    ) -> List[Dict[str, str]]:
-        """Trim chat input to the Stationary Energy prompt budget."""
-        # Count the full agent instructions plus runner input against the chat budget.
-        budget = get_stationary_energy_prompt_budget(get_settings(), "chat_context")
-        trimmed_input, token_count, removed_messages = trim_messages_to_budget(
-            runner_input,
-            instruction_text=self._agent_instruction_text(agent),
-            model=self.agent_model,
-            budget=budget,
-        )
-        if removed_messages:
-            logger.info(
-                "Trimmed %s conversation messages from Stationary Energy chat prompt to fit token budget",
-                removed_messages,
-            )
-        # Fail loudly if even the compacted workflow context exceeds the budget.
-        if token_count.tokens > budget.max_prompt_tokens:
-            raise ValueError(
-                "Stationary Energy chat prompt exceeds configured token budget "
-                f"({token_count.tokens} > {budget.max_prompt_tokens})",
-            )
-        logger.info(
-            "Stationary Energy chat prompt tokens=%s max_prompt_tokens=%s tokenizer=%s",
-            token_count.tokens,
-            budget.max_prompt_tokens,
-            token_count.tokenizer,
-        )
-        return trimmed_input
-
-    def _agent_instruction_text(self, agent: Any | None = None) -> str:
-        """Return the active agent instruction text used for token accounting."""
-        if agent is not None and hasattr(agent, "instructions"):
-            instructions = getattr(agent, "instructions", None)
-            if instructions is not None:
-                return str(instructions)
-        if self.agent_service:
-            return str(
-                getattr(self.agent_service, "active_instructions", None)
-                or getattr(self.agent_service, "system_prompt", "")
-                or ""
-            )
-        return ""
-
-    async def _stream_agent_events(
-        self,
-        agent: Any,
-        payload: MessageCreateRequest,
-        conversation_history: List[Dict[str, str]],
-    ) -> AsyncIterator[bytes]:
-        """Stream events from the agent."""
-        # Use structured history when available; otherwise send the raw user text.
-        runner_input: Any = (
-            conversation_history if conversation_history else payload.content
-        )
-        restore_agent_instructions = False
-        original_agent_instructions: Any = None
-        # Stationary Energy chats carry more context, so enforce the configured budget.
-        if (
-            self.workflow_context.stationary_energy_draft_run_id
-            and isinstance(runner_input, list)
-        ):
-            if self._has_embedded_stationary_energy_system_context(runner_input):
-                if hasattr(agent, "instructions"):
-                    original_agent_instructions = getattr(agent, "instructions", None)
-                    restore_agent_instructions = True
-                self._clear_agent_instructions(agent)
-            runner_input = self._enforce_chat_prompt_budget(agent, runner_input)
-
-        # Prefer the Agents SDK streamed runner and keep the legacy fallback path.
-        try:
-            result = Runner.run_streamed(
-                agent,
-                runner_input,
-                run_config=self._run_config(payload),
-            )
-        except Exception as runner_exc:
-            logger.warning(
-                "Agents Runner streaming failed (%s); falling back to agent.messages.run_stream",
-                runner_exc,
-            )
-            # The fallback only sends raw user content, so restore the scoped prompt.
-            if restore_agent_instructions:
-                try:
-                    setattr(agent, "instructions", original_agent_instructions)
-                except Exception as exc:
-                    logger.debug(
-                        "Could not restore embedded agent instructions before fallback: %s",
-                        exc,
-                    )
-            async for event_bytes in self._fallback_stream(agent, payload):
-                yield event_bytes
-            return
-
-        trace_context_updated = self._update_mlflow_trace_context(payload)
-        trace_context_attempted_after_start = False
-
-        # Convert SDK stream events into the app's SSE event contract.
-        async for chunk in result.stream_events():
-            if not trace_context_updated and not trace_context_attempted_after_start:
-                trace_context_attempted_after_start = True
-                trace_context_updated = self._update_mlflow_trace_context(payload)
-            async for event_bytes in self._process_chunk(chunk):
-                yield event_bytes
-
-    @staticmethod
-    def _has_embedded_stationary_energy_system_context(
-        runner_input: List[Dict[str, str]],
-    ) -> bool:
-        """Return whether the runner input already embeds prompt plus draft context."""
-        if not runner_input:
-            return False
-        first_message = runner_input[0]
-        content = first_message.get("content", "")
-        return (
-            first_message.get("role") == "system"
-            and "<context>" in content
-            and "</context>" in content
-            and (
-                "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON" in content
-                or "STATIONARY_ENERGY_DRAFT_CONTEXT_UNAVAILABLE" in content
-            )
-        )
-
-    @staticmethod
-    def _clear_agent_instructions(agent: Any) -> None:
-        """Avoid sending Stationary Energy instructions twice in one model call."""
-        if not hasattr(agent, "instructions"):
-            return
-        try:
-            setattr(agent, "instructions", "")
-        except Exception as exc:
-            logger.debug("Could not clear embedded agent instructions: %s", exc)
-
-    def _run_config(self, payload: MessageCreateRequest) -> RunConfig:
-        """Build trace metadata and execution options for one streamed run."""
-        settings = get_settings()
-        req_id = self._request_id()
-        workflow_metadata = self.workflow_context.telemetry()
-        draft_run_id = workflow_metadata["stationary_energy_draft_run_id"]
-        concept_note_run_id = workflow_metadata["concept_note_run_id"]
-        has_stationary_energy_context = bool(draft_run_id)
-        # Keep trace metadata low-cardinality except for scoped request ids.
-        trace_metadata: dict[str, Any] = {
-            "service": "climate-advisor",
-            "workflow": workflow_metadata["workflow"],
-            "trace_category": workflow_metadata["trace_category"],
-            "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
-            "context_mode": workflow_metadata["context_mode"],
-            "prompt_name": workflow_metadata["prompt_name"],
-            "request_id": req_id,
-            "thread_id": self.thread_identifier,
-            "inventory_id": self.inventory_id,
-        }
-        if has_stationary_energy_context:
-            trace_metadata["feature_flag"] = "STATIONARY_ENERGY_AGENTIC"
-            trace_metadata["stationary_energy_draft_run_id"] = str(draft_run_id)
-        if concept_note_run_id:
-            trace_metadata["feature_flag"] = "CONCEPT_NOTE_BUILDER"
-            trace_metadata["concept_note_run_id"] = str(concept_note_run_id)
-
-        # Disable tracing from central settings without changing stream behavior.
-        return RunConfig(
-            workflow_name=self.workflow_context.trace_workflow_name,
-            trace_id=gen_trace_id(),
-            group_id=self.thread_identifier,
-            trace_metadata=trace_metadata,
-            tracing_disabled=not settings.langsmith_tracing_enabled,
-        )
-
-    async def _fallback_stream(
-        self, agent: Any, payload: MessageCreateRequest
-    ) -> AsyncIterator[bytes]:
-        """Fallback streaming method if Runner fails."""
-        if not (hasattr(agent, "messages") and hasattr(agent.messages, "run_stream")):
-            raise RuntimeError("No fallback streaming method available")
-
-        try:
-            stream_result = agent.messages.run_stream(payload.content)
-        except TypeError:
-            stream_result = agent.messages.run_stream()
-
-        if inspect.isawaitable(stream_result):
-            stream_result = await stream_result
-
-        async for raw_chunk in stream_result:
-            if isinstance(raw_chunk, (bytes, bytearray)):
-                yield bytes(raw_chunk)
-            elif isinstance(raw_chunk, str):
-                yield raw_chunk.encode("utf-8")
-            else:
-                yield json.dumps(raw_chunk).encode("utf-8")
-
-    async def _process_chunk(self, chunk: Any) -> AsyncIterator[bytes]:
-        """Process a single chunk from the stream."""
-        chunk_type = chunk.type
-
-        if chunk_type == "raw_response_event":
-            async for event_bytes in self._handle_raw_response(chunk):
-                yield event_bytes
-
-        elif chunk_type == "run_item_stream_event":
-            async for event_bytes in self._handle_run_item(chunk):
-                yield event_bytes
-
-        elif chunk_type == "agent_updated_stream_event":
-            logger.info(
-                "Agent updated during streaming for thread_id=%s", self.thread_id
-            )
-
-        else:
-            logger.debug("Unhandled stream event type: %s", chunk_type)
-
-    async def _handle_raw_response(self, chunk: Any) -> AsyncIterator[bytes]:
-        """Handle raw response events (text deltas, errors, etc)."""
-        # Ignore empty SDK event shells; there is nothing to send over SSE.
-        response_event = getattr(chunk, "data", None)
-        if not response_event:
-            return
-
-        response_type = getattr(response_event, "type", "")
-
-        # Stream text/refusal deltas as message events and preserve token order.
-        if response_type in {"response.output_text.delta", "response.refusal.delta"}:
-            content = getattr(response_event, "delta", "")
-            if content:
-                self.assistant_tokens.append(content)
-                yield format_sse(
-                    {"index": self.token_index, "content": content},
-                    event="message",
-                    id=str(self.token_index),
-                ).encode("utf-8")
-                self.token_index += 1
-
-        # Surface SDK error events to the client and mark the stream as failed.
-        elif response_type == "error":
-            error_message = getattr(response_event, "message", "Streaming error")
-            logger.error("Received error event from Responses API: %s", error_message)
-            self.streaming_error = True
-            yield format_sse(
-                {"message": error_message},
-                event="error",
-            ).encode("utf-8")
-
-        elif response_type == "response.completed":
-            logger.info(
-                "Received response.completed event for thread_id=%s", self.thread_id
-            )
-
-        else:
-            logger.debug("Unhandled raw response event type: %s", response_type)
-
-    async def _handle_run_item(self, chunk: Any) -> AsyncIterator[bytes]:
-        """Handle run item stream events (tool calls, tool outputs)."""
-        event_name = getattr(chunk, "name", "")
-        run_item = getattr(chunk, "item", None)
-
-        if event_name == "tool_called" and run_item is not None:
-            async for event_bytes in self._handle_tool_called(run_item):
-                yield event_bytes
-
-        elif event_name == "tool_output" and run_item is not None:
-            async for event_bytes in self._handle_tool_output(run_item):
-                yield event_bytes
-
-        else:
-            logger.debug("Unhandled run item event: %s", event_name)
-
-    async def _handle_tool_called(self, run_item: Any) -> AsyncIterator[bytes]:
-        """Handle tool called events."""
-        raw_item = getattr(run_item, "raw_item", None)
-        tool_name = getattr(raw_item, "name", None) or getattr(
-            raw_item, "type", "unknown_tool"
-        )
-        call_id = getattr(raw_item, "call_id", None) or getattr(raw_item, "id", None)
-
-        arguments: Any = getattr(raw_item, "arguments", None)
-        if isinstance(arguments, str):
-            try:
-                arguments = json.loads(arguments)
-            except json.JSONDecodeError:
-                pass
-
-        # Find or create invocation record
-        existing = None
-        for inv in self.tool_invocations:
-            if (call_id and inv.get("id") == call_id) or inv.get("name") == tool_name:
-                existing = inv
-                break
-
-        if existing is None:
-            invocation = {
-                "id": call_id,
-                "name": tool_name,
-                "arguments": arguments,
-                "status": "executing",
-            }
-            self.tool_invocations.append(invocation)
-        else:
-            invocation = existing
-            invocation["arguments"] = invocation.get("arguments") or arguments
-            invocation["status"] = "executing"
-
-        yield format_sse(
-            {
-                "name": invocation.get("name", "unknown_tool"),
-                "status": invocation.get("status", "executing"),
-                "arguments": invocation.get("arguments"),
-            },
-            event="tool_result",
-        ).encode("utf-8")
-
-    async def _handle_tool_output(self, run_item: Any) -> AsyncIterator[bytes]:
-        """Handle tool output events."""
-        raw_item = getattr(run_item, "raw_item", None)
-        call_id = None
-        if isinstance(raw_item, dict):
-            call_id = raw_item.get("call_id")
-        else:
-            call_id = getattr(raw_item, "call_id", None) or getattr(
-                raw_item, "id", None
-            )
-
-        output_value = getattr(run_item, "output", None)
-        output_preview = str(output_value)[:200] if output_value is not None else ""
-
-        # Parse output if JSON
-        parsed_output: Optional[dict] = None
-        if isinstance(output_value, str):
-            try:
-                parsed_output = json.loads(output_value)
-            except json.JSONDecodeError:
-                parsed_output = None
-        elif isinstance(output_value, dict):
-            parsed_output = output_value
-
-        # Find invocation record
-        invocation = None
-        for inv in self.tool_invocations:
-            if (call_id and inv.get("id") == call_id) or inv.get(
-                "status"
-            ) == "executing":
-                invocation = inv
-                break
-
-        if invocation is None:
-            invocation = {
-                "id": call_id,
-                "name": getattr(raw_item, "name", "unknown_tool"),
-                "arguments": None,
-            }
-            self.tool_invocations.append(invocation)
-
-        invocation["status"] = "success"
-        invocation["result"] = str(output_value) if output_value is not None else ""
-        if parsed_output is not None:
-            invocation["result_json"] = parsed_output
-
-        # Handle token refresh and errors
-        if parsed_output is not None:
-            async for event_bytes in self._handle_tool_result_metadata(parsed_output):
-                yield event_bytes
-            stationary_energy_payload = build_stationary_energy_tool_result_payload(
-                invocation,
-                parsed_output,
-            )
-            if stationary_energy_payload is not None:
-                yield format_sse(
-                    stationary_energy_payload,
-                    event="tool_result",
-                ).encode("utf-8")
-
-        yield format_sse(
-            {
-                "name": invocation.get("name", "unknown_tool"),
-                "status": invocation.get("status"),
-                "result": output_preview,
-            },
-            event="tool_result",
-        ).encode("utf-8")
-
-    async def _handle_tool_result_metadata(
-        self, parsed_output: dict
-    ) -> AsyncIterator[bytes]:
-        """Handle metadata in tool results (token refresh, errors)."""
-        # Handle token refresh
-        if self.token_handler:
-            refreshed_token = parsed_output.get("refreshed_token")
-            if refreshed_token and refreshed_token != self.cc_access_token:
-                await self.token_handler.handle_refreshed_token(
-                    refreshed_token, self.agent_service
-                )
-                self.cc_access_token = refreshed_token
-
-        # Handle errors
-        error_code = parsed_output.get("error_code")
-        success_flag = parsed_output.get("success")
-
-        if success_flag is False and error_code in {"missing_token", "expired_token"}:
-            yield format_sse(
-                {
-                    "message": "CityCatalyst token is missing or expired. Please refresh and retry.",
-                    "error_code": error_code,
-                },
-                event="error",
-            ).encode("utf-8")
-        elif success_flag is True and parsed_output.get("refreshed_token"):
-            yield format_sse(
-                {
-                    "message": "CityCatalyst token refreshed.",
-                    "event": "token_refreshed",
-                },
-                event="info",
-            ).encode("utf-8")
-
     async def _persist_refreshed_token_from_agent(self) -> None:
         """Persist a refreshed token held by AgentService after tool execution."""
         if not self.agent_service or not self.token_handler:
@@ -1033,7 +397,9 @@ class StreamingHandler:
         if current_token == self.cc_access_token:
             return
 
-        await self.token_handler.handle_refreshed_token(current_token, self.agent_service)
+        await self.token_handler.handle_refreshed_token(
+            current_token, self.agent_service
+        )
         self.cc_access_token = current_token
 
     def _format_completion_event(self, req_id: str, ok: bool = None) -> bytes:
@@ -1065,48 +431,27 @@ class StreamingHandler:
             thread_id=self.thread_id,
             user_id=self.user_id,
             assistant_content=assistant_content,
-            tool_invocations=self.tool_invocations or None,
+            tool_invocations=self._tool_invocations_for_persistence(),
         )
         return self.history_saved
 
-    def _mlflow_experiment_name(self, payload: MessageCreateRequest) -> str:
-        """Return the MLflow experiment for the current chat workflow."""
-        return climate_advisor_experiment_name()
+    def _tool_invocations_for_persistence(self) -> list[dict] | None:
+        """Add server-bound CNB edit arguments to the database audit record."""
+        if not self.tool_invocations:
+            return None
+        if self.concept_note_edit_request is None:
+            return self.tool_invocations
 
-    def _mlflow_tags(self, payload: MessageCreateRequest) -> dict[str, object]:
-        """Return low-cardinality MLflow tags for one chat request."""
-        workflow_metadata = self.workflow_context.telemetry()
-        return {
-            "request_kind": "message_stream",
-            "endpoint": "/v1/messages",
-            "workflow": workflow_metadata["workflow"],
-            "trace_category": workflow_metadata["trace_category"],
-            "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
-            "context_mode": workflow_metadata["context_mode"],
-            "prompt_name": workflow_metadata["prompt_name"],
-            "request_id": self._request_id(),
-            "thread_id": self.thread_identifier,
-            "user_id": self.user_id,
-            "inventory_id": payload.inventory_id or self.inventory_id,
-            "stationary_energy_draft_run_id": workflow_metadata[
-                "stationary_energy_draft_run_id"
-            ],
-            "concept_note_run_id": workflow_metadata["concept_note_run_id"],
-        }
-
-    def _mlflow_params(self, payload: MessageCreateRequest) -> dict[str, object]:
-        """Return stable MLflow params for one chat request."""
-        options = payload.options or {}
-        context = payload.context if isinstance(payload.context, dict) else {}
-        return {
-            "content_length": len(payload.content),
-            "has_context": bool(payload.context),
-            "has_options": bool(options),
-            "has_inventory_id": bool(payload.inventory_id or self.inventory_id),
-            "model_override": options.get("model"),
-            "context_keys": sorted(context.keys()),
-            "option_keys": sorted(options.keys()),
-        }
+        bound_arguments = self.concept_note_edit_request.model_dump(mode="json")
+        return [
+            {
+                **invocation,
+                "bound_arguments": bound_arguments,
+            }
+            if invocation.get("name") == "concept_note_edit_propose"
+            else invocation
+            for invocation in self.tool_invocations
+        ]
 
     def _request_id(self) -> str:
         """Return the current request id or a stable per-handler fallback."""
@@ -1116,142 +461,3 @@ class StreamingHandler:
         if self.request_identifier is None:
             self.request_identifier = gen_trace_id()
         return self.request_identifier
-
-    def _update_mlflow_trace_context(
-        self,
-        payload: MessageCreateRequest,
-    ) -> bool:
-        """Attach the CA thread id as the MLflow trace session id."""
-        workflow_metadata = self.workflow_context.telemetry()
-        request_id = self._request_id()
-        inventory_id = payload.inventory_id or self.inventory_id
-        metadata: dict[str, object] = {
-            "service": "climate-advisor",
-            "workflow": workflow_metadata["workflow"],
-            "trace_category": workflow_metadata["trace_category"],
-            "context_mode": workflow_metadata["context_mode"],
-            "prompt_name": workflow_metadata["prompt_name"],
-            "request_id": request_id,
-            "thread_id": self.thread_identifier,
-            "inventory_id": inventory_id,
-        }
-        tags: dict[str, object] = {
-            "workflow": workflow_metadata["workflow"],
-            "trace_category": workflow_metadata["trace_category"],
-            "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
-            "context_mode": workflow_metadata["context_mode"],
-            "prompt_name": workflow_metadata["prompt_name"],
-            "thread_id": self.thread_identifier,
-            "inventory_id": inventory_id,
-        }
-        draft_run_id = workflow_metadata["stationary_energy_draft_run_id"]
-        if draft_run_id:
-            metadata["feature_flag"] = "STATIONARY_ENERGY_AGENTIC"
-            metadata["stationary_energy_draft_run_id"] = draft_run_id
-            tags["stationary_energy_draft_run_id"] = draft_run_id
-        concept_note_run_id = workflow_metadata["concept_note_run_id"]
-        if concept_note_run_id:
-            metadata["feature_flag"] = "CONCEPT_NOTE_BUILDER"
-            metadata["concept_note_run_id"] = concept_note_run_id
-            tags["concept_note_run_id"] = concept_note_run_id
-
-        return update_current_trace_context(
-            session_id=self.thread_identifier,
-            user_id=self.user_id,
-            client_request_id=request_id,
-            tags=tags,
-            metadata=metadata,
-        )
-
-    async def _resolve_workflow_context(
-        self,
-        payload: MessageCreateRequest,
-    ) -> None:
-        """Resolve request or thread workflow IDs once for the shared stream."""
-        draft_run_id = (
-            self.workflow_context.stationary_energy_draft_run_id
-            or extract_stationary_energy_draft_run_id(
-                payload.context,
-                payload.options,
-                self.request_context,
-                self.request_options,
-            )
-        )
-        concept_note_run_id = (
-            self.workflow_context.concept_note_run_id
-            or extract_concept_note_run_id(
-                payload.context,
-                payload.options,
-                self.request_context,
-                self.request_options,
-            )
-        )
-        thread_context = ChatWorkflowContext()
-        if not draft_run_id or not concept_note_run_id:
-            thread_context = await self._load_thread_workflow_context()
-
-        self.workflow_context = ChatWorkflowContext(
-            stationary_energy_draft_run_id=self._normalize_workflow_run_id(
-                draft_run_id or thread_context.stationary_energy_draft_run_id,
-                "Stationary Energy draft_run_id",
-            ),
-            concept_note_run_id=self._normalize_workflow_run_id(
-                concept_note_run_id or thread_context.concept_note_run_id,
-                "Concept Note run id",
-            ),
-        )
-
-    @staticmethod
-    def _normalize_workflow_run_id(value: object, label: str) -> str | None:
-        """Return a canonical UUID string, ignoring malformed workflow IDs."""
-        if not value:
-            return None
-        try:
-            return str(UUID(str(value)))
-        except ValueError:
-            logger.warning(
-                "Ignoring invalid %s before MLflow run: %s",
-                label,
-                value,
-            )
-            return None
-
-    def _log_mlflow_stream_summary(
-        self,
-        *,
-        ok: bool,
-        started_at: float,
-        status: str | None = None,
-    ) -> None:
-        """Log final chat artifacts and metrics for the active MLflow run."""
-        assistant_content = "".join(self.assistant_tokens)
-        duration_ms = (time.perf_counter() - started_at) * 1000
-        stream_status = status or ("ok" if ok else "error")
-        log_tags({"stream_status": stream_status})
-        log_metrics(
-            {
-                "duration_ms": duration_ms,
-                "assistant_characters": len(assistant_content),
-                "assistant_chunks": len(self.assistant_tokens),
-                "tool_invocations": len(self.tool_invocations),
-                "history_saved": int(self.history_saved),
-                "ok": int(ok),
-            }
-        )
-        log_text_artifact("chat/assistant_response.txt", assistant_content)
-        log_json_artifact(
-            "chat/tool_invocations.json",
-            {"tool_invocations": self.tool_invocations},
-        )
-        log_json_artifact(
-            "response/stream_summary.json",
-            {
-                "ok": ok,
-                "status": stream_status,
-                "history_saved": self.history_saved,
-                "thread_id": self.thread_identifier,
-                "model": self.agent_model,
-                "assistant_characters": len(assistant_content),
-                "tool_invocation_count": len(self.tool_invocations),
-            },
-        )

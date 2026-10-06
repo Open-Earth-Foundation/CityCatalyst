@@ -81,14 +81,8 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import {
-  loadConceptNoteRunCity,
-  loadConceptNoteUpload,
-} from "@/backend/ConceptNoteUploadService";
-import {
-  getConceptNotePdfOcrJob,
-  normalizeConceptNotePdfOcrStatus,
-} from "@/backend/PdfOcrService";
+import { loadConceptNoteRunCity } from "@/backend/ConceptNoteUploadService";
+import { loadConceptNoteUploadStatus } from "@/backend/ConceptNoteUploadStatusService";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";
 
@@ -112,36 +106,11 @@ export const GET = apiHandler(async (req, { session, params }) => {
   await PermissionService.canAccessCity(session, cityId, {
     includeResource: false,
   });
-  const upload = await loadConceptNoteUpload({
+  const upload = await loadConceptNoteUploadStatus({
     runId,
     uploadId,
     userId,
     requestId: currentRequestId,
   });
-  const job = await getConceptNotePdfOcrJob(uploadId);
-  const workerState = job ? normalizeConceptNotePdfOcrStatus(job) : null;
-  const completed = upload.status === "ready";
-  const status = completed ? "ready" : workerState?.status || upload.status;
-  const stage = completed ? "complete" : workerState?.stage || "upload";
-  const canRetry = status === "failed" && Boolean(workerState?.canRetry);
-  const retryKind = canRetry ? workerState?.retryKind : undefined;
-  const errorCode =
-    status === "failed"
-      ? workerState?.errorCode || upload.errorCode || undefined
-      : undefined;
-
-  return NextResponse.json({
-    uploadId: upload.uploadId,
-    runId: upload.runId,
-    status,
-    stage,
-    canRetry,
-    ...(retryKind ? { retryKind } : {}),
-    filename: upload.filename,
-    sourceLabel: upload.sourceLabel || null,
-    pageCount: upload.pageCount || null,
-    ...(errorCode ? { errorCode } : {}),
-    receivedAt: upload.receivedAt,
-    completedAt: upload.completedAt || null,
-  });
+  return NextResponse.json(upload);
 });

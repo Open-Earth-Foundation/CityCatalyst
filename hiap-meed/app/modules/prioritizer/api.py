@@ -34,7 +34,10 @@ from app.modules.prioritizer.report_artifacts import (
     write_output_plan_llm_artifacts,
     write_output_plan_markdown_artifact,
 )
-from app.modules.prioritizer.report_context import build_chapter_inputs
+from app.modules.prioritizer.report_context import (
+    authority_scope_classification_metadata,
+    build_chapter_inputs,
+)
 from app.modules.prioritizer.services.report_context_enrichment import (
     build_report_context_with_live_enrichment,
 )
@@ -790,6 +793,11 @@ def generate_output_plan(
                     ),
                     required_sources_ok=True,
                     limitations=report_context.limitations,
+                    authority_scope_classification=(
+                        authority_scope_classification_metadata(
+                            report_context.legal_assessment
+                        )
+                    ),
                 ),
                 meta=build_response_meta(
                     request_id=request_trace_id,

@@ -1457,6 +1457,10 @@ cd climate-advisor
 uv run --directory service pytest tests/ -v
 ```
 
+Pull requests run the CA test suite without requiring a live OpenRouter key.
+Deployment builds additionally validate `OPENROUTER_API_KEY` before deploying.
+The development workflow fails if any test in the full coverage run fails.
+
 ### Run Specific Test
 
 ```bash

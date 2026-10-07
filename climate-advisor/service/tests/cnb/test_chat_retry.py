@@ -1,4 +1,4 @@
-"""A retried chat turn must not store the user's question twice."""
+"""Retry storage skips the newest identical user message."""
 
 from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, Mock
@@ -82,14 +82,39 @@ def test_only_the_retry_turn_option_marks_a_retry():
 
 
 @pytest.mark.asyncio
-async def test_retry_after_a_failed_reply_keeps_one_copy_of_the_question(chat_api):
+@pytest.mark.parametrize(
+    "content",
+    [
+        "What is the budget?",
+        "What is the budget?  ",
+        "What is the budget?\n",
+        "  What is the budget?\nInclude the funding gap.\r\n",
+    ],
+)
+async def test_retry_after_a_failed_reply_preserves_and_dedupes_exact_text(
+    chat_api, content: str
+):
     client, factory, thread_id = chat_api
 
     # The first attempt stores the question; its reply never arrives.
-    await _post(client, thread_id, "What is the budget?")
+    await _post(client, thread_id, content)
+    assert await _stored(factory, thread_id) == [("user", content)]
+    await _post(client, thread_id, content, RETRY_OPTIONS)
+
+    assert await _stored(factory, thread_id) == [("user", content)]
+
+
+@pytest.mark.asyncio
+async def test_retry_does_not_dedupe_different_whitespace(chat_api):
+    client, factory, thread_id = chat_api
+
+    await _post(client, thread_id, "What is the budget?\n")
     await _post(client, thread_id, "What is the budget?", RETRY_OPTIONS)
 
-    assert await _stored(factory, thread_id) == [("user", "What is the budget?")]
+    assert await _stored(factory, thread_id) == [
+        ("user", "What is the budget?\n"),
+        ("user", "What is the budget?"),
+    ]
 
 
 @pytest.mark.asyncio

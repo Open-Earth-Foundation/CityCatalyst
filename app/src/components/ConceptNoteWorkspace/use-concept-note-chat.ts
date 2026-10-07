@@ -22,6 +22,11 @@ import {
 const DRAFT_OVERVIEW_CONTENT = "draft_overview";
 const DRAFT_OVERVIEW_UNAVAILABLE = "concept_note_draft_overview_unavailable";
 const CONTEXT_NOT_READY = "concept_note_context_not_ready";
+const HTTP_REQUEST_ERROR_KEYS: Record<number, string> = {
+  401: "chat-auth-required",
+  403: "chat-access-denied",
+  404: "chat-not-found",
+};
 // Climate Advisor sends a heartbeat every 15 s, so 45 s of silence means the
 // connection or the service is gone rather than the model being slow.
 const CHAT_IDLE_TIMEOUT_MS = 45_000;
@@ -94,7 +99,7 @@ export function useConceptNoteChat({
   const [reasoning, setReasoning] = useState<ConceptNoteReasoning[]>([]);
   const [progress, setProgress] = useState<ConceptNoteProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // Connected only after Climate Advisor answers; any failed call flips it.
+  // Transport, server and stream failures mark the connection as failed.
   const [connectionFailed, setConnectionFailed] = useState(false);
   const [retrying, setRetrying] = useState(false);
   const [failedTurn, setFailedTurn] = useState<ChatTurn | null>(null);
@@ -208,13 +213,33 @@ export function useConceptNoteChat({
       assistantMessageIdRef.current = null;
       pendingUserMessageIdRef.current = null;
       setIsGenerating(false);
-      // Another tab or an earlier visit already posted this overview.
-      if (code === DRAFT_OVERVIEW_UNAVAILABLE) {
+      // Clima answered and declined; the connection itself is fine.
+      if (code === DRAFT_OVERVIEW_UNAVAILABLE || code === CONTEXT_NOT_READY) {
+        setConnectionFailed(false);
+        setFailedTurn(null);
+        if (code === DRAFT_OVERVIEW_UNAVAILABLE) {
+          // Another tab or an earlier visit already posted this overview.
+          setOverviewFailed(false);
+        } else {
+          setError(t("chat-context-not-ready"));
+        }
         return;
       }
-      // Clima answered and declined; the connection itself is fine.
-      if (code === CONTEXT_NOT_READY) {
-        setError(t("chat-context-not-ready"));
+      // Request rejections need user action, not a connection retry. Timeouts
+      // and rate limits remain retryable because they can be transient.
+      const status = details?.status;
+      if (
+        !details?.streamStarted &&
+        status !== undefined &&
+        status >= 400 &&
+        status < 500 &&
+        status !== 408 &&
+        status !== 429
+      ) {
+        setConnectionFailed(false);
+        setFailedTurn(null);
+        if (turn?.overview) setOverviewFailed(true);
+        setError(t(HTTP_REQUEST_ERROR_KEYS[status] ?? "chat-request-rejected"));
         return;
       }
       setConnectionFailed(true);

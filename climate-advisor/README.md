@@ -373,8 +373,8 @@ The message stream sends an initial SSE comment and comment heartbeats every
 15 seconds while the agent is silent, including during chapter planning and
 semantic review. These bytes pass through the CityCatalyst chat proxy on the
 existing response; they add no HTTP requests or model calls. Generation remains
-request-bound: a browser disconnect still cancels it. Heartbeats prevent idle
-timeouts but do not provide reconnect or worker-restart recovery.
+request-bound: a disconnect observed by the service cancels it. Heartbeats
+prevent idle timeouts but do not provide reconnect or worker-restart recovery.
 
 ```text
 event: message
@@ -1351,6 +1351,16 @@ streaming starts. When the Concept Note chat retries a failed turn it sends
 `options.concept_note_turn: "retry"`, and `POST /v1/messages` skips storing the
 question again if it is still the thread's latest message. A retry after a
 request that never reached the service stores the question normally.
+
+This is best-effort deduplication, not per-turn idempotency. The browser's
+45-second stall timeout aborts only the client request; cancellation may not
+reach the service before it finishes and saves an answer. If that answer is
+already stored when Retry arrives, the question is saved again and another
+answer is generated. If the original stream is still running, Retry can start
+a second stream even though it skips saving the question. A follow-up should
+use a stable per-turn idempotency key to claim one generation and return its
+existing result on retry, similar to the `concept_note_edit` idempotency key.
+The existing retry option does not guarantee one question and one answer.
 
 Offline regression checks (from `climate-advisor/`):
 

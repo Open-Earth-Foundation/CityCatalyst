@@ -159,6 +159,107 @@ it("keeps the connection when Clima declines because context is not ready", asyn
   expect(chat.canRetry).toBe(false);
 });
 
+it("clears an old failed turn when a new message is rejected for unready context", async () => {
+  await act(async () => chat.sendMessage("Old failed question"));
+  await act(async () =>
+    streamOptions.onError?.("failed", undefined, { streamStarted: true }),
+  );
+  await act(async () => chat.sendMessage("Rejected question"));
+  await act(async () =>
+    streamOptions.onError?.("not ready", "concept_note_context_not_ready", {
+      status: 409,
+      streamStarted: false,
+    }),
+  );
+
+  expect(chat.connection).toBe("connected");
+  expect(chat.error).toBe("chat-context-not-ready");
+  expect(chat.canRetry).toBe(false);
+  expect(chat.messages.filter((message) => message.role === "user")).toEqual([
+    expect.objectContaining({ text: "Old failed question" }),
+  ]);
+
+  await act(async () => chat.retry());
+  expect(startStream).toHaveBeenCalledTimes(2);
+});
+
+it.each([
+  [400, "chat-request-rejected"],
+  [401, "chat-auth-required"],
+  [403, "chat-access-denied"],
+  [404, "chat-not-found"],
+  [409, "chat-request-rejected"],
+  [422, "chat-request-rejected"],
+] as const)(
+  "does not offer retry or report a connection problem for HTTP %s",
+  async (status, errorKey) => {
+    await act(async () => chat.sendMessage("Old failed question"));
+    await act(async () =>
+      streamOptions.onError?.("failed", undefined, { streamStarted: true }),
+    );
+    await act(async () => chat.sendMessage("New question"));
+    await act(async () =>
+      streamOptions.onError?.("request rejected", undefined, {
+        status,
+        streamStarted: false,
+      }),
+    );
+
+    expect(chat.connection).toBe("connected");
+    expect(chat.error).toBe(errorKey);
+    expect(chat.canRetry).toBe(false);
+    await act(async () => chat.retry());
+    expect(startStream).toHaveBeenCalledTimes(2);
+  },
+);
+
+it.each([408, 429])(
+  "allows retry for transient HTTP %s responses",
+  async (status) => {
+    await act(async () => chat.sendMessage("Question"));
+    await act(async () =>
+      streamOptions.onError?.("temporarily unavailable", undefined, {
+        status,
+        streamStarted: false,
+      }),
+    );
+
+    expect(chat.connection).toBe("error");
+    expect(chat.canRetry).toBe(true);
+    await act(async () => chat.retry());
+    expect(lastRequestBody()).toMatchObject({
+      content: "Question",
+      options: { concept_note_turn: "retry" },
+    });
+  },
+);
+
+it("clears a failed overview when Clima reports it has already been posted", async () => {
+  await act(async () => chat.requestDraftOverview());
+  await act(async () =>
+    streamOptions.onError?.("failed", undefined, { streamStarted: true }),
+  );
+  await act(async () => chat.retry());
+  await act(async () =>
+    streamOptions.onError?.(
+      "already posted",
+      "concept_note_draft_overview_unavailable",
+      {
+        status: 409,
+        streamStarted: false,
+      },
+    ),
+  );
+
+  expect(chat.connection).toBe("connected");
+  expect(chat.error).toBeNull();
+  expect(chat.canRetry).toBe(false);
+  expect(chat.overviewFailed).toBe(false);
+  expect(refreshDraft).toHaveBeenCalledTimes(1);
+  await act(async () => chat.retry());
+  expect(startStream).toHaveBeenCalledTimes(2);
+});
+
 it("retries a failed drafting overview as an overview turn", async () => {
   await act(async () => chat.requestDraftOverview());
   await act(async () =>

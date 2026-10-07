@@ -42,6 +42,7 @@ class MessageService:
         text: str,
         tools_used: Optional[Any] = None,
     ) -> Message:
+        """Persist user text unchanged, including whitespace and newlines."""
         return await self.create_message(
             thread_id=thread_id,
             user_id=user_id,
@@ -72,7 +73,7 @@ class MessageService:
         thread_id: Union[str, UUID],
         text: str,
     ) -> bool:
-        """Return whether the thread's newest message is this user text."""
+        """Return whether the newest message has exactly this user text."""
         latest = await self.get_thread_messages(
             thread_id=thread_id if isinstance(thread_id, UUID) else UUID(str(thread_id)),
             limit=1,

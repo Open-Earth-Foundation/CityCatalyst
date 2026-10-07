@@ -175,7 +175,7 @@ class ConceptNoteRunRepository:
         user_id: str,
         run_id: UUID,
     ) -> None:
-        """Persist the authorized Concept Note run on its owning chat thread."""
+        """Attach the chat thread to its authorized Concept Note run."""
         result = await self.session.execute(
             select(Thread).where(
                 Thread.thread_id == thread_id,
@@ -185,6 +185,7 @@ class ConceptNoteRunRepository:
         thread = result.scalar_one_or_none()
         if thread is None:
             return
+        thread.concept_note_run_id = run_id
         thread.context = bind_workflow_context(
             thread.context,
             workflow_key=CONCEPT_NOTE_RUN_ID_KEY,

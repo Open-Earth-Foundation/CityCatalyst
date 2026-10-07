@@ -10,6 +10,8 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 from app.db.cnb import CnbBase
 from app.models.db import cnb_edit, cnb_reference, cnb_workspace  # noqa: F401
 from app.models.db.concept_note import ConceptNoteUpload
@@ -88,6 +90,15 @@ def _render_offline_upgrade(*, config: str, database_env: str) -> str:
 
     assert completed.returncode == 0, completed.stderr
     return completed.stdout
+
+
+def test_ca_migration_chain_has_one_head() -> None:
+    """Catch divergent CA migrations even when PostgreSQL tests are skipped."""
+    config = Config(str(SERVICE_ROOT / "alembic.ini"))
+    config.set_main_option("script_location", str(SERVICE_ROOT / "migrations"))
+    scripts = ScriptDirectory.from_config(config)
+
+    assert scripts.get_heads() == ["20261005_120000"]
 
 
 def test_ca_migration_chain_renames_selected_opportunity_reference() -> None:
@@ -458,8 +469,13 @@ def test_cnb_notices_upgrade_and_downgrade_preserve_existing_proposal() -> None:
     not CNB_DATABASE_URL,
     reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
 )
-def test_structured_upload_migration_upgrades_released_and_fresh_schemas() -> None:
-    """Upgrade the released CA head and a fresh database to structured uploads."""
+@pytest.mark.parametrize(
+    "parent", ["20260925_120000", "20260925_130000", "20261001_120000"]
+)
+def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
+    parent: str,
+) -> None:
+    """Upgrade either CA branch and a fresh database to the combined schema."""
     assert CNB_DATABASE_URL is not None
     engine = create_engine(CNB_DATABASE_URL)
     expected_columns = {
@@ -469,20 +485,6 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas() -> No
         "structured_size_bytes",
         "structured_schema_version",
     }
-    environment = os.environ.copy()
-    environment["CA_DATABASE_URL"] = CNB_DATABASE_URL
-    heads = subprocess.run(
-        [sys.executable, "-m", "alembic", "-c", "alembic.ini", "heads"],
-        cwd=SERVICE_ROOT,
-        env=environment,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert heads.returncode == 0, heads.stderr
-    assert heads.stdout.count(" (head)") == 1, heads.stdout
-    assert "20261001_120000" in heads.stdout
-
     try:
         _run_alembic(
             config="alembic.ini",
@@ -492,12 +494,16 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas() -> No
         _run_alembic(
             config="alembic.ini",
             database_env="CA_DATABASE_URL",
-            args=["upgrade", "20260925_120000"],
+            args=["upgrade", parent],
         )
-        assert not expected_columns & {
+        parent_columns = {
             column["name"]
             for column in inspect(engine).get_columns("concept_note_uploads")
         }
+        if parent == "20261001_120000":
+            assert expected_columns <= parent_columns
+        else:
+            assert not expected_columns & parent_columns
         _run_alembic(
             config="alembic.ini",
             database_env="CA_DATABASE_URL",
@@ -509,6 +515,9 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas() -> No
         }
         assert expected_columns <= set(columns)
         assert all(columns[name]["nullable"] for name in expected_columns)
+        assert "concept_note_run_id" in {
+            column["name"] for column in inspect(engine).get_columns("threads")
+        }
         assert "ck_concept_note_uploads_structured_identity" in {
             constraint["name"]
             for constraint in inspect(engine).get_check_constraints(
@@ -518,7 +527,7 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas() -> No
         with engine.connect() as connection:
             assert connection.execute(
                 text("SELECT version_num FROM alembic_version")
-            ).scalar_one() == "20261001_120000"
+            ).scalar_one() == "20261005_120000"
 
         run_id = uuid4()
         upload_insert = text(

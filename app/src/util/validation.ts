@@ -461,12 +461,47 @@ export const nativeInputCatalogReconciliationRequest = z.object({
 export type NativeInputCatalogReconciliationRequest = z.infer<
   typeof nativeInputCatalogReconciliationRequest
 >;
+const funderText = (max: number) => z.string().max(max).nullable();
+
+/** Reviewed application template: catalogue `funder_templates` columns. */
+const conceptNoteTemplateFields = z
+  .object({
+    template_name: z.string().trim().min(1).max(255),
+    output_format: funderText(64),
+    chapter_schema: z
+      .array(
+        z
+          .object({
+            // Empty for new chapters; the server derives one from the title.
+            chapter_ref: z.string().max(255),
+            title: z.string().trim().min(1).max(255),
+            description: z.string().nullable(),
+            required: z.boolean(),
+            required_fields: z.array(z.string()),
+          })
+          .strict(),
+      )
+      .min(1),
+  })
+  .strict();
+
+/** A note's own template, typed by hand or reviewed from a template import. */
+export const conceptNoteCustomTemplateRequest = z
+  .object({
+    template: conceptNoteTemplateFields,
+    import_id: z.string().uuid().nullable(),
+  })
+  .strict();
+
 export const conceptNoteFundingSelectionRequest = z
   .object({
     funder_id: z.string().uuid().nullable(),
     selected_funding_opportunity_id: z.string().uuid().nullable(),
     expected_funder_id: z.string().uuid().nullable(),
     expected_funding_opportunity_id: z.string().uuid().nullable(),
+    // An own template replaces the funder and programme.
+    custom_template: conceptNoteCustomTemplateRequest.nullable().default(null),
+    expected_custom_template_id: z.string().uuid().nullable().default(null),
     acknowledge_draft_review: z.boolean().default(false),
   })
   .strict()
@@ -475,13 +510,19 @@ export const conceptNoteFundingSelectionRequest = z
       value.funder_id !== null ||
       value.selected_funding_opportunity_id === null,
     { message: "A funding opportunity requires a funder" },
+  )
+  .refine(
+    (value) => value.custom_template === null || value.funder_id === null,
+    { message: "An own template replaces the funder selection" },
   );
 
 export const conceptNoteFunderImportStartRequest = z
-  .object({ uploadId: z.string().uuid() })
+  .object({
+    uploadId: z.string().uuid(),
+    /** Read a catalogue funder (default) or only a note's own template. */
+    kind: z.enum(["funder", "template"]).default("funder"),
+  })
   .strict();
-
-const funderText = (max: number) => z.string().max(max).nullable();
 const funderAward = z.number().finite().nonnegative().nullable();
 
 /** Reviewed funder, programme and template to add to the CNB catalogue. */
@@ -527,26 +568,7 @@ export const conceptNoteFunderCreateRequest = z
           value.min_award <= value.max_award,
         { message: "min_award must not exceed max_award" },
       ),
-    template: z
-      .object({
-        template_name: z.string().trim().min(1).max(255),
-        output_format: funderText(64),
-        chapter_schema: z
-          .array(
-            z
-              .object({
-                // Empty for new chapters; the server derives one from the title.
-                chapter_ref: z.string().max(255),
-                title: z.string().trim().min(1).max(255),
-                description: z.string().nullable(),
-                required: z.boolean(),
-                required_fields: z.array(z.string()),
-              })
-              .strict(),
-          )
-          .min(1),
-      })
-      .strict(),
+    template: conceptNoteTemplateFields,
     import_id: z.string().uuid().nullable(),
   })
   .strict();

@@ -37,7 +37,23 @@ const selection = {
   expected_funding_opportunity_id: null,
   acknowledge_draft_review: false,
 };
-const request = (body = selection) =>
+const ownTemplate = {
+  template: {
+    template_name: "City concept note",
+    output_format: null,
+    chapter_schema: [
+      {
+        chapter_ref: "",
+        title: "Project summary",
+        description: null,
+        required: true,
+        required_fields: [],
+      },
+    ],
+  },
+  import_id: null,
+};
+const request = (body: object = selection) =>
   new Request("http://localhost", {
     method: "PATCH",
     body: JSON.stringify(body),
@@ -97,11 +113,34 @@ describe("Funding selection API boundary", () => {
     expect(callConceptNoteApi).toHaveBeenCalledWith(
       expect.objectContaining({
         method: "PATCH",
-        body: selection,
+        // Clients that predate own templates send no template fields.
+        body: {
+          ...selection,
+          custom_template: null,
+          expected_custom_template_id: null,
+        },
         userId: "owner",
         searchParams: { user_id: "owner" },
       }),
     );
+  });
+  it("forwards an own template that replaces the funder", async () => {
+    const body = {
+      ...selection,
+      funder_id: null,
+      custom_template: ownTemplate,
+      expected_custom_template_id: null,
+    };
+    await save(request(body), context);
+    expect(callConceptNoteApi).toHaveBeenCalledWith(
+      expect.objectContaining({ body }),
+    );
+  });
+  it("rejects an own template alongside a funder", async () => {
+    await expect(
+      save(request({ ...selection, custom_template: ownTemplate }), context),
+    ).rejects.toMatchObject({ name: "ZodError" });
+    expect(callConceptNoteApi).not.toHaveBeenCalled();
   });
   it("rejects programme-only choices before any upstream call", async () => {
     await expect(

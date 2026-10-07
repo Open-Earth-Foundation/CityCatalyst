@@ -1,14 +1,18 @@
 import type {
+  ConceptNoteApplicationContext,
+  ConceptNoteCustomTemplateRequest,
   ConceptNoteFunderCreateRequest,
   ConceptNoteFunderImport,
   ConceptNoteFunderImportDraft,
   ConceptNoteProgrammeFields,
+  ConceptNoteTemplateFields,
 } from "@/util/types";
 
 /**
  * Form state, validation and request building for adding a funder, one
- * programme and its application template to the CNB catalogue. Pure so it is
- * unit-testable. List fields are edited as comma-separated text.
+ * programme and its application template to the CNB catalogue, or for a
+ * note's own template (the template part alone). Pure so it is unit-testable.
+ * List fields are edited as comma-separated text.
  */
 
 const FUNDER_FIELDS = ["name", "funder_type", "country", "region"] as const;
@@ -59,6 +63,9 @@ export interface FunderForm {
   chapters: ChapterRow[];
 }
 
+/** The template part of the form, also used alone for a note's own template. */
+export type TemplateForm = Pick<FunderForm, "template" | "chapters">;
+
 /** Form sections made only of text inputs. */
 export type FunderTextSection = Exclude<keyof FunderForm, "chapters">;
 
@@ -90,13 +97,20 @@ export function emptyChapter(): ChapterRow {
   };
 }
 
+/** A blank template with one empty chapter. */
+export function emptyTemplateForm(): TemplateForm {
+  return {
+    template: { template_name: "", output_format: "" },
+    chapters: [emptyChapter()],
+  };
+}
+
 /** A blank form with one empty chapter, used for the by-hand path. */
 export function emptyFunderForm(): FunderForm {
   return {
     funder: fieldMap(FUNDER_FIELDS, () => ""),
     opportunity: fieldMap(PROGRAMME_FIELDS, () => ""),
-    template: { template_name: "", output_format: "" },
-    chapters: [emptyChapter()],
+    ...emptyTemplateForm(),
   };
 }
 
@@ -123,6 +137,15 @@ export function formFromDraft(draft: ConceptNoteFunderImportDraft): FunderForm {
     opportunity: fieldMap(PROGRAMME_FIELDS, (field) =>
       inputText(opportunity[field]),
     ),
+    ...templateFormFrom(template),
+  };
+}
+
+/** Fill the template part from reviewed or extracted template fields. */
+export function templateFormFrom(
+  template: ConceptNoteTemplateFields,
+): TemplateForm {
+  return {
     template: {
       template_name: template.template_name,
       output_format: inputText(template.output_format),
@@ -138,6 +161,23 @@ export function formFromDraft(draft: ConceptNoteFunderImportDraft): FunderForm {
           required_fields: inputText(chapter.required_fields),
         }))
       : [emptyChapter()],
+  };
+}
+
+/** Template fields of a saved template, to edit it again. */
+export function templateFieldsFromContext(
+  template: NonNullable<ConceptNoteApplicationContext["template"]>,
+): ConceptNoteTemplateFields {
+  return {
+    template_name: template.name,
+    output_format: template.output_format,
+    chapter_schema: template.chapter_schema.map((chapter) => ({
+      chapter_ref: chapter.chapter_ref,
+      title: chapter.title,
+      description: chapter.description ?? null,
+      required: chapter.required ?? false,
+      required_fields: chapter.required_fields ?? [],
+    })),
   };
 }
 
@@ -157,15 +197,9 @@ export function parseAward(value: string): number | null {
   return Number.isFinite(amount) ? amount : Number.NaN;
 }
 
-/** Required names, at least one titled chapter and valid award amounts. */
-export function validateFunderForm(form: FunderForm): FunderFormErrors {
+/** A template name and at least one titled chapter. */
+export function validateTemplateForm(form: TemplateForm): FunderFormErrors {
   const errors: FunderFormErrors = {};
-  if (!form.funder.name.trim()) {
-    errors["funder.name"] = "funder-error-funder-name";
-  }
-  if (!form.opportunity.name.trim()) {
-    errors["opportunity.name"] = "funder-error-programme-name";
-  }
   if (!form.template.template_name.trim()) {
     errors["template.template_name"] = "funder-error-template-name";
   }
@@ -176,6 +210,18 @@ export function validateFunderForm(form: FunderForm): FunderFormErrors {
     if (!chapter.title.trim()) {
       errors[`chapter.${chapter.id}.title`] = "funder-error-chapter-title";
     }
+  }
+  return errors;
+}
+
+/** Required names, at least one titled chapter and valid award amounts. */
+export function validateFunderForm(form: FunderForm): FunderFormErrors {
+  const errors = validateTemplateForm(form);
+  if (!form.funder.name.trim()) {
+    errors["funder.name"] = "funder-error-funder-name";
+  }
+  if (!form.opportunity.name.trim()) {
+    errors["opportunity.name"] = "funder-error-programme-name";
   }
   const min = parseAward(form.opportunity.min_award);
   const max = parseAward(form.opportunity.max_award);
@@ -221,18 +267,51 @@ export function formToCreateRequest(
       name: form.opportunity.name.trim(),
       known_gaps: source?.draft?.opportunity.known_gaps ?? [],
     },
-    template: {
-      template_name: form.template.template_name.trim(),
-      output_format: optionalText(form.template.output_format),
-      chapter_schema: form.chapters.map((chapter) => ({
-        chapter_ref: chapter.chapter_ref,
-        title: chapter.title.trim(),
-        description: optionalText(chapter.description),
-        required: chapter.required,
-        required_fields: splitList(chapter.required_fields),
-      })),
-    },
+    template: templateFromForm(form),
     import_id: source?.import_id ?? null,
+  };
+}
+
+/** Template fields; call only when `validateTemplateForm` is empty. */
+export function templateFromForm(
+  form: TemplateForm,
+): ConceptNoteTemplateFields {
+  return {
+    template_name: form.template.template_name.trim(),
+    output_format: optionalText(form.template.output_format),
+    chapter_schema: form.chapters.map((chapter) => ({
+      chapter_ref: chapter.chapter_ref,
+      title: chapter.title.trim(),
+      description: optionalText(chapter.description),
+      required: chapter.required,
+      required_fields: splitList(chapter.required_fields),
+    })),
+  };
+}
+
+/** A note's own template, reviewed from a template import when given. */
+export function ownTemplateRequest(
+  form: TemplateForm,
+  source: ConceptNoteFunderImport | null,
+): ConceptNoteCustomTemplateRequest {
+  return {
+    template: templateFromForm(form),
+    import_id: source?.import_id ?? null,
+  };
+}
+
+/** Preview of an own template before it is saved; the server assigns refs. */
+export function templatePreview(
+  template: ConceptNoteTemplateFields,
+): NonNullable<ConceptNoteApplicationContext["template"]> {
+  return {
+    id: "",
+    name: template.template_name,
+    output_format: template.output_format,
+    chapter_schema: template.chapter_schema,
+    required_fields: [
+      ...new Set(template.chapter_schema.flatMap((c) => c.required_fields)),
+    ],
   };
 }
 

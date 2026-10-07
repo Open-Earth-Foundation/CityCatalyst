@@ -1,11 +1,14 @@
-"""Add a funder, programme and template to the CNB catalogue.
+"""Add a funder, programme and template to the CNB catalogue, or give one note
+its own application template.
 
-A run can read one uploaded funder document into a reviewable draft, or accept
-values typed by hand. Nothing reaches the catalogue until the user confirms.
-The pending import lives in the run's context bundle under ``funder_import``;
-confirmed values become ordinary ``funders``, ``funding_opportunities`` and
-``funder_templates`` rows, with per-field provenance in the existing
-``source_documents`` and ``funding_evidence`` tables.
+A run can read one uploaded document into a reviewable draft, or accept values
+typed by hand. Nothing is saved until the user confirms. The pending import
+lives in the run's context bundle under ``funder_import``; its ``kind`` says
+whether it reads a funder or only a template. Confirmed funders become ordinary
+``funders``, ``funding_opportunities`` and ``funder_templates`` rows, with
+per-field provenance in the existing ``source_documents`` and
+``funding_evidence`` tables. A confirmed own template is stored on the run
+(``concept_note_runs.custom_template``) by the funding-selection save.
 """
 
 from __future__ import annotations
@@ -27,8 +30,11 @@ from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_markdown import source_format_from_filename
 from app.models.cnb.funding_catalogue import MANUAL_SOURCE_PREFIX, UPLOAD_SOURCE_PREFIX
+from app.models.cnb.concept_note_application_context import FundingAddedFrom
 from app.models.cnb.funder_import import (
+    CustomTemplateRequest,
     ExtractedChapter,
+    ExtractedEvidence,
     ExtractedFact,
     FieldEvidence,
     FunderCreateRequest,
@@ -37,9 +43,12 @@ from app.models.cnb.funder_import import (
     FunderFields,
     FunderImport,
     FunderImportDraft,
+    FunderImportKind,
     FunderProfileFacts,
     ProgrammeFields,
+    StoredCustomTemplate,
     TemplateChapterFields,
+    TemplateDocumentExtraction,
     TemplateFields,
 )
 from app.models.db.cnb_reference import (
@@ -112,6 +121,8 @@ CATALOGUE_PATHS = (
     "template.output_format",
     "template.chapter_schema",
 )
+# The subset a template-only import reports as ``missing``.
+TEMPLATE_PATHS = tuple(path for path in CATALOGUE_PATHS if path.startswith("template."))
 _BACKGROUND_IMPORTS: set[asyncio.Task[None]] = set()
 
 ExtractDraft = Callable[..., Awaitable[FunderImportDraft]]
@@ -161,6 +172,7 @@ async def start_funder_import(
     *,
     upload_id: UUID,
     token: str,
+    kind: FunderImportKind = "funder",
 ) -> FunderImport:
     """Record a new import for a run upload and read it in the background.
 
@@ -175,9 +187,7 @@ async def start_funder_import(
     await session.get(ConceptNoteRun, run.run_id, with_for_update=True)
     current = await load_funder_import(session, run)
     if current is not None and current.status == "processing":
-        raise api_error(
-            "funder_import_running", "A funder document is already being read."
-        )
+        raise api_error("funder_import_running", "A document is already being read.")
 
     # Replace any previous draft or failure; a new id makes late results no-ops.
     now = datetime.now(UTC)
@@ -185,6 +195,7 @@ async def start_funder_import(
         import_id=uuid4(),
         upload_id=upload.upload_id,
         filename=upload.filename,
+        kind=kind,
         status="processing",
         created_at=now,
         updated_at=now,
@@ -192,10 +203,11 @@ async def start_funder_import(
     await _write_import(session, run.run_id, funder_import)
     await session.commit()
     logger.info(
-        "Started CNB funder import run_id=%s import_id=%s upload_id=%s",
+        "Started CNB funder import run_id=%s import_id=%s upload_id=%s kind=%s",
         run.run_id,
         funder_import.import_id,
         upload_id,
+        kind,
     )
     schedule_funder_import(
         run_id=run.run_id, import_id=funder_import.import_id, token=token
@@ -208,9 +220,8 @@ async def discard_funder_import(
 ) -> None:
     """Forget only the observed import; preserve a concurrent replacement."""
     bundle = await _locked_bundle(session, run.run_id)
-    current = _import_from_bundle(bundle)
-    if current is not None and current.import_id == import_id:
-        _set_import(bundle, None)
+    if bundle is not None:
+        clear_import(bundle, import_id)
     await session.commit()
     logger.info(
         "Discarded CNB funder import run_id=%s import_id=%s", run.run_id, import_id
@@ -247,15 +258,18 @@ async def run_funder_import(
 ) -> None:
     """Wait for, fetch, verify and read one upload, then store a draft or failure."""
     factory = session_factory or get_session_factory()
-    extract = extract or extract_funder_draft
     cc_client: CityCatalystClient | None = None
     draft: FunderImportDraft | None = None
     error_code: str | None = None
     try:
         # Step 1: wait until the upload on the still-current import is converted.
-        upload = await _converted_upload(factory, run_id, import_id)
-        if upload is None:
+        converted = await _converted_upload(factory, run_id, import_id)
+        if converted is None:
             return
+        current, upload = converted
+        read = extract or (
+            extract_template_draft if current.kind == "template" else extract_funder_draft
+        )
 
         # Step 2: read the verified text and extract the catalogue record.
         source_format = source_format_from_filename(upload.filename)
@@ -270,9 +284,7 @@ async def run_funder_import(
             source_format=source_format,
             page_count=upload.page_count,
         )
-        draft = await extract(
-            units, filename=upload.filename, source_format=source_format
-        )
+        draft = await read(units, filename=upload.filename, source_format=source_format)
     except CityCatalystClientError:
         logger.warning("Funder document fetch failed run_id=%s", run_id)
         error_code = "source_fetch_failed"
@@ -294,7 +306,7 @@ async def run_funder_import(
 
 async def _converted_upload(
     factory: async_sessionmaker[AsyncSession], run_id: UUID, import_id: UUID
-) -> ConceptNoteUpload | None:
+) -> tuple[FunderImport, ConceptNoteUpload] | None:
     """Poll until the import's upload is converted; None once it is superseded."""
     deadline = datetime.now(UTC) + UPLOAD_WAIT
     while True:
@@ -308,7 +320,7 @@ async def _converted_upload(
         if upload is None or upload.ingest_status == "failed":
             raise FunderImportError("upload_failed", "The upload could not be converted")
         if upload.ingest_status == "ready" and upload.markdown_s3_key and upload.markdown_sha256:
-            return upload
+            return current, upload
         if datetime.now(UTC) > deadline:
             raise FunderImportError("upload_not_ready", "The upload is still converting")
         await asyncio.sleep(UPLOAD_POLL_SECONDS)
@@ -396,9 +408,60 @@ async def extract_funder_draft(
     client: AsyncOpenAI | None = None,
     runner: Any = Runner,
 ) -> FunderImportDraft:
-    """Read the whole document in one model call and verify its quotes."""
+    """Read a funder, one programme and its template from the whole document."""
+    extraction = await _read_document(
+        units,
+        filename=filename,
+        source_format=source_format,
+        name="Concept Note funder document reader",
+        prompt_key="cnb_funder_document_extraction",
+        output_type=FunderDocumentExtraction,
+        settings=settings,
+        client=client,
+        runner=runner,
+    )
+    return build_draft(extraction, units)
+
+
+async def extract_template_draft(
+    units: Sequence[SourceUnit],
+    *,
+    filename: str,
+    source_format: str,
+    settings: Settings | None = None,
+    client: AsyncOpenAI | None = None,
+    runner: Any = Runner,
+) -> FunderImportDraft:
+    """Read only the application template from the whole document."""
+    extraction = await _read_document(
+        units,
+        filename=filename,
+        source_format=source_format,
+        name="Concept Note template document reader",
+        prompt_key="cnb_template_document_extraction",
+        output_type=TemplateDocumentExtraction,
+        settings=settings,
+        client=client,
+        runner=runner,
+    )
+    return build_template_draft(extraction, units)
+
+
+async def _read_document(
+    units: Sequence[SourceUnit],
+    *,
+    filename: str,
+    source_format: str,
+    name: str,
+    prompt_key: str,
+    output_type: type[BaseModel],
+    settings: Settings | None,
+    client: AsyncOpenAI | None,
+    runner: Any,
+) -> Any:
+    """Read the whole document in one model call."""
     settings = settings or get_settings()
-    prompt = settings.llm.prompts.get_prompt("cnb_funder_document_extraction")
+    prompt = settings.llm.prompts.get_prompt(prompt_key)
     model_config = settings.llm.models.cnb_funder_extractor
     budget = settings.llm.generation.prompt_budget
 
@@ -418,16 +481,16 @@ async def extract_funder_draft(
     ).tokens
     if token_count > budget.cnb_funder_import.max_document_tokens:
         raise FunderImportError(
-            "document_too_long", f"Funder document has {token_count} tokens"
+            "document_too_long", f"Document has {token_count} tokens"
         )
 
     client, owns_client = resolve_analysis_client(settings, client)
     try:
-        extraction = await run_agent(
-            name="Concept Note funder document reader",
+        return await run_agent(
+            name=name,
             prompt=prompt,
             model_config=model_config,
-            output_type=FunderDocumentExtraction,
+            output_type=output_type,
             input_text=input_text,
             client=client,
             runner=runner,
@@ -435,7 +498,6 @@ async def extract_funder_draft(
     finally:
         if owns_client:
             await client.close()
-    return build_draft(extraction, units)
 
 
 def build_draft(
@@ -444,8 +506,7 @@ def build_draft(
     """Convert model output into catalogue fields and keep only verbatim quotes."""
     funder = _cleaned(extraction.funder, exclude={"stated_facts", "derived_facts"})
     opportunity = _cleaned(extraction.opportunity)
-    template = _cleaned(extraction.template, exclude={"chapters"})
-    chapters, chapter_refs = _extracted_chapters(extraction.template.chapters)
+    template, chapter_refs = _template_fields(extraction.template)
     min_award = _award(opportunity["min_award"])
     max_award = _award(opportunity["max_award"])
     if min_award is not None and max_award is not None and min_award > max_award:
@@ -469,18 +530,50 @@ def build_draft(
                 "max_award": max_award,
             }
         ),
-        template=TemplateFields(
+        template=template,
+    )
+    return _with_evidence(draft, extraction.evidence, units, chapter_refs, CATALOGUE_PATHS)
+
+
+def build_template_draft(
+    extraction: TemplateDocumentExtraction, units: Sequence[SourceUnit]
+) -> FunderImportDraft:
+    """Convert a template-only read; funder and programme stay blank."""
+    template, chapter_refs = _template_fields(extraction.template)
+    draft = FunderImportDraft(
+        funder=FunderFields(), opportunity=ProgrammeFields(), template=template
+    )
+    return _with_evidence(draft, extraction.evidence, units, chapter_refs, TEMPLATE_PATHS)
+
+
+def _template_fields(
+    extracted: Any,
+) -> tuple[TemplateFields, dict[str, str]]:
+    """Clean template columns and normalize its chapters."""
+    template = _cleaned(extracted, exclude={"chapters"})
+    chapters, chapter_refs = _extracted_chapters(extracted.chapters)
+    return (
+        TemplateFields(
             **{**template, "template_name": template["template_name"] or ""},
             chapter_schema=chapters,
         ),
+        chapter_refs,
     )
 
-    # Keep evidence only for filled fields and only when the quote is in the text.
+
+def _with_evidence(
+    draft: FunderImportDraft,
+    extracted: Sequence[ExtractedEvidence],
+    units: Sequence[SourceUnit],
+    chapter_refs: dict[str, str],
+    reported_paths: Sequence[str],
+) -> FunderImportDraft:
+    """Keep evidence only for filled fields whose quote is in the text."""
     filled = {path for path in evidence_paths(draft) if field_value(draft, path)}
     unit_texts = [(_squash(unit.text), unit) for unit in units]
     evidence: list[FieldEvidence] = []
     per_field: Counter[str] = Counter()
-    for item in extraction.evidence:
+    for item in extracted:
         path = _renamed_chapter_path(item.field, chapter_refs)
         quote = _squash(item.quote)
         if not quote or path not in filled or per_field[path] >= MAX_EVIDENCE_PER_FIELD:
@@ -493,7 +586,7 @@ def build_draft(
         per_field[path] += 1
 
     draft.evidence = evidence
-    draft.missing = [path for path in CATALOGUE_PATHS if not field_value(draft, path)]
+    draft.missing = [path for path in reported_paths if not field_value(draft, path)]
     return draft
 
 
@@ -544,7 +637,7 @@ async def create_funder(
 
     # Step 1: resolve the import these values were reviewed from, if any.
     draft, upload = (
-        await _reviewed_import(session, run, payload.import_id)
+        await _reviewed_import(session, run, payload.import_id, kind="funder")
         if payload.import_id is not None
         else (None, None)
     )
@@ -630,13 +723,18 @@ async def create_funder(
 
 
 async def _reviewed_import(
-    session: AsyncSession, run: ConceptNoteRun, import_id: UUID
+    session: AsyncSession,
+    run: ConceptNoteRun,
+    import_id: UUID,
+    *,
+    kind: FunderImportKind,
 ) -> tuple[FunderImportDraft, ConceptNoteUpload]:
     """Return the ready draft and its upload, or reject a changed import."""
     funder_import = await load_funder_import(session, run)
     if (
         funder_import is None
         or funder_import.import_id != import_id
+        or funder_import.kind != kind
         or funder_import.status != "ready"
         or funder_import.draft is None
     ):
@@ -648,6 +746,43 @@ async def _reviewed_import(
     if upload is None or upload.markdown_sha256 is None:
         raise api_error("upload_not_found", "The uploaded file was not found.", 404)
     return funder_import.draft, upload
+
+
+async def build_custom_template(
+    session: AsyncSession, run: ConceptNoteRun, payload: CustomTemplateRequest
+) -> StoredCustomTemplate:
+    """Normalize a reviewed own template; a template import must still be current.
+
+    The caller stores it on the run and clears the import in the same commit.
+    """
+    filename: str | None = None
+    if payload.import_id is not None:
+        _, upload = await _reviewed_import(
+            session, run, payload.import_id, kind="template"
+        )
+        filename = upload.filename
+    template = payload.template.model_copy(
+        update={"chapter_schema": normalize_chapters(payload.template.chapter_schema)}
+    )
+    chapter_schema = [chapter.model_dump(mode="json") for chapter in template.chapter_schema]
+    normalize_template_chapters(chapter_schema)
+    return StoredCustomTemplate(
+        id=uuid4(),
+        template_name=template.template_name.strip(),
+        output_format=template.output_format,
+        chapter_schema=chapter_schema,
+        required_fields=template_required_fields(template),
+        added_from=FundingAddedFrom(
+            kind="document" if filename else "manual", filename=filename
+        ),
+    )
+
+
+def clear_import(bundle: ConceptNoteContextBundle, import_id: UUID) -> None:
+    """Remove the observed import from a bundle the caller has locked."""
+    current = _import_from_bundle(bundle)
+    if current is not None and current.import_id == import_id:
+        _set_import(bundle, None)
 
 
 def evidence_rows(

@@ -10,6 +10,8 @@ import { useAppDispatch } from "@/lib/hooks";
 import { api } from "@/services/api";
 import type { ConceptNoteFunderImport } from "@/util/types";
 
+type ImportKind = ConceptNoteFunderImport["kind"];
+
 import { funderApiErrorKey, funderImportErrorKey } from "./funder-form";
 
 const POLL_MS = 2000;
@@ -38,7 +40,7 @@ const IDLE: LocalState = {
 export type FunderImportPhase =
   "idle" | "uploading" | "converting" | "reading" | "ready" | "failed";
 
-/** Status line key for each phase, shared by the panel and the rail entry. */
+/** Status line key for each phase, shared by the panel and the rail entries. */
 export const FUNDER_IMPORT_PHASE_LABEL: Record<FunderImportPhase, string> = {
   idle: "funder-add-entry-help",
   uploading: "funder-import-uploading",
@@ -49,6 +51,7 @@ export const FUNDER_IMPORT_PHASE_LABEL: Record<FunderImportPhase, string> = {
 };
 
 export interface FunderImportFlow {
+  kind: ImportKind;
   phase: FunderImportPhase;
   funderImport: ConceptNoteFunderImport | null;
   filename: string | null;
@@ -64,17 +67,21 @@ export interface FunderImportFlow {
 }
 
 /**
- * Drives adding a funder from a document: upload the file through the note's
- * upload pipeline and start the import straight away. Climate Advisor waits
- * for the conversion, so the browser only polls the import. Lives at the
- * workspace level so the import keeps progressing after the dialog closes.
+ * Drives reading a document into a funder (`kind` funder) or a note's own
+ * template (`kind` template): upload the file through the note's upload
+ * pipeline and start the import straight away. Climate Advisor waits for the
+ * conversion, so the browser only polls the import. Lives at the workspace
+ * level so the import keeps progressing after the dialog closes. A run has one
+ * import at a time; each flow shows only an import of its own kind.
  */
 export function useFunderImport({
   cityId,
   runId,
+  kind = "funder",
 }: {
   cityId: string;
   runId: string;
+  kind?: ImportKind;
 }): FunderImportFlow {
   const dispatch = useAppDispatch();
   // Bumped by every user action so a late response from an earlier one is ignored.
@@ -84,7 +91,8 @@ export function useFunderImport({
   const { currentData } = api.useGetConceptNoteFunderImportQuery(runId, {
     refetchOnMountOrArgChange: true,
   });
-  const funderImport = currentData?.funder_import ?? null;
+  const serverImport = currentData?.funder_import ?? null;
+  const funderImport = serverImport?.kind === kind ? serverImport : null;
   api.useGetConceptNoteFunderImportQuery(runId, {
     skip: funderImport?.status !== "processing",
     pollingInterval: POLL_MS,
@@ -110,6 +118,7 @@ export function useFunderImport({
       const started = await startImport({
         runId,
         uploadId: upload.uploadId,
+        kind,
       }).unwrap();
       if (generation !== generationRef.current) {
         if (started.funder_import) {
@@ -147,7 +156,7 @@ export function useFunderImport({
     try {
       const formData = new FormData();
       formData.set("file", file);
-      // The funder document also becomes an ordinary source of the note.
+      // The document also becomes an ordinary source of the note.
       formData.set("sourceLabel", conceptNoteSourceLabel(file.name));
       const { uploadId } = await uploadSource({
         cityId,
@@ -226,6 +235,7 @@ export function useFunderImport({
   }
 
   return {
+    kind,
     phase,
     funderImport,
     filename,

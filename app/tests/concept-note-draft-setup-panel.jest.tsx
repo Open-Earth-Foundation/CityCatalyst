@@ -7,6 +7,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { appTheme } from "@/lib/theme/recipes/app-theme";
 import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
 import type { ConceptNoteBundleProgress } from "@/components/ConceptNoteDashboard/utils";
+import type { ConceptNoteApplicationContext } from "@/util/types";
 import { LuDatabase } from "react-icons/lu";
 
 jest.unstable_mockModule("@/i18n/client", () => ({
@@ -78,12 +79,13 @@ afterEach(async () => {
 async function render(
   contextStatus: ConceptNoteContextPresentation,
   canStartDrafting: boolean,
+  applicationContext: ConceptNoteApplicationContext | null = null,
 ) {
   await act(async () =>
     root.render(
       <ChakraProvider value={appTheme}>
         <DraftSetupPanel
-          applicationContext={null}
+          applicationContext={applicationContext}
           applicationContextFailed={false}
           applicationContextLoading={false}
           bundle={bundle}
@@ -137,4 +139,33 @@ it("points at the funding setup reason when context is ready but funding is miss
       '[data-testid="concept-note-start-drafting-reason"]',
     ),
   ).toBeNull();
+});
+
+it("lets a note with its own template start drafting without a funder", async () => {
+  await render(status("none", false), true, {
+    run_id: "run",
+    city_id: "city",
+    funder: null,
+    opportunity: null,
+    template: {
+      id: "own",
+      name: "City concept note",
+      output_format: null,
+      chapter_schema: [{ chapter_ref: "summary", title: "Summary" }],
+      required_fields: [],
+    },
+    template_source: { kind: "manual", filename: null },
+    included_sources: {
+      city: true,
+      project: false,
+      ghgi: false,
+      ccra: false,
+      hiap: false,
+    },
+  });
+  const button = container.querySelector<HTMLButtonElement>(
+    '[data-testid="concept-note-start-drafting"]',
+  );
+  expect(button?.disabled).toBe(false);
+  expect(container.querySelector("#drafting-setup-reason")).toBeNull();
 });

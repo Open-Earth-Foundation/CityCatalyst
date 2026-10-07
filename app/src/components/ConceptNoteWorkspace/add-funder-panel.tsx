@@ -27,6 +27,25 @@ const PROCESSING_BADGE = {
   label: "status-processing",
   tone: "neutral",
 } as const;
+/** Copy for reading a funder, or only a note's own template. */
+const PANEL_COPY = {
+  funder: {
+    testId: "add-funder-panel",
+    upload: "funder-upload-label",
+    title: "funder-add-title",
+    description: "funder-add-description",
+    manual: "funder-add-manual",
+    review: "funder-review-details",
+  },
+  template: {
+    testId: "own-template-panel",
+    upload: "template-upload-label",
+    title: "template-add-title",
+    description: "template-add-description",
+    manual: "template-add-manual",
+    review: "template-review-details",
+  },
+} as const;
 
 interface AddFunderPanelProps {
   flow: FunderImportFlow;
@@ -36,8 +55,8 @@ interface AddFunderPanelProps {
 }
 
 /**
- * Right pane of the funding dialog before the form: upload one funder
- * document and follow its read, or switch to entering details by hand.
+ * Right pane of the funding dialog before the form: upload one funder or
+ * template document and follow its read, or switch to entering it by hand.
  */
 export function AddFunderPanel({
   flow,
@@ -49,6 +68,7 @@ export function AddFunderPanel({
   // Remount the dropzone after each pick so a rejected file can be replaced.
   const [pickerKey, setPickerKey] = useState(0);
   const { phase } = flow;
+  const copy = PANEL_COPY[flow.kind];
   const badge =
     phase === "ready" || phase === "failed"
       ? PHASE_BADGE[phase]
@@ -65,13 +85,13 @@ export function AddFunderPanel({
   }
 
   return (
-    <VStack align="stretch" gap={5} data-testid="add-funder-panel">
+    <VStack align="stretch" gap={5} data-testid={copy.testId}>
       <Box>
         <Heading as="h3" fontSize="title.md">
-          {t("funder-add-title")}
+          {t(copy.title)}
         </Heading>
         <Text mt={1} fontSize="body.sm" color="content.secondary">
-          {t("funder-add-description")}
+          {t(copy.description)}
         </Text>
       </Box>
 
@@ -82,7 +102,7 @@ export function AddFunderPanel({
           inputProps={{
             accept:
               "application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md",
-            "aria-label": t("funder-upload-label"),
+            "aria-label": t(copy.upload),
           }}
           onFileChange={onFileChange}
         >
@@ -171,11 +191,11 @@ export function AddFunderPanel({
           </Button>
         )}
         <Button size="sm" variant="outline" onClick={onEnterManually}>
-          {t("funder-add-manual")}
+          {t(copy.manual)}
         </Button>
         {phase === "ready" && (
           <Button size="sm" onClick={onReview}>
-            {t("funder-review-details")}
+            {t(copy.review)}
           </Button>
         )}
       </Flex>

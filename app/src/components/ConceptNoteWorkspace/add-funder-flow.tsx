@@ -117,6 +117,12 @@ export function useAddFunder({
 
 export type AddFunder = ReturnType<typeof useAddFunder>;
 
+/** What the shared footer needs from an add-funder or own-template flow. */
+export type AddFlowControls = Pick<
+  AddFunder,
+  "mode" | "error" | "creating" | "back" | "discard" | "submit"
+>;
+
 interface AddFunderPartProps {
   add: AddFunder;
   flow?: FunderImportFlow;
@@ -148,7 +154,19 @@ export function AddFunderPane({ add, flow, lng }: AddFunderPartProps) {
 }
 
 /** Dialog footer while adding, replacing the selection footer. */
-export function AddFunderFooter({ add, flow, lng }: AddFunderPartProps) {
+export function AddFunderFooter({
+  add,
+  flow,
+  lng,
+  submitLabel = "funder-add-submit",
+  submitTestId = "concept-note-add-funder",
+}: {
+  add: AddFlowControls;
+  flow?: FunderImportFlow;
+  lng: string;
+  submitLabel?: string;
+  submitTestId?: string;
+}) {
   const { t } = useTranslation(lng, "concept-notes");
   return (
     <DialogFooter
@@ -189,9 +207,9 @@ export function AddFunderFooter({ add, flow, lng }: AddFunderPartProps) {
           size="sm"
           loading={add.creating}
           onClick={() => void add.submit()}
-          data-testid="concept-note-add-funder"
+          data-testid={submitTestId}
         >
-          {t("funder-add-submit")}
+          {t(submitLabel)}
         </Button>
       )}
     </DialogFooter>

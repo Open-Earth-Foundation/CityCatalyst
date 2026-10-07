@@ -323,7 +323,8 @@ export function ApplicationTemplatePreview({
             {template.chapter_schema.map((chapter, index) => (
               <Flex
                 as="li"
-                key={chapter.chapter_ref ?? index}
+                // Chapters not saved yet have no ref.
+                key={chapter.chapter_ref || index}
                 gap={3}
                 py={3}
                 borderTop="1px solid"

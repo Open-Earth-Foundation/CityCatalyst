@@ -186,6 +186,7 @@ export function ConceptNoteWorkspace({
   } = useConceptNoteWorkspaceData({ cityId, initialUploadId, lng, runId });
   // Kept here so a funder document keeps converting after the dialog closes.
   const funderImport = useFunderImport({ cityId, runId });
+  const templateImport = useFunderImport({ cityId, runId, kind: "template" });
   const edits = useConceptNoteEdits({
     runId,
     onApplied: async (chapterIds) => {
@@ -904,6 +905,7 @@ export function ConceptNoteWorkspace({
           lng={lng}
           runId={runId}
           funderImport={funderImport}
+          templateImport={templateImport}
           onClose={() => setFundingOpen(false)}
           onSaved={() => {
             setTab("draft");

@@ -148,6 +148,7 @@ export const TONE_TEXT_COLOR: Record<MeedTone, string> = {
   info: "content.link",
   positive: "sentiment.positiveDefault",
   warning: "sentiment.warningDefault",
+  caution: "interactive.quaternary",
   negative: "sentiment.negativeDefault",
 };
 

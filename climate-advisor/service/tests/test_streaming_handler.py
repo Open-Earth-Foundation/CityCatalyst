@@ -1,37 +1,141 @@
 from __future__ import annotations
 
-import asyncio
-import json
 import unittest
-from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 from app.models.requests import MessageCreateRequest
+from app.services.native_input_catalog_service import ActiveRequestContext
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.sse import format_sse
+from app.utils.streaming_context import (
+    native_input_catalog_request,
+    resolve_workflow_context,
+)
 from app.utils.streaming_handler import StreamingHandler
+from app.utils.streaming_runner import build_stream_run_config
+from tests.streaming_fixtures import _parse_sse_payload
 
 
-def _parse_sse_payload(chunk: bytes) -> dict:
-    event_type = None
-    data_lines: list[str] = []
+class StreamingHandlerTests(unittest.IsolatedAsyncioTestCase):
+    def test_native_input_catalog_context_uses_authenticated_request_identity(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id="thread-1",
+            user_id="body-user",
+            session_factory=MagicMock(),
+            cc_access_token="trusted-core-token",
+            catalog_user_id="authenticated-user",
+            inventory_id="inventory-1",
+            request_context={
+                "city_id": "city-1",
+                "native_input_selection": {
+                    "catalog_id": "request-context-catalog",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            },
+            request_options={
+                "project_id": "project-1",
+                "native_input_selection": {
+                    "catalog_id": "request-options-catalog",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            },
+        )
+        payload = MessageCreateRequest(
+            user_id="attacker-supplied-user",
+            content="hello",
+            context={
+                "user_id": "attacker-supplied-user",
+                "organization_id": "organization-1",
+                "native_input_selection": {
+                    "catalog_id": "catalog-1",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            },
+            options={"native_input_selection": {"catalog_id": "forged"}},
+        )
 
-    for line in chunk.decode("utf-8").splitlines():
-        if line.startswith("event:"):
-            event_type = line.split(":", 1)[1].strip()
-        elif line.startswith("data:"):
-            data_lines.append(line.split(":", 1)[1].strip())
+        context = native_input_catalog_request(handler, payload)
 
-    return {
-        "event": event_type,
-        "data": json.loads("\n".join(data_lines)),
-    }
+        self.assertEqual(
+            context,
+            ActiveRequestContext(
+                user_id="authenticated-user",
+                thread_id="thread-1",
+                organization_id="organization-1",
+                project_id="project-1",
+                city_id="city-1",
+                inventory_id="inventory-1",
+            ),
+        )
 
+    def test_native_input_catalog_context_requires_validated_core_identity(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id="thread-1",
+            user_id="body-user",
+            session_factory=MagicMock(),
+            cc_access_token="unvalidated-token",
+            request_context={"city_id": "city-1"},
+        )
+        payload = MessageCreateRequest(
+            user_id="body-user",
+            content="hello",
+            context={"organization_id": "organization-1"},
+        )
 
-class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
+        self.assertIsNone(native_input_catalog_request(handler, payload))
+
+    def test_native_input_catalog_context_requires_current_core_credential(
+        self,
+    ) -> None:
+        """Body identity and scope do not establish catalog authorization."""
+        handler = StreamingHandler(
+            thread_id="thread-1",
+            user_id="authenticated-user",
+            session_factory=MagicMock(),
+            inventory_id="inventory-1",
+            request_context={"city_id": "city-1"},
+            request_options={"project_id": "project-1"},
+        )
+        payload = MessageCreateRequest(
+            user_id="attacker-supplied-user",
+            content="hello",
+            context={
+                "user_id": "attacker-supplied-user",
+                "organization_id": "organization-1",
+                "native_input_selection": {
+                    "catalog_id": "catalog-1",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            },
+            options={"native_input_selection": {"catalog_id": "forged"}},
+        )
+
+        context = native_input_catalog_request(handler, payload)
+
+        self.assertIsNone(context)
+
     async def test_done_event_reflects_persisted_history(self) -> None:
-        payload = MessageCreateRequest(user_id="user-1", content="hello")
+        payload = MessageCreateRequest(
+            user_id="user-1",
+            content="hello",
+            context={
+                "native_input_selection": {
+                    "catalog_id": "payload-catalog",
+                    "capability_id": "ghgi.inventory.status_overview",
+                }
+            },
+            options={
+                "native_input_selection": {
+                    "catalog_id": "options-catalog",
+                    "capability_id": "ghgi.inventory.status_overview",
+                }
+            },
+        )
         handler = StreamingHandler(
             thread_id="thread-1",
             user_id="user-1",
@@ -54,17 +158,16 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
 
         with (
             patch(
-                "app.utils.streaming_handler.AgentService",
+                "app.utils.streaming_agent.AgentService",
                 return_value=fake_agent_service,
-            ),
+            ) as mock_agent_service,
             patch.object(
                 StreamingHandler,
                 "_load_conversation_history",
                 AsyncMock(return_value=[]),
             ),
-            patch.object(
-                StreamingHandler,
-                "_stream_agent_events",
+            patch(
+                "app.utils.streaming_handler.stream_agent_events",
                 new=fake_stream_events,
             ),
             patch(
@@ -80,6 +183,9 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(done_payload["data"]["history_saved"])
         self.assertTrue(handler.history_saved)
         fake_agent_service.close.assert_awaited_once()
+        agent_service_kwargs = mock_agent_service.call_args.kwargs
+        self.assertNotIn("native_input_selection", agent_service_kwargs)
+        self.assertIsNone(agent_service_kwargs["native_input_catalog_context"])
 
     async def test_persist_refreshed_token_from_agent_service(self) -> None:
         handler = StreamingHandler(
@@ -116,13 +222,12 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             )
         )
 
-        with patch.object(
-            handler,
-            "_load_thread_workflow_context",
+        with patch(
+            "app.utils.streaming_context.load_thread_workflow_context",
             thread_context_loader,
         ):
-            await handler._resolve_workflow_context(
-                MessageCreateRequest(user_id="user-1", content="hello")
+            await resolve_workflow_context(
+                handler, MessageCreateRequest(user_id="user-1", content="hello")
             )
 
         thread_context_loader.assert_awaited_once()
@@ -148,7 +253,7 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             stationary_energy_draft_run_id=draft_run_id
         )
 
-        run_config = handler._run_config(payload)
+        run_config = build_stream_run_config(handler, payload)
 
         self.assertEqual(
             run_config.workflow_name,
@@ -163,400 +268,3 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             run_config.trace_metadata["stationary_energy_draft_run_id"],
             draft_run_id,
         )
-
-    async def test_embedded_stationary_energy_context_clears_agent_instructions(
-        self,
-    ) -> None:
-        recorded: dict[str, object] = {}
-        draft_run_id = str(uuid4())
-        system_content = (
-            "<role>\n"
-            "You are Clima assisting with an active GPC Stationary Energy draft review.\n"
-            "</role>\n\n"
-            "<context>\n"
-            "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON\n"
-            '{"draft_run": {"draft_run_id": "draft-1"}}\n'
-            "</context>"
-        )
-        conversation_history = [
-            {"role": "system", "content": system_content},
-            {"role": "user", "content": "Which rows are gaps?"},
-        ]
-        payload = MessageCreateRequest(
-            user_id="user-1",
-            content="Which rows are gaps?",
-            inventory_id="inventory-1",
-        )
-        handler = StreamingHandler(
-            thread_id=str(uuid4()),
-            user_id="user-1",
-            session_factory=MagicMock(),
-            inventory_id="inventory-1",
-        )
-        handler.workflow_context = ChatWorkflowContext(
-            stationary_energy_draft_run_id=draft_run_id
-        )
-        agent = SimpleNamespace(
-            instructions=(
-                "<role>\n"
-                "You are Clima assisting with an active GPC Stationary Energy draft review.\n"
-                "</role>"
-            )
-        )
-
-        class FakeStreamResult:
-            async def stream_events(self):
-                if False:
-                    yield SimpleNamespace(type="agent_updated_stream_event")
-
-        def fake_run_streamed(agent, runner_input, run_config):
-            recorded["agent_instructions"] = agent.instructions
-            recorded["runner_input"] = runner_input
-            recorded["run_config"] = run_config
-            return FakeStreamResult()
-
-        with (
-            patch(
-                "app.utils.streaming_handler.Runner.run_streamed",
-                side_effect=fake_run_streamed,
-            ),
-            patch(
-                "app.utils.streaming_handler.update_current_trace_context",
-                return_value=True,
-            ),
-        ):
-            chunks = [
-                chunk
-                async for chunk in handler._stream_agent_events(
-                    agent,
-                    payload,
-                    conversation_history,
-                )
-            ]
-
-        self.assertEqual(chunks, [])
-        self.assertEqual(recorded["agent_instructions"], "")
-        self.assertEqual(recorded["runner_input"], conversation_history)
-        self.assertEqual(
-            recorded["run_config"].trace_metadata["prompt_name"],
-            "stationary_energy_review",
-        )
-
-    async def test_embedded_stationary_energy_context_restores_instructions_for_fallback(
-        self,
-    ) -> None:
-        recorded: dict[str, object] = {}
-        draft_run_id = str(uuid4())
-        original_instructions = (
-            "<role>\n"
-            "You are Clima assisting with an active GPC Stationary Energy draft review.\n"
-            "</role>"
-        )
-        system_content = (
-            original_instructions
-            + "\n\n<context>\n"
-            + "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON\n"
-            + '{"draft_run": {"draft_run_id": "draft-1"}}\n'
-            + "</context>"
-        )
-        conversation_history = [
-            {"role": "system", "content": system_content},
-            {"role": "user", "content": "Which rows are gaps?"},
-        ]
-        payload = MessageCreateRequest(
-            user_id="user-1",
-            content="Which rows are gaps?",
-            inventory_id="inventory-1",
-        )
-        handler = StreamingHandler(
-            thread_id=str(uuid4()),
-            user_id="user-1",
-            session_factory=MagicMock(),
-            inventory_id="inventory-1",
-        )
-        handler.workflow_context = ChatWorkflowContext(
-            stationary_energy_draft_run_id=draft_run_id
-        )
-        agent = SimpleNamespace(instructions=original_instructions)
-
-        class FakeMessages:
-            def run_stream(self, prompt: str):
-                recorded["fallback_prompt"] = prompt
-                recorded["fallback_instructions"] = agent.instructions
-
-                async def chunks():
-                    yield "fallback answer"
-
-                return chunks()
-
-        agent.messages = FakeMessages()
-
-        def fail_run_streamed(agent, runner_input, run_config):
-            recorded["runner_instructions"] = agent.instructions
-            recorded["runner_input"] = runner_input
-            raise RuntimeError("sdk stream unavailable")
-
-        with patch(
-            "app.utils.streaming_handler.Runner.run_streamed",
-            side_effect=fail_run_streamed,
-        ):
-            chunks = [
-                chunk
-                async for chunk in handler._stream_agent_events(
-                    agent,
-                    payload,
-                    conversation_history,
-                )
-            ]
-
-        self.assertEqual(chunks, [b"fallback answer"])
-        self.assertEqual(recorded["runner_instructions"], "")
-        self.assertEqual(recorded["runner_input"], conversation_history)
-        self.assertEqual(recorded["fallback_prompt"], payload.content)
-        self.assertEqual(recorded["fallback_instructions"], original_instructions)
-        self.assertEqual(agent.instructions, original_instructions)
-
-    async def test_cnb_fallback_retains_composed_cnb_instructions(self) -> None:
-        payload = MessageCreateRequest(
-            user_id="user-1", content="Check the project budget"
-        )
-        handler = StreamingHandler(
-            thread_id=str(uuid4()), user_id="user-1", session_factory=None
-        )
-        handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(uuid4()))
-        instructions = "Shared core + CNB-specific instructions"
-        agent = SimpleNamespace(instructions=instructions)
-        recorded = {}
-
-        class Messages:
-            def run_stream(self, prompt):
-                recorded["instructions"] = agent.instructions
-
-                async def chunks():
-                    yield "No source context available"
-
-                return chunks()
-
-        agent.messages = Messages()
-        with patch(
-            "app.utils.streaming_handler.Runner.run_streamed",
-            side_effect=RuntimeError("unavailable"),
-        ):
-            chunks = [
-                chunk
-                async for chunk in handler._stream_agent_events(agent, payload, [])
-            ]
-        assert chunks == [b"No source context available"]
-        assert recorded["instructions"] == instructions
-        assert handler._mlflow_tags(payload)["prompt_name"] == "cnb_chat"
-
-    async def test_cancelled_stream_logs_cancelled_mlflow_summary(self) -> None:
-        payload = MessageCreateRequest(user_id="user-1", content="hello")
-        handler = StreamingHandler(
-            thread_id=str(uuid4()),
-            user_id="user-1",
-            session_factory=MagicMock(),
-        )
-        fake_agent_service = MagicMock()
-        fake_agent_service.create_agent = AsyncMock(return_value=object())
-        fake_agent_service.close = AsyncMock()
-        logged_tags: list[dict[str, object]] = []
-        logged_metrics: list[dict[str, object]] = []
-        logged_json_artifacts: list[tuple[str, object]] = []
-
-        async def cancel_stream(self, agent, request_payload, conversation_history):
-            raise asyncio.CancelledError()
-            yield b""
-
-        def record_json_artifact(artifact_file: str, payload: object) -> None:
-            logged_json_artifacts.append((artifact_file, payload))
-
-        with (
-            patch(
-                "app.utils.streaming_handler.AgentService",
-                return_value=fake_agent_service,
-            ),
-            patch.object(
-                StreamingHandler,
-                "_load_conversation_history",
-                AsyncMock(return_value=[]),
-            ),
-            patch.object(
-                StreamingHandler,
-                "_stream_agent_events",
-                new=cancel_stream,
-            ),
-            patch(
-                "app.utils.streaming_handler.log_tags",
-                side_effect=lambda tags: logged_tags.append(tags),
-            ),
-            patch(
-                "app.utils.streaming_handler.log_metrics",
-                side_effect=lambda metrics: logged_metrics.append(metrics),
-            ),
-            patch(
-                "app.utils.streaming_handler.log_json_artifact",
-                side_effect=record_json_artifact,
-            ),
-            patch("app.utils.streaming_handler.log_text_artifact"),
-        ):
-            with self.assertRaises(asyncio.CancelledError):
-                [
-                    chunk
-                    async for chunk in handler._stream_response_with_mlflow(
-                        payload=payload,
-                        history_warning=None,
-                        req_id="request-1",
-                        settings=MagicMock(),
-                        started_at=0.0,
-                    )
-                ]
-
-        self.assertTrue(handler.streaming_error)
-        fake_agent_service.close.assert_awaited_once()
-        self.assertIn({"stream_status": "cancelled"}, logged_tags)
-        self.assertTrue(
-            any(metrics.get("ok") == 0 for metrics in logged_metrics),
-        )
-        self.assertIn(
-            (
-                "errors/stream_cancelled.json",
-                {
-                    "type": "CancelledError",
-                    "message": "Client disconnected or request was cancelled.",
-                    "thread_id": handler.thread_identifier,
-                },
-            ),
-            logged_json_artifacts,
-        )
-        self.assertTrue(
-            any(
-                artifact_file == "response/stream_summary.json"
-                and isinstance(payload, dict)
-                and payload.get("status") == "cancelled"
-                for artifact_file, payload in logged_json_artifacts
-            ),
-        )
-
-    async def test_bulk_review_confirmation_ui_event_is_emitted_as_tool_result(
-        self,
-    ) -> None:
-        handler = StreamingHandler(
-            thread_id=str(uuid4()),
-            user_id="user-1",
-            session_factory=MagicMock(),
-        )
-        handler.tool_invocations.append(
-            {
-                "id": "tool-call-1",
-                "name": "stationary_energy_request_all_recommended_confirmation",
-                "status": "executing",
-            }
-        )
-        run_item = SimpleNamespace(
-            raw_item=SimpleNamespace(
-                call_id="tool-call-1",
-                name="stationary_energy_request_all_recommended_confirmation",
-            ),
-            output=json.dumps(
-                {
-                    "success": True,
-                    "action": "stationary_energy_request_all_recommended_confirmation",
-                    "ui_event": "stationary_energy_review_bulk_confirmation_requested",
-                    "draft_run_id": str(uuid4()),
-                    "pending_choices": [
-                        {
-                            "proposal_id": str(uuid4()),
-                            "action": "accept",
-                            "selected_source_id": "ds-1",
-                        }
-                    ],
-                }
-            ),
-        )
-
-        chunks = [chunk async for chunk in handler._handle_tool_output(run_item)]
-        parsed_chunks = [_parse_sse_payload(chunk) for chunk in chunks]
-        emitted_tool_result = next(
-            payload
-            for payload in parsed_chunks
-            if payload["event"] == "tool_result"
-            and payload["data"].get("ui_event")
-            == "stationary_energy_review_bulk_confirmation_requested"
-        )
-
-        self.assertEqual(
-            emitted_tool_result["data"]["action"],
-            "stationary_energy_request_all_recommended_confirmation",
-        )
-
-    async def test_staged_review_rollback_ui_event_is_emitted_as_tool_result(
-        self,
-    ) -> None:
-        handler = StreamingHandler(
-            thread_id=str(uuid4()),
-            user_id="user-1",
-            session_factory=MagicMock(),
-        )
-        handler.tool_invocations.append(
-            {
-                "id": "tool-call-1",
-                "name": "stationary_energy_request_staged_sources_rollback_confirmation",
-                "status": "executing",
-            }
-        )
-        run_item = SimpleNamespace(
-            raw_item=SimpleNamespace(
-                call_id="tool-call-1",
-                name="stationary_energy_request_staged_sources_rollback_confirmation",
-            ),
-            output=json.dumps(
-                {
-                    "success": True,
-                    "action": "stationary_energy_request_staged_sources_rollback_confirmation",
-                    "ui_event": "stationary_energy_review_rollback_confirmation_requested",
-                    "draft_run_id": str(uuid4()),
-                    "pending_choices": [
-                        {
-                            "proposal_id": str(uuid4()),
-                            "action": "rollback_staged",
-                            "selected_source_id": "ds-1",
-                        }
-                    ],
-                }
-            ),
-        )
-
-        chunks = [chunk async for chunk in handler._handle_tool_output(run_item)]
-        parsed_chunks = [_parse_sse_payload(chunk) for chunk in chunks]
-        emitted_tool_result = next(
-            payload
-            for payload in parsed_chunks
-            if payload["event"] == "tool_result"
-            and payload["data"].get("ui_event")
-            == "stationary_energy_review_rollback_confirmation_requested"
-        )
-
-        self.assertEqual(
-            emitted_tool_result["data"]["action"],
-            "stationary_energy_request_staged_sources_rollback_confirmation",
-        )
-
-    def test_stationary_energy_instruction_fallback_uses_composed_prompt(self) -> None:
-        handler = StreamingHandler(
-            thread_id=str(uuid4()),
-            user_id="user-1",
-            session_factory=MagicMock(),
-        )
-        handler.workflow_context = ChatWorkflowContext(
-            stationary_energy_draft_run_id=str(uuid4())
-        )
-        prompts = MagicMock()
-        prompts.compose_prompt.return_value = "Composed Stationary Energy prompt"
-        settings = SimpleNamespace(llm=SimpleNamespace(prompts=prompts))
-
-        with patch("app.utils.streaming_handler.get_settings", return_value=settings):
-            instruction_text = handler._stationary_energy_review_instruction_text()
-
-        self.assertEqual(instruction_text, "Composed Stationary Energy prompt")
-        prompts.compose_prompt.assert_called_once_with("stationary_energy_review")

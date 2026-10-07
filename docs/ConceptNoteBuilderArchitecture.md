@@ -38,6 +38,30 @@ authenticated read boundary. Runs may begin without uploaded document evidence
 and later rebuild with it; all optional CC, funding, matching, and source
 context may be absent.
 
+When city population is unavailable, the Context tab accepts a population amount
+and year for the current concept-note run. The authenticated CityCatalyst proxy
+forwards `PATCH /api/v1/concept-notes/{runId}/population` to Climate Advisor,
+which stores the value in that run's `context_summary.manual_population`. The
+value is shown in the workspace and passed to chat and chapter drafting with
+`user_entered` provenance, and chat edits may cite it as evidence
+(`context_refs: ["manual_population"]`). It does not update the CityCatalyst
+city population record or become CC context. Removing it clears only the run-scoped value.
+The editor and API reject changes while chapter drafting is running because the
+drafting worker uses a single population snapshot for all chapters.
+
+Missing Context cards offer the next step. The GHG inventory card links to GHGI
+onboarding when the city has no inventory, and to adding data when the inventory
+has no recorded values (**Empty inventory**); otherwise the inventory year is a
+chip beside the status badge that opens the inventory picker ("Choose
+different"), disabled with a reason while drafting runs or the bundle is
+building, and a small icon opens that inventory in GHGI. GHGI links open in a
+new tab. Inventory context refreshes automatically (see below), so the inventory
+card has no manual refresh control. The population card retains its explicit
+refresh when the stored population is missing or differs from CityCatalyst. The Climate
+Action Plan card has no module link because not every project enables HIAP. A
+missing application template opens funding selection. The climate risk
+assessment card and tile are hidden until CCRA data feeds concept notes.
+
 In scope:
 
 - A Climate Advisor workflow for concept-note runs.
@@ -155,10 +179,83 @@ flowchart TB
 
 ## Product Shape
 
-The user experience is not a step-by-step questionnaire. It combines an
-optional manual interview with a live document workspace. Draft generation is
-not driven through chat: starting a draft invokes a dedicated persisted process,
-and chat remains available only for user-led questions and clarification.
+The user experience combines chat with a live document workspace. Draft generation is
+not driven through chat: starting a draft invokes a dedicated persisted process.
+Afterwards, chat supports user-led questions, clarification, and reviewable edit
+proposals. Only explicit review actions mutate the persisted document.
+
+The workspace renders one edit-review toolbar in a dedicated row below the
+document header. Funding saves navigate to Draft only when the action is labelled
+"Save and go to drafting". Ready-to-draft guidance follows the current funding,
+source, and draft state regardless of their loading order; it hides during source
+processing or when the template is cleared, and does not duplicate the setup
+panel's Start drafting button. Dismissed guidance stays dismissed. Completion
+guidance clears when drafting resumes. Draft progress uses workspace events, and
+finishing the chat overview refreshes the draft's consumed-overview state.
+
+Files uploaded after drafting began go through source revalidation (see
+below), which redrafts the chapters they affect and closes the gaps their
+evidence answers. In chat, `concept_note_gaps` lists those closed gaps with the
+file that filled them in `filled_from`, so Clima can say what a new file changed.
+
+### Implemented chat revision boundary (CC-732)
+
+The workspace shows red/green changes at each affected passage.
+Users review inline with accept/reject controls
+or Accept all / Reject all, navigate exact hunks, and access provenance and
+refinement in the options popover. The planner groups related occurrences;
+there is no separate checkbox-selection interface. The context tab retains source
+summaries and upload controls without an expanded details dialog.
+
+After an inline decision, bulk actions become Accept remaining / Reject remaining
+and affect only undecided changes. Previously accepted changes are saved and
+previously rejected changes stay excluded. Decisions remain available for retry
+if submission fails. Edit errors appear beside the document toolbar; if saving
+succeeds but loading the updated draft fails, a persistent Reload draft action
+retries the read without resubmitting the edit.
+Confirming a chapter refreshes both its run's draft and edit proposals, so the
+review state updates even when no proposal is processing and polling is stopped.
+
+The proposal-only CA tool uses authorized evidence and explicit user input.
+Evidence is an uploaded source (`source_refs`), a run context section
+(`context_refs`: CityCatalyst `city`, `project`, `ghgi`, `ccra`, `hiap`, or the
+user-entered `manual_population`), or an exact user quote. Each cited context
+section is stored as a fingerprinted `context_snapshots` entry; accepting a
+proposal after that section changes marks it stale, as for a changed upload.
+One bounded document agent searches exact text and reads chapters on demand.
+It proposes contextual matches, selected server-issued match IDs, or explicit
+all-match replacements. Python resolves offsets from the captured revisions and
+returns structural errors to the agent for correction. An independent LLM
+reviewer checks meaning and factual support for each affected chapter. Python checks exact anchors,
+source identity, that cited context sections exist in the run, user quotes,
+required headings and unresolved markers. It does
+not infer meaning from numeric/entity tokens, merge groups based on shared values,
+or expand replacements after semantic review. Scope is automatic; chapter focus is
+only a navigation hint. Parsed-Markdown redlines preserve source offsets and fail
+closed on stale or overlapping anchors. No edit is applied before acceptance.
+Unchanged matching context is trimmed from the displayed diff. All-match edits
+exclude protected markers, template headings, and locked chapters; server-counted
+exclusions appear in the proposal and chat response. Complete, grounded gap fills
+retain the existing marker-resolution contract. The agent has a 12-turn limit;
+planning plus review has a 180-second deadline, configurable in `llm_config.yaml`.
+
+CNB migration `20260907_120000` provisions proposals and
+immutable application records. Apply locks the run and affected chapters, checks
+the expected revision vector, and appends accepted changes atomically. Records
+remain for audit, sequencing and idempotent retries; public history, undo and
+restore endpoints are not exposed. Inline decisions select the exact applied subset.
+Migration `20260917_120000` adds persisted proposal exclusion notices after the
+`20260909_120000` merge revision.
+
+A grounded marker replacement resolves the matching gap in the same transaction.
+Wording-only edits preserve Ready only when exact confirmation and current gap,
+and lock checks permit it; factual changes require renewed review.
+Proposals and results survive reload. Web and CA independently enforce current
+user/run/city authorization. CNB uses the shared Clima MLflow content-logging
+contract: chat turns store user messages and complete assistant responses, while
+nested source queries and edit planning record credential-redacted model/tool
+inputs and outputs. Standalone source analysis, drafting, validation, and edit proposals use
+correlated workflow traces with the same prompt snapshot storage.
 
 The first part of the workflow is context bundle building. The
 `ContextBundleService` assembles the reusable run context by:
@@ -197,7 +294,6 @@ The drafting service and document workspace then use that context bundle to:
 ```mermaid
 flowchart LR
     Context["Assemble context bundle"]
-    Context --> Interview["Optional manual interview"]
     Context --> Draft["Independent sequential drafting"]
     Draft --> Review["User review + edits"]
     Review --> Validate["Review & export<br/>reuse current results, validate stale chapters"]
@@ -382,13 +478,40 @@ Markdown to `InventoryExtractionService` before the import advances to
 | Inventory source PDF    | `ImportedInventoryFile.s3Key` | Existing inventory import lifecycle.      |
 | Concept Note source PDF | UUID v4 `upload_id` key       | CNB upload lifecycle coordinated with CA. |
 | PDF-derived Markdown    | `PdfOcrJob.result_s3_key`     | Produced by the shared OCR lifecycle.     |
+| PDF structured artifact | `PdfOcrJob.structured_s3_key` | Sibling of PDF-derived Markdown.          |
 | Native Markdown         | `PdfOcrJob.result_s3_key`     | Stored directly as the final artifact.    |
 
 PDF-derived Markdown follows
 `pdf-ocr/results/{source_type}/{source_id}/{attempt_count}/combined_markdown.md`.
-Native Markdown follows
+The structured sibling for the same attempt follows
+`pdf-ocr/results/{source_type}/{source_id}/{attempt_count}/document.structured.json`
+and uses schema `citycatalyst.structured-document.1`. Native Markdown follows
 `pdf-ocr/results/concept_note_upload/{upload_id}/direct-{sha256}/combined_markdown.md`,
 so a replay with different bytes cannot replace an already registered artifact.
+Native Markdown has annotation mode `none` and no structured object.
+
+`PdfOcrJob.annotation_mode` is `none` or `visual_context`. It defaults to
+`none`. New CNB PDF uploads request `visual_context`. Inventory imports stay
+`none` and still extract rows only from Markdown. The structured-artifact
+migration requeues in-flight CNB PDF jobs onto `visual_context` and leaves
+completed, failed, inventory, and direct-Markdown rows at `none`. An explicit
+retry of a failed PDF then requests `visual_context`. An idempotent re-enqueue
+cannot change the stored mode. A lost lease after the S3 writes does not
+publish those objects: consumers see only the database pointers. The next claim
+uses a new `attempt_count`. An explicit OCR retry of a failed PDF clears both
+artifact pointers. Delivery retry does not.
+
+Mistral may return page-local table bodies separately from the Markdown page
+through `tables[].content` and links such as `[tbl-1.md](tbl-1.md)`. CC resolves
+those references within each page before hashing and storing canonical Markdown,
+so Climate Advisor's source analysis sees the exact table values. Missing,
+duplicate, cross-page, empty, or unplaced table bodies fail OCR explicitly.
+Pre-structured succeeded CNB PDFs can replay their original Markdown on delivery
+retry. CC attests that narrow state on its authenticated Markdown read with
+`X-CC-Legacy-Pdf-Delivery: pre-structured-pdf-v1`; CA accepts null structured
+metadata only with the exact attestation. Such legacy uploads remain
+Markdown-only, with no visual context, while new PDFs still require the
+structured artifact.
 
 ### Climate Advisor Workflow Database
 
@@ -453,9 +576,13 @@ The authorized run may advance with no ready source by recording
 `document_grounding: none` and `missing_context: [source_documents]`. A ready
 upload records `document_grounding: uploaded_evidence`; every other section has
 an explicit empty value. Independent `available_context` flags report the
-presence of city, project, GHGI, CCRA, HIAP, and uploaded-document context. A
-rebuild keeps the last completed bundle and flags available to chat and
-selected-source queries until the replacement is committed.
+presence of city, project, GHGI, CCRA, HIAP, and uploaded-document context.
+`city_population` holds the `{population, year}` from the stored city profile,
+or `null`. The Context tab labels the population "Included in run" only from
+this field. It offers a refresh (a forced rebuild) when CityCatalyst has a
+figure the run lacks or has since changed. A rebuild keeps the last completed
+bundle and flags available to chat and selected-source queries until the
+replacement is committed.
 
 ```mermaid
 flowchart TB
@@ -493,11 +620,33 @@ Recommended high-level shape:
   ],
   "funder_context": null,
   "similar_projects": [],
-  "document_context": null
+  "document_context": null,
+  "source_text": {
+    "mode": "full_text",
+    "token_count": 6308,
+    "max_tokens": 80000,
+    "documents": [
+      {
+        "upload_id": "uuid",
+        "source_label": "City climate plan",
+        "filename": "plan.pdf",
+        "source_format": "pdf",
+        "text": "<!-- page: 1 -->\nComplete verified page text"
+      }
+    ]
+  }
 }
 ```
 
-The bundle contains no raw source, storage key, credential, or derived chunk.
+`source_text` holds the complete verified text of every selected source only
+while the total stays within `cnb_sources.full_text_max_tokens` (80,000 by
+default). The chapter drafter and CNB chat receive it as a separate
+`CONCEPT_NOTE_SOURCE_DOCUMENTS` message. Above the limit, or when a reused
+source cannot be re-read, `mode` is `summary`, `documents` is empty, and agents
+rely on summaries and the source-query tool.
+
+Apart from `source_text`, the bundle contains no raw source, storage key,
+credential, or derived chunk.
 Its summary records build/fingerprint identity, mode, missing context, source and
 optional-context statuses, warnings, retryability, and completion. Only the
 active build may commit; later rebuilds or retryable failures keep serving the
@@ -951,9 +1100,13 @@ their source records:
   restricted deletion.
 
 `concept_note_runs.thread_id` is a nullable integration identifier for the
-dedicated chat thread. It deliberately has no database foreign key so legacy
-thread bindings remain compatible. Rename updates the owned thread title and
-delete removes the dedicated thread. CityCatalyst validates thread ownership
+run's active chat thread. It deliberately has no database foreign key so legacy
+thread bindings remain compatible. The reverse link is enforced: every chat
+opened for a run carries `threads.concept_note_run_id` (cascading on run
+deletion), which is what the chat list, chat switching, and cleanup rely on. A
+run keeps every chat it has opened; only one is active at a time and message
+turns are validated against it. Rename updates the active thread title and
+delete removes every attached thread. CityCatalyst validates thread ownership
 before passing the identifier into the workflow.
 
 `concept_note_chapter_revisions` enforces a unique
@@ -1327,8 +1480,15 @@ CityCatalyst owns both source-to-Markdown paths:
 
 - PDF uploads use the shared PDF-to-Markdown converter. CC owns source-file
   authorization and storage, the durable OCR queue, Mistral requests, retries,
-  ordered page merge, schema validation, and the authoritative Markdown
-  artifact.
+  ordered page merge, schema validation, and two immutable artifacts from one
+  OCR response: `combined_markdown.md` and `document.structured.json`. The
+  structured artifact keeps the non-binary provider payload and a normalized
+  page, block, hierarchy, order, box, table, figure, caption, and relationship
+  view. A block's normalized `confidence` is only Mistral's
+  `average_content_confidence_score`, stored with that metric name. Other
+  provider confidence scores stay in the raw payload and are not relabeled.
+  Provider `table_id` and `image_id` values link a block to the same-page table
+  or image. Binary image payloads are not stored.
 - Native `.md` uploads bypass OCR entirely. CC validates UTF-8, rejects NUL or
   empty content, removes an optional BOM, normalizes line endings, and stores
   that Markdown directly in the final result namespace that CA reads later.
@@ -1336,6 +1496,11 @@ CityCatalyst owns both source-to-Markdown paths:
 The PDF-derived artifact follows these Markdown-shape requirements:
 
 - all pages are merged in source order into one UTF-8 Markdown document;
+- each page starts with its `<!-- page: N -->` marker, followed by Mistral's
+  separately extracted header, the body with table bodies inserted at their
+  placeholders, and the footer, in that order and joined by blank lines. Header
+  and footer text is verbatim plain text with no wrapper markup; blank or absent
+  fields add nothing, and repeated headers and footers are kept on each page;
 - tables retain Markdown structure, exact headers, aligned rows and columns,
   captions, totals, units, scale, and year context;
 - source rows are not merged, dropped, aggregated, or reordered;
@@ -1354,8 +1519,12 @@ same file again intentionally creates another source identity. Replaying the
 same CA create request with that ID and unchanged metadata is idempotent, while
 changing its immutable identity is rejected. PDF uploads use
 `source_type = concept_note_upload` and `source_id = upload_id` inside the shared
-OCR queue. A run may contain many distinct uploads. The shared 20 MiB upload
-limit applies to the uploaded source file, not to the final Markdown artifact.
+OCR queue. A run may contain up to 10 uploads (`MAX_UPLOADS_PER_RUN`); failed
+uploads keep their slot because files cannot be removed individually, replays of
+an existing `upload_id` never count, and an 11th upload returns 409
+`concept_note_upload_limit_reached`. The Context tab lists every upload. The
+shared 20 MiB upload limit applies to the uploaded source file, not to the final
+Markdown artifact.
 PDF-derived Markdown includes `page_count` metadata; native Markdown does not
 use page counts.
 
@@ -1374,15 +1543,26 @@ Each upload is handled independently:
    and delivery processors after the durable work record exists. The route
    still returns `202` without waiting for OCR or context rebuilding; the
    scheduled worker remains the recovery and retry path.
-2. For a PDF upload, CC creates or reuses the OCR job, converts the file, and
-   stores the authoritative Markdown artifact in CC S3. For a native Markdown
-   upload, CC stores the validated, normalized UTF-8 artifact directly in the
-   final Markdown namespace without queuing or running OCR; the same
-   `PdfOcrJob` table records the completed result and delivery state.
+2. For a PDF upload, CC creates or reuses the OCR job with
+   `annotation_mode = visual_context`, converts the file, and stores both
+   artifacts in CC S3 before the leased job can succeed. When annotation was
+   requested, every returned image or figure must have a schema-valid
+   annotation. A missing or invalid annotation is retryable. After the existing
+   attempt limit the whole job fails and CNB receives that failure. There is no
+   successful Markdown-only downgrade. A document with zero images succeeds with
+   zero annotations. For a native Markdown upload, CC stores the validated,
+   normalized UTF-8 artifact directly in the final Markdown namespace without
+   queuing or running OCR; the same `PdfOcrJob` table records the completed
+   result and delivery state with `annotation_mode = none` and no structured
+   pointer.
 3. CC calls
    `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` with the stable
-   Markdown object key, filename, source label, and digest. PDF-derived
-   artifacts may also include page metadata; native Markdown does not.
+   Markdown object key, filename, source label, and digest. PDF deliveries also
+   include `annotation_mode`, `structured_s3_key`, `structured_sha256`,
+   `structured_size_bytes`, and `structured_schema_version`. Native Markdown
+   omits those structured fields. A new PDF cannot become ready until both
+   identities are present. Existing ready rows with all structured columns null
+   stay readable and are not backfilled.
 4. CA rechecks run permission and calls CC's authenticated internal Markdown
    read route by `upload_id`.
 5. CA validates the returned bytes against the delivered identity metadata,
@@ -1446,6 +1626,26 @@ How it works:
   Revisions are an audit/history trail; they do not feed evidence links.
 - Missing facts are stored as gaps and surfaced to the user in the workspace.
   They do not create chapters by themselves.
+- Users answer gaps through chat: accepting a reviewed edit that fills a
+  gap's marker resolves that gap.
+- A newly processed source runs an impact review. A review-only LLM call picks
+  the chapters whose content or open gaps the source affects, and each of their
+  open gaps is asked of the verified source text. Only those chapters are
+  redrafted, with the cited answers, as a new revision; unaffected chapters
+  stay unchanged. The drafter edits the chapter's current text in place, so
+  accepted chat edits and unaffected prose survive, and a fact the new source
+  contradicts is flagged with a marker rather than overwritten. Only gaps with a
+  successful cited answer from the new source are resolved, as
+  `evidence_update` by `system`; previously resolved gaps that the evidence
+  contradicts reopen, and deferred caveats are left untouched. A redraft that
+  drops an unanswered gap, or whose markers disagree with its gap list, is
+  rejected and logged, and the remaining chapters still update. A confirmed
+  revision is never replaced, so an affected Ready chapter returns to review.
+- The impact review is a durable job in `context_summary.source_revalidation`,
+  queued atomically with the bundle commit. A worker leases it; failures stay
+  pending and the context-bundle reconciler retries them up to three times,
+  re-fetching verified source text with a service-minted token for the run
+  owner. Stale leases return to pending after one hour.
 - Evidence links are shown to the user to explain why a claim was grounded.
   They are review/audit UI only and are ignored by DOCX/PDF export.
 - Chapter-validation prompts reference evidence by one-based list position.
@@ -1454,6 +1654,12 @@ How it works:
   API. The guided review and focused chapter finding render the trusted source
   label, location, and a bounded source excerpt without allowing the model to
   supply source identity metadata.
+- Chat edit planning and its semantic review use one-based selected-source
+  indices encoded as strings in `source_refs`. Only allowlisted source evidence
+  reaches the models; backend upload IDs and hashes remain in verified snapshots.
+  Duplicate filenames stay distinct, and refinement rebinds snapshots to the
+  current source order. Explicit edit requests invoke the available proposal
+  tool; the user must accept the proposal before the document changes.
 - Both validation passes use an explicit `document` and generated `output`
   contract. Completeness compares the output with a code-selected
   `document.validation_profile` and evidence material; consistency compares it
@@ -1644,10 +1850,10 @@ object; this contract does not infer percentages or document/upload counts.
 CityCatalyst exposes the same list at
 `GET /api/v1/concept-notes?city_id=...`, deriving the user from the session and
 rejecting malformed or mixed-city successful responses from Climate Advisor.
-Its single-run read, rename, duplicate, and delete routes also require `city_id` so
-CityCatalyst can authorize the requested city before issuing the Climate Advisor
-token. Climate Advisor remains authoritative for run ownership and stored city
-binding.
+Its single-run read, rename, duplicate, chat-reset, and delete routes also require
+`city_id` so CityCatalyst can authorize the requested city before issuing the
+Climate Advisor token. Climate Advisor remains authoritative for run ownership
+and stored city binding.
 The CityCatalyst dashboard consumes this contract at
 `/{lng}/cities/{cityId}/concept-notes`. Each card exposes Resume, Duplicate,
 Export, and Delete, with a compact rename button beside the title. Rename uses
@@ -1658,9 +1864,20 @@ ID and loads the authorized single-run detail before continuing.
 
 Duplicate creates a fresh thread, copies current context and chapter content
 into new mutable records, and reuses immutable Markdown artifacts by key. Delete
-removes the managed workspace before deleting the CA run and dedicated thread.
-Shared city/project files and immutable source artifacts remain outside the
-deletion boundary. No archive or restore state is added.
+removes edit proposals/applications and the managed workspace before deleting
+the CA run, upload pointers, context, and dedicated thread/messages. Unreferenced
+uploaded files, all OCR attempts, and OCR job records are removed first through
+the service-authenticated CityCatalyst source-cleanup endpoint. Copies retain
+shared source artifacts until the last referencing note is deleted; shared
+city/project files remain outside this boundary. Cleanup failures keep the run
+available for retry, and active OCR jobs block source cleanup. No archive or
+restore state is added.
+
+The workspace chat header exposes **Start new chat**. After explicit confirmation,
+the reset route creates a fresh workflow-bound thread, points the existing run at
+it, and deletes the old dedicated thread and messages in one Climate Advisor
+transaction. The Concept Note workspace, draft chapters, sources, context bundle,
+and revision history are unchanged.
 
 The dashboard and wiring pages are hidden unless both
 `CA_SERVICE_INTEGRATION` and `CONCEPT_NOTE_BUILDER` are present in
@@ -1687,6 +1904,63 @@ Always-on context should include:
 This is crucial because the agent should never need to ask a tool what state the
 workflow is in before deciding what to do next.
 
+### Funding selection in the workspace
+
+The Context tab's **Browse funders** / **Change** action in the funder card's upper-right corner opens a
+searchable catalogue of every managed funder, including profiles without programmes
+or templates. Search matches funder names, countries, regions, and programme names,
+regions, sectors, and summaries; IDs and template JSON are excluded. The inspector
+shows stated and derived profile facts, programme
+eligibility and award information, and the associated template's ordered chapters
+and required fields. The managed schema has one template per programme; selecting
+a programme selects that compatible template. Changing the funder clears the
+pending programme and template before saving.
+
+`GET /v1/concept-notes/{run_id}/funding-catalogue` reads the shared CNB reference
+database after run ownership and current city-access checks. It returns the complete
+curated catalogue for client-side search, without ranking or omitting incomplete
+profiles. `PATCH /v1/concept-notes/{run_id}/application-context` validates the full
+selection and expected previous identifiers, then persists the IDs on the CA run
+and replaces the bundle's funding context. City and uploaded-source context remain
+available. The corresponding CityCatalyst proxy routes and RTK cache invalidation
+refresh the selection, draft review state, and pending proposals.
+
+Funding changes are rejected during active context assembly, drafting, or edit
+planning. For an existing draft, the user must acknowledge another review: chapter
+text and revision history are retained, confirmations and prior validation results
+are cleared, pending edit proposals become stale, and previous project matches are
+removed. An existing draft can switch to a template when its template chapter
+references match, regardless of document order or added custom chapters.
+Incompatible switches are rejected without changing the selected funding or draft;
+the user is directed to start a new note for that template. Compatible switches
+update required flags by reference while preserving run-owned titles, descriptions,
+order and revision history. Clearing funding, or selecting a funder without a
+template, preserves the draft for a later compatible selection.
+
+Edit registration snapshots context while holding the same CA run-row lock as
+funding selection, and commits its processing proposal before releasing that
+lock. Funding changes reject processing proposals; completed proposals are
+invalidated on a switch. Edit application also takes the CA lock before CNB
+proposal/chapter locks, so acceptance cannot race funding invalidation. HTTP and
+chat callers cannot supply an earlier context snapshot to the edit service.
+Reference-store review invalidation commits before the CA selection; a failed CA
+commit keeps the old choice but conservatively requires another draft review.
+
+Focused verification:
+
+```bash
+# From climate-advisor/service
+python -m pytest tests/cnb/test_funding_selection.py tests/cnb/test_application_context.py
+# With a disposable PostgreSQL test database, also exercise real row-lock ordering
+CNB_TEST_DATABASE_URL=postgresql://localhost/cnb_test python -m pytest tests/cnb/test_funding_selection_postgres.py
+# From app, against a running local app and authenticated test-user storage state
+CNB_TEST_URL=http://localhost:3000 CNB_AUTH_STATE=playwright/.auth/user.json npx playwright test --config e2e/funding.playwright.config.ts
+```
+
+The browser test exercises the real workspace with controlled API responses;
+the Python tests exercise catalogue joins, persistence, and invalidation in test
+databases. Neither test starts an LLM request.
+
 ### Context Bundle Build Responsibilities
 
 Context bundle building is not an agent tool group. `ContextBundleService`
@@ -1699,12 +1973,55 @@ persisted `cc_context` sections. The workspace uses those flags for its status
 badges; it does not infer that city or project context is included merely
 because the corresponding record is available elsewhere in CityCatalyst.
 
+The concept-note list labels each city source as available or unavailable in
+the city. The run's Context tab uses the same status terms for its own bundle:
+available city data can still be absent from a run, while selected, processing,
+included, and failed are distinct run states. Bundle progress exposes
+`source_provenance` from the saved bundle, including the GHGI inventory ID and
+year. The Context tab uses that saved
+identity for included sources, rather than the city's latest inventory. Older
+bundles without provenance display that the used inventory was not recorded.
+An optional source reported as `unavailable` by bundle progress appears as
+**Not available** in Run Context, even if it exists in the city; an actual
+bundle or source failure appears as **Failed**.
+A GHG inventory with no recorded values is **Empty inventory** in both places;
+one the run uses with sectors still missing is **Included, partial data**.
+The note-list tiles and the Context cards share one implementation: the
+`context-source-status` module derives state, label, tone and help text, the
+same status badge renders it (**Processing** while data loads), and
+`context-source-action` renders the next step (Create inventory or Add inventory
+data in both; Choose different only in the run). A city with no inventory
+answers 404, which reads as unavailable; other lookup errors read as failed.
+
+GHGI uses the newest accessible inventory (year, then last update, then ID),
+the same order `GET /api/v1/city/{city}/ghgi` uses; that route returns 404 when
+the city has none. A partially filled inventory is still used: sectors missing
+from CityCatalyst's status or emissions data, including IV and V in BASIC
+inventories, count as zero and the source is marked `partial`. "Choose
+different" on the GHGI card calls `PUT /concept-notes/{run}/inventory-selection`,
+which stores `context_summary.selected_inventory_id` (null restores the newest)
+and rebuilds the bundle. A chosen inventory that is no longer accessible falls
+back to the newest with a warning.
+
+Each build records the inventory version it checked as
+`context_bundle.inventory_candidate`. Opening the workspace, and returning to
+its tab (at most every 10 seconds), calls
+`POST /concept-notes/{run}/context-bundle/refresh`. That compares the
+city's current inventory ID and `updated_at` with the recorded version and
+queues a forced rebuild only when they differ, so an inventory created or
+edited after the note started is picked up without a user action. A rebuild
+stores `context_changes` (GHGI added, changed, updated, or removed; HIAP added
+or removed), and the chat shows them once per build as a
+"New context available" notice.
+
 Context loaded:
 
 - Every ready upload's identity, summary, topics, and bounded exact excerpts,
   using pages for PDFs and deterministic heading/block anchors for Markdown.
   Queued and failed uploads are excluded.
-- City profile summary if another workflow has populated it.
+- City profile from the CityCatalyst city page: name, LOCODE, country, region,
+  area (km²), and the most recent population and year. The boundary geometry
+  is omitted. A failed lookup warns and keeps the last stored profile.
 - Project summary if another workflow has populated it.
 - GHGI summary if available.
 - CCRA risk summary if available.
@@ -1726,13 +2043,18 @@ Rules:
   dropping content. For native Markdown, derives deterministic heading/block
   anchors from the stored UTF-8 bytes and partitions without inventing
   synthetic pagination.
-- Uses configured GPT-5.6 Luna readers with low reasoning and process-wide
-  concurrency no greater than three, then GPT-5.6 Sol with medium reasoning for
+- Uses configured GPT-5.6 Terra readers with medium reasoning and process-wide
+  concurrency no greater than three, then GPT-5.6 Terra with medium reasoning for
   final document synthesis. Both retain tool-free structured outputs through
   OpenRouter Chat Completions and omit temperature.
 - Requires exactly one ordered result per input section and verifies every
   retained excerpt as an exact substring of that section. Generated segment
   identifiers are attached only by backend code, never included in the prompt.
+  The provider output schema requires exactly the supplied number of sections;
+  the backend independently checks the returned count.
+  A section-count mismatch discards the incomplete response and rereads both
+  halves, up to two split levels under the same concurrency limit. Every
+  recovered group must pass coverage checks before synthesis can proceed.
 - Requires every factual sentence in a synthesized document summary to remain
   self-contained and supported by an exact retained excerpt. Conflicting
   evidence remains explicit instead of being silently reconciled.
@@ -1746,6 +2068,22 @@ Rules:
 - Completes with `document_grounding: none` when no ready upload exists. A
   pointer/digest change, reader partition failure, or incomplete source coverage
   still fails retryably.
+  Failed run progress and correlated logs retain content-free `error_reason`
+  and numeric `error_details` alongside `error_code`. The workspace derives
+  chat and draft notices from one shared upload/context status, including
+  pending uploads that have not yet reached the bundle. Pending uploads, a failed
+  current upload, and bundle preparation/failure block chat. Older failed uploads
+  are superseded by a newer successful upload and excluded from readiness counts.
+  Ready document context unlocks chat automatically, including after reload.
+- `POST /v1/messages` checks the request/thread's owned CNB run before saving a
+  user turn or starting SSE. Its persisted bundle must be ready and contain the
+  current ready uploads with matching IDs/digests, with no pending uploads or
+  failed latest upload. The workspace sends the run ID explicitly, and Climate
+  Advisor requires that run to match the supplied thread. HTTP `409` /
+  `concept_note_context_not_ready` is preserved by the CC proxy and shown as a
+  recoverable context error in the workspace; other failures before SSE starts
+  also retain their non-success status. The rejected optimistic user message is
+  removed. Ready city-only runs remain valid.
 - Reconciles every five minutes and marks builds left in `building` for more
   than one hour as `context_bundle_build_interrupted`, preserving the existing
   retry route without storing a durable access token in a job queue.
@@ -1754,15 +2092,17 @@ Rules:
   refreshed similar projects, or user-confirmed facts.
 - Does not expose arbitrary context bundle replacement. Bundle edits must come
   from a known workflow trigger and preserve the rest of the assembled context.
-- Replaces only `selected_sources`, `cc_context.ghgi`, and `cc_context.hiap` on a
-  source-triggered rebuild, preserving all unrelated sections populated later.
+- Replaces only `selected_sources`, `source_text`, `cc_context.city` (when the
+  lookup succeeds), `cc_context.ghgi`, and `cc_context.hiap` on a source-triggered
+  rebuild, preserving all unrelated sections populated later.
 - Does not register CC context loading or context bundle editing as
   agent-callable tools. The separate source-query capability is read-only.
 
 ### Selected-document source query
 
 `concept_note.sources.query` is the only agent capability that can read uploaded
-source content. Climate Advisor registers its function-tool implementation
+source content on demand; complete text is otherwise supplied only through the
+budgeted `source_text` message described above. Climate Advisor registers its function-tool implementation
 `concept_note_sources_query` only for the authorized `concept_note_run_id`, only
 after the bundle is ready, and only during `interviewing`,
 `drafting_document`, or `editing_document`.
@@ -1778,7 +2118,7 @@ Generated block fingerprints are replaced with readable document headings, while
 the backend retains exact block anchors for source verification.
 Questions spanning documents require
 separate calls. The function re-fetches and verifies that document, fans out
-tool-free GPT-5.6 Luna readers over every source-preserving partition using
+tool-free GPT-5.6 Terra readers over every source-preserving partition using
 deterministic code-controlled `Runner.run` calls, and returns only after every
 partition succeeds. Its result contains the source label, verified page- or
 block-located excerpts, source-unit/segment coverage counts, and reader caveats for the calling agent
@@ -1923,13 +2263,24 @@ Input:
   "filename": "string",
   "source_label": "Climate Action Plan",
   "page_count": 12,
-  "sha256": "lowercase-hex-digest"
+  "sha256": "lowercase-hex-digest",
+  "annotation_mode": "visual_context",
+  "structured_s3_key": "pdf-ocr/results/concept_note_upload/{upload_id}/1/document.structured.json",
+  "structured_sha256": "lowercase-hex-digest",
+  "structured_size_bytes": 120,
+  "structured_schema_version": "citycatalyst.structured-document.1"
 }
 ```
 
 Native payloads use `source_format: markdown`, `block_count`, and excerpt
-anchors. CA fetches and validates both source formats through the authenticated
-CC boundary described in the handoff contract above.
+anchors, and do not declare structured fields. CA fetches and validates both
+source formats through the authenticated CC boundary described in the handoff
+contract above. PDF ingest also reads
+`GET /api/v1/internal/ca/concept-note-uploads/{upload_id}/structured` with the
+same service-and-user authentication, verifies the digest before analysis, and
+never receives S3 credentials or a signed URL. This internal delivery contract
+is documented here. `climate-advisor/docs/climate-advisor-openapi.yaml` does
+not represent it.
 
 Output:
 
@@ -1945,8 +2296,23 @@ Rules:
 - Uses the existing CC-issued user-scoped bearer authentication and rechecks
   current run permission.
 - Rejects an `upload_id` already associated with another run.
-- Fetches the stored object through authenticated CC and validates the supplied
-  SHA-256 digest before durably registering its pointer.
+- Fetches the stored Markdown through authenticated CC and validates the
+  supplied SHA-256 digest before durably registering its pointer. For a PDF, it
+  also fetches and verifies the structured artifact's content type, digest,
+  schema version, annotation mode, upload identity, and page count.
+- Passes each stored visual annotation through as the complete unverified
+  envelope (`source: image_annotation`, `quantitative_reliability: unverified`,
+  page/image identity, bounding boxes, and unchanged `provider_annotation`).
+  Exact excerpts and citations stay on source Markdown. Prompts and tools treat
+  visual context as untrusted descriptive context only: never as instructions,
+  evidence, citations, or trusted quantitative input. A
+  `VISUAL_CONTEXT_CONTRACT_VERSION` invalidates legacy filtered projections so
+  an authorised refresh rehydrates the full envelope from the structured
+  artifact without re-running Markdown LLM analysis.
+- Rejects a structured artifact larger than `CNB_STRUCTURED_REQUEST_MAX_BYTES`
+  (default 20 MiB) and a CC structured artifact larger than
+  `PDF_OCR_STRUCTURED_MAX_BYTES` (default 20 MiB). Oversized JSON fails
+  explicitly and is not truncated.
 - Treats `page_count` as optional metadata for PDF-derived artifacts only.
 - Requires the completed Markdown to satisfy the
   [source-specific Markdown requirements](#pdf-conversion-and-native-markdown-handoff)
@@ -2382,10 +2748,10 @@ The configured prompt/model roles are:
 ```yaml
 models:
   cnb_source_reader:
-    name: openai/gpt-5.6-luna
-    reasoning_effort: low
+    name: openai/gpt-5.6-terra
+    reasoning_effort: medium
   cnb_source_synthesizer:
-    name: openai/gpt-5.6-sol
+    name: openai/gpt-5.6-terra
     reasoning_effort: medium
   cnb_chapter_validator:
     name: openai/gpt-5.6-terra
@@ -2398,11 +2764,21 @@ prompts:
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 ```
 
-The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-sol`) with explicit
-`reasoning_effort: medium` for its Chat Completions function-tool loop. Funding
-research and similar-project selection use Sol with medium reasoning on the
-existing Responses API path; canonical-funder identity matching uses Luna with
-low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
+The main CNB chat uses `models.cnb_chat` (`openai/gpt-6-sol`) with explicit
+`reasoning_effort: medium` for its Chat Completions function-tool loop. The
+chat-edit planner uses GPT-6 Sol with high reasoning, and the new-source impact
+reviewer uses GPT-6 Sol with medium reasoning. Funding research and
+similar-project selection use Terra with medium reasoning on the existing
+Responses API path; canonical-funder identity matching also uses Terra with
+medium reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
+
+Workspace responses combine current chapter text, exact confirmed revisions,
+structured gaps and their latest resolutions, and validation freshness. An accepted
+chat edit makes a validation of the previous document stale. Duplication preserves
+confirmation only when it refers to the copied latest revision, copies gap
+resolution history with new IDs, and omits stored validation results. CNB migration
+`20260909_120000` joins the validation and review migration heads without rewriting
+either parent migration.
 
 The validation prompt budget is 50,000 tokens. Completeness and consistency run
 with temperature zero and strict structured contracts; only concise findings
@@ -2440,7 +2816,9 @@ not MLflow's thread-local fluent active-run stack. All shared logging helpers an
 run termination target that ID. Failed starts mask the enclosing target, queued
 writes drain before closure, and exceptions/cancellation terminate only the
 affected request. Trace metadata explicitly links to the source run through
-`mlflow.sourceRun` and records session/user using MLflow 3.2 metadata keys.
+`mlflow.sourceRun` and records user identity using MLflow 3.2 metadata keys.
+Only chat turns set `mlflow.trace.session`. Standalone CNB preparation and
+workflow traces retain thread/workflow IDs without becoming extra chat turns.
 CNB chat carries `prompt_name=cnb_chat` for the composed CNB workflow prompt.
 
 All user-initiated CNB telemetry uses the `Clima` experiment and the visible
@@ -2448,12 +2826,12 @@ All user-initiated CNB telemetry uses the `Clima` experiment and the visible
 not be embedded in `mlflow.runName`. The run name identifies the interaction
 boundary with this stable, low-cardinality contract:
 
-| CNB interaction | `mlflow.runName` | Integration boundary |
-| --- | --- | --- |
-| Start or idempotently replay a CNB run | `cnb_start` | `POST /v1/concept-notes/start` |
-| Ask a non-mutating question in the CNB chat | `cnb_chat` | `/v1/messages` with an active `concept_note_run_id` |
+| CNB interaction                                     | `mlflow.runName`          | Integration boundary                                |
+| --------------------------------------------------- | ------------------------- | --------------------------------------------------- |
+| Start or idempotently replay a CNB run              | `cnb_start`               | `POST /v1/concept-notes/start`                      |
+| Ask a non-mutating question in the CNB chat         | `cnb_chat`                | `/v1/messages` with an active `concept_note_run_id` |
 | Answer, correct, skip, or retry missing information | `cnb_missing_information` | The run-scoped gap-resolution operation from CC-730 |
-| Propose or apply a document edit through chat | `cnb_chat_edit` | The dedicated revision operation planned in CC-732 |
+| Propose or apply a document edit through chat       | `cnb_chat_edit`           | The dedicated revision operation planned in CC-732  |
 
 The future CC-732 flow must classify edit intent before opening its MLflow run:
 ordinary questions remain `cnb_chat`, while a durable edit proposal or apply
@@ -2501,7 +2879,7 @@ flowchart LR
 Export preflight should check:
 
 - Required chapters present or intentionally skipped.
-- Critical gaps resolved.
+- Critical gaps resolved or explicitly acknowledged for export.
 - Budget, partners, match funding, and commitments are confirmed or intentionally
   left blank.
 - Custom chapters are allowed by the export mode.
@@ -2516,6 +2894,13 @@ does not disable export. After viewing completeness and consistency findings,
 the user can explicitly choose **Export as is**. Existing unresolved-information
 acknowledgement remains authoritative for every validation state, including
 Needs re-validation, `needs_review`, and `incomplete`.
+
+Open or processing structured gaps, including critical gaps, require explicit
+acknowledgement before either export format becomes available. The chat help
+state reports critical gaps separately from hard blockers and leaves browser
+button availability unknown when a draft exists. The draft panel combines
+validation-finding navigation with inline edit decisions and chapter confirmation. Accepting an edit refreshes
+the current draft and its validation freshness before the next guided review.
 
 ## Planned Routes
 
@@ -2611,6 +2996,11 @@ file layout.
 | Interrupted background build   | Offer the existing context-bundle retry.                                           | A periodic database reconciler marks builds older than one hour failed with `context_bundle_build_interrupted` and `retryable: true`. |
 | Funder profile missing         | Block drafting against a real template.                                            | Mark `profiling_funder` blocked.                                                                                                      |
 | `cc_ocr_failed`                | Show that CC could not convert the specific source.                                | CC retains the source and failed OCR state; an explicit retry may enqueue another Mistral attempt. Nothing is delivered to CA.        |
+| `annotation_invalid`           | Show that the PDF could not be converted because a requested image annotation was missing or invalid. | CC retries with the existing OCR delays. Exhaustion marks the job failed and delivers that code. No Markdown-only success is stored. |
+| `structured_artifact_too_large` | Show that the structured artifact exceeded the size limit.                        | Non-retryable. CC does not truncate the JSON or publish a partial result.                                                            |
+| `annotation_mode_conflict`     | Show that this upload's annotation mode cannot change.                             | Idempotent re-enqueue keeps the stored mode.                                                                                          |
+| `structured_identity_conflict` | Show that the structured pointer does not match the stored upload.                 | CA returns `409` and does not mark the new PDF ready.                                                                                 |
+| `ocr_result_incomplete`        | Show that a new PDF delivery is missing structured metadata.                       | CC refuses delivery until a retry produces both artifacts. Already-ready legacy rows stay Markdown-only.                              |
 | `ca_markdown_ingest_failed`    | Show that conversion succeeded but CNB could not ingest the Markdown yet.          | CC keeps the successful OCR result and retries delivery; CA may retry downstream processing without rerunning Mistral.                |
 | `markdown_identity_conflict`   | Show that the immutable upload cannot be replaced.                                 | CA returns `409`; CC does not retry as a transient delivery failure or alter the successful OCR artifact.                             |
 | Similar projects weak          | Continue but show caveat.                                                          | Persist match caveats.                                                                                                                |
@@ -2692,3 +3082,96 @@ Minimum test surface:
 - Should available risk assessments and GreenStep actions be transformed into
   the current CityCatalyst CCRA/action format, or remain source evidence that is
   summarized only inside the context bundle?
+
+
+## Run-owned chapter structure (CC-864)
+
+The Structure tab edits persisted `concept_note_chapters`, not shared funder
+reference templates. `GET /v1/concept-notes/{run_id}/structure` initializes the
+selected template once and returns ordered chapter metadata and a fingerprint.
+`PUT` accepts the complete ordered list and its `expected_fingerprint`. Both
+routes recheck run ownership and city access; writes are serialized with drafting,
+funding changes, and chat acceptance. Apply the CNB migration
+`20260921_120000` before deploying this feature.
+
+| Operation | Template chapters, including required chapters | Custom chapters |
+| --- | --- | --- |
+| Rename title | Allowed | Allowed |
+| Edit description | Allowed | Allowed |
+| Reorder | Allowed, preserving template references | Allowed |
+| Insert | Cannot invent or change template identities | Allowed |
+| Remove | Blocked with an actionable explanation | Soft-delete |
+
+Titles must be nonblank single lines, at most 255 characters. Descriptions are
+editable generation/validation guidance, at most 4,000 characters; they do not
+replace the chapter body. An empty description is an explicit cleared value.
+Existing chapters with an unset description copy template guidance on first
+structure load or draft start. Chapter IDs, template references, required flags,
+body paragraphs, revisions, evidence and missing-information records retain their
+identity. Renames append a revision, updating the matching chapter heading while
+retaining all body content. Duplicate notes copy the current descriptions and order.
+Navigation and DOCX/PDF export consume the same saved chapter titles/positions.
+Compatible funding changes compare template reference membership independently of
+chapter order and custom chapters. They preserve run-owned titles, descriptions,
+order and body revisions, while updating required flags by template reference.
+Before any drafting or structure edits, funding changes may discard the empty
+materialized chapters without draft acknowledgement. This requires an exact match
+to the previous template's titles, descriptions, order, references and required
+flags, with no revisions or locks. The next structure load or draft start seeds
+the newly selected template. Saved structure edits and draft revisions retain
+the acknowledgement and template-membership guards.
+
+Any structural mutation resets drafted chapters to `needs_review`, clears their
+confirmation/lock and invalidates document validation because order and guidance
+can affect cross-chapter checks. Existing gaps, answers and evidence remain intact.
+Descriptions participate in validation fingerprints, preventing an in-flight
+validation from marking an older description ready. New custom chapters start
+empty and are drafted by the existing start/resume action.
+
+Direct edits stay local until **Save structure**. Drag handles, keyboard Up/Down,
+and arrow buttons use the same reorder operation. Failed saves retain the local
+form and show a retry message. A stale fingerprint requires reviewing local edits
+and explicitly discarding/reloading the latest snapshot before reapplying them.
+Unsaved edits are recovered from session storage when returning to the note in
+the same browser tab, including unfinished titles. Recovery retains the original
+fingerprint, so newer server changes still require explicit stale-state resolution.
+Saving or discarding clears recovery data. An unload warning also protects edits
+when closing or reloading the page. Browser storage restrictions can disable recovery.
+Adding an empty custom chapter keeps existing saved chapter bodies visible in
+Draft, including after reload. A compact **Continue drafting** action lets the
+user generate the new chapters while the run is marked `not_started`.
+
+Chat uses `propose_structure` to stage a durable `StructureProposal` in the
+existing edit-proposal lifecycle. The model addresses existing chapters by
+catalogue position; the server supplies their identities. Structural proposals
+show complete before/after lists in a bounded, scrollable review dialog and
+require **Confirm structure changes**. The dialog keeps its action buttons
+visible on desktop and mobile; closing it leaves the Structure editor and
+**Save structure** available while the proposal is pending.
+Text and structural changes are separate proposals. Required chapter rename and
+description edits are allowed; attempts to remove template chapters receive a
+specific explanation. Acceptance runs the same transaction as direct saves,
+checks a fingerprint covering metadata/content revisions, and replays the same
+acceptance key without another mutation. Structure changes invalidate pending
+text/structure proposals. No model tool applies a structure automatically.
+
+Regression coverage:
+- `service/tests/cnb/test_chapter_structure.py`: isolated PostgreSQL persistence,
+  concurrent saves, stable identity/content/gaps, duplication, protected removal,
+  durable chat preview, ownership and idempotent acceptance.
+- `app/e2e/concept-note-structure.spec.ts`: actual workspace components and RTK
+  requests with deterministic API fixtures for dragging, keyboard, all-chapter
+  editing, reload, failed/stale saves, and explicit structural confirmation.
+- `app/tests/concept-note-edit-routes.jest.ts`: authenticated proxy boundaries,
+  payload validation and upstream errors; export tests cover document ordering.
+
+
+For the browser contract suite, start a local app with
+`CONCEPT_NOTE_BUILDER,CA_SERVICE_INTEGRATION` in `NEXT_PUBLIC_FEATURE_FLAGS`.
+Set `CNB_BROWSER_TEST_URL` to that local server and `CNB_BROWSER_TEST_SECRET` to
+its local test `NEXTAUTH_SECRET`; the fixture signs a test-user cookie and mocks
+application API responses. From `app`, run
+`npx playwright test --config playwright.concept-note-structure.config.ts`.
+These browser tests do not call a live model or prove deployment. For real
+persistence tests, set `CNB_TEST_DATABASE_URL` to a disposable PostgreSQL database
+with pgvector; the structure tests create and remove their own UUID-named schemas.

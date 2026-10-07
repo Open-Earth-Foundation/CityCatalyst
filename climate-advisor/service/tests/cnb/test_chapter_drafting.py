@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
@@ -21,14 +22,24 @@ from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterDraftOutput,
     ConceptNoteDraftResponse,
 )
+from app.models.cnb.context_bundle import (
+    SelectedSource,
+    SourceExcerpt,
+    SourceQueryResult,
+)
 from app.models.db.concept_note import ConceptNoteRun
-from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.gaps import WorkspaceGapSnapshot
+from app.persistence.concept_notes.workspace import WorkspaceConflictError
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.routes.concept_note_runs import start_concept_note_drafting
+from app.services.cnb.source_analysis import SourceAnalysisError
+from app.services.cnb.source_impact_review import RevalidationSource
 from app.services.cnb.chapter_drafting import (
     ChapterDraftingError,
     ChapterDraftingRunUnavailableError,
     ChapterDraftingTemplateError,
     ConceptNoteChapterDraftService,
+    _chapter_input_messages,
     recover_stale_drafts,
     run_chapter_drafting_reconciler,
 )
@@ -201,6 +212,7 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         "Chapter 2",
     ]
     assert payloads[0]["previous_chapters"] == []
+    assert payloads[0]["current_body_markdown"] is None
     for payload in payloads:
         assert payload["run_context"]["context_bundle"]["selected_sources"] == [
             {
@@ -227,6 +239,262 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         service._load_owned_run.return_value,
         included_sources=included_sources,
     )
+
+
+
+def _open_gap(field_key: str, question: str) -> WorkspaceGapSnapshot:
+    now = datetime.now(UTC)
+    return WorkspaceGapSnapshot(
+        gap_id=uuid4(),
+        field_key=field_key,
+        question=question,
+        why_asking="The funder needs the delivered scope.",
+        severity="critical",
+        state="open",
+        suggestions=[],
+        source_refs=[],
+        version=1,
+        resolution=None,
+        created_at=now,
+        updated_at=now,
+    )
+
+
+def _revalidation_service(
+    chapters: list[WorkspaceChapterSnapshot],
+    *,
+    selected: list[int],
+    query_document_fn: Any,
+    payloads: list[dict[str, Any]],
+    saved: list[dict[str, Any]],
+) -> ConceptNoteChapterDraftService:
+    """Wire the real re-check loop to fakes for storage, review, and generation."""
+
+    async def generate(payload: dict[str, Any]) -> ConceptNoteChapterDraftOutput:
+        payloads.append(payload)
+        return ConceptNoteChapterDraftOutput(body_markdown="## Redrafted")
+
+    async def save_revalidated_chapter(**kwargs: Any) -> bool:
+        saved.append(kwargs)
+        return True
+
+    template = ApplicationContextTemplate(
+        id=UUID("70000000-0000-4000-8000-000000000001"),
+        name="Template",
+        chapter_schema=[
+            {"chapter_ref": chapter.chapter_ref, "title": chapter.title}
+            for chapter in chapters
+        ],
+    )
+    service = cast(
+        ConceptNoteChapterDraftService,
+        object.__new__(ConceptNoteChapterDraftService),
+    )
+    service._workspace = SimpleNamespace(
+        list_chapters=AsyncMock(return_value=chapters),
+        save_revalidated_chapter=save_revalidated_chapter,
+    )
+    service._application_context = SimpleNamespace(
+        load_for_run=AsyncMock(
+            return_value=ConceptNoteApplicationContextResponse(
+                run_id=RUN_ID,
+                city_id=UUID("40000000-0000-4000-8000-000000000001"),
+                template=template,
+                included_sources=ApplicationContextIncludedSources(),
+            )
+        )
+    )
+    service._load_owned_run = AsyncMock(
+        return_value=SimpleNamespace(run_id=RUN_ID, user_id="user-1")
+    )
+    service._load_run_context = AsyncMock(
+        return_value=(
+            {"context_bundle": {"selected_sources": []}},
+            ApplicationContextIncludedSources(),
+        )
+    )
+    service._source_impact_reviewer = SimpleNamespace(
+        select_chapters=AsyncMock(return_value=selected)
+    )
+    service._query_document = query_document_fn
+    service._generate_chapter_override = generate
+    service._settings = SimpleNamespace(
+        llm=SimpleNamespace(
+            generation=SimpleNamespace(
+                prompt_budget=SimpleNamespace(
+                    cnb_source_impact=SimpleNamespace(max_gap_queries=40),
+                    cnb_sources=SimpleNamespace(max_concurrency=2),
+                )
+            )
+        )
+    )
+    return service
+
+
+NEW_SOURCE = SelectedSource(
+    upload_id=UUID("80000000-0000-4000-8000-000000000001"),
+    source_label="Technical update",
+    filename="technical-update.md",
+    sha256="b" * 64,
+    source_format="markdown",
+    block_count=2,
+    summary="Stops and financing.",
+    topics=["stops"],
+    key_excerpts=[],
+)
+
+
+async def test_revalidation_redrafts_only_reviewer_selected_chapters_with_evidence() -> None:
+    """Ask the new source each open gap and pass cited answers to the drafter."""
+    stops_gap = _open_gap("new_stops", "How many new stops are built?")
+    chapters = [
+        WorkspaceChapterSnapshot(
+            chapter_id=uuid4(),
+            chapter_ref=f"chapter-{number}",
+            title=f"Chapter {number}",
+            position=number - 1,
+            status="ready" if number == 1 else "needs_review",
+            required=True,
+            user_locked=False,
+            body_markdown=f"Chapter {number} text",
+            gaps=[stops_gap] if number == 2 else [],
+            revision_id=uuid4(),
+            revision_number=3,
+        )
+        for number in (1, 2)
+    ]
+    query = AsyncMock(
+        return_value=SourceQueryResult(
+            found=True,
+            upload_id=NEW_SOURCE.upload_id,
+            source_label="Technical update",
+            source_format="markdown",
+            excerpts=[
+                SourceExcerpt(text="Seven new tram stops.", anchor="components")
+            ],
+            units_processed=2,
+            units_total=2,
+            segments_processed=2,
+            segments_total=2,
+        )
+    )
+    payloads: list[dict[str, Any]] = []
+    saved: list[dict[str, Any]] = []
+    service = _revalidation_service(
+        chapters,
+        selected=[2],
+        query_document_fn=query,
+        payloads=payloads,
+        saved=saved,
+    )
+
+    await service.revalidate_after_new_sources(
+        run_id=RUN_ID,
+        user_id="user-1",
+        new_sources=[RevalidationSource(source=NEW_SOURCE, units=[])],
+    )
+
+    assert [payload["chapter"]["title"] for payload in payloads] == ["Chapter 2"]
+    assert payloads[0]["current_body_markdown"] == "Chapter 2 text"
+    assert payloads[0]["new_source_evidence"] == [
+        {
+            "field_key": "new_stops",
+            "question": "How many new stops are built?",
+            "excerpts": [
+                {
+                    "source_label": "Technical update",
+                    "text": "Seven new tram stops.",
+                    "heading": "components",
+                }
+            ],
+        }
+    ]
+    assert query.await_args.kwargs["question"] == "How many new stops are built?"
+    assert [item["chapter_id"] for item in saved] == [chapters[1].chapter_id]
+    assert saved[0]["expected_revision_number"] == 3
+    assert saved[0]["source_refs"] == ["Technical update"]
+    assert saved[0]["answered_gap_ids"] == {stops_gap.gap_id}
+
+
+async def test_revalidation_still_redrafts_when_a_gap_query_fails() -> None:
+    """A failed evidence query leaves that gap without evidence, not the run."""
+    chapter = WorkspaceChapterSnapshot(
+        chapter_id=uuid4(),
+        chapter_ref="chapter-1",
+        title="Chapter 1",
+        position=0,
+        status="needs_review",
+        required=True,
+        user_locked=False,
+        body_markdown="Text",
+        gaps=[_open_gap("lead_partner", "Who leads delivery?")],
+        revision_id=uuid4(),
+        revision_number=1,
+    )
+    payloads: list[dict[str, Any]] = []
+    saved: list[dict[str, Any]] = []
+    service = _revalidation_service(
+        [chapter],
+        selected=[1],
+        query_document_fn=AsyncMock(
+            side_effect=SourceAnalysisError("reader_failed", "Reader failed")
+        ),
+        payloads=payloads,
+        saved=saved,
+    )
+
+    await service.revalidate_after_new_sources(
+        run_id=RUN_ID,
+        user_id="user-1",
+        new_sources=[RevalidationSource(source=NEW_SOURCE, units=[])],
+    )
+
+    assert payloads[0]["new_source_evidence"] == []
+    assert len(saved) == 1
+    assert saved[0]["answered_gap_ids"] == set()
+
+
+async def test_revalidation_skips_a_rejected_chapter_and_continues() -> None:
+    """A redraft rejected by storage must not block later impacted chapters."""
+    chapters = [
+        WorkspaceChapterSnapshot(
+            chapter_id=uuid4(),
+            chapter_ref=f"chapter-{number}",
+            title=f"Chapter {number}",
+            position=number - 1,
+            status="draft",
+            required=True,
+            user_locked=False,
+            body_markdown=f"Chapter {number} text",
+            revision_id=uuid4(),
+            revision_number=1,
+        )
+        for number in (1, 2)
+    ]
+    saved: list[dict[str, Any]] = []
+    service = _revalidation_service(
+        chapters,
+        selected=[1, 2],
+        query_document_fn=AsyncMock(),
+        payloads=[],
+        saved=saved,
+    )
+
+    async def save_revalidated_chapter(**kwargs: Any) -> bool:
+        if kwargs["chapter_id"] == chapters[0].chapter_id:
+            raise WorkspaceConflictError("dropped gap")
+        saved.append(kwargs)
+        return True
+
+    service._workspace.save_revalidated_chapter = save_revalidated_chapter
+
+    await service.revalidate_after_new_sources(
+        run_id=RUN_ID,
+        user_id="user-1",
+        new_sources=[RevalidationSource(source=NEW_SOURCE, units=[])],
+    )
+
+    assert [item["chapter_id"] for item in saved] == [chapters[1].chapter_id]
 
 
 async def test_recovery_marks_only_stale_running_drafts_retryable(tmp_path) -> None:
@@ -382,3 +650,32 @@ async def test_drafting_errors_keep_their_http_status(
         )
 
     assert exc_info.value.status_code == expected_status
+
+
+def test_chapter_input_sends_complete_sources_as_a_second_message() -> None:
+    document = {
+        "source_label": "KST IV plan",
+        "filename": "plan.pdf",
+        "source_format": "pdf",
+        "text": "<!-- page: 7 -->\nPolsad tunnel 214",
+    }
+    payload = {
+        "chapter": {"title": "Project components"},
+        "source_documents": [document],
+    }
+
+    messages = _chapter_input_messages(payload)
+
+    assert json.loads(messages[0]["content"]) == {
+        "chapter": {"title": "Project components"}
+    }
+    assert messages[1]["role"] == "user"
+    assert messages[1]["content"].startswith("CONCEPT_NOTE_SOURCE_DOCUMENTS\n")
+    assert '<source index="1" label="KST IV plan"' in messages[1]["content"]
+    assert "<!-- page: 7 -->\nPolsad tunnel 214" in messages[1]["content"]
+
+
+def test_chapter_input_without_sources_is_one_json_message() -> None:
+    messages = _chapter_input_messages({"chapter": {}, "source_documents": []})
+
+    assert messages == [{"role": "user", "content": json.dumps({"chapter": {}})}]

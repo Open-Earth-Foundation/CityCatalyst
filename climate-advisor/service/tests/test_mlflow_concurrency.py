@@ -1,43 +1,49 @@
+from app.utils.streaming_runner import stream_agent_events
+
 """Regression coverage for request-local MLflow runs without a remote backend."""
 
 import asyncio
 from contextlib import contextmanager
 from contextvars import ContextVar
+from threading import Event
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 from uuid import uuid4
 
 import pytest
+from anyio import CancelScope
+
 from app.models.requests import MessageCreateRequest
 from app.utils import mlflow_logging
 from app.utils.chat_workflow_context import ChatWorkflowContext
+from app.utils.cnb_observability import record_edit_outcome
+from app.utils.conversation_observability import conversation_trace
 from app.utils.streaming_handler import StreamingHandler
 
 
 @pytest.fixture
-def client(monkeypatch):
-    recorded = MagicMock()
-    next_id = 0
+def client(mlflow_client):
+    return mlflow_client
 
-    def create_run(**kwargs):
-        nonlocal next_id
-        next_id += 1
-        return SimpleNamespace(info=SimpleNamespace(run_id=f"run-{next_id}"))
 
-    recorded.create_run.side_effect = create_run
-    recorded.log_batch.return_value = None
-    monkeypatch.setattr(mlflow_logging, "initialize_mlflow", lambda: True)
-    monkeypatch.setattr(mlflow_logging, "_experiment_id", lambda name: "experiment-1")
-    monkeypatch.setattr(
-        mlflow_logging, "_RUN_CONTEXT", ContextVar("test_run", default=None)
+@pytest.mark.asyncio
+async def test_async_edit_telemetry_forwards_operation_keyword(client):
+    run_id = uuid4()
+    await mlflow_logging.run_mlflow_io(
+        record_edit_outcome,
+        run_id=run_id,
+        operation="apply",
+        outcome="failed",
+        error_code="proposal_not_pending",
     )
-    # There is deliberately no fluent API on this stub.
-    monkeypatch.setattr(
-        mlflow_logging,
-        "mlflow",
-        SimpleNamespace(tracking=SimpleNamespace(MlflowClient=lambda: recorded)),
-    )
-    return recorded
+
+    tags = client.create_run.call_args.kwargs["tags"]
+    assert tags["concept_note_run_id"] == str(run_id)
+    assert tags["operation"] == "apply"
+    assert tags["outcome"] == "failed"
+    assert tags["failure_category"] == "proposal_not_pending"
+    client.set_terminated.assert_called_once_with("run-1", status="FINISHED")
+    assert mlflow_logging._current_run() is None
 
 
 @pytest.mark.asyncio
@@ -47,7 +53,9 @@ async def test_overlapping_requests_isolate_every_logging_operation(client, tmp_
     targets = {}
 
     async def request(name):
-        with mlflow_logging.start_run(run_name=name, experiment_name="Clima") as run:
+        async with mlflow_logging.async_start_run(
+            run_name=name, experiment_name="Clima"
+        ) as run:
             targets[name] = run.info.run_id
             if name == "first":
                 first_started.set()
@@ -138,7 +146,9 @@ async def test_cancelled_request_closes_only_its_run(client):
     started = asyncio.Event()
 
     async def request():
-        with mlflow_logging.start_run(run_name="cancelled", experiment_name="Clima"):
+        async with mlflow_logging.async_start_run(
+            run_name="cancelled", experiment_name="Clima"
+        ):
             started.set()
             await asyncio.Event().wait()
 
@@ -162,7 +172,9 @@ async def test_inherited_child_cannot_log_after_request_closes(client):
         await release_child.wait()
         mlflow_logging.log_tags({"late": "data"})
 
-    with mlflow_logging.start_run(run_name="request", experiment_name="Clima"):
+    async with mlflow_logging.async_start_run(
+        run_name="request", experiment_name="Clima"
+    ):
         task = asyncio.create_task(delayed_log())
     release_child.set()
     await task
@@ -250,7 +262,7 @@ async def test_real_mlflow_persists_isolated_runs_and_trace_links(
     release = asyncio.Event()
 
     async def request(name):
-        with mlflow_logging.start_run(
+        async with mlflow_logging.async_start_run(
             run_name=name, experiment_name="isolated-test"
         ) as run:
             assert run is not None
@@ -294,18 +306,19 @@ async def test_real_mlflow_persists_isolated_runs_and_trace_links(
         mlflow.set_tracking_uri(previous_uri)
 
 
-@pytest.mark.parametrize("stationary_energy", [False, True])
+@pytest.mark.parametrize("mode", ["general", "stationary_energy", "cnb"])
 @pytest.mark.asyncio
-async def test_other_chat_modes_link_traces_before_model_start(
-    monkeypatch, stationary_energy
-):
+async def test_other_chat_modes_link_traces_before_model_start(monkeypatch, mode):
     recorded = {}
     active = False
     handler = StreamingHandler(
         thread_id=uuid4(), user_id="user-1", session_factory=None
     )
     handler.workflow_context = ChatWorkflowContext(
-        stationary_energy_draft_run_id=str(uuid4()) if stationary_energy else None
+        stationary_energy_draft_run_id=str(uuid4())
+        if mode == "stationary_energy"
+        else None,
+        concept_note_run_id=str(uuid4()) if mode == "cnb" else None,
     )
 
     @contextmanager
@@ -314,7 +327,7 @@ async def test_other_chat_modes_link_traces_before_model_start(
         active = True
         recorded["span"] = kwargs
         try:
-            yield object()
+            yield SimpleNamespace(trace_id="test-trace", span_id="root")
         finally:
             active = False
 
@@ -332,13 +345,92 @@ async def test_other_chat_modes_link_traces_before_model_start(
         assert recorded["updated"]
         return Result()
 
-    monkeypatch.setattr("app.utils.streaming_handler.start_trace_span", span_context)
     monkeypatch.setattr(
-        "app.utils.streaming_handler.update_current_trace_context", update_context
+        "app.utils.conversation_observability.start_trace_span", span_context
     )
-    monkeypatch.setattr("app.utils.streaming_handler.Runner.run_streamed", run_streamed)
+    monkeypatch.setattr(
+        "app.utils.streaming_telemetry.update_current_trace_context", update_context
+    )
+    monkeypatch.setattr("app.utils.streaming_runner.Runner.run_streamed", run_streamed)
     payload = MessageCreateRequest(user_id="user-1", content="Review the context")
-    assert [
-        chunk async for chunk in handler._stream_agent_events(object(), payload, [])
-    ] == []
-    assert recorded["span"]["name"] == handler.workflow_context.trace_workflow_name
+    # Every chat owns its root around the entire request, including persistence.
+    with conversation_trace(
+        payload.content, attributes=handler.workflow_context.telemetry()
+    ):
+        assert [
+            chunk async for chunk in stream_agent_events(handler, object(), payload, [])
+        ] == []
+    assert recorded["span"]["name"] == "Climate Advisor Turn"
+    assert (
+        recorded["span"]["attributes"]["workflow"]
+        == handler.workflow_context.telemetry()["workflow"]
+    )
+
+
+@pytest.mark.parametrize("phase", ["create", "write", "close"])
+@pytest.mark.parametrize("cancellation", ["task", "scope", "repeated_task"])
+async def test_cancellation_waits_for_inflight_telemetry_before_closing(
+    client, phase, cancellation
+):
+    entered = Event()
+    release = Event()
+    order = []
+    scopes = []
+    started = asyncio.Event()
+
+    def blocked(*args, **kwargs):
+        entered.set()
+        release.wait(timeout=3)
+        order.append(phase)
+        return SimpleNamespace(info=SimpleNamespace(run_id="cancelled-run"))
+
+    client.set_terminated.side_effect = lambda *args, **kwargs: order.append("close")
+    operation = {
+        "create": client.create_run,
+        "write": client.log_dict,
+        "close": client.set_terminated,
+    }[phase]
+    operation.side_effect = blocked
+
+    async def request():
+        with CancelScope() as scope:
+            scopes.append(scope)
+            async with mlflow_logging.async_start_run(
+                run_name="request", experiment_name="Clima"
+            ):
+                await mlflow_logging.run_mlflow_io(
+                    mlflow_logging.log_json_artifact, "request.json", {}
+                )
+                if phase == "close":
+                    started.set()
+                    await asyncio.Event().wait()
+
+    task = asyncio.create_task(request())
+    try:
+        if phase == "close":
+            await asyncio.wait_for(started.wait(), timeout=2)
+            task.cancel()  # Enter termination with the run already marked FAILED.
+        assert await asyncio.to_thread(entered.wait, 2)
+        if cancellation == "scope":
+            scopes[0].cancel()
+        else:
+            task.cancel()
+        await asyncio.sleep(0.01)
+        if cancellation == "repeated_task":
+            for _ in range(3):
+                task.cancel()
+                await asyncio.sleep(0.01)
+        assert not task.done()
+        if phase != "close":
+            client.set_terminated.assert_not_called()
+    finally:
+        release.set()
+        if cancellation == "scope" and phase != "close":
+            await asyncio.wait_for(task, timeout=2)
+        else:
+            with pytest.raises(asyncio.CancelledError):
+                await asyncio.wait_for(task, timeout=2)
+    assert order == (["close"] if phase == "close" else [phase, "close"])
+    client.set_terminated.assert_called_once()
+    assert client.set_terminated.call_args.kwargs["status"] == "FAILED"
+    assert mlflow_logging._current_run() is None

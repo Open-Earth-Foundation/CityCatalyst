@@ -8,6 +8,10 @@ from logging.config import fileConfig
 
 from alembic import context
 from app.db.cnb import CnbBase
+from app.models.db.cnb_edit import (
+    ConceptNoteEditApplication,
+    ConceptNoteEditProposal,
+)  # noqa: F401
 from app.models.db.cnb_reference import (  # noqa: F401
     CnbFundedProject,
     CnbFunder,
@@ -98,6 +102,10 @@ def _run(connection: Connection) -> None:
 
 def run_migrations_online() -> None:
     """Run online migrations from Alembic's synchronous entry point."""
+    connection = config.attributes.get("connection")
+    if connection is not None:
+        _run(connection)
+        return
     asyncio.run(run_async_migrations())
 
 

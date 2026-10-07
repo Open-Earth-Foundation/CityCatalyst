@@ -1,7 +1,9 @@
 "use client";
 
 import { Box, Text, VStack } from "@chakra-ui/react";
+
 import { useMemo } from "react";
+import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
 
 import { useTranslation } from "@/i18n/client";
 import type {
@@ -9,17 +11,23 @@ import type {
   ConceptNoteDraftState,
 } from "@/util/types";
 
-import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
+import type { ConceptNoteBundleProgress } from "@/components/ConceptNoteDashboard/utils";
 
-import { DraftDocumentPanel } from "./draft-document-panel";
-import { DraftSetupPanel } from "./draft-setup-panel";
-import { useDraftFocus } from "./use-draft-focus";
+import {
+  DraftDocumentPanel,
+  type DraftInlineReviewProps,
+} from "@/components/ConceptNoteWorkspace/draft-document-panel";
+import { DraftSetupPanel } from "@/components/ConceptNoteWorkspace/draft-setup-panel";
+import type { ReactNode } from "react";
+import { useDraftFocus } from "@/components/ConceptNoteWorkspace/use-draft-focus";
 
-interface DraftTabProps {
+interface DraftTabProps extends DraftInlineReviewProps {
+  mutationError: string | null;
   applicationContext: ConceptNoteApplicationContext | null;
   applicationContextFailed: boolean;
   applicationContextLoading: boolean;
   bundle: ConceptNoteBundleProgress;
+  contextStatus: ConceptNoteContextPresentation;
   canStartDrafting: boolean;
   draft: ConceptNoteDraftState | null;
   draftError: string | null;
@@ -31,8 +39,11 @@ interface DraftTabProps {
   lng: string;
   noteName: string;
   onOpenContext: () => void;
+  onOpenFundingSetup: () => void;
   onRetry: () => void;
   onStartDrafting: () => void;
+  highlightStartDrafting?: boolean;
+  nextStep?: ReactNode;
 }
 
 export function DraftTab(props: DraftTabProps) {
@@ -48,7 +59,9 @@ export function DraftTab(props: DraftTabProps) {
     props.focusFindingKey,
   );
   const draftStarted = Boolean(
-    props.draft && props.draft.status !== "not_started",
+    props.draft &&
+    (props.draft.status !== "not_started" ||
+      chapters.some((chapter) => chapter.body_markdown?.trim())),
   );
 
   return (
@@ -75,10 +88,17 @@ export function DraftTab(props: DraftTabProps) {
         </Box>
       )}
 
+      {props.mutationError && (
+        <Text role="alert" color="sentiment.negativeDefault">
+          {props.mutationError}
+        </Text>
+      )}
+      {props.nextStep}
       <DraftSetupPanel {...props} />
 
       {draftStarted && chapters.length > 0 && (
         <DraftDocumentPanel
+          {...props}
           chapters={chapters}
           focus={focus}
           focusFindingKey={props.focusFindingKey}

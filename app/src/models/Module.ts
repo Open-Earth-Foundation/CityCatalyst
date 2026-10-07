@@ -11,11 +11,15 @@ export interface ModuleAttributes {
   author: string;
   url: string;
   logo?: string;
+  isManuallyEdited: boolean;
   created?: Date;
   last_updated?: Date;
 }
 
-export type ModuleCreationAttributes = Optional<ModuleAttributes, "id">;
+export type ModuleCreationAttributes = Optional<
+  ModuleAttributes,
+  "id" | "isManuallyEdited"
+>;
 
 export class Module
   extends Model<ModuleAttributes, ModuleCreationAttributes>
@@ -31,6 +35,7 @@ export class Module
   declare url: string;
   declare author: string;
   declare logo?: string;
+  declare isManuallyEdited: boolean;
   declare created?: Date;
   declare last_updated?: Date;
 
@@ -78,6 +83,12 @@ export class Module
         logo: {
           type: DataTypes.TEXT,
           allowNull: true,
+        },
+        isManuallyEdited: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+          field: "is_manually_edited",
         },
       },
       {

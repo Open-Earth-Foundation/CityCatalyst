@@ -9,6 +9,7 @@ async function bulkUpsert(
   transaction,
   debug = false,
   insertTimestampsOnCreate = false,
+  protectColumn = null, // skip updates on existing rows where this column is true
 ) {
   for (const entry of entries) {
     if (debug) {
@@ -42,11 +43,27 @@ async function bulkUpsert(
       }
       await queryInterface.bulkInsert(tableName, [entryCopy], { transaction });
     } else {
-      const whereClause = idColumns.reduce((acc, idColumn) => {
+      if (protectColumn) {
+        const protectedItem = await queryInterface.sequelize.query(
+          `SELECT "${protectColumn}" FROM "${tableName}" WHERE ${whereClause};`,
+          { transaction },
+        );
+        if (protectedItem[0][0][protectColumn]) {
+          if (debug) {
+            console.info(
+              `Skipping update for entry, ${protectColumn} is set`,
+              entry,
+            );
+          }
+          continue;
+        }
+      }
+
+      const updateWhereClause = idColumns.reduce((acc, idColumn) => {
         acc[idColumn] = entry[idColumn];
         return acc;
       }, {});
-      await queryInterface.bulkUpdate(tableName, entry, whereClause, {
+      await queryInterface.bulkUpdate(tableName, entry, updateWhereClause, {
         transaction,
       });
     }

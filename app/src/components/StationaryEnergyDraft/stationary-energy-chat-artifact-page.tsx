@@ -49,9 +49,11 @@ export function StationaryEnergyChatArtifactPage({
   const [draftsPanelOpen, setDraftsPanelOpen] = useState(true);
   const controller = useStationaryEnergyChatArtifactController({
     cityId,
+    cityName: inventory?.city?.name,
     featureEnabled,
     initialStage,
     inventoryId,
+    inventoryYear: inventory?.year,
     lng,
     queryDraftRunId,
     t,

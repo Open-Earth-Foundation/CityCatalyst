@@ -4,6 +4,8 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
+  DeleteObjectsCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Readable } from "node:stream";
@@ -98,6 +100,39 @@ export default class InventoryFileStorageService {
     );
 
     logger.debug({ key, bucket: BUCKET }, "Inventory file uploaded to S3");
+    return key;
+  }
+
+  /** Object key family for a bulk inventory-file import job. */
+  static bulkImportObjectKey(jobId: string, relativePath: string): string {
+    const safeJobId = jobId.replace(/[^0-9a-f-]/gi, "");
+    const safeRelative = relativePath
+      .replace(/\\/g, "/")
+      .split("/")
+      .filter((part) => part && part !== "." && part !== "..")
+      .join("/");
+    return `bulk-import/${safeJobId}/${safeRelative}`;
+  }
+
+  /**
+   * Store a bulk-import zip or inner file. Returns null when S3 is not
+   * configured (local/dev fallback — items are still inserted).
+   */
+  static async uploadBulkImportFile(
+    jobId: string,
+    relativePath: string,
+    buffer: Buffer,
+    contentType: string,
+  ): Promise<string | null> {
+    if (!isS3Configured()) {
+      logger.warn(
+        { jobId, relativePath },
+        "AWS_FILE_UPLOAD_S3_BUCKET_ID not set — skipping S3 store for bulk import file",
+      );
+      return null;
+    }
+    const key = this.bulkImportObjectKey(jobId, relativePath);
+    await this.putFile(key, buffer, contentType);
     return key;
   }
 
@@ -197,6 +232,55 @@ export default class InventoryFileStorageService {
       new DeleteObjectCommand({ Bucket: BUCKET, Key: s3Key }),
     );
     logger.debug({ key: s3Key }, "Inventory file deleted from S3");
+  }
+
+  /** Remove the uploaded file and every OCR attempt under its upload-specific prefixes. */
+  static async deleteConceptNoteSource(uploadId: string): Promise<void> {
+    assertConfigured();
+    if (!/^[0-9a-f-]{36}$/i.test(uploadId)) {
+      throw new Error("Invalid Concept Note upload identity");
+    }
+    const client = getS3Client();
+    for (const kind of ["sources", "results"]) {
+      const prefix = `pdf-ocr/${kind}/concept_note_upload/${uploadId}/`;
+      let continuationToken: string | undefined;
+      do {
+        const page = await client.send(
+          new ListObjectsV2Command({
+            Bucket: BUCKET!,
+            Prefix: prefix,
+            ContinuationToken: continuationToken,
+          }),
+        );
+        const objects = (page.Contents ?? []).flatMap((item) =>
+          item.Key ? [{ Key: item.Key }] : [],
+        );
+        if (objects.length) {
+          const result = await client.send(
+            new DeleteObjectsCommand({
+              Bucket: BUCKET!,
+              Delete: { Objects: objects, Quiet: true },
+            }),
+          );
+          if (result.Errors?.length) {
+            logger.error(
+              {
+                uploadId,
+                bucket: BUCKET,
+                prefix,
+                errors: result.Errors.map(({ Code, Message }) => ({
+                  Code,
+                  Message,
+                })),
+              },
+              "Concept Note source cleanup failed",
+            );
+            throw new Error("Concept Note source cleanup failed");
+          }
+        }
+        continuationToken = page.NextContinuationToken;
+      } while (continuationToken);
+    }
   }
 
   /**

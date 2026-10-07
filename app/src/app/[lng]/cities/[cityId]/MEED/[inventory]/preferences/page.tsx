@@ -10,7 +10,7 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import { LuCheck, LuTarget } from "react-icons/lu";
+import { LuCheck } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import type { TFunction } from "i18next";
@@ -352,19 +352,6 @@ function StrategicPreferencesContent(props: {
     <VStack alignItems="stretch" gap="l">
       <VStack alignItems="stretch" gap="s">
         <BodyLarge color="content.secondary">{t("description")}</BodyLarge>
-        {/* What this whole screen is worth, before the user spends time on it. */}
-        <HStack
-          gap="s"
-          px="m"
-          py="s"
-          borderRadius="rounded"
-          bg="background.neutral"
-          alignItems="flex-start"
-          alignSelf="flex-start"
-        >
-          <Icon as={LuTarget} boxSize="16px" color="content.link" mt="0" />
-          <Caption color="content.secondary">{t("alignment-note")}</Caption>
-        </HStack>
       </VStack>
 
       {/* Priority sectors */}

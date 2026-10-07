@@ -14,6 +14,19 @@ All modes share thread persistence, token handling, SSE streaming, and the
 Agents SDK runtime. Workflow-specific context and tools are resolved before the
 single shared stream starts.
 
+Concept Note chat exposes a proposal-only edit tool backed by a planner,
+service, repository and authorized API. Explicit web review applies edits;
+internal application records preserve safe retries and the audit trail.
+The planner searches a fixed draft snapshot, reads chapter context on demand,
+and proposes replacements using server-issued match IDs or an explicit
+all-match selection. Tools compute anchors and return validation errors to the
+agent for correction. Independent semantic review checks affected chapters
+before a durable proposal is created. Protected-match exclusions are counted in
+the proposal and remain visible after reload. Only acceptance writes revisions,
+subject to the existing revision and idempotency checks.
+See the [CNB revision boundary](../../docs/ConceptNoteBuilderArchitecture.md#implemented-chat-revision-boundary-cc-732)
+for validation, inline review and persistence details.
+
 ## Current Architecture (As-Implemented)
 
 ### System Architecture
@@ -53,24 +66,22 @@ sequenceDiagram
     participant Client
     participant API as Climate Advisor API
     participant Thread as ThreadResolver
-    participant Token as TokenHandler
     participant DB as PostgreSQL
     participant Stream as StreamingHandler
     participant Agent as AgentService
     participant CC as CityCatalyst API
 
-    Client->>API: POST /v1/messages
-    API->>Thread: Resolve existing thread or create one
-    Thread-->>API: thread
-
-    API->>Token: Load token from request or thread context
-    alt token expired
-        Token->>CC: Refresh token
-        CC-->>Token: New access token
-        Token->>DB: Persist refreshed token
+    Client->>API: POST /v1/threads or /v1/messages with Authorization Bearer
+    API->>CC: Validate bearer at /internal/ca/auth/identity
+    alt missing, malformed, rejected, or subject mismatch
+        API-->>Client: HTTP 401 (no write)
+    else Core identity unavailable
+        API-->>Client: HTTP 503 (no write)
+    else canonical subject matches body user_id
+        API->>Thread: Resolve existing thread or create one
+        Thread-->>API: thread
+        API->>Stream: Start streamed response with canonical user and validated bearer
     end
-
-    API->>Stream: Start streamed response
     opt Stationary Energy draft run is present
         Stream->>DB: Load persisted draft snapshot and staged review state
         Stream-->>Stream: Build STATIONARY_ENERGY_DRAFT_CONTEXT_JSON + ui_context
@@ -140,7 +151,7 @@ flowchart LR
     Pool --> Review
     Default --> Core
     Default --> Legacy
-    Default --> StartDraft
+    Review --> StartDraft
     Review --> ReviewTools
     Review --> SharedContext
 ```
@@ -148,8 +159,16 @@ flowchart LR
 `AgentService.create_agent()` selects instructions from the active chat mode:
 
 - General chat composes `prompts.core` with `prompts.chat`.
-- Stationary Energy draft-surface chat can register `stationary_energy_start_draft`
-  before a draft run exists, while staying on the composed general chat prompt.
+- Stationary Energy draft-surface chat composes `prompts.core` with
+  `prompts.stationary_energy_review` even before a draft run exists. In that
+  state the handler sends a `STATIONARY_ENERGY_RUN_NOT_STARTED` context message
+  instead of the draft snapshot, and the workflow tools are
+  `stationary_energy_start_draft` plus the read-only, page-scoped
+  `inventory_status_overview` and `inventory_emissions_context`.
+- When the agent starts a run with `continue_request` set, the page re-sends the request
+  with `stationary_energy_resume_after_draft_start` once the run is ready. The
+  messages route does not store it again, and the handler re-adds it after the
+  "starting the run" reply so the review agent answers it with the new data.
 - Stationary Energy review chat composes `prompts.core` with
   `prompts.stationary_energy_review` and registers only tools scoped to the
   active draft review workflow. That pack includes read-only whole-inventory
@@ -213,8 +232,8 @@ workflow state in PostgreSQL.
 - `services/agent_service.py`
   - Selects the model for the current workflow context.
   - Composes `prompts.core` with `prompts.chat` for general chat.
-  - Composes `prompts.core` with `prompts.stationary_energy_review` for active
-    Stationary Energy review chat.
+  - Composes `prompts.core` with `prompts.stationary_energy_review` for the
+    Stationary Energy page, both before a run exists and during review.
   - Registers the pre-draft `stationary_energy_start_draft` tool only when the
     Stationary Energy surface is active and no draft run is loaded.
   - Keeps general inventory and vector-search tools out of active review chat.
@@ -228,6 +247,63 @@ workflow state in PostgreSQL.
   - Orchestrates review staging, notation-key staging, preview, rollback, and
     draft-save flows.
   - Commits staged selection transitions through the repository and draft service.
+
+### NativeInputCatalog Consumption Boundary
+
+`services/native_input_catalog_service.py` provides the request-scoped
+consumer seam for the NativeInputCatalog integration. It accepts the resolved
+authenticated request context and defers Core discovery to the runtime tool
+call. Core discovery is limited to its lightweight readiness result; it does
+not load Climate Advisor capabilities or execute full reads for candidates.
+
+`AgentService` registers the stable `native_input_discover` and
+`native_input_read` tools only when authenticated catalog context and the
+current Core credential are available. Registration makes no Core discovery
+request and does not accept a client-selected catalog/capability pair.
+Before persistence, `POST /v1/threads` and `POST /v1/messages`
+validate the request `Authorization` bearer at Core's
+`/api/v1/internal/ca/auth/identity` boundary. Missing, malformed, rejected, or
+subject-mismatched credentials return the same HTTP 401 problem response.
+Core identity unavailability returns HTTP 503. Neither case creates or mutates
+a thread, message, or stored credential. After validation, routes use Core's
+canonical user ID for ownership, readiness, persistence, streaming, and tool
+registration. Thread context stores only that validated bearer as
+`access_token`; conflicting body aliases and leftover persisted
+`cc_access_token` values are discarded on the write.
+`StreamingHandler` receives that canonical identity separately for catalog
+context and ignores caller-supplied identity. Missing authentication fails the
+write instead of disabling tools.
+
+Write requests never refresh from a stored thread bearer or a claimed
+`user_id`. After each write is authenticated, the request-scoped token context
+may renew the current bearer before an authenticated Core tool call, using only
+the canonical subject returned by Core for that request. It replaces the shared
+token reference used by NativeInputCatalog, inventory, Stationary Energy, and
+Concept Note tools. Capability payloads cannot choose the refresh subject. A
+capability call is sent once after preflight renewal; a later 401/403 fails
+closed and is not replayed. A renewed bearer is persisted under `access_token`
+only after the streaming turn completes normally. Cancellation and failures do
+not persist it, and the next turn still has to present a bearer accepted by Core.
+
+This boundary is the write-auth contract for Climate Advisor chat: thread
+creation, message writes, and the developer inventory check are authenticated
+and canonical-subject-bound. Read-only thread-history GET remains unchanged.
+
+At tool-call time, discovery returns only locally supported safe entries and
+may include an opaque Core continuation cursor so later authorized pages remain
+discoverable. Core bounds the number of raw active candidates examined per
+request and emits that cursor even when the authorized page is short or empty.
+A page or cursor is never cached as an authorization grant. A
+read accepts a model-selected catalog/capability pair with finite bounded
+arguments, then calls Core for fresh authorization and execution. Core remains
+the final read-time authority; unavailable or invalid reads use the stable
+non-disclosing response. Before discovery or read, the server-owned request
+context renews a token that is expired or within the 10-minute safety margin.
+The explicit `allow_token_refresh=False` contract remains for callers without
+that authenticated context. A 401/403 after preflight fails through the safe
+tool path without another refresh or replay. Refresh identity never comes from
+request JSON.
+
 - `services/stationary_energy/stationary_energy_review_resolver.py`
   - Resolves selectable sources, notation-key targets, pending review rows, and
     save-ready decision inputs for one persisted draft snapshot.
@@ -243,6 +319,14 @@ workflow state in PostgreSQL.
 
 ### Tool Layer
 
+- `tools/native_input_catalog_tools.py`
+  - Exposes the stable `native_input_discover` and `native_input_read` tools
+    for bounded Core-mediated catalog access.
+  - Captures active request scope, filters discovery to locally supported
+    capabilities, relays an optional opaque continuation cursor, rejects
+    arbitrary runtime routing/scope or credential arguments, redacts forbidden
+    result fields, and closes the short-lived Core client after each read
+    invocation.
 - `tools/climate_vector_sync.py`
   - General climate knowledge retrieval.
 - `tools/cc_inventory_wrappers.py`
@@ -250,8 +334,8 @@ workflow state in PostgreSQL.
 - `tools/inventory_context_tools.py`
   - The shared CityCatalyst inventory capability tools used by the general
     prompt and the scoped Stationary Energy review prompt.
-  - Updates the shared request token reference after a capability call refreshes
-    the CityCatalyst bearer token.
+  - Uses the authenticated turn's shared bearer and request-scoped canonical
+    preflight renewal context.
 - `tools/stationary_energy_review_tools.py`
   - The scoped Stationary Energy review tool pack backed by
     `StationaryEnergyAgentReviewService`.
@@ -268,10 +352,21 @@ workflow state in PostgreSQL.
   - Enforces the Stationary Energy chat prompt budget.
   - Emits `tool_result` SSE payloads for normal tools and Stationary Energy UI
     events via `services/stationary_energy/stationary_energy_tool_events.py`.
+  - Records request-local redacted MLflow `TOOL` spans for each agent tool
+    call without changing SSE or persisted chat history. Summary artifacts use
+    those records, or an equally redacted projection when span instrumentation
+    fails, including Stationary Energy and other agentic workflows. Fallback
+    records reuse the same envelope classifier as completed TOOL observations.
+    Incomplete invocations stay non-success, and later uninstrumented calls are
+    merged into the summary in call order.
+- `utils/mlflow_logging.py`
+  - Owns explicit run lifecycle, redaction, sibling per-tool observations,
+    and the local configuration preflight used by
+    `python -m scripts.mlflow_preflight`.
 - `utils/history_manager.py`
   - Prunes older tool metadata for LLM context while keeping full DB audit data.
 - `utils/token_handler.py`
-  - Refreshes and persists CityCatalyst tokens.
+  - Persists the renewed request bearer after a successful streaming turn.
 
 ### Concept Note Source Context
 
@@ -281,13 +376,24 @@ capability contract live in
 Operationally, run creation schedules guarded background assembly. A run with
 no uploaded source records `document_grounding: none`; a ready PDF or native
 Markdown source rebuilds it as `uploaded_evidence`. Separate
-`available_context` flags report CityCatalyst and uploaded-document presence.
+`available_context` flags report CityCatalyst and uploaded-document presence,
+and `city_population` reports the population the city profile gives the models.
 Evidence keeps page or heading/block locators, optional GHGI/HIAP failures do
 not block readiness, and eligible turns get one scoped read-only source query.
 During rebuilds, callers keep using the last completed bundle; unchanged
 document analyses are reused by digest and analysis-contract version. Reader
 and chapter-drafter configuration remains in `llm_config.yaml`, and the public
 CNB contracts live under `app/models/cnb`.
+
+When a new source finishes analysis, a review-only LLM call selects the chapters
+it affects, and each of their open gaps is asked of the verified source text.
+Only those chapters are redrafted with the cited answers, editing the current
+chapter text in place so accepted user edits survive. Each redraft appends a
+revision and reconciles gaps with the new evidence without replacing the last
+user-confirmed revision. Only gaps backed by a cited answer close; a redraft
+that drops any other gap or mismatches its markers is rejected. The re-check is
+a durable job in `context_summary.source_revalidation`, queued with the bundle
+commit and retried by the context-bundle reconciler after failures or restarts.
 
 ## SSE Contract
 
@@ -405,3 +511,19 @@ Each streamed request creates a `RunConfig` with workflow-specific metadata.
 Stationary Energy context chat uses a dedicated workflow name and includes
 `stationary_energy_draft_run_id` in trace metadata so it can be separated from
 general conversations in traces and logs.
+
+All Climate Advisor chat modes share one handler and keep one `Climate Advisor Turn` root
+open through response persistence. Each root represents one user turn; MLflow's
+Sessions view groups turns by the shared thread/session ID. The root stores the
+user message, one hash-keyed copy of each system/developer prompt, the assembled assistant output,
+and the final stream/persistence status. Child model spans reference the root
+prompt snapshot and omit raw streaming-chunk events while retaining their final
+outputs and diagnostic events. Function calls are recorded as child `TOOL` spans
+with call IDs and credential-redacted inputs/outputs. CNB chat and edits now
+record conversation and model/tool content under the same MLflow settings.
+The existing catalog summary projection remains available in tool artifacts.
+CNB source analysis/drafting/validation and Stationary Energy generation/review/save share
+workflow tracing and prompt compaction. Inline operations stay under the chat;
+background tasks own independent traces linked by thread and workflow IDs.
+Standalone jobs omit `mlflow.trace.session`; only conversation turns appear in
+the Sessions view. Workflow traces remain searchable by `thread_id` metadata.

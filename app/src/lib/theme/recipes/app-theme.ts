@@ -538,6 +538,7 @@ export const appTheme = createSystem(defaultConfig, {
         gray: {
           focusRing: { value: "#A1A1AA" }, // gray-focusRing
           muted: { value: "#E4E4E7" }, // gray-muted
+          medium: { value: "#999999" }, // Neutral/Neutral Medium
         },
         divider: {
           neutral: { value: "#F0F0F0" },
@@ -713,6 +714,10 @@ export const appTheme = createSystem(defaultConfig, {
         "shadow-lg": {
           value:
             "0 1px 3px 0 rgba(0, 0, 31, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10)",
+        },
+        "shadow-lg-top": {
+          value:
+            "0 -1px 3px 0 rgba(0, 0, 31, 0.10), 0 -1px 2px -1px rgba(0, 0, 0, 0.10)",
         },
       },
 

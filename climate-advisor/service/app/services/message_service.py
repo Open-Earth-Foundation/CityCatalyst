@@ -24,7 +24,7 @@ class MessageService:
     ) -> Message:
         message = Message(
             message_id=uuid4(),
-            thread_id=thread_id,
+            thread_id=thread_id if isinstance(thread_id, UUID) else UUID(str(thread_id)),
             user_id=user_id,
             role=role,
             text=text,

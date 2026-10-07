@@ -110,150 +110,169 @@ function DataTableAlt<T extends object>({
     setCurrentPage(1);
   };
 
+  const hasToolbar =
+    Boolean(title) ||
+    searchable ||
+    (Boolean(filterProperty) && filterOptions.length > 0) ||
+    pagination;
+
   return (
-    <Box w="full" display="flex" flexDirection="column" gap={4}>
-      <Flex
-        alignItems="center"
-        justifyContent="space-between"
-        gap={4}
-        flexWrap="wrap"
-        w="full"
-      >
-        <HStack w="full" alignItems="end">
-          <HStack
-            justifyContent="space-between"
-            w="full"
-            flexDir="column"
-            alignItems="flex-start"
-            gap="24px"
-          >
-            {title && (
-              <Text
-                fontWeight="bold"
-                fontSize="title.md"
-                color="content.primary"
+    <Box w="full" display="flex" flexDirection="column" gap="6">
+      {hasToolbar && (
+        <Flex
+          alignItems="center"
+          justifyContent="space-between"
+          gap={4}
+          flexWrap="wrap"
+          w="full"
+        >
+          <HStack w="full" alignItems="end">
+            <HStack
+              justifyContent="space-between"
+              w="full"
+              flexDir="column"
+              alignItems="flex-start"
+              gap="6"
+            >
+              {title && (
+                <Text
+                  fontWeight="bold"
+                  fontSize="title.md"
+                  color="content.primary"
+                  whiteSpace="nowrap"
+                >
+                  {title}
+                </Text>
+              )}
+              <Flex gap={3} alignItems="center" flex="1" minW="0">
+                {searchable && (
+                  <InputGroup
+                    flex="1"
+                    gap="2"
+                    maxW="420px"
+                    startElement={
+                      <Icon
+                        as={MdSearch}
+                        color="content.tertiary"
+                        boxSize={5}
+                      />
+                    }
+                  >
+                    <Input
+                      placeholder={searchPlaceholder ?? t("search-records")}
+                      value={searchQuery}
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      borderRadius="minimal"
+                      border="1px solid"
+                      borderColor="border.neutral"
+                      bg="background.default"
+                      size="lg"
+                      fontFamily="body"
+                      w="365px"
+                      _placeholder={{ color: "content.tertiary" }}
+                      shadow="sm"
+                    />
+                  </InputGroup>
+                )}
+
+                {filterProperty && filterOptions.length > 0 && (
+                  <NativeSelectRoot w="auto" size="lg">
+                    <NativeSelectField
+                      placeholder={t("all")}
+                      value={filterValue}
+                      onChange={(e) => handleFilterChange(e.target.value)}
+                      borderRadius="minimal"
+                      borderColor="border.neutral"
+                      shadow="sm"
+                    >
+                      {filterOptions.map((option, idx) => {
+                        const isObj = isLabelValueOption(option);
+                        const value = isObj ? option.value : option;
+                        const label = isObj ? option.label : String(option);
+                        return (
+                          <option key={idx} value={String(value)}>
+                            {label}
+                          </option>
+                        );
+                      })}
+                    </NativeSelectField>
+                  </NativeSelectRoot>
+                )}
+              </Flex>
+            </HStack>
+            {pagination && (
+              <Flex
+                gap={1}
+                align="center"
                 whiteSpace="nowrap"
+                ml="auto"
+                top="-5px"
+                position="relative"
               >
-                {title}
-              </Text>
-            )}
-            <Flex gap={3} alignItems="center" flex="1" minW="0">
-              {searchable && (
-                <InputGroup
-                  flex="1"
-                  gap="8px"
-                  maxW="420px"
-                  startElement={
-                    <Icon as={MdSearch} color="content.tertiary" boxSize={5} />
+                <Text fontSize="body.md" color="content.tertiary">
+                  {filteredData.length === 0
+                    ? t("table-pagination", { start: 0, end: 0, total: 0 })
+                    : t("table-pagination", {
+                        start: (currentPage - 1) * itemsPerPage + 1,
+                        end: Math.min(
+                          filteredData.length,
+                          currentPage * itemsPerPage,
+                        ),
+                        total: filteredData.length,
+                      })}
+                </Text>
+                <IconButton
+                  variant="ghost"
+                  size="sm"
+                  aria-label="Previous page"
+                  disabled={currentPage === 1}
+                  color={
+                    currentPage === 1
+                      ? "background.overlay"
+                      : "interactive.control"
+                  }
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
                   }
                 >
-                  <Input
-                    placeholder={searchPlaceholder ?? t("search-records")}
-                    value={searchQuery}
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                    borderRadius="4px"
-                    border="1px solid"
-                    borderColor="border.neutral"
-                    bg="background.default"
-                    size="lg"
-                    fontFamily="body"
-                    w="365px"
-                    _placeholder={{ color: "content.tertiary" }}
-                    shadow="sm"
-                  />
-                </InputGroup>
-              )}
-
-              {filterProperty && filterOptions.length > 0 && (
-                <NativeSelectRoot w="auto" size="lg">
-                  <NativeSelectField
-                    placeholder={t("all")}
-                    value={filterValue}
-                    onChange={(e) => handleFilterChange(e.target.value)}
-                    borderRadius="4px"
-                    borderColor="border.neutral"
-                    shadow="sm"
-                  >
-                    {filterOptions.map((option, idx) => {
-                      const isObj = isLabelValueOption(option);
-                      const value = isObj ? option.value : option;
-                      const label = isObj ? option.label : String(option);
-                      return (
-                        <option key={idx} value={String(value)}>
-                          {label}
-                        </option>
-                      );
-                    })}
-                  </NativeSelectField>
-                </NativeSelectRoot>
-              )}
-            </Flex>
+                  <Icon as={IoIosArrowBack} />
+                </IconButton>
+                <IconButton
+                  variant="ghost"
+                  size="sm"
+                  color="interactive.control"
+                  aria-label="Next page"
+                  disabled={
+                    currentPage === totalPages || filteredData.length === 0
+                  }
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                >
+                  <Icon as={IoIosArrowBack} rotate="180deg" />
+                </IconButton>
+              </Flex>
+            )}
           </HStack>
-          {pagination && (
-            <Flex
-              gap={1}
-              align="center"
-              whiteSpace="nowrap"
-              ml="auto"
-              top="-5px"
-              position="relative"
-            >
-              <Text fontSize="body.md" color="content.tertiary">
-                {filteredData.length === 0
-                  ? t("table-pagination", { start: 0, end: 0, total: 0 })
-                  : t("table-pagination", {
-                      start: (currentPage - 1) * itemsPerPage + 1,
-                      end: Math.min(
-                        filteredData.length,
-                        currentPage * itemsPerPage,
-                      ),
-                      total: filteredData.length,
-                    })}
-              </Text>
-              <IconButton
-                variant="ghost"
-                size="sm"
-                aria-label="Previous page"
-                disabled={currentPage === 1}
-                color={
-                  currentPage === 1
-                    ? "background.overlay"
-                    : "interactive.control"
-                }
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              >
-                <Icon as={IoIosArrowBack} />
-              </IconButton>
-              <IconButton
-                variant="ghost"
-                size="sm"
-                color="interactive.control"
-                aria-label="Next page"
-                disabled={
-                  currentPage === totalPages || filteredData.length === 0
-                }
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-              >
-                <Icon as={IoIosArrowBack} rotate="180deg" />
-              </IconButton>
-            </Flex>
-          )}
-        </HStack>
-      </Flex>
+        </Flex>
+      )}
 
       <Box
         w="full"
-        borderRadius="8px"
+        borderRadius="rounded"
         borderWidth="1px"
         borderColor="border.overlay"
-        bg="background.backgroundLight"
+        bg="white"
         overflow="hidden"
       >
         <Box maxH={maxHeight} overflowY="auto" w="full">
           <Table.Root px={0} w="full" variant="outline">
-            <Table.Header position="sticky" top={0} zIndex={1}>
+            <Table.Header
+              position="sticky"
+              top={0}
+              zIndex={1}
+              bg="background.backgroundLight"
+            >
               <Table.Row>
                 {columns.map((col) => (
                   <Table.ColumnHeader

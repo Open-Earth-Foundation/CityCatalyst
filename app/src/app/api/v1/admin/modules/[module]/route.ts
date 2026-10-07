@@ -45,6 +45,8 @@ export const PUT = apiHandler(async (req, { session, params }) => {
   if (url !== undefined) updateData.url = url;
   if (logo !== undefined) updateData.logo = logo;
 
+  updateData.isManuallyEdited = true;
+
   await record.update(updateData);
 
   return NextResponse.json({ data: record });

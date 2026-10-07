@@ -8,6 +8,10 @@
  * One report covers one action, because `actionId` is singular upstream. A
  * multi-action report is several of these in document order.
  */
+import {
+  authorityScopeStatusText,
+  readAuthorityScopeClassification,
+} from "@/util/authorityScopeClassification";
 import type { MeedPlanRouteReport } from "@/util/types/meed";
 import { resolveI18nList, resolveI18nText } from "../../../localizedText";
 
@@ -22,6 +26,8 @@ export interface MeedReportActionDocument {
   actionId: string;
   actionName: string;
   sections: MeedReportSection[];
+  /** Deterministic status. Absent when the stored report has no classification. */
+  classificationStatus?: string | null;
 }
 
 export interface MeedReportInput {
@@ -56,7 +62,15 @@ export function toReportActionDocument(
   }
 
   if (sections.length === 0) return null;
-  return { actionId, actionName, sections };
+  return {
+    actionId,
+    actionName,
+    sections,
+    classificationStatus: authorityScopeStatusText(
+      readAuthorityScopeClassification(report.authorityScopeClassification),
+      language,
+    ),
+  };
 }
 
 /**

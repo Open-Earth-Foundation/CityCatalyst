@@ -46,6 +46,43 @@ export function isReportNotFound(error: unknown): boolean {
   return isFetchBaseQueryError(error) && error.status === 404;
 }
 
+/** Why a run stopped before producing anything. */
+export type MeedReportBlockedReason =
+  /** The stored reports could not be read at all — expired session, sick service. */
+  | "fetch"
+  /** Generation has no ranking snapshot to work from. */
+  | "no-snapshot";
+
+/**
+ * A run that could not start, as opposed to one whose actions failed.
+ *
+ * The caller needs the difference because the instruction differs: one is
+ * "try again", the other is "re-run the ranking".
+ */
+export class MeedReportBlockedError extends Error {
+  constructor(readonly reason: MeedReportBlockedReason) {
+    super(`meed report blocked: ${reason}`);
+    this.name = "MeedReportBlockedError";
+  }
+}
+
+/**
+ * True when generation failed for want of its inputs rather than on its merits.
+ *
+ * `generatePlan` 404s in exactly two cases, both structural and both fatal to
+ * the whole run: the inventory is gone, or there is no `MeedRankSnapshot` row
+ * for it. The snapshot is written by the ranking POST, and only by the version
+ * of it that shipped in #3109 — so any inventory ranked before that has ranked
+ * actions on screen and no snapshot behind them, which is precisely the state
+ * that produces "Rank snapshot not found - run ranking first".
+ *
+ * Retrying per action cannot fix either, so this aborts instead of spending
+ * nine more round trips to collect nine more identical 404s.
+ */
+export function isMissingRankSnapshot(error: unknown): boolean {
+  return isFetchBaseQueryError(error) && error.status === 404;
+}
+
 const IDLE: MeedReportProgress = {
   done: 0,
   total: 0,
@@ -111,7 +148,9 @@ export function useMeedReport(cityId: string, inventoryId: string) {
             // Only a 404 means "not generated yet". Anything else is a fetch
             // failure that affects every remaining action too, so it aborts
             // the run rather than being recorded as a per-action miss.
-            if (!isReportNotFound(error)) throw error;
+            if (!isReportNotFound(error)) {
+              throw new MeedReportBlockedError("fetch");
+            }
             report = null;
           }
 
@@ -125,9 +164,14 @@ export function useMeedReport(cityId: string, inventoryId: string) {
                   languages: [language],
                 },
               }).unwrap();
-            } catch {
-              // A generation that fails is per-action: the next one may well
-              // succeed, so the run continues and names this one at the end.
+            } catch (error) {
+              // A missing snapshot is not this action's fault and will not be
+              // any other action's luck either, so it stops the run.
+              if (isMissingRankSnapshot(error)) {
+                throw new MeedReportBlockedError("no-snapshot");
+              }
+              // Anything else is per-action: the next one may well succeed, so
+              // the run continues and names this one at the end.
               failed.push(target.actionName);
               report = null;
             }

@@ -2,7 +2,8 @@ import { useEffect, useMemo } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSetCurrentUserDataMutation } from "@/services/api";
-import i18next, { TFunction } from "i18next";
+import { TFunction } from "i18next";
+import { useParams } from "next/navigation";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { LANGUAGES, UpdateUserPayload, UserInfoResponse } from "@/util/types";
@@ -14,6 +15,7 @@ import {
   NativeSelectRoot,
 } from "@/components/ui/native-select";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { getParamValue } from "@/util/helpers";
 
 interface ProfileInputs {
   preferredLanguage?: string;
@@ -49,10 +51,12 @@ const PreferencesTab = ({
     formState: { errors, isSubmitting },
   } = useForm<ProfileInputs>();
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
+  const params = useParams();
 
   // Falls back to the language currently active in the navbar (rather than
   // a hardcoded default) when the user has no saved preference yet.
-  const navbarLanguage = (i18next.language as LANGUAGES) || LANGUAGES.en;
+  const navbarLanguage =
+    (getParamValue(params.lng) as LANGUAGES) || LANGUAGES.en;
   const savedPreferredLanguage =
     (userInfo?.preferredLanguage as LANGUAGES) || navbarLanguage;
   // Treats any unset or unrecognized value (e.g. the legacy "default" enum
@@ -100,8 +104,8 @@ const PreferencesTab = ({
       p={6}
       display="flex"
       flexDirection="column"
-      gap="24px"
-      borderRadius="8px"
+      gap="6"
+      borderRadius="rounded"
       boxShadow="shadow-lg"
     >
       {!userInfo ? (
@@ -136,7 +140,7 @@ const PreferencesTab = ({
             >
               <NativeSelectRoot
                 shadow="2dp"
-                borderRadius="4px"
+                borderRadius="minimal"
                 border="inputBox"
                 background={
                   errors.numberFormat
@@ -160,7 +164,7 @@ const PreferencesTab = ({
               </NativeSelectRoot>
             </Field>
           )}
-          <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
+          <Box display="flex" w="100%" justifyContent="right" marginTop="3">
             <Button
               type="submit"
               loading={isSubmitting}
@@ -168,7 +172,7 @@ const PreferencesTab = ({
               h={16}
               w="auto"
               minW="175px"
-              px="24px"
+              px="6"
               letterSpacing="widest"
               textTransform="uppercase"
               fontWeight="semibold"

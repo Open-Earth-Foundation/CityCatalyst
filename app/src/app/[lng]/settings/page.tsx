@@ -13,7 +13,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AccountSettingsTab from "./account";
 import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
@@ -31,8 +31,16 @@ const PREFERENCES_INFO_DISMISSED_KEY = "settings-preferences-info-dismissed";
 const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "settings");
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") ?? "account";
+  const activeTab = searchParams.get("tab") ?? "account";
+
+  const handleTabChange = (details: { value: string }) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", details.value);
+    router.replace(`${pathname}?${params.toString()}`);
+  };
 
   const { data: userInfo } = api.useGetUserInfoQuery();
   const isAdmin = userInfo?.role === Roles.Admin;
@@ -88,7 +96,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
         <Button
           display="flex"
           alignItems="center"
-          gap="8px"
+          gap="2"
           color="content.link"
           fontFamily="heading"
           fontSize="button.md"
@@ -98,7 +106,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
           {t("go-back")}
         </Button>
       </Link>
-      <Box w="full" mt="16px">
+      <Box w="full" mt="4">
         <Text
           color="content.primary"
           fontWeight="bold"
@@ -113,13 +121,13 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
           <HStack
             w="full"
             bg="background.info"
-            p="12px"
-            my="40px"
+            p="3"
+            my="10"
             borderRadius="6px"
             justifyContent="space-between"
             alignItems="center"
           >
-            <HStack gap="8px" alignItems="center">
+            <HStack gap="2" alignItems="center">
               <Icon
                 as={BiInfoCircle}
                 color="content.alternative"
@@ -127,12 +135,12 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                 mt="1px"
               />
 
-              <VStack alignItems="flex-start" gap="4px">
+              <VStack alignItems="flex-start" gap="1">
                 <Text
                   fontSize="body.md"
                   fontFamily="body"
                   fontWeight="semibold"
-                  lineHeight="16px"
+                  lineHeight="16"
                 >
                   {t("preferences-info-update-title")}
                 </Text>
@@ -160,13 +168,17 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
             </IconButton>
           </HStack>
         )}
-        <Box marginTop="48px" borderBottomColor={"border.overlay"}>
-          <Tabs.Root defaultValue={initialTab} variant="enclosed">
+        <Box marginTop="12" borderBottomColor={"border.overlay"}>
+          <Tabs.Root
+            value={activeTab}
+            onValueChange={handleTabChange}
+            variant="enclosed"
+          >
             <Tabs.List
               p={0}
               w="full"
               backgroundColor="background.backgroundLight"
-              mb="24px"
+              mb="6"
             >
               <Tabs.Trigger
                 value="account"
@@ -180,7 +192,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                   backgroundColor: "background.backgroundLight",
                 }}
               >
-                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24">
                   {t("account")}
                 </Text>
               </Tabs.Trigger>
@@ -196,7 +208,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                   backgroundColor: "background.backgroundLight",
                 }}
               >
-                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24">
                   {t("team")}
                 </Text>
               </Tabs.Trigger>
@@ -212,7 +224,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                   backgroundColor: "background.backgroundLight",
                 }}
               >
-                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24">
                   {t("projects")}
                 </Text>
               </Tabs.Trigger>
@@ -232,7 +244,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                   <Text
                     fontSize="title.md"
                     fontStyle="normal"
-                    lineHeight="24px"
+                    lineHeight="24"
                   >
                     {t("api-tokens")}
                   </Text>
@@ -254,7 +266,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                   <Text
                     fontSize="title.md"
                     fontStyle="normal"
-                    lineHeight="24px"
+                    lineHeight="24"
                   >
                     {t("apps")}
                   </Text>

@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { use, useMemo } from "react";
 import useScrollSpy from "@/hooks/useScrollSpy";
 import { methodologiesBySector } from "./methodologies";
-import i18next from "i18next";
 import { LANGUAGES } from "@/util/types";
 import { MethodologyContent } from "./MethodologyContent";
 import { MethodologyTableOfContents } from "./MethodologyTableOfContents";
 import Footer from "@/components/Sections/Footer";
 
-export default function MethodologiesPage() {
-  const lng = i18next.language as LANGUAGES;
+export default function MethodologiesPage(props: {
+  params: Promise<{ lng: string }>;
+}) {
+  const { lng } = use(props.params) as { lng: LANGUAGES };
 
   const ids = useMemo(() => {
     const result: string[] = [];

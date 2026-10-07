@@ -299,14 +299,16 @@ export const POST = apiHandler(async (req, { session }) => {
         ).subject;
 
         // Email is best-effort: invite URL is still returned for clipboard copy.
-        const sendInvite = await sendEmail({
-          to: email!,
-          subject: translatedSubject,
-          html,
-        });
-        if (!sendInvite) {
+        // sendEmail throws on failure, so catch here to avoid failing the invite.
+        try {
+          await sendEmail({
+            to: email!,
+            subject: translatedSubject,
+            html,
+          });
+        } catch (error) {
           logger.warn(
-            { email, cityIds },
+            { email, cityIds, error },
             "Invitation email could not be sent; invite was created and URL is available",
           );
         }

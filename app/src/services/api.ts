@@ -66,13 +66,18 @@ import {
   Authz,
   CityDashboardResponse,
   ConceptNoteApplicationContext,
+  ConceptNoteFunder,
+  ConceptNoteFundingSelection,
+  ConfirmConceptNoteChapterRequest,
   ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
+  ConceptNoteChatThreadListResponse,
   ConceptNoteRun,
   ConceptNoteRunListResponse,
   ConceptNoteUploadRequest,
   ConceptNoteUploadResponse,
   ConceptNoteUploadStatusRequest,
+  ConceptNoteContextBundleRefreshResponse,
   ConceptNoteContextBundleRetryResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
@@ -113,6 +118,50 @@ import type {
 } from "@/util/types/meed";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+export interface BulkInventoryImportItemCountsDto {
+  total: number;
+  pending: number;
+  matched: number;
+  unmatched: number;
+  importing: number;
+  completed: number;
+  failed: number;
+  skipped: number;
+}
+
+export interface BulkInventoryImportJobDto {
+  id: string;
+  projectId: string;
+  year: number;
+  status: string;
+  dryRun: boolean;
+  createMissingCities: boolean;
+  inventoryType: string;
+  globalWarmingPotentialType: string;
+  replaceExisting: boolean;
+  progressStage: string | null;
+  progressDetail: string | null;
+  counts: BulkInventoryImportItemCountsDto;
+  created: string | null;
+  lastUpdated: string | null;
+}
+
+export interface BulkInventoryImportItemDto {
+  id: string;
+  originalFileName: string;
+  locode: string | null;
+  status: string;
+  stage: string | null;
+  errorCode: string | null;
+  errorLog: string | null;
+  warnings: string[];
+  resolvedYear: number | null;
+}
+
+export interface BulkInventoryImportJobDetailDto extends BulkInventoryImportJobDto {
+  items: BulkInventoryImportItemDto[];
+}
 
 export const api = createApi({
   reducerPath: "api",
@@ -163,8 +212,13 @@ export const api = createApi({
     "MeedRanking",
     "MeedPlan",
     "ConceptNoteRuns",
+    "ConceptNoteChatThreads",
     "ConceptNoteUpload",
     "ConceptNoteDraft",
+    "ConceptNoteEdits",
+    "BulkInventoryImport",
+    "ConceptNoteApplicationContext",
+    "ConceptNoteFundingCatalogue",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -258,21 +312,6 @@ export const api = createApi({
         transformResponse: (response: { data: unknown }) => response.data,
         providesTags: ["Meed"],
       }),
-      getMeedFinanceFeasibility: builder.query<unknown, { cityId: string }>({
-        query: ({ cityId }) =>
-          `city/${cityId}/modules/meed/finance/feasibility`,
-        transformResponse: (response: { data: unknown }) => response.data,
-        providesTags: ["Meed"],
-      }),
-      getMeedFinanceLink: builder.query<
-        unknown,
-        { cityId: string; link: string }
-      >({
-        query: ({ cityId, link }) =>
-          `city/${cityId}/modules/meed/finance/follow?link=${encodeURIComponent(link)}`,
-        transformResponse: (response: { data: unknown }) => response.data,
-        providesTags: ["Meed"],
-      }),
       /**
        * The stored ranking for one inventory. Separate cache tag from "Meed"
        * so running a ranking does not invalidate the catalog and reference
@@ -294,9 +333,7 @@ export const api = createApi({
       // pass-throughs to hiap-meed, so unlike the ranking route their payloads
       // are snake_case with a `meta`/`warnings` envelope — see the contract
       // types. The older proxies stay until their consumers are migrated;
-      // that migration also retires `finance/follow`, whose guard only permits
-      // `/api/v1/cities/` while the real links are `/api/v1/climate-finance/`,
-      // so both of its calls 400 and the cards silently render "no data".
+      // finance already reads through these.
       getMeedReferenceActions: builder.query<
         MeedReferenceActionsResponse,
         { cityId: string }
@@ -877,6 +914,57 @@ export const api = createApi({
           body: { password, token },
         }),
       }),
+      setupSecondFactorAuth: builder.mutation<
+        { success: boolean; qrCodeDataUrl: string },
+        void
+      >({
+        query: () => ({
+          url: "auth/2fa/setup",
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: { success: boolean; qrCodeDataUrl: string };
+        }) => response.data,
+      }),
+      verifySecondFactorAuth: builder.mutation<
+        { success: boolean; recoveryCodes: string[] },
+        { token: string }
+      >({
+        query: ({ token }) => ({
+          url: "auth/2fa/verify",
+          method: "POST",
+          body: { token },
+        }),
+        transformResponse: (response: {
+          data: { success: boolean; recoveryCodes: string[] };
+        }) => response.data,
+        invalidatesTags: ["UserInfo"],
+      }),
+      disableSecondFactorAuth: builder.mutation<
+        { success: boolean },
+        { password: string }
+      >({
+        query: ({ password }) => ({
+          url: "auth/2fa/disable",
+          method: "POST",
+          body: { password },
+        }),
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
+        invalidatesTags: ["UserInfo"],
+      }),
+      checkSecondFactorAuth: builder.query<
+        { enabled: boolean },
+        { email: string }
+      >({
+        query: ({ email }) => ({
+          url: `auth/2fa/check?email=${encodeURIComponent(email)}`,
+          method: "GET",
+        }),
+        transformResponse: (response: { data: { enabled: boolean } }) =>
+          response.data,
+        providesTags: ["UserInfo"],
+      }),
       getCities: builder.query({
         query: () => ({
           url: "/city",
@@ -1404,6 +1492,51 @@ export const api = createApi({
           body: data,
         }),
         transformResponse: (response: unknown) => response,
+      }),
+      enqueueBulkInventoryImport: builder.mutation<
+        {
+          jobId: string;
+          itemCount: number;
+          unmatchedCount: number;
+        },
+        FormData
+      >({
+        query: (formData) => ({
+          url: `/admin/bulk-inventory-import`,
+          method: "POST",
+          body: formData,
+        }),
+        transformResponse: (response: {
+          data: {
+            jobId: string;
+            itemCount: number;
+            unmatchedCount: number;
+          };
+        }) => response.data,
+        invalidatesTags: ["BulkInventoryImport"],
+      }),
+      getLatestBulkInventoryImportJob: builder.query<
+        BulkInventoryImportJobDto | null,
+        string
+      >({
+        query: (projectId) =>
+          `/admin/bulk-inventory-import?projectId=${projectId}`,
+        transformResponse: (response: {
+          data: BulkInventoryImportJobDto | null;
+        }) => response.data,
+        providesTags: ["BulkInventoryImport"],
+      }),
+      getBulkInventoryImportJob: builder.query<
+        BulkInventoryImportJobDetailDto,
+        string
+      >({
+        query: (jobId) => `/admin/bulk-inventory-import/${jobId}`,
+        transformResponse: (response: {
+          data: BulkInventoryImportJobDetailDto;
+        }) => response.data,
+        providesTags: (_r, _e, jobId) => [
+          { type: "BulkInventoryImport", id: jobId },
+        ],
       }),
       connectDataSources: builder.mutation({
         query: (data: {
@@ -2429,12 +2562,41 @@ export const api = createApi({
           url: `concept-notes/${runId}/`,
           params: { city_id: cityId },
         }),
+        providesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteRuns", id: runId },
+        ],
       }),
       getConceptNoteApplicationContext: builder.query<
         ConceptNoteApplicationContext,
         string
       >({
         query: (runId) => `concept-notes/${runId}/application-context/`,
+        providesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteApplicationContext", id: runId },
+        ],
+      }),
+      getConceptNoteFundingCatalogue: builder.query<
+        { funders: ConceptNoteFunder[] },
+        string
+      >({
+        query: (runId) => `concept-notes/${runId}/funding-catalogue/`,
+        providesTags: ["ConceptNoteFundingCatalogue"],
+      }),
+      updateConceptNoteFundingSelection: builder.mutation<
+        ConceptNoteApplicationContext,
+        { runId: string; selection: ConceptNoteFundingSelection }
+      >({
+        query: ({ runId, selection }) => ({
+          url: `concept-notes/${runId}/application-context/`,
+          method: "PATCH",
+          body: selection,
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteApplicationContext", id: runId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
+        ],
       }),
       getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
         query: (runId) => `concept-notes/${runId}/draft/`,
@@ -2454,10 +2616,12 @@ export const api = createApi({
           funderId,
           selectedFundingOpportunityId,
           threadId,
+          initialUploads,
         }) => ({
           url: "concept-notes/start/",
           method: "POST",
           body: {
+            initial_uploads: initialUploads,
             city_id: cityId,
             idempotency_key: idempotencyKey,
             name,
@@ -2470,6 +2634,24 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
           { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      updateConceptNotePopulation: builder.mutation<
+        ConceptNoteRun,
+        {
+          cityId: string;
+          runId: string;
+          manualPopulation: { population: number; year: number } | null;
+        }
+      >({
+        query: ({ cityId, runId, manualPopulation }) => ({
+          url: `concept-notes/${runId}/population/`,
+          method: "PATCH",
+          params: { city_id: cityId },
+          body: { manual_population: manualPopulation },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteRuns", id: runId },
         ],
       }),
       renameConceptNoteRun: builder.mutation<
@@ -2513,6 +2695,85 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
+      getConceptNoteChatThreads: builder.query<
+        ConceptNoteChatThreadListResponse,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}/chat/threads`,
+          params: { city_id: cityId },
+        }),
+        providesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteChatThreads", id: runId },
+        ],
+      }),
+      startConceptNoteChat: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}/chat/threads`,
+          method: "POST",
+          params: { city_id: cityId },
+        }),
+        // Swap the cached run to the new chat before the refetch lands.
+        async onQueryStarted({ cityId, runId }, { dispatch, queryFulfilled }) {
+          try {
+            const { data } = await queryFulfilled;
+            dispatch(
+              api.util.updateQueryData(
+                "getConceptNoteRun",
+                { cityId, runId },
+                (draft) => {
+                  draft.thread_id = data.thread_id;
+                },
+              ),
+            );
+          } catch {
+            // The mutation hook reports the failure; the cache stays as is.
+          }
+        },
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteChatThreads", id: runId },
+        ],
+      }),
+      activateConceptNoteChatThread: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; runId: string; threadId: string }
+      >({
+        query: ({ cityId, runId, threadId }) => ({
+          url: `concept-notes/${runId}/chat/threads/${threadId}/activate`,
+          method: "POST",
+          params: { city_id: cityId },
+        }),
+        // Switch the cached run immediately so the panel loads that history.
+        async onQueryStarted(
+          { cityId, runId, threadId },
+          { dispatch, queryFulfilled },
+        ) {
+          const patch = dispatch(
+            api.util.updateQueryData(
+              "getConceptNoteRun",
+              { cityId, runId },
+              (draft) => {
+                draft.thread_id = threadId;
+              },
+            ),
+          );
+          try {
+            await queryFulfilled;
+          } catch {
+            patch.undo();
+          }
+        },
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteChatThreads", id: runId },
+        ],
+      }),
       uploadConceptNoteSource: builder.mutation<
         ConceptNoteUploadResponse,
         ConceptNoteUploadRequest
@@ -2522,8 +2783,9 @@ export const api = createApi({
           method: "POST",
           body: formData,
         }),
-        invalidatesTags: (_result, _error, { cityId }) => [
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
           { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
         ],
       }),
       getConceptNoteUploadStatus: builder.query<
@@ -2558,6 +2820,29 @@ export const api = createApi({
         }),
         invalidatesTags: ["ConceptNoteRuns"],
       }),
+      refreshConceptNoteContextBundle: builder.mutation<
+        ConceptNoteContextBundleRefreshResponse,
+        string
+      >({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/context-bundle/refresh/`,
+          method: "POST",
+        }),
+        // Only a queued rebuild changes the run; skip needless refetches.
+        invalidatesTags: (result) =>
+          result?.status === "queued" ? ["ConceptNoteRuns"] : [],
+      }),
+      selectConceptNoteInventory: builder.mutation<
+        ConceptNoteContextBundleRetryResponse,
+        { runId: string; inventoryId: string | null }
+      >({
+        query: ({ runId, inventoryId }) => ({
+          url: `concept-notes/${runId}/inventory-selection/`,
+          method: "PUT",
+          body: { inventory_id: inventoryId },
+        }),
+        invalidatesTags: ["ConceptNoteRuns"],
+      }),
       startConceptNoteDraft: builder.mutation<ConceptNoteDraftState, string>({
         query: (runId) => ({
           url: `concept-notes/${runId}/draft/`,
@@ -2565,6 +2850,24 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, runId) => [
           { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteRuns", id: runId },
+        ],
+      }),
+      confirmConceptNoteChapter: builder.mutation<
+        ConceptNoteDraftState,
+        ConfirmConceptNoteChapterRequest
+      >({
+        query: ({ runId, chapterId, expectedRevision, idempotencyKey }) => ({
+          url: `concept-notes/${runId}/chapters/${chapterId}/confirm`,
+          method: "POST",
+          body: {
+            expected_revision: expectedRevision,
+            idempotency_key: idempotencyKey,
+          },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
         ],
       }),
       validateConceptNoteChapter: builder.mutation<
@@ -2655,8 +2958,6 @@ export const {
   useGetMeedActionsQuery,
   useGetMeedCityAttributesQuery,
   useGetMeedPolicyScoresQuery,
-  useGetMeedFinanceFeasibilityQuery,
-  useGetMeedFinanceLinkQuery,
   useGetMeedRankingQuery,
   useRunMeedRankingMutation,
   useGetMeedPlanQuery,
@@ -2687,6 +2988,9 @@ export const {
   useEditProjectMutation,
   useDeleteProjectMutation,
   useCreateBulkInventoriesMutation,
+  useEnqueueBulkInventoryImportMutation,
+  useGetLatestBulkInventoryImportJobQuery,
+  useGetBulkInventoryImportJobQuery,
   useConnectDataSourcesMutation,
   useGetDataSourcePreviewQuery,
   useConnectAllInventoryDataSourcesMutation,
@@ -2749,10 +3053,15 @@ export const {
   useGetConceptNoteApplicationContextQuery,
   useGetConceptNoteDraftQuery,
   useStartConceptNoteRunMutation,
+  useUpdateConceptNotePopulationMutation,
   useRenameConceptNoteRunMutation,
   useDuplicateConceptNoteRunMutation,
   useDeleteConceptNoteRunMutation,
+  useGetConceptNoteChatThreadsQuery,
+  useStartConceptNoteChatMutation,
+  useActivateConceptNoteChatThreadMutation,
   useStartConceptNoteDraftMutation,
+  useConfirmConceptNoteChapterMutation,
   useValidateConceptNoteChapterMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,

@@ -49,7 +49,7 @@ export function ProfessionSelect({
     >
       <NativeSelectRoot
         shadow="2dp"
-        borderRadius="4px"
+        borderRadius="minimal"
         border="inputBox"
         background={error ? "sentiment.negativeOverlay" : "background.default"}
         size="lg"

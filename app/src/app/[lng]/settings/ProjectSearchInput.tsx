@@ -29,7 +29,7 @@ export default function ProjectSearchInput({
       <Input
         type="search"
         placeholder={t("search-by-project")}
-        borderRadius="4px"
+        borderRadius="minimal"
         borderWidth="1px"
         borderColor="border.neutral"
         shadow="sm"

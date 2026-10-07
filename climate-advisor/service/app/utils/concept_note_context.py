@@ -39,14 +39,20 @@ def omit_context_identifiers(value: Any) -> Any:
                 "md5",
             } or normalized in {
                 "analysis_contract_version",
+                "visual_context_contract_version",
                 "idempotency_key",
                 "local_snapshot_path",
                 "markdown_s3_key",
+                "storage_key",
+                "s3_key",
+                "object_key",
                 "completion_event",
                 "retryable",
                 "target_path",
             }:
-                continue
+                # Keep document-local visual envelope identity; drop system IDs only.
+                if normalized != "image_id":
+                    continue
             if normalized == "anchor":
                 # Keep a readable document heading, never its generated block hash.
                 if isinstance(item, str):
@@ -57,6 +63,34 @@ def omit_context_identifiers(value: Any) -> Any:
     if isinstance(value, list):
         return [omit_context_identifiers(item) for item in value]
     return value
+
+
+SOURCE_DOCUMENTS_MESSAGE_HEADER = "CONCEPT_NOTE_SOURCE_DOCUMENTS"
+
+
+def render_source_documents_message(documents: list[dict[str, Any]]) -> str:
+    """Render complete uploaded source text as one model-facing message body.
+
+    Source indices follow ``selected_sources`` order so citations and source
+    queries refer to the same document.
+    """
+    parts = [SOURCE_DOCUMENTS_MESSAGE_HEADER]
+    for index, document in enumerate(documents, start=1):
+        # JSON-quote metadata so labels cannot break the source wrapper.
+        label = json.dumps(document.get("source_label") or "", ensure_ascii=False)
+        filename = json.dumps(document.get("filename") or "", ensure_ascii=False)
+        source_format = json.dumps(document.get("source_format") or "")
+        parts.append(
+            f'<source index="{index}" label={label} filename={filename} '
+            f"format={source_format}>\n{document['text']}\n</source>"
+        )
+    return "\n\n".join(parts)
+
+
+def manual_population_context(summary: Any) -> dict[str, Any] | None:
+    """Label the run's user-entered population so models never mistake its source."""
+    population = summary.get("manual_population") if isinstance(summary, dict) else None
+    return {**population, "source": "user_entered"} if population else None
 
 
 def readable_source_heading(anchor: str) -> str:

@@ -1,12 +1,12 @@
 import { Box, Flex, HStack, Icon, Text } from "@chakra-ui/react";
-import type { IconType } from "react-icons";
 import {
-  LuCheck,
   LuCircleAlert,
   LuDatabase,
+  LuLandmark,
   LuRefreshCw,
   LuSparkles,
 } from "react-icons/lu";
+import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
@@ -16,23 +16,16 @@ import type {
   ConceptNoteDraftState,
 } from "@/util/types";
 
-import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
+import type { ConceptNoteBundleProgress } from "@/components/ConceptNoteDashboard/utils";
 
-import { chapterTone } from "./draft-document-panel";
-
-interface DraftStatusPresentation {
-  background: string;
-  border: string;
-  description: string;
-  icon: IconType;
-  title: string;
-}
+import { chapterTone } from "@/components/ConceptNoteWorkspace/draft-document-panel";
 
 interface DraftSetupPanelProps {
   applicationContext: ConceptNoteApplicationContext | null;
   applicationContextFailed: boolean;
   applicationContextLoading: boolean;
   bundle: ConceptNoteBundleProgress;
+  contextStatus: ConceptNoteContextPresentation;
   canStartDrafting: boolean;
   draft: ConceptNoteDraftState | null;
   draftError: string | null;
@@ -41,8 +34,10 @@ interface DraftSetupPanelProps {
   isStartingDraft: boolean;
   lng: string;
   onOpenContext: () => void;
+  onOpenFundingSetup: () => void;
   onRetry: () => void;
   onStartDrafting: () => void;
+  highlightStartDrafting?: boolean;
 }
 
 function draftStatusKey(status: ConceptNoteDraftRunStatus): string {
@@ -58,63 +53,20 @@ function currentChapter(draft: ConceptNoteDraftState | null): string | null {
   );
 }
 
-function sourceStatus(
-  bundle: ConceptNoteBundleProgress,
-  t: ReturnType<typeof useTranslation>["t"],
-): DraftStatusPresentation {
-  if (bundle.status === "building") {
-    return {
-      background: "background.neutral",
-      border: "content.link",
-      description: t("building-source-context-description"),
-      icon: LuSparkles,
-      title: t("building-source-context"),
-    };
-  }
-  if (bundle.status === "failed") {
-    return {
-      background: "sentiment.negativeOverlay",
-      border: "sentiment.negativeDefault",
-      description: t("context-failed-description"),
-      icon: LuCircleAlert,
-      title: t("context-needs-attention"),
-    };
-  }
-  if (bundle.status === "ready" && bundle.documentGrounding === "none") {
-    return {
-      background: "background.neutral",
-      border: "content.link",
-      description: t("no-uploaded-evidence-draft-description"),
-      icon: LuDatabase,
-      title: t("uploaded-evidence-none"),
-    };
-  }
-  if (bundle.status === "ready") {
-    return {
-      background: "sentiment.positiveOverlay",
-      border: "sentiment.positiveDefault",
-      description: t("source-context-count", { count: bundle.readySources }),
-      icon: LuCheck,
-      title: t("source-context-assembled"),
-    };
-  }
-  return {
-    background: "background.neutral",
-    border: "content.link",
-    description: t("context-starting-description"),
-    icon: LuDatabase,
-    title: t("context-starting-title"),
-  };
-}
-
 export function DraftSetupPanel(props: DraftSetupPanelProps) {
   const { t } = useTranslation(props.lng, "concept-notes");
   const { bundle, draft } = props;
-  const draftStarted = Boolean(draft && draft.status !== "not_started");
+  const hasDraftContent = Boolean(
+    draft?.chapters.some((chapter) => chapter.body_markdown?.trim()),
+  );
+  const canResume = draft?.status === "not_started" && hasDraftContent;
+  const draftStarted = Boolean(
+    draft && (draft.status !== "not_started" || hasDraftContent),
+  );
   const showDraftSetup = !draftStarted || draft?.status === "failed";
-  const isBuilding = bundle.status === "building";
-  const isFailed = bundle.status === "failed";
-  const status = sourceStatus(bundle, t);
+  const isBuilding = props.contextStatus.busy;
+  const isFailed = props.contextStatus.state === "failed";
+  const status = props.contextStatus;
   const requirements = [
     !props.applicationContext?.funder ? t("drafting-requirement-funder") : null,
     !props.applicationContext?.opportunity
@@ -132,7 +84,11 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
     ? t("drafting-setup-load-error")
     : props.applicationContextLoading
       ? t("drafting-setup-loading")
-      : t("drafting-setup-missing", { requirements: requirements.join(", ") });
+      : t("drafting-setup-missing", {
+          requirements: new Intl.ListFormat(props.lng, {
+            type: "conjunction",
+          }).format(requirements),
+        });
   const totalChapters =
     draft?.total_chapters ||
     props.applicationContext?.template?.chapter_schema.length ||
@@ -140,19 +96,35 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
 
   return (
     <>
+      {canResume && (
+        <Flex align="center" gap={3} flexWrap="wrap" flexShrink={0}>
+          <Text flex={1} fontSize="body.sm" color="content.secondary">
+            {t("draft-additional-chapters")}
+          </Text>
+          <Button
+            size="sm"
+            disabled={!props.canStartDrafting || props.isDraftRunning}
+            loading={props.isStartingDraft}
+            onClick={props.onStartDrafting}
+          >
+            <Icon as={LuSparkles} />
+            {t("continue-drafting")}
+          </Button>
+        </Flex>
+      )}
       {showDraftSetup && (
         <Flex
           align={{ base: "stretch", xl: "center" }}
           direction={{ base: "column", xl: "row" }}
           gap={4}
           border="1px solid"
-          borderColor={status.border}
+          borderColor={status.color}
           borderRadius="rounded"
-          bg={status.background}
+          bg={status.surface}
           p={4}
         >
           <Flex align="start" gap={3} flex={1}>
-            <Icon as={status.icon} mt={0.5} color={status.border} />
+            <Icon as={status.icon} mt={0.5} color={status.color} />
             <Box>
               <Text
                 fontFamily="heading"
@@ -183,30 +155,70 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
               <Icon as={LuRefreshCw} />
               {t("retry-context")}
             </Button>
-          ) : !isBuilding && !isFailed ? (
-            <HStack gap={2} flexWrap="wrap">
-              <Button size="sm" variant="outline" onClick={props.onOpenContext}>
-                <Icon as={LuDatabase} />
-                {t("review-context")}
-              </Button>
-              <Button
-                size="sm"
-                variant="solid"
-                aria-describedby={
-                  setupBlocked ? "drafting-setup-reason" : undefined
-                }
-                disabled={
-                  !props.canStartDrafting ||
-                  props.isDraftRunning ||
-                  draft?.status === "complete"
-                }
-                loading={props.isStartingDraft}
-                onClick={props.onStartDrafting}
-              >
-                <Icon as={LuSparkles} />
-                {t(draftStarted ? "continue-drafting" : "start-drafting")}
-              </Button>
-            </HStack>
+          ) : !isFailed ? (
+            <Box>
+              <HStack gap={2} flexWrap="wrap">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={props.onOpenContext}
+                >
+                  <Icon as={LuDatabase} />
+                  {t("review-context")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="solid"
+                  data-testid="concept-note-start-drafting"
+                  aria-describedby={
+                    isBuilding
+                      ? "drafting-blocked-reason"
+                      : setupBlocked
+                        ? "drafting-setup-reason"
+                        : undefined
+                  }
+                  disabled={
+                    isBuilding ||
+                    !props.canStartDrafting ||
+                    props.isDraftRunning ||
+                    draft?.status === "complete"
+                  }
+                  loading={props.isStartingDraft}
+                  onClick={props.onStartDrafting}
+                  css={
+                    props.highlightStartDrafting
+                      ? {
+                          "@keyframes cnb-start-pulse": {
+                            "0%": {
+                              boxShadow:
+                                "0 0 0 0 var(--chakra-colors-content-link)",
+                            },
+                            "100%": {
+                              boxShadow: "0 0 0 10px rgba(0, 30, 167, 0)",
+                            },
+                          },
+                          animation: "cnb-start-pulse 1.1s ease-out 3",
+                        }
+                      : undefined
+                  }
+                >
+                  <Icon as={LuSparkles} />
+                  {t(draftStarted ? "continue-drafting" : "start-drafting")}
+                </Button>
+              </HStack>
+              {isBuilding && (
+                <Text
+                  id="drafting-blocked-reason"
+                  mt={2}
+                  fontSize="label.sm"
+                  lineHeight="20px"
+                  color="content.secondary"
+                  data-testid="concept-note-start-drafting-reason"
+                >
+                  {t("drafting-blocked-context")}
+                </Text>
+              )}
+            </Box>
           ) : null}
         </Flex>
       )}
@@ -246,16 +258,27 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
             >
               {setupDescription}
             </Text>
-            {!props.applicationContextFailed &&
-              !props.applicationContextLoading && (
-                <Text
-                  mt={1}
-                  fontSize="label.sm"
-                  lineHeight="20px"
-                  color="content.secondary"
+            {!props.applicationContextLoading &&
+              (props.applicationContextFailed || requirements.length > 0) && (
+                <Button
+                  mt={3}
+                  size="sm"
+                  variant="outline"
+                  onClick={props.onOpenFundingSetup}
                 >
-                  {t("drafting-setup-review-context")}
-                </Text>
+                  <Icon
+                    as={
+                      props.applicationContextFailed ? LuRefreshCw : LuLandmark
+                    }
+                  />
+                  {t(
+                    props.applicationContextFailed
+                      ? "try-again"
+                      : props.applicationContext?.funder
+                        ? "drafting-setup-change-funding"
+                        : "drafting-setup-choose-funding",
+                  )}
+                </Button>
               )}
           </Box>
         </Flex>

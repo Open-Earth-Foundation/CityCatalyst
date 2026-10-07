@@ -78,7 +78,26 @@ function chapter(index: number): ConceptNoteDraftChapter {
   return {
     body_markdown: `# Chapter ${index + 1}\n\nDraft body`,
     chapter_id: `chapter-${index + 1}`,
-    missing_information: ["Add required information"],
+    gaps: [
+      {
+        gap_id: "gap-1",
+        field_key: "amount",
+        question: "Add required information",
+        why_asking: "Required",
+        severity: "noncritical",
+        state: "open",
+        suggestions: [],
+        source_refs: [],
+        version: 1,
+        resolution: null,
+        created_at: "2026-09-09T00:00:00Z",
+        updated_at: "2026-09-09T00:00:00Z",
+      },
+    ],
+    open_gap_count: 1,
+    caveat_count: 0,
+    confirmed_body_markdown: null,
+    confirmed_revision_number: null,
     position: index,
     required: true,
     revision_number: 1,
@@ -241,6 +260,34 @@ afterEach(async () => {
 });
 
 describe("guided review before export", () => {
+  it("warns on critical gaps and enables export once acknowledged", async () => {
+    const savedDraft = draft(1, true);
+    savedDraft.chapters[0].gaps[0].severity = "critical";
+    await renderDialog({ draft: savedDraft });
+    await settle();
+    await click("Continue to conflicts & logic");
+    await click("Continue to decision");
+    await click("Export anyway");
+    expect(document.body.textContent).toContain(
+      translations["draft-preflight-critical-gap-description"],
+    );
+    const downloads = () =>
+      [...document.body.querySelectorAll("button")].filter((button) =>
+        /Export (DOCX|PDF)/.test(button.textContent ?? ""),
+      );
+    expect(downloads()).toHaveLength(2);
+    // Export warns, never blocks: disabled only until the user acknowledges.
+    expect(downloads().every((button) => button.disabled)).toBe(true);
+    const acknowledgement = document.body.querySelector<HTMLInputElement>(
+      'input[type="checkbox"]',
+    );
+    expect(acknowledgement).not.toBeNull();
+    await act(async () => {
+      acknowledgement?.click();
+    });
+    expect(downloads().every((button) => !button.disabled)).toBe(true);
+  });
+
   it("limits validation concurrency to three chapters", async () => {
     const pending: Array<() => void> = [];
     const onReviewComplete = jest.fn(async () => undefined);
@@ -307,6 +354,51 @@ describe("guided review before export", () => {
     expect(
       validateChapter.mock.calls.map(([request]) => request.chapterId),
     ).toEqual(["chapter-1", "chapter-2", "chapter-2"]);
+  });
+
+  it("sends an invalid application template to setup instead of retry", async () => {
+    validateChapter.mockImplementation(() => ({
+      unwrap: async () => {
+        throw { data: { code: "chapter_validation_template_invalid" } };
+      },
+    }));
+    const onReviewSetup = jest.fn();
+
+    await renderDialog({ onReviewSetup });
+    await settle();
+
+    expect(document.body.textContent).toContain(
+      translations["guided-review-template-invalid"],
+    );
+    expect(document.body.textContent).not.toContain(translations["try-again"]);
+    await click(translations["review-application-setup"]);
+    expect(onReviewSetup).toHaveBeenCalledTimes(1);
+  });
+
+  it("marks steps with unchecked chapters as not checked instead of clear", async () => {
+    validateChapter.mockImplementation((request) => ({
+      unwrap: async () => {
+        if (request.chapterId === "chapter-2") {
+          throw Object.assign(new Error("Unavailable"), { status: 503 });
+        }
+        return result(request.chapterId);
+      },
+    }));
+
+    await renderDialog();
+    await settle();
+    await settle();
+
+    expect(document.body.textContent).toContain(
+      translations["review-step-incomplete"],
+    );
+    await click("Continue to conflicts & logic");
+    expect(document.body.textContent).toContain(
+      translations["review-results-unchecked"],
+    );
+    expect(document.body.textContent).not.toContain(
+      translations["review-no-conflicts"],
+    );
   });
 
   it("shows missing information before requiring an explicit export decision", async () => {

@@ -23,8 +23,8 @@
   "weight-alignment-description": "Apoio de políticas, setores e co-benefícios",
   "weight-feasibility": "Viabilidade",
   "weight-feasibility-description": "Ambiente legal e adequação socioeconômica",
-  "weight-default": "Padrão: {{value}}%",
-  "weight-adjusted": "Padrão: {{value}}% · ajustado",
+  "weight-default": "Padrão",
+  "weight-adjusted": "Ajustado",
   "weights-total": "Total: {{total}}%",
   "reset-to-defaults": "Redefinir para padrões",
   "exclusions-title": "Exclusões confirmadas",
@@ -80,5 +80,7 @@
   "confidence-verdict-moderate": "Moderado",
   "confidence-verdict-high": "Alto",
   "weight-value-text": "{{value}} por cento",
-  "gate-ready": "Pronto para gerar recomendações."
+  "gate-ready": "Pronto para gerar recomendações.",
+  "view-breakdown": "Ver detalhamento",
+  "view-breakdown-aria": "Veja o detalhamento das emissões"
 }

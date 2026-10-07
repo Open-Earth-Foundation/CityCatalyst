@@ -9,7 +9,6 @@ import { PasswordStrengthMeter } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { api } from "@/services/api";
-import { Toaster } from "@/components/ui/toaster";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import { getApiErrorMessage } from "@/util/helpers";
 import { isPasswordPatternValid } from "@/util/validation";
@@ -101,8 +100,13 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
   const newPasswordStrength = computePasswordStrength(watchPassword);
 
   return (
-    <Box backgroundColor="white" p={6} borderRadius="8px" boxShadow="shadow-lg">
-      <TitleMedium pb="36px">{t("manage-password")}</TitleMedium>
+    <Box
+      backgroundColor="white"
+      p={6}
+      borderRadius="rounded"
+      boxShadow="shadow-lg"
+    >
+      <TitleMedium pb="9">{t("manage-password")}</TitleMedium>
       <Box>
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -134,7 +138,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
             t={t}
           />
           {error && <Text color="semantic.danger">{error}</Text>}
-          <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
+          <Box display="flex" w="100%" justifyContent="right" marginTop="3">
             <Button
               type="submit"
               loading={isSubmitting}
@@ -147,7 +151,6 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
           </Box>
         </form>
       </Box>
-      <Toaster />
     </Box>
   );
 };

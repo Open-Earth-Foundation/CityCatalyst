@@ -5,12 +5,15 @@ import hashlib
 import json
 from collections.abc import AsyncIterator
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import httpx
 import pytest
 import pytest_asyncio
 from agents import RunConfig, Runner
+from openai import AsyncOpenAI
+
 from app.config import Settings, get_settings
 from app.models.cnb.source_prompt import (
     DocumentMappingReading,
@@ -32,10 +35,37 @@ from app.services.cnb.source_analysis import (
     prompt_token_count,
     query_document,
     render_partition,
+    render_source_text,
     source_analysis_contract_version,
     verify_source_artifact,
 )
-from openai import AsyncOpenAI
+from app.utils.cnb_progress import bind_cnb_progress
+
+
+@pytest.mark.asyncio
+async def test_source_worker_uses_live_stream_and_validates_result(
+    analysis_dependencies, monkeypatch
+):
+    settings, client = analysis_dependencies
+    stream = AsyncMock(return_value=SimpleNamespace(final_output={
+        "sections": [{"excerpts": ["Drainage upgrades"], "caveats": []}],
+    }))
+    monkeypatch.setattr("app.services.cnb.source_analysis.run_with_cnb_reasoning", stream)
+    with bind_cnb_progress(AsyncMock()):
+        result = await _run_agent(
+            name="Source reader",
+            prompt="Read source",
+            model_config=settings.llm.models.cnb_source_reader,
+            output_type=QuestionReading,
+            input_text="Drainage upgrades",
+            client=client,
+            runner=Runner,
+            expected_sections=1,
+        )
+    stream.assert_awaited_once()
+    assert stream.call_args.kwargs["stage"] == "reading"
+    assert stream.call_args.kwargs["run_config"].tracing_disabled
+    assert result.sections[0].excerpts == ["Drainage upgrades"]
 
 
 class FakeRunner:
@@ -48,7 +78,7 @@ class FakeRunner:
         self.reader_tools: list[list[object]] = []
 
     async def run(self, agent, input_text: str):
-        output_type = agent.output_type
+        output_type = agent.output_type.output_type
         payload = json.loads(input_text)
         if output_type in (DocumentMappingReading, QuestionReading):
             self.active += 1
@@ -148,6 +178,48 @@ async def test_analysis_and_query_cover_every_page_with_exact_citations(
     assert set(runner.covered_pages) == set(range(1, 7))
     assert runner.max_active <= 4
     assert all(tools == [] for tools in runner.reader_tools)
+
+
+def test_source_pages_keep_values_inserted_at_mistral_table_placeholders() -> None:
+    markdown = (
+        "<!-- page: 1 -->\n"
+        "# Emissions\n\n"
+        "| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |"
+    )
+
+    pages = parse_source_pages(markdown)
+
+    assert pages == [
+        SourcePage(
+            number=1,
+            text="\n# Emissions\n\n| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |",
+        )
+    ]
+    assert "12.50" in pages[0].text
+
+
+def test_source_pages_keep_each_pages_header_and_footer_in_order() -> None:
+    footer = "This project has received funding from the EU (grant 101036519)"
+    markdown = (
+        "<!-- page: 1 -->\n"
+        "Action Plan | City of Krakow\n\n"
+        "# Emissions\n\n| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |\n\n"
+        f"{footer}\n\n"
+        "<!-- page: 2 -->\n"
+        "Action Plan | City of Krakow\n\n"
+        "Second page\n\n"
+        "2"
+    )
+
+    pages = parse_source_pages(markdown)
+
+    assert [page.number for page in pages] == [1, 2]
+    assert pages[0].text.index("Action Plan") < pages[0].text.index("12.50")
+    assert pages[0].text.index("12.50") < pages[0].text.index(footer)
+    assert "101036519" in pages[0].text
+    assert "101036519" not in pages[1].text
+    assert pages[1].text.startswith("\nAction Plan | City of Krakow")
+    assert render_source_text(pages) == markdown
 
 
 @pytest.mark.asyncio
@@ -293,6 +365,8 @@ async def test_incomplete_reader_coverage_fails_the_document(
             runner=IncompleteCoverageRunner(),
         )
     assert failure.value.code == "incomplete_source_coverage"
+    assert failure.value.reason == "reader_section_count_mismatch"
+    assert failure.value.details == {"expected_sections": 1, "returned_sections": 0}
 
 
 @pytest.mark.asyncio
@@ -337,14 +411,14 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
     [
         (
             "cnb_source_reader",
-            "openai/gpt-5.6-luna",
-            "low",
+            "openai/gpt-5.6-terra",
+            "medium",
             QuestionReading,
             {"sections": [{"excerpts": [], "caveats": []}]},
         ),
         (
             "cnb_source_synthesizer",
-            "openai/gpt-5.6-sol",
+            "openai/gpt-5.6-terra",
             "medium",
             DocumentSummary,
             {
@@ -356,7 +430,7 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
     ],
 )
 @pytest.mark.asyncio
-async def test_source_worker_serializes_sol_luna_requests_without_temperature(
+async def test_source_worker_serializes_terra_requests_without_temperature(
     role,
     model_name,
     effort,
@@ -368,26 +442,29 @@ async def test_source_worker_serializes_sol_luna_requests_without_temperature(
     captured = []
 
     def respond(request: httpx.Request) -> httpx.Response:
-        assert str(request.url) == "https://openrouter.ai/api/v1/chat/completions"
+        assert str(request.url) == "https://openrouter.ai/api/v1/responses"
         payload = json.loads(request.content)
         captured.append(payload)
         return httpx.Response(
             200,
             json={
-                "id": "chatcmpl-local-test",
-                "object": "chat.completion",
-                "created": 0,
+                "id": "resp-local-test",
+                "object": "response",
+                "created_at": 0,
+                "status": "completed",
                 "model": payload["model"],
-                "choices": [
+                "output": [
                     {
-                        "index": 0,
-                        "message": {"role": "assistant", "content": json.dumps(output)},
-                        "finish_reason": "stop",
+                        "id": "msg-local-test",
+                        "type": "message",
+                        "status": "completed",
+                        "role": "assistant",
+                        "content": [{"type": "output_text", "text": json.dumps(output), "annotations": []}],
                     }
                 ],
                 "usage": {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 10,
+                    "input_tokens": 10,
+                    "output_tokens": 10,
                     "total_tokens": 20,
                 },
             },
@@ -412,23 +489,27 @@ async def test_source_worker_serializes_sol_luna_requests_without_temperature(
                 if role == "cnb_source_reader"
                 else "cnb_source_summary_synthesis"
             ),
-            model_name=getattr(settings.llm.models, role).name,
+            model_config=getattr(settings.llm.models, role),
             output_type=output_type,
             input_text="No budget is stated.",
-            settings=settings,
             client=client,
             runner=LocalRunner,
+            expected_sections=1 if role == "cnb_source_reader" else None,
         )
 
     assert result == output_type.model_validate(output)
     assert len(captured) == 1
     request = captured[0]
     assert request["model"] == model_name
-    assert request["reasoning_effort"] == effort
+    assert request["reasoning"] == {"effort": effort, "summary": "detailed"}
+    assert request["store"] is False
     assert "temperature" not in request
     assert not request.get("tools")
-    assert request["response_format"]["type"] == "json_schema"
-    assert request["response_format"]["json_schema"]["strict"] is True
+    assert request["text"]["format"]["type"] == "json_schema"
+    assert request["text"]["format"]["strict"] is True
+    if role == "cnb_source_reader":
+        sections = request["text"]["format"]["schema"]["properties"]["sections"]
+        assert sections["minItems"] == sections["maxItems"] == 1
 
 
 @pytest.mark.parametrize("role", ["cnb_source_reader", "cnb_source_synthesizer"])
@@ -437,3 +518,83 @@ def test_source_model_change_invalidates_analysis_reuse_contract(role) -> None:
     current_contract = source_analysis_contract_version(settings)
     getattr(settings.llm.models, role).name = "previous-model"
     assert source_analysis_contract_version(settings) != current_contract
+
+
+class SmallGroupCoverageRunner(FakeRunner):
+    """Simulate a reader that omits sections in larger groups, including empty ones."""
+
+    async def run(self, agent, input_text: str):
+        result = await super().run(agent, input_text)
+        if isinstance(result.final_output, (DocumentMappingReading, QuestionReading)):
+            if len(result.final_output.sections) > 1:
+                result.final_output = result.final_output.model_copy(
+                    update={"sections": result.final_output.sections[:-1]}
+                )
+        return result
+
+
+@pytest.mark.asyncio
+async def test_incomplete_groups_are_reread_without_losing_pages_or_citations(
+    analysis_dependencies,
+) -> None:
+    settings, client = analysis_dependencies
+    pages = [
+        SourcePage(number=i, text="Drainage upgrades" if i == 4 else "Blank section")
+        for i in range(1, 5)
+    ]
+    runner = SmallGroupCoverageRunner()
+    source = await analyze_document(
+        upload_id=uuid4(),
+        filename="plan.pdf",
+        source_label=None,
+        sha256="a" * 64,
+        pages=pages,
+        settings=settings,
+        client=client,
+        runner=runner,
+    )
+    assert source.page_count == 4
+    assert any(excerpt.page == 4 for excerpt in source.key_excerpts)
+    assert runner.max_active <= 3
+    result = await query_document(
+        upload_id=source.upload_id,
+        source_label="plan.pdf",
+        pages=pages,
+        question="Drainage?",
+        settings=settings,
+        client=client,
+        runner=runner,
+    )
+    assert result.units_processed == 4
+    assert result.found
+    assert any(excerpt.page == 4 for excerpt in result.excerpts)
+
+
+@pytest.mark.asyncio
+async def test_coverage_recovery_has_a_finite_limit(analysis_dependencies) -> None:
+    settings, client = analysis_dependencies
+    runner = IncompleteCoverageRunner()
+    with pytest.raises(SourceAnalysisError) as failure:
+        await analyze_document(
+            upload_id=uuid4(),
+            filename="plan.pdf",
+            source_label=None,
+            sha256="a" * 64,
+            pages=[SourcePage(number=i, text="Drainage upgrades") for i in range(1, 9)],
+            settings=settings,
+            client=client,
+            runner=runner,
+        )
+    assert failure.value.reason == "reader_section_count_mismatch"
+    assert len(runner.reader_tools) <= 7
+
+
+@pytest.mark.parametrize(
+    ("markdown", "parse"),
+    [
+        ("<!-- page: 1 -->\nIntro\n\n<!-- page: 2 -->\n| a | b |\n", parse_source_pages),
+        ("# Plan\n\nIntro\n\n## Costs\n\nTable\n", parse_markdown_blocks),
+    ],
+)
+def test_render_source_text_restores_the_verified_markdown(markdown, parse) -> None:
+    assert render_source_text(parse(markdown)) == markdown

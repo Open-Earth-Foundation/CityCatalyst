@@ -143,6 +143,7 @@ export function useMeedReport(cityId: string, inventoryId: string) {
               cityId,
               inventoryId,
               actionId: target.actionId,
+              language,
             }).unwrap();
           } catch (error) {
             // Only a 404 means "not generated yet". Anything else is a fetch

@@ -688,11 +688,16 @@ export default class MeedApiService {
     return report;
   }
 
-  public static async getPlan(inventoryId: string, actionId: string) {
+  public static async getPlan(
+    inventoryId: string,
+    actionId: string,
+    language?: string,
+  ) {
     const plan = await db.models.MeedActionReport.findOne({
       where: {
         inventoryId,
         actionId,
+        ...(language ? { languages: { [Op.contains]: [language] } } : {}),
       },
       order: [
         ["created", "DESC"],

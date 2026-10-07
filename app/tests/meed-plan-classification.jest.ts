@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { Op } from "sequelize";
 
 process.env.HIAP_MEED_API_URL = "https://meed.example";
 
@@ -194,5 +195,21 @@ describe("MeedApiService plan classification persistence", () => {
     );
     expect(created).toBeDefined();
     expect(registerMEEDOutputPlan).not.toHaveBeenCalled();
+  });
+
+  it("filters the stored plan by language when one is requested", async () => {
+    reportModel.findOne.mockResolvedValue({ id: "report-es" });
+    await MeedApiService.getPlan("inventory-1", "icare_0016", "es");
+    expect(reportModel.findOne).toHaveBeenCalledWith({
+      where: {
+        inventoryId: "inventory-1",
+        actionId: "icare_0016",
+        languages: { [Op.contains]: ["es"] },
+      },
+      order: [
+        ["created", "DESC"],
+        ["id", "DESC"],
+      ],
+    });
   });
 });

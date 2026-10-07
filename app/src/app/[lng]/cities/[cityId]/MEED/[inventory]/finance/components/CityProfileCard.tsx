@@ -7,20 +7,23 @@ import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import { ROUTE_META, type ProfileAttrs } from "../labels";
+import { ROUTE_META, type ProfileAttrs, type RouteKey } from "../labels";
 import { LevelMeter } from "./LevelMeter";
 import { RouteTag } from "./RouteTag";
 
 export interface CityProfileCardProps {
   cityName: string;
   profile: ProfileAttrs;
+  /** Routes present in this city's rows — the legend explains only those. */
+  routes: RouteKey[];
   t: TFunction;
 }
 
-/** What the city brings to the table, and what the three routes mean. */
+/** What the city brings to the table, and what its routes mean. */
 export function CityProfileCard({
   cityName,
   profile,
+  routes,
   t,
 }: CityProfileCardProps) {
   return (
@@ -80,7 +83,7 @@ export function CityProfileCard({
           <VStack alignItems="stretch" gap="s">
             <Overline>{t("route-legend-title")}</Overline>
             <SimpleGrid columns={{ base: 1, md: 3 }} gap="m">
-              {(["self", "cofinance", "support"] as const).map((key) => (
+              {routes.map((key) => (
                 <Card.Root key={key} h="full" borderColor="border.neutral">
                   <Card.Body p="m">
                     <VStack alignItems="flex-start" gap="s">

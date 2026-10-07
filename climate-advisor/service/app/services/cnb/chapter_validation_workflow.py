@@ -17,8 +17,8 @@ from app.models.cnb.concept_note_draft import (
     ConceptNoteValidationFindingResponse,
 )
 from app.models.db.concept_note import ConceptNoteRun
-from app.persistence.concept_notes.workspace import (
-    ConceptNoteWorkspaceRepository,
+from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
+from app.persistence.concept_notes.workspace_validation import (
     WorkspaceValidationContext,
     WorkspaceValidationInputChangedError,
     WorkspaceValidationSnapshot,
@@ -31,7 +31,10 @@ from app.services.cnb.chapter_validation import (
     ConceptNoteChapterValidationService,
     build_chapter_validation_request,
 )
-from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
+from app.utils.conversation_observability import (
+    async_workflow_trace,
+    finish_workflow_trace,
+)
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -133,7 +136,7 @@ class ConceptNoteChapterValidationWorkflowService:
             template_fingerprint=template_fingerprint,
         )
 
-        with workflow_trace(
+        async with async_workflow_trace(
             name="cnb_chapter_validation",
             inputs={"chapter_id": str(chapter_id)},
             session_id=getattr(run, "thread_id", None) or run.run_id,

@@ -68,7 +68,6 @@ const AddCollaboratorsDialog = ({
         alignItems="center"
         gap="24px"
         minW="779px"
-        minH="779px"
         maxH="calc(100vh - 56px * 2)"
         overflowY="auto"
         py="24px"
@@ -86,24 +85,29 @@ const AddCollaboratorsDialog = ({
           borderBottomWidth="2px"
           borderStyle="solid"
           borderColor="background.neutral"
-          pb="24px"
+          pt={0}
+          pb={6}
         >
-          <HStack>
+          <HStack w="full" justifyContent="space-between">
             <TitleLarge>{tSettings("invite-collaborators-title")}</TitleLarge>
+            {/* Static inside the header so it stays vertically centred on the title */}
+            <DialogCloseTrigger position="static" color="interactive.control" />
           </HStack>
         </DialogHeader>
-        <DialogCloseTrigger mt="2" color="interactive.control" mr="4" />
-        <DialogBody w="full" px="48px" py="24px">
+        <DialogBody w="full" px={12} py={0}>
           <InviteCollaboratorsStep
             ref={stepRef}
             lng={lng}
             onValidityChange={setCanSubmit}
+            variant="modal"
           />
         </DialogBody>
         <DialogFooter
           w="full"
-          paddingX="48px"
-          paddingY={6}
+          px={12}
+          pt={6}
+          pb={0}
+          gap={6}
           borderTop="2px"
           borderColor="background.neutral"
           borderStyle="solid"

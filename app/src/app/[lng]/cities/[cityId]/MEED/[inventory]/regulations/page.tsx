@@ -1,12 +1,7 @@
 "use client";
 import React, { useEffect, useMemo } from "react";
-import { Box, Card, HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
-import {
-  LuCircleCheck,
-  LuCircleX,
-  LuScale,
-  LuTriangleAlert,
-} from "react-icons/lu";
+import { Box, Card, HStack, Icon, VStack } from "@chakra-ui/react";
+import { LuCircleCheck, LuScale } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import { useTranslation } from "@/i18n/client";
 import { useGetMeedActionsQuery } from "@/services/api";
@@ -17,7 +12,7 @@ import {
 } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { Overline } from "@/components/package/Texts/Overline";
-import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MeedStatusTag, type MeedTone } from "../../components/MeedStatusTag";
@@ -27,6 +22,8 @@ import { useMeedRanking } from "../../useMeedRanking";
 import { MeedCardSkeleton } from "../../components/MeedSkeletons";
 import { MeedErrorCard } from "../../components/MeedErrorCard";
 import { buildActionIndex } from "../results/components/actionCatalog";
+import { legalFunnel } from "../results/components/rankingFacts";
+import { MeedFunnelStrip } from "../../components/MeedFunnelStrip";
 import {
   deriveLegalScreening,
   type LegalScreenedAction,
@@ -44,37 +41,6 @@ const STATUS_TAG_KEY: Record<ScreenedStatus, string> = {
   blocked: "excluded-tag",
   flagged: "flagged-tag",
 };
-
-function SummaryCard({
-  count,
-  label,
-  sublabel,
-  icon,
-  countColor,
-}: {
-  count: number;
-  label: string;
-  sublabel: string;
-  icon: React.ElementType;
-  countColor: string;
-}) {
-  return (
-    <Card.Root borderColor="border.overlay" h="full">
-      <Card.Body>
-        <VStack alignItems="flex-start" gap="xs">
-          <Overline color="content.tertiary">{label}</Overline>
-          <HStack gap="s" alignItems="center">
-            <TitleLarge color={countColor} fontVariantNumeric="tabular-nums">
-              {count}
-            </TitleLarge>
-            <Icon as={icon} boxSize="18px" color={countColor} />
-          </HStack>
-          <Caption color="content.secondary">{sublabel}</Caption>
-        </VStack>
-      </Card.Body>
-    </Card.Root>
-  );
-}
 
 /**
  * One screened action. Blocked and flagged actions differ only in tone, tag and
@@ -158,6 +124,14 @@ function RegulationsContent({
   );
   const { blocked, flagged, includedCount, isEmpty } = screening;
   const hasScreening = Boolean(ranking) && !isEmpty;
+  const catalogSize = useMemo(() => buildActionIndex(catalog).size, [catalog]);
+  // Assessed → passed → ranked. `includedCount` is what the screening derived
+  // as "passed"; the response counts, when present, take precedence.
+  const funnel = legalFunnel(ranking?.result ?? null, catalogSize) ?? {
+    assessed: catalogSize,
+    passed: includedCount,
+    ranked: ranking?.result?.ranked_actions?.length ?? 0,
+  };
 
   // Report progress only once there is something to report.
   //
@@ -186,17 +160,6 @@ function RegulationsContent({
     <VStack alignItems="stretch" gap="l">
       <VStack alignItems="stretch" gap="m">
         <BodyLarge color="content.secondary">{t("intro")}</BodyLarge>
-        <HStack
-          gap="s"
-          bg="background.neutral"
-          borderRadius="rounded"
-          px="m"
-          py="s"
-          alignSelf="flex-start"
-        >
-          <Icon as={LuScale} boxSize="14px" color="content.secondary" />
-          <Caption color="content.secondary">{t("feasibility-note")}</Caption>
-        </HStack>
       </VStack>
 
       {/*
@@ -233,29 +196,47 @@ function RegulationsContent({
         </Card.Root>
       ) : (
         <>
-          <SimpleGrid columns={{ base: 1, md: 3 }} gap="m">
-            <SummaryCard
-              count={includedCount}
-              label={t("summary-included")}
-              sublabel={t("summary-included-sub")}
-              icon={LuCircleCheck}
-              countColor="sentiment.positiveDefault"
-            />
-            <SummaryCard
-              count={blocked.length}
-              label={t("summary-blocked")}
-              sublabel={t("summary-blocked-sub")}
-              icon={LuCircleX}
-              countColor="sentiment.negativeDefault"
-            />
-            <SummaryCard
-              count={flagged.length}
-              label={t("summary-flagged")}
-              sublabel={t("summary-flagged-sub")}
-              icon={LuTriangleAlert}
-              countColor="sentiment.warningDefault"
-            />
-          </SimpleGrid>
+          <Card.Root borderColor="border.overlay">
+            <Card.Body>
+              <VStack alignItems="stretch" gap="m">
+                <MeedFunnelStrip
+                  steps={[
+                    {
+                      label: t("funnel-assessed"),
+                      sublabel: t("funnel-assessed-sub"),
+                      value: funnel.assessed,
+                      tone: "neutral",
+                    },
+                    {
+                      label: t("funnel-passed"),
+                      sublabel: t("funnel-passed-sub"),
+                      value: funnel.passed,
+                      tone: "positive",
+                    },
+                    {
+                      label: t("funnel-ranked"),
+                      sublabel: t("funnel-ranked-sub"),
+                      value: funnel.ranked,
+                      tone: "info",
+                    },
+                  ]}
+                  ariaLabel={t("funnel-aria", { ...funnel })}
+                  tipTitle={t("funnel-tip-title")}
+                  tipNote={t("funnel-tip-note")}
+                />
+                {flagged.length > 0 && (
+                  <HStack gap="s" alignItems="center">
+                    <MeedStatusTag tone="warning">
+                      {t("summary-flagged")}
+                    </MeedStatusTag>
+                    <Caption color="content.secondary">
+                      {t("summary-flagged-count", { count: flagged.length })}
+                    </Caption>
+                  </HStack>
+                )}
+              </VStack>
+            </Card.Body>
+          </Card.Root>
 
           {blocked.length === 0 && flagged.length === 0 && (
             <Card.Root borderColor="border.neutral">

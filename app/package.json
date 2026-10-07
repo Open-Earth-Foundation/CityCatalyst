@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "1.27.0-dev.0",
+  "version": "1.28.0-dev.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -88,6 +88,7 @@
     "i18next-resources-to-backend": "^1.2.1",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.3",
+    "jszip": "^3.10.1",
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.7",
     "katex": "^0.17.0",

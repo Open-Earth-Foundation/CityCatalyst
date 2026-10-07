@@ -13,12 +13,15 @@ from app.models.cnb.concept_note_edits import (
     EditProposalRequest,
     EditProposalResponse,
 )
+from app.models.cnb.concept_note_structure import StructureSaveRequest, StructureState
 from app.models.db.concept_note import ConceptNoteRun
 from app.persistence.concept_notes.edits import EditOperationError
+from app.persistence.concept_notes.structure import structure_snapshot
+from app.persistence.concept_notes.workspace import normalize_template_chapters
+from app.services.cnb.application_context import ConceptNoteApplicationContextService
 from app.services.cnb.edits import (
     ConceptNoteEditService,
     get_edit_service,
-    load_edit_context,
 )
 from app.services.concept_note_runs import ConceptNoteRunService
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
@@ -105,13 +108,10 @@ async def propose_edit(
     payload: EditProposalRequest,
     run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
-    session: AsyncSession = Depends(get_session),
 ) -> EditProposalResponse:
     """Create or replay a proposal without mutating the current draft."""
     require_active_run(run)
-    return await service.propose(
-        run, payload, await load_edit_context(session, run.run_id)
-    )
+    return await service.propose(run, payload)
 
 
 @router.get(
@@ -138,13 +138,10 @@ async def apply_edit_proposal(
     payload: EditApplyRequest,
     run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
-    session: AsyncSession = Depends(get_session),
 ) -> EditProposalResponse:
     """Apply only explicit user acceptance of a complete expected revision vector."""
     require_active_run(run)
-    return await service.apply(
-        run, proposal_id, payload, await load_edit_context(session, run.run_id)
-    )
+    return await service.apply(run, proposal_id, payload)
 
 
 @router.post(
@@ -171,7 +168,6 @@ async def refine_edit_proposal(
     payload: EditProposalRequest,
     run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
-    session: AsyncSession = Depends(get_session),
 ) -> EditProposalResponse:
     """Create a separately reviewable replacement for an owned prior proposal."""
     require_active_run(run)
@@ -185,6 +181,34 @@ async def refine_edit_proposal(
         run_id=run.run_id, user_id=run.user_id, proposal_id=proposal_id
     )
     bound = payload.model_copy(update={"refines_proposal_id": proposal_id})
-    return await service.propose(
-        run, bound, await load_edit_context(session, run.run_id)
-    )
+    return await service.propose(run, bound)
+
+
+@router.get("/concept-notes/{run_id}/structure", response_model=StructureState)
+async def get_structure(
+    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
+    service: Annotated[ConceptNoteEditService, Depends(edit_service)],
+) -> StructureState:
+    """Initialize run-owned template chapters once and restore the saved structure."""
+    # Materialize the selected template under the same lock as funding changes.
+    async with service.locked_context(run) as (current, _):
+        context = await ConceptNoteApplicationContextService().load_for_run(current)
+        if context.template is not None:
+            await service.workspace.ensure_template_chapters(
+                run_id=run.run_id,
+                chapters=normalize_template_chapters(context.template.chapter_schema),
+            )
+        return structure_snapshot(
+            await service.workspace.list_chapters(run_id=run.run_id)
+        )
+
+
+@router.put("/concept-notes/{run_id}/structure", response_model=StructureState)
+async def put_structure(
+    payload: StructureSaveRequest,
+    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
+    service: Annotated[ConceptNoteEditService, Depends(edit_service)],
+) -> StructureState:
+    """Save explicit direct edits after ownership and optimistic concurrency checks."""
+    async with service.locked_context(run, structure=True):
+        return await service.repository.save_structure(run.run_id, payload)

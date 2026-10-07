@@ -8,6 +8,7 @@ import { Op } from "sequelize";
 import { logger } from "@/services/logger";
 import { registerMEEDRanking } from "@/backend/meed/MeedNativeInputCatalogService";
 import type { MeedStateCreationAttributes } from "@/models/MeedState";
+import { readAuthorityScopeClassification } from "@/util/authorityScopeClassification";
 
 const MEED_API_URL = process.env.HIAP_MEED_API_URL + "/v1/";
 
@@ -164,67 +165,73 @@ export default class MeedApiService {
       ...requestBody,
       createExplanations: requestBody.createExplanations ?? false,
       cityDataList: requestBody.cityDataList.map((cityData) => {
-      return {
-        ...cityData,
-        locode: inventory.city.locode ?? "",
-        countryCode: inventory.city.countryLocode ?? "",
-        populationSize: population ?? 0,
-        cityEmissionsData: {
-          inventoryYear: inventory.year ?? 0,
-          gpcData: inventoryValues.reduce(
-            (acc, inventoryValue) => {
-              const notationKey =
-                inventoryValue.unavailableReason &&
-                inventoryValue.unavailableReason.length > 0
-                  ? inventoryValue.unavailableReason
-                  : undefined;
-              let activities = inventoryValue.activityValues.map((activity) => {
-                const fields = InventoryService.extractActivityFields(
-                  activity,
-                  inventoryValue,
-                );
-                return fields as GpcActivity;
-              });
-
-              // make sure direct measure data is represented even if there are no activities
-              if (activities.length === 0 && (inventoryValue.co2eq ?? 0) > 0) {
-                activities = [
-                  {
-                    activityType: "direct-measure",
-                    totalEmissions: Number(inventoryValue.co2eq) ?? 0,
-                    totalEmissionsUnit: "kg",
-                    dataSource: inventoryValue.dataSource?.datasourceName,
-                    notationKey: inventoryValue.unavailableReason ?? undefined,
+        return {
+          ...cityData,
+          locode: inventory.city.locode ?? "",
+          countryCode: inventory.city.countryLocode ?? "",
+          populationSize: population ?? 0,
+          cityEmissionsData: {
+            inventoryYear: inventory.year ?? 0,
+            gpcData: inventoryValues.reduce(
+              (acc, inventoryValue) => {
+                const notationKey =
+                  inventoryValue.unavailableReason &&
+                  inventoryValue.unavailableReason.length > 0
+                    ? inventoryValue.unavailableReason
+                    : undefined;
+                let activities = inventoryValue.activityValues.map(
+                  (activity) => {
+                    const fields = InventoryService.extractActivityFields(
+                      activity,
+                      inventoryValue,
+                    );
+                    return fields as GpcActivity;
                   },
-                ];
-              }
-
-              // validation for duplicate or missing GPC reference numbers
-              if (!inventoryValue.gpcReferenceNumber) {
-                throw new createHttpError.BadRequest(
-                  "Missing GPC reference number for InventoryValue " +
-                    inventoryValue.id,
                 );
-              }
-              if (acc.hasOwnProperty(inventoryValue.gpcReferenceNumber)) {
-                throw new createHttpError.BadRequest(
-                  "Duplicate GPC reference number in inventory: " +
-                    inventoryValue.gpcReferenceNumber,
-                );
-              }
 
-              return {
-                ...acc,
-                [inventoryValue.gpcReferenceNumber ?? ""]: {
-                  notationKey,
-                  activities,
-                },
-              };
-            },
-            {} as Record<string, GpcDataEntry>,
-          ),
-        },
-      };
+                // make sure direct measure data is represented even if there are no activities
+                if (
+                  activities.length === 0 &&
+                  (inventoryValue.co2eq ?? 0) > 0
+                ) {
+                  activities = [
+                    {
+                      activityType: "direct-measure",
+                      totalEmissions: Number(inventoryValue.co2eq) ?? 0,
+                      totalEmissionsUnit: "kg",
+                      dataSource: inventoryValue.dataSource?.datasourceName,
+                      notationKey:
+                        inventoryValue.unavailableReason ?? undefined,
+                    },
+                  ];
+                }
+
+                // validation for duplicate or missing GPC reference numbers
+                if (!inventoryValue.gpcReferenceNumber) {
+                  throw new createHttpError.BadRequest(
+                    "Missing GPC reference number for InventoryValue " +
+                      inventoryValue.id,
+                  );
+                }
+                if (acc.hasOwnProperty(inventoryValue.gpcReferenceNumber)) {
+                  throw new createHttpError.BadRequest(
+                    "Duplicate GPC reference number in inventory: " +
+                      inventoryValue.gpcReferenceNumber,
+                  );
+                }
+
+                return {
+                  ...acc,
+                  [inventoryValue.gpcReferenceNumber ?? ""]: {
+                    notationKey,
+                    activities,
+                  },
+                };
+              },
+              {} as Record<string, GpcDataEntry>,
+            ),
+          },
+        };
       }),
     };
     const inputDigest = digest(fullRequest);
@@ -313,25 +320,23 @@ export default class MeedApiService {
         { transaction },
       );
       const removedActions = await db.models.MeedActionRemoved.bulkCreate(
-        removedActionsRaw.map(
-          (action) => ({
+        removedActionsRaw.map((action) => ({
           id: randomUUID(),
           inventoryId,
           rankingId: ranking.id,
-            actionId: action.action_id,
-            actionName: action.action_name,
-            removalReason: action.removal_reason,
-            removalSource: action.removal_source,
-            verdictCategory: action.legal?.verdict_category,
-            ownershipCategory: action.legal?.ownership_category,
-            restrictionsCategory: action.legal?.restrictions_category,
-            ownershipDescription: action.legal?.ownership_description,
-            restrictionsDescription: action.legal?.restrictions_description,
-            legalJustification: action.legal?.legal_justification,
-            legalReferences: action.legal?.legal_references,
-          }),
-          { transaction },
-        ),
+          actionId: action.action_id,
+          actionName: action.action_name,
+          removalReason: action.removal_reason,
+          removalSource: action.removal_source,
+          verdictCategory: action.legal?.verdict_category,
+          ownershipCategory: action.legal?.ownership_category,
+          restrictionsCategory: action.legal?.restrictions_category,
+          ownershipDescription: action.legal?.ownership_description,
+          restrictionsDescription: action.legal?.restrictions_description,
+          legalJustification: action.legal?.legal_justification,
+          legalReferences: action.legal?.legal_references,
+        })),
+        { transaction },
       );
       return { ranking, rankedActions, removedActions };
     });
@@ -443,10 +448,25 @@ export default class MeedApiService {
       throw new createHttpError.NotFound("City not found");
     }
     const countryLocode = city.countryLocode;
+    // hiap-meed answers 404 when no project matches the action; that is an
+    // empty list to the caller, not an error.
     const result = await this.makeRequest(
       `climate-finance/projects?country_code=${countryLocode}&action_id=${actionId}`,
+      null,
+      undefined,
+      { notFoundAsNull: true },
     );
-    return result;
+    return (
+      result ?? {
+        projects: [],
+        meta: {
+          requestId: randomUUID(),
+          generatedAtUtc: new Date().toISOString(),
+          totalRecords: 0,
+        },
+        warnings: [],
+      }
+    );
   }
 
   public static async getExclusionsPreview(data: ExclusionsPreviewRequest) {
@@ -591,6 +611,9 @@ export default class MeedApiService {
       { inventoryId, languages, actionId, result, data },
       "MEED output plan route finished",
     );
+    const authorityScopeClassification = readAuthorityScopeClassification(
+      result.metadata?.authority_scope_classification,
+    );
 
     // save result to database, update existing report if it exists
     let report = await db.models.MeedActionReport.findOne({
@@ -602,6 +625,7 @@ export default class MeedApiService {
         actionId: result.action_id,
         languages: result.language,
         chapters: result.chapters,
+        authorityScopeClassification,
       });
     } else {
       report = await db.models.MeedActionReport.create({
@@ -610,6 +634,7 @@ export default class MeedApiService {
         actionId: result.action_id,
         languages: result.language,
         chapters: result.chapters,
+        authorityScopeClassification,
       });
     }
 
@@ -658,6 +683,7 @@ export default class MeedApiService {
     route: string,
     data: object | null = null,
     requestId: string | undefined = undefined,
+    options: { notFoundAsNull?: boolean } = {},
   ) {
     const method = data == null ? "GET" : "POST";
     requestId = requestId ?? randomUUID();
@@ -680,6 +706,9 @@ export default class MeedApiService {
 
     const result = await response.json();
 
+    if (response.status === 404 && options.notFoundAsNull) {
+      return null;
+    }
     if (response.status != 200 || result.detail) {
       const resultString = JSON.stringify(result, null, 2);
       throw new createHttpError.BadRequest("MEED API error: " + resultString);

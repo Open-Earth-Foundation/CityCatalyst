@@ -31,6 +31,7 @@ type RouteContext = {
 
 let getRun: typeof import("@/app/api/v1/concept-notes/[runId]/route").GET;
 let renameRun: typeof import("@/app/api/v1/concept-notes/[runId]/route").PATCH;
+let updatePopulation: typeof import("@/app/api/v1/concept-notes/[runId]/population/route").PATCH;
 let deleteRun: typeof import("@/app/api/v1/concept-notes/[runId]/route").DELETE;
 let duplicateRun: typeof import("@/app/api/v1/concept-notes/[runId]/duplicate/route").POST;
 
@@ -48,6 +49,8 @@ beforeAll(async () => {
   } = await import("@/app/api/v1/concept-notes/[runId]/route"));
   ({ POST: duplicateRun } =
     await import("@/app/api/v1/concept-notes/[runId]/duplicate/route"));
+  ({ PATCH: updatePopulation } =
+    await import("@/app/api/v1/concept-notes/[runId]/population/route"));
 });
 
 describe("Concept Note lifecycle proxy routes", () => {
@@ -105,6 +108,49 @@ describe("Concept Note lifecycle proxy routes", () => {
       searchParams: { user_id: ownerId },
       session: context.session,
     });
+  });
+
+  it("saves population on the concept-note route, never the city route", async () => {
+    callAuthorizedConceptNoteApi.mockResolvedValueOnce(
+      Response.json({
+        run_id: runId,
+        manual_population: { population: 0, year: 2024 },
+      }),
+    );
+
+    const response = await updatePopulation(
+      new Request("http://localhost", {
+        method: "PATCH",
+        body: JSON.stringify({
+          manual_population: { population: 0, year: 2024 },
+        }),
+      }),
+      context,
+    );
+
+    expect(response.status).toBe(200);
+    expect(callAuthorizedConceptNoteApi).toHaveBeenCalledWith({
+      cityId,
+      path: `/v1/concept-notes/${runId}/population`,
+      method: "PATCH",
+      body: { manual_population: { population: 0, year: 2024 } },
+      requestId: undefined,
+      searchParams: { user_id: ownerId },
+      session: context.session,
+    });
+  });
+
+  it("rejects a missing year before saving population", async () => {
+    await expect(
+      updatePopulation(
+        new Request("http://localhost", {
+          method: "PATCH",
+          body: JSON.stringify({ manual_population: { population: 10 } }),
+        }),
+        context,
+      ),
+    ).rejects.toBeInstanceOf(ZodError);
+    expect(callAuthorizedConceptNoteApi).not.toHaveBeenCalled();
   });
 
   it("forwards duplicate idempotency and preserves a conflict", async () => {

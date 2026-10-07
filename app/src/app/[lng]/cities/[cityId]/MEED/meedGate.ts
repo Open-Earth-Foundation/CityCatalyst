@@ -19,7 +19,11 @@ export interface MeedGate {
   missing: string[];
 }
 
-/** Emissions is the only hard requirement — it drives the impact score. */
+/**
+ * Emissions is the only hard requirement — it drives the impact score. It is
+ * "ready" once retrieved from CityCatalyst (see `meedEmissions.ts`), which
+ * writes the step as complete in one go; there is no partial state to accept.
+ */
 const REQUIRED_STEP = "emissions";
 
 /**
@@ -28,14 +32,10 @@ const REQUIRED_STEP = "emissions";
  * so counting them here rewarded opening a read-only page and told the user
  * nothing about whether the ranking would be any good.
  */
-const SCORED_INPUTS = ["emissions", "preferences"];
+const SCORED_INPUTS = ["preferences"];
 
 export function computeMeedGate(states: MeedSectionStates): MeedGate {
-  const emissions = states[REQUIRED_STEP];
-  const emissionsReady =
-    emissions?.status === "complete" ||
-    emissions?.status === "needs-review" ||
-    emissions?.status === "in-progress";
+  const emissionsReady = states[REQUIRED_STEP]?.status === "complete";
 
   if (!emissionsReady) {
     return {

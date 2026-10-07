@@ -1,6 +1,5 @@
 {
   "description": "Diga-nos quais setores e objetivos são mais importantes para a sua cidade, quão rapidamente as ações devem ser implementadas e se algum tipo de ação deve ser excluído da classificação.",
-  "alignment-note": "O alinhamento molda 22% do ranking — setores prioritários 15% · preferência de prazo 5% · prioridades estratégicas 5%",
   "required": "Obrigatório",
   "badge-alignment-15": "Alinhamento · 15%",
   "badge-alignment-5": "Alinhamento · 5%",

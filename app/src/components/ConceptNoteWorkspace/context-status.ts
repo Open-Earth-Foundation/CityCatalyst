@@ -6,8 +6,14 @@ import {
 } from "react-icons/lu";
 
 import type { useTranslation } from "@/i18n/client";
-import type { ConceptNoteRun, ConceptNoteUploadResponse } from "@/util/types";
+import type {
+  ConceptNoteRun,
+  ConceptNoteUploadResponse,
+  ConceptNoteUploadStatus,
+} from "@/util/types";
 import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
+import { uploadStatusTranslationKey } from "../ConceptNoteWiringHarness/utils";
+import type { ContextTone } from "./context-status-badge";
 
 export type ConceptNoteContextState =
   "none" | "uploading" | "processing" | "preparing" | "failed" | "ready";
@@ -76,6 +82,34 @@ export function getConceptNoteContextState({
     bundle.documentGrounding === "uploaded_evidence"
     ? "ready"
     : "none";
+}
+
+/**
+ * Label and tone for one uploaded file. A converted file only counts as ready
+ * once the context bundle holds every converted upload.
+ */
+export function getConceptNoteUploadRowPresentation(
+  status: ConceptNoteUploadStatus,
+  bundle: ConceptNoteBundleProgress,
+  readyUploadCount: number,
+): { labelKey: string; tone: ContextTone } {
+  if (status !== "ready") {
+    return {
+      labelKey: uploadStatusTranslationKey(status),
+      tone: status === "failed" ? "warning" : "neutral",
+    };
+  }
+  if (bundle.status === "failed") {
+    return { labelKey: "status-failed", tone: "warning" };
+  }
+  if (
+    bundle.status !== "ready" ||
+    bundle.documentGrounding !== "uploaded_evidence" ||
+    bundle.readySources < readyUploadCount
+  ) {
+    return { labelKey: "status-processing", tone: "neutral" };
+  }
+  return { labelKey: "status-ready", tone: "positive" };
 }
 
 export function getConceptNoteContextPresentation(

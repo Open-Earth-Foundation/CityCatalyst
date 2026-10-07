@@ -1,10 +1,17 @@
 import { defineConfig, devices } from "@playwright/test";
+import nextEnv from "@next/env";
+import { fileURLToPath } from "node:url";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
+// Match the test server's environment, including flags supplied through .env files.
+process.env.NODE_ENV = "test";
+nextEnv.loadEnvConfig(fileURLToPath(new URL(".", import.meta.url)));
+
+const featureFlags = (process.env.NEXT_PUBLIC_FEATURE_FLAGS ?? "")
+  .split(",")
+  .map((flag) => flag.trim());
+const conceptNoteBuilderEnabled =
+  featureFlags.includes("CONCEPT_NOTE_BUILDER") &&
+  featureFlags.includes("CA_SERVICE_INTEGRATION");
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -34,6 +41,7 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   testMatch: /.*\.spec.ts/,
+  testIgnore: conceptNoteBuilderEnabled ? [] : ["**/concept-note-*.spec.ts"],
 
   /* Configure projects for major browsers */
   projects: [

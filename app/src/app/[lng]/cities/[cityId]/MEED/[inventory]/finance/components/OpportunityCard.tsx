@@ -32,9 +32,9 @@ export function OpportunityCard({ opp, t }: OpportunityCardProps) {
               {opp.opportunity_name ?? t("opportunity-fallback-name")}
             </LabelLarge>
             <HStack gap="xs" flexShrink={0}>
-              {statusKey && (
+              {status && (
                 <MeedStatusTag tone={STATUS_TONE[status] ?? "neutral"}>
-                  {t(statusKey)}
+                  {statusKey ? t(statusKey) : humanizeEnum(opp.status)}
                 </MeedStatusTag>
               )}
               {opp.instrument && (

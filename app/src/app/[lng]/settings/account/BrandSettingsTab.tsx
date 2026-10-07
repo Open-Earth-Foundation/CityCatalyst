@@ -174,7 +174,11 @@ const BrandSettingsTab = ({
       </Text>
       <Box mt={9}>
         <Field w="full" label={t("logo")}>
-          <FileUploadRoot accept={{ "image/*": [] }} maxFiles={1}>
+          <FileUploadRoot
+            key={organization?.logoUrl ?? "no-logo"}
+            accept={{ "image/*": [] }}
+            maxFiles={1}
+          >
             <LogoUploadCard
               defaultUrl={clearImage ? undefined : organization?.logoUrl}
               setFile={setFile}

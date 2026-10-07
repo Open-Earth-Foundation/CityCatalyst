@@ -146,7 +146,7 @@
   "yes-i-understand": "Ja, ich verstehe",
   "enter-city-name-confirmation": "Bitte schreiben Sie \"{{name}}\" unten, um es zu löschen",
   "year-inventory_status": "{{year}} Inventarstatus",
-  "ghg-emissions-inventory-year": "Treibhausgas-Emissionsinventar {{Jahr}}",
+  "ghg-emissions-inventory-year": "Treibhausgas-Emissionsinventar {{year}}",
   "ghg-inventory-year": "{{year}} Inventar",
   "add-inventory": "Inventar hinzufügen",
   "open-inventory": "Inventar öffnen",
@@ -250,7 +250,7 @@
   "preferences": "Einstellungen",
   "preferences-updated": "Einstellungen aktualisiert",
   "inventories": "Inventar",
-  "invite-collaborators-title": "Laden Sie Mitarbeitende in Ihr Team ein",
+  "invite-collaborators-title": "Teammitglieder einladen",
   "search-by-project": "Suche nach Projektname",
   "search-by-name-or-email": "Suche nach Name oder E-Mail-Adresse",
   "select-a-project": "Wählen Sie ein Projekt",
@@ -277,5 +277,14 @@
   "two-factor-disable-button": "Deaktivieren",
   "two-factor-disable-confirm-message": "Nach der Deaktivierung der Zwei-Faktor-Authentifizierung können Sie eine andere App oder ein anderes Gerät konfigurieren",
   "two-factor-disable-password-message": "Bestätigen Sie Ihr Passwort, um die Zwei-Faktor-Authentifizierung für Ihr Konto zu deaktivieren",
-  "two-factor-disabled": "Erfolgreich die Zwei-Faktor-Authentifizierung deaktiviert"
+  "two-factor-disabled": "Erfolgreich die Zwei-Faktor-Authentifizierung deaktiviert",
+  "two-factor-recovery-codes-message": "Dies sind Ihre Einmal-Wiederherstellungscodes. <1>Bitte notieren Sie sie oder speichern Sie sie in Ihrem Passwortmanager, da sie nicht erneut angezeigt werden.</1> Verwenden Sie diese anstelle eines Sicherheitscodes, falls Sie den Zugriff auf Ihre Authenticator-App oder Ihr Gerät verlieren.",
+  "two-factor-copy-recovery-codes-label": "Kopieren Sie die Wiederherstellungscodes in die Zwischenablage",
+  "2fa-security": "2FA-Sicherheit",
+  "enabled": "Aktiviert",
+  "disabled": "Deaktiviert",
+  "your-data": "Ihre Daten",
+  "your-data-description": "Laden Sie eine Kopie der persönlichen Daten herunter, die CityCatalyst über Ihr Konto gespeichert hat. Dies beinhaltet Ihr Profil, Einladungen, von Ihnen hochgeladene Dateien und Zustimmungsauswahlen. Passwörter und Sicherheitsgeheimnisse sind nicht enthalten.",
+  "download-json": "JSON herunterladen",
+  "personal-data-download-failed": "Ihre Daten konnten nicht heruntergeladen werden. Bitte versuchen Sie es erneut."
 }

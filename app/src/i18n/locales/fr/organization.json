@@ -33,5 +33,6 @@
   "state-name": "Nom de l'état",
   "view-full-list": "Voir la liste complète",
   "search-by-city-name": "Rechercher par nom de ville",
-  "citycatalyst-demo": "CityCatalyst Demo"
+  "citycatalyst-demo": "CityCatalyst Demo",
+  "go-back": "Revenir en arrière"
 }

@@ -8,7 +8,8 @@ import {
 } from "@/util/types";
 import { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "@/i18n/client";
-import i18next from "i18next";
+import { useParams } from "next/navigation";
+import { getParamValue } from "@/util/helpers";
 import {
   Box,
   Text,
@@ -99,7 +100,8 @@ export function HiapTab({
   cityData: CityWithProjectDataResponse;
   onTriggerHiap?: () => void;
 }) {
-  const lng = i18next.language as LANGUAGES;
+  const params = useParams();
+  const lng = (getParamValue(params.lng) ?? "en") as LANGUAGES;
   const { t } = useTranslation(lng, "hiap");
 
   // UI State

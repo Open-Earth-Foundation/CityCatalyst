@@ -10,7 +10,10 @@ import {
 } from "@/backend/NativeInputCatalogService";
 import type { NativeInputCatalog } from "@/models/NativeInputCatalog";
 import { logger } from "@/services/logger";
-import { isCompleteMEEDOutputPlan } from "@/backend/meed/meedOutputPlan";
+import {
+  isCompleteMEEDOutputPlan,
+  meedOutputPlanLanguageKey,
+} from "@/backend/meed/meedOutputPlan";
 
 const MEED_MODULE = "hiap_meed" as const;
 const MEED_RANKING_SOURCE_TYPE = "hiap_meed_ranking" as const;
@@ -299,6 +302,7 @@ export async function buildMEEDOutputPlanInput(
       reportId: report.id,
       actionId: report.actionId,
       languages,
+      languageKey: meedOutputPlanLanguageKey(languages),
       chapterCount,
     },
   };
@@ -334,7 +338,7 @@ async function findActiveMEEDEntries(
   sourceType: string,
   inventoryId: string | null | undefined,
   transaction: Transaction,
-  actionId?: string | null,
+  labels?: Record<string, string> | null,
 ): Promise<NativeInputCatalog[]> {
   const where: Record<string, unknown> = {
     owningModule: MEED_MODULE,
@@ -342,8 +346,8 @@ async function findActiveMEEDEntries(
     inventoryId,
     availability: "active",
   };
-  if (actionId) {
-    where.labels = { [Op.contains]: { actionId } };
+  if (labels) {
+    where.labels = { [Op.contains]: labels };
   }
 
   return models().NativeInputCatalog.findAll({
@@ -375,14 +379,14 @@ async function reconcileMEEDCatalogInTransaction<T extends OrderedSource>(
   options: {
     sourceType: string;
     loadSource: (sourceId: string, transaction: Transaction) => Promise<T>;
-    actionId?: string | null;
+    labels?: Record<string, string> | null;
   },
 ): Promise<void> {
   const activeEntries = await findActiveMEEDEntries(
     options.sourceType,
     input.inventoryId,
     transaction,
-    options.actionId,
+    options.labels,
   );
   const entries = activeEntries.some(
     (catalog) => catalog.id === registration.catalog.id,
@@ -509,7 +513,7 @@ export async function registerMEEDOutputPlan(
     }
     await lockMEEDKey(
       transaction,
-      `${MEED_OUTPUT_PLAN_LOCK_PREFIX}${report.inventoryId}:${report.actionId}`,
+      `${MEED_OUTPUT_PLAN_LOCK_PREFIX}${report.inventoryId}:${report.actionId}:${meedOutputPlanLanguageKey(report.languages)}`,
     );
 
     const input = await buildMEEDOutputPlanInput(report, transaction);
@@ -537,7 +541,10 @@ export async function registerMEEDOutputPlan(
       {
         sourceType: MEED_OUTPUT_PLAN_SOURCE_TYPE,
         loadSource: loadReport,
-        actionId: report.actionId,
+        labels: {
+          actionId: report.actionId,
+          languageKey: meedOutputPlanLanguageKey(report.languages),
+        },
       },
     );
     return registration;

@@ -27,3 +27,13 @@ export function isCompleteMEEDOutputPlan(report: {
   if (report.requiredSourcesOk === false) return false;
   return true;
 }
+
+/**
+ * Versions of an output plan are grouped per inventory, action and language
+ * set, so a translation never supersedes the plan it translates.
+ */
+export function meedOutputPlanLanguageKey(
+  languages: string[] | null | undefined,
+): string {
+  return [...new Set(languages ?? [])].sort().join(",");
+}

@@ -598,6 +598,7 @@ describe("MeedNativeInputCatalogService", () => {
           reportId: "report-1",
           actionId: "action-1",
           languages: ["en"],
+          languageKey: "en",
           chapterCount: 1,
         }),
       }),
@@ -673,7 +674,9 @@ describe("MeedNativeInputCatalogService", () => {
         sourceType: "hiap_meed_output_plan",
         inventoryId: "inventory-1",
         availability: "active",
-        labels: { [Op.contains]: { actionId: "action-1" } },
+        labels: {
+          [Op.contains]: { actionId: "action-1", languageKey: "en" },
+        },
       },
       transaction,
     });
@@ -720,7 +723,7 @@ describe("MeedNativeInputCatalogService", () => {
       "SELECT pg_advisory_xact_lock(hashtext($1))",
       expect.objectContaining({
         bind: [
-          "citycatalyst:hiap-meed-output-plan:inventory-1:action-1",
+          "citycatalyst:hiap-meed-output-plan:inventory-1:action-1:en",
         ],
         transaction,
       }),
@@ -784,6 +787,32 @@ describe("MeedNativeInputCatalogService", () => {
     );
   });
 
+  it("keeps plans in different languages active side by side", async () => {
+    catalogModel.findOne.mockResolvedValueOnce(null);
+    // The lookup is scoped by language, so the English entry is never returned.
+    catalogModel.findAll.mockResolvedValueOnce([]);
+    reportModel.findByPk.mockResolvedValueOnce({
+      ...completedReport,
+      id: "report-es",
+      languages: ["es"],
+    });
+
+    await registerMEEDOutputPlan("report-es");
+
+    expect(catalogModel.findAll).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          labels: {
+            [Op.contains]: { actionId: "action-1", languageKey: "es" },
+          },
+        }),
+      }),
+    );
+    expect(registerNativeInput.mock.calls.at(-1)?.[0].labels).toMatchObject({
+      languageKey: "es",
+    });
+  });
+
   it("does not supersede output plans for a different action", async () => {
     const otherActionCatalog = {
       id: "catalog-other",
@@ -803,7 +832,9 @@ describe("MeedNativeInputCatalogService", () => {
     expect(otherActionCatalog.update).not.toHaveBeenCalled();
     expect(catalogModel.findAll).toHaveBeenCalledWith({
       where: expect.objectContaining({
-        labels: { [Op.contains]: { actionId: "action-1" } },
+        labels: {
+          [Op.contains]: { actionId: "action-1", languageKey: "en" },
+        },
       }),
       transaction,
     });

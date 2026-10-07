@@ -11,11 +11,20 @@ export function getClimateActionPlanState(
     (upload) => upload.sourceRole === "climate_action_plan",
   );
   if (plans.length === 0) return null;
-  if (plans.some((upload) => upload.status === "failed")) return "failed";
-  if (plans.some((upload) => upload.status !== "ready")) return "processing";
-  const included = plans.every((upload) =>
+  if (
+    plans.some((upload) => ["queued", "processing"].includes(upload.status))
+  ) {
+    return "processing";
+  }
+  const readyPlans = plans.filter((upload) => upload.status === "ready");
+  if (readyPlans.length === 0 || bundle.status === "failed") return "failed";
+  const included = readyPlans.every((upload) =>
     bundle.includedUploadIds?.includes(upload.uploadId),
   );
-  if (bundle.status === "ready" && included) return "included";
-  return bundle.status === "failed" ? "failed" : "processing";
+  if (bundle.status === "ready" && included) {
+    return readyPlans.length === plans.length
+      ? "included"
+      : "included-with-failures";
+  }
+  return "processing";
 }

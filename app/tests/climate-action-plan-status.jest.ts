@@ -76,3 +76,37 @@ describe("Climate Action Plan document state", () => {
     ).toBe("processing");
   });
 });
+
+describe("plan replacement recovery", () => {
+  const failed: ConceptNoteUploadResponse = {
+    ...plan,
+    uploadId: "bad-plan",
+    status: "failed",
+    canRetry: false,
+  };
+  it("keeps a successful replacement included while exposing the failed attachment", () => {
+    expect(
+      getClimateActionPlanState(
+        [failed, plan],
+        bundle("ready", [plan.uploadId]),
+      ),
+    ).toBe("included-with-failures");
+  });
+  it("waits for the replacement's actual membership, including during retry", () => {
+    expect(
+      getClimateActionPlanState(
+        [failed, plan],
+        bundle("ready", ["other-plan"]),
+      ),
+    ).toBe("processing");
+    expect(
+      getClimateActionPlanState(
+        [failed, { ...plan, status: "queued" }],
+        bundle("failed"),
+      ),
+    ).toBe("processing");
+    expect(getClimateActionPlanState([failed, plan], bundle("failed"))).toBe(
+      "failed",
+    );
+  });
+});

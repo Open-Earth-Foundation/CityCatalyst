@@ -497,6 +497,40 @@ describe("Context tab missing-state cards", () => {
     expect(container.textContent).toContain("status-processing");
   });
 
+  it("shows an included replacement with a warning while retaining the failed file", async () => {
+    await renderTab({
+      uploads: [
+        {
+          uploadId: "bad-plan",
+          filename: "broken.pdf",
+          sourceRole: "climate_action_plan",
+          status: "failed",
+          errorCode: "pdf_parse_failed",
+          canRetry: false,
+        },
+        {
+          uploadId: "good-plan",
+          filename: "corrected.pdf",
+          sourceRole: "climate_action_plan",
+          status: "ready",
+        },
+      ],
+      bundle: bundle({ includedUploadIds: ["good-plan"] }),
+    });
+    const planCard =
+      container.querySelector('input[type="file"]')!.parentElement!;
+    expect(planCard.textContent).toContain("plan-included-with-failures");
+    expect(planCard.textContent).toContain("plan-upload-partial-help");
+    expect(planCard.textContent).toContain("broken.pdf");
+    expect(planCard.textContent).toContain("corrected.pdf");
+    expect(planCard.textContent).not.toContain("plan-upload-failed-help");
+    expect(
+      Array.from(planCard.querySelectorAll("button")).some(
+        (button) => button.textContent === "retry",
+      ),
+    ).toBe(false);
+  });
+
   it("shows a plan parse failure and retries that document from its card", async () => {
     const onRetryUpload = jest
       .fn<ContextTabProps["onRetryUpload"]>()

@@ -805,9 +805,11 @@ export function ContextTab({
                     t(
                       planState === "included"
                         ? "source-help-included"
-                        : planState === "failed"
-                          ? "plan-upload-failed-help"
-                          : "plan-upload-processing-help",
+                        : planState === "included-with-failures"
+                          ? "plan-upload-partial-help"
+                          : planState === "failed"
+                            ? "plan-upload-failed-help"
+                            : "plan-upload-processing-help",
                     ),
                     ...planUploads
                       .filter(

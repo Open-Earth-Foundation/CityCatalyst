@@ -48,7 +48,11 @@ export const GET = apiHandler(async (_req, { params, session }) => {
       inventoryId: inventory.inventoryId,
     },
     include: [
-      { model: db.models.DataSource, as: "dataSource" },
+      {
+        model: db.models.DataSource,
+        as: "dataSource",
+        include: [{ model: db.models.Publisher, as: "publisher" }],
+      },
       {
         model: db.models.SubCategory,
         as: "subCategory",

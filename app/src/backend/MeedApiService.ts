@@ -657,6 +657,8 @@ export default class MeedApiService {
       );
     }
 
+    // Every successful generation is a new row. Older versions are kept as an
+    // audit trail of what the LLM produced; the catalog marks them superseded.
     const report = await db.models.MeedActionReport.create({
       id: randomUUID(),
       inventoryId,

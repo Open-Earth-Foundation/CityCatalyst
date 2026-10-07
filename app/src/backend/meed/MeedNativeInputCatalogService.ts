@@ -675,20 +675,6 @@ export async function backfillMissingMEEDOutputPlansPage(
   };
 }
 
-export async function withdrawMEEDOutputPlan(reportId: string): Promise<boolean> {
-  const catalog = await models().NativeInputCatalog.findOne({
-    where: {
-      owningModule: MEED_MODULE,
-      sourceType: MEED_OUTPUT_PLAN_SOURCE_TYPE,
-      sourceId: reportId,
-      availability: "active",
-    },
-  });
-  if (!catalog) return false;
-  await withdrawNativeInput(String(catalog.id));
-  return true;
-}
-
 export async function withdrawMEEDCatalogForInventory(
   inventoryId: string,
 ): Promise<number> {

@@ -1,4 +1,4 @@
-"""Rename, duplicate, reset chat, and permanently delete Concept Note runs."""
+"""Rename, duplicate, manage chats for, and permanently delete Concept Note runs."""
 
 from __future__ import annotations
 
@@ -16,6 +16,8 @@ import httpx
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.models.cnb.context_bundle import ConceptNoteContextBundle
 from app.models.cnb.concept_note_runs import (
+    ConceptNoteChatThreadListResponse,
+    ConceptNoteChatThreadResponse,
     ConceptNoteRenameRequest,
     ConceptNoteRunResponse,
 )
@@ -23,8 +25,10 @@ from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
+from app.models.db.message import Message, MessageRole
 from app.models.db.thread import Thread
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
+from app.services.cnb.draft_overview import DRAFT_OVERVIEW_REQUEST
 from app.services.concept_note_runs import (
     ConceptNoteRunService,
     _require_bearer_token,
@@ -37,10 +41,12 @@ from app.utils.chat_workflow_context import (
 )
 from app.utils.token_manager import create_token_context
 from fastapi import HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
+
+CHAT_PREVIEW_CHARS = 120
 
 
 class ConceptNoteLifecycleService:
@@ -180,7 +186,7 @@ class ConceptNoteLifecycleService:
         requested_user_id: str,
         authorization: str | None,
     ) -> None:
-        """Delete an owned run, its private workspace/chat, and unshared sources."""
+        """Delete an owned run, its private workspace/chats, and unshared sources."""
         run = await self.run_service.get_authorized_run(
             run_id=run_id,
             requested_user_id=requested_user_id,
@@ -213,15 +219,32 @@ class ConceptNoteLifecycleService:
                 detail="Concept Note could not be deleted",
             ) from exc
 
-        if run.thread_id is not None:
-            thread = await self.session.scalar(
-                select(Thread).where(
-                    Thread.thread_id == run.thread_id,
-                    Thread.user_id == run.user_id,
-                )
+        # Remove attached chats through the session so their messages cascade
+        # and the identity map stays consistent with the database. A chat that
+        # another note still has open moves to that note instead.
+        threads = list(
+            await self.session.scalars(
+                select(Thread).where(Thread.concept_note_run_id == run.run_id)
             )
-            if thread is not None:
+        )
+        heirs = await self._other_runs_by_thread(
+            run_id=run.run_id,
+            thread_ids=[thread.thread_id for thread in threads],
+        )
+        for thread in threads:
+            heir_run_id = heirs.get(thread.thread_id)
+            if heir_run_id is None:
                 await self.session.delete(thread)
+                continue
+            thread.concept_note_run_id = heir_run_id
+            thread.context = bind_workflow_context(
+                thread.context,
+                workflow_key=CONCEPT_NOTE_RUN_ID_KEY,
+                run_id=heir_run_id,
+            )
+        # Flush the hand-offs before the run row goes, or its FK cascade
+        # would still remove those chats.
+        await self.session.flush()
         await self.session.delete(run)
         await self.session.commit()
 
@@ -257,14 +280,14 @@ class ConceptNoteLifecycleService:
                 unshared.append(upload_id)
         return unshared
 
-    async def reset_chat(
+    async def start_chat(
         self,
         *,
         run_id: UUID,
         requested_user_id: str,
         authorization: str | None,
     ) -> ConceptNoteRunResponse:
-        """Replace an owned run's dedicated chat without changing its workspace."""
+        """Open a fresh chat on an owned run and make it active; earlier chats stay."""
         token = _require_bearer_token(authorization)
         run = await self.run_service.get_authorized_run(
             run_id=run_id,
@@ -272,26 +295,11 @@ class ConceptNoteLifecycleService:
             authorization=authorization,
         )
         _require_idle(run)
-        if not await self._thread_is_dedicated(run):
-            raise HTTPException(
-                status_code=409,
-                detail="The Concept Note chat is shared and cannot be reset",
-            )
 
-        old_thread = None
-        if run.thread_id is not None:
-            old_thread = await self.session.scalar(
-                select(Thread).where(
-                    Thread.thread_id == run.thread_id,
-                    Thread.user_id == run.user_id,
-                )
-            )
-
-        # Point the run at a fresh workflow-bound chat before removing history.
-        new_thread_id = uuid4()
-        new_thread = Thread(
-            thread_id=new_thread_id,
+        thread = Thread(
+            thread_id=uuid4(),
             user_id=run.user_id,
+            concept_note_run_id=run.run_id,
             title=run.name,
             context=bind_workflow_context(
                 create_token_context(token),
@@ -299,15 +307,140 @@ class ConceptNoteLifecycleService:
                 run_id=run.run_id,
             ),
         )
-        self.session.add(new_thread)
-        run.thread_id = new_thread_id
+        self.session.add(thread)
+        run.thread_id = thread.thread_id
         run.updated_at = datetime.now(UTC)
-        await self.session.flush()
-
-        if old_thread is not None:
-            await self.session.delete(old_thread)
         await self.session.commit()
         return _to_response(run, created=False)
+
+    async def list_chat_threads(
+        self,
+        *,
+        run_id: UUID,
+        requested_user_id: str,
+        authorization: str | None,
+    ) -> ConceptNoteChatThreadListResponse:
+        """Return every chat attached to an owned run, newest first."""
+        run = await self.run_service.get_authorized_run(
+            run_id=run_id,
+            requested_user_id=requested_user_id,
+            authorization=authorization,
+        )
+        threads = list(
+            await self.session.scalars(
+                select(Thread)
+                .where(Thread.concept_note_run_id == run.run_id)
+                .order_by(Thread.created_at.desc(), Thread.thread_id.desc())
+            )
+        )
+        thread_ids = [thread.thread_id for thread in threads]
+        stats = await self._message_stats(thread_ids)
+        previews = await self._first_user_messages(thread_ids)
+        return ConceptNoteChatThreadListResponse(
+            active_thread_id=run.thread_id,
+            threads=[
+                ConceptNoteChatThreadResponse(
+                    thread_id=thread.thread_id,
+                    title=thread.title,
+                    created_at=thread.created_at,
+                    last_message_at=stats.get(thread.thread_id, (0, None))[1],
+                    message_count=stats.get(thread.thread_id, (0, None))[0],
+                    preview=previews.get(thread.thread_id),
+                )
+                for thread in threads
+            ],
+        )
+
+    async def activate_chat_thread(
+        self,
+        *,
+        run_id: UUID,
+        thread_id: UUID,
+        requested_user_id: str,
+        authorization: str | None,
+    ) -> ConceptNoteRunResponse:
+        """Make one of an owned run's attached chats the active conversation."""
+        run = await self.run_service.get_authorized_run(
+            run_id=run_id,
+            requested_user_id=requested_user_id,
+            authorization=authorization,
+        )
+        thread = await self.session.scalar(
+            select(Thread).where(
+                Thread.thread_id == thread_id,
+                Thread.concept_note_run_id == run.run_id,
+                Thread.user_id == run.user_id,
+            )
+        )
+        if thread is None:
+            raise HTTPException(status_code=404, detail="Chat thread not found")
+        if run.thread_id == thread.thread_id:
+            return _to_response(run, created=False)
+
+        # Chat turns are scoped to the run's active thread, so switching while
+        # context or drafting work may still post into it must wait.
+        _require_idle(run)
+        run.thread_id = thread.thread_id
+        run.updated_at = datetime.now(UTC)
+        await self.session.commit()
+        return _to_response(run, created=False)
+
+    async def _message_stats(
+        self, thread_ids: list[UUID]
+    ) -> dict[UUID, tuple[int, datetime | None]]:
+        """Return visible message count and latest timestamp per thread."""
+        if not thread_ids:
+            return {}
+        rows = await self.session.execute(
+            select(
+                Message.thread_id,
+                func.count(Message.message_id),
+                func.max(Message.created_at),
+            )
+            .where(
+                Message.thread_id.in_(thread_ids),
+                Message.text != DRAFT_OVERVIEW_REQUEST,
+            )
+            .group_by(Message.thread_id)
+        )
+        return {
+            thread_id: (int(count), last_at) for thread_id, count, last_at in rows
+        }
+
+    async def _first_user_messages(self, thread_ids: list[UUID]) -> dict[UUID, str]:
+        """Return a short preview of the first typed user message per thread."""
+        if not thread_ids:
+            return {}
+        # The hidden drafting-overview trigger is server text, not a user prompt.
+        visible_user = and_(
+            Message.thread_id.in_(thread_ids),
+            Message.role == MessageRole.USER,
+            Message.text != DRAFT_OVERVIEW_REQUEST,
+        )
+        earliest = (
+            select(
+                Message.thread_id.label("thread_id"),
+                func.min(Message.created_at).label("first_at"),
+            )
+            .where(visible_user)
+            .group_by(Message.thread_id)
+            .subquery()
+        )
+        rows = await self.session.execute(
+            select(Message.thread_id, Message.text)
+            .join(
+                earliest,
+                and_(
+                    Message.thread_id == earliest.c.thread_id,
+                    Message.created_at == earliest.c.first_at,
+                ),
+            )
+            .where(visible_user)
+        )
+        previews: dict[UUID, str] = {}
+        for thread_id, text in rows:
+            previews.setdefault(thread_id, _preview(text))
+        return previews
 
     async def _build_copy(
         self,
@@ -341,6 +474,7 @@ class ConceptNoteLifecycleService:
         thread = Thread(
             thread_id=destination_thread_id,
             user_id=source.user_id,
+            concept_note_run_id=destination_run_id,
             title=name,
             context=bind_workflow_context(
                 create_token_context(token),
@@ -396,6 +530,28 @@ class ConceptNoteLifecycleService:
             )
         return destination
 
+    async def _other_runs_by_thread(
+        self,
+        *,
+        run_id: UUID,
+        thread_ids: list[UUID],
+    ) -> dict[UUID, UUID]:
+        """Map each chat to the most recently updated other run it is open on."""
+        if not thread_ids:
+            return {}
+        rows = await self.session.execute(
+            select(ConceptNoteRun.thread_id, ConceptNoteRun.run_id)
+            .where(
+                ConceptNoteRun.thread_id.in_(thread_ids),
+                ConceptNoteRun.run_id != run_id,
+            )
+            .order_by(ConceptNoteRun.updated_at.desc(), ConceptNoteRun.run_id)
+        )
+        heirs: dict[UUID, UUID] = {}
+        for thread_id, other_run_id in rows:
+            heirs.setdefault(thread_id, other_run_id)
+        return heirs
+
     async def _thread_is_dedicated(self, run: ConceptNoteRun) -> bool:
         """Return whether no other run references the chat thread."""
         if run.thread_id is None:
@@ -448,6 +604,14 @@ def _copy_context_summary(
             json.dumps(fingerprint_rows, sort_keys=True).encode()
         ).hexdigest()
     return summary
+
+
+def _preview(text: str) -> str:
+    """Collapse whitespace and cap the preview so listings stay one line."""
+    collapsed = " ".join(text.split())
+    if len(collapsed) <= CHAT_PREVIEW_CHARS:
+        return collapsed
+    return collapsed[: CHAT_PREVIEW_CHARS - 1].rstrip() + "…"
 
 
 def _require_idle(run: ConceptNoteRun) -> None:

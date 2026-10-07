@@ -22,10 +22,10 @@ const mockDb = {
 jest.unstable_mockModule("@/models", () => ({ db: mockDb }));
 jest.mock("@/models", () => ({ db: mockDb }));
 jest.unstable_mockModule("@/services/logger", () => ({
-  logger: { error: jest.fn(), info: jest.fn() },
+  logger: { error: jest.fn(), info: jest.fn(), warn: jest.fn() },
 }));
 jest.mock("@/services/logger", () => ({
-  logger: { error: jest.fn(), info: jest.fn() },
+  logger: { error: jest.fn(), info: jest.fn(), warn: jest.fn() },
 }));
 jest.unstable_mockModule("@/backend/PopulationService", () => ({
   default: {},
@@ -149,7 +149,7 @@ describe("MeedApiService plan classification persistence", () => {
     expect(registerMEEDOutputPlan).not.toHaveBeenCalled();
   });
 
-  it("does not store incomplete plans", async () => {
+  it("rejects a plan without chapters", async () => {
     global.fetch = jest.fn(async () =>
       completePlanResponse({
         chapters: [],
@@ -161,6 +161,38 @@ describe("MeedApiService plan classification persistence", () => {
       MeedApiService.generatePlan("inventory-1", ["en"], "icare_0016", false),
     ).rejects.toMatchObject({ statusCode: 502 });
     expect(reportModel.create).not.toHaveBeenCalled();
+    expect(registerMEEDOutputPlan).not.toHaveBeenCalled();
+  });
+
+  it("stores an incomplete plan but keeps it out of the catalog", async () => {
+    global.fetch = jest.fn(async () =>
+      completePlanResponse({ metadata: { required_sources_ok: false } }),
+    ) as unknown as typeof fetch;
+
+    const created = await MeedApiService.generatePlan(
+      "inventory-1",
+      ["en"],
+      "icare_0016",
+      false,
+    );
+    expect(reportModel.create).toHaveBeenCalledWith(
+      expect.objectContaining({ catalogEligible: false }),
+    );
+    expect(created.chapters).toHaveLength(1);
+    expect(registerMEEDOutputPlan).not.toHaveBeenCalled();
+  });
+
+  it("stores a plan missing a requested language as catalog-ineligible", async () => {
+    const created = await MeedApiService.generatePlan(
+      "inventory-1",
+      ["en", "es"],
+      "icare_0016",
+      false,
+    );
+    expect(reportModel.create).toHaveBeenCalledWith(
+      expect.objectContaining({ catalogEligible: false }),
+    );
+    expect(created).toBeDefined();
     expect(registerMEEDOutputPlan).not.toHaveBeenCalled();
   });
 });

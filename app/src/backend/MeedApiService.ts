@@ -630,16 +630,30 @@ export default class MeedApiService {
       };
     }
 
-    const isComplete = isCompleteMEEDOutputPlan({
+    const hasContent = isCompleteMEEDOutputPlan({
+      catalogEligible: true,
+      languages: result.language,
+      chapters: result.chapters,
+    });
+    if (!hasContent) {
+      throw new createHttpError.BadGateway(
+        "MEED output plan has no chapters and was not stored",
+      );
+    }
+
+    // An incomplete plan is still the user's paid LLM output, so it is stored
+    // and returned. Only complete plans are eligible for NativeInputCatalog.
+    const catalogEligible = isCompleteMEEDOutputPlan({
       catalogEligible: true,
       languages: result.language,
       chapters: result.chapters,
       requestedLanguages: languages,
       requiredSourcesOk: result.metadata?.required_sources_ok === true,
     });
-    if (!isComplete) {
-      throw new createHttpError.BadGateway(
-        "MEED output plan is incomplete and was not stored",
+    if (!catalogEligible) {
+      logger.warn(
+        { inventoryId, actionId: result.action_id, languages },
+        "MEED output plan is incomplete; stored without catalog registration",
       );
     }
 
@@ -647,19 +661,26 @@ export default class MeedApiService {
       id: randomUUID(),
       inventoryId,
       actionId: result.action_id,
-      catalogEligible: true,
+      catalogEligible,
       languages: result.language,
       chapters: result.chapters,
       authorityScopeClassification,
     });
 
-    try {
-      await registerMEEDOutputPlan(report.id);
-    } catch (error) {
-      logger.error(
-        { error, reportId: report.id, inventoryId, actionId: report.actionId },
-        "Failed to register MEED output plan in NativeInputCatalog",
-      );
+    if (catalogEligible) {
+      try {
+        await registerMEEDOutputPlan(report.id);
+      } catch (error) {
+        logger.error(
+          {
+            error,
+            reportId: report.id,
+            inventoryId,
+            actionId: report.actionId,
+          },
+          "Failed to register MEED output plan in NativeInputCatalog",
+        );
+      }
     }
 
     return report;

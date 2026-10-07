@@ -381,6 +381,9 @@ async function processPages(
 
   const isContinuousMeed =
     kind === "meedRankings" || kind === "meedOutputPlans";
+  // A row that keeps failing must not pin the cursor and starve later rows.
+  // Failures are logged per row and counted in the totals.
+  const skipFailedRows = kind === "meedOutputPlans";
   if (progress.completed && !isContinuousMeed) {
     return { totals, checkpoint, pages };
   }
@@ -403,7 +406,7 @@ async function processPages(
 
     progress = {
       cursor:
-        page.failed > 0
+        page.failed > 0 && !skipFailedRows
           ? progress.cursor
           : isContinuousMeed
             ? (page.nextCursor ?? progress.cursor)
@@ -418,7 +421,7 @@ async function processPages(
     };
     await saveCheckpoint(checkpoint);
 
-    if (page.failed > 0 || !page.hasMore) break;
+    if ((page.failed > 0 && !skipFailedRows) || !page.hasMore) break;
   }
 
   return { totals, checkpoint, pages };

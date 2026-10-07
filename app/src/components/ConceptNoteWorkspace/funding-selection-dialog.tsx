@@ -623,7 +623,12 @@ export function FundingSelectionDialog({
                       >
                         {t("template-edit")}
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={own.open}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        color="content.link"
+                        onClick={own.open}
+                      >
                         {t("template-replace")}
                       </Button>
                     </HStack>

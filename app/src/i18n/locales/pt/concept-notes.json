@@ -787,5 +787,17 @@
   "upload-limit-select": "Uma nota conceitual pode ter até {{max}} arquivos. Escolha {{max}} ou menos.",
   "uploaded-files-count": "{{uploaded}} de {{max}} arquivos",
   "upload-limit-reason": "Esta nota conceitual atingiu o limite de {{max}} arquivos.",
-  "upload-limit-reached": "Esta nota conceitual já possui {{max}} arquivos, o máximo que pode conter, então o arquivo não foi adicionado."
+  "upload-limit-reached": "Esta nota conceitual já possui {{max}} arquivos, o máximo que pode conter, então o arquivo não foi adicionado.",
+  "connection-connecting": "Conectando…",
+  "connection-retrying": "Reconectando…",
+  "connection-error": "Problema de conexão",
+  "chat-auth-required": "Faça login novamente para continuar a conversar com Clima.",
+  "chat-access-denied": "Você não tem permissão para conversar nesta nota conceitual. Entre em contato com o administrador da sua organização.",
+  "chat-not-found": "Este chat não pôde ser encontrado. Recarregue o espaço de trabalho para verificar se ainda está disponível.",
+  "chat-request-rejected": "Clima rejeitou esta solicitação. Verifique sua mensagem e nota conceitual antes de enviar novamente.",
+  "chat-service-unavailable": "Clima não pode ser acessado no momento. Tente novamente quando o serviço estiver de volta.",
+  "chat-stream-stalled": "Clima parou de responder. Verifique sua conexão, depois tente novamente.",
+  "chat-overview-error": "Clima não conseguiu publicar o resumo do rascunho.",
+  "chat-retry": "Tentar novamente",
+  "drafting-card-summary-failed": "Não foi possível publicar o resumo. Tente novamente a partir do chat."
 }

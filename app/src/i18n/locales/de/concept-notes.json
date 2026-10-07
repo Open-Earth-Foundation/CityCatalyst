@@ -787,5 +787,17 @@
   "upload-limit-select": "Ein Konzeptpapier kann bis zu {{max}} Dateien enthalten. Wählen Sie {{max}} oder weniger aus.",
   "uploaded-files-count": "{{uploaded}} von {{max}} Dateien",
   "upload-limit-reason": "Dieser Konzeptvermerk hat das Limit von {{max}} Dateien erreicht.",
-  "upload-limit-reached": "Diese Konzeptnotiz hat bereits {{max}} Dateien, das Maximum, daher wurde die Datei nicht hinzugefügt."
+  "upload-limit-reached": "Diese Konzeptnotiz hat bereits {{max}} Dateien, das Maximum, daher wurde die Datei nicht hinzugefügt.",
+  "connection-connecting": "Verbinden...",
+  "connection-retrying": "Wird erneut verbunden...",
+  "connection-error": "Verbindungsproblem",
+  "chat-auth-required": "Melden Sie sich erneut an, um weiter mit Clima zu chatten.",
+  "chat-access-denied": "Sie haben keine Berechtigung, in dieser Konzeptnotiz zu chatten. Kontaktieren Sie Ihren Organisationsadministrator.",
+  "chat-not-found": "Dieser Chat konnte nicht gefunden werden. Laden Sie den Arbeitsbereich neu, um zu überprüfen, ob er noch verfügbar ist.",
+  "chat-request-rejected": "Clima hat diese Anfrage abgelehnt. Überprüfen Sie Ihre Nachricht und Ihr Konzeptnotiz, bevor Sie erneut senden.",
+  "chat-service-unavailable": "Clima ist momentan nicht erreichbar. Versuchen Sie es erneut, wenn der Dienst wieder verfügbar ist.",
+  "chat-stream-stalled": "Clima hat aufgehört zu reagieren. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+  "chat-overview-error": "Clima konnte die Entwurfszusammenfassung nicht veröffentlichen.",
+  "chat-retry": "Wiederholen",
+  "drafting-card-summary-failed": "Die Zusammenfassung konnte nicht veröffentlicht werden. Versuchen Sie es erneut aus dem Chat."
 }

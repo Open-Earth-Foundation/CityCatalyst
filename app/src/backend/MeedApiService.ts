@@ -6,33 +6,15 @@ import { InventoryService } from "./InventoryService";
 import { createHash, randomUUID } from "node:crypto";
 import { Op } from "sequelize";
 import { logger } from "@/services/logger";
-import { registerMEEDRanking, registerMEEDOutputPlan } from "@/backend/meed/MeedNativeInputCatalogService";
+import {
+  registerMEEDRanking,
+  registerMEEDOutputPlan,
+} from "@/backend/meed/MeedNativeInputCatalogService";
+import { isCompleteMEEDOutputPlan } from "@/backend/meed/meedOutputPlan";
 import type { MeedStateCreationAttributes } from "@/models/MeedState";
 import { readAuthorityScopeClassification } from "@/util/authorityScopeClassification";
 
 const MEED_API_URL = process.env.HIAP_MEED_API_URL + "/v1/";
-
-function isCompleteOutputPlanResult(
-  result: {
-    language?: string[];
-    chapters?: unknown;
-    metadata?: { required_sources_ok?: boolean };
-  },
-  requestedLanguages: string[],
-): boolean {
-  const chapters = result.chapters;
-  const hasChapters = Array.isArray(chapters)
-    ? chapters.length > 0
-    : !!(chapters && typeof chapters === "object" && Object.keys(chapters).length > 0);
-  if (!hasChapters) return false;
-  const languages = result.language ?? [];
-  if (languages.length === 0) return false;
-  const present = new Set(languages);
-  if (!requestedLanguages.every((language) => present.has(language))) {
-    return false;
-  }
-  return result.metadata?.required_sources_ok === true;
-}
 
 type RunRankingFullRequest = {
   requestedLanguages: string[];
@@ -648,7 +630,14 @@ export default class MeedApiService {
       };
     }
 
-    if (!isCompleteOutputPlanResult(result, languages)) {
+    const isComplete = isCompleteMEEDOutputPlan({
+      catalogEligible: true,
+      languages: result.language,
+      chapters: result.chapters,
+      requestedLanguages: languages,
+      requiredSourcesOk: result.metadata?.required_sources_ok === true,
+    });
+    if (!isComplete) {
       throw new createHttpError.BadGateway(
         "MEED output plan is incomplete and was not stored",
       );

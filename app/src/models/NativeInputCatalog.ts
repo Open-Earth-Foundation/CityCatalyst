@@ -11,6 +11,7 @@ export const NATIVE_INPUT_CATALOG_KINDS = [
   "cnb_upload",
   "hiap_meed_artifact",
   "hiap_meed_ranking",
+  "hiap_meed_output_plan",
 ] as const;
 
 export const NATIVE_INPUT_CATALOG_OWNING_MODULES = [
@@ -31,6 +32,7 @@ export const NATIVE_INPUT_CATALOG_SOURCE_TYPES = [
   "cnb_upload",
   "hiap_meed_artifact",
   "hiap_meed_ranking",
+  "hiap_meed_output_plan",
 ] as const;
 
 export const NATIVE_INPUT_CATALOG_AVAILABILITIES = [

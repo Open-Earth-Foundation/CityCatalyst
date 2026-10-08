@@ -93,6 +93,12 @@ export const POST = apiHandler(async (req, { session }) => {
  *         required: true
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: language
+ *         required: false
+ *         description: Only return a plan that includes this language
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Plan retrieved
@@ -100,11 +106,13 @@ export const POST = apiHandler(async (req, { session }) => {
 const getRankingQuery = z.object({
   inventoryId: z.string().uuid(),
   actionId: z.string().min(1),
+  language: z.string().min(1).optional(),
 });
 export const GET = apiHandler(async (_req, { session, searchParams }) => {
-  const { inventoryId, actionId } = getRankingQuery.parse(searchParams);
+  const { inventoryId, actionId, language } =
+    getRankingQuery.parse(searchParams);
   await PermissionService.canAccessInventory(session, inventoryId);
 
-  const result = await MeedApiService.getPlan(inventoryId, actionId);
+  const result = await MeedApiService.getPlan(inventoryId, actionId, language);
   return NextResponse.json({ data: result });
 });

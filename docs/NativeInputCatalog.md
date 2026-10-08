@@ -71,6 +71,51 @@ Selection identities use logical action IDs rather than language-specific row UU
 
 Action-plan deletion withdraws all active versions before the source row is removed. Inventory and city deletion withdraw all active HIAP rows before the owning records are removed. Failed, pending, incomplete, or temporary HIAP results are never registered. The HIAP cron backfills successful rankings and persisted action plans that are missing their current active catalog entry, so a transient catalog failure can be retried on a later run. HIAP-MEED uses a separate adapter and is intentionally not covered by CC-638.
 
+## Legacy HIAP catalog scope audit (CC-768)
+
+Audit of the CC-638 producers against the inventory-owned model used by HIAP-MEED. This section documents behavior only; no code or data changes are included. Line references are from `develop` at `4775ca348`.
+
+### Current behavior
+
+`resolveScope` in `HiapNativeInputCatalogService.ts` returns the resolved inventory, city, project and organization IDs plus an optional `userId`. The legacy producers fill `userId` with the source author:
+
+| Artifact | Producer | Catalog `userId` source |
+|---|---|---|
+| Ranking | `buildHIAPRankingInput` | `ranking.userId` (`:205`) |
+| Action plan | `buildHIAPActionPlanInput` | `plan.createdBy` (`:420`) |
+| Selection | `registerHIAPSelections` | request `authorId` (`:644`) |
+
+Discovery treats a populated catalog `userId` as a hard identity filter. `authorizeCatalogScope` in `NativeInputCatalogCapabilityService.ts:250` returns false when `entry.userId` differs from the session user, before it checks inventory, city, project or organization permissions. `requestMatchesEntry` (`:201`) applies the same equality when a request carries a `userId`.
+
+`HIAP_INVENTORY_DEFINITION` in `registry.ts:92` declares `requiredResourceScope: ["user", "city", "inventory"]`, although the capability reads through the inventory adapter.
+
+### Comparison
+
+| Producer | Catalog `userId` | Ownership model |
+|---|---|---|
+| Legacy HIAP (ranking, plan, selection) | Source author | Inventory data, plus a user filter |
+| HIAP-MEED | Not set | Inventory-scoped; user only as `createdBy` on `MeedRanking` |
+| GHGI import and OCR | `importedFile.userId` (`GHGINativeInputCatalogService.ts:40,84,104,144`) | Uploader recorded as `userId` |
+
+### Inconsistencies
+
+1. Legacy HIAP and HIAP-MEED use opposite scope models.
+2. A collaborator with access to the inventory cannot discover a legacy ranking or action plan created by another user.
+3. The HIAP capability declares a `user` scope that the HIAP data model does not have.
+4. Active `owningModule=hiap` rows registered under CC-638 keep the author `userId`, so changing new registrations alone would not repair them.
+5. GHGI rows also carry the uploader as `userId`. This may be intended for private uploads and is not assessed here.
+
+### Proposed follow-up
+
+Pending product confirmation, in a separate change:
+
+- Stop writing the author `userId` for new legacy HIAP rows. `HighImpactActionRanking.userId` and `ActionPlan.createdBy` keep the attribution.
+- Remove `user` from the HIAP `requiredResourceScope`.
+- Backfill active `owningModule=hiap` rows with a source-validated, idempotent job that clears `userId` only when the source row and its ownership graph match.
+- Cover creator A, collaborator B with inventory access (can discover and read) and outsider C (cannot).
+
+Open product questions: whether any legacy HIAP artifact is meant to be private to its creator, whether existing rows may become visible to collaborators who cannot see them today, and whether uploader-scoped GHGI discovery is intended.
+
 ## HIAP-MEED ranking producer mapping (CC-736)
 
 The first CC-736 slice registers the completed MEED ranking artifact produced by the CityCatalyst ranking route. `MeedRanking` is the durable source record; `MeedActionRanked` and `MeedActionRemoved` are version-linked child rows.

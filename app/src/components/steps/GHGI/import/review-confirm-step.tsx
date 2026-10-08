@@ -15,7 +15,7 @@ import {
 import { api } from "@/services/api";
 import { Trans } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { MdOutlineMap } from "react-icons/md";
+import { MdOutlineMap, MdWarning } from "react-icons/md";
 import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
 
@@ -94,6 +94,9 @@ export default function ReviewConfirmStep({
   const reviewData = data?.reviewData;
   const fileInfo = data?.fileInfo;
   const validationResults = data?.validationResults;
+  const importWarnings = (validationResults?.warnings ?? []).filter((warning) =>
+    warning.startsWith("Row "),
+  );
 
   // Fallback to fileInfo and validationResults if reviewData is not available
   const importSummary = reviewData?.importSummary || {
@@ -206,6 +209,52 @@ export default function ReviewConfirmStep({
           </HStack>
         </HStack>
       </VStack>
+      {importWarnings.length > 0 && (
+        <Box
+          bg="sentiment.warningOverlay"
+          border="1px solid"
+          borderColor="sentiment.warningDefault"
+          borderRadius="md"
+          p={4}
+          mb={8}
+          display="flex"
+          alignItems="flex-start"
+          gap="12px"
+        >
+          <Icon
+            as={MdWarning}
+            boxSize={5}
+            color="sentiment.warningDefault"
+            mt="2px"
+            flexShrink={0}
+          />
+          <Box>
+            <Text
+              fontWeight="semibold"
+              color="sentiment.warningDefault"
+              fontSize="body.md"
+            >
+              {t("import-warnings-title")}
+            </Text>
+            <Text fontSize="body.sm" color="content.secondary" mt={1}>
+              {t("import-warnings-detail")}
+            </Text>
+            <VStack
+              alignItems="flex-start"
+              gap="4px"
+              mt={3}
+              maxH="240px"
+              overflowY="auto"
+            >
+              {importWarnings.map((warning, index) => (
+                <Text key={index} fontSize="body.sm" color="content.secondary">
+                  {warning}
+                </Text>
+              ))}
+            </VStack>
+          </Box>
+        </Box>
+      )}
       <Box
         w="full"
         borderWidth="1px"

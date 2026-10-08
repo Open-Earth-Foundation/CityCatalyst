@@ -88,17 +88,24 @@ async function buildImportResult(args: {
 }): Promise<ECRFImportResult> {
   const parsed = await FileParserService.parseFile(args.buffer, args.fileType);
   if (args.kind === "near-ecrf") {
-    const extracted = FormatAdapterService.toExtractedRows(
+    const extracted = FormatAdapterService.extractNearEcrfRows(
       parsed,
       args.inventoryYear ?? undefined,
     );
-    if (extracted.length === 0) {
+    if (extracted.rows.length === 0) {
       throw new BulkInventoryImportAutoImportError(
         "empty_file",
-        "Adapter D: no data rows could be extracted from this file",
+        extracted.warnings.join("; ") ||
+          "Adapter D: no data rows could be extracted from this file",
       );
     }
-    return ECRFImportService.fromExtractedRows(extracted);
+    const importResult = await ECRFImportService.fromExtractedRows(
+      extracted.rows,
+    );
+    return {
+      ...importResult,
+      warnings: [...extracted.warnings, ...importResult.warnings],
+    };
   }
   return ECRFImportService.processECRFFile(
     parsed,

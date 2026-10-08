@@ -209,6 +209,8 @@
   "map-rows-description-pdf": "Extracted rows are already mapped to inventory fields. Review the data below and continue to the final step.",
   "map-to": "Map To",
   "select-mapping": "Select mapping",
+  "import-warnings-title": "Some rows will not be imported",
+  "import-warnings-detail": "These rows are left out of the inventory. A GPC reference could not be resolved, or the row has no emissions and no notation key.",
   "review-confirm-heading": "Review and confirm",
   "review-confirm-description": "Please <0>carefully review all fields</0> and confirm the upload since you won't be able to modify it later on.",
   "import-summary": "Import Summary",

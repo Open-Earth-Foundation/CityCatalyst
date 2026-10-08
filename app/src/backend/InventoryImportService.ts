@@ -400,12 +400,13 @@ export default class InventoryImportService {
               existingValue.co2eq != null
                 ? BigInt(existingValue.co2eq) + co2eqBigInt
                 : co2eqBigInt;
-            // Update existing value with emissions (clear notation keys if present)
+            // Update existing value with emissions. null clears a notation key
+            // that an earlier row stored for this same GPC reference.
             inventoryValue = await existingValue.update({
               co2eq: accumulatedCo2eq,
               co2eqYears: 100, // Default value
-              unavailableReason: undefined,
-              unavailableExplanation: undefined,
+              unavailableReason: null,
+              unavailableExplanation: null,
               inputMethodology:
                 finalMethodology || existingValue.inputMethodology,
               sectorId: row.sectorId,
@@ -730,17 +731,22 @@ export default class InventoryImportService {
             continue;
           }
 
+          // A later NE/NO/IE row must not hide activity data already stored for this ref.
+          if (existingValue?.co2eq != null) {
+            warnings.push(
+              `Row ${row.rowIndex + 1}: Notation key "${row.notationKey}" was not applied because ${row.gpcRefNo} already has emissions`,
+            );
+            continue;
+          }
+
           // Create or update inventory value with notation key
           // Note: eCRF files don't typically include explanation, so we use a default
           const unavailableExplanation = `Imported from eCRF file with notation key: ${row.notationKey}`;
 
           if (existingValue) {
-            // Update existing value with notation key (clear emissions)
             await existingValue.update({
               unavailableReason,
               unavailableExplanation,
-              co2eq: undefined,
-              co2eqYears: undefined,
               sectorId: row.sectorId,
               subSectorId: row.subsectorId,
               subCategoryId: row.subcategoryId ?? undefined,

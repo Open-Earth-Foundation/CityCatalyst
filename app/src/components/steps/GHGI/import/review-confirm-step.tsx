@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { MdOutlineMap, MdWarning } from "react-icons/md";
 import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
+import { activityDescriptionSample } from "@/util/activity-description-sample";
 
 interface ReviewConfirmStepProps {
   t: TFunction;
@@ -115,11 +116,12 @@ export default function ReviewConfirmStep({
     sampleValue: string | null;
   }
 
-  // Use field mappings from reviewData, or fallback to validation results
+  // Use field mappings from reviewData, or fallback to validation results.
+  // Activity data description is the one example the review should show.
   const fieldMappings: FieldMappingRow[] =
     reviewData?.fieldMappings?.map((mapping) => ({
       ...mapping,
-      sampleValue: null,
+      sampleValue: activityDescriptionSample(mapping),
     })) ||
     validationResults?.columns
       ?.filter((col) => col.interpretedAs)

@@ -217,6 +217,13 @@ export default class FormatAdapterService {
       "activity_units",
       "activity data - unit",
     ]);
+    const methodologyIdx = this.col(h, [
+      "activity data - description and methodology",
+      "activity data - description",
+      "activity data description",
+      "input methodology",
+      "methodology",
+    ]);
     const co2Idx = this.col(h, [
       "ghgs (metric tonnes co2e) - co2",
       "co2 emissions",
@@ -337,6 +344,7 @@ export default class FormatAdapterService {
         activityAmount: this.numVal(get(actValIdx)),
         activityUnit: this.strVal(get(actUnitIdx)),
         activityType,
+        methodology: this.strVal(get(methodologyIdx)),
         ...(notation ? { notationKey: notation } : {}),
         ...(efUnitIdx >= 0
           ? { emissionFactorUnit: this.strVal(get(efUnitIdx)) }

@@ -10,6 +10,7 @@ import { Inventory } from "@/models/Inventory";
 import { logger } from "@/services/logger";
 import { Op } from "sequelize";
 import { ActivityValue } from "@/models/ActivityValue";
+import { sqlOmitGridGeneration } from "@/util/GHGI/reported-totals";
 
 function multiplyBigIntByFraction(
   stringValue: string,
@@ -25,7 +26,10 @@ function multiplyBigIntByFraction(
  * non-negative co2eq values for the same scope). Returns null for removals (negative
  * co2eq) since "% of emissions" isn't a meaningful figure for a removal - see CC-749.
  */
-function calculatePercentage(co2eq: Decimal, grossTotal: Decimal): number | null {
+function calculatePercentage(
+  co2eq: Decimal,
+  grossTotal: Decimal,
+): number | null {
   if (co2eq.isNegative()) {
     return null;
   }
@@ -148,6 +152,7 @@ export async function getTotalEmissionsBySector(inventoryIds: string[]) {
     FROM "InventoryValue" iv
            JOIN "Sector" s ON iv.sector_id = s.sector_id
     WHERE iv.inventory_id IN (:inventoryIds)
+      AND ${sqlOmitGridGeneration("iv.gpc_reference_number")}
     GROUP BY iv.inventory_id, s.sector_name, s.reference_number
     ORDER BY iv.inventory_id, SUM(iv.co2eq) DESC
   `;
@@ -168,6 +173,7 @@ export async function getTotalEmissionsBySectorAndSubsector(
            LEFT JOIN "SubSector" ss on iv.sub_sector_id = ss.subsector_id
     WHERE iv.inventory_id = :inventoryId
     AND iv.co2eq >= 0
+    AND ${sqlOmitGridGeneration("iv.gpc_reference_number")}
     GROUP BY iv.inventory_id, s.reference_number, ss.reference_number
     ORDER BY iv.inventory_id, SUM(iv.co2eq) DESC;
   `;
@@ -244,6 +250,7 @@ async function fetchTopEmissionsBulk(
            LEFT JOIN "Scope" scope ON scope.scope_id = COALESCE(sc.scope_id, ss.scope_id)
     WHERE iv.inventory_id IN (:inventoryIds)
       AND iv.co2eq IS NOT NULL
+      AND ${sqlOmitGridGeneration("iv.gpc_reference_number")}
     ORDER BY iv.inventory_id, iv.co2eq DESC
   `;
 
@@ -377,6 +384,7 @@ const fetchInventoryValuesBySector = async (
     WHERE iv.inventory_id = (:inventoryId)
       and iv.co2eq IS NOT NULL
       AND (s.sector_name) = (:sectorName)
+      AND ${sqlOmitGridGeneration("iv.gpc_reference_number")}
   `;
   const sectorNameDB = SectorMappingsFromFEToDB[sectorName as SectorNamesInFE];
 

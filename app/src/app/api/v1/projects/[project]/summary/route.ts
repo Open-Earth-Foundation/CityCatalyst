@@ -40,6 +40,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/models";
 import PopulationService from "@/backend/PopulationService";
 import { QueryTypes } from "sequelize";
+import { sqlOmitGridGeneration } from "@/util/GHGI/reported-totals";
 
 export const GET = apiHandler(async (req, { params }) => {
   const { project: projectId } = params;
@@ -78,6 +79,7 @@ export const GET = apiHandler(async (req, { params }) => {
     SELECT SUM(co2eq)
     FROM "InventoryValue"
     WHERE inventory_id IN (:inventoryIds)
+      AND ${sqlOmitGridGeneration()}
   `;
 
   const inventoryIds = inventories.map((inventory) => inventory.inventoryId);

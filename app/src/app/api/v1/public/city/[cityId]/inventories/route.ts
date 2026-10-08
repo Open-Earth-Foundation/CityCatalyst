@@ -55,6 +55,7 @@ import createHttpError from "http-errors";
 import { validate } from "uuid";
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
+import { sqlOmitGridGeneration } from "@/util/GHGI/reported-totals";
 
 export const GET = apiHandler(async (req, { params }) => {
   const { cityId } = params;
@@ -98,6 +99,7 @@ export const GET = apiHandler(async (req, { params }) => {
         SELECT SUM(co2eq) as sum
         FROM "InventoryValue"
         WHERE inventory_id = :inventoryId
+          AND ${sqlOmitGridGeneration()}
       `;
 
       const [{ sum }] = (await db.sequelize!.query(rawQuery, {

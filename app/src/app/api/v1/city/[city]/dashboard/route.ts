@@ -16,6 +16,7 @@ import { Inventory } from "@/models/Inventory";
 import type { AppSession } from "@/lib/auth";
 import { logger } from "@/services/logger";
 import { QueryTypes } from "sequelize";
+import { sqlOmitGridGeneration } from "@/util/GHGI/reported-totals";
 
 /**
  * @swagger
@@ -167,6 +168,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
         CASE WHEN COUNT(*) > 0 THEN COALESCE(SUM(co2eq), 0) ELSE NULL END AS sum
        FROM "InventoryValue"
        WHERE inventory_id IN (:inventoryIds)
+         AND ${sqlOmitGridGeneration()}
        GROUP BY inventory_id`,
       {
         replacements: { inventoryIds },
@@ -209,7 +211,10 @@ export const GET = apiHandler(async (req, { params, session }) => {
     city: cityWithRelations as CityDashboardResponse["city"],
     inventories: inventories.map((inv) => ({
       ...inv.toJSON(),
-      totalEmissions: totalEmissionsByInventory[inv.inventoryId] ?? inv.totalEmissions ?? undefined,
+      totalEmissions:
+        totalEmissionsByInventory[inv.inventoryId] ??
+        inv.totalEmissions ??
+        undefined,
     })),
     population:
       populationData &&

@@ -406,9 +406,10 @@ export function ConceptNoteWorkspace({
 
   return (
     <Box
+      data-testid="concept-note-workspace"
       h="calc(100dvh - 80px)"
       minH={0}
-      overflow="hidden"
+      overflowY="auto"
       bg="background.alternativeLight"
     >
       <motion.main
@@ -420,8 +421,9 @@ export function ConceptNoteWorkspace({
         <VStack
           align="stretch"
           gap={4}
-          h="full"
-          minH={0}
+          h={{ base: "auto", md: "full" }}
+          // Keep the panels usable when zoom or a short window reduces height.
+          minH={{ base: "full", md: "640px" }}
           maxW="1800px"
           mx="auto"
           px={{ base: 2, md: 5 }}
@@ -473,7 +475,7 @@ export function ConceptNoteWorkspace({
           <Grid
             flex={1}
             data-testid="concept-note-workspace-panels"
-            minH={0}
+            minH={{ base: "auto", md: 0 }}
             overflow="hidden"
             gap={2.5}
             alignItems="stretch"
@@ -482,7 +484,8 @@ export function ConceptNoteWorkspace({
               md: "minmax(280px, 31%) minmax(0, 1fr)",
             }}
             gridTemplateRows={{
-              base: "repeat(2, minmax(0, 1fr))",
+              // Stacked panes must not compete for half of a phone viewport.
+              base: "minmax(420px, 60dvh) minmax(640px, 85dvh)",
               md: "minmax(0, 1fr)",
             }}
           >

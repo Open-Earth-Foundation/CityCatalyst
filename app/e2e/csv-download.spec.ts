@@ -195,11 +195,14 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal
     .getByLabel(/Select emission factor type/i)
     .selectOption("custom");
-  await addEmissionModal.getByLabel("CO2 emission factor").fill("10");
-  await addEmissionModal.getByLabel("N2O emission factor").fill("10");
-  await addEmissionModal.getByLabel("CH4 emission factor").fill("1");
+  await addEmissionModal.getByLabel("CO₂ emission factor").fill("10");
+  await addEmissionModal.getByLabel("N₂O emission factor").fill("10");
+  await addEmissionModal.getByLabel("CH₄ emission factor").fill("1");
   await addEmissionModal.getByLabel(/Data Quality/i).selectOption("high");
-  await addEmissionModal.getByLabel("Data source").fill("test");
+  await addEmissionModal.getByTestId("data-provider-input").fill("test");
+  await addEmissionModal
+    .getByLabel(/Data year/i)
+    .selectOption(String(new Date().getFullYear()));
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
 }
 

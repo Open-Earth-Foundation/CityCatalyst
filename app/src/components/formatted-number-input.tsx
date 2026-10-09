@@ -1,13 +1,21 @@
 import React, { useCallback, useLayoutEffect, useRef } from "react";
-import { Control, Controller, FieldValues, Path, PathValue } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  FieldValues,
+  Path,
+  PathValue,
+  RegisterOptions,
+} from "react-hook-form";
 import { Group, Input, InputAddon } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { NumberInputProps } from "./ui/number-input";
 import { decimalSeparators, formatNumber } from "@/util/helpers";
 import { NumberFormatEnum } from "@/util/enums";
 
-interface FormattedNumberInputProps<T extends FieldValues>
-  extends NumberInputProps {
+interface FormattedNumberInputProps<
+  T extends FieldValues,
+> extends NumberInputProps {
   control: Control<T>;
   name: Path<T>;
   defaultValue?: PathValue<T, Path<T>>;
@@ -22,6 +30,12 @@ interface FormattedNumberInputProps<T extends FieldValues>
   max?: number;
   min?: number;
   numberFormat?: string;
+  inputHeight?: string;
+  invalid?: boolean;
+  rules?: Omit<
+    RegisterOptions<T, Path<T>>,
+    "valueAsNumber" | "valueAsDate" | "setValueAs" | "disabled"
+  >;
 }
 
 /**
@@ -57,6 +71,9 @@ function FormattedNumberInput<T extends FieldValues>({
   min,
   max,
   numberFormat,
+  inputHeight,
+  invalid,
+  rules,
 }: FormattedNumberInputProps<T>) {
   const normalizedFormat = numberFormat ?? NumberFormatEnum.COMMA_AND_DOT;
   const decimalSeparator = decimalSeparators[normalizedFormat];
@@ -65,7 +82,7 @@ function FormattedNumberInput<T extends FieldValues>({
 
   const format = useCallback(
     (nval: number | string) => {
-      if (nval == null || nval === "") return "";
+      if (nval == null || nval === "" || Number.isNaN(nval)) return "";
       nval = nval.toString();
 
       // Check if the input ends with a decimal separator
@@ -147,7 +164,11 @@ function FormattedNumberInput<T extends FieldValues>({
       const newFormatted = format(parsedValue);
 
       // Count separators before cursor in old vs new string
-      const oldSeps = countSeparatorsBefore(oldValue, cursorPos, decimalSeparator);
+      const oldSeps = countSeparatorsBefore(
+        oldValue,
+        cursorPos,
+        decimalSeparator,
+      );
       const newSeps = countSeparatorsBefore(
         newFormatted,
         cursorPos + (newFormatted.length - oldValue.length),
@@ -173,6 +194,7 @@ function FormattedNumberInput<T extends FieldValues>({
       control={control}
       name={name}
       defaultValue={defaultValue}
+      rules={rules}
       render={({ field }) => {
         const formatted = format(field.value);
         return (
@@ -188,13 +210,18 @@ function FormattedNumberInput<T extends FieldValues>({
               onBlur={(e) => {
                 e.preventDefault();
                 const parsedValue = parse(e.target.value);
-                field.onChange(parseFloat(parsedValue));
+                field.onChange(
+                  parsedValue === "" ? "" : parseFloat(parsedValue),
+                );
               }}
               placeholder={placeholder}
               shadow="1dp"
               w="full"
+              h={inputHeight}
               borderRightRadius={children ? 0 : "md"}
               bgColor={isDisabled ? "background.neutral" : "base.light"}
+              background={invalid ? "sentiment.negativeOverlay" : undefined}
+              borderColor={invalid ? "sentiment.negativeDefault" : undefined}
               pos="relative"
               zIndex={3}
             />
@@ -202,7 +229,7 @@ function FormattedNumberInput<T extends FieldValues>({
               <InputAddon
                 bgColor={isDisabled ? "background.neutral" : "base.light"}
                 color="content.tertiary"
-                h="40px"
+                h={inputHeight ?? "40px"}
                 fontSize="14px"
                 shadow="1dp"
                 pos="relative"

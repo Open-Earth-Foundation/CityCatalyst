@@ -91,6 +91,7 @@ jobs:
           uv sync --locked --group dev
 
       - name: Validate OpenRouter API key
+        if: github.event_name != 'pull_request'
         working-directory: climate-advisor
         env:
           OPENROUTER_SMOKE_TEST: "1"
@@ -134,7 +135,7 @@ jobs:
                  --cov-report=html \
                  --cov-report=term-missing \
                  --cov-report=xml \
-                 -v || true
+                 -v
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

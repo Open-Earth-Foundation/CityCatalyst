@@ -284,6 +284,14 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
     page.getByText("No funder selected", { exact: true }),
   ).toBeVisible();
 
+  // Each save stacks a "Funding selection saved" toast at the bottom, where it
+  // covers "Browse funders" on a phone viewport. A pointer resting on a toast
+  // pauses its auto-dismiss, so move the pointer away and let the toasts go,
+  // as a user would, before clicking underneath them.
+  await page.mouse.move(0, 0);
+  await expect(
+    page.locator('[data-scope="toast"][data-part="root"]'),
+  ).toHaveCount(0, { timeout: 20_000 });
   await page.setViewportSize({ width: 390, height: 844 });
   await page
     .getByRole("button", { name: "Browse funders", exact: true })

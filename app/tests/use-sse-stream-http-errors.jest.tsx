@@ -124,6 +124,7 @@ it("passes the HTTP readiness code to the chat error handler exactly once", asyn
   expect(onError).toHaveBeenCalledWith(
     "Context is not ready",
     "concept_note_context_not_ready",
+    { status: 409, streamStarted: false },
   );
 });
 

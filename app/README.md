@@ -3,6 +3,16 @@
 This is the main CityCatalyst Web app. This directory includes both the
 frontend and backend code for the app, as well as database management scripts.
 
+## Concept Note chat errors
+
+Concept Note chat keeps request rejections separate from connection failures:
+HTTP 401 asks the user to sign in, 403 explains the access restriction, and 404
+asks them to reload the workspace. Other non-transient 4xx responses ask the
+user to check the request. These errors clear any previous failed turn and do
+not offer Retry. HTTP 408/429, server errors, transport failures, and stream
+failures remain retryable. A context-not-ready response also clears a previous
+failed turn because Clima answered successfully and declined that new request.
+
 ## Prerequisites
 
 This guide assumes you have installed and access to the following tools:

@@ -42,8 +42,8 @@ async def funding_workspace():
             await connection.execute(CreateSchema(schema))
         async with engine.begin() as connection:
             for table in (
-                Thread.__table__,
                 ConceptNoteRun.__table__,
+                Thread.__table__,
                 ConceptNoteContextBundle.__table__,
             ):
                 await connection.run_sync(table.create)

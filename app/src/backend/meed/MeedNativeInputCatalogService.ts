@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { Op, QueryTypes, type Transaction } from "sequelize";
 
 import { db } from "@/models";
@@ -9,10 +10,16 @@ import {
 } from "@/backend/NativeInputCatalogService";
 import type { NativeInputCatalog } from "@/models/NativeInputCatalog";
 import { logger } from "@/services/logger";
+import {
+  isCompleteMEEDOutputPlan,
+  meedOutputPlanLanguageKey,
+} from "@/backend/meed/meedOutputPlan";
 
 const MEED_MODULE = "hiap_meed" as const;
 const MEED_RANKING_SOURCE_TYPE = "hiap_meed_ranking" as const;
+const MEED_OUTPUT_PLAN_SOURCE_TYPE = "hiap_meed_output_plan" as const;
 const MEED_RANKING_LOCK_PREFIX = "citycatalyst:hiap-meed-ranking:";
+const MEED_OUTPUT_PLAN_LOCK_PREFIX = "citycatalyst:hiap-meed-output-plan:";
 
 export type MEEDCatalogBackfillCursor = {
   created: string;
@@ -45,6 +52,22 @@ type MeedRankingLike = {
   created?: Date;
 };
 
+type MeedActionReportLike = {
+  id: string;
+  inventoryId?: string | null;
+  actionId?: string | null;
+  catalogEligible?: boolean | null;
+  languages?: string[] | null;
+  chapters?: unknown;
+  authorityScopeClassification?: unknown;
+  created?: Date;
+};
+
+type OrderedSource = {
+  id: string;
+  created?: Date;
+};
+
 type CatalogScope = {
   inventoryId: string | null;
   cityId: string | null;
@@ -67,6 +90,16 @@ type MeedRankingModel = {
   ) => Promise<MeedRankingLike | null>;
 };
 
+type MeedActionReportModel = {
+  findAll: (
+    options: Record<string, unknown>,
+  ) => Promise<MeedActionReportLike[]>;
+  findByPk: (
+    id: string,
+    options?: Record<string, unknown>,
+  ) => Promise<MeedActionReportLike | null>;
+};
+
 type MeedActionModel = {
   findAll: (
     options: Record<string, unknown>,
@@ -76,6 +109,7 @@ type MeedActionModel = {
 type MeedModels = typeof db.models & {
   NativeInputCatalog: CatalogModel;
   MeedRanking: MeedRankingModel;
+  MeedActionReport: MeedActionReportModel;
   MeedActionRanked: MeedActionModel;
   MeedActionRemoved: MeedActionModel;
 };
@@ -84,12 +118,29 @@ function models(): MeedModels {
   return db.models as MeedModels;
 }
 
+function canonicalize(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (!value || typeof value !== "object") return value;
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, entry]) => [key, canonicalize(entry)]),
+  );
+}
+
+function digest(value: unknown): string {
+  return createHash("sha256")
+    .update(JSON.stringify(canonicalize(value)))
+    .digest("hex");
+}
+
 async function resolveScope(
-  ranking: MeedRankingLike,
+  inventoryId: string | null | undefined,
   transaction?: Transaction,
 ): Promise<CatalogScope> {
-  const inventory = ranking.inventoryId
-    ? await db.models.Inventory.findByPk(ranking.inventoryId, {
+  const inventory = inventoryId
+    ? await db.models.Inventory.findByPk(inventoryId, {
         transaction,
         include: [
           {
@@ -113,7 +164,7 @@ async function resolveScope(
   const project = city?.project;
   const organization = project?.organization;
   const scope: CatalogScope = {
-    inventoryId: inventory?.inventoryId ?? ranking.inventoryId ?? null,
+    inventoryId: inventory?.inventoryId ?? inventoryId ?? null,
     cityId: inventory?.cityId ?? city?.cityId ?? null,
     projectId: city?.projectId ?? project?.projectId ?? null,
     organizationId:
@@ -141,6 +192,17 @@ async function loadRanking(
   });
   if (!ranking) throw new Error("MEED ranking not found");
   return ranking;
+}
+
+async function loadReport(
+  reportId: string,
+  transaction?: Transaction,
+): Promise<MeedActionReportLike> {
+  const report = await models().MeedActionReport.findByPk(reportId, {
+    transaction,
+  });
+  if (!report) throw new Error("MEED output plan not found");
+  return report;
 }
 
 async function buildMEEDRankingInput(
@@ -174,7 +236,7 @@ async function buildMEEDRankingInput(
     throw new Error("Only persisted MEED rankings can enter the catalog");
   }
 
-  const scope = await resolveScope(ranking, transaction);
+  const scope = await resolveScope(ranking.inventoryId, transaction);
   const sourceId = ranking.id;
 
   return {
@@ -195,27 +257,75 @@ async function buildMEEDRankingInput(
   };
 }
 
-async function lockMEEDInventory(
+export async function buildMEEDOutputPlanInput(
+  report: MeedActionReportLike,
+  transaction?: Transaction,
+): Promise<RegisterNativeInputInput> {
+  if (!report.inventoryId) {
+    throw new Error("MEED output plans require an inventory");
+  }
+  if (!report.actionId) {
+    throw new Error("MEED output plans require an action");
+  }
+  if (
+    !isCompleteMEEDOutputPlan({
+      catalogEligible: report.catalogEligible,
+      languages: report.languages,
+      chapters: report.chapters,
+    })
+  ) {
+    throw new Error("Only complete MEED output plans can enter the catalog");
+  }
+
+  const languages = report.languages ?? [];
+  const chapters = report.chapters;
+  const contentDigest = digest({
+    actionId: report.actionId,
+    languages,
+    chapters,
+    authorityScopeClassification: report.authorityScopeClassification ?? null,
+  });
+  const scope = await resolveScope(report.inventoryId, transaction);
+  const chapterCount = Array.isArray(chapters)
+    ? chapters.length
+    : Object.keys((chapters as Record<string, unknown>) ?? {}).length;
+
+  return {
+    kind: "hiap_meed_output_plan",
+    owningModule: MEED_MODULE,
+    sourceType: MEED_OUTPUT_PLAN_SOURCE_TYPE,
+    sourceId: report.id,
+    ...scope,
+    contentDigest,
+    markdownReady: false,
+    labels: {
+      reportId: report.id,
+      actionId: report.actionId,
+      languages,
+      languageKey: meedOutputPlanLanguageKey(languages),
+      chapterCount,
+    },
+  };
+}
+
+async function lockMEEDKey(
   transaction: Transaction,
-  inventoryId: string,
+  lockKey: string,
 ): Promise<void> {
   if (!db.sequelize) {
     throw new Error("Database is not initialized");
   }
 
   await db.sequelize.query("SELECT pg_advisory_xact_lock(hashtext($1))", {
-    replacements: [`${MEED_RANKING_LOCK_PREFIX}${inventoryId}`],
+    bind: [lockKey],
     transaction,
     type: QueryTypes.SELECT,
   });
 }
 
-function compareRankingOrder(
-  left: MeedRankingLike,
-  right: MeedRankingLike,
-): number {
+function compareSourceOrder(left: OrderedSource, right: OrderedSource): number {
   if (!left.created || !right.created) {
-    throw new Error("MEED rankings require a created timestamp");
+    throw new Error("MEED catalog sources require a created timestamp");
   }
 
   const createdDifference = left.created.getTime() - right.created.getTime();
@@ -225,16 +335,23 @@ function compareRankingOrder(
 }
 
 async function findActiveMEEDEntries(
-  input: RegisterNativeInputInput,
+  sourceType: string,
+  inventoryId: string | null | undefined,
   transaction: Transaction,
+  labels?: Record<string, string> | null,
 ): Promise<NativeInputCatalog[]> {
+  const where: Record<string, unknown> = {
+    owningModule: MEED_MODULE,
+    sourceType,
+    inventoryId,
+    availability: "active",
+  };
+  if (labels) {
+    where.labels = { [Op.contains]: labels };
+  }
+
   return models().NativeInputCatalog.findAll({
-    where: {
-      owningModule: MEED_MODULE,
-      sourceType: MEED_RANKING_SOURCE_TYPE,
-      inventoryId: input.inventoryId,
-      availability: "active",
-    },
+    where,
     transaction,
   });
 }
@@ -254,13 +371,23 @@ async function supersedeCatalogEntry(
   );
 }
 
-async function reconcileMEEDCatalogInTransaction(
-  ranking: MeedRankingLike,
+async function reconcileMEEDCatalogInTransaction<T extends OrderedSource>(
+  source: T,
   input: RegisterNativeInputInput,
   registration: NativeInputCatalogRegistration,
   transaction: Transaction,
+  options: {
+    sourceType: string;
+    loadSource: (sourceId: string, transaction: Transaction) => Promise<T>;
+    labels?: Record<string, string> | null;
+  },
 ): Promise<void> {
-  const activeEntries = await findActiveMEEDEntries(input, transaction);
+  const activeEntries = await findActiveMEEDEntries(
+    options.sourceType,
+    input.inventoryId,
+    transaction,
+    options.labels,
+  );
   const entries = activeEntries.some(
     (catalog) => catalog.id === registration.catalog.id,
   )
@@ -270,14 +397,14 @@ async function reconcileMEEDCatalogInTransaction(
   const rankedEntries = await Promise.all(
     entries.map(async (catalog) => ({
       catalog,
-      ranking:
+      source:
         catalog.id === registration.catalog.id
-          ? ranking
-          : await loadRanking(String(catalog.sourceId), transaction),
+          ? source
+          : await options.loadSource(String(catalog.sourceId), transaction),
     })),
   );
   const winner = rankedEntries.reduce((current, candidate) =>
-    compareRankingOrder(candidate.ranking, current.ranking) > 0
+    compareSourceOrder(candidate.source, current.source) > 0
       ? candidate
       : current,
   );
@@ -311,10 +438,10 @@ function cursorWhere(cursor?: MEEDCatalogBackfillCursor) {
   };
 }
 
-function cursorFor(record: MeedRankingLike): MEEDCatalogBackfillCursor {
+function cursorFor(record: OrderedSource): MEEDCatalogBackfillCursor {
   if (!record.created) {
     throw new Error(
-      `MEED catalog backfill ranking ${record.id} has no created timestamp`,
+      `MEED catalog backfill source ${record.id} has no created timestamp`,
     );
   }
 
@@ -333,7 +460,10 @@ export async function registerMEEDRanking(
     if (!ranking.inventoryId) {
       throw new Error("MEED rankings require an inventory");
     }
-    await lockMEEDInventory(transaction, ranking.inventoryId);
+    await lockMEEDKey(
+      transaction,
+      `${MEED_RANKING_LOCK_PREFIX}${ranking.inventoryId}`,
+    );
 
     const input = await buildMEEDRankingInput(ranking, transaction);
     const existing = await models().NativeInputCatalog.findOne({
@@ -357,6 +487,65 @@ export async function registerMEEDRanking(
       input,
       registration,
       transaction,
+      {
+        sourceType: MEED_RANKING_SOURCE_TYPE,
+        loadSource: loadRanking,
+      },
+    );
+    return registration;
+  });
+}
+
+export async function registerMEEDOutputPlan(
+  reportId: string,
+): Promise<NativeInputCatalogRegistration> {
+  if (!db.sequelize) {
+    throw new Error("Database is not initialized");
+  }
+
+  return db.sequelize.transaction(async (transaction) => {
+    const report = await loadReport(reportId, transaction);
+    if (!report.inventoryId) {
+      throw new Error("MEED output plans require an inventory");
+    }
+    if (!report.actionId) {
+      throw new Error("MEED output plans require an action");
+    }
+    await lockMEEDKey(
+      transaction,
+      `${MEED_OUTPUT_PLAN_LOCK_PREFIX}${report.inventoryId}:${report.actionId}:${meedOutputPlanLanguageKey(report.languages)}`,
+    );
+
+    const input = await buildMEEDOutputPlanInput(report, transaction);
+    const existing = await models().NativeInputCatalog.findOne({
+      where: {
+        owningModule: MEED_MODULE,
+        sourceType: MEED_OUTPUT_PLAN_SOURCE_TYPE,
+        sourceId: input.sourceId,
+        availability: { [Op.ne]: "withdrawn" },
+      },
+      transaction,
+    });
+    if (existing?.availability === "superseded") {
+      return { catalog: existing, created: false };
+    }
+
+    const registration = existing
+      ? { catalog: existing, created: false }
+      : await registerNativeInput(input, transaction);
+    await reconcileMEEDCatalogInTransaction(
+      report,
+      input,
+      registration,
+      transaction,
+      {
+        sourceType: MEED_OUTPUT_PLAN_SOURCE_TYPE,
+        loadSource: loadReport,
+        labels: {
+          actionId: report.actionId,
+          languageKey: meedOutputPlanLanguageKey(report.languages),
+        },
+      },
     );
     return registration;
   });
@@ -414,13 +603,94 @@ export async function backfillMissingMEEDRankingsPage(
   };
 }
 
+export async function backfillMissingMEEDOutputPlansPage(
+  options: MEEDCatalogBackfillPageOptions,
+): Promise<MEEDCatalogBackfillPage> {
+  validateBackfillLimit(options.limit);
+
+  const reports = await models().MeedActionReport.findAll({
+    where: { ...cursorWhere(options.cursor) },
+    order: [
+      ["created", "ASC"],
+      ["id", "ASC"],
+    ],
+    limit: options.limit,
+  });
+
+  let repaired = 0;
+  let failed = 0;
+
+  for (const report of reports) {
+    if (
+      !isCompleteMEEDOutputPlan({
+        catalogEligible: report.catalogEligible,
+        languages: report.languages,
+        chapters: report.chapters,
+      })
+    ) {
+      logger.warn(
+        {
+          reportId: report.id,
+          inventoryId: report.inventoryId,
+          actionId: report.actionId,
+        },
+        "Skipped ineligible MEED output plan during catalog backfill",
+      );
+      continue;
+    }
+
+    try {
+      if (options.dryRun) {
+        await buildMEEDOutputPlanInput(report);
+        repaired++;
+      } else {
+        const registration = await registerMEEDOutputPlan(report.id);
+        if (registration.created) {
+          repaired++;
+          logger.info(
+            {
+              reportId: report.id,
+              inventoryId: report.inventoryId,
+              actionId: report.actionId,
+            },
+            "Backfilled missing MEED output plan catalog entry",
+          );
+        }
+      }
+    } catch (error) {
+      failed++;
+      logger.error(
+        {
+          error,
+          reportId: report.id,
+          inventoryId: report.inventoryId,
+          actionId: report.actionId,
+        },
+        "Failed to backfill MEED output plan catalog entry",
+      );
+    }
+  }
+
+  const hasMore = reports.length === options.limit;
+  return {
+    scanned: reports.length,
+    repaired,
+    failed,
+    hasMore,
+    nextCursor:
+      reports.length > 0 ? cursorFor(reports[reports.length - 1]) : null,
+  };
+}
+
 export async function withdrawMEEDCatalogForInventory(
   inventoryId: string,
 ): Promise<number> {
   const activeEntries = await models().NativeInputCatalog.findAll({
     where: {
       owningModule: MEED_MODULE,
-      sourceType: MEED_RANKING_SOURCE_TYPE,
+      sourceType: {
+        [Op.in]: [MEED_RANKING_SOURCE_TYPE, MEED_OUTPUT_PLAN_SOURCE_TYPE],
+      },
       inventoryId,
       availability: "active",
     },

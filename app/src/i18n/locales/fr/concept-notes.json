@@ -787,5 +787,17 @@
   "upload-limit-select": "Une note conceptuelle peut contenir jusqu'à {{max}} fichiers. Choisissez {{max}} ou moins.",
   "uploaded-files-count": "{{uploaded}} sur {{max}} fichiers",
   "upload-limit-reason": "Cette note conceptuelle a atteint la limite de {{max}} fichiers.",
-  "upload-limit-reached": "Cette note conceptuelle a déjà {{max}} fichiers, le maximum qu'elle peut contenir, donc le fichier n'a pas été ajouté."
+  "upload-limit-reached": "Cette note conceptuelle a déjà {{max}} fichiers, le maximum qu'elle peut contenir, donc le fichier n'a pas été ajouté.",
+  "connection-connecting": "En cours de connexion…",
+  "connection-retrying": "En cours de reconnexion…",
+  "connection-error": "Problème de connexion",
+  "chat-auth-required": "Connectez-vous à nouveau pour continuer à discuter avec Clima.",
+  "chat-access-denied": "Vous n'avez pas la permission de discuter dans cette note conceptuelle. Contactez l'administrateur de votre organisation.",
+  "chat-not-found": "Cette discussion n'a pas pu être trouvée. Rechargez l'espace de travail pour vérifier si elle est toujours disponible.",
+  "chat-request-rejected": "Clima a rejeté cette demande. Vérifiez votre message et votre note conceptuelle avant de renvoyer.",
+  "chat-service-unavailable": "Clima n'est pas accessible pour le moment. Réessayez lorsque le service sera de retour.",
+  "chat-stream-stalled": "Clima a cessé de répondre. Vérifiez votre connexion, puis réessayez.",
+  "chat-overview-error": "Clima n'a pas pu publier le résumé du brouillon.",
+  "chat-retry": "Réessayer",
+  "drafting-card-summary-failed": "Le résumé n'a pas pu être publié. Réessayez depuis le chat."
 }

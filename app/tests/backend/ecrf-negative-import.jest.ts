@@ -144,6 +144,7 @@ describe("InventoryImportService negative totalCO2e", () => {
       warnings: [],
       rowCount: 1,
       validRowCount: 1,
+      rowsSkippedEmptyEmissions: 0,
     };
 
     const summary = await InventoryImportService.importECRFData(
@@ -204,6 +205,7 @@ describe("InventoryImportService negative totalCO2e", () => {
           warnings: [],
           rowCount: 1,
           validRowCount: 1,
+          rowsSkippedEmptyEmissions: 1,
         },
       );
       expect(summary.importedRows).toBe(0);

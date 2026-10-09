@@ -338,6 +338,8 @@ export default class FileValidatorService {
     // GPC ref no is required OR sector + subsector (to resolve ref from reference table)
     const gpcRefFound =
       FileParserService.detectColumn(sheet.headers, [
+        "gpc_ref_no",
+        "gpc_ref",
         "GPC ref. no.",
         "gpc ref",
         "gpc ref no",
@@ -386,6 +388,7 @@ export default class FileValidatorService {
       {
         name: "GHGs (metric tonnes CO2e) - Total CO2e",
         alternatives: [
+          "total_co2e",
           "total co2e",
           "co2e",
           "total emissions",
@@ -492,7 +495,15 @@ export default class FileValidatorService {
     const columnsToDetect = [
       {
         key: "gpcRefNo",
-        terms: ["gpc ref", "gpc ref no", "reference number", "gpc reference"],
+        terms: [
+          "gpc_ref_no",
+          "gpc_ref",
+          "gpc ref. no.",
+          "gpc ref",
+          "gpc ref no",
+          "reference number",
+          "gpc reference",
+        ],
       },
       {
         key: "sector",
@@ -541,6 +552,7 @@ export default class FileValidatorService {
         key: "totalCO2e",
         // Prioritize the exact eCRF format first, then fallback to other variations
         terms: [
+          "total_co2e",
           "ghgs (metric tonnes co2e) - total co2e", // Exact eCRF format - highest priority
           "ghgs (metric tonnes co2e) - total", // Alternative eCRF format
           "total co2e", // Fallback
@@ -563,6 +575,8 @@ export default class FileValidatorService {
       {
         key: "activityType",
         terms: [
+          "activity_name",
+          "activity name",
           "activity type",
           "activity_type",
           "fuel type",

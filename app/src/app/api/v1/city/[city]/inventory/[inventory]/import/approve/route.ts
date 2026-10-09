@@ -55,6 +55,7 @@ import UserService from "@/backend/UserService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
 import ECRFImportService, {
+  countRowsSkippedEmptyEmissions,
   type ECRFImportResult,
   type ECRFRowData,
 } from "@/backend/ECRFImportService";
@@ -440,6 +441,7 @@ async function runApproveImportInBackground(args: {
         warnings,
         rowCount: extractedRows.length,
         validRowCount: rows.filter((r) => !r.errors?.length).length,
+        rowsSkippedEmptyEmissions: countRowsSkippedEmptyEmissions(rows),
         inferredYearFromFile: inferredYear,
       };
 

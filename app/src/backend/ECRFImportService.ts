@@ -8,6 +8,7 @@ import {
   hasSignedNumericValue,
   parseNumericCell,
 } from "@/util/parse-numeric-cell";
+import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
 import { type ParsedFileData } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
 
@@ -48,8 +49,25 @@ export interface ECRFImportResult {
   warnings: string[];
   rowCount: number;
   validRowCount: number;
+  /**
+   * Rows kept in the parse but dropped at import: no signed CO2, CH4, N2O,
+   * or total CO2e, and no notation key. Zero counts as empty.
+   */
+  rowsSkippedEmptyEmissions: number;
   /** First non-null year from file when a year column is mapped (inventory year). */
   inferredYearFromFile?: number;
+}
+
+/** Same rule InventoryImportService uses when it skips a row at commit. */
+export function countRowsSkippedEmptyEmissions(rows: ECRFRowData[]): number {
+  return rows.filter(
+    (row) =>
+      !hasSignedNumericValue(row.co2) &&
+      !hasSignedNumericValue(row.ch4) &&
+      !hasSignedNumericValue(row.n2o) &&
+      !hasSignedNumericValue(row.totalCO2e) &&
+      !row.notationKey,
+  ).length;
 }
 
 /**
@@ -78,6 +96,7 @@ export default class ECRFImportService {
         warnings: [],
         rowCount: 0,
         validRowCount: 0,
+        rowsSkippedEmptyEmissions: 0,
       };
     }
 
@@ -97,6 +116,7 @@ export default class ECRFImportService {
         warnings,
         rowCount: sheet.rows.length,
         validRowCount: 0,
+        rowsSkippedEmptyEmissions: 0,
       };
     }
 
@@ -537,7 +557,9 @@ export default class ECRFImportService {
       errors.push("No valid rows found in file");
     }
 
-    const inferredYearFromFile = rows.find((r) => r.year != null)?.year;
+    const inferredYearFromFile =
+      rows.find((r) => r.year != null)?.year ??
+      inferInventoryYearFromSheets(parsedData.sheets);
 
     return {
       rows,
@@ -545,6 +567,7 @@ export default class ECRFImportService {
       warnings,
       rowCount: rows.length,
       validRowCount: validRows.length,
+      rowsSkippedEmptyEmissions: countRowsSkippedEmptyEmissions(rows),
       inferredYearFromFile,
     };
   }
@@ -763,6 +786,7 @@ export default class ECRFImportService {
       warnings,
       rowCount: extractedRows.length,
       validRowCount: rows.filter((r) => !r.errors?.length).length,
+      rowsSkippedEmptyEmissions: countRowsSkippedEmptyEmissions(rows),
       inferredYearFromFile: inferredYear,
     };
   }

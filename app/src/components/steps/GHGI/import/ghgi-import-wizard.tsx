@@ -47,6 +47,7 @@ function ImportButton({
   mappingOverrides,
   onImport,
   onImportProgressChange,
+  disabled,
   t,
 }: {
   cityId: string;
@@ -55,6 +56,7 @@ function ImportButton({
   mappingOverrides: Record<string, string>;
   onImport: () => void;
   onImportProgressChange: (inProgress: boolean) => void;
+  disabled?: boolean;
   t: TFunction;
 }) {
   const dispatch = useAppDispatch();
@@ -127,7 +129,7 @@ function ImportButton({
   });
 
   const handleImport = async () => {
-    if (!importedFileId) return;
+    if (!importedFileId || disabled) return;
     stopImportPolling();
     // Swap ReviewConfirmStep for the importing panel before approve polling
     // can clear reviewData from the shared status cache.
@@ -192,7 +194,7 @@ function ImportButton({
       onClick={handleImport}
       h="64px"
       loading={isImporting || isImportPolling}
-      disabled={isImporting || isImportPolling}
+      disabled={disabled || isImporting || isImportPolling}
     >
       <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
         {t("import-inventory")}
@@ -368,22 +370,33 @@ export default function GhgiImportWizard({
     inventory?.year != null && Number.isFinite(Number(inventory.year))
       ? Number(inventory.year)
       : null;
+  const reportedFileYear =
+    mappingStepData?.inferredYearFromFile ??
+    lastImportStatus?.inferredYearFromFile;
   const fileYear =
-    lastImportStatus?.inferredYearFromFile != null &&
-    Number.isFinite(Number(lastImportStatus.inferredYearFromFile))
-      ? Number(lastImportStatus.inferredYearFromFile)
+    reportedFileYear != null && Number.isFinite(Number(reportedFileYear))
+      ? Number(reportedFileYear)
       : null;
   const fileYearMismatch =
     inventoryYear != null && fileYear != null && inventoryYear !== fileYear;
+  const yearsAllowAdvance = (status?: {
+    inferredYearFromFile?: number | null;
+  } | null) => {
+    const raw = status?.inferredYearFromFile;
+    if (inventoryYear == null || raw == null || !Number.isFinite(Number(raw))) {
+      return true;
+    }
+    return Number(raw) === inventoryYear;
+  };
 
   useEffect(() => {
     if (!fileYearMismatch || fileYearMismatchToastShownRef.current) return;
     fileYearMismatchToastShownRef.current = true;
     makeErrorToast(
       t("file-year-mismatch-title"),
-      t("file-year-mismatch", { year: inventoryYear }),
+      t("file-year-mismatch", { year: inventoryYear, fileYear }),
     );
-  }, [fileYearMismatch, inventoryYear, t]);
+  }, [fileYearMismatch, fileYear, inventoryYear, t]);
 
   const {
     startPolling: startUploadPolling,
@@ -424,7 +437,10 @@ export default function GhgiImportWizard({
         setTabularPendingInterpretation(
           res.importStatus === "pending_ai_interpretation",
         );
-        if (res.importStatus === "waiting_for_approval")
+        if (
+          res.importStatus === "waiting_for_approval" &&
+          yearsAllowAdvance(res)
+        )
           setTimeout(() => goToNextStep(), 150);
       }
     },
@@ -477,7 +493,7 @@ export default function GhgiImportWizard({
       setIsExtractInProgress(false);
       setExtractionProgress(null);
       setPdfPendingExtraction(false);
-      setTimeout(() => goToNextStep(), 150);
+      if (yearsAllowAdvance(res)) setTimeout(() => goToNextStep(), 150);
     },
     onFailure: (res) => {
       setIsExtractInProgress(false);
@@ -526,7 +542,7 @@ export default function GhgiImportWizard({
       setIsInterpretInProgress(false);
       setExtractionProgress(null);
       setTabularPendingInterpretation(false);
-      setTimeout(() => goToNextStep(), 150);
+      if (yearsAllowAdvance(res)) setTimeout(() => goToNextStep(), 150);
     },
     onFailure: (res) => {
       setIsInterpretInProgress(false);
@@ -594,14 +610,16 @@ export default function GhgiImportWizard({
         // Sync upload path (no polling): polls do not run, so fetch status for year-mismatch / inferredYearFromFile
         getImportStatus({ cityId, inventoryId, importedFileId: result.id })
           .unwrap()
-          .then(setLastImportStatus)
+          .then((status) => {
+            setLastImportStatus(status);
+            if (yearsAllowAdvance(status)) setTimeout(() => goToNextStep(), 150);
+          })
           .catch((err) =>
             logger.debug(
               { err, cityId, inventoryId, importedFileId: result.id },
               "Import status fetch after sync upload failed",
             ),
           );
-        setTimeout(() => goToNextStep(), 150);
       }
     } catch (error: unknown) {
       const message = getApiErrorMessage(error, t("failed-to-upload-file"));
@@ -610,6 +628,7 @@ export default function GhgiImportWizard({
   };
 
   const handleContinue = () => {
+    if (fileYearMismatch) return;
     if (activeStep < importStepCount - 1) {
       // Small delay for smooth transition
       setTimeout(() => {
@@ -654,12 +673,13 @@ export default function GhgiImportWizard({
       stopExtractionPolling();
       setIsExtractInProgress(false);
       setPdfPendingExtraction(false);
-      await getImportStatus({
+      const status = await getImportStatus({
         cityId,
         inventoryId,
         importedFileId,
       }).unwrap();
-      setTimeout(() => goToNextStep(), 150);
+      setLastImportStatus(status);
+      if (yearsAllowAdvance(status)) setTimeout(() => goToNextStep(), 150);
     } catch (error: unknown) {
       stopExtractionPolling();
       setIsExtractInProgress(false);
@@ -700,7 +720,13 @@ export default function GhgiImportWizard({
         return;
       }
       setTabularPendingInterpretation(false);
-      setTimeout(() => goToNextStep(), 150);
+      const status = await getImportStatus({
+        cityId,
+        inventoryId,
+        importedFileId,
+      }).unwrap();
+      setLastImportStatus(status);
+      if (yearsAllowAdvance(status)) setTimeout(() => goToNextStep(), 150);
     } catch (error: unknown) {
       setIsInterpretInProgress(false);
       setExtractionProgress(null);
@@ -804,6 +830,37 @@ export default function GhgiImportWizard({
           minH="400px"
         >
           <Box w="full" position="relative" minH="400px" overflow="hidden">
+            {fileYearMismatch && (
+              <Box
+                mb="24px"
+                p="16px"
+                borderWidth="1px"
+                borderColor="sentiment.warningDefault"
+                bg="sentiment.warningOverlay"
+                borderRadius="md"
+                display="flex"
+                gap="8px"
+                alignItems="flex-start"
+              >
+                <Icon
+                  as={MdWarning}
+                  boxSize={5}
+                  color="sentiment.warningDefault"
+                  mt="2px"
+                />
+                <Box>
+                  <Text fontWeight="bold" color="content.primary">
+                    {t("file-year-mismatch-title")}
+                  </Text>
+                  <Text fontSize="body.md" color="content.secondary">
+                    {t("file-year-mismatch", {
+                      year: inventoryYear,
+                      fileYear,
+                    })}
+                  </Text>
+                </Box>
+              </Box>
+            )}
             <AnimatePresence mode="wait">
               {activeStep === 0 && (
                 <motion.div
@@ -1081,6 +1138,7 @@ export default function GhgiImportWizard({
                   }
                   h="64px"
                   disabled={
+                    fileYearMismatch ||
                     inventoryHasData ||
                     !uploadedFile ||
                     !importedFileId ||
@@ -1168,6 +1226,7 @@ export default function GhgiImportWizard({
                     importedFileId={importedFileId}
                     mappingOverrides={mappingOverrides}
                     onImportProgressChange={setIsImportInProgress}
+                    disabled={fileYearMismatch}
                     onImport={() => {
                       onComplete(inventoryId);
                     }}

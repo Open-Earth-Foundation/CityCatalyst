@@ -184,13 +184,25 @@ export default function OnboardingSetup(props: {
     setSelectedGlobalWarmingPotentialValue,
   ] = useState("");
 
-  // Check if the selected year already has an inventory
+  // An existing inventory for this year is reused. Block only when it already
+  // has activity data; an empty one can still be filled from this flow.
   const selectedYear =
     selectedYearArray.length > 0 ? parseInt(selectedYearArray[0], 10) : null;
-  const yearAlreadyExists = useMemo(() => {
-    if (!selectedYear || !existingInventories) return false;
-    return existingInventories.some((inv) => inv.year === selectedYear);
+  const existingInventoryForYear = useMemo(() => {
+    if (!selectedYear || !existingInventories) return undefined;
+    return existingInventories.find((inv) => inv.year === selectedYear);
   }, [selectedYear, existingInventories]);
+  const { data: existingInventoryProgress, isFetching: existingProgressLoading } =
+    api.useGetInventoryProgressQuery(
+      existingInventoryForYear?.inventoryId ?? "",
+      { skip: !existingInventoryForYear?.inventoryId },
+    );
+  const existingInventoryHasData = useMemo(() => {
+    if (!existingInventoryProgress?.totalProgress) return false;
+    const { thirdParty, uploaded, reasonNE, reasonNO } =
+      existingInventoryProgress.totalProgress;
+    return thirdParty + uploaded + reasonNE + reasonNO > 0;
+  }, [existingInventoryProgress]);
   const [thirdPartyDataChoice, setThirdPartyDataChoice] = useState<
     string | null
   >(null);
@@ -199,16 +211,6 @@ export default function OnboardingSetup(props: {
     const { showErrorToast } = UseErrorToast({ description, title });
     showErrorToast();
   };
-
-  // Show error toast when user selects a year that already has an inventory
-  useEffect(() => {
-    if (yearAlreadyExists && selectedYear) {
-      makeErrorToast(
-        t("inventory-year-already-exists-title"),
-        t("inventory-year-already-exists-description", { year: selectedYear }),
-      );
-    }
-  }, [yearAlreadyExists, selectedYear]);
 
   // Population data
 
@@ -307,6 +309,7 @@ export default function OnboardingSetup(props: {
   };
 
   const onSubmit: SubmitHandler<Inputs> = async (formData) => {
+    if (existingInventoryHasData) return;
     setData({
       ...data,
       ...formData,
@@ -400,6 +403,8 @@ export default function OnboardingSetup(props: {
               setSelectedGlobalWarmingPotentialValue={
                 setSelectedGlobalWarmingPotentialValue
               }
+              yearAlreadyExists={existingInventoryHasData}
+              selectedYear={selectedYear}
             />
           )}
           {activeStep === 1 && (
@@ -459,6 +464,10 @@ export default function OnboardingSetup(props: {
                   onClick={handleSubmit(onSubmit)}
                   h="64px"
                   type="submit"
+                  disabled={
+                    existingInventoryHasData ||
+                    (!!existingInventoryForYear && existingProgressLoading)
+                  }
                 >
                   <Text
                     fontFamily="button.md"

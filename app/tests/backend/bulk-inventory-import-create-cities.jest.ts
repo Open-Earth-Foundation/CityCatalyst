@@ -44,6 +44,7 @@ function ecrfCsv(totalCO2e: number): string {
 
 describe("Bulk inventory import createMissingCities", () => {
   const createdCityIds: string[] = [];
+  const createdProjectIds: string[] = [];
   const jobIds: string[] = [];
   let sectorId: string;
   let subsectorId: string;
@@ -69,7 +70,9 @@ describe("Bulk inventory import createMissingCities", () => {
     jest
       .spyOn(OpenClimateService, "getPopulationData")
       .mockResolvedValue({ error: "skip" } as never);
-    jest.spyOn(OpenClimateService, "searchCities").mockResolvedValue([] as never);
+    jest
+      .spyOn(OpenClimateService, "searchCities")
+      .mockResolvedValue([] as never);
     jest
       .spyOn(CityBoundaryService, "getCityBoundary")
       .mockRejectedValue(new Error("skip") as never);
@@ -155,6 +158,11 @@ describe("Bulk inventory import createMissingCities", () => {
         });
       }
       await db.models.City.destroy({ where: { cityId: createdCityIds } });
+    }
+    if (createdProjectIds.length) {
+      await db.models.Project.destroy({
+        where: { projectId: createdProjectIds },
+      });
     }
     if (subcategoryId) {
       await db.models.SubCategory.destroy({
@@ -278,6 +286,81 @@ describe("Bulk inventory import createMissingCities", () => {
     expect(secondItems[0].cityId).toBe(items[0].cityId);
     expect(secondItems[0].status).toBe(BulkInventoryImportItemStatus.PENDING);
     expect(secondItems[0].warnings ?? []).not.toContain("created_city");
+  });
+
+  it("creates a city in this project when the locode already belongs to another", async () => {
+    const sharedToken = lettersFromUuid(3);
+    const sharedLocode = formatStoredLocode(`XX-${sharedToken}`);
+    const defaultProject = await db.models.Project.findByPk(DEFAULT_PROJECT_ID);
+    expect(defaultProject).not.toBeNull();
+    const otherProject = await db.models.Project.create({
+      projectId: randomUUID(),
+      name: `${PREFIX} other`,
+      description: `${PREFIX} other project`,
+      cityCountLimit: 10,
+      organizationId: defaultProject!.organizationId,
+    });
+    const otherCity = await db.models.City.create({
+      cityId: randomUUID(),
+      name: `${PREFIX} other city`,
+      locode: sharedLocode,
+      projectId: otherProject.projectId,
+    });
+    createdCityIds.push(otherCity.cityId);
+    createdProjectIds.push(otherProject.projectId);
+
+    const zip = await createBulkInventoryImportZip({
+      [`XX-${sharedToken}-2022.csv`]: ecrfCsv(12),
+    });
+    const first = await BulkInventoryImportEnqueueService.enqueue({
+      projectId: DEFAULT_PROJECT_ID,
+      year: 2022,
+      zipBuffer: zip,
+      zipFileName: "cc1022-other-project.zip",
+      userId: testUserID,
+      createMissingCities: true,
+      replaceExisting: true,
+    });
+    jobIds.push(first.jobId);
+
+    const item = await db.models.BulkInventoryImportItem.findOne({
+      where: { jobId: first.jobId },
+    });
+    expect(item?.status).toBe(BulkInventoryImportItemStatus.PENDING);
+    expect(item?.errorLog).toBeNull();
+    expect(item?.cityId).toBeTruthy();
+    expect(item?.cityId).not.toBe(otherCity.cityId);
+    createdCityIds.push(item!.cityId!);
+
+    const created = await db.models.City.findByPk(item!.cityId!);
+    expect(created?.projectId).toBe(DEFAULT_PROJECT_ID);
+    expect(created?.locode).toBe(sharedLocode);
+
+    const second = await BulkInventoryImportEnqueueService.enqueue({
+      projectId: DEFAULT_PROJECT_ID,
+      year: 2022,
+      zipBuffer: zip,
+      zipFileName: "cc1022-other-project-again.zip",
+      userId: testUserID,
+      createMissingCities: true,
+      replaceExisting: true,
+    });
+    jobIds.push(second.jobId);
+    const secondItem = await db.models.BulkInventoryImportItem.findOne({
+      where: { jobId: second.jobId },
+    });
+    expect(secondItem?.cityId).toBe(item!.cityId);
+    expect(secondItem?.inventoryId).toBe(item!.inventoryId);
+    expect(secondItem?.warnings ?? []).not.toContain("created_city");
+
+    const sameLocode = await db.models.City.findAll({
+      where: { locode: sharedLocode },
+    });
+    expect(sameLocode).toHaveLength(2);
+    const inventories = await db.models.Inventory.findAll({
+      where: { cityId: item!.cityId!, year: 2022 },
+    });
+    expect(inventories).toHaveLength(1);
   });
 
   it("creates a name-only CRFFormat city when no locode exists", async () => {

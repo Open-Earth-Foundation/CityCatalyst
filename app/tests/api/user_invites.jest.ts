@@ -83,6 +83,7 @@ describe("User Invites API", () => {
     const body = await res.json();
     expect(body.success).toBe(true);
     expect(body.inviteUrls[inviteEmail]).toContain("/user/invites?");
+    expect(body.emailFailures).toEqual([inviteEmail]);
     expect(sendEmailMock).toHaveBeenCalled();
 
     const invite = await db.models.CityInvite.findOne({

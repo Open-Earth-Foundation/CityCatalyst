@@ -58,7 +58,21 @@ building, and a small icon opens that inventory in GHGI. GHGI links open in a
 new tab. Inventory context refreshes automatically (see below), so the inventory
 card has no manual refresh control. The population card retains its explicit
 refresh when the stored population is missing or differs from CityCatalyst. The Climate
-Action Plan card has no module link because not every project enables HIAP. A
+Action Plan card offers a run-scoped PDF/Markdown upload independently of HIAP
+module access. Uploads use the same CC storage, OCR and Markdown handoff as the
+new-note dialog, with an immutable `source_role: "climate_action_plan"`. Other
+uploads default to `reference`. The plan card shows processing/failure/retry and
+persisted filenames; it reports **Included in run** only when the completed
+bundle's `included_upload_ids` contains those plan uploads. Each note's list
+card uses the same resolver and persisted upload metadata. The dashboard refreshes
+on entry and polls while plan processing is unfinished; bundle completion also
+invalidates the city list. If ready plans are included but other plan files failed,
+both views show **Included · some files failed**, retaining failed-file details and
+retry controls where supported. Duplicating a note preserves source roles and
+remaps included upload IDs to the copy. The city tile still
+reports city-level HIAP availability; HIAP loading and freshness are unchanged.
+Both entrypoints share PDF/Markdown validation, the 20 MiB limit and the 10-file
+per-note cap. A
 missing application template opens funding selection. The climate risk
 assessment card and tile are hidden until CCRA data feeds concept notes.
 

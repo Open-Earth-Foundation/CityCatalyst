@@ -7,18 +7,12 @@ from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
-import pytest
 import httpx
-from fastapi import HTTPException
-from pydantic import ValidationError
-from sqlalchemy import DefaultClause, event, select, text
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.pool import StaticPool
-
+import pytest
 from app.db.cnb import CnbBase
 from app.models.cnb.concept_note_runs import ConceptNoteRenameRequest
-from app.models.db.cnb_reference import CnbFundedProject, CnbFunder  # noqa: F401
 from app.models.db.cnb_edit import ConceptNoteEditApplication, ConceptNoteEditProposal
+from app.models.db.cnb_reference import CnbFundedProject, CnbFunder  # noqa: F401
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteChapterRevision,
@@ -29,11 +23,16 @@ from app.models.db.concept_note import (
     ConceptNoteRun,
     ConceptNoteUpload,
 )
-from app.models.db.thread import Thread
 from app.models.db.message import Message, MessageRole
+from app.models.db.thread import Thread
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.cnb.draft_overview import DRAFT_OVERVIEW_REQUEST
 from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
+from fastapi import HTTPException
+from pydantic import ValidationError
+from sqlalchemy import DefaultClause, event, select, text
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import StaticPool
 
 
 @asynccontextmanager
@@ -145,6 +144,9 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
             thread_id=source_thread_id,
             city_id=city_id,
         )
+        source.context_summary["context_bundle"]["included_upload_ids"] = [
+            str(source_upload_id)
+        ]
         session.add_all(
             [
                 Thread(
@@ -177,6 +179,7 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
                     run_id=source_run_id,
                     uploaded_by_user_id="owner-1",
                     filename="plan.pdf",
+                    source_role="climate_action_plan",
                     markdown_s3_key="shared/plan.md",
                     markdown_sha256="b" * 64,
                     page_count=3,
@@ -242,6 +245,14 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
         assert destination_upload is not None
         assert destination_upload.upload_id != source_upload_id
         assert destination_upload.markdown_s3_key == "shared/plan.md"
+        assert destination_upload.source_role == "climate_action_plan"
+        assert destination.context_summary["context_bundle"]["included_upload_ids"] == [
+            str(destination_upload.upload_id)
+        ]
+        copied_bundle = await session.get(ConceptNoteContextBundle, destination.run_id)
+        assert copied_bundle.context_bundle["selected_sources"][0]["upload_id"] == str(
+            destination_upload.upload_id
+        )
 
         async with workspace_sessions() as workspace_session:
             copied_chapter = await workspace_session.scalar(

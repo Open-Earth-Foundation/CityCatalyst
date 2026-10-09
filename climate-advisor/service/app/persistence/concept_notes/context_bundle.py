@@ -10,6 +10,10 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID
 
+from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.models.cnb.concept_note_markdown import source_format_from_filename
 from app.models.cnb.context_bundle import (
     ConceptNoteContextBundle,
@@ -29,9 +33,6 @@ from app.utils.concept_note_context import (
     manual_population_context,
     omit_context_identifiers,
 )
-from sqlalchemy import select
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -155,6 +156,9 @@ async def begin_build(
                         "source_provenance": _source_provenance_from_bundle(
                             previous_bundle
                         ),
+                        "included_upload_ids": [
+                            str(source.upload_id) for source in previous_sources
+                        ],
                         # Keep the checked inventory version so completion can
                         # report an inventory whose data changed as "updated".
                         "inventory_candidate": previous.get("inventory_candidate"),
@@ -300,6 +304,9 @@ async def complete_build(
                 "available_context": _available_context_from_bundle(bundle),
                 "city_population": _city_population_from_bundle(bundle),
                 "source_provenance": _source_provenance_from_bundle(bundle),
+                "included_upload_ids": [
+                    str(source.upload_id) for source in selected_sources
+                ],
                 "inventory_candidate": inventory_candidate,
                 "context_changes": (
                     _context_changes(
@@ -664,8 +671,16 @@ async def load_agent_context(
                 {
                     "workflow_step": run.workflow_step,
                     "context_bundle_status": {
-                        key: value for key, value in bundle_progress.items()
-                        if key in {"status", "document_grounding", "available_context", "missing_context", "warnings"}
+                        key: value
+                        for key, value in bundle_progress.items()
+                        if key
+                        in {
+                            "status",
+                            "document_grounding",
+                            "available_context",
+                            "missing_context",
+                            "warnings",
+                        }
                     },
                     "selected_sources": [
                         {
@@ -1012,6 +1027,7 @@ def _upload_snapshot(upload: ConceptNoteUpload) -> ConceptNoteUploadSnapshot:
         filename=upload.filename,
         source_label=upload.source_label,
         source_format=source_format_from_filename(upload.filename),
+        source_role=upload.source_role,
         markdown_s3_key=upload.markdown_s3_key,
         markdown_sha256=upload.markdown_sha256,
         page_count=upload.page_count,

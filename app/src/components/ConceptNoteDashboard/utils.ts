@@ -228,6 +228,8 @@ export interface ConceptNoteBundleProgress {
   };
   missingContext: string[];
   readySources: number;
+  /** Exact uploaded documents in the last completed context bundle. */
+  includedUploadIds?: string[];
   queuedSources: number;
   processingSources: number;
   failedSources: number;
@@ -334,6 +336,11 @@ export function getConceptNoteBundleProgress(
         )
       : [],
     readySources: countValue(sourceCounts.ready),
+    includedUploadIds: Array.isArray(bundle.included_upload_ids)
+      ? bundle.included_upload_ids.filter(
+          (id): id is string => typeof id === "string",
+        )
+      : [],
     queuedSources: countValue(sourceCounts.queued),
     processingSources: countValue(sourceCounts.processing),
     failedSources: countValue(sourceCounts.failed),

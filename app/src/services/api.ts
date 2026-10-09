@@ -2557,8 +2557,12 @@ export const api = createApi({
           url: "concept-notes/",
           params: { city_id: cityId },
         }),
-        providesTags: (_result, _error, cityId) => [
+        providesTags: (result, _error, cityId) => [
           { type: "ConceptNoteRuns", id: cityId },
+          ...(result?.runs ?? []).map((run) => ({
+            type: "ConceptNoteRuns" as const,
+            id: run.run_id,
+          })),
         ],
       }),
       getConceptNoteRun: builder.query<

@@ -431,14 +431,63 @@ describe("Context tab missing-state cards", () => {
     expect(control("create-inventory")).toBeUndefined();
   });
 
-  it("gives the Climate Action Plan card no action", async () => {
-    await renderTab({ ...withInventory, ...withPlan });
+  it("opens a role-specific upload picker on the Climate Action Plan card", async () => {
+    const onUploadFile = jest
+      .fn<ContextTabProps["onUploadFile"]>()
+      .mockResolvedValue(undefined);
+    await renderTab({ ...withInventory, ...withPlan, onUploadFile });
 
     expect(container.textContent).toContain("bundle-source-available");
     expect(
       container.querySelectorAll('button[title="inventory-choose-different"]'),
     ).toHaveLength(1);
     expect(container.querySelector('a[href*="/HIAP/"]')).toBeNull();
+    expect(container.textContent).toContain("plan-upload-limits");
+    const planButton = control("upload-climate-action-plan")!;
+    const inputs =
+      container.querySelectorAll<HTMLInputElement>('input[type="file"]');
+    const planInput = inputs[0];
+    const picker = jest.spyOn(planInput, "click");
+    await act(async () => planButton.click());
+    expect(picker).toHaveBeenCalledTimes(1);
+    expect(onUploadFile).not.toHaveBeenCalled();
+    const file = new File(["%PDF-1.7"], "city-plan.pdf", {
+      type: "application/pdf",
+    });
+    Object.defineProperty(planInput, "files", {
+      value: [file],
+      configurable: true,
+    });
+    await act(async () =>
+      planInput.dispatchEvent(new Event("change", { bubbles: true })),
+    );
+    expect(onUploadFile).toHaveBeenCalledWith(file, "climate_action_plan");
+  });
+
+  it("shows a persisted plan and waits for its own bundle inclusion", async () => {
+    const uploads: ConceptNoteUploadResponse[] = [
+      {
+        uploadId: "cap",
+        filename: "city-plan.pdf",
+        sourceRole: "climate_action_plan",
+        status: "ready",
+      },
+    ];
+    const planCard = () =>
+      container.querySelector('input[type="file"]')!.parentElement!;
+    await renderTab({
+      uploads,
+      bundle: bundle({ includedUploadIds: ["other-source"] }),
+    });
+    expect(planCard().textContent).toContain("city-plan.pdf");
+    expect(planCard().textContent).toContain("status-processing");
+    expect(planCard().textContent).not.toContain("included-in-run");
+    await renderTab({
+      uploads,
+      bundle: bundle({ includedUploadIds: ["cap"] }),
+    });
+    expect(planCard().textContent).toContain("included-in-run");
+    expect(planCard().textContent).toContain("plan-upload-provenance");
   });
 
   it("withholds the inventory action while the inventory loads", async () => {
@@ -446,6 +495,68 @@ describe("Context tab missing-state cards", () => {
 
     expect(control("create-inventory")).toBeUndefined();
     expect(container.textContent).toContain("status-processing");
+  });
+
+  it("shows an included replacement with a warning while retaining the failed file", async () => {
+    await renderTab({
+      uploads: [
+        {
+          uploadId: "bad-plan",
+          filename: "broken.pdf",
+          sourceRole: "climate_action_plan",
+          status: "failed",
+          errorCode: "pdf_parse_failed",
+          canRetry: false,
+        },
+        {
+          uploadId: "good-plan",
+          filename: "corrected.pdf",
+          sourceRole: "climate_action_plan",
+          status: "ready",
+        },
+      ],
+      bundle: bundle({ includedUploadIds: ["good-plan"] }),
+    });
+    const planCard =
+      container.querySelector('input[type="file"]')!.parentElement!;
+    expect(planCard.textContent).toContain("plan-included-with-failures");
+    expect(planCard.textContent).toContain("plan-upload-partial-help");
+    expect(planCard.textContent).toContain("broken.pdf");
+    expect(planCard.textContent).toContain("corrected.pdf");
+    expect(planCard.textContent).not.toContain("plan-upload-failed-help");
+    expect(
+      Array.from(planCard.querySelectorAll("button")).some(
+        (button) => button.textContent === "retry",
+      ),
+    ).toBe(false);
+  });
+
+  it("shows a plan parse failure and retries that document from its card", async () => {
+    const onRetryUpload = jest
+      .fn<ContextTabProps["onRetryUpload"]>()
+      .mockResolvedValue(undefined);
+    await renderTab({
+      onRetryUpload,
+      uploads: [
+        {
+          uploadId: "failed-plan",
+          filename: "city-plan.pdf",
+          sourceRole: "climate_action_plan",
+          status: "failed",
+          errorCode: "pdf_parse_failed",
+          canRetry: true,
+        },
+      ],
+    });
+    const planCard =
+      container.querySelector('input[type="file"]')!.parentElement!;
+    expect(planCard.textContent).toContain("status-failed");
+    expect(planCard.textContent).toContain("context-error-code");
+    const retry = Array.from(planCard.querySelectorAll("button")).find(
+      (button) => button.textContent === "retry",
+    )!;
+    await act(async () => retry.click());
+    expect(onRetryUpload).toHaveBeenCalledWith("failed-plan");
   });
 
   it("does not offer to create an inventory when the lookup failed", async () => {
@@ -587,6 +698,9 @@ describe("Context tab uploaded files", () => {
     expect(container.textContent).toContain("10 of 10 files");
     const button = uploadButton();
     expect(button.disabled).toBe(true);
+    expect(
+      (control("upload-climate-action-plan") as HTMLButtonElement).disabled,
+    ).toBe(true);
     const reason = document.getElementById(
       button.getAttribute("aria-describedby") ?? "",
     );

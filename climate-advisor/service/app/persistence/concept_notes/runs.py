@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from uuid import UUID
 
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
 from app.models.cnb.context_bundle import ConceptNoteContextBundle
 from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
@@ -12,9 +17,6 @@ from app.utils.chat_workflow_context import (
     CONCEPT_NOTE_RUN_ID_KEY,
     bind_workflow_context,
 )
-from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class ConceptNoteRunRepository:
@@ -135,6 +137,13 @@ class ConceptNoteRunRepository:
         """Load a user's runs for one city in deterministic activity order."""
         query = (
             select(ConceptNoteRun)
+            .options(
+                selectinload(
+                    ConceptNoteRun.uploads.and_(
+                        ConceptNoteUpload.uploaded_by_user_id == user_id
+                    )
+                )
+            )
             .where(
                 ConceptNoteRun.user_id == user_id,
                 ConceptNoteRun.city_id == city_id,

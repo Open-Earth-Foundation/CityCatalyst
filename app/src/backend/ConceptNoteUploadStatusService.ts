@@ -35,6 +35,7 @@ export async function loadConceptNoteUploadStatus(args: {
     ...(retryKind ? { retryKind } : {}),
     filename: upload.filename,
     sourceLabel: upload.sourceLabel || null,
+    sourceRole: upload.sourceRole,
     pageCount: upload.pageCount || null,
     ...(errorCode ? { errorCode } : {}),
     receivedAt: upload.receivedAt,

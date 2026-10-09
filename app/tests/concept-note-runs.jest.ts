@@ -100,6 +100,30 @@ describe("Concept Note run listing route", () => {
     expect(callConceptNoteApi).not.toHaveBeenCalled();
   });
 
+  it("preserves plan uploads and exact bundle membership for the note-list badge", async () => {
+    const runId = "33333333-3333-4333-8333-333333333333";
+    const uploadId = "44444444-4444-4444-8444-444444444444";
+    const run = {
+      ...runPayload(runId),
+      uploads: [
+        {
+          upload_id: uploadId,
+          run_id: runId,
+          status: "ready",
+          filename: "climate-action-plan.pdf",
+          source_role: "climate_action_plan",
+          received_at: "2026-09-30T09:00:00Z",
+        },
+      ],
+      progress_summary: {
+        context_bundle: { status: "ready", included_upload_ids: [uploadId] },
+      },
+    };
+    callConceptNoteApi.mockResolvedValueOnce(Response.json({ runs: [run] }));
+    const response = await listRuns(new Request("http://localhost"), context);
+    expect(await response.json()).toEqual({ runs: [run] });
+  });
+
   it("rejects an invalid city identifier before permission lookup", async () => {
     await expect(
       listRuns(new Request("http://localhost"), {

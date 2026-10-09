@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { MdOutlineMap } from "react-icons/md";
 import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
+import ReportingLevelWarning from "./reporting-level-warning";
 
 interface ReviewConfirmStepProps {
   t: TFunction;
@@ -36,7 +37,7 @@ export default function ReviewConfirmStep({
   onEditMapping,
   inventoryId,
 }: ReviewConfirmStepProps) {
-  const { data, isLoading } = api.useGetImportStatusQuery(
+  const { data, isLoading, refetch } = api.useGetImportStatusQuery(
     {
       cityId,
       inventoryId,
@@ -149,6 +150,12 @@ export default function ReviewConfirmStep({
           </Trans>
         </Text>
       </Box>
+      <ReportingLevelWarning
+        t={t}
+        inventoryId={inventoryId}
+        references={data?.rowsOutsideInventoryType ?? []}
+        onSwitched={refetch}
+      />
       <VStack gap="32px" shadow="sm" borderRadius="8px" p="24px" mb="32px">
         <HStack justifyContent="space-between" alignItems="flex-start" w="full">
           <Box display="flex" alignItems="flex-start" gap="4px">

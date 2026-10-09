@@ -151,6 +151,14 @@
  *                         Calendar year inferred from the uploaded file's tabular/eCRF data (first row with a year).
  *                         Omitted when processing has not run yet or no year could be inferred.
  *                         Clients may compare this with the inventory target year before continuing import.
+ *                     rowsOutsideInventoryType:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       description: |
+ *                         Distinct GPC reference numbers in the file that the inventory type does not
+ *                         require (e.g. Scope 3 rows in GPC BASIC). They are still imported but do not
+ *                         count toward completion. Empty unless the import is waiting for approval.
  *                     rowCount:
  *                       type: integer
  *                     processedRowCount:
@@ -176,6 +184,7 @@
 
 import UserService from "@/backend/UserService";
 import ImportMappingService from "@/backend/ImportMappingService";
+import InventoryProgressService from "@/backend/InventoryProgressService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
 import FileValidatorService from "@/backend/FileValidatorService";
@@ -187,6 +196,7 @@ import { getInventoryPdfOcrStatus } from "@/backend/PdfOcrService";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
+import { ImportStatusEnum } from "@/util/enums";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -622,6 +632,21 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
     }
   }
 
+  // Rows the inventory type will not count (e.g. Scope 3 in GPC BASIC), so the
+  // review step can offer switching to GPC BASIC+ before approval.
+  const rowsOutsideInventoryType =
+    importedFile.importStatus === ImportStatusEnum.WAITING_FOR_APPROVAL
+      ? await InventoryProgressService.findReferencesOutsideInventoryType(
+          inventory.inventoryType,
+          pdfExtractedRows
+            .filter((row) => row.hasErrors !== true)
+            .map((row) => row.gpcRefNo)
+            .filter(
+              (gpcRefNo): gpcRefNo is string => typeof gpcRefNo === "string",
+            ),
+        )
+      : [];
+
   const legacyValidation = importedFile.validationResults as {
     inferredYearFromFile?: number;
   } | null;
@@ -655,6 +680,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
       reviewData: reviewStepData,
       // Year inferred from file data (eCRF); used for target-year mismatch check
       inferredYearFromFile: legacyValidation?.inferredYearFromFile ?? undefined,
+      rowsOutsideInventoryType,
       // Legacy fields (for backwards compatibility)
       rowCount: importedFile.rowCount,
       processedRowCount: importedFile.processedRowCount,

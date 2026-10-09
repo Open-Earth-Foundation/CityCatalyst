@@ -6,6 +6,8 @@ export interface ParsedSheet {
   name: string;
   headers: string[];
   rows: Record<string, string | number | null>[];
+  /** 1-based row number in the source file for each entry in `rows` (xlsx only). */
+  rowNumbers?: number[];
   rowCount: number;
   columnCount: number;
 }
@@ -39,6 +41,7 @@ export default class FileParserService {
     workbook.worksheets.forEach((worksheet) => {
       const headers: string[] = [];
       const rows: Record<string, string | number | null>[] = [];
+      const rowNumbers: number[] = [];
 
       // Get headers from first row
       const headerRow = worksheet.getRow(1);
@@ -62,6 +65,7 @@ export default class FileParserService {
         // Only add row if it has at least one non-null value
         if (Object.values(rowData).some((val) => val !== null && val !== "")) {
           rows.push(rowData);
+          rowNumbers.push(rowNum);
         }
       }
 
@@ -69,6 +73,7 @@ export default class FileParserService {
         name: worksheet.name,
         headers: headers.filter(Boolean),
         rows,
+        rowNumbers,
         rowCount: worksheet.rowCount,
         columnCount: worksheet.columnCount,
       });

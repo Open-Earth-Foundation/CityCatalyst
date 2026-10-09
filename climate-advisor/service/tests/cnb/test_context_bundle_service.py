@@ -24,6 +24,7 @@ from app.services.cnb.context_bundle import (
     ContextBundleService,
     run_context_bundle_reconciler,
 )
+from app.services.concept_note_city_context import ConceptNoteCityContextDataError
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceBlock,
@@ -433,6 +434,36 @@ async def test_partial_ghgi_and_usable_hiap_are_retained(monkeypatch) -> None:
     assert statuses == {"ghgi": "partial", "hiap": "available"}
     assert candidate == {"inventory_id": inventory["inventory_id"], "updated_at": None}
     assert warnings == []
+
+
+@pytest.mark.asyncio
+async def test_rejected_ghgi_logs_the_contract_reason(monkeypatch, caplog) -> None:
+    service = ContextBundleService(None)  # type: ignore[arg-type]
+    city_id = uuid4()
+
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_ghgi_context",
+        AsyncMock(
+            side_effect=ConceptNoteCityContextDataError(
+                "GHGI completion percentage exceeds 100"
+            )
+        ),
+    )
+    with caplog.at_level("WARNING", logger="app.services.cnb.context_bundle"):
+        ghgi, status, warning = await service._try_load_ghgi(
+            cc_client=SimpleNamespace(),  # type: ignore[arg-type]
+            user_id="owner",
+            city_id=city_id,
+            inventory={"inventory_id": str(uuid4())},
+            token="secret-token",
+        )
+
+    assert ghgi is None
+    assert status == "unavailable"
+    assert warning == "GHGI context was unavailable."
+    assert "GHGI completion percentage exceeds 100" in caplog.text
+    assert str(city_id) in caplog.text
+    assert "secret-token" not in caplog.text
 
 
 @pytest.mark.asyncio

@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import { type ECRFImportResult } from "./ECRFImportService";
+import { type ECRFImportResult, type ECRFRowData } from "./ECRFImportService";
 import { randomUUID } from "node:crypto";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
@@ -16,6 +16,46 @@ import {
   hasSignedNumericValue,
   parseNumericCell,
 } from "@/util/parse-numeric-cell";
+
+/**
+ * Total CO2e (tonnes) that importECRFData stores for a row: the file total when
+ * present, otherwise the sum of CO2, CH4 and N2O when any gas is given.
+ */
+export function resolveImportedTotalCO2e(
+  row: Pick<ECRFRowData, "co2" | "ch4" | "n2o" | "totalCO2e">,
+): number | undefined {
+  const co2Val = parseNumericCell(row.co2);
+  const ch4Val = parseNumericCell(row.ch4);
+  const n2oVal = parseNumericCell(row.n2o);
+  const hasAnyGas =
+    hasSignedNumericValue(co2Val) ||
+    hasSignedNumericValue(ch4Val) ||
+    hasSignedNumericValue(n2oVal);
+  if (!hasAnyGas) {
+    return parseNumericCell(row.totalCO2e);
+  }
+  const parsedTotal = parseNumericCell(row.totalCO2e);
+  return hasSignedNumericValue(parsedTotal)
+    ? parsedTotal
+    : (co2Val ?? 0) + (ch4Val ?? 0) + (n2oVal ?? 0);
+}
+
+/**
+ * Why importECRFData skips a row that passed validation, or null when it is
+ * imported. Shared with the mapping preview so both always agree.
+ */
+export function importRowSkipReason(
+  row: ECRFRowData,
+): "unknown-notation-key" | "no-value-or-notation-key" | null {
+  // Emission values take precedence over notation keys
+  if (hasSignedNumericValue(resolveImportedTotalCO2e(row))) {
+    return null;
+  }
+  if (row.notationKey) {
+    return toCanonical(row.notationKey) ? null : "unknown-notation-key";
+  }
+  return "no-value-or-notation-key";
+}
 
 /** Options for import (e.g. PDF): default data source from file name. */
 export type ImportECRFDataOptions = {
@@ -327,20 +367,12 @@ export default class InventoryImportService {
           hasSignedNumericValue(ch4Val) ||
           hasSignedNumericValue(n2oVal);
 
-        const gasSum =
-          (co2Val ?? 0) + (ch4Val ?? 0) + (n2oVal ?? 0);
-
-        let totalCO2e: number | undefined;
+        const totalCO2e = resolveImportedTotalCO2e(row);
         if (hasAnyGas) {
-          const parsedTotal = parseNumericCell(row.totalCO2e);
-          totalCO2e = hasSignedNumericValue(parsedTotal)
-            ? parsedTotal
-            : gasSum;
           console.log(
             `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e and gas values: totalCO2e=${totalCO2e}, CO2=${co2Val ?? "-"}, CH4=${ch4Val ?? "-"}, N2O=${n2oVal ?? "-"}`,
           );
         } else {
-          totalCO2e = parseNumericCell(row.totalCO2e);
           console.log(
             `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e only (no gas values): ${totalCO2e}`,
           );

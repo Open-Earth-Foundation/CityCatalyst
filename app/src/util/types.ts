@@ -26,6 +26,7 @@ import type {
 import type { ActivityValue } from "@/models/ActivityValue";
 import {
   GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
   OrganizationPlanType,
 } from "@/util/enums";
 import type {
@@ -204,7 +205,14 @@ export interface InventoryDeleteQuery {
 
 export interface InventoryUpdateQuery {
   inventoryId: string;
-  data: { isPublic: boolean };
+  data:
+    | { isPublic: boolean }
+    | {
+        inventoryName: string;
+        year: number;
+        inventoryType: InventoryTypeEnum;
+        globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum;
+      };
 }
 
 export type EmissionsFactorWithDataSources = EmissionsFactorAttributes & {
@@ -941,6 +949,36 @@ export interface FieldMapping {
   mappedField: string;
 }
 
+/** Why an uploaded row is skipped on import, or imported without counting. */
+export type ImportRowIssue =
+  | "missing-gpc-reference"
+  | "gpc-reference-unresolved"
+  | "gpc-reference-unknown"
+  | "unknown-notation-key"
+  | "no-value-or-notation-key"
+  | "invalid-row"
+  | "outside-inventory-type";
+
+export interface ImportRowOutcome {
+  /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */
+  rowNumber: number;
+  gpcRefNo: string | null;
+  /** Sector / subsector text when no GPC reference could be resolved. */
+  sourceLabel: string | null;
+  /** Notation key as written in the file, for unknown-notation-key rows. */
+  notationKey: string | null;
+  status: "skipped" | "not-counted";
+  issue: ImportRowIssue;
+}
+
+export interface ImportRowPreview {
+  totalRows: number;
+  importedRows: number;
+  skippedRows: number;
+  /** Only rows that are skipped or will not count toward completion. */
+  rows: ImportRowOutcome[];
+}
+
 export interface ReviewData {
   importSummary: ImportSummary;
   fieldMappings: FieldMapping[];
@@ -962,6 +1000,8 @@ export interface ImportStatusResponse {
   reviewData: ReviewData | null;
   /** Year inferred from file data (eCRF); used to check match with inventory target year. */
   inferredYearFromFile?: number;
+  /** GPC references in the file the inventory type does not require (e.g. Scope 3 in GPC BASIC). */
+  rowsOutsideInventoryType?: string[];
   /**
    * Full mapping payload from the imported file (Path B/C).
    * Includes `extractionProgress` while AI chunk work is in flight.

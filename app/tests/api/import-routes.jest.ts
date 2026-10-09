@@ -513,6 +513,43 @@ describe("Import Routes API", () => {
       assert.ok(json.data.reviewData.fieldMappings);
     });
 
+    it("should list rows outside GPC BASIC while waiting for approval", async () => {
+      const importedFile = await db.models.ImportedInventoryFile.create({
+        id: randomUUID(),
+        userId: testUserID,
+        cityId: city.cityId,
+        inventoryId: inventory.inventoryId,
+        fileName: "test-file.xlsx",
+        fileType: "xlsx",
+        fileSize: 1,
+        originalFileName: "test-file.xlsx",
+        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+        validationResults: { errors: [], warnings: [] },
+        mappingConfiguration: {
+          rows: [
+            { gpcRefNo: "I.1.1" },
+            { gpcRefNo: "I.1.3" },
+            { gpcRefNo: "I.2.3", hasErrors: true },
+            { gpcRefNo: "IV.1" },
+            { gpcRefNo: null },
+          ],
+        },
+        rowCount: 5,
+      });
+
+      const res = await getImportStatus(mockRequest(), {
+        params: Promise.resolve({
+          city: city.cityId,
+          inventory: inventory.inventoryId,
+          importedFileId: importedFile.id,
+        }),
+      });
+
+      await expectStatusCode(res, 200);
+      const json = await res.json();
+      assert.deepEqual(json.data.rowsOutsideInventoryType, ["I.1.3", "IV.1"]);
+    });
+
     it("should return 404 for non-existent imported file", async () => {
       const req = mockRequest();
       const fakeId = randomUUID();

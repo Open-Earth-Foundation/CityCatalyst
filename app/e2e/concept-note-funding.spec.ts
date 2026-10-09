@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page, type Route } from "@playwright/test";
 import type { CityDashboardResponse } from "@/util/types";
 import { skipCookieConsent } from "./helpers";
 
@@ -79,12 +79,27 @@ const funders = [
   },
 ];
 
-test("browse, inspect, select, reload, switch and clear funding", async ({
-  page,
-}) => {
-  let selectedFunder: (typeof funders)[number] | undefined;
-  let selectedOpportunity: typeof opportunity | undefined;
-  const saved: unknown[] = [];
+interface CatalogueFunder {
+  id: string;
+  name: string;
+  opportunities: Array<{ id: string; name: string; template: unknown }>;
+}
+
+interface WorkspaceMockOptions {
+  /** Current catalogue; tests that add a funder mutate their own copy. */
+  catalogue?: () => CatalogueFunder[];
+  /** Extra concept-note routes; return true once the route is fulfilled. */
+  extra?: (route: Route, url: URL) => Promise<boolean>;
+}
+
+/** Deterministic responses for the workspace, catalogue and funding save. */
+async function mockWorkspace(
+  page: Page,
+  { catalogue = () => funders, extra }: WorkspaceMockOptions = {},
+): Promise<{ saved: Array<Record<string, unknown>> }> {
+  let selectedFunder: CatalogueFunder | undefined;
+  let selectedOpportunity: CatalogueFunder["opportunities"][number] | undefined;
+  const saved: Array<Record<string, unknown>> = [];
   await page.route("**/api/v1/**", async (route) => {
     const url = new URL(route.request().url());
     url.pathname = `${url.pathname.replace(/\/$/, "")}/`;
@@ -134,6 +149,7 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
       return route.fulfill({ json: { data: { hasAccess: true } } });
     if (!url.pathname.includes(`/concept-notes/${runId}`))
       return route.fulfill({ json: { data: [] } });
+    if (extra && (await extra(route, url))) return;
     if (url.pathname.endsWith("/context-bundle/refresh/"))
       return route.fulfill({ json: { run_id: runId, status: "current" } });
     if (url.pathname.endsWith("/structure/"))
@@ -141,15 +157,15 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
         json: { fingerprint: "a".repeat(64), chapters: [] },
       });
     if (url.pathname.endsWith("/funding-catalogue/"))
-      return route.fulfill({ json: { funders } });
+      return route.fulfill({ json: { funders: catalogue() } });
     if (url.pathname.endsWith("/application-context/")) {
       if (route.request().method() === "PATCH") {
         const body = route.request().postDataJSON();
         saved.push(body);
-        selectedFunder = funders.find((f) => f.id === body.funder_id);
+        selectedFunder = catalogue().find((f) => f.id === body.funder_id);
         selectedOpportunity = selectedFunder?.opportunities.find(
           (o) => o.id === body.selected_funding_opportunity_id,
-        ) as typeof opportunity | undefined;
+        );
       }
       return route.fulfill({
         json: {
@@ -202,6 +218,22 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
       });
     return route.continue();
   });
+  return { saved };
+}
+
+async function openFundingDialog(page: Page) {
+  await page.goto(`/en/cities/${cityId}/concept-notes/${runId}/`);
+  await page.getByRole("tab", { name: "Context", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Browse funders", exact: true })
+    .click();
+  return page.getByRole("dialog");
+}
+
+test("browse, inspect, select, reload, switch and clear funding", async ({
+  page,
+}) => {
+  const { saved } = await mockWorkspace(page);
 
   await page.goto(`/en/cities/${cityId}/concept-notes/${runId}/`);
   await page.getByRole("tab", { name: "Context", exact: true }).click();
@@ -303,4 +335,121 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
   ).toBe(true);
   await page.keyboard.press("Escape");
   await expect(dialog).not.toBeVisible();
+});
+
+const addedFunderId = "10000000-0000-4000-8000-000000000099";
+const addedOpportunityId = "20000000-0000-4000-8000-000000000099";
+
+/** The catalogue row the server returns once the reviewed funder is added. */
+function addedFunder(
+  body: {
+    funder: { name: string; funder_type: string | null };
+    opportunity: { name: string };
+    template: {
+      template_name: string;
+      chapter_schema: Array<{ title: string }>;
+    };
+  },
+  addedFrom: { kind: "document" | "manual"; filename: string | null },
+): CatalogueFunder {
+  return {
+    ...funders[1]!,
+    id: addedFunderId,
+    name: body.funder.name,
+    funder_type: body.funder.funder_type,
+    opportunities: [
+      {
+        ...opportunity,
+        id: addedOpportunityId,
+        name: body.opportunity.name,
+        added_from: addedFrom,
+        template: {
+          ...template,
+          id: "30000000-0000-4000-8000-000000000099",
+          name: body.template.template_name,
+          chapter_schema: body.template.chapter_schema.map((chapter, i) => ({
+            chapter_ref: `chapter_${i + 1}`,
+            title: chapter.title,
+            description: null,
+            required: true,
+          })),
+          required_fields: [],
+        },
+      },
+    ],
+  } as unknown as CatalogueFunder;
+}
+
+test("add a funder by hand and select it", async ({ page }) => {
+  const catalogue: CatalogueFunder[] = [...funders];
+  const created: Array<Record<string, unknown>> = [];
+  const { saved } = await mockWorkspace(page, {
+    catalogue: () => catalogue,
+    extra: async (route, url) => {
+      if (!url.pathname.endsWith("/funders/")) return false;
+      const body = route.request().postDataJSON();
+      created.push(body);
+      catalogue.push(addedFunder(body, { kind: "manual", filename: null }));
+      await route.fulfill({
+        status: 201,
+        json: {
+          funder_id: addedFunderId,
+          funding_opportunity_id: addedOpportunityId,
+        },
+      });
+      return true;
+    },
+  });
+  const dialog = await openFundingDialog(page);
+  // The entry point stays visible when a search finds nothing.
+  await dialog
+    .getByLabel("Search all funders", { exact: true })
+    .fill("Resilient Futures");
+  await dialog
+    .getByRole("button", { name: /Add a funder that isn't listed/ })
+    .click();
+
+  const add = dialog.getByRole("button", { name: "Add funder", exact: true });
+  await dialog.getByLabel("Funder name").fill("Resilient Futures Fund");
+  await dialog.getByLabel("Programme name").fill("Resilient Cities 2027");
+  // A missing required field explains why the funder cannot be added yet.
+  await add.click();
+  await expect(
+    dialog.getByText("Add a template name so drafting knows", { exact: false }),
+  ).toBeVisible();
+  expect(created).toHaveLength(0);
+  await dialog.getByLabel("Template name").fill("Concept note");
+  await dialog.getByLabel("Chapter 1 title").fill("Project summary");
+  await dialog.getByLabel("Hazards").fill("Flooding, Heat");
+  await add.click();
+
+  expect(created[0]).toMatchObject({
+    funder: { name: "Resilient Futures Fund" },
+    opportunity: {
+      name: "Resilient Cities 2027",
+      min_award: null,
+      hazards: ["Flooding", "Heat"],
+    },
+    template: {
+      template_name: "Concept note",
+      chapter_schema: [{ chapter_ref: "", title: "Project summary" }],
+    },
+  });
+  await expect(
+    dialog.getByRole("button", { name: /Resilient Futures Fund/ }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    dialog.getByText("Added by hand", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByText("Funder added. Save the selection", { exact: false }),
+  ).toBeVisible();
+  await dialog
+    .getByRole("button", { name: "Save and go to drafting", exact: true })
+    .click();
+  await expect(dialog).not.toBeVisible();
+  expect(saved[0]).toMatchObject({
+    funder_id: addedFunderId,
+    selected_funding_opportunity_id: addedOpportunityId,
+  });
 });

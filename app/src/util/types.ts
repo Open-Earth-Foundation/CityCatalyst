@@ -1,5 +1,6 @@
 import type Decimal from "decimal.js";
 import type { GeoJSON } from "geojson";
+import type { z } from "zod";
 import type {
   DataSourceWithRelations,
   GlobalAPISourceResponse,
@@ -17,6 +18,7 @@ import {
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
+import type { conceptNoteFunderCreateRequest } from "@/util/validation";
 import type { CityAttributes } from "@/models/City";
 import type { GasValue, GasValueAttributes } from "@/models/GasValue";
 import type {
@@ -1167,7 +1169,32 @@ export interface ConceptNoteFundingOpportunity {
   hazards: string[];
   interventions: string[];
   known_gaps: string[];
+  /** Set for programmes a user added from a document or by hand. */
+  added_from?: ConceptNoteFundingAddedFrom | null;
   template: ConceptNoteApplicationContext["template"];
+}
+
+export interface ConceptNoteFundingAddedFrom {
+  kind: "document" | "manual";
+  filename: string | null;
+}
+
+/** Reviewed funder, programme and template; see `conceptNoteFunderCreateRequest`. */
+export type ConceptNoteFunderCreateRequest = z.infer<
+  typeof conceptNoteFunderCreateRequest
+>;
+/** Reviewable `funders` columns. */
+export type ConceptNoteFunderFields = ConceptNoteFunderCreateRequest["funder"];
+/** Reviewable `funding_opportunities` columns. */
+export type ConceptNoteProgrammeFields =
+  ConceptNoteFunderCreateRequest["opportunity"];
+/** Reviewable `funder_templates` columns; `required_fields` is derived. */
+export type ConceptNoteTemplateFields =
+  ConceptNoteFunderCreateRequest["template"];
+
+export interface ConceptNoteFunderCreateResponse {
+  funder_id: string;
+  funding_opportunity_id: string;
 }
 
 export interface ConceptNoteFunder {

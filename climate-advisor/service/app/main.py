@@ -14,6 +14,9 @@ from app.routes.concept_note_chapter_validation import (
 from app.routes.concept_note_context_bundle import (
     router as concept_note_context_bundle_router,
 )
+from app.routes.concept_note_funder_imports import (
+    router as concept_note_funder_imports_router,
+)
 from app.routes.concept_note_markdown import router as concept_note_markdown_router
 from app.routes.concept_note_runs import router as concept_note_runs_router
 from app.routes.concept_note_edits import (
@@ -128,6 +131,7 @@ def get_app() -> FastAPI:
     app.include_router(concept_note_chapter_validation_router, prefix="/v1")
     app.include_router(concept_note_context_bundle_router, prefix="/v1")
     app.include_router(concept_note_runs_router, prefix="/v1")
+    app.include_router(concept_note_funder_imports_router, prefix="/v1")
     app.include_router(concept_note_edits_router, prefix="/v1")
     app.add_exception_handler(EditOperationError, edit_exception_handler)
 

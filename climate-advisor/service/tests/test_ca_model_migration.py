@@ -9,7 +9,7 @@ from agents import RunConfig, Runner, function_tool
 from app.config import get_settings
 from app.models.cnb.source_prompt import DocumentSummary, QuestionReading
 from app.services.agent_service import AgentService
-from app.services.cnb.source_analysis import _run_agent
+from app.services.cnb.source_analysis import run_agent
 from openai import AsyncOpenAI
 
 
@@ -27,6 +27,7 @@ def test_active_ca_model_defaults_preserve_cnb_roles():
         "cnb_source_synthesizer": ("openai/gpt-5.6-terra", "medium"),
         "cnb_chapter_drafter": ("openai/gpt-5.6-terra", "medium"),
         "cnb_chapter_validator": ("openai/gpt-5.6-terra", "medium"),
+        "cnb_funder_extractor": ("openai/gpt-5.6-terra", "medium"),
     }
     for role, (model, effort) in expected.items():
         configured = getattr(models, role)
@@ -203,7 +204,7 @@ async def test_source_roles_preserve_reasoning_and_structured_outputs(
         base_url="https://openrouter.ai/api/v1",
         http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
     ) as client:
-        result = await _run_agent(
+        result = await run_agent(
             name="Source compatibility test",
             prompt=settings.llm.prompts.get_prompt(
                 "cnb_source_question_reading"

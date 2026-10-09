@@ -4,7 +4,7 @@
  *   post:
  *     operationId: createConceptNoteFunder
  *     summary: Add a reviewed funder, programme and application template to the funding catalogue
- *     description: Adds the funder to the shared catalogue. Selecting the new funder is a separate application-context update.
+ *     description: Send import_id when the values were reviewed from a ready document import so the server records where each value came from; send null for details entered by hand. Selecting the new funder is a separate application-context update.
  *     tags: [concept-notes]
  *     parameters:
  *       - in: path
@@ -17,11 +17,12 @@
  *         application/json:
  *           schema:
  *             type: object
- *             required: [funder, opportunity, template]
+ *             required: [funder, opportunity, template, import_id]
  *             properties:
  *               funder: { type: object }
  *               opportunity: { type: object }
  *               template: { type: object }
+ *               import_id: { type: string, format: uuid, nullable: true }
  *     responses:
  *       201:
  *         description: Catalogue rows created
@@ -36,6 +37,7 @@
  *       400: { description: Invalid funder details }
  *       401: { description: Authentication required }
  *       403: { description: City or run access denied }
+ *       409: { description: The document import changed or the funder was already added }
  *       422: { description: Invalid funder details }
  */
 import { z } from "zod";

@@ -1,5 +1,7 @@
 import type {
   ConceptNoteFunderCreateRequest,
+  ConceptNoteFunderImport,
+  ConceptNoteFunderImportDraft,
   ConceptNoteProgrammeFields,
 } from "@/util/types";
 
@@ -107,6 +109,38 @@ function optionalText(value: string): string | null {
   return value.trim() || null;
 }
 
+/** Text for one input; lists become comma-separated. */
+function inputText(value: string | string[] | number | null): string {
+  if (Array.isArray(value)) return value.join(", ");
+  return value === null ? "" : String(value);
+}
+
+/** Fill a form with everything a ready document import extracted. */
+export function formFromDraft(draft: ConceptNoteFunderImportDraft): FunderForm {
+  const { funder, opportunity, template } = draft;
+  return {
+    funder: fieldMap(FUNDER_FIELDS, (field) => inputText(funder[field])),
+    opportunity: fieldMap(PROGRAMME_FIELDS, (field) =>
+      inputText(opportunity[field]),
+    ),
+    template: {
+      template_name: template.template_name,
+      output_format: inputText(template.output_format),
+    },
+    // A document without chapters keeps one empty chapter to type into.
+    chapters: template.chapter_schema.length
+      ? template.chapter_schema.map((chapter) => ({
+          ...emptyChapter(),
+          chapter_ref: chapter.chapter_ref,
+          title: chapter.title,
+          description: inputText(chapter.description),
+          required: chapter.required,
+          required_fields: inputText(chapter.required_fields),
+        }))
+      : [emptyChapter()],
+  };
+}
+
 /**
  * Accept decimal dots/commas and space-grouped thousands; reject ambiguity.
  * Returns `null` for an empty input and `NaN` for an invalid amount.
@@ -164,15 +198,20 @@ function programmeValue(
   return optionalText(value);
 }
 
-/** Build the create request; call only when `validateFunderForm` is empty. */
+/**
+ * Build the create request; call only when `validateFunderForm` is empty.
+ * Values the form does not edit (profile facts, known gaps) come from the
+ * reviewed document import, if any.
+ */
 export function formToCreateRequest(
   form: FunderForm,
+  source: ConceptNoteFunderImport | null,
 ): ConceptNoteFunderCreateRequest {
   return {
     funder: {
       ...fieldMap(FUNDER_FIELDS, (field) => optionalText(form.funder[field])),
       name: form.funder.name.trim(),
-      profile: { stated: {}, derived: {} },
+      profile: source?.draft?.funder.profile ?? { stated: {}, derived: {} },
     },
     opportunity: {
       // Each field's value type follows `programmeValue`.
@@ -180,7 +219,7 @@ export function formToCreateRequest(
         programmeValue(field, form.opportunity[field]),
       ) as Omit<ConceptNoteProgrammeFields, "known_gaps">),
       name: form.opportunity.name.trim(),
-      known_gaps: [],
+      known_gaps: source?.draft?.opportunity.known_gaps ?? [],
     },
     template: {
       template_name: form.template.template_name.trim(),
@@ -193,11 +232,40 @@ export function formToCreateRequest(
         required_fields: splitList(chapter.required_fields),
       })),
     },
+    import_id: source?.import_id ?? null,
   };
 }
 
-/** Copy for a failed create request. */
+// --- Errors ------------------------------------------------------------------
+
+const IMPORT_ERROR_KEYS = new Map([
+  ["document_too_long", "funder-import-error-too-long"],
+  ["extraction_interrupted", "funder-import-error-interrupted"],
+  ["upload_failed", "funder-upload-failed"],
+]);
+
+const API_ERROR_KEYS = new Map([
+  ["funder_import_running", "funder-error-import-running"],
+  ["funder_import_changed", "funder-error-import-changed"],
+  ["funder_already_added", "funder-error-already-added"],
+]);
+
+/** Copy for an import that finished with `status: "failed"`. */
+export function funderImportErrorKey(code: string | null): string {
+  return IMPORT_ERROR_KEYS.get(code ?? "") ?? "funder-import-error-generic";
+}
+
+/** Machine-readable code from a Climate Advisor problem response, if any. */
+export function funderApiErrorCode(error: unknown): string | null {
+  const detail = (error as { data?: { detail?: { code?: unknown } } } | null)
+    ?.data?.detail;
+  return typeof detail?.code === "string" ? detail.code : null;
+}
+
+/** Copy for a failed funder import or create request. */
 export function funderApiErrorKey(error: unknown): string {
+  const byCode = API_ERROR_KEYS.get(funderApiErrorCode(error) ?? "");
+  if (byCode) return byCode;
   const status = (error as { status?: unknown } | null)?.status;
   if (status === 400 || status === 422) return "funder-error-invalid";
   if (status === 403) return "funding-permission-error";

@@ -357,6 +357,7 @@ it("adds a funder entered by hand and selects it", async () => {
   expect(createFunder).toHaveBeenCalledWith({
     runId: "run",
     funder: expect.objectContaining({
+      import_id: null,
       funder: expect.objectContaining({ name: "Resilient Futures Fund" }),
       template: expect.objectContaining({
         template_name: "Concept note",

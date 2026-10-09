@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
 import { useTranslation } from "@/i18n/client";
+import type { ConceptNoteFunderImport } from "@/util/types";
 
 import {
   emptyChapter,
@@ -47,6 +48,8 @@ interface TextFieldOptions {
 interface AddFunderFormProps {
   form: FunderForm;
   onChange: (update: (form: FunderForm) => FunderForm) => void;
+  /** The document import the values were filled from, if any. */
+  source: ConceptNoteFunderImport | null;
   /** Errors to show; empty until the user first tries to add the funder. */
   errors: FunderFormErrors;
   disabled?: boolean;
@@ -57,12 +60,14 @@ interface AddFunderFormProps {
 export function AddFunderForm({
   form,
   onChange,
+  source,
   errors,
   disabled,
   lng,
 }: AddFunderFormProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const errorText = (path: string) => (errors[path] ? t(errors[path]) : null);
+  const missingCount = source?.draft?.missing.length ?? 0;
 
   function setChapters(update: (rows: ChapterRow[]) => ChapterRow[]): void {
     onChange((current) => ({ ...current, chapters: update(current.chapters) }));
@@ -111,11 +116,24 @@ export function AddFunderForm({
     <VStack align="stretch" gap={6} data-testid="add-funder-form">
       <Box>
         <Heading as="h3" fontSize="title.md">
-          {t("funder-manual-title")}
+          {t(source ? "funder-review-title" : "funder-manual-title")}
         </Heading>
         <Text mt={1} fontSize="body.sm" color="content.secondary">
-          {t("funder-manual-description")}
+          {source
+            ? t("funder-review-from-document", { filename: source.filename })
+            : t("funder-manual-description")}
         </Text>
+        {missingCount > 0 && (
+          <Text
+            mt={3}
+            p={3}
+            fontSize="body.sm"
+            bg="sentiment.warningOverlay"
+            borderRadius="rounded"
+          >
+            {t("funder-import-missing", { count: missingCount })}
+          </Text>
+        )}
       </Box>
 
       <VStack align="stretch" gap={4}>

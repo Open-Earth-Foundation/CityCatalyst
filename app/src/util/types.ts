@@ -1192,6 +1192,30 @@ export type ConceptNoteProgrammeFields =
 export type ConceptNoteTemplateFields =
   ConceptNoteFunderCreateRequest["template"];
 
+/** Values extracted from a funder document, awaiting review. */
+export interface ConceptNoteFunderImportDraft extends Omit<
+  ConceptNoteFunderCreateRequest,
+  "import_id"
+> {
+  /** Field paths the document did not state, e.g. `funder.region`. */
+  missing: string[];
+}
+
+export interface ConceptNoteFunderImport {
+  import_id: string;
+  upload_id: string;
+  filename: string;
+  status: "processing" | "ready" | "failed";
+  /** While processing: whether the upload is still converting to text. */
+  stage?: "converting" | "reading" | null;
+  error_code: string | null;
+  draft: ConceptNoteFunderImportDraft | null;
+}
+
+export interface ConceptNoteFunderImportResponse {
+  funder_import: ConceptNoteFunderImport | null;
+}
+
 export interface ConceptNoteFunderCreateResponse {
   funder_id: string;
   funding_opportunity_id: string;

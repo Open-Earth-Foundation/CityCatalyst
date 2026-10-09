@@ -45,8 +45,7 @@ export interface CreateBulkInventoriesResponse {
   results: { locode: string; result: string[] }[];
 }
 
-export type CityInventoryShellErrorCode =
-  "missing_city_identity" | "city_in_other_project";
+export type CityInventoryShellErrorCode = "missing_city_identity";
 
 export class CityInventoryShellError extends Error {
   constructor(
@@ -296,10 +295,7 @@ export default class AdminService {
     }
 
     if (storedLocode) {
-      await props.onProgress?.(
-        "enriching_population",
-        storedLocode,
-      );
+      await props.onProgress?.("enriching_population", storedLocode);
       await this.enrichCityBestEffort(
         storedLocode,
         props.year,
@@ -342,20 +338,11 @@ export default class AdminService {
       if (inProject.length > 0) {
         return { record: inProject[0], created: false };
       }
-      const elsewhere = existing.find(
-        (row) => row.projectId && row.projectId !== input.projectId,
-      );
-      if (elsewhere) {
-        throw new CityInventoryShellError(
-          "city_in_other_project",
-          `Locode ${input.locode} already belongs to another project`,
-        );
-      }
-      if (existing.length > 0) {
-        const orphan = existing[0];
-        if (!orphan.projectId) {
-          await orphan.update({ projectId: input.projectId });
-        }
+      // The same locode may exist in other projects. Only a city with no
+      // project is claimed here; otherwise a new city is created below.
+      const orphan = existing.find((row) => !row.projectId);
+      if (orphan) {
+        await orphan.update({ projectId: input.projectId });
         return { record: orphan, created: false };
       }
     }
@@ -421,12 +408,6 @@ export default class AdminService {
           (row) => row.projectId === input.projectId,
         );
         if (inProject) return { record: inProject, created: false };
-        if (raced.length > 0) {
-          throw new CityInventoryShellError(
-            "city_in_other_project",
-            `Locode ${input.locode} already belongs to another project`,
-          );
-        }
       }
       throw err;
     }
@@ -562,10 +543,7 @@ export default class AdminService {
       chile?.locode ? formatStoredLocode(chile.locode) : null,
     ].filter((id): id is string => Boolean(id));
 
-    const cityPop = await fetchGlobalApiCityPopulation(
-      actorIds,
-      inventoryYear,
-    );
+    const cityPop = await fetchGlobalApiCityPopulation(actorIds, inventoryYear);
     if (cityPop) {
       await db.models.Population.upsert({
         population: cityPop.population,
@@ -595,7 +573,8 @@ export default class AdminService {
       {
         region: chile?.regionName,
         regionLocode: chile?.regionCode,
-        country: countryPop?.name ?? (countryLocode === "CL" ? "Chile" : undefined),
+        country:
+          countryPop?.name ?? (countryLocode === "CL" ? "Chile" : undefined),
         countryLocode,
         projectId: projectId ?? undefined,
       },

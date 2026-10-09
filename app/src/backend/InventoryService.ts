@@ -13,6 +13,7 @@ import {
   type DirectMeasure,
   type Methodology,
 } from "@/util/form-schema";
+import { sqlOmitGridGeneration } from "@/util/GHGI/reported-totals";
 
 type ResolvedMethodology = Methodology | DirectMeasure;
 
@@ -84,6 +85,7 @@ export class InventoryService {
     SELECT SUM(co2eq) AS sum
     FROM "InventoryValue"
     WHERE inventory_id = :inventoryId
+      AND ${sqlOmitGridGeneration()}
   `;
 
     const [{ sum }] = (await db.sequelize!.query(rawQuery, {

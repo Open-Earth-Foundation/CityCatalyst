@@ -17,14 +17,15 @@ import FileParserService, {
 } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
 import {
-  resolveGpcRefNo,
+  resolveGpcRefFromLabels,
   splitSectorSubsectorLabels,
 } from "@/util/GHGI/gpc-ref-resolver";
 import { parseNumericCell } from "@/util/parse-numeric-cell";
 
 // ─── Public types ────────────────────────────────────────────────────────────
 
-export type AdapterType = "near-ecrf" | "long-tidy" | "wide-year" | "multi-sheet";
+export type AdapterType =
+  "near-ecrf" | "long-tidy" | "wide-year" | "multi-sheet";
 
 export interface AdapterDetectionResult {
   /** Which adapter family was matched, or null if the file looks like standard eCRF. */
@@ -107,7 +108,10 @@ export default class FormatAdapterService {
     }
 
     // ── Adapter C (multi-sheet workbook): XLSX with scope/fuel sheets ───────
-    if (parsedData.fileType === "xlsx" && this.isMultiSheetWorkbook(parsedData)) {
+    if (
+      parsedData.fileType === "xlsx" &&
+      this.isMultiSheetWorkbook(parsedData)
+    ) {
       return { adapterType: "multi-sheet", isMultiCity, warnings };
     }
 
@@ -149,8 +153,19 @@ export default class FormatAdapterService {
     parsedData: ParsedFileData,
     targetYear?: number,
   ): ExtractedRow[] {
+    return this.extractNearEcrfRows(parsedData, targetYear).rows;
+  }
+
+  /**
+   * Same mapping as toExtractedRows, plus a warning for each labelled row that
+   * cannot be stored (no GPC ref, or no emissions and no notation key).
+   */
+  public static extractNearEcrfRows(
+    parsedData: ParsedFileData,
+    targetYear?: number,
+  ): { rows: ExtractedRow[]; warnings: string[] } {
     const sheet = parsedData.primarySheet;
-    if (!sheet) return [];
+    if (!sheet) return { rows: [], warnings: [] };
 
     const h = sheet.headers;
 
@@ -183,7 +198,13 @@ export default class FormatAdapterService {
       "crf sub-sector",
       "category",
     ]);
-    const actTypeIdx = this.col(h, ["activity type", "activity_type"]);
+    const actTypeIdx = this.col(h, [
+      "fuel type or activity",
+      "fuel type",
+      "fuel_type",
+      "activity type",
+      "activity_type",
+    ]);
     const actValIdx = this.col(h, [
       "activity value",
       "activity_value",
@@ -196,10 +217,29 @@ export default class FormatAdapterService {
       "activity_units",
       "activity data - unit",
     ]);
-    const co2Idx = this.col(h, ["ghgs (metric tonnes co2e) - co2", "co2 emissions", "- co2"]);
-    const ch4Idx = this.col(h, ["ghgs (metric tonnes co2e) - ch4", "ch4 emissions", "- ch4"]);
-    const n2oIdx = this.col(h, ["ghgs (metric tonnes co2e) - n2o", "n2o emissions", "- n2o"]);
-    
+    const methodologyIdx = this.col(h, [
+      "activity data - description and methodology",
+      "activity data - description",
+      "activity data description",
+      "input methodology",
+      "methodology",
+    ]);
+    const co2Idx = this.col(h, [
+      "ghgs (metric tonnes co2e) - co2",
+      "co2 emissions",
+      "- co2",
+    ]);
+    const ch4Idx = this.col(h, [
+      "ghgs (metric tonnes co2e) - ch4",
+      "ch4 emissions",
+      "- ch4",
+    ]);
+    const n2oIdx = this.col(h, [
+      "ghgs (metric tonnes co2e) - n2o",
+      "n2o emissions",
+      "- n2o",
+    ]);
+
     const scopeIdx = this.col(h, ["scope"]);
     const sourceIdx = this.col(h, [
       "data source name",
@@ -222,47 +262,67 @@ export default class FormatAdapterService {
       "emission factor - n2o",
       "emission factor n2o",
     ]);
+    // detectColumn skips "total co2e" inside an emission-factor header, so find this one directly.
+    const efTotalIdx = h.findIndex((header) => {
+      const name = header.toLowerCase();
+      return name.includes("emission factor") && name.includes("total co2e");
+    });
+    const efSourceIdx = this.col(h, [
+      "emission factor - source",
+      "emission factor source",
+    ]);
+    const efDescriptionIdx = this.col(h, [
+      "emission factor - description",
+      "emission factor description",
+    ]);
 
     const rows: ExtractedRow[] = [];
+    const warnings: string[] = [];
 
-    for (const row of sheet.rows) {
+    for (let index = 0; index < sheet.rows.length; index++) {
+      const row = sheet.rows[index];
+      const rowNumber = index + 1;
       const get = (idx: number): unknown =>
-        idx >= 0 ? row[h[idx]] ?? null : null;
+        idx >= 0 ? (row[h[idx]] ?? null) : null;
 
       const notation = this.strVal(get(notationIdx));
       const totalCO2e = this.numVal(get(totalEmIdx));
-
-      // Skip rows that have no emissions and no meaningful notation key
-      if (totalCO2e === null && !notation) continue;
-
-      let gpcRefNo = this.strVal(get(gpcRefIdx));
       const activityType = this.strVal(get(actTypeIdx));
+      const scopeLabel = this.strVal(get(scopeIdx));
       const rawSectorVal = this.strVal(get(sectorIdx)) ?? "";
       const rawSubsectorVal = this.strVal(get(subsectorIdx)) ?? "";
       const { sector, subsector } = splitSectorSubsectorLabels(
         rawSectorVal,
         rawSubsectorVal,
       );
-      // Track which subsector name was actually used for resolution
-      let resolvedSubsector = subsector;
+      const hasLabel = Boolean(
+        rawSectorVal || rawSubsectorVal || activityType || scopeLabel,
+      );
 
-      if (!gpcRefNo && sector && subsector) {
-        gpcRefNo = resolveGpcRefNo(sector, subsector, activityType ?? undefined);
-        // Fallback: if right side of " > " didn't resolve, try the left side
-        // e.g. "On-road > Other/uncategorized" → "Other/uncategorized" fails → try "On-road"
-        if (!gpcRefNo && rawSubsectorVal.includes(" > ")) {
-          const leftPart = rawSubsectorVal.split(" > ")[0].trim();
-          if (leftPart && leftPart !== subsector) {
-            gpcRefNo = resolveGpcRefNo(sector, leftPart, activityType ?? undefined);
-            if (gpcRefNo) resolvedSubsector = leftPart;
-          }
+      // Blank template rows have no label. A labelled row with nothing to store is reported.
+      if (totalCO2e === null && !notation) {
+        if (hasLabel) {
+          warnings.push(
+            `Row ${rowNumber}: Skipped - no emission values or notation key (${rawSectorVal || "unknown sector"} / ${rawSubsectorVal || "unknown sub-sector"})`,
+          );
         }
-        if (!gpcRefNo && rawSectorVal.includes(" > ")) {
-          const leftPart = rawSectorVal.split(" > ")[0].trim();
-          if (leftPart && leftPart !== sector) {
-            gpcRefNo = resolveGpcRefNo(leftPart, subsector, activityType ?? undefined);
-          }
-        }
+        continue;
+      }
+
+      let gpcRefNo = this.strVal(get(gpcRefIdx));
+      if (!gpcRefNo) {
+        gpcRefNo = resolveGpcRefFromLabels({
+          sector: rawSectorVal,
+          subsector: rawSubsectorVal,
+          fuelTypeOrActivity: activityType,
+          scopeLabel,
+        });
+      }
+
+      if (!gpcRefNo && hasLabel) {
+        warnings.push(
+          `Row ${rowNumber}: Could not resolve a GPC reference from sector "${rawSectorVal}" and sub-sector "${rawSubsectorVal}". This row will not be imported.`,
+        );
       }
 
       const resolvedSector =
@@ -271,9 +331,10 @@ export default class FormatAdapterService {
       rows.push({
         year: targetYear ?? null,
         sector: resolvedSector,
-        subsector: resolvedSubsector || null,
-        scope: this.strVal(get(scopeIdx)),
-        category: resolvedSubsector || null,
+        subsector: subsector || null,
+        scope: scopeLabel,
+        // Category is the fuel or activity, not the sub-sector name.
+        category: activityType,
         totalCO2e,
         co2: this.numVal(get(co2Idx)),
         ch4: this.numVal(get(ch4Idx)),
@@ -282,12 +343,19 @@ export default class FormatAdapterService {
         source: this.strVal(get(sourceIdx)),
         activityAmount: this.numVal(get(actValIdx)),
         activityUnit: this.strVal(get(actUnitIdx)),
-        activityType: this.strVal(get(actTypeIdx)),
-        // Pass notation key and emission factor columns through as free-form fields.
-        // These are stored in ExtractedRow via the existing extended fields.
+        activityType,
+        methodology: this.strVal(get(methodologyIdx)),
         ...(notation ? { notationKey: notation } : {}),
         ...(efUnitIdx >= 0
           ? { emissionFactorUnit: this.strVal(get(efUnitIdx)) }
+          : {}),
+        ...(efSourceIdx >= 0
+          ? { emissionFactorSource: this.strVal(get(efSourceIdx)) }
+          : {}),
+        ...(efDescriptionIdx >= 0
+          ? {
+              emissionFactorDescription: this.strVal(get(efDescriptionIdx)),
+            }
           : {}),
         ...(efCO2Idx >= 0
           ? { emissionFactorCO2: this.numVal(get(efCO2Idx)) }
@@ -298,10 +366,13 @@ export default class FormatAdapterService {
         ...(efN2OIdx >= 0
           ? { emissionFactorN2O: this.numVal(get(efN2OIdx)) }
           : {}),
+        ...(efTotalIdx >= 0
+          ? { emissionFactorTotalCO2e: this.numVal(get(efTotalIdx)) }
+          : {}),
       });
     }
 
-    return rows;
+    return { rows, warnings };
   }
 
   // ── Private: detection helpers ─────────────────────────────────────────────
@@ -320,9 +391,7 @@ export default class FormatAdapterService {
       return false;
     }
 
-    const hasNotation = headersLower.some((h) =>
-      /notation(\s*key)?/i.test(h),
-    );
+    const hasNotation = headersLower.some((h) => /notation(\s*key)?/i.test(h));
     if (hasNotation) {
       return true;
     }
@@ -355,9 +424,7 @@ export default class FormatAdapterService {
   private static detectWideYearColumn(
     headersLower: string[],
   ): string | undefined {
-    const yearMatches = headersLower.filter((h) =>
-      /\b(19|20)\d{2}\b/.test(h),
-    );
+    const yearMatches = headersLower.filter((h) => /\b(19|20)\d{2}\b/.test(h));
     return yearMatches.length >= 3 ? yearMatches[0] : undefined;
   }
 
@@ -365,9 +432,7 @@ export default class FormatAdapterService {
   private static detectLongTidy(
     sheet: ParsedSheet,
     headers: string[],
-  ):
-    | { yearCol: string; sectorCol: string; emissionsCol: string }
-    | null {
+  ): { yearCol: string; sectorCol: string; emissionsCol: string } | null {
     const yearIdx = this.col(headers, [
       "year",
       "calendar year",
@@ -540,7 +605,7 @@ export default class FormatAdapterService {
     }
 
     const normalizedRows = rows.map((row) => {
-      const get = (idx: number) => (idx >= 0 ? row[h[idx]] ?? null : null);
+      const get = (idx: number) => (idx >= 0 ? (row[h[idx]] ?? null) : null);
       return {
         year: get(yearIdx),
         sector: get(sectorIdx),
@@ -570,9 +635,7 @@ export default class FormatAdapterService {
         "department",
       ] as const
     ).filter((key) =>
-      normalizedRows.some(
-        (r) => (r as Record<string, unknown>)[key] != null,
-      ),
+      normalizedRows.some((r) => (r as Record<string, unknown>)[key] != null),
     ) as string[];
 
     const normalizedSheet: ParsedSheet = {
@@ -716,7 +779,9 @@ export default class FormatAdapterService {
   }
 
   /** Adapter C → merge Scope/fuel sheets into a single flat sheet. */
-  private static normalizeMultiSheet(parsedData: ParsedFileData): ParsedFileData {
+  private static normalizeMultiSheet(
+    parsedData: ParsedFileData,
+  ): ParsedFileData {
     // Prefer Scope 1/2/3 sheets; fall back to fuel/emission sheets
     const scopeSheets = parsedData.sheets.filter((s) =>
       /scope\s*[123]/i.test(s.name),
@@ -728,9 +793,7 @@ export default class FormatAdapterService {
     );
 
     const targetSheets =
-      scopeSheets.length > 0
-        ? scopeSheets
-        : emissionSheets.slice(0, 4);
+      scopeSheets.length > 0 ? scopeSheets : emissionSheets.slice(0, 4);
 
     if (targetSheets.length === 0) return parsedData;
 

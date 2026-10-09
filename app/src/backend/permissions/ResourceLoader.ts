@@ -5,6 +5,7 @@ import { Inventory } from "@/models/Inventory";
 import { City } from "@/models/City";
 import { Project } from "@/models/Project";
 import { Organization } from "@/models/Organization";
+import { sqlOmitGridGeneration } from "@/util/GHGI/reported-totals";
 
 /**
  * Handles loading resources based on permission context
@@ -70,6 +71,7 @@ export class ResourceLoader {
     SELECT SUM(co2eq)
     FROM "InventoryValue"
     WHERE inventory_id = :inventoryId
+      AND ${sqlOmitGridGeneration()}
   `;
 
     const [{ sum }] = (await db.sequelize!.query(rawQuery, {

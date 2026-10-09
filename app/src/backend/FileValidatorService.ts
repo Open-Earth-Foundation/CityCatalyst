@@ -614,7 +614,14 @@ export default class FileValidatorService {
       },
       {
         key: "methodology",
-        terms: ["methodology", "input methodology", "input_methodology"],
+        terms: [
+          "activity data - description and methodology",
+          "activity data - description",
+          "activity data description",
+          "methodology",
+          "input methodology",
+          "input_methodology",
+        ],
       },
       {
         key: "activityDataSource",

@@ -290,13 +290,21 @@ export default class InventoryImportService {
       );
     }
 
-    // Filter to only valid rows (no errors)
+    // Filter to only valid rows (no errors). Unresolved rows used to disappear here.
     const validRows = importResult.rows.filter(
       (row) => !row.errors || row.errors.length === 0,
     );
+    for (const row of importResult.rows) {
+      if (!row.errors?.length) continue;
+      skippedRows++;
+      for (const message of row.errors) {
+        warnings.push(`Row ${row.rowIndex + 1}: ${message}`);
+      }
+    }
 
     if (validRows.length === 0) {
       errors.push("No valid rows to import");
+      errors.push(...warnings);
       return {
         totalRows: importResult.rowCount,
         importedRows: 0,
@@ -327,15 +335,12 @@ export default class InventoryImportService {
           hasSignedNumericValue(ch4Val) ||
           hasSignedNumericValue(n2oVal);
 
-        const gasSum =
-          (co2Val ?? 0) + (ch4Val ?? 0) + (n2oVal ?? 0);
+        const gasSum = (co2Val ?? 0) + (ch4Val ?? 0) + (n2oVal ?? 0);
 
         let totalCO2e: number | undefined;
         if (hasAnyGas) {
           const parsedTotal = parseNumericCell(row.totalCO2e);
-          totalCO2e = hasSignedNumericValue(parsedTotal)
-            ? parsedTotal
-            : gasSum;
+          totalCO2e = hasSignedNumericValue(parsedTotal) ? parsedTotal : gasSum;
           console.log(
             `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e and gas values: totalCO2e=${totalCO2e}, CO2=${co2Val ?? "-"}, CH4=${ch4Val ?? "-"}, N2O=${n2oVal ?? "-"}`,
           );
@@ -382,10 +387,11 @@ export default class InventoryImportService {
           // Normalize: when the resolved methodology is a directMeasure variant,
           // store "direct-measure" so the frontend lookup (which normalizes IDs
           // containing "direct-measure" to just "direct-measure") can find the match.
-          const finalMethodology =
-            resolvedMethodology?.includes("direct-measure")
-              ? "direct-measure"
-              : resolvedMethodology;
+          const finalMethodology = resolvedMethodology?.includes(
+            "direct-measure",
+          )
+            ? "direct-measure"
+            : resolvedMethodology;
 
           let inventoryValue;
           if (existingValue) {
@@ -394,12 +400,13 @@ export default class InventoryImportService {
               existingValue.co2eq != null
                 ? BigInt(existingValue.co2eq) + co2eqBigInt
                 : co2eqBigInt;
-            // Update existing value with emissions (clear notation keys if present)
+            // Update existing value with emissions. null clears a notation key
+            // that an earlier row stored for this same GPC reference.
             inventoryValue = await existingValue.update({
               co2eq: accumulatedCo2eq,
               co2eqYears: 100, // Default value
-              unavailableReason: undefined,
-              unavailableExplanation: undefined,
+              unavailableReason: null,
+              unavailableExplanation: null,
               inputMethodology:
                 finalMethodology || existingValue.inputMethodology,
               sectorId: row.sectorId,
@@ -432,7 +439,12 @@ export default class InventoryImportService {
           for (const gv of existingGasValues) {
             await gv.destroy();
           }
-          if (hasAnyGas && (typeof co2Val === "number" || typeof ch4Val === "number" || typeof n2oVal === "number")) {
+          if (
+            hasAnyGas &&
+            (typeof co2Val === "number" ||
+              typeof ch4Val === "number" ||
+              typeof n2oVal === "number")
+          ) {
             const toKg = (t: number) =>
               decimalToBigInt(new Decimal(t).mul(1000));
             const gases: { gas: "CO2" | "CH4" | "N2O"; val: number }[] = [];
@@ -636,8 +648,7 @@ export default class InventoryImportService {
               }
 
               // Default data quality to low when not provided
-              metadata.dataQuality =
-                row.activityDataQuality?.trim() || "low";
+              metadata.dataQuality = row.activityDataQuality?.trim() || "low";
 
               if (row.emissionFactorSource) {
                 metadata.emissionFactorName = row.emissionFactorSource;
@@ -720,17 +731,22 @@ export default class InventoryImportService {
             continue;
           }
 
+          // A later NE/NO/IE row must not hide activity data already stored for this ref.
+          if (existingValue?.co2eq != null) {
+            warnings.push(
+              `Row ${row.rowIndex + 1}: Notation key "${row.notationKey}" was not applied because ${row.gpcRefNo} already has emissions`,
+            );
+            continue;
+          }
+
           // Create or update inventory value with notation key
           // Note: eCRF files don't typically include explanation, so we use a default
           const unavailableExplanation = `Imported from eCRF file with notation key: ${row.notationKey}`;
 
           if (existingValue) {
-            // Update existing value with notation key (clear emissions)
             await existingValue.update({
               unavailableReason,
               unavailableExplanation,
-              co2eq: undefined,
-              co2eqYears: undefined,
               sectorId: row.sectorId,
               subSectorId: row.subsectorId,
               subCategoryId: row.subcategoryId ?? undefined,

@@ -7,6 +7,7 @@ import { randomUUID } from "node:crypto";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { City } from "@/models/City";
 import { QueryTypes } from "sequelize";
+import { sqlOmitGridGeneration } from "@/util/GHGI/reported-totals";
 
 /**
  * @swagger
@@ -151,6 +152,7 @@ export const GET = apiHandler(
           SELECT SUM(co2eq) as sum
           FROM "InventoryValue"
           WHERE inventory_id = :inventoryId
+            AND ${sqlOmitGridGeneration()}
         `;
 
         const [{ sum }] = (await db.sequelize!.query(rawQuery, {
@@ -163,7 +165,7 @@ export const GET = apiHandler(
           ...inventory.toJSON(),
           totalEmissions: sum || 0,
         };
-      })
+      }),
     );
 
     return NextResponse.json({ data: inventoriesWithTotals });

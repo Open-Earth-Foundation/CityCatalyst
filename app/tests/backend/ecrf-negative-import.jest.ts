@@ -175,6 +175,108 @@ describe("InventoryImportService negative totalCO2e", () => {
     expect(results.totalEmissions.toNumber()).toBe(-239500);
   });
 
+  it("keeps emissions when a later notation key shares the GPC reference", async () => {
+    const mixedInventory = await db.models.Inventory.create({
+      inventoryId: randomUUID(),
+      cityId: city.cityId,
+      inventoryName: `${PREFIX}notation`,
+      year: 2016,
+      totalEmissions: 0,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+    });
+    const rowBase = {
+      sectorId: sector.sectorId,
+      subsectorId: subsector.subsectorId,
+      subcategoryId: subcategory.subcategoryId,
+      scopeId: scope.scopeId,
+    };
+    try {
+      const summary = await InventoryImportService.importECRFData(
+        mixedInventory.inventoryId,
+        {
+          rows: [
+            {
+              ...rowBase,
+              gpcRefNo: "I.1.1",
+              totalCO2e: 1200,
+              activityType: "Natural gas",
+              rowIndex: 0,
+            },
+            {
+              ...rowBase,
+              gpcRefNo: "I.1.1",
+              notationKey: "NE",
+              rowIndex: 1,
+            },
+            {
+              ...rowBase,
+              gpcRefNo: "I.1.2",
+              notationKey: "NE",
+              rowIndex: 2,
+            },
+            {
+              ...rowBase,
+              gpcRefNo: "I.1.2",
+              totalCO2e: 400,
+              activityType: "Electricity",
+              rowIndex: 3,
+            },
+          ],
+          errors: [],
+          warnings: [],
+          rowCount: 4,
+          validRowCount: 4,
+        },
+      );
+
+      expect(summary.warnings.some((warning) => warning.includes("I.1.1"))).toBe(
+        true,
+      );
+
+      const withEmissionsFirst = await db.models.InventoryValue.findOne({
+        where: {
+          inventoryId: mixedInventory.inventoryId,
+          gpcReferenceNumber: "I.1.1",
+        },
+      });
+      expect(withEmissionsFirst?.unavailableReason ?? null).toBeNull();
+      expect(withEmissionsFirst?.unavailableExplanation ?? null).toBeNull();
+      expect(BigInt(withEmissionsFirst!.co2eq as unknown as string)).toBe(
+        1200000n,
+      );
+
+      const notationFirst = await db.models.InventoryValue.findOne({
+        where: {
+          inventoryId: mixedInventory.inventoryId,
+          gpcReferenceNumber: "I.1.2",
+        },
+      });
+      expect(notationFirst?.unavailableReason ?? null).toBeNull();
+      expect(notationFirst?.unavailableExplanation ?? null).toBeNull();
+      expect(BigInt(notationFirst!.co2eq as unknown as string)).toBe(400000n);
+    } finally {
+      const values = await db.models.InventoryValue.findAll({
+        where: { inventoryId: mixedInventory.inventoryId },
+      });
+      const valueIds = values.map((value) => value.id);
+      if (valueIds.length > 0) {
+        await db.models.ActivityValue.destroy({
+          where: { inventoryValueId: valueIds },
+        });
+        await db.models.GasValue.destroy({
+          where: { inventoryValueId: valueIds },
+        });
+      }
+      await db.models.InventoryValue.destroy({
+        where: { inventoryId: mixedInventory.inventoryId },
+      });
+      await db.models.Inventory.destroy({
+        where: { inventoryId: mixedInventory.inventoryId },
+      });
+    }
+  });
+
   it("skips totalCO2e 0 as empty rather than a removal", async () => {
     const otherInventory = await db.models.Inventory.create({
       inventoryId: randomUUID(),

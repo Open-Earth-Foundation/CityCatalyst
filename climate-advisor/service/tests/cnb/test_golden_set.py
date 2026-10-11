@@ -1,7 +1,9 @@
-"""Deterministic checks for the CNB grounding golden set and its scorer."""
+"""Exact-check, judge-contract, and orchestration tests; no judge calibration benchmark."""
 
 from __future__ import annotations
 
+import json
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
@@ -9,29 +11,38 @@ from unittest.mock import AsyncMock
 from uuid import NAMESPACE_URL, uuid5
 
 import pytest
-from app.config import get_settings
 from app.models.cnb.context_bundle import SelectedSource
-from app.models.cnb.golden_set import TermMatch
+from app.models.cnb.golden_set import (
+    ClaimJudgment,
+    CoverageJudgment,
+    JudgeEvaluation,
+    StageReport,
+    TextReference,
+)
 from app.persistence.concept_notes.context_bundle import ContextBundleBuildSnapshot
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.cnb.context_bundle import ContextBundleService
 from app.services.cnb.golden_set import (
-    DraftedChapter,
     LoadedFixture,
-    compare_source_analyses,
-    drafting_failures,
-    extract_numbers,
     golden_evidence_problems,
     load_drafting_input,
     load_golden_fixtures,
-    matches_terms,
-    score_drafting,
-    score_source_analysis,
-    source_analysis_failures,
+    score_judgment,
+    source_judge_input,
+    validate_judgment,
+    verify_excerpts,
+)
+from app.services.cnb.golden_set_judge import (
+    GoldenJudgeError,
+    judge_output,
+    judge_prompt_versions,
 )
 from app.services.cnb.source_analysis import source_analysis_contract_version
 from app.services.cnb.visual_context import VISUAL_CONTEXT_CONTRACT_VERSION
+from service.scripts import evaluate_cnb_golden_set as evaluator
+
+from app.config import get_settings
 
 FIXTURES_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "cnb_golden_set"
 HARBOR_POINT = "harbor-point-heat-and-stormwater-resilience-plan"
@@ -58,6 +69,7 @@ def selected_source(loaded: LoadedFixture, **values) -> SelectedSource:
             "source_format": source.source_format,
             "page_count": len(loaded.units) if is_pdf else None,
             "block_count": None if is_pdf else len(loaded.units),
+            "topics": [],
             **values,
         }
     )
@@ -132,284 +144,355 @@ HARBOR_SUMMARY = (
 )
 
 
-def test_checked_in_fixtures_cover_both_formats_with_exact_evidence(fixtures) -> None:
-    """Every fixture revalidates and its evidence is exact at an allowed locator."""
-    formats = {item.fixture.source.source_format for item in fixtures.values()}
-    assert formats == {"pdf", "markdown"}
+def test_fixtures_preserve_exact_evidence_and_both_source_formats(fixtures):
+    assert {item.fixture.source.source_format for item in fixtures.values()} == {
+        "pdf",
+        "markdown",
+    }
     for loaded in fixtures.values():
         assert golden_evidence_problems(loaded) == []
-
-
-def test_frozen_drafting_bundle_passes_its_own_analysis_gates(fixtures) -> None:
-    """Stage 2 drafts from a reviewed analysis that stage 1 would accept."""
-    loaded = fixtures["richfield-flood-risk"]
-    frozen = selected_source(loaded, **load_drafting_input(loaded).selected_source)
-
-    score = score_source_analysis(loaded, frozen, run=1)
-
-    thresholds = loaded.fixture.source_analysis.thresholds
-    assert source_analysis_failures(thresholds, [score]) == []
-    assert score.unsupported_sentences == []
-    assert score.excerpt_findings == []
-
-
-def test_reworded_grounded_summary_passes_without_exact_strings(fixtures) -> None:
-    loaded = fixtures["harbor-point-heat-resilience"]
-
-    score = score_source_analysis(
-        loaded, harbor_analysis(loaded, HARBOR_SUMMARY), run=1
+    richfield = fixtures["richfield-flood-risk"]
+    frozen = selected_source(
+        richfield, **load_drafting_input(richfield).selected_source
     )
-
-    assert score.required_fact_coverage == 1.0
-    assert score.fact_grounding == 1.0
-    assert score.topic_coverage == 1.0
-    assert score.unsupported_sentence_rate == 0.0
-    assert (
-        source_analysis_failures(loaded.fixture.source_analysis.thresholds, [score])
-        == []
-    )
+    failures, retained = verify_excerpts(richfield, frozen)
+    assert failures == []
+    assert len(retained) == len(frozen.key_excerpts)
 
 
-def test_invalid_locators_and_non_exact_excerpts_fail_every_run(fixtures) -> None:
+def test_invalid_locators_nonexact_and_empty_quotes_are_rejected(fixtures):
     loaded = fixtures["richfield-flood-risk"]
     source = selected_source(
         loaded,
-        summary="The Richfield study evaluated 746 flood-risk areas.",
-        topics=["flood-risk prioritization"],
+        summary="Text",
         key_excerpts=[
-            {"text": "A total of 746 flood-risk areas were evaluated", "page": 31},
-            {"text": "A total of 746 flood risk areas were evaluated", "page": 30},
+            {"text": "invented", "page": 999},
+            {"text": "invented", "page": 30},
+            {"text": " ", "page": 30},
         ],
     )
-
-    score = score_source_analysis(loaded, source, run=1)
-
-    assert score.invalid_locators == 0
-    assert score.non_exact_excerpts == 2
-    assert [item.reason for item in score.excerpt_findings] == [
-        "text_not_exact_at_locator",
-        "text_not_exact_at_locator",
-    ]
-    failures = source_analysis_failures(
-        loaded.fixture.source_analysis.thresholds, [score]
-    )
-    assert "non_exact_excerpts 2 > 0" in failures
+    failures, retained = verify_excerpts(loaded, source)
+    assert len(failures) == 3
+    assert "invalid locator" in failures[0]
+    assert "non-exact" in failures[1]
+    assert not retained
 
 
-def test_markdown_excerpt_with_a_page_locator_is_invalid(fixtures) -> None:
+def test_markdown_cannot_cite_pdf_pages(fixtures):
     loaded = fixtures["harbor-point-heat-resilience"]
     source = selected_source(
         loaded,
         summary=HARBOR_SUMMARY,
-        topics=["heat"],
-        key_excerpts=[{"text": "Harbor Point has 182,400 residents.", "page": 1}],
+        key_excerpts=[{"text": "Harbor Point", "page": 1}],
     )
-
-    score = score_source_analysis(loaded, source, run=1)
-
-    assert score.invalid_locators == 1
-    assert score.excerpt_findings[0].reason == "locator_not_in_source"
+    assert "invalid locator" in verify_excerpts(loaded, source)[0][0]
 
 
-def test_summary_claim_without_a_retained_excerpt_is_unsupported(fixtures) -> None:
-    """A true document fact still fails when its supporting excerpt was dropped."""
+@pytest.fixture
+def judged_case(fixtures):
+    """A small mocked judge response to test plumbing, never judge accuracy."""
     loaded = fixtures["richfield-flood-risk"]
+    fixture = loaded.fixture.model_copy(deep=True)
+    fact = next(
+        f for f in fixture.source_analysis.facts if f.id == "flood-risk-area-count"
+    )
+    fixture.source_analysis.facts = [fact]
+    fixture.source_analysis.topics = []
+    loaded = replace(loaded, fixture=fixture)
+    text = fact.evidence[0].text
     source = selected_source(
-        loaded,
-        summary=(
-            "The Richfield study presents the Section 5 cost estimates as a concept "
-            "level design, and all costs are presented in 2025 US dollars."
+        loaded, summary=text, topics=[], key_excerpts=[{"text": text, "page": 30}]
+    )
+    payload, failures = source_judge_input(loaded, source)
+    original = next(
+        u for u in payload.evidence if u.kind == "source" and text in u.text
+    )
+    supplied = next(u for u in payload.evidence if u.kind == "supplied")
+    output = TextReference(unit_id="summary", quote=text)
+    judgment = JudgeEvaluation(
+        facts=[
+            CoverageJudgment(
+                id=fact.id,
+                verdict="covered",
+                output_refs=[output],
+                reason="Mocked semantic verdict",
+            )
+        ],
+        topics=[],
+        chapters=[],
+        contradictions=[],
+        claims=[
+            ClaimJudgment(
+                output=output,
+                verdict="supported",
+                evidence=[TextReference(unit_id=original.id, quote=text)],
+                supplied_verdict="supported",
+                supplied_evidence=[TextReference(unit_id=supplied.id, quote=text)],
+                self_contained=True,
+                reason="Mocked semantic verdict",
+            )
+        ],
+    )
+    return loaded, source, payload, judgment
+
+
+def test_valid_judgment_is_aggregated_without_lexical_matching(judged_case):
+    loaded, _, payload, judgment = judged_case
+    report = score_judgment(loaded, payload, judgment, [])
+    assert report.passed
+    assert report.metrics == {
+        "required_fact_coverage": 1.0,
+        "retained_support": 1.0,
+        "topic_coverage": 1.0,
+    }
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "missing_fact",
+        "duplicate_fact",
+        "invented_quote",
+        "unknown_unit",
+        "wrong_kind",
+        "no_claims",
+        "no_support",
+        "topic_as_fact",
+    ],
+)
+def test_invalid_judge_response_withholds_metrics(judged_case, mutation):
+    loaded, _, payload, judgment = judged_case
+    if mutation == "missing_fact":
+        judgment.facts = []
+    elif mutation == "duplicate_fact":
+        judgment.facts.append(judgment.facts[0])
+    elif mutation == "invented_quote":
+        judgment.claims[0].evidence[0].quote = "This quotation is invented."
+    elif mutation == "unknown_unit":
+        judgment.claims[0].evidence[0].unit_id = "source/does-not-exist"
+    elif mutation == "wrong_kind":
+        judgment.claims[0].evidence = judgment.claims[0].supplied_evidence
+    elif mutation == "no_claims":
+        judgment.claims = []
+    elif mutation == "no_support":
+        judgment.claims[0].evidence = []
+    else:
+        payload.outputs.append(payload.outputs[0].model_copy(update={"id": "topic/0"}))
+        judgment.facts[0].output_refs[0].unit_id = "topic/0"
+    report = score_judgment(loaded, payload, judgment, [])
+    assert not report.passed
+    assert report.evaluation_errors
+    assert report.metrics == {}
+    assert report.semantic_failures == []
+
+
+def test_source_truth_and_retained_evidence_support_are_separate(judged_case):
+    loaded, _, payload, judgment = judged_case
+    judgment.claims[0].supplied_verdict = "unsupported"
+    judgment.claims[0].supplied_evidence = []
+    report = score_judgment(loaded, payload, judgment, [])
+    assert not report.evaluation_errors
+    assert report.metrics["required_fact_coverage"] == 1
+    assert report.metrics["retained_support"] == 0
+    assert any("retained_support" in failure for failure in report.semantic_failures)
+
+
+@pytest.mark.parametrize(
+    "verdict", ["partially_supported", "unsupported", "contradicted", "uncertain"]
+)
+def test_non_supported_claims_fail_even_with_full_fact_coverage(judged_case, verdict):
+    loaded, _, payload, judgment = judged_case
+    judgment.claims[0].verdict = verdict
+    report = score_judgment(loaded, payload, judgment, [])
+    assert report.metrics["required_fact_coverage"] == 1
+    assert not report.passed
+    assert report.semantic_failures
+
+
+def test_empty_fixture_directory_fails(tmp_path):
+    with pytest.raises(ValueError, match="No golden fixtures"):
+        load_golden_fixtures(tmp_path)
+
+
+def test_cli_has_no_repetition_mode():
+    assert evaluator.parse_args([]).stage == "all"
+    with pytest.raises(SystemExit):
+        evaluator.parse_args(["--repeats", "2"])
+
+
+@pytest.mark.asyncio
+async def test_all_mode_reuses_one_fresh_analysis_for_end_to_end(
+    fixtures, monkeypatch, tmp_path
+):
+    loaded = fixtures["richfield-flood-risk"]
+    source = selected_source(loaded, **load_drafting_input(loaded).selected_source)
+    analysis = AsyncMock(
+        return_value=(StageReport(semantic_failures=["example upstream issue"]), source)
+    )
+    drafting = AsyncMock(return_value=StageReport())
+    monkeypatch.setattr(evaluator, "_evaluate_source_analysis", analysis)
+    monkeypatch.setattr(evaluator, "_evaluate_drafting", drafting)
+    report = await evaluator._evaluate_fixture(loaded, get_settings(), "all", tmp_path)
+    analysis.assert_awaited_once()
+    assert drafting.await_count == 2
+    assert len(drafting.await_args_list[0].args) == 3  # Frozen input.
+    assert drafting.await_args_list[1].args[3] is source
+    assert report.source_analysis.semantic_failures == ["example upstream issue"]
+    assert not report.passed
+
+
+@pytest.mark.asyncio
+async def test_failed_analysis_blocks_end_to_end(fixtures, monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        evaluator,
+        "_evaluate_source_analysis",
+        AsyncMock(
+            return_value=(StageReport(evaluation_errors=["analysis failed"]), None)
         ),
-        topics=["cost estimates"],
-        key_excerpts=[
-            {
-                "text": "The projects, model results, and cost estimates presented in "
-                "Section 5 are represent a concept level design.",
-                "page": 48,
-            }
-        ],
     )
-
-    score = score_source_analysis(loaded, source, run=1)
-
-    assert score.unsupported_sentence_rate == 1.0
-    assert score.unsupported_sentences[0].reason == (
-        "figures_not_in_retained_excerpts: 2025"
+    drafting = AsyncMock()
+    monkeypatch.setattr(evaluator, "_evaluate_drafting", drafting)
+    report = await evaluator._evaluate_fixture(
+        fixtures["richfield-flood-risk"], get_settings(), "end_to_end", tmp_path
     )
-    assert "cost-basis" in score.ungrounded_facts
+    drafting.assert_not_awaited()
+    assert report.end_to_end.evaluation_errors
 
 
-def test_invented_summary_wording_has_low_term_support(fixtures) -> None:
-    loaded = fixtures["harbor-point-heat-resilience"]
-    source = harbor_analysis(
-        loaded,
-        HARBOR_SUMMARY
-        + " Harbor Point will also electrify municipal ferries and retrofit seawalls.",
+@pytest.mark.asyncio
+async def test_judge_unavailable_never_becomes_product_failure(
+    judged_case, monkeypatch, tmp_path
+):
+    loaded, _, payload, _ = judged_case
+    monkeypatch.setattr(
+        evaluator,
+        "judge_output",
+        AsyncMock(side_effect=GoldenJudgeError("judge unavailable")),
     )
+    report = await evaluator._judge_stage(loaded, payload, [], get_settings(), tmp_path)
+    assert report.evaluation_errors == ["judge unavailable"]
+    assert not report.semantic_failures
+    assert not report.passed
 
-    score = score_source_analysis(loaded, source, run=1)
 
-    assert len(score.unsupported_sentences) == 1
-    assert score.unsupported_sentences[0].reason.startswith("term_support")
-
-
-def test_missing_facts_topics_and_ambiguous_subjects_are_reported(fixtures) -> None:
-    loaded = fixtures["harbor-point-heat-resilience"]
-    source = selected_source(
-        loaded,
-        summary="Harbor Point has 182,400 residents. It plans new trees.",
-        topics=["population"],
-        key_excerpts=[
-            {
-                "text": "Harbor Point has 182,400 residents.",
-                "anchor": harbor_anchor(loaded, "summary", "182,400"),
-            }
-        ],
+@pytest.mark.asyncio
+async def test_source_analysis_calls_producer_once_and_saves_judgment(
+    judged_case, monkeypatch, tmp_path
+):
+    loaded, source, _, judgment = judged_case
+    producer = AsyncMock(return_value=source)
+    monkeypatch.setattr(evaluator, "analyze_document", producer)
+    monkeypatch.setattr(evaluator, "judge_output", AsyncMock(return_value=judgment))
+    report, result = await evaluator._evaluate_source_analysis(
+        loaded, get_settings(), tmp_path
     )
+    producer.assert_awaited_once()
+    assert result is source and report.passed
+    assert (tmp_path / "analysis.json").exists()
+    assert (tmp_path / "source_analysis/judgment.json").exists()
 
-    score = score_source_analysis(loaded, source, run=1)
 
-    assert "programme-financing" in score.missing_required_facts
-    assert "financing" in score.missing_topics
-    assert score.ambiguous_sentence_rate == 0.5
-    failures = source_analysis_failures(
-        loaded.fixture.source_analysis.thresholds, [score]
+def test_fresh_source_replaces_frozen_source_in_drafting_workspace(fixtures):
+    loaded = fixtures["richfield-flood-risk"]
+    fresh = selected_source(
+        loaded, summary="Fresh analysis", topics=[], key_excerpts=[]
     )
-    assert any(failure.startswith("required_fact_coverage") for failure in failures)
-    assert any(failure.startswith("ambiguous_sentence_rate") for failure in failures)
-
-
-def test_demonstrative_opener_naming_its_subject_is_not_ambiguous(fixtures) -> None:
-    loaded = fixtures["harbor-point-heat-resilience"]
-    summary = (
-        HARBOR_SUMMARY.replace(
-            "The Harbor Point City Council adopted",
-            "This Harbor Point City Council adopted",
-        )
-        + " This plan also adds cooling centres."
+    _, frozen_context, _, _ = evaluator._drafting_workspace(loaded, get_settings())
+    _, fresh_context, _, _ = evaluator._drafting_workspace(
+        loaded, get_settings(), fresh
     )
-
-    score = score_source_analysis(loaded, harbor_analysis(loaded, summary), run=1)
-
-    assert [item.sentence for item in score.ambiguous_sentences] == [
-        "This plan also adds cooling centres."
-    ]
-
-
-def test_stability_is_reported_separately_from_correctness(fixtures) -> None:
-    """Two correct but differently worded runs pass and report their variation."""
-    loaded = fixtures["harbor-point-heat-resilience"]
-    first = harbor_analysis(loaded, HARBOR_SUMMARY)
-    second = harbor_analysis(
-        loaded,
-        HARBOR_SUMMARY.replace("adopted", "approved").replace("seeks", "requests"),
-    ).model_copy(
-        update={"topics": ["heat risk", "flooding", "trees", "green space", "budget"]}
-    )
-    second = second.model_copy(
-        update={"key_excerpts": second.key_excerpts[:-1] + first.key_excerpts[-1:]}
-    )
-    sources = [first, second]
-    scores = [
-        score_source_analysis(loaded, item, run=run)
-        for run, item in enumerate(sources, 1)
-    ]
-
-    stability = compare_source_analyses(
-        sources, scores, loaded.fixture.source_analysis.facts
-    )
-
-    assert stability.fact_agreement == 1.0
-    assert stability.unstable_facts == []
-    assert stability.topic_jaccard == 0.0
-    assert stability.locator_jaccard == 1.0
     assert (
-        source_analysis_failures(loaded.fixture.source_analysis.thresholds, scores)
-        == []
+        fresh_context["context_bundle"]["selected_sources"][0]["summary"]
+        == "Fresh analysis"
+    )
+    assert (
+        frozen_context["context_bundle"]["selected_sources"][0]["summary"]
+        != "Fresh analysis"
     )
 
 
-def test_term_matching_is_word_bounded_for_figures() -> None:
-    assert matches_terms("601 areas", TermMatch(all_of=[["601"]]))
-    assert not matches_terms("6010 areas", TermMatch(all_of=[["601"]]))
-    assert not matches_terms("1601 areas", TermMatch(all_of=[["601"]]))
-    assert matches_terms("Flood-risk prioritization", TermMatch(all_of=[["prioriti"]]))
-    assert matches_terms("costs of $8,853,000", TermMatch(all_of=[["8,853,000"]]))
-
-
-def test_figure_extraction_scales_amounts_and_ignores_single_digits() -> None:
-    figures = extract_numbers(
-        "USD 8.85million, $8,853,000, a 2-year storm, 3.2 ha, 2025"
+@pytest.mark.asyncio
+async def test_drafting_judge_receives_actual_inputs_without_previous_generated_text(
+    fixtures, monkeypatch, tmp_path
+):
+    loaded = fixtures["richfield-flood-risk"]
+    monkeypatch.setattr(
+        evaluator,
+        "generate_chapter_draft",
+        AsyncMock(return_value=SimpleNamespace(body_markdown="GENERATED CLAIM MARKER")),
     )
-
-    assert figures == [
-        ("8.85million", 8_850_000.0),
-        ("8853000", 8_853_000.0),
-        ("3.2", 3.2),
-        ("2025", 2025.0),
-    ]
-
-
-def test_drafting_requires_facts_in_their_chapters_and_flags_invented_figures(
-    fixtures,
-) -> None:
-    golden = fixtures["richfield-flood-risk"].fixture.drafting
-    chapters = [
-        DraftedChapter(
-            "applicant_project_information",
-            "Applicant",
-            "The City of Richfield, Minnesota applies to the Flood Hazard Mitigation "
-            "Grant Assistance Program.",
-        ),
-        DraftedChapter(
-            "funding_breakout",
-            "Funding",
-            "Wilson Pond Concept A is estimated at $8.85 million in 2025 US dollars, "
-            "and the city requests $12.5 million.",
-        ),
-        DraftedChapter("project_activities", "Activities", ""),
-        DraftedChapter(
-            "project_analysis",
-            "Analysis",
-            "Of 746 flood-risk areas, 601 lie within the city.",
-        ),
-    ]
-    input_text = "Concept A $8,853,000; 746 and 601 flood-risk areas; 2025 US dollars."
-
-    score = score_drafting(golden, chapters, input_text)
-
-    findings = {fact.fact_id: fact for fact in score.facts}
-    assert findings["applicant-city"].covered
-    assert findings["funding-programme"].covered
-    assert findings["cost-basis"].covered
-    assert findings["concept-cost-figures"].covered
-    assert findings["flood-risk-area-count"].found_in == ["project_analysis"]
-    assert findings["flood-risk-area-count"].covered
-    assert not findings["selected-sites"].covered
-    assert [item.number for item in score.unsupported_numbers] == ["12.5 million"]
-    assert score.empty_chapters == ["project_activities"]
-    failures = drafting_failures(golden.thresholds, score)
-    assert "empty_chapters 1 > 0" in failures
-    assert any(failure.startswith("unsupported_number_rate") for failure in failures)
-
-
-def test_drafting_fact_outside_its_allowed_chapters_is_not_covered(fixtures) -> None:
-    golden = fixtures["richfield-flood-risk"].fixture.drafting
-    chapters = [
-        DraftedChapter(
-            "project_financing",
-            "Financing",
-            "Wilson Pond flooding reaches the lowest structures in the 2-year event.",
-        )
-    ]
-
-    score = score_drafting(golden, chapters, "2-year")
-
-    finding = next(
-        fact for fact in score.facts if fact.fact_id == "wilson-pond-damages"
+    judge = AsyncMock(return_value=StageReport())
+    monkeypatch.setattr(evaluator, "_judge_stage", judge)
+    await evaluator._evaluate_drafting(loaded, get_settings(), tmp_path)
+    payload = judge.await_args.args[1]
+    assert len(payload.outputs) == 8
+    assert len(payload.chapter_requirements) == 8
+    assert all(unit.text == "GENERATED CLAIM MARKER" for unit in payload.outputs)
+    assert not any("GENERATED CLAIM MARKER" in unit.text for unit in payload.evidence)
+    assert any(unit.kind == "source" for unit in payload.evidence)
+    assert any(
+        unit.kind == "context" and "36994" in unit.text for unit in payload.evidence
     )
-    assert finding.found_in == ["project_financing"]
-    assert not finding.covered
+    assert any(unit.id.startswith("supplied/shared/") for unit in payload.evidence)
+
+
+def test_prompt_format_examples_and_fingerprints():
+    settings = get_settings()
+    for key in ("cnb_golden_set_source_judge", "cnb_golden_set_drafting_judge"):
+        prompt = settings.llm.prompts.get_prompt(key)
+        positions = [
+            prompt.index(f"<{section}>")
+            for section in ("role", "task", "input", "output", "example_output")
+        ]
+        assert positions == sorted(positions)
+        example = prompt.split("<example_output>")[1].split("</example_output>")[0]
+        JudgeEvaluation.model_validate_json(example)
+    assert all(len(digest) == 64 for digest in judge_prompt_versions(settings).values())
+
+
+@pytest.mark.asyncio
+async def test_judge_client_closes_and_uses_configured_model(judged_case, monkeypatch):
+    _, _, payload, judgment = judged_case
+    from app.services.cnb import golden_set_judge as module
+
+    client = SimpleNamespace(close=AsyncMock())
+    monkeypatch.setattr(
+        module,
+        "build_openrouter_client_options",
+        lambda *a, **kw: SimpleNamespace(kwargs={}),
+    )
+    monkeypatch.setattr(module, "AsyncOpenAI", lambda **kw: client)
+    runner = SimpleNamespace(
+        run=AsyncMock(return_value=SimpleNamespace(final_output=judgment))
+    )
+    assert await judge_output(payload, get_settings(), runner=runner) == judgment
+    agent, sent = runner.run.await_args.args
+    assert agent.model.model == get_settings().llm.models.cnb_golden_set_judge.name
+    assert json.loads(sent)["stage"] == "source_analysis"
+    client.close.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_judge_provider_error_is_sanitized_and_client_closed(
+    judged_case, monkeypatch
+):
+    _, _, payload, _ = judged_case
+    from app.services.cnb import golden_set_judge as module
+
+    client = SimpleNamespace(close=AsyncMock())
+    monkeypatch.setattr(
+        module,
+        "build_openrouter_client_options",
+        lambda *a, **kw: SimpleNamespace(kwargs={}),
+    )
+    monkeypatch.setattr(module, "AsyncOpenAI", lambda **kw: client)
+    runner = SimpleNamespace(
+        run=AsyncMock(side_effect=RuntimeError("private provider body"))
+    )
+    with pytest.raises(GoldenJudgeError, match="judge_failed: RuntimeError") as error:
+        await judge_output(payload, get_settings(), runner=runner)
+    assert "private" not in str(error.value)
+    client.close.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -502,3 +585,92 @@ async def test_incremental_build_keeps_golden_analysis_byte_for_byte(
     selected = complete_build.await_args.kwargs["selected_sources"]
     assert selected[0].model_dump_json() == previous_json
     assert selected[1].analysis_contract_version == previous.analysis_contract_version
+
+
+def test_shared_input_deduplication_preserves_chapter_specific_values():
+    from app.models.cnb.golden_set import TextUnit
+
+    units = [
+        TextUnit(
+            id="supplied/a/source/text",
+            text="Common source",
+            kind="supplied",
+            chapter_ref="a",
+        ),
+        TextUnit(
+            id="supplied/b/source/text",
+            text="Common source",
+            kind="supplied",
+            chapter_ref="b",
+        ),
+        TextUnit(
+            id="supplied/a/resolved/cost", text="120", kind="supplied", chapter_ref="a"
+        ),
+        TextUnit(
+            id="supplied/b/resolved/cost", text="150", kind="supplied", chapter_ref="b"
+        ),
+    ]
+    result = evaluator._share_common_inputs(units, {"a", "b"})
+    assert len(result) == 3
+    common = next(unit for unit in result if unit.text == "Common source")
+    assert common.id == "supplied/shared/source/text" and common.chapter_ref is None
+    assert next(unit for unit in result if unit.text == "120").chapter_ref == "a"
+    assert next(unit for unit in result if unit.text == "150").chapter_ref == "b"
+
+
+def test_judge_cannot_cite_another_chapters_input(judged_case):
+    _, _, payload, judgment = judged_case
+    payload.stage = "drafting"
+    payload.outputs[0].chapter_ref = "a"
+    supplied = next(unit for unit in payload.evidence if unit.kind == "supplied")
+    supplied.chapter_ref = "b"
+    assert any(
+        "different chapter" in error for error in validate_judgment(payload, judgment)
+    )
+
+
+def test_judge_cannot_cover_fact_in_disallowed_chapter(judged_case):
+    _, _, payload, judgment = judged_case
+    payload.stage = "drafting"
+    payload.expected_facts[0].chapters = ["funding"]
+    payload.outputs[0].chapter_ref = "activities"
+    assert any(
+        "outside allowed chapters" in error
+        for error in validate_judgment(payload, judgment)
+    )
+
+
+def test_invalid_judgment_is_explicitly_untrusted_in_markdown(judged_case):
+    from app.models.cnb.golden_set import FixtureReport, GoldenSetReport
+
+    loaded, _, payload, judgment = judged_case
+    judgment.claims[0].evidence[0].quote = "Invented evidence"
+    stage = score_judgment(loaded, payload, judgment, [])
+    report = GoldenSetReport(
+        generated_at="test",
+        analysis_contract_version="test",
+        judge_prompt_versions={},
+        models={},
+        fixtures=[
+            FixtureReport(
+                fixture_id="test",
+                source_sha256="test",
+                source_format="pdf",
+                source_analysis=stage,
+            )
+        ],
+    )
+    markdown = evaluator.render_markdown(report)
+    assert "Evaluation error" in markdown
+    assert "metrics withheld" in markdown
+    assert "untrusted" in markdown
+    assert "CNB golden set: FAIL" in markdown
+
+
+def test_draft_with_covered_facts_requires_claim_assessment(judged_case):
+    _, _, payload, judgment = judged_case
+    payload.stage = "drafting"
+    judgment.claims = []
+    assert "covered factual output has no claim judgments" in validate_judgment(
+        payload, judgment
+    )

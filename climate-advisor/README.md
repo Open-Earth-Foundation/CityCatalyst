@@ -1471,20 +1471,28 @@ uv run --directory service python -m scripts.run_ca_e2e
 
 ### CNB Grounding Golden Set
 
-Checked-in fixtures under `service/tests/fixtures/cnb_golden_set/` score
-Concept Note source analysis (facts, exact excerpts, page/heading locators,
-unsupported claims, stability) and chapter drafting (fact carry-over, invented
-figures). The deterministic checks run with the CNB suite. The live evaluation
-calls the configured OpenRouter models, runs on every Climate Advisor pull
-request to `develop`, and fails when a documented gate fails:
+Fixtures under `service/tests/fixtures/cnb_golden_set/` evaluate source analysis,
+chapter drafting from a frozen bundle, and drafting from a fresh analysis.
+Each path runs once. Python checks exact quotations, locators, artifact integrity,
+and judge references. A configured LLM judge evaluates meaning, claim support,
+required-fact coverage, clarity, and chapter requirements. There are no lexical
+coverage heuristics, repeated-run stability checks, or judge calibration benchmark.
 
 ```bash
 uv run --directory service pytest tests/cnb/test_golden_set.py -q
 uv run --directory service python -m scripts.evaluate_cnb_golden_set
 ```
 
-See the fixture README for gates, adding fixtures, and reviewing intentional
-baseline changes.
+The live evaluation requires `OPENROUTER_API_KEY` for both production models and
+`models.cnb_golden_set_judge` in `llm_config.yaml`. Review the two judge prompts in
+[`prompts/cnb/golden_set/`](prompts/cnb/golden_set/). Reports record the configured
+models and hashes of the loaded judge prompts. The CI evaluation runs on matching
+pull requests to `develop`; quality failures and unavailable/invalid evaluations
+both return a nonzero exit status. Mocked unit tests verify the evaluator plumbing
+and do not claim to validate the judge's semantic accuracy.
+
+See the [fixture README](service/tests/fixtures/cnb_golden_set/README.md) for
+stage selection, gates, reports, and how to review fixture changes.
 
 ## Docker Deployment (Local Testing)
 

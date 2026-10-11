@@ -138,6 +138,7 @@ class ModelsConfig(BaseModel):
     funder_identity: ResearchModelConfig
     cnb_source_reader: ResearchModelConfig
     cnb_source_synthesizer: ResearchModelConfig
+    cnb_golden_set_judge: ResearchModelConfig | None = None
     cnb_chapter_drafter: ResearchModelConfig | None = None
     cnb_source_impact_reviewer: ResearchModelConfig | None = None
     cnb_chat_edit_planner: ResearchModelConfig | None = None
@@ -233,6 +234,8 @@ class PromptsConfig(BaseModel):
     cnb_source_document_mapping: str = "prompts/cnb/source_document_mapping.md"
     cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
+    cnb_golden_set_source_judge: str = "prompts/cnb/golden_set/source_analysis.md"
+    cnb_golden_set_drafting_judge: str = "prompts/cnb/golden_set/drafting.md"
     cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
     cnb_source_impact_review: str = "prompts/cnb/source_impact_review.md"
     cnb_chat_edit_planner: str = "prompts/cnb/chat_edit_planner.md"

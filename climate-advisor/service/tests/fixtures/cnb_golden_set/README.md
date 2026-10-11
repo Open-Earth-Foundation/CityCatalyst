@@ -1,157 +1,177 @@
 # CNB grounding golden set
 
-Versioned fixtures that check whether Concept Note Builder keeps uploaded
-evidence grounded at two stages:
+A single-pass evaluation of whether Concept Note Builder preserves meaning and
+supports its claims. Python checks exact contracts; an LLM judge evaluates
+semantic coverage and evidence support. No repetition/reliability evaluation or
+judge calibration benchmark is included.
 
-1. **Source analysis.** `analyze_document` must produce a summary whose facts
-   are traceable to exact excerpts at valid locators, cover the expected facts
-   and topics, and stay stable across repeated runs on unchanged input.
-2. **Chapter drafting.** Given a frozen, reviewed context bundle, the chapter
-   drafter must carry the expected document and context-bundle facts into the
-   chapters where the template needs them, without inventing figures.
+## Evaluation paths
 
-The scorer lives in `app/services/cnb/golden_set.py` and the contracts in
-`app/models/cnb/golden_set.py`. Scoring is deterministic; only the live
-evaluator calls models.
+| Stage | Input | Question |
+| --- | --- | --- |
+| `source_analysis` | Original document -> production analysis | Are expected facts/topics preserved? Is every substantive summary claim true, clear, and supported by retained quotations? |
+| `drafting` | Frozen reviewed bundle -> production chapter drafter | Does the draft preserve relevant facts, answer the application requirements, and avoid invented claims or commitments? |
+| `end_to_end` | Fresh source analysis -> production chapter drafter | Does information survive the complete pipeline, including upstream omissions or distortions? |
 
-## Fixtures
+`all` runs all available paths. Source analysis runs **once** and its actual
+output is reused for end-to-end drafting. The frozen and fresh drafting paths
+serve different diagnostic purposes; they are not repetition measurements.
+A semantic failure in stage 1 does not prevent end-to-end drafting when an
+analysis was produced. A generation failure blocks that dependent path.
 
-| Fixture | Format | Stages | Source |
-| --- | --- | --- | --- |
-| `richfield-flood-risk` | PDF-derived Markdown, 55 page markers | 1 and 2 | Public August 2025 Barr Engineering study for the City of Richfield, Minnesota |
-| `harbor-point-heat-resilience` | Native Markdown, heading/block anchors | 1 | Synthetic plan for a fictional city |
+## Fixtures and expectations
 
-Each fixture directory contains:
+| Fixture | Format | Stages |
+| --- | --- | --- |
+| `richfield-flood-risk` | Public August 2025 Barr Engineering report for Richfield, Minnesota; PDF-derived Markdown with 55 page markers | All |
+| `harbor-point-heat-resilience` | Synthetic fictional city plan with Markdown heading/block anchors | Source analysis |
 
-- `source.md`: the exact Markdown Climate Advisor receives from CityCatalyst.
-  PDF fixtures keep CityCatalyst's `<!-- page: N -->` markers, page headers and
-  footers, and inlined tables. Its SHA-256 is pinned in `golden.json`, and the
-  loader revalidates it with the production `verify_source_artifact` contract.
-- `golden.json`: expected facts, topics, and gate thresholds (`GoldenFixture`).
-- `drafting_input.json` (stage 2 only): the frozen bundle (a reviewed
-  `selected_source`, CityCatalyst context, funder, programme, and application
-  template) that the drafter receives.
+Each directory has `source.md` and `golden.json`; Richfield also has
+`drafting_input.json`. The source SHA-256 is pinned and verified with the production
+artifact contract. Richfield's certifying engineer, licence number, and private
+email correspondents are redacted. No private uploads or credentials belong here.
 
-No fixture contains secrets, tokens, production upload identifiers, or private
-documents. The Richfield report is public. Its certifying engineer, licence
-number, and private email correspondents are redacted.
+Expected facts are semantic statements with stable IDs and required/optional
+status. Source facts include exact evidence and allowed locators for baseline
+review and fixture validation. Draft facts include their origin and allowed
+chapters (empty means any chapter). Topics are descriptions of meaning. There
+are no keyword lists, reference-answer strings, or `match` rules.
+
+The golden expectations are **coverage targets, not factual evidence** for the
+judge. The original source and authoritative city/application context establish
+truth. Frozen/generated summaries are not authoritative when they contradict
+that evidence.
 
 ## Run
 
-Deterministic checks run in the normal CNB suite and in CI:
+From `climate-advisor/`:
 
-```powershell
+```bash
+# Deterministic tests of contracts, orchestration, and cache behavior; no model calls.
 uv run --directory service pytest tests/cnb/test_golden_set.py -q
-```
 
-The live evaluation calls the configured OpenRouter models. It needs
-`OPENROUTER_API_KEY`:
-
-```powershell
+# All paths, each once.
 uv run --directory service python -m scripts.evaluate_cnb_golden_set
-uv run --directory service python -m scripts.evaluate_cnb_golden_set `
-    --fixture richfield-flood-risk --stage drafting --repeats 1
+
+# One path or fixture.
+uv run --directory service python -m scripts.evaluate_cnb_golden_set \
+  --fixture richfield-flood-risk --stage drafting
+uv run --directory service python -m scripts.evaluate_cnb_golden_set \
+  --fixture richfield-flood-risk --stage end_to_end
+uv run --directory service python -m scripts.evaluate_cnb_golden_set \
+  --fixture harbor-point-heat-resilience --stage source_analysis
 ```
 
-It writes `report.md`, `report.json`, and raw model outputs
-(`outputs/<fixture>/analysis-run-<n>.json`, `drafts.json`) to
-`climate-advisor/output/cnb_golden_set/`. It exits with code 1 when any gate
-fails. Reports identify the fixture, analysis contract version, and model
-configuration. Evidence is limited to short snippets of model output, so
-reports never reproduce full source text.
+`--fixture` may be specified multiple times to select different cases.
+`--fixtures-dir` and `--output-dir` override the default directories. There is no
+`--repeats` flag. Explicitly selecting a drafting path for a fixture without
+one fails; an unfiltered drafting run selects only fixtures supporting drafting.
 
-## What is checked
+Live execution requires `OPENROUTER_API_KEY` and the usual Climate Advisor
+settings. `llm_config.yaml` independently configures `models.cnb_golden_set_judge`
+and the source/drafting models. The checked-in judge is `openai/gpt-6-sol` with
+high reasoning effort; no silent fallback to a producer model is used.
 
-Expected facts use `match.all_of`: every group must match one case-insensitive
-alternative. A term must start at a word boundary, and a term ending in a digit
-must also end at one. So `601` never matches `6010`, while `prioriti` matches
-`prioritization`. Thousands separators and typographic dashes are normalized
-before matching. Rewording therefore passes, while missing facts and wrong
-figures fail.
+## Review the judge prompts
 
-### Stage 1 gates (`source_analysis.thresholds`)
+The prompts use the repository's `<role>`, `<task>`, `<input>`, `<output>`, and
+`<example_output>` format and live together in:
 
-| Metric | Meaning | Default gate |
-| --- | --- | --- |
-| `invalid_locators` | Excerpts citing a page or anchor absent from the source, or the wrong locator kind for the format | 0 in every run |
-| `non_exact_excerpts` | Excerpts whose text is not an exact substring of the cited unit | 0 in every run |
-| `required_fact_coverage` | Required facts stated in the summary | mean ≥ 0.75 |
-| `fact_grounding` | Stated facts backed by a retained excerpt that overlaps the fact's evidence at an allowed locator | mean ≥ 0.6 |
-| `topic_coverage` | Expected topics named by any returned topic | mean ≥ 0.6 |
-| `unsupported_sentence_rate` | Summary sentences with a figure missing from the retained excerpts, or term support below `min_sentence_term_support` (0.6) | mean ≤ 0.2 |
-| `ambiguous_sentence_rate` | Sentences opening with an unresolved pronoun such as "It" or "This" | mean ≤ 0.2 |
+- [`prompts/cnb/golden_set/source_analysis.md`](../../../../prompts/cnb/golden_set/source_analysis.md)
+- [`prompts/cnb/golden_set/drafting.md`](../../../../prompts/cnb/golden_set/drafting.md)
 
-The unsupported-sentence check follows the synthesis prompt's contract: every
-summary sentence must be traceable to a *retained* key excerpt. A true document
-fact therefore still fails when the excerpt supporting it was dropped. Figures
-of 10,000 or more may differ by up to 1% to allow rounding, such as
-"$8.85 million" for $8,853,000. Smaller figures, including years, must match
-exactly.
+The drafting prompt is shared by frozen-input and end-to-end evaluations.
+Prompt paths are configured under `prompts.cnb_golden_set_source_judge` and
+`prompts.cnb_golden_set_drafting_judge`. Reports record SHA-256 hashes of the
+loaded prompt text, producer analysis contract version, and producer/judge models.
+The judge uses a structured output schema with no tools and a 10-minute request
+limit. It makes one judgment per evaluated stage; there is no voting or repeated
+judging. Provider/schema failures are evaluation errors, not quality verdicts.
 
-### Stability (informational)
+## Python versus the judge
 
-With `--repeats` above 1, the report shows fact agreement (the share of facts
-with the same covered status in every run) and the mean pairwise Jaccard
-similarity of topics, excerpts, and locators. Stability is reported separately
-and never fails the run. Low topic or excerpt Jaccard with high fact agreement
-is harmless wording variation. A fact listed under `unstable_facts` is covered
-in only some runs. Treat it as a prompt or limit weakness even when the mean
-coverage gate passes.
+Python validates source digests, exact excerpt text, correct locator types,
+chapter presence, and judge output contracts. Every judge reference must quote an
+exact substring of an existing input/output unit. Coverage requires exactly one
+verdict per expectation. A supported fact must be cited in the allowed chapter;
+evidence supplied only to another chapter cannot support the current one.
+Invalid judgments withhold metrics and fail evaluation rather than assigning a
+product defect. Python also retains the incremental-cache and contract-invalidation
+tests. It does not assess semantics through term overlap or number presence.
 
-### Stage 2 gates (`drafting.thresholds`)
+The judge evaluates both directions:
 
-| Metric | Meaning | Default gate |
-| --- | --- | --- |
-| `required_fact_coverage` | Required facts found in one of the fact's `chapters` (any chapter when empty) | ≥ 0.7 |
-| `unsupported_number_rate` | Significant drafted figures absent from every drafter input (source text, bundle, application context) | ≤ 0.1 |
-| `empty_chapters` | Chapters drafted with no body | 0 |
+1. Expected fact -> output: `covered`, `partially_covered`, `missing`, or `contradicted`.
+2. Every substantive output claim -> evidence: `supported`, `partially_supported`,
+   `unsupported`, `contradicted`, or `uncertain`.
 
-A fact found only outside its allowed chapters is listed under "Found in" but
-does not count as covered. Figures the drafter derived (sums, conversions) count
-as unsupported, because the drafting prompt forbids combining values.
+For each claim it separately checks **original truth** and **supplied evidence**.
+In source analysis, supplied evidence is only the verified retained quotations.
+In drafting, it is the actual chapter inputs, excluding earlier generated
+chapters and the current draft. Complete source text appears in those inputs
+only when the production token budget permits it. Original source text remains
+available to the judge for detecting upstream misinformation even in summary mode.
 
-## Interpreting nondeterministic results
+The judge checks entity/quantity relationships, units, time, geographic scope,
+negation, uncertainty, proposals versus commitments, and cost versus funding.
+It judges rounding in context, with no universal percentage tolerance. Newly
+derived totals/conversions remain unsupported under this benchmark's
+source-preservation policy. Clarity is assessed within the complete reusable source summary and in the reading
+context of draft chapters; ordinary resolvable pronouns are acceptable.
 
-- Integrity failures (`invalid_locators`, `non_exact_excerpts`) are always
-  regressions in excerpt verification. They are never sampling noise.
-- A single run below a semantic gate can be noise. Gates use the run mean, so
-  rerun with `--repeats 3` before changing prompts or thresholds.
-- A failure that persists across reruns after a prompt, model, or limit change
-  is a grounding regression. Fix the prompt or limits rather than loosening the
-  gate.
+Chapter judgments check whether the application question is answered and whether
+chapters contradict each other. Explicitly acknowledging unavailable information
+is acceptable; inventing answers or omitting relevant available information is not.
+The judge's own semantic accuracy is not mechanically established by reference
+validation or mocked tests; judge calibration is outside this ticket.
 
-## Add a fixture
+## Gates and reports
 
-1. Create `<fixture-id>/source.md` from non-sensitive Markdown. For PDFs, use
-   CityCatalyst's Mistral OCR output so page markers, headers, footers, and
-   tables match production. Redact personal data.
-2. Compute the SHA-256 of the file with LF line endings and record it in
-   `golden.json` together with the filename, label, format, and page count.
-3. Add facts with exact `evidence` text and allowed `locators` (`page` for
-   PDFs, the readable heading path such as `plan/financing` for Markdown). Mark
-   facts a short summary may reasonably omit as `"required": false`.
-4. For stage 2, add `drafting_input.json` and `drafting.facts` with the
-   `chapters` each fact belongs in. The frozen `selected_source` must pass the
-   fixture's own stage-1 gates.
-5. Run `pytest tests/cnb/test_golden_set.py`. The fixture tests fail when
-   evidence is not exact at its locators or the digest is stale.
+Existing coverage defaults are retained, with semantic rather than lexical verdicts:
 
-## Review intentional baseline changes
+| Gate | Default |
+| --- | --- |
+| Source required-fact coverage (fully covered / required) | >= 0.75 |
+| Source retained-evidence support (fully supported / evaluated claims) | >= 0.60 |
+| Source topic coverage (fully covered / expected topics) | >= 0.60 |
+| Draft required-fact coverage | >= 0.70 |
 
-The expectations in `golden.json` and `drafting_input.json` are the baseline.
-When a prompt or model change legitimately changes what a good answer looks
-like:
+Partial coverage does not count as full coverage. A contradicted fact, any claim
+not fully supported by original evidence (including uncertain/partial verdicts),
+an unclear claim, or an output contradiction fails the stage. Draft claims must
+also be fully supported by the actual drafter inputs, and required chapter
+requirements must be satisfied. Any invalid quotation/locator or empty chapter
+fails integrity checks. These gates are explicit policy defaults, not calibrated
+accuracy estimates. Review threshold changes intentionally with fixture changes.
 
-1. Run the live evaluator and read `report.md` and the raw outputs.
-2. Edit expectations or thresholds only with a reason in the pull request, for
-   example "the new synthesizer prompt keeps 10 excerpts, so the cost basis is
-   now required".
-3. To refresh the frozen stage-2 bundle, copy a reviewed
-   `analysis-run-<n>.json` result's `summary`, `topics`, and `key_excerpts` into
-   `drafting_input.json`. Then confirm `test_frozen_drafting_bundle_passes_its_own_analysis_gates`.
+The evaluator writes to `climate-advisor/output/cnb_golden_set/` by default:
 
-Changing the reader or synthesizer model, reasoning effort, either prompt,
-tokenizer, or partition, excerpt, or topic limits changes
-`source_analysis_contract_version`. That forces production re-analysis of
-cached sources, and `test_every_analysis_input_invalidates_the_reuse_contract`
-enforces it.
+- `report.md`: metrics, integrity/semantic failures, evaluation errors, and cited findings.
+- `report.json`: structured reports and full structured judgments.
+- `outputs/<fixture>/analysis.json`: the generated analysis.
+- `outputs/<fixture>/<stage>/judgment.json`: raw judge output, including invalid judgments for review.
+- `outputs/<fixture>/drafting/drafts.json` and `end_to_end/drafts.json`: generated chapters.
+
+Reports do not embed complete source documents or judge input payloads. Markdown
+findings are truncated to short snippets. Output directories are reused; the
+current report names the stages evaluated in this invocation. Use a new
+`--output-dir` when preserving a previous result. Exit code 1 means a product
+failure or an invalid/unavailable evaluation; the report distinguishes them.
+
+## Add or intentionally change a fixture
+
+1. Add non-sensitive source Markdown matching the production artifact format.
+2. Pin its SHA-256, format, and page count in `golden.json`.
+3. Write semantic fact/topic statements with essential qualifiers. Add exact
+   evidence and valid locators for source facts. Mark genuinely optional facts.
+4. For drafting, add a reviewed `drafting_input.json` and relevant fact targets
+   with allowed chapters; do not require every document fact in the final note.
+5. Run the deterministic tests and the selected live evaluation. Inspect the
+   generated passages, original evidence, and judge explanations.
+6. Explain intentional baseline/prompt/threshold changes in the review. Update
+   the frozen analysis only after reviewing its factual accuracy and excerpts.
+
+Model, reasoning, source prompt, tokenizer, or partition/excerpt/topic limit
+changes invalidate production cached source analyses through
+`source_analysis_contract_version`; the existing tests verify this independently
+of the semantic judge.

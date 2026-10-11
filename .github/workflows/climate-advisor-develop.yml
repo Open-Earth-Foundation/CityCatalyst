@@ -192,7 +192,6 @@ jobs:
         working-directory: climate-advisor
         run: |
           uv run --directory service python -m scripts.evaluate_cnb_golden_set \
-                 --repeats 2 \
                  --output-dir ../output/cnb_golden_set
 
       - name: Publish golden-set report

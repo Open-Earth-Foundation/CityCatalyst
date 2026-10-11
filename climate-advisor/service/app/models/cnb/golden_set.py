@@ -1,41 +1,21 @@
-"""Golden-set fixture and report contracts for CNB grounding evaluation.
+"""Fixture, judge, and report contracts for single-pass CNB evaluation.
 
-Stage 1 (``source_analysis``) checks one analyzed source document against
-expected facts, topics, exact excerpts, and allowed locators. Stage 2
-(``drafting``) checks that drafted chapters carry expected document and
-context-bundle facts without inventing figures. Expectations use any-of term
-groups so harmless rewording does not fail exact-string checks.
+Python checks source integrity and judge references. A model judges semantic
+coverage, claim support, clarity, and chapter requirements using cited evidence.
 """
 
 from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
-
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class GoldenContract(BaseModel):
     """Reject unknown fields so fixture typos fail instead of being ignored."""
 
     model_config = ConfigDict(extra="forbid")
-
-
-class TermMatch(GoldenContract):
-    """Wording-tolerant match: every group needs one case-insensitive alternative."""
-
-    all_of: list[list[str]] = Field(min_length=1)
-
-    @model_validator(mode="after")
-    def require_alternatives(self) -> TermMatch:
-        """Reject empty groups, which would otherwise match every text."""
-        if any(
-            not group or not all(term.strip() for term in group)
-            for group in self.all_of
-        ):
-            raise ValueError("Every term group needs at least one non-empty term")
-        return self
 
 
 class GoldenLocator(GoldenContract):
@@ -65,28 +45,22 @@ class GoldenFact(GoldenContract):
     id: str = Field(min_length=1)
     statement: str = Field(min_length=1)
     required: bool = True
-    match: TermMatch
     evidence: list[GoldenEvidence] = Field(min_length=1)
 
 
 class GoldenTopic(GoldenContract):
-    """A topic the analysis should name, matched by any listed alternative."""
+    """A topic the analysis should convey, regardless of wording."""
 
     id: str = Field(min_length=1)
-    any_of: list[str] = Field(min_length=1)
+    statement: str = Field(min_length=1)
 
 
 class SourceAnalysisThresholds(GoldenContract):
-    """Documented gates; rates are means across repeated runs."""
+    """Coverage gates for one semantically judged analysis."""
 
     min_required_fact_coverage: float = Field(default=0.75, ge=0, le=1)
-    min_fact_grounding: float = Field(default=0.6, ge=0, le=1)
+    min_retained_support: float = Field(default=0.6, ge=0, le=1)
     min_topic_coverage: float = Field(default=0.6, ge=0, le=1)
-    max_unsupported_sentence_rate: float = Field(default=0.2, ge=0, le=1)
-    max_ambiguous_sentence_rate: float = Field(default=0.2, ge=0, le=1)
-    max_invalid_locators: int = Field(default=0, ge=0)
-    max_non_exact_excerpts: int = Field(default=0, ge=0)
-    min_sentence_term_support: float = Field(default=0.6, ge=0, le=1)
 
 
 class SourceAnalysisGolden(GoldenContract):
@@ -107,15 +81,12 @@ class DraftFact(GoldenContract):
     origin: Literal["document", "context_bundle", "application_context"]
     required: bool = True
     chapters: list[str] = Field(default_factory=list)
-    match: TermMatch
 
 
 class DraftingThresholds(GoldenContract):
-    """Documented stage-2 gates for one drafted note."""
+    """Fact coverage gate for one semantically judged draft."""
 
     min_required_fact_coverage: float = Field(default=0.7, ge=0, le=1)
-    max_unsupported_number_rate: float = Field(default=0.1, ge=0, le=1)
-    max_empty_chapters: int = Field(default=0, ge=0)
 
 
 class DraftingGolden(GoldenContract):
@@ -165,121 +136,151 @@ class GoldenFixture(GoldenContract):
     drafting: DraftingGolden | None = None
 
 
-class SentenceFinding(BaseModel):
-    """One summary sentence that failed a grounding heuristic."""
-
-    sentence: str
-    reason: str
-
-
-class ExcerptFinding(BaseModel):
-    """One returned excerpt whose locator or exact text could not be verified."""
-
-    locator: str
-    excerpt: str
-    reason: str
+Stage = Literal["source_analysis", "drafting", "end_to_end"]
+CoverageVerdict = Literal["covered", "partially_covered", "missing", "contradicted"]
+SupportVerdict = Literal[
+    "supported", "partially_supported", "unsupported", "contradicted", "uncertain"
+]
 
 
-class SourceAnalysisRunScore(BaseModel):
-    """Semantic correctness of one analysis run."""
+class TextUnit(GoldenContract):
+    """Addressable verbatim text for deterministic reference verification."""
 
-    run: int
-    required_fact_coverage: float
-    fact_grounding: float
-    topic_coverage: float
-    unsupported_sentence_rate: float
-    ambiguous_sentence_rate: float
-    invalid_locators: int
-    non_exact_excerpts: int
-    covered_facts: list[str]
-    missing_required_facts: list[str]
-    ungrounded_facts: list[str]
-    missing_topics: list[str]
-    unsupported_sentences: list[SentenceFinding]
-    ambiguous_sentences: list[SentenceFinding]
-    excerpt_findings: list[ExcerptFinding]
+    id: str
+    text: str
+    kind: Literal["source", "context", "supplied", "output"]
+    chapter_ref: str | None = None
 
 
-class StabilityScore(BaseModel):
-    """Agreement between repeated runs on unchanged input, reported separately."""
+class ExpectedFact(GoldenContract):
+    """Meaning to preserve, with optional allowed output chapters."""
 
-    runs: int
-    fact_agreement: float
-    unstable_facts: list[str]
-    topic_jaccard: float
-    excerpt_jaccard: float
-    locator_jaccard: float
-
-
-class DraftFactFinding(BaseModel):
-    """Where one expected drafting fact was found, if anywhere."""
-
-    fact_id: str
-    origin: str
+    id: str
+    statement: str
     required: bool
-    found_in: list[str]
-    covered: bool
+    chapters: list[str]
 
 
-class NumberFinding(BaseModel):
-    """A drafted figure absent from every input the drafter received."""
+class ChapterRequirement(GoldenContract):
+    """Application requirement evaluated against one output chapter."""
 
     chapter_ref: str
-    number: str
-    context: str
+    title: str
+    description: str
+    required: bool
 
 
-class DraftingScore(BaseModel):
-    """Stage-2 coverage and figure grounding for one drafted note."""
+class JudgeInput(GoldenContract):
+    """Exact judge payload; expectations are targets, never factual evidence."""
 
-    figures_checked: int
-    required_fact_coverage: float
-    unsupported_number_rate: float
-    empty_chapters: list[str]
-    facts: list[DraftFactFinding]
-    unsupported_numbers: list[NumberFinding]
-
-
-class SourceAnalysisReport(BaseModel):
-    """Stage-1 runs, stability, and gate failures for one fixture."""
-
-    runs: list[SourceAnalysisRunScore]
-    stability: StabilityScore | None
-    failures: list[str]
+    stage: Stage
+    expected_facts: list[ExpectedFact]
+    expected_topics: list[GoldenTopic]
+    chapter_requirements: list[ChapterRequirement]
+    outputs: list[TextUnit]
+    evidence: list[TextUnit]
 
 
-class DraftingReport(BaseModel):
-    """Stage-2 score and gate failures for one fixture."""
+class TextReference(GoldenContract):
+    """A verbatim span in a declared input or output unit."""
 
-    score: DraftingScore
-    failures: list[str]
+    unit_id: str
+    quote: str = Field(min_length=1)
 
 
-class FixtureReport(BaseModel):
-    """Evaluation results for one golden fixture."""
+class CoverageJudgment(GoldenContract):
+    """One expected fact or topic and the output passages expressing it."""
+
+    id: str
+    verdict: CoverageVerdict
+    output_refs: list[TextReference]
+    reason: str = Field(min_length=1, max_length=1200)
+
+
+class ClaimJudgment(GoldenContract):
+    """A substantive output claim checked against truth and supplied evidence."""
+
+    output: TextReference
+    verdict: SupportVerdict
+    evidence: list[TextReference]
+    supplied_verdict: SupportVerdict
+    supplied_evidence: list[TextReference]
+    self_contained: bool
+    reason: str = Field(min_length=1, max_length=1200)
+
+
+class ChapterJudgment(GoldenContract):
+    """Whether a chapter answers its question without fabricating missing inputs."""
+
+    chapter_ref: str
+    verdict: Literal["satisfied", "partially_satisfied", "not_satisfied"]
+    output_refs: list[TextReference]
+    reason: str = Field(min_length=1, max_length=1200)
+
+
+class ContradictionJudgment(GoldenContract):
+    """Two or more output passages making incompatible statements."""
+
+    output_refs: list[TextReference] = Field(min_length=2)
+    reason: str = Field(min_length=1, max_length=1200)
+
+
+class JudgeEvaluation(GoldenContract):
+    """Structured semantic judgments, validated before any metrics are trusted."""
+
+    facts: list[CoverageJudgment]
+    topics: list[CoverageJudgment]
+    claims: list[ClaimJudgment]
+    chapters: list[ChapterJudgment]
+    contradictions: list[ContradictionJudgment]
+
+
+class StageReport(GoldenContract):
+    """Separate product failures from invalid or unavailable evaluation results."""
+
+    metrics: dict[str, float] = Field(default_factory=dict)
+    integrity_failures: list[str] = Field(default_factory=list)
+    semantic_failures: list[str] = Field(default_factory=list)
+    evaluation_errors: list[str] = Field(default_factory=list)
+    judgment: JudgeEvaluation | None = None
+
+    @property
+    def passed(self) -> bool:
+        """An unavailable judgment can never produce a passing stage."""
+        return self.judgment is not None and not (
+            self.integrity_failures or self.semantic_failures or self.evaluation_errors
+        )
+
+
+class FixtureReport(GoldenContract):
+    """Single-pass results for the enabled stages of one fixture."""
 
     fixture_id: str
     source_sha256: str
     source_format: ConceptNoteSourceFormat
-    source_analysis: SourceAnalysisReport | None = None
-    drafting: DraftingReport | None = None
+    source_analysis: StageReport | None = None
+    drafting: StageReport | None = None
+    end_to_end: StageReport | None = None
 
     @property
     def passed(self) -> bool:
-        """Return whether every evaluated stage met its documented gates."""
-        stages = [self.source_analysis, self.drafting]
-        return all(not stage.failures for stage in stages if stage is not None)
+        """Require at least one evaluated stage and no stage failures."""
+        stages = [
+            s for s in (self.source_analysis, self.drafting, self.end_to_end) if s
+        ]
+        return bool(stages) and all(stage.passed for stage in stages)
 
 
-class GoldenSetReport(BaseModel):
-    """Complete developer-readable evaluation report without source text."""
+class GoldenSetReport(GoldenContract):
+    """Evaluation provenance and results; contains no complete source documents."""
 
     generated_at: str
     analysis_contract_version: str
+    judge_prompt_versions: dict[str, str]
     models: dict[str, dict[str, str | None]]
     fixtures: list[FixtureReport]
 
     @property
     def passed(self) -> bool:
-        """Return whether every fixture passed."""
-        return all(fixture.passed for fixture in self.fixtures)
+        """Require evaluated fixtures and successful results for every one."""
+        return bool(self.fixtures) and all(fixture.passed for fixture in self.fixtures)

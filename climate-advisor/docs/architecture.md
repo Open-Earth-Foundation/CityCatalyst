@@ -394,6 +394,9 @@ user-confirmed revision. Only gaps backed by a cited answer close; a redraft
 that drops any other gap or mismatches its markers is rejected. The re-check is
 a durable job in `context_summary.source_revalidation`, queued with the bundle
 commit and retried by the context-bundle reconciler after failures or restarts.
+It needs no template: a note with nothing drafted finishes without a model
+call, and a note without a template is redrafted from its chapters' own titles
+and descriptions.
 
 ## SSE Contract
 

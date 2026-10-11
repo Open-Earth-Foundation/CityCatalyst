@@ -267,6 +267,7 @@ def _revalidation_service(
     query_document_fn: Any,
     payloads: list[dict[str, Any]],
     saved: list[dict[str, Any]],
+    with_template: bool = True,
 ) -> ConceptNoteChapterDraftService:
     """Wire the real re-check loop to fakes for storage, review, and generation."""
 
@@ -299,7 +300,7 @@ def _revalidation_service(
             return_value=ConceptNoteApplicationContextResponse(
                 run_id=RUN_ID,
                 city_id=UUID("40000000-0000-4000-8000-000000000001"),
-                template=template,
+                template=template if with_template else None,
                 included_sources=ApplicationContextIncludedSources(),
             )
         )
@@ -494,6 +495,90 @@ async def test_revalidation_skips_a_rejected_chapter_and_continues() -> None:
         new_sources=[RevalidationSource(source=NEW_SOURCE, units=[])],
     )
 
+    assert [item["chapter_id"] for item in saved] == [chapters[1].chapter_id]
+
+
+def _drafted_chapter(number: int, *, revision_number: int | None = 1):
+    return WorkspaceChapterSnapshot(
+        chapter_id=uuid4(),
+        chapter_ref=f"chapter-{number}",
+        title=f"Chapter {number}",
+        description=f"What chapter {number} covers.",
+        position=number - 1,
+        status="draft" if revision_number else "not_started",
+        required=True,
+        user_locked=False,
+        body_markdown=f"Chapter {number} text" if revision_number else None,
+        revision_id=uuid4() if revision_number else None,
+        revision_number=revision_number,
+    )
+
+
+async def test_revalidation_finishes_without_llm_calls_before_drafting() -> None:
+    """New files on an undrafted note need no redraft and no template."""
+    service = _revalidation_service(
+        [_drafted_chapter(1, revision_number=None)],
+        selected=[1],
+        query_document_fn=AsyncMock(),
+        payloads=[],
+        saved=[],
+        with_template=False,
+    )
+
+    assert await service.revalidate_after_new_sources(
+        run_id=RUN_ID,
+        user_id="user-1",
+        new_sources=[RevalidationSource(source=NEW_SOURCE, units=[])],
+    )
+
+    service._load_run_context.assert_not_awaited()
+    service._source_impact_reviewer.select_chapters.assert_not_awaited()
+
+
+async def test_revalidation_without_chapters_finishes() -> None:
+    """A note with no chapters at all has nothing to revalidate."""
+    service = _revalidation_service(
+        [],
+        selected=[],
+        query_document_fn=AsyncMock(),
+        payloads=[],
+        saved=[],
+        with_template=False,
+    )
+
+    assert await service.revalidate_after_new_sources(
+        run_id=RUN_ID,
+        user_id="user-1",
+        new_sources=[RevalidationSource(source=NEW_SOURCE, units=[])],
+    )
+
+    service._source_impact_reviewer.select_chapters.assert_not_awaited()
+
+
+async def test_revalidation_redrafts_drafted_chapters_without_a_template() -> None:
+    """Without a template, the drafted chapters themselves guide the redraft."""
+    chapters = [_drafted_chapter(1), _drafted_chapter(2)]
+    payloads: list[dict[str, Any]] = []
+    saved: list[dict[str, Any]] = []
+    service = _revalidation_service(
+        chapters,
+        selected=[2],
+        query_document_fn=AsyncMock(),
+        payloads=payloads,
+        saved=saved,
+        with_template=False,
+    )
+
+    assert await service.revalidate_after_new_sources(
+        run_id=RUN_ID,
+        user_id="user-1",
+        new_sources=[RevalidationSource(source=NEW_SOURCE, units=[])],
+    )
+
+    assert payloads[0]["application_context"]["template"] is None
+    assert payloads[0]["chapter"]["title"] == "Chapter 2"
+    assert payloads[0]["chapter"]["description"] == "What chapter 2 covers."
+    assert payloads[0]["current_body_markdown"] == "Chapter 2 text"
     assert [item["chapter_id"] for item in saved] == [chapters[1].chapter_id]
 
 

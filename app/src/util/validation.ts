@@ -1,3 +1,4 @@
+import { conceptNoteCustomTemplateRequest } from "./concept-note-funder";
 import { z } from "zod";
 import {
   GlobalWarmingPotentialTypeEnum,
@@ -461,38 +462,6 @@ export const nativeInputCatalogReconciliationRequest = z.object({
 export type NativeInputCatalogReconciliationRequest = z.infer<
   typeof nativeInputCatalogReconciliationRequest
 >;
-const funderText = (max: number) => z.string().max(max).nullable();
-
-/** Reviewed application template: catalogue `funder_templates` columns. */
-const conceptNoteTemplateFields = z
-  .object({
-    template_name: z.string().trim().min(1).max(255),
-    output_format: funderText(64),
-    chapter_schema: z
-      .array(
-        z
-          .object({
-            // Empty for new chapters; the server derives one from the title.
-            chapter_ref: z.string().max(255),
-            title: z.string().trim().min(1).max(255),
-            description: z.string().nullable(),
-            required: z.boolean(),
-            required_fields: z.array(z.string()),
-          })
-          .strict(),
-      )
-      .min(1),
-  })
-  .strict();
-
-/** A note's own template, typed by hand or reviewed from a template import. */
-export const conceptNoteCustomTemplateRequest = z
-  .object({
-    template: conceptNoteTemplateFields,
-    import_id: z.string().uuid().nullable(),
-  })
-  .strict();
-
 export const conceptNoteFundingSelectionRequest = z
   .object({
     funder_id: z.string().uuid().nullable(),
@@ -523,56 +492,6 @@ export const conceptNoteFunderImportStartRequest = z
     kind: z.enum(["funder", "template"]).default("funder"),
   })
   .strict();
-const funderAward = z.number().finite().nonnegative().nullable();
-
-/** Reviewed funder, programme and template to add to the CNB catalogue. */
-export const conceptNoteFunderCreateRequest = z
-  .object({
-    funder: z
-      .object({
-        name: z.string().trim().min(1).max(255),
-        funder_type: funderText(100),
-        country: funderText(100),
-        region: funderText(255),
-        profile: z
-          .object({
-            stated: z.record(z.string(), z.string()),
-            derived: z.record(z.string(), z.string()),
-          })
-          .strict(),
-      })
-      .strict(),
-    opportunity: z
-      .object({
-        name: z.string().trim().min(1).max(255),
-        applicant_type: funderText(255),
-        category: funderText(255),
-        sector: funderText(255),
-        hazards: z.array(z.string()),
-        interventions: z.array(z.string()),
-        finance_route: funderText(255),
-        instrument_type: funderText(255),
-        region_scope: funderText(255),
-        min_award: funderAward,
-        max_award: funderAward,
-        currency: funderText(16),
-        status: funderText(64),
-        summary: z.string().nullable(),
-        known_gaps: z.array(z.string()),
-      })
-      .strict()
-      .refine(
-        (value) =>
-          value.min_award === null ||
-          value.max_award === null ||
-          value.min_award <= value.max_award,
-        { message: "min_award must not exceed max_award" },
-      ),
-    template: conceptNoteTemplateFields,
-    import_id: z.string().uuid().nullable(),
-  })
-  .strict();
-
 export const recordConsentRequest = z.object({
   consentType: z.enum(["analytics", "marketing"]),
   granted: z.boolean(),

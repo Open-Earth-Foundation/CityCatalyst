@@ -21,7 +21,7 @@ import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
 import type {
   conceptNoteCustomTemplateRequest,
   conceptNoteFunderCreateRequest,
-} from "@/util/validation";
+} from "@/util/concept-note-funder";
 import type { CityAttributes } from "@/models/City";
 import type { GasValue, GasValueAttributes } from "@/models/GasValue";
 import type {

@@ -14,7 +14,7 @@ from app.models.db.concept_note import (
     ConceptNoteUpload,
 )
 from app.models.db.thread import Thread
-from app.services.cnb import funder_import as service
+from app.services.cnb import funder_creation as service
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.schema import CreateSchema, DropSchema

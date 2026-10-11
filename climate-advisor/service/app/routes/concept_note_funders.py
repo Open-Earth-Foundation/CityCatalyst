@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from app.db.session import get_session
-from app.models.cnb.funder_import import (
+from app.models.cnb.funder_creation import (
     FunderCreateRequest,
     FunderCreateResponse,
     FunderImportDiscardRequest,
@@ -11,7 +11,7 @@ from app.models.cnb.funder_import import (
     FunderImportStartRequest,
 )
 from app.routes.dependencies import AuthorizedRun
-from app.services.cnb.funder_import import (
+from app.services.cnb.funder_creation import (
     create_funder,
     discard_funder_import,
     load_funder_import,

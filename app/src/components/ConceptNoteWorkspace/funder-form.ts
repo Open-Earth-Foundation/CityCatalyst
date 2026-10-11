@@ -1,10 +1,15 @@
+import Decimal from "decimal.js";
+import type { ZodIssue } from "zod";
+import {
+  conceptNoteFunderCreateRequest,
+  conceptNoteTemplateFields,
+} from "@/util/concept-note-funder";
 import type {
   ConceptNoteApplicationContext,
   ConceptNoteCustomTemplateRequest,
   ConceptNoteFunderCreateRequest,
   ConceptNoteFunderImport,
   ConceptNoteFunderImportDraft,
-  ConceptNoteProgrammeFields,
   ConceptNoteTemplateFields,
 } from "@/util/types";
 
@@ -35,15 +40,6 @@ const PROGRAMME_FIELDS = [
   "interventions",
 ] as const;
 type ProgrammeField = (typeof PROGRAMME_FIELDS)[number];
-const LIST_FIELDS: ReadonlySet<ProgrammeField> = new Set([
-  "hazards",
-  "interventions",
-]);
-const AWARD_FIELDS: ReadonlySet<ProgrammeField> = new Set([
-  "min_award",
-  "max_award",
-]);
-
 type TemplateField = "template_name" | "output_format";
 
 export interface ChapterRow {
@@ -193,55 +189,47 @@ export function parseAward(value: string): number | null {
   ) {
     return Number.NaN;
   }
-  const amount = Number(text.replace(/[ \u00a0\u202f]/g, "").replace(",", "."));
-  return Number.isFinite(amount) ? amount : Number.NaN;
+  const decimal = new Decimal(
+    text.replace(/[ \u00a0\u202f]/g, "").replace(",", "."),
+  );
+  const amount = decimal.toNumber();
+  return Number.isFinite(amount) && decimal.equals(amount)
+    ? amount
+    : Number.NaN;
 }
 
-/** A template name and at least one titled chapter. */
-export function validateTemplateForm(form: TemplateForm): FunderFormErrors {
+/** Map request issues to stable chapter IDs so field errors survive row edits. */
+function fieldErrors(issues: ZodIssue[], form: TemplateForm): FunderFormErrors {
   const errors: FunderFormErrors = {};
-  if (!form.template.template_name.trim()) {
-    errors["template.template_name"] = "funder-error-template-name";
-  }
-  if (!form.chapters.length) {
-    errors["template.chapters"] = "funder-error-chapters";
-  }
-  for (const chapter of form.chapters) {
-    if (!chapter.title.trim()) {
-      errors[`chapter.${chapter.id}.title`] = "funder-error-chapter-title";
+  for (const issue of issues) {
+    let path = issue.path.join(".");
+    if (issue.path[1] === "chapter_schema") {
+      const row = form.chapters[Number(issue.path[2])];
+      path = row ? `chapter.${row.id}.${issue.path[3]}` : "template.chapters";
     }
+    errors[path] ??= issue.message;
   }
   return errors;
 }
 
-/** Required names, at least one titled chapter and valid award amounts. */
+export function validateTemplateForm(form: TemplateForm): FunderFormErrors {
+  const result = conceptNoteTemplateFields.safeParse(templateFromForm(form));
+  return result.success
+    ? {}
+    : fieldErrors(
+        result.error.issues.map((issue) => ({
+          ...issue,
+          path: ["template", ...issue.path],
+        })),
+        form,
+      );
+}
+
 export function validateFunderForm(form: FunderForm): FunderFormErrors {
-  const errors = validateTemplateForm(form);
-  if (!form.funder.name.trim()) {
-    errors["funder.name"] = "funder-error-funder-name";
-  }
-  if (!form.opportunity.name.trim()) {
-    errors["opportunity.name"] = "funder-error-programme-name";
-  }
-  const min = parseAward(form.opportunity.min_award);
-  const max = parseAward(form.opportunity.max_award);
-  if (Number.isNaN(min)) errors["opportunity.min_award"] = "funder-error-award";
-  if (Number.isNaN(max)) errors["opportunity.max_award"] = "funder-error-award";
-  // Comparisons with NaN are false, so an invalid amount skips this check.
-  if (min !== null && max !== null && min > max) {
-    errors["opportunity.max_award"] = "funder-error-award-range";
-  }
-  return errors;
-}
-
-/** Request value for one programme input. */
-function programmeValue(
-  field: ProgrammeField,
-  value: string,
-): string | string[] | number | null {
-  if (LIST_FIELDS.has(field)) return splitList(value);
-  if (AWARD_FIELDS.has(field)) return parseAward(value);
-  return optionalText(value);
+  const result = conceptNoteFunderCreateRequest.safeParse(
+    formToCreateRequest(form, null),
+  );
+  return result.success ? {} : fieldErrors(result.error.issues, form);
 }
 
 /**
@@ -253,18 +241,30 @@ export function formToCreateRequest(
   form: FunderForm,
   source: ConceptNoteFunderImport | null,
 ): ConceptNoteFunderCreateRequest {
+  const { funder, opportunity } = form;
   return {
     funder: {
-      ...fieldMap(FUNDER_FIELDS, (field) => optionalText(form.funder[field])),
-      name: form.funder.name.trim(),
+      name: funder.name.trim(),
+      funder_type: optionalText(funder.funder_type),
+      country: optionalText(funder.country),
+      region: optionalText(funder.region),
       profile: source?.draft?.funder.profile ?? { stated: {}, derived: {} },
     },
     opportunity: {
-      // Each field's value type follows `programmeValue`.
-      ...(fieldMap(PROGRAMME_FIELDS, (field) =>
-        programmeValue(field, form.opportunity[field]),
-      ) as Omit<ConceptNoteProgrammeFields, "known_gaps">),
-      name: form.opportunity.name.trim(),
+      name: opportunity.name.trim(),
+      summary: optionalText(opportunity.summary),
+      applicant_type: optionalText(opportunity.applicant_type),
+      region_scope: optionalText(opportunity.region_scope),
+      sector: optionalText(opportunity.sector),
+      category: optionalText(opportunity.category),
+      instrument_type: optionalText(opportunity.instrument_type),
+      finance_route: optionalText(opportunity.finance_route),
+      status: optionalText(opportunity.status),
+      min_award: parseAward(opportunity.min_award),
+      max_award: parseAward(opportunity.max_award),
+      currency: optionalText(opportunity.currency),
+      hazards: splitList(opportunity.hazards),
+      interventions: splitList(opportunity.interventions),
       known_gaps: source?.draft?.opportunity.known_gaps ?? [],
     },
     template: templateFromForm(form),

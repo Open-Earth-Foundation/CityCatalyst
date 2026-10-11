@@ -31,7 +31,7 @@ from app.db.session import get_session_factory
 from app.models.cnb.concept_note_markdown import source_format_from_filename
 from app.models.cnb.funding_catalogue import MANUAL_SOURCE_PREFIX, UPLOAD_SOURCE_PREFIX
 from app.models.cnb.concept_note_application_context import FundingAddedFrom
-from app.models.cnb.funder_import import (
+from app.models.cnb.funder_creation import (
     CustomTemplateRequest,
     ExtractedChapter,
     ExtractedEvidence,
@@ -63,7 +63,6 @@ from app.models.db.concept_note import (
     ConceptNoteRun,
     ConceptNoteUpload,
 )
-from app.persistence.concept_notes.workspace import normalize_template_chapters
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
@@ -648,7 +647,6 @@ async def create_funder(
     )
     reviewed = payload.model_copy(update={"template": template})
     chapter_schema = [chapter.model_dump(mode="json") for chapter in template.chapter_schema]
-    normalize_template_chapters(chapter_schema)
 
     # Step 3: write funder, programme, template and provenance in one transaction.
     funder_id, opportunity_id = uuid4(), uuid4()
@@ -678,9 +676,7 @@ async def create_funder(
                     source_record_ref=source_record_ref,
                     funder_id=funder_id,
                     name=reviewed.opportunity.name.strip(),
-                    **reviewed.opportunity.model_dump(
-                        include={*OPPORTUNITY_FIELDS, "known_gaps"}
-                    ),
+                    **reviewed.opportunity.model_dump(exclude={"name"}),
                 )
             )
             await reference.flush()
@@ -765,7 +761,6 @@ async def build_custom_template(
         update={"chapter_schema": normalize_chapters(payload.template.chapter_schema)}
     )
     chapter_schema = [chapter.model_dump(mode="json") for chapter in template.chapter_schema]
-    normalize_template_chapters(chapter_schema)
     return StoredCustomTemplate(
         id=uuid4(),
         template_name=template.template_name.strip(),

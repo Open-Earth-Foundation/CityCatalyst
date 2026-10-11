@@ -44,7 +44,8 @@ export function useAddFunder({
   const [source, setSource] = useState<ConceptNoteFunderImport | null>(null);
   const [showErrors, setShowErrors] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [createFunder, createState] = api.useCreateConceptNoteFunderMutation();
+  const [createFunder] = api.useCreateConceptNoteFunderMutation();
+  const [creating, setCreating] = useState(false);
   const formErrors = validateFunderForm(form);
 
   function edit(next: FunderForm, from: ConceptNoteFunderImport | null): void {
@@ -69,7 +70,7 @@ export function useAddFunder({
     errors: showErrors ? formErrors : {},
     /** i18n key for a failed request. */
     error,
-    creating: createState.isLoading,
+    creating,
     open: () => setMode(flow ? "choose" : "form"),
     close: () => setMode(null),
     back: () => setMode(mode === "form" && flow ? "choose" : null),
@@ -92,24 +93,28 @@ export function useAddFunder({
       }
     },
     async submit(): Promise<void> {
+      if (creating) return;
       setError(null);
       if (Object.keys(formErrors).length) {
         setShowErrors(true);
         return;
       }
+      setCreating(true);
       try {
         const created = await createFunder({
           runId,
           funder: formToCreateRequest(form, source),
         }).unwrap();
-        await onAdded(created);
         reset();
+        await onAdded(created);
       } catch (cause) {
         // A replaced or discarded import can still be added as typed.
         if (funderApiErrorCode(cause) === "funder_import_changed") {
           setSource(null);
         }
         setError(funderApiErrorKey(cause));
+      } finally {
+        setCreating(false);
       }
     },
   };
@@ -194,12 +199,18 @@ export function AddFunderFooter({
           textDecoration="underline"
           size="sm"
           loading={flow.busy}
+          disabled={add.creating}
           onClick={() => void add.discard()}
         >
           {t("funder-discard")}
         </Button>
       )}
-      <Button variant="outline" size="sm" onClick={add.back}>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={add.creating}
+        onClick={add.back}
+      >
         {t("funder-back")}
       </Button>
       {add.mode === "form" && (

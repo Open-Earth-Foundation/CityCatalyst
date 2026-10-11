@@ -2021,6 +2021,17 @@ filename as `source_record_ref`, so one upload cannot be added twice) or
 `cnb-manual:<run_id>`; the catalogue exposes this as `added_from`.
 
 Added funders are visible to every city, because `funders` has no owner column.
+The form explains this before submission.
+
+The form and Next.js route share `util/concept-note-funder.ts`, including field
+limits and award validation. Templates must match the workspace contract: 1-100
+chapters, single-line titles up to 255 characters and descriptions up to 4,000
+characters. Climate Advisor's `funder_creation` contracts validate chapter content
+against the same model used by structure edits before inserting catalogue rows.
+
+Creation keeps navigation and closing disabled through the catalogue refresh.
+Once the POST succeeds, the form closes and the new IDs remain selected even if
+refresh fails; retrying the catalogue load never repeats the successful creation.
 
 Because the import starts before conversion finishes, the server import is the
 only state to recover: reopening the dialog or reloading the note shows it.
@@ -2050,7 +2061,7 @@ or dot thousands grouping is rejected instead of silently changing the amount.
 
 ```bash
 # From climate-advisor/service
-python -m pytest tests/cnb/test_funder_import.py
+python -m pytest tests/cnb/test_funder_creation.py tests/cnb/test_funder_import.py
 ```
 
 ### Using a note's own template

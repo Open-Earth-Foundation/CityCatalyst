@@ -11,7 +11,7 @@ import pytest
 from app.db.session import get_session
 from app.main import get_app
 from app.routes.dependencies import authorized_run
-from app.models.cnb.funder_import import (
+from app.models.cnb.funder_creation import (
     ExtractedChapter,
     ExtractedEvidence,
     ExtractedFact,
@@ -33,9 +33,9 @@ from app.models.db.concept_note import (
     ConceptNoteUpload,
 )
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
-from app.services.cnb import funder_import as service
+from app.services.cnb import funder_creation as service
 from app.config import get_settings
-from app.services.cnb.funder_import import (
+from app.services.cnb.funder_creation import (
     FunderImportError,
     build_draft,
     create_funder,
@@ -342,42 +342,6 @@ def test_create_request_requires_names_and_a_titled_chapter():
 # --- Adding to the catalogue ------------------------------------------------------
 
 
-async def test_create_by_hand_adds_ordinary_catalogue_rows_without_evidence():
-    async with _workspace_repository() as (_, factory), _ca_session() as session:
-        run, _ = await _run_with_upload(session)
-        draft = _draft()
-        draft.template.chapter_schema.append(
-            TemplateChapterFields(
-                chapter_ref="",
-                title="Budget",
-                required_fields=["budget_total", "municipality_name"],
-            )
-        )
-        created = await create_funder(
-            session, run, _request(draft), reference_factory=factory
-        )
-
-        catalogue = await load_funding_catalogue(factory)
-        funder = next(f for f in catalogue.funders if f.id == created.funder_id)
-        opportunity = funder.opportunities[0]
-        assert funder.profile == {
-            "stated": {"purpose": "Nature for cities"},
-            "derived": {},
-        }
-        assert opportunity.id == created.funding_opportunity_id
-        assert opportunity.min_award == Decimal("150000")
-        assert opportunity.added_from.kind == "manual"
-        template = opportunity.template
-        assert [c["chapter_ref"] for c in template.chapter_schema] == [
-            "applicant-details",
-            "budget",
-        ]
-        # Every inventory field is owned by a chapter, as validation requires.
-        assert template.required_fields == ["municipality_name", "budget_total"]
-        async with factory() as reference:
-            assert (await reference.scalars(select(CnbFundingEvidence))).all() == []
-
-
 async def test_create_from_import_records_extracted_and_edited_provenance():
     async with _workspace_repository() as (_, factory), _ca_session() as session:
         run, upload = await _run_with_upload(session)
@@ -652,7 +616,7 @@ def test_discard_requires_and_forwards_the_observed_import_id():
     import_id = uuid4()
     with (
         patch(
-            "app.routes.concept_note_funder_imports.discard_funder_import", AsyncMock()
+            "app.routes.concept_note_funders.discard_funder_import", AsyncMock()
         ) as discard,
         TestClient(app) as client,
     ):
@@ -677,7 +641,7 @@ def test_structured_errors_keep_their_code_in_problem_responses():
     app.dependency_overrides[authorized_run] = lambda: run
     with (
         patch(
-            "app.routes.concept_note_funder_imports.start_funder_import",
+            "app.routes.concept_note_funders.start_funder_import",
             AsyncMock(
                 side_effect=service.api_error("funder_import_running", "Busy")
             ),

@@ -29,7 +29,7 @@ from app.services.cnb.application_context import (
     custom_template,
     custom_template_response,
 )
-from app.services.cnb.funder_import import build_custom_template, clear_import
+from app.services.cnb.funder_creation import build_custom_template, clear_import
 from app.services.cnb.funding_catalogue import load_funding_catalogue
 from fastapi import HTTPException
 from sqlalchemy import delete, select

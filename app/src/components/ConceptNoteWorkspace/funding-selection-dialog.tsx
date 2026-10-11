@@ -180,6 +180,7 @@ export function FundingSelectionDialog({
     flow: templateImport,
     onUse: chooseOwnTemplate,
   });
+  const submitting = saveState.isLoading || add.creating;
   // The rail shows no funder while adding one or using an own template.
   const selectedFunderId = add.mode || own.mode || usingOwn ? null : funderId;
   const addedFrom = funder?.opportunities.find(
@@ -189,7 +190,6 @@ export function FundingSelectionDialog({
   async function selectAdded(
     created: ConceptNoteFunderCreateResponse,
   ): Promise<void> {
-    await refetch();
     setQuery("");
     setFunderId(created.funder_id);
     setOpportunityId(created.funding_opportunity_id);
@@ -197,6 +197,11 @@ export function FundingSelectionDialog({
     setAcknowledged(false);
     setError(null);
     setNotice(t("funder-added"));
+    try {
+      await refetch().unwrap();
+    } catch {
+      setError(t("funder-added-refresh-error"));
+    }
   }
 
   function chooseOwnTemplate(choice: OwnTemplateChoice): void {
@@ -301,9 +306,9 @@ export function FundingSelectionDialog({
       open
       size="xl"
       initialFocusEl={() => searchRef.current}
-      onOpenChange={({ open }) => !open && !saveState.isLoading && onClose()}
-      closeOnEscape={!saveState.isLoading}
-      closeOnInteractOutside={!saveState.isLoading}
+      onOpenChange={({ open }) => !open && !submitting && onClose()}
+      closeOnEscape={!submitting}
+      closeOnInteractOutside={!submitting}
     >
       <DialogContent
         maxW="1100px"
@@ -333,10 +338,7 @@ export function FundingSelectionDialog({
             {t("funding-dialog-description")}
           </DialogDescription>
         </DialogHeader>
-        <DialogCloseTrigger
-          aria-label={t("close")}
-          disabled={saveState.isLoading}
-        />
+        <DialogCloseTrigger aria-label={t("close")} disabled={submitting} />
         <DialogBody p={0} minH={0} overflowY="auto">
           {isLoading ? (
             <VStack
@@ -358,7 +360,13 @@ export function FundingSelectionDialog({
                 )}
               </Text>
               {!forbidden && (
-                <Button variant="outline" onClick={() => void refetch()}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setError(null);
+                    void refetch();
+                  }}
+                >
                   {t("try-again")}
                 </Button>
               )}
@@ -436,7 +444,7 @@ export function FundingSelectionDialog({
                       minH="76px"
                       gap={3}
                       aria-pressed={item.id === selectedFunderId}
-                      disabled={saveState.isLoading}
+                      disabled={submitting}
                       bg="transparent"
                       borderInlineStart="3px solid"
                       borderColor="transparent"
@@ -519,7 +527,7 @@ export function FundingSelectionDialog({
                     borderColor={add.mode ? "content.link" : "border.neutral"}
                     bg="base.light"
                     aria-pressed={Boolean(add.mode)}
-                    disabled={saveState.isLoading}
+                    disabled={submitting}
                     onClick={() => {
                       own.close();
                       add.open();
@@ -557,7 +565,7 @@ export function FundingSelectionDialog({
                     }
                     bg="base.light"
                     aria-pressed={Boolean(own.mode) || (usingOwn && !add.mode)}
-                    disabled={saveState.isLoading}
+                    disabled={submitting}
                     onClick={openOwnTemplate}
                   >
                     <Icon as={LuFileText} flexShrink={0} color="content.link" />
@@ -685,7 +693,7 @@ export function FundingSelectionDialog({
                                   ? "content.link"
                                   : "border.neutral"
                               }
-                              disabled={saveState.isLoading}
+                              disabled={submitting}
                               onClick={() => {
                                 setOpportunityId(
                                   item.id === opportunityId ? null : item.id,
@@ -782,7 +790,7 @@ export function FundingSelectionDialog({
                   onCheckedChange={({ checked }) =>
                     setAcknowledged(checked === true)
                   }
-                  disabled={saveState.isLoading}
+                  disabled={submitting}
                 >
                   {t("funding-draft-acknowledge")}
                 </Checkbox>
@@ -833,9 +841,7 @@ export function FundingSelectionDialog({
                   color: "content.link",
                 }}
                 size="sm"
-                disabled={
-                  (!funderId && !usingOwn) || saveState.isLoading || isError
-                }
+                disabled={(!funderId && !usingOwn) || submitting || isError}
                 onClick={() => {
                   setFunderId(null);
                   setOpportunityId(null);
@@ -848,14 +854,14 @@ export function FundingSelectionDialog({
               <Button
                 variant="outline"
                 size="sm"
-                disabled={saveState.isLoading}
+                disabled={submitting}
                 onClick={onClose}
               >
                 {t("cancel")}
               </Button>
               <Button
                 size="sm"
-                loading={saveState.isLoading}
+                loading={submitting}
                 disabled={
                   !changed ||
                   isLoading ||

@@ -13,7 +13,7 @@ from app.models.cnb.concept_note_application_context import (
     ConceptNoteApplicationContextResponse,
 )
 from app.models.cnb.context_bundle import ConceptNoteContextBundle
-from app.models.cnb.funder_import import StoredCustomTemplate
+from app.models.cnb.funder_creation import StoredCustomTemplate
 from app.models.db.cnb_reference import (
     CnbFunder,
     CnbFunderTemplate,

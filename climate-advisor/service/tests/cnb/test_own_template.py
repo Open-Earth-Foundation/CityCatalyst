@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
-from app.models.cnb.funder_import import (
+from app.models.cnb.funder_creation import (
     CustomTemplateRequest,
     FunderImportDraft,
     TemplateChapterFields,
@@ -15,12 +15,12 @@ from app.models.cnb.funder_import import (
 )
 from app.models.cnb.funding_catalogue import FundingSelectionRequest
 from app.models.db.concept_note import ConceptNoteContextBundle
-from app.services.cnb import funder_import as service
+from app.services.cnb import funder_creation as service
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
     calculate_application_template_fingerprint,
 )
-from app.services.cnb.funder_import import (
+from app.services.cnb.funder_creation import (
     build_template_draft,
     create_funder,
     extract_template_draft,

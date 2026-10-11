@@ -12,7 +12,7 @@ from app.models.cnb.concept_note_application_context import (
     ApplicationContextTemplate,
     FundingAddedFrom,
 )
-from app.models.cnb.funder_import import CustomTemplateRequest
+from app.models.cnb.funder_creation import CustomTemplateRequest
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 

@@ -13,6 +13,7 @@ from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from app.models.cnb.concept_note_application_context import FundingAddedFrom
+from app.models.cnb.chapter_content import ChapterContent, MAX_CHAPTERS
 from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, model_validator
 
 FunderImportStatus = Literal["processing", "ready", "failed"]
@@ -26,20 +27,20 @@ Award = Annotated[
 ]
 
 
-class FunderImportContract(BaseModel):
+class FunderCreationContract(BaseModel):
     """Base contract that rejects fields outside the documented shape."""
 
     model_config = ConfigDict(extra="forbid")
 
 
-class FunderProfileFacts(FunderImportContract):
+class FunderProfileFacts(FunderCreationContract):
     """Profile facts stored in ``funders.profile`` as stated and derived maps."""
 
     stated: dict[str, str] = Field(default_factory=dict)
     derived: dict[str, str] = Field(default_factory=dict)
 
 
-class FunderFields(FunderImportContract):
+class FunderFields(FunderCreationContract):
     """Reviewable ``funders`` columns."""
 
     name: str = Field(default="", max_length=255)
@@ -49,7 +50,7 @@ class FunderFields(FunderImportContract):
     profile: FunderProfileFacts = Field(default_factory=FunderProfileFacts)
 
 
-class ProgrammeFields(FunderImportContract):
+class ProgrammeFields(FunderCreationContract):
     """Reviewable ``funding_opportunities`` columns."""
 
     name: str = Field(default="", max_length=255)
@@ -80,7 +81,7 @@ class ProgrammeFields(FunderImportContract):
         return self
 
 
-class TemplateChapterFields(FunderImportContract):
+class TemplateChapterFields(FunderCreationContract):
     """One ``funder_templates.chapter_schema`` entry."""
 
     chapter_ref: str = Field(default="", max_length=255)
@@ -90,7 +91,7 @@ class TemplateChapterFields(FunderImportContract):
     required_fields: list[str] = Field(default_factory=list)
 
 
-class TemplateFields(FunderImportContract):
+class TemplateFields(FunderCreationContract):
     """Reviewable ``funder_templates`` columns; required_fields is derived."""
 
     template_name: str = Field(default="", max_length=255)
@@ -99,16 +100,16 @@ class TemplateFields(FunderImportContract):
 
 
 def require_template_values(template: TemplateFields) -> None:
-    """Require what drafting needs: a template name and titled chapters."""
+    """Reject reviewed templates that the structure editor cannot load or save."""
     if not template.template_name.strip():
         raise ValueError("template.template_name is required")
-    if not template.chapter_schema:
-        raise ValueError("template.chapter_schema needs at least one chapter")
-    if any(not chapter.title.strip() for chapter in template.chapter_schema):
-        raise ValueError("every template chapter needs a title")
+    if not 1 <= len(template.chapter_schema) <= MAX_CHAPTERS:
+        raise ValueError(f"template.chapter_schema needs 1-{MAX_CHAPTERS} chapters")
+    for chapter in template.chapter_schema:
+        ChapterContent(title=chapter.title, description=chapter.description or "")
 
 
-class FieldEvidence(FunderImportContract):
+class FieldEvidence(FunderCreationContract):
     """A verbatim document quote supporting one extracted field."""
 
     field: str = Field(min_length=1, max_length=255)
@@ -116,7 +117,7 @@ class FieldEvidence(FunderImportContract):
     page: int | None = Field(default=None, ge=1)
 
 
-class FunderImportDraft(FunderImportContract):
+class FunderImportDraft(FunderCreationContract):
     """Extracted values awaiting review, with verified evidence per field.
 
     A ``template`` import fills only ``template``; funder and programme stay blank.
@@ -129,7 +130,7 @@ class FunderImportDraft(FunderImportContract):
     missing: list[str] = Field(default_factory=list)
 
 
-class FunderImport(FunderImportContract):
+class FunderImport(FunderCreationContract):
     """The run's current document import, persisted in its context bundle."""
 
     import_id: UUID
@@ -145,26 +146,26 @@ class FunderImport(FunderImportContract):
     updated_at: datetime
 
 
-class FunderImportResponse(FunderImportContract):
+class FunderImportResponse(FunderCreationContract):
     """Current import for a run, or null when none is pending."""
 
     funder_import: FunderImport | None = None
 
 
-class FunderImportDiscardRequest(FunderImportContract):
+class FunderImportDiscardRequest(FunderCreationContract):
     """Discard a specific observed import without removing its replacement."""
 
     import_id: UUID
 
 
-class FunderImportStartRequest(FunderImportContract):
+class FunderImportStartRequest(FunderCreationContract):
     """Read funder or template details from one run upload once it has converted."""
 
     upload_id: UUID
     kind: FunderImportKind = "funder"
 
 
-class FunderCreateRequest(FunderImportContract):
+class FunderCreateRequest(FunderCreationContract):
     """Reviewed values to add to the catalogue, by hand or from an import."""
 
     funder: FunderFields
@@ -183,7 +184,7 @@ class FunderCreateRequest(FunderImportContract):
         return self
 
 
-class CustomTemplateRequest(FunderImportContract):
+class CustomTemplateRequest(FunderCreationContract):
     """A reviewed template for one note, typed by hand or from a template import."""
 
     template: TemplateFields
@@ -207,21 +208,21 @@ class StoredCustomTemplate(BaseModel):
     added_from: FundingAddedFrom
 
 
-class FunderCreateResponse(FunderImportContract):
+class FunderCreateResponse(FunderCreationContract):
     """Catalogue identifiers to select through the application context."""
 
     funder_id: UUID
     funding_opportunity_id: UUID
 
 
-class ExtractedFact(FunderImportContract):
+class ExtractedFact(FunderCreationContract):
     """Model-facing key/value profile fact."""
 
     key: str
     value: str
 
 
-class ExtractedChapter(FunderImportContract):
+class ExtractedChapter(FunderCreationContract):
     """Model-facing application-template chapter."""
 
     chapter_ref: str
@@ -231,14 +232,14 @@ class ExtractedChapter(FunderImportContract):
     required_fields: list[str]
 
 
-class ExtractedEvidence(FunderImportContract):
+class ExtractedEvidence(FunderCreationContract):
     """Model-facing verbatim quote for one output field path."""
 
     field: str
     quote: str
 
 
-class ExtractedFunder(FunderImportContract):
+class ExtractedFunder(FunderCreationContract):
     """Model-facing ``funders`` columns and profile facts."""
 
     name: str | None
@@ -249,7 +250,7 @@ class ExtractedFunder(FunderImportContract):
     derived_facts: list[ExtractedFact]
 
 
-class ExtractedProgramme(FunderImportContract):
+class ExtractedProgramme(FunderCreationContract):
     """Model-facing ``funding_opportunities`` columns."""
 
     name: str | None
@@ -269,7 +270,7 @@ class ExtractedProgramme(FunderImportContract):
     known_gaps: list[str]
 
 
-class ExtractedTemplate(FunderImportContract):
+class ExtractedTemplate(FunderCreationContract):
     """Model-facing ``funder_templates`` columns."""
 
     template_name: str | None
@@ -277,7 +278,7 @@ class ExtractedTemplate(FunderImportContract):
     chapters: list[ExtractedChapter]
 
 
-class FunderDocumentExtraction(FunderImportContract):
+class FunderDocumentExtraction(FunderCreationContract):
     """Strict model output; code converts it into a ``FunderImportDraft``.
 
     Every field is required (nullable instead) because structured outputs run
@@ -290,7 +291,7 @@ class FunderDocumentExtraction(FunderImportContract):
     evidence: list[ExtractedEvidence]
 
 
-class TemplateDocumentExtraction(FunderImportContract):
+class TemplateDocumentExtraction(FunderCreationContract):
     """Strict model output for a template-only read of an application form."""
 
     template: ExtractedTemplate

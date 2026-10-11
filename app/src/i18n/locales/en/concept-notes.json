@@ -821,7 +821,7 @@
   "funder-import-missing_one": "{{count}} detail wasn't in the document. Fill it in or leave it empty.",
   "funder-import-missing_other": "{{count}} details weren't in the document. Fill them in or leave them empty.",
   "funder-manual-title": "Enter funder details",
-  "funder-manual-description": "Add the funder, one programme and its application template. Fields marked * are required.",
+  "funder-manual-description": "Add the funder, one programme and its application template to the shared catalogue, visible to every city. Cancelling the selection later will not remove it. Fields marked * are required.",
   "funder-section-funder": "Funder",
   "funder-section-programme": "Programme",
   "funder-field-name": "Funder name",
@@ -883,5 +883,14 @@
   "template-by-hand": "Defined by hand",
   "template-edit": "Edit template",
   "template-replace": "Use a different template",
-  "template-error-import-changed": "The template document changed. Review the template again before saving."
+  "template-error-import-changed": "The template document changed. Review the template again before saving.",
+  "funder-added-refresh-error": "The funder was added, but the catalogue could not be reloaded. Retry loading the catalogue to select it.",
+  "funder-error-length-16": "Use no more than 16 characters.",
+  "funder-error-length-64": "Use no more than 64 characters.",
+  "funder-error-length-100": "Use no more than 100 characters.",
+  "funder-error-length-255": "Use no more than 255 characters.",
+  "funder-error-length-4000": "Use no more than 4,000 characters.",
+  "funder-error-chapter-limit": "Use no more than 100 chapters.",
+  "funder-error-chapter-title-line": "Keep the chapter title on one line.",
+  "funder-error-award-limit": "This amount is too large to save accurately."
 }

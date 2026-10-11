@@ -1,5 +1,9 @@
 """Evaluate CNB grounding with exact Python checks and an evidence-based LLM judge.
 
+Judge retained quotations and complete chapters against full original evidence.
+Generated source summaries are excluded from all judge inputs, while production
+generation is unchanged. Raw analysis artifacts retain the producer response.
+
 Inputs:
 - --fixtures-dir: versioned fixtures (default service/tests/fixtures/cnb_golden_set).
 - --fixture: fixture ID; repeat the flag to select multiple fixtures (default all).
@@ -29,6 +33,7 @@ import asyncio
 import json
 import logging
 import sys
+from copy import deepcopy
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -300,6 +305,10 @@ async def _evaluate_drafting(
                     "existing_open_gaps",
                 }
             }
+            # A producer's own summary is never evidence for evaluating its draft.
+            inputs = deepcopy(inputs)
+            for source in inputs["run_context"]["context_bundle"]["selected_sources"]:
+                source.pop("summary", None)
             supplied += _text_units(
                 inputs,
                 f"supplied/{chapter.chapter_ref}",
@@ -557,8 +566,30 @@ def render_markdown(report: GoldenSetReport) -> str:
             if stage is None:
                 continue
             lines += ["", f"### {name}: {'PASS' if stage.passed else 'FAIL'}"]
+            scope = (
+                "retained source quotations"
+                if name == "source_analysis"
+                else "complete generated chapters"
+            )
+            lines.append(
+                f"Fact coverage is evaluated in **{scope}**; generated source summaries are excluded."
+            )
+            if "required_fact_coverage" in stage.metrics:
+                counts = [
+                    f"{int(stage.metrics[f'required_facts_{verdict}'])} {label}"
+                    for verdict, label in (
+                        ("covered", "fully covered"),
+                        ("partially_covered", "partially covered"),
+                        ("missing", "missing"),
+                        ("contradicted", "contradicted"),
+                    )
+                ]
+                lines.append("Required facts: **" + " · ".join(counts) + "**.")
             for metric, value in stage.metrics.items():
-                lines.append(f"- {metric}: {value:.2f}")
+                if metric == "required_fact_coverage":
+                    lines.append(f"- Fully covered required facts: {value:.1%}")
+                elif not metric.startswith("required_facts_"):
+                    lines.append(f"- {metric}: {value:.2f}")
             for label, findings in (
                 ("Integrity", stage.integrity_failures),
                 ("Semantic", stage.semantic_failures),
@@ -578,7 +609,7 @@ def render_markdown(report: GoldenSetReport) -> str:
                 for claim in stage.judgment.claims:
                     lines += [
                         f"- Claim in `{claim.output.unit_id}`: {_snippet(claim.output.quote)}",
-                        f"  - Truth: **{claim.verdict}**; supplied evidence: **{claim.supplied_verdict}**; self-contained: {claim.self_contained}.",
+                        f"  - Truth: **{claim.verdict}**; supplied evidence: **{claim.supplied_verdict or 'not applicable'}**; self-contained: {claim.self_contained}.",
                         f"  - {_snippet(claim.reason)}",
                     ]
                     for ref in [*claim.evidence, *claim.supplied_evidence]:

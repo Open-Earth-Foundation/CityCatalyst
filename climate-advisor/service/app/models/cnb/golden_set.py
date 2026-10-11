@@ -40,7 +40,7 @@ class GoldenEvidence(GoldenContract):
 
 
 class GoldenFact(GoldenContract):
-    """A fact a correct source summary should state, with its exact evidence."""
+    """A fact retained source quotations should preserve, with exact evidence."""
 
     id: str = Field(min_length=1)
     statement: str = Field(min_length=1)
@@ -59,7 +59,6 @@ class SourceAnalysisThresholds(GoldenContract):
     """Coverage gates for one semantically judged analysis."""
 
     min_required_fact_coverage: float = Field(default=0.75, ge=0, le=1)
-    min_retained_support: float = Field(default=0.6, ge=0, le=1)
     min_topic_coverage: float = Field(default=0.6, ge=0, le=1)
 
 
@@ -203,7 +202,7 @@ class ClaimJudgment(GoldenContract):
     output: TextReference
     verdict: SupportVerdict
     evidence: list[TextReference]
-    supplied_verdict: SupportVerdict
+    supplied_verdict: SupportVerdict | None
     supplied_evidence: list[TextReference]
     self_contained: bool
     reason: str = Field(min_length=1, max_length=1200)

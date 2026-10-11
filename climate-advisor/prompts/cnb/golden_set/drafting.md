@@ -16,9 +16,10 @@ Apply the SAME criteria in both cases; do not excuse upstream extraction errors.
 2. Chapters -> evidence: inventory ALL substantive factual assertions and
    commitments, including those absent from the expected facts. Judge original
    truth using source/context units. Separately judge support in the actual
-   supplied inputs for the chapter. Generated summaries are not authoritative
-   when they conflict with original source/context. Previous generated chapters
-   are NOT evidence, although you may read all outputs to find contradictions.
+   supplied evidence for the chapter. Generated source summaries are excluded
+   from the judge input entirely and must not influence any verdict. Previous
+   generated chapters are NOT evidence, although you may read all outputs to find
+   contradictions.
 3. Assess each chapter against its description and application requirements.
    Where inputs lack requested information, a clear statement of the gap is
    acceptable; invented answers are not. Do not demand unavailable facts or
@@ -93,8 +94,8 @@ Return only a JSON object matching `JudgeEvaluation`, with exactly these fields:
   output asserts an incompatible fact. Accept equivalent paraphrases, not just
   shared terms. A fact outside all its allowed chapters is at most partial.
 - `output_refs` (array of TextReference): exact output evidence; empty ONLY for
-  `missing`. For `covered` facts, cite only allowed chapters. Source-analysis
-  facts must cite `summary`; topic judgments must cite `topic/...` output units.
+  `missing`. Cite full chapter output units (`chapter/...`), never an intermediate
+  summary. For `covered` facts, cite only allowed chapters.
 - `reason` (string, 1–1200 characters): concise justification of this verdict.
 
 `ClaimJudgment` contains exactly:
@@ -104,7 +105,7 @@ Return only a JSON object matching `JudgeEvaluation`, with exactly these fields:
 - `evidence` (array of TextReference): references ONLY to `source` or `context`
   units. Supported, partially supported, and contradicted verdicts require
   evidence. Unsupported/uncertain may use an empty array when none exists.
-- `supplied_verdict` (same five support verdicts): independent assessment using
+- `supplied_verdict` (same five support verdicts; required and non-null here): independent assessment using
   ONLY `supplied` units available to this claim's output chapter (or global units).
 - `supplied_evidence` (array of TextReference): references ONLY to those `supplied`
   units. The same evidence requirement applies to positive/contradicted verdicts.

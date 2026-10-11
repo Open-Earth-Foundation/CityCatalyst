@@ -1477,6 +1477,10 @@ Each path runs once. Python checks exact quotations, locators, artifact integrit
 and judge references. A configured LLM judge evaluates meaning, claim support,
 required-fact coverage, clarity, and chapter requirements. There are no lexical
 coverage heuristics, repeated-run stability checks, or judge calibration benchmark.
+Generated source summaries are excluded from all judge inputs. Source-analysis
+coverage checks retained quotations against the full original source; final-document
+coverage checks complete generated chapters. Reports distinguish fully covered,
+partially covered, missing, and contradicted facts. Production generation is unchanged.
 
 ```bash
 uv run --directory service pytest tests/cnb/test_golden_set.py -q

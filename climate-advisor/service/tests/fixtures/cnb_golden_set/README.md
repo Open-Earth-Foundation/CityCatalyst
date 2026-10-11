@@ -9,7 +9,7 @@ judge calibration benchmark is included.
 
 | Stage | Input | Question |
 | --- | --- | --- |
-| `source_analysis` | Original document -> production analysis | Are expected facts/topics preserved? Is every substantive summary claim true, clear, and supported by retained quotations? |
+| `source_analysis` | Original document -> production analysis | Do retained quotations preserve expected facts in context, and do topic labels convey the expected topics? |
 | `drafting` | Frozen reviewed bundle -> production chapter drafter | Does the draft preserve relevant facts, answer the application requirements, and avoid invented claims or commitments? |
 | `end_to_end` | Fresh source analysis -> production chapter drafter | Does information survive the complete pipeline, including upstream omissions or distortions? |
 
@@ -39,8 +39,10 @@ are no keyword lists, reference-answer strings, or `match` rules.
 
 The golden expectations are **coverage targets, not factual evidence** for the
 judge. The original source and authoritative city/application context establish
-truth. Frozen/generated summaries are not authoritative when they contradict
-that evidence.
+truth. Generated source summaries are excluded from every judge input: they
+are neither evaluated output nor supporting evidence. Production analysis and
+drafting still run unchanged, including their normal use of source summaries.
+The benchmark does not replace production inputs to manufacture a different pipeline.
 
 ## Run
 
@@ -105,19 +107,29 @@ The judge evaluates both directions:
 2. Every substantive output claim -> evidence: `supported`, `partially_supported`,
    `unsupported`, `contradicted`, or `uncertain`.
 
-For each claim it separately checks **original truth** and **supplied evidence**.
-In source analysis, supplied evidence is only the verified retained quotations.
-In drafting, it is the actual chapter inputs, excluding earlier generated
-chapters and the current draft. Complete source text appears in those inputs
-only when the production token budget permits it. Original source text remains
-available to the judge for detecting upstream misinformation even in summary mode.
+Source analysis checks **retained quotations against the complete original source**.
+Coverage can combine several retained passages; source text that was not retained
+cannot fill gaps in that coverage. Topic labels are checked separately. There is
+no summary-coverage or summary-to-retained-evidence support score. Claim
+`supplied_verdict` is null and `supplied_evidence` is empty in this stage.
+
+Drafting checks **complete generated chapters against original source/context**,
+then separately checks support in the evidence actually supplied to that chapter.
+That second evidence set excludes generated source summaries, earlier generated
+chapters, and the current draft. The production inputs themselves are unchanged.
+Complete source text appears in supplied evidence only when the production token
+budget permits it; the judge always receives the full original source separately.
+A correct fact in a final chapter counts even if no intermediate summary or
+retained quotation contains it. A fact present only in the original document
+cannot count as coverage in generated chapters.
 
 The judge checks entity/quantity relationships, units, time, geographic scope,
 negation, uncertainty, proposals versus commitments, and cost versus funding.
 It judges rounding in context, with no universal percentage tolerance. Newly
 derived totals/conversions remain unsupported under this benchmark's
-source-preservation policy. Clarity is assessed within the complete reusable source summary and in the reading
-context of draft chapters; ordinary resolvable pronouns are acceptable.
+source-preservation policy. Clarity is assessed across the retained quotations
+together or in the reading context of complete draft chapters; ordinary resolvable
+pronouns are acceptable. The judge does not use a summary of either output.
 
 Chapter judgments check whether the application question is answered and whether
 chapters contradict each other. Explicitly acknowledging unavailable information
@@ -127,19 +139,21 @@ validation or mocked tests; judge calibration is outside this ticket.
 
 ## Gates and reports
 
-Existing coverage defaults are retained, with semantic rather than lexical verdicts:
+Coverage gates use semantic verdicts. Source coverage measures retained quotations;
+draft coverage measures complete chapters:
 
 | Gate | Default |
 | --- | --- |
-| Source required-fact coverage (fully covered / required) | >= 0.75 |
-| Source retained-evidence support (fully supported / evaluated claims) | >= 0.60 |
+| Source retained-fact coverage (fully covered / required) | >= 0.75 |
 | Source topic coverage (fully covered / expected topics) | >= 0.60 |
 | Draft required-fact coverage | >= 0.70 |
 
-Partial coverage does not count as full coverage. A contradicted fact, any claim
+Reports explicitly show counts of fully covered, partially covered, missing, and
+contradicted required facts, alongside the full-coverage percentage. Partial
+coverage does not count as full coverage. A contradicted fact, any claim
 not fully supported by original evidence (including uncertain/partial verdicts),
 an unclear claim, or an output contradiction fails the stage. Draft claims must
-also be fully supported by the actual drafter inputs, and required chapter
+also be fully supported by the supplied evidence after excluding generated summaries, and required chapter
 requirements must be satisfied. Any invalid quotation/locator or empty chapter
 fails integrity checks. These gates are explicit policy defaults, not calibrated
 accuracy estimates. Review threshold changes intentionally with fixture changes.
@@ -148,7 +162,8 @@ The evaluator writes to `climate-advisor/output/cnb_golden_set/` by default:
 
 - `report.md`: metrics, integrity/semantic failures, evaluation errors, and cited findings.
 - `report.json`: structured reports and full structured judgments.
-- `outputs/<fixture>/analysis.json`: the generated analysis.
+- `outputs/<fixture>/analysis.json`: the complete raw production analysis for diagnosis;
+  its summary is saved here but never sent to the judge.
 - `outputs/<fixture>/<stage>/judgment.json`: raw judge output, including invalid judgments for review.
 - `outputs/<fixture>/drafting/drafts.json` and `end_to_end/drafts.json`: generated chapters.
 

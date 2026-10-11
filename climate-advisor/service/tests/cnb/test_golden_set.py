@@ -18,6 +18,7 @@ from app.models.cnb.golden_set import (
     JudgeEvaluation,
     StageReport,
     TextReference,
+    TextUnit,
 )
 from app.persistence.concept_notes.context_bundle import ContextBundleBuildSnapshot
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
@@ -207,8 +208,7 @@ def judged_case(fixtures):
     original = next(
         u for u in payload.evidence if u.kind == "source" and text in u.text
     )
-    supplied = next(u for u in payload.evidence if u.kind == "supplied")
-    output = TextReference(unit_id="summary", quote=text)
+    output = TextReference(unit_id=payload.outputs[0].id, quote=text)
     judgment = JudgeEvaluation(
         facts=[
             CoverageJudgment(
@@ -226,8 +226,8 @@ def judged_case(fixtures):
                 output=output,
                 verdict="supported",
                 evidence=[TextReference(unit_id=original.id, quote=text)],
-                supplied_verdict="supported",
-                supplied_evidence=[TextReference(unit_id=supplied.id, quote=text)],
+                supplied_verdict=None,
+                supplied_evidence=[],
                 self_contained=True,
                 reason="Mocked semantic verdict",
             )
@@ -242,7 +242,10 @@ def test_valid_judgment_is_aggregated_without_lexical_matching(judged_case):
     assert report.passed
     assert report.metrics == {
         "required_fact_coverage": 1.0,
-        "retained_support": 1.0,
+        "required_facts_covered": 1,
+        "required_facts_partially_covered": 0,
+        "required_facts_missing": 0,
+        "required_facts_contradicted": 0,
         "topic_coverage": 1.0,
     }
 
@@ -271,7 +274,12 @@ def test_invalid_judge_response_withholds_metrics(judged_case, mutation):
     elif mutation == "unknown_unit":
         judgment.claims[0].evidence[0].unit_id = "source/does-not-exist"
     elif mutation == "wrong_kind":
-        judgment.claims[0].evidence = judgment.claims[0].supplied_evidence
+        payload.evidence[0].kind = "supplied"
+        judgment.claims[0].evidence = [
+            TextReference(
+                unit_id=payload.evidence[0].id, quote=payload.evidence[0].text
+            )
+        ]
     elif mutation == "no_claims":
         judgment.claims = []
     elif mutation == "no_support":
@@ -286,15 +294,56 @@ def test_invalid_judge_response_withholds_metrics(judged_case, mutation):
     assert report.semantic_failures == []
 
 
-def test_source_truth_and_retained_evidence_support_are_separate(judged_case):
-    loaded, _, payload, judgment = judged_case
-    judgment.claims[0].supplied_verdict = "unsupported"
-    judgment.claims[0].supplied_evidence = []
+@pytest.mark.parametrize(
+    "summary", ["Unrelated description", "Contradictory generated assertion", ""]
+)
+def test_source_summary_never_enters_judge_input_or_changes_score(judged_case, summary):
+    loaded, source, payload, judgment = judged_case
+    source.summary = summary
+    revised, failures = source_judge_input(loaded, source)
+    assert revised == payload
+    assert not failures
+    if summary:
+        assert summary not in revised.model_dump_json()
+    assert [u.text for u in revised.evidence] == [u.text for u in loaded.units]
+    assert score_judgment(loaded, revised, judgment, []).passed
+
+
+def test_fact_only_in_summary_or_original_source_cannot_count_as_retained(judged_case):
+    loaded, source, _, judgment = judged_case
+    # The expected fact remains in both the summary and original document.
+    source.key_excerpts = []
+    payload, failures = source_judge_input(loaded, source)
+    assert not payload.outputs
+    assert not failures
+    assert validate_judgment(payload, judgment)
+    judgment.facts[0].verdict = "missing"
+    judgment.facts[0].output_refs = []
+    judgment.claims = []
     report = score_judgment(loaded, payload, judgment, [])
     assert not report.evaluation_errors
-    assert report.metrics["required_fact_coverage"] == 1
-    assert report.metrics["retained_support"] == 0
-    assert any("retained_support" in failure for failure in report.semantic_failures)
+    assert report.metrics["required_fact_coverage"] == 0
+    assert report.metrics["required_facts_missing"] == 1
+    assert not report.passed
+
+
+def test_source_stage_rejects_old_summary_support_assessment(judged_case):
+    _, _, payload, judgment = judged_case
+    judgment.claims[0].supplied_verdict = "supported"
+    assert (
+        "source analysis must not judge supplied-evidence support"
+        in validate_judgment(payload, judgment)
+    )
+
+
+def test_partial_coverage_is_reported_separately(judged_case):
+    loaded, _, payload, judgment = judged_case
+    judgment.facts[0].verdict = "partially_covered"
+    report = score_judgment(loaded, payload, judgment, [])
+    assert not report.evaluation_errors
+    assert report.metrics["required_fact_coverage"] == 0
+    assert report.metrics["required_facts_partially_covered"] == 1
+    assert report.metrics["required_facts_missing"] == 0
 
 
 @pytest.mark.parametrize(
@@ -412,18 +461,25 @@ def test_fresh_source_replaces_frozen_source_in_drafting_workspace(fixtures):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("fresh", [False, True])
 async def test_drafting_judge_receives_actual_inputs_without_previous_generated_text(
-    fixtures, monkeypatch, tmp_path
+    fixtures, monkeypatch, tmp_path, fresh
 ):
     loaded = fixtures["richfield-flood-risk"]
-    monkeypatch.setattr(
-        evaluator,
-        "generate_chapter_draft",
-        AsyncMock(return_value=SimpleNamespace(body_markdown="GENERATED CLAIM MARKER")),
+    producer = AsyncMock(
+        return_value=SimpleNamespace(body_markdown="GENERATED CLAIM MARKER")
     )
+    monkeypatch.setattr(evaluator, "generate_chapter_draft", producer)
     judge = AsyncMock(return_value=StageReport())
     monkeypatch.setattr(evaluator, "_judge_stage", judge)
-    await evaluator._evaluate_drafting(loaded, get_settings(), tmp_path)
+    source = (
+        selected_source(loaded, **load_drafting_input(loaded).selected_source)
+        if fresh
+        else None
+    )
+    if source is not None:
+        source.summary = "FRESH GENERATED SUMMARY THAT MUST NEVER REACH THE JUDGE"
+    await evaluator._evaluate_drafting(loaded, get_settings(), tmp_path, source)
     payload = judge.await_args.args[1]
     assert len(payload.outputs) == 8
     assert len(payload.chapter_requirements) == 8
@@ -434,6 +490,23 @@ async def test_drafting_judge_receives_actual_inputs_without_previous_generated_
         unit.kind == "context" and "36994" in unit.text for unit in payload.evidence
     )
     assert any(unit.id.startswith("supplied/shared/") for unit in payload.evidence)
+    source_summary = (
+        source.summary
+        if source is not None
+        else load_drafting_input(loaded).selected_source["summary"]
+    )
+    assert source_summary not in payload.model_dump_json()
+    assert all(not unit.id.endswith("/summary") for unit in payload.evidence)
+    # Filtering judge evidence must not mutate the production inputs.
+    assert (
+        producer.await_args_list[0].args[0]["run_context"]["context_bundle"][
+            "selected_sources"
+        ][0]["summary"]
+        == source_summary
+    )
+    assert [u.text for u in payload.evidence if u.kind == "source"] == [
+        u.text for u in loaded.units
+    ]
 
 
 def test_prompt_format_examples_and_fingerprints():
@@ -588,8 +661,6 @@ async def test_incremental_build_keeps_golden_analysis_byte_for_byte(
 
 
 def test_shared_input_deduplication_preserves_chapter_specific_values():
-    from app.models.cnb.golden_set import TextUnit
-
     units = [
         TextUnit(
             id="supplied/a/source/text",
@@ -622,8 +693,15 @@ def test_judge_cannot_cite_another_chapters_input(judged_case):
     _, _, payload, judgment = judged_case
     payload.stage = "drafting"
     payload.outputs[0].chapter_ref = "a"
-    supplied = next(unit for unit in payload.evidence if unit.kind == "supplied")
-    supplied.chapter_ref = "b"
+    original = payload.evidence[0]
+    supplied = TextUnit(
+        id="supplied/b/source", text=original.text, kind="supplied", chapter_ref="b"
+    )
+    payload.evidence.append(supplied)
+    judgment.claims[0].supplied_verdict = "supported"
+    judgment.claims[0].supplied_evidence = [
+        TextReference(unit_id=supplied.id, quote=supplied.text)
+    ]
     assert any(
         "different chapter" in error for error in validate_judgment(payload, judgment)
     )
@@ -640,11 +718,14 @@ def test_judge_cannot_cover_fact_in_disallowed_chapter(judged_case):
     )
 
 
-def test_invalid_judgment_is_explicitly_untrusted_in_markdown(judged_case):
+@pytest.mark.parametrize("invalid", [False, True])
+def test_markdown_identifies_scope_counts_and_invalid_judgments(judged_case, invalid):
     from app.models.cnb.golden_set import FixtureReport, GoldenSetReport
 
     loaded, _, payload, judgment = judged_case
-    judgment.claims[0].evidence[0].quote = "Invented evidence"
+    judgment.facts[0].verdict = "partially_covered"
+    if invalid:
+        judgment.claims[0].evidence[0].quote = "Invented evidence"
     stage = score_judgment(loaded, payload, judgment, [])
     report = GoldenSetReport(
         generated_at="test",
@@ -661,9 +742,18 @@ def test_invalid_judgment_is_explicitly_untrusted_in_markdown(judged_case):
         ],
     )
     markdown = evaluator.render_markdown(report)
-    assert "Evaluation error" in markdown
-    assert "metrics withheld" in markdown
-    assert "untrusted" in markdown
+    assert "retained source quotations" in markdown
+    assert "generated source summaries are excluded" in markdown
+    if invalid:
+        assert "Evaluation error" in markdown
+        assert "metrics withheld" in markdown
+        assert "untrusted" in markdown
+    else:
+        assert (
+            "0 fully covered · 1 partially covered · 0 missing · 0 contradicted"
+            in markdown
+        )
+        assert "Fully covered required facts: 0.0%" in markdown
     assert "CNB golden set: FAIL" in markdown
 
 
@@ -673,4 +763,13 @@ def test_draft_with_covered_facts_requires_claim_assessment(judged_case):
     judgment.claims = []
     assert "covered factual output has no claim judgments" in validate_judgment(
         payload, judgment
+    )
+
+
+def test_drafting_requires_supplied_evidence_assessment(judged_case):
+    _, _, payload, judgment = judged_case
+    payload.stage = "drafting"
+    assert any(
+        "missing supplied-evidence verdict" in e
+        for e in validate_judgment(payload, judgment)
     )

@@ -168,7 +168,7 @@ def verify_excerpts(
                 TextUnit(
                     id=f"retained/{index}/{anchor}",
                     text=excerpt.text,
-                    kind="supplied",
+                    kind="output",
                 )
             )
     return failures, verified
@@ -185,10 +185,8 @@ def source_evidence(loaded: LoadedFixture) -> list[TextUnit]:
 def source_judge_input(
     loaded: LoadedFixture, source: SelectedSource
 ) -> tuple[JudgeInput, list[str]]:
-    """Separate original-document truth from support in retained quotations."""
+    """Judge retained quotations against the full source, excluding generated prose."""
     failures, retained = verify_excerpts(loaded, source)
-    if not source.summary.strip():
-        failures.append("empty source summary")
     golden = loaded.fixture.source_analysis
     return JudgeInput(
         stage="source_analysis",
@@ -201,13 +199,13 @@ def source_judge_input(
         expected_topics=golden.topics,
         chapter_requirements=[],
         outputs=[
-            TextUnit(id="summary", text=source.summary, kind="output"),
+            *retained,
             *[
                 TextUnit(id=f"topic/{i}", text=topic, kind="output")
                 for i, topic in enumerate(source.topics)
             ],
         ],
-        evidence=[*source_evidence(loaded), *retained],
+        evidence=source_evidence(loaded),
     ), failures
 
 
@@ -258,9 +256,13 @@ def validate_judgment(payload: JudgeInput, judgment: JudgeEvaluation) -> list[st
         fact = expected_facts.get(item.id)
         for ref in item.output_refs:
             unit = outputs.get(ref.unit_id)
-            if unit and payload.stage == "source_analysis" and unit.id != "summary":
+            if (
+                unit
+                and payload.stage == "source_analysis"
+                and not unit.id.startswith("retained/")
+            ):
                 errors.append(
-                    f"{item.id}: source fact must be evaluated in the summary"
+                    f"{item.id}: source fact must be evaluated in retained quotations"
                 )
             if fact and fact.chapters and item.verdict == "covered" and unit:
                 if unit.chapter_ref not in fact.chapters:
@@ -272,12 +274,6 @@ def validate_judgment(payload: JudgeInput, judgment: JudgeEvaluation) -> list[st
             errors.append(f"{item.id}: topic verdict must cite a returned topic")
 
     # A positive support verdict must cite verified evidence of the correct kind.
-    if (
-        payload.stage == "source_analysis"
-        and outputs["summary"].text.strip()
-        and not judgment.claims
-    ):
-        errors.append("nonempty source summary has no claim judgments")
     if not judgment.claims and any(
         item.verdict == "covered" for item in judgment.facts
     ):
@@ -285,10 +281,21 @@ def validate_judgment(payload: JudgeInput, judgment: JudgeEvaluation) -> list[st
     for claim in judgment.claims:
         errors += _reference_errors(claim.output, outputs)
         output = outputs.get(claim.output.unit_id)
-        for verdict, refs, kinds in (
-            (claim.verdict, claim.evidence, {"source", "context"}),
-            (claim.supplied_verdict, claim.supplied_evidence, {"supplied"}),
-        ):
+        checks = [(claim.verdict, claim.evidence, {"source", "context"})]
+        if payload.stage == "source_analysis":
+            if claim.supplied_verdict is not None or claim.supplied_evidence:
+                errors.append(
+                    "source analysis must not judge supplied-evidence support"
+                )
+        else:
+            if claim.supplied_verdict is None:
+                errors.append(
+                    f"{claim.output.unit_id}: missing supplied-evidence verdict"
+                )
+            checks.append(
+                (claim.supplied_verdict, claim.supplied_evidence, {"supplied"})
+            )
+        for verdict, refs, kinds in checks:
             if (
                 verdict in {"supported", "partially_supported", "contradicted"}
                 and not refs
@@ -356,6 +363,10 @@ def score_judgment(
     )
     coverage = covered / len(required) if required else 1.0
     report.metrics["required_fact_coverage"] = coverage
+    for verdict in ("covered", "partially_covered", "missing", "contradicted"):
+        report.metrics[f"required_facts_{verdict}"] = sum(
+            item.id in required and item.verdict == verdict for item in judgment.facts
+        )
     is_source = payload.stage == "source_analysis"
     thresholds = (
         loaded.fixture.source_analysis.thresholds
@@ -389,15 +400,9 @@ def score_judgment(
 
     # Source analysis must retain useful evidence; drafting must answer its template.
     if is_source:
-        retained = sum(c.supplied_verdict == "supported" for c in judgment.claims)
-        retained_rate = retained / len(judgment.claims) if judgment.claims else 0.0
         topics = sum(t.verdict == "covered" for t in judgment.topics)
         topic_rate = topics / len(judgment.topics) if judgment.topics else 1.0
-        report.metrics.update(retained_support=retained_rate, topic_coverage=topic_rate)
-        if retained_rate < thresholds.min_retained_support:
-            report.semantic_failures.append(
-                f"retained_support {retained_rate:.2f} < {thresholds.min_retained_support}"
-            )
+        report.metrics["topic_coverage"] = topic_rate
         if topic_rate < thresholds.min_topic_coverage:
             report.semantic_failures.append(
                 f"topic_coverage {topic_rate:.2f} < {thresholds.min_topic_coverage}"

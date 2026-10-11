@@ -246,17 +246,23 @@ export function AddFunderForm({
                     <LuTrash2 />
                   </IconButton>
                 </HStack>
-                <Textarea
-                  size="sm"
-                  rows={2}
-                  value={chapter.description}
-                  aria-label={t("funder-field-chapter-description")}
-                  placeholder={t("funder-field-chapter-description")}
-                  disabled={disabled}
-                  onChange={(event) =>
-                    setChapter(chapter.id, { description: event.target.value })
-                  }
-                />
+                <Field
+                  label={t("funder-field-chapter-description")}
+                  invalid={Boolean(errors[`chapter.${chapter.id}.description`])}
+                  errorText={errorText(`chapter.${chapter.id}.description`)}
+                >
+                  <Textarea
+                    size="sm"
+                    rows={2}
+                    value={chapter.description}
+                    disabled={disabled}
+                    onChange={(event) =>
+                      setChapter(chapter.id, {
+                        description: event.target.value,
+                      })
+                    }
+                  />
+                </Field>
                 <Field
                   label={t("funding-required-fields")}
                   helperText={t("funder-list-help")}

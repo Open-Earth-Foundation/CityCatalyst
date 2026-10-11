@@ -1,48 +1,23 @@
-import type {
-  ConceptNoteFunderCreateRequest,
-  ConceptNoteProgrammeFields,
-} from "@/util/types";
+import Decimal from "decimal.js";
+import { conceptNoteFunderCreateRequest } from "@/util/concept-note-funder";
+import type { ConceptNoteFunderCreateRequest } from "@/util/types";
 
-/**
- * Form state, validation and request building for adding a funder, one
- * programme and its application template to the CNB catalogue. Pure so it is
- * unit-testable. List fields are edited as comma-separated text.
- */
-
-const FUNDER_FIELDS = ["name", "funder_type", "country", "region"] as const;
-type FunderField = (typeof FUNDER_FIELDS)[number];
-
-const PROGRAMME_FIELDS = [
-  "name",
-  "summary",
-  "applicant_type",
-  "region_scope",
-  "sector",
-  "category",
-  "instrument_type",
-  "finance_route",
-  "status",
-  "min_award",
-  "max_award",
-  "currency",
-  "hazards",
-  "interventions",
-] as const;
-type ProgrammeField = (typeof PROGRAMME_FIELDS)[number];
-const LIST_FIELDS: ReadonlySet<ProgrammeField> = new Set([
-  "hazards",
-  "interventions",
-]);
-const AWARD_FIELDS: ReadonlySet<ProgrammeField> = new Set([
-  "min_award",
-  "max_award",
-]);
-
-type TemplateField = "template_name" | "output_format";
+/** Text inputs stay strings until the shared request schema validates them. */
+export interface FunderForm {
+  funder: Record<
+    Exclude<keyof ConceptNoteFunderCreateRequest["funder"], "profile">,
+    string
+  >;
+  opportunity: Record<
+    Exclude<keyof ConceptNoteFunderCreateRequest["opportunity"], "known_gaps">,
+    string
+  >;
+  template: { template_name: string; output_format: string };
+  chapters: ChapterRow[];
+}
 
 export interface ChapterRow {
   id: string;
-  /** Empty for chapters added in the form; the server derives one. */
   chapter_ref: string;
   title: string;
   description: string;
@@ -50,36 +25,15 @@ export interface ChapterRow {
   required_fields: string;
 }
 
-export interface FunderForm {
-  funder: Record<FunderField, string>;
-  opportunity: Record<ProgrammeField, string>;
-  template: Record<TemplateField, string>;
-  chapters: ChapterRow[];
-}
-
-/** Form sections made only of text inputs. */
 export type FunderTextSection = Exclude<keyof FunderForm, "chapters">;
-
-/** Error keys (i18n) by field path; `chapter.<rowId>.title` for chapters. */
+/** i18n keys by field path; chapters use their stable row ID. */
 export type FunderFormErrors = Record<string, string>;
-
-/** One value per field name. */
-function fieldMap<K extends string, V>(
-  fields: readonly K[],
-  value: (field: K) => V,
-): Record<K, V> {
-  return Object.fromEntries(
-    fields.map((field) => [field, value(field)]),
-  ) as Record<K, V>;
-}
 
 let nextRowId = 0;
 
-/** A blank required chapter with a row id unique to this page. */
 export function emptyChapter(): ChapterRow {
-  nextRowId += 1;
   return {
-    id: `chapter-${nextRowId}`,
+    id: `chapter-${++nextRowId}`,
     chapter_ref: "",
     title: "",
     description: "",
@@ -88,29 +42,46 @@ export function emptyChapter(): ChapterRow {
   };
 }
 
-/** A blank form with one empty chapter, used for the by-hand path. */
 export function emptyFunderForm(): FunderForm {
   return {
-    funder: fieldMap(FUNDER_FIELDS, () => ""),
-    opportunity: fieldMap(PROGRAMME_FIELDS, () => ""),
+    funder: { name: "", funder_type: "", country: "", region: "" },
+    opportunity: {
+      name: "",
+      summary: "",
+      applicant_type: "",
+      region_scope: "",
+      sector: "",
+      category: "",
+      instrument_type: "",
+      finance_route: "",
+      status: "",
+      min_award: "",
+      max_award: "",
+      currency: "",
+      hazards: "",
+      interventions: "",
+    },
     template: { template_name: "", output_format: "" },
     chapters: [emptyChapter()],
   };
 }
 
 function splitList(value: string): string[] {
-  const items = value.split(",").map((item) => item.trim());
-  return [...new Set(items.filter(Boolean))];
+  return [
+    ...new Set(
+      value
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
+    ),
+  ];
 }
 
 function optionalText(value: string): string | null {
   return value.trim() || null;
 }
 
-/**
- * Accept decimal dots/commas and space-grouped thousands; reject ambiguity.
- * Returns `null` for an empty input and `NaN` for an invalid amount.
- */
+/** Accept localized decimals, rejecting ambiguous grouping and precision loss. */
 export function parseAward(value: string): number | null {
   const text = value.trim();
   if (!text) return null;
@@ -119,72 +90,66 @@ export function parseAward(value: string): number | null {
   ) {
     return Number.NaN;
   }
-  const amount = Number(text.replace(/[ \u00a0\u202f]/g, "").replace(",", "."));
-  return Number.isFinite(amount) ? amount : Number.NaN;
+  const decimal = new Decimal(
+    text.replace(/[ \u00a0\u202f]/g, "").replace(",", "."),
+  );
+  const amount = decimal.toNumber();
+  return Number.isFinite(amount) && decimal.equals(amount)
+    ? amount
+    : Number.NaN;
 }
 
-/** Required names, at least one titled chapter and valid award amounts. */
+/** Map the same schema used by the API to the form's stable field paths. */
 export function validateFunderForm(form: FunderForm): FunderFormErrors {
+  const result = conceptNoteFunderCreateRequest.safeParse(
+    formToCreateRequest(form),
+  );
+  if (result.success) return {};
   const errors: FunderFormErrors = {};
-  if (!form.funder.name.trim()) {
-    errors["funder.name"] = "funder-error-funder-name";
-  }
-  if (!form.opportunity.name.trim()) {
-    errors["opportunity.name"] = "funder-error-programme-name";
-  }
-  if (!form.template.template_name.trim()) {
-    errors["template.template_name"] = "funder-error-template-name";
-  }
-  if (!form.chapters.length) {
-    errors["template.chapters"] = "funder-error-chapters";
-  }
-  for (const chapter of form.chapters) {
-    if (!chapter.title.trim()) {
-      errors[`chapter.${chapter.id}.title`] = "funder-error-chapter-title";
+  for (const issue of result.error.issues) {
+    let path = issue.path.join(".");
+    if (issue.path[1] === "chapter_schema") {
+      const row = form.chapters[Number(issue.path[2])];
+      path = row ? `chapter.${row.id}.${issue.path[3]}` : "template.chapters";
     }
-  }
-  const min = parseAward(form.opportunity.min_award);
-  const max = parseAward(form.opportunity.max_award);
-  if (Number.isNaN(min)) errors["opportunity.min_award"] = "funder-error-award";
-  if (Number.isNaN(max)) errors["opportunity.max_award"] = "funder-error-award";
-  // Comparisons with NaN are false, so an invalid amount skips this check.
-  if (min !== null && max !== null && min > max) {
-    errors["opportunity.max_award"] = "funder-error-award-range";
+    errors[path] ??= issue.message;
   }
   return errors;
 }
 
-/** Request value for one programme input. */
-function programmeValue(
-  field: ProgrammeField,
-  value: string,
-): string | string[] | number | null {
-  if (LIST_FIELDS.has(field)) return splitList(value);
-  if (AWARD_FIELDS.has(field)) return parseAward(value);
-  return optionalText(value);
-}
-
-/** Build the create request; call only when `validateFunderForm` is empty. */
+/** Convert editable fields explicitly; validate before sending the request. */
 export function formToCreateRequest(
   form: FunderForm,
 ): ConceptNoteFunderCreateRequest {
+  const { funder, opportunity, template } = form;
   return {
     funder: {
-      ...fieldMap(FUNDER_FIELDS, (field) => optionalText(form.funder[field])),
-      name: form.funder.name.trim(),
+      name: funder.name.trim(),
+      funder_type: optionalText(funder.funder_type),
+      country: optionalText(funder.country),
+      region: optionalText(funder.region),
       profile: { stated: {}, derived: {} },
     },
     opportunity: {
-      // Each field's value type follows `programmeValue`.
-      ...(fieldMap(PROGRAMME_FIELDS, (field) =>
-        programmeValue(field, form.opportunity[field]),
-      ) as Omit<ConceptNoteProgrammeFields, "known_gaps">),
-      name: form.opportunity.name.trim(),
+      name: opportunity.name.trim(),
+      summary: optionalText(opportunity.summary),
+      applicant_type: optionalText(opportunity.applicant_type),
+      region_scope: optionalText(opportunity.region_scope),
+      sector: optionalText(opportunity.sector),
+      category: optionalText(opportunity.category),
+      instrument_type: optionalText(opportunity.instrument_type),
+      finance_route: optionalText(opportunity.finance_route),
+      status: optionalText(opportunity.status),
+      min_award: parseAward(opportunity.min_award),
+      max_award: parseAward(opportunity.max_award),
+      currency: optionalText(opportunity.currency),
+      hazards: splitList(opportunity.hazards),
+      interventions: splitList(opportunity.interventions),
       known_gaps: [],
     },
     template: {
-      template_name: form.template.template_name.trim(),
-      output_format: optionalText(form.template.output_format),
+      template_name: template.template_name.trim(),
+      output_format: optionalText(template.output_format),
       chapter_schema: form.chapters.map((chapter) => ({
         chapter_ref: chapter.chapter_ref,
         title: chapter.title.trim(),

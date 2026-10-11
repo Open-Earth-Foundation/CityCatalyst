@@ -42,7 +42,7 @@ import { z } from "zod";
 
 import { proxyConceptNoteRunRequest } from "@/backend/concept-note-run-proxy";
 import { apiHandler } from "@/util/api";
-import { conceptNoteFunderCreateRequest } from "@/util/validation";
+import { conceptNoteFunderCreateRequest } from "@/util/concept-note-funder";
 
 const paramsSchema = z.object({ runId: z.string().uuid() });
 
@@ -52,7 +52,6 @@ export const POST = apiHandler(async (req, { session, params }) => {
   return proxyConceptNoteRunRequest(req, session, {
     runId,
     path: `/v1/concept-notes/${runId}/funders`,
-    method: "POST",
     body,
   });
 });

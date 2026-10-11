@@ -4,27 +4,19 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
-class StructureChapter(BaseModel):
+from app.models.cnb.chapter_content import ChapterContent, MAX_CHAPTERS
+
+
+class StructureChapter(ChapterContent):
     """Stable chapter identity; array order determines document order."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
     chapter_id: UUID
     template_section_id: str | None = None
     required: bool = False
-    title: str = Field(min_length=1, max_length=255)
-    description: str = Field(default="", max_length=4000)
-
-    @field_validator("title")
-    @classmethod
-    def validate_title(cls, value: str) -> str:
-        """Keep chapter headings nonempty and on one line."""
-        value = value.strip()
-        if not value or "\n" in value or "\r" in value:
-            raise ValueError("Chapter title must be nonempty and on one line")
-        return value
 
 
 class StructureState(BaseModel):
@@ -39,7 +31,7 @@ class StructureSaveRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     expected_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
-    chapters: list[StructureChapter] = Field(min_length=1, max_length=100)
+    chapters: list[StructureChapter] = Field(min_length=1, max_length=MAX_CHAPTERS)
 
     @model_validator(mode="after")
     def unique_chapters(self) -> StructureSaveRequest:
@@ -56,10 +48,9 @@ class StructureProposal(BaseModel):
     after: list[StructureChapter]
 
 
-class StructurePlannedChapter(BaseModel):
+class StructurePlannedChapter(ChapterContent):
     """Agent addresses existing chapters by catalogue position, never invented IDs."""
 
     model_config = ConfigDict(extra="forbid")
     chapter_position: int | None = Field(default=None, ge=0)
-    title: str = Field(min_length=1, max_length=255)
     description: str = Field(max_length=4000)

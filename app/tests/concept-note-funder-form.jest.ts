@@ -122,3 +122,50 @@ describe("funder errors", () => {
     );
   });
 });
+
+describe("shared request limits", () => {
+  it.each([
+    ["funder", "name", 255],
+    ["funder", "country", 100],
+    ["opportunity", "currency", 16],
+    ["opportunity", "status", 64],
+    ["template", "template_name", 255],
+  ] as const)(
+    "shows the API length limit for %s.%s",
+    (section, field, limit) => {
+      const form = typedForm();
+      Object.assign(form[section], { [field]: "x".repeat(limit + 1) });
+      expect(validateFunderForm(form)[`${section}.${field}`]).toBe(
+        `funder-error-length-${limit}`,
+      );
+    },
+  );
+  it("validates chapter text and count against workspace limits", () => {
+    const form = typedForm();
+    form.chapters[0]!.description = "x".repeat(4001);
+    form.chapters[0]!.title = "Summary\nBudget";
+    const errors = validateFunderForm(form);
+    expect(errors[`chapter.${form.chapters[0]!.id}.description`]).toBe(
+      "funder-error-length-4000",
+    );
+    expect(errors[`chapter.${form.chapters[0]!.id}.title`]).toBe(
+      "funder-error-chapter-title-line",
+    );
+    form.chapters = Array.from({ length: 101 }, () => ({
+      ...form.chapters[0]!,
+      title: "Summary",
+      description: "",
+    }));
+    expect(validateFunderForm(form)["template.chapters"]).toBe(
+      "funder-error-chapter-limit",
+    );
+  });
+  it("rejects awards exceeding storage limits or losing numeric precision", () => {
+    const form = typedForm();
+    form.opportunity.max_award = "10000000000000000";
+    expect(validateFunderForm(form)["opportunity.max_award"]).toBe(
+      "funder-error-award-limit",
+    );
+    expect(parseAward("9999999999999999.99")).toBeNaN();
+  });
+});

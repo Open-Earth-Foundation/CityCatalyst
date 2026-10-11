@@ -358,7 +358,7 @@ function addedFunder(
       chapter_schema: Array<{ title: string }>;
     };
   },
-  addedFrom: { kind: "document" | "manual"; filename: string | null },
+  addedFrom: { kind: "manual" },
 ): CatalogueFunder {
   return {
     ...funders[1]!,
@@ -397,7 +397,7 @@ test("add a funder by hand and select it", async ({ page }) => {
       if (!url.pathname.endsWith("/funders/")) return false;
       const body = route.request().postDataJSON();
       created.push(body);
-      catalogue.push(addedFunder(body, { kind: "manual", filename: null }));
+      catalogue.push(addedFunder(body, { kind: "manual" }));
       await route.fulfill({
         status: 201,
         json: {

@@ -19,13 +19,11 @@ export async function proxyConceptNoteRunRequest(
   {
     runId,
     path,
-    method = "GET",
     body,
   }: {
     runId: string;
     path: string;
-    method?: "GET" | "POST" | "DELETE";
-    body?: Record<string, unknown>;
+    body: Record<string, unknown>;
   },
 ): Promise<NextResponse> {
   if (!session?.user?.id) {
@@ -38,14 +36,11 @@ export async function proxyConceptNoteRunRequest(
     cityId,
     session,
     path,
-    method,
+    method: "POST",
     body,
     requestId,
     searchParams: { user_id: userId },
   });
-  if (response.status === 204) {
-    return new NextResponse(null, { status: 204 });
-  }
   return NextResponse.json(await readConceptNoteApiPayload(response), {
     status: response.status,
   });

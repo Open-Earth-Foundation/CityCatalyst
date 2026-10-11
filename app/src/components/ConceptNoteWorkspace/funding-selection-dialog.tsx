@@ -127,7 +127,9 @@ export function FundingSelectionDialog({
   });
   const [saveSelection, saveState] =
     api.useUpdateConceptNoteFundingSelectionMutation();
-  const [createFunder, createState] = api.useCreateConceptNoteFunderMutation();
+  const [createFunder] = api.useCreateConceptNoteFunderMutation();
+  const [creating, setCreating] = useState(false);
+  const submitting = creating || saveState.isLoading;
   const funders = data?.funders ?? [];
   const visibleFunders = funders.filter((funder) =>
     matchesFundingSearch(funder, query),
@@ -160,17 +162,18 @@ export function FundingSelectionDialog({
   }
 
   async function submitFunder(): Promise<void> {
+    if (creating) return;
     setAddError(null);
     if (Object.keys(formErrors).length) {
       setShowErrors(true);
       return;
     }
+    setCreating(true);
     try {
       const created = await createFunder({
         runId,
         funder: formToCreateRequest(form),
       }).unwrap();
-      await refetch();
       resetAdding();
       setQuery("");
       setFunderId(created.funder_id);
@@ -178,8 +181,15 @@ export function FundingSelectionDialog({
       setAcknowledged(false);
       setError(null);
       setNotice(t("funder-added"));
+      try {
+        await refetch().unwrap();
+      } catch {
+        setError(t("funder-added-refresh-error"));
+      }
     } catch (cause) {
       setAddError(t(funderApiErrorKey(cause)));
+    } finally {
+      setCreating(false);
     }
   }
 
@@ -264,9 +274,9 @@ export function FundingSelectionDialog({
       open
       size="xl"
       initialFocusEl={() => searchRef.current}
-      onOpenChange={({ open }) => !open && !saveState.isLoading && onClose()}
-      closeOnEscape={!saveState.isLoading}
-      closeOnInteractOutside={!saveState.isLoading}
+      onOpenChange={({ open }) => !open && !submitting && onClose()}
+      closeOnEscape={!submitting}
+      closeOnInteractOutside={!submitting}
     >
       <DialogContent
         maxW="1100px"
@@ -296,10 +306,7 @@ export function FundingSelectionDialog({
             {t("funding-dialog-description")}
           </DialogDescription>
         </DialogHeader>
-        <DialogCloseTrigger
-          aria-label={t("close")}
-          disabled={saveState.isLoading}
-        />
+        <DialogCloseTrigger aria-label={t("close")} disabled={submitting} />
         <DialogBody p={0} minH={0} overflowY="auto">
           {isLoading ? (
             <VStack
@@ -399,7 +406,7 @@ export function FundingSelectionDialog({
                       minH="76px"
                       gap={3}
                       aria-pressed={item.id === selectedFunderId}
-                      disabled={saveState.isLoading}
+                      disabled={submitting}
                       bg="transparent"
                       borderInlineStart="3px solid"
                       borderColor="transparent"
@@ -476,7 +483,7 @@ export function FundingSelectionDialog({
                     borderColor={adding ? "content.link" : "border.neutral"}
                     bg="base.light"
                     aria-pressed={adding}
-                    disabled={saveState.isLoading}
+                    disabled={submitting}
                     onClick={() => setAdding(true)}
                   >
                     <Icon as={LuPlus} flexShrink={0} color="content.link" />
@@ -510,7 +517,7 @@ export function FundingSelectionDialog({
                     form={form}
                     onChange={setForm}
                     errors={showErrors ? formErrors : {}}
-                    disabled={createState.isLoading}
+                    disabled={creating}
                     lng={lng}
                   />
                 ) : !funder ? (
@@ -555,7 +562,7 @@ export function FundingSelectionDialog({
                                   ? "content.link"
                                   : "border.neutral"
                               }
-                              disabled={saveState.isLoading}
+                              disabled={submitting}
                               onClick={() => {
                                 setOpportunityId(
                                   item.id === opportunityId ? null : item.id,
@@ -628,12 +635,17 @@ export function FundingSelectionDialog({
                 {addError}
               </Text>
             )}
-            <Button variant="outline" size="sm" onClick={resetAdding}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={submitting}
+              onClick={resetAdding}
+            >
               {t("cancel")}
             </Button>
             <Button
               size="sm"
-              loading={createState.isLoading}
+              loading={creating}
               onClick={() => void submitFunder()}
               data-testid="concept-note-add-funder"
             >
@@ -673,7 +685,7 @@ export function FundingSelectionDialog({
                   onCheckedChange={({ checked }) =>
                     setAcknowledged(checked === true)
                   }
-                  disabled={saveState.isLoading}
+                  disabled={submitting}
                 >
                   {t("funding-draft-acknowledge")}
                 </Checkbox>
@@ -722,7 +734,7 @@ export function FundingSelectionDialog({
                   color: "content.link",
                 }}
                 size="sm"
-                disabled={!funderId || saveState.isLoading || isError}
+                disabled={!funderId || submitting || isError}
                 onClick={() => {
                   setFunderId(null);
                   setOpportunityId(null);
@@ -734,14 +746,14 @@ export function FundingSelectionDialog({
               <Button
                 variant="outline"
                 size="sm"
-                disabled={saveState.isLoading}
+                disabled={submitting}
                 onClick={onClose}
               >
                 {t("cancel")}
               </Button>
               <Button
                 size="sm"
-                loading={saveState.isLoading}
+                loading={submitting}
                 disabled={
                   !changed ||
                   isLoading ||

@@ -15,15 +15,13 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 # ``funding_opportunities.source_run_id`` prefixes for programmes users added.
-UPLOAD_SOURCE_PREFIX = "cnb-upload:"
 MANUAL_SOURCE_PREFIX = "cnb-manual:"
 
 
 class FundingAddedFrom(BaseModel):
     """How a user-added programme reached the catalogue."""
 
-    kind: Literal["document", "manual"]
-    filename: str | None = None
+    kind: Literal["manual"]
 
 
 class FundingCatalogueOpportunity(ApplicationContextOpportunity):

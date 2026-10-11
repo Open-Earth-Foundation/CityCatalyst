@@ -1978,7 +1978,18 @@ field has an owning chapter as chapter validation requires. List fields
 text. `funding_opportunities.source_run_id` is `cnb-manual:<run_id>`; the
 catalogue exposes this as `added_from`.
 
-Added funders are visible to every city, because `funders` has no owner column.
+Added funders are visible to every city, because `funders` has no owner column. The form explains this before submission.
+
+The form and Next.js route share `util/concept-note-funder.ts`, including field
+limits and award validation. Templates must match the workspace contract: 1-100
+chapters, single-line titles up to 255 characters and descriptions up to 4,000
+characters. Climate Advisor's `funder_creation` contracts validate chapter content
+against the same model used by structure edits before inserting catalogue rows.
+
+Creation keeps navigation and closing disabled through the catalogue refresh.
+Once the POST succeeds, the form closes and the new IDs remain selected even if
+refresh fails; retrying the catalogue load never repeats the successful creation.
+
 
 Award inputs accept a dot or comma as the decimal separator (up to two places)
 and spaces as thousands separators, for example `150 000,50`. Ambiguous comma
@@ -1986,7 +1997,7 @@ or dot thousands grouping is rejected instead of silently changing the amount.
 
 ```bash
 # From climate-advisor/service
-python -m pytest tests/cnb/test_funder_import.py
+python -m pytest tests/cnb/test_funder_creation.py
 ```
 
 ### Context Bundle Build Responsibilities

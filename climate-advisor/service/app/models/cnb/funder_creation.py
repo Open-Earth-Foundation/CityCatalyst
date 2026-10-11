@@ -9,23 +9,25 @@ from __future__ import annotations
 from decimal import Decimal
 from uuid import UUID
 
+from app.models.cnb.chapter_content import ChapterContent, MAX_CHAPTERS
+
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
-class FunderImportContract(BaseModel):
+class FunderCreationContract(BaseModel):
     """Base contract that rejects fields outside the documented shape."""
 
     model_config = ConfigDict(extra="forbid")
 
 
-class FunderProfileFacts(FunderImportContract):
+class FunderProfileFacts(FunderCreationContract):
     """Profile facts stored in ``funders.profile`` as stated and derived maps."""
 
     stated: dict[str, str] = Field(default_factory=dict)
     derived: dict[str, str] = Field(default_factory=dict)
 
 
-class FunderFields(FunderImportContract):
+class FunderFields(FunderCreationContract):
     """Reviewable ``funders`` columns."""
 
     name: str = Field(default="", max_length=255)
@@ -35,7 +37,7 @@ class FunderFields(FunderImportContract):
     profile: FunderProfileFacts = Field(default_factory=FunderProfileFacts)
 
 
-class ProgrammeFields(FunderImportContract):
+class ProgrammeFields(FunderCreationContract):
     """Reviewable ``funding_opportunities`` columns."""
 
     name: str = Field(default="", max_length=255)
@@ -47,8 +49,12 @@ class ProgrammeFields(FunderImportContract):
     finance_route: str | None = Field(default=None, max_length=255)
     instrument_type: str | None = Field(default=None, max_length=255)
     region_scope: str | None = Field(default=None, max_length=255)
-    min_award: Decimal | None = Field(default=None, ge=0, max_digits=18, decimal_places=2)
-    max_award: Decimal | None = Field(default=None, ge=0, max_digits=18, decimal_places=2)
+    min_award: Decimal | None = Field(
+        default=None, ge=0, max_digits=18, decimal_places=2
+    )
+    max_award: Decimal | None = Field(
+        default=None, ge=0, max_digits=18, decimal_places=2
+    )
     currency: str | None = Field(default=None, max_length=16)
     status: str | None = Field(default=None, max_length=64)
     summary: str | None = None
@@ -66,7 +72,7 @@ class ProgrammeFields(FunderImportContract):
         return self
 
 
-class TemplateChapterFields(FunderImportContract):
+class TemplateChapterFields(FunderCreationContract):
     """One ``funder_templates.chapter_schema`` entry."""
 
     chapter_ref: str = Field(default="", max_length=255)
@@ -76,7 +82,7 @@ class TemplateChapterFields(FunderImportContract):
     required_fields: list[str] = Field(default_factory=list)
 
 
-class TemplateFields(FunderImportContract):
+class TemplateFields(FunderCreationContract):
     """Reviewable ``funder_templates`` columns; required_fields is derived."""
 
     template_name: str = Field(default="", max_length=255)
@@ -84,7 +90,7 @@ class TemplateFields(FunderImportContract):
     chapter_schema: list[TemplateChapterFields] = Field(default_factory=list)
 
 
-class FunderCreateRequest(FunderImportContract):
+class FunderCreateRequest(FunderCreationContract):
     """Reviewed values to add to the catalogue."""
 
     funder: FunderFields
@@ -98,17 +104,22 @@ class FunderCreateRequest(FunderImportContract):
             raise ValueError("funder.name is required")
         if not self.opportunity.name.strip():
             raise ValueError("opportunity.name is required")
-        if not self.template.template_name.strip():
-            raise ValueError("template.template_name is required")
-        if not self.template.chapter_schema:
-            raise ValueError("template.chapter_schema needs at least one chapter")
-        if any(not chapter.title.strip() for chapter in self.template.chapter_schema):
-            raise ValueError("every template chapter needs a title")
+        require_template_values(self.template)
         return self
 
 
-class FunderCreateResponse(FunderImportContract):
+class FunderCreateResponse(FunderCreationContract):
     """Catalogue identifiers to select through the application context."""
 
     funder_id: UUID
     funding_opportunity_id: UUID
+
+
+def require_template_values(template: TemplateFields) -> None:
+    """Reject reviewed templates that the structure editor cannot load or save."""
+    if not template.template_name.strip():
+        raise ValueError("template.template_name is required")
+    if not 1 <= len(template.chapter_schema) <= MAX_CHAPTERS:
+        raise ValueError(f"template.chapter_schema needs 1-{MAX_CHAPTERS} chapters")
+    for chapter in template.chapter_schema:
+        ChapterContent(title=chapter.title, description=chapter.description or "")

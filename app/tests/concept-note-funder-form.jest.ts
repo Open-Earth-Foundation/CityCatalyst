@@ -2,12 +2,18 @@ import { describe, expect, it } from "@jest/globals";
 
 import {
   emptyFunderForm,
+  emptyTemplateForm,
   formFromDraft,
   formToCreateRequest,
   funderApiErrorKey,
   funderImportErrorKey,
+  ownTemplateRequest,
   parseAward,
+  templateFieldsFromContext,
+  templateFormFrom,
+  templatePreview,
   validateFunderForm,
+  validateTemplateForm,
 } from "@/components/ConceptNoteWorkspace/funder-form";
 import type {
   ConceptNoteFunderImport,
@@ -201,6 +207,70 @@ describe("funder errors", () => {
     );
     expect(funderApiErrorKey({ status: 500, data: null })).toBe(
       "funder-error-generic",
+    );
+  });
+});
+
+describe("own template", () => {
+  it("needs only a template name and titled chapters", () => {
+    const form = emptyTemplateForm();
+    expect(validateTemplateForm(form)).toEqual({
+      "template.template_name": "funder-error-template-name",
+      [`chapter.${form.chapters[0]!.id}.title`]: "funder-error-chapter-title",
+    });
+    expect(
+      validateTemplateForm({ ...form, chapters: [] })["template.chapters"],
+    ).toBe("funder-error-chapters");
+  });
+
+  it("builds the request from a template import and previews it", () => {
+    const source = {
+      import_id: "import-1",
+      filename: "form.pdf",
+    } as ConceptNoteFunderImport;
+    const request = ownTemplateRequest(
+      templateFormFrom(draft.template),
+      source,
+    );
+    expect(request.import_id).toBe("import-1");
+    expect(request.template).toEqual(
+      formToCreateRequest(formFromDraft(draft), null).template,
+    );
+    const preview = templatePreview(request.template);
+    expect(preview.name).toBe(draft.template.template_name);
+    expect(preview.required_fields).toEqual([
+      ...new Set(
+        draft.template.chapter_schema.flatMap((c) => c.required_fields),
+      ),
+    ]);
+  });
+
+  it("edits a saved template with its chapter details", () => {
+    const fields = templateFieldsFromContext({
+      id: "own",
+      name: "City concept note",
+      output_format: null,
+      chapter_schema: [
+        {
+          chapter_ref: "summary",
+          title: "Summary",
+          required_fields: ["total_budget"],
+        },
+      ],
+      required_fields: ["total_budget"],
+    });
+    expect(fields.chapter_schema).toEqual([
+      {
+        chapter_ref: "summary",
+        title: "Summary",
+        description: null,
+        required: false,
+        required_fields: ["total_budget"],
+      },
+    ]);
+    // A saved template survives a round trip through the form.
+    expect(ownTemplateRequest(templateFormFrom(fields), null).template).toEqual(
+      fields,
     );
   });
 });

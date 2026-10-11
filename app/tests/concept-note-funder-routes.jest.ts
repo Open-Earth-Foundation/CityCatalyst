@@ -115,8 +115,20 @@ describe("Funder API boundary", () => {
         session,
         path: `/v1/concept-notes/${runId}/funder-imports`,
         method: "POST",
-        body: { upload_id: uploadId },
+        body: { upload_id: uploadId, kind: "funder" },
         searchParams: { user_id: "owner" },
+      }),
+    );
+  });
+
+  it("forwards a template-only import", async () => {
+    callApi.mockResolvedValue(
+      Response.json({ funder_import: null }, { status: 202 }),
+    );
+    await startImport(post({ uploadId, kind: "template" }), context);
+    expect(callApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: { upload_id: uploadId, kind: "template" },
       }),
     );
   });

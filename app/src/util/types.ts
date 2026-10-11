@@ -18,7 +18,10 @@ import {
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
-import type { conceptNoteFunderCreateRequest } from "@/util/validation";
+import type {
+  conceptNoteCustomTemplateRequest,
+  conceptNoteFunderCreateRequest,
+} from "@/util/validation";
 import type { CityAttributes } from "@/models/City";
 import type { GasValue, GasValueAttributes } from "@/models/GasValue";
 import type {
@@ -1109,6 +1112,7 @@ export interface ConceptNoteTemplateChapter {
   title: string;
   description?: string | null;
   required?: boolean | null;
+  required_fields?: string[] | null;
 }
 
 export interface ConceptNoteApplicationContext {
@@ -1129,6 +1133,8 @@ export interface ConceptNoteApplicationContext {
     chapter_schema: ConceptNoteTemplateChapter[];
     required_fields: string[];
   } | null;
+  /** Set only when the note uses its own template instead of a funder's. */
+  template_source?: ConceptNoteFundingAddedFrom | null;
   included_sources: {
     city: boolean;
     project: boolean;
@@ -1178,6 +1184,11 @@ export type ConceptNoteProgrammeFields =
 export type ConceptNoteTemplateFields =
   ConceptNoteFunderCreateRequest["template"];
 
+/** A note's own template; see `conceptNoteCustomTemplateRequest`. */
+export type ConceptNoteCustomTemplateRequest = z.infer<
+  typeof conceptNoteCustomTemplateRequest
+>;
+
 /** Values extracted from a funder document, awaiting review. */
 export interface ConceptNoteFunderImportDraft extends Omit<
   ConceptNoteFunderCreateRequest,
@@ -1191,6 +1202,8 @@ export interface ConceptNoteFunderImport {
   import_id: string;
   upload_id: string;
   filename: string;
+  /** A funder import fills every section; a template import only `template`. */
+  kind: "funder" | "template";
   status: "processing" | "ready" | "failed";
   /** While processing: whether the upload is still converting to text. */
   stage?: "converting" | "reading" | null;
@@ -1222,6 +1235,9 @@ export interface ConceptNoteFundingSelection {
   selected_funding_opportunity_id: string | null;
   expected_funder_id: string | null;
   expected_funding_opportunity_id: string | null;
+  /** The note's own template; replaces the funder and programme. */
+  custom_template: ConceptNoteCustomTemplateRequest | null;
+  expected_custom_template_id: string | null;
   acknowledge_draft_review: boolean;
 }
 

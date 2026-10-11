@@ -27,6 +27,7 @@ const currentImport: ConceptNoteFunderImport = {
   import_id: "import-1",
   upload_id: "upload-1",
   filename: "call.pdf",
+  kind: "funder",
   status: "processing",
   stage: "converting",
   draft: null,
@@ -84,15 +85,21 @@ jest.unstable_mockModule("@/services/api", () => ({
 let useFunderImport: typeof import("@/components/ConceptNoteWorkspace/use-funder-import").useFunderImport;
 let root: Root;
 let container: HTMLDivElement;
-function Harness({ runId = "run" }: { runId?: string }) {
-  const current = useFunderImport({ cityId: "city", runId });
+function Harness({
+  runId = "run",
+  kind,
+}: {
+  runId?: string;
+  kind?: "funder" | "template";
+}) {
+  const current = useFunderImport({ cityId: "city", runId, kind });
   useEffect(() => {
     flow = current;
   }, [current]);
   return null;
 }
-async function render(runId = "run") {
-  await act(async () => root.render(<Harness runId={runId} />));
+async function render(runId = "run", kind?: "funder" | "template") {
+  await act(async () => root.render(<Harness runId={runId} kind={kind} />));
 }
 async function upload(name = "call.pdf", uploadId = "upload-1") {
   await act(async () => {
@@ -136,6 +143,7 @@ it("starts the import as soon as the file is uploaded and follows its stage", as
   expect(startImport).toHaveBeenCalledWith({
     runId: "run",
     uploadId: "upload-1",
+    kind: "funder",
   });
   expect(dispatch).toHaveBeenCalledWith({ funder_import: currentImport });
   await render();
@@ -199,6 +207,7 @@ it("ignores a late old upload after choosing a replacement", async () => {
   expect(startImport).toHaveBeenCalledWith({
     runId: "run",
     uploadId: "upload-1",
+    kind: "funder",
   });
   await render();
   expect(flow.filename).toBe("call.pdf");
@@ -216,6 +225,7 @@ it("keeps a failed start retryable on the same upload", async () => {
   expect(startImport).toHaveBeenLastCalledWith({
     runId: "run",
     uploadId: "upload-1",
+    kind: "funder",
   });
   await render();
   expect(flow.phase).toBe("converting");
@@ -238,6 +248,7 @@ it("retries the conversion before restarting an import whose upload failed", asy
   expect(startImport).toHaveBeenCalledWith({
     runId: "run",
     uploadId: "upload-1",
+    kind: "funder",
   });
 });
 
@@ -257,4 +268,24 @@ it("forgets browser-only progress when switching to another note", async () => {
   expect(flow.phase).toBe("failed");
   await render("other-run");
   expect(flow.phase).toBe("idle");
+});
+
+it("reads a template upload and ignores an import of the other kind", async () => {
+  serverImport = currentImport;
+  await render("run", "template");
+  // The funder import belongs to the add-funder flow.
+  expect(flow.phase).toBe("idle");
+  start.mockImplementation(async () => {
+    serverImport = { ...currentImport, kind: "template" };
+    return { funder_import: serverImport };
+  });
+  await upload("form.pdf");
+  expect(startImport).toHaveBeenCalledWith({
+    runId: "run",
+    uploadId: "upload-1",
+    kind: "template",
+  });
+  await render("run", "template");
+  expect(flow.kind).toBe("template");
+  expect(flow.phase).toBe("converting");
 });

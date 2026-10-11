@@ -257,6 +257,9 @@ class PromptsConfig(BaseModel):
     cnb_funder_document_extraction: str = (
         "prompts/cnb/funder_document_extraction.md"
     )
+    cnb_template_document_extraction: str = (
+        "prompts/cnb/template_document_extraction.md"
+    )
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""

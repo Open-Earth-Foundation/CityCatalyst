@@ -1,4 +1,5 @@
-"""Contracts for adding a funder, programme and template to the CNB catalogue.
+"""Contracts for adding a funder, programme and template to the CNB catalogue,
+or for giving one note its own application template.
 
 Field names mirror the existing ``funders``, ``funding_opportunities`` and
 ``funder_templates`` columns so a reviewed import is an ordinary catalogue row.
@@ -8,12 +9,15 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
+from app.models.cnb.concept_note_application_context import FundingAddedFrom
 from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, model_validator
 
 FunderImportStatus = Literal["processing", "ready", "failed"]
+# What an uploaded document is read for: a catalogue funder or a note's own template.
+FunderImportKind = Literal["funder", "template"]
 # JSON carries awards as numbers, matching what the browser sends back.
 Award = Annotated[
     Decimal,
@@ -94,6 +98,16 @@ class TemplateFields(FunderImportContract):
     chapter_schema: list[TemplateChapterFields] = Field(default_factory=list)
 
 
+def require_template_values(template: TemplateFields) -> None:
+    """Require what drafting needs: a template name and titled chapters."""
+    if not template.template_name.strip():
+        raise ValueError("template.template_name is required")
+    if not template.chapter_schema:
+        raise ValueError("template.chapter_schema needs at least one chapter")
+    if any(not chapter.title.strip() for chapter in template.chapter_schema):
+        raise ValueError("every template chapter needs a title")
+
+
 class FieldEvidence(FunderImportContract):
     """A verbatim document quote supporting one extracted field."""
 
@@ -103,7 +117,10 @@ class FieldEvidence(FunderImportContract):
 
 
 class FunderImportDraft(FunderImportContract):
-    """Extracted values awaiting review, with verified evidence per field."""
+    """Extracted values awaiting review, with verified evidence per field.
+
+    A ``template`` import fills only ``template``; funder and programme stay blank.
+    """
 
     funder: FunderFields
     opportunity: ProgrammeFields
@@ -118,6 +135,7 @@ class FunderImport(FunderImportContract):
     import_id: UUID
     upload_id: UUID
     filename: str
+    kind: FunderImportKind = "funder"
     status: FunderImportStatus
     # Reported, not stored: a processing import waits for its upload to convert.
     stage: Literal["converting", "reading"] | None = None
@@ -140,9 +158,10 @@ class FunderImportDiscardRequest(FunderImportContract):
 
 
 class FunderImportStartRequest(FunderImportContract):
-    """Read funder details from one run upload once it has converted."""
+    """Read funder or template details from one run upload once it has converted."""
 
     upload_id: UUID
+    kind: FunderImportKind = "funder"
 
 
 class FunderCreateRequest(FunderImportContract):
@@ -160,13 +179,32 @@ class FunderCreateRequest(FunderImportContract):
             raise ValueError("funder.name is required")
         if not self.opportunity.name.strip():
             raise ValueError("opportunity.name is required")
-        if not self.template.template_name.strip():
-            raise ValueError("template.template_name is required")
-        if not self.template.chapter_schema:
-            raise ValueError("template.chapter_schema needs at least one chapter")
-        if any(not chapter.title.strip() for chapter in self.template.chapter_schema):
-            raise ValueError("every template chapter needs a title")
+        require_template_values(self.template)
         return self
+
+
+class CustomTemplateRequest(FunderImportContract):
+    """A reviewed template for one note, typed by hand or from a template import."""
+
+    template: TemplateFields
+    import_id: UUID | None = None
+
+    @model_validator(mode="after")
+    def validate_required_values(self) -> CustomTemplateRequest:
+        """Require a template name and titled chapters."""
+        require_template_values(self.template)
+        return self
+
+
+class StoredCustomTemplate(BaseModel):
+    """``concept_note_runs.custom_template``: normalized, so drafting reads it as is."""
+
+    id: UUID
+    template_name: str
+    output_format: str | None = None
+    chapter_schema: list[dict[str, Any]]
+    required_fields: list[str] = Field(default_factory=list)
+    added_from: FundingAddedFrom
 
 
 class FunderCreateResponse(FunderImportContract):
@@ -248,5 +286,12 @@ class FunderDocumentExtraction(FunderImportContract):
 
     funder: ExtractedFunder
     opportunity: ExtractedProgramme
+    template: ExtractedTemplate
+    evidence: list[ExtractedEvidence]
+
+
+class TemplateDocumentExtraction(FunderImportContract):
+    """Strict model output for a template-only read of an application form."""
+
     template: ExtractedTemplate
     evidence: list[ExtractedEvidence]

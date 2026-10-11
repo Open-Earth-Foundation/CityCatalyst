@@ -7,6 +7,7 @@ import {
   beforeEach,
   expect,
   it,
+  describe,
   jest,
 } from "@jest/globals";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
@@ -375,4 +376,127 @@ it("adds a funder entered by hand and selects it", async () => {
     document.querySelector('[data-testid="concept-note-funder-added-from"]')
       ?.textContent,
   ).toBe(translations["funding-added-by-hand"]);
+});
+
+describe("own template", () => {
+  const context = {
+    run_id: "run",
+    city_id: "city",
+    funder: null,
+    opportunity: null,
+    template: null,
+    included_sources: {
+      city: true,
+      project: false,
+      ghgi: false,
+      ccra: false,
+      hiap: false,
+    },
+  };
+  const ownTemplate = {
+    id: "own-template-id",
+    name: "City concept note",
+    output_format: "DOCX",
+    chapter_schema: [
+      { chapter_ref: "summary", title: "Summary", required: true },
+    ],
+    required_fields: [],
+  };
+  const button = (label: string) =>
+    [...document.querySelectorAll("button")].find((item) =>
+      item.textContent?.includes(label),
+    )!;
+  async function type(label: string, value: string) {
+    const labelElement = [...document.querySelectorAll("label")].find((item) =>
+      item.textContent?.startsWith(label),
+    )!;
+    const input = document.getElementById(labelElement.htmlFor)!;
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value",
+      )!.set!.call(input, value);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  }
+  async function renderDialog(applicationContext = context) {
+    save.mockImplementation(() => ({ unwrap: async () => ({}) }));
+    await act(async () => {
+      root.render(
+        <ChakraProvider value={defaultSystem}>
+          <FundingSelectionDialog
+            applicationContext={applicationContext}
+            hasDraft={false}
+            busy={false}
+            lng="en"
+            runId="run"
+            onClose={onClose}
+          />
+        </ChakraProvider>,
+      );
+    });
+  }
+
+  it("uses a template defined by hand without a funder", async () => {
+    await renderDialog();
+    await act(async () => button(translations["template-own-entry"]).click());
+    await type(translations["funder-field-template-name"], "City concept note");
+    await type("Chapter", "Summary");
+    await act(async () => button(translations["template-use-submit"]).click());
+
+    // The chosen template is previewed and becomes the pending selection.
+    expect(
+      document.querySelector('[data-testid="own-template-details"]')
+        ?.textContent,
+    ).toContain(translations["template-by-hand"]);
+    await act(async () =>
+      button(translations["funding-save-and-draft"]).click(),
+    );
+    expect(save).toHaveBeenCalledWith({
+      runId: "run",
+      selection: expect.objectContaining({
+        funder_id: null,
+        selected_funding_opportunity_id: null,
+        custom_template: {
+          template: expect.objectContaining({
+            template_name: "City concept note",
+            chapter_schema: [
+              expect.objectContaining({ chapter_ref: "", title: "Summary" }),
+            ],
+          }),
+          import_id: null,
+        },
+        expected_custom_template_id: null,
+      }),
+    });
+  });
+
+  it("shows a saved own template and replaces it with a funder", async () => {
+    await renderDialog({
+      ...context,
+      template: ownTemplate,
+      template_source: { kind: "document", filename: "form.pdf" },
+    });
+    expect(
+      document.querySelector('[data-testid="own-template-details"]')
+        ?.textContent,
+    ).toContain(translations["template-from-file"]);
+    // Nothing changed yet, so there is nothing to save.
+    const saveButton = () =>
+      document.querySelector<HTMLButtonElement>(
+        '[data-testid="concept-note-funding-save"]',
+      )!;
+    expect(saveButton().disabled).toBe(true);
+
+    await act(async () => button("New funder").click());
+    await act(async () => saveButton().click());
+    expect(save).toHaveBeenCalledWith({
+      runId: "run",
+      selection: expect.objectContaining({
+        funder_id: "new-funder",
+        custom_template: null,
+        expected_custom_template_id: "own-template-id",
+      }),
+    });
+  });
 });

@@ -27,6 +27,7 @@ import {
   type FunderForm,
   type FunderFormErrors,
   type FunderTextSection,
+  type TemplateForm,
 } from "./funder-form";
 
 const sectionProps = {
@@ -45,96 +46,140 @@ interface TextFieldOptions {
   help?: string;
 }
 
-interface AddFunderFormProps {
-  form: FunderForm;
-  onChange: (update: (form: FunderForm) => FunderForm) => void;
-  /** The document import the values were filled from, if any. */
-  source: ConceptNoteFunderImport | null;
-  /** Errors to show; empty until the user first tries to add the funder. */
+interface FormProps<F> {
+  form: F;
+  onChange: (update: (form: F) => F) => void;
+  /** Errors to show; empty until the user first tries to submit. */
   errors: FunderFormErrors;
   disabled?: boolean;
   lng: string;
 }
 
-/** Editable funder, programme and application template (`funding-details.tsx` fields). */
-export function AddFunderForm({
-  form,
+interface SourcedFormProps<F> extends FormProps<F> {
+  /** The document import the values were filled from, if any. */
+  source: ConceptNoteFunderImport | null;
+}
+
+/** One labelled text input; `path` keys its error. */
+function TextField({
+  path,
+  label,
+  value,
   onChange,
-  source,
   errors,
   disabled,
   lng,
-}: AddFunderFormProps) {
+  options: { required, full, multiline, help } = {},
+}: {
+  path: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  errors: FunderFormErrors;
+  disabled?: boolean;
+  lng: string;
+  options?: TextFieldOptions;
+}) {
   const { t } = useTranslation(lng, "concept-notes");
-  const errorText = (path: string) => (errors[path] ? t(errors[path]) : null);
-  const missingCount = source?.draft?.missing.length ?? 0;
+  const Control = multiline ? Textarea : Input;
+  return (
+    <Field
+      label={t(label)}
+      required={required}
+      invalid={Boolean(errors[path])}
+      errorText={errors[path] ? t(errors[path]) : null}
+      helperText={help ? t(help) : undefined}
+      gridColumn={full ? "1 / -1" : undefined}
+    >
+      <Control
+        size="sm"
+        value={value}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </Field>
+  );
+}
 
-  function setChapters(update: (rows: ChapterRow[]) => ChapterRow[]): void {
-    onChange((current) => ({ ...current, chapters: update(current.chapters) }));
-  }
-  function setChapter(id: string, patch: Partial<ChapterRow>): void {
-    setChapters((rows) =>
-      rows.map((row) => (row.id === id ? { ...row, ...patch } : row)),
-    );
-  }
+/** Form heading, the document it was filled from and how much was missing. */
+function FormIntro({
+  title,
+  description,
+  source,
+  lng,
+}: {
+  title: string;
+  description: string;
+  source: ConceptNoteFunderImport | null;
+  lng: string;
+}) {
+  const { t } = useTranslation(lng, "concept-notes");
+  const missingCount = source?.draft?.missing.length ?? 0;
+  return (
+    <Box>
+      <Heading as="h3" fontSize="title.md">
+        {title}
+      </Heading>
+      <Text mt={1} fontSize="body.sm" color="content.secondary">
+        {description}
+      </Text>
+      {missingCount > 0 && (
+        <Text
+          mt={3}
+          p={3}
+          fontSize="body.sm"
+          bg="sentiment.warningOverlay"
+          borderRadius="rounded"
+        >
+          {t("funder-import-missing", { count: missingCount })}
+        </Text>
+      )}
+    </Box>
+  );
+}
+
+/** Editable funder, programme and application template (`funding-details.tsx` fields). */
+export function AddFunderForm(props: SourcedFormProps<FunderForm>) {
+  const { form, onChange, source, lng } = props;
+  const { t } = useTranslation(lng, "concept-notes");
 
   function textField<S extends FunderTextSection>(
     section: S,
     field: keyof FunderForm[S] & string,
-    labelKey: string,
-    { required, full, multiline, help }: TextFieldOptions = {},
+    label: string,
+    options?: TextFieldOptions,
   ): ReactNode {
-    const path = `${section}.${field}`;
-    const Control = multiline ? Textarea : Input;
     const values: Record<string, string> = form[section];
     return (
-      <Field
-        key={path}
-        label={t(labelKey)}
-        required={required}
-        invalid={Boolean(errors[path])}
-        errorText={errorText(path)}
-        helperText={help ? t(help) : undefined}
-        gridColumn={full ? "1 / -1" : undefined}
-      >
-        <Control
-          size="sm"
-          value={values[field]}
-          disabled={disabled}
-          onChange={(event) =>
-            onChange((current) => ({
-              ...current,
-              [section]: { ...current[section], [field]: event.target.value },
-            }))
-          }
-        />
-      </Field>
+      <TextField
+        key={`${section}.${field}`}
+        {...props}
+        path={`${section}.${field}`}
+        label={label}
+        value={values[field]}
+        onChange={(value) =>
+          onChange((current) => ({
+            ...current,
+            [section]: { ...current[section], [field]: value },
+          }))
+        }
+        options={options}
+      />
     );
   }
 
   return (
     <VStack align="stretch" gap={6} data-testid="add-funder-form">
-      <Box>
-        <Heading as="h3" fontSize="title.md">
-          {t(source ? "funder-review-title" : "funder-manual-title")}
-        </Heading>
-        <Text mt={1} fontSize="body.sm" color="content.secondary">
-          {source
+      <FormIntro
+        title={t(source ? "funder-review-title" : "funder-manual-title")}
+        description={
+          source
             ? t("funder-review-from-document", { filename: source.filename })
-            : t("funder-manual-description")}
-        </Text>
-        {missingCount > 0 && (
-          <Text
-            mt={3}
-            p={3}
-            fontSize="body.sm"
-            bg="sentiment.warningOverlay"
-            borderRadius="rounded"
-          >
-            {t("funder-import-missing", { count: missingCount })}
-          </Text>
-        )}
-      </Box>
+            : t("funder-manual-description")
+        }
+        source={source}
+        lng={lng}
+      />
 
       <VStack align="stretch" gap={4}>
         <Heading as="h4" fontSize="body.md">
@@ -191,131 +236,188 @@ export function AddFunderForm({
         </Grid>
       </VStack>
 
-      <VStack {...sectionProps}>
-        <Heading as="h4" fontSize="body.md">
-          {t("funding-template-preview")}
-        </Heading>
-        <Grid {...fieldGrid}>
-          {textField(
-            "template",
-            "template_name",
-            "funder-field-template-name",
-            {
-              required: true,
-            },
-          )}
-          {textField("template", "output_format", "funder-field-output-format")}
-        </Grid>
-        {errors["template.chapters"] && (
-          <Text
-            role="alert"
-            fontSize="label.sm"
-            color="sentiment.negativeDefault"
-          >
-            {t(errors["template.chapters"])}
-          </Text>
-        )}
-        <VStack as="ol" align="stretch" gap={0} listStyleType="none" m={0}>
-          {form.chapters.map((chapter, index) => {
-            const titlePath = `chapter.${chapter.id}.title`;
-            return (
-              <VStack
-                as="li"
-                key={chapter.id}
-                align="stretch"
-                gap={2}
-                py={3}
-                borderTop="1px solid"
-                borderColor="border.neutral"
-                data-testid="funder-chapter"
-              >
-                <HStack align="start" gap={2}>
-                  <Field
-                    flex={1}
-                    label={t("funder-field-chapter-title", {
-                      index: index + 1,
-                    })}
-                    required
-                    invalid={Boolean(errors[titlePath])}
-                    errorText={errorText(titlePath)}
-                  >
-                    <Input
-                      size="sm"
-                      value={chapter.title}
-                      disabled={disabled}
-                      onChange={(event) =>
-                        setChapter(chapter.id, { title: event.target.value })
-                      }
-                    />
-                  </Field>
-                  <IconButton
-                    mt={6}
-                    size="sm"
-                    variant="ghost"
-                    color="content.link"
-                    aria-label={t("funder-remove-chapter")}
-                    disabled={disabled}
-                    onClick={() =>
-                      setChapters((rows) =>
-                        rows.filter((row) => row.id !== chapter.id),
-                      )
-                    }
-                  >
-                    <LuTrash2 />
-                  </IconButton>
-                </HStack>
-                <Textarea
-                  size="sm"
-                  rows={2}
-                  value={chapter.description}
-                  aria-label={t("funder-field-chapter-description")}
-                  placeholder={t("funder-field-chapter-description")}
-                  disabled={disabled}
-                  onChange={(event) =>
-                    setChapter(chapter.id, { description: event.target.value })
-                  }
-                />
+      <TemplateFieldsSection
+        {...props}
+        onChange={(update) =>
+          onChange((current) => ({ ...current, ...update(current) }))
+        }
+      />
+    </VStack>
+  );
+}
+
+/** A note's own application template, typed by hand or reviewed from a file. */
+export function OwnTemplateForm(props: SourcedFormProps<TemplateForm>) {
+  const { source, lng } = props;
+  const { t } = useTranslation(lng, "concept-notes");
+  return (
+    <VStack align="stretch" gap={6} data-testid="own-template-form">
+      <FormIntro
+        title={t(source ? "template-review-title" : "template-manual-title")}
+        description={
+          source
+            ? t("template-review-from-document", { filename: source.filename })
+            : t("template-manual-description")
+        }
+        source={source}
+        lng={lng}
+      />
+      <TemplateFieldsSection {...props} />
+    </VStack>
+  );
+}
+
+/** Template name, format and the ordered chapters drafting will write. */
+function TemplateFieldsSection(props: FormProps<TemplateForm>) {
+  const { form, onChange, errors, disabled, lng } = props;
+  const { t } = useTranslation(lng, "concept-notes");
+  const errorText = (path: string) => (errors[path] ? t(errors[path]) : null);
+
+  function setChapters(update: (rows: ChapterRow[]) => ChapterRow[]): void {
+    onChange((current) => ({ ...current, chapters: update(current.chapters) }));
+  }
+  function setChapter(id: string, patch: Partial<ChapterRow>): void {
+    setChapters((rows) =>
+      rows.map((row) => (row.id === id ? { ...row, ...patch } : row)),
+    );
+  }
+
+  return (
+    <VStack {...sectionProps}>
+      <Heading as="h4" fontSize="body.md">
+        {t("funding-template-preview")}
+      </Heading>
+      <Grid {...fieldGrid}>
+        {(["template_name", "output_format"] as const).map((field) => (
+          <TextField
+            key={field}
+            {...props}
+            path={`template.${field}`}
+            label={
+              field === "template_name"
+                ? "funder-field-template-name"
+                : "funder-field-output-format"
+            }
+            value={form.template[field]}
+            onChange={(value) =>
+              onChange((current) => ({
+                ...current,
+                template: { ...current.template, [field]: value },
+              }))
+            }
+            options={{ required: field === "template_name" }}
+          />
+        ))}
+      </Grid>
+      {errors["template.chapters"] && (
+        <Text
+          role="alert"
+          fontSize="label.sm"
+          color="sentiment.negativeDefault"
+        >
+          {t(errors["template.chapters"])}
+        </Text>
+      )}
+      <VStack as="ol" align="stretch" gap={0} listStyleType="none" m={0}>
+        {form.chapters.map((chapter, index) => {
+          const titlePath = `chapter.${chapter.id}.title`;
+          return (
+            <VStack
+              as="li"
+              key={chapter.id}
+              align="stretch"
+              gap={2}
+              py={3}
+              borderTop="1px solid"
+              borderColor="border.neutral"
+              data-testid="funder-chapter"
+            >
+              <HStack align="start" gap={2}>
                 <Field
-                  label={t("funding-required-fields")}
-                  helperText={t("funder-list-help")}
+                  flex={1}
+                  label={t("funder-field-chapter-title", {
+                    index: index + 1,
+                  })}
+                  required
+                  invalid={Boolean(errors[titlePath])}
+                  errorText={errorText(titlePath)}
                 >
                   <Input
                     size="sm"
-                    value={chapter.required_fields}
+                    value={chapter.title}
                     disabled={disabled}
                     onChange={(event) =>
-                      setChapter(chapter.id, {
-                        required_fields: event.target.value,
-                      })
+                      setChapter(chapter.id, { title: event.target.value })
                     }
                   />
                 </Field>
-                <Checkbox
+                <IconButton
+                  mt={6}
                   size="sm"
-                  checked={chapter.required}
+                  variant="ghost"
+                  color="content.link"
+                  aria-label={t("funder-remove-chapter")}
                   disabled={disabled}
-                  onCheckedChange={({ checked }) =>
-                    setChapter(chapter.id, { required: checked === true })
+                  onClick={() =>
+                    setChapters((rows) =>
+                      rows.filter((row) => row.id !== chapter.id),
+                    )
                   }
                 >
-                  {t("funding-required")}
-                </Checkbox>
-              </VStack>
-            );
-          })}
-        </VStack>
-        <Box>
-          <Button
-            size="xs"
-            variant="outline"
-            disabled={disabled}
-            onClick={() => setChapters((rows) => [...rows, emptyChapter()])}
-          >
-            <Icon as={LuPlus} />
-            {t("funder-add-chapter")}
-          </Button>
-        </Box>
+                  <LuTrash2 />
+                </IconButton>
+              </HStack>
+              <Textarea
+                size="sm"
+                rows={2}
+                value={chapter.description}
+                aria-label={t("funder-field-chapter-description")}
+                placeholder={t("funder-field-chapter-description")}
+                disabled={disabled}
+                onChange={(event) =>
+                  setChapter(chapter.id, { description: event.target.value })
+                }
+              />
+              <Field
+                label={t("funding-required-fields")}
+                helperText={t("funder-list-help")}
+              >
+                <Input
+                  size="sm"
+                  value={chapter.required_fields}
+                  disabled={disabled}
+                  onChange={(event) =>
+                    setChapter(chapter.id, {
+                      required_fields: event.target.value,
+                    })
+                  }
+                />
+              </Field>
+              <Checkbox
+                size="sm"
+                checked={chapter.required}
+                disabled={disabled}
+                onCheckedChange={({ checked }) =>
+                  setChapter(chapter.id, { required: checked === true })
+                }
+              >
+                {t("funding-required")}
+              </Checkbox>
+            </VStack>
+          );
+        })}
       </VStack>
+      <Box>
+        <Button
+          size="xs"
+          variant="outline"
+          disabled={disabled}
+          onClick={() => setChapters((rows) => [...rows, emptyChapter()])}
+        >
+          <Icon as={LuPlus} />
+          {t("funder-add-chapter")}
+        </Button>
+      </Box>
     </VStack>
   );
 }

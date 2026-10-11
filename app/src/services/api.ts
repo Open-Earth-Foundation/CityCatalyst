@@ -2598,6 +2598,8 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: runId },
           { type: "ConceptNoteDraft", id: runId },
           { type: "ConceptNoteEdits", id: runId },
+          // Using a reviewed template import clears it.
+          { type: "ConceptNoteFunderImport", id: runId },
         ],
       }),
       getConceptNoteFunderImport: builder.query<
@@ -2611,12 +2613,12 @@ export const api = createApi({
       }),
       startConceptNoteFunderImport: builder.mutation<
         ConceptNoteFunderImportResponse,
-        { runId: string; uploadId: string }
+        { runId: string; uploadId: string; kind: "funder" | "template" }
       >({
-        query: ({ runId, uploadId }) => ({
+        query: ({ runId, uploadId, kind }) => ({
           url: `concept-notes/${runId}/funder-imports/`,
           method: "POST",
-          body: { uploadId },
+          body: { uploadId, kind },
         }),
         invalidatesTags: (_result, _error, { runId }) => [
           { type: "ConceptNoteFunderImport", id: runId },

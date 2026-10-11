@@ -252,6 +252,7 @@ export function AddFunderForm({
                     mt={6}
                     size="sm"
                     variant="ghost"
+                    color="content.link"
                     aria-label={t("funder-remove-chapter")}
                     disabled={disabled}
                     onClick={() =>

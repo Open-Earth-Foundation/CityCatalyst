@@ -387,25 +387,76 @@ async def test_source_revalidation_proposes_revisions_and_preserves_confirmed_te
     assert unchanged.revision_number == 4
 
 
-async def test_source_revalidation_rejects_dropping_an_unanswered_gap(
+async def test_source_revalidation_restores_a_dropped_unanswered_gap(
     workspace,
 ) -> None:
-    """A failed or capped evidence query must not silently resolve its gap."""
-    with pytest.raises(WorkspaceConflictError, match="did not answer"):
-        await workspace.save_revalidated_chapter(
-            chapter_id=CHAPTER_ID,
-            expected_revision_number=1,
-            generated=ConceptNoteChapterDraftOutput(
-                body_markdown="## Implementation\n\nA partner will lead delivery."
-            ),
-            source_refs=["implementation-plan.pdf"],
-            answered_gap_ids=set(),
+    """A failed or capped evidence query must not silently resolve its gap.
+
+    The redraft is kept, and the dropped question is put back as its marker.
+    """
+    changed = await workspace.save_revalidated_chapter(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=1,
+        generated=ConceptNoteChapterDraftOutput(
+            body_markdown="## Implementation\n\nA partner will lead delivery."
+        ),
+        source_refs=["implementation-plan.pdf"],
+        answered_gap_ids=set(),
+    )
+
+    assert changed is True
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.revision_number == 2
+    assert chapter.body_markdown == (
+        "## Implementation\n\nA partner will lead delivery.\n\n"
+        "[Information needed: Confirm the lead partner.]"
+    )
+    assert chapter.status == "needs_review"
+    [gap] = chapter.gaps
+    assert gap.gap_id == GAP_ID
+    assert gap.state == "open"
+    assert gap.resolution is None
+    assert gap.suggestions[0]["value"] == "Lincoln Park Neighborhood Council"
+
+
+async def test_source_revalidation_closes_only_the_answered_gap(workspace) -> None:
+    """With a cited answer for one gap, only that gap closes; the other returns."""
+    other_gap = uuid4()
+    async with workspace._session_factory() as session, session.begin():
+        session.add(
+            ConceptNoteGap(
+                gap_id=other_gap,
+                run_id=RUN_ID,
+                chapter_id=CHAPTER_ID,
+                field_key="delivery_budget",
+                severity="noncritical",
+                question="Confirm the delivery budget.",
+                why_asking="The funder needs the delivery cost.",
+                suggestions=[],
+                source_refs=[],
+                status="open",
+            )
         )
 
+    changed = await workspace.save_revalidated_chapter(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=1,
+        generated=ConceptNoteChapterDraftOutput(
+            body_markdown=(
+                "## Implementation\n\nLincoln Park Neighborhood Council will lead."
+            )
+        ),
+        source_refs=["implementation-plan.pdf"],
+        answered_gap_ids={GAP_ID},
+    )
+
+    assert changed is True
     [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    assert chapter.revision_number == 1
-    assert chapter.gaps[0].state == "open"
-    assert chapter.gaps[0].resolution is None
+    assert chapter.body_markdown.endswith(
+        "[Information needed: Confirm the delivery budget.]"
+    )
+    states = {gap.gap_id: gap.state for gap in chapter.gaps}
+    assert states == {GAP_ID: "resolved", other_gap: "open"}
 
 
 async def test_source_revalidation_keeps_deferred_caveat_gaps(workspace) -> None:

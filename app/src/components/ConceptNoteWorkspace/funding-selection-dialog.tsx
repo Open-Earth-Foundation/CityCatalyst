@@ -328,7 +328,13 @@ export function FundingSelectionDialog({
                 )}
               </Text>
               {!forbidden && (
-                <Button variant="outline" onClick={() => void refetch()}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setError(null);
+                    void refetch();
+                  }}
+                >
                   {t("try-again")}
                 </Button>
               )}

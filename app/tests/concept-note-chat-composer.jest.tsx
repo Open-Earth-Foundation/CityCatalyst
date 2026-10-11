@@ -26,7 +26,11 @@ jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/use-concept-note-chat",
   () => ({
     useConceptNoteChat: () => ({
+      connection: "connected",
       error: null,
+      canRetry: false,
+      overviewFailed: false,
+      retry: jest.fn(),
       historyLoading: false,
       isGenerating,
       progress: null,
@@ -48,6 +52,14 @@ for (const [path, name] of [
     [name]: () => null,
   }));
 }
+jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/chat-threads",
+  () => ({
+    ChatThreadSwitcher: () => null,
+    OlderChatNotice: () => null,
+    useConceptNoteChatThreads: () => ({}),
+  }),
+);
 
 let ConceptNoteChatPanel: typeof import("@/components/ConceptNoteWorkspace/chat-panel").ConceptNoteChatPanel;
 let root: Root;

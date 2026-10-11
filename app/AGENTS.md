@@ -40,7 +40,7 @@ npm run i18n:update             # Auto-translate EN keys to de, es, pt
 
 ```
 app/src/
-├── app/                        # Next.js 15 App Router
+├── app/                        # Next.js 16 App Router
 │   ├── [lng]/                  # Locale-prefixed pages (en, de, es, fr, pt)
 │   │   ├── auth/               # Login, signup, password reset, invite acceptance
 │   │   ├── admin/              # OEF admin panel

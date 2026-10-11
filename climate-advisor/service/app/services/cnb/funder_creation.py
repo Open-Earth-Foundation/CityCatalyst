@@ -12,7 +12,7 @@ from uuid import uuid4
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.models.cnb.funding_catalogue import MANUAL_SOURCE_PREFIX
-from app.models.cnb.funder_import import (
+from app.models.cnb.funder_creation import (
     FunderCreateRequest,
     FunderCreateResponse,
     TemplateChapterFields,
@@ -24,27 +24,10 @@ from app.models.db.cnb_reference import (
     CnbFundingOpportunity,
 )
 from app.models.db.concept_note import ConceptNoteRun
-from app.persistence.concept_notes.workspace import normalize_template_chapters
 from app.services.cnb.source_analysis import markdown_heading_slug
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
-
-OPPORTUNITY_FIELDS = (
-    "applicant_type",
-    "category",
-    "sector",
-    "hazards",
-    "interventions",
-    "finance_route",
-    "instrument_type",
-    "region_scope",
-    "min_award",
-    "max_award",
-    "currency",
-    "status",
-    "summary",
-)
 
 
 async def create_funder(
@@ -60,8 +43,9 @@ async def create_funder(
     template = payload.template.model_copy(
         update={"chapter_schema": normalize_chapters(payload.template.chapter_schema)}
     )
-    chapter_schema = [chapter.model_dump(mode="json") for chapter in template.chapter_schema]
-    normalize_template_chapters(chapter_schema)
+    chapter_schema = [
+        chapter.model_dump(mode="json") for chapter in template.chapter_schema
+    ]
 
     # Step 2: write funder, programme and template in one transaction.
     funder_id, opportunity_id = uuid4(), uuid4()
@@ -84,7 +68,7 @@ async def create_funder(
                 source_record_ref=str(opportunity_id),
                 funder_id=funder_id,
                 name=payload.opportunity.name.strip(),
-                **payload.opportunity.model_dump(include={*OPPORTUNITY_FIELDS, "known_gaps"}),
+                **payload.opportunity.model_dump(exclude={"name"}),
             )
         )
         await reference.flush()
@@ -138,11 +122,15 @@ def template_required_fields(template: TemplateFields) -> list[str]:
     """Build the template inventory from chapter fields so each has an owner."""
     return list(
         dict.fromkeys(
-            field for chapter in template.chapter_schema for field in chapter.required_fields
+            field
+            for chapter in template.chapter_schema
+            for field in chapter.required_fields
         )
     )
 
 
 def _clean_list(values: Sequence[str]) -> list[str]:
     """Strip, drop blanks and keep the first copy of each value."""
-    return list(dict.fromkeys(stripped for value in values if (stripped := value.strip())))
+    return list(
+        dict.fromkeys(stripped for value in values if (stripped := value.strip()))
+    )

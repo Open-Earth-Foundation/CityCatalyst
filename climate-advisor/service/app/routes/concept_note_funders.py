@@ -5,8 +5,8 @@ from __future__ import annotations
 from uuid import UUID
 
 from app.db.session import get_session
-from app.models.cnb.funder_import import FunderCreateRequest, FunderCreateResponse
-from app.services.cnb.funder_import import create_funder
+from app.models.cnb.funder_creation import FunderCreateRequest, FunderCreateResponse
+from app.services.cnb.funder_creation import create_funder
 from app.services.concept_note_runs import ConceptNoteRunService
 from fastapi import APIRouter, Depends, Header, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession

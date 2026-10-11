@@ -134,11 +134,7 @@ export function FunderProfile({
             color="content.tertiary"
             data-testid="concept-note-funder-added-from"
           >
-            {addedFrom.kind === "manual"
-              ? t("funding-added-by-hand")
-              : addedFrom.filename
-                ? t("funding-added-from-file", { filename: addedFrom.filename })
-                : t("funding-added-from-document")}
+            {t("funding-added-by-hand")}
           </Text>
         )}
       </Box>

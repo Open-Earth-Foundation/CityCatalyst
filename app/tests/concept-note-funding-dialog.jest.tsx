@@ -44,6 +44,7 @@ const opportunity: ConceptNoteFundingOpportunity = {
   },
 };
 let funders: ConceptNoteFunder[];
+let catalogueFailed = false;
 
 let rejection: unknown;
 const save = jest.fn(() => ({
@@ -61,7 +62,7 @@ jest.unstable_mockModule("@/services/api", () => ({
         funders,
       },
       isLoading: false,
-      isError: false,
+      isError: catalogueFailed,
       refetch,
     }),
     useUpdateConceptNoteFundingSelectionMutation: () => [
@@ -108,6 +109,7 @@ afterAll(() => {
   globalThis.structuredClone = originalStructuredClone;
 });
 beforeEach(() => {
+  catalogueFailed = false;
   funders = [
     {
       id: "new-funder",
@@ -496,14 +498,18 @@ it("keeps controls busy through refresh and sends one create request", async () 
   expect(button(translations["funder-add-entry"]).disabled).toBe(false);
 });
 
-it("preserves a successful create when catalogue refresh fails", async () => {
-  refetch.mockReturnValue({
+it("retries a failed catalogue refresh without repeating a successful create", async () => {
+  refetch.mockReturnValueOnce({
     unwrap: async () => {
+      catalogueFailed = true;
       throw { status: 503 };
     },
   });
   createFunder.mockImplementation(() => ({
-    unwrap: async () => addCatalogueRow(),
+    unwrap: async () => ({
+      funder_id: "delayed",
+      funding_opportunity_id: "delayed-programme",
+    }),
   }));
   const button = await openFilledForm();
   await act(async () => button(translations["funder-add-submit"]).click());
@@ -512,7 +518,19 @@ it("preserves a successful create when catalogue refresh fails", async () => {
   expect(document.body.textContent).toContain(
     translations["funder-added-refresh-error"],
   );
+
+  refetch.mockImplementationOnce(() => {
+    catalogueFailed = false;
+    addCatalogueRow();
+    return { unwrap: async () => undefined };
+  });
+  await act(async () => button(translations["try-again"]).click());
+  expect(document.body.textContent).not.toContain(
+    translations["funder-added-refresh-error"],
+  );
   expect(
     document.querySelector('nav button[aria-pressed="true"]')?.textContent,
   ).toContain("Delayed funder");
+  expect(refetch).toHaveBeenCalledTimes(2);
+  expect(createFunder).toHaveBeenCalledTimes(1);
 });

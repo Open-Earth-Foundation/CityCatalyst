@@ -4,10 +4,8 @@ from __future__ import annotations
 
 from uuid import UUID
 
+from app.models.cnb.chapter_content import MAX_CHAPTERS, ChapterContent
 from pydantic import BaseModel, ConfigDict, Field, model_validator
-
-
-from app.models.cnb.chapter_content import ChapterContent, MAX_CHAPTERS
 
 
 class StructureChapter(ChapterContent):

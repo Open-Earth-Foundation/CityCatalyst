@@ -1096,6 +1096,9 @@ PostgreSQL regression coverage runs with `CNB_TEST_DATABASE_URL` configured:
 
 Merge revision `20261005_120000` joins chat ownership (`20260925_130000`)
 and structured uploads (`20261001_120000`) without changing either migration.
+Merge revision `20261011_120000` joins that history with the custom application
+template revision (`20261007_120000`), preserving both branches' schema and data
+operations and keeping a single deployable head.
 Run `uv run --directory service alembic upgrade head` from `climate-advisor/`
 to apply both branches, including when either parent is already installed.
 

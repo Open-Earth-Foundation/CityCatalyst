@@ -1641,6 +1641,9 @@ How it works:
   drops an unanswered gap, or whose markers disagree with its gap list, is
   rejected and logged, and the remaining chapters still update. A confirmed
   revision is never replaced, so an affected Ready chapter returns to review.
+  A note with no drafted chapter has nothing to update and finishes without a
+  model call; drafting reads the new source when it starts. A note without a
+  template is redrafted from its chapters' own titles and descriptions.
 - The impact review is a durable job in `context_summary.source_revalidation`,
   queued atomically with the bundle commit. A worker leases it; failures stay
   pending and the context-bundle reconciler retries them up to three times,

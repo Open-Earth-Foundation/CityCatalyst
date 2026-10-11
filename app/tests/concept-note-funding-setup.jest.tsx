@@ -167,7 +167,6 @@ for (const [path, name] of [
   ["context-tab", "ContextTab"],
   ["structure-tab", "StructureTab"],
   ["export-dialog", "ExportDialog"],
-  ["start-new-chat-dialog", "StartNewChatDialog"],
 ]) {
   jest.unstable_mockModule(`@/components/ConceptNoteWorkspace/${path}`, () => ({
     [name]: () => null,

@@ -9,7 +9,7 @@ test.describe("Dashboard", () => {
       test.setTimeout(180000);
 
       // Create inventory through onboarding
-      const { cityId, inventoryYear } =
+      const { cityId, cityName, inventoryYear } =
         await createCityAndInventoryThroughOnboarding(page);
       await page.goto(`/en/cities/${cityId}/GHGI`);
       // Verify Dashboard
@@ -24,8 +24,8 @@ test.describe("Dashboard", () => {
       });
 
       // Verify city name is displayed
-      const cityName = page.getByTestId("hero-city-name");
-      await expect(cityName).toHaveText("Chicago", { timeout: 10000 });
+      const heroCityName = page.getByTestId("hero-city-name");
+      await expect(heroCityName).toHaveText(cityName, { timeout: 10000 });
 
       // Verify inventory year title is displayed
       const inventoryYearTitle = page.getByTestId("inventory-year-title");

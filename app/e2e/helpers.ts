@@ -1,6 +1,7 @@
 import {
   APIRequestContext,
   expect,
+  test,
   type BrowserContext,
   type Page,
 } from "@playwright/test";
@@ -158,13 +159,21 @@ export async function createInventory(
 }
 
 /**
- * Inventory year for cities onboarding E2E. Uses the previous calendar year so
- * the value stays inside the UI dropdown (current year + 19 prior years) and
- * matches ghgi-onboarding.spec.ts. Call once per flow and pass the return value
- * to assertions so setup and expectations never drift apart.
+ * Inventory year for GHGI onboarding E2E.
+ *
+ * Every flow reuses Chicago, and Continue stays disabled once that year
+ * already has activity data. Parallel workers each take a different slot in
+ * the 20-year dropdown, then advance to the next free slot on the next call.
  */
+let nextOnboardingYearSlot = 0;
+
 export function pickE2EOnboardingInventoryYear(): string {
-  return String(new Date().getFullYear() - 1);
+  const yearSpan = 20;
+  const workers = Math.max(test.info().config.workers || 1, 1);
+  const offset =
+    (test.info().parallelIndex + nextOnboardingYearSlot * workers) % yearSpan;
+  nextOnboardingYearSlot += 1;
+  return String(new Date().getFullYear() - offset);
 }
 
 /**

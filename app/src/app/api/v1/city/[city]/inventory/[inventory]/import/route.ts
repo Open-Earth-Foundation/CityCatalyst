@@ -198,10 +198,15 @@ async function runUploadProcessingInBackground(
         inventory?.year != null && Number.isInteger(Number(inventory.year))
           ? Number(inventory.year)
           : undefined;
-      const rows = FormatAdapterService.toExtractedRows(parsedData, targetYear);
+      const extracted = FormatAdapterService.extractNearEcrfRows(
+        parsedData,
+        targetYear,
+      );
+      const rows = extracted.rows;
       if (rows.length === 0) {
         await setFailed(
-          "Adapter D: no data rows could be extracted from this file",
+          extracted.warnings.join("; ") ||
+            "Adapter D: no data rows could be extracted from this file",
         );
         return;
       }
@@ -209,7 +214,10 @@ async function runUploadProcessingInBackground(
         importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
         validationResults: {
           errors: validationResult.errors,
-          warnings: validationResult.warnings,
+          warnings: [
+            ...(validationResult.warnings || []),
+            ...extracted.warnings,
+          ],
           detectedColumns: validationResult.detectedColumns,
           adapterType: "near-ecrf",
           isMultiCity: validationResult.isMultiCity ?? false,

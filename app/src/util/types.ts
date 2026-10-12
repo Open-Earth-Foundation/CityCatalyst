@@ -939,6 +939,7 @@ export interface ImportSummary {
 export interface FieldMapping {
   sourceColumn: string;
   mappedField: string;
+  sampleValue?: string | null;
 }
 
 export interface ReviewData {

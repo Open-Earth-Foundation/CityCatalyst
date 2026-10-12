@@ -24,6 +24,7 @@ jest.unstable_mockModule("@/backend/llm", () => ({
 }));
 
 const {
+  canonicalGpcRefNo,
   extractInventoryFromDocument,
   finalizeExtractedRows,
   tonnesMultiplier,
@@ -539,5 +540,54 @@ describe("tonnesMultiplier", () => {
     ["tCO2e per capita", null],
   ])("%s", (unit, expected) => {
     expect(tonnesMultiplier(unit as string | undefined)).toBe(expected);
+  });
+});
+
+describe("references copied from the real model output (CC-1008 live run)", () => {
+  it("completes a reference written once for all scopes", () => {
+    expect(canonicalGpcRefNo("I.1", "1")).toBe("I.1.1");
+    expect(canonicalGpcRefNo("I.1", "2")).toBe("I.1.2");
+    expect(canonicalGpcRefNo("II.4", "3")).toBe("II.4.3");
+    expect(canonicalGpcRefNo("I.4.4", "1")).toBe("I.4.4");
+    expect(canonicalGpcRefNo("IV.1", "1")).toBe("IV.1");
+  });
+
+  it("drops combined and placeholder references", () => {
+    expect(canonicalGpcRefNo("III.1.1/2", "1")).toBeNull();
+    expect(canonicalGpcRefNo("III.X.1", "1")).toBeNull();
+    expect(canonicalGpcRefNo("I.1", null)).toBeNull();
+    expect(canonicalGpcRefNo("", "1")).toBeNull();
+    expect(canonicalGpcRefNo(undefined, "1")).toBeNull();
+  });
+
+  it("resolves a row without a usable reference from sector, sub-sector and scope", async () => {
+    mockLlm([
+      line("I.1", "2", 450523, SE, "Residential Buildings"),
+      line("III.1.1/2", "3", 82991, WA, "Solid Waste Disposal"),
+    ]);
+    const { rows } = await extractInventoryFromDocument(fixture, {
+      targetYear: 2021,
+    });
+    expect(rows.map((r) => r.gpcRefNo)).toEqual(["I.1.2", "III.1.2"]);
+  });
+
+  it("treats rows labeled as a sum as subtotals even when marked line_item", () => {
+    const base = {
+      year: 2021,
+      sector: TR,
+      subsector: "On Road Transportation",
+    };
+    const { rows, summary } = finalizeExtractedRows(
+      [
+        { ...base, category: "(All II emissions)", totalCO2e: 2251428 },
+        { ...base, category: "Subtotal", totalCO2e: 327000 },
+        { ...base, category: "Total", totalCO2e: 9559215 },
+        { ...base, category: "Subsector total", totalCO2e: 100 },
+        { ...base, category: "Diesel", totalCO2e: 50 },
+      ],
+      2021,
+    );
+    expect(rows.map((r) => r.category)).toEqual(["Subsector total", "Diesel"]);
+    expect(summary.droppedRows.subtotal_or_total).toBe(3);
   });
 });

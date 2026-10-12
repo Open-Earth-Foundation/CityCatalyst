@@ -21,6 +21,35 @@ import gpcNameMappings from "@/util/GHGI/data/gpc-name-mappings.json";
 type GpcRow = { sector: string; subsector: string };
 const gpcTable = gpcReferenceTable as GpcRow[];
 
+const knownGpcRefs = new Set(
+  (gpcReferenceTable as { gpcRefNo: string }[]).map((row) => row.gpcRefNo),
+);
+
+/**
+ * A reference copied from the document is kept only when the GPC taxonomy has it.
+ * "I.1" with scope 2 becomes I.1.2. Combined or placeholder references
+ * ("III.1.1/2", "III.X.1") are dropped; the sector, sub-sector and scope resolve them.
+ */
+export function canonicalGpcRefNo(
+  ref: string | null | undefined,
+  scope?: string | null,
+): string | null {
+  const trimmed = ref?.trim();
+  if (!trimmed) return null;
+  if (knownGpcRefs.has(trimmed)) return trimmed;
+  if (scope && knownGpcRefs.has(`${trimmed}.${scope}`)) {
+    return `${trimmed}.${scope}`;
+  }
+  return null;
+}
+
+/**
+ * Labels that mean a sum, whatever rowType the model gave. "Subsector total" is not
+ * here: the prompt uses it for a sub-sector that has no activity breakdown.
+ */
+const SUM_LABEL =
+  /^\(?\s*(all\s+[ivx]+\s+emissions|sub-?total|(grand\s+)?total)\s*\)?$/i;
+
 type NameMappings = {
   sector: Record<string, string>;
   subsector: Record<string, string>;
@@ -790,8 +819,9 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
       const n = parseFloat(normalizeNumberString(row.totalCO2e));
       if (Number.isFinite(n)) out.totalCO2e = n;
     }
-    if (typeof row.gpcRefNo === "string" && row.gpcRefNo.trim()) {
-      out.gpcRefNo = row.gpcRefNo.trim();
+    if (typeof row.gpcRefNo === "string") {
+      const ref = canonicalGpcRefNo(row.gpcRefNo, out.scope);
+      if (ref) out.gpcRefNo = ref;
     }
     if (row.rowType === "line_item" || row.rowType === "subtotal") {
       out.rowType = row.rowType;
@@ -996,7 +1026,15 @@ export function finalizeExtractedRows(
     }
     if (row.unit) scaled.unit = "t";
 
-    if (row.rowType === "subtotal" || row.rowType === "total") {
+    const labelIsSum =
+      (row.category != null && SUM_LABEL.test(row.category.trim())) ||
+      (row.activityType != null && SUM_LABEL.test(row.activityType.trim()));
+    const rowType: ExtractedRowType | null | undefined =
+      labelIsSum && (row.rowType == null || row.rowType === "line_item")
+        ? "subtotal"
+        : row.rowType;
+
+    if (rowType === "subtotal" || rowType === "total") {
       drop("subtotal_or_total");
       if (
         scaled.totalCO2e != null &&
@@ -1007,13 +1045,13 @@ export function finalizeExtractedRows(
             scaled.category?.trim() ||
             scaled.subsector?.trim() ||
             scaled.sector?.trim() ||
-            row.rowType,
+            rowType,
           value: scaled.totalCO2e,
           year: scaled.year,
           scope: scaled.scope ?? null,
           sector: scaled.sector,
           subsector: scaled.subsector,
-          level: row.rowType,
+          level: rowType,
         });
       }
       continue;

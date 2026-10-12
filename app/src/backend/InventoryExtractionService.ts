@@ -949,6 +949,8 @@ export function tonnesMultiplier(unit?: string | null): number | null {
   ) {
     return 1000;
   }
+  // "MT" in capitals is ambiguous (metric tonne or megatonne): do not guess.
+  if (cleaned === "MT") return null;
   if (/^(t|mt|tonnes?|tons?)$/i.test(cleaned)) return 1;
   return null;
 }
@@ -1064,6 +1066,12 @@ export function finalizeExtractedRows(
 
   return {
     rows: finalRows,
-    summary: { reportedTotals, droppedRows, importedSum, yearAssumed },
+    summary: {
+      reportedTotals,
+      droppedRows,
+      importedSum,
+      yearAssumed,
+      targetYear: targetYear ?? null,
+    },
   };
 }

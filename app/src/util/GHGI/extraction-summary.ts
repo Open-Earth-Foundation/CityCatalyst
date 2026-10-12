@@ -29,6 +29,8 @@ export type ExtractionSummary = {
   importedSum: number;
   /** True when no row had a year and every row was assigned the target year. */
   yearAssumed: boolean;
+  /** Inventory year the extraction ran for. Missing on summaries stored before this field. */
+  targetYear?: number | null;
 };
 
 /** Imported sum may differ from the document total by this fraction before the review screen warns. */
@@ -50,7 +52,10 @@ export type Reconciliation = {
  * Returns null when the document reported no usable grand total.
  */
 export function reconcileExtraction(
-  summary: Pick<ExtractionSummary, "reportedTotals" | "importedSum"> | null,
+  summary: Pick<
+    ExtractionSummary,
+    "reportedTotals" | "importedSum" | "targetYear"
+  > | null,
 ): Reconciliation | null {
   if (!summary) return null;
   const candidates = [
@@ -60,7 +65,11 @@ export function reconcileExtraction(
           (total) =>
             total.level === "total" &&
             Number.isFinite(total.value) &&
-            total.value !== 0,
+            total.value !== 0 &&
+            // A grand total of another year (a 2016 comparison) is no target.
+            (total.year == null ||
+              summary.targetYear == null ||
+              total.year === summary.targetYear),
         )
         .map((total) => total.value),
     ),

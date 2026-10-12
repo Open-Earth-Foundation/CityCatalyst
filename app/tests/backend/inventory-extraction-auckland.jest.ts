@@ -389,6 +389,35 @@ describe("reconcileExtraction", () => {
     ).toBe(true);
   });
 
+  it("ignores a grand total of another year", () => {
+    const reconciliation = reconcileExtraction({
+      importedSum: 12016000,
+      targetYear: 2021,
+      reportedTotals: [
+        {
+          label: "Gross emissions",
+          value: 12016000,
+          year: 2016,
+          scope: null,
+          sector: null,
+          subsector: null,
+          level: "total",
+        },
+        {
+          label: "TOTAL",
+          value: 9559215,
+          year: 2021,
+          scope: null,
+          sector: null,
+          subsector: null,
+          level: "total",
+        },
+      ],
+    });
+    expect(reconciliation?.reportedTotal).toBe(9559215);
+    expect(reconciliation?.mismatch).toBe(true);
+  });
+
   it("gives no verdict without a reported grand total", () => {
     expect(
       reconcileExtraction({ importedSum: 100, reportedTotals: [] }),
@@ -504,6 +533,7 @@ describe("tonnesMultiplier", () => {
     ["Mt", 1_000_000],
     ["MtCO2e", 1_000_000],
     ["million tonnes", 1_000_000],
+    ["MT", null],
     ["kg", null],
     ["lb", null],
     ["tCO2e per capita", null],

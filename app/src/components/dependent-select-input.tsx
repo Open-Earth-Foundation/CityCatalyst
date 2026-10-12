@@ -1,5 +1,5 @@
 import { ExtraField } from "@/util/form-schema";
-import { Box, Icon, NativeSelectField, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import {
   Control,
   Controller,
@@ -12,8 +12,10 @@ import {
 } from "react-hook-form";
 import React from "react";
 import { TFunction } from "i18next";
-import { MdWarning } from "react-icons/md";
-import { NativeSelectRoot } from "./ui/native-select";
+import {
+  ModalFieldError,
+  ModalSelect,
+} from "./Modals/activity-modal/sections/ModalField";
 
 const DependentSelectInput = ({
   field,
@@ -39,8 +41,7 @@ const DependentSelectInput = ({
   });
   const fieldId = field.id;
   const activityErrors = errors?.activity as
-    | Record<string, { message?: string } | undefined>
-    | undefined;
+    Record<string, { message?: string } | undefined> | undefined;
   const fieldError = activityErrors?.[fieldId];
   return (
     <Controller
@@ -49,61 +50,31 @@ const DependentSelectInput = ({
       render={({ field }) => {
         return (
           <Box display="flex" flexDirection="column" gap="8px">
-            <NativeSelectRoot
-              borderRadius="4px"
-              borderWidth={fieldError ? "1px" : 0}
-              border="inputBox"
-              h="full"
-              p={0}
-              w="full"
+            <ModalSelect
               disabled={!dependentValue}
-              shadow="1dp"
-              borderColor={
-                fieldError ? "sentiment.negativeDefault" : ""
+              invalid={!!fieldError}
+              name={field.name}
+              value={field.value ?? ""}
+              onBlur={field.onBlur}
+              placeholder={
+                !dependentValue
+                  ? t("dependent-extra-field-placeholder", {
+                      dependency: t(dependentFieldKey ?? ""),
+                    })
+                  : t("option-required")
               }
-              background={
-                fieldError ? "sentiment.negativeOverlay" : ""
-              }
-              _focus={{
-                borderWidth: "1px",
-                shadow: "none",
-                borderColor: "content.link",
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                field.onChange(e.target.value);
+                setValue(`activity.${fieldId}`, e.target.value);
               }}
-              onChange={(e: React.ChangeEvent<HTMLDivElement>) => {
-                // The change event bubbles up from the inner <select>.
-                const value = (e.target as unknown as HTMLSelectElement)
-                  .value;
-                field.onChange(value);
-                setValue(`activity.${fieldId}`, value);
-              }}
-              bgColor="base.light"
             >
-              <NativeSelectField
-                placeholder={
-                  !dependentValue
-                    ? t("dependent-extra-field-placeholder", {
-                        dependency: t(dependentFieldKey ?? ""),
-                      })
-                    : t("option-required")
-                }
-              >
-                {dependentOptions?.[dependentValue]?.map((option) => (
-                  <option key={option} value={option}>
-                    {t(option)}
-                  </option>
-                ))}
-              </NativeSelectField>
-            </NativeSelectRoot>
-            {fieldError ? (
-              <Box display="flex" gap="6px" alignItems="center">
-                <Icon as={MdWarning} color="sentiment.negativeDefault" />
-                <Text fontSize="body.md">
-                  {fieldError?.message}
-                </Text>
-              </Box>
-            ) : (
-              ""
-            )}
+              {dependentOptions?.[dependentValue]?.map((option) => (
+                <option key={option} value={option}>
+                  {t(option)}
+                </option>
+              ))}
+            </ModalSelect>
+            {fieldError && <ModalFieldError message={fieldError.message} />}
           </Box>
         );
       }}

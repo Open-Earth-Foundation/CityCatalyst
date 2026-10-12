@@ -944,6 +944,7 @@ export interface ImportSummary {
 export interface FieldMapping {
   sourceColumn: string;
   mappedField: string;
+  sampleValue?: string | null;
 }
 
 export interface ReviewData {
@@ -1105,6 +1106,20 @@ export interface ConceptNoteRun {
 
 export interface ConceptNoteRunListResponse {
   runs: ConceptNoteRun[];
+}
+
+export interface ConceptNoteChatThread {
+  thread_id: string;
+  title: string | null;
+  created_at: string;
+  last_message_at: string | null;
+  message_count: number;
+  preview: string | null;
+}
+
+export interface ConceptNoteChatThreadListResponse {
+  active_thread_id: string | null;
+  threads: ConceptNoteChatThread[];
 }
 
 export interface ConceptNoteTemplateChapter {

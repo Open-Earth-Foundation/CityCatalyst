@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
-
 import type {
   ConceptNoteApplicationContext,
   ConceptNoteCustomTemplateRequest,
-  ConceptNoteFunderImport,
   ConceptNoteFundingAddedFrom,
 } from "@/util/types";
 
@@ -13,14 +10,13 @@ import { OwnTemplateForm } from "./add-funder-form";
 import { AddFunderPanel } from "./add-funder-panel";
 import {
   emptyTemplateForm,
-  funderApiErrorKey,
   ownTemplateRequest,
   templateFieldsFromContext,
   templateFormFrom,
   templatePreview,
   validateTemplateForm,
-  type TemplateForm,
 } from "./funder-form";
+import { useImportForm } from "./use-import-form";
 import type { FunderImportFlow } from "./use-funder-import";
 
 type Template = NonNullable<ConceptNoteApplicationContext["template"]>;
@@ -59,64 +55,22 @@ export function useOwnTemplate({
   flow?: FunderImportFlow;
   onUse: (choice: OwnTemplateChoice) => void;
 }) {
-  const [mode, setMode] = useState<"choose" | "form" | null>(null);
-  const [form, setForm] = useState<TemplateForm>(emptyTemplateForm);
-  const [source, setSource] = useState<ConceptNoteFunderImport | null>(null);
-  const [showErrors, setShowErrors] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const formErrors = validateTemplateForm(form);
-
-  function edit(next: TemplateForm, from: ConceptNoteFunderImport | null) {
-    setForm(next);
-    setSource(from);
-    setShowErrors(false);
-    setError(null);
-    setMode("form");
-  }
-
-  function reset(): void {
-    edit(emptyTemplateForm(), null);
-    setMode(null);
-  }
+  const { controls, edit, reset, isValid } = useImportForm({
+    empty: emptyTemplateForm,
+    fromDraft: (draft) => templateFormFrom(draft.template),
+    validate: validateTemplateForm,
+    flow,
+  });
+  const { form, source } = controls;
 
   return {
-    mode,
-    form,
-    setForm,
-    source,
-    errors: showErrors ? formErrors : {},
-    /** i18n key for a failed request. */
-    error,
+    ...controls,
     creating: false,
-    open: () => setMode(flow ? "choose" : "form"),
     /** Edit a template already chosen for the note. */
     change: (template: Template) =>
       edit(templateFormFrom(templateFieldsFromContext(template)), null),
-    close: () => setMode(null),
-    back: () => setMode(mode === "form" && flow ? "choose" : null),
-    enterManually: () => edit(emptyTemplateForm(), null),
-    /** Fill the form from the ready import unless it is already loaded. */
-    review(): void {
-      const ready = flow?.funderImport;
-      if (ready?.draft && ready.import_id !== source?.import_id) {
-        edit(templateFormFrom(ready.draft.template), ready);
-      } else {
-        setMode("form");
-      }
-    },
-    async discard(): Promise<void> {
-      try {
-        await flow?.discard();
-        reset();
-      } catch (cause) {
-        setError(funderApiErrorKey(cause));
-      }
-    },
     async submit(): Promise<void> {
-      if (Object.keys(formErrors).length) {
-        setShowErrors(true);
-        return;
-      }
+      if (!isValid()) return;
       const request = ownTemplateRequest(form, source);
       onUse({
         request,

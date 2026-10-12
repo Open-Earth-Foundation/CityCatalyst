@@ -22,6 +22,7 @@ from contextvars import Context
 from copy import deepcopy
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from functools import partial
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -266,9 +267,7 @@ async def run_funder_import(
         if converted is None:
             return
         current, upload = converted
-        read = extract or (
-            extract_template_draft if current.kind == "template" else extract_funder_draft
-        )
+        read = extract or partial(extract_funder_draft, kind=current.kind)
 
         # Step 2: read the verified text and extract the catalogue record.
         source_format = source_format_from_filename(upload.filename)
@@ -403,64 +402,14 @@ async def extract_funder_draft(
     *,
     filename: str,
     source_format: str,
+    kind: FunderImportKind = "funder",
     settings: Settings | None = None,
     client: AsyncOpenAI | None = None,
     runner: Any = Runner,
 ) -> FunderImportDraft:
-    """Read a funder, one programme and its template from the whole document."""
-    extraction = await _read_document(
-        units,
-        filename=filename,
-        source_format=source_format,
-        name="Concept Note funder document reader",
-        prompt_key="cnb_funder_document_extraction",
-        output_type=FunderDocumentExtraction,
-        settings=settings,
-        client=client,
-        runner=runner,
-    )
-    return build_draft(extraction, units)
-
-
-async def extract_template_draft(
-    units: Sequence[SourceUnit],
-    *,
-    filename: str,
-    source_format: str,
-    settings: Settings | None = None,
-    client: AsyncOpenAI | None = None,
-    runner: Any = Runner,
-) -> FunderImportDraft:
-    """Read only the application template from the whole document."""
-    extraction = await _read_document(
-        units,
-        filename=filename,
-        source_format=source_format,
-        name="Concept Note template document reader",
-        prompt_key="cnb_template_document_extraction",
-        output_type=TemplateDocumentExtraction,
-        settings=settings,
-        client=client,
-        runner=runner,
-    )
-    return build_template_draft(extraction, units)
-
-
-async def _read_document(
-    units: Sequence[SourceUnit],
-    *,
-    filename: str,
-    source_format: str,
-    name: str,
-    prompt_key: str,
-    output_type: type[BaseModel],
-    settings: Settings | None,
-    client: AsyncOpenAI | None,
-    runner: Any,
-) -> Any:
-    """Read the whole document in one model call."""
+    """Read a funder or just its template, retaining only verified document quotes."""
     settings = settings or get_settings()
-    prompt = settings.llm.prompts.get_prompt(prompt_key)
+    prompt = settings.llm.prompts.get_prompt(f"cnb_{kind}_document_extraction")
     model_config = settings.llm.models.cnb_funder_extractor
     budget = settings.llm.generation.prompt_budget
 
@@ -485,11 +434,13 @@ async def _read_document(
 
     client, owns_client = resolve_analysis_client(settings, client)
     try:
-        return await run_agent(
-            name=name,
+        extraction = await run_agent(
+            name=f"Concept Note {kind} document reader",
             prompt=prompt,
             model_config=model_config,
-            output_type=output_type,
+            output_type=TemplateDocumentExtraction
+            if kind == "template"
+            else FunderDocumentExtraction,
             input_text=input_text,
             client=client,
             runner=runner,
@@ -497,6 +448,9 @@ async def _read_document(
     finally:
         if owns_client:
             await client.close()
+
+    build = build_template_draft if kind == "template" else build_draft
+    return build(extraction, units)
 
 
 def build_draft(
@@ -597,11 +551,7 @@ def _extracted_chapters(
     normalized = normalize_chapters(
         [
             TemplateChapterFields(
-                chapter_ref=chapter.chapter_ref,
-                title=chapter.title,
-                description=_text(chapter.description),
-                required=chapter.required,
-                required_fields=chapter.required_fields,
+                **{**chapter.model_dump(), "description": _text(chapter.description)}
             )
             for chapter in kept
         ]

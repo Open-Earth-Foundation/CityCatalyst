@@ -12,19 +12,12 @@ from app.db.session import get_session
 from app.main import get_app
 from app.routes.dependencies import authorized_run
 from app.models.cnb.funder_creation import (
-    ExtractedChapter,
-    ExtractedEvidence,
-    ExtractedFact,
     FieldEvidence,
     FunderCreateRequest,
     FunderDocumentExtraction,
-    FunderFields,
     FunderImport,
     FunderImportDraft,
-    FunderProfileFacts,
-    ProgrammeFields,
-    TemplateChapterFields,
-    TemplateFields,
+    FunderImportStatus,
 )
 from app.models.db.cnb_reference import CnbFundingEvidence, CnbSourceDocument
 from app.models.db.concept_note import (
@@ -50,6 +43,7 @@ from fastapi import HTTPException
 from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from tests.cnb.test_funder_creation import _request as _manual_request
 from tests.test_concept_note_lifecycle import _ca_session, _workspace_repository
 
 PAGES = [
@@ -137,31 +131,12 @@ def _extraction(
 def _draft() -> FunderImportDraft:
     """A reviewed-ready draft with evidence for name, award and one chapter."""
     return FunderImportDraft(
-        funder=FunderFields(
-            name="Green Cities Foundation",
-            funder_type="Private foundation",
-            profile=FunderProfileFacts(stated={"purpose": "Nature for cities"}),
-        ),
-        opportunity=ProgrammeFields(
-            name="Nature-Based Cities Call 2026",
-            min_award=Decimal("150000"),
-            max_award=Decimal("600000"),
-            currency="USD",
-        ),
-        template=TemplateFields(
-            template_name="Proposal form",
-            chapter_schema=[
-                TemplateChapterFields(
-                    chapter_ref="applicant-details",
-                    title="Applicant details",
-                    required=True,
-                    required_fields=["municipality_name"],
-                )
-            ],
-        ),
+        **_manual_request().model_dump(exclude={"import_id"}),
         evidence=[
             FieldEvidence(field="funder.name", quote="Green Cities Foundation", page=1),
-            FieldEvidence(field="funder.funder_type", quote="private foundation", page=1),
+            FieldEvidence(
+                field="funder.funder_type", quote="private foundation", page=1
+            ),
             FieldEvidence(field="opportunity.min_award", quote="USD 150,000", page=2),
             FieldEvidence(
                 field="template.chapter_schema.applicant-details",
@@ -218,14 +193,16 @@ async def _store_import(
     await session.commit()
 
 
-def _ready_import(upload: ConceptNoteUpload) -> FunderImport:
+def _ready_import(
+    upload: ConceptNoteUpload, *, status: FunderImportStatus = "ready"
+) -> FunderImport:
     now = datetime.now(UTC)
     return FunderImport(
         import_id=uuid4(),
         upload_id=upload.upload_id,
         filename=upload.filename,
-        status="ready",
-        draft=_draft(),
+        status=status,
+        draft=_draft() if status == "ready" else None,
         created_at=now,
         updated_at=now,
     )
@@ -456,8 +433,8 @@ async def test_abandoned_import_is_reported_failed_and_restarted_on_its_upload()
         await _store_import(
             session,
             run,
-            _ready_import(upload).model_copy(
-                update={"status": "processing", "draft": None, "updated_at": stale}
+            _ready_import(upload, status="processing").model_copy(
+                update={"updated_at": stale}
             ),
         )
         current = await load_funder_import(session, run)
@@ -516,9 +493,7 @@ async def test_background_job_stores_its_outcome(failed):
         await _store_import(
             session,
             run,
-            _ready_import(upload).model_copy(
-                update={"status": "processing", "draft": None}
-            ),
+            _ready_import(upload, status="processing"),
         )
         extract = AsyncMock(
             return_value=_draft(),
@@ -546,7 +521,7 @@ async def test_background_job_waits_for_the_upload_to_convert(
         await _store_import(
             session,
             run,
-            _ready_import(upload).model_copy(update={"status": "processing", "draft": None}),
+            _ready_import(upload, status="processing"),
         )
         factory = async_sessionmaker(session.bind, expire_on_commit=False)
 

@@ -7,10 +7,7 @@ import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
-import type {
-  ConceptNoteFunderCreateResponse,
-  ConceptNoteFunderImport,
-} from "@/util/types";
+import type { ConceptNoteFunderCreateResponse } from "@/util/types";
 
 import { AddFunderForm } from "./add-funder-form";
 import { AddFunderPanel } from "./add-funder-panel";
@@ -21,8 +18,8 @@ import {
   funderApiErrorCode,
   funderApiErrorKey,
   validateFunderForm,
-  type FunderForm,
 } from "./funder-form";
+import { useImportForm } from "./use-import-form";
 import type { FunderImportFlow } from "./use-funder-import";
 
 /**
@@ -39,66 +36,23 @@ export function useAddFunder({
   flow?: FunderImportFlow;
   onAdded: (created: ConceptNoteFunderCreateResponse) => Promise<void>;
 }) {
-  const [mode, setMode] = useState<"choose" | "form" | null>(null);
-  const [form, setForm] = useState(emptyFunderForm);
-  const [source, setSource] = useState<ConceptNoteFunderImport | null>(null);
-  const [showErrors, setShowErrors] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { controls, reset, setError, setSource, isValid } = useImportForm({
+    empty: emptyFunderForm,
+    fromDraft: formFromDraft,
+    validate: validateFunderForm,
+    flow,
+  });
+  const { form, source } = controls;
   const [createFunder] = api.useCreateConceptNoteFunderMutation();
   const [creating, setCreating] = useState(false);
-  const formErrors = validateFunderForm(form);
-
-  function edit(next: FunderForm, from: ConceptNoteFunderImport | null): void {
-    setForm(next);
-    setSource(from);
-    setShowErrors(false);
-    setError(null);
-    setMode("form");
-  }
-
-  function reset(): void {
-    edit(emptyFunderForm(), null);
-    setMode(null);
-  }
 
   return {
-    mode,
-    form,
-    setForm,
-    source,
-    /** Errors to show; empty until the user first tries to add the funder. */
-    errors: showErrors ? formErrors : {},
-    /** i18n key for a failed request. */
-    error,
+    ...controls,
     creating,
-    open: () => setMode(flow ? "choose" : "form"),
-    close: () => setMode(null),
-    back: () => setMode(mode === "form" && flow ? "choose" : null),
-    enterManually: () => edit(emptyFunderForm(), null),
-    /** Fill the form from the ready import unless it is already loaded. */
-    review(): void {
-      const ready = flow?.funderImport;
-      if (ready?.draft && ready.import_id !== source?.import_id) {
-        edit(formFromDraft(ready.draft), ready);
-      } else {
-        setMode("form");
-      }
-    },
-    async discard(): Promise<void> {
-      try {
-        await flow?.discard();
-        reset();
-      } catch (cause) {
-        setError(funderApiErrorKey(cause));
-      }
-    },
     async submit(): Promise<void> {
       if (creating) return;
       setError(null);
-      if (Object.keys(formErrors).length) {
-        setShowErrors(true);
-        return;
-      }
+      if (!isValid()) return;
       setCreating(true);
       try {
         const created = await createFunder({

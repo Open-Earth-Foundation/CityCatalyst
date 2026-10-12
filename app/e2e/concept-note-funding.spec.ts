@@ -1,5 +1,6 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
 import type { CityDashboardResponse } from "@/util/types";
+import { funderDraft } from "../tests/fixtures/concept-note-funder-draft";
 import { skipCookieConsent } from "./helpers";
 
 test.beforeEach(({ context }) => skipCookieConsent(context));
@@ -468,47 +469,23 @@ test("read a funder document, review it and add the funder", async ({
   let importPolls = 0;
   let funderImport: Record<string, unknown> | null = null;
   const draft = {
-    funder: {
-      name: "Green Cities Foundation",
-      funder_type: "Private foundation",
-      country: "United States",
-      region: null,
-      profile: {
-        stated: { purpose: "Helps cities reduce climate risk." },
-        derived: {},
-      },
-    },
+    ...funderDraft,
     opportunity: {
-      name: "Nature-Based Cities Call 2026",
-      applicant_type: "Municipal governments",
-      category: null,
-      sector: "Biodiversity",
+      ...funderDraft.opportunity,
       hazards: ["Flooding"],
-      interventions: [],
-      finance_route: null,
-      instrument_type: "Grant",
-      region_scope: "Latin America",
-      min_award: 150000,
       max_award: 600000,
-      currency: "USD",
-      status: "Open",
       summary: null,
-      known_gaps: ["Co-financing share is not quantified."],
     },
     template: {
-      template_name: "Proposal form",
-      output_format: "docx",
+      ...funderDraft.template,
       chapter_schema: [
         {
-          chapter_ref: "applicant_details",
-          title: "Applicant details",
+          ...funderDraft.template.chapter_schema[0]!,
           description: null,
-          required: true,
           required_fields: [],
         },
       ],
     },
-    missing: ["funder.region", "opportunity.category"],
   };
   const { saved } = await mockWorkspace(page, {
     catalogue: () => catalogue,

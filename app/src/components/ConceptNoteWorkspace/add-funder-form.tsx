@@ -43,6 +43,7 @@ interface TextFieldOptions {
   required?: boolean;
   full?: boolean;
   multiline?: boolean;
+  rows?: number;
   help?: string;
 }
 
@@ -69,7 +70,7 @@ function TextField({
   errors,
   disabled,
   lng,
-  options: { required, full, multiline, help } = {},
+  options: { required, full, multiline, rows, help } = {},
 }: {
   path: string;
   label: string;
@@ -93,6 +94,7 @@ function TextField({
     >
       <Control
         size="sm"
+        rows={rows}
         value={value}
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
@@ -367,40 +369,26 @@ function TemplateFieldsSection(props: FormProps<TemplateForm>) {
                   <LuTrash2 />
                 </IconButton>
               </HStack>
-              <Field
-                label={t("funder-field-chapter-description")}
-                invalid={Boolean(errors[`chapter.${chapter.id}.description`])}
-                errorText={
-                  errors[`chapter.${chapter.id}.description`]
-                    ? t(errors[`chapter.${chapter.id}.description`])
-                    : undefined
+              <TextField
+                {...props}
+                path={`chapter.${chapter.id}.description`}
+                label="funder-field-chapter-description"
+                value={chapter.description}
+                onChange={(description) =>
+                  setChapter(chapter.id, { description })
                 }
-              >
-                <Textarea
-                  size="sm"
-                  rows={2}
-                  value={chapter.description}
-                  disabled={disabled}
-                  onChange={(event) =>
-                    setChapter(chapter.id, { description: event.target.value })
-                  }
-                />
-              </Field>
-              <Field
-                label={t("funding-required-fields")}
-                helperText={t("funder-list-help")}
-              >
-                <Input
-                  size="sm"
-                  value={chapter.required_fields}
-                  disabled={disabled}
-                  onChange={(event) =>
-                    setChapter(chapter.id, {
-                      required_fields: event.target.value,
-                    })
-                  }
-                />
-              </Field>
+                options={{ multiline: true, rows: 2 }}
+              />
+              <TextField
+                {...props}
+                path={`chapter.${chapter.id}.required_fields`}
+                label="funding-required-fields"
+                value={chapter.required_fields}
+                onChange={(required_fields) =>
+                  setChapter(chapter.id, { required_fields })
+                }
+                options={{ help: "funder-list-help" }}
+              />
               <Checkbox
                 size="sm"
                 checked={chapter.required}

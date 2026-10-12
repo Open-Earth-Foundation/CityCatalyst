@@ -167,6 +167,10 @@ const button = (label: string) =>
     item.textContent?.includes(label),
   )!;
 
+async function click(label: string) {
+  await act(async () => button(label).click());
+}
+
 async function type(label: string, value: string) {
   const labelNode = [...document.querySelectorAll("label")].find((item) =>
     item.textContent?.startsWith(label),
@@ -257,13 +261,6 @@ it.each([
   async (detail, key) => {
     rejection = { status: 409, data: { detail } };
     await renderDialog();
-    async function click(label: string) {
-      const button = [...document.querySelectorAll("button")].find((item) =>
-        item.textContent?.includes(label),
-      );
-      expect(button).toBeDefined();
-      await act(async () => button!.click());
-    }
     await click("New funder");
     await click(translations["funding-save"]);
     expect(save).toHaveBeenCalledTimes(1);
@@ -290,19 +287,17 @@ describe("own template", () => {
 
   it("uses a template defined by hand without a funder", async () => {
     await renderDialog();
-    await act(async () => button(translations["template-own-entry"]).click());
+    await click(translations["template-own-entry"]);
     await type(translations["funder-field-template-name"], "City concept note");
     await type("Chapter", "Summary");
-    await act(async () => button(translations["template-use-submit"]).click());
+    await click(translations["template-use-submit"]);
 
     // The chosen template is previewed and becomes the pending selection.
     expect(
       document.querySelector('[data-testid="own-template-details"]')
         ?.textContent,
     ).toContain(translations["template-by-hand"]);
-    await act(async () =>
-      button(translations["funding-save-and-draft"]).click(),
-    );
+    await click(translations["funding-save-and-draft"]);
     expect(save).toHaveBeenCalledWith({
       runId: "run",
       selection: expect.objectContaining({
@@ -339,7 +334,7 @@ describe("own template", () => {
       )!;
     expect(saveButton().disabled).toBe(true);
 
-    await act(async () => button("New funder").click());
+    await click("New funder");
     await act(async () => saveButton().click());
     expect(save).toHaveBeenCalledWith({
       runId: "run",
@@ -354,7 +349,7 @@ describe("own template", () => {
 
 async function openFilledForm() {
   await renderDialog();
-  await act(async () => button(translations["funder-add-entry"]).click());
+  await click(translations["funder-add-entry"]);
   for (const [label, value] of [
     [translations["funder-field-name"], "Delayed funder"],
     [translations["funder-field-programme-name"], "Programme"],
@@ -386,7 +381,7 @@ it("blocks cancel, closing and selection changes while creation is pending", asy
   });
   createFunder.mockImplementation(() => ({ unwrap: () => pending }));
   const button = await openFilledForm();
-  await act(async () => button(translations["funder-add-submit"]).click());
+  await click(translations["funder-add-submit"]);
   expect(button(translations["funder-add-submit"]).disabled).toBe(true);
   expect(button(translations["funder-back"]).disabled).toBe(true);
   expect(button("New funder").disabled).toBe(true);
@@ -420,11 +415,11 @@ it("keeps controls busy through refresh and sends one create request", async () 
     unwrap: async () => addCatalogueRow(),
   }));
   const button = await openFilledForm();
-  await act(async () => button(translations["funder-add-submit"]).click());
+  await click(translations["funder-add-submit"]);
   expect(document.querySelector('[data-testid="add-funder-form"]')).toBeNull();
   expect(button(translations["funder-add-entry"]).disabled).toBe(true);
   expect(button(translations.cancel).disabled).toBe(true);
-  await act(async () => button(translations["funder-add-entry"]).click());
+  await click(translations["funder-add-entry"]);
   expect(createFunder).toHaveBeenCalledTimes(1);
   await act(async () => resolveRefresh(undefined));
   expect(button(translations["funder-add-entry"]).disabled).toBe(false);
@@ -443,8 +438,8 @@ it("retries a failed catalogue refresh without repeating a successful create", a
       funding_opportunity_id: "delayed-programme",
     }),
   }));
-  const button = await openFilledForm();
-  await act(async () => button(translations["funder-add-submit"]).click());
+  await openFilledForm();
+  await click(translations["funder-add-submit"]);
   expect(createFunder).toHaveBeenCalledTimes(1);
   expect(document.querySelector('[data-testid="add-funder-form"]')).toBeNull();
   expect(document.body.textContent).toContain(
@@ -456,7 +451,7 @@ it("retries a failed catalogue refresh without repeating a successful create", a
     addCatalogueRow();
     return { unwrap: async () => undefined };
   });
-  await act(async () => button(translations["try-again"]).click());
+  await click(translations["try-again"]);
   expect(document.body.textContent).not.toContain(
     translations["funder-added-refresh-error"],
   );

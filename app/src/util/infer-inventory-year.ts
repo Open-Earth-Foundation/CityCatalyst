@@ -38,7 +38,8 @@ export function inferInventoryYearFromSheets(
     for (const row of sheet.rows) {
       const cells = headers.map((header) => row[header]);
       for (let i = 0; i < cells.length; i++) {
-        const label = typeof cells[i] === "string" ? cells[i].trim() : "";
+        const cell = cells[i];
+        const label = typeof cell === "string" ? cell.trim() : "";
         if (!YEAR_LABEL.test(label)) continue;
         const year =
           asInventoryYear(cells[i + 1]) ?? asInventoryYear(cells[i - 1]);

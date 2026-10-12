@@ -6,7 +6,11 @@ import { InventoryService } from "./InventoryService";
 import { createHash, randomUUID } from "node:crypto";
 import { Op } from "sequelize";
 import { logger } from "@/services/logger";
-import { registerMEEDRanking } from "@/backend/meed/MeedNativeInputCatalogService";
+import {
+  registerMEEDRanking,
+  registerMEEDOutputPlan,
+} from "@/backend/meed/MeedNativeInputCatalogService";
+import { isCompleteMEEDOutputPlan } from "@/backend/meed/meedOutputPlan";
 import type { MeedStateCreationAttributes } from "@/models/MeedState";
 import { readAuthorityScopeClassification } from "@/util/authorityScopeClassification";
 
@@ -615,38 +619,90 @@ export default class MeedApiService {
       result.metadata?.authority_scope_classification,
     );
 
-    // save result to database, update existing report if it exists
-    let report = await db.models.MeedActionReport.findOne({
-      where: { inventoryId, actionId: result.action_id },
-    });
-    if (report) {
-      await report.update({
-        inventoryId,
-        actionId: result.action_id,
-        languages: result.language,
-        chapters: result.chapters,
-        authorityScopeClassification,
-      });
-    } else {
-      report = await db.models.MeedActionReport.create({
+    if (debugContextOnly) {
+      return {
         id: randomUUID(),
         inventoryId,
         actionId: result.action_id,
         languages: result.language,
         chapters: result.chapters,
         authorityScopeClassification,
-      });
+      };
+    }
+
+    const hasContent = isCompleteMEEDOutputPlan({
+      catalogEligible: true,
+      languages: result.language,
+      chapters: result.chapters,
+    });
+    if (!hasContent) {
+      throw new createHttpError.BadGateway(
+        "MEED output plan has no chapters and was not stored",
+      );
+    }
+
+    // An incomplete plan is still the user's paid LLM output, so it is stored
+    // and returned. Only complete plans are eligible for NativeInputCatalog.
+    const catalogEligible = isCompleteMEEDOutputPlan({
+      catalogEligible: true,
+      languages: result.language,
+      chapters: result.chapters,
+      requestedLanguages: languages,
+      requiredSourcesOk: result.metadata?.required_sources_ok === true,
+    });
+    if (!catalogEligible) {
+      logger.warn(
+        { inventoryId, actionId: result.action_id, languages },
+        "MEED output plan is incomplete; stored without catalog registration",
+      );
+    }
+
+    // Every successful generation is a new row. Older versions are kept as an
+    // audit trail of what the LLM produced; the catalog marks them superseded.
+    const report = await db.models.MeedActionReport.create({
+      id: randomUUID(),
+      inventoryId,
+      actionId: result.action_id,
+      catalogEligible,
+      languages: result.language,
+      chapters: result.chapters,
+      authorityScopeClassification,
+    });
+
+    if (catalogEligible) {
+      try {
+        await registerMEEDOutputPlan(report.id);
+      } catch (error) {
+        logger.error(
+          {
+            error,
+            reportId: report.id,
+            inventoryId,
+            actionId: report.actionId,
+          },
+          "Failed to register MEED output plan in NativeInputCatalog",
+        );
+      }
     }
 
     return report;
   }
 
-  public static async getPlan(inventoryId: string, actionId: string) {
+  public static async getPlan(
+    inventoryId: string,
+    actionId: string,
+    language?: string,
+  ) {
     const plan = await db.models.MeedActionReport.findOne({
       where: {
         inventoryId,
         actionId,
+        ...(language ? { languages: { [Op.contains]: [language] } } : {}),
       },
+      order: [
+        ["created", "DESC"],
+        ["id", "DESC"],
+      ],
     });
 
     if (!plan) {

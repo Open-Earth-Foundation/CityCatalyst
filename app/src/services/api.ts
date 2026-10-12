@@ -404,12 +404,19 @@ export const api = createApi({
        */
       getMeedPlan: builder.query<
         MeedPlanRouteReport,
-        { cityId: string; inventoryId: string; actionId: string }
+        {
+          cityId: string;
+          inventoryId: string;
+          actionId: string;
+          language?: string;
+        }
       >({
-        query: ({ cityId, inventoryId, actionId }) =>
+        query: ({ cityId, inventoryId, actionId, language }) =>
           `city/${cityId}/meed/generate-plan?inventoryId=${encodeURIComponent(
             inventoryId,
-          )}&actionId=${encodeURIComponent(actionId)}`,
+          )}&actionId=${encodeURIComponent(actionId)}${
+            language ? `&language=${encodeURIComponent(language)}` : ""
+          }`,
         transformResponse: (r: { data: MeedPlanRouteReport }) => r.data,
         providesTags: ["MeedPlan"],
       }),

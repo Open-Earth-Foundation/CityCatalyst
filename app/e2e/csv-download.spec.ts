@@ -273,6 +273,7 @@ test.describe("CSV Download", () => {
   test.setTimeout(120000);
 
   let cityId: string;
+  let cityName: string;
   let inventoryId: string;
 
   test.beforeAll(async ({ browser }) => {
@@ -285,6 +286,7 @@ test.describe("CSV Download", () => {
 
     const result = await createCityAndInventoryThroughOnboarding(page);
     cityId = result.cityId;
+    cityName = result.cityName;
     inventoryId = result.inventoryId;
 
     await context.close();
@@ -298,7 +300,7 @@ test.describe("CSV Download", () => {
 
     const heroCityName = page.getByTestId("hero-city-name");
     await expect(heroCityName).toBeVisible({ timeout: 60000 });
-    await expect(heroCityName).toHaveText("Chicago", { timeout: 10000 });
+    await expect(heroCityName).toHaveText(cityName, { timeout: 10000 });
 
     const downloadActionCard = page.getByTestId("download-action-card");
     await expect(downloadActionCard).toBeVisible({ timeout: 60000 });

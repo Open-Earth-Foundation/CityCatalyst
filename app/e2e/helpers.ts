@@ -1,6 +1,7 @@
 import {
   APIRequestContext,
   expect,
+  test,
   type BrowserContext,
   type Locator,
   type Page,
@@ -162,11 +163,58 @@ const INVENTORY_YEAR_TAKEN =
   "An inventory for this year already contains data";
 
 /**
+ * Real OpenClimate cities. Each onboarding flow takes the next one so
+ * parallel Chromium and Firefox runs do not pile activity data onto one
+ * Chicago record. The year dropdown only has 20 years, and Continue stays
+ * disabled once every year already has data.
+ */
+const E2E_CITIES: { name: string; region: RegExp }[] = [
+  { name: "Houston", region: /United States of America > Texas/ },
+  { name: "Phoenix", region: /United States of America > Arizona/ },
+  { name: "Philadelphia", region: /United States of America > Pennsylvania/ },
+  { name: "San Antonio", region: /United States of America > Texas/ },
+  { name: "San Diego", region: /United States of America > California/ },
+  { name: "Dallas", region: /United States of America > Texas/ },
+  { name: "Austin", region: /United States of America > Texas/ },
+  { name: "Jacksonville", region: /United States of America > Florida/ },
+  { name: "Columbus", region: /United States of America > Ohio/ },
+  { name: "Charlotte", region: /United States of America > North Carolina/ },
+  { name: "Indianapolis", region: /United States of America > Indiana/ },
+  { name: "Seattle", region: /United States of America > Washington/ },
+  { name: "Denver", region: /United States of America > Colorado/ },
+  { name: "Boston", region: /United States of America > Massachusetts/ },
+  { name: "Nashville", region: /United States of America > Tennessee/ },
+  { name: "Detroit", region: /United States of America > Michigan/ },
+  { name: "Portland", region: /United States of America > Oregon/ },
+  { name: "Memphis", region: /United States of America > Tennessee/ },
+  { name: "Baltimore", region: /United States of America > Maryland/ },
+  { name: "Milwaukee", region: /United States of America > Wisconsin/ },
+  { name: "Albuquerque", region: /United States of America > New Mexico/ },
+  { name: "Tucson", region: /United States of America > Arizona/ },
+  { name: "Fresno", region: /United States of America > California/ },
+  { name: "Sacramento", region: /United States of America > California/ },
+  { name: "Atlanta", region: /United States of America > Georgia/ },
+  { name: "Miami", region: /United States of America > Florida/ },
+  { name: "Minneapolis", region: /United States of America > Minnesota/ },
+  { name: "Cleveland", region: /United States of America > Ohio/ },
+  { name: "New Orleans", region: /United States of America > Louisiana/ },
+  { name: "Chicago", region: /United States of America > Illinois/ },
+];
+
+let nextCitySlot = 0;
+
+function nextE2ECity(): { name: string; region: RegExp } {
+  const workers = Math.max(test.info().config.workers || 1, 1);
+  const index =
+    (test.info().parallelIndex + nextCitySlot * workers) % E2E_CITIES.length;
+  nextCitySlot += 1;
+  return E2E_CITIES[index];
+}
+
+/**
  * Pick a dropdown year whose Continue button stays enabled.
- * Onboarding reuses one Chicago city, and Continue stays disabled when the
- * selected year already has activity data. Parallel Chromium and Firefox
- * runs fill those years in an unpredictable order, so the test has to read
- * the warning instead of guessing a free year.
+ * A fresh city can use the first year. This still skips a year that already
+ * has activity data when two flows land on the same city.
  */
 export async function selectAvailableInventoryYear(page: Page): Promise<string> {
   const trigger = page
@@ -262,7 +310,7 @@ export async function selectCityFromOnboardingSearch(
 
 async function walkCitiesOnboardingWizard(
   page: Page,
-): Promise<{ cityId: string }> {
+): Promise<{ cityId: string; cityName: string }> {
   // Step 0: welcome page → click "Get started"
   await page.goto("/en/cities/onboarding/");
   await page.waitForLoadState("domcontentloaded");
@@ -291,7 +339,8 @@ async function walkCitiesOnboardingWizard(
   // Step 0: select city
   await page.waitForURL("**/cities/onboarding/setup/");
 
-  await selectCityFromOnboardingSearch(page, "Chicago");
+  const city = nextE2ECity();
+  await selectCityFromOnboardingSearch(page, city.name, city.region);
 
   // Continue (creates the city, advances to invite collaborators)
   {
@@ -314,7 +363,7 @@ async function walkCitiesOnboardingWizard(
   if (!cityId) {
     throw new Error("Could not extract cityId from URL after onboarding");
   }
-  return { cityId };
+  return { cityId, cityName: city.name };
 }
 
 export async function createCityThroughOnboarding(page: Page): Promise<string> {
@@ -497,18 +546,20 @@ export async function createCityAndInventoryThroughOnboarding(
 ): Promise<{
   page: Page;
   cityId: string;
+  cityName: string;
   inventoryId: string;
   inventoryYear: string;
 }> {
   // City onboarding no longer creates an inventory (CC-612): create the
   // city first, then run the separate GHGI onboarding flow for the
-  // inventory.
-  const { cityId } = await walkCitiesOnboardingWizard(page);
+  // inventory. Each call uses a different city so the shared 20-year
+  // dropdown is not already full of activity data.
+  const { cityId, cityName } = await walkCitiesOnboardingWizard(page);
   const { inventoryId, inventoryYear } = await createInventoryThroughOnboarding(
     page,
     cityId,
   );
-  return { page, cityId, inventoryId, inventoryYear };
+  return { page, cityId, cityName, inventoryId, inventoryYear };
 }
 
 export async function createProject(

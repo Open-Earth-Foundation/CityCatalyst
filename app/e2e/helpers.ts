@@ -204,9 +204,15 @@ const E2E_CITIES: { name: string; region: RegExp }[] = [
 let nextCitySlot = 0;
 
 function nextE2ECity(): { name: string; region: RegExp } {
-  const workers = Math.max(test.info().config.workers || 1, 1);
+  const info = test.info();
+  const workers = Math.max(info.config.workers || 1, 1);
+  // Chromium and Firefox are separate processes, so each would otherwise
+  // start again at Houston and reuse a city that already has data.
+  const projectOffset =
+    info.project.name === "firefox" ? Math.floor(E2E_CITIES.length / 2) : 0;
   const index =
-    (test.info().parallelIndex + nextCitySlot * workers) % E2E_CITIES.length;
+    (projectOffset + info.parallelIndex + nextCitySlot * workers) %
+    E2E_CITIES.length;
   nextCitySlot += 1;
   return E2E_CITIES[index];
 }
@@ -229,11 +235,18 @@ export async function selectAvailableInventoryYear(page: Page): Promise<string> 
   await page.keyboard.press("Escape");
 
   const continueBtn = page.getByRole("button", { name: /Continue/i });
-  const taken = page.getByText(INVENTORY_YEAR_TAKEN);
+  const taken = page.getByText(INVENTORY_YEAR_TAKEN, { exact: true });
 
   for (const year of years) {
     await trigger.click();
     await page.getByRole("option", { name: year, exact: true }).click();
+    // The previous year's warning stays on screen until this selection commits.
+    // Ignore it until the closed select actually shows the year we clicked.
+    const selected = await expect(trigger)
+      .toContainText(year, { timeout: 5000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!selected) continue;
     if (await inventoryYearIsAvailable(page, continueBtn, taken)) return year;
   }
 

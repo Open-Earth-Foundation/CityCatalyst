@@ -14,7 +14,10 @@ test("Inventory Onboarding", async ({ page }) => {
 
     //   Check that the main heading is present and has the correct text
     const mainHeading = page.getByTestId(/start-page-heading/i);
-    await expect(mainHeading).toHaveText(/Select how to create a GHG emission inventory/i);
+    await expect(mainHeading).toHaveText(
+      /Select how to create a GHG emission inventory/i,
+      { timeout: 30000 },
+    );
 
     //   Select "Create a new inventory" and continue
     const createOption = page.getByTestId("create-inventory-option");

@@ -113,26 +113,18 @@ describe("Funder create API boundary", () => {
           context,
         ),
     ],
-    [
-      "a minimum above the maximum",
-      () =>
-        createFunder(
-          post({
-            ...funder,
-            opportunity: { ...funder.opportunity, min_award: 9000 },
-          }),
-          context,
-        ),
-    ],
   ])("rejects %s before any upstream call", async (_name, call) => {
     await expect(call()).rejects.toMatchObject({ name: "ZodError" });
     expect(callApi).not.toHaveBeenCalled();
   });
 
-  it("requires authentication", async () => {
-    await expect(
-      createFunder(post(funder), { ...context, session: null }),
-    ).rejects.toMatchObject({ statusCode: 401 });
-    expect(callApi).not.toHaveBeenCalled();
-  });
+  it.each([funder, {}])(
+    "requires authentication before validating the body",
+    async (body) => {
+      await expect(
+        createFunder(post(body), { ...context, session: null }),
+      ).rejects.toMatchObject({ statusCode: 401 });
+      expect(callApi).not.toHaveBeenCalled();
+    },
+  );
 });

@@ -38,6 +38,7 @@
  *       403: { description: City or run access denied }
  *       422: { description: Invalid funder details }
  */
+import createHttpError from "http-errors";
 import { z } from "zod";
 
 import { proxyConceptNoteRunRequest } from "@/backend/concept-note-run-proxy";
@@ -47,6 +48,9 @@ import { conceptNoteFunderCreateRequest } from "@/util/concept-note-funder";
 const paramsSchema = z.object({ runId: z.string().uuid() });
 
 export const POST = apiHandler(async (req, { session, params }) => {
+  if (!session?.user?.id) {
+    throw new createHttpError.Unauthorized("Unauthorized");
+  }
   const { runId } = paramsSchema.parse(params);
   const body = conceptNoteFunderCreateRequest.parse(await req.json());
   return proxyConceptNoteRunRequest(req, session, {

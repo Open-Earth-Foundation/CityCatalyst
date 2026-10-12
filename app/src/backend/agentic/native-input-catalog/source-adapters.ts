@@ -13,6 +13,15 @@ import {
   hiapInventoryContextInputSchema,
 } from "@/backend/agentic/hiap/registry";
 import {
+  buildMeedOutputPlanContext,
+  buildMeedRankingContext,
+} from "@/backend/agentic/hiap-meed/context";
+import {
+  HIAP_MEED_OUTPUT_PLAN_CONTEXT_CAPABILITY,
+  HIAP_MEED_RANKING_CONTEXT_CAPABILITY,
+  hiapMeedContextInputSchema,
+} from "@/backend/agentic/hiap-meed/registry";
+import {
   getNativeInputCapabilityDefinition,
   type NativeInputCapabilityId,
   type NativeInputDiscoveryCatalogEntry,
@@ -111,6 +120,31 @@ const hiapInventoryAdapter = createNativeInputSourceAdapter({
   },
 });
 
+const hiapMeedAdapter = createNativeInputSourceAdapter({
+  async probeReadiness(entry) {
+    if (
+      entry.owningModule !== "hiap_meed" ||
+      !entry.sourceId ||
+      !entry.inventoryId ||
+      !getNativeInputCapabilityDefinition(entry)
+    ) {
+      return false;
+    }
+    return inventoryExists(entry.inventoryId);
+  },
+  async executeSelected({ entry, capabilityId, input }) {
+    if (!entry.sourceId) return null;
+    const parsed = hiapMeedContextInputSchema.parse(input);
+    if (capabilityId === HIAP_MEED_RANKING_CONTEXT_CAPABILITY) {
+      return buildMeedRankingContext(entry.sourceId, parsed.language);
+    }
+    if (capabilityId === HIAP_MEED_OUTPUT_PLAN_CONTEXT_CAPABILITY) {
+      return buildMeedOutputPlanContext(entry.sourceId);
+    }
+    return null;
+  },
+});
+
 function adapterKey(entry: NativeInputDiscoveryCatalogEntry): string {
   return `${entry.owningModule}|${entry.kind}|${entry.sourceType}`;
 }
@@ -121,6 +155,8 @@ const nativeInputSourceAdapters: Record<string, NativeInputSourceAdapter> = {
   "hiap|hiap_selection|hiap_ranked_selection": hiapInventoryAdapter,
   "hiap|hiap_selection|hiap_unranked_selection": hiapInventoryAdapter,
   "hiap|hiap_action_plan|action_plan": hiapInventoryAdapter,
+  "hiap_meed|hiap_meed_ranking|hiap_meed_ranking": hiapMeedAdapter,
+  "hiap_meed|hiap_meed_output_plan|hiap_meed_output_plan": hiapMeedAdapter,
 };
 
 export function getNativeInputSourceAdapter(

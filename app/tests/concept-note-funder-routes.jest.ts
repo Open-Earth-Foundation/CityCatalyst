@@ -7,6 +7,8 @@ import {
   jest,
 } from "@jest/globals";
 
+import { funderRequest as funder } from "./fixtures/concept-note-funder";
+
 const runId = "11111111-1111-4111-8111-111111111111";
 const cityId = "33333333-3333-4333-8333-333333333333";
 const loadRunCity = jest.fn<(...args: unknown[]) => Promise<string>>();
@@ -31,46 +33,6 @@ const post = (body: unknown) =>
     method: "POST",
     body: JSON.stringify(body),
   });
-const funder = {
-  funder: {
-    name: "Green Cities Foundation",
-    funder_type: null,
-    country: null,
-    region: null,
-    profile: { stated: {}, derived: {} },
-  },
-  opportunity: {
-    name: "Nature-Based Cities 2026",
-    applicant_type: null,
-    category: null,
-    sector: null,
-    hazards: [],
-    interventions: [],
-    finance_route: null,
-    instrument_type: null,
-    region_scope: null,
-    min_award: 1000,
-    max_award: 5000,
-    currency: "USD",
-    status: null,
-    summary: null,
-    known_gaps: [],
-  },
-  template: {
-    template_name: "Proposal form",
-    output_format: null,
-    chapter_schema: [
-      {
-        chapter_ref: "",
-        title: "Summary",
-        description: null,
-        required: true,
-        required_fields: [],
-      },
-    ],
-  },
-};
-
 beforeAll(async () => {
   ({ POST: createFunder } =
     (await import("@/app/api/v1/concept-notes/[runId]/funders/route")) as unknown as {

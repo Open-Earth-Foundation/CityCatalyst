@@ -26,6 +26,8 @@ jest.unstable_mockModule("@/backend/llm", () => ({
 const {
   canonicalGpcRefNo,
   extractInventoryFromDocument,
+  findHiddenRowTotals,
+  splitDocumentPages,
   finalizeExtractedRows,
   tonnesMultiplier,
 } = await import("@/backend/InventoryExtractionService");
@@ -329,7 +331,7 @@ describe("Auckland 2021 extraction", () => {
     expect(system).toContain('"rowType"');
     expect(system).toContain("one row per non-empty scope cell");
     expect(system).toContain("BASIC+");
-    expect(system).toContain("Do not convert units yourself");
+    expect(system).toContain("Output totalCO2e in metric tonnes CO2e");
     expect(user).toContain("Table A-1");
     expect(user).toContain("year 2021");
   });
@@ -589,5 +591,360 @@ describe("references copied from the real model output (CC-1008 live run)", () =
     );
     expect(rows.map((r) => r.category)).toEqual(["Subsector total", "Diesel"]);
     expect(summary.droppedRows.subtotal_or_total).toBe(3);
+  });
+});
+
+describe("page-by-page extraction with reconciliation (CC-1008 amendment)", () => {
+  const numbers = (n: number) =>
+    Array.from({ length: n }, (_, i) => `${100 + i},${100 + i}`).join(" ");
+  const page = (n: number, title: string, withNumbers = true) =>
+    `<!-- page: ${n} -->
+${title}
+${withNumbers ? numbers(10) : "Prose only."}
+`;
+
+  const grandTotal = {
+    year: 2021,
+    sector: null,
+    subsector: null,
+    category: "BASIC+",
+    totalCO2e: 9559215,
+    unit: "t",
+    rowType: "total",
+  };
+  /** Rounded figures from the sector chapters: the noise seen in the live run. */
+  const narrative: LlmRow[] = [
+    line("II.1.1", "1", 1800000, TR, "On Road Transportation", {
+      category: "Diesel",
+    }),
+    line("II.1.1", "1", 1200000, TR, "On Road Transportation", {
+      category: "Petrol",
+    }),
+    line("V.1", "1", 594000, AF, "Livestock", { category: "Livestock" }),
+  ];
+  const junkFromSummary = line("I.4.4", "1", 4048691, SE, "Energy Industries", {
+    category: "Energy generation supplied to the grid",
+  });
+
+  function mockByPage(byTitle: Record<string, LlmRow[]>): void {
+    complete.mockImplementation(async (args) => {
+      const user = (
+        args as { messages: { role: string; content: string }[] }
+      ).messages.find((m) => m.role === "user")!.content;
+      const title = Object.keys(byTitle).find((t) => user.includes(t));
+      return { content: JSON.stringify({ rows: title ? byTitle[title] : [] }) };
+    });
+  }
+
+  it("keeps only the page whose sum matches the document total", async () => {
+    const doc = [
+      page(2, "Contents", false),
+      page(15, "Table 3-1 Emissions summary"),
+      page(17, "Chapter 4 narrative"),
+      page(46, "Table A-1 GPC format"),
+    ].join("");
+    mockByPage({
+      "Table 3-1": [grandTotal, junkFromSummary],
+      "Chapter 4": narrative,
+      "Table A-1": tableA1,
+    });
+
+    const { rows, summary } = await extractInventoryFromDocument(doc, {
+      targetYear: 2021,
+    });
+
+    expect(summary.pageSelection).toBe("reconciled");
+    expect(summary.selectedPages).toEqual([46]);
+    expect(summary.importedSum).toBe(9559215);
+    expect(rows).toHaveLength(tableA1.length);
+    expect(summary.droppedRows.other_page).toBe(narrative.length + 1);
+    // The page without numbers is never sent to the model. Page 15 is asked
+    // twice: its rows (only I.4.4) miss its own total.
+    expect(complete).toHaveBeenCalledTimes(4);
+  });
+
+  it("joins a table split over two consecutive pages", async () => {
+    const half = Math.ceil(tableA1.length / 2);
+    const doc = [
+      page(15, "Table 3-1 Emissions summary"),
+      page(46, "Table A-1 part one"),
+      page(47, "Table A-1 part two"),
+    ].join("");
+    mockByPage({
+      "Table 3-1": [grandTotal],
+      "part one": tableA1.slice(0, half),
+      "part two": tableA1.slice(half),
+    });
+
+    const { summary } = await extractInventoryFromDocument(doc, {
+      targetYear: 2021,
+    });
+    expect(summary.pageSelection).toBe("reconciled");
+    expect(summary.selectedPages).toEqual([46, 47]);
+    expect(summary.importedSum).toBe(9559215);
+  });
+
+  it("does not join pages that are not consecutive", async () => {
+    const half = Math.ceil(tableA1.length / 2);
+    const doc = [
+      page(15, "Table 3-1 Emissions summary"),
+      page(46, "Table A-1 part one"),
+      page(48, "Table A-1 part two"),
+    ].join("");
+    mockByPage({
+      "Table 3-1": [grandTotal],
+      "part one": tableA1.slice(0, half),
+      "part two": tableA1.slice(half),
+    });
+
+    const { summary } = await extractInventoryFromDocument(doc, {
+      targetYear: 2021,
+    });
+    expect(summary.pageSelection).toBe("fallback");
+  });
+
+  it("keeps every page when the document reports no grand total", async () => {
+    const doc = [page(17, "Chapter 4 narrative"), page(46, "Table A-1")].join(
+      "",
+    );
+    mockByPage({ "Chapter 4": narrative, "Table A-1": tableA1 });
+
+    const { rows, summary } = await extractInventoryFromDocument(doc, {
+      targetYear: 2021,
+    });
+    expect(summary.pageSelection).toBe("fallback");
+    expect(summary.selectedPages).toEqual([17, 46]);
+    // V.1 Livestock is on both pages: the cross-page dedupe keeps one.
+    expect(rows).toHaveLength(tableA1.length + narrative.length - 1);
+    expect(summary.droppedRows.duplicate).toBe(1);
+    expect(summary.droppedRows.other_page).toBeUndefined();
+  });
+
+  it("ignores a grand total of another year when selecting", async () => {
+    const doc = [
+      page(15, "Table A-2 2016 profile"),
+      page(17, "Chapter 4 narrative"),
+    ].join("");
+    mockByPage({
+      "Table A-2": [{ ...grandTotal, year: 2016, totalCO2e: 3594000 }],
+      "Chapter 4": narrative,
+    });
+
+    const { summary } = await extractInventoryFromDocument(doc, {
+      targetYear: 2021,
+    });
+    expect(summary.pageSelection).toBe("fallback");
+  });
+
+  it("prefers the GPC table over a narrative page that matches the gross total", async () => {
+    // Live run: the model missed rows on Table A-1 (6% short) while a chapter
+    // listing gross emissions by source matched the gross total exactly.
+    const incompleteA1 = tableA1.filter(
+      (r) => r.gpcRefNo !== "I.3.2" && r.gpcRefNo !== "I.2.2",
+    );
+    const gross = {
+      ...grandTotal,
+      category: "Gross emissions",
+      totalCO2e: 10757000,
+    };
+    const grossBreakdown: LlmRow[] = [
+      line("II.1.1", "1", 5000000, TR, "On Road Transportation", {
+        scope: null,
+        category: "Transport",
+      }),
+      line("I.1.1", "1", 5757000, SE, "Residential Buildings", {
+        scope: null,
+        category: "Energy",
+      }),
+    ];
+    const doc = [
+      page(15, "Table 3-1 Emissions summary"),
+      page(37, "Chapter gross emissions"),
+      page(46, "Table A-1 GPC format"),
+    ].join("");
+    mockByPage({
+      "Table 3-1": [grandTotal],
+      "Chapter gross": [gross, ...grossBreakdown],
+      "Table A-1": incompleteA1,
+    });
+
+    const { summary } = await extractInventoryFromDocument(doc, {
+      targetYear: 2021,
+    });
+    expect(summary.selectedPages).toEqual([46]);
+    // The review warning still flags the missing rows.
+    expect(reconcileExtraction(summary)?.mismatch).toBe(true);
+  });
+
+  it("does not select one sector because its total was marked as a total", async () => {
+    const transport = tableA1.filter((r) =>
+      String(r.gpcRefNo).startsWith("II."),
+    );
+    const transportSum = transport.reduce(
+      (n, r) => n + Number(r.totalCO2e ?? 0),
+      0,
+    );
+    const doc = [
+      page(15, "Table 3-1 Emissions summary"),
+      page(24, "Chapter transport"),
+    ].join("");
+    mockByPage({
+      "Table 3-1": [grandTotal],
+      "Chapter transport": [
+        { ...grandTotal, category: "Total", totalCO2e: transportSum },
+        ...transport,
+      ],
+    });
+
+    const { summary } = await extractInventoryFromDocument(doc, {
+      targetYear: 2021,
+    });
+    expect(summary.pageSelection).toBe("fallback");
+  });
+
+  it("asks a page once more when its rows miss the page total", async () => {
+    // Live run: the same page lost the scope 3 column on one call out of three.
+    const withoutScope3 = tableA1.filter((r) => r.scope !== "3");
+    const doc = [page(46, "Table A-1 GPC format"), page(47, "Notes")].join("");
+    let calls = 0;
+    complete.mockImplementation(async (args) => {
+      const user = (
+        args as { messages: { role: string; content: string }[] }
+      ).messages.find((m) => m.role === "user")!.content;
+      if (!user.includes("Table A-1")) return { content: '{"rows": []}' };
+      calls += 1;
+      const rows = calls === 1 ? withoutScope3 : tableA1;
+      return { content: JSON.stringify({ rows: [grandTotal, ...rows] }) };
+    });
+
+    const { summary } = await extractInventoryFromDocument(doc, {
+      targetYear: 2021,
+    });
+    expect(calls).toBe(2);
+    expect(summary.selectedPages).toEqual([46]);
+    expect(summary.importedSum).toBe(9559215);
+  });
+
+  it("keeps the chunk path for text without page breaks", async () => {
+    mockLlm(tableA1);
+    const { summary } = await extractInventoryFromDocument(fixture, {
+      targetYear: 2021,
+    });
+    expect(summary.pageSelection).toBeUndefined();
+    expect(complete).toHaveBeenCalledTimes(1);
+  });
+
+  it("splits Mistral page markers and form feeds", () => {
+    expect(
+      splitDocumentPages("<!-- page: 1 -->\nA\n<!-- page: 2 -->\nB").map(
+        (p) => [p.page, p.text.trim()],
+      ),
+    ).toEqual([
+      [1, "A"],
+      [2, "B"],
+    ]);
+    expect(splitDocumentPages("A\fB\fC").map((p) => p.page)).toEqual([1, 2, 3]);
+    expect(splitDocumentPages("no breaks")).toEqual([]);
+  });
+});
+
+describe("findHiddenRowTotals", () => {
+  it("finds a Total column read as a line item without scope", () => {
+    const rows = [
+      {
+        year: 2021,
+        sector: SE,
+        subsector: "Residential Buildings",
+        category: null,
+        scope: "1",
+        gpcRefNo: "I.1.1",
+        totalCO2e: 196407,
+      },
+      {
+        year: 2021,
+        sector: SE,
+        subsector: "Residential Buildings",
+        category: null,
+        scope: "2",
+        gpcRefNo: "I.1.2",
+        totalCO2e: 450523,
+      },
+      {
+        year: 2021,
+        sector: SE,
+        subsector: "Residential Buildings",
+        category: null,
+        scope: "3",
+        gpcRefNo: "I.1.3",
+        totalCO2e: 33017,
+      },
+      {
+        year: 2021,
+        sector: SE,
+        subsector: "Residential Buildings",
+        category: null,
+        scope: null,
+        gpcRefNo: "I.1.1",
+        totalCO2e: 679947,
+      },
+      {
+        year: 2021,
+        sector: SE,
+        subsector: "Manufacturing",
+        category: null,
+        scope: null,
+        gpcRefNo: null,
+        totalCO2e: 50,
+      },
+    ];
+    const hidden = findHiddenRowTotals(rows);
+    expect([...hidden].map((r) => r.totalCO2e)).toEqual([679947]);
+  });
+
+  it("drops the hidden total during finalize and keeps the scoped rows", () => {
+    const { rows, summary } = finalizeExtractedRows(
+      [
+        {
+          year: 2021,
+          sector: TR,
+          subsector: "Railways",
+          category: null,
+          scope: "1",
+          gpcRefNo: "II.2.1",
+          totalCO2e: 5673,
+        },
+        {
+          year: 2021,
+          sector: TR,
+          subsector: "Railways",
+          category: null,
+          scope: "2",
+          gpcRefNo: "II.2.2",
+          totalCO2e: 3629,
+        },
+        {
+          year: 2021,
+          sector: TR,
+          subsector: "Railways",
+          category: null,
+          scope: "3",
+          gpcRefNo: "II.2.3",
+          totalCO2e: 266,
+        },
+        {
+          year: 2021,
+          sector: TR,
+          subsector: "Railways",
+          category: null,
+          scope: null,
+          gpcRefNo: null,
+          totalCO2e: 9568,
+        },
+      ],
+      2021,
+    );
+    expect(rows).toHaveLength(3);
+    expect(summary.importedSum).toBe(9568);
+    expect(summary.droppedRows.subtotal_or_total).toBe(1);
   });
 });

@@ -30,6 +30,7 @@ const REPORTED_DROP_REASONS: DroppedRowReason[] = [
   "missing_year",
   "unsupported_unit",
   "duplicate",
+  "other_page",
 ];
 
 interface ReviewConfirmStepProps {
@@ -113,6 +114,10 @@ export default function ReviewConfirmStep({
 
   const extractionSummary = data?.mappingConfiguration?.extractionSummary;
   const reconciliation = reconcileExtraction(extractionSummary ?? null);
+  const reconciledPages =
+    extractionSummary?.pageSelection === "reconciled"
+      ? (extractionSummary.selectedPages ?? [])
+      : [];
   const droppedReasons = REPORTED_DROP_REASONS.filter(
     (reason) => (extractionSummary?.droppedRows?.[reason] ?? 0) > 0,
   );
@@ -270,7 +275,9 @@ export default function ReviewConfirmStep({
           </Box>
         </Box>
       )}
-      {(droppedReasons.length > 0 || extractionSummary?.yearAssumed) && (
+      {(droppedReasons.length > 0 ||
+        extractionSummary?.yearAssumed ||
+        reconciledPages.length > 0) && (
         <Box
           bg="background.neutral"
           border="1px solid"
@@ -298,6 +305,13 @@ export default function ReviewConfirmStep({
                 ))}
               </VStack>
             </>
+          )}
+          {reconciledPages.length > 0 && (
+            <Text fontSize="body.sm" color="content.secondary" mt={2}>
+              {t("import-pages-reconciled", {
+                pages: reconciledPages.join(", "),
+              })}
+            </Text>
           )}
           {extractionSummary?.yearAssumed && (
             <Text fontSize="body.sm" color="content.secondary" mt={2}>

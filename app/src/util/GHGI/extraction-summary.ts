@@ -20,7 +20,8 @@ export type DroppedRowReason =
   | "other_year"
   | "missing_year"
   | "unsupported_unit"
-  | "duplicate";
+  | "duplicate"
+  | "other_page";
 
 export type ExtractionSummary = {
   reportedTotals: ReportedTotal[];
@@ -31,6 +32,13 @@ export type ExtractionSummary = {
   yearAssumed: boolean;
   /** Inventory year the extraction ran for. Missing on summaries stored before this field. */
   targetYear?: number | null;
+  /**
+   * `reconciled`: rows come only from `selectedPages`, whose sum matches a document
+   * grand total. `fallback`: no page run matched; rows come from every page.
+   * Missing when the document had no page markers (chunked extraction).
+   */
+  pageSelection?: "reconciled" | "fallback";
+  selectedPages?: number[];
 };
 
 /** Imported sum may differ from the document total by this fraction before the review screen warns. */

@@ -10,10 +10,11 @@ import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
 import { GRID_GENERATION_GPC_REF } from "@/util/GHGI/reported-totals";
 import { toCanonical } from "@/util/notation-keys";
-import type {
-  DroppedRowReason,
-  ExtractionSummary,
-  ReportedTotal,
+import {
+  RECONCILIATION_TOLERANCE,
+  type DroppedRowReason,
+  type ExtractionSummary,
+  type ReportedTotal,
 } from "@/util/GHGI/extraction-summary";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
 import gpcNameMappings from "@/util/GHGI/data/gpc-name-mappings.json";
@@ -173,7 +174,7 @@ You are an extractor of GHG inventory line items from city emissions reports. Yo
 </role>
 
 <task>
-Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Do not convert units yourself: output each number as written in the table and put the unit from the column header or row label in "unit" (e.g. "t", "tCO2e", "kt", "ktCO2e", "Mt", "thousand tonnes"); the system converts to tonnes. Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the document has multiple. Also output subtotal and total rows, but mark them with rowType so they are not counted as data.
+Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Output totalCO2e in metric tonnes CO2e: when the column header, row label or table title states the unit, convert (e.g. 48 in a "kt CO2e" or "thousand tonnes" column → 48000) and set "unit" to "t". When you keep a number unconverted, set "unit" to the unit of that number as you output it (e.g. "kt"). Never mark a number as kt or Mt unless the document says so. Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the document has multiple. Also output subtotal and total rows, but mark them with rowType so they are not counted as data.
 
 Row types (critical): set "rowType" on every row.
 - "line_item": a measured value for one activity, subsector or GPC reference. Only these rows are imported.
@@ -213,8 +214,8 @@ Return a single JSON object with one key "rows" whose value is an array of row o
 - sector (string): canonical sector from hierarchy below.
 - subsector (string): canonical subsector from hierarchy below; must belong under sector.
 - category (string): activity/category name when at activity level (e.g. "Natural gas", "Diesel"); or "Subsector total" / subsector name when only subsector-level data exists.
-- totalCO2e (number | null): emissions for this row only, exactly as written in the table (do not convert units)—per activity when activity data exists, per subsector when only subsector data exists. Null for a notation key. Do not put the whole sector total on every row; each row gets the value for that activity, subsector or scope cell.
-- unit (string | null): unit of totalCO2e as written in the column header, row label or table title (e.g. "tCO2e", "kt CO2e", "Mt"); null when the document does not say.
+- totalCO2e (number | null): emissions for this row only, in tonnes CO2e when the document states the unit (see unit)—per activity when activity data exists, per subsector when only subsector data exists. Null for a notation key. Do not put the whole sector total on every row; each row gets the value for that activity, subsector or scope cell.
+- unit (string | null): unit of the totalCO2e number you output: "t" after converting to tonnes, or the unit of an unconverted number ("kt", "Mt"); null when the document does not say.
 - rowType (string): "line_item", "subtotal" or "total" (see Row types).
 - notationKey (string | null): "NO", "NE", "IE" or "C" when the cell has that notation instead of a number; else null.
 - scope (string | null): "1", "2", or "3" when present in document; else null.
@@ -257,7 +258,7 @@ const SEGMENT_PROMPT_PREFIX = `The following text is one segment of a longer emi
 - If this segment contains only sector-level totals: output one row per sector.
 - Never output a single aggregated row when the segment shows multiple line items (multiple activities, subsectors, or sectors). Extract every row you see in the inventory tables.
 - If the table has columns by year (e.g. CY 2015): year = the column header (2015); totalCO2e = tCO₂e from that column for that row; activityAmount = Consumed from that column; one output row per table row, do not collapse the year column into one total.
-- Set rowType on every row ("line_item", "subtotal" or "total"). Scope 1/2/3 columns give one line_item row each; BASIC, BASIC+, Total and sub-total columns or rows are never line_item. Put the unit written in the table in "unit" and do not convert numbers.
+- Set rowType on every row ("line_item", "subtotal" or "total"). Scope 1/2/3 columns give one line_item row each; BASIC, BASIC+, Total and sub-total columns or rows are never line_item. Convert to tonnes when the unit is stated and set "unit" to "t".
 - Numbers: output numeric fields as JSON numbers; strip thousand separators (e.g. 48,000 → 48000); use decimal point for decimals (1,5 → 1.5).\n\nSegment text:\n\n`;
 
 /** Max document length in a single LLM request; above CHUNK_THRESHOLD we split into chunks. */
@@ -299,6 +300,209 @@ export type ExtractionResult = {
 };
 
 const MAX_REPORTED_TOTALS = 200;
+
+/** A page needs at least this many numbers of 3+ digits to be sent to the model. */
+const MIN_NUMBERS_PER_PAGE = 8;
+/** Above this many candidate pages, per-page extraction costs too much; use chunks. */
+const MAX_CANDIDATE_PAGES = 150;
+/**
+ * A page run may be this far from a grand total and still be chosen. Wider than
+ * the review warning (1%): the model can miss a few rows of a dense table, and the
+ * warning still tells the user.
+ */
+const PAGE_SELECTION_TOLERANCE = 0.1;
+/** Totals below this share of the largest reported total are sector totals. */
+const MIN_GRAND_TOTAL_SHARE = 0.5;
+/** Longest run of consecutive pages a single inventory table may span. */
+const MAX_PAGES_PER_TABLE = 3;
+
+export type DocumentPage = { page: number; text: string };
+
+/**
+ * Split OCR output into pages: Mistral writes `<!-- page: N -->` before each page;
+ * pdftotext separates pages with form feeds. Returns [] when there are no page breaks.
+ */
+export function splitDocumentPages(content: string): DocumentPage[] {
+  const marker = /<!--\s*page:\s*(\d+)\s*-->/g;
+  const matches = [...content.matchAll(marker)];
+  if (matches.length >= 2) {
+    return matches.map((match, i) => {
+      const start = (match.index ?? 0) + match[0].length;
+      const end =
+        i + 1 < matches.length
+          ? (matches[i + 1].index ?? content.length)
+          : content.length;
+      return { page: Number(match[1]), text: content.slice(start, end) };
+    });
+  }
+  const formFeedPages = content.split("\f");
+  if (formFeedPages.length >= 2) {
+    return formFeedPages.map((text, i) => ({ page: i + 1, text }));
+  }
+  return [];
+}
+
+/** Pages with enough numbers to hold an emissions table. */
+export function isCandidatePage(text: string): boolean {
+  return (text.match(/\d[\d,]{2,}/g) ?? []).length >= MIN_NUMBERS_PER_PAGE;
+}
+
+type PageResult = { page: number; result: ExtractionResult };
+
+/**
+ * Distance of a page's line items from a grand total on the same page, for pages
+ * holding GPC rows (scope and reference). Null when there is nothing to compare.
+ */
+function ownTotalDeviation({ rows, summary }: ExtractionResult): number | null {
+  if (!rows.some((row) => row.scope && row.gpcRefNo)) return null;
+  const totals = summary.reportedTotals.filter(
+    (t) => t.level === "total" && t.value !== 0,
+  );
+  if (totals.length === 0) return null;
+  return Math.min(
+    ...totals.map(
+      (t) => Math.abs(summary.importedSum - t.value) / Math.abs(t.value),
+    ),
+  );
+}
+
+function mergeDropped(
+  target: ExtractionSummary["droppedRows"],
+  source: ExtractionSummary["droppedRows"],
+): void {
+  for (const [reason, count] of Object.entries(source) as [
+    DroppedRowReason,
+    number,
+  ][]) {
+    target[reason] = (target[reason] ?? 0) + count;
+  }
+}
+
+/**
+ * Choose the rows of one inventory table out of per-page extractions.
+ * Candidates are runs of 1 to MAX_PAGES_PER_TABLE consecutive pages whose line items
+ * add up to a grand total of the document within PAGE_SELECTION_TOLERANCE. The run
+ * with most rows carrying a scope and a GPC reference wins, then the closest sum.
+ * Without a candidate every page's rows are kept (fallback).
+ * Exported for unit tests.
+ */
+export function selectReconciledPages(
+  pages: PageResult[],
+  targetYear?: number,
+): ExtractionResult {
+  const sorted = [...pages].sort((a, b) => a.page - b.page);
+  const reportedTotals = sorted.flatMap((p) => p.result.summary.reportedTotals);
+  const droppedRows: ExtractionSummary["droppedRows"] = {};
+  for (const p of sorted)
+    mergeDropped(droppedRows, p.result.summary.droppedRows);
+  const yearAssumed = sorted.some(
+    (p) => p.result.summary.yearAssumed && p.result.rows.length > 0,
+  );
+
+  const yearTotals = reportedTotals
+    .filter(
+      (t) =>
+        t.level === "total" &&
+        t.value !== 0 &&
+        (t.year == null || targetYear == null || t.year === targetYear),
+    )
+    .map((t) => t.value);
+  // A sector total the model marked "total" must not select a single sector.
+  const largest = Math.max(0, ...yearTotals.map((v) => Math.abs(v)));
+  const grandTotals = [
+    ...new Set(
+      yearTotals.filter((v) => Math.abs(v) >= largest * MIN_GRAND_TOTAL_SHARE),
+    ),
+  ];
+
+  type Run = {
+    start: number;
+    end: number;
+    rows: number;
+    structured: number;
+    deviation: number;
+  };
+  // Rank: rows that carry a scope and a GPC reference first (the GPC table),
+  // then the closest sum, then more rows.
+  const better = (a: Run, b: Run): boolean =>
+    a.structured !== b.structured
+      ? a.structured > b.structured
+      : a.deviation !== b.deviation
+        ? a.deviation < b.deviation
+        : a.rows > b.rows;
+
+  let best: Run | null = null;
+  for (let start = 0; start < sorted.length; start++) {
+    let sum = 0;
+    let rowCount = 0;
+    let structured = 0;
+    for (
+      let end = start;
+      end < sorted.length && end - start < MAX_PAGES_PER_TABLE;
+      end++
+    ) {
+      // A run must be consecutive pages of the document.
+      if (end > start && sorted[end].page !== sorted[end - 1].page + 1) break;
+      const { rows, summary } = sorted[end].result;
+      sum += summary.importedSum;
+      rowCount += rows.length;
+      structured += rows.filter((r) => r.scope && r.gpcRefNo).length;
+      if (rowCount === 0) continue;
+      const deviation = Math.min(
+        ...grandTotals.map((total) => Math.abs(sum - total) / Math.abs(total)),
+      );
+      if (deviation > PAGE_SELECTION_TOLERANCE) continue;
+      const run = { start, end, rows: rowCount, structured, deviation };
+      if (!best || better(run, best)) best = run;
+    }
+  }
+
+  const base = { reportedTotals, targetYear: targetYear ?? null };
+
+  if (best) {
+    const chosen = sorted.slice(best.start, best.end + 1);
+    const otherRows = sorted
+      .filter((p) => !chosen.includes(p))
+      .reduce((n, p) => n + p.result.rows.length, 0);
+    if (otherRows > 0) droppedRows.other_page = otherRows;
+    const rows = chosen.flatMap((p) => p.result.rows);
+    return {
+      rows,
+      summary: {
+        ...base,
+        droppedRows,
+        importedSum: chosen.reduce(
+          (sum, p) => sum + p.result.summary.importedSum,
+          0,
+        ),
+        yearAssumed: chosen.some((p) => p.result.summary.yearAssumed),
+        pageSelection: "reconciled",
+        selectedPages: chosen.map((p) => p.page),
+      },
+    };
+  }
+
+  // Fallback: all pages, deduped across pages. Rows are already in tonnes and
+  // already filtered by year, so a second pass only removes repeats.
+  const merged = finalizeExtractedRows(
+    sorted.flatMap((p) => p.result.rows),
+    targetYear,
+  );
+  mergeDropped(droppedRows, merged.summary.droppedRows);
+  return {
+    rows: merged.rows,
+    summary: {
+      ...base,
+      droppedRows,
+      importedSum: merged.summary.importedSum,
+      yearAssumed,
+      pageSelection: "fallback",
+      selectedPages: sorted
+        .filter((p) => p.result.rows.length > 0)
+        .map((p) => p.page),
+    },
+  };
+}
 
 /**
  * Extract inventory rows from document text using the configured LLM.
@@ -347,6 +551,71 @@ export async function extractInventoryFromDocument(
       ? `Extract only emissions data for the year ${targetYear}. Do not output rows from tables or columns of other years. Set year to the year each value belongs to (${targetYear}); use null only when the document gives no year.\n\n`
       : "";
 
+  const year =
+    targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
+  const pages = splitDocumentPages(documentContent).filter((p) =>
+    isCandidatePage(p.text),
+  );
+  if (pages.length > 0 && pages.length <= MAX_CANDIDATE_PAGES) {
+    logger.info(
+      { pageCount: pages.length, totalChars: documentContent.length },
+      "Extraction page by page with reconciliation",
+    );
+    const onProgress = options?.onChunkProgress;
+    const perPage = await mapPool(
+      pages,
+      getLlmChunkConcurrency(),
+      async (page): Promise<PageResult> => {
+        const extract = async () =>
+          finalizeExtractedRows(
+            normalizeExtractedRows(
+              await extractSegment(page.text, yearInstruction, false),
+            ),
+            year,
+          );
+        let result = await extract();
+        // The model sometimes skips a column of a dense table. When the page states
+        // its own grand total and the rows miss it, ask once more; keep the closer.
+        const first = ownTotalDeviation(result);
+        if (first != null && first > RECONCILIATION_TOLERANCE) {
+          const retry = await extract();
+          const second = ownTotalDeviation(retry);
+          if (second != null && second < first) result = retry;
+          logger.info(
+            { page: page.page, first, second },
+            "Page retried: rows did not add up to the page total",
+          );
+        }
+        return { page: page.page, result };
+      },
+      async (completedCount, total) => {
+        if (onProgress) {
+          await Promise.resolve(onProgress(completedCount, total));
+        }
+      },
+    );
+    const selected = selectReconciledPages(perPage, year);
+    logger.info(
+      {
+        pageSelection: selected.summary.pageSelection,
+        selectedPages: selected.summary.selectedPages,
+        importedSum: selected.summary.importedSum,
+      },
+      "Page selection finished",
+    );
+    const extractedCount = perPage.reduce(
+      (n, p) =>
+        n +
+        p.result.rows.length +
+        Object.values(p.result.summary.droppedRows).reduce(
+          (a, b) => a + (b ?? 0),
+          0,
+        ),
+      0,
+    );
+    return checkExtractionResult(selected, extractedCount, targetYear);
+  }
+
   let allRows: ExtractedRow[];
 
   if (documentContent.length <= CHUNK_THRESHOLD) {
@@ -382,21 +651,29 @@ export async function extractInventoryFromDocument(
     allRows = mergeAndDedupeRows(perChunkRows);
   }
 
-  const { rows: result, summary } = finalizeExtractedRows(
-    normalizeExtractedRows(allRows),
-    targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined,
+  return checkExtractionResult(
+    finalizeExtractedRows(normalizeExtractedRows(allRows), year),
+    allRows.length,
+    targetYear,
   );
+}
 
+/** Log and reject empty results the same way for the page and chunk paths. */
+function checkExtractionResult(
+  { rows: result, summary }: ExtractionResult,
+  extractedCount: number,
+  targetYear: number | undefined,
+): ExtractionResult {
   if (
     targetYear != null &&
     Number.isInteger(targetYear) &&
-    allRows.length > 0 &&
+    extractedCount > 0 &&
     result.length === 0
   ) {
     logger.warn(
       {
         targetYear,
-        rowsBeforeFilter: allRows.length,
+        rowsBeforeFilter: extractedCount,
         dropped: summary.droppedRows,
       },
       "All extracted rows dropped before import (no line item for the target year)",
@@ -423,7 +700,7 @@ export async function extractInventoryFromDocument(
   if (result.length === 0) {
     logger.warn(
       {
-        totalRowsBeforeFilter: allRows.length,
+        totalRowsBeforeFilter: extractedCount,
         targetYear: targetYear ?? null,
       },
       "Extraction produced zero rows: LLM may have returned empty array or no parseable rows",
@@ -992,6 +1269,53 @@ function scaleOrNull(
   return value == null ? value : value * multiplier;
 }
 
+/** Sub-sector key of a row: the GPC reference without its scope digit, else the names. */
+function subsectorKeys(row: ExtractedRow): string[] {
+  const keys: string[] = [];
+  const ref = row.gpcRefNo?.trim();
+  if (ref) {
+    const parts = ref.split(".");
+    keys.push(`ref:${parts.length >= 3 ? parts.slice(0, 2).join(".") : ref}`);
+  }
+  const subsector = row.subsector?.trim().toLowerCase();
+  if (subsector) {
+    keys.push(`name:${row.sector?.trim().toLowerCase() ?? ""}|${subsector}`);
+  }
+  return keys;
+}
+
+/**
+ * Rows without a scope whose value equals (within 0.5%) the sum of at least two
+ * scoped rows of the same sub-sector. Exported for unit tests.
+ */
+export function findHiddenRowTotals(rows: ExtractedRow[]): Set<ExtractedRow> {
+  const scopedSums = new Map<string, { sum: number; count: number }>();
+  for (const row of rows) {
+    if (!row.scope || row.totalCO2e == null) continue;
+    for (const key of subsectorKeys(row)) {
+      const entry = scopedSums.get(key) ?? { sum: 0, count: 0 };
+      entry.sum += row.totalCO2e;
+      entry.count += 1;
+      scopedSums.set(key, entry);
+    }
+  }
+  const hidden = new Set<ExtractedRow>();
+  for (const row of rows) {
+    if (row.scope || row.totalCO2e == null || row.totalCO2e === 0) continue;
+    const value = row.totalCO2e;
+    const isSum = subsectorKeys(row).some((key) => {
+      const entry = scopedSums.get(key);
+      return (
+        entry != null &&
+        entry.count >= 2 &&
+        Math.abs(entry.sum - value) <= Math.abs(value) * 0.005
+      );
+    });
+    if (isSum) hidden.add(row);
+  }
+  return hidden;
+}
+
 /**
  * Turn LLM rows into importable rows plus a reconciliation summary:
  * - subtotal and total rows leave the rows and go to reportedTotals;
@@ -1059,19 +1383,40 @@ export function finalizeExtractedRows(
     converted.push(scaled);
   }
 
+  // A "Total" column read as a line item: no scope, and its value is the sum of the
+  // scoped rows of the same sub-sector. Keep it for reconciliation only.
+  const hiddenTotals = findHiddenRowTotals(converted);
+  if (hiddenTotals.size > 0) {
+    for (const row of hiddenTotals) {
+      drop("subtotal_or_total");
+      if (reportedTotals.length < MAX_REPORTED_TOTALS) {
+        reportedTotals.push({
+          label: row.category?.trim() || row.subsector?.trim() || "subtotal",
+          value: row.totalCO2e as number,
+          year: row.year,
+          scope: null,
+          sector: row.sector,
+          subsector: row.subsector,
+          level: "subtotal",
+        });
+      }
+    }
+  }
+  const lineItems = converted.filter((row) => !hiddenTotals.has(row));
+
   let yearAssumed = false;
-  let kept = converted;
+  let kept = lineItems;
   if (targetYear != null) {
-    const anyExplicitYear = converted.some((row) => row.year != null);
+    const anyExplicitYear = lineItems.some((row) => row.year != null);
     if (anyExplicitYear) {
       kept = [];
-      for (const row of converted) {
+      for (const row of lineItems) {
         if (row.year === targetYear) kept.push(row);
         else if (row.year == null) drop("missing_year");
         else drop("other_year");
       }
     } else {
-      kept = converted.map((row) => ({ ...row, year: targetYear }));
+      kept = lineItems.map((row) => ({ ...row, year: targetYear }));
       yearAssumed = kept.length > 0;
     }
   }

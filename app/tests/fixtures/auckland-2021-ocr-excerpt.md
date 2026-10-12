@@ -12,6 +12,8 @@ Table 3-1 Emissions summary for 2021
 
 Table A-1 GHG emissions by sector and sub-sector for 2021 in the GPC format
 
+Total GHGs (metric tonnes CO2e)
+
 | GPC ref No. | GHG Emissions Source (By Sector and Sub-sector)                       | Scope 1    | Scope 2   | Scope 3 | Total      |
 | ----------- | --------------------------------------------------------------------- | ---------- | --------- | ------- | ---------- |
 | I.1         | Residential buildings                                                 | 196,407    | 450,523   | 33,017  | 679,947    |

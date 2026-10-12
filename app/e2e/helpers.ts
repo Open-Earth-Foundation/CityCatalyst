@@ -1,8 +1,8 @@
 import {
   APIRequestContext,
   expect,
-  test,
   type BrowserContext,
+  type Locator,
   type Page,
 } from "@playwright/test";
 
@@ -158,22 +158,60 @@ export async function createInventory(
   return await result.json();
 }
 
-/**
- * Inventory year for GHGI onboarding E2E.
- *
- * Every flow reuses Chicago, and Continue stays disabled once that year
- * already has activity data. Parallel workers each take a different slot in
- * the 20-year dropdown, then advance to the next free slot on the next call.
- */
-let nextOnboardingYearSlot = 0;
+const INVENTORY_YEAR_TAKEN =
+  "An inventory for this year already contains data";
 
-export function pickE2EOnboardingInventoryYear(): string {
-  const yearSpan = 20;
-  const workers = Math.max(test.info().config.workers || 1, 1);
-  const offset =
-    (test.info().parallelIndex + nextOnboardingYearSlot * workers) % yearSpan;
-  nextOnboardingYearSlot += 1;
-  return String(new Date().getFullYear() - offset);
+/**
+ * Pick a dropdown year whose Continue button stays enabled.
+ * Onboarding reuses one Chicago city, and Continue stays disabled when the
+ * selected year already has activity data. Parallel Chromium and Firefox
+ * runs fill those years in an unpredictable order, so the test has to read
+ * the warning instead of guessing a free year.
+ */
+export async function selectAvailableInventoryYear(page: Page): Promise<string> {
+  const trigger = page
+    .locator('[data-testid="inventory-details-year"]')
+    .locator("button");
+  await trigger.click();
+  const options = page.getByRole("option");
+  await expect(options.first()).toBeVisible();
+  const years = (await options.allInnerTexts())
+    .map((text) => text.trim())
+    .filter((text) => /^\d{4}$/.test(text));
+  await page.keyboard.press("Escape");
+
+  const continueBtn = page.getByRole("button", { name: /Continue/i });
+  const taken = page.getByText(INVENTORY_YEAR_TAKEN);
+
+  for (const year of years) {
+    await trigger.click();
+    await page.getByRole("option", { name: year, exact: true }).click();
+    if (await inventoryYearIsAvailable(page, continueBtn, taken)) return year;
+  }
+
+  throw new Error(
+    "Every inventory year in the dropdown already has activity data",
+  );
+}
+
+async function inventoryYearIsAvailable(
+  page: Page,
+  continueBtn: Locator,
+  taken: Locator,
+): Promise<boolean> {
+  const started = Date.now();
+  let enabledSince: number | null = null;
+  while (Date.now() - started < 15000) {
+    if (await taken.isVisible()) return false;
+    if (await continueBtn.isEnabled()) {
+      if (enabledSince == null) enabledSince = Date.now();
+      else if (Date.now() - enabledSince >= 1500) return true;
+    } else {
+      enabledSince = null;
+    }
+    await page.waitForTimeout(200);
+  }
+  return false;
 }
 
 /**
@@ -242,7 +280,13 @@ async function walkCitiesOnboardingWizard(
 
   const getStartedButton = page.getByTestId("start-inventory-button");
   await expect(getStartedButton).toBeVisible({ timeout: 30000 });
-  await getStartedButton.click();
+  // The cookie banner can appear after the first dismiss and cover this button.
+  try {
+    await getStartedButton.click({ timeout: 15000 });
+  } catch {
+    await dismissCookieConsent(page);
+    await getStartedButton.click();
+  }
 
   // Step 0: select city
   await page.waitForURL("**/cities/onboarding/setup/");
@@ -325,16 +369,17 @@ export async function createInventoryThroughOnboarding(
     cityId = cityIdMatch[1];
   }
   const lng = "en";
-  const inventoryYear = pickE2EOnboardingInventoryYear();
   await page.goto(`/${lng}/cities/${cityId}/GHGI/onboarding`);
 
   await dismissCookieConsent(page);
 
   // Step 3: Select "Create a new inventory" and continue
-  await expect(page.getByTestId("start-page-heading")).toBeVisible();
+  await expect(page.getByTestId("start-page-heading")).toBeVisible({
+    timeout: 30000,
+  });
   await page.getByTestId("create-inventory-option").click();
   const startContinueButton = page.getByTestId("continue-button");
-  await expect(startContinueButton).toBeEnabled();
+  await expect(startContinueButton).toBeEnabled({ timeout: 15000 });
   await startContinueButton.click();
 
   // Step 4: Wait for redirect to GHGI onboarding setup
@@ -344,14 +389,8 @@ export async function createInventoryThroughOnboarding(
   const inventoryDetailsHeading = page.getByTestId("inventory-details-heading");
   await expect(inventoryDetailsHeading).toBeVisible();
 
-  // Select year - click the select trigger and then select an option
-  const yearSelectTrigger = page
-    .locator('[data-testid="inventory-details-year"]')
-    .locator("button");
-  await yearSelectTrigger.click();
-  await page.waitForTimeout(500); // Wait for dropdown to open
-  const yearOption = page.getByRole("option", { name: inventoryYear });
-  await yearOption.click();
+  // Skip years that already have activity data. Continue stays disabled for those.
+  const inventoryYear = await selectAvailableInventoryYear(page);
 
   // Select inventory goal
   const inventoryGoalOption = page.getByTestId("inventory-goal-gpc_basic");

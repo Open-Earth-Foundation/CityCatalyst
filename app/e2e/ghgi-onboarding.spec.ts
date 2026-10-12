@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import {
   createCityThroughOnboarding,
-  pickE2EOnboardingInventoryYear,
+  selectAvailableInventoryYear,
 } from "./helpers";
 
 test("Inventory Onboarding", async ({ page }) => {
@@ -52,10 +52,8 @@ test("Inventory Onboarding", async ({ page }) => {
     // Verify that the select element is visible
     await expect(year).toBeVisible();
 
-    // A year in the dropdown that this worker has not already filled with data.
-    const testYear = pickE2EOnboardingInventoryYear();
-    
-    await year.selectOption(testYear);
+    // Skip a year that already has activity data. Continue stays disabled for it.
+    const testYear = await selectAvailableInventoryYear(page);
 
     // Verify that the selection was successful
     await expect(year).toHaveValue(testYear);

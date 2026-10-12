@@ -19,19 +19,7 @@ import { MdOutlineMap, MdWarning } from "react-icons/md";
 import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
 import { activityDescriptionSample } from "@/util/activity-description-sample";
-import {
-  reconcileExtraction,
-  type DroppedRowReason,
-} from "@/util/GHGI/extraction-summary";
-
-/** Reasons worth showing. Subtotals and totals are expected to be left out. */
-const REPORTED_DROP_REASONS: DroppedRowReason[] = [
-  "other_year",
-  "missing_year",
-  "unsupported_unit",
-  "duplicate",
-  "other_page",
-];
+import { extractionReviewNotes } from "@/util/GHGI/extraction-summary";
 
 interface ReviewConfirmStepProps {
   t: TFunction;
@@ -113,14 +101,8 @@ export default function ReviewConfirmStep({
   );
 
   const extractionSummary = data?.mappingConfiguration?.extractionSummary;
-  const reconciliation = reconcileExtraction(extractionSummary ?? null);
-  const reconciledPages =
-    extractionSummary?.pageSelection === "reconciled"
-      ? (extractionSummary.selectedPages ?? [])
-      : [];
-  const droppedReasons = REPORTED_DROP_REASONS.filter(
-    (reason) => (extractionSummary?.droppedRows?.[reason] ?? 0) > 0,
-  );
+  const { reconciliation, reconciledPages, failedPages, droppedReasons } =
+    extractionReviewNotes(extractionSummary ?? null);
 
   // Fallback to fileInfo and validationResults if reviewData is not available
   const importSummary = reviewData?.importSummary || {
@@ -277,7 +259,8 @@ export default function ReviewConfirmStep({
       )}
       {(droppedReasons.length > 0 ||
         extractionSummary?.yearAssumed ||
-        reconciledPages.length > 0) && (
+        reconciledPages.length > 0 ||
+        failedPages.length > 0) && (
         <Box
           bg="background.neutral"
           border="1px solid"
@@ -311,6 +294,11 @@ export default function ReviewConfirmStep({
               {t("import-pages-reconciled", {
                 pages: reconciledPages.join(", "),
               })}
+            </Text>
+          )}
+          {failedPages.length > 0 && (
+            <Text fontSize="body.sm" color="content.secondary" mt={2}>
+              {t("import-pages-failed", { pages: failedPages.join(", ") })}
             </Text>
           )}
           {extractionSummary?.yearAssumed && (

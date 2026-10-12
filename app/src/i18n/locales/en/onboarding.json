@@ -220,6 +220,7 @@
   "import-dropped-reason-duplicate": "Repeated in another table: {{count}}",
   "import-dropped-reason-other_page": "From pages that do not add up to the document total: {{count}}",
   "import-pages-reconciled": "Values come from page {{pages}}, which adds up to the total the document reports.",
+  "import-pages-failed": "Page {{pages}} could not be read. Its values are not in this import.",
   "import-year-assumed": "The document does not state a year for its values. They are imported as the inventory year.",
   "review-confirm-heading": "Review and confirm",
   "review-confirm-description": "Please <0>carefully review all fields</0> and confirm the upload since you won't be able to modify it later on.",

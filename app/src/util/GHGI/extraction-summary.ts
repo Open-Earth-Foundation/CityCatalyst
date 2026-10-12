@@ -39,6 +39,8 @@ export type ExtractionSummary = {
    */
   pageSelection?: "reconciled" | "fallback";
   selectedPages?: number[];
+  /** Pages the model could not read twice in a row; their rows are missing. */
+  failedPages?: number[];
 };
 
 /** Imported sum may differ from the document total by this fraction before the review screen warns. */
@@ -99,5 +101,43 @@ export function reconcileExtraction(
     reportedTotal: best,
     deviation: bestDeviation,
     mismatch: bestDeviation > RECONCILIATION_TOLERANCE,
+  };
+}
+
+/** Drop reasons worth showing. Subtotals and totals are expected to be left out. */
+export const REPORTED_DROP_REASONS: DroppedRowReason[] = [
+  "other_year",
+  "missing_year",
+  "unsupported_unit",
+  "duplicate",
+  "other_page",
+];
+
+export type ExtractionReviewNotes = {
+  reconciliation: Reconciliation | null;
+  /** Pages to name in the "adds up to the total" note; empty when it would be false. */
+  reconciledPages: number[];
+  failedPages: number[];
+  droppedReasons: DroppedRowReason[];
+};
+
+/** What the review screen tells the user about an extraction. */
+export function extractionReviewNotes(
+  summary: ExtractionSummary | null,
+): ExtractionReviewNotes {
+  const reconciliation = reconcileExtraction(summary);
+  return {
+    reconciliation,
+    // Only when the sum really matches; otherwise the mismatch banner speaks.
+    reconciledPages:
+      summary?.pageSelection === "reconciled" &&
+      reconciliation != null &&
+      !reconciliation.mismatch
+        ? (summary.selectedPages ?? [])
+        : [],
+    failedPages: summary?.failedPages ?? [],
+    droppedReasons: REPORTED_DROP_REASONS.filter(
+      (reason) => (summary?.droppedRows?.[reason] ?? 0) > 0,
+    ),
   };
 }

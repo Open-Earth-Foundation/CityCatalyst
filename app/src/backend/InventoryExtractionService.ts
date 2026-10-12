@@ -22,14 +22,21 @@ import gpcNameMappings from "@/util/GHGI/data/gpc-name-mappings.json";
 type GpcRow = { sector: string; subsector: string };
 const gpcTable = gpcReferenceTable as GpcRow[];
 
-const knownGpcRefs = new Set(
-  (gpcReferenceTable as { gpcRefNo: string }[]).map((row) => row.gpcRefNo),
+/** GPC reference → scope in the taxonomy (null for I.4.4, which has no scope). */
+const gpcRefScopes = new Map(
+  (gpcReferenceTable as { gpcRefNo: string; scope?: number | null }[]).map(
+    (row) => [row.gpcRefNo, row.scope ?? null],
+  ),
 );
 
 /**
  * A reference copied from the document is kept only when the GPC taxonomy has it.
  * "I.1" with scope 2 becomes I.1.2. Combined or placeholder references
  * ("III.1.1/2", "III.X.1") are dropped; the sector, sub-sector and scope resolve them.
+ * A reference whose taxonomy scope differs from the row's scope column is dropped
+ * too: the column is the more reliable of the two (a copied reference from the
+ * row above is a common model slip). The taxonomy scope is used, not the last
+ * digit, because waste references (III.1.2 is scope 3) do not follow it.
  */
 export function canonicalGpcRefNo(
   ref: string | null | undefined,
@@ -37,8 +44,12 @@ export function canonicalGpcRefNo(
 ): string | null {
   const trimmed = ref?.trim();
   if (!trimmed) return null;
-  if (knownGpcRefs.has(trimmed)) return trimmed;
-  if (scope && knownGpcRefs.has(`${trimmed}.${scope}`)) {
+  if (gpcRefScopes.has(trimmed)) {
+    const refScope = gpcRefScopes.get(trimmed);
+    if (scope && refScope != null && String(refScope) !== scope) return null;
+    return trimmed;
+  }
+  if (scope && gpcRefScopes.has(`${trimmed}.${scope}`)) {
     return `${trimmed}.${scope}`;
   }
   return null;
@@ -47,9 +58,21 @@ export function canonicalGpcRefNo(
 /**
  * Labels that mean a sum, whatever rowType the model gave. "Subsector total" is not
  * here: the prompt uses it for a sub-sector that has no activity breakdown.
+ * An unqualified "Total" or "Grand total" is a grand total (the 50% share rule in
+ * page selection keeps sector totals out); the others are subtotals.
  */
-const SUM_LABEL =
-  /^\(?\s*(all\s+[ivx]+\s+emissions|sub-?total|(grand\s+)?total)\s*\)?$/i;
+const GRAND_TOTAL_LABEL = /^\(?\s*(grand\s+)?total\s*\)?$/i;
+const SUBTOTAL_LABEL =
+  /^\(?\s*(all\s+[ivx]+\s+emissions|sub-?\s?total)\s*\)?$/i;
+
+function sumLabelLevel(row: ExtractedRow): "subtotal" | "total" | null {
+  const labels = [row.category, row.activityType]
+    .map((label) => label?.trim())
+    .filter((label): label is string => !!label);
+  if (labels.some((label) => GRAND_TOTAL_LABEL.test(label))) return "total";
+  if (labels.some((label) => SUBTOTAL_LABEL.test(label))) return "subtotal";
+  return null;
+}
 
 type NameMappings = {
   sector: Record<string, string>;
@@ -391,23 +414,64 @@ function mergeDropped(
 /**
  * Choose the rows of one inventory table out of per-page extractions.
  * Candidates are runs of 1 to MAX_PAGES_PER_TABLE consecutive pages whose line items
- * add up to a grand total of the document within PAGE_SELECTION_TOLERANCE. The run
- * with most rows carrying a scope and a GPC reference wins, then the closest sum.
+ * add up to a grand total of the document within PAGE_SELECTION_TOLERANCE; a page
+ * joins a run only when it brings the sum closer to that total.
+ * Ranking: runs with GPC rows (scope and reference) that reconcile within 1% first,
+ * then other runs with GPC rows, then runs without them. Inside the 1% band the run
+ * with more GPC rows wins, then the closer sum; outside it, the closer sum wins.
+ * Year: pages are finalized with the year assumption deferred. When any page names
+ * a year (rows or totals), year-less rows are dropped here; when none does, the
+ * target year is assumed and a run must reconcile within 1%.
  * Without a candidate every page's rows are kept (fallback).
  * Exported for unit tests.
  */
 export function selectReconciledPages(
-  pages: PageResult[],
+  input: PageResult[],
   targetYear?: number,
 ): ExtractionResult {
-  const sorted = [...pages].sort((a, b) => a.page - b.page);
-  const reportedTotals = sorted.flatMap((p) => p.result.summary.reportedTotals);
   const droppedRows: ExtractionSummary["droppedRows"] = {};
-  for (const p of sorted)
+  for (const p of input)
     mergeDropped(droppedRows, p.result.summary.droppedRows);
-  const yearAssumed = sorted.some(
-    (p) => p.result.summary.yearAssumed && p.result.rows.length > 0,
-  );
+
+  const documentNamesYear =
+    targetYear == null ||
+    input.some(
+      (p) =>
+        p.result.rows.some((row) => row.year != null) ||
+        p.result.summary.reportedTotals.some((t) => t.year != null) ||
+        (p.result.summary.droppedRows.other_year ?? 0) > 0 ||
+        (p.result.summary.droppedRows.missing_year ?? 0) > 0,
+    );
+  const yearAssumed =
+    !documentNamesYear && input.some((p) => p.result.rows.length > 0);
+  const sorted = [...input]
+    .sort((a, b) => a.page - b.page)
+    .map((p): PageResult => {
+      const yearless = p.result.rows.filter((row) => row.year == null);
+      if (yearless.length === 0) return p;
+      const rows = documentNamesYear
+        ? p.result.rows.filter((row) => row.year != null)
+        : p.result.rows.map((row) =>
+            row.year == null ? { ...row, year: targetYear ?? null } : row,
+          );
+      if (documentNamesYear) {
+        droppedRows.missing_year =
+          (droppedRows.missing_year ?? 0) + yearless.length;
+      }
+      return {
+        page: p.page,
+        result: {
+          rows,
+          summary: { ...p.result.summary, importedSum: sumImported(rows) },
+        },
+      };
+    });
+  const reportedTotals = sorted.flatMap((p) => p.result.summary.reportedTotals);
+  // Without any year in the document a wrong table cannot be told apart by year:
+  // accept only a run that reconciles within the review tolerance.
+  const selectionTolerance = yearAssumed
+    ? RECONCILIATION_TOLERANCE
+    : PAGE_SELECTION_TOLERANCE;
 
   const yearTotals = reportedTotals
     .filter(
@@ -432,20 +496,25 @@ export function selectReconciledPages(
     structured: number;
     deviation: number;
   };
-  // Rank: rows that carry a scope and a GPC reference first (the GPC table),
-  // then the closest sum, then more rows.
-  const better = (a: Run, b: Run): boolean =>
-    a.structured !== b.structured
-      ? a.structured > b.structured
-      : a.deviation !== b.deviation
-        ? a.deviation < b.deviation
-        : a.rows > b.rows;
+  const tier = (run: Run): number =>
+    (run.structured > 0 ? 0 : 2) +
+    (run.deviation <= RECONCILIATION_TOLERANCE ? 0 : 1);
+  const better = (a: Run, b: Run): boolean => {
+    if (tier(a) !== tier(b)) return tier(a) < tier(b);
+    const inBand = tier(a) % 2 === 0;
+    if (inBand && a.structured !== b.structured) {
+      return a.structured > b.structured;
+    }
+    if (a.deviation !== b.deviation) return a.deviation < b.deviation;
+    return a.rows > b.rows;
+  };
 
   let best: Run | null = null;
   for (let start = 0; start < sorted.length; start++) {
     let sum = 0;
     let rowCount = 0;
     let structured = 0;
+    let previousDeviation = Infinity;
     for (
       let end = start;
       end < sorted.length && end - start < MAX_PAGES_PER_TABLE;
@@ -461,7 +530,10 @@ export function selectReconciledPages(
       const deviation = Math.min(
         ...grandTotals.map((total) => Math.abs(sum - total) / Math.abs(total)),
       );
-      if (deviation > PAGE_SELECTION_TOLERANCE) continue;
+      // A page that moves the sum away from the total is not part of the table.
+      if (deviation >= previousDeviation) break;
+      previousDeviation = deviation;
+      if (deviation > selectionTolerance) continue;
       const run = { start, end, rows: rowCount, structured, deviation };
       if (!best || better(run, best)) best = run;
     }
@@ -485,7 +557,7 @@ export function selectReconciledPages(
           (sum, p) => sum + p.result.summary.importedSum,
           0,
         ),
-        yearAssumed: chosen.some((p) => p.result.summary.yearAssumed),
+        yearAssumed: yearAssumed && rows.length > 0,
         pageSelection: "reconciled",
         selectedPages: chosen.map((p) => p.page),
       },
@@ -572,6 +644,9 @@ export async function extractInventoryFromDocument(
       "Extraction page by page with reconciliation",
     );
     const onProgress = options?.onChunkProgress;
+    // One progress bar for the page phase and a possible chunk fallback, so the
+    // bar never moves back. The chunk count is known before any call.
+    const progressTotal = pages.length + countChunks(documentContent);
     const failedPages: { page: number; error: unknown }[] = [];
     const perPage = await mapPool(
       pages,
@@ -583,15 +658,22 @@ export async function extractInventoryFromDocument(
               await extractSegment(page.text, yearInstruction, false),
             ),
             year,
+            { deferYearAssumption: true },
           );
         let result: ExtractionResult;
         try {
-          result = await extract();
+          result = await extract().catch((error) => {
+            logger.info(
+              { page: page.page, err: error },
+              "Page extraction failed; retrying once",
+            );
+            return extract();
+          });
         } catch (error) {
           // One unreadable page must not fail the whole import.
           logger.warn(
             { page: page.page, err: error },
-            "Page extraction failed; page skipped",
+            "Page extraction failed twice; page skipped",
           );
           failedPages.push({ page: page.page, error });
           return { page: page.page, result: EMPTY_RESULT };
@@ -610,14 +692,19 @@ export async function extractInventoryFromDocument(
         }
         return { page: page.page, result };
       },
-      async (completedCount, total) => {
+      async (completedCount) => {
         if (onProgress) {
-          await Promise.resolve(onProgress(completedCount, total));
+          await Promise.resolve(onProgress(completedCount, progressTotal));
         }
       },
     );
     if (failedPages.length === pages.length) throw failedPages[0].error;
-    const selected = selectReconciledPages(perPage, year);
+    const failed = failedPages.map((f) => f.page).sort((a, b) => a - b);
+    const withFailed = (result: ExtractionResult): ExtractionResult =>
+      failed.length > 0
+        ? { ...result, summary: { ...result.summary, failedPages: failed } }
+        : result;
+    const selected = withFailed(selectReconciledPages(perPage, year));
     logger.info(
       {
         pageSelection: selected.summary.pageSelection,
@@ -634,19 +721,23 @@ export async function extractInventoryFromDocument(
         documentContent,
         yearInstruction,
         options,
+        { offset: pages.length, total: progressTotal },
       );
       const result = finalizeExtractedRows(
         normalizeExtractedRows(chunked),
         year,
       );
       return checkExtractionResult(
-        {
+        withFailed({
           rows: result.rows,
           summary: { ...result.summary, pageSelection: "fallback" },
-        },
+        }),
         chunked.length,
         targetYear,
       );
+    }
+    if (onProgress) {
+      await Promise.resolve(onProgress(progressTotal, progressTotal));
     }
     const extractedCount = perPage.reduce(
       (n, p) =>
@@ -673,12 +764,24 @@ export async function extractInventoryFromDocument(
   );
 }
 
-/** Whole-document extraction: one call, or overlapping chunks for long text. */
+/** Number of LLM calls extractByChunks makes for this document. */
+function countChunks(documentContent: string): number {
+  return documentContent.length <= CHUNK_THRESHOLD
+    ? 1
+    : splitIntoChunks(documentContent, CHUNK_SIZE, CHUNK_OVERLAP).length;
+}
+
+/**
+ * Whole-document extraction: one call, or overlapping chunks for long text.
+ * `progress` places these calls after earlier work on the same progress bar.
+ */
 async function extractByChunks(
   documentContent: string,
   yearInstruction: string,
   options?: ExtractOptions,
+  progress?: { offset: number; total: number },
 ): Promise<ExtractedRow[]> {
+  const onProgress = options?.onChunkProgress;
   let allRows: ExtractedRow[];
 
   if (documentContent.length <= CHUNK_THRESHOLD) {
@@ -688,6 +791,9 @@ async function extractByChunks(
           "\n\n[Document truncated for length.]"
         : documentContent;
     allRows = await extractSegment(content, yearInstruction, false);
+    if (progress && onProgress) {
+      await Promise.resolve(onProgress(progress.offset + 1, progress.total));
+    }
   } else {
     const chunks = splitIntoChunks(documentContent, CHUNK_SIZE, CHUNK_OVERLAP);
     logger.info(
@@ -695,7 +801,6 @@ async function extractByChunks(
       "Extraction using chunks to avoid timeout",
     );
     const segmentPrefix = yearInstruction + SEGMENT_PROMPT_PREFIX;
-    const onProgress = options?.onChunkProgress;
     const concurrency = getLlmChunkConcurrency();
     const perChunkRows = await mapPool(
       chunks,
@@ -703,7 +808,11 @@ async function extractByChunks(
       async (chunk) => extractSegment(chunk, segmentPrefix, true),
       async (completedCount, total) => {
         if (onProgress) {
-          await Promise.resolve(onProgress(completedCount, total));
+          await Promise.resolve(
+            progress
+              ? onProgress(progress.offset + completedCount, progress.total)
+              : onProgress(completedCount, total),
+          );
         }
       },
     );
@@ -1330,6 +1439,17 @@ function scaleOrNull(
   return value == null ? value : value * multiplier;
 }
 
+/** Sum of imported values in tonnes, without rows left out of totals (I.4.4). */
+function sumImported(rows: ExtractedRow[]): number {
+  return rows.reduce(
+    (sum, row) =>
+      row.gpcRefNo === GRID_GENERATION_GPC_REF || row.totalCO2e == null
+        ? sum
+        : sum + row.totalCO2e,
+    0,
+  );
+}
+
 /** Sub-sector key of a row: the GPC reference without its scope digit, else the names. */
 function subsectorKeys(row: ExtractedRow): string[] {
   const keys: string[] = [];
@@ -1346,14 +1466,18 @@ function subsectorKeys(row: ExtractedRow): string[] {
 }
 
 /**
- * Rows without a scope whose value equals (within 0.5%) the sum of at least two
- * scoped rows of the same sub-sector. Exported for unit tests.
+ * Rows without a scope whose value equals the sum of the scoped rows of the same
+ * sub-sector and year: within 0.5% for two or more rows, exactly for one row.
+ * Exported for unit tests.
  */
 export function findHiddenRowTotals(rows: ExtractedRow[]): Set<ExtractedRow> {
+  // Per year, so a total of one year never hides a row of another.
+  const keyed = (row: ExtractedRow) =>
+    subsectorKeys(row).map((key) => `${row.year ?? ""}|${key}`);
   const scopedSums = new Map<string, { sum: number; count: number }>();
   for (const row of rows) {
     if (!row.scope || row.totalCO2e == null) continue;
-    for (const key of subsectorKeys(row)) {
+    for (const key of keyed(row)) {
       const entry = scopedSums.get(key) ?? { sum: 0, count: 0 };
       entry.sum += row.totalCO2e;
       entry.count += 1;
@@ -1364,13 +1488,12 @@ export function findHiddenRowTotals(rows: ExtractedRow[]): Set<ExtractedRow> {
   for (const row of rows) {
     if (row.scope || row.totalCO2e == null || row.totalCO2e === 0) continue;
     const value = row.totalCO2e;
-    const isSum = subsectorKeys(row).some((key) => {
+    const isSum = keyed(row).some((key) => {
       const entry = scopedSums.get(key);
-      return (
-        entry != null &&
-        entry.count >= 2 &&
-        Math.abs(entry.sum - value) <= Math.abs(value) * 0.005
-      );
+      if (entry == null) return false;
+      // One scoped row: the Total column repeats it, so the match must be exact.
+      if (entry.count === 1) return Math.abs(entry.sum - value) < 0.5;
+      return Math.abs(entry.sum - value) <= Math.abs(value) * 0.005;
     });
     if (isSum) hidden.add(row);
   }
@@ -1385,9 +1508,18 @@ export function findHiddenRowTotals(rows: ExtractedRow[]): Set<ExtractedRow> {
  *   any row names a year; only when no row names a year is the target year assumed;
  * - rows repeating the same year, reference, scope and activity are dropped.
  */
+export type FinalizeOptions = {
+  /**
+   * Keep year-less rows as they are when no row names a year, instead of assigning
+   * the target year. Page selection decides later, with every page in view.
+   */
+  deferYearAssumption?: boolean;
+};
+
 export function finalizeExtractedRows(
   rows: ExtractedRow[],
   targetYear?: number,
+  options?: FinalizeOptions,
 ): ExtractionResult {
   const droppedRows: ExtractionSummary["droppedRows"] = {};
   const drop = (reason: DroppedRowReason) => {
@@ -1411,12 +1543,10 @@ export function finalizeExtractedRows(
     }
     if (row.unit) scaled.unit = "t";
 
-    const labelIsSum =
-      (row.category != null && SUM_LABEL.test(row.category.trim())) ||
-      (row.activityType != null && SUM_LABEL.test(row.activityType.trim()));
+    const labelLevel = sumLabelLevel(row);
     const rowType: ExtractedRowType | null | undefined =
-      labelIsSum && (row.rowType == null || row.rowType === "line_item")
-        ? "subtotal"
+      labelLevel && (row.rowType == null || row.rowType === "line_item")
+        ? labelLevel
         : row.rowType;
 
     if (rowType === "subtotal" || rowType === "total") {
@@ -1444,43 +1574,42 @@ export function finalizeExtractedRows(
     converted.push(scaled);
   }
 
-  // A "Total" column read as a line item: no scope, and its value is the sum of the
-  // scoped rows of the same sub-sector. Keep it for reconciliation only.
-  const hiddenTotals = findHiddenRowTotals(converted);
-  if (hiddenTotals.size > 0) {
-    for (const row of hiddenTotals) {
-      drop("subtotal_or_total");
-      if (reportedTotals.length < MAX_REPORTED_TOTALS) {
-        reportedTotals.push({
-          label: row.category?.trim() || row.subsector?.trim() || "subtotal",
-          value: row.totalCO2e as number,
-          year: row.year,
-          scope: null,
-          sector: row.sector,
-          subsector: row.subsector,
-          level: "subtotal",
-        });
-      }
-    }
-  }
-  const lineItems = converted.filter((row) => !hiddenTotals.has(row));
-
   let yearAssumed = false;
-  let kept = lineItems;
+  let yearFiltered = converted;
   if (targetYear != null) {
-    const anyExplicitYear = lineItems.some((row) => row.year != null);
+    const anyExplicitYear = converted.some((row) => row.year != null);
     if (anyExplicitYear) {
-      kept = [];
-      for (const row of lineItems) {
-        if (row.year === targetYear) kept.push(row);
+      yearFiltered = [];
+      for (const row of converted) {
+        if (row.year === targetYear) yearFiltered.push(row);
         else if (row.year == null) drop("missing_year");
         else drop("other_year");
       }
-    } else {
-      kept = lineItems.map((row) => ({ ...row, year: targetYear }));
-      yearAssumed = kept.length > 0;
+    } else if (!options?.deferYearAssumption) {
+      yearFiltered = converted.map((row) => ({ ...row, year: targetYear }));
+      yearAssumed = yearFiltered.length > 0;
     }
   }
+
+  // A "Total" column read as a line item: no scope, and its value is the sum of the
+  // scoped rows of the same sub-sector. Keep it for reconciliation only. Runs after
+  // the year filter so rows of other years do not count.
+  const hiddenTotals = findHiddenRowTotals(yearFiltered);
+  for (const row of hiddenTotals) {
+    drop("subtotal_or_total");
+    if (reportedTotals.length < MAX_REPORTED_TOTALS) {
+      reportedTotals.push({
+        label: row.category?.trim() || row.subsector?.trim() || "subtotal",
+        value: row.totalCO2e as number,
+        year: row.year,
+        scope: null,
+        sector: row.sector,
+        subsector: row.subsector,
+        level: "subtotal",
+      });
+    }
+  }
+  const kept = yearFiltered.filter((row) => !hiddenTotals.has(row));
 
   const seen = new Set<string>();
   const finalRows: ExtractedRow[] = [];
@@ -1500,13 +1629,7 @@ export function finalizeExtractedRows(
     finalRows.push(row);
   }
 
-  const importedSum = finalRows.reduce(
-    (sum, row) =>
-      row.gpcRefNo === GRID_GENERATION_GPC_REF || row.totalCO2e == null
-        ? sum
-        : sum + row.totalCO2e,
-    0,
-  );
+  const importedSum = sumImported(finalRows);
 
   return {
     rows: finalRows,

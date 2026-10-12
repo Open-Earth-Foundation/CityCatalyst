@@ -319,5 +319,7 @@
   "invite-collaborators-info": "Pressione enter entre cada e-mail para adicionar membros.",
   "invite-collaborators-select-project-to-share": "Selecione qual projeto você deseja compartilhar",
   "projects-label": "Projetos",
-  "invite-collaborators-select-project-first": "Selecione um projeto acima para ver as cidades disponíveis."
+  "invite-collaborators-select-project-first": "Selecione um projeto acima para ver as cidades disponíveis.",
+  "import-warnings-title": "Algumas linhas não serão importadas",
+  "import-warnings-detail": "Estas linhas foram deixadas de fora do inventário. Uma referência GPC não pôde ser resolvida, ou a linha não tem emissões e nenhuma chave de notação."
 }

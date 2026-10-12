@@ -57,22 +57,18 @@ describe("GPC activity extract detection", () => {
   });
 
   it("still detects a year + sector + emissions sheet as long-tidy", () => {
-    const parsed = parsedFile(
-      ["Year", "Sector", "GHG emissions (mt CO2e)"],
-      {
-        Year: 2020,
-        Sector: "Waste",
-        "GHG emissions (mt CO2e)": 100,
-      },
-    );
+    const parsed = parsedFile(["Year", "Sector", "GHG emissions (mt CO2e)"], {
+      Year: 2020,
+      Sector: "Waste",
+      "GHG emissions (mt CO2e)": 100,
+    });
 
     expect(FormatAdapterService.detect(parsed).adapterType).toBe("long-tidy");
   });
 
   it("maps snake_case GPC columns onto the eCRF fields", () => {
-    const columns = FileValidatorService.detectRequiredColumns(
-      BUENOS_AIRES_HEADERS,
-    );
+    const columns =
+      FileValidatorService.detectRequiredColumns(BUENOS_AIRES_HEADERS);
 
     expect(columns.gpcRefNo).toBe(0);
     expect(columns.sector).toBe(1);
@@ -90,10 +86,9 @@ describe("GPC activity extract detection", () => {
     );
   });
 
-  it("counts a row when any gas or total CO2e cell is blank", () => {
-    const columns = FileValidatorService.detectRequiredColumns(
-      BUENOS_AIRES_HEADERS,
-    );
+  it("counts a row only when every gas and total CO2e cell is blank", () => {
+    const columns =
+      FileValidatorService.detectRequiredColumns(BUENOS_AIRES_HEADERS);
     const count = countRowsWithEmptyEmissionCells(
       BUENOS_AIRES_HEADERS,
       [
@@ -118,11 +113,18 @@ describe("GPC activity extract detection", () => {
           n2o: 1,
           total_co2e: "",
         },
+        {
+          gpc_ref_no: "I.1.4",
+          co2: null,
+          ch4: "",
+          n2o: 0,
+          total_co2e: null,
+        },
       ],
       columns,
     );
 
-    expect(count).toBe(2);
+    expect(count).toBe(1);
   });
 
   it("reads the inventory year from a details sheet label", () => {

@@ -241,6 +241,8 @@
   "not-specified": "Not specified",
   "upload-failed": "Upload failed",
   "failed-to-upload-file": "Failed to upload file",
+  "import-status-check-failed": "Could not check this file",
+  "import-status-check-failed-detail": "The file uploaded, but its year could not be checked. You can try Continue, or upload the file again.",
   "edit": "Edit",
   "citycatalyst-demo": "CityCatalyst Demo",
   "inventory-goal-description-ghgi": "The GPC provides a robust framework for accounting and reporting city-wide greenhouse gas emissions.",

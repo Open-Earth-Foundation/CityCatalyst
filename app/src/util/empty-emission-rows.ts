@@ -6,9 +6,9 @@ import {
 const EMISSION_COLUMN_KEYS = ["co2", "ch4", "n2o", "totalCO2e"] as const;
 
 /**
- * Rows where a mapped CO2, CH4, N2O, or total CO2e cell is blank or zero.
- * A column that was not mapped is ignored, so a total-only file is not
- * counted as empty for the gases it does not have.
+ * Rows the importer will skip: every mapped CO2, CH4, N2O, and total CO2e
+ * cell is blank or zero, and there is no notation key. A total-only row is
+ * kept. A column that was not mapped is ignored.
  */
 export function countRowsWithEmptyEmissionCells(
   headers: string[],
@@ -23,10 +23,20 @@ export function countRowsWithEmptyEmissionCells(
   );
   if (indexes.length === 0) return 0;
 
-  return rows.filter((row) =>
-    indexes.some((index) => {
+  const notationIndex = detectedColumns.notationKey;
+  const hasNotationColumn =
+    typeof notationIndex === "number" &&
+    notationIndex >= 0 &&
+    notationIndex < headers.length;
+
+  return rows.filter((row) => {
+    const emissionsEmpty = indexes.every((index) => {
       const header = headers[index];
       return !hasSignedNumericValue(parseNumericCell(row[header]));
-    }),
-  ).length;
+    });
+    if (!emissionsEmpty) return false;
+    if (!hasNotationColumn || notationIndex == null) return true;
+    const notation = row[headers[notationIndex]];
+    return notation == null || String(notation).trim() === "";
+  }).length;
 }

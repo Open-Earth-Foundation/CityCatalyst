@@ -379,9 +379,11 @@ export default function GhgiImportWizard({
       : null;
   const fileYearMismatch =
     inventoryYear != null && fileYear != null && inventoryYear !== fileYear;
-  const yearsAllowAdvance = (status?: {
-    inferredYearFromFile?: number | null;
-  } | null) => {
+  const yearsAllowAdvance = (
+    status?: {
+      inferredYearFromFile?: number | null;
+    } | null,
+  ) => {
     const raw = status?.inferredYearFromFile;
     if (inventoryYear == null || raw == null || !Number.isFinite(Number(raw))) {
       return true;
@@ -612,14 +614,19 @@ export default function GhgiImportWizard({
           .unwrap()
           .then((status) => {
             setLastImportStatus(status);
-            if (yearsAllowAdvance(status)) setTimeout(() => goToNextStep(), 150);
+            if (yearsAllowAdvance(status))
+              setTimeout(() => goToNextStep(), 150);
           })
-          .catch((err) =>
+          .catch((err) => {
             logger.debug(
               { err, cityId, inventoryId, importedFileId: result.id },
               "Import status fetch after sync upload failed",
-            ),
-          );
+            );
+            makeErrorToast(
+              t("import-status-check-failed"),
+              getApiErrorMessage(err, t("import-status-check-failed-detail")),
+            );
+          });
       }
     } catch (error: unknown) {
       const message = getApiErrorMessage(error, t("failed-to-upload-file"));

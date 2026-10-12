@@ -8,6 +8,13 @@ import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
+import { GRID_GENERATION_GPC_REF } from "@/util/GHGI/reported-totals";
+import { toCanonical } from "@/util/notation-keys";
+import type {
+  DroppedRowReason,
+  ExtractionSummary,
+  ReportedTotal,
+} from "@/util/GHGI/extraction-summary";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
 import gpcNameMappings from "@/util/GHGI/data/gpc-name-mappings.json";
 
@@ -85,6 +92,8 @@ const SUBSECTOR_DICTIONARY_TEXT = Object.entries(SUBSECTOR_VARIANT_TO_CANONICAL)
   .map(([term, canonical]) => `"${term}" → ${canonical}`)
   .join("; ");
 
+export type ExtractedRowType = "line_item" | "subtotal" | "total";
+
 export type ExtractedRow = {
   year: number | null;
   sector: string | null;
@@ -110,8 +119,16 @@ export type ExtractedRow = {
   activityDataSource?: string | null;
   /** Data quality when present (e.g. high, medium, low). */
   activityDataQuality?: string | null;
-  /** Notation key when the row has no measured emissions (NE, NO, IE, NA). */
+  /** Notation key when the row has no measured emissions (NE, NO, IE, C). */
   notationKey?: string | null;
+  /**
+   * What the row is in the source table. Only `line_item` rows are imported.
+   * Subtotals and totals are kept apart to reconcile the imported sum.
+   * Missing on rows stored before this field existed (treated as `line_item`).
+   */
+  rowType?: ExtractedRowType | null;
+  /** Unit of totalCO2e as written in the source (t, kt, Mt, tCO2e). Converted to tonnes after extraction. */
+  unit?: string | null;
   emissionFactorUnit?: string | null;
   emissionFactorSource?: string | null;
   emissionFactorDescription?: string | null;
@@ -127,7 +144,19 @@ You are an extractor of GHG inventory line items from city emissions reports. Yo
 </role>
 
 <task>
-Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Preserve numeric scale from column headers (e.g. "thousand tonnes" → multiply by 1000; "million" → multiply by 1e6). Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity, subsector, or sector total)—never a single aggregated row when the document has multiple.
+Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Do not convert units yourself: output each number as written in the table and put the unit from the column header or row label in "unit" (e.g. "t", "tCO2e", "kt", "ktCO2e", "Mt", "thousand tonnes"); the system converts to tonnes. Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the document has multiple. Also output subtotal and total rows, but mark them with rowType so they are not counted as data.
+
+Row types (critical): set "rowType" on every row.
+- "line_item": a measured value for one activity, subsector or GPC reference. Only these rows are imported.
+- "subtotal": a sum of several line items (sector subtotal, "SUB-TOTAL", "(All II emissions)", a subsector total when the table also lists its activities).
+- "total": a grand total of the inventory (TOTAL row, BASIC, BASIC+, BASIC+ S3, "Total GHG emissions").
+Never output a line_item whose value is a sum of other rows you also output.
+
+Scope columns (critical): when a table has separate Scope 1, Scope 2 and Scope 3 columns, output one row per non-empty scope cell, with scope "1", "2" or "3" and that cell's value. The columns BASIC, BASIC+, BASIC+ S3, Total and Net are sums over scopes: never output them as line_item rows (use rowType "total" or "subtotal"). Never output a row total as a Scope 1 row. Copy the GPC reference number (e.g. I.1.1, II.4.1, I.4.4) from the document into gpcRefNo when the table has a reference column. When the reference is written once for all scopes (e.g. "I.1"), use the reference of that scope (I.1.1 for scope 1, I.1.2 for scope 2, I.1.3 for scope 3).
+
+Notation keys: when a cell holds NO, NE, IE or C (or "NA") instead of a number, output a row with totalCO2e null and notationKey set to that code, with the scope of its column.
+
+Duplicate tables: the same sector, subsector and scope often appears in a summary table and in a detailed table. Extract each value once, from the table with the most detail (the one with GPC reference numbers when it exists). Do not use tables that compare with a previous inventory, list changes between inventories, or give other years (e.g. "2016 inventory vs this inventory", "analysis of changes"): they are not data for the inventory year.
 
 Tables to use (full coverage only): Use only tables that present a full-coverage summary of emissions—i.e. a comprehensive inventory that covers multiple sectors and/or the full scope (e.g. citywide, all scopes, or a complete sector breakdown with multiple subsectors and activities). Typical titles: "Citywide GHG Emissions Summary", "Emissions by sector", "City-wide GHG emissions", "Full inventory", "Inventory summary", "Emissions by category" (when it covers all categories). Do NOT use: executive summary tables with only a single total; partial tables that cover only one sector or one topic; methodology-only text; targets/projections without full inventory figures; narrative sections; or any table that does not give a full-coverage emissions summary with row-by-row data for multiple sectors/subsectors/activities.
 
@@ -151,11 +180,14 @@ Granularity (critical):
 
 <output>
 Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown, no "error" key. The "rows" array must have one object per inventory line item—typical reports produce many rows (do not collapse to a single row). Each object in "rows" has:
-- year (integer): inventory year. When the table has columns by year (e.g. CY 2015), use the year from the column header (2015), not a cell value; every row extracted from that column gets that year.
+- year (integer | null): year the value belongs to. When the table has columns by year (e.g. CY 2015), use the year from the column header (2015), not a cell value; every row extracted from that column gets that year. Use the year of the table or column even when it is not the requested year (the system drops other years). Null only when the document gives no year at all.
 - sector (string): canonical sector from hierarchy below.
 - subsector (string): canonical subsector from hierarchy below; must belong under sector.
 - category (string): activity/category name when at activity level (e.g. "Natural gas", "Diesel"); or "Subsector total" / subsector name when only subsector-level data exists.
-- totalCO2e (number): emissions in metric tonnes CO2e for this row only—per activity when activity data exists, per subsector when only subsector data exists. Apply column unit (e.g. 48 in "thousand tonnes" column → 48000). Do not put the whole sector total on every row; each row gets the total for that activity or that subsector.
+- totalCO2e (number | null): emissions for this row only, exactly as written in the table (do not convert units)—per activity when activity data exists, per subsector when only subsector data exists. Null for a notation key. Do not put the whole sector total on every row; each row gets the value for that activity, subsector or scope cell.
+- unit (string | null): unit of totalCO2e as written in the column header, row label or table title (e.g. "tCO2e", "kt CO2e", "Mt"); null when the document does not say.
+- rowType (string): "line_item", "subtotal" or "total" (see Row types).
+- notationKey (string | null): "NO", "NE", "IE" or "C" when the cell has that notation instead of a number; else null.
 - scope (string | null): "1", "2", or "3" when present in document; else null.
 - gpcRefNo (string | null): e.g. I.1.1, II.2.1 when present; else null.
 - co2, ch4, n2o (number | null): gas breakdown when present.
@@ -178,9 +210,11 @@ Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"
 
 <example_output>
 {"rows": [
-  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "totalCO2e": 125000, "scope": "1", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
-  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Electricity", "totalCO2e": 42000, "scope": "2", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 12000, "activityUnit": "MWh", "activityType": "Electricity", "activityDataSource": null, "activityDataQuality": null},
-  {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "totalCO2e": 89000, "scope": "1", "gpcRefNo": "I.2.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 7", "methodology": null, "activityAmount": 25000, "activityUnit": "liters", "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null}
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "totalCO2e": 125000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Electricity", "totalCO2e": 42000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "2", "gpcRefNo": "I.1.2", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 12000, "activityUnit": "MWh", "activityType": "Electricity", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "totalCO2e": 89000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "II.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 7", "methodology": null, "activityAmount": 25000, "activityUnit": "liters", "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Subtotal", "totalCO2e": 167000, "unit": "tCO2e", "rowType": "subtotal", "notationKey": null, "scope": null, "gpcRefNo": null, "source": "Table 5"},
+  {"year": 2020, "sector": "Waste", "subsector": "Solid Waste Disposal", "category": "Solid waste", "totalCO2e": null, "unit": null, "rowType": "line_item", "notationKey": "NO", "scope": "1", "gpcRefNo": "III.1.1", "source": "Table 5"}
 ]}
 </example_output>`;
 
@@ -194,6 +228,7 @@ const SEGMENT_PROMPT_PREFIX = `The following text is one segment of a longer emi
 - If this segment contains only sector-level totals: output one row per sector.
 - Never output a single aggregated row when the segment shows multiple line items (multiple activities, subsectors, or sectors). Extract every row you see in the inventory tables.
 - If the table has columns by year (e.g. CY 2015): year = the column header (2015); totalCO2e = tCO₂e from that column for that row; activityAmount = Consumed from that column; one output row per table row, do not collapse the year column into one total.
+- Set rowType on every row ("line_item", "subtotal" or "total"). Scope 1/2/3 columns give one line_item row each; BASIC, BASIC+, Total and sub-total columns or rows are never line_item. Put the unit written in the table in "unit" and do not convert numbers.
 - Numbers: output numeric fields as JSON numbers; strip thousand separators (e.g. 48,000 → 48000); use decimal point for decimals (1,5 → 1.5).\n\nSegment text:\n\n`;
 
 /** Max document length in a single LLM request; above CHUNK_THRESHOLD we split into chunks. */
@@ -229,6 +264,24 @@ export type ExtractOptions = {
   onChunkProgress?: (current: number, total: number) => void | Promise<void>;
 };
 
+export type ExtractionResult = {
+  rows: ExtractedRow[];
+  summary: ExtractionSummary;
+};
+
+const MAX_REPORTED_TOTALS = 200;
+
+/**
+ * Extract inventory rows from document text using the configured LLM.
+ * Returns the rows only; use extractInventoryFromDocument for the reconciliation summary.
+ */
+export async function extractInventoryRowsFromDocument(
+  documentContent: string,
+  options?: ExtractOptions,
+): Promise<ExtractedRow[]> {
+  return (await extractInventoryFromDocument(documentContent, options)).rows;
+}
+
 /**
  * Extract inventory rows from document text using the configured LLM.
  * Document content is user-controlled; prompt-injection risk is mitigated by rejecting
@@ -240,10 +293,10 @@ export type ExtractOptions = {
  * @returns Array of normalized row objects; throws on parse or LLM failure
  * @throws LLMError with BAD_REQUEST if content appears to be prompt-injection
  */
-export async function extractInventoryRowsFromDocument(
+export async function extractInventoryFromDocument(
   documentContent: string,
   options?: ExtractOptions,
-): Promise<ExtractedRow[]> {
+): Promise<ExtractionResult> {
   const trimmed = documentContent.trim();
   const lookup = trimmed.slice(0, PROMPT_INJECTION_LOOKUP_LENGTH).toLowerCase();
   const looksLikeInjection = PROMPT_INJECTION_PREFIXES.some(
@@ -262,7 +315,7 @@ export async function extractInventoryRowsFromDocument(
   const targetYear = options?.targetYear;
   const yearInstruction =
     targetYear != null
-      ? `Extract only emissions data for the year ${targetYear}. Set year to ${targetYear} for every row; do not include other years.\n\n`
+      ? `Extract only emissions data for the year ${targetYear}. Do not output rows from tables or columns of other years. Set year to the year each value belongs to (${targetYear}); use null only when the document gives no year.\n\n`
       : "";
 
   let allRows: ExtractedRow[];
@@ -300,24 +353,42 @@ export async function extractInventoryRowsFromDocument(
     allRows = mergeAndDedupeRows(perChunkRows);
   }
 
-  let result = normalizeExtractedRows(allRows);
+  const { rows: result, summary } = finalizeExtractedRows(
+    normalizeExtractedRows(allRows),
+    targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined,
+  );
 
-  if (targetYear != null && Number.isInteger(targetYear)) {
-    const before = result.length;
-    result = result.filter(
-      (row) => row.year == null || row.year === targetYear,
+  if (
+    targetYear != null &&
+    Number.isInteger(targetYear) &&
+    allRows.length > 0 &&
+    result.length === 0
+  ) {
+    logger.warn(
+      {
+        targetYear,
+        rowsBeforeFilter: allRows.length,
+        dropped: summary.droppedRows,
+      },
+      "All extracted rows dropped before import (no line item for the target year)",
     );
-    result = result.map((row) => ({ ...row, year: targetYear }));
-    if (before > 0 && result.length === 0) {
-      logger.warn(
-        { targetYear, rowsBeforeFilter: before },
-        "All extracted rows dropped by targetYear filter (no matching year)",
-      );
+    if (
+      (summary.droppedRows.other_year ?? 0) +
+        (summary.droppedRows.missing_year ?? 0) >
+      0
+    ) {
       throw new LLMError(
         "Inventory not found for the target year",
         LLMErrorCode.BAD_REQUEST,
       );
     }
+  }
+
+  if (summary.yearAssumed) {
+    logger.warn(
+      { targetYear },
+      "Extraction rows carry no year; assigned the target year",
+    );
   }
 
   if (result.length === 0) {
@@ -330,7 +401,7 @@ export async function extractInventoryRowsFromDocument(
     );
   }
 
-  return result;
+  return { rows: result, summary };
 }
 
 /**
@@ -378,6 +449,10 @@ export function mergeAndDedupeRows(
         row.sector ?? "",
         row.subsector ?? "",
         row.category ?? "",
+        row.scope ?? "",
+        row.gpcRefNo ?? "",
+        row.rowType ?? "",
+        row.notationKey ?? "",
         String(row.totalCO2e ?? ""),
       ].join("\t");
       if (seen.has(key)) continue;
@@ -715,7 +790,25 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
       const n = parseFloat(normalizeNumberString(row.totalCO2e));
       if (Number.isFinite(n)) out.totalCO2e = n;
     }
-    if (typeof row.gpcRefNo === "string") out.gpcRefNo = row.gpcRefNo;
+    if (typeof row.gpcRefNo === "string" && row.gpcRefNo.trim()) {
+      out.gpcRefNo = row.gpcRefNo.trim();
+    }
+    if (row.rowType === "line_item" || row.rowType === "subtotal") {
+      out.rowType = row.rowType;
+    } else if (row.rowType === "total") {
+      out.rowType = "total";
+    }
+    if (typeof row.unit === "string" && !isPlaceholderOrEmpty(row.unit)) {
+      out.unit = row.unit.trim();
+    }
+    if (
+      typeof row.notationKey === "string" &&
+      !isPlaceholderOrEmpty(row.notationKey)
+    ) {
+      // Keep the code only when it maps to a known notation key.
+      if (toCanonical(row.notationKey))
+        out.notationKey = row.notationKey.trim();
+    }
     if (typeof row.co2 === "number" && Number.isFinite(row.co2)) {
       out.co2 = row.co2;
     } else if (typeof row.co2 === "string") {
@@ -823,4 +916,154 @@ function fillActivityTypeFromCategory(rows: ExtractedRow[]): ExtractedRow[] {
  */
 export function normalizeExtractedRows(rows: ExtractedRow[]): ExtractedRow[] {
   return fillActivityTypeFromCategory(fillMissingGpcRefNo(rows));
+}
+
+/**
+ * Multiplier from the unit written in the document to metric tonnes.
+ * Empty unit means tonnes (rows stored before the unit field existed). Returns
+ * null for a unit that cannot be converted safely (kg, lb, per-capita, %).
+ * Exported for unit tests.
+ */
+export function tonnesMultiplier(unit?: string | null): number | null {
+  if (unit == null) return 1;
+  const raw = unit.trim();
+  if (!raw) return 1;
+  const cleaned = raw
+    .replace(/co[2\u2082]\s*-?\s*(e|eq|equiv\w*)?/gi, "")
+    .replace(/\bmetric\b/gi, "")
+    .replace(/\bof\b/gi, "")
+    .replace(/[()\s]/g, "");
+  if (cleaned === "") return 1;
+  // Case matters here: "Mt" is megatonnes, "mt" is a metric tonne.
+  if (
+    /^(Mt|Mtonnes?|megatonnes?|megatons?|milliontonnes?|milliontons?|million)$/.test(
+      cleaned,
+    )
+  ) {
+    return 1_000_000;
+  }
+  if (
+    /^(kt|ktonnes?|kilotonnes?|kilotons?|thousandtonnes?|thousandtons?|thousand|gg|gigagrams?)$/i.test(
+      cleaned,
+    )
+  ) {
+    return 1000;
+  }
+  if (/^(t|mt|tonnes?|tons?)$/i.test(cleaned)) return 1;
+  return null;
+}
+
+function scaleOrNull(
+  value: number | null | undefined,
+  multiplier: number,
+): number | null | undefined {
+  return value == null ? value : value * multiplier;
+}
+
+/**
+ * Turn LLM rows into importable rows plus a reconciliation summary:
+ * - subtotal and total rows leave the rows and go to reportedTotals;
+ * - units are converted to tonnes, rows with an unknown unit are dropped;
+ * - with a target year, rows of another year or without a year are dropped when
+ *   any row names a year; only when no row names a year is the target year assumed;
+ * - rows repeating the same year, reference, scope and activity are dropped.
+ */
+export function finalizeExtractedRows(
+  rows: ExtractedRow[],
+  targetYear?: number,
+): ExtractionResult {
+  const droppedRows: ExtractionSummary["droppedRows"] = {};
+  const drop = (reason: DroppedRowReason) => {
+    droppedRows[reason] = (droppedRows[reason] ?? 0) + 1;
+  };
+  const reportedTotals: ReportedTotal[] = [];
+  const converted: ExtractedRow[] = [];
+
+  for (const row of rows) {
+    const multiplier = tonnesMultiplier(row.unit);
+    if (multiplier == null) {
+      drop("unsupported_unit");
+      continue;
+    }
+    const scaled: ExtractedRow = { ...row };
+    if (multiplier !== 1) {
+      scaled.totalCO2e = scaleOrNull(row.totalCO2e, multiplier) ?? null;
+      if (row.co2 != null) scaled.co2 = row.co2 * multiplier;
+      if (row.ch4 != null) scaled.ch4 = row.ch4 * multiplier;
+      if (row.n2o != null) scaled.n2o = row.n2o * multiplier;
+    }
+    if (row.unit) scaled.unit = "t";
+
+    if (row.rowType === "subtotal" || row.rowType === "total") {
+      drop("subtotal_or_total");
+      if (
+        scaled.totalCO2e != null &&
+        reportedTotals.length < MAX_REPORTED_TOTALS
+      ) {
+        reportedTotals.push({
+          label:
+            scaled.category?.trim() ||
+            scaled.subsector?.trim() ||
+            scaled.sector?.trim() ||
+            row.rowType,
+          value: scaled.totalCO2e,
+          year: scaled.year,
+          scope: scaled.scope ?? null,
+          sector: scaled.sector,
+          subsector: scaled.subsector,
+          level: row.rowType,
+        });
+      }
+      continue;
+    }
+    converted.push(scaled);
+  }
+
+  let yearAssumed = false;
+  let kept = converted;
+  if (targetYear != null) {
+    const anyExplicitYear = converted.some((row) => row.year != null);
+    if (anyExplicitYear) {
+      kept = [];
+      for (const row of converted) {
+        if (row.year === targetYear) kept.push(row);
+        else if (row.year == null) drop("missing_year");
+        else drop("other_year");
+      }
+    } else {
+      kept = converted.map((row) => ({ ...row, year: targetYear }));
+      yearAssumed = kept.length > 0;
+    }
+  }
+
+  const seen = new Set<string>();
+  const finalRows: ExtractedRow[] = [];
+  for (const row of kept) {
+    const key = [
+      row.year ?? "",
+      row.gpcRefNo ?? `${row.sector ?? ""}|${row.subsector ?? ""}`,
+      row.scope ?? "",
+      (row.activityType ?? row.category ?? "").trim().toLowerCase(),
+      row.notationKey ?? "",
+    ].join("\t");
+    if (seen.has(key)) {
+      drop("duplicate");
+      continue;
+    }
+    seen.add(key);
+    finalRows.push(row);
+  }
+
+  const importedSum = finalRows.reduce(
+    (sum, row) =>
+      row.gpcRefNo === GRID_GENERATION_GPC_REF || row.totalCO2e == null
+        ? sum
+        : sum + row.totalCO2e,
+    0,
+  );
+
+  return {
+    rows: finalRows,
+    summary: { reportedTotals, droppedRows, importedSum, yearAssumed },
+  };
 }

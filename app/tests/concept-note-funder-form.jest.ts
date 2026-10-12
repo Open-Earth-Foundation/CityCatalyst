@@ -5,7 +5,6 @@ import {
   formToCreateRequest,
   parseAward,
   validateFunderForm,
-  type FunderForm,
 } from "@/components/ConceptNoteWorkspace/funder-form";
 
 /** A complete form as a user would type it. */
@@ -68,74 +67,39 @@ describe("funder form", () => {
       "1.234",
       "9".repeat(400),
       "9999999999999999.99",
-    ].map((amount) => ({
-      name: `invalid award ${amount}`,
-      change: (form: FunderForm) => {
-        form.opportunity.min_award = amount;
-      },
-      field: "opportunity.min_award",
-      error: "funder-error-award",
-    })),
-    {
-      name: "reversed awards",
-      change: (form: FunderForm) => {
-        form.opportunity.min_award = "700";
-        form.opportunity.max_award = "600";
-      },
-      field: "opportunity.max_award",
-      error: "funder-error-award-range",
-    },
-    {
-      name: "award above storage limit",
-      change: (form: FunderForm) => {
-        form.opportunity.max_award = "10000000000000000";
-      },
-      field: "opportunity.max_award",
-      error: "funder-error-award-limit",
-    },
-    {
-      name: "long chapter description",
-      change: (form: FunderForm) => {
-        form.chapters[0]!.description = "x".repeat(4001);
-      },
-      field: "chapter",
-      chapterField: "description",
-      error: "funder-error-length-4000",
-    },
-    {
-      name: "multiline chapter title",
-      change: (form: FunderForm) => {
-        form.chapters[0]!.title = "Summary\nBudget";
-      },
-      field: "chapter",
-      chapterField: "title",
-      error: "funder-error-chapter-title-line",
-    },
-    {
-      name: "too many chapters",
-      change: (form: FunderForm) => {
-        form.chapters = Array.from({ length: 101 }, () => ({
-          ...form.chapters[0]!,
-        }));
-      },
-      field: "template.chapters",
-      error: "funder-error-chapter-limit",
-    },
-    {
-      name: "long funder name",
-      change: (form: FunderForm) => {
-        form.funder.name = "x".repeat(256);
-      },
-      field: "funder.name",
-      error: "funder-error-length-255",
-    },
-  ])("rejects $name", ({ change, field, error, ...testCase }) => {
+    ].map(
+      (amount) =>
+        ["opportunity", "min_award", amount, "funder-error-award"] as const,
+    ),
+    ["opportunity", "max_award", "100", "funder-error-award-range"],
+    [
+      "opportunity",
+      "max_award",
+      "10000000000000000",
+      "funder-error-award-limit",
+    ],
+    ["chapters", "description", "x".repeat(4001), "funder-error-length-4000"],
+    ["chapters", "title", "Summary\nBudget", "funder-error-chapter-title-line"],
+    ["root", "chapters", 101, "funder-error-chapter-limit"],
+    ["funder", "name", "x".repeat(256), "funder-error-length-255"],
+  ] as const)("rejects invalid %s.%s", (section, field, value, error) => {
     const form = typedForm();
-    change(form);
+    if (section === "root") {
+      form.chapters = Array.from({ length: value as number }, () => ({
+        ...form.chapters[0]!,
+      }));
+    } else {
+      Object.assign(
+        section === "chapters" ? form.chapters[0]! : form[section],
+        { [field]: value },
+      );
+    }
     const key =
-      field === "chapter"
-        ? `chapter.${form.chapters[0]!.id}.${testCase.chapterField}`
-        : field;
+      section === "root"
+        ? "template.chapters"
+        : section === "chapters"
+          ? `chapter.${form.chapters[0]!.id}.${field}`
+          : `${section}.${field}`;
     expect(validateFunderForm(form)[key]).toBe(error);
   });
 });

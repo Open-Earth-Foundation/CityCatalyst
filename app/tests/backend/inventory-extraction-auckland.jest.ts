@@ -703,21 +703,71 @@ ${withNumbers ? numbers(10) : "Prose only."}
     expect(summary.pageSelection).toBe("fallback");
   });
 
-  it("keeps every page when the document reports no grand total", async () => {
+  it("falls back to whole-document extraction when no page reconciles", async () => {
     const doc = [page(17, "Chapter 4 narrative"), page(46, "Table A-1")].join(
       "",
     );
-    mockByPage({ "Chapter 4": narrative, "Table A-1": tableA1 });
+    const seen: string[] = [];
+    complete.mockImplementation(async (args) => {
+      const user = (
+        args as { messages: { role: string; content: string }[] }
+      ).messages.find((m) => m.role === "user")!.content;
+      seen.push(user);
+      const whole = user.includes("Chapter 4") && user.includes("Table A-1");
+      const rows = whole
+        ? tableA1
+        : user.includes("Chapter 4")
+          ? narrative
+          : tableA1;
+      return { content: JSON.stringify({ rows }) };
+    });
 
     const { rows, summary } = await extractInventoryFromDocument(doc, {
       targetYear: 2021,
     });
     expect(summary.pageSelection).toBe("fallback");
-    expect(summary.selectedPages).toEqual([17, 46]);
-    // V.1 Livestock is on both pages: the cross-page dedupe keeps one.
-    expect(rows).toHaveLength(tableA1.length + narrative.length - 1);
-    expect(summary.droppedRows.duplicate).toBe(1);
-    expect(summary.droppedRows.other_page).toBeUndefined();
+    // Two page calls, then one call with the whole document.
+    expect(seen).toHaveLength(3);
+    expect(seen[2]).toContain("Chapter 4");
+    expect(seen[2]).toContain("Table A-1");
+    expect(rows).toHaveLength(tableA1.length);
+  });
+
+  it("skips a page the model cannot answer and keeps the others", async () => {
+    const doc = [
+      page(15, "Table 3-1 Emissions summary"),
+      page(17, "Chapter 4 narrative"),
+      page(46, "Table A-1 GPC format"),
+    ].join("");
+    complete.mockImplementation(async (args) => {
+      const user = (
+        args as { messages: { role: string; content: string }[] }
+      ).messages.find((m) => m.role === "user")!.content;
+      if (user.includes("Chapter 4")) return { content: "not json at all" };
+      if (user.includes("Table 3-1")) {
+        return { content: JSON.stringify({ rows: [grandTotal] }) };
+      }
+      return { content: JSON.stringify({ rows: tableA1 }) };
+    });
+
+    const { summary } = await extractInventoryFromDocument(doc, {
+      targetYear: 2021,
+    });
+    expect(summary.selectedPages).toEqual([46]);
+    expect(summary.importedSum).toBe(9559215);
+  });
+
+  it("uses LLM_EXTRACTION_MODEL when set", async () => {
+    process.env.LLM_EXTRACTION_MODEL = "gpt-4o";
+    try {
+      mockLlm(tableA1);
+      await extractInventoryFromDocument(fixture, { targetYear: 2021 });
+      expect((complete.mock.calls[0][0] as { model?: string }).model).toBe(
+        "gpt-4o",
+      );
+    } finally {
+      delete process.env.LLM_EXTRACTION_MODEL;
+    }
   });
 
   it("ignores a grand total of another year when selecting", async () => {

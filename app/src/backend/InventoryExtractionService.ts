@@ -349,6 +349,16 @@ export function isCandidatePage(text: string): boolean {
 
 type PageResult = { page: number; result: ExtractionResult };
 
+const EMPTY_RESULT: ExtractionResult = {
+  rows: [],
+  summary: {
+    reportedTotals: [],
+    droppedRows: {},
+    importedSum: 0,
+    yearAssumed: false,
+  },
+};
+
 /**
  * Distance of a page's line items from a grand total on the same page, for pages
  * holding GPC rows (scope and reference). Null when there is nothing to compare.
@@ -562,6 +572,7 @@ export async function extractInventoryFromDocument(
       "Extraction page by page with reconciliation",
     );
     const onProgress = options?.onChunkProgress;
+    const failedPages: { page: number; error: unknown }[] = [];
     const perPage = await mapPool(
       pages,
       getLlmChunkConcurrency(),
@@ -573,14 +584,25 @@ export async function extractInventoryFromDocument(
             ),
             year,
           );
-        let result = await extract();
+        let result: ExtractionResult;
+        try {
+          result = await extract();
+        } catch (error) {
+          // One unreadable page must not fail the whole import.
+          logger.warn(
+            { page: page.page, err: error },
+            "Page extraction failed; page skipped",
+          );
+          failedPages.push({ page: page.page, error });
+          return { page: page.page, result: EMPTY_RESULT };
+        }
         // The model sometimes skips a column of a dense table. When the page states
         // its own grand total and the rows miss it, ask once more; keep the closer.
         const first = ownTotalDeviation(result);
         if (first != null && first > RECONCILIATION_TOLERANCE) {
-          const retry = await extract();
-          const second = ownTotalDeviation(retry);
-          if (second != null && second < first) result = retry;
+          const retry = await extract().catch(() => null);
+          const second = retry ? ownTotalDeviation(retry) : null;
+          if (retry && second != null && second < first) result = retry;
           logger.info(
             { page: page.page, first, second },
             "Page retried: rows did not add up to the page total",
@@ -594,15 +616,38 @@ export async function extractInventoryFromDocument(
         }
       },
     );
+    if (failedPages.length === pages.length) throw failedPages[0].error;
     const selected = selectReconciledPages(perPage, year);
     logger.info(
       {
         pageSelection: selected.summary.pageSelection,
         selectedPages: selected.summary.selectedPages,
         importedSum: selected.summary.importedSum,
+        failedPages: failedPages.map((f) => f.page),
       },
       "Page selection finished",
     );
+    if (selected.summary.pageSelection === "fallback") {
+      // No page run reconciles. Per-page rows carry more noise than whole-document
+      // chunks (CC-1008 live runs), so extract the old way.
+      const chunked = await extractByChunks(
+        documentContent,
+        yearInstruction,
+        options,
+      );
+      const result = finalizeExtractedRows(
+        normalizeExtractedRows(chunked),
+        year,
+      );
+      return checkExtractionResult(
+        {
+          rows: result.rows,
+          summary: { ...result.summary, pageSelection: "fallback" },
+        },
+        chunked.length,
+        targetYear,
+      );
+    }
     const extractedCount = perPage.reduce(
       (n, p) =>
         n +
@@ -616,6 +661,24 @@ export async function extractInventoryFromDocument(
     return checkExtractionResult(selected, extractedCount, targetYear);
   }
 
+  const allRows = await extractByChunks(
+    documentContent,
+    yearInstruction,
+    options,
+  );
+  return checkExtractionResult(
+    finalizeExtractedRows(normalizeExtractedRows(allRows), year),
+    allRows.length,
+    targetYear,
+  );
+}
+
+/** Whole-document extraction: one call, or overlapping chunks for long text. */
+async function extractByChunks(
+  documentContent: string,
+  yearInstruction: string,
+  options?: ExtractOptions,
+): Promise<ExtractedRow[]> {
   let allRows: ExtractedRow[];
 
   if (documentContent.length <= CHUNK_THRESHOLD) {
@@ -650,12 +713,7 @@ export async function extractInventoryFromDocument(
     );
     allRows = mergeAndDedupeRows(perChunkRows);
   }
-
-  return checkExtractionResult(
-    finalizeExtractedRows(normalizeExtractedRows(allRows), year),
-    allRows.length,
-    targetYear,
-  );
+  return allRows;
 }
 
 /** Log and reject empty results the same way for the page and chunk paths. */
@@ -781,6 +839,9 @@ async function extractSegment(
 
   const client = createLLMClient();
   const { content: responseContent } = await client.complete({
+    // Table extraction needs a stronger model than column mapping (CC-1008:
+    // gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
+    model: process.env.LLM_EXTRACTION_MODEL?.trim() || undefined,
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
       { role: "user", content: userContent },

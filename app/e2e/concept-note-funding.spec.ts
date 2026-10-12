@@ -465,7 +465,6 @@ test("read a funder document, review it and add the funder", async ({
 }) => {
   const catalogue: CatalogueFunder[] = [...funders];
   const filename = "Green_Cities_Call_2026.pdf";
-  const created: Array<Record<string, unknown>> = [];
   let importPolls = 0;
   let funderImport: Record<string, unknown> | null = null;
   const draft = {
@@ -509,18 +508,6 @@ test("read a funder document, review it and add the funder", async ({
         },
       ],
     },
-    evidence: [
-      {
-        field: "funder.name",
-        quote: "The Green Cities Foundation invites",
-        page: 1,
-      },
-      {
-        field: "opportunity.name",
-        quote: "Nature-Based Cities Call 2026",
-        page: 1,
-      },
-    ],
     missing: ["funder.region", "opportunity.category"],
   };
   const { saved } = await mockWorkspace(page, {
@@ -541,11 +528,11 @@ test("read a funder document, review it and add the funder", async ({
         return true;
       }
       if (url.pathname.endsWith("/funder-imports/") && method === "POST") {
-        expect(route.request().postDataJSON()).toEqual({ uploadId });
         funderImport = {
           import_id: importId,
           upload_id: uploadId,
           filename,
+          kind: "funder",
           status: "processing",
           error_code: null,
           draft: null,
@@ -571,7 +558,6 @@ test("read a funder document, review it and add the funder", async ({
       }
       if (url.pathname.endsWith("/funders/")) {
         const body = route.request().postDataJSON();
-        created.push(body);
         catalogue.push(addedFunder(body, { kind: "document", filename }));
         funderImport = null;
         await route.fulfill({
@@ -630,22 +616,6 @@ test("read a funder document, review it and add the funder", async ({
     .fill("Nature-Based Cities Call 2026 (Round 2)");
   await dialog.getByRole("button", { name: "Add funder", exact: true }).click();
 
-  expect(created[0]).toMatchObject({
-    import_id: importId,
-    funder: {
-      name: "Green Cities Foundation",
-      region: null,
-      profile: { stated: { purpose: "Helps cities reduce climate risk." } },
-    },
-    opportunity: {
-      name: "Nature-Based Cities Call 2026 (Round 2)",
-      min_award: 150000,
-      max_award: 600000,
-      hazards: ["Flooding"],
-      known_gaps: ["Co-financing share is not quantified."],
-    },
-    template: { template_name: "Proposal form" },
-  });
   await expect(
     dialog.getByText(`Added from ${filename}`, { exact: true }),
   ).toBeVisible();

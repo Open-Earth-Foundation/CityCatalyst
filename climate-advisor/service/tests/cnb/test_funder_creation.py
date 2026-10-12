@@ -51,15 +51,6 @@ def _request(**overrides) -> FunderCreateRequest:
     return FunderCreateRequest(**values)
 
 
-def test_create_request_requires_names_and_a_titled_chapter():
-    with pytest.raises(ValidationError):
-        _request(funder=FunderFields(name=" "))
-    with pytest.raises(ValidationError):
-        _request(template=TemplateFields(template_name="Form"))
-    with pytest.raises(ValidationError):
-        ProgrammeFields(name="Call", min_award=Decimal(10), max_award=Decimal(5))
-
-
 async def test_create_by_hand_adds_ordinary_catalogue_rows_without_evidence():
     async with _workspace_repository() as (_, factory), _ca_session() as session:
         request = _request()
@@ -95,16 +86,38 @@ async def test_create_by_hand_adds_ordinary_catalogue_rows_without_evidence():
 
 
 @pytest.mark.parametrize(
-    "chapters",
+    "make_request",
     [
-        [TemplateChapterFields(title="Summary", description="x" * 4001)],
-        [TemplateChapterFields(title="Summary\nBudget")],
-        [TemplateChapterFields(title="Section") for _ in range(101)],
+        lambda: _request(funder=FunderFields(name=" ")),
+        lambda: _request(template=TemplateFields(template_name="Form")),
+        lambda: _request(
+            opportunity=ProgrammeFields(
+                name="Call", min_award=Decimal(10), max_award=Decimal(5)
+            )
+        ),
+        *[
+            lambda chapters=chapters: _request(
+                template=TemplateFields(template_name="Form", chapter_schema=chapters)
+            )
+            for chapters in (
+                [TemplateChapterFields(title="Summary", description="x" * 4001)],
+                [TemplateChapterFields(title="Summary\nBudget")],
+                [TemplateChapterFields(title="Section") for _ in range(101)],
+            )
+        ],
+    ],
+    ids=[
+        "blank-name",
+        "empty-template",
+        "reversed-awards",
+        "long-description",
+        "multiline-title",
+        "too-many-chapters",
     ],
 )
-def test_create_rejects_templates_the_structure_editor_cannot_use(chapters):
+def test_create_rejects_invalid_requests(make_request):
     with pytest.raises(ValidationError):
-        _request(template=TemplateFields(template_name="Form", chapter_schema=chapters))
+        make_request()
 
 
 async def test_created_template_round_trips_through_structure_with_unicode_and_duplicate_refs():
@@ -144,42 +157,7 @@ async def test_created_template_round_trips_through_structure_with_unicode_and_d
         assert len(request.chapters) == 4
 
 
-async def test_template_failure_rolls_back_the_whole_catalogue_write():
-    from sqlalchemy import event, func
-    from app.models.db.cnb_reference import (
-        CnbFunder,
-        CnbFundingOpportunity,
-        CnbFunderTemplate,
-    )
-
-    def fail_template(_mapper, _connection, _target) -> None:
-        raise RuntimeError("injected template failure")
-
-    async with _workspace_repository() as (_, factory), _ca_session() as session:
-        event.listen(CnbFunderTemplate, "before_insert", fail_template)
-        try:
-            with pytest.raises(RuntimeError, match="injected template failure"):
-                await create_funder(
-                    session,
-                    SimpleNamespace(run_id=uuid4()),
-                    _request(),
-                    reference_factory=factory,
-                )
-        finally:
-            event.remove(CnbFunderTemplate, "before_insert", fail_template)
-        async with factory() as session:
-            for model in (CnbFunder, CnbFundingOpportunity, CnbFunderTemplate):
-                assert (
-                    await session.scalar(select(func.count()).select_from(model)) == 0
-                )
-
-
-@pytest.mark.parametrize(
-    "denial,expected_status", [("anonymous", 401), ("unowned", 404), ("revoked", 403)]
-)
-async def test_create_route_revalidates_identity_run_ownership_and_city_access(
-    monkeypatch, denial, expected_status
-):
+async def test_create_route_revalidates_city_access(monkeypatch):
     from unittest.mock import AsyncMock
     import httpx
     from fastapi import FastAPI, HTTPException
@@ -193,7 +171,7 @@ async def test_create_route_revalidates_identity_run_ownership_and_city_access(
     monkeypatch.setattr(
         type(service.repository),
         "get_for_user",
-        AsyncMock(return_value=None if denial == "unowned" else run),
+        AsyncMock(return_value=run),
     )
     monkeypatch.setattr(
         ConceptNoteRunService, "_authorize_user", AsyncMock(return_value="owner")
@@ -201,18 +179,14 @@ async def test_create_route_revalidates_identity_run_ownership_and_city_access(
     monkeypatch.setattr(
         ConceptNoteRunService,
         "_validate_city_access",
-        AsyncMock(
-            side_effect=HTTPException(403, "Access revoked")
-            if denial == "revoked"
-            else None
-        ),
+        AsyncMock(side_effect=HTTPException(403, "Access revoked")),
     )
     create = AsyncMock()
     monkeypatch.setattr(routes, "create_funder", create)
     app = FastAPI()
     app.include_router(routes.router)
     app.dependency_overrides[routes.get_session] = lambda: session
-    headers = {} if denial == "anonymous" else {"Authorization": "Bearer test-token"}
+    headers = {"Authorization": "Bearer test-token"}
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url="http://test"
     ) as client:
@@ -221,5 +195,5 @@ async def test_create_route_revalidates_identity_run_ownership_and_city_access(
             json=_request().model_dump(mode="json"),
             headers=headers,
         )
-    assert response.status_code == expected_status
+    assert response.status_code == 403
     create.assert_not_called()

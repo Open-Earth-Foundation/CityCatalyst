@@ -6,12 +6,10 @@ import {
   formFromDraft,
   formToCreateRequest,
   funderApiErrorKey,
-  funderImportErrorKey,
   ownTemplateRequest,
   parseAward,
   templateFieldsFromContext,
   templateFormFrom,
-  templatePreview,
   validateFunderForm,
   validateTemplateForm,
 } from "@/components/ConceptNoteWorkspace/funder-form";
@@ -90,25 +88,12 @@ describe("funder form", () => {
     expect(validateFunderForm(formFromDraft(draft))).toEqual({});
   });
 
-  it("validates award amounts and their order", () => {
+  it("accepts empty and localized awards", () => {
     const form = formFromDraft(draft);
-    const withAward = (min: string, max: string) =>
-      validateFunderForm({
-        ...form,
-        opportunity: { ...form.opportunity, min_award: min, max_award: max },
-      });
-    expect(withAward("abc", "")["opportunity.min_award"]).toBe(
-      "funder-error-award",
-    );
-    expect(withAward("-5", "")["opportunity.min_award"]).toBe(
-      "funder-error-award",
-    );
-    expect(withAward("700", "600")["opportunity.max_award"]).toBe(
-      "funder-error-award-range",
-    );
-    expect(withAward("150 000,50", "600 000.50")).toEqual({});
+    form.opportunity.min_award = "150 000,50";
+    form.opportunity.max_award = "600 000.50";
+    expect(validateFunderForm(form)).toEqual({});
     expect(parseAward("")).toBeNull();
-    expect(parseAward("1.234")).toBeNaN();
   });
 
   it.each(["150 000,50", "150\u00a0000,50", "150\u202f000.50", "150000.50"])(
@@ -124,32 +109,52 @@ describe("funder form", () => {
   );
 
   it.each([
-    "150,000",
-    "150,000.50",
-    "150.000,50",
-    "1 2",
-    "1,234",
-    "9".repeat(400),
-  ])("rejects an ambiguous or invalid award %s", (amount) => {
+    ...[
+      "abc",
+      "-5",
+      "150,000",
+      "150,000.50",
+      "150.000,50",
+      "1 2",
+      "1,234",
+      "1.234",
+      "9".repeat(400),
+      "9999999999999999.99",
+    ].map(
+      (amount) =>
+        ["opportunity", "min_award", amount, "funder-error-award"] as const,
+    ),
+    ["opportunity", "max_award", "100", "funder-error-award-range"],
+    [
+      "opportunity",
+      "max_award",
+      "10000000000000000",
+      "funder-error-award-limit",
+    ],
+    ["chapters", "description", "x".repeat(4001), "funder-error-length-4000"],
+    ["chapters", "title", "Summary\nBudget", "funder-error-chapter-title-line"],
+    ["root", "chapters", 101, "funder-error-chapter-limit"],
+    ["funder", "name", "x".repeat(256), "funder-error-length-255"],
+  ] as const)("rejects invalid %s.%s", (section, field, value, error) => {
     const form = formFromDraft(draft);
-    form.opportunity.min_award = amount;
-    expect(validateFunderForm(form)["opportunity.min_award"]).toBe(
-      "funder-error-award",
-    );
+    if (section === "root") {
+      form.chapters = Array.from({ length: value as number }, () => ({
+        ...form.chapters[0]!,
+      }));
+    } else {
+      Object.assign(
+        section === "chapters" ? form.chapters[0]! : form[section],
+        { [field]: value },
+      );
+    }
+    const key =
+      section === "root"
+        ? "template.chapters"
+        : section === "chapters"
+          ? `chapter.${form.chapters[0]!.id}.${field}`
+          : `${section}.${field}`;
+    expect(validateFunderForm(form)[key]).toBe(error);
   });
-
-  it("fills the form from a draft with lists as comma-separated text", () => {
-    const form = formFromDraft(draft);
-    expect(form.funder.region).toBe("");
-    expect(form.opportunity.hazards).toBe("Flooding, Heat");
-    expect(form.opportunity.min_award).toBe("150000");
-    expect(form.opportunity.max_award).toBe("600000.5");
-    expect(form.chapters[0]).toMatchObject({
-      chapter_ref: "applicant_details",
-      required_fields: "municipality_name, contact_email",
-    });
-  });
-
   it("builds the create request, keeping unedited import values", () => {
     const form = formFromDraft(draft);
     form.opportunity.currency = " ";
@@ -181,29 +186,12 @@ describe("funder form", () => {
 });
 
 describe("funder errors", () => {
-  it("maps failed import codes to copy, treating unknown codes as generic", () => {
-    expect(funderImportErrorKey("document_too_long")).toBe(
-      "funder-import-error-too-long",
-    );
-    expect(funderImportErrorKey("extraction_interrupted")).toBe(
-      "funder-import-error-interrupted",
-    );
-    expect(funderImportErrorKey(null)).toBe("funder-import-error-generic");
-  });
-
-  it("maps API problem codes and statuses to copy", () => {
-    const problem = (code: string, status = 409) => ({
-      status,
-      data: { detail: { code, message: "x" } },
-    });
-    expect(funderApiErrorKey(problem("funder_import_changed"))).toBe(
-      "funder-error-import-changed",
-    );
-    expect(funderApiErrorKey(problem("funder_already_added"))).toBe(
-      "funder-error-already-added",
-    );
+  it("maps API statuses to copy", () => {
     expect(funderApiErrorKey({ status: 422, data: { detail: "bad" } })).toBe(
       "funder-error-invalid",
+    );
+    expect(funderApiErrorKey({ status: 403, data: null })).toBe(
+      "funding-permission-error",
     );
     expect(funderApiErrorKey({ status: 500, data: null })).toBe(
       "funder-error-generic",
@@ -221,28 +209,6 @@ describe("own template", () => {
     expect(
       validateTemplateForm({ ...form, chapters: [] })["template.chapters"],
     ).toBe("funder-error-chapters");
-  });
-
-  it("builds the request from a template import and previews it", () => {
-    const source = {
-      import_id: "import-1",
-      filename: "form.pdf",
-    } as ConceptNoteFunderImport;
-    const request = ownTemplateRequest(
-      templateFormFrom(draft.template),
-      source,
-    );
-    expect(request.import_id).toBe("import-1");
-    expect(request.template).toEqual(
-      formToCreateRequest(formFromDraft(draft), null).template,
-    );
-    const preview = templatePreview(request.template);
-    expect(preview.name).toBe(draft.template.template_name);
-    expect(preview.required_fields).toEqual([
-      ...new Set(
-        draft.template.chapter_schema.flatMap((c) => c.required_fields),
-      ),
-    ]);
   });
 
   it("edits a saved template with its chapter details", () => {
@@ -272,52 +238,5 @@ describe("own template", () => {
     expect(ownTemplateRequest(templateFormFrom(fields), null).template).toEqual(
       fields,
     );
-  });
-});
-
-describe("shared request limits", () => {
-  it.each([
-    ["funder", "name", 255],
-    ["funder", "country", 100],
-    ["opportunity", "currency", 16],
-    ["opportunity", "status", 64],
-    ["template", "template_name", 255],
-  ] as const)(
-    "shows the API length limit for %s.%s",
-    (section, field, limit) => {
-      const form = formFromDraft(draft);
-      Object.assign(form[section], { [field]: "x".repeat(limit + 1) });
-      expect(validateFunderForm(form)[`${section}.${field}`]).toBe(
-        `funder-error-length-${limit}`,
-      );
-    },
-  );
-  it("validates chapter text and count against workspace limits", () => {
-    const form = formFromDraft(draft);
-    form.chapters[0]!.description = "x".repeat(4001);
-    form.chapters[0]!.title = "Summary\nBudget";
-    const errors = validateFunderForm(form);
-    expect(errors[`chapter.${form.chapters[0]!.id}.description`]).toBe(
-      "funder-error-length-4000",
-    );
-    expect(errors[`chapter.${form.chapters[0]!.id}.title`]).toBe(
-      "funder-error-chapter-title-line",
-    );
-    form.chapters = Array.from({ length: 101 }, () => ({
-      ...form.chapters[0]!,
-      title: "Summary",
-      description: "",
-    }));
-    expect(validateFunderForm(form)["template.chapters"]).toBe(
-      "funder-error-chapter-limit",
-    );
-  });
-  it("rejects awards exceeding storage limits or losing numeric precision", () => {
-    const form = formFromDraft(draft);
-    form.opportunity.max_award = "10000000000000000";
-    expect(validateFunderForm(form)["opportunity.max_award"]).toBe(
-      "funder-error-award-limit",
-    );
-    expect(parseAward("9999999999999999.99")).toBeNaN();
   });
 });

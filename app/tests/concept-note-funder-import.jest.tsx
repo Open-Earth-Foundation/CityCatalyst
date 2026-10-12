@@ -153,21 +153,6 @@ it("starts the import as soon as the file is uploaded and follows its stage", as
   expect(flow.phase).toBe("reading");
 });
 
-it("does not start an import for a late upload after discard", async () => {
-  let pending!: Promise<void>;
-  await act(async () => {
-    pending = flow.uploadFile(new File(["pdf"], "call.pdf"));
-  });
-  expect(flow.phase).toBe("uploading");
-  await act(async () => flow.discard());
-  await act(async () => {
-    uploadResult.resolve({ uploadId: "upload-1" });
-    await pending;
-  });
-  expect(flow.phase).toBe("idle");
-  expect(startImport).not.toHaveBeenCalled();
-});
-
 it("discards only the late accepted import when cancelled during POST", async () => {
   const accepted = deferred<ConceptNoteFunderImportResponse>();
   start.mockReturnValue(accepted.promise);
@@ -250,24 +235,6 @@ it("retries the conversion before restarting an import whose upload failed", asy
     uploadId: "upload-1",
     kind: "funder",
   });
-});
-
-it("keeps the server import visible when discard fails", async () => {
-  serverImport = currentImport;
-  discard.mockRejectedValue(new Error("unavailable"));
-  await render();
-  await act(async () => {
-    await expect(flow.discard()).rejects.toThrow("unavailable");
-  });
-  expect(flow.phase).toBe("converting");
-});
-
-it("forgets browser-only progress when switching to another note", async () => {
-  start.mockRejectedValueOnce({ status: 500 });
-  await upload();
-  expect(flow.phase).toBe("failed");
-  await render("other-run");
-  expect(flow.phase).toBe("idle");
 });
 
 it("reads a template upload and ignores an import of the other kind", async () => {

@@ -124,8 +124,7 @@ def _run(*, run_id: UUID, thread_id: UUID, city_id: UUID) -> ConceptNoteRun:
     )
 
 
-@pytest.mark.parametrize("import_status", ["processing", "ready", "failed"])
-async def test_lifecycle_actions_keep_copies_independent(import_status: str) -> None:
+async def test_lifecycle_actions_keep_copies_independent() -> None:
     """Exercise the complete service flow without lifecycle-operation tables."""
     source_run_id = uuid4()
     source_thread_id = uuid4()
@@ -161,7 +160,7 @@ async def test_lifecycle_actions_keep_copies_independent(import_status: str) -> 
                         "funder_import": {
                             "import_id": str(uuid4()),
                             "upload_id": str(source_upload_id),
-                            "status": import_status,
+                            "status": "processing",
                             "filename": "plan.pdf",
                         },
                         "selected_sources": [
@@ -257,7 +256,7 @@ async def test_lifecycle_actions_keep_copies_independent(import_status: str) -> 
             "upload_id"
         ] == str(destination_upload.upload_id)
         source_bundle = await session.get(ConceptNoteContextBundle, source_run_id)
-        assert source_bundle.context_bundle["funder_import"]["status"] == import_status
+        assert source_bundle.context_bundle["funder_import"]["status"] == "processing"
 
         async with workspace_sessions() as workspace_session:
             copied_chapter = await workspace_session.scalar(

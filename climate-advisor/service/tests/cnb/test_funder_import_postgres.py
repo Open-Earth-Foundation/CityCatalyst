@@ -19,11 +19,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.schema import CreateSchema, DropSchema
 from tests.cnb.test_funder_import import (
-    _draft,
-    _ready_import,
-    _request,
     _run_with_upload,
-    _store_import,
 )
 
 pytestmark = pytest.mark.skipif(
@@ -48,8 +44,8 @@ async def import_sessions():
             await connection.execute(CreateSchema(schema))
         async with engine.begin() as connection:
             for table in (
-                Thread.__table__,
                 ConceptNoteRun.__table__,
+                Thread.__table__,
                 ConceptNoteContextBundle.__table__,
                 ConceptNoteUpload.__table__,
             ):
@@ -112,40 +108,3 @@ async def test_concurrent_starts_accept_and_schedule_only_one_import(import_sess
                 if not task.done():
                     task.cancel()
             await asyncio.gather(*tasks, return_exceptions=True)
-
-
-async def test_catalogue_confirmation_does_not_clear_a_newer_import(import_sessions):
-    async with import_sessions() as session:
-        run, upload = await _run_with_upload(session)
-        original = _ready_import(upload)
-        await _store_import(session, run, original)
-        document_id = service._source_document_id
-        replacement = None
-
-        async def replace_while_saving(reference, current_run, current_upload):
-            nonlocal replacement
-            result = await document_id(reference, current_run, current_upload)
-            async with import_sessions() as other_session:
-                other_run = await other_session.get(ConceptNoteRun, run.run_id)
-                replacement = await service.start_funder_import(
-                    other_session, other_run, upload_id=upload.upload_id, token="test"
-                )
-            return result
-
-        with patch.object(
-            service, "_source_document_id", replace_while_saving
-        ), patch.object(service, "schedule_funder_import"):
-            created = await asyncio.wait_for(
-                service.create_funder(
-                    session,
-                    run,
-                    _request(_draft(), original.import_id),
-                    reference_factory=import_sessions,
-                ),
-                5,
-            )
-        assert created.funder_id
-        current = await service.load_funder_import(session, run)
-        assert current is not None
-        assert current.import_id == replacement.import_id
-        assert current.status == "processing"

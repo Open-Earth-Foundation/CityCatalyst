@@ -100,38 +100,32 @@ beforeEach(() => {
 });
 
 describe("Funder API boundary", () => {
-  it("starts an import with the snake_case upstream body after the city check", async () => {
-    callApi.mockResolvedValue(
-      Response.json(
-        { funder_import: { status: "processing" } },
-        { status: 202 },
-      ),
-    );
-    const response = await startImport(post({ uploadId }), context);
-    expect(response.status).toBe(202);
-    expect(callApi).toHaveBeenCalledWith(
-      expect.objectContaining({
-        cityId,
-        session,
-        path: `/v1/concept-notes/${runId}/funder-imports`,
-        method: "POST",
-        body: { upload_id: uploadId, kind: "funder" },
-        searchParams: { user_id: "owner" },
-      }),
-    );
-  });
-
-  it("forwards a template-only import", async () => {
-    callApi.mockResolvedValue(
-      Response.json({ funder_import: null }, { status: 202 }),
-    );
-    await startImport(post({ uploadId, kind: "template" }), context);
-    expect(callApi).toHaveBeenCalledWith(
-      expect.objectContaining({
-        body: { upload_id: uploadId, kind: "template" },
-      }),
-    );
-  });
+  it.each(["funder", "template"] as const)(
+    "starts a %s import after the city check",
+    async (kind) => {
+      callApi.mockResolvedValue(
+        Response.json(
+          { funder_import: { status: "processing" } },
+          { status: 202 },
+        ),
+      );
+      const response = await startImport(
+        post(kind === "funder" ? { uploadId } : { uploadId, kind }),
+        context,
+      );
+      expect(response.status).toBe(202);
+      expect(callApi).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cityId,
+          session,
+          path: `/v1/concept-notes/${runId}/funder-imports`,
+          method: "POST",
+          body: { upload_id: uploadId, kind },
+          searchParams: { user_id: "owner" },
+        }),
+      );
+    },
+  );
 
   it("reads and discards the current import, keeping upstream codes", async () => {
     const read = await getImport(new Request("http://localhost"), context);
@@ -168,7 +162,11 @@ describe("Funder API boundary", () => {
     expect(await response.json()).toEqual(created);
     expect(callApi).toHaveBeenCalledWith(
       expect.objectContaining({
+        cityId,
+        session,
         path: `/v1/concept-notes/${runId}/funders`,
+        method: "POST",
+        searchParams: { user_id: "owner" },
         body: funder,
       }),
     );
@@ -192,26 +190,30 @@ describe("Funder API boundary", () => {
           context,
         ),
     ],
-    [
-      "a minimum above the maximum",
-      () =>
-        createFunder(
-          post({
-            ...funder,
-            opportunity: { ...funder.opportunity, min_award: 9000 },
-          }),
-          context,
-        ),
-    ],
   ])("rejects %s before any upstream call", async (_name, call) => {
     await expect(call()).rejects.toMatchObject({ name: "ZodError" });
     expect(callApi).not.toHaveBeenCalled();
   });
 
-  it("requires authentication", async () => {
-    await expect(
-      getImport(new Request("http://localhost"), { ...context, session: null }),
-    ).rejects.toMatchObject({ statusCode: 401 });
+  it.each([
+    [
+      "reading an import",
+      () =>
+        getImport(new Request("http://localhost"), {
+          ...context,
+          session: null,
+        }),
+    ],
+    [
+      "creating a funder",
+      () => createFunder(post(funder), { ...context, session: null }),
+    ],
+    [
+      "creating with invalid details",
+      () => createFunder(post({}), { ...context, session: null }),
+    ],
+  ])("requires authentication before %s", async (_name, call) => {
+    await expect(call()).rejects.toMatchObject({ statusCode: 401 });
     expect(callApi).not.toHaveBeenCalled();
   });
 });

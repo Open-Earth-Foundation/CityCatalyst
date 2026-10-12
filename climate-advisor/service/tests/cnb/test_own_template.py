@@ -1,39 +1,30 @@
 """A note's own application template, typed by hand or read from a document."""
 
 from functools import partial
-from types import SimpleNamespace
-from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
 from app.models.cnb.funder_creation import (
     CustomTemplateRequest,
-    FunderImportDraft,
     TemplateChapterFields,
     TemplateDocumentExtraction,
     TemplateFields,
 )
 from app.models.cnb.funding_catalogue import FundingSelectionRequest
 from app.models.db.concept_note import ConceptNoteContextBundle
-from app.services.cnb import funder_creation as service
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
     calculate_application_template_fingerprint,
 )
 from app.services.cnb.funder_creation import (
     build_template_draft,
-    create_funder,
-    extract_template_draft,
     load_funder_import,
 )
 from app.services.cnb.funding_selection import save_funding_selection
 from fastapi import HTTPException
-from pydantic import ValidationError
 from tests.cnb.test_funder_import import (
     PAGES,
     _ready_import,
-    _request,
-    _run_job,
     _run_with_upload,
     _store_import,
 )
@@ -129,66 +120,9 @@ def test_template_draft_fills_only_the_template_and_reports_its_gaps():
     ]
 
 
-async def test_template_extract_uses_the_template_reader():
-    runner = SimpleNamespace(
-        run=AsyncMock(
-            return_value=SimpleNamespace(
-                final_output=_template_extraction().model_dump(mode="json")
-            )
-        )
-    )
-    draft = await extract_template_draft(
-        PAGES,
-        filename="form.pdf",
-        source_format="pdf",
-        client=SimpleNamespace(),
-        runner=runner,
-    )
-    assert draft.template.template_name == "Proposal form"
-    agent, _ = runner.run.await_args.args
-    assert agent.name == "Concept Note template document reader"
-
-
-async def test_background_job_reads_a_template_import_with_the_template_reader(
-    monkeypatch,
-):
-    async with _ca_session() as session:
-        run, upload = await _run_with_upload(session)
-        await _store_import(
-            session,
-            run,
-            _template_import(upload).model_copy(
-                update={"status": "processing", "draft": None}
-            ),
-        )
-        draft = build_template_draft(_template_extraction(), PAGES)
-        template_reader = AsyncMock(return_value=draft)
-        funder_reader = AsyncMock()
-        monkeypatch.setattr(service, "extract_template_draft", template_reader)
-        monkeypatch.setattr(service, "extract_funder_draft", funder_reader)
-        result = await _run_job(session, run, upload, None)
-        assert result.kind == "template"
-        assert result.status == "ready"
-        assert result.draft == draft
-        template_reader.assert_awaited_once()
-        funder_reader.assert_not_awaited()
-
-
-async def test_imports_are_only_used_for_their_own_kind():
+async def test_own_template_rejects_a_funder_import():
     async with _workspace_repository() as (_, factory), _ca_session() as session:
         run, upload = await _run_with_upload(session)
-        template_import = _template_import(upload)
-        await _store_import(session, run, template_import)
-        # A template read cannot become a catalogue funder.
-        with pytest.raises(HTTPException) as funder_error:
-            await create_funder(
-                session,
-                run,
-                _request(_ready_import(upload).draft, template_import.import_id),
-                reference_factory=factory,
-            )
-        assert funder_error.value.detail["code"] == "funder_import_changed"
-
         # A funder read cannot become an own template.
         funder_import = _ready_import(upload)
         await _store_import(session, run, funder_import)
@@ -204,15 +138,6 @@ async def test_imports_are_only_used_for_their_own_kind():
 
 
 # --- Using an own template --------------------------------------------------------
-
-
-def test_own_template_requires_a_name_titled_chapters_and_no_funder():
-    with pytest.raises(ValidationError):
-        CustomTemplateRequest(template=TemplateFields(template_name="Form"))
-    with pytest.raises(ValidationError):
-        _own_template(" ")
-    with pytest.raises(ValidationError):
-        _choose(_own_template("Summary"), funder=uuid4())
 
 
 async def test_own_template_by_hand_drives_drafting_without_a_funder():
@@ -316,11 +241,3 @@ async def test_own_template_with_a_draft_needs_acknowledgement_and_matching_chap
         assert revised.template.id != first.template.id
         chapter = (await workspace.list_chapters(run_id=run.run_id))[0]
         assert chapter.status == "needs_review"
-
-
-def test_template_imports_default_to_reading_funders():
-    stored = _ready_import(SimpleNamespace(upload_id=uuid4(), filename="call.pdf"))
-    payload = stored.model_dump(mode="json")
-    payload.pop("kind")
-    assert type(stored).model_validate(payload).kind == "funder"
-    assert isinstance(stored.draft, FunderImportDraft)

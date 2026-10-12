@@ -241,7 +241,6 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
     )
 
 
-
 def _open_gap(field_key: str, question: str) -> WorkspaceGapSnapshot:
     now = datetime.now(UTC)
     return WorkspaceGapSnapshot(
@@ -514,11 +513,16 @@ def _drafted_chapter(number: int, *, revision_number: int | None = 1):
     )
 
 
-async def test_revalidation_finishes_without_llm_calls_before_drafting() -> None:
+@pytest.mark.parametrize(
+    "has_chapters", [False, True], ids=["empty-note", "undrafted-note"]
+)
+async def test_revalidation_finishes_without_llm_calls_before_drafting(
+    has_chapters,
+) -> None:
     """New files on an undrafted note need no redraft and no template."""
     service = _revalidation_service(
-        [_drafted_chapter(1, revision_number=None)],
-        selected=[1],
+        [_drafted_chapter(1, revision_number=None)] if has_chapters else [],
+        selected=[1] if has_chapters else [],
         query_document_fn=AsyncMock(),
         payloads=[],
         saved=[],
@@ -532,26 +536,6 @@ async def test_revalidation_finishes_without_llm_calls_before_drafting() -> None
     )
 
     service._load_run_context.assert_not_awaited()
-    service._source_impact_reviewer.select_chapters.assert_not_awaited()
-
-
-async def test_revalidation_without_chapters_finishes() -> None:
-    """A note with no chapters at all has nothing to revalidate."""
-    service = _revalidation_service(
-        [],
-        selected=[],
-        query_document_fn=AsyncMock(),
-        payloads=[],
-        saved=[],
-        with_template=False,
-    )
-
-    assert await service.revalidate_after_new_sources(
-        run_id=RUN_ID,
-        user_id="user-1",
-        new_sources=[RevalidationSource(source=NEW_SOURCE, units=[])],
-    )
-
     service._source_impact_reviewer.select_chapters.assert_not_awaited()
 
 

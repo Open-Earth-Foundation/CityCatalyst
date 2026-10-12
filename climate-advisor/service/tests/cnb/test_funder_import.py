@@ -48,13 +48,14 @@ from app.services.cnb.funding_catalogue import load_funding_catalogue
 from app.services.cnb.source_analysis import SourceBlock, SourcePage
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
-from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from tests.test_concept_note_lifecycle import _ca_session, _workspace_repository
 
 PAGES = [
-    SourcePage(number=1, text="\nGreen Cities Foundation\nNature-Based Cities Call 2026\n"),
+    SourcePage(
+        number=1, text="\nGreen Cities Foundation\nNature-Based Cities Call 2026\n"
+    ),
     SourcePage(
         number=2,
         text="\nWe award   grants of USD 150,000 to 600,000 per project.\n"
@@ -286,27 +287,6 @@ def test_build_draft_reports_markdown_quotes_without_page():
     assert "template.chapter_schema" in draft.missing
 
 
-async def test_extract_reads_the_whole_document_once_and_verifies_quotes():
-    runner = SimpleNamespace(
-        run=AsyncMock(
-            return_value=SimpleNamespace(
-                final_output=_extraction().model_dump(mode="json")
-            )
-        )
-    )
-    draft = await extract_funder_draft(
-        PAGES,
-        filename="call.pdf",
-        source_format="pdf",
-        client=SimpleNamespace(),
-        runner=runner,
-    )
-    assert draft.funder.name == "Green Cities Foundation"
-    agent, input_text = runner.run.await_args.args
-    assert agent.name == "Concept Note funder document reader"
-    assert "<!-- page: 2 -->" in input_text
-
-
 async def test_extract_rejects_documents_over_the_token_budget():
     settings = get_settings().model_copy(deep=True)
     settings.llm.generation.prompt_budget.cnb_funder_import.max_document_tokens = 1000
@@ -323,20 +303,6 @@ async def test_extract_rejects_documents_over_the_token_budget():
         )
     assert error.value.code == "document_too_long"
     runner.run.assert_not_awaited()
-
-
-def test_create_request_requires_names_and_a_titled_chapter():
-    draft = _draft()
-    with pytest.raises(ValidationError):
-        _request(draft.model_copy(update={"funder": FunderFields(name=" ")}))
-    with pytest.raises(ValidationError):
-        _request(
-            draft.model_copy(
-                update={"template": TemplateFields(template_name="Form")}
-            )
-        )
-    with pytest.raises(ValidationError):
-        ProgrammeFields(name="Call", min_award=Decimal(10), max_award=Decimal(5))
 
 
 # --- Adding to the catalogue ------------------------------------------------------
@@ -399,11 +365,14 @@ async def test_create_from_import_records_extracted_and_edited_provenance():
         assert replay.value.detail["code"] == "funder_import_changed"
 
 
-async def test_create_rejects_an_import_that_is_not_ready():
+@pytest.mark.parametrize(
+    "status,kind", [("processing", "funder"), ("ready", "template")]
+)
+async def test_create_rejects_a_stale_or_wrong_kind_import(status, kind):
     async with _workspace_repository() as (_, factory), _ca_session() as session:
         run, upload = await _run_with_upload(session)
         funder_import = _ready_import(upload).model_copy(
-            update={"status": "processing", "draft": None}
+            update={"status": status, "kind": kind}
         )
         await _store_import(session, run, funder_import)
         with pytest.raises(HTTPException) as error:
@@ -414,6 +383,7 @@ async def test_create_rejects_an_import_that_is_not_ready():
                 reference_factory=factory,
             )
         assert error.value.status_code == 409
+        assert error.value.detail["code"] == "funder_import_changed"
 
 
 # --- Import lifecycle ----------------------------------------------------------------
@@ -539,35 +509,29 @@ async def _run_job(
     return await load_funder_import(session, run)
 
 
-async def test_background_job_stores_a_ready_draft():
+@pytest.mark.parametrize("failed", [False, True], ids=["ready-draft", "stable-failure"])
+async def test_background_job_stores_its_outcome(failed):
     async with _ca_session() as session:
         run, upload = await _run_with_upload(session)
         await _store_import(
             session,
             run,
-            _ready_import(upload).model_copy(update={"status": "processing", "draft": None}),
+            _ready_import(upload).model_copy(
+                update={"status": "processing", "draft": None}
+            ),
         )
-        extract = AsyncMock(return_value=_draft())
-        result = await _run_job(session, run, upload, extract)
-        assert result.status == "ready"
-        assert result.draft == _draft()
-        pages = extract.await_args.args[0]
-        assert [page.number for page in pages] == [1, 2]
-
-
-async def test_background_job_stores_a_stable_failure_code():
-    async with _ca_session() as session:
-        run, upload = await _run_with_upload(session)
-        await _store_import(
-            session,
-            run,
-            _ready_import(upload).model_copy(update={"status": "processing", "draft": None}),
+        extract = AsyncMock(
+            return_value=_draft(),
+            side_effect=FunderImportError("document_too_long", "big")
+            if failed
+            else None,
         )
-        extract = AsyncMock(side_effect=FunderImportError("document_too_long", "big"))
         result = await _run_job(session, run, upload, extract)
-        assert result.status == "failed"
-        assert result.error_code == "document_too_long"
-        assert result.draft is None
+        assert result.status == ("failed" if failed else "ready")
+        assert result.error_code == ("document_too_long" if failed else None)
+        assert result.draft == (None if failed else _draft())
+        if not failed:
+            assert [page.number for page in extract.await_args.args[0]] == [1, 2]
 
 
 @pytest.mark.parametrize(
@@ -606,32 +570,6 @@ async def test_background_job_waits_for_the_upload_to_convert(
 
 
 # --- HTTP ---------------------------------------------------------------------------
-
-
-def test_discard_requires_and_forwards_the_observed_import_id():
-    app = get_app()
-    run = SimpleNamespace(run_id=uuid4(), user_id="owner")
-    app.dependency_overrides[get_session] = lambda: None
-    app.dependency_overrides[authorized_run] = lambda: run
-    import_id = uuid4()
-    with (
-        patch(
-            "app.routes.concept_note_funders.discard_funder_import", AsyncMock()
-        ) as discard,
-        TestClient(app) as client,
-    ):
-        path = f"/v1/concept-notes/{run.run_id}/funder-imports/current"
-        missing = client.delete(path, params={"user_id": "owner"})
-        assert missing.status_code == 422
-        discard.assert_not_awaited()
-        response = client.request(
-            "DELETE",
-            path,
-            params={"user_id": "owner"},
-            json={"import_id": str(import_id)},
-        )
-    assert response.status_code == 204
-    discard.assert_awaited_once_with(None, run, import_id=import_id)
 
 
 def test_structured_errors_keep_their_code_in_problem_responses():

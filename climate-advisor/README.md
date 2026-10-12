@@ -961,8 +961,10 @@ Operationally:
   unaffected prose are kept; a contradicted existing fact is flagged with a new
   marker instead of being overwritten. Each redraft appends a revision, resolves
   only gaps with a cited answer as `evidence_update` by `system`, keeps deferred
-  caveats, and reopens resolved gaps it contradicts. A redraft that drops an
-  unanswered gap or mismatches its markers is rejected and logged. The last
+  caveats, and reopens resolved gaps it contradicts. A gap the redraft drops
+  without an answer is added back as a marker at the end of the chapter and
+  stays open; a redraft that mismatches its markers is rejected and logged.
+  The last
   confirmed revision is preserved, so an affected Ready chapter returns to
   review. The drafter also receives the chapter's `resolved_information` and
   `existing_open_gaps` so earlier answers stay applied and gap keys stay

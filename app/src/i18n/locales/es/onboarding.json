@@ -322,5 +322,8 @@
   "projects-label": "Proyectos",
   "invite-collaborators-select-project-first": "Selecciona un proyecto arriba para ver las ciudades disponibles.",
   "import-warnings-title": "Algunas filas no serán importadas",
-  "import-warnings-detail": "Estas filas se dejan fuera del inventario. No se pudo resolver una referencia GPC, o la fila no tiene emisiones y no tiene clave de notación."
+  "import-warnings-detail": "Estas filas se dejan fuera del inventario. No se pudo resolver una referencia GPC, o la fila no tiene emisiones y no tiene clave de notación.",
+  "columns-mapped-in-file": "Columnas mapeadas",
+  "import-status-check-failed": "No se pudo comprober este archivo",
+  "import-status-check-failed-detail": "El archivo se subió, pero no se pudo comprobar su año. Puedes intentar Continuar o subir el archivo de nuevo."
 }

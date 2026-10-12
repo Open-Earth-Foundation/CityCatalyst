@@ -321,5 +321,8 @@
   "projects-label": "Projekte",
   "invite-collaborators-select-project-first": "Wähle oben ein Projekt aus, um verfügbare Städte zu sehen.",
   "import-warnings-title": "Einige Zeilen werden nicht importiert",
-  "import-warnings-detail": "Diese Zeilen wurden aus dem Inventar ausgeschlossen. Eine GPC-Referenz konnte nicht aufgelöst werden, oder die Zeile hat keine Emissionen und keinen Notationsschlüssel."
+  "import-warnings-detail": "Diese Zeilen wurden aus dem Inventar ausgeschlossen. Eine GPC-Referenz konnte nicht aufgelöst werden, oder die Zeile hat keine Emissionen und keinen Notationsschlüssel.",
+  "columns-mapped-in-file": "Zugeordnete Spalten",
+  "import-status-check-failed": "Konnte diese Datei nicht überprüfen",
+  "import-status-check-failed-detail": "Die Datei wurde hochgeladen, aber ihr Jahr konnte nicht überprüft werden. Sie können mit Fortfahren versuchen oder die Datei erneut hochladen."
 }

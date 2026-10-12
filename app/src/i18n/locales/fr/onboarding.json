@@ -319,5 +319,8 @@
   "projects-label": "Projets",
   "invite-collaborators-select-project-first": "Sélectionnez un projet ci-dessus pour voir les villes disponibles.",
   "import-warnings-title": "Certaines lignes ne seront pas importées",
-  "import-warnings-detail": "Ces lignes sont exclues de l'inventaire. Une référence GPC n'a pas pu être résolue, ou la ligne ne contient aucune émission et aucune clé de notation."
+  "import-warnings-detail": "Ces lignes sont exclues de l'inventaire. Une référence GPC n'a pas pu être résolue, ou la ligne ne contient aucune émission et aucune clé de notation.",
+  "columns-mapped-in-file": "Colonnes mappées",
+  "import-status-check-failed": "Impossible de vérifier ce fichier",
+  "import-status-check-failed-detail": "Le fichier a été téléchargé, mais son année n'a pas pu être vérifiée. Vous pouvez essayer de Continuer, ou télécharger le fichier à nouveau."
 }

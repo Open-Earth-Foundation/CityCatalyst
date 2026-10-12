@@ -1925,6 +1925,9 @@ and replaces the bundle's funding context. City and uploaded-source context rema
 available. The corresponding CityCatalyst proxy routes and RTK cache invalidation
 refresh the selection, draft review state, and pending proposals.
 
+A note's own template is the alternative to a funder; see
+[using a note's own template](#using-a-notes-own-template).
+
 Funding changes are rejected during active context assembly, drafting, or edit
 planning. For an existing draft, the user must acknowledge another review: chapter
 text and revision history are retained, confirmations and prior validation results
@@ -2054,6 +2057,53 @@ or dot thousands grouping is rejected instead of silently changing the amount.
 ```bash
 # From climate-advisor/service
 python -m pytest tests/cnb/test_funder_creation.py tests/cnb/test_funder_import.py
+```
+
+### Using a note's own template
+
+A note does not need a funder. The funding dialog's rail footer, **Use your own
+template**, gives the note an application template that the user defines by hand
+or uploads (an application form or concept note template). The template applies
+only to that note and is not added to the shared catalogue. It replaces the
+funder selection: a note uses either one catalogue programme's template or its
+own template.
+
+Storage and selection:
+
+- `concept_note_runs.custom_template` (CA migration `20261007_120000`) stores a
+  normalized snapshot `{id, template_name, output_format, chapter_schema,
+  required_fields, added_from: {kind: manual | document, filename}}`. Chapter
+  refs are slugged uniquely and `required_fields` is built from chapter fields,
+  as for catalogue templates.
+- It is saved through the same `PATCH /application-context` as a funder:
+  `custom_template: {template, import_id}` with `funder_id` and
+  `selected_funding_opportunity_id` null. `expected_custom_template_id` joins
+  the expected funder and programme in the stale-selection check. Each save
+  stores a new template id; choosing a funder or clearing the selection removes
+  the own template. Draft acknowledgement, chapter compatibility
+  (`funding_template_incompatible`), review invalidation and locking are the
+  rules above, applied to the own template's chapters.
+- `GET /application-context` returns it as `template` with
+  `template_source = added_from`; `funder` and `opportunity` stay null. Drafting,
+  validation and the template fingerprint read it there, so they need no other
+  change. The bundle's `funder_context` carries the template with a null funder.
+- Duplicating a note copies its own template.
+
+Document path: the same upload and import as adding a funder, started with
+`POST /funder-imports {upload_id, kind: "template"}`. The run still has one
+import at a time; each dialog flow shows only an import of its own `kind`, and
+stored imports without a kind are funder imports. The background job reads the
+document with prompt `prompts/cnb/template_document_extraction.md` (same
+`cnb_funder_extractor` model and token limit) into a draft that fills only
+`template`, reporting only template columns in `missing`. The user reviews the
+chapters, confirms the template in the dialog and saves the selection, which
+stores the template and clears the import. A funder import cannot be used as an
+own template, and a template import cannot be added as a funder
+(`funder_import_changed`).
+
+```bash
+# From climate-advisor/service
+python -m pytest tests/cnb/test_own_template.py
 ```
 
 ### Context Bundle Build Responsibilities

@@ -815,7 +815,11 @@ language, or client-side fallback behavior. The boundary is:
   the user reviews them. Concurrent import starts are serialized, and discard
   requires the observed import ID so it cannot remove a newer import. Duplicated
   notes keep the source files but omit pending funder imports; see
-  [adding a funder](../docs/ConceptNoteBuilderArchitecture.md#adding-a-funder-that-is-not-in-the-catalogue). See the
+  [adding a funder](../docs/ConceptNoteBuilderArchitecture.md#adding-a-funder-that-is-not-in-the-catalogue).
+  A note can instead use its own template (`concept_note_runs.custom_template`),
+  typed by hand or read from an upload with the same extractor and
+  `prompts/cnb/template_document_extraction.md`; see
+  [own templates](../docs/ConceptNoteBuilderArchitecture.md#using-a-notes-own-template). See the
   [workspace funding-selection contract](../docs/ConceptNoteBuilderArchitecture.md#funding-selection-in-the-workspace)
   for compatible-template checks, draft review invalidation, serialized edit
   registration/application, and focused tests

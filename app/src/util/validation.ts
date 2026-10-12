@@ -468,6 +468,9 @@ export const conceptNoteFundingSelectionRequest = z
     selected_funding_opportunity_id: z.string().uuid().nullable(),
     expected_funder_id: z.string().uuid().nullable(),
     expected_funding_opportunity_id: z.string().uuid().nullable(),
+    // An own template replaces the funder and programme.
+    custom_template: conceptNoteCustomTemplateRequest.nullable().default(null),
+    expected_custom_template_id: z.string().uuid().nullable().default(null),
     acknowledge_draft_review: z.boolean().default(false),
   })
   .strict()
@@ -476,12 +479,17 @@ export const conceptNoteFundingSelectionRequest = z
       value.funder_id !== null ||
       value.selected_funding_opportunity_id === null,
     { message: "A funding opportunity requires a funder" },
+  )
+  .refine(
+    (value) => value.custom_template === null || value.funder_id === null,
+    { message: "An own template replaces the funder selection" },
   );
 
 export const conceptNoteFunderImportStartRequest = z
   .object({
     uploadId: z.string().uuid(),
-    kind: z.enum(["funder"]).default("funder"),
+    /** Read a catalogue funder (default) or only a note's own template. */
+    kind: z.enum(["funder", "template"]).default("funder"),
   })
   .strict();
 export const recordConsentRequest = z.object({

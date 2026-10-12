@@ -27,7 +27,7 @@ const PROCESSING_BADGE = {
   label: "status-processing",
   tone: "neutral",
 } as const;
-/** Copy for reading a funder document. */
+/** Copy for reading a funder, or only a note's own template. */
 const PANEL_COPY = {
   funder: {
     testId: "add-funder-panel",
@@ -36,6 +36,14 @@ const PANEL_COPY = {
     description: "funder-add-description",
     manual: "funder-add-manual",
     review: "funder-review-details",
+  },
+  template: {
+    testId: "own-template-panel",
+    upload: "template-upload-label",
+    title: "template-add-title",
+    description: "template-add-description",
+    manual: "template-add-manual",
+    review: "template-review-details",
   },
 } as const;
 
@@ -47,8 +55,8 @@ interface AddFunderPanelProps {
 }
 
 /**
- * Right pane of the funding dialog before the form: upload a funder document
- * and follow its read, or switch to entering it by hand.
+ * Right pane of the funding dialog before the form: upload one funder or
+ * template document and follow its read, or switch to entering it by hand.
  */
 export function AddFunderPanel({
   flow,

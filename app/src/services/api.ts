@@ -2622,7 +2622,7 @@ export const api = createApi({
       }),
       startConceptNoteFunderImport: builder.mutation<
         ConceptNoteFunderImportResponse,
-        { runId: string; uploadId: string; kind: "funder" }
+        { runId: string; uploadId: string; kind: "funder" | "template" }
       >({
         query: ({ runId, uploadId, kind }) => ({
           url: `concept-notes/${runId}/funder-imports/`,

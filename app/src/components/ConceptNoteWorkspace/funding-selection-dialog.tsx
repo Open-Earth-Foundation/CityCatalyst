@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import {
   LuCheck,
+  LuFileText,
   LuLandmark,
   LuPlus,
   LuSearch,
@@ -47,9 +48,16 @@ import {
 } from "./add-funder-flow";
 import { funderApiErrorCode } from "./funder-form";
 import {
+  ApplicationTemplatePreview,
   FunderProfile,
   FundingOpportunityDetails,
 } from "./funding-details";
+import {
+  OwnTemplatePane,
+  savedOwnTemplate,
+  useOwnTemplate,
+  type OwnTemplateChoice,
+} from "./own-template-flow";
 import {
   FUNDER_IMPORT_PHASE_LABEL,
   type FunderImportFlow,
@@ -65,6 +73,8 @@ interface FundingSelectionDialogProps {
   onSaved?: () => void;
   /** Enables adding a funder from a document; by hand works without it. */
   funderImport?: FunderImportFlow;
+  /** Enables reading the note's own template from a document. */
+  templateImport?: FunderImportFlow;
 }
 
 const selectionButtonProps = {
@@ -111,6 +121,7 @@ export function FundingSelectionDialog({
   onClose,
   onSaved,
   funderImport,
+  templateImport,
 }: FundingSelectionDialogProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const searchRef = useRef<HTMLInputElement>(null);
@@ -122,6 +133,10 @@ export function FundingSelectionDialog({
   const [opportunityId, setOpportunityId] = useState(
     applicationContext.opportunity?.id ?? null,
   );
+  // The note's own template replaces the funder and programme when chosen.
+  const [initialOwn] = useState(() => savedOwnTemplate(applicationContext));
+  const [ownTemplate, setOwnTemplate] = useState(initialOwn);
+  const [usingOwn, setUsingOwn] = useState(initialOwn !== null);
   const [acknowledged, setAcknowledged] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Shown in the footer, not as a toast, so it never covers the save button.
@@ -145,10 +160,14 @@ export function FundingSelectionDialog({
   const opportunity = funder?.opportunities.find(
     (item) => item.id === opportunityId,
   );
-  const changed =
-    funderId !== (initialContext.funder?.id ?? null) ||
-    opportunityId !== (initialContext.opportunity?.id ?? null);
-  const selectedTemplate = opportunity?.template;
+  const changed = usingOwn
+    ? !initialOwn || Boolean(ownTemplate?.request)
+    : Boolean(initialOwn) ||
+      funderId !== (initialContext.funder?.id ?? null) ||
+      opportunityId !== (initialContext.opportunity?.id ?? null);
+  const selectedTemplate = usingOwn
+    ? ownTemplate?.preview
+    : opportunity?.template;
   // Only a first save with a drafting template moves the user on to drafting.
   const savesIntoDrafting =
     !hasDraft && Boolean(selectedTemplate?.chapter_schema.length);
@@ -157,9 +176,13 @@ export function FundingSelectionDialog({
     [401, 403, 404].includes(Number(catalogueError.status));
   // Adding an unlisted funder replaces the details pane and footer.
   const add = useAddFunder({ runId, flow: funderImport, onAdded: selectAdded });
+  const own = useOwnTemplate({
+    flow: templateImport,
+    onUse: chooseOwnTemplate,
+  });
   const submitting = saveState.isLoading || add.creating;
-  // The rail shows no selection while adding a funder.
-  const selectedFunderId = add.mode ? null : funderId;
+  // The rail shows no funder while adding one or using an own template.
+  const selectedFunderId = add.mode || own.mode || usingOwn ? null : funderId;
   const addedFrom = funder?.opportunities.find(
     (item) => item.added_from,
   )?.added_from;
@@ -170,6 +193,7 @@ export function FundingSelectionDialog({
     setQuery("");
     setFunderId(created.funder_id);
     setOpportunityId(created.funding_opportunity_id);
+    setUsingOwn(false);
     setAcknowledged(false);
     setError(null);
     setNotice(t("funder-added"));
@@ -180,9 +204,35 @@ export function FundingSelectionDialog({
     }
   }
 
+  function chooseOwnTemplate(choice: OwnTemplateChoice): void {
+    setOwnTemplate(choice);
+    setUsingOwn(true);
+    setAcknowledged(false);
+    setError(null);
+    setNotice(t("template-chosen"));
+  }
+
+  /** Show a template read in progress, the chosen template, or start one. */
+  function openOwnTemplate(): void {
+    add.close();
+    setNotice(null);
+    if (ownTemplate && (templateImport?.phase ?? "idle") === "idle") {
+      own.close();
+      setUsingOwn(true);
+      setAcknowledged(false);
+    } else {
+      own.open();
+    }
+  }
+
   function chooseFunder(id: string): void {
     setNotice(null);
     add.close();
+    own.close();
+    if (usingOwn) {
+      setUsingOwn(false);
+      setAcknowledged(false);
+    }
     if (id === funderId) return;
     const opportunities =
       funders.find((item) => item.id === id)?.opportunities ?? [];
@@ -217,11 +267,13 @@ export function FundingSelectionDialog({
       await saveSelection({
         runId,
         selection: {
-          funder_id: funderId,
-          selected_funding_opportunity_id: opportunityId,
+          funder_id: usingOwn ? null : funderId,
+          selected_funding_opportunity_id: usingOwn ? null : opportunityId,
           expected_funder_id: initialContext.funder?.id ?? null,
           expected_funding_opportunity_id:
             initialContext.opportunity?.id ?? null,
+          custom_template: usingOwn ? (ownTemplate?.request ?? null) : null,
+          expected_custom_template_id: initialOwn?.preview.id ?? null,
           acknowledge_draft_review: acknowledged,
         },
       }).unwrap();
@@ -476,7 +528,10 @@ export function FundingSelectionDialog({
                     bg="base.light"
                     aria-pressed={Boolean(add.mode)}
                     disabled={submitting}
-                    onClick={add.open}
+                    onClick={() => {
+                      own.close();
+                      add.open();
+                    }}
                   >
                     <Icon as={LuPlus} flexShrink={0} color="content.link" />
                     <Box>
@@ -497,7 +552,41 @@ export function FundingSelectionDialog({
                       </Text>
                     </Box>
                   </Button>
-
+                  <Button
+                    {...selectionButtonProps}
+                    variant="outline"
+                    w="full"
+                    gap={3}
+                    border="1px dashed"
+                    borderColor={
+                      own.mode || (usingOwn && !add.mode)
+                        ? "content.link"
+                        : "border.neutral"
+                    }
+                    bg="base.light"
+                    aria-pressed={Boolean(own.mode) || (usingOwn && !add.mode)}
+                    disabled={submitting}
+                    onClick={openOwnTemplate}
+                  >
+                    <Icon as={LuFileText} flexShrink={0} color="content.link" />
+                    <Box minW={0}>
+                      <Text fontSize="body.sm" fontWeight="semibold">
+                        {t("template-own-entry")}
+                      </Text>
+                      <Text
+                        mt={0.5}
+                        fontSize="label.sm"
+                        fontWeight="normal"
+                        color="content.tertiary"
+                        truncate
+                      >
+                        {templateImport && templateImport.phase !== "idle"
+                          ? t(FUNDER_IMPORT_PHASE_LABEL[templateImport.phase])
+                          : (ownTemplate?.preview.name ??
+                            t("template-own-entry-help"))}
+                      </Text>
+                    </Box>
+                  </Button>
                 </VStack>
               </VStack>
               <VStack
@@ -511,6 +600,57 @@ export function FundingSelectionDialog({
               >
                 {add.mode ? (
                   <AddFunderPane add={add} flow={funderImport} lng={lng} />
+                ) : own.mode ? (
+                  <OwnTemplatePane own={own} flow={templateImport} lng={lng} />
+                ) : usingOwn && ownTemplate ? (
+                  <VStack
+                    align="stretch"
+                    gap={4}
+                    data-testid="own-template-details"
+                  >
+                    <Box>
+                      <Heading as="h3" fontSize="title.md">
+                        {t("template-own-title")}
+                      </Heading>
+                      <Text mt={1} fontSize="label.sm" color="content.tertiary">
+                        {ownTemplate.source.kind === "document"
+                          ? t("template-from-file", {
+                              filename: ownTemplate.source.filename,
+                            })
+                          : t("template-by-hand")}
+                      </Text>
+                      <Text mt={2} fontSize="body.sm" color="content.secondary">
+                        {t("template-own-help")}
+                      </Text>
+                    </Box>
+                    <HStack gap={2} flexWrap="wrap">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => own.change(ownTemplate.preview)}
+                      >
+                        {t("template-edit")}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        color="content.link"
+                        onClick={own.open}
+                      >
+                        {t("template-replace")}
+                      </Button>
+                    </HStack>
+                    <Box
+                      borderTop="1px solid"
+                      borderColor="border.neutral"
+                      pt={4}
+                    >
+                      <ApplicationTemplatePreview
+                        template={ownTemplate.preview}
+                        lng={lng}
+                      />
+                    </Box>
+                  </VStack>
                 ) : !funder ? (
                   <VStack align="start" justify="center" flex={1} gap={3}>
                     <Icon as={LuLandmark} boxSize={8} color="content.link" />
@@ -609,6 +749,14 @@ export function FundingSelectionDialog({
         </DialogBody>
         {add.mode ? (
           <AddFunderFooter add={add} flow={funderImport} lng={lng} />
+        ) : own.mode ? (
+          <AddFunderFooter
+            add={own}
+            flow={templateImport}
+            lng={lng}
+            submitLabel="template-use-submit"
+            submitTestId="concept-note-use-template"
+          />
         ) : (
           <DialogFooter
             display="block"
@@ -676,7 +824,9 @@ export function FundingSelectionDialog({
             >
               <Box flex={1} minW="160px">
                 <Text fontSize="body.sm" fontWeight="semibold">
-                  {funder?.name ?? t("funding-not-selected")}
+                  {usingOwn
+                    ? t("template-own-title")
+                    : (funder?.name ?? t("funding-not-selected"))}
                 </Text>
                 <Text fontSize="label.sm" color="content.tertiary">
                   {selectedTemplate?.name ?? t("template-not-selected")}
@@ -691,10 +841,11 @@ export function FundingSelectionDialog({
                   color: "content.link",
                 }}
                 size="sm"
-                disabled={!funderId || submitting || isError}
+                disabled={(!funderId && !usingOwn) || submitting || isError}
                 onClick={() => {
                   setFunderId(null);
                   setOpportunityId(null);
+                  setUsingOwn(false);
                   setAcknowledged(false);
                 }}
               >
@@ -717,7 +868,7 @@ export function FundingSelectionDialog({
                   isError ||
                   busy ||
                   (hasDraft && changed && !acknowledged) ||
-                  (funderId !== null && !funder)
+                  (!usingOwn && funderId !== null && !funder)
                 }
                 onClick={() => void save()}
                 data-testid="concept-note-funding-save"

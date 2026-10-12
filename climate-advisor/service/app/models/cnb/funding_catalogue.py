@@ -12,6 +12,7 @@ from app.models.cnb.concept_note_application_context import (
     ApplicationContextTemplate,
     FundingAddedFrom,
 )
+from app.models.cnb.funder_creation import CustomTemplateRequest
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
@@ -66,11 +67,16 @@ class FundingSelectionRequest(BaseModel):
     selected_funding_opportunity_id: UUID | None
     expected_funder_id: UUID | None
     expected_funding_opportunity_id: UUID | None
+    # A note's own template replaces the funder and programme.
+    custom_template: CustomTemplateRequest | None = None
+    expected_custom_template_id: UUID | None = None
     acknowledge_draft_review: bool = False
 
     @model_validator(mode="after")
     def require_funder_for_opportunity(self) -> FundingSelectionRequest:
-        """Prevent an opportunity from being selected without its funder."""
+        """Keep an opportunity under its funder and an own template on its own."""
         if self.selected_funding_opportunity_id is not None and self.funder_id is None:
             raise ValueError("A funding opportunity requires a funder")
+        if self.custom_template is not None and self.funder_id is not None:
+            raise ValueError("An own template replaces the funder selection")
         return self

@@ -369,6 +369,8 @@ export function ContextTab({
   const [templateOpen, setTemplateOpen] = useState(false);
   const [inventoryPickerOpen, setInventoryPickerOpen] = useState(false);
   const template = applicationContext?.template ?? null;
+  // A note's own template stands in for a funder.
+  const ownTemplate = Boolean(applicationContext?.template_source);
   const ghgiIncluded =
     bundle.availableContext.ghgi ||
     (applicationContext?.included_sources.ghgi ?? false);
@@ -796,17 +798,28 @@ export function ContextTab({
                   }
             }
             value={
-              applicationContext?.funder?.name || t("funding-not-selected")
+              applicationContext?.funder?.name ||
+              t(ownTemplate ? "funding-no-funder" : "funding-not-selected")
             }
             details={[
               applicationContext?.funder
                 ? applicationContext.opportunity?.name || ""
-                : t("funder-why"),
+                : t(ownTemplate ? "template-own-funder-help" : "funder-why"),
             ]}
             status={t(
-              applicationContext?.funder ? "connected" : "not-connected",
+              applicationContext?.funder
+                ? "connected"
+                : ownTemplate
+                  ? "not-needed"
+                  : "not-connected",
             )}
-            tone={applicationContext?.funder ? "positive" : "warning"}
+            tone={
+              applicationContext?.funder
+                ? "positive"
+                : ownTemplate
+                  ? "neutral"
+                  : "warning"
+            }
           />
           <ContextCard
             label={t("funding-template-preview")}
@@ -829,6 +842,7 @@ export function ContextTab({
               template
                 ? [
                     [
+                      ownTemplate && t("template-own-title"),
                       t("funding-template-chapters", {
                         count: template.chapter_schema.length,
                       }),

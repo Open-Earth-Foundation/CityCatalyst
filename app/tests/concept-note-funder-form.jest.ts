@@ -2,11 +2,16 @@ import { describe, expect, it } from "@jest/globals";
 
 import {
   emptyFunderForm,
+  emptyTemplateForm,
   formFromDraft,
   formToCreateRequest,
   funderApiErrorKey,
+  ownTemplateRequest,
   parseAward,
+  templateFieldsFromContext,
+  templateFormFrom,
   validateFunderForm,
+  validateTemplateForm,
 } from "@/components/ConceptNoteWorkspace/funder-form";
 import type { ConceptNoteFunderImport } from "@/util/types";
 import { funderDraft as draft } from "./fixtures/concept-note-funder-draft";
@@ -144,6 +149,48 @@ describe("funder errors", () => {
     );
     expect(funderApiErrorKey({ status: 500, data: null })).toBe(
       "funder-error-generic",
+    );
+  });
+});
+
+describe("own template", () => {
+  it("needs only a template name and titled chapters", () => {
+    const form = emptyTemplateForm();
+    expect(validateTemplateForm(form)).toEqual({
+      "template.template_name": "funder-error-template-name",
+      [`chapter.${form.chapters[0]!.id}.title`]: "funder-error-chapter-title",
+    });
+    expect(
+      validateTemplateForm({ ...form, chapters: [] })["template.chapters"],
+    ).toBe("funder-error-chapters");
+  });
+
+  it("edits a saved template with its chapter details", () => {
+    const fields = templateFieldsFromContext({
+      id: "own",
+      name: "City concept note",
+      output_format: null,
+      chapter_schema: [
+        {
+          chapter_ref: "summary",
+          title: "Summary",
+          required_fields: ["total_budget"],
+        },
+      ],
+      required_fields: ["total_budget"],
+    });
+    expect(fields.chapter_schema).toEqual([
+      {
+        chapter_ref: "summary",
+        title: "Summary",
+        description: null,
+        required: false,
+        required_fields: ["total_budget"],
+      },
+    ]);
+    // A saved template survives a round trip through the form.
+    expect(ownTemplateRequest(templateFormFrom(fields), null).template).toEqual(
+      fields,
     );
   });
 });

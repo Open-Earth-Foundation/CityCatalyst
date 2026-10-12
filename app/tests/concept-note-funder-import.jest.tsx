@@ -90,7 +90,7 @@ function Harness({
   kind,
 }: {
   runId?: string;
-  kind?: "funder";
+  kind?: "funder" | "template";
 }) {
   const current = useFunderImport({ cityId: "city", runId, kind });
   useEffect(() => {
@@ -98,7 +98,7 @@ function Harness({
   }, [current]);
   return null;
 }
-async function render(runId = "run", kind?: "funder") {
+async function render(runId = "run", kind?: "funder" | "template") {
   await act(async () => root.render(<Harness runId={runId} kind={kind} />));
 }
 async function upload(name = "call.pdf", uploadId = "upload-1") {
@@ -235,4 +235,24 @@ it("retries the conversion before restarting an import whose upload failed", asy
     uploadId: "upload-1",
     kind: "funder",
   });
+});
+
+it("reads a template upload and ignores an import of the other kind", async () => {
+  serverImport = currentImport;
+  await render("run", "template");
+  // The funder import belongs to the add-funder flow.
+  expect(flow.phase).toBe("idle");
+  start.mockImplementation(async () => {
+    serverImport = { ...currentImport, kind: "template" };
+    return { funder_import: serverImport };
+  });
+  await upload("form.pdf");
+  expect(startImport).toHaveBeenCalledWith({
+    runId: "run",
+    uploadId: "upload-1",
+    kind: "template",
+  });
+  await render("run", "template");
+  expect(flow.kind).toBe("template");
+  expect(flow.phase).toBe("converting");
 });

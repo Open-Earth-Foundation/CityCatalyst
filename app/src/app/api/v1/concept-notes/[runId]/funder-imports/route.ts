@@ -3,8 +3,8 @@
  * /api/v1/concept-notes/{runId}/funder-imports:
  *   post:
  *     operationId: startConceptNoteFunderImport
- *     summary: Start reading funder, programme and template details from an upload
- *     description: The upload must belong to the run; the import waits for its conversion. Replaces any ready or failed import, so it also retries a failed read; read the result with GET funder-imports/current.
+ *     summary: Start reading funder or template details from an upload
+ *     description: The upload must belong to the run; the import waits for its conversion. `kind` funder reads a funder, programme and template for the catalogue; `kind` template reads only an application template for this note. Replaces any ready or failed import, so it also retries a failed read; read the result with GET funder-imports/current.
  *     tags: [concept-notes]
  *     parameters:
  *       - in: path
@@ -20,7 +20,7 @@
  *             required: [uploadId]
  *             properties:
  *               uploadId: { type: string, format: uuid }
- *               kind: { type: string, enum: [funder], default: funder }
+ *               kind: { type: string, enum: [funder, template], default: funder }
  *     responses:
  *       202: { description: Import started; returns the current funder import }
  *       401: { description: Authentication required }

@@ -343,7 +343,7 @@ async def test_create_from_import_records_extracted_and_edited_provenance():
 
 
 @pytest.mark.parametrize(
-    "status,kind", [("processing", "funder")]
+    "status,kind", [("processing", "funder"), ("ready", "template")]
 )
 async def test_create_rejects_a_stale_or_wrong_kind_import(status, kind):
     async with _workspace_repository() as (_, factory), _ca_session() as session:

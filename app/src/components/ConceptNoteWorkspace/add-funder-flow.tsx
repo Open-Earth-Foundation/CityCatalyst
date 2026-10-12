@@ -76,7 +76,7 @@ export function useAddFunder({
 
 export type AddFunder = ReturnType<typeof useAddFunder>;
 
-/** Controls needed by the add-funder footer. */
+/** What the shared footer needs from an add-funder or own-template flow. */
 export type AddFlowControls = Pick<
   AddFunder,
   "mode" | "error" | "creating" | "back" | "discard" | "submit"

@@ -1,4 +1,5 @@
-"""Contracts for adding a funder, programme and template to the CNB catalogue.
+"""Contracts for adding a funder, programme and template to the CNB catalogue,
+or for giving one note its own application template.
 
 Field names mirror the existing ``funders``, ``funding_opportunities`` and
 ``funder_templates`` columns so a reviewed import is an ordinary catalogue row.
@@ -8,14 +9,16 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
+from app.models.cnb.concept_note_application_context import FundingAddedFrom
 from app.models.cnb.chapter_content import ChapterContent, MAX_CHAPTERS
 from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, model_validator
 
 FunderImportStatus = Literal["processing", "ready", "failed"]
-FunderImportKind = Literal["funder"]
+# What an uploaded document is read for: a catalogue funder or a note's own template.
+FunderImportKind = Literal["funder", "template"]
 # JSON carries awards as numbers, matching what the browser sends back.
 Award = Annotated[
     Decimal,
@@ -115,7 +118,10 @@ class FieldEvidence(FunderCreationContract):
 
 
 class FunderImportDraft(FunderCreationContract):
-    """Extracted values awaiting review, with verified evidence per field."""
+    """Extracted values awaiting review, with verified evidence per field.
+
+    A ``template`` import fills only ``template``; funder and programme stay blank.
+    """
 
     funder: FunderFields
     opportunity: ProgrammeFields
@@ -153,7 +159,7 @@ class FunderImportDiscardRequest(FunderCreationContract):
 
 
 class FunderImportStartRequest(FunderCreationContract):
-    """Read funder details from one run upload once it has converted."""
+    """Read funder or template details from one run upload once it has converted."""
 
     upload_id: UUID
     kind: FunderImportKind = "funder"
@@ -178,8 +184,28 @@ class FunderCreateRequest(FunderCreationContract):
         return self
 
 
+class CustomTemplateRequest(FunderCreationContract):
+    """A reviewed template for one note, typed by hand or from a template import."""
+
+    template: TemplateFields
+    import_id: UUID | None = None
+
+    @model_validator(mode="after")
+    def validate_required_values(self) -> CustomTemplateRequest:
+        """Require a template name and titled chapters."""
+        require_template_values(self.template)
+        return self
 
 
+class StoredCustomTemplate(BaseModel):
+    """``concept_note_runs.custom_template``: normalized, so drafting reads it as is."""
+
+    id: UUID
+    template_name: str
+    output_format: str | None = None
+    chapter_schema: list[dict[str, Any]]
+    required_fields: list[str] = Field(default_factory=list)
+    added_from: FundingAddedFrom
 
 
 class FunderCreateResponse(FunderCreationContract):
@@ -261,5 +287,12 @@ class FunderDocumentExtraction(FunderCreationContract):
 
     funder: ExtractedFunder
     opportunity: ExtractedProgramme
+    template: ExtractedTemplate
+    evidence: list[ExtractedEvidence]
+
+
+class TemplateDocumentExtraction(FunderCreationContract):
+    """Strict model output for a template-only read of an application form."""
+
     template: ExtractedTemplate
     evidence: list[ExtractedEvidence]

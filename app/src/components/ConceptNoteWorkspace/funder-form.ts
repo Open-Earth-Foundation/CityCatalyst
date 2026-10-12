@@ -2,8 +2,11 @@ import Decimal from "decimal.js";
 import type { ZodIssue } from "zod";
 import {
   conceptNoteFunderCreateRequest,
+  conceptNoteTemplateFields,
 } from "@/util/concept-note-funder";
 import type {
+  ConceptNoteApplicationContext,
+  ConceptNoteCustomTemplateRequest,
   ConceptNoteFunderCreateRequest,
   ConceptNoteFunderImport,
   ConceptNoteFunderImportDraft,
@@ -12,7 +15,8 @@ import type {
 
 /**
  * Form state, validation and request building for adding a funder, one
- * programme and its application template to the CNB catalogue. Pure so it is unit-testable.
+ * programme and its application template to the CNB catalogue, or for a
+ * note's own template (the template part alone). Pure so it is unit-testable.
  * List fields are edited as comma-separated text.
  */
 
@@ -55,7 +59,7 @@ export interface FunderForm {
   chapters: ChapterRow[];
 }
 
-/** The template part of the funder form. */
+/** The template part of the form, also used alone for a note's own template. */
 export type TemplateForm = Pick<FunderForm, "template" | "chapters">;
 
 /** Form sections made only of text inputs. */
@@ -156,6 +160,23 @@ export function templateFormFrom(
   };
 }
 
+/** Template fields of a saved template, to edit it again. */
+export function templateFieldsFromContext(
+  template: NonNullable<ConceptNoteApplicationContext["template"]>,
+): ConceptNoteTemplateFields {
+  return {
+    template_name: template.name,
+    output_format: template.output_format,
+    chapter_schema: template.chapter_schema.map((chapter) => ({
+      chapter_ref: chapter.chapter_ref,
+      title: chapter.title,
+      description: chapter.description ?? null,
+      required: chapter.required ?? false,
+      required_fields: chapter.required_fields ?? [],
+    })),
+  };
+}
+
 /**
  * Accept decimal dots/commas and space-grouped thousands; reject ambiguity.
  * Returns `null` for an empty input and `NaN` for an invalid amount.
@@ -189,6 +210,19 @@ function fieldErrors(issues: ZodIssue[], form: TemplateForm): FunderFormErrors {
     errors[path] ??= issue.message;
   }
   return errors;
+}
+
+export function validateTemplateForm(form: TemplateForm): FunderFormErrors {
+  const result = conceptNoteTemplateFields.safeParse(templateFromForm(form));
+  return result.success
+    ? {}
+    : fieldErrors(
+        result.error.issues.map((issue) => ({
+          ...issue,
+          path: ["template", ...issue.path],
+        })),
+        form,
+      );
 }
 
 export function validateFunderForm(form: FunderForm): FunderFormErrors {
@@ -252,6 +286,32 @@ export function templateFromForm(
       required: chapter.required,
       required_fields: splitList(chapter.required_fields),
     })),
+  };
+}
+
+/** A note's own template, reviewed from a template import when given. */
+export function ownTemplateRequest(
+  form: TemplateForm,
+  source: ConceptNoteFunderImport | null,
+): ConceptNoteCustomTemplateRequest {
+  return {
+    template: templateFromForm(form),
+    import_id: source?.import_id ?? null,
+  };
+}
+
+/** Preview of an own template before it is saved; the server assigns refs. */
+export function templatePreview(
+  template: ConceptNoteTemplateFields,
+): NonNullable<ConceptNoteApplicationContext["template"]> {
+  return {
+    id: "",
+    name: template.template_name,
+    output_format: template.output_format,
+    chapter_schema: template.chapter_schema,
+    required_fields: [
+      ...new Set(template.chapter_schema.flatMap((c) => c.required_fields)),
+    ],
   };
 }
 

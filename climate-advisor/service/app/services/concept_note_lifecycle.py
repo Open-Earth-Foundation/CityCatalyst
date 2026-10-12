@@ -491,6 +491,7 @@ class ConceptNoteLifecycleService:
             project_id=source.project_id,
             funder_id=source.funder_id,
             selected_funding_opportunity_id=source.selected_funding_opportunity_id,
+            custom_template=deepcopy(source.custom_template),
             status="active",
             workflow_step=source.workflow_step,
             context_summary=_copy_context_summary(

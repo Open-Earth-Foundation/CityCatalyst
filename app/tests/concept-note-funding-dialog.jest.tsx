@@ -5,6 +5,7 @@ import {
   afterEach,
   beforeAll,
   beforeEach,
+  describe,
   expect,
   it,
   jest,
@@ -269,6 +270,82 @@ it.each([
     expect(onClose).not.toHaveBeenCalled();
   },
 );
+
+describe("own template", () => {
+  const ownTemplate = {
+    id: "own-template-id",
+    name: "City concept note",
+    output_format: "DOCX",
+    chapter_schema: [
+      { chapter_ref: "summary", title: "Summary", required: true },
+    ],
+    required_fields: [],
+  };
+  beforeEach(() => {
+    save.mockImplementation(() => ({ unwrap: async () => ({}) }));
+  });
+
+  it("uses a template defined by hand without a funder", async () => {
+    await renderDialog();
+    await click(translations["template-own-entry"]);
+    await type(translations["funder-field-template-name"], "City concept note");
+    await type("Chapter", "Summary");
+    await click(translations["template-use-submit"]);
+
+    // The chosen template is previewed and becomes the pending selection.
+    expect(
+      document.querySelector('[data-testid="own-template-details"]')
+        ?.textContent,
+    ).toContain(translations["template-by-hand"]);
+    await click(translations["funding-save-and-draft"]);
+    expect(save).toHaveBeenCalledWith({
+      runId: "run",
+      selection: expect.objectContaining({
+        funder_id: null,
+        selected_funding_opportunity_id: null,
+        custom_template: {
+          template: expect.objectContaining({
+            template_name: "City concept note",
+            chapter_schema: [
+              expect.objectContaining({ chapter_ref: "", title: "Summary" }),
+            ],
+          }),
+          import_id: null,
+        },
+        expected_custom_template_id: null,
+      }),
+    });
+  });
+
+  it("shows a saved own template and replaces it with a funder", async () => {
+    await renderDialog({
+      ...applicationContext,
+      template: ownTemplate,
+      template_source: { kind: "document", filename: "form.pdf" },
+    });
+    expect(
+      document.querySelector('[data-testid="own-template-details"]')
+        ?.textContent,
+    ).toContain(translations["template-from-file"]);
+    // Nothing changed yet, so there is nothing to save.
+    const saveButton = () =>
+      document.querySelector<HTMLButtonElement>(
+        '[data-testid="concept-note-funding-save"]',
+      )!;
+    expect(saveButton().disabled).toBe(true);
+
+    await click("New funder");
+    await act(async () => saveButton().click());
+    expect(save).toHaveBeenCalledWith({
+      runId: "run",
+      selection: expect.objectContaining({
+        funder_id: "new-funder",
+        custom_template: null,
+        expected_custom_template_id: "own-template-id",
+      }),
+    });
+  });
+});
 
 async function openFilledForm() {
   await renderDialog();

@@ -248,6 +248,27 @@ export function AddFunderForm(props: SourcedFormProps<FunderForm>) {
   );
 }
 
+/** A note's own application template, typed by hand or reviewed from a file. */
+export function OwnTemplateForm(props: SourcedFormProps<TemplateForm>) {
+  const { source, lng } = props;
+  const { t } = useTranslation(lng, "concept-notes");
+  return (
+    <VStack align="stretch" gap={6} data-testid="own-template-form">
+      <FormIntro
+        title={t(source ? "template-review-title" : "template-manual-title")}
+        description={
+          source
+            ? t("template-review-from-document", { filename: source.filename })
+            : t("template-manual-description")
+        }
+        source={source}
+        lng={lng}
+      />
+      <TemplateFieldsSection {...props} />
+    </VStack>
+  );
+}
+
 /** Template name, format and the ordered chapters drafting will write. */
 function TemplateFieldsSection(props: FormProps<TemplateForm>) {
   const { form, onChange, errors, disabled, lng } = props;

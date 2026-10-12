@@ -46,7 +46,7 @@ async def start_concept_note_funder_import(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> FunderImportResponse:
-    """Read funder details from an upload on this run once converted."""
+    """Read funder or template details from an upload on this run once converted."""
     funder_import = await start_funder_import(
         session,
         run,

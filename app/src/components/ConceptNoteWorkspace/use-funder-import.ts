@@ -67,7 +67,8 @@ export interface FunderImportFlow {
 }
 
 /**
- * Drives reading a funder document: upload the file through the note's upload
+ * Drives reading a document into a funder (`kind` funder) or a note's own
+ * template (`kind` template): upload the file through the note's upload
  * pipeline and start the import straight away. Climate Advisor waits for the
  * conversion, so the browser only polls the import. Lives at the workspace
  * level so the import keeps progressing after the dialog closes. A run has one

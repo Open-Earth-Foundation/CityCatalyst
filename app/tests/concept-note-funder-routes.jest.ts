@@ -61,7 +61,7 @@ beforeEach(() => {
 });
 
 describe("Funder API boundary", () => {
-  it.each(["funder"] as const)(
+  it.each(["funder", "template"] as const)(
     "starts a %s import after the city check",
     async (kind) => {
       callApi.mockResolvedValue(

@@ -1,11 +1,14 @@
-"""Add a funder, programme and template to the CNB catalogue.
+"""Add a funder, programme and template to the CNB catalogue, or give one note
+its own application template.
 
-A run can read one uploaded funder document into a reviewable draft, or accept
-values typed by hand. Nothing reaches the catalogue until the user confirms.
-The pending import lives in the run's context bundle under ``funder_import``;
-confirmed values become ordinary ``funders``, ``funding_opportunities`` and
-``funder_templates`` rows, with per-field provenance in the existing
-``source_documents`` and ``funding_evidence`` tables.
+A run can read one uploaded document into a reviewable draft, or accept values
+typed by hand. Nothing is saved until the user confirms. The pending import
+lives in the run's context bundle under ``funder_import``; its ``kind`` says
+whether it reads a funder or only a template. Confirmed funders become ordinary
+``funders``, ``funding_opportunities`` and ``funder_templates`` rows, with
+per-field provenance in the existing ``source_documents`` and
+``funding_evidence`` tables. A confirmed own template is stored on the run
+(``concept_note_runs.custom_template``) by the funding-selection save.
 """
 
 from __future__ import annotations
@@ -28,7 +31,9 @@ from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_markdown import source_format_from_filename
 from app.models.cnb.funding_catalogue import MANUAL_SOURCE_PREFIX, UPLOAD_SOURCE_PREFIX
+from app.models.cnb.concept_note_application_context import FundingAddedFrom
 from app.models.cnb.funder_creation import (
+    CustomTemplateRequest,
     ExtractedChapter,
     ExtractedEvidence,
     ExtractedFact,
@@ -42,7 +47,9 @@ from app.models.cnb.funder_creation import (
     FunderImportKind,
     FunderProfileFacts,
     ProgrammeFields,
+    StoredCustomTemplate,
     TemplateChapterFields,
+    TemplateDocumentExtraction,
     TemplateFields,
 )
 from app.models.db.cnb_reference import (
@@ -114,6 +121,8 @@ CATALOGUE_PATHS = (
     "template.output_format",
     "template.chapter_schema",
 )
+# The subset a template-only import reports as ``missing``.
+TEMPLATE_PATHS = tuple(path for path in CATALOGUE_PATHS if path.startswith("template."))
 _BACKGROUND_IMPORTS: set[asyncio.Task[None]] = set()
 
 ExtractDraft = Callable[..., Awaitable[FunderImportDraft]]
@@ -398,7 +407,7 @@ async def extract_funder_draft(
     client: AsyncOpenAI | None = None,
     runner: Any = Runner,
 ) -> FunderImportDraft:
-    """Read a funder document, retaining only verified document quotes."""
+    """Read a funder or just its template, retaining only verified document quotes."""
     settings = settings or get_settings()
     prompt = settings.llm.prompts.get_prompt(f"cnb_{kind}_document_extraction")
     model_config = settings.llm.models.cnb_funder_extractor
@@ -429,7 +438,9 @@ async def extract_funder_draft(
             name=f"Concept Note {kind} document reader",
             prompt=prompt,
             model_config=model_config,
-            output_type=FunderDocumentExtraction,
+            output_type=TemplateDocumentExtraction
+            if kind == "template"
+            else FunderDocumentExtraction,
             input_text=input_text,
             client=client,
             runner=runner,
@@ -438,7 +449,8 @@ async def extract_funder_draft(
         if owns_client:
             await client.close()
 
-    return build_draft(extraction, units)
+    build = build_template_draft if kind == "template" else build_draft
+    return build(extraction, units)
 
 
 def build_draft(
@@ -476,6 +488,15 @@ def build_draft(
     return _with_evidence(draft, extraction.evidence, units, chapter_refs, CATALOGUE_PATHS)
 
 
+def build_template_draft(
+    extraction: TemplateDocumentExtraction, units: Sequence[SourceUnit]
+) -> FunderImportDraft:
+    """Convert a template-only read; funder and programme stay blank."""
+    template, chapter_refs = _template_fields(extraction.template)
+    draft = FunderImportDraft(
+        funder=FunderFields(), opportunity=ProgrammeFields(), template=template
+    )
+    return _with_evidence(draft, extraction.evidence, units, chapter_refs, TEMPLATE_PATHS)
 
 
 def _template_fields(
@@ -673,6 +694,33 @@ async def _reviewed_import(
     return funder_import.draft, upload
 
 
+async def build_custom_template(
+    session: AsyncSession, run: ConceptNoteRun, payload: CustomTemplateRequest
+) -> StoredCustomTemplate:
+    """Normalize a reviewed own template; a template import must still be current.
+
+    The caller stores it on the run and clears the import in the same commit.
+    """
+    filename: str | None = None
+    if payload.import_id is not None:
+        _, upload = await _reviewed_import(
+            session, run, payload.import_id, kind="template"
+        )
+        filename = upload.filename
+    template = payload.template.model_copy(
+        update={"chapter_schema": normalize_chapters(payload.template.chapter_schema)}
+    )
+    chapter_schema = [chapter.model_dump(mode="json") for chapter in template.chapter_schema]
+    return StoredCustomTemplate(
+        id=uuid4(),
+        template_name=template.template_name.strip(),
+        output_format=template.output_format,
+        chapter_schema=chapter_schema,
+        required_fields=template_required_fields(template),
+        added_from=FundingAddedFrom(
+            kind="document" if filename else "manual", filename=filename
+        ),
+    )
 
 
 def clear_import(bundle: ConceptNoteContextBundle, import_id: UUID) -> None:

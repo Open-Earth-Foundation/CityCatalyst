@@ -31,7 +31,7 @@ class ApplicationContextTemplate(BaseModel):
 
 
 class FundingAddedFrom(BaseModel):
-    """How a user-added programme was entered."""
+    """How a user-added programme or a note's own template was entered."""
 
     kind: Literal["document", "manual"]
     filename: str | None = None
@@ -55,6 +55,8 @@ class ConceptNoteApplicationContextResponse(BaseModel):
     funder: ApplicationContextFunder | None = None
     opportunity: ApplicationContextOpportunity | None = None
     template: ApplicationContextTemplate | None = None
+    # Set only when the note uses its own template instead of a funder's.
+    template_source: FundingAddedFrom | None = None
     included_sources: ApplicationContextIncludedSources = Field(
         default_factory=ApplicationContextIncludedSources
     )

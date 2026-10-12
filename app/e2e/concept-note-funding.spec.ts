@@ -1,5 +1,6 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
 import type { CityDashboardResponse } from "@/util/types";
+import { funderDraft } from "../tests/fixtures/concept-note-funder-draft";
 import { skipCookieConsent } from "./helpers";
 
 test.beforeEach(({ context }) => skipCookieConsent(context));
@@ -150,6 +151,8 @@ async function mockWorkspace(
     if (!url.pathname.includes(`/concept-notes/${runId}`))
       return route.fulfill({ json: { data: [] } });
     if (extra && (await extra(route, url))) return;
+    if (url.pathname.endsWith("/funder-imports/current/"))
+      return route.fulfill({ json: { funder_import: null } });
     if (url.pathname.endsWith("/context-bundle/refresh/"))
       return route.fulfill({ json: { run_id: runId, status: "current" } });
     if (url.pathname.endsWith("/structure/"))
@@ -339,6 +342,8 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
 
 const addedFunderId = "10000000-0000-4000-8000-000000000099";
 const addedOpportunityId = "20000000-0000-4000-8000-000000000099";
+const uploadId = "40000000-0000-4000-8000-000000000001";
+const importId = "50000000-0000-4000-8000-000000000001";
 
 /** The catalogue row the server returns once the reviewed funder is added. */
 function addedFunder(
@@ -350,7 +355,7 @@ function addedFunder(
       chapter_schema: Array<{ title: string }>;
     };
   },
-  addedFrom: { kind: "manual" },
+  addedFrom: { kind: "document" | "manual"; filename: string | null },
 ): CatalogueFunder {
   return {
     ...funders[1]!,
@@ -389,7 +394,7 @@ test("add a funder by hand and select it", async ({ page }) => {
       if (!url.pathname.endsWith("/funders/")) return false;
       const body = route.request().postDataJSON();
       created.push(body);
-      catalogue.push(addedFunder(body, { kind: "manual" }));
+      catalogue.push(addedFunder(body, { kind: "manual", filename: null }));
       await route.fulfill({
         status: 201,
         json: {
@@ -408,6 +413,7 @@ test("add a funder by hand and select it", async ({ page }) => {
   await dialog
     .getByRole("button", { name: /Add a funder that isn't listed/ })
     .click();
+  await dialog.getByRole("button", { name: "Enter details by hand" }).click();
 
   const add = dialog.getByRole("button", { name: "Add funder", exact: true });
   await dialog.getByLabel("Funder name").fill("Resilient Futures Fund");
@@ -424,6 +430,7 @@ test("add a funder by hand and select it", async ({ page }) => {
   await add.click();
 
   expect(created[0]).toMatchObject({
+    import_id: null,
     funder: { name: "Resilient Futures Fund" },
     opportunity: {
       name: "Resilient Cities 2027",
@@ -444,6 +451,154 @@ test("add a funder by hand and select it", async ({ page }) => {
   await expect(
     dialog.getByText("Funder added. Save the selection", { exact: false }),
   ).toBeVisible();
+  await dialog
+    .getByRole("button", { name: "Save and go to drafting", exact: true })
+    .click();
+  await expect(dialog).not.toBeVisible();
+  expect(saved[0]).toMatchObject({
+    funder_id: addedFunderId,
+    selected_funding_opportunity_id: addedOpportunityId,
+  });
+});
+
+test("read a funder document, review it and add the funder", async ({
+  page,
+}) => {
+  const catalogue: CatalogueFunder[] = [...funders];
+  const filename = "Green_Cities_Call_2026.pdf";
+  let importPolls = 0;
+  let funderImport: Record<string, unknown> | null = null;
+  const draft = {
+    ...funderDraft,
+    opportunity: {
+      ...funderDraft.opportunity,
+      hazards: ["Flooding"],
+      max_award: 600000,
+      summary: null,
+    },
+    template: {
+      ...funderDraft.template,
+      chapter_schema: [
+        {
+          ...funderDraft.template.chapter_schema[0]!,
+          description: null,
+          required_fields: [],
+        },
+      ],
+    },
+  };
+  const { saved } = await mockWorkspace(page, {
+    catalogue: () => catalogue,
+    extra: async (route, url) => {
+      const method = route.request().method();
+      if (url.pathname.endsWith("/uploads/") && method === "POST") {
+        await route.fulfill({
+          status: 202,
+          json: {
+            uploadId,
+            status: "processing",
+            stage: "ocr",
+            canRetry: false,
+            filename,
+          },
+        });
+        return true;
+      }
+      if (url.pathname.endsWith("/funder-imports/") && method === "POST") {
+        funderImport = {
+          import_id: importId,
+          upload_id: uploadId,
+          filename,
+          kind: "funder",
+          status: "processing",
+          error_code: null,
+          draft: null,
+          created_at: "2026-09-28T10:00:00Z",
+          updated_at: "2026-09-28T10:00:00Z",
+        };
+        await route.fulfill({
+          status: 202,
+          json: { funder_import: funderImport },
+        });
+        return true;
+      }
+      if (url.pathname.endsWith("/funder-imports/current/")) {
+        if (funderImport?.status === "processing") {
+          importPolls += 1;
+          // Stay "processing" across closing and reopening the dialog.
+          if (importPolls > 3) {
+            funderImport = { ...funderImport, status: "ready", draft };
+          }
+        }
+        await route.fulfill({ json: { funder_import: funderImport } });
+        return true;
+      }
+      if (url.pathname.endsWith("/funders/")) {
+        const body = route.request().postDataJSON();
+        catalogue.push(addedFunder(body, { kind: "document", filename }));
+        funderImport = null;
+        await route.fulfill({
+          status: 201,
+          json: {
+            funder_id: addedFunderId,
+            funding_opportunity_id: addedOpportunityId,
+          },
+        });
+        return true;
+      }
+      return false;
+    },
+  });
+  const dialog = await openFundingDialog(page);
+  await dialog
+    .getByRole("button", { name: /Add a funder that isn't listed/ })
+    .click();
+  await dialog.locator('input[type="file"]').setInputFiles({
+    name: filename,
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\n% funder call\n"),
+  });
+  const status = dialog.getByTestId("funder-import-status");
+  await expect(status).toContainText(filename);
+  await expect(status).toContainText("Reading funder details");
+
+  // Closing the dialog does not stop the read; reopening shows its state.
+  await page.keyboard.press("Escape");
+  await expect(dialog).not.toBeVisible();
+  await page
+    .getByRole("button", { name: "Browse funders", exact: true })
+    .click();
+  const entry = dialog.getByRole("button", {
+    name: /Add a funder that isn't listed/,
+  });
+  // The mock finishes the read after a few 2-second polls.
+  await expect(entry).toContainText("Ready to review", { timeout: 15000 });
+  await entry.click();
+  await dialog
+    .getByRole("button", { name: "Review details", exact: true })
+    .click();
+
+  await expect(
+    dialog.getByRole("heading", { name: "Review funder details" }),
+  ).toBeVisible();
+  await expect(dialog.getByLabel("Funder name")).toHaveValue(
+    "Green Cities Foundation",
+  );
+  await expect(dialog.getByLabel("Minimum award")).toHaveValue("150000");
+  await expect(
+    dialog.getByText("2 details weren't in the document", { exact: false }),
+  ).toBeVisible();
+  await dialog
+    .getByLabel("Programme name")
+    .fill("Nature-Based Cities Call 2026 (Round 2)");
+  await dialog.getByRole("button", { name: "Add funder", exact: true }).click();
+
+  await expect(
+    dialog.getByText(`Added from ${filename}`, { exact: true }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByRole("button", { name: /Green Cities Foundation/ }),
+  ).toHaveAttribute("aria-pressed", "true");
   await dialog
     .getByRole("button", { name: "Save and go to drafting", exact: true })
     .click();

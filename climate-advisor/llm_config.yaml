@@ -42,6 +42,9 @@ models:
   cnb_chat_edit_planner:
     name: "openai/gpt-6-sol"
     reasoning_effort: "high"
+  cnb_funder_extractor:
+    name: "openai/gpt-5.6-terra"
+    reasoning_effort: "medium"
 
 # Generation Parameters
 generation:
@@ -76,6 +79,9 @@ generation:
       timeout_seconds: 300
     cnb_validation:
       max_prompt_tokens: 50000
+    cnb_funder_import:
+      # Funder documents above this size fail with document_too_long.
+      max_document_tokens: 120000
 
 # System Prompts
 prompts:
@@ -112,6 +118,8 @@ prompts:
   cnb_draft_overview: "prompts/cnb/draft_overview.md"
   cnb_chapter_validation_completeness: "prompts/cnb/chapter_validation_completeness.md"
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
+  # Reads an uploaded funder document into a reviewable catalogue record
+  cnb_funder_document_extraction: "prompts/cnb/funder_document_extraction.md"
 
 # API Configuration
 api:

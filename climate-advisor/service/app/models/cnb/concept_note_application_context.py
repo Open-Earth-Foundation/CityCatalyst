@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -28,6 +28,13 @@ class ApplicationContextTemplate(BaseModel):
     output_format: str | None = None
     chapter_schema: list[dict[str, Any]] = Field(default_factory=list)
     required_fields: list[str] = Field(default_factory=list)
+
+
+class FundingAddedFrom(BaseModel):
+    """How a user-added programme was entered."""
+
+    kind: Literal["document", "manual"]
+    filename: str | None = None
 
 
 class ApplicationContextIncludedSources(BaseModel):

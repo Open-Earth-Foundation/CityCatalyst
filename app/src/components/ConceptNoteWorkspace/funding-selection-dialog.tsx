@@ -12,7 +12,12 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { LuCheck, LuSearch, LuLandmark, LuPlus } from "react-icons/lu";
+import {
+  LuCheck,
+  LuLandmark,
+  LuPlus,
+  LuSearch,
+} from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -31,17 +36,24 @@ import { api } from "@/services/api";
 import { isFetchBaseQueryError } from "@/util/helpers";
 import type {
   ConceptNoteApplicationContext,
+  ConceptNoteFunderCreateResponse,
   ConceptNoteFundingOpportunity,
   ConceptNoteFunder,
 } from "@/util/types";
-import { AddFunderForm } from "./add-funder-form";
 import {
-  emptyFunderForm,
-  formToCreateRequest,
-  funderApiErrorKey,
-  validateFunderForm,
-} from "./funder-form";
-import { FunderProfile, FundingOpportunityDetails } from "./funding-details";
+  AddFunderFooter,
+  AddFunderPane,
+  useAddFunder,
+} from "./add-funder-flow";
+import { funderApiErrorCode } from "./funder-form";
+import {
+  FunderProfile,
+  FundingOpportunityDetails,
+} from "./funding-details";
+import {
+  FUNDER_IMPORT_PHASE_LABEL,
+  type FunderImportFlow,
+} from "./use-funder-import";
 
 interface FundingSelectionDialogProps {
   applicationContext: ConceptNoteApplicationContext;
@@ -51,6 +63,8 @@ interface FundingSelectionDialogProps {
   runId: string;
   onClose: () => void;
   onSaved?: () => void;
+  /** Enables adding a funder from a document; by hand works without it. */
+  funderImport?: FunderImportFlow;
 }
 
 const selectionButtonProps = {
@@ -96,6 +110,7 @@ export function FundingSelectionDialog({
   runId,
   onClose,
   onSaved,
+  funderImport,
 }: FundingSelectionDialogProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const searchRef = useRef<HTMLInputElement>(null);
@@ -109,11 +124,6 @@ export function FundingSelectionDialog({
   );
   const [acknowledged, setAcknowledged] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Adding an unlisted funder replaces the details pane and footer.
-  const [adding, setAdding] = useState(false);
-  const [form, setForm] = useState(emptyFunderForm);
-  const [showErrors, setShowErrors] = useState(false);
-  const [addError, setAddError] = useState<string | null>(null);
   // Shown in the footer, not as a toast, so it never covers the save button.
   const [notice, setNotice] = useState<string | null>(null);
   const {
@@ -127,9 +137,6 @@ export function FundingSelectionDialog({
   });
   const [saveSelection, saveState] =
     api.useUpdateConceptNoteFundingSelectionMutation();
-  const [createFunder] = api.useCreateConceptNoteFunderMutation();
-  const [creating, setCreating] = useState(false);
-  const submitting = creating || saveState.isLoading;
   const funders = data?.funders ?? [];
   const visibleFunders = funders.filter((funder) =>
     matchesFundingSearch(funder, query),
@@ -141,61 +148,41 @@ export function FundingSelectionDialog({
   const changed =
     funderId !== (initialContext.funder?.id ?? null) ||
     opportunityId !== (initialContext.opportunity?.id ?? null);
+  const selectedTemplate = opportunity?.template;
   // Only a first save with a drafting template moves the user on to drafting.
   const savesIntoDrafting =
-    !hasDraft && Boolean(opportunity?.template?.chapter_schema.length);
+    !hasDraft && Boolean(selectedTemplate?.chapter_schema.length);
   const forbidden =
     isFetchBaseQueryError(catalogueError) &&
     [401, 403, 404].includes(Number(catalogueError.status));
-  const formErrors = validateFunderForm(form);
-  // The rail shows no selection while the add-funder pane is open.
-  const selectedFunderId = adding ? null : funderId;
+  // Adding an unlisted funder replaces the details pane and footer.
+  const add = useAddFunder({ runId, flow: funderImport, onAdded: selectAdded });
+  const submitting = saveState.isLoading || add.creating;
+  // The rail shows no selection while adding a funder.
+  const selectedFunderId = add.mode ? null : funderId;
   const addedFrom = funder?.opportunities.find(
     (item) => item.added_from,
   )?.added_from;
 
-  function resetAdding(): void {
-    setAdding(false);
-    setForm(emptyFunderForm());
-    setShowErrors(false);
-    setAddError(null);
-  }
-
-  async function submitFunder(): Promise<void> {
-    if (creating) return;
-    setAddError(null);
-    if (Object.keys(formErrors).length) {
-      setShowErrors(true);
-      return;
-    }
-    setCreating(true);
+  async function selectAdded(
+    created: ConceptNoteFunderCreateResponse,
+  ): Promise<void> {
+    setQuery("");
+    setFunderId(created.funder_id);
+    setOpportunityId(created.funding_opportunity_id);
+    setAcknowledged(false);
+    setError(null);
+    setNotice(t("funder-added"));
     try {
-      const created = await createFunder({
-        runId,
-        funder: formToCreateRequest(form),
-      }).unwrap();
-      resetAdding();
-      setQuery("");
-      setFunderId(created.funder_id);
-      setOpportunityId(created.funding_opportunity_id);
-      setAcknowledged(false);
-      setError(null);
-      setNotice(t("funder-added"));
-      try {
-        await refetch().unwrap();
-      } catch {
-        setError(t("funder-added-refresh-error"));
-      }
-    } catch (cause) {
-      setAddError(t(funderApiErrorKey(cause)));
-    } finally {
-      setCreating(false);
+      await refetch().unwrap();
+    } catch {
+      setError(t("funder-added-refresh-error"));
     }
   }
 
   function chooseFunder(id: string): void {
     setNotice(null);
-    setAdding(false);
+    add.close();
     if (id === funderId) return;
     const opportunities =
       funders.find((item) => item.id === id)?.opportunities ?? [];
@@ -243,27 +230,20 @@ export function FundingSelectionDialog({
       if (savesIntoDrafting) onSaved?.();
     } catch (cause) {
       const status = isFetchBaseQueryError(cause) ? cause.status : null;
-      const data = isFetchBaseQueryError(cause) ? cause.data : null;
-      const detail =
-        data && typeof data === "object" && "detail" in data
-          ? data.detail
-          : null;
-      const incompatibleTemplate =
-        detail &&
-        typeof detail === "object" &&
-        "code" in detail &&
-        detail.code === "funding_template_incompatible";
+      const code = funderApiErrorCode(cause);
       setError(
         t(
-          incompatibleTemplate
+          code === "funding_template_incompatible"
             ? "funding-template-incompatible"
-            : status === 409
-              ? "funding-save-conflict"
-              : status === 403
-                ? "funding-permission-error"
-                : status === 422
-                  ? "funding-selection-unavailable"
-                  : "funding-save-error",
+            : code === "funder_import_changed"
+              ? "template-error-import-changed"
+              : status === 409
+                ? "funding-save-conflict"
+                : status === 403
+                  ? "funding-permission-error"
+                  : status === 422
+                    ? "funding-selection-unavailable"
+                    : "funding-save-error",
         ),
       );
     }
@@ -479,18 +459,24 @@ export function FundingSelectionDialog({
                     </Text>
                   )}
                 </VStack>
-                <Box p={3} borderTop="1px solid" borderColor="border.neutral">
+                <VStack
+                  align="stretch"
+                  gap={2}
+                  p={3}
+                  borderTop="1px solid"
+                  borderColor="border.neutral"
+                >
                   <Button
                     {...selectionButtonProps}
                     variant="outline"
                     w="full"
                     gap={3}
                     border="1px dashed"
-                    borderColor={adding ? "content.link" : "border.neutral"}
+                    borderColor={add.mode ? "content.link" : "border.neutral"}
                     bg="base.light"
-                    aria-pressed={adding}
+                    aria-pressed={Boolean(add.mode)}
                     disabled={submitting}
-                    onClick={() => setAdding(true)}
+                    onClick={add.open}
                   >
                     <Icon as={LuPlus} flexShrink={0} color="content.link" />
                     <Box>
@@ -503,11 +489,16 @@ export function FundingSelectionDialog({
                         fontWeight="normal"
                         color="content.tertiary"
                       >
-                        {t("funder-add-entry-help")}
+                        {t(
+                          FUNDER_IMPORT_PHASE_LABEL[
+                            funderImport?.phase ?? "idle"
+                          ],
+                        )}
                       </Text>
                     </Box>
                   </Button>
-                </Box>
+
+                </VStack>
               </VStack>
               <VStack
                 align="stretch"
@@ -518,14 +509,8 @@ export function FundingSelectionDialog({
                 overflowY={{ md: "auto" }}
                 aria-label={t("funding-details-label")}
               >
-                {adding ? (
-                  <AddFunderForm
-                    form={form}
-                    onChange={setForm}
-                    errors={showErrors ? formErrors : {}}
-                    disabled={creating}
-                    lng={lng}
-                  />
+                {add.mode ? (
+                  <AddFunderPane add={add} flow={funderImport} lng={lng} />
                 ) : !funder ? (
                   <VStack align="start" justify="center" flex={1} gap={3}>
                     <Icon as={LuLandmark} boxSize={8} color="content.link" />
@@ -622,42 +607,8 @@ export function FundingSelectionDialog({
             </Flex>
           )}
         </DialogBody>
-        {adding ? (
-          <DialogFooter
-            flexShrink={0}
-            flexWrap="wrap"
-            gap={3}
-            p={4}
-            borderTop="1px solid"
-            borderColor="border.neutral"
-          >
-            {addError && (
-              <Text
-                role="alert"
-                flexBasis="100%"
-                color="sentiment.negativeDefault"
-                fontSize="body.sm"
-              >
-                {addError}
-              </Text>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={submitting}
-              onClick={resetAdding}
-            >
-              {t("cancel")}
-            </Button>
-            <Button
-              size="sm"
-              loading={creating}
-              onClick={() => void submitFunder()}
-              data-testid="concept-note-add-funder"
-            >
-              {t("funder-add-submit")}
-            </Button>
-          </DialogFooter>
+        {add.mode ? (
+          <AddFunderFooter add={add} flow={funderImport} lng={lng} />
         ) : (
           <DialogFooter
             display="block"
@@ -728,7 +679,7 @@ export function FundingSelectionDialog({
                   {funder?.name ?? t("funding-not-selected")}
                 </Text>
                 <Text fontSize="label.sm" color="content.tertiary">
-                  {opportunity?.template?.name ?? t("template-not-selected")}
+                  {selectedTemplate?.name ?? t("template-not-selected")}
                 </Text>
               </Box>
               <Button
@@ -770,11 +721,7 @@ export function FundingSelectionDialog({
                 }
                 onClick={() => void save()}
                 data-testid="concept-note-funding-save"
-                title={
-                  !hasDraft && opportunity?.template?.chapter_schema.length
-                    ? t("funding-next-step")
-                    : undefined
-                }
+                title={savesIntoDrafting ? t("funding-next-step") : undefined}
               >
                 {t(
                   savesIntoDrafting ? "funding-save-and-draft" : "funding-save",

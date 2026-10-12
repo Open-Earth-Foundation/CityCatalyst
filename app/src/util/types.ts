@@ -18,7 +18,9 @@ import {
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
-import type { conceptNoteFunderCreateRequest } from "@/util/concept-note-funder";
+import type {
+  conceptNoteFunderCreateRequest,
+} from "@/util/concept-note-funder";
 import type { CityAttributes } from "@/models/City";
 import type { GasValue, GasValueAttributes } from "@/models/GasValue";
 import type {
@@ -1123,6 +1125,7 @@ export interface ConceptNoteTemplateChapter {
   title: string;
   description?: string | null;
   required?: boolean | null;
+  required_fields?: string[] | null;
 }
 
 export interface ConceptNoteApplicationContext {
@@ -1169,19 +1172,54 @@ export interface ConceptNoteFundingOpportunity {
   hazards: string[];
   interventions: string[];
   known_gaps: string[];
-  /** Set for programmes a user added from by hand. */
+  /** Set for programmes a user added from a document or by hand. */
   added_from?: ConceptNoteFundingAddedFrom | null;
   template: ConceptNoteApplicationContext["template"];
 }
 
 export interface ConceptNoteFundingAddedFrom {
-  kind: "manual";
+  kind: "document" | "manual";
+  filename: string | null;
 }
 
 /** Reviewed funder, programme and template; see `conceptNoteFunderCreateRequest`. */
 export type ConceptNoteFunderCreateRequest = z.infer<
   typeof conceptNoteFunderCreateRequest
 >;
+/** Reviewable `funders` columns. */
+export type ConceptNoteFunderFields = ConceptNoteFunderCreateRequest["funder"];
+/** Reviewable `funding_opportunities` columns. */
+export type ConceptNoteProgrammeFields =
+  ConceptNoteFunderCreateRequest["opportunity"];
+/** Reviewable `funder_templates` columns; `required_fields` is derived. */
+export type ConceptNoteTemplateFields =
+  ConceptNoteFunderCreateRequest["template"];
+
+/** Values extracted from a funder document, awaiting review. */
+export interface ConceptNoteFunderImportDraft extends Omit<
+  ConceptNoteFunderCreateRequest,
+  "import_id"
+> {
+  /** Field paths the document did not state, e.g. `funder.region`. */
+  missing: string[];
+}
+
+export interface ConceptNoteFunderImport {
+  import_id: string;
+  upload_id: string;
+  filename: string;
+  kind: "funder";
+  status: "processing" | "ready" | "failed";
+  /** While processing: whether the upload is still converting to text. */
+  stage?: "converting" | "reading" | null;
+  error_code: string | null;
+  draft: ConceptNoteFunderImportDraft | null;
+}
+
+export interface ConceptNoteFunderImportResponse {
+  funder_import: ConceptNoteFunderImport | null;
+}
+
 export interface ConceptNoteFunderCreateResponse {
   funder_id: string;
   funding_opportunity_id: string;

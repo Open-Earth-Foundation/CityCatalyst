@@ -142,6 +142,7 @@ class ModelsConfig(BaseModel):
     cnb_source_impact_reviewer: ResearchModelConfig | None = None
     cnb_chat_edit_planner: ResearchModelConfig | None = None
     cnb_chapter_validator: ResearchModelConfig
+    cnb_funder_extractor: ResearchModelConfig
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -193,6 +194,12 @@ class CnbValidationPromptBudgetConfig(BaseModel):
     max_prompt_tokens: int = Field(default=50000, ge=1000)
 
 
+class CnbFunderImportPromptBudgetConfig(BaseModel):
+    """Limit for reading one uploaded funder document in a single model call."""
+
+    max_document_tokens: int = Field(default=120000, ge=1000)
+
+
 class PromptBudgetConfig(BaseModel):
     tokenizer_encoding: str = "o200k_base"
     stationary_energy: StationaryEnergyPromptBudgetConfig = Field(
@@ -209,6 +216,9 @@ class PromptBudgetConfig(BaseModel):
     )
     cnb_validation: CnbValidationPromptBudgetConfig = Field(
         default_factory=CnbValidationPromptBudgetConfig,
+    )
+    cnb_funder_import: CnbFunderImportPromptBudgetConfig = Field(
+        default_factory=CnbFunderImportPromptBudgetConfig,
     )
 
 
@@ -243,6 +253,9 @@ class PromptsConfig(BaseModel):
     )
     cnb_chapter_validation_consistency: str = (
         "prompts/cnb/chapter_validation_consistency.md"
+    )
+    cnb_funder_document_extraction: str = (
+        "prompts/cnb/funder_document_extraction.md"
     )
 
     def get_prompt(self, prompt_type: str) -> str:

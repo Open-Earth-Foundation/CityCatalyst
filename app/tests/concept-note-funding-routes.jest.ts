@@ -37,7 +37,7 @@ const selection = {
   expected_funding_opportunity_id: null,
   acknowledge_draft_review: false,
 };
-const request = (body = selection) =>
+const request = (body: object = selection) =>
   new Request("http://localhost", {
     method: "PATCH",
     body: JSON.stringify(body),
@@ -79,30 +79,34 @@ describe("Funding selection API boundary", () => {
     ).rejects.toMatchObject({ statusCode: 401 });
     expect(callConceptNoteApi).not.toHaveBeenCalled();
   });
-  it("does not read or save catalogue data when city access is denied", async () => {
-    canAccessCity.mockRejectedValue(
-      Object.assign(new Error("Forbidden"), { statusCode: 403 }),
-    );
-    await expect(
-      catalogue(new Request("http://localhost"), context),
-    ).rejects.toMatchObject({ statusCode: 403 });
-    await expect(save(request(), context)).rejects.toMatchObject({
-      statusCode: 403,
-    });
-    expect(callConceptNoteApi).not.toHaveBeenCalled();
-  });
-  it("forwards the explicit choice and concurrency check with the authenticated user", async () => {
-    const response = await save(request(), context);
-    expect(response.status).toBe(200);
-    expect(callConceptNoteApi).toHaveBeenCalledWith(
-      expect.objectContaining({
-        method: "PATCH",
-        body: selection,
-        userId: "owner",
-        searchParams: { user_id: "owner" },
-      }),
-    );
-  });
+  it.each([200, 403])(
+    "checks city access before forwarding a choice (status %s)",
+    async (status) => {
+      if (status === 403) {
+        canAccessCity.mockRejectedValue(
+          Object.assign(new Error("Forbidden"), { statusCode: 403 }),
+        );
+        await expect(
+          catalogue(new Request("http://localhost"), context),
+        ).rejects.toMatchObject({ statusCode: 403 });
+        await expect(save(request(), context)).rejects.toMatchObject({
+          statusCode: 403,
+        });
+        expect(callConceptNoteApi).not.toHaveBeenCalled();
+      } else {
+        const response = await save(request(), context);
+        expect(response.status).toBe(200);
+        expect(callConceptNoteApi).toHaveBeenCalledWith(
+          expect.objectContaining({
+            method: "PATCH",
+            body: selection,
+            userId: "owner",
+            searchParams: { user_id: "owner" },
+          }),
+        );
+      }
+    },
+  );
   it("rejects programme-only choices before any upstream call", async () => {
     await expect(
       save(

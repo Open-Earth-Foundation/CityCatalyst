@@ -1,3 +1,4 @@
+import { conceptNoteCustomTemplateRequest } from "./concept-note-funder";
 import { z } from "zod";
 import {
   GlobalWarmingPotentialTypeEnum,
@@ -477,6 +478,12 @@ export const conceptNoteFundingSelectionRequest = z
     { message: "A funding opportunity requires a funder" },
   );
 
+export const conceptNoteFunderImportStartRequest = z
+  .object({
+    uploadId: z.string().uuid(),
+    kind: z.enum(["funder"]).default("funder"),
+  })
+  .strict();
 export const recordConsentRequest = z.object({
   consentType: z.enum(["analytics", "marketing"]),
   granted: z.boolean(),

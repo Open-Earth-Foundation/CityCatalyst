@@ -144,12 +144,12 @@ const applicationContext: ConceptNoteApplicationContext = {
   },
 };
 
-async function renderDialog() {
+async function renderDialog(context = applicationContext) {
   await act(async () => {
     root.render(
       <ChakraProvider value={defaultSystem}>
         <FundingSelectionDialog
-          applicationContext={applicationContext}
+          applicationContext={context}
           hasDraft={false}
           busy={false}
           lng="en"
@@ -165,6 +165,10 @@ const button = (label: string) =>
   [...document.querySelectorAll("button")].find((item) =>
     item.textContent?.includes(label),
   )!;
+
+async function click(label: string) {
+  await act(async () => button(label).click());
+}
 
 async function type(label: string, value: string) {
   const labelNode = [...document.querySelectorAll("label")].find((item) =>
@@ -256,13 +260,6 @@ it.each([
   async (detail, key) => {
     rejection = { status: 409, data: { detail } };
     await renderDialog();
-    async function click(label: string) {
-      const button = [...document.querySelectorAll("button")].find((item) =>
-        item.textContent?.includes(label),
-      );
-      expect(button).toBeDefined();
-      await act(async () => button!.click());
-    }
     await click("New funder");
     await click(translations["funding-save"]);
     expect(save).toHaveBeenCalledTimes(1);
@@ -275,7 +272,7 @@ it.each([
 
 async function openFilledForm() {
   await renderDialog();
-  await act(async () => button(translations["funder-add-entry"]).click());
+  await click(translations["funder-add-entry"]);
   for (const [label, value] of [
     [translations["funder-field-name"], "Delayed funder"],
     [translations["funder-field-programme-name"], "Programme"],
@@ -307,16 +304,16 @@ it("blocks cancel, closing and selection changes while creation is pending", asy
   });
   createFunder.mockImplementation(() => ({ unwrap: () => pending }));
   const button = await openFilledForm();
-  await act(async () => button(translations["funder-add-submit"]).click());
+  await click(translations["funder-add-submit"]);
   expect(button(translations["funder-add-submit"]).disabled).toBe(true);
-  expect(button(translations.cancel).disabled).toBe(true);
+  expect(button(translations["funder-back"]).disabled).toBe(true);
   expect(button("New funder").disabled).toBe(true);
   expect(
     document.querySelector<HTMLButtonElement>('button[aria-label="Close"]')
       ?.disabled,
   ).toBe(true);
   await act(async () => {
-    button(translations.cancel).click();
+    button(translations["funder-back"]).click();
     button("New funder").click();
     document.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
@@ -341,11 +338,11 @@ it("keeps controls busy through refresh and sends one create request", async () 
     unwrap: async () => addCatalogueRow(),
   }));
   const button = await openFilledForm();
-  await act(async () => button(translations["funder-add-submit"]).click());
+  await click(translations["funder-add-submit"]);
   expect(document.querySelector('[data-testid="add-funder-form"]')).toBeNull();
   expect(button(translations["funder-add-entry"]).disabled).toBe(true);
   expect(button(translations.cancel).disabled).toBe(true);
-  await act(async () => button(translations["funder-add-entry"]).click());
+  await click(translations["funder-add-entry"]);
   expect(createFunder).toHaveBeenCalledTimes(1);
   await act(async () => resolveRefresh(undefined));
   expect(button(translations["funder-add-entry"]).disabled).toBe(false);
@@ -364,8 +361,8 @@ it("retries a failed catalogue refresh without repeating a successful create", a
       funding_opportunity_id: "delayed-programme",
     }),
   }));
-  const button = await openFilledForm();
-  await act(async () => button(translations["funder-add-submit"]).click());
+  await openFilledForm();
+  await click(translations["funder-add-submit"]);
   expect(createFunder).toHaveBeenCalledTimes(1);
   expect(document.querySelector('[data-testid="add-funder-form"]')).toBeNull();
   expect(document.body.textContent).toContain(
@@ -377,7 +374,7 @@ it("retries a failed catalogue refresh without repeating a successful create", a
     addCatalogueRow();
     return { unwrap: async () => undefined };
   });
-  await act(async () => button(translations["try-again"]).click());
+  await click(translations["try-again"]);
   expect(document.body.textContent).not.toContain(
     translations["funder-added-refresh-error"],
   );

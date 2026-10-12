@@ -572,6 +572,9 @@ def _copy_context_bundle(
     payload = ConceptNoteContextBundle.model_validate(value or {}).model_dump(
         mode="json"
     )
+    # Import jobs and drafts belong to the original run; copied uploads remain
+    # ordinary sources and may be explicitly imported in the new run.
+    payload.pop("funder_import", None)
     for source in payload.get("selected_sources", []):
         source_id = _as_uuid(source.get("upload_id"))
         if source_id in upload_map:

@@ -1,13 +1,7 @@
 /**
  * IMP-013: persist negative eCRF totalCO2e (tonnes → kg) on InventoryValue / ActivityValue.
  */
-import {
-  afterAll,
-  beforeAll,
-  describe,
-  expect,
-  it,
-} from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { randomUUID } from "node:crypto";
 import env from "@next/env";
 import InventoryImportService from "@/backend/InventoryImportService";
@@ -230,9 +224,10 @@ describe("InventoryImportService negative totalCO2e", () => {
         },
       );
 
-      expect(summary.warnings.some((warning) => warning.includes("I.1.1"))).toBe(
-        true,
-      );
+      expect(summary.skippedRows).toBe(1);
+      expect(
+        summary.warnings.some((warning) => warning.includes("I.1.1")),
+      ).toBe(true);
 
       const withEmissionsFirst = await db.models.InventoryValue.findOne({
         where: {

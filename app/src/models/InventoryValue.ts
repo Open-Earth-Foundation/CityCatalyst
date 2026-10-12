@@ -11,6 +11,7 @@ import type { Sector, SectorId } from "./Sector";
 import type { SubSector, SubSectorId } from "./SubSector";
 import type { GasValue, GasValueId } from "./GasValue";
 import type { ActivityValue, ActivityValueId } from "./ActivityValue";
+import { GRID_GENERATION_GPC_REF } from "@/util/GHGI/reported-totals";
 
 export interface InventoryValueAttributes {
   id: string;
@@ -29,6 +30,8 @@ export interface InventoryValueAttributes {
   subCategoryId?: string;
   inventoryId?: string;
   datasourceId?: string | null; // TODO remove
+  /** Stored, but left out of BASIC and BASIC+ totals. */
+  omitFromTotal?: boolean;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -49,6 +52,7 @@ export type InventoryValueOptionalAttributes =
   | "subCategoryId"
   | "inventoryId"
   | "datasourceId"
+  | "omitFromTotal"
   | "created"
   | "lastUpdated";
 export type InventoryValueCreationAttributes = Optional<
@@ -76,13 +80,17 @@ export class InventoryValue
   declare subCategoryId?: string;
   declare inventoryId?: string;
   declare datasourceId?: string | null;
+  declare omitFromTotal?: boolean;
   declare created?: Date;
   declare lastUpdated?: Date;
 
   // InventoryValue belongsTo Inventory via inventoryId
   declare inventory: Inventory;
   declare getInventory: Sequelize.BelongsToGetAssociationMixin<Inventory>;
-  declare setInventory: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
+  declare setInventory: Sequelize.BelongsToSetAssociationMixin<
+    Inventory,
+    InventoryId
+  >;
   declare createInventory: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
   // InventoryValue belongsTo SubCategory via subcategoryId
   declare sector: Sector;
@@ -92,7 +100,10 @@ export class InventoryValue
   // InventoryValue belongsTo SubCategory via subcategoryId
   declare subSector: SubSector;
   declare getSubSector: Sequelize.BelongsToGetAssociationMixin<SubSector>;
-  declare setSubSector: Sequelize.BelongsToSetAssociationMixin<SubSector, SubSectorId>;
+  declare setSubSector: Sequelize.BelongsToSetAssociationMixin<
+    SubSector,
+    SubSectorId
+  >;
   declare createSubSector: Sequelize.BelongsToCreateAssociationMixin<SubSector>;
   // InventoryValue belongsTo SubCategory via subcategoryId
   declare subcategory: SubCategory;
@@ -113,9 +124,18 @@ export class InventoryValue
   // InventoryValue hasMany GasValue via inventoryValueId
   declare gasValues: GasValue[];
   declare getGasValues: Sequelize.HasManyGetAssociationsMixin<GasValue>;
-  declare setGasValues: Sequelize.HasManySetAssociationsMixin<GasValue, GasValueId>;
-  declare addGasValue: Sequelize.HasManyAddAssociationMixin<GasValue, GasValueId>;
-  declare addGasValues: Sequelize.HasManyAddAssociationsMixin<GasValue, GasValueId>;
+  declare setGasValues: Sequelize.HasManySetAssociationsMixin<
+    GasValue,
+    GasValueId
+  >;
+  declare addGasValue: Sequelize.HasManyAddAssociationMixin<
+    GasValue,
+    GasValueId
+  >;
+  declare addGasValues: Sequelize.HasManyAddAssociationsMixin<
+    GasValue,
+    GasValueId
+  >;
   declare createGasValue: Sequelize.HasManyCreateAssociationMixin<GasValue>;
   declare removeGasValue: Sequelize.HasManyRemoveAssociationMixin<
     GasValue,
@@ -125,8 +145,14 @@ export class InventoryValue
     GasValue,
     GasValueId
   >;
-  declare hasGasValue: Sequelize.HasManyHasAssociationMixin<GasValue, GasValueId>;
-  declare hasGasValues: Sequelize.HasManyHasAssociationsMixin<GasValue, GasValueId>;
+  declare hasGasValue: Sequelize.HasManyHasAssociationMixin<
+    GasValue,
+    GasValueId
+  >;
+  declare hasGasValues: Sequelize.HasManyHasAssociationsMixin<
+    GasValue,
+    GasValueId
+  >;
   declare countGasValues: Sequelize.HasManyCountAssociationsMixin;
 
   // InventoryValue hasMany ActivityValue via inventoryValueId
@@ -256,6 +282,12 @@ export class InventoryValue
           },
           field: "datasource_id",
         },
+        omitFromTotal: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+          field: "omit_from_total",
+        },
       },
       {
         sequelize,
@@ -272,6 +304,13 @@ export class InventoryValue
           },
         ],
         hooks: {
+          beforeSave: (inventoryValue: InventoryValue) => {
+            // Grid generation is stored for a territorial total and omitted
+            // from BASIC/BASIC+ totals. Other rows can set the flag directly.
+            if (inventoryValue.gpcReferenceNumber === GRID_GENERATION_GPC_REF) {
+              inventoryValue.omitFromTotal = true;
+            }
+          },
           afterCreate: async (inventoryValue: InventoryValue) => {
             if (inventoryValue.inventoryId) {
               const inventory = await inventoryValue.getInventory();

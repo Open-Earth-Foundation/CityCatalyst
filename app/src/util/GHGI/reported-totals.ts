@@ -1,11 +1,12 @@
 /**
- * I.4.4 is energy generation supplied to the grid. The row is stored so a
- * territorial total can use it later. BASIC and BASIC+ totals leave it out,
- * otherwise those tonnes are counted again with scope 2 grid electricity.
+ * Some stored rows are excluded from BASIC and BASIC+ totals. I.4.4 (energy
+ * generation supplied to the grid) is the current case: it stays on the
+ * inventory for a territorial total, and is not counted again with scope 2
+ * grid electricity. Totals check this flag rather than a GPC reference.
  */
 export const GRID_GENERATION_GPC_REF = "I.4.4";
 
 /** SQL predicate for a trusted column name. Not for user input. */
-export function sqlOmitGridGeneration(column = "gpc_reference_number"): string {
-  return `COALESCE(${column}, '') <> '${GRID_GENERATION_GPC_REF}'`;
+export function sqlOmitFromTotal(column = "omit_from_total"): string {
+  return `${column} = false`;
 }

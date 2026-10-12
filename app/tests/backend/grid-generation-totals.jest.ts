@@ -113,6 +113,7 @@ describe("reported totals omit grid generation", () => {
       },
     });
     expect(stored).not.toBeNull();
+    expect(stored!.omitFromTotal).toBe(true);
     expect(BigInt(stored!.co2eq as unknown as string)).toBe(500n);
 
     const results = await getEmissionResults(inventory.inventoryId);

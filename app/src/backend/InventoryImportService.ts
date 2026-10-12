@@ -733,6 +733,7 @@ export default class InventoryImportService {
 
           // A later NE/NO/IE row must not hide activity data already stored for this ref.
           if (existingValue?.co2eq != null) {
+            skippedRows++;
             warnings.push(
               `Row ${row.rowIndex + 1}: Notation key "${row.notationKey}" was not applied because ${row.gpcRefNo} already has emissions`,
             );

@@ -36,18 +36,18 @@ export function useAddFunder({
   flow?: FunderImportFlow;
   onAdded: (created: ConceptNoteFunderCreateResponse) => Promise<void>;
 }) {
-  const { controls, reset, setError, setSource, isValid } = useImportForm({
+  const editor = useImportForm({
     empty: emptyFunderForm,
     fromDraft: formFromDraft,
     validate: validateFunderForm,
     flow,
   });
-  const { form, source } = controls;
+  const { form, source, reset, setError, setSource, isValid } = editor;
   const [createFunder] = api.useCreateConceptNoteFunderMutation();
   const [creating, setCreating] = useState(false);
 
   return {
-    ...controls,
+    ...editor,
     creating,
     async submit(): Promise<void> {
       if (creating) return;

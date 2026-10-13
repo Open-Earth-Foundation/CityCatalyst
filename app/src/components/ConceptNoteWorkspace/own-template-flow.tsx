@@ -55,16 +55,16 @@ export function useOwnTemplate({
   flow?: FunderImportFlow;
   onUse: (choice: OwnTemplateChoice) => void;
 }) {
-  const { controls, edit, reset, isValid } = useImportForm({
+  const editor = useImportForm({
     empty: emptyTemplateForm,
     fromDraft: (draft) => templateFormFrom(draft.template),
     validate: validateTemplateForm,
     flow,
   });
-  const { form, source } = controls;
+  const { form, source, edit, reset, isValid } = editor;
 
   return {
-    ...controls,
+    ...editor,
     creating: false,
     /** Edit a template already chosen for the note. */
     change: (template: Template) =>

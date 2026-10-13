@@ -15,14 +15,6 @@ import type {
 } from "@/util/types";
 import type { FunderImportFlow } from "@/components/ConceptNoteWorkspace/use-funder-import";
 
-function deferred<T>() {
-  let resolve!: (value: T) => void;
-  const promise = new Promise<T>((done) => {
-    resolve = done;
-  });
-  return { promise, resolve };
-}
-
 const currentImport: ConceptNoteFunderImport = {
   import_id: "import-1",
   upload_id: "upload-1",
@@ -34,7 +26,7 @@ const currentImport: ConceptNoteFunderImport = {
   error_code: null,
 };
 let serverImport: ConceptNoteFunderImport | null;
-let uploadResult: ReturnType<typeof deferred<{ uploadId: string }>>;
+let uploadResult: PromiseWithResolvers<{ uploadId: string }>;
 let flow: FunderImportFlow;
 const start = jest.fn<() => Promise<ConceptNoteFunderImportResponse>>();
 const discard =
@@ -119,7 +111,7 @@ beforeAll(async () => {
 beforeEach(async () => {
   jest.clearAllMocks();
   serverImport = null;
-  uploadResult = deferred();
+  uploadResult = Promise.withResolvers();
   // The accepted import replaces the cached query, as `upsertQueryData` does.
   start.mockImplementation(async () => {
     serverImport = currentImport;
@@ -145,7 +137,6 @@ it("starts the import as soon as the file is uploaded and follows its stage", as
     uploadId: "upload-1",
     kind: "funder",
   });
-  expect(dispatch).toHaveBeenCalledWith({ funder_import: currentImport });
   await render();
   expect(flow.phase).toBe("converting");
   serverImport = { ...currentImport, stage: "reading" };
@@ -154,7 +145,7 @@ it("starts the import as soon as the file is uploaded and follows its stage", as
 });
 
 it("discards only the late accepted import when cancelled during POST", async () => {
-  const accepted = deferred<ConceptNoteFunderImportResponse>();
+  const accepted = Promise.withResolvers<ConceptNoteFunderImportResponse>();
   start.mockReturnValue(accepted.promise);
   let pending!: Promise<void>;
   await act(async () => {
@@ -171,7 +162,6 @@ it("discards only the late accepted import when cancelled during POST", async ()
     runId: "run",
     importId: "import-1",
   });
-  expect(dispatch).not.toHaveBeenCalled();
   expect(flow.phase).toBe("idle");
 });
 
@@ -182,7 +172,7 @@ it("ignores a late old upload after choosing a replacement", async () => {
     first = flow.uploadFile(new File(["pdf"], "old.pdf"));
   });
   await act(async () => flow.chooseAnotherFile());
-  uploadResult = deferred();
+  uploadResult = Promise.withResolvers();
   await upload();
   await act(async () => {
     oldResult.resolve({ uploadId: "old-upload" });

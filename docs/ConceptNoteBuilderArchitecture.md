@@ -2004,6 +2004,10 @@ Document path:
    from chapter `required_fields`, so every inventory field has an owning
    chapter as chapter validation requires.
 
+Backend responsibilities are split across `services/cnb/funder_creation.py`
+(import lifecycle and saves), `funder_document.py` (extraction and verified
+quotes), and `funder_fields.py` (normalization and provenance field values).
+
 The browser fills the review form from the draft and shows how many catalogue
 columns the document did not state. Profile facts and known gaps are not edited
 in the form; they are submitted as extracted. List fields (hazards,

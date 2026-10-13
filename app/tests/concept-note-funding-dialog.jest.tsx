@@ -375,11 +375,8 @@ function addCatalogueRow() {
 }
 
 it("blocks cancel, closing and selection changes while creation is pending", async () => {
-  let resolveCreate!: (value: unknown) => void;
-  const pending = new Promise((resolve) => {
-    resolveCreate = resolve;
-  });
-  createFunder.mockImplementation(() => ({ unwrap: () => pending }));
+  const pending = Promise.withResolvers<ReturnType<typeof addCatalogueRow>>();
+  createFunder.mockImplementation(() => ({ unwrap: () => pending.promise }));
   const button = await openFilledForm();
   await click(translations["funder-add-submit"]);
   expect(button(translations["funder-add-submit"]).disabled).toBe(true);
@@ -397,20 +394,15 @@ it("blocks cancel, closing and selection changes while creation is pending", asy
     );
   });
   expect(onClose).not.toHaveBeenCalled();
-  await act(async () => resolveCreate(addCatalogueRow()));
+  await act(async () => pending.resolve(addCatalogueRow()));
   expect(
     document.querySelector('nav button[aria-pressed="true"]')?.textContent,
   ).toContain("Delayed funder");
 });
 
 it("keeps controls busy through refresh and sends one create request", async () => {
-  let resolveRefresh!: (value: unknown) => void;
-  refetch.mockReturnValue({
-    unwrap: () =>
-      new Promise((resolve) => {
-        resolveRefresh = resolve;
-      }),
-  });
+  const pending = Promise.withResolvers<void>();
+  refetch.mockReturnValue({ unwrap: () => pending.promise });
   createFunder.mockImplementation(() => ({
     unwrap: async () => addCatalogueRow(),
   }));
@@ -421,7 +413,7 @@ it("keeps controls busy through refresh and sends one create request", async () 
   expect(button(translations.cancel).disabled).toBe(true);
   await click(translations["funder-add-entry"]);
   expect(createFunder).toHaveBeenCalledTimes(1);
-  await act(async () => resolveRefresh(undefined));
+  await act(async () => pending.resolve());
   expect(button(translations["funder-add-entry"]).disabled).toBe(false);
 });
 

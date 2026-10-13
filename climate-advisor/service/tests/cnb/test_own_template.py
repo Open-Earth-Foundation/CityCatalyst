@@ -16,10 +16,8 @@ from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
     calculate_application_template_fingerprint,
 )
-from app.services.cnb.funder_creation import (
-    build_template_draft,
-    load_funder_import,
-)
+from app.services.cnb.funder_creation import load_funder_import
+from app.services.cnb.funder_document import build_template_draft
 from app.services.cnb.funding_selection import save_funding_selection
 from fastapi import HTTPException
 from tests.cnb.test_funder_import import (

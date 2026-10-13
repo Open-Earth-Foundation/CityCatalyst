@@ -41,6 +41,12 @@ export function useImportForm<Form>({
   }
 
   return {
+    mode,
+    form,
+    setForm,
+    source,
+    errors: showErrors ? errors : {},
+    error,
     edit,
     reset,
     setSource,
@@ -50,33 +56,25 @@ export function useImportForm<Form>({
       setShowErrors(true);
       return false;
     },
-    controls: {
-      mode,
-      form,
-      setForm,
-      source,
-      errors: showErrors ? errors : {},
-      error,
-      open: () => setMode(flow ? "choose" : "form"),
-      close: () => setMode(null),
-      back: () => setMode(mode === "form" && flow ? "choose" : null),
-      enterManually: () => edit(empty(), null),
-      review(): void {
-        const ready = flow?.funderImport;
-        if (ready?.draft && ready.import_id !== source?.import_id) {
-          edit(fromDraft(ready.draft), ready);
-        } else {
-          setMode("form");
-        }
-      },
-      async discard(): Promise<void> {
-        try {
-          await flow?.discard();
-          reset();
-        } catch (cause) {
-          setError(funderApiErrorKey(cause));
-        }
-      },
+    open: () => setMode(flow ? "choose" : "form"),
+    close: () => setMode(null),
+    back: () => setMode(mode === "form" && flow ? "choose" : null),
+    enterManually: () => edit(empty(), null),
+    review(): void {
+      const ready = flow?.funderImport;
+      if (ready?.draft && ready.import_id !== source?.import_id) {
+        edit(fromDraft(ready.draft), ready);
+      } else {
+        setMode("form");
+      }
+    },
+    async discard(): Promise<void> {
+      try {
+        await flow?.discard();
+        reset();
+      } catch (cause) {
+        setError(funderApiErrorKey(cause));
+      }
     },
   };
 }

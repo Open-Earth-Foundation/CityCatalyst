@@ -29,13 +29,15 @@ from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.cnb import funder_creation as service
 from app.config import get_settings
 from app.services.cnb.funder_creation import (
-    FunderImportError,
-    build_draft,
     create_funder,
-    extract_funder_draft,
     load_funder_import,
     run_funder_import,
     start_funder_import,
+)
+from app.services.cnb.funder_document import (
+    FunderImportError,
+    build_draft,
+    extract_funder_draft,
 )
 from app.services.cnb.funding_catalogue import load_funding_catalogue
 from app.services.cnb.source_analysis import SourceBlock, SourcePage

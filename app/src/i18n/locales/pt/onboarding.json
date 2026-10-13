@@ -319,5 +319,10 @@
   "invite-collaborators-info": "Pressione enter entre cada e-mail para adicionar membros.",
   "invite-collaborators-select-project-to-share": "Selecione qual projeto você deseja compartilhar",
   "projects-label": "Projetos",
-  "invite-collaborators-select-project-first": "Selecione um projeto acima para ver as cidades disponíveis."
+  "invite-collaborators-select-project-first": "Selecione um projeto acima para ver as cidades disponíveis.",
+  "import-warnings-title": "Algumas linhas não serão importadas",
+  "import-warnings-detail": "Estas linhas foram deixadas de fora do inventário. Uma referência GPC não pôde ser resolvida, ou a linha não tem emissões e nenhuma chave de notação.",
+  "columns-mapped-in-file": "Colunas mapeadas",
+  "import-status-check-failed": "Não foi possível verificar este arquivo",
+  "import-status-check-failed-detail": "O arquivo foi carregado, mas o seu ano não pôde ser verificado. Você pode tentar Continuar, ou carregar o arquivo novamente."
 }

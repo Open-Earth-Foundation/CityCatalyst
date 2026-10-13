@@ -72,8 +72,9 @@ retry controls where supported. Duplicating a note preserves source roles and
 remaps included upload IDs to the copy. The city tile still
 reports city-level HIAP availability; HIAP loading and freshness are unchanged.
 Both entrypoints share PDF/Markdown validation, the 20 MiB limit and the 10-file
-per-note cap. A
-missing application template opens funding selection. The climate risk
+per-note cap. The plan and ordinary source actions share a role-aware file picker
+and upload handler; both wait for the current file's validation and upload to finish.
+A missing application template opens funding selection. The climate risk
 assessment card and tile are hidden until CCRA data feeds concept notes.
 
 In scope:

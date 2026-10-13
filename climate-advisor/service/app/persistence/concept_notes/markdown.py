@@ -6,10 +6,6 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from uuid import UUID
 
-from sqlalchemy import func, select
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_markdown import (
     MAX_UPLOADS_PER_RUN,
@@ -20,6 +16,9 @@ from app.models.cnb.concept_note_markdown import (
     source_format_from_filename,
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
+from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 

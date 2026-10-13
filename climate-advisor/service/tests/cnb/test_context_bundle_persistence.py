@@ -5,17 +5,11 @@ from uuid import UUID, uuid4
 
 import pytest
 from app.db import Base
-from app.models.cnb.context_bundle import SelectedSource, SourceExcerpt
 from app.models.cnb.concept_note_markdown import (
     ConceptNoteMarkdownRequest,
     ConceptNoteUploadCreateRequest,
 )
-from app.persistence.concept_notes.markdown import (
-    SqlAlchemyConceptNoteMarkdownRepository,
-    ConceptNoteMarkdownRepositoryError,
-)
-from app.persistence.concept_notes.runs import ConceptNoteRunRepository
-from app.services.concept_note_runs import _to_list_item, _to_upload_response
+from app.models.cnb.context_bundle import SelectedSource, SourceExcerpt
 from app.models.db.concept_note import (
     ConceptNoteContextBundle,
     ConceptNoteRun,
@@ -34,8 +28,14 @@ from app.persistence.concept_notes.context_bundle import (
     set_selected_inventory,
     source_fingerprint,
 )
-from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
+from app.persistence.concept_notes.markdown import (
+    ConceptNoteMarkdownRepositoryError,
+    ConceptNoteUploadSnapshot,
+    SqlAlchemyConceptNoteMarkdownRepository,
+)
+from app.persistence.concept_notes.runs import ConceptNoteRunRepository
 from app.services.cnb.visual_context import VISUAL_CONTEXT_CONTRACT_VERSION
+from app.services.concept_note_runs import _to_list_item, _to_upload_response
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 

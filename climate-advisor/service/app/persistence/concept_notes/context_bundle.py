@@ -10,10 +10,6 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
 from app.models.cnb.concept_note_markdown import source_format_from_filename
 from app.models.cnb.context_bundle import (
     ConceptNoteContextBundle,
@@ -33,6 +29,9 @@ from app.utils.concept_note_context import (
     manual_population_context,
     omit_context_identifiers,
 )
+from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 

@@ -446,6 +446,7 @@ describe("Context tab missing-state cards", () => {
     const planButton = control("upload-climate-action-plan")!;
     const inputs =
       container.querySelectorAll<HTMLInputElement>('input[type="file"]');
+    expect(inputs).toHaveLength(1);
     const planInput = inputs[0];
     const picker = jest.spyOn(planInput, "click");
     await act(async () => planButton.click());
@@ -463,6 +464,74 @@ describe("Context tab missing-state cards", () => {
     );
     expect(onUploadFile).toHaveBeenCalledWith(file, "climate_action_plan");
   });
+
+  it("resets the shared picker role for ordinary and recommended sources", async () => {
+    const onUploadFile = jest
+      .fn<ContextTabProps["onUploadFile"]>()
+      .mockResolvedValue(undefined);
+    await renderTab({ onUploadFile });
+    const input =
+      container.querySelector<HTMLInputElement>('input[type="file"]')!;
+    const file = new File(["# Plan"], "plan.md", { type: "text/markdown" });
+    Object.defineProperty(input, "files", {
+      value: [file],
+      configurable: true,
+    });
+
+    await act(async () => control("upload-climate-action-plan")!.click());
+    await act(async () =>
+      input.dispatchEvent(new Event("change", { bubbles: true })),
+    );
+    expect(onUploadFile).toHaveBeenLastCalledWith(file, "climate_action_plan");
+
+    await act(async () => uploadButton().click());
+    await act(async () =>
+      input.dispatchEvent(new Event("change", { bubbles: true })),
+    );
+    expect(onUploadFile).toHaveBeenLastCalledWith(file, "reference");
+
+    // A cancelled plan picker must not affect the recommended source action.
+    await act(async () => control("upload-climate-action-plan")!.click());
+    await renderTab({ onUploadFile, uploadPickerRequest: 1 });
+    await act(async () =>
+      input.dispatchEvent(new Event("change", { bubbles: true })),
+    );
+    expect(onUploadFile).toHaveBeenLastCalledWith(file, "reference");
+    expect(onUploadFile).toHaveBeenCalledTimes(3);
+  });
+
+  it.each(["upload-climate-action-plan", "upload-pdf"])(
+    "blocks both picker actions until %s finishes validation and upload",
+    async (label) => {
+      let finishUpload!: () => void;
+      const onUploadFile = jest.fn<ContextTabProps["onUploadFile"]>(
+        () =>
+          new Promise<void>((resolve) => {
+            finishUpload = resolve;
+          }),
+      );
+      await renderTab({ onUploadFile });
+      await act(async () => control(label)!.click());
+      const input =
+        container.querySelector<HTMLInputElement>('input[type="file"]')!;
+      Object.defineProperty(input, "files", {
+        value: [new File(["# Plan"], "plan.md", { type: "text/markdown" })],
+      });
+      await act(async () =>
+        input.dispatchEvent(new Event("change", { bubbles: true })),
+      );
+
+      expect(uploadButton().disabled).toBe(true);
+      expect(
+        (control("upload-climate-action-plan") as HTMLButtonElement).disabled,
+      ).toBe(true);
+      await act(async () => finishUpload());
+      expect(uploadButton().disabled).toBe(false);
+      expect(
+        (control("upload-climate-action-plan") as HTMLButtonElement).disabled,
+      ).toBe(false);
+    },
+  );
 
   it("shows a persisted plan and waits for its own bundle inclusion", async () => {
     const uploads: ConceptNoteUploadResponse[] = [

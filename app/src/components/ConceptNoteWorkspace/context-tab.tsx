@@ -363,11 +363,17 @@ export function ContextTab({
 }: ContextTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const planFileInputRef = useRef<HTMLInputElement>(null);
-  const [planUploading, setPlanUploading] = useState(false);
+  const fileSourceRoleRef = useRef<ConceptNoteSourceRole>("reference");
+  const [uploadingRole, setUploadingRole] =
+    useState<ConceptNoteSourceRole | null>(null);
+  const planUploading = uploadingRole === "climate_action_plan";
+  const uploadBusy = isUploading || uploadingRole !== null;
   const uploadLimitReasonId = useId();
   useEffect(() => {
-    if (uploadPickerRequest) fileInputRef.current?.click();
+    if (uploadPickerRequest) {
+      fileSourceRoleRef.current = "reference";
+      fileInputRef.current?.click();
+    }
   }, [uploadPickerRequest]);
   const [editingPopulation, setEditingPopulation] = useState(false);
   const [populationInput, setPopulationInput] = useState("");
@@ -491,30 +497,67 @@ export function ContextTab({
   const planUploads = uploads.filter(
     (upload) => upload.sourceRole === "climate_action_plan",
   );
+  const failedPlans = planUploads.filter(
+    (upload) => upload.status === "failed",
+  );
   const uploadedPlanState =
     planUploading ||
     planUploads.some((upload) => upload.uploadId === retryingUploadId)
       ? "processing"
       : getClimateActionPlanState(uploads, bundle);
   const planState = uploadedPlanState ?? actionPlanState;
-  function onFileChange(event: ChangeEvent<HTMLInputElement>): void {
-    const file = event.target.files?.[0];
-    if (file) {
-      void onUploadFile(file);
-    }
-    event.target.value = "";
+
+  let planHelpKey = "plan-upload-processing-help";
+  if (planState === "included") {
+    planHelpKey = "source-help-included";
+  } else if (planState === "included-with-failures") {
+    planHelpKey = "plan-upload-partial-help";
+  } else if (planState === "failed") {
+    planHelpKey = "plan-upload-failed-help";
   }
-  async function onPlanFileChange(
+  const planDetails = uploadedPlanState
+    ? [
+        t("plan-upload-provenance"),
+        t(planHelpKey),
+        ...failedPlans
+          .filter((upload) => upload.errorCode)
+          .map((upload) => t("context-error-code", { code: upload.errorCode })),
+        t("plan-upload-limits", { max: CONCEPT_NOTE_MAX_UPLOADS }),
+      ]
+    : [
+        t("hiap-why"),
+        actionPlanState === "available" ? t("not-included-in-run") : "",
+        runHelp(actionPlanState, actionPlanAvailable),
+        t("plan-upload-limits", { max: CONCEPT_NOTE_MAX_UPLOADS }),
+      ];
+  let planValue = t("hiap-no-actions");
+  if (planUploads.length > 0) {
+    planValue = planUploads
+      .map((upload) => upload.filename || upload.sourceLabel)
+      .join(", ");
+  } else if (hiapIncluded) {
+    planValue = hiapStatusLabel;
+  } else if (actionPlanAvailable) {
+    planValue = t("bundle-source-available");
+  }
+
+  function openUploadPicker(sourceRole: ConceptNoteSourceRole): void {
+    fileSourceRoleRef.current = sourceRole;
+    fileInputRef.current?.click();
+  }
+
+  async function onFileChange(
     event: ChangeEvent<HTMLInputElement>,
   ): Promise<void> {
     const file = event.target.files?.[0];
+    const sourceRole = fileSourceRoleRef.current;
     event.target.value = "";
     if (!file) return;
-    setPlanUploading(true);
+    setUploadingRole(sourceRole);
     try {
-      await onUploadFile(file, "climate_action_plan");
+      await onUploadFile(file, sourceRole);
     } finally {
-      setPlanUploading(false);
+      setUploadingRole(null);
     }
   }
 
@@ -779,57 +822,16 @@ export function ContextTab({
             label={t("hiap-context")}
             action={{
               label: t("upload-climate-action-plan"),
-              onClick: () => planFileInputRef.current?.click(),
+              onClick: () => openUploadPicker("climate_action_plan"),
               loading: planUploading,
               disabledReason: uploadLimitReached
                 ? t("upload-limit-reason", { max: CONCEPT_NOTE_MAX_UPLOADS })
-                : isUploading || planUploading
+                : uploadBusy
                   ? t("plan-upload-in-progress")
                   : undefined,
             }}
-            value={
-              planUploads.length > 0
-                ? planUploads
-                    .map((upload) => upload.filename || upload.sourceLabel)
-                    .join(", ")
-                : hiapIncluded
-                  ? hiapStatusLabel
-                  : actionPlanAvailable
-                    ? t("bundle-source-available")
-                    : t("hiap-no-actions")
-            }
-            details={
-              uploadedPlanState
-                ? [
-                    t("plan-upload-provenance"),
-                    t(
-                      planState === "included"
-                        ? "source-help-included"
-                        : planState === "included-with-failures"
-                          ? "plan-upload-partial-help"
-                          : planState === "failed"
-                            ? "plan-upload-failed-help"
-                            : "plan-upload-processing-help",
-                    ),
-                    ...planUploads
-                      .filter(
-                        (upload) =>
-                          upload.status === "failed" && upload.errorCode,
-                      )
-                      .map((upload) =>
-                        t("context-error-code", { code: upload.errorCode }),
-                      ),
-                    t("plan-upload-limits", { max: CONCEPT_NOTE_MAX_UPLOADS }),
-                  ]
-                : [
-                    t("hiap-why"),
-                    actionPlanState === "available"
-                      ? t("not-included-in-run")
-                      : "",
-                    runHelp(actionPlanState, actionPlanAvailable),
-                    t("plan-upload-limits", { max: CONCEPT_NOTE_MAX_UPLOADS }),
-                  ]
-            }
+            value={planValue}
+            details={planDetails}
             status={t(
               contextSourceStatusKey(
                 planState,
@@ -839,35 +841,32 @@ export function ContextTab({
             tone={contextSourceTone(planState)}
           >
             <input
-              ref={planFileInputRef}
+              ref={fileInputRef}
               type="file"
               accept="application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md"
               hidden
-              onChange={(event) => void onPlanFileChange(event)}
+              onChange={(event) => void onFileChange(event)}
             />
-            {planUploads
-              .filter((upload) => upload.status === "failed")
-              .map((upload) => (
-                <UploadRetryButton
-                  key={upload.uploadId}
-                  label={t("retry")}
-                  loading={retryingUploadId === upload.uploadId}
-                  onRetry={() => onRetryUpload(upload.uploadId)}
-                  runId={runId}
-                  upload={upload}
-                />
-              ))}
-            {uploadedPlanState === "failed" &&
-              planUploads.every((upload) => upload.status === "ready") && (
-                <Button
-                  size="xs"
-                  variant="outline"
-                  onClick={onRetryBundle}
-                  loading={isRetryingBundle}
-                >
-                  {t("retry")}
-                </Button>
-              )}
+            {failedPlans.map((upload) => (
+              <UploadRetryButton
+                key={upload.uploadId}
+                label={t("retry")}
+                loading={retryingUploadId === upload.uploadId}
+                onRetry={() => onRetryUpload(upload.uploadId)}
+                runId={runId}
+                upload={upload}
+              />
+            ))}
+            {uploadedPlanState === "failed" && failedPlans.length === 0 && (
+              <Button
+                size="xs"
+                variant="outline"
+                onClick={onRetryBundle}
+                loading={isRetryingBundle}
+              >
+                {t("retry")}
+              </Button>
+            )}
           </ContextCard>
         </Grid>
       </VStack>
@@ -998,22 +997,15 @@ export function ContextTab({
               })}
             </Text>
           </HStack>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md"
-            hidden
-            onChange={onFileChange}
-          />
           <Button
             size="xs"
             variant="outline"
-            loading={isUploading}
+            loading={uploadBusy}
             disabled={uploadLimitReached}
             aria-describedby={
               uploadLimitReached ? uploadLimitReasonId : undefined
             }
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => openUploadPicker("reference")}
           >
             <Icon as={LuUpload} />
             {t("upload-pdf")}

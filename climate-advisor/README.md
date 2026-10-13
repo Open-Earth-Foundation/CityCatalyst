@@ -665,6 +665,7 @@ Current CA model defaults:
 - Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `medium`.
 - New-source chapter impact review: `openai/gpt-6-sol`, reasoning `medium`.
 - Document-summary synthesis: `openai/gpt-5.6-terra`, reasoning `medium`.
+- Uploaded funder and standalone-template extraction: `openai/gpt-6.1-sol`, reasoning `medium`.
 
 General and Stationary Energy chat use the OpenRouter Chat Completions tool loop
 with medium reasoning. CNB chat and source workers use OpenRouter's Responses API

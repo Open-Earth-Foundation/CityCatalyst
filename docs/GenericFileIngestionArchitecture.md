@@ -8,7 +8,9 @@
 
 CityCatalyst gets a **shared file ingestion spine** — upload, store, detect, parse, map, validate, review/auto-approve, commit — that **modules plug into** with their own formats and taxonomies, so GHGI, CCRA, CNB, and future modules do not each reinvent ingestion.
 
-A stored file is a **city/org document** with its own identity. Module extracts are separate catalog entries that point at that document. They are written only after the module validates them and a Decide step allows the commit.
+A stored file is a **city asset** when it was uploaded in a city's context. The person who uploaded it is the author, not the owner. Module extracts are separate catalog entries that point at that document. They are written only after the module validates them and a Decide step allows the commit.
+
+Every imported value stays traceable to its source document. GPC asks for transparency on data sources and methods, so dropping that link is a trust failure, not only a missing foreign key.
 
 ---
 
@@ -109,15 +111,17 @@ Three records stay distinct:
 
 Eligibility:
 
-| Document state | Path B visible to readers who pass the ACL | Module SoT rows |
+"Visible" below means visible to the readers named in [Document ownership](#document-ownership). A concept-note working attachment is visible to that note's collaborators, not to every city user, until someone marks it as a city document.
+
+| Document state | Path B visible to those readers | Module SoT rows |
 | --- | --- | --- |
 | Stored, not yet reviewed | Yes | None |
 | `awaiting_review` | Yes | None |
-| Rejected (`unknown_format`, policy reject, user reject) | Yes. The file remains a city document | None |
+| Rejected (`unknown_format`, policy reject, user reject) | Yes. The file remains in its visibility class | None |
 | Committed for one module | Yes | That module’s Path A only |
 | Dry-run | No catalog row | None |
-| `withdrawn` | No. Availability is `withdrawn` | Path A withdraws only if that module opted in (D9) |
-| `superseded` | The old row points at the replacement via `supersededById` | Unchanged until a module recommits |
+| `withdrawn` | The row stays so values can name it. Availability is `withdrawn`. It is not offered for a new ingest | Imported values stay. Their source info says the document was withdrawn. They are removed only when the user confirms "delete including data" |
+| `superseded` | The old row points at the replacement via `supersededById` | Unchanged. The user is asked whether to re-import |
 
 Owner, scope, and identity for each record are in [Document ownership](#document-ownership). Delete and replace are in [Delete, replace, and versioning](#delete-replace-and-versioning).
 
@@ -207,21 +211,28 @@ Path B is published at store time. Path A is published at commit time. A second 
 
 ## Document ownership
 
-Uploaded files are city and organization data. Several users work on one inventory. The uploader is an audit field, not the ACL.
+Product proposal for [CC-954](https://linear.app/openearth/issue/CC-954/spike-document-ownership-hierarchy-sot). The city owns documents uploaded in its context. The user who uploaded a document is recorded as its **author**, not its owner. Inventories are team work and outlive individual users. If the user were the owner, documents would be orphaned when someone leaves. Cross-module reuse only works if the document belongs to the city.
 
-| Binding | Role | Lean (D7) |
-| --- | --- | --- |
-| `organizationId` + `cityId` | Primary ACL and discovery scope | Required on every pool document |
-| `projectId` | Optional tighter scope when the upload is project-bound | Set when the caller has a project |
-| `userId` | Who uploaded. Audit only | Not sufficient to read or delete |
-| `inventoryId` / assessment id | Target of a **module extract**, stored on the review draft and on the Path A row | Does not hide the Path B document from the rest of the city |
-| CNB `upload_id` | Climate Advisor’s immutable upload identity for one run | Extra binding. Does not replace city/org. See [CC and Climate Advisor](#cc-and-climate-advisor) |
+| Case | Owner | Who can see it | Other modules and Clima |
+| --- | --- | --- | --- |
+| Inventory file (Excel, PDF) uploaded in GHGI | City | Users with access to the city | Yes |
+| City document uploaded in CNB (action plan, report) | City | Users with access to the city | Yes |
+| Working attachment of a concept note (draft, internal note) | City, visible only inside that concept note | Collaborators of that concept note | No, until a user marks it as a city document |
+| Document not tied to a city (org or project) | Organization or project | Members with access to that org or project | Yes, inside that scope |
 
-`NativeInputCatalog` already has `userId`, `cityId`, `projectId`, `organizationId`, and `inventoryId`. The pool uses those columns. It does not invent a second scope model.
+`userId` stores the author. It is not an ACL. `NativeInputCatalog` already has `userId`, `cityId`, `projectId`, `organizationId`, and `inventoryId`. The pool uses those columns and adds a visibility class: `city`, `concept_note`, or `org_or_project`. It does not invent a second scope model.
 
-Open until the [CC-954](https://linear.app/openearth/issue/CC-954/spike-document-ownership-hierarchy-sot) spike closes: whether a CNB run-scoped Path B row is visible to GHGI and CCRA by default, or only after a user with city access chooses it. The lean is city/org visibility, with the run id as a label rather than a wall.
+A concept-note attachment keeps the CA `upload_id` as its run binding. That binding limits discovery. It does not make the user the owner. Promoting it to a city document is an explicit user action. After that, GHGI, CCRA, and Clima may use it like any other city file. See [CC and Climate Advisor](#cc-and-climate-advisor).
 
-This section is the hierarchy other docs should point at when they enable or disable access. [CC-954](https://linear.app/openearth/issue/CC-954/spike-document-ownership-hierarchy-sot) either confirms the lean or replaces it.
+### Year coverage
+
+Each document stores the year or years it covers. When Clima uses a Path B or Path A row for an inventory of a different year, the answer says so. Example: "this value is from 2019, your inventory is 2022." That matters for multi-year historical files, such as the GCoM samples. The mismatch is disclosed. It does not hide the document and it does not rewrite the inventory year.
+
+### Still to validate
+
+- **CNB.** Can current uploads be split into "city document" and "concept note attachment", or are they all tied to the run today?
+- **Roles.** Are the current city collaborator roles enough, or does delete need its own permission?
+- **Confidentiality.** Are there city documents that should not be visible to every city collaborator? Product and leadership have not answered this. Until they do, the table above is the rule: city documents are visible to users with access to the city.
 
 ---
 
@@ -272,6 +283,7 @@ Stored with the draft:
 | `targetBinding` | City, and the inventory / assessment / CNB run the reviewer confirmed |
 | `expiresAt` | After expiry, confirm returns `stale_review_draft` and the user re-opens the draft |
 | `decision` | `pending`, `confirmed`, or `rejected`, plus user id and time |
+| `editorUserId`, `lockExpiresAt` | The one collaborator who may edit. Others see the draft read-only until the lock expires |
 
 Approve and retry:
 
@@ -287,19 +299,30 @@ Acceptance cases for the implementation ([CC-956](https://linear.app/openearth/i
 - Change the file bytes or the target inventory and confirm fails closed.
 - Confirm the same version twice and the second call does not insert a second set of activity rows.
 
-Who may resume the draft follows [Document ownership](#document-ownership): any user who can access the city/org, not only the uploader. Last-write-wins on `reviewDraftVersion` until a lock is justified.
+Any city collaborator can resume a saved review ([CC-956](https://linear.app/openearth/issue/CC-956/persist-multi-session-ingest-review-drafts-in-core)). Only one person edits at a time. A collaborator who opens a draft someone else is editing sees it read-only, with "X is editing this review."
+
+The lock is a row on the item: `editorUserId` and `lockExpiresAt`. It is released when that person leaves the review, or after a period of inactivity. Real-time co-editing is out of scope. Last-write-wins is out of scope, because two people would overwrite each other's mapping without knowing it.
+
+Still to validate: the engineering cost of that expiring lock. The product behavior above is the requirement. The inactivity window is an implementation choice.
 
 ---
 
 ## Delete, replace, and versioning
 
-| Action | Pool | Path B | Path A |
-| --- | --- | --- | --- |
-| Withdraw | Soft-delete the pool row | `availability = withdrawn` | Left in place unless that module opted in (D9 lean: default off) |
-| Replace | New pool row, new content hash | Old row `superseded`, `supersededById` points at the new Path B row | Unchanged until a module commits again against the new document |
-| Ingest from a withdrawn or superseded id | Refused | Error `document_withdrawn` or `document_superseded` | — |
+Product proposal for [CC-958](https://linear.app/openearth/issue/CC-958/deletesupersede-ingest-documents-and-sync-nativeinputcatalog). Deleting or replacing a document does not delete or change the inventory data imported from it. The link between them is never lost. After an import, the inventory is often edited. A cascade delete would destroy that work. Re-importing a new version automatically would change emission values without review.
 
-S3 objects are not hard-deleted in the same request. Retention is a product decision ([CC-958](https://linear.app/openearth/issue/CC-958/deletesupersede-ingest-documents-and-sync-nativeinputcatalog)). An active catalog row must not outlive a withdrawn pool row.
+| Action | Document | Imported inventory data | What the user sees |
+| --- | --- | --- | --- |
+| Replace with a corrected version | Marked `superseded`, `supersededById` points at the new version | Not changed | "A newer version of the source is available. Re-import?" |
+| Delete (default) | Marked `withdrawn`. Bytes kept for a retention period | Not changed | On the value's source info: "Source document withdrawn" |
+| Delete including data (exception, for example a wrong file) | Marked `withdrawn` | Imported values removed, only after explicit confirmation, and recorded in version history | Confirmation that shows how many values will be removed |
+
+A new ingest from a withdrawn or superseded document id is refused (`document_withdrawn` / `document_superseded`). An active catalog pointer must not outlive the pool row it names: the Path B row stays, with `withdrawn` or `superseded`, so the value can still name its source.
+
+Still to validate:
+
+- How long bytes are kept after withdraw. Engineering, and legal if the file can contain personal data.
+- Who can delete. Proposal: city admins and the uploader. This waits on the role check in [Document ownership](#document-ownership).
 
 ---
 
@@ -310,15 +333,17 @@ v1 does **not** accept one zip that several plugins consume (D3). Reuse is expli
 `POST …/modules/{module}/ingest/from-document/{documentId}`
 
 - No new multipart body. The runner resolves the pool object and starts at coarse detect.
-- Auth is city/org access to that document.
-- The committing module owns the conversion. A CAP stored for CNB can later be ingested by GHGI; GHGI’s plugin writes GHGI rows and GHGI’s Path A pointer.
+- The document must be a city document, or an org/project document inside that scope. A concept-note working attachment is refused until a user marks it as a city document.
+- Auth is access to the city, org, or project that owns the document.
+- The committing module owns the conversion. A CAP stored as a city document in CNB can later be ingested by GHGI. GHGI’s plugin writes GHGI rows and GHGI’s Path A pointer.
 - The Path B row stays the one created at first store. The second module adds a Path A row with the same content hash.
+- If the document's covered years differ from the target inventory year, the review summary says so. Clima does the same when it cites the row. See [Year coverage](#year-coverage).
 
 ---
 
 ## CC and Climate Advisor
 
-Concept-note uploads already have an owner. The spine must not replace it.
+Concept-note uploads already have an identity. The spine must not replace it. The city still owns the file. Climate Advisor owns the upload record. A working attachment stays inside the concept note until a user marks it as a city document. A city document uploaded in CNB, such as an action plan or a report, is discoverable by other modules immediately. Whether today's CNB uploads can already be split that way is still open. See [Document ownership](#document-ownership).
 
 | Record | Authoritative owner | Identity |
 | --- | --- | --- |
@@ -560,14 +585,17 @@ Do not block Chile/GHGI bulk delivery on the generic rename.
 | D4 | Create missing targets outside GHGI? | Opt-in per plugin. Default off |
 | D5 | First CCRA city-file formats? | Agreed template + review before auto |
 | D6 | Agent confirm API | Internal capabilities + the existing session approve route. No new MCP surface |
-| D7 | Who owns a document? | City and org for ACL. `userId` is audit. CNB `upload_id` is an extra run binding. [CC-954](https://linear.app/openearth/issue/CC-954/spike-document-ownership-hierarchy-sot) confirms or replaces this |
+| D7 | Who owns a document? | The city, for a file uploaded in a city's context. The uploader is the author. A concept-note working attachment stays inside that note until a user marks it as a city document. Org/project documents stay in that scope. Open: CNB split, delete permission, confidentiality. [CC-954](https://linear.app/openearth/issue/CC-954/spike-document-ownership-hierarchy-sot) |
 | D8 | Does dry-run register Path B? | No |
-| D9 | Does withdrawing a document withdraw Path A extracts? | Module opt-in. Default is Path B only |
+| D9 | Does deleting a document delete imported values? | No. The link stays, and the value says the source was withdrawn or superseded. Removing imported values is a separate, confirmed action and is written to version history. [CC-958](https://linear.app/openearth/issue/CC-958/deletesupersede-ingest-documents-and-sync-nativeinputcatalog) |
 
 ---
 
 ## Success criteria
 
+- City ownership, concept-note attachments, and org/project documents follow the table in [Document ownership](#document-ownership).
+- Replacing or withdrawing a source does not change imported values unless the user confirms a delete that includes data.
+- A review draft has one editor at a time. Other city collaborators can open it read-only.
 - One ownership table and one diagram that show Path B at store time and Path A after commit.
 - The source file, its OCR/Markdown, and each module extract have separate identity, scope, and eligibility.
 - A review confirm after restart commits the stored bundle, or fails with `stale_review_draft`.
@@ -618,3 +646,4 @@ Proposed (child tickets of CC-953, no code yet):
 | --- | --- |
 | 2026-09-21 | Initial draft from GHGI (including bulk), NativeInputCatalog, and CNB/agentic patterns |
 | 2026-10-13 | Review revision. Source lifecycle separate from module extracts. Path B at durable store, Path A after commit. Durable review drafts. Coarse detect in core. From-document reuse. Withdraw/supersede. Climate Advisor keeps CNB upload identity. Anchors split into what runs on `develop` and what is still proposed |
+| 2026-10-13 | Product definitions. City owns documents and the uploader is the author. Concept-note working attachments stay inside the note until marked as a city document. Delete and replace keep imported values and the source link. One editor at a time on a review draft |

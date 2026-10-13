@@ -105,8 +105,38 @@ async def handle_run_item(
         async for event_bytes in handle_tool_output(handler, run_item):
             yield event_bytes
 
+    elif event_name == "message_output_created" and run_item is not None:
+        async for event_bytes in handle_partial_answer(handler, run_item):
+            yield event_bytes
+
     else:
         logger.debug("Unhandled run item event: %s", event_name)
+
+
+async def handle_partial_answer(
+    handler: StreamingHandler, run_item: Any
+) -> AsyncIterator[bytes]:
+    """Forward the turn-limit partial answer, which the SDK emits as a run item.
+
+    Normal assistant text already streamed as deltas, so only the message that
+    matches the stored partial answer is emitted here, once.
+    """
+    expected = handler.partial_answer_text
+    if not expected:
+        return
+    raw_item = getattr(run_item, "raw_item", None)
+    parts = getattr(raw_item, "content", None) or []
+    text = "".join(getattr(part, "text", "") or "" for part in parts)
+    if text != expected:
+        return
+    handler.partial_answer_text = None
+    handler.assistant_tokens.append(text)
+    yield format_sse(
+        {"index": handler.token_index, "content": text},
+        event="message",
+        id=str(handler.token_index),
+    ).encode("utf-8")
+    handler.token_index += 1
 
 
 async def handle_tool_called(

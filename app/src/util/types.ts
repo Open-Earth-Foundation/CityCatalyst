@@ -934,11 +934,17 @@ export interface ImportSummary {
   formatDetected: string;
   rowsFound: number;
   fieldsMapped: number;
+  /**
+   * Rows in the file that will not be imported because CO2, CH4, N2O, and
+   * total CO2e are empty and there is no notation key.
+   */
+  rowsSkippedEmptyEmissions?: number;
 }
 
 export interface FieldMapping {
   sourceColumn: string;
   mappedField: string;
+  sampleValue?: string | null;
 }
 
 export interface ReviewData {

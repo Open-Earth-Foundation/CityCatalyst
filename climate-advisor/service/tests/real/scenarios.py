@@ -1,4 +1,4 @@
-"""CC-1021 Phase F scenarios R1-R19 and H1-H3 with objective assertions.
+"""CC-1021 Phase F scenarios R1-R19, H1-H3 and M1 (multi-selection) with objective assertions.
 
 Each check receives the seed fixture and the captured run and returns
 (passed, note). Assertions read the payloads that actually reached Core, not
@@ -262,6 +262,18 @@ def r19(fix: Fixture, run: Run) -> tuple[bool, str]:
     )
 
 
+def m1(fix: Fixture, run: Run) -> tuple[bool, str]:
+    """All selected actions of a multi-selection inventory appear in the answer."""
+    a7 = fix.inventory("A7", 2023).lower()
+    selected = fix.data["selected"]["A7"]
+    missing = [rank for rank, item in selected.items() if not answer_has(run.text, [item["en"]])]
+    return ok(
+        (bool(reads(run)), "no catalog read"),
+        (a7 in inventories(reads(run)), f"read inventories {[fix.abbreviate(i) for i in inventories(reads(run))]}"),
+        (not missing, f"selected actions missing from answer: ranks {missing}"),
+    )
+
+
 def h1(fix: Fixture, run: Run) -> tuple[bool, str]:
     return ok(
         (has(run.text, fix, "A1"), "A1 missing"),
@@ -308,6 +320,7 @@ def build_scenarios(fix: Fixture) -> list[Scenario]:
         Scenario("R17", [f"Show the ranked climate actions for {n('A6')}."], r17),
         Scenario("R18", [f"Mostre as ações climáticas priorizadas de {n('A1')} 2022."], r18),
         Scenario("R19", [f"Show the ranked climate actions for {n('A4')} 2023."], r19),
+        Scenario("M1", [f"Which climate actions have I selected for {n('A7')} 2023?"], m1),
         Scenario("H1", [f"I'd like to know the highest-priority climate measure in {n('A1')} 2022 and in {n('A0')}."], h1, repeat=True),
         Scenario("H2", [f"Quais são as principais ações climáticas priorizadas de {n('A1')} 2022 e de {n('A2')} 2023?"], h2),
         Scenario("H3", [f"Show ranked actions for {n('A4')}, {n('A1')} 2022 and {n('A0')}."], h3),

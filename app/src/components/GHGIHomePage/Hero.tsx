@@ -52,6 +52,13 @@ interface HeroProps {
    * pathname fallback below should pass their own translated name.
    */
   moduleLabel?: string;
+  /**
+   * `compact` is a slim nameplate: breadcrumb, project, flag + city name and
+   * one "year · emissions" line — no stats row, no map, no fixed height. For
+   * module homes (Actions & Plans v2) where the banner exists to say which
+   * city you are in, not to restate the inventory.
+   */
+  variant?: "default" | "compact";
 }
 
 export function Hero({
@@ -64,6 +71,7 @@ export function Hero({
   city,
   numberFormat,
   moduleLabel: moduleLabelProp,
+  variant = "default",
 }: HeroProps) {
   const { t } = useTranslation(lng, "dashboard");
   const pathname = usePathname();
@@ -119,9 +127,17 @@ export function Hero({
 
   const cityId = inventory?.cityId ?? city?.cityId;
   const breadcrumbsHomeHref = cityId ? `/${lng}/cities/${cityId}` : `/${lng}`;
+  const isCompact = variant === "compact";
 
   return (
-    <Box bg="content.alternative" w="full" h="491px" pt="80px" px={8}>
+    <Box
+      bg="content.alternative"
+      w="full"
+      h={isCompact ? "auto" : "491px"}
+      pt={isCompact ? "xxl" : "80px"}
+      pb={isCompact ? "xl" : 0}
+      px={8}
+    >
       <Box
         display="flex"
         flexDirection="column"
@@ -161,13 +177,13 @@ export function Hero({
         </Box>
         <Box
           w="full"
-          h="240px"
+          h={isCompact ? "auto" : "240px"}
           display="flex"
           flexDirection="column"
           justifyContent="center"
-          pt="36px"
+          pt={isCompact ? "m" : "36px"}
         >
-          <Box display="flex" h="240px" gap={8}>
+          <Box display="flex" h={isCompact ? "auto" : "240px"} gap={8}>
             <Box
               display="flex"
               gap="24px"
@@ -175,14 +191,17 @@ export function Hero({
               h="full"
               w="full"
             >
-              <Text
-                fontSize="headline.sm"
-                color="background.overlay"
-                lineHeight="32"
-                fontWeight="semibold"
-              >
-                {!inventory ? t("welcome") : null}
-              </Text>
+              {/* The slim variant has no room for a 32px empty line. */}
+              {(!isCompact || !inventory) && (
+                <Text
+                  fontSize="headline.sm"
+                  color="background.overlay"
+                  lineHeight="32"
+                  fontWeight="semibold"
+                >
+                  {!inventory ? t("welcome") : null}
+                </Text>
+              )}
 
               <Box display="flex" flexDirection="column" gap={2}>
                 {!isPublic &&
@@ -223,69 +242,31 @@ export function Hero({
                   )}
                 </Box>
               </Box>
-              <Box display="flex" gap={8} mt="24px">
-                <Box display="flex" gap={3}>
-                  <Icon
-                    as={HeatIcon}
-                    boxSize={6}
-                    fill="background.overlay"
-                    mt={1}
-                  />
-                  <Box>
-                    <Box display="flex" gap={1}>
-                      <Text
-                        fontFamily="heading"
-                        color="base.light"
-                        fontSize="headline.sm"
-                        fontWeight="semibold"
-                        lineHeight="32"
-                      >
-                        <>
-                          {value}{" "}
-                          {unit && (
-                            // eslint-disable-next-line i18next/no-literal-string
-                            <span style={{ fontSize: "16px" }}>{unit}</span>
-                          )}
-                        </>
-                      </Text>
-                      <Tooltip
-                        content={t("total-emissions-tooltip", {
-                          year: inventory?.year,
-                        })}
-                        positioning={{ placement: "bottom-start" }}
-                      >
-                        <Icon
-                          as={MdInfoOutline}
-                          w={3}
-                          h={3}
-                          color="background.overlay"
-                        />
-                      </Tooltip>
-                    </Box>
-                    <Text
-                      fontSize="body.md"
-                      color="background.overlay"
-                      fontStyle="normal"
-                      fontWeight={400}
-                      lineHeight="20px"
-                      letterSpacing="wide"
-                    >
-                      <Trans values={{ year: inventory?.year }} t={t}>
-                        total-emissions-in
-                      </Trans>
-                    </Text>
-                  </Box>
-                </Box>
-                <Box display="flex" gap={3}>
-                  <Icon
-                    as={MdGroup}
-                    boxSize={6}
-                    fill="background.overlay"
-                    mt={1}
-                  />
-                  <Box>
-                    <Box display="flex" gap={1}>
-                      {effectivePopulation?.population ? (
+              {isCompact && inventory?.year && value && (
+                <Text
+                  fontSize="body.lg"
+                  color="background.overlay"
+                  fontWeight={400}
+                  data-testid="hero-inventory-line"
+                >
+                  {t("hero-inventory-line", {
+                    year: inventory.year,
+                    value,
+                    unit,
+                  })}
+                </Text>
+              )}
+              {!isCompact && (
+                <Box display="flex" gap={8} mt="24px">
+                  <Box display="flex" gap={3}>
+                    <Icon
+                      as={HeatIcon}
+                      boxSize={6}
+                      fill="background.overlay"
+                      mt={1}
+                    />
+                    <Box>
+                      <Box display="flex" gap={1}>
                         <Text
                           fontFamily="heading"
                           color="base.light"
@@ -293,145 +274,198 @@ export function Hero({
                           fontWeight="semibold"
                           lineHeight="32"
                         >
-                          {shortenNumber(
-                            effectivePopulation.population,
-                            numberFormat,
-                          )}
-                          <Text as="span" fontSize="16px">
-                            {getShortenNumberUnit(
-                              effectivePopulation.population,
-                            )}
-                          </Text>
-                        </Text>
-                      ) : (
-                        <Text
-                          fontFamily="heading"
-                          color="border.neutral"
-                          fontSize="headline.sm"
-                          fontWeight="semibold"
-                          lineHeight="32"
-                        >
-                          {t("no-data-for-inventory-yet")}
-                        </Text>
-                      )}
-                      <Tooltip
-                        content={
                           <>
-                            {popWithDS
-                              ? popWithDS.datasource.name
-                              : t("source-open-climate")}
-                            <br />
-                            {t("population-year", {
-                              year: effectivePopulation?.year,
-                            })}
+                            {value}{" "}
+                            {unit && (
+                              // eslint-disable-next-line i18next/no-literal-string
+                              <span style={{ fontSize: "16px" }}>{unit}</span>
+                            )}
                           </>
-                        }
-                        positioning={{
-                          placement: "bottom-start",
-                        }}
-                      >
-                        <Icon
-                          as={MdInfoOutline}
-                          w={3}
-                          h={3}
-                          color="background.overlay"
-                        />
-                      </Tooltip>
-                    </Box>
-                    <Text
-                      fontSize="body.md"
-                      color="background.overlay"
-                      fontStyle="normal"
-                      fontWeight={400}
-                      lineHeight="20px"
-                      letterSpacing="wide"
-                    >
-                      <Trans t={t}>total-population</Trans>
-                    </Text>
-                  </Box>
-                </Box>
-                <Box display="flex" gap={3}>
-                  <Icon
-                    as={MdOutlineAspectRatio}
-                    boxSize={6}
-                    fill="background.overlay"
-                    mt={1}
-                  />
-                  <Box>
-                    <Box display="flex" gap={1}>
-                      {cityArea === null || cityArea === 0 ? (
-                        <Text
-                          fontFamily="heading"
-                          color="border.neutral"
-                          fontSize="headline.sm"
-                          fontWeight="semibold"
-                          lineHeight="32"
-                        >
-                          {t("n-a")}
                         </Text>
-                      ) : (
-                        <Text
-                          fontFamily="heading"
-                          color="base.light"
-                          fontSize="headline.sm"
-                          fontWeight="semibold"
-                          lineHeight="32"
+                        <Tooltip
+                          content={t("total-emissions-tooltip", {
+                            year: inventory?.year,
+                          })}
+                          positioning={{ placement: "bottom-start" }}
                         >
-                          {formatNumber(
-                            Math.round(cityArea!),
-                            numberFormat,
-                          )}
-                          {/* eslint-disable-next-line i18next/no-literal-string */}
-                          <Text as="span" fontSize="16px">
-                            km<sup>2</sup>
+                          <Icon
+                            as={MdInfoOutline}
+                            w={3}
+                            h={3}
+                            color="background.overlay"
+                          />
+                        </Tooltip>
+                      </Box>
+                      <Text
+                        fontSize="body.md"
+                        color="background.overlay"
+                        fontStyle="normal"
+                        fontWeight={400}
+                        lineHeight="20px"
+                        letterSpacing="wide"
+                      >
+                        <Trans values={{ year: inventory?.year }} t={t}>
+                          total-emissions-in
+                        </Trans>
+                      </Text>
+                    </Box>
+                  </Box>
+                  <Box display="flex" gap={3}>
+                    <Icon
+                      as={MdGroup}
+                      boxSize={6}
+                      fill="background.overlay"
+                      mt={1}
+                    />
+                    <Box>
+                      <Box display="flex" gap={1}>
+                        {effectivePopulation?.population ? (
+                          <Text
+                            fontFamily="heading"
+                            color="base.light"
+                            fontSize="headline.sm"
+                            fontWeight="semibold"
+                            lineHeight="32"
+                          >
+                            {shortenNumber(
+                              effectivePopulation.population,
+                              numberFormat,
+                            )}
+                            <Text as="span" fontSize="16px">
+                              {getShortenNumberUnit(
+                                effectivePopulation.population,
+                              )}
+                            </Text>
                           </Text>
-                        </Text>
-                      )}
-                      <Tooltip
-                        content={
-                          <Trans i18nKey="source-open-climate" t={t}>
-                            {`Source: OpenClimate`}
-                          </Trans>
-                        }
-                        positioning={{
-                          placement: "bottom-start",
-                        }}
+                        ) : (
+                          <Text
+                            fontFamily="heading"
+                            color="border.neutral"
+                            fontSize="headline.sm"
+                            fontWeight="semibold"
+                            lineHeight="32"
+                          >
+                            {t("no-data-for-inventory-yet")}
+                          </Text>
+                        )}
+                        <Tooltip
+                          content={
+                            <>
+                              {popWithDS
+                                ? popWithDS.datasource.name
+                                : t("source-open-climate")}
+                              <br />
+                              {t("population-year", {
+                                year: effectivePopulation?.year,
+                              })}
+                            </>
+                          }
+                          positioning={{
+                            placement: "bottom-start",
+                          }}
+                        >
+                          <Icon
+                            as={MdInfoOutline}
+                            w={3}
+                            h={3}
+                            color="background.overlay"
+                          />
+                        </Tooltip>
+                      </Box>
+                      <Text
+                        fontSize="body.md"
+                        color="background.overlay"
+                        fontStyle="normal"
+                        fontWeight={400}
+                        lineHeight="20px"
+                        letterSpacing="wide"
                       >
-                        <Icon
-                          as={MdInfoOutline}
-                          w={3}
-                          h={3}
-                          color="background.overlay"
-                        />
-                      </Tooltip>
+                        <Trans t={t}>total-population</Trans>
+                      </Text>
                     </Box>
-                    <Text
-                      fontSize="body.md"
-                      color="background.overlay"
-                      fontStyle="normal"
-                      fontWeight={400}
-                      lineHeight="20px"
-                      letterSpacing="wide"
-                    >
-                      <Trans t={t}>total-land-area</Trans>
-                    </Text>
+                  </Box>
+                  <Box display="flex" gap={3}>
+                    <Icon
+                      as={MdOutlineAspectRatio}
+                      boxSize={6}
+                      fill="background.overlay"
+                      mt={1}
+                    />
+                    <Box>
+                      <Box display="flex" gap={1}>
+                        {cityArea === null || cityArea === 0 ? (
+                          <Text
+                            fontFamily="heading"
+                            color="border.neutral"
+                            fontSize="headline.sm"
+                            fontWeight="semibold"
+                            lineHeight="32"
+                          >
+                            {t("n-a")}
+                          </Text>
+                        ) : (
+                          <Text
+                            fontFamily="heading"
+                            color="base.light"
+                            fontSize="headline.sm"
+                            fontWeight="semibold"
+                            lineHeight="32"
+                          >
+                            {formatNumber(Math.round(cityArea!), numberFormat)}
+                            {/* eslint-disable-next-line i18next/no-literal-string */}
+                            <Text as="span" fontSize="16px">
+                              km<sup>2</sup>
+                            </Text>
+                          </Text>
+                        )}
+                        <Tooltip
+                          content={
+                            <Trans i18nKey="source-open-climate" t={t}>
+                              {`Source: OpenClimate`}
+                            </Trans>
+                          }
+                          positioning={{
+                            placement: "bottom-start",
+                          }}
+                        >
+                          <Icon
+                            as={MdInfoOutline}
+                            w={3}
+                            h={3}
+                            color="background.overlay"
+                          />
+                        </Tooltip>
+                      </Box>
+                      <Text
+                        fontSize="body.md"
+                        color="background.overlay"
+                        fontStyle="normal"
+                        fontWeight={400}
+                        lineHeight="20px"
+                        letterSpacing="wide"
+                      >
+                        <Trans t={t}>total-land-area</Trans>
+                      </Text>
+                    </Box>
                   </Box>
                 </Box>
+              )}
+            </Box>
+            {!isCompact && (
+              <Box
+                mt={-25}
+                w="422px"
+                flexShrink={0}
+                borderRadius="8px"
+                overflow="hidden"
+              >
+                <CityMap
+                  locode={inventory?.city?.locode || city?.locode || null}
+                  width={422}
+                  height={317}
+                />
               </Box>
-            </Box>
-            <Box
-              mt={-25}
-              w="422px"
-              flexShrink={0}
-              borderRadius="8px"
-              overflow="hidden"
-            >
-              <CityMap
-                locode={inventory?.city?.locode || city?.locode || null}
-                width={422}
-                height={317}
-              />
-            </Box>
+            )}
           </Box>
         </Box>
       </Box>

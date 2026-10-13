@@ -3,7 +3,6 @@ import { use } from "react";
 import { useEffect, Suspense } from "react";
 
 import { NavigationBar } from "@/components/navigation-bar";
-import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
 import { useTheme } from "next-themes";
 
@@ -29,7 +28,6 @@ export default function AuthLayout(props: {
       <Box display="flex" flexDirection="row" flex={1}>
         <Box w="full">
           <Box pt={148} pb={4} w="480px" maxW="full" mx="auto" px={4}>
-            <Toaster />
             <Suspense fallback={null}>{props.children}</Suspense>
           </Box>
         </Box>

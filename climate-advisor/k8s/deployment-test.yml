@@ -60,6 +60,7 @@ spec:
               memory: "1024Mi"
               cpu: "1000m"
           livenessProbe:
+            timeoutSeconds: 3
             httpGet:
               path: /health
               port: http
@@ -69,6 +70,7 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
+            timeoutSeconds: 3
             httpGet:
               path: /ready
               port: http
@@ -78,6 +80,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
           startupProbe:
+            timeoutSeconds: 3
             httpGet:
               path: /health
               port: http

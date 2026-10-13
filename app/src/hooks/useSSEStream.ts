@@ -11,12 +11,29 @@ export interface SSEEvent {
   id?: string;
 }
 
+/** Error code reported when an idle timeout cancels a silent stream. */
+export const STREAM_STALLED_CODE = "stream_stalled";
+
+export interface SSEErrorDetails {
+  /** HTTP status when the request failed before streaming. */
+  status?: number;
+  /** Whether the server accepted the request and began streaming. */
+  streamStarted: boolean;
+}
+
 export interface SSEStreamOptions {
   onMessage?: (content: string, index: number) => void;
   onToolResult?: (tool: ToolResultPayload) => void;
+  onProgress?: (progress: unknown) => void;
+  onReasoning?: (reasoning: unknown) => void;
   onComplete?: () => void;
-  onError?: (error: string, code?: string) => void;
+  onError?: (error: string, code?: string, details?: SSEErrorDetails) => void;
   onWarning?: (warning: string) => void;
+  /**
+   * Cancel the request when no bytes arrive for this long. Heartbeat comments
+   * count as activity, so only a dead connection or a frozen service trips it.
+   */
+  idleTimeoutMs?: number;
   /** @deprecated No longer needed — streams always use CA SSE format. */
   forceEventStream?: boolean;
 }
@@ -144,6 +161,14 @@ export function useSSEStream(
             }
             break;
 
+          case "progress":
+            options.onProgress?.(event.data);
+            break;
+
+          case "reasoning":
+            options.onReasoning?.(event.data);
+            break;
+
           case "done":
             if (
               isRecord(event.data) &&
@@ -170,6 +195,10 @@ export function useSSEStream(
                   ? (valueAsString(event.data.error) ??
                       "Stream completed with error")
                   : "Stream completed with error",
+                isRecord(event.data)
+                  ? valueAsString(event.data.code)
+                  : undefined,
+                { streamStarted: true },
               );
             }
             streamErroredRef.current = false;
@@ -182,6 +211,10 @@ export function useSSEStream(
                 isRecord(event.data)
                   ? (valueAsString(event.data.message) ?? "Stream error")
                   : "Stream error",
+                isRecord(event.data)
+                  ? valueAsString(event.data.code)
+                  : undefined,
+                { streamStarted: true },
               );
             }
             break;
@@ -202,7 +235,11 @@ export function useSSEStream(
       } catch (error: unknown) {
         logger.error({ error, event }, "Error handling SSE event");
         if (options.onError) {
-          options.onError(getErrorMessage(error, "Stream processing error"));
+          options.onError(
+            getErrorMessage(error, "Stream processing error"),
+            undefined,
+            { streamStarted: true },
+          );
         }
       }
     },
@@ -210,7 +247,7 @@ export function useSSEStream(
   );
 
   const handleStream = useCallback(
-    async (response: Response) => {
+    async (response: Response, onBytes: () => void) => {
       const reader = response.body?.getReader();
       if (!reader) {
         throw new Error("No response body reader available");
@@ -218,11 +255,13 @@ export function useSSEStream(
 
       const decoder = new TextDecoder();
       let buffer = "";
+      let terminalSeen = false;
 
       try {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
+          onBytes();
 
           buffer += decoder.decode(value, { stream: true });
 
@@ -234,14 +273,18 @@ export function useSSEStream(
 
             try {
               const event = parseSSEEvent(eventText);
-              // SSE comments keep the connection alive without an application event.
+              // SSE comments keep the transport alive without an application event.
               if (!event.type && event.data === undefined) continue;
+              if (event.type === "done" || event.type === "error")
+                terminalSeen = true;
               await handleSSEEvent(event);
             } catch (error) {
               logger.error({ error, eventText }, "Failed to parse SSE event");
             }
           }
         }
+        if (!terminalSeen)
+          throw new Error("The response stream ended before completion");
       } finally {
         reader.releaseLock();
       }
@@ -257,13 +300,28 @@ export function useSSEStream(
 
       const abortController = new AbortController();
       abortControllerRef.current = abortController;
+      let status: number | undefined;
+      let streamStarted = false;
+      let stalled = false;
+      let idleTimer: ReturnType<typeof setTimeout> | undefined;
+      // Restart the idle clock whenever the server shows it is still there.
+      const markActivity = () => {
+        if (!options.idleTimeoutMs) return;
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+          stalled = true;
+          abortController.abort();
+        }, options.idleTimeoutMs);
+      };
 
       try {
         streamErroredRef.current = false;
+        markActivity();
         const response = await fetch(url, {
           ...fetchOptions,
           signal: abortController.signal,
         });
+        status = response.status;
 
         if (!response.ok) {
           // Try to extract error message from response
@@ -289,8 +347,22 @@ export function useSSEStream(
           throw new Error("HTTP response is null");
         }
 
-        await handleStream(response);
+        streamStarted = true;
+        markActivity();
+        await handleStream(response, markActivity);
       } catch (error: unknown) {
+        if (stalled) {
+          streamErroredRef.current = true;
+          options.onError?.(
+            "The response stream stalled",
+            STREAM_STALLED_CODE,
+            { status, streamStarted },
+          );
+          // Not an AbortError: callers must not treat a stall as a user cancel.
+          throw Object.assign(new Error("The response stream stalled"), {
+            name: "StreamStalledError",
+          });
+        }
         if (!isNamedError(error, "AbortError")) {
           streamErroredRef.current = true;
           if (options.onError) {
@@ -301,10 +373,13 @@ export function useSSEStream(
                 typeof error.code === "string"
                 ? error.code
                 : undefined,
+              { status: streamStarted ? undefined : status, streamStarted },
             );
           }
         }
         throw error;
+      } finally {
+        clearTimeout(idleTimer);
       }
     },
     [handleStream, options],

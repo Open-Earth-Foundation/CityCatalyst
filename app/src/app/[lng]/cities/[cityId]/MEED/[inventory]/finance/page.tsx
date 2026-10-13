@@ -1,17 +1,15 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import { Card, HStack, Icon, Table, VStack } from "@chakra-ui/react";
-import { LuCoins } from "react-icons/lu";
+import { Card, HStack, Table, VStack } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import {
   useGetCityQuery,
-  useGetMeedFinanceFeasibilityQuery,
+  useGetMeedReferenceFinanceFeasibilityQuery,
 } from "@/services/api";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { MeedButton } from "../../components/MeedButton";
-import { pillarPercent } from "../../scoringWeights";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MEED_WIZARD_STEPS } from "../../steps";
 import { setMeedStepState } from "../../meedLocalState";
@@ -30,6 +28,7 @@ import {
   FINANCE_COLUMN_WIDTHS,
   FOCUS_RING,
   profileAttrs,
+  ROUTE_ORDER,
   routeKeyOf,
   sortByFeasibility,
   type RouteKey,
@@ -40,8 +39,6 @@ import { extractFeasibilityRows } from "./types";
 const INITIAL_ROWS = 15;
 const TABLE_ID = "meed-finance-table";
 
-const FINANCE_RANKING_WEIGHT = pillarPercent("feasibility");
-
 function FinancialFeasibilityContent(props: {
   lng: string;
   cityId: string;
@@ -51,7 +48,7 @@ function FinancialFeasibilityContent(props: {
   const { t } = useTranslation(lng, "meed-finance");
 
   const { data, isLoading, isError, refetch } =
-    useGetMeedFinanceFeasibilityQuery({ cityId }, { skip: !cityId });
+    useGetMeedReferenceFinanceFeasibilityQuery({ cityId }, { skip: !cityId });
   const { data: city } = useGetCityQuery(cityId, { skip: !cityId });
 
   const [activeRoute, setActiveRoute] = useState<RouteKey | null>(null);
@@ -90,28 +87,11 @@ function FinancialFeasibilityContent(props: {
     });
   }, [inventoryId, totalActions, selfCount, t]);
 
-  const weightStrip = (
-    <HStack
-      gap="s"
-      bg="background.neutral"
-      borderRadius="rounded"
-      px="m"
-      py="s"
-      alignItems="center"
-    >
-      <Icon as={LuCoins} boxSize="14px" color="content.secondary" />
-      <Caption color="content.secondary">
-        {t("finance-ranking-weight", { weight: FINANCE_RANKING_WEIGHT })}
-      </Caption>
-    </HStack>
-  );
-
   const intro = (
     <VStack alignItems="stretch" gap="s">
       <BodyLarge color="content.secondary">
         {t("finance-description", { city: cityName })}
       </BodyLarge>
-      {weightStrip}
     </VStack>
   );
 
@@ -161,6 +141,9 @@ function FinancialFeasibilityContent(props: {
       <CityProfileCard
         cityName={cityName}
         profile={profileAttrs(rows[0]?.inputs?.city?.profile)}
+        routes={ROUTE_ORDER.filter(
+          (key) => key !== "other" && (routeCounts[key] ?? 0) > 0,
+        )}
         t={t}
       />
 

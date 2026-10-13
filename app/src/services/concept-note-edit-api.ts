@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api } from "@/services/api";
 import type {
   EditApplyRequest,
   EditProposal,
@@ -32,7 +32,10 @@ export const editApi = api.injectEndpoints({
         method: "POST",
         body: args.body,
       }),
-      invalidatesTags: tags,
+      invalidatesTags: (_r, _e, args) => [
+        ...tags(_r, _e, args),
+        { type: "ConceptNoteDraft" as const, id: args.runId },
+      ],
     }),
     rejectEditProposal: builder.mutation<EditProposal, Target>({
       query: (args) => ({
@@ -40,7 +43,10 @@ export const editApi = api.injectEndpoints({
         method: "POST",
         body: {},
       }),
-      invalidatesTags: tags,
+      invalidatesTags: (_r, _e, args) => [
+        ...tags(_r, _e, args),
+        { type: "ConceptNoteDraft" as const, id: args.runId },
+      ],
     }),
     refineEditProposal: builder.mutation<
       EditProposal,
@@ -51,7 +57,10 @@ export const editApi = api.injectEndpoints({
         method: "POST",
         body: args.body,
       }),
-      invalidatesTags: tags,
+      invalidatesTags: (_r, _e, args) => [
+        ...tags(_r, _e, args),
+        { type: "ConceptNoteDraft" as const, id: args.runId },
+      ],
     }),
   }),
 });

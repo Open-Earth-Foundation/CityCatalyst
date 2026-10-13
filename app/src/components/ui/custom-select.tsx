@@ -1,6 +1,7 @@
 import { Box, Icon, Text } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import { BiCaretDown } from "react-icons/bi";
+import { Tooltip } from "@/components/ui/tooltip";
 
 export interface CustomSelectOption {
   value: string;
@@ -16,6 +17,8 @@ export interface CustomSelectProps {
   height?: string;
   t: (key: string) => string;
   label: string;
+  disabled?: boolean;
+  disabledTooltip?: string;
 }
 
 export const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -27,6 +30,8 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   height = "300px",
   t,
   label,
+  disabled = false,
+  disabledTooltip,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] =
@@ -62,52 +67,60 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         {t(label)}
       </Text>
       {/* Select Trigger */}
-      <Box
-        as="button"
-        appearance="none"
-        w="full"
-        h="12"
-        mt="2"
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        px="16px"
-        bg="base.light"
-        fontFamily="heading"
-        border="1px solid"
-        borderColor="border.neutral"
-        borderRadius="4px"
-        shadow="sm"
-        outline="none"
-        gap="8px"
-        cursor="pointer"
-        _hover={{
-          borderColor: "content.link",
-        }}
-        _focus={{
-          outline: "none",
-          borderColor: "content.link",
-          boxShadow: "0 0 0 1px content.link",
-        }}
-        onClick={() => setIsOpen(!isOpen)}
+      <Tooltip
+        content={disabledTooltip}
+        disabled={!disabled || !disabledTooltip}
+        positioning={{ placement: "top" }}
+        showArrow
       >
-        <Text
-          fontFamily="body"
-          fontSize="md"
-          fontWeight="normal"
-          lineHeight="24"
-          color={selectedOption ? "content.primary" : "content.tertiary"}
-        >
-          {selectedOption ? selectedOption.label : placeholder}
-        </Text>
-        <Icon
-          as={BiCaretDown}
-          color="interactive.control"
-          boxSize={5}
-          transition="transform 0.2s"
-          transform={isOpen ? "rotate(180deg)" : "rotate(0deg)"}
-        />
-      </Box>
+        <Box mt="2">
+          <Box
+            as="button"
+            aria-disabled={disabled}
+            appearance="none"
+            w="full"
+            h="12"
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            px="16px"
+            bg="base.light"
+            fontFamily="heading"
+            border="1px solid"
+            borderColor="border.neutral"
+            borderRadius="4px"
+            shadow="sm"
+            outline="none"
+            gap="8px"
+            cursor={disabled ? "not-allowed" : "pointer"}
+            opacity={disabled ? 0.5 : 1}
+            _hover={disabled ? undefined : { borderColor: "content.link" }}
+            _focus={{
+              outline: "none",
+              borderColor: "content.link",
+              boxShadow: "0 0 0 1px content.link",
+            }}
+            onClick={() => !disabled && setIsOpen(!isOpen)}
+          >
+            <Text
+              fontFamily="body"
+              fontSize="md"
+              fontWeight="normal"
+              lineHeight="24"
+              color={selectedOption ? "content.primary" : "content.tertiary"}
+            >
+              {selectedOption ? selectedOption.label : placeholder}
+            </Text>
+            <Icon
+              as={BiCaretDown}
+              color="interactive.control"
+              boxSize={5}
+              transition="transform 0.2s"
+              transform={isOpen ? "rotate(180deg)" : "rotate(0deg)"}
+            />
+          </Box>
+        </Box>
+      </Tooltip>
 
       {/* Dropdown Menu */}
       {isOpen && (

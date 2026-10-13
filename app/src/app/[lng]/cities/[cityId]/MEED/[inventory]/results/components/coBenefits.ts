@@ -86,7 +86,7 @@ export function coBenefitLabel(key: string, t: TFunction): string {
   });
 }
 
-type CoBenefitRelationship = "positive" | "negative" | "unknown";
+type CoBenefitRelationship = "positive" | "negative" | "neutral" | "unknown";
 
 /**
  * How a co-benefit entry relates to the action.
@@ -102,12 +102,23 @@ function relationshipOf(value: unknown): CoBenefitRelationship {
   const normalized = value.trim().toLowerCase();
   if (normalized === "negative") return "negative";
   if (normalized === "positive") return "positive";
+  // An explicit "neutral" is a scored zero: neither a benefit nor a trade-off.
+  if (normalized === "neutral") return "neutral";
   return "unknown";
+}
+
+/** The numeric magnitude an entry carries (−2…+2 in scored catalogs), if any. */
+function magnitudeOf(value: unknown): number | null {
+  if (!value || typeof value !== "object") return null;
+  const raw = (value as { impact_numeric?: unknown }).impact_numeric;
+  return typeof raw === "number" && Number.isFinite(raw) ? raw : null;
 }
 
 interface CoBenefitEntry {
   key: string;
   relationship: CoBenefitRelationship;
+  /** Null when the source states a relationship but no magnitude. */
+  value: number | null;
 }
 
 function entryRelationship(value: unknown): CoBenefitRelationship {
@@ -137,6 +148,7 @@ function evidenceEntries(
       .map((key) => ({
         key: normalizeKey(key),
         relationship: "unknown" as const,
+        value: null,
       }));
     return entries.length > 0 ? entries : null;
   }
@@ -145,6 +157,7 @@ function evidenceEntries(
       ([key, value]) => ({
         key: normalizeKey(key),
         relationship: entryRelationship(value),
+        value: magnitudeOf(value),
       }),
     );
     return entries.length > 0 ? entries : null;
@@ -161,6 +174,7 @@ function catalogEntries(
   return Object.entries(catalog).map(([key, value]) => ({
     key: normalizeKey(key),
     relationship: relationshipOf(value?.impact_relationship),
+    value: magnitudeOf(value),
   }));
 }
 
@@ -172,40 +186,68 @@ function coBenefitEntries(
   return evidenceEntries(action) ?? catalogEntries(action, index);
 }
 
+export interface MeedCoBenefitScore {
+  key: string;
+  /** −2…+2 where the catalog scores it; null when it only names the benefit. */
+  value: number | null;
+}
+
 /**
- * Co-benefit keys the action delivers.
+ * Co-benefits the action delivers, with their magnitude when scored.
  *
  * `unknown` counts as a benefit on purpose: the live catalog carries no
- * negative relationships at all, so this shows exactly what it showed before
- * relationships were read at all. Only an explicit `negative` is withheld.
+ * relationships at all for most entries, so this shows exactly what it showed
+ * before relationships were read. An explicit `negative` is a trade-off and an
+ * explicit `neutral` (a scored zero) is neither, so both are withheld.
  */
+export function actionCoBenefitScores(
+  action: MeedRankedActionResult,
+  index: MeedActionIndex,
+): MeedCoBenefitScore[] {
+  return coBenefitEntries(action, index)
+    .filter(
+      (entry) =>
+        entry.relationship !== "negative" && entry.relationship !== "neutral",
+    )
+    .map(({ key, value }) => ({ key, value }));
+}
+
+/** Co-benefit keys the action delivers (magnitudes dropped). */
 export function actionCoBenefits(
   action: MeedRankedActionResult,
   index: MeedActionIndex,
 ): string[] {
-  return coBenefitEntries(action, index)
-    .filter((entry) => entry.relationship !== "negative")
-    .map((entry) => entry.key);
+  return actionCoBenefitScores(action, index).map((entry) => entry.key);
 }
 
 /**
- * Co-benefit keys the action explicitly scores *negatively* on — its trade-offs.
- * Empty for every action in the live catalog today; the section that renders it
- * hides itself when so.
+ * Co-benefits the action explicitly scores *negatively* on — its trade-offs —
+ * with their magnitude. Empty for every action in the live catalog today; the
+ * section that renders it hides itself when so.
  */
+export function actionTradeOffScores(
+  action: MeedRankedActionResult,
+  index: MeedActionIndex,
+): MeedCoBenefitScore[] {
+  return coBenefitEntries(action, index)
+    .filter((entry) => entry.relationship === "negative")
+    .map(({ key, value }) => ({ key, value }));
+}
+
+/** Trade-off keys (magnitudes dropped). */
 export function actionTradeOffs(
   action: MeedRankedActionResult,
   index: MeedActionIndex,
 ): string[] {
-  return coBenefitEntries(action, index)
-    .filter((entry) => entry.relationship === "negative")
-    .map((entry) => entry.key);
+  return actionTradeOffScores(action, index).map((entry) => entry.key);
 }
 
 export interface MeedCoBenefitTally {
   key: string;
   /** How many of the given actions deliver this co-benefit. */
   count: number;
+  /** Mean scored magnitude across those actions; null when none is scored. */
+  mean: number | null;
 }
 
 /**
@@ -218,14 +260,41 @@ export function tallyCoBenefits(
   index: MeedActionIndex,
   limit = 6,
 ): MeedCoBenefitTally[] {
-  const counts = new Map<string, number>();
+  return tally(actions, limit, (a) => actionCoBenefitScores(a, index));
+}
+
+/** Trade-offs shared across a set of actions, most common first. */
+export function tallyTradeOffs(
+  actions: MeedRankedActionResult[],
+  index: MeedActionIndex,
+  limit = 6,
+): MeedCoBenefitTally[] {
+  return tally(actions, limit, (a) => actionTradeOffScores(a, index));
+}
+
+function tally(
+  actions: MeedRankedActionResult[],
+  limit: number,
+  scoresOf: (action: MeedRankedActionResult) => MeedCoBenefitScore[],
+): MeedCoBenefitTally[] {
+  const counts = new Map<string, { count: number; values: number[] }>();
   for (const action of actions) {
-    for (const key of actionCoBenefits(action, index)) {
-      counts.set(key, (counts.get(key) ?? 0) + 1);
+    for (const { key, value } of scoresOf(action)) {
+      const tally = counts.get(key) ?? { count: 0, values: [] };
+      tally.count += 1;
+      if (value !== null) tally.values.push(value);
+      counts.set(key, tally);
     }
   }
   return [...counts.entries()]
-    .map(([key, count]) => ({ key, count }))
+    .map(([key, { count, values }]) => ({
+      key,
+      count,
+      mean:
+        values.length > 0
+          ? values.reduce((sum, v) => sum + v, 0) / values.length
+          : null,
+    }))
     .sort((a, b) => b.count - a.count || a.key.localeCompare(b.key))
     .slice(0, limit);
 }

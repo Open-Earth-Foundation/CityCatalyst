@@ -23,8 +23,8 @@
   "weight-alignment-description": "Politische Unterstützung, Sektoren & Zusatznutzen",
   "weight-feasibility": "Machbarkeit",
   "weight-feasibility-description": "Rechtliches Umfeld & sozioökonomische Passform",
-  "weight-default": "Standard: {{value}}%",
-  "weight-adjusted": "Standard: {{value}}% · angepasst",
+  "weight-default": "Standard",
+  "weight-adjusted": "Angepasst",
   "weights-total": "Gesamt: {{total}}%",
   "reset-to-defaults": "Auf Standardwerte zurücksetzen",
   "exclusions-title": "Bestätigte Ausschlüsse",
@@ -80,5 +80,7 @@
   "confidence-verdict-moderate": "Mäßig",
   "confidence-verdict-high": "Hoch",
   "weight-value-text": "{{value}} Prozent",
-  "gate-ready": "Bereit, Empfehlungen zu generieren."
+  "gate-ready": "Bereit, Empfehlungen zu generieren.",
+  "view-breakdown": "Aufschlüsselung anzeigen",
+  "view-breakdown-aria": "Die Emissionsaufteilung anzeigen"
 }

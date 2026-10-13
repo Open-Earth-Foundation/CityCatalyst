@@ -291,17 +291,6 @@ function SocioeconomicContextContent(props: {
         <BodyLarge color="content.secondary">
           {t("context-description")}
         </BodyLarge>
-        <HStack
-          gap="s"
-          bg="background.neutral"
-          borderRadius="rounded"
-          px="m"
-          py="s"
-          alignSelf="flex-start"
-        >
-          <Icon as={LuUsers} boxSize="14px" color="content.secondary" />
-          <Caption color="content.secondary">{t("ranking-weight")}</Caption>
-        </HStack>
       </VStack>
 
       {isError ? (

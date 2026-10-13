@@ -7,7 +7,7 @@ import { LabelLarge } from "@/components/package/Texts/Label";
 import { MeedStatusTag } from "../../../components/MeedStatusTag";
 import {
   confidenceMeta,
-  formatClpMillions,
+  formatClpAmount,
   humanizeEnum,
   lifecycleTone,
 } from "../labels";
@@ -24,7 +24,7 @@ export function ProjectCard({ proj, t }: ProjectCardProps) {
   const conf = proj.action_matches?.[0]
     ? confidenceMeta(proj.action_matches[0].confidence)
     : null;
-  const cost = formatClpMillions(proj.cost_total, t);
+  const cost = formatClpAmount(proj.cost_total, proj.amount_unit, t);
   const funder = proj.funding_sources?.[0]?.funder_name;
   const name =
     proj.project_name_i18n?.en ??

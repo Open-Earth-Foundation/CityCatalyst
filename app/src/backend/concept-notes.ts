@@ -13,9 +13,10 @@ import { logger } from "@/services/logger";
 const upstreamRunSchema = z.object({ city_id: z.string().uuid() });
 
 type ConceptNoteApiRequest = {
+  signal?: AbortSignal;
   path: string;
   userId: string;
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: Record<string, unknown>;
   headers?: Record<string, string>;
   requestId?: string;
@@ -39,6 +40,7 @@ export async function callConceptNoteApi(
 
   return callClimateAdvisorChat({
     path: request.path,
+    ...(request.signal ? { signal: request.signal } : {}),
     method: request.method,
     body: request.body,
     searchParams: request.searchParams,

@@ -17,6 +17,7 @@ on:
       - k8s/test/cc-test-check-hiap-jobs.yml
       - k8s/test/cc-test-process-pdf-ocr-jobs.yml
       - k8s/test/cc-test-process-webhook-deliveries.yml
+      - k8s/test/cc-test-process-bulk-inventory-import.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-test.yml
     branches: ["main"]
@@ -286,6 +287,9 @@ jobs:
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/test/cc-test-process-webhook-deliveries.yml -n default
           kubectl set env cronjob/citycatalyst-test-process-webhook-deliveries \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+          kubectl apply -f k8s/test/cc-test-process-bulk-inventory-import.yml -n default
+          kubectl set env cronjob/citycatalyst-test-process-bulk-inventory-import \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl rollout restart deployment cc-test-web-deploy -n default
           kubectl rollout status deployment/cc-test-web-deploy -n default --timeout=300s

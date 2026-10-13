@@ -1,0 +1,30 @@
+[
+  {
+    "number": 1,
+    "prompt": "Sou novo aqui. Onde posso ver o rascunho que você gerou? Preciso baixá-lo primeiro?"
+  },
+  {
+    "number": 2,
+    "prompt": "Onde clico para mudar o financiador e o programa de financiamento desta nota?"
+  },
+  {
+    "number": 3,
+    "prompt": "Tenho um PDF com mais informações sobre o projeto. Onde faço o upload?"
+  },
+  {
+    "number": 4,
+    "prompt": "Quero corrigir uma frase no rascunho. Onde digito a alteração e como a salvo?"
+  },
+  {
+    "number": 5,
+    "prompt": "Como baixo esta nota em PDF e por que o botão de download pode estar desativado?"
+  },
+  {
+    "number": 6,
+    "prompt": "O que você pode fazer neste construtor de notas conceituais?"
+  },
+  {
+    "number": 7,
+    "prompt": "Qual financiador e programa estão selecionados para este projeto?"
+  }
+]

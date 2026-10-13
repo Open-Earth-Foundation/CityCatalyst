@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.services.stationary_energy.stationary_energy_agent_review import (
     StationaryEnergyAgentReviewService,
 )
+from app.services.citycatalyst_client import CityCatalystClient
 from app.services.stationary_energy.stationary_energy_review_models import (
     MessageParamValue,
     StationaryEnergyAgentReviewChoiceInput,
@@ -20,6 +21,7 @@ from app.services.stationary_energy.stationary_energy_review_models import (
     StationaryEnergyNotationKeyChoiceInput,
 )
 from app.tools.inventory_context_tools import build_inventory_context_tools
+from app.utils.request_token_refresh import RequestTokenRefreshContext
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +44,9 @@ def build_stationary_energy_review_tools(
     draft_run_id: str | UUID,
     user_id: str,
     token_ref: Dict[str, Optional[str]],
+    request_token_refresh_context: RequestTokenRefreshContext | None = None,
 ) -> Sequence[object]:
-    """Create scoped Stationary Energy review tools for one draft run."""
+    """Create scoped review tools with the active turn's optional refresh context."""
     draft_uuid = UUID(str(draft_run_id))
 
     async def _resolve_inventory_scope() -> tuple[str, str]:
@@ -70,8 +73,17 @@ def build_stationary_energy_review_tools(
         try:
             # Execute each tool in a short-lived session so DB writes are atomic.
             async with session_factory() as session:
-                result = await operation(StationaryEnergyAgentReviewService(session))
-                await session.commit()
+                review_service = StationaryEnergyAgentReviewService(
+                    session,
+                    cc_client=CityCatalystClient(
+                        request_token_refresh_context=request_token_refresh_context
+                    ),
+                )
+                try:
+                    result = await operation(review_service)
+                    await session.commit()
+                finally:
+                    await review_service.cc_client.close()
                 logger.info(
                     "Stationary Energy review tool completed action=%s draft_run_id=%s success=%s",
                     action,
@@ -711,6 +723,9 @@ def build_stationary_energy_review_tools(
         resolve_scope=_resolve_inventory_scope,
         user_id=user_id,
         token_ref=token_ref,
+        client_factory=lambda: CityCatalystClient(
+            request_token_refresh_context=request_token_refresh_context
+        ),
     )
 
     return [

@@ -144,10 +144,11 @@ export function MeedShell({
    *
    * The footer used to advance unconditionally, so a user could walk the whole
    * wizard having entered nothing and only discover at pre-flight that the
-   * ranking could not run. These are the same two inputs the readiness gate
-   * scores — the ones the city actually supplies.
+   * ranking could not run. Preferences is the one input the city actually
+   * supplies in the wizard; emissions is retrieved from the home screen and
+   * gated there.
    */
-  const REQUIRED_TO_ADVANCE = ["emissions", "preferences"];
+  const REQUIRED_TO_ADVANCE = ["preferences"];
   const currentStatus = step ? states[step.key]?.status : undefined;
   const isStepIncomplete =
     !!step &&
@@ -209,7 +210,10 @@ export function MeedShell({
       <Box
         display="flex"
         mx="auto"
-        py="xxl"
+        pt="xxl"
+        // Clears the fixed "Ask Clima AI" button, which otherwise sits on the
+        // last row of every screen.
+        pb="xxl-6"
         px="l"
         w="full"
         maxW="1090px"

@@ -37,6 +37,8 @@ class ConceptNoteChapter(CnbBase):
     run_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
     template_section_id: Mapped[str | None] = mapped_column(String(255))
     title: Mapped[str] = mapped_column(String(255), nullable=False)
+    # Null means this existing chapter has not copied its template guidance yet.
+    description: Mapped[str | None] = mapped_column(Text)
     position: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[str] = mapped_column(
         String(64), nullable=False, default="empty", server_default="empty"

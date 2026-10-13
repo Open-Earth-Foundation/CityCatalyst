@@ -4,8 +4,7 @@ import type { TFunction } from "i18next";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
-import { TitleLarge } from "@/components/package/Texts/Title";
-import { MeedMeter } from "../../../components/MeedMeter";
+import { MeedScoreRing } from "../../../components/MeedScoreRing";
 import { alignmentLabelKey, scoreTone, TONE_TEXT_COLOR } from "../policyRows";
 
 export interface ScopeScoreCardProps {
@@ -16,7 +15,10 @@ export interface ScopeScoreCardProps {
   t: TFunction;
 }
 
-/** Aggregate alignment for one plan scope (national / regional / municipal). */
+/**
+ * Aggregate alignment for one plan scope (national / regional / municipal),
+ * read as a ring so the three scopes compare at a glance.
+ */
 export function ScopeScoreCard({
   scopeLabel,
   score,
@@ -31,21 +33,25 @@ export function ScopeScoreCard({
   return (
     <Card.Root h="full" borderColor="border.overlay">
       <Card.Body p="m">
-        <VStack alignItems="stretch" gap="s" h="full">
-          <HStack justifyContent="space-between" alignItems="center" gap="s">
-            <Overline>{scopeLabel}</Overline>
-            <TitleLarge color={textColor} fontVariantNumeric="tabular-nums">
-              {pct !== null ? t("percent-value", { value: pct }) : "—"}
-            </TitleLarge>
-          </HStack>
-          <MeedMeter
-            value={score ?? 0}
+        <HStack alignItems="center" gap="m" h="full">
+          <MeedScoreRing
+            value={score}
             tone={tone}
-            ariaLabel={`${scopeLabel} — ${alignmentLabel}`}
+            size="lg"
+            ariaLabel={t("ring-aria", {
+              scope: scopeLabel,
+              value: pct !== null ? t("percent-value", { value: pct }) : "—",
+            })}
+            tipTitle={scopeLabel}
+            tipNote={t("ring-note")}
+            t={t}
           />
-          <LabelMedium color={textColor}>{alignmentLabel}</LabelMedium>
-          <Caption>{description}</Caption>
-        </VStack>
+          <VStack alignItems="stretch" gap="xs" flex="1" minW={0}>
+            <Overline>{scopeLabel}</Overline>
+            <LabelMedium color={textColor}>{alignmentLabel}</LabelMedium>
+            <Caption>{description}</Caption>
+          </VStack>
+        </HStack>
       </Card.Body>
     </Card.Root>
   );

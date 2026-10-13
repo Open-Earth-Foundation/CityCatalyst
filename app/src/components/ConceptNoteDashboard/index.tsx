@@ -25,7 +25,6 @@ import {
   LuFolderOpen,
   LuLandmark,
   LuListChecks,
-  LuShieldAlert,
 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
@@ -38,13 +37,21 @@ import type { ConceptNoteRun } from "@/util/types";
 import { ExportDialog } from "../ConceptNoteWorkspace/export-dialog";
 import { ContextTile } from "./context-tile";
 import {
+  contextSourceHelpKey,
+  contextSourceStatusKey,
+  contextSourceTone,
+  getCitySourceState,
+  inventorySourceAction,
+  isSourceLookupFailure,
+  type ContextSourceState,
+} from "./context-source-status";
+import {
   ConceptNoteLifecycleDialog,
   type ConceptNoteLifecycleAction,
 } from "./lifecycle-dialog";
 import { NewConceptNoteDialog } from "./new-concept-note-dialog";
 import { RunCard } from "./run-card";
 import { RunCardSkeleton } from "./run-card-skeleton";
-import { StatusBadge } from "./status-badge";
 import {
   conceptNoteResumeHref,
   formatRelativeTime,
@@ -74,6 +81,8 @@ export function ConceptNoteDashboard({
   const router = useRouter();
   const reducedMotion = useReducedMotion() ?? false;
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [retryRun, setRetryRun] = useState<ConceptNoteRun | null>(null);
+  const [uploadingRunId, setUploadingRunId] = useState<string | null>(null);
   const [lifecycleDialog, setLifecycleDialog] = useState<{
     action: ConceptNoteLifecycleAction;
     run: ConceptNoteRun;
@@ -88,14 +97,27 @@ export function ConceptNoteDashboard({
     isLoading: runsLoading,
   } = api.useGetConceptNoteRunsQuery(cityId);
   const { data: city, isLoading: cityLoading } = api.useGetCityQuery(cityId);
-  const { data: population, isLoading: populationLoading } =
-    api.useGetMostRecentCityPopulationQuery({ cityId });
-  const { data: inventory, isLoading: inventoryLoading } =
-    api.useGetInventoryByCityIdQuery(cityId);
-  const { data: files, isLoading: filesLoading } =
-    api.useGetUserFilesQuery(cityId);
-  const { data: cityDashboard, isLoading: modulesLoading } =
-    api.useGetCityDashboardQuery({ cityId, lng });
+  const {
+    data: population,
+    isLoading: populationLoading,
+    isError: populationFailed,
+  } = api.useGetMostRecentCityPopulationQuery({ cityId });
+  const {
+    data: inventory,
+    isLoading: inventoryLoading,
+    error: inventoryError,
+  } = api.useGetInventoryByCityIdQuery(cityId);
+  const inventoryFailed = isSourceLookupFailure(inventoryError);
+  const {
+    data: files,
+    isLoading: filesLoading,
+    isError: filesFailed,
+  } = api.useGetUserFilesQuery(cityId);
+  const {
+    data: cityDashboard,
+    isLoading: modulesLoading,
+    isError: modulesFailed,
+  } = api.useGetCityDashboardQuery({ cityId, lng });
   const {
     currentData: exportDraft,
     isError: exportDraftFailed,
@@ -130,8 +152,36 @@ export function ConceptNoteDashboard({
     ? t("inventory-year", { year: inventory.year })
     : t("no-inventory");
   const fileName = cityFiles[0]?.fileName ?? t("no-city-files");
-  const ccraConnected = Boolean(cityDashboard?.widgets.ccra);
-  const hiapConnected = hasPrioritizedHiapActions(cityDashboard?.widgets.hiap);
+  const hiapAvailable = hasPrioritizedHiapActions(cityDashboard?.widgets.hiap);
+  const populationState = getCitySourceState(
+    Boolean(populationData),
+    populationFailed,
+  );
+  // A city without an inventory answers 404; an inventory with no values is empty.
+  const inventoryState = getCitySourceState(
+    Boolean(inventory),
+    inventoryFailed,
+    inventory?.totalEmissions == null,
+  );
+  // Tiles link to GHGI to create or fill an inventory; choosing one is per note.
+  const inventoryNext = inventoryLoading
+    ? undefined
+    : inventorySourceAction(inventoryState, {
+        lng,
+        cityId,
+        inventoryId: inventory?.inventoryId ?? null,
+      });
+  const inventoryAction = inventoryNext?.href
+    ? { label: t(inventoryNext.labelKey), href: inventoryNext.href }
+    : undefined;
+  const actionPlanState = getCitySourceState(hiapAvailable, modulesFailed);
+  const filesState = getCitySourceState(cityFiles.length > 0, filesFailed);
+  // Status badge, tone, and help text shared by every city source tile.
+  const sourceTile = (state: ContextSourceState, loading: boolean) => ({
+    help: loading ? undefined : t(contextSourceHelpKey(state, "city")),
+    status: t(contextSourceStatusKey(state, loading)),
+    statusTone: contextSourceTone(state),
+  });
   const exportBundle = exportRun
     ? getConceptNoteBundleProgress(exportRun.progress_summary)
     : null;
@@ -265,7 +315,6 @@ export function ConceptNoteDashboard({
                   </Text>
                 </Box>
               </Flex>
-              <StatusBadge label={t("connected")} tone="positive" />
               <Button asChild size="sm" variant="outline">
                 <NextLink href={`/${lng}/cities/${cityId}/dashboard`}>
                   {t("open-city-dashboard")}
@@ -278,12 +327,13 @@ export function ConceptNoteDashboard({
               gridTemplateColumns={{
                 base: "1fr",
                 sm: "repeat(2, minmax(0, 1fr))",
-                lg: "repeat(5, minmax(0, 1fr))",
+                lg: "repeat(4, minmax(0, 1fr))",
               }}
             >
               <ContextTile
                 icon={LuBuilding2}
                 label={t("city-context")}
+                {...sourceTile(populationState, populationLoading)}
                 value={cityLoading ? <Skeleton h="20px" /> : cityLocation}
                 detail={
                   populationLoading ? <Skeleton h="16px" /> : populationLabel
@@ -292,50 +342,40 @@ export function ConceptNoteDashboard({
               <ContextTile
                 icon={LuLandmark}
                 label={t("ghg-inventory")}
-                status={inventory ? t("connected") : t("not-available")}
-                statusTone={inventory ? "info" : "neutral"}
+                action={inventoryAction}
+                {...sourceTile(inventoryState, inventoryLoading)}
                 value={
                   inventoryLoading ? <Skeleton h="20px" /> : inventoryLabel
                 }
-                detail={t("inventory-detail")}
-              />
-              <ContextTile
-                icon={LuShieldAlert}
-                label={t("climate-risk-assessment")}
-                status={ccraConnected ? t("connected") : t("not-available")}
-                statusTone={ccraConnected ? "info" : "neutral"}
-                value={
-                  modulesLoading ? (
-                    <Skeleton h="20px" />
-                  ) : ccraConnected ? (
-                    t("context-ready")
-                  ) : (
-                    t("not-available")
-                  )
-                }
-                detail={t("ccra-detail")}
+                detail={inventory ? t("inventory-detail") : ""}
               />
               <ContextTile
                 icon={LuListChecks}
                 label={t("hiap-context")}
-                status={hiapConnected ? t("connected") : t("not-available")}
-                statusTone={hiapConnected ? "info" : "neutral"}
+                {...sourceTile(actionPlanState, modulesLoading)}
                 value={
                   modulesLoading ? (
                     <Skeleton h="20px" />
-                  ) : hiapConnected ? (
+                  ) : hiapAvailable ? (
                     t("context-ready")
                   ) : (
-                    t("not-available")
+                    t("hiap-no-actions")
                   )
                 }
-                detail={t(
-                  hiapConnected ? "hiap-detail" : "hiap-impact-missing-summary",
-                )}
+                detail={
+                  modulesLoading
+                    ? ""
+                    : t(
+                        hiapAvailable
+                          ? "hiap-detail"
+                          : "hiap-impact-missing-summary",
+                      )
+                }
               />
               <ContextTile
                 icon={LuFolderOpen}
                 label={t("city-files")}
+                {...sourceTile(filesState, filesLoading)}
                 value={filesLoading ? <Skeleton h="20px" /> : fileName}
                 detail={t("file-count", { count: cityFiles.length })}
               />
@@ -386,6 +426,8 @@ export function ConceptNoteDashboard({
                     resumeHref={conceptNoteResumeHref(lng, cityId, run.run_id)}
                     duplicateLoading={duplicatingRunId === run.run_id}
                     lifecycleDisabled={Boolean(duplicatingRunId)}
+                    uploading={uploadingRunId === run.run_id}
+                    onRetryUpload={() => setRetryRun(run)}
                     onRename={() =>
                       setLifecycleDialog({ action: "rename", run })
                     }
@@ -458,9 +500,24 @@ export function ConceptNoteDashboard({
         lng={lng}
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
+        onUploadingRunChange={setUploadingRunId}
         projectId={city?.projectId ?? null}
         projectName={city?.project?.name ?? null}
       />
+      {retryRun && (
+        <NewConceptNoteDialog
+          key={retryRun.run_id}
+          retryRun={retryRun}
+          cityId={cityId}
+          cityName={cityName}
+          lng={lng}
+          open
+          onOpenChange={(open) => {
+            if (!open) setRetryRun(null);
+          }}
+          onUploadingRunChange={setUploadingRunId}
+        />
+      )}
       {lifecycleDialog && (
         <ConceptNoteLifecycleDialog
           key={`${lifecycleDialog.action}-${lifecycleDialog.run.run_id}`}

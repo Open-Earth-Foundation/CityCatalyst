@@ -74,6 +74,7 @@ export const POST = apiHandler(async (req, { session }) => {
 
   user.twoFactorSecret = null;
   user.twoFactorEnabled = false;
+  user.twoFactorRecoveryHashes = [];
   await user.save();
 
   return NextResponse.json({ data: { success: true } });

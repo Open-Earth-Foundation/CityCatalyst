@@ -1,6 +1,6 @@
 import { Box, Button, HStack, Separator, Text } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
-import i18next from "i18next";
+import { useParams } from "next/navigation";
 import { api } from "@/services/api";
 import { UnpublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/UnpublishedView";
 import { PublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/PublishedView";
@@ -16,6 +16,7 @@ import {
   DialogCloseTrigger,
 } from "@/components/ui/dialog";
 import type { InventoryResponse } from "@/util/types";
+import { getParamValue } from "@/util/helpers";
 
 const ModalPublish = ({
   t,
@@ -33,6 +34,8 @@ const ModalPublish = ({
   setModalOpen: (open: boolean) => void;
 }) => {
   const { copyToClipboard } = useCopyToClipboard({});
+  const params = useParams();
+  const lng = getParamValue(params.lng) ?? "en";
 
   const [changePublishStatus, { isLoading: updateLoading }] =
     api.useUpdateInventoryMutation();
@@ -59,7 +62,7 @@ const ModalPublish = ({
 
         if (isPublishing) {
           // Copy public URL to clipboard when publishing
-          const publicUrl = `${window.location.protocol}//${window.location.host}/${i18next.language}/public/${inventoryId}`;
+          const publicUrl = `${window.location.protocol}//${window.location.host}/${lng}/public/${inventoryId}`;
           copyToClipboard(publicUrl);
 
           // Show success toast with clipboard message
@@ -139,6 +142,7 @@ const ModalPublish = ({
           ) : (
             <PublishedView
               t={t}
+              lng={lng}
               inventoryId={inventoryId}
               inventory={inventory}
             />

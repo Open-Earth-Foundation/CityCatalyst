@@ -47,8 +47,11 @@ export function ConceptNoteLifecycleDialog({
   const [error, setError] = useState<string | null>(null);
   const [renameRun, renameState] = api.useRenameConceptNoteRunMutation();
   const [deleteRun, deleteState] = api.useDeleteConceptNoteRunMutation();
+  const [loadRuns, runsState] = api.useLazyGetConceptNoteRunsQuery();
   const isRename = action === "rename";
-  const loading = isRename ? renameState.isLoading : deleteState.isLoading;
+  const loading = isRename
+    ? renameState.isLoading
+    : deleteState.isLoading || runsState.isFetching;
 
   async function rename(event: FormEvent): Promise<void> {
     event.preventDefault();
@@ -77,15 +80,30 @@ export function ConceptNoteLifecycleDialog({
         cityId,
         runId: run.run_id,
       }).unwrap();
-      toaster.create({ title: t("delete-success"), type: "success" });
-      onClose();
     } catch (requestError) {
+      if (isFetchBaseQueryError(requestError) && requestError.status === 404) {
+        // Confirm absence through the authorized list; a 404 alone can also
+        // represent an unavailable endpoint or a note the user cannot access.
+        try {
+          const { runs } = await loadRuns(cityId, false).unwrap();
+          if (!runs.some((candidate) => candidate.run_id === run.run_id)) {
+            onClose();
+            toaster.create({ title: t("delete-unavailable"), type: "info" });
+            return;
+          }
+        } catch {
+          // Keep the dialog open when the current state cannot be verified.
+        }
+      }
       setError(
         isFetchBaseQueryError(requestError) && requestError.status === 409
           ? t("delete-conflict")
           : t("delete-error"),
       );
+      return;
     }
+    onClose();
+    toaster.create({ title: t("delete-success"), type: "success" });
   }
 
   return (

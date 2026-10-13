@@ -142,12 +142,21 @@ describe("MEED ranking adapter — downstream consumers", () => {
       alignment: 0.22,
       feasibility: 0.23,
     });
-    const fallback = { impact: 1, alignment: 0, feasibility: 0 };
-    expect(readRankingWeights(adapted, fallback)).toEqual({
+    expect(readRankingWeights(adapted)).toEqual({
       impact: 0.55,
       alignment: 0.22,
       feasibility: 0.23,
     });
+  });
+
+  it("reports no weights rather than assumed ones when the response omits them", () => {
+    expect(readRankingWeights(null)).toBeNull();
+    expect(
+      readRankingWeights({
+        ...adapted,
+        metadata: { ...adapted.metadata, weights: undefined },
+      }),
+    ).toBeNull();
   });
 
   it("rebuilds the hard-filter evidence map the regulations screen needs", () => {

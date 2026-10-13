@@ -26,6 +26,20 @@ beforeAll(async () => {
 });
 
 describe("Concept Note upload Climate Advisor adapter", () => {
+  it("preserves Retry-After on upload throttling errors", async () => {
+    callConceptNoteApi.mockResolvedValueOnce(
+      Response.json(
+        {},
+        {
+          status: 429,
+          headers: { "Retry-After": "60" },
+        },
+      ),
+    );
+    await expect(
+      loadConceptNoteUpload({ runId, uploadId, userId: "owner-user" }),
+    ).rejects.toMatchObject({ statusCode: 429, retryAfter: "60" });
+  });
   beforeEach(() => {
     jest.clearAllMocks();
   });

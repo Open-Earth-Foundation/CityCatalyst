@@ -33,6 +33,7 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
             alignItems="center"
             justifyContent="space-between"
             border="none"
+            cursor="pointer"
           >
             <Box display="flex" alignItems="center" gap="12px">
               <Icon as={IconComponent} color={"interactive.secondary"} boxSize={6} />

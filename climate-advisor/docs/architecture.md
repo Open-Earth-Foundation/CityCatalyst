@@ -17,6 +17,13 @@ single shared stream starts.
 Concept Note chat exposes a proposal-only edit tool backed by a planner,
 service, repository and authorized API. Explicit web review applies edits;
 internal application records preserve safe retries and the audit trail.
+The planner searches a fixed draft snapshot, reads chapter context on demand,
+and proposes replacements using server-issued match IDs or an explicit
+all-match selection. Tools compute anchors and return validation errors to the
+agent for correction. Independent semantic review checks affected chapters
+before a durable proposal is created. Protected-match exclusions are counted in
+the proposal and remain visible after reload. Only acceptance writes revisions,
+subject to the existing revision and idempotency checks.
 See the [CNB revision boundary](../../docs/ConceptNoteBuilderArchitecture.md#implemented-chat-revision-boundary-cc-732)
 for validation, inline review and persistence details.
 
@@ -59,33 +66,22 @@ sequenceDiagram
     participant Client
     participant API as Climate Advisor API
     participant Thread as ThreadResolver
-    participant Token as TokenHandler
     participant DB as PostgreSQL
     participant Stream as StreamingHandler
     participant Agent as AgentService
     participant CC as CityCatalyst API
 
-    Client->>API: POST /v1/messages
-    API->>Thread: Resolve existing thread or create one
-    Thread-->>API: thread
-
-    API->>Token: Load token from request or thread context
-    opt CityCatalyst bearer is present
-        API->>CC: Validate bearer at /internal/ca/auth/identity
-        CC-->>API: Canonical user ID or identity error
-        alt subject differs, or request-supplied bearer rejected
-            API-->>Client: HTTP 401 (no catalog-enabled agent)
-        else Core unavailable or thread-stored bearer rejected
-            API-->>API: Continue with catalog identity disabled
-        end
+    Client->>API: POST /v1/threads or /v1/messages with Authorization Bearer
+    API->>CC: Validate bearer at /internal/ca/auth/identity
+    alt missing, malformed, rejected, or subject mismatch
+        API-->>Client: HTTP 401 (no write)
+    else Core identity unavailable
+        API-->>Client: HTTP 503 (no write)
+    else canonical subject matches body user_id
+        API->>Thread: Resolve existing thread or create one
+        Thread-->>API: thread
+        API->>Stream: Start streamed response with canonical user and validated bearer
     end
-    alt token expired
-        Token->>CC: Refresh token
-        CC-->>Token: New access token
-        Token->>DB: Persist refreshed token
-    end
-
-    API->>Stream: Start streamed response
     opt Stationary Energy draft run is present
         Stream->>DB: Load persisted draft snapshot and staged review state
         Stream-->>Stream: Build STATIONARY_ENERGY_DRAFT_CONTEXT_JSON + ui_context
@@ -155,7 +151,7 @@ flowchart LR
     Pool --> Review
     Default --> Core
     Default --> Legacy
-    Default --> StartDraft
+    Review --> StartDraft
     Review --> ReviewTools
     Review --> SharedContext
 ```
@@ -163,8 +159,16 @@ flowchart LR
 `AgentService.create_agent()` selects instructions from the active chat mode:
 
 - General chat composes `prompts.core` with `prompts.chat`.
-- Stationary Energy draft-surface chat can register `stationary_energy_start_draft`
-  before a draft run exists, while staying on the composed general chat prompt.
+- Stationary Energy draft-surface chat composes `prompts.core` with
+  `prompts.stationary_energy_review` even before a draft run exists. In that
+  state the handler sends a `STATIONARY_ENERGY_RUN_NOT_STARTED` context message
+  instead of the draft snapshot, and the workflow tools are
+  `stationary_energy_start_draft` plus the read-only, page-scoped
+  `inventory_status_overview` and `inventory_emissions_context`.
+- When the agent starts a run with `continue_request` set, the page re-sends the request
+  with `stationary_energy_resume_after_draft_start` once the run is ready. The
+  messages route does not store it again, and the handler re-adds it after the
+  "starting the run" reply so the review agent answers it with the new data.
 - Stationary Energy review chat composes `prompts.core` with
   `prompts.stationary_energy_review` and registers only tools scoped to the
   active draft review workflow. That pack includes read-only whole-inventory
@@ -228,8 +232,8 @@ workflow state in PostgreSQL.
 - `services/agent_service.py`
   - Selects the model for the current workflow context.
   - Composes `prompts.core` with `prompts.chat` for general chat.
-  - Composes `prompts.core` with `prompts.stationary_energy_review` for active
-    Stationary Energy review chat.
+  - Composes `prompts.core` with `prompts.stationary_energy_review` for the
+    Stationary Energy page, both before a run exists and during review.
   - Registers the pre-draft `stationary_energy_start_draft` tool only when the
     Stationary Energy surface is active and no draft run is loaded.
   - Keeps general inventory and vector-search tools out of active review chat.
@@ -256,34 +260,34 @@ not load Climate Advisor capabilities or execute full reads for candidates.
 `native_input_read` tools only when authenticated catalog context and the
 current Core credential are available. Registration makes no Core discovery
 request and does not accept a client-selected catalog/capability pair.
-Before constructing `StreamingHandler`, `/v1/messages` validates any supplied
-bearer at Core's `/api/v1/internal/ca/auth/identity` boundary. The request is
-rejected with the same HTTP 401 response when Core's canonical subject differs
-from body `user_id`, or when Core rejects a bearer that came from the request
-payload. Every other identity outcome — Core unavailable, `CC_BASE_URL` unset,
-a malformed identity response, or a rejected thread-stored bearer — leaves the
-chat request running with catalog identity disabled rather than returning 401.
-On that degraded path the route also skips the thread-context write for a
-request-supplied bearer: a token is persisted only after Core returned a
-canonical identity, so an unvalidated bearer cannot be laundered into the more
-permissive thread-stored class on subsequent requests.
-`StreamingHandler` accepts that canonical identity separately for catalog
-context, combines it with the safe request scope, and ignores caller-supplied
-identity and catalog selections. Missing token or validated catalog identity
-leaves the catalog tools disabled.
+Before persistence, `POST /v1/threads` and `POST /v1/messages`
+validate the request `Authorization` bearer at Core's
+`/api/v1/internal/ca/auth/identity` boundary. Missing, malformed, rejected, or
+subject-mismatched credentials return the same HTTP 401 problem response.
+Core identity unavailability returns HTTP 503. Neither case creates or mutates
+a thread, message, or stored credential. After validation, routes use Core's
+canonical user ID for ownership, readiness, persistence, streaming, and tool
+registration. Thread context stores only that validated bearer as
+`access_token`; conflicting body aliases and leftover persisted
+`cc_access_token` values are discarded on the write.
+`StreamingHandler` receives that canonical identity separately for catalog
+context and ignores caller-supplied identity. Missing authentication fails the
+write instead of disabling tools.
 
-Thread-stored bearers are never refreshed for the catalog path, and CA-issued
-tokens expire after one hour. After expiry the catalog tools stay unregistered
-for the thread; recovery is a new request-supplied bearer that Core identity
-validation accepts. Refreshing from the thread record's stored `user_id` is
-deliberately rejected as a recovery mechanism, because `POST /v1/threads` is
-unauthenticated and persists an arbitrary caller-supplied `user_id`.
+Write requests never refresh from a stored thread bearer or a claimed
+`user_id`. After each write is authenticated, the request-scoped token context
+may renew the current bearer before an authenticated Core tool call, using only
+the canonical subject returned by Core for that request. It replaces the shared
+token reference used by NativeInputCatalog, inventory, Stationary Energy, and
+Concept Note tools. Capability payloads cannot choose the refresh subject. A
+capability call is sent once after preflight renewal; a later 401/403 fails
+closed and is not replayed. A renewed bearer is persisted under `access_token`
+only after the streaming turn completes normally. Cancellation and failures do
+not persist it, and the next turn still has to present a bearer accepted by Core.
 
-This boundary is closed for request-supplied bearers and for all
-NativeInputCatalog paths, not for Climate Advisor as a whole. `POST /v1/threads`
-remains unauthenticated, and legacy non-catalog inventory tools may still
-derive a token refresh from the request body `user_id`; that residual is
-outside CC-737 scope.
+This boundary is the write-auth contract for Climate Advisor chat: thread
+creation, message writes, and the developer inventory check are authenticated
+and canonical-subject-bound. Read-only thread-history GET remains unchanged.
 
 At tool-call time, discovery returns only locally supported safe entries and
 may include an opaque Core continuation cursor so later authorized pages remain
@@ -293,9 +297,12 @@ A page or cursor is never cached as an authorization grant. A
 read accepts a model-selected catalog/capability pair with finite bounded
 arguments, then calls Core for fresh authorization and execution. Core remains
 the final read-time authority; unavailable or invalid reads use the stable
-non-disclosing response. NativeInputCatalog discovery and reads never exchange
-a 401 for a new user token and never derive refresh identity from request JSON.
-Unrelated legacy inventory tools retain their existing refresh behavior.
+non-disclosing response. Before discovery or read, the server-owned request
+context renews a token that is expired or within the 10-minute safety margin.
+The explicit `allow_token_refresh=False` contract remains for callers without
+that authenticated context. A 401/403 after preflight fails through the safe
+tool path without another refresh or replay. Refresh identity never comes from
+request JSON.
 
 - `services/stationary_energy/stationary_energy_review_resolver.py`
   - Resolves selectable sources, notation-key targets, pending review rows, and
@@ -327,8 +334,8 @@ Unrelated legacy inventory tools retain their existing refresh behavior.
 - `tools/inventory_context_tools.py`
   - The shared CityCatalyst inventory capability tools used by the general
     prompt and the scoped Stationary Energy review prompt.
-  - Updates the shared request token reference after a capability call refreshes
-    the CityCatalyst bearer token.
+  - Uses the authenticated turn's shared bearer and request-scoped canonical
+    preflight renewal context.
 - `tools/stationary_energy_review_tools.py`
   - The scoped Stationary Energy review tool pack backed by
     `StationaryEnergyAgentReviewService`.
@@ -359,7 +366,7 @@ Unrelated legacy inventory tools retain their existing refresh behavior.
 - `utils/history_manager.py`
   - Prunes older tool metadata for LLM context while keeping full DB audit data.
 - `utils/token_handler.py`
-  - Refreshes and persists CityCatalyst tokens.
+  - Persists the renewed request bearer after a successful streaming turn.
 
 ### Concept Note Source Context
 
@@ -369,13 +376,24 @@ capability contract live in
 Operationally, run creation schedules guarded background assembly. A run with
 no uploaded source records `document_grounding: none`; a ready PDF or native
 Markdown source rebuilds it as `uploaded_evidence`. Separate
-`available_context` flags report CityCatalyst and uploaded-document presence.
+`available_context` flags report CityCatalyst and uploaded-document presence,
+and `city_population` reports the population the city profile gives the models.
 Evidence keeps page or heading/block locators, optional GHGI/HIAP failures do
 not block readiness, and eligible turns get one scoped read-only source query.
 During rebuilds, callers keep using the last completed bundle; unchanged
 document analyses are reused by digest and analysis-contract version. Reader
 and chapter-drafter configuration remains in `llm_config.yaml`, and the public
 CNB contracts live under `app/models/cnb`.
+
+When a new source finishes analysis, a review-only LLM call selects the chapters
+it affects, and each of their open gaps is asked of the verified source text.
+Only those chapters are redrafted with the cited answers, editing the current
+chapter text in place so accepted user edits survive. Each redraft appends a
+revision and reconciles gaps with the new evidence without replacing the last
+user-confirmed revision. Only gaps backed by a cited answer close; a redraft
+that drops any other gap or mismatches its markers is rejected. The re-check is
+a durable job in `context_summary.source_revalidation`, queued with the bundle
+commit and retried by the context-bundle reconciler after failures or restarts.
 
 ## SSE Contract
 

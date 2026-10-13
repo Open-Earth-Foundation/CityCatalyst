@@ -61,6 +61,20 @@
  *                       type: string
  *                       enum: [ar6, ar5]
  *                       nullable: true
+ *                     gwp:
+ *                       type: object
+ *                       nullable: true
+ *                       description: GWP100 factors (from the GasToCO2Eq table) for the inventory's globalWarmingPotentialType.
+ *                       properties:
+ *                         version:
+ *                           type: string
+ *                           enum: [ar6, ar5]
+ *                         ch4:
+ *                           type: number
+ *                           nullable: true
+ *                         n2o:
+ *                           type: number
+ *                           nullable: true
  *                     lastUpdated:
  *                       type: string
  *                       format: date-time
@@ -127,7 +141,18 @@ export const GET = apiHandler(async (req, { session, params }) => {
     inventoryId,
     session,
   );
-  return NextResponse.json({ data: inventory });
+
+  const gwpVersion = CalculationService.resolveGwpVersion(
+    inventory.globalWarmingPotentialType,
+  );
+  const gasToCO2Eqs = await CalculationService.loadGasToCO2Eqs(gwpVersion);
+  const gwp = {
+    version: gwpVersion,
+    ch4: gasToCO2Eqs.find((entry) => entry.gas === "CH4")?.co2eqPerKg ?? null,
+    n2o: gasToCO2Eqs.find((entry) => entry.gas === "N2O")?.co2eqPerKg ?? null,
+  };
+
+  return NextResponse.json({ data: { ...inventory.toJSON(), gwp } });
 });
 
 /**

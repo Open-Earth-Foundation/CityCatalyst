@@ -3,20 +3,23 @@ import { useTranslation } from "@/i18n/client";
 import { Box, Text, Link, HStack, Icon } from "@chakra-ui/react";
 import { BodyLarge } from "@/components/package/Texts/Body";
 import { TitleLarge } from "@/components/package/Texts/Title";
-import i18next from "i18next";
+import { useParams } from "next/navigation";
 import { OrganizationResponse } from "@/util/types";
 import { env } from "@/lib/runtime-env";
 import { CitiesBuildingIcon, CityLimitIcon, PlanFolderIcon } from "./icons";
 import { PlanBadge } from "@/components/PlanBadge";
 import { getOrganizationPlanDisplay } from "@/util/plan-details";
 import { OrganizationPlanType } from "@/util/enums";
+import { getParamValue } from "@/util/helpers";
 
 interface PlanDetailsBoxProps {
   organization?: OrganizationResponse;
 }
 
 const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
-  const { t } = useTranslation(i18next.language, "settings");
+  const params = useParams();
+  const lng = getParamValue(params.lng) ?? "en";
+  const { t } = useTranslation(lng, "settings");
 
   if (!organization) return null;
 

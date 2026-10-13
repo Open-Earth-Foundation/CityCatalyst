@@ -8,6 +8,7 @@ from uuid import UUID
 
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_markdown import (
+    MAX_UPLOADS_PER_RUN,
     ConceptNoteMarkdownRequest,
     ConceptNoteSourceFormat,
     ConceptNoteUploadCreateRequest,
@@ -58,6 +59,11 @@ class ConceptNoteUploadSnapshot:
     received_at: datetime
     completed_at: datetime | None
     source_format: ConceptNoteSourceFormat = "pdf"
+    annotation_mode: str | None = None
+    structured_s3_key: str | None = None
+    structured_sha256: str | None = None
+    structured_size_bytes: int | None = None
+    structured_schema_version: str | None = None
 
 
 class ConceptNoteMarkdownRepository(ABC):
@@ -198,7 +204,11 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         run_id: UUID,
         payload: ConceptNoteUploadCreateRequest,
     ) -> ConceptNoteUploadSnapshot:
-        """Create or idempotently replay one pre-conversion upload."""
+        """Create or idempotently replay one pre-conversion upload.
+
+        Replays of an existing upload ID always succeed. A new upload raises 409
+        `concept_note_upload_limit_reached` once the run has `MAX_UPLOADS_PER_RUN`.
+        """
         try:
             async with self._session_factory() as session, session.begin():
                 run = await _require_owned_run(
@@ -221,6 +231,20 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                         source_format=payload.source_format,
                     )
                     return _snapshot(existing)
+
+                # The run row is locked above, so concurrent uploads cannot both
+                # pass this count.
+                upload_count = await session.scalar(
+                    select(func.count())
+                    .select_from(ConceptNoteUpload)
+                    .where(ConceptNoteUpload.run_id == run_id)
+                )
+                if (upload_count or 0) >= MAX_UPLOADS_PER_RUN:
+                    raise ConceptNoteMarkdownRepositoryError(
+                        "concept_note_upload_limit_reached",
+                        409,
+                        f"A concept note can have at most {MAX_UPLOADS_PER_RUN} files",
+                    )
 
                 upload = ConceptNoteUpload(
                     upload_id=payload.upload_id,
@@ -339,12 +363,22 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                         markdown_s3_key=payload.markdown_s3_key,
                         markdown_sha256=payload.sha256,
                         page_count=payload.page_count,
+                        annotation_mode=payload.annotation_mode,
+                        structured_s3_key=payload.structured_s3_key,
+                        structured_sha256=payload.structured_sha256,
+                        structured_size_bytes=payload.structured_size_bytes,
+                        structured_schema_version=payload.structured_schema_version,
                     )
                     return _snapshot(upload)
 
                 upload.markdown_s3_key = payload.markdown_s3_key
                 upload.markdown_sha256 = payload.sha256
                 upload.page_count = payload.page_count
+                upload.annotation_mode = payload.annotation_mode
+                upload.structured_s3_key = payload.structured_s3_key
+                upload.structured_sha256 = payload.structured_sha256
+                upload.structured_size_bytes = payload.structured_size_bytes
+                upload.structured_schema_version = payload.structured_schema_version
                 upload.ingest_status = "ready"
                 upload.ingest_error_code = None
                 upload.ingest_started_at = upload.ingest_started_at or func.now()
@@ -576,6 +610,11 @@ def _validate_existing_markdown(
     markdown_s3_key: str,
     markdown_sha256: str,
     page_count: int | None,
+    annotation_mode: str | None,
+    structured_s3_key: str | None,
+    structured_sha256: str | None,
+    structured_size_bytes: int | None,
+    structured_schema_version: str | None,
 ) -> None:
     if (
         existing.markdown_s3_key != markdown_s3_key
@@ -586,6 +625,35 @@ def _validate_existing_markdown(
             "markdown_identity_conflict",
             409,
             "Upload Markdown identity cannot change",
+        )
+    existing_structured = (
+        existing.annotation_mode,
+        existing.structured_s3_key,
+        existing.structured_sha256,
+        existing.structured_size_bytes,
+        existing.structured_schema_version,
+    )
+    incoming_structured = (
+        annotation_mode,
+        structured_s3_key,
+        structured_sha256,
+        structured_size_bytes,
+        structured_schema_version,
+    )
+    # Legacy ready rows stay Markdown-only. Do not backfill them in place.
+    if all(value is None for value in existing_structured):
+        if any(value is not None for value in incoming_structured):
+            raise ConceptNoteMarkdownRepositoryError(
+                "structured_identity_conflict",
+                409,
+                "Legacy Markdown identity cannot acquire a structured artifact",
+            )
+        return
+    if existing_structured != incoming_structured:
+        raise ConceptNoteMarkdownRepositoryError(
+            "structured_identity_conflict",
+            409,
+            "Upload structured artifact identity cannot change",
         )
 
 
@@ -600,6 +668,11 @@ def _snapshot(upload: ConceptNoteUpload) -> ConceptNoteUploadSnapshot:
         markdown_s3_key=upload.markdown_s3_key,
         markdown_sha256=upload.markdown_sha256,
         page_count=upload.page_count,
+        annotation_mode=upload.annotation_mode,
+        structured_s3_key=upload.structured_s3_key,
+        structured_sha256=upload.structured_sha256,
+        structured_size_bytes=upload.structured_size_bytes,
+        structured_schema_version=upload.structured_schema_version,
         status=upload.ingest_status,
         error_code=upload.ingest_error_code,
         received_at=upload.received_at,

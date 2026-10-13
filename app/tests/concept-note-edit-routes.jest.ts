@@ -50,6 +50,20 @@ jest.unstable_mockModule("@/backend/chat/climate-advisor", () => ({
 // Loading the client error parser does not require the runtime environment script.
 jest.unstable_mockModule("@/lib/runtime-env", () => ({ env: () => undefined }));
 
+const structure =
+  await import("@/app/api/v1/concept-notes/[runId]/structure/route");
+const structureBody = {
+  expected_fingerprint: "a".repeat(64),
+  chapters: [
+    {
+      chapter_id: targetId,
+      template_section_id: "summary",
+      required: true,
+      title: "Summary",
+      description: "Guidance",
+    },
+  ],
+};
 const collection =
   await import("@/app/api/v1/concept-notes/[runId]/edit-proposals/route");
 const read =
@@ -62,8 +76,8 @@ const refine =
   await import("@/app/api/v1/concept-notes/[runId]/edit-proposals/[proposalId]/refine/route");
 const confirm =
   await import("@/app/api/v1/concept-notes/[runId]/chapters/[chapterId]/confirm/route");
-const reset =
-  await import("@/app/api/v1/concept-notes/[runId]/chat/reset/route");
+const startChat =
+  await import("@/app/api/v1/concept-notes/[runId]/chat/threads/route");
 const { editErrorCode } = await import("@/services/concept-note-edit-api");
 
 const proposalBody = {
@@ -78,6 +92,20 @@ const applyBody = {
 };
 const confirmBody = { expected_revision: 2, idempotency_key: key };
 const routes = [
+  {
+    name: "structure-read",
+    handler: structure.GET,
+    method: "GET",
+    suffix: "/structure",
+    body: undefined,
+  },
+  {
+    name: "structure-save",
+    handler: structure.PUT,
+    method: "PUT",
+    suffix: "/structure",
+    body: structureBody,
+  },
   {
     name: "list",
     handler: collection.GET,
@@ -128,10 +156,10 @@ const routes = [
     body: confirmBody,
   },
   {
-    name: "reset",
-    handler: reset.POST,
+    name: "start-chat",
+    handler: startChat.POST,
     method: "POST",
-    suffix: "/chat/reset",
+    suffix: "/chat/threads",
     body: undefined,
   },
 ];
@@ -215,7 +243,7 @@ describe.each(routes)("$name route boundary", (route) => {
         ([args]) => args.path === `/v1/concept-notes/${runId}` && !args.method,
       ),
     ).toBe(true);
-    if (route.name === "reset") expect(upstream).not.toHaveBeenCalled();
+    if (route.name === "start-chat") expect(upstream).not.toHaveBeenCalled();
   });
   test("forwards validated input using the authenticated user and request ID", async () => {
     const response = await request(route, {
@@ -254,7 +282,7 @@ test.each(
 test.each([
   ["apply", {}],
   ["apply", { ...applyBody, idempotency_key: "bad" }],
-  ["apply", { ...applyBody, expected_revisions: {} }],
+
   ["apply", { ...applyBody, expected_revisions: { [targetId]: 0 } }],
   ["apply", { ...applyBody, selected_change_ids: [] }],
   ["apply", { ...applyBody, selected_change_ids: [key, key] }],
@@ -322,7 +350,7 @@ test.each(["apply", "refine", "confirm"])(
   },
 );
 
-test.each(["apply", "refine", "confirm", "reset"])(
+test.each(["apply", "refine", "confirm", "start-chat"])(
   "%s preserves upstream error status, code and detail for the client",
   async (name) => {
     const payload = { code: "stale_base", detail: "The draft has changed" };
@@ -344,17 +372,50 @@ test.each(["apply", "refine", "confirm", "reset"])(
 );
 
 test.each(["", "city_id=bad"])(
-  "chat reset rejects missing/invalid city query %s",
+  "starting a chat rejects missing/invalid city query %s",
   async (query) => {
     expect((await request(routes.at(-1)!, { query })).status).toBe(400);
     expect(upstream).not.toHaveBeenCalled();
   },
 );
 
-test("chat reset rejects a successful response for a different city", async () => {
+test("starting a chat rejects a successful response for a different city", async () => {
   upstream.mockResolvedValueOnce(Response.json({ city_id: otherCity }));
   const response = await request(routes.at(-1)!);
   // The API wrapper masks non-public upstream failures as 500.
   expect(response.status).toBe(500);
   expect(await response.json()).not.toHaveProperty("city_id");
+});
+
+test("structural acceptance permits the empty content revision vector", async () => {
+  expect(
+    (
+      await request(
+        routes.find((route) => route.name === "apply")!,
+        { body: { idempotency_key: key, expected_revisions: {} } },
+      )
+    ).status,
+  ).toBe(200);
+});
+test.each([
+  { ...structureBody, chapters: [] },
+  { ...structureBody, expected_fingerprint: "invalid" },
+  {
+    ...structureBody,
+    chapters: [structureBody.chapters[0], structureBody.chapters[0]],
+  },
+  {
+    ...structureBody,
+    chapters: [{ ...structureBody.chapters[0], title: " " }],
+  },
+])("structure rejects invalid snapshots", async (body) => {
+  expect(
+    (
+      await request(
+        routes.find((route) => route.name === "structure-save")!,
+        { body },
+      )
+    ).status,
+  ).toBe(400);
+  expect(upstream).not.toHaveBeenCalled();
 });

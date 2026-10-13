@@ -114,6 +114,19 @@
  *         sha256:
  *           type: "string"
  *           pattern: "^[0-9a-f]{64}$"
+ *     CnbEditContextSnapshot:
+ *       type: "object"
+ *       additionalProperties: false
+ *       required: ["section","label","sha256"]
+ *       properties:
+ *         section:
+ *           type: "string"
+ *           enum: ["city","project","ghgi","ccra","hiap","manual_population"]
+ *         label:
+ *           type: "string"
+ *         sha256:
+ *           type: "string"
+ *           pattern: "^[0-9a-f]{64}$"
  *     CnbEditChange:
  *       type: "object"
  *       additionalProperties: false
@@ -158,10 +171,20 @@
  *           type: "string"
  *           nullable: true
  *           maxLength: 8000
+ *         context_refs:
+ *           type: "array"
+ *           description: "Run context sections (CityCatalyst data or user-entered population) cited as evidence."
+ *           items:
+ *             type: "string"
+ *             enum: ["city","project","ghgi","ccra","hiap","manual_population"]
  *         source_snapshots:
  *           type: "array"
  *           items:
  *             $ref: "#/components/schemas/CnbEditSourceSnapshot"
+ *         context_snapshots:
+ *           type: "array"
+ *           items:
+ *             $ref: "#/components/schemas/CnbEditContextSnapshot"
  *     CnbEditApplicationResult:
  *       type: "object"
  *       nullable: true

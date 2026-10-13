@@ -26,16 +26,28 @@ export function ReviewFindingList({
   chapterTitles,
   emptyKey,
   entries,
+  incomplete = false,
   lng,
   onOpenFinding,
 }: {
   chapterTitles: Record<string, string>;
   emptyKey: string;
   entries: DocumentReviewFinding[];
+  incomplete?: boolean;
   lng: string;
   onOpenFinding: (entry: DocumentReviewFinding) => void;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
+
+  // With unchecked chapters an empty list is unknown, not a positive result.
+  if (entries.length === 0 && incomplete) {
+    return (
+      <HStack gap={2} py={5} color="content.secondary">
+        <Icon as={LuCircleAlert} />
+        <Text fontSize="body.sm">{t("review-results-unchecked")}</Text>
+      </HStack>
+    );
+  }
 
   if (entries.length === 0) {
     return (

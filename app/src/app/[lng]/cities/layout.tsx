@@ -1,7 +1,6 @@
 "use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
-import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
 import { useGetOrganizationQuery } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -55,7 +54,6 @@ export default function CitiesLayout(props: {
       bg="background.backgroundLight"
     >
       <NavigationBar showMenu lng={lng} />
-      <Toaster />
       <Box w="full" h="full">
         {children}
       </Box>

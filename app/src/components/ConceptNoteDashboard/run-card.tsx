@@ -15,6 +15,7 @@ import { LuPencil } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { api } from "@/services/api";
+import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";
 import type { ConceptNoteRun } from "@/util/types";
 
 import { StatusBadge } from "./status-badge";
@@ -27,6 +28,7 @@ interface RunCardProps {
   activityLabel: string;
   duplicateLoading: boolean;
   lifecycleDisabled: boolean;
+  onRetryUpload: () => void;
   onDelete: () => void;
   onDuplicate: () => void;
   onExport: () => void;
@@ -38,12 +40,14 @@ interface RunCardProps {
   run: ConceptNoteRun;
   scopeLabel: string;
   t: TFunction;
+  uploading: boolean;
 }
 
 export function RunCard({
   activityLabel,
   duplicateLoading,
   lifecycleDisabled,
+  onRetryUpload,
   onDelete,
   onDuplicate,
   onExport,
@@ -55,7 +59,9 @@ export function RunCard({
   run,
   scopeLabel,
   t,
+  uploading,
 }: RunCardProps) {
+  const incomplete = !uploading && hasIncompleteInitialUploads(run);
   const loadReviewStatus = shouldLoadConceptNoteReviewStatus(
     run.status,
     run.progress_summary,
@@ -118,7 +124,16 @@ export function RunCard({
               <Icon as={LuPencil} boxSize={3.5} />
             </IconButton>
           </HStack>
-          <StatusBadge label={t(status.translationKey)} tone={status.tone} />
+          <StatusBadge
+            label={t(
+              uploading
+                ? "uploading-sources"
+                : incomplete
+                  ? "upload-incomplete"
+                  : status.translationKey,
+            )}
+            tone={uploading ? "info" : incomplete ? "warning" : status.tone}
+          />
         </Flex>
 
         <Text
@@ -130,81 +145,104 @@ export function RunCard({
           {scopeLabel}
         </Text>
 
-        <Box>
-          <Flex justify="space-between" gap={3} mb={1}>
-            <Text fontSize="label.sm" color="content.tertiary">
-              {progressLabel}
-            </Text>
-            <Text
-              fontSize="label.sm"
-              fontWeight="semibold"
-              color="content.secondary"
-            >
-              {progress}%
-            </Text>
-          </Flex>
-          <Box
-            h="8px"
-            overflow="hidden"
-            borderRadius="pill"
-            bg="background.neutral"
-          >
+        {incomplete ? (
+          <Text fontSize="body.sm">{t("upload-incomplete-message")}</Text>
+        ) : (
+          <Box>
+            <Flex justify="space-between" gap={3} mb={1}>
+              <Text fontSize="label.sm" color="content.tertiary">
+                {progressLabel}
+              </Text>
+              <Text
+                fontSize="label.sm"
+                fontWeight="semibold"
+                color="content.secondary"
+              >
+                {progress}%
+              </Text>
+            </Flex>
             <Box
-              h="full"
-              w={`${progress}%`}
+              h="8px"
+              overflow="hidden"
               borderRadius="pill"
-              bg="sentiment.positiveDefault"
-              transition="width 180ms ease"
-              _motionReduce={{ transition: "none" }}
-            />
+              bg="background.neutral"
+            >
+              <Box
+                h="full"
+                w={`${progress}%`}
+                borderRadius="pill"
+                bg="sentiment.positiveDefault"
+                transition="width 180ms ease"
+                _motionReduce={{ transition: "none" }}
+              />
+            </Box>
           </Box>
-        </Box>
+        )}
 
-        <Text
-          fontFamily="body"
-          fontSize="label.sm"
-          lineHeight="16"
-          color="content.tertiary"
-        >
-          {activityLabel}
-        </Text>
+        {!incomplete && (
+          <Text
+            fontFamily="body"
+            fontSize="label.sm"
+            lineHeight="16"
+            color="content.tertiary"
+          >
+            {activityLabel}
+          </Text>
+        )}
 
         <HStack mt="auto" gap={2} flexWrap="wrap">
-          <Button asChild size="sm" variant="solid" h="32px" px="14px" py="8px">
-            <NextLink
-              href={resumeHref}
-              aria-label={`${t("resume")}: ${run.name}`}
+          {incomplete ? (
+            <Button size="sm" onClick={onRetryUpload}>
+              {t("retry-upload")}
+            </Button>
+          ) : (
+            <Button
+              asChild
+              size="sm"
+              variant="solid"
+              h="32px"
+              px="14px"
+              py="8px"
             >
-              {t("resume")}
-            </NextLink>
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            h="32px"
-            px="14px"
-            py="8px"
-            onClick={onDuplicate}
-            loading={duplicateLoading}
-            disabled={lifecycleDisabled}
-            aria-label={`${t("duplicate")}: ${run.name}`}
-          >
-            {t("duplicate")}
-          </Button>
-          <Button
-            size="sm"
-            variant="solid"
-            h="32px"
-            px="14px"
-            py="8px"
-            bg="sentiment.positiveDefault"
-            color="base.light"
-            onClick={onExport}
-            disabled={lifecycleDisabled}
-            aria-label={`${t("export")}: ${run.name}`}
-          >
-            {t("export")}
-          </Button>
+              <NextLink
+                href={resumeHref}
+                aria-label={`${t("resume")}: ${run.name}`}
+              >
+                {t("resume")}
+              </NextLink>
+            </Button>
+          )}
+          {!incomplete && (
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                h="32px"
+                px="14px"
+                py="8px"
+                onClick={onDuplicate}
+                loading={duplicateLoading}
+                disabled={lifecycleDisabled}
+                aria-label={`${t("duplicate")}: ${run.name}`}
+              >
+                {t("duplicate")}
+              </Button>
+              <Button
+                size="sm"
+                variant="solid"
+                h="32px"
+                px="14px"
+                py="8px"
+                bg="sentiment.positiveDefault"
+                color="base.light"
+                onClick={onExport}
+                disabled={lifecycleDisabled}
+                aria-label={`${t("export")}: ${run.name}`}
+              >
+                {t("export")}
+              </Button>
+            </>
+          )}
           <Button
             size="sm"
             variant="outline"

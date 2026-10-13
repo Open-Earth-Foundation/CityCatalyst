@@ -1,5 +1,5 @@
 "use client";
-import { Box, HStack, Icon, IconButton, Table } from "@chakra-ui/react";
+import { Box, HStack, Icon, IconButton, Table, VStack } from "@chakra-ui/react";
 import { LuChevronDown, LuChevronRight } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import { BodyMedium } from "@/components/package/Texts/Body";
@@ -9,8 +9,11 @@ import { MeedMeter } from "../../../components/MeedMeter";
 import {
   FOCUS_RING,
   humanizeEnum,
+  fundAccessLabelKey,
+  isSelfFundable,
   routeKeyOf,
-  scoreTone,
+  SCORE_LEVEL_META,
+  scoreLevel,
   TONE_TEXT_COLOR,
 } from "../labels";
 import type { FeasibilityRow as FeasibilityRowData } from "../types";
@@ -36,9 +39,11 @@ export function FeasibilityRow({
   t,
 }: FeasibilityRowProps) {
   const routeKey = routeKeyOf(row.route);
-  const selfFundable = routeKey === "self";
+  const selfFundable = isSelfFundable(row.route);
   const fundCount = row.inputs?.finance?.n_reachable_opportunities ?? 0;
-  const tone = scoreTone(row.financial_feasibility);
+  const fundAccessKey = fundAccessLabelKey(row.inputs?.finance?.fund_access);
+  const level = SCORE_LEVEL_META[scoreLevel(row.financial_feasibility)];
+  const tone = level.tone;
   const name = row.action_name ?? row.action_id;
   const detailId = `finance-detail-${row.action_id}`;
 
@@ -73,30 +78,33 @@ export function FeasibilityRow({
             truncating to "Self…". */}
         <Table.Cell whiteSpace="nowrap" verticalAlign="top">
           <Box display="flex">
-            <RouteTag routeKey={routeKey} t={t} />
+            <RouteTag routeKey={routeKey} route={row.route} t={t} />
           </Box>
         </Table.Cell>
         <Table.Cell textAlign="end" verticalAlign="top">
-          <HStack gap="s" justifyContent="flex-end">
-            <Box
-              w="40px"
-              flexShrink={0}
-              display={{ base: "none", lg: "block" }}
-            >
-              <MeedMeter
-                value={row.financial_feasibility}
-                tone={tone}
-                ariaLabel={`${name} — ${row.financial_feasibility.toFixed(2)}`}
-              />
-            </Box>
-            <LabelMedium
-              color={TONE_TEXT_COLOR[tone]}
-              fontVariantNumeric="tabular-nums"
-              textAlign="end"
-            >
-              {row.financial_feasibility.toFixed(2)}
-            </LabelMedium>
-          </HStack>
+          <VStack gap="0" alignItems="flex-end">
+            <HStack gap="s" justifyContent="flex-end">
+              <Box
+                w="40px"
+                flexShrink={0}
+                display={{ base: "none", lg: "block" }}
+              >
+                <MeedMeter
+                  value={row.financial_feasibility}
+                  tone={tone}
+                  ariaLabel={`${name} — ${row.financial_feasibility.toFixed(2)} (${t(level.labelKey)})`}
+                />
+              </Box>
+              <LabelMedium
+                color={TONE_TEXT_COLOR[tone]}
+                fontVariantNumeric="tabular-nums"
+                textAlign="end"
+              >
+                {row.financial_feasibility.toFixed(2)}
+              </LabelMedium>
+            </HStack>
+            <Caption color={TONE_TEXT_COLOR[tone]}>{t(level.labelKey)}</Caption>
+          </VStack>
         </Table.Cell>
         <Table.Cell
           textAlign="end"
@@ -114,7 +122,7 @@ export function FeasibilityRow({
             {selfFundable
               ? t("fund-access-self")
               : fundCount > 0
-                ? t("fund-access-direct", { n: fundCount })
+                ? t(fundAccessKey, { n: fundCount })
                 : "—"}
           </BodyMedium>
         </Table.Cell>

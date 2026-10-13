@@ -4,6 +4,10 @@ import * as s3 from "@aws-sdk/client-s3";
 const send =
   jest.fn<(...args: unknown[]) => Promise<Record<string, unknown>>>();
 const previousBucket = process.env.AWS_FILE_UPLOAD_S3_BUCKET_ID;
+const logError = jest.fn();
+jest.unstable_mockModule("@/services/logger", () => ({
+  logger: { error: logError },
+}));
 process.env.AWS_FILE_UPLOAD_S3_BUCKET_ID = "test-cnb-deletion";
 jest.unstable_mockModule("@aws-sdk/client-s3", () => ({
   ...s3,
@@ -20,6 +24,7 @@ afterAll(() => {
 });
 beforeEach(() => {
   send.mockReset();
+  logError.mockReset();
 });
 const upload = "11111111-1111-4111-8111-111111111111";
 
@@ -72,6 +77,13 @@ test("fails on partial S3 deletion errors instead of reporting success", async (
     .mockResolvedValueOnce({ Errors: [{ Code: "AccessDenied" }] });
   await expect(storage.deleteConceptNoteSource(upload)).rejects.toThrow(
     "cleanup failed",
+  );
+  expect(logError).toHaveBeenCalledWith(
+    expect.objectContaining({
+      uploadId: upload,
+      errors: [{ Code: "AccessDenied", Message: undefined }],
+    }),
+    "Concept Note source cleanup failed",
   );
 });
 

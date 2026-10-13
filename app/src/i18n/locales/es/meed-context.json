@@ -2,8 +2,6 @@
   "context-description": "Los indicadores socioeconómicos se utilizan para evaluar cuán factible es cada acción climática para esta ciudad. Indicadores como los niveles de ingresos, el empleo y la densidad urbana determinan qué acciones se pueden entregar de manera realista.",
   "loading-indicators": "Cargando indicadores socioeconómicos…",
   "indicators-loaded": "{{n}} indicadores cargados",
-  "feasibility-note": "La factibilidad de mitigación conforma el 33% de la puntuación de factibilidad · La factibilidad conforma el 23% del ranking",
-  "ranking-weight": "El contexto socioeconómico moldea el 33% de la puntuación de viabilidad · la viabilidad moldea el 23% del ranking",
   "no-indicators-sub": "No hay indicadores disponibles",
   "indicators-error-title": "No se pudieron cargar los indicadores socioeconómicos",
   "indicators-error-body": "No pudimos acceder al servicio de indicadores para esta ciudad. Verifica tu conexión e intenta de nuevo.",

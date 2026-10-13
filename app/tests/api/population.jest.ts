@@ -176,6 +176,55 @@ describe("Population API", () => {
     expectToBeLooselyEqual(populations[0].countryPopulation, 9);
   });
 
+  it.each([2, 3])(
+    "should roll back all population changes when upsert %i fails",
+    async (failingUpsert) => {
+      const years = [1342, 1343, 1344];
+      await db.models.Population.destroy({
+        where: { cityId, year: { [Op.in]: years } },
+      });
+      await db.models.Population.create({
+        cityId,
+        year: 1342,
+        population: 100,
+      });
+
+      const hookName = "fail-population-save";
+      let upsertCount = 0;
+      db.models.Population.addHook("beforeUpsert", hookName, () => {
+        upsertCount += 1;
+        if (upsertCount === failingUpsert) {
+          throw new Error("Simulated population write failure");
+        }
+      });
+
+      try {
+        const res = await savePopulations(
+          mockRequest({
+            cityId,
+            cityPopulation: 200,
+            cityPopulationYear: 1342,
+            regionPopulation: 300,
+            regionPopulationYear: 1343,
+            countryPopulation: 400,
+            countryPopulationYear: 1344,
+          }),
+          { params: Promise.resolve({ city: cityId }) },
+        );
+        await expectStatusCode(res, 500);
+
+        const populations = await db.models.Population.findAll({
+          where: { cityId, year: { [Op.in]: years } },
+        });
+        expect(populations).toHaveLength(1);
+        expect(populations[0].year).toEqual(1342);
+        expectToBeLooselyEqual(populations[0].population, 100);
+      } finally {
+        db.models.Population.removeHook("beforeUpsert", hookName);
+      }
+    },
+  );
+
   it("should not save invalid population information", async () => {
     const req = mockRequest(invalidPopulationUpdate);
     const res = await savePopulations(req, {

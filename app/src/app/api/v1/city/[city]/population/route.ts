@@ -97,6 +97,7 @@ import { createPopulationRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import PopulationService from "@/backend/PopulationService";
+import type { Transaction } from "sequelize";
 
 /**
  * Sets one population column for a city and year in a single statement,
@@ -112,10 +113,11 @@ async function upsertPopulation(
     PopulationCreationAttributes,
     "population" | "regionPopulation" | "countryPopulation"
   >,
+  transaction: Transaction,
 ): Promise<Population> {
   const [population] = await db.models.Population.upsert(
     { cityId, year, ...values },
-    { returning: true },
+    { returning: true, transaction },
   );
   return population;
 }
@@ -130,25 +132,32 @@ export const POST = apiHandler(async (req, { session, params }) => {
 
   const { cityId } = city;
 
-  const cityPopulation = await upsertPopulation(
-    cityId,
-    body.cityPopulationYear,
-    { population: body.cityPopulation },
-  );
-  const regionPopulation = await upsertPopulation(
-    cityId,
-    body.regionPopulationYear,
-    { regionPopulation: body.regionPopulation },
-  );
-  const countryPopulation = await upsertPopulation(
-    cityId,
-    body.countryPopulationYear,
-    { countryPopulation: body.countryPopulation },
-  );
+  if (!db.sequelize) throw new Error("Database not initialized");
 
-  return NextResponse.json({
-    data: { cityPopulation, regionPopulation, countryPopulation },
+  const data = await db.sequelize.transaction(async (transaction) => {
+    const cityPopulation = await upsertPopulation(
+      cityId,
+      body.cityPopulationYear,
+      { population: body.cityPopulation },
+      transaction,
+    );
+    const regionPopulation = await upsertPopulation(
+      cityId,
+      body.regionPopulationYear,
+      { regionPopulation: body.regionPopulation },
+      transaction,
+    );
+    const countryPopulation = await upsertPopulation(
+      cityId,
+      body.countryPopulationYear,
+      { countryPopulation: body.countryPopulation },
+      transaction,
+    );
+
+    return { cityPopulation, regionPopulation, countryPopulation };
   });
+
+  return NextResponse.json({ data });
 });
 
 export const GET = apiHandler(async (_req: Request, { session, params }) => {

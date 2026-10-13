@@ -1,10 +1,13 @@
 ---
-description: NextAuth authentication and permission patterns
+description: How to USE the NextAuth setup in CityCatalyst — session retrieval, role checks, route protection, permission hooks. Scoped to auth-related files. Pair with `security-baseline` (always-on guardrails) which defines the non-negotiable rules every auth-touching change must satisfy.
 globs: app/src/lib/auth*,app/src/middleware.ts,app/src/hooks/useUserPermissions*,app/src/hooks/useAdminGuard*
 alwaysApply: false
 ---
 
 # Authentication & Permissions
+
+> **When to use this rule:** you're wiring up auth in a route, component, or hook and need the recipe (which helper, which session shape, which role check).
+> **For non-negotiable security checks** (secrets, error sanitisation, outbound auth keys, fetch resilience), see `security-baseline.mdc`.
 
 ## NextAuth Configuration (src/lib/auth.ts)
 

@@ -347,5 +347,9 @@
   "removals-not-countable-footnote": "* Sub-setores com remoções não são contabilizáveis como emissões",
   "no-cited-source": "Sem fonte citada",
   "hero-inventory-line": "{{year}} · {{value}} {{unit}}",
-  "default-organization": "Organização Padrão"
+  "default-organization": "Organização Padrão",
+  "invite-email-failed-toast-title": "Convite criado, mas não conseguimos enviá-lo por email",
+  "invite-email-failed-toast-description": "Não conseguimos enviar o convite para {{emails}}. Compartilhe o link de convite com eles diretamente.",
+  "invite-email-failed-toast-description-many": "Não conseguimos enviar o convite para {{count}} convidados. Compartilhe os links do convite diretamente com eles.",
+  "invite-link-in-clipboard": "O link está na sua área de transferência."
 }

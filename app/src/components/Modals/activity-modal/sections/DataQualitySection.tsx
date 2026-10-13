@@ -1,24 +1,33 @@
-import { Box, HStack, Icon, Input, Text, Textarea } from "@chakra-ui/react";
+import {
+  Grid,
+  GridItem,
+  HStack,
+  Icon,
+  Input,
+  Text,
+  Textarea,
+} from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Control,
   Controller,
   FieldErrors,
   FieldValues,
-  Path,
+  useWatch,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
-import { resolve } from "@/util/helpers";
-import { ExtraField } from "@/util/form-schema";
-import { Field } from "@/components/ui/field";
-import { MdInfoOutline, MdWarning } from "react-icons/md";
+import { getDataYearOptions } from "@/util/data-providers";
+import { ProviderCombobox } from "./ProviderCombobox";
 import {
-  NativeSelectField,
-  NativeSelectRoot,
-} from "@/components/ui/native-select";
-import { BodyMedium } from "@/components/package/Texts/Body";
+  ModalField,
+  ModalFieldError,
+  ModalSelect,
+  modalInputProps,
+} from "./ModalField";
+import { ExtraField } from "@/util/form-schema";
+import { MdInfoOutline } from "react-icons/md";
 import { Inputs } from "../activity-modal-body";
 import { GlobalWarmingPotentialTypeEnum } from "@/util/enums";
 
@@ -45,57 +54,40 @@ export const DataQualitySection = ({
   fields,
   gwp,
 }: DataQualitySectionProps) => {
-  const prefix = "";
-
   const sourceField = fields.find(
     (f) => f.id.includes("-source") && f.type === "text",
   );
 
   const activityErrors = errors?.activity as
-    | Record<string, { message?: string } | undefined>
-    | undefined;
+    Record<string, { message?: string } | undefined> | undefined;
+
+  const storedYear = Number(useWatch({ control, name: "activity.dataYear" }));
+  const yearOptions = useMemo(
+    () => getDataYearOptions(storedYear || undefined),
+    [storedYear],
+  );
 
   return (
     <>
-      <HStack display="flex" flexDirection="column" mt={4} gap={4} mb={5}>
-        <Field
-          invalid={!!resolve(prefix + "dataQuality", errors)}
-          label={t("data-quality")}
-        >
-          <Controller
-            name="activity.dataQuality"
-            control={control}
-            render={({ field }) => (
-              <NativeSelectRoot
-                borderWidth={activityErrors?.dataQuality ? "1px" : 0}
-                border="inputBox"
-                borderRadius="4px"
-                borderColor={
-                  activityErrors?.dataQuality
-                    ? "sentiment.negativeDefault"
-                    : ""
-                }
-                background={
-                  activityErrors?.dataQuality
-                    ? "sentiment.negativeOverlay"
-                    : ""
-                }
-                _focus={{
-                  borderWidth: "1px",
-                  shadow: "none",
-                  borderColor: "content.link",
-                }}
-                bgColor="base.light"
-                {...register("activity.dataQuality", {
-                  required: t("option-required"),
-                })}
-                h="full"
-                shadow="1dp"
-              >
-                <NativeSelectField
+      <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={5}>
+        <GridItem colSpan={2}>
+          <ModalField
+            label={t("select-data-quality")}
+            required
+            invalid={!!activityErrors?.dataQuality}
+          >
+            <Controller
+              name="activity.dataQuality"
+              control={control}
+              rules={{ required: t("option-required") }}
+              render={({ field }) => (
+                <ModalSelect
                   aria-label={t("data-quality")}
                   placeholder={t("data-quality-placeholder")}
-                  value={field.value}
+                  invalid={!!activityErrors?.dataQuality}
+                  name={field.name}
+                  value={field.value ?? ""}
+                  onBlur={field.onBlur}
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                     field.onChange(e.target.value);
                     setValue("activity.dataQuality", e.target.value);
@@ -106,102 +98,131 @@ export const DataQualitySection = ({
                   <option value="low">
                     {t("highly-modeled-uncertain-activity-data")}
                   </option>
-                </NativeSelectField>
-              </NativeSelectRoot>
+                </ModalSelect>
+              )}
+            />
+            {activityErrors?.dataQuality && (
+              <ModalFieldError message={t("data-quality-form-label")} />
             )}
-          />
-          {activityErrors?.dataQuality && (
-            <Box display="flex" gap="6px" alignItems="center" mt="6px">
-              <Icon as={MdWarning} color="sentiment.negativeDefault" />
-              <Text fontSize="body.md">{t("data-quality-form-label")}</Text>
-            </Box>
-          )}
-        </Field>
+          </ModalField>
+        </GridItem>
 
         {sourceField && (
-          <Field w="full" label={t("data-source")}>
-            <Input
-              type="text"
-              borderRadius="4px"
-              placeholder={t("data-source-placeholder")}
-              h="48px"
-              shadow="1dp"
-              borderWidth={activityErrors?.[sourceField.id] ? "1px" : 0}
-              border="inputBox"
-              borderColor={
-                activityErrors?.[sourceField.id]
-                  ? "sentiment.negativeDefault"
-                  : ""
-              }
-              background={
-                activityErrors?.[sourceField.id]
-                  ? "sentiment.negativeOverlay"
-                  : ""
-              }
-              bgColor="base.light"
-              _focus={{
-                borderWidth: "1px",
-                shadow: "none",
-                borderColor: "content.link",
-              }}
-              {...register(`activity.${sourceField.id}` as Path<Inputs>, {
+          <ModalField
+            label={t("data-provider")}
+            required={sourceField.required !== false}
+            invalid={!!activityErrors?.[sourceField.id]}
+          >
+            <Controller
+              name={`activity.${sourceField.id}`}
+              control={control}
+              defaultValue=""
+              rules={{
                 required:
                   sourceField.required === false ? false : t("value-required"),
-              })}
+              }}
+              render={({ field }) => (
+                <ProviderCombobox
+                  t={t}
+                  value={(field.value as string) ?? ""}
+                  onChange={field.onChange}
+                  invalid={!!activityErrors?.[sourceField.id]}
+                />
+              )}
             />
-
             {activityErrors?.[sourceField.id] && (
-              <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                <Icon as={MdWarning} color="sentiment.negativeDefault" />
-                <Text fontSize="body.md">
-                  {activityErrors?.[sourceField.id]?.message}
-                </Text>
-              </Box>
+              <ModalFieldError
+                message={activityErrors?.[sourceField.id]?.message}
+              />
             )}
-          </Field>
+          </ModalField>
         )}
 
-        <Field
-          invalid={!!resolve(prefix + "dataComments", errors)}
-          mb={12}
-          label={t("data-comments")}
+        <ModalField
+          label={t("data-year")}
+          required
+          invalid={!!activityErrors?.dataYear}
         >
-          <Textarea
-            data-testid="source-reference"
-            borderWidth={activityErrors?.dataComments ? "1px" : 0}
-            border="inputBox"
-            borderRadius="4px"
-            shadow="1dp"
-            h="96px"
-            borderColor={
-              activityErrors?.dataComments ? "sentiment.negativeDefault" : ""
-            }
-            background={
-              activityErrors?.dataComments ? "sentiment.negativeOverlay" : ""
-            }
-            _focus={{
-              borderWidth: "1px",
-              shadow: "none",
-              borderColor: "content.link",
-            }}
-            placeholder={t("data-comments-placeholder")}
-            {...register(`activity.dataComments`, {
-              required: t("data-comments-required"),
+          <ModalSelect
+            aria-label={t("data-year")}
+            placeholder={t("data-year-placeholder")}
+            invalid={!!activityErrors?.dataYear}
+            {...register("activity.dataYear", {
+              required: t("option-required"),
+            })}
+          >
+            {yearOptions.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </ModalSelect>
+          {activityErrors?.dataYear && (
+            <ModalFieldError message={activityErrors.dataYear.message} />
+          )}
+        </ModalField>
+
+        <GridItem colSpan={2}>
+          <ModalField label={t("source-document")}>
+            <Input
+              {...modalInputProps(false)}
+              placeholder={t("source-document-placeholder")}
+              {...register("activity.sourceDocument")}
+            />
+          </ModalField>
+        </GridItem>
+
+        <ModalField label={t("source-page")}>
+          <Input
+            {...modalInputProps(false)}
+            placeholder={t("source-page-placeholder")}
+            {...register("activity.sourcePage")}
+          />
+        </ModalField>
+        <ModalField
+          label={t("source-url")}
+          invalid={!!activityErrors?.sourceUrl}
+        >
+          <Input
+            {...modalInputProps(!!activityErrors?.sourceUrl)}
+            type="url"
+            placeholder={t("source-url-placeholder")}
+            {...register("activity.sourceUrl", {
+              pattern: {
+                value: /^https?:\/\/\S+$/i,
+                message: t("source-url-invalid"),
+              },
             })}
           />
-          {activityErrors?.dataComments && (
-            <Box display="flex" gap="6px" alignItems="center" mt="6px">
-              <Icon as={MdWarning} color="sentiment.negativeDefault" />
-              <BodyMedium fontSize="body.md">
-                {activityErrors?.dataComments?.message}
-              </BodyMedium>
-            </Box>
+          {activityErrors?.sourceUrl && (
+            <ModalFieldError message={activityErrors.sourceUrl.message} />
           )}
-        </Field>
-      </HStack>
+        </ModalField>
+
+        <GridItem colSpan={2}>
+          <ModalField
+            invalid={!!activityErrors?.dataComments}
+            required
+            label={t("data-comments")}
+          >
+            <Textarea
+              data-testid="source-reference"
+              {...modalInputProps(!!activityErrors?.dataComments)}
+              h="96px"
+              placeholder={t("data-comments-placeholder")}
+              {...register(`activity.dataComments`, {
+                required: t("data-comments-required"),
+              })}
+            />
+            {activityErrors?.dataComments && (
+              <ModalFieldError message={activityErrors.dataComments.message} />
+            )}
+          </ModalField>
+        </GridItem>
+      </Grid>
 
       {gwp && gwp.ch4 != null && gwp.n2o != null && (
-        <HStack alignItems="flex-start" mb={13}>
+        <HStack alignItems="flex-start" mb={4}>
           <Icon as={MdInfoOutline} mt={1} color="content.link" />
           <Text color="content.tertiary">
             {t("gwp-info-prefix")}{" "}

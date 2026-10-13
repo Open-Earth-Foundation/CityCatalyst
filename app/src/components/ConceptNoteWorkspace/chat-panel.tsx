@@ -283,8 +283,9 @@ export function ConceptNoteChatPanel({
   // Switching chats mid-turn or mid-drafting would strand the reply.
   const threadSwitchDisabled =
     historyLoading || isGenerating || draft?.status === "running";
-  // Typing stays open while Clima responds; only sending waits for it.
-  const composerDisabled = contextBlocked || !threadId;
+  // Typing stays open while context is processing or Clima responds.
+  // Only submission waits for context readiness and the current turn.
+  const composerDisabled = !threadId;
   const requestedOverviewThreadRef = useRef<string | null>(null);
 
   // Ask Clima once for the drafting overview; the service claims it per build.
@@ -633,11 +634,7 @@ export function ConceptNoteChatPanel({
               contextBlocked ? "concept-note-chat-blocked" : undefined
             }
             placeholder={
-              contextBlocked
-                ? t("chat-waiting-for-context")
-                : threadId
-                  ? t("chat-input-placeholder")
-                  : t("chat-unavailable")
+              threadId ? t("chat-input-placeholder") : t("chat-unavailable")
             }
             bg="base.light"
             borderColor="border.neutral"

@@ -1,8 +1,9 @@
 import { expect, Locator, Page, test } from "@playwright/test";
 import {
-  createCityAndInventoryThroughOnboarding,
+  createCityAndInventoryViaApi,
   dismissCookieConsent,
   navigateToDataPage,
+  openAddEmissionModal,
 } from "./helpers";
 
 async function openResidentialSubsector(
@@ -58,9 +59,9 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal
     .getByLabel(/Select emission factor type/i)
     .selectOption("custom");
-  const co2 = addEmissionModal.getByLabel("CO2 emission factor");
-  const n2o = addEmissionModal.getByLabel("N2O emission factor");
-  const ch4 = addEmissionModal.getByLabel("CH4 emission factor");
+  const co2 = addEmissionModal.getByLabel("CO₂ emission factor");
+  const n2o = addEmissionModal.getByLabel("N₂O emission factor");
+  const ch4 = addEmissionModal.getByLabel("CH₄ emission factor");
   await co2.fill("10");
   await n2o.fill("10");
   await ch4.fill("1");
@@ -68,7 +69,10 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await n2o.blur();
   await ch4.blur();
   await addEmissionModal.getByLabel(/Data Quality/i).selectOption("high");
-  await addEmissionModal.getByLabel("Data source").fill("test");
+  await addEmissionModal.getByTestId("data-provider-input").fill("test");
+  await addEmissionModal
+    .getByLabel(/Data year/i)
+    .selectOption(String(new Date().getFullYear()));
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
 }
 
@@ -151,19 +155,10 @@ async function addScope1ResidentialEmissions(
 
   const scopeOnePanel = openScopePanel(page, 1);
   await expect(scopeOnePanel).toBeVisible({ timeout: 30000 });
-  const hasExistingActivity = await scopeOnePanel
-    .getByText(/Propane/i)
-    .isVisible()
-    .catch(() => false);
-  if (hasExistingActivity) {
-    return;
-  }
 
   await ensureMethodologySelected(page, /Fuel Consumption/i, scopeOnePanel);
 
-  await addActivityButton(page, scopeOnePanel).click();
-  const addEmissionModal = page.getByTestId("add-emission-modal");
-  await expect(addEmissionModal).toBeVisible();
+  const addEmissionModal = await openAddEmissionModal(page, scopeOnePanel);
 
   await addEmissionModal
     .getByLabel(/Building type/i)
@@ -198,56 +193,25 @@ async function addScope2ResidentialEmissions(
 
   await ensureMethodologySelected(page, /Energy Consumption/i, scopeTwoPanel);
 
-  // Prior Playwright retries share the inventory — skip if Scope 2 data exists.
-  if ((await scopeTwoPanel.locator("table tbody tr").count()) > 0) {
-    return;
-  }
+  const addEmissionModal = await openAddEmissionModal(page, scopeTwoPanel);
 
-  const createWithBuildingType = async (buildingTypeValue: string) => {
-    await addActivityButton(page, scopeTwoPanel).click();
-    const addEmissionModal = page.getByTestId("add-emission-modal");
-    await expect(addEmissionModal).toBeVisible();
+  const buildingType = addEmissionModal.getByLabel(/Building type/i);
+  await buildingType.selectOption("building-type-single-family-home");
+  await expect(buildingType).toHaveValue("building-type-single-family-home");
 
-    const buildingType = addEmissionModal.getByLabel(/Building type/i);
-    await buildingType.selectOption(buildingTypeValue);
-    await expect(buildingType).toHaveValue(buildingTypeValue);
+  const energyUsage = addEmissionModal.getByLabel(/Energy usage type/i);
+  await energyUsage.selectOption("energy-usage-electricity");
+  await expect(energyUsage).toHaveValue("energy-usage-electricity");
 
-    const energyUsage = addEmissionModal.getByLabel(/Energy usage type/i);
-    await energyUsage.selectOption("energy-usage-electricity");
-    await expect(energyUsage).toHaveValue("energy-usage-electricity");
+  await fillEnergyConsumptionAmount(addEmissionModal);
+  const unitSelect = addEmissionModal.getByLabel(/Select Unit/i);
+  await unitSelect.selectOption("units-kilowatt-hours");
+  await expect(unitSelect).toHaveValue("units-kilowatt-hours");
+  await fillCustomEmissionFactors(addEmissionModal);
+  // Re-assert amount after EF fields mount (FormattedNumberInput can reset).
+  await fillEnergyConsumptionAmount(addEmissionModal);
 
-    await fillEnergyConsumptionAmount(addEmissionModal);
-    const unitSelect = addEmissionModal.getByLabel(/Select Unit/i);
-    await unitSelect.selectOption("units-kilowatt-hours");
-    await expect(unitSelect).toHaveValue("units-kilowatt-hours");
-    await fillCustomEmissionFactors(addEmissionModal);
-    // Re-assert amount after EF fields mount (FormattedNumberInput can reset).
-    await fillEnergyConsumptionAmount(addEmissionModal);
-
-    await submitActivity(page, addEmissionModal);
-  };
-
-  try {
-    await createWithBuildingType("building-type-single-family-home");
-  } catch (error) {
-    if (await addEmissionModalStillOpen(page)) {
-      await page.keyboard.press("Escape");
-      await page
-        .getByTestId("add-emission-modal")
-        .waitFor({ state: "hidden", timeout: 10000 })
-        .catch(() => undefined);
-    }
-    if ((await scopeTwoPanel.locator("table tbody tr").count()) > 0) {
-      return;
-    }
-
-    const message = error instanceof Error ? error.message : String(error);
-    if (!/EXCLUSIVE_CONFLICT/i.test(message)) {
-      throw error;
-    }
-    // Avoid fragile overflow-menu clearing; use another non-exclusive building type.
-    await createWithBuildingType("building-type-multi-family-home");
-  }
+  await submitActivity(page, addEmissionModal);
 
   await expect(scopeTwoPanel.locator("table tbody tr").first()).toBeVisible({
     timeout: 30000,
@@ -258,13 +222,6 @@ async function addScope2ResidentialEmissions(
   });
 }
 
-async function addEmissionModalStillOpen(page: Page) {
-  return page
-    .getByTestId("add-emission-modal")
-    .isVisible()
-    .catch(() => false);
-}
-
 async function openEmissionInventoryResultsTab(page: Page) {
   await page.getByTestId("tab-emission-inventory-results-title").click();
   await expect(
@@ -273,25 +230,22 @@ async function openEmissionInventoryResultsTab(page: Page) {
 }
 
 // Serial flow: one city/inventory, scope 1 + scope 2 data, then results tab assertions.
+// The inventory is created per run (and per retry of the group) through the API,
+// so no other spec, browser project or earlier attempt shares its data.
 test.describe.serial("Report Results", () => {
   test.setTimeout(120000);
 
   let cityId: string;
+  let cityName: string;
   let inventoryId: string;
 
   test.beforeAll(async ({ browser }) => {
-    test.setTimeout(180000);
-
     const context = await browser.newContext({
       storageState: "playwright/.auth/user.json",
     });
-    const page = await context.newPage();
-
-    const cityInventoryData =
-      await createCityAndInventoryThroughOnboarding(page);
-    cityId = cityInventoryData.cityId;
-    inventoryId = cityInventoryData.inventoryId;
-
+    ({ cityId, cityName, inventoryId } = await createCityAndInventoryViaApi(
+      context.request,
+    ));
     await context.close();
   });
 
@@ -301,11 +255,11 @@ test.describe.serial("Report Results", () => {
 
     const heroCityName = page.getByTestId("hero-city-name");
     await expect(heroCityName).toBeVisible({ timeout: 60000 });
-    await expect(heroCityName).toHaveText("Chicago", { timeout: 10000 });
+    await expect(heroCityName).toHaveText(cityName, { timeout: 10000 });
   });
 
   test("User can navigate to GHGI module", async ({ page }) => {
-    await expect(page.getByTestId("hero-city-name")).toHaveText("Chicago");
+    await expect(page.getByTestId("hero-city-name")).toHaveText(cityName);
   });
 
   test("User can navigate to subsector page and enter scope 1 emissions data", async ({
@@ -320,10 +274,7 @@ test.describe.serial("Report Results", () => {
     await addScope2ResidentialEmissions(page, cityId, inventoryId);
   });
 
-  // TODO(CC-583): Firefox Top Emissions never shows the Scope 2 residential row
-  // even after a successful activity create with non-zero co2eq. Re-enable once
-  // results aggregation/join for I.1.2 is reliable across browsers.
-  test.skip("User can navigate to dashboard and verify data", async ({ page }) => {
+  test("User can navigate to dashboard and verify data", async ({ page }) => {
     test.setTimeout(180000);
     const topEmissionsTable = page.locator("table").filter({
       has: page.getByText(/Total emissions \(CO2eq\)/i),

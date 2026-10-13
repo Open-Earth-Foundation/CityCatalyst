@@ -13,6 +13,12 @@ on:
       - app/scripts/update-translation.js
       - .github/workflows/web-translate.yml
 
+# Overlapping runs both translate the same keys with different wording and
+# leave the i18n branch conflicting with develop, so queue them instead.
+concurrency:
+  group: web-translate
+  cancel-in-progress: false
+
 jobs:
   translate:
     runs-on: ubuntu-latest
@@ -20,6 +26,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          ref: develop
           fetch-depth: 0
 
       - name: Configure git user
@@ -38,12 +45,17 @@ jobs:
 
       - name: Create or checkout i18n branch
         run: |
+          # Build on the latest develop, which may include an i18n PR merged
+          # after this run started.
+          git fetch origin develop
           if [ "${{ steps.check_branch.outputs.branch_exists }}" = "true" ]; then
             git fetch origin i18n
             git checkout i18n
-            git merge origin/develop --no-edit
+            # develop holds the reviewed translations, so it wins conflicting
+            # lines; keys left missing are translated again below.
+            git merge -X theirs origin/develop --no-edit
           else
-            git checkout -b i18n
+            git checkout -b i18n origin/develop
           fi
 
       - name: Set up Node.js

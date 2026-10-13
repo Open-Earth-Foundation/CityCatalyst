@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import {
   APIRequestContext,
   expect,
+  test,
   type BrowserContext,
   type Locator,
   type Page,
@@ -183,14 +184,120 @@ export async function createInventory(
   return await result.json();
 }
 
+const INVENTORY_YEAR_TAKEN =
+  "An inventory for this year already contains data";
+
 /**
- * Inventory year for cities onboarding E2E. Uses the previous calendar year so
- * the value stays inside the UI dropdown (current year + 19 prior years) and
- * matches ghgi-onboarding.spec.ts. Call once per flow and pass the return value
- * to assertions so setup and expectations never drift apart.
+ * Real OpenClimate cities. Each onboarding flow takes the next one so
+ * parallel Chromium and Firefox runs do not pile activity data onto one
+ * Chicago record. The year dropdown only has 20 years, and Continue stays
+ * disabled once every year already has data.
  */
-export function pickE2EOnboardingInventoryYear(): string {
-  return String(new Date().getFullYear() - 1);
+const E2E_CITIES: { name: string; region: RegExp }[] = [
+  { name: "Houston", region: /United States of America > Texas/ },
+  { name: "Phoenix", region: /United States of America > Arizona/ },
+  { name: "Philadelphia", region: /United States of America > Pennsylvania/ },
+  { name: "San Antonio", region: /United States of America > Texas/ },
+  { name: "San Diego", region: /United States of America > California/ },
+  { name: "Dallas", region: /United States of America > Texas/ },
+  { name: "Austin", region: /United States of America > Texas/ },
+  { name: "Jacksonville", region: /United States of America > Florida/ },
+  { name: "Columbus", region: /United States of America > Ohio/ },
+  { name: "Charlotte", region: /United States of America > North Carolina/ },
+  { name: "Indianapolis", region: /United States of America > Indiana/ },
+  { name: "Seattle", region: /United States of America > Washington/ },
+  { name: "Denver", region: /United States of America > Colorado/ },
+  { name: "Boston", region: /United States of America > Massachusetts/ },
+  { name: "Nashville", region: /United States of America > Tennessee/ },
+  { name: "Detroit", region: /United States of America > Michigan/ },
+  { name: "Portland", region: /United States of America > Oregon/ },
+  { name: "Memphis", region: /United States of America > Tennessee/ },
+  { name: "Baltimore", region: /United States of America > Maryland/ },
+  { name: "Milwaukee", region: /United States of America > Wisconsin/ },
+  { name: "Albuquerque", region: /United States of America > New Mexico/ },
+  { name: "Tucson", region: /United States of America > Arizona/ },
+  { name: "Fresno", region: /United States of America > California/ },
+  { name: "Sacramento", region: /United States of America > California/ },
+  { name: "Atlanta", region: /United States of America > Georgia/ },
+  { name: "Miami", region: /United States of America > Florida/ },
+  { name: "Minneapolis", region: /United States of America > Minnesota/ },
+  { name: "Cleveland", region: /United States of America > Ohio/ },
+  { name: "New Orleans", region: /United States of America > Louisiana/ },
+  { name: "Chicago", region: /United States of America > Illinois/ },
+];
+
+let nextCitySlot = 0;
+
+function nextE2ECity(): { name: string; region: RegExp } {
+  const info = test.info();
+  const workers = Math.max(info.config.workers || 1, 1);
+  // Chromium and Firefox are separate processes, so each would otherwise
+  // start again at Houston and reuse a city that already has data.
+  const projectOffset =
+    info.project.name === "firefox" ? Math.floor(E2E_CITIES.length / 2) : 0;
+  const index =
+    (projectOffset + info.parallelIndex + nextCitySlot * workers) %
+    E2E_CITIES.length;
+  nextCitySlot += 1;
+  return E2E_CITIES[index];
+}
+
+/**
+ * Pick a dropdown year whose Continue button stays enabled.
+ * A fresh city can use the first year. This still skips a year that already
+ * has activity data when two flows land on the same city.
+ */
+export async function selectAvailableInventoryYear(page: Page): Promise<string> {
+  const trigger = page
+    .locator('[data-testid="inventory-details-year"]')
+    .locator("button");
+  await trigger.click();
+  const options = page.getByRole("option");
+  await expect(options.first()).toBeVisible();
+  const years = (await options.allInnerTexts())
+    .map((text) => text.trim())
+    .filter((text) => /^\d{4}$/.test(text));
+  await page.keyboard.press("Escape");
+
+  const continueBtn = page.getByRole("button", { name: /Continue/i });
+  const taken = page.getByText(INVENTORY_YEAR_TAKEN, { exact: true });
+
+  for (const year of years) {
+    await trigger.click();
+    await page.getByRole("option", { name: year, exact: true }).click();
+    // The previous year's warning stays on screen until this selection commits.
+    // Ignore it until the closed select actually shows the year we clicked.
+    const selected = await expect(trigger)
+      .toContainText(year, { timeout: 5000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!selected) continue;
+    if (await inventoryYearIsAvailable(page, continueBtn, taken)) return year;
+  }
+
+  throw new Error(
+    "Every inventory year in the dropdown already has activity data",
+  );
+}
+
+async function inventoryYearIsAvailable(
+  page: Page,
+  continueBtn: Locator,
+  taken: Locator,
+): Promise<boolean> {
+  const started = Date.now();
+  let enabledSince: number | null = null;
+  while (Date.now() - started < 15000) {
+    if (await taken.isVisible()) return false;
+    if (await continueBtn.isEnabled()) {
+      if (enabledSince == null) enabledSince = Date.now();
+      else if (Date.now() - enabledSince >= 1500) return true;
+    } else {
+      enabledSince = null;
+    }
+    await page.waitForTimeout(200);
+  }
+  return false;
 }
 
 /**
@@ -241,7 +348,7 @@ export async function selectCityFromOnboardingSearch(
 
 async function walkCitiesOnboardingWizard(
   page: Page,
-): Promise<{ cityId: string }> {
+): Promise<{ cityId: string; cityName: string }> {
   // Step 0: welcome page → click "Get started"
   await page.goto("/en/cities/onboarding/");
   await page.waitForLoadState("domcontentloaded");
@@ -258,12 +365,19 @@ async function walkCitiesOnboardingWizard(
 
   const getStartedButton = page.getByTestId("start-inventory-button");
   await expect(getStartedButton).toBeVisible({ timeout: 30000 });
-  await getStartedButton.click();
+  // The cookie banner can appear after the first dismiss and cover this button.
+  try {
+    await getStartedButton.click({ timeout: 15000 });
+  } catch {
+    await dismissCookieConsent(page);
+    await getStartedButton.click();
+  }
 
   // Step 0: select city
   await page.waitForURL("**/cities/onboarding/setup/");
 
-  await selectCityFromOnboardingSearch(page, "Chicago");
+  const city = nextE2ECity();
+  await selectCityFromOnboardingSearch(page, city.name, city.region);
 
   // Continue (creates the city, advances to invite collaborators)
   {
@@ -286,7 +400,7 @@ async function walkCitiesOnboardingWizard(
   if (!cityId) {
     throw new Error("Could not extract cityId from URL after onboarding");
   }
-  return { cityId };
+  return { cityId, cityName: city.name };
 }
 
 export async function createCityThroughOnboarding(page: Page): Promise<string> {
@@ -341,16 +455,17 @@ export async function createInventoryThroughOnboarding(
     cityId = cityIdMatch[1];
   }
   const lng = "en";
-  const inventoryYear = pickE2EOnboardingInventoryYear();
   await page.goto(`/${lng}/cities/${cityId}/GHGI/onboarding`);
 
   await dismissCookieConsent(page);
 
   // Step 3: Select "Create a new inventory" and continue
-  await expect(page.getByTestId("start-page-heading")).toBeVisible();
+  await expect(page.getByTestId("start-page-heading")).toBeVisible({
+    timeout: 30000,
+  });
   await page.getByTestId("create-inventory-option").click();
   const startContinueButton = page.getByTestId("continue-button");
-  await expect(startContinueButton).toBeEnabled();
+  await expect(startContinueButton).toBeEnabled({ timeout: 15000 });
   await startContinueButton.click();
 
   // Step 4: Wait for redirect to GHGI onboarding setup
@@ -360,13 +475,8 @@ export async function createInventoryThroughOnboarding(
   const inventoryDetailsHeading = page.getByTestId("inventory-details-heading");
   await expect(inventoryDetailsHeading).toBeVisible();
 
-  // Select year - click the select trigger and then select an option
-  const yearSelectTrigger = page
-    .locator('[data-testid="inventory-details-year"]')
-    .locator("button");
-  await yearSelectTrigger.click();
-  const yearOption = page.getByRole("option", { name: inventoryYear });
-  await yearOption.click();
+  // Skip years that already have activity data. Continue stays disabled for those.
+  const inventoryYear = await selectAvailableInventoryYear(page);
 
   // Select inventory goal
   const inventoryGoalOption = page.getByTestId("inventory-goal-gpc_basic");
@@ -476,8 +586,13 @@ export async function createInventoryThroughOnboarding(
  */
 export async function createCityAndInventoryViaApi(
   request: APIRequestContext,
-): Promise<{ cityId: string; inventoryId: string; inventoryYear: string }> {
-  const year = Number(pickE2EOnboardingInventoryYear());
+): Promise<{
+  cityId: string;
+  cityName: string;
+  inventoryId: string;
+  inventoryYear: string;
+}> {
+  const year = new Date().getFullYear() - 1;
   const locode = `XX E2E${randomUUID().slice(0, 8).toUpperCase()}`;
 
   const cityResponse = await request.post("/api/v1/city/", {
@@ -491,7 +606,7 @@ export async function createCityAndInventoryViaApi(
     },
   });
   expect(cityResponse.ok(), await cityResponse.text()).toBeTruthy();
-  const { cityId } = (await cityResponse.json()).data;
+  const { cityId, name: cityName } = (await cityResponse.json()).data;
 
   const populationResponse = await request.post(
     `/api/v1/city/${cityId}/population/`,
@@ -523,7 +638,7 @@ export async function createCityAndInventoryViaApi(
   expect(inventoryResponse.ok(), await inventoryResponse.text()).toBeTruthy();
   const { inventoryId } = (await inventoryResponse.json()).data;
 
-  return { cityId, inventoryId, inventoryYear: String(year) };
+  return { cityId, cityName, inventoryId, inventoryYear: String(year) };
 }
 
 export async function createCityAndInventoryThroughOnboarding(
@@ -531,18 +646,20 @@ export async function createCityAndInventoryThroughOnboarding(
 ): Promise<{
   page: Page;
   cityId: string;
+  cityName: string;
   inventoryId: string;
   inventoryYear: string;
 }> {
   // City onboarding no longer creates an inventory (CC-612): create the
   // city first, then run the separate GHGI onboarding flow for the
-  // inventory.
-  const { cityId } = await walkCitiesOnboardingWizard(page);
+  // inventory. Each call uses a different city so the shared 20-year
+  // dropdown is not already full of activity data.
+  const { cityId, cityName } = await walkCitiesOnboardingWizard(page);
   const { inventoryId, inventoryYear } = await createInventoryThroughOnboarding(
     page,
     cityId,
   );
-  return { page, cityId, inventoryId, inventoryYear };
+  return { page, cityId, cityName, inventoryId, inventoryYear };
 }
 
 export async function createProject(

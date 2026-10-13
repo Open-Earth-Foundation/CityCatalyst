@@ -196,11 +196,14 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal
     .getByLabel(/Select emission factor type/i)
     .selectOption("custom");
-  await addEmissionModal.getByLabel("CO2 emission factor").fill("10");
-  await addEmissionModal.getByLabel("N2O emission factor").fill("10");
-  await addEmissionModal.getByLabel("CH4 emission factor").fill("1");
+  await addEmissionModal.getByLabel("CO₂ emission factor").fill("10");
+  await addEmissionModal.getByLabel("N₂O emission factor").fill("10");
+  await addEmissionModal.getByLabel("CH₄ emission factor").fill("1");
   await addEmissionModal.getByLabel(/Data Quality/i).selectOption("high");
-  await addEmissionModal.getByLabel("Data source").fill("test");
+  await addEmissionModal.getByTestId("data-provider-input").fill("test");
+  await addEmissionModal
+    .getByLabel(/Data year/i)
+    .selectOption(String(new Date().getFullYear()));
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
 }
 
@@ -272,6 +275,7 @@ test.describe("CSV Download", () => {
   test.setTimeout(120000);
 
   let cityId: string;
+  let cityName: string;
   let inventoryId: string;
 
   // A fresh inventory per run (and per retry) keeps the downloads independent
@@ -280,7 +284,7 @@ test.describe("CSV Download", () => {
     const context = await browser.newContext({
       storageState: "playwright/.auth/user.json",
     });
-    ({ cityId, inventoryId } = await createCityAndInventoryViaApi(
+    ({ cityId, cityName, inventoryId } = await createCityAndInventoryViaApi(
       context.request,
     ));
     await context.close();
@@ -294,7 +298,7 @@ test.describe("CSV Download", () => {
 
     const heroCityName = page.getByTestId("hero-city-name");
     await expect(heroCityName).toBeVisible({ timeout: 60000 });
-    await expect(heroCityName).toHaveText("Chicago", { timeout: 10000 });
+    await expect(heroCityName).toHaveText(cityName, { timeout: 10000 });
 
     const downloadActionCard = page.getByTestId("download-action-card");
     await expect(downloadActionCard).toBeVisible({ timeout: 60000 });

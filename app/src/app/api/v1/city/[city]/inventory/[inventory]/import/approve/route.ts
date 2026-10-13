@@ -56,17 +56,12 @@ import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
 import ECRFImportService, {
   type ECRFImportResult,
-  type ECRFRowData,
 } from "@/backend/ECRFImportService";
 import InventoryImportService from "@/backend/InventoryImportService";
 import {
   syncGHGIImportedInventorySource,
   syncGHGIInventory,
 } from "@/backend/GHGINativeInputCatalogService";
-import {
-  resolveGpcRefNo,
-  splitSectorSubsectorLabels,
-} from "@/util/GHGI/gpc-ref-resolver";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
@@ -74,7 +69,6 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { logger } from "@/services/logger";
-import { Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 
@@ -265,8 +259,7 @@ async function runApproveImportInBackground(args: {
     // Pre-extracted rows: PDF, Path B key-value, or Adapter D (near-ecrf) — no file re-parse.
     // mappingOverrides: per-row field overrides keyed by row index (e.g. { "0": { sector: "X", subsector: "Y" } }).
     const extractedRows = mappingConfiguration.rows as
-      | ExtractedRow[]
-      | undefined;
+      ExtractedRow[] | undefined;
     const keyValueShaped = mappingConfiguration.keyValueShaped === true;
     const useExtractedRows =
       Array.isArray(extractedRows) &&
@@ -276,20 +269,6 @@ async function runApproveImportInBackground(args: {
         adapterType === "near-ecrf");
 
     if (useExtractedRows) {
-      const errors: string[] = [];
-      const warnings: string[] = [];
-      const rows: ECRFRowData[] = [];
-      let inferredYear: number | undefined;
-
-      const scopeByName = new Map<string, string>();
-      const scopeRecords = await db.models.Scope.findAll({
-        attributes: ["scopeId", "scopeName"],
-        where: { scopeName: { [Op.in]: ["1", "2", "3"] } },
-      });
-      for (const s of scopeRecords) {
-        if (s.scopeName) scopeByName.set(s.scopeName, s.scopeId);
-      }
-
       const allowedPdfOverrideKeys = new Set([
         "year",
         "sector",
@@ -310,138 +289,23 @@ async function runApproveImportInBackground(args: {
         "activityDataQuality",
       ]);
 
-      for (let i = 0; i < extractedRows.length; i++) {
-        const baseRow = extractedRows[i];
+      const preparedRows = extractedRows.map((baseRow, i) => {
         const rowOverrides =
           mappingOverrides &&
           typeof mappingOverrides[String(i)] === "object" &&
           mappingOverrides[String(i)] !== null
             ? (mappingOverrides[String(i)] as Record<string, unknown>)
             : null;
-        const row: ExtractedRow = rowOverrides
+        return rowOverrides
           ? applyPdfFieldOverrides(
               baseRow,
               rowOverrides,
               allowedPdfOverrideKeys,
             )
           : baseRow;
+      });
 
-        const { sector, subsector } = splitSectorSubsectorLabels(
-          row.sector?.trim() ?? "",
-          row.subsector?.trim() ?? "",
-        );
-        const activityHint =
-          row.activityType?.trim() || row.category?.trim() || undefined;
-        let gpcRefNo =
-          row.gpcRefNo?.trim() ||
-          resolveGpcRefNo(sector, subsector, activityHint) ||
-          null;
-        // Fallback: if the right side of " > " didn't resolve, try the left side
-        // e.g. "On-road > Other/uncategorized" → split gives subsector="Other/uncategorized" (fails)
-        //       → retry with left part "On-road" (resolves to on-road-transportation)
-        if (!gpcRefNo) {
-          const rawSub = row.subsector?.trim() ?? "";
-          if (rawSub.includes(" > ")) {
-            const leftPart = rawSub.split(" > ")[0].trim();
-            if (leftPart && leftPart !== subsector) {
-              gpcRefNo = resolveGpcRefNo(sector, leftPart, activityHint);
-            }
-          }
-          if (!gpcRefNo) {
-            const rawSec = row.sector?.trim() ?? "";
-            if (rawSec.includes(" > ")) {
-              const leftPart = rawSec.split(" > ")[0].trim();
-              if (leftPart && leftPart !== sector) {
-                gpcRefNo = resolveGpcRefNo(leftPart, subsector, activityHint);
-              }
-            }
-          }
-        }
-
-        if (!gpcRefNo) {
-          errors.push(
-            `Row ${i + 1}: Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
-          );
-          rows.push({
-            gpcRefNo: "",
-            sectorId: "",
-            subsectorId: "",
-            subcategoryId: null,
-            scopeId: "",
-            rowIndex: i,
-            errors: [
-              `Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
-            ],
-          });
-          continue;
-        }
-
-        const gpcMapping = await ECRFImportService.lookupGPCReference(gpcRefNo);
-        if (!gpcMapping) {
-          errors.push(
-            `Row ${i + 1}: GPC reference "${gpcRefNo}" not in taxonomy`,
-          );
-          rows.push({
-            gpcRefNo,
-            sectorId: "",
-            subsectorId: "",
-            subcategoryId: null,
-            scopeId: "",
-            rowIndex: i,
-            errors: [`GPC reference "${gpcRefNo}" not found in taxonomy`],
-          });
-          continue;
-        }
-
-        const scopeFromFile = row.scope?.trim();
-        const resolvedScopeId =
-          scopeFromFile && scopeByName.has(scopeFromFile)
-            ? scopeByName.get(scopeFromFile)!
-            : gpcMapping.scopeId;
-
-        const num = (v: number | null | undefined): number | undefined =>
-          v != null && Number.isFinite(v) ? Number(v) : undefined;
-        if (row.year != null && Number.isFinite(row.year)) {
-          inferredYear =
-            inferredYear != null ? inferredYear : (row.year as number);
-        }
-
-        rows.push({
-          gpcRefNo,
-          sectorId: gpcMapping.sectorId,
-          subsectorId: gpcMapping.subsectorId,
-          subcategoryId: gpcMapping.subcategoryId,
-          scopeId: resolvedScopeId,
-          co2: num(row.co2),
-          ch4: num(row.ch4),
-          n2o: num(row.n2o),
-          totalCO2e: num(row.totalCO2e),
-          year:
-            row.year != null && Number.isFinite(row.year)
-              ? row.year
-              : undefined,
-          rowIndex: i,
-          methodology: row.methodology?.trim() || undefined,
-          activityAmount:
-            row.activityAmount != null && Number.isFinite(row.activityAmount)
-              ? row.activityAmount
-              : undefined,
-          activityUnit: row.activityUnit?.trim() || undefined,
-          activityType:
-            row.category?.trim() || row.activityType?.trim() || undefined,
-          activityDataSource: row.activityDataSource?.trim() || undefined,
-          activityDataQuality: row.activityDataQuality?.trim() || undefined,
-        });
-      }
-
-      importResult = {
-        rows,
-        errors,
-        warnings,
-        rowCount: extractedRows.length,
-        validRowCount: rows.filter((r) => !r.errors?.length).length,
-        inferredYearFromFile: inferredYear,
-      };
+      importResult = await ECRFImportService.fromExtractedRows(preparedRows);
 
       // Near-eCRF uploads stored before sector-column extraction was fixed may have
       // no resolvable rows; re-parse from S3/BYTEA using the full eCRF pipeline.

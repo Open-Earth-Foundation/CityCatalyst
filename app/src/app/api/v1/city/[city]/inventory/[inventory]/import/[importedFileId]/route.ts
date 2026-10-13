@@ -178,6 +178,8 @@ import UserService from "@/backend/UserService";
 import ImportMappingService from "@/backend/ImportMappingService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
+import { countRowsWithEmptyEmissionCells } from "@/util/empty-emission-rows";
+import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
 import FileValidatorService from "@/backend/FileValidatorService";
 import {
   syncGHGIImportedInventorySource,
@@ -364,6 +366,8 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
 
   // Step 2: Validation Results - Get detected columns (xlsx/csv) or extracted rows (PDF)
   let validationStepData = null;
+  let parsedSheets: { headers: string[]; rows: Record<string, unknown>[] }[] =
+    [];
   const pdfExtractedRows = Array.isArray(
     importedFile.mappingConfiguration?.rows,
   )
@@ -440,6 +444,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
             fileBuffer,
             importedFile.fileType,
           );
+          parsedSheets = parsedData.sheets;
 
           if (parsedData.primarySheet) {
             const headers = parsedData.primarySheet.headers;
@@ -606,12 +611,23 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
           }
         }
 
+        const detectedColumns = (importedFile.validationResults
+          ?.detectedColumns ?? {}) as Record<string, number | undefined>;
+        const sheet = parsedData.primarySheet;
+
         reviewStepData = {
           importSummary: {
             sourceFile: importedFile.originalFileName,
             formatDetected: importedFile.fileType.toUpperCase(),
             rowsFound: importedFile.rowCount || 0,
             fieldsMapped: fieldMappings.length,
+            rowsSkippedEmptyEmissions: sheet
+              ? countRowsWithEmptyEmissionCells(
+                  sheet.headers,
+                  sheet.rows,
+                  detectedColumns,
+                )
+              : 0,
           },
           fieldMappings,
           mappingPreview,
@@ -625,6 +641,9 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
   const legacyValidation = importedFile.validationResults as {
     inferredYearFromFile?: number;
   } | null;
+  const inferredYearFromFile =
+    legacyValidation?.inferredYearFromFile ??
+    inferInventoryYearFromSheets(parsedSheets);
   const pdfOcr =
     importedFile.fileType === "pdf"
       ? await getInventoryPdfOcrStatus(
@@ -654,7 +673,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
       // Step 4: Review and Confirm
       reviewData: reviewStepData,
       // Year inferred from file data (eCRF); used for target-year mismatch check
-      inferredYearFromFile: legacyValidation?.inferredYearFromFile ?? undefined,
+      inferredYearFromFile,
       // Legacy fields (for backwards compatibility)
       rowCount: importedFile.rowCount,
       processedRowCount: importedFile.processedRowCount,

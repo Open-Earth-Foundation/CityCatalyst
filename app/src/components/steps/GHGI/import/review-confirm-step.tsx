@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { MdOutlineMap, MdWarning } from "react-icons/md";
 import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
+import ReportingLevelWarning from "./reporting-level-warning";
 import { activityDescriptionSample } from "@/util/activity-description-sample";
 
 interface ReviewConfirmStepProps {
@@ -26,6 +27,7 @@ interface ReviewConfirmStepProps {
   cityName?: string;
   inventoryId: string;
   importedFileId: string;
+  mappingOverrides?: Record<string, string>;
   onEditMapping?: () => void;
 }
 
@@ -36,12 +38,18 @@ export default function ReviewConfirmStep({
   importedFileId,
   onEditMapping,
   inventoryId,
+  mappingOverrides,
 }: ReviewConfirmStepProps) {
-  const { data, isLoading } = api.useGetImportStatusQuery(
+  const { data, isLoading, refetch } = api.useGetImportStatusQuery(
     {
       cityId,
       inventoryId,
       importedFileId,
+      mappingOverrides: mappingOverrides
+        ? Object.fromEntries(
+            Object.entries(mappingOverrides).filter(([, key]) => key !== ""),
+          )
+        : undefined,
     },
     {
       skip: !cityId || !inventoryId || !importedFileId,
@@ -154,6 +162,12 @@ export default function ReviewConfirmStep({
           </Trans>
         </Text>
       </Box>
+      <ReportingLevelWarning
+        t={t}
+        inventoryId={inventoryId}
+        references={data?.rowsOutsideInventoryType ?? []}
+        onSwitched={refetch}
+      />
       <VStack gap="32px" shadow="sm" borderRadius="8px" p="24px" mb="32px">
         <HStack justifyContent="space-between" alignItems="flex-start" w="full">
           <Box display="flex" alignItems="flex-start" gap="4px">

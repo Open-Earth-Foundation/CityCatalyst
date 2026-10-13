@@ -54,9 +54,10 @@
 import UserService from "@/backend/UserService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
-import ECRFImportService, {
-  type ECRFImportResult,
-} from "@/backend/ECRFImportService";
+import {
+  buildImportResult,
+  type ImportValidationResults,
+} from "@/backend/ImportResultBuilder";
 import InventoryImportService from "@/backend/InventoryImportService";
 import {
   syncGHGIImportedInventorySource,
@@ -72,12 +73,6 @@ import { logger } from "@/services/logger";
 import { v4 as uuidv4 } from "uuid";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 
-interface ImportValidationResults {
-  adapterType?: string;
-  detectedColumns?: Record<string, number>;
-  headerKey?: string;
-}
-
 const approveImportSchema = z.object({
   importedFileId: z.string().uuid(),
   mappingOverrides: z.record(z.any()).optional(),
@@ -85,33 +80,6 @@ const approveImportSchema = z.object({
 
 /** Quick response so request returns before ingress timeout; import runs in background. */
 export const maxDuration = 30;
-
-/**
- * Apply user overrides to a PDF-extracted row. Only allowed keys are applied;
- * used for manual correction of sector/subsector/category etc. per row.
- */
-function applyPdfFieldOverrides(
-  base: ExtractedRow,
-  overrides: Record<string, unknown>,
-  allowedKeys: Set<string>,
-): ExtractedRow {
-  const out = { ...base };
-  for (const [key, value] of Object.entries(overrides)) {
-    if (!allowedKeys.has(key)) continue;
-    if (value === null || value === undefined) {
-      (out as Record<string, unknown>)[key] = null;
-      continue;
-    }
-    if (typeof value === "number" && Number.isFinite(value)) {
-      (out as Record<string, unknown>)[key] = value;
-      continue;
-    }
-    if (typeof value === "string") {
-      (out as Record<string, unknown>)[key] = value;
-    }
-  }
-  return out;
-}
 
 /**
  * Derive a column→field mapping from the raw file headers and the approved ExtractedRow[] set.
@@ -246,134 +214,11 @@ async function runApproveImportInBackground(args: {
       // For xlsx/csv: columnName -> internal key (string). For PDF imports:
       // row index (stringified) -> per-row field overrides (object).
       overrides?: Record<string, unknown>;
-      rows?: unknown;
-      keyValueShaped?: boolean;
     };
-    const mappingOverrides = mappingConfiguration.overrides;
-
-    const validationResults =
-      (importedFile.validationResults as ImportValidationResults) || {};
-    const adapterType = validationResults?.adapterType;
-    let importResult: ECRFImportResult;
-
-    // Pre-extracted rows: PDF, Path B key-value, or Adapter D (near-ecrf) — no file re-parse.
-    // mappingOverrides: per-row field overrides keyed by row index (e.g. { "0": { sector: "X", subsector: "Y" } }).
-    const extractedRows = mappingConfiguration.rows as
-      ExtractedRow[] | undefined;
-    const keyValueShaped = mappingConfiguration.keyValueShaped === true;
-    const useExtractedRows =
-      Array.isArray(extractedRows) &&
-      extractedRows.length > 0 &&
-      (importedFile.fileType === "pdf" ||
-        keyValueShaped ||
-        adapterType === "near-ecrf");
-
-    if (useExtractedRows) {
-      const allowedPdfOverrideKeys = new Set([
-        "year",
-        "sector",
-        "subsector",
-        "scope",
-        "category",
-        "totalCO2e",
-        "co2",
-        "ch4",
-        "n2o",
-        "gpcRefNo",
-        "source",
-        "methodology",
-        "activityAmount",
-        "activityUnit",
-        "activityType",
-        "activityDataSource",
-        "activityDataQuality",
-      ]);
-
-      const preparedRows = extractedRows.map((baseRow, i) => {
-        const rowOverrides =
-          mappingOverrides &&
-          typeof mappingOverrides[String(i)] === "object" &&
-          mappingOverrides[String(i)] !== null
-            ? (mappingOverrides[String(i)] as Record<string, unknown>)
-            : null;
-        return rowOverrides
-          ? applyPdfFieldOverrides(
-              baseRow,
-              rowOverrides,
-              allowedPdfOverrideKeys,
-            )
-          : baseRow;
-      });
-
-      importResult = await ECRFImportService.fromExtractedRows(preparedRows);
-
-      // Near-eCRF uploads stored before sector-column extraction was fixed may have
-      // no resolvable rows; re-parse from S3/BYTEA using the full eCRF pipeline.
-      if (
-        adapterType === "near-ecrf" &&
-        importResult.validRowCount === 0 &&
-        importResult.rowCount > 0
-      ) {
-        const fileBuffer =
-          await InventoryFileStorageService.resolveImportedFileBuffer(
-            importedFile,
-          );
-        if (fileBuffer) {
-          const parsedData = await FileParserService.parseFile(
-            fileBuffer,
-            importedFile.fileType,
-          );
-          const detectedColumns: Record<string, number> = {
-            ...(validationResults?.detectedColumns || {}),
-          };
-          importResult = await ECRFImportService.processECRFFile(
-            parsedData,
-            detectedColumns,
-          );
-        }
-      }
-    } else {
-      // xlsx/csv (column-mapped, not key-value shaped): parse file and process with ECRF pipeline
-      const fileBuffer =
-        await InventoryFileStorageService.resolveImportedFileBuffer(
-          importedFile,
-        );
-      if (!fileBuffer) {
-        throw new Error("File data not found");
-      }
-
-      const parsedData = await FileParserService.parseFile(
-        fileBuffer,
-        importedFile.fileType,
-      );
-
-      const validationResults =
-        importedFile.validationResults as ImportValidationResults;
-      const detectedColumns: Record<string, number> = {
-        ...(validationResults?.detectedColumns || {}),
-      };
-
-      // Apply mapping overrides: columnName -> key; resolve column name to index
-      if (
-        mappingOverrides &&
-        Object.keys(mappingOverrides).length > 0 &&
-        parsedData.primarySheet
-      ) {
-        const headers = parsedData.primarySheet.headers;
-        for (const [columnName, key] of Object.entries(mappingOverrides)) {
-          if (!key || typeof key !== "string") continue;
-          const idx = headers.findIndex((h) => h === columnName);
-          if (idx !== -1) {
-            detectedColumns[key] = idx;
-          }
-        }
-      }
-
-      importResult = await ECRFImportService.processECRFFile(
-        parsedData,
-        detectedColumns,
-      );
-    }
+    const { importResult, extractedRows } = await buildImportResult(
+      importedFile,
+      mappingConfiguration.overrides,
+    );
 
     const defaultActivityDataSource =
       (importedFile.originalFileName as string) ||
@@ -394,7 +239,7 @@ async function runApproveImportInBackground(args: {
       completedAt: new Date(),
       lastUpdated: new Date(),
       validationResults: {
-        ...validationResults,
+        ...((importedFile.validationResults as ImportValidationResults) ?? {}),
         importSummary,
       },
     });
@@ -402,7 +247,7 @@ async function runApproveImportInBackground(args: {
 
     // Persist mapping feedback for Path B (AI-shaped) files so future uploads
     // with the same header structure get a warm-start prompt hint.
-    if (useExtractedRows && extractedRows && extractedRows.length > 0) {
+    if (extractedRows && extractedRows.length > 0) {
       const vr =
         (importedFile.validationResults as ImportValidationResults) ?? {};
       const headerKey = vr.headerKey;

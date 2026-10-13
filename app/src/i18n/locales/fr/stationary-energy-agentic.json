@@ -104,6 +104,12 @@
   "chat-panel-subtitle": "Conseiller Climatique",
   "chat-panel-ask-about-proposal": "Pouvez-vous expliquer la proposition de source connectée pour {{- label}}?",
   "chat-panel-thinking": "En réflexion...",
+  "chat-activity-start-run": "Recherche dans les sources connectées pour cet inventaire...",
+  "chat-activity-run-loading": "Chargement des résultats des sources pour cet inventaire...",
+  "chat-activity-checking-sources": "Vérification des options de source...",
+  "chat-activity-preparing-choices": "Préparation des choix à examiner...",
+  "chat-activity-staging-choices": "Mise en attente de vos choix...",
+  "chat-activity-running-tool": "Traitement en cours...",
   "chat-panel-placeholder-review": "Posez une question sur une source ou une ligne avant de décider...",
   "chat-panel-placeholder-default": "Message Clima...",
   "chat-panel-stop": "Arrête",
@@ -308,5 +314,10 @@
   "tool-error-invalid-notation-choice": "Le choix de la clé de notation de l'énergie Stationnaire était invalide.",
   "tool-error-invalid-notation-choices": "Les choix de notation-clé d'Énergie Stationnaire étaient invalides.",
   "sector-card-draft-with-agent": "Ébauche avec l'agent",
-  "sector-card-draft-with-agent-tooltip": "Laissez Clima ébaucher ce secteur à partir de vos données connectées (bêta) — vous révisez chaque valeur avant de sauvegarder."
+  "sector-card-draft-with-agent-tooltip": "Laissez Clima ébaucher ce secteur à partir de vos données connectées (bêta) — vous révisez chaque valeur avant de sauvegarder.",
+  "chat-pending-request-waiting": "Je continuerai avec votre demande précédente lorsque la course sera prête : {{request}}. Pour la remplacer, annulez-la d'abord et envoyez votre nouvelle demande.",
+  "chat-pending-request-cancel": "Annuler la demande précédente",
+  "chat-pending-request-canceled": "Votre demande précédente a été annulée. Vous pouvez envoyer une nouvelle demande.",
+  "chat-pending-request-failed": "L'exécution a échoué, donc je ne pouvais pas continuer avec votre demande précédente. Veuillez essayer à nouveau le brouillon et renvoyer votre demande.",
+  "chat-pending-request-ended": "La course est terminée, donc votre demande précédente ne continuera pas automatiquement."
 }

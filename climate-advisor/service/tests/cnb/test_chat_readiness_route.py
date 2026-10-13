@@ -19,6 +19,8 @@ from app.routes import messages
 from fastapi import FastAPI
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
+AUTH_HEADERS = {"Authorization": "Bearer owner-token"}
+
 
 @pytest_asyncio.fixture
 async def chat_api(tmp_path, monkeypatch):
@@ -84,6 +86,10 @@ async def chat_api(tmp_path, monkeypatch):
                 ),
             ]
         )
+    monkeypatch.setattr(
+        "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
+        AsyncMock(return_value="owner"),
+    )
     save_message = AsyncMock()
     monkeypatch.setattr(messages.MessageService, "create_user_message", save_message)
 
@@ -162,6 +168,7 @@ async def test_rejects_unready_persisted_context_before_turn_or_agent(
             "content": "Use my evidence",
             # Omitted run ID forces the guard to read persisted thread scope.
         },
+        headers=AUTH_HEADERS,
     )
     assert response.status_code == 409
     assert response.json()["detail"]["code"] == "concept_note_context_not_ready"
@@ -209,6 +216,7 @@ async def test_accepts_ready_context_and_supported_non_document_chat(
             "user_id": "owner",
             "content": "Hello",
         },
+        headers=AUTH_HEADERS,
     )
     assert response.status_code == 200
     assert "event: done" in response.text
@@ -233,6 +241,7 @@ async def test_checks_explicit_request_scope_too(chat_api, scope):
             "content": "Hello",
             scope: {"concept_note_run_id": str(run_id)},
         },
+        headers=AUTH_HEADERS,
     )
     assert response.status_code == 409
     save_message.assert_not_awaited()
@@ -252,6 +261,7 @@ async def test_run_ownership_is_checked_before_readiness(chat_api):
             "user_id": "owner",
             "content": "Hello",
         },
+        headers=AUTH_HEADERS,
     )
     assert response.status_code == 403
     save_message.assert_not_awaited()
@@ -273,6 +283,7 @@ async def test_explicit_run_scope_must_match_the_thread(chat_api):
             "content": "Hello",
             "context": {"concept_note_run_id": str(run_id)},
         },
+        headers=AUTH_HEADERS,
     )
     assert response.status_code == 409
     assert response.json()["detail"]["code"] == "concept_note_thread_mismatch"

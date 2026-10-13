@@ -7,6 +7,9 @@ from uuid import uuid4
 import httpx
 import pytest
 import pytest_asyncio
+from fastapi import FastAPI
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
 from app.config import get_settings
 from app.config.settings import _load_llm_config
 from app.db import Base
@@ -30,11 +33,10 @@ from app.services.cnb.draft_overview import (
 )
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.streaming_handler import StreamingHandler
-from fastapi import FastAPI
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 BUILD_ID = str(uuid4())
 OVERVIEW_OPTIONS = {"concept_note_turn": "draft_overview"}
+AUTH_HEADERS = {"Authorization": "Bearer owner-token"}
 
 
 @pytest_asyncio.fixture
@@ -74,6 +76,10 @@ async def chat_api(tmp_path, monkeypatch):
                 ConceptNoteContextBundle(run_id=run_id, context_bundle={}),
             ]
         )
+    monkeypatch.setattr(
+        "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
+        AsyncMock(return_value="owner"),
+    )
     save_message = AsyncMock()
     monkeypatch.setattr(messages.MessageService, "create_user_message", save_message)
 
@@ -119,7 +125,11 @@ def _overview_request(thread_id) -> dict:
 async def test_overview_turn_is_hidden_server_owned_and_claimed_once(chat_api):
     client, factory, run_id, thread_id, save_message, handler = chat_api
 
-    response = await client.post("/v1/messages", json=_overview_request(thread_id))
+    response = await client.post(
+        "/v1/messages",
+        json=_overview_request(thread_id),
+        headers=AUTH_HEADERS,
+    )
 
     assert response.status_code == 200
     save_message.assert_not_awaited()
@@ -129,7 +139,11 @@ async def test_overview_turn_is_hidden_server_owned_and_claimed_once(chat_api):
     assert progress["overview_build_id"] == BUILD_ID
     assert not overview_pending(progress)
 
-    repeat = await client.post("/v1/messages", json=_overview_request(thread_id))
+    repeat = await client.post(
+        "/v1/messages",
+        json=_overview_request(thread_id),
+        headers=AUTH_HEADERS,
+    )
     assert repeat.status_code == 409
     assert repeat.json()["detail"]["code"] == "concept_note_draft_overview_unavailable"
     assert handler.call_count == 1
@@ -152,7 +166,11 @@ async def test_overview_turn_replaces_client_content_with_server_trigger(
 
     monkeypatch.setattr(messages, "StreamingHandler", RecordingHandler)
 
-    response = await client.post("/v1/messages", json=_overview_request(thread_id))
+    response = await client.post(
+        "/v1/messages",
+        json=_overview_request(thread_id),
+        headers=AUTH_HEADERS,
+    )
 
     assert response.status_code == 200
     assert streamed == [DRAFT_OVERVIEW_REQUEST]
@@ -173,7 +191,11 @@ async def test_overview_turn_rejects_drafts_without_a_finished_build(
     client, factory, run_id, thread_id, save_message, handler = chat_api
     await _set_draft_progress(factory, run_id, progress)
 
-    response = await client.post("/v1/messages", json=_overview_request(thread_id))
+    response = await client.post(
+        "/v1/messages",
+        json=_overview_request(thread_id),
+        headers=AUTH_HEADERS,
+    )
 
     assert response.status_code == 409
     assert (
@@ -190,7 +212,11 @@ async def test_failed_draft_gets_an_overview_and_release_makes_it_retryable(chat
         factory, run_id, {"status": "failed", "build_id": BUILD_ID}
     )
 
-    response = await client.post("/v1/messages", json=_overview_request(thread_id))
+    response = await client.post(
+        "/v1/messages",
+        json=_overview_request(thread_id),
+        headers=AUTH_HEADERS,
+    )
     assert response.status_code == 200
 
     await release_draft_overview(
@@ -221,28 +247,36 @@ async def test_release_ignores_a_newer_drafting_build(chat_api):
 
 
 @pytest.mark.asyncio
-async def test_rejected_bearer_does_not_use_up_the_overview(chat_api):
+async def test_rejected_bearer_does_not_use_up_the_overview(chat_api, monkeypatch):
     client, factory, run_id, thread_id, _save_message, handler = chat_api
-    request = {**_overview_request(thread_id), "context": {"access_token": "token"}}
+    request = _overview_request(thread_id)
     rejected = AsyncMock(
         side_effect=CityCatalystClientError("rejected", status_code=401)
     )
+    monkeypatch.setattr(
+        "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
+        rejected,
+    )
 
-    with patch.object(
-        messages.CityCatalystClient, "validate_user_identity", new=rejected
-    ):
-        response = await client.post("/v1/messages", json=request)
+    response = await client.post(
+        "/v1/messages",
+        json=request,
+        headers=AUTH_HEADERS,
+    )
 
     assert response.status_code == 401
     handler.assert_not_called()
     assert overview_pending(await _draft_progress(factory, run_id))
 
-    with patch.object(
-        messages.CityCatalystClient,
-        "validate_user_identity",
-        new=AsyncMock(return_value="owner"),
-    ):
-        retry = await client.post("/v1/messages", json=request)
+    monkeypatch.setattr(
+        "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
+        AsyncMock(return_value="owner"),
+    )
+    retry = await client.post(
+        "/v1/messages",
+        json=request,
+        headers=AUTH_HEADERS,
+    )
 
     assert retry.status_code == 200
     assert handler.call_args.kwargs["draft_overview_claim"] == (run_id, BUILD_ID)
@@ -255,7 +289,11 @@ async def test_handler_setup_failure_releases_the_overview(chat_api, monkeypatch
         messages, "StreamingHandler", Mock(side_effect=RuntimeError("boom"))
     )
 
-    response = await client.post("/v1/messages", json=_overview_request(thread_id))
+    response = await client.post(
+        "/v1/messages",
+        json=_overview_request(thread_id),
+        headers=AUTH_HEADERS,
+    )
 
     assert response.status_code == 500
     assert overview_pending(await _draft_progress(factory, run_id))
@@ -268,6 +306,7 @@ async def test_regular_messages_are_still_saved(chat_api):
     response = await client.post(
         "/v1/messages",
         json={"user_id": "owner", "thread_id": str(thread_id), "content": "Hi"},
+        headers=AUTH_HEADERS,
     )
 
     assert response.status_code == 200
@@ -387,7 +426,7 @@ async def test_overview_turn_orders_context_facts_then_hidden_trigger():
             new=AsyncMock(return_value=[]),
         ),
         patch(
-            "app.utils.streaming_handler.load_agent_context",
+            "app.utils.streaming_context.load_agent_context",
             new=AsyncMock(return_value={"workflow_step": "editing_document"}),
         ),
         patch(

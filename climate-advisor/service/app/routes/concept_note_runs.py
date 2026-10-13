@@ -21,6 +21,7 @@ from app.models.cnb.concept_note_draft import (
     ConceptNoteDraftResponse,
 )
 from app.models.cnb.concept_note_runs import (
+    ConceptNoteChatThreadListResponse,
     ConceptNotePopulationRequest,
     ConceptNoteRenameRequest,
     ConceptNoteRunListResponse,
@@ -56,14 +57,15 @@ from app.services.concept_note_runs import ConceptNoteRunService
 from app.services.message_service import MessageService
 from app.utils.cnb_observability import CNBInteraction
 from app.utils.mlflow_logging import (
+    async_start_run as start_mlflow_run,
+)
+from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
     log_tags,
+    run_mlflow_io,
     set_span_outputs,
     start_trace_span,
     update_current_trace_context,
-)
-from app.utils.mlflow_logging import (
-    start_run as start_mlflow_run,
 )
 from fastapi import (
     APIRouter,
@@ -168,7 +170,7 @@ async def start_concept_note_run(
 ) -> JSONResponse:
     """Create a concept-note run or replay an identical idempotent request."""
     interaction = CNBInteraction.START
-    with start_mlflow_run(
+    async with start_mlflow_run(
         run_name=interaction.mlflow_run_name,
         experiment_name=climate_advisor_experiment_name(),
         tags={
@@ -177,36 +179,37 @@ async def start_concept_note_run(
             "workflow_name": "concept_note_run_lifecycle",
             "interaction": interaction.value,
         },
-    ), start_trace_span(
-        name="CNB start",
-        span_type="CHAIN",
-        attributes={
-            "workflow": "CNB",
-            "workflow_name": "concept_note_run_lifecycle",
-            "interaction": interaction.value,
-        },
-    ) as span:
-        service = ConceptNoteRunService(session)
-        response = await service.start_run_and_schedule_context(
-            payload,
-            authorization=authorization,
-            context_bundle_service=context_bundle_service,
-        )
-        result = "created" if response.created else "replayed"
-        correlation_tags = {
-            "concept_note_run_id": str(response.run_id),
-            "result": result,
-        }
-        log_tags(correlation_tags)
-        update_current_trace_context(
-            tags={
+    ):
+        with start_trace_span(
+            name="CNB start",
+            span_type="CHAIN",
+            attributes={
                 "workflow": "CNB",
+                "workflow_name": "concept_note_run_lifecycle",
                 "interaction": interaction.value,
-                **correlation_tags,
             },
-            metadata=correlation_tags,
-        )
-        set_span_outputs(span, correlation_tags)
+        ) as span:
+            service = ConceptNoteRunService(session)
+            response = await service.start_run_and_schedule_context(
+                payload,
+                authorization=authorization,
+                context_bundle_service=context_bundle_service,
+            )
+            result = "created" if response.created else "replayed"
+            correlation_tags = {
+                "concept_note_run_id": str(response.run_id),
+                "result": result,
+            }
+            await run_mlflow_io(log_tags, correlation_tags)
+            update_current_trace_context(
+                tags={
+                    "workflow": "CNB",
+                    "interaction": interaction.value,
+                    **correlation_tags,
+                },
+                metadata=correlation_tags,
+            )
+            set_span_outputs(span, correlation_tags)
 
     return JSONResponse(
         status_code=201 if response.created else 200,
@@ -321,20 +324,61 @@ async def duplicate_concept_note_run(
     )
 
 
-@router.post(
-    "/concept-notes/{run_id}/chat/reset",
-    response_model=ConceptNoteRunResponse,
+@router.get(
+    "/concept-notes/{run_id}/chat/threads",
+    response_model=ConceptNoteChatThreadListResponse,
 )
-async def reset_concept_note_chat(
+async def list_concept_note_chat_threads(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteChatThreadListResponse:
+    """List every chat attached to one concept note, newest first."""
+    service = ConceptNoteLifecycleService(session)
+    return await service.list_chat_threads(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
+@router.post(
+    "/concept-notes/{run_id}/chat/threads",
+    response_model=ConceptNoteRunResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def start_concept_note_chat(
     run_id: UUID,
     user_id: str = Query(..., min_length=1),
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> ConceptNoteRunResponse:
-    """Replace one concept note's dedicated chat and remove its history."""
+    """Open a new chat on one concept note and make it active; history is kept."""
     service = ConceptNoteLifecycleService(session)
-    return await service.reset_chat(
+    return await service.start_chat(
         run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
+@router.post(
+    "/concept-notes/{run_id}/chat/threads/{thread_id}/activate",
+    response_model=ConceptNoteRunResponse,
+)
+async def activate_concept_note_chat_thread(
+    run_id: UUID,
+    thread_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunResponse:
+    """Switch one concept note back to a previously attached chat."""
+    service = ConceptNoteLifecycleService(session)
+    return await service.activate_chat_thread(
+        run_id=run_id,
+        thread_id=thread_id,
         requested_user_id=user_id,
         authorization=authorization,
     )

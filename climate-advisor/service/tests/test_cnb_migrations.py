@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -9,9 +10,13 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 from app.db.cnb import CnbBase
 from app.models.db import cnb_edit, cnb_reference, cnb_workspace  # noqa: F401
+from app.models.db.concept_note import ConceptNoteUpload
 from sqlalchemy import create_engine, inspect, text
+from sqlalchemy.exc import IntegrityError
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 CNB_DATABASE_URL = os.getenv("CNB_TEST_DATABASE_URL")
@@ -87,6 +92,15 @@ def _render_offline_upgrade(*, config: str, database_env: str) -> str:
     return completed.stdout
 
 
+def test_ca_migration_chain_has_one_head() -> None:
+    """Catch divergent CA migrations even when PostgreSQL tests are skipped."""
+    config = Config(str(SERVICE_ROOT / "alembic.ini"))
+    config.set_main_option("script_location", str(SERVICE_ROOT / "migrations"))
+    scripts = ScriptDirectory.from_config(config)
+
+    assert scripts.get_heads() == ["20261005_120000"]
+
+
 def test_ca_migration_chain_renames_selected_opportunity_reference() -> None:
     """Keep the deployed CA column aligned with the explicit opportunity API."""
     sql = _render_offline_upgrade(
@@ -98,6 +112,165 @@ def test_ca_migration_chain_renames_selected_opportunity_reference() -> None:
         f"ALTER TABLE concept_note_runs RENAME {legacy_column} "
         "TO selected_funding_opportunity_id;"
     ) in sql
+
+
+def test_ca_migration_chain_backfills_run_city_population() -> None:
+    """Pre-CC-948 runs report the population their stored bundle already holds."""
+    sql = _render_offline_upgrade(
+        config="alembic.ini",
+        database_env="CA_DATABASE_URL",
+    )
+    assert "'{context_bundle,city_population}'" in sql
+    assert "FROM concept_note_context_bundles AS bundle" in sql
+
+
+def test_ca_structured_upload_migration_keeps_explicit_constraint_name() -> None:
+    """The named check must not be prefixed twice by metadata conventions."""
+    sql = _render_offline_upgrade(
+        config="alembic.ini",
+        database_env="CA_DATABASE_URL",
+    )
+    assert (
+        "ADD CONSTRAINT ck_concept_note_uploads_structured_identity CHECK (" in sql
+    )
+    assert "annotation_mode IS NOT NULL" in sql
+    assert "structured_size_bytes IS NOT NULL" in sql
+    assert "ck_concept_note_uploads_ck_concept_note_uploads_structured_identity" not in sql
+    model_check = next(
+        constraint
+        for constraint in ConceptNoteUpload.__table__.constraints
+        if constraint.name == "ck_concept_note_uploads_structured_identity"
+    )
+    assert "annotation_mode IS NOT NULL" in str(model_check.sqltext)
+    assert "structured_size_bytes IS NOT NULL" in str(model_check.sqltext)
+
+    environment = os.environ.copy()
+    environment["CA_DATABASE_URL"] = "postgresql://unused:unused@localhost/unused"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "alembic",
+            "-c",
+            "alembic.ini",
+            "downgrade",
+            "20261001_120000:20260925_120000",
+            "--sql",
+        ],
+        cwd=SERVICE_ROOT,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert (
+        "DROP CONSTRAINT ck_concept_note_uploads_structured_identity;"
+        in completed.stdout
+    )
+
+
+@pytest.mark.skipif(
+    not CNB_DATABASE_URL,
+    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
+)
+def test_ca_city_population_backfill_derives_from_stored_bundle() -> None:
+    """Only legacy ready progress gains the field, with the bundle's population."""
+    assert CNB_DATABASE_URL is not None
+    engine = create_engine(CNB_DATABASE_URL)
+    populated, unpopulated, current, unbuilt = uuid4(), uuid4(), uuid4(), uuid4()
+    city = {"name": "Kraków", "population": 804237, "population_year": 2024}
+    runs = {
+        populated: ({"context_bundle": {"status": "ready"}}, city),
+        unpopulated: (
+            {"context_bundle": {"status": "ready"}},
+            {**city, "population": None, "population_year": None},
+        ),
+        current: (
+            {"context_bundle": {"status": "ready", "city_population": None}},
+            city,
+        ),
+        unbuilt: ({}, None),
+    }
+    try:
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "20260811_120000"],
+        )
+        # Seed runs as the pre-CC-948 build left them.
+        with engine.begin() as connection:
+            for run_id, (summary, bundle_city) in runs.items():
+                connection.execute(
+                    text(
+                        """
+                        INSERT INTO concept_note_runs (
+                            run_id, user_id, name, city_id, context_summary,
+                            idempotency_key, request_fingerprint
+                        )
+                        VALUES (
+                            :run_id, 'owner', 'Run', 'city',
+                            CAST(:summary AS jsonb), :key, 'fingerprint'
+                        )
+                        """
+                    ),
+                    {
+                        "run_id": run_id,
+                        "summary": json.dumps(summary),
+                        "key": uuid4(),
+                    },
+                )
+                if bundle_city is not None:
+                    connection.execute(
+                        text(
+                            """
+                            INSERT INTO concept_note_context_bundles
+                                (run_id, context_bundle)
+                            VALUES (:run_id, CAST(:bundle AS jsonb))
+                            """
+                        ),
+                        {
+                            "run_id": run_id,
+                            "bundle": json.dumps({"cc_context": {"city": bundle_city}}),
+                        },
+                    )
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "head"],
+        )
+
+        with engine.connect() as connection:
+            summaries = dict(
+                connection.execute(
+                    text("SELECT run_id, context_summary FROM concept_note_runs")
+                ).all()
+            )
+        assert summaries[populated]["context_bundle"]["city_population"] == {
+            "population": 804237,
+            "year": 2024,
+        }
+        assert summaries[unpopulated]["context_bundle"] == {
+            "status": "ready",
+            "city_population": None,
+        }
+        assert summaries[current] == runs[current][0]
+        assert summaries[unbuilt] == {}
+    finally:
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        # Leave no CA version table for the CNB table-set assertions.
+        with engine.begin() as connection:
+            connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
+        engine.dispose()
 
 
 def test_cnb_offline_migration_preserves_explicit_constraint_names() -> None:
@@ -289,6 +462,170 @@ def test_cnb_notices_upgrade_and_downgrade_preserve_existing_proposal() -> None:
             database_env="CNB_DATABASE_URL",
             args=["downgrade", "base"],
         )
+        engine.dispose()
+
+
+@pytest.mark.skipif(
+    not CNB_DATABASE_URL,
+    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
+)
+@pytest.mark.parametrize(
+    "parent", ["20260925_120000", "20260925_130000", "20261001_120000"]
+)
+def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
+    parent: str,
+) -> None:
+    """Upgrade either CA branch and a fresh database to the combined schema."""
+    assert CNB_DATABASE_URL is not None
+    engine = create_engine(CNB_DATABASE_URL)
+    expected_columns = {
+        "annotation_mode",
+        "structured_s3_key",
+        "structured_sha256",
+        "structured_size_bytes",
+        "structured_schema_version",
+    }
+    try:
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", parent],
+        )
+        parent_columns = {
+            column["name"]
+            for column in inspect(engine).get_columns("concept_note_uploads")
+        }
+        if parent == "20261001_120000":
+            assert expected_columns <= parent_columns
+        else:
+            assert not expected_columns & parent_columns
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "head"],
+        )
+        columns = {
+            column["name"]: column
+            for column in inspect(engine).get_columns("concept_note_uploads")
+        }
+        assert expected_columns <= set(columns)
+        assert all(columns[name]["nullable"] for name in expected_columns)
+        assert "concept_note_run_id" in {
+            column["name"] for column in inspect(engine).get_columns("threads")
+        }
+        assert "ck_concept_note_uploads_structured_identity" in {
+            constraint["name"]
+            for constraint in inspect(engine).get_check_constraints(
+                "concept_note_uploads"
+            )
+        }
+        with engine.connect() as connection:
+            assert connection.execute(
+                text("SELECT version_num FROM alembic_version")
+            ).scalar_one() == "20261005_120000"
+
+        run_id = uuid4()
+        upload_insert = text(
+            """
+            INSERT INTO concept_note_uploads (
+                upload_id, run_id, uploaded_by_user_id, filename, page_count,
+                annotation_mode, structured_s3_key, structured_sha256,
+                structured_size_bytes, structured_schema_version
+            ) VALUES (
+                :upload_id, :run_id, 'migration-test-user', 'fixture.pdf', 1,
+                :annotation_mode, :structured_s3_key, :structured_sha256,
+                :structured_size_bytes, :structured_schema_version
+            )
+            """
+        )
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO concept_note_runs (
+                        run_id, user_id, name, city_id, context_summary,
+                        permission_summary, idempotency_key, request_fingerprint
+                    ) VALUES (
+                        :run_id, 'migration-test-user', 'Migration test',
+                        'test-city', '{}'::jsonb, '{}'::jsonb, :idempotency_key,
+                        :request_fingerprint
+                    )
+                    """
+                ),
+                {
+                    "run_id": run_id,
+                    "idempotency_key": uuid4(),
+                    "request_fingerprint": "a" * 64,
+                },
+            )
+            connection.execute(
+                upload_insert,
+                {
+                    "upload_id": uuid4(),
+                    "run_id": run_id,
+                    "annotation_mode": None,
+                    "structured_s3_key": None,
+                    "structured_sha256": None,
+                    "structured_size_bytes": None,
+                    "structured_schema_version": None,
+                },
+            )
+            complete_identity = {
+                "run_id": run_id,
+                "annotation_mode": "none",
+                "structured_s3_key": "pdf-ocr/structured/complete.json",
+                "structured_sha256": "b" * 64,
+                "structured_size_bytes": 1,
+                "structured_schema_version": "citycatalyst.structured-document.1",
+            }
+            connection.execute(
+                upload_insert,
+                {"upload_id": uuid4(), **complete_identity},
+            )
+            for null_field in (
+                "annotation_mode",
+                "structured_s3_key",
+                "structured_sha256",
+                "structured_size_bytes",
+                "structured_schema_version",
+            ):
+                with pytest.raises(IntegrityError):
+                    with connection.begin_nested():
+                        connection.execute(
+                            upload_insert,
+                            {
+                                "upload_id": uuid4(),
+                                **{**complete_identity, null_field: None},
+                            },
+                        )
+
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "head"],
+        )
+        assert expected_columns <= {
+            column["name"]
+            for column in inspect(engine).get_columns("concept_note_uploads")
+        }
+    finally:
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        with engine.begin() as connection:
+            connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
         engine.dispose()
 
 

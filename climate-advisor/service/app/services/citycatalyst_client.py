@@ -13,10 +13,11 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 import logging
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 
 import httpx
 from app.config import get_settings
@@ -29,6 +30,9 @@ from app.utils.token_manager import (
 )
 
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from app.utils.request_token_refresh import RequestTokenRefreshContext
 
 _AUTHORIZATION_CACHE_TTL_SECONDS = 30.0
 _AUTHORIZATION_CACHE_MAX_ENTRIES = 1024
@@ -63,6 +67,22 @@ class ConceptNoteMarkdownArtifact:
     sha256: str
     source_format: ConceptNoteSourceFormat = "pdf"
     page_count: int | None = None
+    legacy_markdown_only: bool = False
+
+
+@dataclass(frozen=True)
+class ConceptNoteStructuredArtifact:
+    """Verified metadata and JSON returned by the CC structured-artifact read."""
+
+    body: dict[str, Any]
+    raw_bytes: bytes
+    content_type: str
+    s3_key: str
+    sha256: str
+    schema_version: str
+    annotation_mode: str
+    page_count: int
+    upload_id: str
 
 
 class TokenRefreshError(Exception):
@@ -100,6 +120,7 @@ class CityCatalystClient:
         base_url: Optional[str] = None,
         api_key: Optional[str] = None,
         timeout: int = 30,
+        request_token_refresh_context: Optional["RequestTokenRefreshContext"] = None,
     ):
         """Initialize CityCatalyst client.
 
@@ -107,16 +128,18 @@ class CityCatalystClient:
             base_url: CityCatalyst base URL (defaults to settings.cc_base_url)
             api_key: CityCatalyst API key (defaults to settings.cc_api_key)
             timeout: Request timeout in seconds
+            request_token_refresh_context: Optional canonical turn context used
+                only for preflight renewal before authenticated requests
         """
         settings = get_settings()
         raw_base_url = base_url or settings.cc_base_url
         self.base_url = raw_base_url.rstrip("/") if raw_base_url else None
         self.api_key = api_key or settings.cc_api_key
         self.timeout = timeout
+        self.request_token_refresh_context = request_token_refresh_context
         # Datasource aggregation pulls several upstream feeds and often exceeds the default 30s.
         self.datasource_timeout = max(self.timeout, 90)
         self._client: Optional[httpx.AsyncClient] = None
-        self.last_refreshed_token: Optional[str] = None
 
         if not self.base_url:
             logger.warning(
@@ -129,6 +152,20 @@ class CityCatalystClient:
         if self._client is None:
             self._client = httpx.AsyncClient(timeout=self.timeout)
         return self._client
+
+    async def _request_token(self, token: str) -> str:
+        """Preflight-renew a bearer through the authenticated turn context."""
+        if self.request_token_refresh_context is None:
+            return token
+        try:
+            return await self.request_token_refresh_context.token_for_request(
+                self.refresh_token
+            )
+        except TokenRefreshError as exc:
+            raise CityCatalystClientError(
+                "Authenticated request token could not be renewed",
+                status_code=401,
+            ) from exc
 
     async def close(self) -> None:
         """Close HTTP client connection."""
@@ -304,7 +341,7 @@ class CityCatalystClient:
             token: Bearer token
             user_id: User ID (for token refresh context)
             thread_id: Thread ID (for token refresh context)
-            auto_refresh: Automatically refresh token on 401
+            auto_refresh: Refresh on expiry/401 when no request context is bound
 
         Returns:
             Response object
@@ -312,8 +349,15 @@ class CityCatalystClient:
         Raises:
             CityCatalystClientError: If request fails
         """
+        # Use only the authenticated turn's canonical identity when available.
+        token = await self._request_token(token)
+
         # Check if token is expired and refresh preemptively
-        if is_token_expired(token):
+        if (
+            auto_refresh
+            and self.request_token_refresh_context is None
+            and is_token_expired(token)
+        ):
             logger.debug("Token expired, refreshing preemptively")
             try:
                 token, _ = await self.refresh_token(user_id)
@@ -335,7 +379,11 @@ class CityCatalystClient:
             )
 
             # Handle 401 Unauthorized - try to refresh
-            if response.status_code == 401 and auto_refresh:
+            if (
+                response.status_code == 401
+                and auto_refresh
+                and self.request_token_refresh_context is None
+            ):
                 logger.debug("Got 401, attempting token refresh")
                 try:
                     token, _ = await self.refresh_token(user_id)
@@ -517,6 +565,8 @@ class CityCatalystClient:
                 status_code=503,
             )
 
+        token = await self._request_token(token)
+
         client = await self._get_client()
         try:
             async with client.stream(
@@ -573,6 +623,7 @@ class CityCatalystClient:
                 sha256 = response.headers.get("X-Markdown-SHA256")
                 source_format = response.headers.get("X-Source-Format")
                 page_count_header = response.headers.get("X-Page-Count")
+                legacy_header = response.headers.get("X-CC-Legacy-Pdf-Delivery")
         except httpx.HTTPError as exc:
             raise CityCatalystClientError(
                 "CC Markdown verification is unavailable",
@@ -596,6 +647,7 @@ class CityCatalystClient:
                 "CC Markdown artifact metadata is invalid",
                 status_code=502,
             )
+        legacy_markdown_only = False
         if source_format == "pdf":
             try:
                 page_count = int(page_count_header or "")
@@ -609,8 +661,14 @@ class CityCatalystClient:
                     "CC Markdown artifact metadata is invalid",
                     status_code=502,
                 )
+            if legacy_header not in (None, "pre-structured-pdf-v1"):
+                raise CityCatalystClientError(
+                    "CC Markdown artifact metadata is invalid",
+                    status_code=502,
+                )
+            legacy_markdown_only = legacy_header == "pre-structured-pdf-v1"
         else:
-            if page_count_header is not None:
+            if page_count_header is not None or legacy_header is not None:
                 raise CityCatalystClientError(
                     "CC Markdown artifact metadata is invalid",
                     status_code=502,
@@ -623,6 +681,121 @@ class CityCatalystClient:
             sha256=sha256,
             source_format=source_format,
             page_count=page_count,
+            legacy_markdown_only=legacy_markdown_only,
+        )
+
+    async def get_concept_note_structured(
+        self,
+        *,
+        upload_id: str,
+        token: str,
+    ) -> ConceptNoteStructuredArtifact:
+        """Read a completed structured PDF artifact through authenticated CC."""
+        if not self.base_url:
+            raise CityCatalystClientError(
+                "CC_BASE_URL not configured",
+                status_code=503,
+            )
+
+        client = await self._get_client()
+        try:
+            async with client.stream(
+                "GET",
+                (
+                    f"{self.base_url}/api/v1/internal/ca/"
+                    f"concept-note-uploads/{upload_id}/structured"
+                ),
+                headers=self._internal_headers(token),
+                follow_redirects=True,
+                timeout=self.datasource_timeout,
+            ) as response:
+                if not response.is_success:
+                    raise CityCatalystClientError(
+                        "CC structured artifact could not be verified",
+                        status_code=response.status_code,
+                    )
+                settings = get_settings()
+                max_bytes = settings.cnb_structured_request_max_bytes
+                content_length = response.headers.get("Content-Length")
+                if content_length:
+                    try:
+                        declared_size = int(content_length)
+                    except ValueError as exc:
+                        raise CityCatalystClientError(
+                            "CC structured artifact metadata is invalid",
+                            status_code=502,
+                        ) from exc
+                    if declared_size < 0 or declared_size > max_bytes:
+                        raise CityCatalystClientError(
+                            "CC structured artifact exceeds the configured maximum",
+                            status_code=413 if declared_size > max_bytes else 502,
+                        )
+                raw = bytearray()
+                async for chunk in response.aiter_bytes():
+                    if len(raw) + len(chunk) > max_bytes:
+                        raise CityCatalystClientError(
+                            "CC structured artifact exceeds the configured maximum",
+                            status_code=413,
+                        )
+                    raw.extend(chunk)
+                content_type = response.headers.get("Content-Type", "")
+                s3_key = response.headers.get("X-Structured-S3-Key")
+                sha256 = response.headers.get("X-Structured-SHA256")
+                schema_version = response.headers.get("X-Structured-Schema-Version")
+                annotation_mode = response.headers.get("X-Annotation-Mode")
+                page_count_header = response.headers.get("X-Page-Count")
+                header_upload_id = response.headers.get("X-Upload-Id")
+        except httpx.HTTPError as exc:
+            raise CityCatalystClientError(
+                "CC structured verification is unavailable",
+                status_code=503,
+            ) from exc
+        if (
+            not s3_key
+            or not sha256
+            or len(sha256) != 64
+            or not schema_version
+            or annotation_mode not in ("none", "visual_context")
+            or header_upload_id != upload_id
+        ):
+            raise CityCatalystClientError(
+                "CC structured artifact metadata is invalid",
+                status_code=502,
+            )
+        try:
+            page_count = int(page_count_header or "")
+        except ValueError as exc:
+            raise CityCatalystClientError(
+                "CC structured artifact metadata is invalid",
+                status_code=502,
+            ) from exc
+        if page_count < 1:
+            raise CityCatalystClientError(
+                "CC structured artifact metadata is invalid",
+                status_code=502,
+            )
+        try:
+            parsed = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise CityCatalystClientError(
+                "CC structured artifact metadata is invalid",
+                status_code=502,
+            ) from exc
+        if not isinstance(parsed, dict):
+            raise CityCatalystClientError(
+                "CC structured artifact metadata is invalid",
+                status_code=502,
+            )
+        return ConceptNoteStructuredArtifact(
+            body=parsed,
+            raw_bytes=bytes(raw),
+            content_type=content_type,
+            s3_key=s3_key,
+            sha256=sha256,
+            schema_version=schema_version,
+            annotation_mode=annotation_mode,
+            page_count=page_count,
+            upload_id=header_upload_id,
         )
 
     async def post_internal_capability(
@@ -632,54 +805,37 @@ class CityCatalystClient:
         json_data: Dict[str, Any],
         token: Optional[str] = None,
         request_timeout: Optional[float] = None,
-        refresh_user_id: Optional[str] = None,
-        allow_token_refresh: bool = True,
+        allow_token_refresh: bool = False,
         safe_selection_error: bool = False,
     ) -> Dict[str, Any]:
-        """POST to an internal capability, optionally refreshing legacy callers."""
+        """POST once to an internal capability, with optional canonical preflight.
+
+        ``allow_token_refresh`` stays so NativeInputCatalog callers can keep an
+        explicit no-refresh contract for callers without request context. ``True``
+        is rejected. A bound authenticated turn context may preflight-renew the
+        canonical bearer; a capability 401/403 is returned without replay.
+        Refresh identity is never derived from ``json_data``.
+        """
+        if allow_token_refresh:
+            raise ValueError(
+                "post_internal_capability does not refresh tokens. "
+                "Pass allow_token_refresh=False. Identity is never taken from the request payload."
+            )
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
+        if self.request_token_refresh_context is not None:
+            token = await self._request_token(token or "")
 
         url = f"{self.base_url.rstrip('/')}{path}"
         client = await self._get_client()
-        request_token = token
-        refresh_identity = None
-        if allow_token_refresh:
-            refresh_identity = refresh_user_id or self._refresh_user_id(json_data)
-        self.last_refreshed_token = None
 
         response = await client.post(
             url,
-            headers=self._internal_headers(request_token),
+            headers=self._internal_headers(token),
             json=json_data,
             follow_redirects=True,
             timeout=request_timeout or self.datasource_timeout,
         )
-
-        # Retry once on 401 with a fresh user token, matching the public POST path.
-        if (
-            allow_token_refresh
-            and response.status_code == 401
-            and request_token
-            and refresh_identity
-        ):
-            logger.debug("Internal capability got 401, attempting token refresh")
-            try:
-                request_token, _ = await self.refresh_token(refresh_identity)
-                self.last_refreshed_token = request_token
-                response = await client.post(
-                    url,
-                    headers=self._internal_headers(request_token),
-                    json=json_data,
-                    follow_redirects=True,
-                    timeout=request_timeout or self.datasource_timeout,
-                )
-            except TokenRefreshError as e:
-                logger.error("Failed to refresh internal capability token: %s", e)
-                raise CityCatalystClientError(
-                    f"Authentication failed: {e}",
-                    status_code=401,
-                ) from e
 
         if not response.is_success:
             if safe_selection_error and response.status_code == 404:
@@ -699,14 +855,6 @@ class CityCatalystClient:
             raise CityCatalystClientError(
                 f"Failed to parse CC capability response: {e}"
             ) from e
-
-    def _refresh_user_id(self, payload: Dict[str, Any]) -> Optional[str]:
-        """Return the user id available for internal capability token refresh."""
-        user_id = payload.get("userId") or payload.get("user_id")
-        if user_id is None:
-            return None
-        user_id_text = str(user_id).strip()
-        return user_id_text or None
 
     async def discover_native_inputs(
         self,
@@ -949,12 +1097,15 @@ class CityCatalystClient:
         *,
         token: str,
         user_id: str,
+        auto_refresh: bool = True,
     ) -> Dict[str, Any]:
         """Fetch all inventories available to the authenticated user.
 
         Args:
             token: User access token
             user_id: User ID for token refresh context
+            auto_refresh: Refresh on expiry/401. Developer write-auth callers
+                pass False so the presented bearer is used as-is.
 
         Returns:
             Dictionary payload containing the list of inventories
@@ -971,6 +1122,7 @@ class CityCatalystClient:
             token=token,
             user_id=user_id,
             thread_id="",  # Not used in new refresh method
+            auto_refresh=auto_refresh,
         )
 
         if not response.is_success:
@@ -982,7 +1134,8 @@ class CityCatalystClient:
                 error_text,
             )
             raise CityCatalystClientError(
-                f"Failed to fetch user inventories: {response.status_code} - {error_text}"
+                f"Failed to fetch user inventories: {response.status_code} - {error_text}",
+                status_code=response.status_code,
             )
 
         try:

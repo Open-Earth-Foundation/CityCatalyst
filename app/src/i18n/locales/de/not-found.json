@@ -3,5 +3,8 @@
   "invite-not-valid": "Diese Einladung ist nicht mehr gültig",
   "invite-not-valid-description": "Der Link, den Sie verwenden, ist entweder abgelaufen oder wurde bereits eingelöst.\n Bitte bitten Sie den Einladenden, ihn Ihnen erneut zu senden.\n Wenn Sie denken, dass dies ein Fehler ist, bitte",
   "contact-us": "kontaktieren Sie uns.",
-  "go-back": "Zurück"
+  "go-back": "Zurück",
+  "page-not-found": "Seite nicht gefunden",
+  "page-not-found-description": "Die Seite, nach der Sie suchen, existiert nicht oder wurde möglicherweise verschoben. Überprüfen Sie die Adresse oder kehren Sie zu Ihrer Stadt zurück, um Ihre Arbeit fortzusetzen.",
+  "back-to-city": "Zurück zu Ihrer Stadt"
 }

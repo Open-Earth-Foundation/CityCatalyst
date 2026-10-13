@@ -32,10 +32,19 @@ class OpenAIConfig(BaseModel):
     max_retries: int = 3
 
 
+class JevConfig(BaseModel):
+    model_id: str = "typesafe/jev-1.13"
+    confidence_threshold: float = 0.55
+    timeout_seconds: float = 60.0
+    max_retries: int = 2
+    retention_keep_newest: int = 5
+
+
 class LLMSettings(BaseModel):
     models: ModelsConfig
     features: FeaturesConfig = FeaturesConfig()
     openai: OpenAIConfig = OpenAIConfig()
+    jev: JevConfig = JevConfig()
 
 
 def _resolve_llm_config_path() -> Path:

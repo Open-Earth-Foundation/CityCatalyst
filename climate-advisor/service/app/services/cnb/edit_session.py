@@ -14,7 +14,7 @@ from app.models.cnb.concept_note_edits import (
     PlannedTextChange,
 )
 from app.persistence.concept_notes.edits import EditOperationError
-from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_validation import (
     is_information_gap_fill,
     validate_document_integrity,
@@ -337,4 +337,5 @@ def resolve_change(
         group_id=replacement.group_id,
         source_refs=replacement.source_refs,
         user_input_quote=replacement.user_input_quote,
+        context_refs=replacement.context_refs,
     )

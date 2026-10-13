@@ -343,6 +343,8 @@ export interface UsersInvitesResponse {
   success: boolean;
   /** email -> invitation URL (returned so admins can copy if email delivery fails) */
   inviteUrls: Record<string, string>;
+  /** emails of invitees whose invitation email could not be sent */
+  emailFailures?: string[];
 }
 
 export interface OrganizationInviteResponse {
@@ -557,6 +559,7 @@ export type ProjectUserResponse = {
   role: OrganizationRole;
   status: InviteStatus;
   cityId?: string;
+  twoFactorEnabled?: boolean;
 };
 
 export type UserAccessResponse = {
@@ -933,11 +936,17 @@ export interface ImportSummary {
   formatDetected: string;
   rowsFound: number;
   fieldsMapped: number;
+  /**
+   * Rows in the file that will not be imported because CO2, CH4, N2O, and
+   * total CO2e are empty and there is no notation key.
+   */
+  rowsSkippedEmptyEmissions?: number;
 }
 
 export interface FieldMapping {
   sourceColumn: string;
   mappedField: string;
+  sampleValue?: string | null;
 }
 
 export interface ReviewData {
@@ -1099,6 +1108,20 @@ export interface ConceptNoteRun {
 
 export interface ConceptNoteRunListResponse {
   runs: ConceptNoteRun[];
+}
+
+export interface ConceptNoteChatThread {
+  thread_id: string;
+  title: string | null;
+  created_at: string;
+  last_message_at: string | null;
+  message_count: number;
+  preview: string | null;
+}
+
+export interface ConceptNoteChatThreadListResponse {
+  active_thread_id: string | null;
+  threads: ConceptNoteChatThread[];
 }
 
 export interface ConceptNoteTemplateChapter {

@@ -71,6 +71,7 @@ import {
   ConfirmConceptNoteChapterRequest,
   ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
+  ConceptNoteChatThreadListResponse,
   ConceptNoteRun,
   ConceptNoteRunListResponse,
   ConceptNoteUploadRequest,
@@ -117,6 +118,50 @@ import type {
 } from "@/util/types/meed";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+export interface BulkInventoryImportItemCountsDto {
+  total: number;
+  pending: number;
+  matched: number;
+  unmatched: number;
+  importing: number;
+  completed: number;
+  failed: number;
+  skipped: number;
+}
+
+export interface BulkInventoryImportJobDto {
+  id: string;
+  projectId: string;
+  year: number;
+  status: string;
+  dryRun: boolean;
+  createMissingCities: boolean;
+  inventoryType: string;
+  globalWarmingPotentialType: string;
+  replaceExisting: boolean;
+  progressStage: string | null;
+  progressDetail: string | null;
+  counts: BulkInventoryImportItemCountsDto;
+  created: string | null;
+  lastUpdated: string | null;
+}
+
+export interface BulkInventoryImportItemDto {
+  id: string;
+  originalFileName: string;
+  locode: string | null;
+  status: string;
+  stage: string | null;
+  errorCode: string | null;
+  errorLog: string | null;
+  warnings: string[];
+  resolvedYear: number | null;
+}
+
+export interface BulkInventoryImportJobDetailDto extends BulkInventoryImportJobDto {
+  items: BulkInventoryImportItemDto[];
+}
 
 export const api = createApi({
   reducerPath: "api",
@@ -167,9 +212,11 @@ export const api = createApi({
     "MeedRanking",
     "MeedPlan",
     "ConceptNoteRuns",
+    "ConceptNoteChatThreads",
     "ConceptNoteUpload",
     "ConceptNoteDraft",
     "ConceptNoteEdits",
+    "BulkInventoryImport",
     "ConceptNoteApplicationContext",
     "ConceptNoteFundingCatalogue",
   ],
@@ -357,12 +404,19 @@ export const api = createApi({
        */
       getMeedPlan: builder.query<
         MeedPlanRouteReport,
-        { cityId: string; inventoryId: string; actionId: string }
+        {
+          cityId: string;
+          inventoryId: string;
+          actionId: string;
+          language?: string;
+        }
       >({
-        query: ({ cityId, inventoryId, actionId }) =>
+        query: ({ cityId, inventoryId, actionId, language }) =>
           `city/${cityId}/meed/generate-plan?inventoryId=${encodeURIComponent(
             inventoryId,
-          )}&actionId=${encodeURIComponent(actionId)}`,
+          )}&actionId=${encodeURIComponent(actionId)}${
+            language ? `&language=${encodeURIComponent(language)}` : ""
+          }`,
         transformResponse: (r: { data: MeedPlanRouteReport }) => r.data,
         providesTags: ["MeedPlan"],
       }),
@@ -1445,6 +1499,51 @@ export const api = createApi({
           body: data,
         }),
         transformResponse: (response: unknown) => response,
+      }),
+      enqueueBulkInventoryImport: builder.mutation<
+        {
+          jobId: string;
+          itemCount: number;
+          unmatchedCount: number;
+        },
+        FormData
+      >({
+        query: (formData) => ({
+          url: `/admin/bulk-inventory-import`,
+          method: "POST",
+          body: formData,
+        }),
+        transformResponse: (response: {
+          data: {
+            jobId: string;
+            itemCount: number;
+            unmatchedCount: number;
+          };
+        }) => response.data,
+        invalidatesTags: ["BulkInventoryImport"],
+      }),
+      getLatestBulkInventoryImportJob: builder.query<
+        BulkInventoryImportJobDto | null,
+        string
+      >({
+        query: (projectId) =>
+          `/admin/bulk-inventory-import?projectId=${projectId}`,
+        transformResponse: (response: {
+          data: BulkInventoryImportJobDto | null;
+        }) => response.data,
+        providesTags: ["BulkInventoryImport"],
+      }),
+      getBulkInventoryImportJob: builder.query<
+        BulkInventoryImportJobDetailDto,
+        string
+      >({
+        query: (jobId) => `/admin/bulk-inventory-import/${jobId}`,
+        transformResponse: (response: {
+          data: BulkInventoryImportJobDetailDto;
+        }) => response.data,
+        providesTags: (_r, _e, jobId) => [
+          { type: "BulkInventoryImport", id: jobId },
+        ],
       }),
       connectDataSources: builder.mutation({
         query: (data: {
@@ -2603,17 +2702,83 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
-      resetConceptNoteChat: builder.mutation<
+      getConceptNoteChatThreads: builder.query<
+        ConceptNoteChatThreadListResponse,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}/chat/threads`,
+          params: { city_id: cityId },
+        }),
+        providesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteChatThreads", id: runId },
+        ],
+      }),
+      startConceptNoteChat: builder.mutation<
         ConceptNoteRun,
         { cityId: string; runId: string }
       >({
         query: ({ cityId, runId }) => ({
-          url: `concept-notes/${runId}/chat/reset`,
+          url: `concept-notes/${runId}/chat/threads`,
           method: "POST",
           params: { city_id: cityId },
         }),
-        invalidatesTags: (_result, _error, { cityId }) => [
+        // Swap the cached run to the new chat before the refetch lands.
+        async onQueryStarted({ cityId, runId }, { dispatch, queryFulfilled }) {
+          try {
+            const { data } = await queryFulfilled;
+            dispatch(
+              api.util.updateQueryData(
+                "getConceptNoteRun",
+                { cityId, runId },
+                (draft) => {
+                  draft.thread_id = data.thread_id;
+                },
+              ),
+            );
+          } catch {
+            // The mutation hook reports the failure; the cache stays as is.
+          }
+        },
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
           { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteChatThreads", id: runId },
+        ],
+      }),
+      activateConceptNoteChatThread: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; runId: string; threadId: string }
+      >({
+        query: ({ cityId, runId, threadId }) => ({
+          url: `concept-notes/${runId}/chat/threads/${threadId}/activate`,
+          method: "POST",
+          params: { city_id: cityId },
+        }),
+        // Switch the cached run immediately so the panel loads that history.
+        async onQueryStarted(
+          { cityId, runId, threadId },
+          { dispatch, queryFulfilled },
+        ) {
+          const patch = dispatch(
+            api.util.updateQueryData(
+              "getConceptNoteRun",
+              { cityId, runId },
+              (draft) => {
+                draft.thread_id = threadId;
+              },
+            ),
+          );
+          try {
+            await queryFulfilled;
+          } catch {
+            patch.undo();
+          }
+        },
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteChatThreads", id: runId },
         ],
       }),
       uploadConceptNoteSource: builder.mutation<
@@ -2830,6 +2995,9 @@ export const {
   useEditProjectMutation,
   useDeleteProjectMutation,
   useCreateBulkInventoriesMutation,
+  useEnqueueBulkInventoryImportMutation,
+  useGetLatestBulkInventoryImportJobQuery,
+  useGetBulkInventoryImportJobQuery,
   useConnectDataSourcesMutation,
   useGetDataSourcePreviewQuery,
   useConnectAllInventoryDataSourcesMutation,
@@ -2896,7 +3064,9 @@ export const {
   useRenameConceptNoteRunMutation,
   useDuplicateConceptNoteRunMutation,
   useDeleteConceptNoteRunMutation,
-  useResetConceptNoteChatMutation,
+  useGetConceptNoteChatThreadsQuery,
+  useStartConceptNoteChatMutation,
+  useActivateConceptNoteChatThreadMutation,
   useStartConceptNoteDraftMutation,
   useConfirmConceptNoteChapterMutation,
   useValidateConceptNoteChapterMutation,

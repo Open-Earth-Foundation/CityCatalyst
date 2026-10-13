@@ -76,6 +76,48 @@ describe("report document", () => {
     expect(toReportActionDocument({ chapters: [] }, "A", "en")).toBeNull();
   });
 
+  it("shows a stored classification even when chapters omit provenance", () => {
+    const classified: MeedPlanRouteReport = {
+      ...report,
+      authorityScopeClassification: {
+        classification_method: "ai_classified",
+        review_status: "pending_human_review",
+        authority_scope: "qualified",
+        authority_scope_status: "pending_human_review",
+      },
+      chapters: [
+        {
+          key: "legal",
+          title: { en: "Legal", es: "Legal" },
+          markdown: { en: "The city can pursue this action.", es: "La ciudad puede avanzar." },
+          limitations: { en: [], es: [] },
+        },
+      ],
+    };
+    const english = toReportActionDocument(classified, "Action", "en")!;
+    const spanish = toReportActionDocument(classified, "Action", "es")!;
+    expect(english.sections[0].limitations).toEqual([]);
+    expect(english.classificationStatus).toContain("AI-unreviewed");
+    expect(spanish.classificationStatus).toContain("IA-sin-revisar");
+  });
+
+  it("does not invent a review status when metadata is absent or invalid", () => {
+    const doc = toReportActionDocument(report, "Action", "en")!;
+    expect(doc.classificationStatus).toBeNull();
+    const invalid: MeedPlanRouteReport = {
+      ...report,
+      authorityScopeClassification: {
+        classification_method: "human_classified",
+        review_status: "pending_human_review",
+        authority_scope: "full_direct",
+        authority_scope_status: "release_validated",
+      },
+    };
+    expect(
+      toReportActionDocument(invalid, "Action", "en")!.classificationStatus,
+    ).toBeNull();
+  });
+
   it("keeps the on-screen order and skips actions that failed", () => {
     const docs = toReportDocument(
       [

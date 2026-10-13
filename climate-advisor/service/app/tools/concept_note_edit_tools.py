@@ -11,6 +11,8 @@ from agents import function_tool
 from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.services.cnb.edits import get_edit_service
 from app.services.concept_note_runs import ConceptNoteRunService
+from app.services.citycatalyst_client import CityCatalystClient
+from app.utils.request_token_refresh import RequestTokenRefreshContext
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -26,8 +28,9 @@ def build_concept_note_edit_tools(
     token_ref: dict[str, str | None],
     request: EditProposalRequest,
     recent_messages: list[dict[str, str]] | None = None,
+    request_token_refresh_context: RequestTokenRefreshContext | None = None,
 ) -> list:
-    """Bind the user's exact instruction and UI selection outside model arguments."""
+    """Bind edit inputs and optional authenticated-turn renewal outside the model."""
     run_uuid = UUID(str(run_id))
 
     @function_tool
@@ -61,8 +64,15 @@ def build_concept_note_edit_tools(
         try:
             # Recheck token identity, run ownership and current city access at use time.
             async with session_factory() as session:
-                run_service = ConceptNoteRunService(session)
+                client = CityCatalystClient(
+                    request_token_refresh_context=request_token_refresh_context
+                )
+                run_service = ConceptNoteRunService(session, cc_client=client)
                 try:
+                    if request_token_refresh_context is not None:
+                        token = await request_token_refresh_context.token_for_request(
+                            client.refresh_token
+                        )
                     run = await run_service.get_authorized_run(
                         run_id=run_uuid,
                         requested_user_id=user_id,

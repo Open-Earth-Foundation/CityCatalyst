@@ -5,7 +5,7 @@ from uuid import UUID
 import pytest
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.concept_note_chapter_validation import ChapterValidationGap
-from app.persistence.concept_notes.workspace import (
+from app.persistence.concept_notes.workspace_validation import (
     WorkspaceValidationChapter,
     WorkspaceValidationContext,
     WorkspaceValidationEvidence,

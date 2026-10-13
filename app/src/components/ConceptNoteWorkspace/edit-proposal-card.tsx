@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   Box,
   chakra,
+  Flex,
   HStack,
   Icon,
   Text,
@@ -31,7 +32,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useTranslation } from "@/i18n/client";
-import type { EditProposal } from "@/util/concept-note-edit-types";
+import type {
+  EditContextSection,
+  EditProposal,
+} from "@/util/concept-note-edit-types";
+
+const contextSectionKeys: Record<EditContextSection, string> = {
+  city: "edit-context-city",
+  project: "edit-context-project",
+  ghgi: "edit-context-ghgi",
+  ccra: "edit-context-ccra",
+  hiap: "edit-context-hiap",
+  manual_population: "edit-context-manual-population",
+};
 
 interface ProposalCardProps {
   proposal: EditProposal;
@@ -97,431 +110,455 @@ export function EditProposalCard({
   }
 
   return (
-    <VStack
-      align="stretch"
-      gap={2}
-      flexDirection="row"
+    <Flex
+      align="center"
+      justify="space-between"
+      gap={3}
       flexWrap="wrap"
-      bg="base.light"
-      maxW="full"
+      w="full"
       minW={0}
       position="relative"
       data-testid="concept-note-document-review"
       data-proposal-id={proposal.proposal_id}
     >
-      {proposal.structure && (
-        <DialogRoot
-          open={structureOpen}
-          onOpenChange={({ open }) => setStructureOpen(open)}
-          size="xl"
-          placement="center"
-          scrollBehavior="inside"
-        >
-          <DialogTrigger asChild>
-            <Button size="sm" variant="outline">
-              {t("structure-review")}
-            </Button>
-          </DialogTrigger>
-          <DialogContent
-            maxH="calc(100dvh - 48px)"
-            maxW="min(960px, calc(100vw - 32px))"
-            data-testid="structure-proposal"
-          >
-            <DialogHeader flexShrink={0} pe={12}>
-              <DialogTitle>{t("structure-proposal-title")}</DialogTitle>
-              <DialogDescription>
-                {t("structure-proposal-note")}
-              </DialogDescription>
-            </DialogHeader>
-            <DialogBody
-              minH={0}
-              overflowY="auto"
-              data-testid="structure-preview-scroll"
-            >
-              <HStack
-                align="start"
-                flexDirection={{ base: "column", md: "row" }}
-              >
-                {(["before", "after"] as const).map((side) => (
-                  <Box
-                    key={side}
-                    flex={1}
-                    minW={0}
-                    w="full"
-                    overflowWrap="anywhere"
-                  >
-                    <Text fontWeight="semibold">{t(`structure-${side}`)}</Text>
-                    {(side === "before"
-                      ? proposal.structure!.before.chapters
-                      : proposal.structure!.after
-                    ).map((chapter, index) => (
-                      <Box key={chapter.chapter_id} py={2}>
-                        <Text>{`${index + 1}. ${chapter.title}`}</Text>
-                        <Text fontSize="label.sm" whiteSpace="pre-wrap">
-                          {chapter.description}
-                        </Text>
-                      </Box>
-                    ))}
-                  </Box>
-                ))}
-              </HStack>
-            </DialogBody>
-            {awaitingReview && (
-              <DialogFooter flexShrink={0} flexWrap="wrap">
-                {errorMessage && (
-                  <Text
-                    role="alert"
-                    flexBasis="100%"
-                    fontSize="label.sm"
-                    color="content.primary"
-                    data-testid="structure-proposal-error"
-                  >
-                    {errorMessage}
-                  </Text>
-                )}
-                <Button
-                  disabled={busy || !canApply}
-                  loading={busy}
-                  onClick={async () => {
-                    if ((await onApply(proposal)) !== false)
-                      setStructureOpen(false);
-                  }}
-                >
-                  {t("structure-confirm")}
-                </Button>
-                <Button
-                  disabled={busy}
-                  variant="ghost"
-                  onClick={async () => {
-                    if ((await onReject(proposal)) !== false)
-                      setStructureOpen(false);
-                  }}
-                >
-                  {t("edit-reject-all")}
-                </Button>
-              </DialogFooter>
-            )}
-            {!awaitingReview && (
-              <DialogFooter>
-                <Text role="status">{t(`edit-status-${proposal.status}`)}</Text>
-              </DialogFooter>
-            )}
-            <DialogCloseTrigger aria-label={t("structure-close-preview")} />
-          </DialogContent>
-        </DialogRoot>
-      )}
+      {/* A pending proposal shows only its controls; details live in the options popover. */}
       {!awaitingReview && (
-        <Text role="status" flexBasis="100%" fontSize="body.sm">
-          {t(`edit-status-${proposal.status}`)}
-        </Text>
-      )}
-      {awaitingReview && proposal.changes.length > 0 && (
-        <Box
-          flexBasis="100%"
-          maxW="400px"
+        <VStack
+          align="start"
+          gap={0.5}
+          flex="1 1 240px"
           minW={0}
-          data-testid="concept-note-review-summary"
+          data-testid="concept-note-review-messages"
         >
-          <Text fontSize="label.sm" color="content.secondary">
-            {t("edit-review-scope", {
-              count: proposal.changes.length,
-              chapters: new Set(proposal.changes.map((item) => item.chapter_id))
-                .size,
-            })}
+          <Text role="status" fontSize="body.sm">
+            {t(`edit-status-${proposal.status}`)}
           </Text>
-          {proposal.changes.some(
-            (item) =>
-              item.kind === "factual" &&
-              item.user_input_quote &&
-              !item.source_refs.length,
-          ) && (
-            <Text
-              fontSize="label.sm"
-              color="content.secondary"
-              data-testid="concept-note-user-facts-notice"
-            >
-              {t("edit-user-facts-notice")}
+          {proposal.clarification && (
+            <Text role="status" fontSize="body.sm" color="content.primary">
+              {proposal.clarification}
             </Text>
           )}
-        </Box>
+          {proposal.error_code &&
+            proposal.status !== "clarification_required" && (
+              <Text role="alert" fontSize="label.sm" color="content.primary">
+                {t(
+                  proposal.status === "stale"
+                    ? "edit-stale-hint"
+                    : [`edit-error-${proposal.error_code}`, "edit-retry-hint"],
+                )}
+              </Text>
+            )}
+        </VStack>
       )}
-      {proposal.clarification && (
-        <Text
-          role="status"
-          flexBasis="100%"
-          fontSize="body.sm"
-          color="content.primary"
-        >
-          {proposal.clarification}
-        </Text>
-      )}
-      {proposal.notices?.map((notice) => (
-        <Text
-          key={notice.code}
-          role="status"
-          flexBasis="100%"
-          fontSize="label.sm"
-          color="content.secondary"
-          data-testid="concept-note-edit-exclusion"
-        >
-          {t(`edit-excluded-${notice.code}`, { count: notice.count })}
-        </Text>
-      ))}
-      {proposal.error_code && proposal.status !== "clarification_required" && (
-        <Text role="alert" fontSize="label.sm" color="content.primary">
-          {t(
-            proposal.status === "stale"
-              ? "edit-stale-hint"
-              : [`edit-error-${proposal.error_code}`, "edit-retry-hint"],
-          )}
-        </Text>
-      )}
-      {!canApply && <Text role="alert">{t("edit-inline-stale")}</Text>}
-      {change && (
-        <>
-          <HStack
-            gap={1}
-            aria-label={t("edit-change-position", {
-              current: activeIndex + 1,
-              total: proposal.changes.length,
-            })}
+      <HStack
+        gap={2}
+        flexShrink={0}
+        flexWrap="wrap"
+        justify="flex-end"
+        data-testid="concept-note-review-controls"
+      >
+        {proposal.structure && (
+          <DialogRoot
+            open={structureOpen}
+            onOpenChange={({ open }) => setStructureOpen(open)}
+            size="xl"
+            placement="center"
+            scrollBehavior="inside"
           >
-            <Button
-              minW="44px"
-              minH="44px"
-              size="sm"
-              variant="outline"
-              p={0}
-              color="content.primary"
-              aria-label={t("edit-previous-change")}
-              data-testid="concept-note-edit-previous"
-              disabled={activeIndex === 0}
-              onClick={() => navigate(activeIndex - 1)}
+            <DialogTrigger asChild>
+              <Button size="sm" variant="outline">
+                {t("structure-review")}
+              </Button>
+            </DialogTrigger>
+            <DialogContent
+              maxH="calc(100dvh - 48px)"
+              maxW="min(960px, calc(100vw - 32px))"
+              data-testid="structure-proposal"
             >
-              <Icon as={LuChevronLeft} />
-            </Button>
-            <Text
-              fontSize="label.sm"
-              minW="54px"
-              textAlign="center"
-              aria-live="polite"
-            >
-              {t("edit-header-position", {
+              <DialogHeader flexShrink={0} pe={12}>
+                <DialogTitle>{t("structure-proposal-title")}</DialogTitle>
+                <DialogDescription>
+                  {t("structure-proposal-note")}
+                </DialogDescription>
+              </DialogHeader>
+              <DialogBody
+                minH={0}
+                overflowY="auto"
+                data-testid="structure-preview-scroll"
+              >
+                <HStack
+                  align="start"
+                  flexDirection={{ base: "column", md: "row" }}
+                >
+                  {(["before", "after"] as const).map((side) => (
+                    <Box
+                      key={side}
+                      flex={1}
+                      minW={0}
+                      w="full"
+                      overflowWrap="anywhere"
+                    >
+                      <Text fontWeight="semibold">
+                        {t(`structure-${side}`)}
+                      </Text>
+                      {(side === "before"
+                        ? proposal.structure!.before.chapters
+                        : proposal.structure!.after
+                      ).map((chapter, index) => (
+                        <Box key={chapter.chapter_id} py={2}>
+                          <Text>{`${index + 1}. ${chapter.title}`}</Text>
+                          <Text fontSize="label.sm" whiteSpace="pre-wrap">
+                            {chapter.description}
+                          </Text>
+                        </Box>
+                      ))}
+                    </Box>
+                  ))}
+                </HStack>
+              </DialogBody>
+              {awaitingReview && (
+                <DialogFooter flexShrink={0} flexWrap="wrap">
+                  {errorMessage && (
+                    <Text
+                      role="alert"
+                      flexBasis="100%"
+                      fontSize="label.sm"
+                      color="content.primary"
+                      data-testid="structure-proposal-error"
+                    >
+                      {errorMessage}
+                    </Text>
+                  )}
+                  <Button
+                    disabled={busy || !canApply}
+                    loading={busy}
+                    onClick={async () => {
+                      if ((await onApply(proposal)) !== false)
+                        setStructureOpen(false);
+                    }}
+                  >
+                    {t("structure-confirm")}
+                  </Button>
+                  <Button
+                    disabled={busy}
+                    variant="ghost"
+                    onClick={async () => {
+                      if ((await onReject(proposal)) !== false)
+                        setStructureOpen(false);
+                    }}
+                  >
+                    {t("edit-reject-all")}
+                  </Button>
+                </DialogFooter>
+              )}
+              {!awaitingReview && (
+                <DialogFooter>
+                  <Text role="status">
+                    {t(`edit-status-${proposal.status}`)}
+                  </Text>
+                </DialogFooter>
+              )}
+              <DialogCloseTrigger aria-label={t("structure-close-preview")} />
+            </DialogContent>
+          </DialogRoot>
+        )}
+        {change && (
+          <>
+            <HStack
+              gap={1}
+              aria-label={t("edit-change-position", {
                 current: activeIndex + 1,
                 total: proposal.changes.length,
               })}
-            </Text>
-            <Button
-              minW="44px"
-              minH="44px"
-              size="sm"
-              variant="outline"
-              p={0}
-              color="content.primary"
-              aria-label={t("edit-next-change")}
-              data-testid="concept-note-edit-next"
-              disabled={activeIndex === proposal.changes.length - 1}
-              onClick={() => navigate(activeIndex + 1)}
-            >
-              <Icon as={LuChevronRight} />
-            </Button>
-          </HStack>
-          {awaitingReview && (
-            <HStack
-              gap={2}
-              flexWrap="wrap"
-              data-testid="concept-note-edit-primary-actions"
             >
               <Button
+                minW="44px"
                 minH="44px"
                 size="sm"
-                variant="ghost"
-                data-testid="concept-note-edit-reject-all"
-                disabled={busy || (hasDecisions && !canApply)}
-                onClick={() => void onReject(proposal)}
+                variant="outline"
+                p={0}
+                color="content.primary"
+                aria-label={t("edit-previous-change")}
+                data-testid="concept-note-edit-previous"
+                disabled={activeIndex === 0}
+                onClick={() => navigate(activeIndex - 1)}
               >
-                {t(hasDecisions ? "edit-reject-remaining" : "edit-reject-all")}
+                <Icon as={LuChevronLeft} />
               </Button>
+              <Text
+                fontSize="label.sm"
+                minW="54px"
+                textAlign="center"
+                aria-live="polite"
+              >
+                {t("edit-header-position", {
+                  current: activeIndex + 1,
+                  total: proposal.changes.length,
+                })}
+              </Text>
               <Button
+                minW="44px"
                 minH="44px"
                 size="sm"
-                data-testid="concept-note-edit-apply-all"
-                disabled={busy || !canApply}
-                loading={busy}
-                onClick={() => void onApply(proposal)}
+                variant="outline"
+                p={0}
+                color="content.primary"
+                aria-label={t("edit-next-change")}
+                data-testid="concept-note-edit-next"
+                disabled={activeIndex === proposal.changes.length - 1}
+                onClick={() => navigate(activeIndex + 1)}
               >
-                {t(hasDecisions ? "edit-accept-remaining" : "edit-accept-all")}
+                <Icon as={LuChevronRight} />
               </Button>
             </HStack>
-          )}
-        </>
-      )}
-      <PopoverRoot
-        lazyMount
-        unmountOnExit
-        positioning={{ placement: "bottom-end" }}
-      >
-        <PopoverTrigger asChild>
-          <Button
-            size="xs"
-            minH="44px"
-            minW="32px"
-            p={0}
-            variant="ghost"
-            aria-label={t("edit-review-options")}
-            data-testid="concept-note-edit-options"
-          >
-            <Icon as={LuEllipsis} />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent
-          width="340px"
-          maxW="calc(100vw - 32px)"
-          maxH="min(480px, 70vh)"
-          overflowY="auto"
+            {awaitingReview && (
+              <HStack
+                gap={2}
+                flexWrap="wrap"
+                data-testid="concept-note-edit-primary-actions"
+              >
+                <Button
+                  minH="44px"
+                  size="sm"
+                  variant="ghost"
+                  data-testid="concept-note-edit-reject-all"
+                  disabled={busy || (hasDecisions && !canApply)}
+                  onClick={() => void onReject(proposal)}
+                >
+                  {t(
+                    hasDecisions ? "edit-reject-remaining" : "edit-reject-all",
+                  )}
+                </Button>
+                <Button
+                  minH="44px"
+                  size="sm"
+                  data-testid="concept-note-edit-apply-all"
+                  disabled={busy || !canApply}
+                  loading={busy}
+                  onClick={() => void onApply(proposal)}
+                >
+                  {t(
+                    hasDecisions ? "edit-accept-remaining" : "edit-accept-all",
+                  )}
+                </Button>
+              </HStack>
+            )}
+          </>
+        )}
+        <PopoverRoot
+          lazyMount
+          unmountOnExit
+          positioning={{ placement: "bottom-end" }}
         >
-          <PopoverBody>
-            <VStack align="stretch" gap={2}>
-              {change && (
-                <Box data-testid="concept-note-review-details">
-                  <Text fontSize="body.md" fontWeight="semibold">
-                    {change.chapter_title}
+          <PopoverTrigger asChild>
+            <Button
+              size="xs"
+              minH="44px"
+              minW="32px"
+              p={0}
+              variant="ghost"
+              aria-label={t("edit-review-options")}
+              data-testid="concept-note-edit-options"
+            >
+              <Icon as={LuEllipsis} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            width="340px"
+            maxW="calc(100vw - 32px)"
+            maxH="min(480px, 70vh)"
+            overflowY="auto"
+          >
+            <PopoverBody>
+              <VStack align="stretch" gap={2}>
+                {!canApply && (
+                  <Text role="alert" fontSize="label.sm">
+                    {t("edit-inline-stale")}
                   </Text>
-                  <Text fontSize="label.sm" color="content.secondary">
-                    {t("edit-inline-legend")}
+                )}
+                {proposal.changes.some(
+                  (item) =>
+                    item.kind === "factual" &&
+                    item.user_input_quote &&
+                    !item.source_refs.length &&
+                    !item.context_snapshots?.length,
+                ) && (
+                  <Text
+                    fontSize="label.sm"
+                    color="content.secondary"
+                    data-testid="concept-note-user-facts-notice"
+                  >
+                    {t("edit-user-facts-notice")}
                   </Text>
-                  {groups.length > 1 && (
-                    <Text
-                      fontSize="label.sm"
-                      data-testid="concept-note-edit-current-group"
-                    >
-                      {t("edit-current-group", {
-                        group: groups.indexOf(change.group_id) + 1,
-                      })}
+                )}
+                {proposal.notices?.map((notice) => (
+                  <Text
+                    key={notice.code}
+                    fontSize="label.sm"
+                    color="content.secondary"
+                    data-testid="concept-note-edit-exclusion"
+                  >
+                    {t(`edit-excluded-${notice.code}`, { count: notice.count })}
+                  </Text>
+                ))}
+                {change && (
+                  <Box data-testid="concept-note-review-details">
+                    <Text fontSize="body.md" fontWeight="semibold">
+                      {change.chapter_title}
                     </Text>
-                  )}
-                  <Text fontSize="label.sm" color="content.secondary">
-                    {t(
-                      change.kind === "wording"
-                        ? "edit-kind-wording"
-                        : "edit-kind-factual",
+                    <Text fontSize="label.sm" color="content.secondary">
+                      {t("edit-inline-legend")}
+                    </Text>
+                    {groups.length > 1 && (
+                      <Text
+                        fontSize="label.sm"
+                        data-testid="concept-note-edit-current-group"
+                      >
+                        {t("edit-current-group", {
+                          group: groups.indexOf(change.group_id) + 1,
+                        })}
+                      </Text>
                     )}
-                  </Text>
-                  {change.user_input_quote && (
                     <Text fontSize="label.sm" color="content.secondary">
-                      {t("edit-user-input", {
-                        quote: change.user_input_quote,
-                        interpolation: { escapeValue: false },
-                      })}
+                      {t(
+                        change.kind === "wording"
+                          ? "edit-kind-wording"
+                          : "edit-kind-factual",
+                      )}
                     </Text>
-                  )}
-                  {change.source_refs.length > 0 && (
-                    <Text fontSize="label.sm" color="content.secondary">
-                      {t("edit-sources", {
-                        sources:
-                          change.source_snapshots
-                            ?.map((source) => source.source_label)
-                            .join(", ") || change.source_refs.join(", "),
-                      })}
-                    </Text>
-                  )}
-                  {change.source_refs.length > 0 && onOpenSources && (
+                    {change.user_input_quote && (
+                      <Text fontSize="label.sm" color="content.secondary">
+                        {t("edit-user-input", {
+                          quote: change.user_input_quote,
+                          interpolation: { escapeValue: false },
+                        })}
+                      </Text>
+                    )}
+                    {change.source_refs.length > 0 && (
+                      <Text fontSize="label.sm" color="content.secondary">
+                        {t("edit-sources", {
+                          sources:
+                            change.source_snapshots
+                              ?.map((source) => source.source_label)
+                              .join(", ") || change.source_refs.join(", "),
+                        })}
+                      </Text>
+                    )}
+                    {change.context_snapshots?.length ? (
+                      <Text
+                        fontSize="label.sm"
+                        color="content.secondary"
+                        data-testid="concept-note-edit-context-sources"
+                      >
+                        {t("edit-context-sources", {
+                          sources: change.context_snapshots
+                            .map((snapshot) =>
+                              t(contextSectionKeys[snapshot.section]),
+                            )
+                            .join(", "),
+                        })}
+                      </Text>
+                    ) : null}
+                    {change.source_refs.length > 0 && onOpenSources && (
+                      <Button
+                        size="xs"
+                        minH="36px"
+                        variant="ghost"
+                        color="content.link"
+                        data-testid="concept-note-edit-view-sources"
+                        onClick={onOpenSources}
+                      >
+                        {t("edit-view-sources")}
+                      </Button>
+                    )}
+                  </Box>
+                )}
+                {canRefine && (
+                  <>
                     <Button
+                      type="button"
                       size="xs"
-                      minH="36px"
                       variant="ghost"
                       color="content.link"
-                      data-testid="concept-note-edit-view-sources"
-                      onClick={onOpenSources}
+                      minH="36px"
+                      disabled={busy}
+                      aria-expanded={refining}
+                      data-testid="concept-note-edit-refine-toggle"
+                      onClick={() => setRefining(!refining)}
                     >
-                      {t("edit-view-sources")}
+                      {t("edit-refine-request")}
                     </Button>
-                  )}
-                </Box>
-              )}
-              {canRefine && (
-                <>
-                  <Button
-                    type="button"
-                    size="xs"
-                    variant="ghost"
-                    color="content.link"
-                    minH="36px"
-                    disabled={busy}
-                    aria-expanded={refining}
-                    data-testid="concept-note-edit-refine-toggle"
-                    onClick={() => setRefining(!refining)}
-                  >
-                    {t("edit-refine-request")}
-                  </Button>
-                  {refining && (
-                    <Box
-                      as="form"
-                      data-testid="concept-note-edit-refine-form"
-                      onSubmit={(event) => {
-                        event.preventDefault();
-                        if (instruction.trim())
-                          void onRefine?.(proposal, instruction);
-                      }}
-                    >
-                      <chakra.label
-                        htmlFor={`refine-document-${proposal.proposal_id}`}
-                        fontSize="label.sm"
+                    {refining && (
+                      <Box
+                        as="form"
+                        data-testid="concept-note-edit-refine-form"
+                        onSubmit={(event) => {
+                          event.preventDefault();
+                          if (instruction.trim())
+                            void onRefine?.(proposal, instruction);
+                        }}
                       >
-                        {t("edit-refine-label")}
-                      </chakra.label>
-                      <Textarea
-                        id={`refine-document-${proposal.proposal_id}`}
-                        value={instruction}
-                        maxLength={8_000}
-                        disabled={busy}
-                        data-testid="concept-note-edit-refine-input"
-                        onChange={(event) => setInstruction(event.target.value)}
-                      />
-                      <Button
-                        type="submit"
-                        size="sm"
-                        minH="44px"
-                        mt={2}
-                        disabled={busy || !instruction.trim()}
-                        data-testid="concept-note-edit-refine-submit"
-                      >
-                        {t("edit-refine-submit")}
-                      </Button>
-                    </Box>
-                  )}
-                </>
-              )}
-            </VStack>
-          </PopoverBody>
-        </PopoverContent>
-      </PopoverRoot>
-      {proposal.status === "processing" && (
-        <Button
-          minH="44px"
-          size="sm"
-          variant="outline"
-          data-testid="concept-note-edit-cancel"
-          disabled={busy}
-          onClick={() => void onReject(proposal)}
-        >
-          {t("cancel")}
-        </Button>
-      )}
-      {["failed", "stale", "clarification_required"].includes(
-        proposal.status,
-      ) && (
-        <Button
-          minH="36px"
-          size="xs"
-          variant="outline"
-          data-testid="concept-note-edit-dismiss"
-          disabled={busy}
-          onClick={() => void onReject(proposal)}
-        >
-          {t("edit-dismiss")}
-        </Button>
-      )}
-    </VStack>
+                        <chakra.label
+                          htmlFor={`refine-document-${proposal.proposal_id}`}
+                          fontSize="label.sm"
+                        >
+                          {t("edit-refine-label")}
+                        </chakra.label>
+                        <Textarea
+                          id={`refine-document-${proposal.proposal_id}`}
+                          value={instruction}
+                          maxLength={8_000}
+                          disabled={busy}
+                          data-testid="concept-note-edit-refine-input"
+                          onChange={(event) =>
+                            setInstruction(event.target.value)
+                          }
+                        />
+                        <Button
+                          type="submit"
+                          size="sm"
+                          minH="44px"
+                          mt={2}
+                          disabled={busy || !instruction.trim()}
+                          data-testid="concept-note-edit-refine-submit"
+                        >
+                          {t("edit-refine-submit")}
+                        </Button>
+                      </Box>
+                    )}
+                  </>
+                )}
+              </VStack>
+            </PopoverBody>
+          </PopoverContent>
+        </PopoverRoot>
+        {proposal.status === "processing" && (
+          <Button
+            minH="44px"
+            size="sm"
+            variant="outline"
+            data-testid="concept-note-edit-cancel"
+            disabled={busy}
+            onClick={() => void onReject(proposal)}
+          >
+            {t("cancel")}
+          </Button>
+        )}
+        {["failed", "stale", "clarification_required"].includes(
+          proposal.status,
+        ) && (
+          <Button
+            minH="36px"
+            size="xs"
+            variant="outline"
+            data-testid="concept-note-edit-dismiss"
+            disabled={busy}
+            onClick={() => void onReject(proposal)}
+          >
+            {t("edit-dismiss")}
+          </Button>
+        )}
+      </HStack>
+    </Flex>
   );
 }

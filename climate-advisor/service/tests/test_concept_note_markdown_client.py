@@ -35,6 +35,7 @@ def settings(max_bytes: int) -> SimpleNamespace:
         cc_base_url=None,
         cc_api_key=None,
         cnb_markdown_request_max_bytes=max_bytes,
+        cnb_structured_request_max_bytes=max_bytes,
     )
 
 
@@ -93,7 +94,79 @@ async def test_markdown_client_parses_pdf_and_native_markdown_artifacts(
     assert artifact.sha256 == digest
     assert artifact.source_format == source_format
     assert artifact.page_count == page_count
+    assert artifact.legacy_markdown_only is False
     assert stream.chunks_read == 2
+
+
+@pytest.mark.asyncio
+async def test_markdown_client_accepts_only_the_exact_legacy_pdf_marker() -> None:
+    markdown = b"<!-- page: 1 -->\n# Legacy plan"
+    digest = hashlib.sha256(markdown).hexdigest()
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            headers={
+                "X-Markdown-S3-Key": "results/upload/combined.md",
+                "X-Markdown-SHA256": digest,
+                "X-Source-Format": "pdf",
+                "X-Page-Count": "1",
+                "X-CC-Legacy-Pdf-Delivery": "pre-structured-pdf-v1",
+            },
+            content=markdown,
+        )
+
+    with patch(
+        "app.services.citycatalyst_client.get_settings",
+        return_value=settings(len(markdown)),
+    ):
+        client = CityCatalystClient(base_url="https://cc.example")
+        client._client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+        try:
+            artifact = await client.get_concept_note_markdown(
+                upload_id="upload-id",
+                token="user-token",
+            )
+        finally:
+            await client.close()
+
+    assert artifact.legacy_markdown_only is True
+
+
+@pytest.mark.asyncio
+async def test_markdown_client_rejects_unknown_legacy_marker() -> None:
+    markdown = b"<!-- page: 1 -->\n# Plan"
+    digest = hashlib.sha256(markdown).hexdigest()
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            headers={
+                "X-Markdown-S3-Key": "results/upload/combined.md",
+                "X-Markdown-SHA256": digest,
+                "X-Source-Format": "pdf",
+                "X-Page-Count": "1",
+                "X-CC-Legacy-Pdf-Delivery": "true",
+            },
+            content=markdown,
+        )
+
+    with patch(
+        "app.services.citycatalyst_client.get_settings",
+        return_value=settings(len(markdown)),
+    ):
+        client = CityCatalystClient(base_url="https://cc.example")
+        client._client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+        try:
+            with pytest.raises(CityCatalystClientError) as error:
+                await client.get_concept_note_markdown(
+                    upload_id="upload-id",
+                    token="user-token",
+                )
+        finally:
+            await client.close()
+
+    assert error.value.status_code == 502
 
 
 @pytest.mark.asyncio
@@ -150,3 +223,65 @@ async def test_markdown_client_stops_an_undeclared_oversize_stream() -> None:
 
     assert error.value.status_code == 413
     assert stream.chunks_read == 2
+
+
+@pytest.mark.asyncio
+async def test_structured_client_reads_json_and_rejects_an_oversize_artifact() -> None:
+    """Structured reads use their own byte limit and require a JSON object."""
+    body = b'{"schema_version":"citycatalyst.structured-document.1"}'
+    digest = hashlib.sha256(body).hexdigest()
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path.endswith("/structured")
+        return httpx.Response(
+            200,
+            headers={
+                "Content-Type": "application/json; charset=utf-8",
+                "Content-Length": str(len(body)),
+                "X-Structured-S3-Key": "document.structured.json",
+                "X-Structured-SHA256": digest,
+                "X-Structured-Schema-Version": "citycatalyst.structured-document.1",
+                "X-Annotation-Mode": "visual_context",
+                "X-Page-Count": "1",
+                "X-Upload-Id": "upload-id",
+            },
+            content=body,
+        )
+
+    with patch(
+        "app.services.citycatalyst_client.get_settings",
+        return_value=settings(len(body)),
+    ):
+        client = CityCatalystClient(
+            base_url="https://cc.example",
+            api_key="service-key",
+        )
+        client._client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+        try:
+            artifact = await client.get_concept_note_structured(
+                upload_id="upload-id",
+                token="user-token",
+            )
+        finally:
+            await client.close()
+
+    assert artifact.sha256 == digest
+    assert artifact.annotation_mode == "visual_context"
+    assert artifact.page_count == 1
+
+    with patch(
+        "app.services.citycatalyst_client.get_settings",
+        return_value=settings(len(body) - 1),
+    ):
+        client = CityCatalystClient(base_url="https://cc.example")
+        client._client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+        try:
+            with pytest.raises(CityCatalystClientError) as error:
+                await client.get_concept_note_structured(
+                    upload_id="upload-id",
+                    token="user-token",
+                )
+        finally:
+            await client.close()
+
+    assert error.value.status_code == 413

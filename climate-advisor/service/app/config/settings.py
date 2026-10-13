@@ -139,6 +139,7 @@ class ModelsConfig(BaseModel):
     cnb_source_reader: ResearchModelConfig
     cnb_source_synthesizer: ResearchModelConfig
     cnb_chapter_drafter: ResearchModelConfig | None = None
+    cnb_source_impact_reviewer: ResearchModelConfig | None = None
     cnb_chat_edit_planner: ResearchModelConfig | None = None
     cnb_chapter_validator: ResearchModelConfig
 
@@ -163,6 +164,16 @@ class CnbSourcePromptBudgetConfig(BaseModel):
     max_key_excerpts: int = Field(default=8, ge=1, le=20)
     max_topics: int = Field(default=12, ge=1, le=30)
     max_question_chars: int = Field(default=2000, ge=1, le=10000)
+    # Above this total, agents fall back to compact summaries and source queries.
+    full_text_max_tokens: int = Field(default=80000, ge=0)
+
+
+class CnbSourceImpactPromptBudgetConfig(BaseModel):
+    """Limits for choosing and grounding chapters affected by a new source."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=2000)
+    max_chapter_slice_tokens: int = Field(default=12000, ge=500)
+    max_gap_queries: int = Field(default=40, ge=0, le=200)
 
 
 class CnbEditPromptBudgetConfig(BaseModel):
@@ -189,6 +200,9 @@ class PromptBudgetConfig(BaseModel):
     )
     cnb_sources: CnbSourcePromptBudgetConfig = Field(
         default_factory=CnbSourcePromptBudgetConfig,
+    )
+    cnb_source_impact: CnbSourceImpactPromptBudgetConfig = Field(
+        default_factory=CnbSourceImpactPromptBudgetConfig,
     )
     cnb_edits: CnbEditPromptBudgetConfig = Field(
         default_factory=CnbEditPromptBudgetConfig
@@ -220,6 +234,7 @@ class PromptsConfig(BaseModel):
     cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
     cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
+    cnb_source_impact_review: str = "prompts/cnb/source_impact_review.md"
     cnb_chat_edit_planner: str = "prompts/cnb/chat_edit_planner.md"
     cnb_chat_edit_review: str = "prompts/cnb/chat_edit_review.md"
     cnb_draft_overview: str = "prompts/cnb/draft_overview.md"
@@ -436,11 +451,19 @@ class CacheConfig(BaseModel):
     max_size_mb: Optional[int] = None
 
 
+class StreamingConfig(BaseModel):
+    """Bound recovery for transport failures after a model opens its stream."""
+
+    retry_attempts: int = Field(default=2, ge=0, le=3)
+    retry_delay_ms: int = Field(default=500, ge=0, le=5000)
+
+
 class LLMConfig(BaseModel):
     models: ModelsConfig
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
     prompts: PromptsConfig
     api: APIConfig
+    streaming: StreamingConfig = Field(default_factory=StreamingConfig)
     conversation: Optional[ConversationConfig] = ConversationConfig()
     features: FeaturesConfig
     logging: LoggingConfig
@@ -522,6 +545,9 @@ class Settings(BaseModel):
     cc_oauth_token_url: str | None = os.getenv("CC_OAUTH_TOKEN_URL")
     cnb_markdown_request_max_bytes: int = _parse_int(
         os.getenv("CNB_MARKDOWN_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
+    )
+    cnb_structured_request_max_bytes: int = _parse_int(
+        os.getenv("CNB_STRUCTURED_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
     )
 
     def model_post_init(self, __context: Any) -> None:

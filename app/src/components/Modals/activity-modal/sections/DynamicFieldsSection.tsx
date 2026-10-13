@@ -1,4 +1,4 @@
-import { Box, HStack, Icon, Input, Text } from "@chakra-ui/react";
+import { Grid, GridItem, HStack, Input } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React from "react";
 import {
@@ -20,12 +20,12 @@ import { ExtraField, SuggestedActivity } from "@/util/form-schema";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
 import DependentSelectInput from "@/components/dependent-select-input";
-import { Field } from "@/components/ui/field";
-import { MdWarning } from "react-icons/md";
 import {
-  NativeSelectField,
-  NativeSelectRoot,
-} from "@/components/ui/native-select";
+  ModalField as Field,
+  ModalFieldError,
+  ModalSelect,
+  modalInputProps,
+} from "./ModalField";
 
 interface DynamicFieldsSectionProps {
   t: TFunction;
@@ -41,6 +41,9 @@ interface DynamicFieldsSectionProps {
   inventoryId?: string;
   methodologyId: string;
 }
+
+// selects (building type, fuel type...) take half of the row, everything else the full row
+const isHalfWidth = (f: ExtraField) => !!f.options || !!f.dependsOn;
 
 export const DynamicFieldsSection = ({
   t,
@@ -61,23 +64,16 @@ export const DynamicFieldsSection = ({
   });
 
   const activityErrors = errors?.activity as
-    | Record<string, { message?: string } | undefined>
-    | undefined;
+    Record<string, { message?: string } | undefined> | undefined;
 
   if (filteredFields.length === 0) {
     return null;
   }
 
   return (
-    <HStack
-      mb="24px"
-      display="flex"
-      flexDirection="column"
-      alignItems="flex-start"
-      gap="24px"
-    >
+    <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={5}>
       {filteredFields.map((f, idx) => (
-        <Box key={idx}>
+        <GridItem key={idx} colSpan={isHalfWidth(f) ? 1 : 2}>
           {f.options && (
             <Field w="full">
               <BuildingTypeSelectInput
@@ -118,51 +114,32 @@ export const DynamicFieldsSection = ({
             />
           )}
           {f.type === "text" && (
-            <Field w="full" label={t(f.id)}>
+            <Field w="full" label={t(f.id)} required={f.required !== false}>
               <Input
                 type="text"
-                borderRadius="4px"
-                h="48px"
-                shadow="1dp"
-                borderWidth={activityErrors?.[f.id] ? "1px" : 0}
-                border="inputBox"
-                borderColor={
-                  activityErrors?.[f.id] ? "sentiment.negativeDefault" : ""
-                }
-                background={
-                  activityErrors?.[f.id] ? "sentiment.negativeOverlay" : ""
-                }
-                bgColor="base.light"
-                _focus={{
-                  borderWidth: "1px",
-                  shadow: "none",
-                  borderColor: "content.link",
-                }}
+                {...modalInputProps(!!activityErrors?.[f.id])}
                 {...register(`activity.${f.id}` as Path<Inputs>, {
                   required: f.required === false ? false : t("value-required"),
                 })}
               />
 
               {activityErrors?.[f.id] && (
-                <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
-                  <Text fontSize="body.md">
-                    {activityErrors?.[f.id]?.message}
-                  </Text>
-                </Box>
+                <ModalFieldError message={activityErrors?.[f.id]?.message} />
               )}
             </Field>
           )}
           {f.type === "number" && (
-            <Field w="full" label={t(f.id)}>
+            <Field w="full" label={t(f.id)} required={f.required !== false}>
               <HStack>
                 <FormattedNumberInput
+                  inputHeight="48px"
                   placeholder={t("activity-data-amount-placeholder")}
                   max={f.max!}
                   id={f.id}
                   min={f.min!}
                   control={control}
                   name={`activity.${f.id}`}
+                  invalid={!!activityErrors?.[f.id]}
                   t={t}
                   w="full"
                 />
@@ -177,86 +154,47 @@ export const DynamicFieldsSection = ({
                         f.required === false ? false : t("option-required"),
                     }}
                     render={({ field }) => (
-                      <NativeSelectRoot
-                        borderRadius="4px"
-                        borderWidth={
-                          activityErrors?.[`${f.id}-unit`] ? "1px" : 0
-                        }
-                        border="inputBox"
-                        h="42px"
-                        shadow="1dp"
-                        borderColor={
-                          activityErrors?.[`${f.id}-unit`]
-                            ? "sentiment.negativeDefault"
-                            : ""
-                        }
-                        background={
-                          activityErrors?.[`${f.id}-unit`]
-                            ? "sentiment.negativeOverlay"
-                            : ""
-                        }
-                        _focus={{
-                          borderWidth: "1px",
-                          shadow: "none",
-                          borderColor: "content.link",
-                        }}
-                        bgColor="base.light"
-                        {...field}
-                        onChange={(e: React.ChangeEvent<HTMLDivElement>) => {
-                          const value = (
-                            e.target as unknown as HTMLSelectElement
-                          ).value;
-                          field.onChange(value);
+                      <ModalSelect
+                        placeholder={t("select-unit")}
+                        invalid={!!activityErrors?.[`${f.id}-unit`]}
+                        name={field.name}
+                        value={(field.value as string) ?? ""}
+                        onBlur={field.onBlur}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                          field.onChange(e.target.value);
                           setValue(
                             `activity.${f.id}-unit` as Path<Inputs>,
-                            value,
+                            e.target.value,
                           );
                         }}
                       >
-                        <NativeSelectField
-                          value={field.value as string}
-                          placeholder={t("select-unit")}
-                        >
-                          {f.units?.map((item: string) => (
-                            <option key={item} value={item}>
-                              {t(item)}
-                            </option>
-                          ))}
-                        </NativeSelectField>
-                      </NativeSelectRoot>
+                        {f.units?.map((item: string) => (
+                          <option key={item} value={item}>
+                            {t(item)}
+                          </option>
+                        ))}
+                      </ModalSelect>
                     )}
                   />
                 )}
               </HStack>
               {activityErrors?.[f.id] && (
-                <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
-                  <Text fontSize="body.md">
-                    {activityErrors?.[f.id]?.message}
-                  </Text>
-                </Box>
+                <ModalFieldError message={activityErrors?.[f.id]?.message} />
               )}
-              {activityErrors?.[`${f.id}-unit`] &&
-                !activityErrors?.[f.id] && (
-                  <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                    <Icon as={MdWarning} color="sentiment.negativeDefault" />
-                    <Text fontSize="body.md">
-                      {activityErrors?.[`${f.id}-unit`]?.message}
-                    </Text>
-                  </Box>
-                )}
+              {activityErrors?.[`${f.id}-unit`] && !activityErrors?.[f.id] && (
+                <ModalFieldError
+                  message={activityErrors?.[`${f.id}-unit`]?.message}
+                />
+              )}
             </Field>
           )}
           {f.dependsOn && (
-            <Field w="full" label={t(f.id)}>
+            <Field w="full" label={t(f.id)} required={f.required !== false}>
               <DependentSelectInput
                 field={f}
                 register={register as unknown as UseFormRegister<FieldValues>}
                 setValue={
-                  setValue as unknown as (
-                    name: string,
-                    value: unknown,
-                  ) => void
+                  setValue as unknown as (name: string, value: unknown) => void
                 }
                 getValues={
                   getValues as unknown as UseFormGetValues<FieldValues>
@@ -268,8 +206,8 @@ export const DynamicFieldsSection = ({
               />
             </Field>
           )}
-        </Box>
+        </GridItem>
       ))}
-    </HStack>
+    </Grid>
   );
 };

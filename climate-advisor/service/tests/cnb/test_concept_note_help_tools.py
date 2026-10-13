@@ -149,3 +149,49 @@ def test_labels_match_frontend_translations(ui_locale):
         for name, (key, value) in UI_LABEL_KEYS.items()
     }
     assert UI_LABELS[ui_locale] == expected
+
+
+async def test_help_lists_uploaded_files_with_the_newest_flagged():
+    context = {
+        "selected_sources": [
+            {
+                "source_index": 1,
+                "filename": "brief.pdf",
+                "uploaded_at": "2026-09-25T03:27:42+00:00",
+                "newest": False,
+                "summary": "Not repeated in help.",
+            },
+            {
+                "source_index": 2,
+                "filename": "plan.pdf",
+                "uploaded_at": "2026-09-25T04:00:07+00:00",
+                "newest": True,
+                "summary": "Not repeated in help.",
+            },
+        ]
+    }
+    with (
+        patch(
+            "app.tools.concept_note_help_tools.load_agent_context",
+            new=AsyncMock(return_value=context),
+        ),
+        patch(
+            "app.tools.concept_note_help_tools.load_ui_state",
+            new=AsyncMock(return_value={"draft": {"exists": True}}),
+        ),
+    ):
+        result = await invoke(make_tool())
+    assert result["uploaded_files"] == [
+        {
+            "source_index": 1,
+            "filename": "brief.pdf",
+            "uploaded_at": "2026-09-25T03:27:42+00:00",
+            "newest": False,
+        },
+        {
+            "source_index": 2,
+            "filename": "plan.pdf",
+            "uploaded_at": "2026-09-25T04:00:07+00:00",
+            "newest": True,
+        },
+    ]

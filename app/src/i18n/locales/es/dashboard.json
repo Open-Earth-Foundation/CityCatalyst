@@ -347,5 +347,10 @@
   "removal": "Eliminación",
   "removals-not-countable-footnote": "* Los subsectores con eliminaciones no son contables como emisiones",
   "no-cited-source": "Sin fuente citada",
-  "hero-inventory-line": "{{year}} · {{value}} {{unit}}"
+  "hero-inventory-line": "{{year}} · {{value}} {{unit}}",
+  "default-organization": "Organización Predeterminada",
+  "invite-email-failed-toast-title": "Invitación creada, pero no pudimos enviarla por correo electrónico",
+  "invite-email-failed-toast-description": "No pudimos enviar la invitación a {{emails}}. Comparte el enlace de invitación con ellos directamente.",
+  "invite-email-failed-toast-description-many": "No pudimos enviar la invitación a {{count}} invitados. Comparte los enlaces de invitación con ellos directamente.",
+  "invite-link-in-clipboard": "El enlace está en tu portapapeles."
 }

@@ -177,6 +177,7 @@ describe("Concept Note dashboard presentation helpers", () => {
           missing_context: [12],
           source_counts: { ready: 2, queued: 1, failed: -1 },
           optional_sources: { ghgi: "included", hiap: "unavailable" },
+          city_population: { population: "1000000", year: 2025 },
           source_provenance: {
             ghgi: {
               inventory_id: "00000000-0000-4000-8000-000000000024",
@@ -212,6 +213,7 @@ describe("Concept Note dashboard presentation helpers", () => {
       queuedSources: 1,
       processingSources: 0,
       failedSources: 0,
+      cityPopulation: { population: 1_000_000, year: 2025 },
       ghgiStatus: "included",
       hiapStatus: "unavailable",
       sourceProvenance: {
@@ -247,6 +249,7 @@ describe("Concept Note dashboard presentation helpers", () => {
       },
       missingContext: [],
       readySources: 0,
+      cityPopulation: null,
     });
 
     expect(

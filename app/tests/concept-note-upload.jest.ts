@@ -496,6 +496,27 @@ describe("Concept Note source upload route", () => {
     expect(enqueue).not.toHaveBeenCalled();
   });
 
+  it("forwards the CA upload-limit conflict with its code and stores nothing", async () => {
+    const problem = {
+      code: "concept_note_upload_limit_reached",
+      detail: "A concept note can have at most 10 files",
+      status: 409,
+    };
+    callConceptNoteApi.mockResolvedValueOnce(
+      Response.json(problem, { status: 409 }),
+    );
+    const response = await uploadHandler(
+      requestWithFile("%PDF-1.7\ncontent"),
+      context,
+    );
+
+    expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toEqual(problem);
+    expect(putFile).not.toHaveBeenCalled();
+    expect(enqueue).not.toHaveBeenCalled();
+    expect(updateUpload).not.toHaveBeenCalled();
+  });
+
   it("retains the stored source and marks CA failed when enqueueing fails", async () => {
     enqueue.mockRejectedValueOnce(new Error("database unavailable"));
 

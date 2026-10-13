@@ -46,7 +46,7 @@ type ReviewDecisionPayload = {
   note?: string;
 };
 
-function canReviewDraftStatus(status: string): boolean {
+export function canReviewDraftStatus(status: string): boolean {
   return REVIEW_READY_DRAFT_STATUSES.has(status);
 }
 

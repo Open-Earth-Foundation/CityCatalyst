@@ -11,13 +11,24 @@ from typing import Any
 from uuid import UUID
 
 from app.models.cnb.concept_note_markdown import source_format_from_filename
-from app.models.cnb.context_bundle import ConceptNoteContextBundle, SelectedSource
+from app.models.cnb.context_bundle import (
+    ConceptNoteContextBundle,
+    SelectedSource,
+    SourceTextContext,
+)
 from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
-from app.utils.concept_note_context import omit_context_identifiers
+from app.persistence.concept_notes.source_revalidation import (
+    queue_source_revalidation,
+)
+from app.services.cnb.visual_context import VISUAL_CONTEXT_CONTRACT_VERSION
+from app.utils.concept_note_context import (
+    manual_population_context,
+    omit_context_identifiers,
+)
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -113,11 +124,13 @@ async def begin_build(
             )
             previous_sources = list(previous_bundle.selected_sources)
 
-            # Reuse only a ready bundle built from this exact source set.
+            # Reuse only a ready bundle built from this exact source set whose
+            # visual projection already matches the current full-envelope contract.
             already_current = bool(
                 not force
                 and previous.get("status") == "ready"
                 and previous.get("source_fingerprint") == fingerprint
+                and _selected_sources_have_current_visual_contract(previous_sources)
             )
             if not already_current:
                 # Preserve the last completed context while its replacement builds.
@@ -134,6 +147,9 @@ async def begin_build(
                         "status": "building",
                         "document_grounding": _document_grounding(previous),
                         "available_context": _available_context_from_bundle(
+                            previous_bundle
+                        ),
+                        "city_population": _city_population_from_bundle(
                             previous_bundle
                         ),
                         "source_provenance": _source_provenance_from_bundle(
@@ -154,6 +170,7 @@ async def begin_build(
                             "failed": status_counts.get("failed", 0),
                         },
                         "optional_sources": {
+                            "city": "pending",
                             "ghgi": "pending",
                             "hiap": "pending",
                         },
@@ -197,13 +214,18 @@ async def complete_build(
     optional_sources: dict[str, str],
     warnings: list[str],
     city: dict[str, Any] | None = None,
+    revalidation_upload_ids: list[UUID] | None = None,
+    source_text: SourceTextContext | None = None,
     inventory_candidate: dict[str, Any] | None = None,
 ) -> bool:
     """Commit only the active build's owned bundle sections.
 
     ``city`` replaces the city profile only when provided, so a failed lookup
-    keeps the last usable profile. ``inventory_candidate`` identifies the
+    keeps the last usable profile; a failed population-only lookup keeps the
+    last population the same way. ``inventory_candidate`` identifies the
     inventory version this build checked, so a later refresh can detect changes.
+    ``revalidation_upload_ids`` queues a durable chapter revalidation job for
+    newly analyzed sources in the same transaction.
     """
     try:
         async with session_factory() as session, session.begin():
@@ -259,8 +281,11 @@ async def complete_build(
                 session.add(bundle_row)
             bundle = normalize_bundle(bundle_row.context_bundle)
             bundle.selected_sources = selected_sources
+            bundle.source_text = source_text
             if city is not None:
-                bundle.cc_context.city = city
+                bundle.cc_context.city = _keep_population_after_failed_lookup(
+                    city, bundle.cc_context.city
+                )
             bundle.cc_context.ghgi = ghgi
             bundle.cc_context.hiap = hiap
             bundle_row.context_bundle = bundle.model_dump(mode="json")
@@ -273,6 +298,7 @@ async def complete_build(
                     "uploaded_evidence" if selected_sources else "none"
                 ),
                 "available_context": _available_context_from_bundle(bundle),
+                "city_population": _city_population_from_bundle(bundle),
                 "source_provenance": _source_provenance_from_bundle(bundle),
                 "inventory_candidate": inventory_candidate,
                 "context_changes": (
@@ -296,6 +322,12 @@ async def complete_build(
                 run.context_summary,
                 next_progress,
             )
+            # Queue chapter revalidation atomically so a crash cannot drop it.
+            if revalidation_upload_ids:
+                run.context_summary = queue_source_revalidation(
+                    run.context_summary,
+                    revalidation_upload_ids,
+                )
             if run.workflow_step == "assembling_context":
                 run.workflow_step = "interviewing"
             run.status = "active"
@@ -497,6 +529,42 @@ async def recover_stale_builds(
         ) from exc
 
 
+async def load_source_revalidation_inputs(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    run_id: UUID,
+    upload_ids: list[UUID],
+) -> list[tuple[ConceptNoteUploadSnapshot, SelectedSource]]:
+    """Pair still-ready uploads with their persisted analyses for a retry.
+
+    Uploads that were removed, are no longer ready, or whose analysis no longer
+    matches the stored digest are skipped; the current bundle is authoritative.
+    """
+    async with session_factory() as session:
+        uploads = list(
+            (
+                await session.scalars(
+                    select(ConceptNoteUpload).where(
+                        ConceptNoteUpload.run_id == run_id,
+                        ConceptNoteUpload.upload_id.in_(upload_ids),
+                        ConceptNoteUpload.ingest_status == "ready",
+                    )
+                )
+            ).all()
+        )
+        bundle_row = await session.get(ConceptNoteContextBundleRow, run_id)
+        bundle = normalize_bundle(
+            bundle_row.context_bundle if bundle_row is not None else None
+        )
+    sources = {source.upload_id: source for source in bundle.selected_sources}
+    inputs: list[tuple[ConceptNoteUploadSnapshot, SelectedSource]] = []
+    for upload in uploads:
+        source = sources.get(upload.upload_id)
+        if source is not None and source.sha256 == upload.markdown_sha256:
+            inputs.append((_upload_snapshot(upload), source))
+    return inputs
+
+
 async def load_query_source(
     *,
     session_factory: async_sessionmaker[AsyncSession],
@@ -589,6 +657,9 @@ async def load_agent_context(
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
             )
+            # Upload times let the agent tell which file the user just added.
+            uploaded_at = await _source_upload_times(session, bundle.selected_sources)
+            newest = max(uploaded_at.values(), default=None)
             return omit_context_identifiers(
                 {
                     "workflow_step": run.workflow_step,
@@ -604,20 +675,24 @@ async def load_agent_context(
                             "source_format": source.source_format,
                             "summary": source.summary,
                             "topics": source.topics,
+                            "visual_context": [
+                                item.model_dump(mode="json")
+                                for item in source.visual_context
+                            ],
+                            "uploaded_at": _iso(uploaded_at.get(source.upload_id)),
+                            "newest": newest is not None
+                            and uploaded_at.get(source.upload_id) == newest,
                         }
                         for source_index, source in enumerate(
                             bundle.selected_sources, start=1
                         )
                     ],
                     "cc_context": bundle.cc_context.model_dump(mode="json"),
-                    "manual_population": (
-                        {**run.context_summary["manual_population"], "source": "user_entered"}
-                        if (run.context_summary or {}).get("manual_population")
-                        else None
-                    ),
+                    "manual_population": manual_population_context(run.context_summary),
                     "funder_context": bundle.funder_context,
                     "similar_projects": bundle.similar_projects,
                     "document_context": bundle.document_context,
+                    "source_text": source_text_status(bundle.source_text),
                 }
             )
     except ContextBundlePersistenceError:
@@ -629,6 +704,66 @@ async def load_agent_context(
             503,
             "Concept Note context storage is unavailable",
         ) from exc
+
+
+async def _source_upload_times(
+    session: AsyncSession,
+    sources: list[SelectedSource],
+) -> dict[UUID, datetime]:
+    """Map each bundled source to the time its upload was received."""
+    if not sources:
+        return {}
+    rows = await session.execute(
+        select(ConceptNoteUpload.upload_id, ConceptNoteUpload.received_at).where(
+            ConceptNoteUpload.upload_id.in_([source.upload_id for source in sources])
+        )
+    )
+    return {upload_id: received_at for upload_id, received_at in rows.all()}
+
+
+def _iso(value: datetime | None) -> str | None:
+    """Serialize an optional timestamp for model-facing context."""
+    return value.isoformat() if value is not None else None
+
+
+def source_text_status(source_text: SourceTextContext | None) -> dict[str, Any]:
+    """Tell agents whether complete source text accompanies the summaries."""
+    if source_text is None:
+        return {"mode": "summary", "token_count": 0, "max_tokens": None}
+    return source_text.model_dump(mode="json", exclude={"documents"})
+
+
+def source_documents_for_model(
+    source_text: SourceTextContext | None,
+) -> list[dict[str, Any]]:
+    """Return identifier-free complete source text, or nothing in summary mode."""
+    if source_text is None or source_text.mode != "full_text":
+        return []
+    return [
+        document.model_dump(mode="json", exclude={"upload_id"})
+        for document in source_text.documents
+    ]
+
+
+async def load_source_documents(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    user_id: str,
+    run_id: UUID,
+) -> list[dict[str, Any]]:
+    """Load complete source text for an owned run when it fits the budget."""
+    async with session_factory() as session:
+        await _require_owned_run(
+            session=session,
+            user_id=user_id,
+            run_id=run_id,
+            lock=False,
+        )
+        bundle_row = await session.get(ConceptNoteContextBundleRow, run_id)
+        bundle = normalize_bundle(
+            bundle_row.context_bundle if bundle_row is not None else None
+        )
+        return source_documents_for_model(bundle.source_text)
 
 
 async def _require_owned_run(
@@ -667,11 +802,23 @@ def source_fingerprint(uploads: list[ConceptNoteUploadSnapshot]) -> str:
             "sha256": upload.markdown_sha256,
             "source_format": upload.source_format,
             "page_count": upload.page_count,
+            "structured_sha256": upload.structured_sha256,
+            "structured_schema_version": upload.structured_schema_version,
         }
         for upload in uploads
     ]
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _selected_sources_have_current_visual_contract(
+    sources: list[SelectedSource],
+) -> bool:
+    """Return whether every selected source already carries the full-envelope contract."""
+    return all(
+        source.visual_context_contract_version == VISUAL_CONTEXT_CONTRACT_VERSION
+        for source in sources
+    )
 
 
 async def _matches_current_source_fingerprint(
@@ -750,6 +897,33 @@ def _available_context_from_bundle(
         "hiap": context.hiap is not None,
         "uploaded_documents": bool(bundle.selected_sources),
     }
+
+
+def _keep_population_after_failed_lookup(
+    city: dict[str, Any],
+    previous_city: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Drop the lookup-failure flag, restoring the prior population it guards.
+
+    A genuine no-population response carries no flag and stays null.
+    """
+    profile = dict(city)
+    if profile.pop("population_lookup_failed", False) and previous_city:
+        profile["population"] = previous_city.get("population")
+        profile["population_year"] = previous_city.get("population_year")
+    return profile
+
+
+def _city_population_from_bundle(
+    bundle: ConceptNoteContextBundle,
+) -> dict[str, int] | None:
+    """Report the CityCatalyst population this bundle gives the models, if any."""
+    city = bundle.cc_context.city or {}
+    population = city.get("population")
+    year = city.get("population_year")
+    if population is None or year is None:
+        return None
+    return {"population": population, "year": year}
 
 
 def _source_provenance_from_bundle(
@@ -841,6 +1015,11 @@ def _upload_snapshot(upload: ConceptNoteUpload) -> ConceptNoteUploadSnapshot:
         markdown_s3_key=upload.markdown_s3_key,
         markdown_sha256=upload.markdown_sha256,
         page_count=upload.page_count,
+        annotation_mode=upload.annotation_mode,
+        structured_s3_key=upload.structured_s3_key,
+        structured_sha256=upload.structured_sha256,
+        structured_size_bytes=upload.structured_size_bytes,
+        structured_schema_version=upload.structured_schema_version,
         status=upload.ingest_status,
         error_code=upload.ingest_error_code,
         received_at=upload.received_at,

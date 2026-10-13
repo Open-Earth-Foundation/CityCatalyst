@@ -73,7 +73,9 @@ async def load_city_profile(
     """Build the compact city profile the CityCatalyst city page shows.
 
     The boundary geometry is omitted. A population lookup failure keeps the
-    rest of the profile, with population fields left null.
+    rest of the profile, with population fields left null and a transient
+    ``population_lookup_failed`` flag so the bundle can keep its prior figure.
+    A city without a recorded population returns null fields and no flag.
     """
     city_payload = await cc_client.get_city(
         city_id=str(city_id), token=token, user_id=user_id
@@ -81,6 +83,7 @@ async def load_city_profile(
     city = city_payload.get("data") if isinstance(city_payload, Mapping) else None
     if not isinstance(city, Mapping) or str(city.get("cityId")) != str(city_id):
         raise ConceptNoteCityContextDataError("City profile response is invalid")
+    population_lookup_failed = False
     try:
         population_payload = await cc_client.get_city_population(
             city_id=str(city_id), token=token, user_id=user_id
@@ -88,10 +91,11 @@ async def load_city_profile(
         population = population_payload.get("data")
     except CityCatalystClientError:
         population = None
+        population_lookup_failed = True
     if not isinstance(population, Mapping):
         population = {}
     area = city.get("area")
-    return {
+    profile: dict[str, Any] = {
         "name": optional_string(city.get("name")),
         "locode": optional_string(city.get("locode")),
         "country": optional_string(city.get("country")),
@@ -103,6 +107,9 @@ async def load_city_profile(
         "population_year": optional_int(population.get("year")),
         "source": "citycatalyst",
     }
+    if population_lookup_failed:
+        profile["population_lookup_failed"] = True
+    return profile
 
 
 async def load_ghgi_context(

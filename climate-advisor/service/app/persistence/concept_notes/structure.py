@@ -21,9 +21,9 @@ from app.models.db.cnb_workspace import (
     ConceptNoteChapterValidation,
 )
 from app.persistence.concept_notes.edits import EditOperationError
-from app.persistence.concept_notes.workspace import (
+from app.persistence.concept_notes.workspace_queries import _latest_revision
+from app.persistence.concept_notes.workspace_snapshots import (
     WorkspaceChapterSnapshot,
-    _latest_revision,
     _snapshot_chapters,
 )
 from sqlalchemy import select, update

@@ -31,6 +31,8 @@ export interface DropdownProps {
   width?: string;
   maxW?: string;
   flex?: string | number;
+  invalid?: boolean;
+  errorText?: React.ReactNode;
 }
 
 export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
@@ -48,6 +50,8 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       width,
       maxW,
       flex,
+      invalid,
+      errorText,
     },
     ref,
   ) {
@@ -73,6 +77,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
         maxW={maxW}
         flex={flex}
         required={required}
+        invalid={invalid}
       >
         <SelectRoot
           ref={ref}
@@ -107,7 +112,11 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                     />
                   </Tooltip>
                 ) : (
-                  <Icon as={labelIcon} color="interactive.control" boxSize={4} />
+                  <Icon
+                    as={labelIcon}
+                    color="interactive.control"
+                    boxSize={4}
+                  />
                 ))}
             </SelectLabel>
           )}
@@ -115,7 +124,9 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
             css={{
               "& [data-part=trigger]": {
                 borderWidth: "1px",
-                borderColor: "border.neutral",
+                borderColor: invalid
+                  ? "sentiment.negativeDefault"
+                  : "border.neutral",
                 borderRadius: "minimal",
                 bg: "background.default",
               },
@@ -147,6 +158,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
             ))}
           </SelectContent>
         </SelectRoot>
+        {errorText && <Field.ErrorText>{errorText}</Field.ErrorText>}
       </Field.Root>
     );
   },

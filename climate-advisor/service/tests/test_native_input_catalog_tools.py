@@ -14,6 +14,7 @@ from agents.tool import ToolContext
 from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.native_input_catalog_service import (
     ActiveRequestContext,
+    NativeInputCatalogService,
     NativeInputDiscovery,
 )
 from app.tools.native_input_catalog_tools import build_native_input_catalog_tools
@@ -788,3 +789,51 @@ async def test_failure_for_one_inventory_does_not_affect_the_next_call() -> None
     assert failed["error_code"] == "capability_unavailable"
     assert succeeded["success"] is True
     assert client.requests[-1]["request_payload"]["inventoryId"] == INVENTORY_A
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "failure",
+    [TimeoutError("Core timed out"), CityCatalystClientError("down", status_code=503)],
+)
+async def test_discovery_outage_is_an_error_not_an_empty_catalog(
+    failure: Exception,
+) -> None:
+    """A Core timeout for an inventory that has a ranking must not look like no ranking."""
+    core = AsyncMock()
+    core.discover_native_inputs.side_effect = failure
+    service = NativeInputCatalogService(core_client=core)
+    tools = build_native_input_catalog_tools(
+        service=service,
+        context=_context(),
+        token_ref={"value": "jwt-token"},
+        client_factory=lambda: _StubClient(),
+    )
+    by_name = {getattr(tool, "name"): tool for tool in tools}
+
+    outage = await _call(by_name, "native_input_discover", {"inventoryId": INVENTORY_A})
+
+    assert outage["success"] is False
+    assert outage["error_code"] == "temporarily_unavailable"
+    assert "entries" not in json.dumps(outage)
+
+    core.discover_native_inputs.side_effect = CityCatalystClientError(
+        "missing", status_code=404
+    )
+    absent = await _call(by_name, "native_input_discover", {"inventoryId": INVENTORY_A})
+
+    assert absent["success"] is True
+    assert absent["data"]["entries"] == []
+
+
+@pytest.mark.asyncio
+async def test_read_outage_is_reported_as_temporarily_unavailable() -> None:
+    """A Core server error on read is not a stored-input absence."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    client.error = CityCatalystClientError("down", status_code=503)
+    failed = await _call(tools, "native_input_read", _read_args(INVENTORY_A))
+
+    assert failed["success"] is False
+    assert failed["error_code"] == "temporarily_unavailable"

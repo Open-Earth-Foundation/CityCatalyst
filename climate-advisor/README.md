@@ -1452,8 +1452,16 @@ sequential cities cost up to `1 + 2 x 4 + 1 = 10` model turns, so streamed chat
 runs with `chat.max_agent_turns: 16` (`llm_config.yaml`, override with the
 `CHAT_MAX_AGENT_TURNS` environment variable; integer from 1 to 64, anything else stops the service at startup). This limit applies to all streamed
 chat, not only rankings. If a run still reaches it, the user gets a partial
-answer naming the cities already read and the pending ones instead of a generic
-error (`app/utils/max_turns_handler.py`).
+answer instead of a generic error (`app/utils/max_turns_handler.py`). It keeps a
+bounded summary (up to 5 actions per city, rank and name) of every successful
+read, including reads of the chat's own inventory, and lists a city as "Not
+finished" when its read has no summary the user can see.
+
+Discovery failures are not "no ranking": a Core timeout, a server error or a
+rate limit makes `native_input_discover` (and a failed `native_input_read`)
+return `success: false` with `error_code: temporarily_unavailable`, and the
+prompts tell the model to ask the user to try again. Authorization and
+not-found answers still look like an empty catalog.
 
 Known limitation: a legacy HIAP ranking created by a colleague is hidden by Core
 (the catalog row carries the creator's `userId`; see CC-768), so an accessible

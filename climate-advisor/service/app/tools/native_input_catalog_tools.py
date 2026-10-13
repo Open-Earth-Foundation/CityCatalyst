@@ -19,6 +19,8 @@ from app.services.native_input_catalog_service import (
     ActiveRequestContext,
     NativeInputCatalogService,
     NativeInputDiscovery,
+    NativeInputDiscoveryUnavailableError,
+    is_transient_core_failure,
 )
 
 logger = logging.getLogger(__name__)
@@ -26,6 +28,11 @@ logger = logging.getLogger(__name__)
 _MAX_TOOL_INPUT_BYTES = 16 * 1024
 _MAX_TOOL_OUTPUT_BYTES = 64 * 1024
 _UNAVAILABLE_MESSAGE = "Requested capability is unavailable."
+_TEMPORARILY_UNAVAILABLE_CODE = "temporarily_unavailable"
+_TEMPORARILY_UNAVAILABLE_MESSAGE = (
+    "CityCatalyst is temporarily unavailable, so this lookup did not complete. "
+    "This does not mean nothing is stored. Ask the user to try again shortly."
+)
 _DISCOVER_TOOL_NAME = "native_input_discover"
 _READ_TOOL_NAME = "native_input_read"
 _DISCOVER_DESCRIPTION = (
@@ -35,7 +42,9 @@ _DISCOVER_DESCRIPTION = (
     "Call this first when the user asks about their ranked, prioritized, or "
     "selected climate actions (HIAP ranking, action plan), or about stored "
     "inventory context. Each entry lists its catalogId and capabilityIds. An empty "
-    "result means nothing is stored, which is not an access error."
+    "result means nothing is stored, which is not an access error. If the result "
+    "is an error with error_code temporarily_unavailable, the lookup failed: do not "
+    "say that no ranking exists."
 )
 _READ_DESCRIPTION = (
     "Read one stored input returned by native_input_discover, passing its catalogId "
@@ -192,6 +201,13 @@ def build_native_input_catalog_tools(
                     context=discover_context, token=token
                 )
             return _discovery_success_payload(discovery)
+        except NativeInputDiscoveryUnavailableError:
+            logger.warning("NativeInputCatalog discovery temporarily unavailable")
+            return _error_payload(
+                _DISCOVER_TOOL_NAME,
+                _TEMPORARILY_UNAVAILABLE_CODE,
+                _TEMPORARILY_UNAVAILABLE_MESSAGE,
+            )
         except Exception:
             logger.warning("NativeInputCatalog discovery failed")
             return _error_payload(
@@ -271,6 +287,12 @@ def build_native_input_catalog_tools(
                 capability_id,
                 error.status_code,
             )
+            if is_transient_core_failure(error.status_code):
+                return _error_payload(
+                    _READ_TOOL_NAME,
+                    _TEMPORARILY_UNAVAILABLE_CODE,
+                    _TEMPORARILY_UNAVAILABLE_MESSAGE,
+                )
             return _error_payload(
                 _READ_TOOL_NAME,
                 "tool_error",

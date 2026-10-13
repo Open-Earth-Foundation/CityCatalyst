@@ -19,6 +19,19 @@ _SAFE_ENTRY_FIELDS = (
 )
 
 
+class NativeInputDiscoveryUnavailableError(Exception):
+    """Core discovery failed for an operational reason, not because nothing exists."""
+
+
+def is_transient_core_failure(status_code: Optional[int]) -> bool:
+    """Return True for transport failures, timeouts and server-side errors.
+
+    Authorization and not-found answers (4xx other than timeout and rate limit)
+    stay indistinguishable from an empty catalog on purpose.
+    """
+    return status_code is None or status_code >= 500 or status_code in (408, 429)
+
+
 @dataclass(frozen=True)
 class ActiveRequestContext:
     """Authenticated request identity and the applicable resource scope."""
@@ -74,7 +87,10 @@ class NativeInputCatalogService:
         token: Optional[str],
         cursor: Optional[str] = None,
     ) -> NativeInputDiscovery:
-        """Discover current safe entries for the active context and fail closed."""
+        """Discover current safe entries for the active context and fail closed.
+
+        Raises NativeInputDiscoveryUnavailableError for timeouts and server errors.
+        """
         if not self.enabled or context is None:
             return self._empty_discovery()
 
@@ -89,7 +105,17 @@ class NativeInputCatalogService:
                 user_id=context.user_id,
                 thread_id=context.thread_id,
             )
-        except (CityCatalystClientError, TimeoutError):
+        except TimeoutError as error:
+            raise NativeInputDiscoveryUnavailableError(
+                "Core discovery timed out."
+            ) from error
+        except CityCatalystClientError as error:
+            # Unauthorized or missing resources look like an empty catalog; an
+            # outage must not, or a ranking that exists would be reported as absent.
+            if is_transient_core_failure(error.status_code):
+                raise NativeInputDiscoveryUnavailableError(
+                    "Core discovery is temporarily unavailable."
+                ) from error
             return self._empty_discovery()
         return self._parse_discovery(response)
 

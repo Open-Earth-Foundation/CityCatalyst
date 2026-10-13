@@ -18,6 +18,9 @@ _LIST_TOOL_NAME = "inventory_list_accessible"
 _CATALOG_READ_TOOL_NAME = "native_input_read"
 _CATALOG_DISCOVER_TOOL_NAME = "native_input_discover"
 _CATALOG_TOOL_NAMES = {_CATALOG_READ_TOOL_NAME, _CATALOG_DISCOVER_TOOL_NAME}
+_CHAT_INVENTORY_LABEL = "your current inventory"
+_MAX_SUMMARY_ACTIONS = 5
+_MAX_ACTION_LABEL_CHARS = 80
 
 
 def _parse_json(value: Any) -> Optional[Dict[str, Any]]:
@@ -67,13 +70,56 @@ def _item_call_id(item: Any) -> Optional[str]:
     return getattr(raw, "call_id", None)
 
 
-def summarize_catalog_progress(new_items: List[Any]) -> Dict[str, List[str]]:
-    """Return the cities already answered and the cities still pending.
+def _action_label(action: Dict[str, Any]) -> Optional[str]:
+    """Return a short user-facing label for one returned action, or None."""
+    name = action.get("name")
+    if not isinstance(name, str) or not name.strip():
+        name = action.get("explanation")
+    if not isinstance(name, str) or not name.strip():
+        return None
+    text = " ".join(name.split())
+    if len(text) > _MAX_ACTION_LABEL_CHARS:
+        text = text[: _MAX_ACTION_LABEL_CHARS - 3].rstrip() + "..."
+    rank = action.get("rank")
+    return f"#{rank} {text}" if isinstance(rank, int) else text
 
-    Answered means a successful native_input_read for an inventory. Pending
-    means the inventory was discovered or read without success. Cities the
-    model never reached cannot be known here and are covered by the generic
-    instruction in the message.
+
+def _collect_actions(value: Any, found: List[Dict[str, Any]]) -> None:
+    """Collect action-like dicts (with a rank or a name) from a read payload."""
+    if isinstance(value, dict):
+        actions = value.get("actions")
+        if isinstance(actions, list):
+            found.extend(item for item in actions if isinstance(item, dict))
+        for child in value.values():
+            if isinstance(child, (dict, list)) and child is not actions:
+                _collect_actions(child, found)
+    elif isinstance(value, list):
+        for child in value:
+            _collect_actions(child, found)
+
+
+def _summarize_read(output: Dict[str, Any]) -> Optional[str]:
+    """Return a bounded one-line summary of the actions in a successful read."""
+    actions: List[Dict[str, Any]] = []
+    _collect_actions(output.get("data"), actions)
+    labels = [label for label in map(_action_label, actions) if label]
+    if not labels:
+        return None
+    shown = labels[:_MAX_SUMMARY_ACTIONS]
+    extra = len(labels) - len(shown)
+    suffix = f" and {extra} more" if extra > 0 else ""
+    return "; ".join(shown) + suffix
+
+
+def summarize_catalog_progress(new_items: List[Any]) -> Dict[str, Any]:
+    """Return the cities already answered, the pending ones and what was read.
+
+    Answered means a successful native_input_read whose result holds a summary
+    that can be shown to the user. A read without a usable summary stays pending,
+    so the user is asked to resend it instead of being told it was delivered.
+    Reads that omit inventoryId use the chat inventory. Cities the model never
+    reached cannot be known here and are covered by the generic instruction in
+    the message.
     """
     calls: Dict[str, Dict[str, Any]] = {}
     list_outputs: List[Dict[str, Any]] = []
@@ -101,31 +147,40 @@ def summarize_catalog_progress(new_items: List[Any]) -> Dict[str, List[str]]:
 
     # Step 2: classify each inventory the model touched, in first-touch order.
     labels = _inventory_labels(list_outputs)
-    read_ok: Dict[str, bool] = {}
+    summaries: Dict[str, str] = {}
+    touched: List[str] = []
     for call_id, call in calls.items():
         if call["name"] not in _CATALOG_TOOL_NAMES:
             continue
-        label = labels.get(str(call["arguments"].get("inventoryId") or "").lower())
+        inventory_id = str(call["arguments"].get("inventoryId") or "").lower()
+        label = labels.get(inventory_id) if inventory_id else _CHAT_INVENTORY_LABEL
         if not label:
             continue
-        succeeded = (
-            call["name"] == _CATALOG_READ_TOOL_NAME
-            and call_results.get(call_id, {}).get("success") is True
-        )
-        read_ok[label] = read_ok.get(label, False) or succeeded
+        if label not in touched:
+            touched.append(label)
+        result = call_results.get(call_id, {})
+        if call["name"] == _CATALOG_READ_TOOL_NAME and result.get("success") is True:
+            summary = _summarize_read(result)
+            if summary:
+                summaries[label] = summary
     return {
-        "answered": [label for label, done in read_ok.items() if done],
-        "pending": [label for label, done in read_ok.items() if not done],
+        "answered": [label for label in touched if label in summaries],
+        "pending": [label for label in touched if label not in summaries],
+        "summaries": summaries,
     }
 
 
-def build_partial_answer(progress: Dict[str, List[str]]) -> str:
+def build_partial_answer(progress: Dict[str, Any]) -> str:
     """Compose the user-facing message for a run that stopped at the turn limit."""
     answered = progress["answered"]
     pending = progress["pending"]
+    summaries = progress.get("summaries", {})
     lines = ["I reached my step limit for one message, so this answer is partial."]
     if answered:
-        lines.append("Already read: " + ", ".join(answered) + ".")
+        lines.append(
+            "Already read: "
+            + " ".join(f"{label}: {summaries[label]}." for label in answered)
+        )
     if pending:
         lines.append("Not finished: " + ", ".join(pending) + ".")
     lines.append(

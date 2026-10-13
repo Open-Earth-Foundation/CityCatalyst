@@ -30,6 +30,7 @@ Available tools:
   - Takes no required arguments. Returns the catalog entries available for the current chat scope, each with `catalogId`, `kind`, `owningModule`, and `capabilityIds`.
   - An entry whose `capabilityIds` contains `hiap.inventory.context` holds the HIAP ranking. If no entry has `hiap.inventory.context` or `hiap_meed.ranking.context`, tell the user no ranking was found for this inventory. Do not say you lack access.
   - An entry whose `capabilityIds` contains `hiap_meed.ranking.context` holds a HIAP-MEED ranking (it counts as a ranking: read it); `hiap_meed.output_plan.context` holds a HIAP-MEED output plan for one action.
+  - If the result is an error (`success: false`, for example `error_code` `temporarily_unavailable`), the lookup failed and says nothing about whether a ranking exists. Tell the user it could not be retrieved right now and to try again shortly; never say no ranking was found and never say you lack access.
   - If `continuationCursor` is returned and the needed entry is not on the page, call again with that `cursor`. An empty page with a cursor does not mean no ranking: keep following the cursor until an entry appears or no cursor is returned, and read any entry with a ranking capability from any page.
 
 - `native_input_read`

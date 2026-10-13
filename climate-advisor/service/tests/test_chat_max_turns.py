@@ -136,6 +136,33 @@ def _list_output() -> dict:
     }
 
 
+_ACTION_NAMES = [
+    "Solar rooftops",
+    "Bus fleet",
+    "LED lighting",
+    "Tidal pilot",
+    "Wetland sink",
+    "Cycle lanes",
+    "Tree canopy",
+]
+
+
+def _read_output(count: int = 1) -> dict:
+    return {
+        "success": True,
+        "data": {
+            "categories": {
+                "mitigation": {
+                    "actions": [
+                        {"rank": rank, "name": name, "selected": rank == 1}
+                        for rank, name in enumerate(_ACTION_NAMES[:count], start=1)
+                    ]
+                }
+            }
+        },
+    }
+
+
 def test_progress_names_answered_and_pending_cities() -> None:
     items = [
         _call_item("c1", "inventory_list_accessible", {}),
@@ -147,7 +174,7 @@ def test_progress_names_answered_and_pending_cities() -> None:
             "native_input_read",
             {"inventoryId": INVENTORY_A, "catalogId": "x", "capabilityId": "y"},
         ),
-        _output_item("c3", {"success": True, "data": {}}),
+        _output_item("c3", _read_output()),
         _call_item("c4", "native_input_discover", {"inventoryId": INVENTORY_B}),
         _output_item("c4", {"success": True, "data": {"entries": []}}),
     ]
@@ -155,8 +182,9 @@ def test_progress_names_answered_and_pending_cities() -> None:
     progress = summarize_catalog_progress(items)
     message = build_partial_answer(progress)
 
-    assert progress == {"answered": ["Curitiba 2022"], "pending": ["Recife 2023"]}
-    assert "Already read: Curitiba 2022." in message
+    assert progress["answered"] == ["Curitiba 2022"]
+    assert progress["pending"] == ["Recife 2023"]
+    assert "Already read: Curitiba 2022: #1 Solar rooftops." in message
     assert "Not finished: Recife 2023." in message
     assert "new message" in message
 
@@ -167,3 +195,60 @@ def test_progress_without_catalog_calls_still_asks_for_a_new_message() -> None:
     assert "step limit" in message
     assert "Already read" not in message
     assert "new message" in message
+
+
+def test_partial_answer_keeps_the_retrieved_ranking_after_a_successful_read() -> None:
+    items = [
+        _call_item("c1", "inventory_list_accessible", {}),
+        _output_item("c1", _list_output()),
+        _call_item(
+            "c2",
+            "native_input_read",
+            {"inventoryId": INVENTORY_B, "catalogId": "x", "capabilityId": "y"},
+        ),
+        _output_item("c2", _read_output(count=7)),
+    ]
+
+    message = build_partial_answer(summarize_catalog_progress(items))
+
+    assert "#1 Solar rooftops" in message
+    assert "#5 Wetland sink" in message
+    assert "#6" not in message
+    assert "and 2 more" in message
+    assert "Not finished" not in message
+
+
+def test_partial_answer_includes_reads_of_the_default_chat_inventory() -> None:
+    items = [
+        _call_item("c1", "native_input_discover", {}),
+        _output_item("c1", {"success": True, "data": {"entries": []}}),
+        _call_item("c2", "native_input_read", {"catalogId": "x", "capabilityId": "y"}),
+        _output_item("c2", _read_output()),
+    ]
+
+    progress = summarize_catalog_progress(items)
+    message = build_partial_answer(progress)
+
+    assert progress["answered"] == ["your current inventory"]
+    assert "your current inventory: #1 Solar rooftops." in message
+
+
+def test_a_successful_read_without_usable_actions_is_marked_unfinished() -> None:
+    items = [
+        _call_item("c1", "inventory_list_accessible", {}),
+        _output_item("c1", _list_output()),
+        _call_item(
+            "c2",
+            "native_input_read",
+            {"inventoryId": INVENTORY_A, "catalogId": "x", "capabilityId": "y"},
+        ),
+        _output_item("c2", {"success": True, "data": {}}),
+    ]
+
+    progress = summarize_catalog_progress(items)
+    message = build_partial_answer(progress)
+
+    assert progress["answered"] == []
+    assert progress["pending"] == ["Curitiba 2022"]
+    assert "Not finished: Curitiba 2022." in message
+    assert "Already read" not in message

@@ -74,6 +74,8 @@ export function reconcileExtraction(
         .filter(
           (total) =>
             total.level === "total" &&
+            // A scope total (scope 1 of Table A-1) is no grand total.
+            !total.scope &&
             Number.isFinite(total.value) &&
             total.value !== 0 &&
             // A grand total of another year (a 2016 comparison) is no target.

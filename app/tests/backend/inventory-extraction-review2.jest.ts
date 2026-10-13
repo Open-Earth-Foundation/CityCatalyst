@@ -1,6 +1,7 @@
 /**
  * CC-1008 Re-review 2: regression tests for the page selection, year, progress,
- * failed-page, total-label, hidden-total and reference-scope findings.
+ * failed-page, total-label, hidden-total and reference-scope findings, plus the
+ * Re-review 3 warnings (scope totals, year on totals only, I.4.4, no target year).
  * The LLM is mocked; these tests prove the code around the model.
  */
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
@@ -116,7 +117,7 @@ describe("1. ranking: an exact page beats a wider run", () => {
 });
 
 describe("2. year: decided after selection, not per page", () => {
-  it("does not reconcile a year-less page when another page names 2021", () => {
+  it("does not reconcile a year-less page 4.8% off a 2021 total", () => {
     const result = selectReconciledPages(
       [
         pageOf(15, [grandTotal()]),
@@ -124,9 +125,51 @@ describe("2. year: decided after selection, not per page", () => {
       ],
       2021,
     );
+    // Only the total names a year, so the year is assumed and 1% applies.
     expect(result.summary.pageSelection).toBe("fallback");
+    expect(result.summary.yearAssumed).toBe(true);
+  });
+
+  it("drops a year-less page when a line item on another page names 2021", () => {
+    const result = selectReconciledPages(
+      [
+        pageOf(15, [grandTotal(), row("I.2.1", "1", 1)]),
+        pageOf(60, [row("I.3.1", "1", 9100000, { year: null })]),
+      ],
+      2021,
+    );
     expect(result.summary.yearAssumed).toBe(false);
     expect(result.summary.droppedRows.missing_year).toBe(1);
+  });
+
+  it("selects a year-less GPC page when only the total names the year", () => {
+    const yearless = exactTable().map((r) => ({ ...r, year: null }));
+    const result = selectReconciledPages(
+      [pageOf(15, [grandTotal()]), pageOf(46, yearless)],
+      2021,
+    );
+    expect(result.summary.pageSelection).toBe("reconciled");
+    expect(result.summary.selectedPages).toEqual([46]);
+    expect(result.summary.yearAssumed).toBe(true);
+    expect(result.rows.every((r) => r.year === 2021)).toBe(true);
+  });
+
+  it("runs no year logic without a target year", () => {
+    const yearless = exactTable().map((r) => ({ ...r, year: null }));
+    const result = selectReconciledPages([
+      { page: 15, result: finalizeExtractedRows([grandTotal(TOTAL, null)]) },
+      {
+        page: 46,
+        result: finalizeExtractedRows(yearless, undefined, {
+          deferYearAssumption: true,
+        }),
+      },
+    ]);
+    expect(result.summary.pageSelection).toBe("reconciled");
+    expect(result.rows).toHaveLength(2);
+    expect(result.rows.every((r) => r.year == null)).toBe(true);
+    expect(result.summary.yearAssumed).toBe(false);
+    expect(result.summary.droppedRows.missing_year).toBeUndefined();
   });
 
   it("assumes the year when no page names one, but only within 1%", () => {
@@ -342,6 +385,80 @@ describe("6. total labels", () => {
       ["Sub-total", "subtotal"],
     ]);
   });
+
+  it("keeps a scoped Total row as a scope subtotal", () => {
+    const { summary } = finalizeExtractedRows(
+      [
+        row(null, "1", 5200000, { category: "Total", rowType: "line_item" }),
+        row(null, "2", 2000000, { category: "Total" }),
+        row(null, null, TOTAL, { category: "Total" }),
+      ],
+      2021,
+    );
+    expect(summary.reportedTotals.map((t) => [t.scope, t.level])).toEqual([
+      ["1", "subtotal"],
+      ["2", "subtotal"],
+      [null, "total"],
+    ]);
+  });
+
+  it("does not select a page that sums to the scope 1 total", () => {
+    const result = selectReconciledPages(
+      [
+        pageOf(46, [
+          row("I.1.1", "1", 5200000),
+          row("I.1.2", "2", 2000000),
+          row("I.1.3", "3", 2359215),
+          row(null, "1", 5200000, { category: "Total" }),
+          row(null, "2", 2000000, { category: "Total" }),
+          // A total the model typed itself, with a scope.
+          row(null, "1", 5200000, { category: "Scope 1", rowType: "total" }),
+          row(null, null, TOTAL, { category: "Total" }),
+        ]),
+        pageOf(60, [
+          row("I.2.1", "1", 1300000),
+          row("I.3.1", "1", 1300000),
+          row("I.5.1", "1", 1300000),
+          row("I.6.1", "1", 1300000),
+        ]),
+      ],
+      2021,
+    );
+    expect(result.summary.pageSelection).toBe("reconciled");
+    expect(result.summary.selectedPages).toEqual([46]);
+    expect(result.summary.importedSum).toBe(TOTAL);
+  });
+
+  it("warns when the imported sum matches only a scope total", () => {
+    const notes = extractionReviewNotes({
+      reportedTotals: [
+        {
+          label: "Scope 1",
+          value: 5200000,
+          year: 2021,
+          scope: "1",
+          sector: null,
+          subsector: null,
+          level: "total",
+        },
+        {
+          label: "Total",
+          value: TOTAL,
+          year: 2021,
+          scope: null,
+          sector: null,
+          subsector: null,
+          level: "total",
+        },
+      ],
+      droppedRows: {},
+      importedSum: 5200000,
+      yearAssumed: false,
+      targetYear: 2021,
+    });
+    expect(notes.reconciliation?.reportedTotal).toBe(TOTAL);
+    expect(notes.reconciliation?.mismatch).toBe(true);
+  });
 });
 
 describe("7. hidden Total column with one scope", () => {
@@ -376,6 +493,19 @@ describe("7. hidden Total column with one scope", () => {
     );
     // The 2016 row is dropped by the year filter, not counted as a total.
     expect(rows).toHaveLength(1);
+  });
+  it("keeps an I.4.4 row equal to I.4.1", () => {
+    const { rows, summary } = finalizeExtractedRows(
+      [
+        row("I.4.1", "1", 32, { subsector: "Energy Industries" }),
+        row("I.4.4", null, 32, { subsector: "Energy Industries" }),
+      ],
+      2021,
+    );
+    expect(rows.map((r) => r.gpcRefNo)).toEqual(["I.4.1", "I.4.4"]);
+    expect(summary.droppedRows.subtotal_or_total).toBeUndefined();
+    // I.4.4 stays out of the sum.
+    expect(summary.importedSum).toBe(32);
   });
 });
 

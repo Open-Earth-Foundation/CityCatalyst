@@ -58,8 +58,9 @@ export function canonicalGpcRefNo(
 /**
  * Labels that mean a sum, whatever rowType the model gave. "Subsector total" is not
  * here: the prompt uses it for a sub-sector that has no activity breakdown.
- * An unqualified "Total" or "Grand total" is a grand total (the 50% share rule in
- * page selection keeps sector totals out); the others are subtotals.
+ * An unqualified "Total" or "Grand total" without a scope is a grand total (the 50%
+ * share rule in page selection keeps sector totals out); a scoped "Total" is the
+ * total of one scope column, so a subtotal. The others are subtotals.
  */
 const GRAND_TOTAL_LABEL = /^\(?\s*(grand\s+)?total\s*\)?$/i;
 const SUBTOTAL_LABEL =
@@ -69,7 +70,9 @@ function sumLabelLevel(row: ExtractedRow): "subtotal" | "total" | null {
   const labels = [row.category, row.activityType]
     .map((label) => label?.trim())
     .filter((label): label is string => !!label);
-  if (labels.some((label) => GRAND_TOTAL_LABEL.test(label))) return "total";
+  if (labels.some((label) => GRAND_TOTAL_LABEL.test(label))) {
+    return row.scope ? "subtotal" : "total";
+  }
   if (labels.some((label) => SUBTOTAL_LABEL.test(label))) return "subtotal";
   return null;
 }
@@ -419,9 +422,10 @@ function mergeDropped(
  * Ranking: runs with GPC rows (scope and reference) that reconcile within 1% first,
  * then other runs with GPC rows, then runs without them. Inside the 1% band the run
  * with more GPC rows wins, then the closer sum; outside it, the closer sum wins.
- * Year: pages are finalized with the year assumption deferred. When any page names
- * a year (rows or totals), year-less rows are dropped here; when none does, the
- * target year is assumed and a run must reconcile within 1%.
+ * Year: pages are finalized with the year assumption deferred. When any line item
+ * names a year, year-less rows are dropped here; when none does, the target year is
+ * assumed and a run must reconcile within 1%. Without a target year no year logic runs.
+ * Totals with a scope are scope totals, never grand totals.
  * Without a candidate every page's rows are kept (fallback).
  * Exported for unit tests.
  */
@@ -433,22 +437,25 @@ export function selectReconciledPages(
   for (const p of input)
     mergeDropped(droppedRows, p.result.summary.droppedRows);
 
+  // Line items only, as in the chunk path: a year on a total alone says nothing
+  // about the year of year-less line items.
   const documentNamesYear =
-    targetYear == null ||
+    targetYear != null &&
     input.some(
       (p) =>
         p.result.rows.some((row) => row.year != null) ||
-        p.result.summary.reportedTotals.some((t) => t.year != null) ||
         (p.result.summary.droppedRows.other_year ?? 0) > 0 ||
         (p.result.summary.droppedRows.missing_year ?? 0) > 0,
     );
   const yearAssumed =
-    !documentNamesYear && input.some((p) => p.result.rows.length > 0);
+    targetYear != null &&
+    !documentNamesYear &&
+    input.some((p) => p.result.rows.length > 0);
   const sorted = [...input]
     .sort((a, b) => a.page - b.page)
     .map((p): PageResult => {
       const yearless = p.result.rows.filter((row) => row.year == null);
-      if (yearless.length === 0) return p;
+      if (yearless.length === 0 || targetYear == null) return p;
       const rows = documentNamesYear
         ? p.result.rows.filter((row) => row.year != null)
         : p.result.rows.map((row) =>
@@ -477,6 +484,7 @@ export function selectReconciledPages(
     .filter(
       (t) =>
         t.level === "total" &&
+        !t.scope &&
         t.value !== 0 &&
         (t.year == null || targetYear == null || t.year === targetYear),
     )
@@ -1468,6 +1476,7 @@ function subsectorKeys(row: ExtractedRow): string[] {
 /**
  * Rows without a scope whose value equals the sum of the scoped rows of the same
  * sub-sector and year: within 0.5% for two or more rows, exactly for one row.
+ * I.4.4 has no scope by design and is never a hidden total.
  * Exported for unit tests.
  */
 export function findHiddenRowTotals(rows: ExtractedRow[]): Set<ExtractedRow> {
@@ -1486,7 +1495,14 @@ export function findHiddenRowTotals(rows: ExtractedRow[]): Set<ExtractedRow> {
   }
   const hidden = new Set<ExtractedRow>();
   for (const row of rows) {
-    if (row.scope || row.totalCO2e == null || row.totalCO2e === 0) continue;
+    if (
+      row.scope ||
+      row.totalCO2e == null ||
+      row.totalCO2e === 0 ||
+      row.gpcRefNo?.trim() === GRID_GENERATION_GPC_REF
+    ) {
+      continue;
+    }
     const value = row.totalCO2e;
     const isSum = keyed(row).some((key) => {
       const entry = scopedSums.get(key);

@@ -35,6 +35,12 @@
  *         schema:
  *           type: string
  *           format: uuid
+ *       - in: query
+ *         name: mappingOverrides
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: JSON-encoded mapping overrides, with the same shape as approval. Used to preview the current unsaved edits without persisting them.
  *     responses:
  *       200:
  *         description: Import file status and mappings.
@@ -184,9 +190,12 @@
 
 import UserService from "@/backend/UserService";
 import ImportMappingService from "@/backend/ImportMappingService";
-import InventoryProgressService from "@/backend/InventoryProgressService";
+import { buildImportResult } from "@/backend/ImportResultBuilder";
+import { previewImportRows } from "@/backend/ImportRowPreviewService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
+import { countRowsWithEmptyEmissionCells } from "@/util/empty-emission-rows";
+import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
 import FileValidatorService from "@/backend/FileValidatorService";
 import {
   syncGHGIImportedInventorySource,
@@ -374,6 +383,8 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
 
   // Step 2: Validation Results - Get detected columns (xlsx/csv) or extracted rows (PDF)
   let validationStepData = null;
+  let parsedSheets: { headers: string[]; rows: Record<string, unknown>[] }[] =
+    [];
   const pdfExtractedRows = Array.isArray(
     importedFile.mappingConfiguration?.rows,
   )
@@ -450,6 +461,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
             fileBuffer,
             importedFile.fileType,
           );
+          parsedSheets = parsedData.sheets;
 
           if (parsedData.primarySheet) {
             const headers = parsedData.primarySheet.headers;
@@ -616,12 +628,23 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
           }
         }
 
+        const detectedColumns = (importedFile.validationResults
+          ?.detectedColumns ?? {}) as Record<string, number | undefined>;
+        const sheet = parsedData.primarySheet;
+
         reviewStepData = {
           importSummary: {
             sourceFile: importedFile.originalFileName,
             formatDetected: importedFile.fileType.toUpperCase(),
             rowsFound: importedFile.rowCount || 0,
             fieldsMapped: fieldMappings.length,
+            rowsSkippedEmptyEmissions: sheet
+              ? countRowsWithEmptyEmissionCells(
+                  sheet.headers,
+                  sheet.rows,
+                  detectedColumns,
+                )
+              : 0,
           },
           fieldMappings,
           mappingPreview,
@@ -634,22 +657,37 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
 
   // Rows the inventory type will not count (e.g. Scope 3 in GPC BASIC), so the
   // review step can offer switching to GPC BASIC+ before approval.
-  const rowsOutsideInventoryType =
-    importedFile.importStatus === ImportStatusEnum.WAITING_FOR_APPROVAL
-      ? await InventoryProgressService.findReferencesOutsideInventoryType(
-          inventory.inventoryType,
-          pdfExtractedRows
-            .filter((row) => row.hasErrors !== true)
-            .map((row) => row.gpcRefNo)
-            .filter(
-              (gpcRefNo): gpcRefNo is string => typeof gpcRefNo === "string",
-            ),
-        )
-      : [];
+  let rowsOutsideInventoryType: string[] = [];
+  if (importedFile.importStatus === ImportStatusEnum.WAITING_FOR_APPROVAL) {
+    const overridesParam = req.nextUrl.searchParams.get("mappingOverrides");
+    const mappingOverrides = overridesParam
+      ? z.record(z.unknown()).parse(JSON.parse(overridesParam))
+      : (importedFile.mappingConfiguration?.overrides as
+          Record<string, unknown> | undefined);
+    const { importResult } = await buildImportResult(
+      importedFile,
+      mappingOverrides,
+    );
+    const preview = await previewImportRows(
+      importResult,
+      inventory.inventoryType,
+    );
+    rowsOutsideInventoryType = [
+      ...new Set(
+        preview.rows
+          .filter((row) => row.status === "not-counted")
+          .map((row) => row.gpcRefNo)
+          .filter((ref): ref is string => ref !== null),
+      ),
+    ];
+  }
 
   const legacyValidation = importedFile.validationResults as {
     inferredYearFromFile?: number;
   } | null;
+  const inferredYearFromFile =
+    legacyValidation?.inferredYearFromFile ??
+    inferInventoryYearFromSheets(parsedSheets);
   const pdfOcr =
     importedFile.fileType === "pdf"
       ? await getInventoryPdfOcrStatus(
@@ -679,7 +717,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
       // Step 4: Review and Confirm
       reviewData: reviewStepData,
       // Year inferred from file data (eCRF); used for target-year mismatch check
-      inferredYearFromFile: legacyValidation?.inferredYearFromFile ?? undefined,
+      inferredYearFromFile,
       rowsOutsideInventoryType,
       // Legacy fields (for backwards compatibility)
       rowCount: importedFile.rowCount,

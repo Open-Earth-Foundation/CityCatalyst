@@ -58,9 +58,9 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal
     .getByLabel(/Select emission factor type/i)
     .selectOption("custom");
-  const co2 = addEmissionModal.getByLabel("CO2 emission factor");
-  const n2o = addEmissionModal.getByLabel("N2O emission factor");
-  const ch4 = addEmissionModal.getByLabel("CH4 emission factor");
+  const co2 = addEmissionModal.getByLabel("CO₂ emission factor");
+  const n2o = addEmissionModal.getByLabel("N₂O emission factor");
+  const ch4 = addEmissionModal.getByLabel("CH₄ emission factor");
   await co2.fill("10");
   await n2o.fill("10");
   await ch4.fill("1");
@@ -68,7 +68,10 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await n2o.blur();
   await ch4.blur();
   await addEmissionModal.getByLabel(/Data Quality/i).selectOption("high");
-  await addEmissionModal.getByLabel("Data source").fill("test");
+  await addEmissionModal.getByTestId("data-provider-input").fill("test");
+  await addEmissionModal
+    .getByLabel(/Data year/i)
+    .selectOption(String(new Date().getFullYear()));
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
 }
 
@@ -277,6 +280,7 @@ test.describe.serial("Report Results", () => {
   test.setTimeout(120000);
 
   let cityId: string;
+  let cityName: string;
   let inventoryId: string;
 
   test.beforeAll(async ({ browser }) => {
@@ -290,6 +294,7 @@ test.describe.serial("Report Results", () => {
     const cityInventoryData =
       await createCityAndInventoryThroughOnboarding(page);
     cityId = cityInventoryData.cityId;
+    cityName = cityInventoryData.cityName;
     inventoryId = cityInventoryData.inventoryId;
 
     await context.close();
@@ -301,11 +306,11 @@ test.describe.serial("Report Results", () => {
 
     const heroCityName = page.getByTestId("hero-city-name");
     await expect(heroCityName).toBeVisible({ timeout: 60000 });
-    await expect(heroCityName).toHaveText("Chicago", { timeout: 10000 });
+    await expect(heroCityName).toHaveText(cityName, { timeout: 10000 });
   });
 
   test("User can navigate to GHGI module", async ({ page }) => {
-    await expect(page.getByTestId("hero-city-name")).toHaveText("Chicago");
+    await expect(page.getByTestId("hero-city-name")).toHaveText(cityName);
   });
 
   test("User can navigate to subsector page and enter scope 1 emissions data", async ({

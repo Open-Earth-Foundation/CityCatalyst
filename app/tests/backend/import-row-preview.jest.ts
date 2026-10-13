@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import ECRFImportService, {
+  countRowsSkippedEmptyEmissions,
   type ECRFImportResult,
   type ECRFRowData,
 } from "@/backend/ECRFImportService";
@@ -46,6 +47,7 @@ function importResult(rows: ECRFRowData[]): ECRFImportResult {
     warnings: [],
     rowCount: rows.length,
     validRowCount: rows.filter((r) => !r.errors?.length).length,
+    rowsSkippedEmptyEmissions: countRowsSkippedEmptyEmissions(rows),
   };
 }
 

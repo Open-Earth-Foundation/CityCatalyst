@@ -2265,10 +2265,19 @@ export const api = createApi({
       }),
       getImportStatus: builder.query<
         ImportStatusResponse,
-        { cityId: string; inventoryId: string; importedFileId: string }
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+          mappingOverrides?: Record<string, unknown>;
+        }
       >({
-        query: ({ cityId, inventoryId, importedFileId }) =>
-          `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
+        query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
+          params: mappingOverrides
+            ? { mappingOverrides: JSON.stringify(mappingOverrides) }
+            : undefined,
+        }),
         transformResponse: (response: { data: ImportStatusResponse }) =>
           response.data,
       }),

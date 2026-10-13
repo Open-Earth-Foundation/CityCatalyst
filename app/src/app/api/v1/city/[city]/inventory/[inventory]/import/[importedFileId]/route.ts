@@ -35,6 +35,12 @@
  *         schema:
  *           type: string
  *           format: uuid
+ *       - in: query
+ *         name: mappingOverrides
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: JSON-encoded mapping overrides, with the same shape as approval. Used to preview the current unsaved edits without persisting them.
  *     responses:
  *       200:
  *         description: Import file status and mappings.
@@ -151,6 +157,14 @@
  *                         Calendar year inferred from the uploaded file's tabular/eCRF data (first row with a year).
  *                         Omitted when processing has not run yet or no year could be inferred.
  *                         Clients may compare this with the inventory target year before continuing import.
+ *                     rowsOutsideInventoryType:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       description: |
+ *                         Distinct GPC reference numbers in the file that the inventory type does not
+ *                         require (e.g. Scope 3 rows in GPC BASIC). They are still imported but do not
+ *                         count toward completion. Empty unless the import is waiting for approval.
  *                     rowCount:
  *                       type: integer
  *                     processedRowCount:
@@ -176,6 +190,8 @@
 
 import UserService from "@/backend/UserService";
 import ImportMappingService from "@/backend/ImportMappingService";
+import { buildImportResult } from "@/backend/ImportResultBuilder";
+import { previewImportRows } from "@/backend/ImportRowPreviewService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
 import { countRowsWithEmptyEmissionCells } from "@/util/empty-emission-rows";
@@ -189,6 +205,7 @@ import { getInventoryPdfOcrStatus } from "@/backend/PdfOcrService";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
+import { ImportStatusEnum } from "@/util/enums";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -638,6 +655,33 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
     }
   }
 
+  // Rows the inventory type will not count (e.g. Scope 3 in GPC BASIC), so the
+  // review step can offer switching to GPC BASIC+ before approval.
+  let rowsOutsideInventoryType: string[] = [];
+  if (importedFile.importStatus === ImportStatusEnum.WAITING_FOR_APPROVAL) {
+    const overridesParam = req.nextUrl.searchParams.get("mappingOverrides");
+    const mappingOverrides = overridesParam
+      ? z.record(z.unknown()).parse(JSON.parse(overridesParam))
+      : (importedFile.mappingConfiguration?.overrides as
+          Record<string, unknown> | undefined);
+    const { importResult } = await buildImportResult(
+      importedFile,
+      mappingOverrides,
+    );
+    const preview = await previewImportRows(
+      importResult,
+      inventory.inventoryType,
+    );
+    rowsOutsideInventoryType = [
+      ...new Set(
+        preview.rows
+          .filter((row) => row.status === "not-counted")
+          .map((row) => row.gpcRefNo)
+          .filter((ref): ref is string => ref !== null),
+      ),
+    ];
+  }
+
   const legacyValidation = importedFile.validationResults as {
     inferredYearFromFile?: number;
   } | null;
@@ -674,6 +718,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
       reviewData: reviewStepData,
       // Year inferred from file data (eCRF); used for target-year mismatch check
       inferredYearFromFile,
+      rowsOutsideInventoryType,
       // Legacy fields (for backwards compatibility)
       rowCount: importedFile.rowCount,
       processedRowCount: importedFile.processedRowCount,

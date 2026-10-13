@@ -348,7 +348,7 @@
   "hero-inventory-line": "{{year}} · {{value}} {{unit}}",
   "default-organization": "Standardorganisation",
   "invite-email-failed-toast-title": "Einladung erstellt, aber wir konnten sie nicht per E-Mail versenden",
-  "invite-email-failed-toast-description": "Wir konnten die Einladung an {{emails}} nicht senden. Teilen Sie den Einladungslink direkt mit ihnen.",
-  "invite-email-failed-toast-description-many": "Wir konnten die Einladung an {{count}} Eingeladene nicht senden. Teilen Sie die Einladungslinks direkt mit ihnen.",
-  "invite-link-in-clipboard": "Der Link ist in Ihrer Zwischenablage."
+  "invite-email-failed-toast-description": "Wir konnten die Einladung nicht an {{emails}} senden. Teilen Sie den Einladungslink direkt mit ihnen.",
+  "invite-email-failed-toast-description-many": "Wir konnten die Einladung an {{count}} Einladungsempfänger nicht senden. Teilen Sie die Einladungslinks direkt mit ihnen.",
+  "invite-link-in-clipboard": "Der Link befindet sich in Ihrer Zwischenablage."
 }

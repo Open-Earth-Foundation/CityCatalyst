@@ -347,8 +347,8 @@
   "no-cited-source": "Aucune source citée",
   "hero-inventory-line": "{{year}} · {{value}} {{unit}}",
   "default-organization": "Organisation par Défaut",
-  "invite-email-failed-toast-title": "Invitation créée, mais nous n'avons pas pu l'envoyer par e-mail",
+  "invite-email-failed-toast-title": "Invitation créée, mais nous n'avons pas pu l'envoyer par email",
   "invite-email-failed-toast-description": "Nous n'avons pas pu envoyer l'invitation à {{emails}}. Partagez le lien d'invitation avec eux directement.",
-  "invite-email-failed-toast-description-many": "Nous n'avons pas pu envoyer l'invitation à {{count}} invités. Partagez directement avec eux les liens d'invitation.",
+  "invite-email-failed-toast-description-many": "Nous n'avons pas pu envoyer l'invitation à {{count}} invités. Partagez directement les liens d'invitation avec eux.",
   "invite-link-in-clipboard": "Le lien est dans votre presse-papiers."
 }

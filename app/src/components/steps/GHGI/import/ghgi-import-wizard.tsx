@@ -1101,6 +1101,7 @@ export default function GhgiImportWizard({
                       inventoryId={inventoryId}
                       importedFileId={importedFileId}
                       onEditMapping={goToPrevStep}
+                      mappingOverrides={mappingOverrides}
                     />
                   )}
                 </motion.div>

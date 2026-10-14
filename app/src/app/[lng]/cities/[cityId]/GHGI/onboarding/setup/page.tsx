@@ -192,11 +192,15 @@ export default function OnboardingSetup(props: {
     if (!selectedYear || !existingInventories) return undefined;
     return existingInventories.find((inv) => inv.year === selectedYear);
   }, [selectedYear, existingInventories]);
-  const { data: existingInventoryProgress, isFetching: existingProgressLoading } =
-    api.useGetInventoryProgressQuery(
-      existingInventoryForYear?.inventoryId ?? "",
-      { skip: !existingInventoryForYear?.inventoryId },
-    );
+  // `data` keeps the previous year's progress when this query is skipped or
+  // its inventory changes; `currentData` belongs to the selected year only.
+  const {
+    currentData: existingInventoryProgress,
+    isFetching: existingProgressLoading,
+  } = api.useGetInventoryProgressQuery(
+    existingInventoryForYear?.inventoryId ?? "",
+    { skip: !existingInventoryForYear?.inventoryId },
+  );
   const existingInventoryHasData = useMemo(() => {
     if (!existingInventoryProgress?.totalProgress) return false;
     const { thirdParty, uploaded, reasonNE, reasonNO } =

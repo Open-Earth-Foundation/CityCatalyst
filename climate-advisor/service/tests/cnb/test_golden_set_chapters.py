@@ -90,10 +90,10 @@ async def test_drafting_mirrors_production_order_and_gap_sanitizing(fixtures, mo
                 ),
                 gap(question="A duplicate key production drops."),
             ],
-        )
+        ), [{"before": "x", "after": "y", "reason": "r", "applied": False, "skipped": "passage not found exactly once"}]
 
     producer = AsyncMock(side_effect=draft)
-    monkeypatch.setattr(chapters_module, "generate_chapter_draft", producer)
+    monkeypatch.setattr(chapters_module, "draft_chapter", producer)
     drafted, supplied = await write_chapters(loaded, get_settings(), source)
 
     assert [c.chapter_ref for c in drafted] == [
@@ -101,6 +101,8 @@ async def test_drafting_mirrors_production_order_and_gap_sanitizing(fixtures, mo
     ]
     # Production sanitizing: duplicate field keys and ungrounded suggestions are dropped.
     assert all(len(c.gaps) == 1 and c.gaps[0].suggestions == [] for c in drafted)
+    # The production support check's records are kept for review.
+    assert drafted[0].as_json()["support_check"][0]["skipped"] == "passage not found exactly once"
     # Later chapters see every earlier generated chapter, as in production.
     second = producer.await_args_list[1].args[0]
     assert second["previous_chapters"][0]["body_markdown"].startswith("## Chapter 0")
@@ -253,25 +255,33 @@ def test_raised_gap_that_is_not_genuine_fails(writing_case, verdict):
     assert report.metrics["flagged_gap_validity"] == 0
 
 
+@pytest.mark.parametrize("mutation", ["missing_gap_verdict", "missing_flagged_gap_verdict"])
+def test_missing_gap_verdicts_withhold_metrics(writing_case, mutation):
+    loaded, payload, judgment, integrity = writing_case
+    if mutation == "missing_gap_verdict":
+        judgment.gaps = []
+    else:
+        judgment.flagged_gaps = []
+    assert validate_chapter_writing_judgment(payload, judgment)
+    report = score_chapter_writing(loaded, payload, judgment, integrity)
+    assert report.evaluation_errors and report.metrics == {}
+
+
 @pytest.mark.parametrize(
     "mutation",
     [
-        "missing_gap_verdict",
-        "missing_flagged_gap_verdict",
         "flagged_outside_allowed_chapter",
         "answered_elsewhere_cites_source",
         "answerable_without_evidence",
         "claim_cites_gap_unit",
         "missing_supplied_verdict",
+        "supplied_evidence_from_another_chapter",
     ],
 )
-def test_invalid_chapter_writing_judgments_withhold_metrics(writing_case, mutation):
+def test_reference_slips_never_withhold_chapter_writing_metrics(writing_case, mutation):
+    """The judge's verdicts stand; references only point reviewers to text."""
     loaded, payload, judgment, integrity = writing_case
-    if mutation == "missing_gap_verdict":
-        judgment.gaps = []
-    elif mutation == "missing_flagged_gap_verdict":
-        judgment.flagged_gaps = []
-    elif mutation == "flagged_outside_allowed_chapter":
+    if mutation == "flagged_outside_allowed_chapter":
         judgment.gaps[0].output_refs = [
             TextReference(unit_id="chapter/funding_breakout", quote="Richfield text for funding_breakout.")
         ]
@@ -284,11 +294,17 @@ def test_invalid_chapter_writing_judgments_withhold_metrics(writing_case, mutati
     elif mutation == "claim_cites_gap_unit":
         unit = "gap/applicant_project_information/submittal_date"
         judgment.claims[0].output = TextReference(unit_id=unit, quote=f"Question: {QUESTION}")
-    else:
+    elif mutation == "missing_supplied_verdict":
         judgment.claims[0].supplied_verdict = None
-    assert validate_chapter_writing_judgment(payload, judgment)
+    else:
+        other = TextUnit(
+            id="supplied/funding_breakout/x", text="Richfield", kind="supplied", chapter_ref="funding_breakout"
+        )
+        payload.evidence.append(other)
+        judgment.claims[0].supplied_evidence = [TextReference(unit_id=other.id, quote="Richfield")]
+    assert validate_chapter_writing_judgment(payload, judgment) == []
     report = score_chapter_writing(loaded, payload, judgment, integrity)
-    assert report.evaluation_errors and report.metrics == {}
+    assert report.evaluation_errors == [] and "gap_recall" in report.metrics
 
 
 def test_partially_satisfied_required_chapter_fails(writing_case):
@@ -296,14 +312,6 @@ def test_partially_satisfied_required_chapter_fails(writing_case):
     judgment.chapters[0].verdict = "partially_satisfied"
     report = score_chapter_writing(loaded, payload, judgment, integrity)
     assert any(f.startswith("applicant_project_information: partially_satisfied") for f in report.semantic_failures)
-
-
-def test_supplied_evidence_must_belong_to_the_claims_chapter(writing_case):
-    _, payload, judgment, _ = writing_case
-    other = TextUnit(id="supplied/funding_breakout/x", text="Richfield", kind="supplied", chapter_ref="funding_breakout")
-    payload.evidence.append(other)
-    judgment.claims[0].supplied_evidence = [TextReference(unit_id=other.id, quote="Richfield")]
-    assert any("different chapter" in e for e in validate_chapter_writing_judgment(payload, judgment))
 
 
 def test_transfer_separates_extraction_and_drafting_losses(fixtures):

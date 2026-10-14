@@ -26,7 +26,10 @@ from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.concept_note_draft_tools import build_draft_tools
 from app.utils.cnb_model_settings import cnb_model_settings
 from app.utils.cnb_progress import emit_cnb_progress, run_with_cnb_reasoning
-from app.utils.concept_note_context import omit_context_identifiers
+from app.utils.concept_note_context import (
+    chapter_excerpts_for,
+    omit_context_identifiers,
+)
 from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
 
@@ -453,6 +456,14 @@ def build_planner_input(
             "confirmed_body_markdown": chapter.confirmed_body_markdown,
             "gaps": [
                 {"question": gap.question, "state": gap.state} for gap in chapter.gaps
+            ],
+            # Quotations each source keeps for this chapter's template requirements.
+            "source_excerpts": [
+                {"source_index": str(index), **excerpt}
+                for index, source in enumerate(sources, start=1)
+                for excerpt in omit_context_identifiers(
+                    chapter_excerpts_for(source, chapter.chapter_ref)
+                )
             ],
         },
         "run_context": omit_context_identifiers(context),

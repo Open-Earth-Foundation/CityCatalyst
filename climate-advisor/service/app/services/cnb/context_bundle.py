@@ -4,18 +4,22 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections.abc import Awaitable, Callable, Mapping
+from collections.abc import Awaitable, Callable, Mapping, Sequence
 from contextvars import Context
 from datetime import datetime, timedelta, timezone
+from functools import partial
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
 from app.db.session import get_session_factory
+from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.context_bundle import (
+    ChapterExcerpts,
     SelectedSource,
     SourceDocumentText,
     SourceTextContext,
 )
+from app.models.db.concept_note import ConceptNoteRun
 from app.persistence.concept_notes.context_bundle import (
     ContextBundleBuildSnapshot,
     ContextBundlePersistenceError,
@@ -23,6 +27,7 @@ from app.persistence.concept_notes.context_bundle import (
     complete_build,
     fail_build,
     load_refresh_state,
+    load_selected_sources,
     load_source_revalidation_inputs,
     recover_stale_builds,
     set_selected_inventory,
@@ -35,11 +40,17 @@ from app.persistence.concept_notes.source_revalidation import (
     recover_stale_source_revalidations,
 )
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
+from app.services.cnb.application_context import (
+    ConceptNoteApplicationContextService,
+    template_chapter_requirements,
+)
 from app.services.cnb.chapter_drafting import ConceptNoteChapterDraftService
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceUnit,
     analyze_document,
+    chapter_evidence_fingerprint,
+    extract_chapter_evidence,
     gather_all_or_raise,
     render_source_text,
     source_analysis_contract_version,
@@ -94,17 +105,27 @@ class ContextBundleService:
         ),
         cc_client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
         revalidate_fn: Callable[..., Awaitable[bool]] | None = None,
+        load_template_fn: (
+            Callable[[UUID], Awaitable[ApplicationContextTemplate | None]] | None
+        ) = None,
+        extract_chapter_evidence_fn: Callable[
+            ..., Awaitable[list[ChapterExcerpts]]
+        ] = extract_chapter_evidence,
     ) -> None:
         """Store dependencies so background resources are created inside the task.
 
         ``revalidate_fn`` redrafts chapters affected by new sources and returns
         whether the pass succeeded; without it no revalidation job is queued.
+        ``load_template_fn`` returns the run's application template; without it
+        no per-chapter quotations are extracted.
         """
         self.session_factory = session_factory
         self.analyze_document_fn = analyze_document_fn
         self.verify_source_artifact_fn = verify_source_artifact_fn
         self.cc_client_factory = cc_client_factory
         self.revalidate_fn = revalidate_fn
+        self.load_template_fn = load_template_fn
+        self.extract_chapter_evidence_fn = extract_chapter_evidence_fn
 
     async def begin(
         self,
@@ -230,13 +251,27 @@ class ContextBundleService:
                         selected_by_upload[upload.upload_id]
                         for upload in active.uploads
                     ]
-                    source_text = await self._build_source_text(
+                    units_by_upload = await self._load_all_source_units(
                         uploads=active.uploads,
                         analyzed_units={
                             item.source.upload_id: item.units for item in new_sources
                         },
                         token=token,
                         cc_client=cc_client,
+                    )
+                    template = await self._load_template(run_id)
+                    if template is not None and units_by_upload is not None:
+                        selected_sources = await self._attach_chapter_evidence(
+                            sources=selected_sources,
+                            units_by_upload=units_by_upload,
+                            template=template,
+                            settings=analysis_settings,
+                            reader_limit=reader_limit,
+                        )
+                    source_text = _source_text(
+                        uploads=active.uploads,
+                        units_by_upload=units_by_upload,
+                        selected_sources=selected_sources,
                         settings=analysis_settings,
                     )
 
@@ -505,22 +540,21 @@ class ContextBundleService:
             page_count=upload.page_count,
         )
 
-    async def _build_source_text(
+    async def _load_all_source_units(
         self,
         *,
         uploads: list[ConceptNoteUploadSnapshot],
         analyzed_units: dict[UUID, list[SourceUnit]],
         token: str,
         cc_client: CityCatalystClient,
-        settings: Settings,
-    ) -> SourceTextContext:
-        """Keep complete source text for agents only while it fits the budget."""
-        budget = settings.llm.generation.prompt_budget
-        max_tokens = budget.cnb_sources.full_text_max_tokens
+    ) -> dict[UUID, list[SourceUnit]] | None:
+        """Return verified units for every upload, or None when a fetch fails.
+
+        Reused analyses need their verified text fetched again; no LLM runs.
+        """
+        units_by_upload = dict(analyzed_units)
+        missing = [u for u in uploads if u.upload_id not in units_by_upload]
         try:
-            # Reused analyses need their verified text fetched again; no LLM runs.
-            units_by_upload = dict(analyzed_units)
-            missing = [u for u in uploads if u.upload_id not in units_by_upload]
             fetched = await gather_all_or_raise(
                 *(
                     self._load_source_units(
@@ -529,31 +563,90 @@ class ContextBundleService:
                     for upload in missing
                 )
             )
-            units_by_upload.update(
-                {
-                    upload.upload_id: units
-                    for upload, units in zip(missing, fetched, strict=True)
-                }
-            )
         except SourceAnalysisError as exc:
-            # Summaries stay usable, so a text fetch failure only drops full text.
+            # Summaries stay usable, so a fetch failure only drops full text and
+            # leaves existing chapter quotations in place.
             logger.warning(
                 "Concept Note source text unavailable; using summaries code=%s",
                 exc.code,
             )
-            return SourceTextContext(mode="summary", token_count=0, max_tokens=max_tokens)
+            return None
+        units_by_upload.update(
+            {upload.upload_id: units for upload, units in zip(missing, fetched, strict=True)}
+        )
+        return units_by_upload
 
-        documents = [
-            SourceDocumentText(
-                upload_id=upload.upload_id,
-                source_label=upload.source_label or upload.filename,
-                filename=upload.filename,
-                source_format=upload.source_format,
-                text=render_source_text(units_by_upload[upload.upload_id]),
+    async def _load_template(self, run_id: UUID) -> ApplicationContextTemplate | None:
+        """Return the run's application template; reference outages skip chapter evidence."""
+        if self.load_template_fn is None:
+            return None
+        try:
+            return await self.load_template_fn(run_id)
+        except Exception:
+            logger.warning(
+                "Concept Note application template unavailable for chapter evidence run_id=%s",
+                run_id,
+                exc_info=True,
             )
-            for upload in uploads
-        ]
-        return source_text_context(documents, settings)
+            return None
+
+    async def _attach_chapter_evidence(
+        self,
+        *,
+        sources: list[SelectedSource],
+        units_by_upload: dict[UUID, list[SourceUnit]],
+        template: ApplicationContextTemplate,
+        settings: Settings,
+        reader_limit: asyncio.Semaphore,
+    ) -> list[SelectedSource]:
+        """Extract per-chapter quotations for sources built for another template.
+
+        A failed extraction keeps the source's previous quotations and
+        fingerprint, so the next build retries it.
+        """
+        chapters = template_chapter_requirements(template)
+        fingerprint = chapter_evidence_fingerprint(settings, chapters)
+
+        async def refresh(source: SelectedSource) -> SelectedSource:
+            if source.chapter_evidence_fingerprint == fingerprint:
+                return source
+            try:
+                excerpts = await self.extract_chapter_evidence_fn(
+                    source_label=source.source_label,
+                    source_format=source.source_format,
+                    pages=units_by_upload[source.upload_id],
+                    chapters=chapters,
+                    settings=settings,
+                    reader_limit=reader_limit,
+                )
+            except SourceAnalysisError as exc:
+                logger.warning(
+                    "Concept Note chapter evidence unavailable upload_id=%s code=%s",
+                    source.upload_id,
+                    exc.code,
+                )
+                return source
+            return source.model_copy(
+                update={
+                    "chapter_excerpts": excerpts,
+                    "chapter_evidence_fingerprint": fingerprint,
+                }
+            )
+
+        return list(await asyncio.gather(*(refresh(source) for source in sources)))
+
+    async def _chapter_evidence_stale(self, *, user_id: str, run_id: UUID) -> bool:
+        """Whether any source's chapter quotations predate the run's current template."""
+        template = await self._load_template(run_id)
+        if template is None:
+            return False
+        sources = await load_selected_sources(
+            session_factory=self.session_factory, user_id=user_id, run_id=run_id
+        )
+        fingerprint = chapter_evidence_fingerprint(
+            get_settings(), template_chapter_requirements(template)
+        )
+        return any(source.chapter_evidence_fingerprint != fingerprint for source in sources)
 
     async def _verified_visual_context(
         self,
@@ -713,10 +806,11 @@ class ContextBundleService:
         run_id: UUID,
         token: str,
     ) -> Literal["queued", "current", "building"]:
-        """Rebuild a ready bundle only when its inventory changed in the city.
+        """Rebuild a ready bundle when its inventory or application template changed.
 
-        Called once per workspace open, so it compares cheap inventory list
-        metadata instead of reloading GHGI and HIAP.
+        Called once per workspace open and after a funding change, so it
+        compares cheap inventory list metadata and the template fingerprint of
+        the stored chapter quotations instead of reloading GHGI and HIAP.
         """
         state = await load_refresh_state(
             session_factory=self.session_factory,
@@ -737,7 +831,9 @@ class ContextBundleService:
             )
         except (CityCatalystClientError, ConceptNoteCityContextDataError):
             return "current"
-        if candidate == state.inventory_candidate:
+        if candidate == state.inventory_candidate and not await self._chapter_evidence_stale(
+            user_id=user_id, run_id=run_id
+        ):
             return "current"
         await self._queue_rebuild(user_id=user_id, run_id=run_id, token=token)
         return "queued"
@@ -913,15 +1009,53 @@ class ContextBundleService:
         )
 
 
+def _source_text(
+    *,
+    uploads: list[ConceptNoteUploadSnapshot],
+    units_by_upload: dict[UUID, list[SourceUnit]] | None,
+    selected_sources: Sequence[SelectedSource],
+    settings: Settings,
+) -> SourceTextContext:
+    """Render every upload's verified text, or summaries when it is unavailable."""
+    if units_by_upload is None:
+        return SourceTextContext(
+            mode="summary",
+            token_count=0,
+            max_tokens=settings.llm.generation.prompt_budget.cnb_sources.context_window_tokens,
+        )
+    documents = [
+        SourceDocumentText(
+            upload_id=upload.upload_id,
+            source_label=upload.source_label or upload.filename,
+            filename=upload.filename,
+            source_format=upload.source_format,
+            text=render_source_text(units_by_upload[upload.upload_id]),
+        )
+        for upload in uploads
+    ]
+    return source_text_context(documents, settings, selected_sources=selected_sources)
+
+
 def source_text_context(
     documents: list[SourceDocumentText],
     settings: Settings,
+    *,
+    selected_sources: Sequence[SelectedSource] = (),
 ) -> SourceTextContext:
-    """Keep complete verified source text only while it fits the drafting budget."""
+    """Keep complete verified source text while the whole request fits the window.
+
+    The count covers the chapter drafter's instructions, the selected-source
+    context, and every document. Each chapter request is checked again when it
+    is drafted, once its earlier chapters are known.
+    """
     budget = settings.llm.generation.prompt_budget
-    max_tokens = budget.cnb_sources.full_text_max_tokens
+    max_tokens = budget.cnb_sources.context_window_tokens
     token_count = count_prompt_tokens(
-        [document.text for document in documents],
+        [
+            settings.llm.prompts.get_prompt("cnb_chapter_drafting"),
+            [source.model_dump(mode="json") for source in selected_sources],
+            *(document.text for document in documents),
+        ],
         model=settings.llm.models.cnb_chapter_drafter.name,
         fallback_encoding=budget.tokenizer_encoding,
     ).tokens
@@ -1052,12 +1186,25 @@ async def resume_source_revalidations(
     return len(pending)
 
 
+async def load_run_template(
+    session_factory: async_sessionmaker[AsyncSession], run_id: UUID
+) -> ApplicationContextTemplate | None:
+    """Load a run's selected application template from the reference database."""
+    async with session_factory() as session:
+        run = await session.get(ConceptNoteRun, run_id)
+    if run is None:
+        return None
+    return await ConceptNoteApplicationContextService().load_template_for_run(run)
+
+
 def get_context_bundle_service() -> ContextBundleService | None:
     """Provide a build service, or a safe unavailable marker without a database."""
     try:
+        session_factory = get_session_factory()
         return ContextBundleService(
-            get_session_factory(),
+            session_factory,
             revalidate_fn=_revalidate_with_chapter_service,
+            load_template_fn=partial(load_run_template, session_factory),
         )
     except Exception:
         logger.exception("Concept Note context-bundle storage is unavailable")

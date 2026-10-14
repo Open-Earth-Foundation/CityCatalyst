@@ -47,7 +47,9 @@ decision concretely; do not ask for evidence already supplied in the instruction
 One JSON object:
 - instruction (string): current user instruction.
 - recent_messages (array): previous visible user/assistant messages.
-- chapter (object): title, position, body_markdown, confirmed_body_markdown, gaps.
+- chapter (object): title, position, body_markdown, confirmed_body_markdown, gaps,
+  and source_excerpts: exact quotations each selected source keeps for this
+  chapter, each with source_index, text, and a PDF page or readable heading.
 - run_context (object): selected_sources and available contextual data, without
   backend identities or fingerprints. cc_context holds CityCatalyst data
   sections, which may be null; manual_population is a nullable user-entered

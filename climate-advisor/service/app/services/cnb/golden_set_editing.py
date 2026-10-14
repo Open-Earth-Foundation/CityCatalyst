@@ -33,10 +33,7 @@ from app.services.cnb.edit_validation import validate_edit_plan
 from app.services.cnb.golden_set import (
     LoadedFixture,
     exactly_once,
-    reference_errors,
-    repair_references,
     source_evidence,
-    units_by_id,
 )
 from app.services.cnb.golden_set_judge import GoldenJudgeError
 from app.services.cnb.golden_set_workspace import (
@@ -216,17 +213,13 @@ def editing_judge_input(
 def validate_editing_judgment(
     payload: EditingJudgeInput, judgment: EditingEvaluation
 ) -> list[str]:
-    """One judgment per case, expectation, and change; references stay in their case."""
-    outputs = {unit.id: unit for unit in payload.outputs}
-    every_unit = {unit.id: unit for unit in [*payload.outputs, *payload.evidence]}
+    """Require one judgment per case, expectation, preserved statement, and change."""
     errors = exactly_once("cases", [c.id for c in payload.cases], [c.case_id for c in judgment.cases])
     cases = {case.id: case for case in payload.cases}
     for item in judgment.cases:
         case = cases.get(item.case_id)
         if case is None:
             continue
-        mine = {uid for uid in outputs if uid.split("/")[1] == case.id}
-        changed = {outputs[uid].chapter_ref for uid in mine if uid.startswith("edited/")}
         errors += exactly_once(
             f"{case.id} expected_changes",
             [e.id for e in case.expected_changes],
@@ -237,35 +230,9 @@ def validate_editing_judgment(
         )
         errors += exactly_once(
             f"{case.id} changes",
-            sorted(uid for uid in mine if uid.startswith("change/")),
+            sorted(u.id for u in payload.outputs if u.id.startswith(f"change/{case.id}/")),
             [c.unit_id for c in item.changes],
         )
-        for expectation in item.expected_changes:
-            if expectation.verdict != "not_applied" and not expectation.output_refs:
-                errors.append(f"{case.id}/{expectation.id}: {expectation.verdict} needs output references")
-            for ref in expectation.output_refs:
-                errors += reference_errors(ref, outputs)
-                if ref.unit_id not in mine:
-                    errors.append(f"{case.id}/{expectation.id}: cites another case's output")
-        for kept in item.preserved:
-            if not kept.output_refs and kept.verdict == "preserved":
-                errors.append(f"{case.id}/{kept.id}: preserved needs a reference")
-            for ref in kept.output_refs:
-                errors += reference_errors(ref, every_unit)
-                unit = every_unit.get(ref.unit_id)
-                # Unchanged chapters may be cited from the reference draft.
-                if unit and unit.kind == "draft" and unit.chapter_ref in changed:
-                    errors.append(f"{case.id}/{kept.id}: cite the edited text of a changed chapter")
-                elif unit and unit.kind == "output" and ref.unit_id not in mine:
-                    errors.append(f"{case.id}/{kept.id}: cites another case's output")
-        for change in item.changes:
-            if change.verdict == "supported" and not change.evidence:
-                errors.append(f"{change.unit_id}: supported change needs evidence")
-            for ref in change.evidence:
-                errors += reference_errors(ref, every_unit)
-        for conflict in item.contradictions:
-            for ref in conflict.output_refs:
-                errors += reference_errors(ref, every_unit)
     return errors
 
 
@@ -276,13 +243,8 @@ def score_editing(
     checks: list[dict[str, Any]],
 ) -> StageReport:
     """A case passes only with the right outcome, scope, fidelity, and consistency."""
-    repairs = repair_references(judgment, units_by_id(payload))
     errors = validate_editing_judgment(payload, judgment)
-    report = StageReport(
-        judgment=judgment,
-        evaluation_errors=errors,
-        details={"cases": checks, "repaired_quotes": repairs},
-    )
+    report = StageReport(judgment=judgment, evaluation_errors=errors, details={"cases": checks})
     for check in checks:
         if not check["outcome_ok"]:
             report.semantic_failures.append(

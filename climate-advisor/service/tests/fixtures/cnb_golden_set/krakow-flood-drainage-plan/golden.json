@@ -536,14 +536,14 @@
         "edits": [
           {
             "chapter_ref": "zadania",
-            "find": "[Information needed: Confirm the planned start and end dates and the milestone dates for preparation, procurement, construction, commissioning and settlement of the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.]",
+            "find": "[Information needed: Confirm the planned start and end dates of the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.]",
             "replace": "Projekt będzie realizowany w latach 2026–2028."
           }
         ],
         "remove_gaps": [
           {
             "chapter_ref": "zadania",
-            "field_key": "project_task_schedule"
+            "field_key": "project_task_period"
           }
         ],
         "expected_chapters": [

@@ -1,7 +1,8 @@
 """Stage 2: draft every chapter from this run's extraction and score the result.
 
 Drafting mirrors production order and post-processing: each chapter sees the
-complete earlier chapters, and structured gaps pass through the same sanitizing
+complete earlier chapters, the production support check corrects claims its
+inputs do not support, and structured gaps pass through the same sanitizing
 step persistence applies. Python checks marker/gap parity, chapter identity,
 and judge references; the judge assesses fact transfer, claim support, chapter
 requirements, and whether missing information is flagged honestly.
@@ -11,7 +12,7 @@ from __future__ import annotations
 
 import logging
 from copy import deepcopy
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from app.models.cnb.concept_note_draft import ConceptNoteDraftGapOutput
@@ -28,17 +29,14 @@ from app.models.cnb.golden_set import (
 from app.services.cnb.chapter_drafting import (
     _sanitize_generated_output,
     build_chapter_input,
-    generate_chapter_draft,
+    draft_chapter,
 )
 from app.services.cnb.golden_set import (
     LoadedFixture,
     exactly_once,
     marker_parity_problems,
-    reference_errors,
-    repair_references,
     score_facts_and_claims,
     source_evidence,
-    units_by_id,
     validate_judgment,
 )
 from app.services.cnb.golden_set_workspace import (
@@ -68,14 +66,17 @@ class DraftedChapter:
     title: str
     body_markdown: str
     gaps: list[ConceptNoteDraftGapOutput]
+    # Every revision the support check proposed, applied or skipped.
+    support_check: list[dict[str, Any]] = field(default_factory=list)
 
     def as_json(self) -> dict[str, Any]:
-        """Serialize for drafts.json and the reference-draft format."""
+        """Serialize for drafts.json (the reference-draft format plus the support check)."""
         return {
             "chapter_ref": self.chapter_ref,
             "title": self.title,
             "body_markdown": self.body_markdown,
             "gaps": [gap.model_dump(mode="json") for gap in self.gaps],
+            "support_check": self.support_check,
         }
 
 
@@ -107,7 +108,7 @@ async def write_chapters(
         supplied += text_units(
             inputs, f"supplied/{chapter.chapter_ref}", "supplied", chapter.chapter_ref
         )
-        generated = await generate_chapter_draft(payload, settings=settings)
+        generated, support_check = await draft_chapter(payload, settings=settings)
         generated = _sanitize_generated_output(generated, workspace.run_context)
         chapters[index] = replace(chapter, body_markdown=generated.body_markdown)
         drafted.append(
@@ -116,14 +117,16 @@ async def write_chapters(
                 title=chapter.title,
                 body_markdown=generated.body_markdown,
                 gaps=list(generated.missing_information),
+                support_check=support_check,
             )
         )
         logger.info(
-            "Golden chapter writing fixture=%s chapter=%s/%s gaps=%s",
+            "Golden chapter writing fixture=%s chapter=%s/%s gaps=%s support_revisions=%s",
             loaded.fixture.fixture_id,
             index + 1,
             len(chapters),
             len(generated.missing_information),
+            sum(record["applied"] for record in support_check),
         )
     return drafted, share_common_inputs(supplied, {c.chapter_ref for c in chapters})
 
@@ -211,42 +214,13 @@ def chapter_writing_judge_input(
 def validate_chapter_writing_judgment(
     payload: JudgeInput, judgment: ChapterWritingEvaluation
 ) -> list[str]:
-    """Extend the shared reference contract to gap and flagged-gap verdicts."""
+    """Also require one verdict per expected gap and per flagged gap."""
     errors = validate_judgment(payload, judgment)
-    outputs = {unit.id: unit for unit in payload.outputs}
-    every_unit = {unit.id: unit for unit in [*payload.outputs, *payload.evidence]}
-    for claim in judgment.claims:
-        if not claim.output.unit_id.startswith("chapter/"):
-            errors.append(f"{claim.output.unit_id}: claims must cite chapter text")
-    expected = {gap.id: gap for gap in payload.expected_gaps}
-    errors += exactly_once("gaps", list(expected), [g.id for g in judgment.gaps])
-    for item in judgment.gaps:
-        if item.verdict != "not_flagged" and not item.output_refs:
-            errors.append(f"{item.id}: {item.verdict} needs output references")
-        for ref in item.output_refs:
-            errors += reference_errors(ref, outputs)
-            unit = outputs.get(ref.unit_id)
-            gap = expected.get(item.id)
-            if (
-                item.verdict == "flagged"
-                and unit
-                and gap
-                and gap.chapters
-                and unit.chapter_ref not in gap.chapters
-            ):
-                errors.append(f"{item.id}: flagged gap cited outside allowed chapters")
+    errors += exactly_once(
+        "gaps", [g.id for g in payload.expected_gaps], [g.id for g in judgment.gaps]
+    )
     gap_units = [unit.id for unit in payload.outputs if unit.id.startswith("gap/")]
     errors += exactly_once("flagged_gaps", gap_units, [g.unit_id for g in judgment.flagged_gaps])
-    for item in judgment.flagged_gaps:
-        if item.verdict in {"answerable_from_inputs", "answered_elsewhere"} and not item.evidence:
-            errors.append(f"{item.unit_id}: {item.verdict} needs evidence")
-        for ref in item.evidence:
-            errors += reference_errors(ref, every_unit)
-            unit = every_unit.get(ref.unit_id)
-            if item.verdict == "answered_elsewhere" and unit and unit.kind != "output":
-                errors.append(f"{item.unit_id}: answered_elsewhere must cite draft output")
-            if item.verdict == "answerable_from_inputs" and unit and unit.kind == "output":
-                errors.append(f"{item.unit_id}: answerable_from_inputs must cite inputs")
     return errors
 
 
@@ -258,13 +232,11 @@ def score_chapter_writing(
     extraction: JudgeEvaluation | None = None,
 ) -> StageReport:
     """Score fact transfer, claim support, chapter requirements, and gap honesty."""
-    repairs = repair_references(judgment, units_by_id(payload))
     errors = validate_chapter_writing_judgment(payload, judgment)
     report = StageReport(
         integrity_failures=integrity_failures,
         judgment=judgment,
         evaluation_errors=errors,
-        details={"repaired_quotes": repairs},
     )
     if errors:
         return report

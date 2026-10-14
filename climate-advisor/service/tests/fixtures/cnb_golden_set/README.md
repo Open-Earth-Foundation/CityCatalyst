@@ -1,18 +1,18 @@
 # CNB golden set
 
 A single-pass, stage-by-stage evaluation of whether the Concept Note Builder
-pipeline preserves meaning and supports its claims. Python checks exact
-contracts; an LLM judge evaluates meaning and must cite exact text for every
-verdict. There is no repetition/reliability evaluation and no judge calibration
+pipeline preserves meaning and supports its claims. Python checks the
+production output's exact contracts; an LLM judge evaluates meaning and cites
+the text behind every verdict. There is no repetition/reliability evaluation and no judge calibration
 benchmark.
 
 ## Stages
 
 | Stage | Production code exercised | Input | Question |
 | --- | --- | --- | --- |
-| `extraction` | source analysis | original document | Do retained quotations preserve expected facts in context, and do topic labels convey the expected topics? |
-| `chapter_writing` | chapter drafter, gap sanitizing | this run's extraction + full source text + template + city context | Are facts transferred into the right chapters, are claims supported, are chapter requirements met, and is missing information flagged instead of invented? |
-| `verification` | chapter validator (completeness + consistency) | reference draft with seeded defects | Does the validator find each seeded defect, and are its other findings genuine? |
+| `extraction` | source analysis and per-chapter quotations for the fixture template | original document | Do retained quotations (document-level and per chapter) preserve expected facts in context, and do topic labels convey the expected topics? |
+| `chapter_writing` | chapter drafter, support check, gap sanitizing | this run's extraction + full source text (within the context window) + template + city context | Are facts transferred into the right chapters, are claims supported, are chapter requirements met, and is missing information flagged instead of invented? |
+| `verification` | chapter validator (completeness + consistency + answered gaps) | reference draft with seeded defects | Does the validator find each seeded defect, and are its other findings genuine? |
 | `editing` | edit planner, semantic review, plan validation, anchor replacement | reference draft + chat request | Does the edit do what was asked, keep what must survive, change only authorized content, and leave the document consistent? |
 
 `all` (the default) runs every stage. `chapter_writing` always runs
@@ -75,35 +75,22 @@ English for a Polish source; the judge compares meaning across languages.
 
 ## Python versus the judge
 
-Python validates source digests, exact excerpt text, locator types, chapter
-identity, marker/gap parity (the rule production persistence enforces), that
-every seeded edit matches exactly once and keeps parity, which validator
-findings are the fixed open-gap findings (excluded from scoring), the edit
-outcome and which chapters changed, and the judge output contract:
+Python validates source digests, the production output's exact excerpt text
+and locator types, chapter identity, marker/gap parity (the rule production
+persistence enforces), that every seeded edit matches exactly once and keeps
+parity, which validator findings are the fixed open-gap findings (excluded from
+scoring), the edit outcome and which chapters changed, and that the judge
+returned exactly one verdict per expectation, defect, model finding, edit case,
+and change. A missing or repeated verdict leaves nothing to score, so it is the
+only judge problem that withholds metrics; the stage then reports an evaluation
+error, never a product failure.
 
-- exactly one verdict per expectation, defect, model finding, edit case and change;
-- every reference quotes an exact substring of a real unit, scoped correctly
-  (a covered fact cites an allowed chapter; supplied evidence belongs to the
-  claim's chapter; edit references stay within their case).
-
-Three judge slips are repaired deterministically and listed under
-`repaired_quotes` in the report:
-
-- a quote that differs from its unit only in case, whitespace, typographic
-  quotes, dashes, brackets, or Markdown emphasis markers (never commas or
-  periods, so numbers cannot merge), and matches exactly one span after
-  folding, is replaced with that exact span;
-- a mistyped unit ID is re-pointed to the single unit with the same kind, scope,
-  and field name that contains the quote verbatim (ties broken by the longest
-  shared ID suffix);
-- a verbatim quote cited from the wrong unit (for example the neighbouring page)
-  is re-pointed to the single unit of the same kind and chapter scope that
-  contains it, so evidence never moves between chapters.
-
-Anything else, such as a paraphrase or an inflected word, invalidates the
-judgment: metrics are withheld and the stage reports an evaluation error, never
-a product failure. Python never assesses meaning through
-term overlap or number presence.
+The judge's verdicts stand as given. Its references point reviewers to the text
+behind a verdict and are never matched by code: an inflected Polish word, a
+changed letter case, or a quote cited from the neighbouring page does not
+invalidate the judgment. The viewer shows such a quote as written and marks it
+"not found verbatim in this unit". Python never assesses meaning through term
+overlap or number presence.
 
 The judge checks entity/quantity relationships, units, time, geographic scope,
 negation, uncertainty, proposals versus commitments, and cost versus funding.
@@ -124,7 +111,7 @@ three documents and both languages.
 
 | Stage | Gate (default) | Also fails the stage |
 | --- | --- | --- |
-| extraction | required facts fully covered in retained quotations >= 0.75; topics >= 0.60 | contradicted fact; any claim not fully supported or not self-contained; non-exact quotation or locator |
+| extraction | required facts fully covered in retained quotations >= 0.75; topics >= 0.60 | contradicted fact; any claim not fully supported or not self-contained; non-exact production quotation or locator |
 | chapter_writing | required facts fully covered in allowed chapters >= 0.70; required expected gaps flagged >= 0.75 | claim not supported by the original source or by the evidence supplied to its chapter; invented value instead of a gap; raised gap answerable from inputs, answered in another chapter, or unclear; required chapter not satisfied; contradiction; marker/gap mismatch |
 | verification | seeded defects detected >= 0.75; false alarms <= 0.25 of model findings | any missed or partially detected defect |
 | editing | every case passes | wrong outcome; change outside the allowed chapters; expected change not applied; protected statement altered; unauthorized change; inconsistency after the edit |
@@ -144,6 +131,11 @@ the extraction verdict, the draft verdict, and an outcome: `transferred`,
 `lost_in_drafting`, `lost_in_extraction`, or `recovered` (extraction missed it
 but the drafter used the full source text). `transfer_rate` is the share of
 facts covered in extraction that are also covered in the draft.
+`claim_support_rate` is the share of judged claims fully supported (by the
+source and, for chapter writing, by the drafter's input) and self-contained;
+each other claim is one semantic failure. `drafts.json` keeps every revision the
+production support check proposed for each chapter, applied or skipped with a
+reason, and the viewer shows them under each chapter.
 
 ### Verification metrics
 
@@ -151,8 +143,9 @@ facts covered in extraction that are also covered in the draft.
 requires a cited finding with an expected category that names every expected
 chapter. The validator turns every open gap into a fixed finding; those are
 reported as `open_gap_findings` and never sent to the judge. Production
-generation never creates evidence links, so evidence-category findings about
-missing inline links are genuine production behaviour and are judged as such.
+generation never creates evidence links, so, as in production, the validator
+receives none and does not report missing links. Its answered-gaps pass reports
+each open question that another chapter already answers.
 
 ## Run
 
@@ -228,11 +221,12 @@ CI uploads the whole results folder as its artifact.
 Each run folder contains:
 
 - `report.md` and `report.json`: metrics, failures, evaluation errors, details
-  (transfer table, validator findings, edit checks, repaired quotes), and the
+  (transfer table, validator findings, edit checks), and the
   structured judgments. No complete source documents.
-- `outputs/<fixture>/analysis.json`: the raw extraction output; its summary is
-  saved here but never sent to the judge.
-- `outputs/<fixture>/chapter_writing/drafts.json`: chapters with structured gaps.
+- `outputs/<fixture>/analysis.json`: the raw extraction output, including the
+  per-chapter quotations; its summary is saved here but never sent to the judge.
+- `outputs/<fixture>/chapter_writing/drafts.json`: chapters with structured gaps
+  and the support check's revisions.
 - `outputs/<fixture>/verification/seeded_draft.json` and `findings.json`.
 - `outputs/<fixture>/editing/cases.json`: outcome, applied changes, and edited chapters per case.
 - `outputs/<fixture>/<stage>/judgment.json`: raw judge output, including invalid judgments.

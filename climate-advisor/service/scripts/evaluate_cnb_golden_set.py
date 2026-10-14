@@ -85,10 +85,13 @@ from app.services.cnb.golden_set_judge import (
     judge_prompt_versions,
 )
 from app.services.cnb.golden_set_viewer import publish_run
-from app.services.cnb.golden_set_workspace import golden_id
+from app.services.cnb.application_context import template_chapter_requirements
+from app.services.cnb.golden_set_workspace import fixture_template, golden_id
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     analyze_document,
+    chapter_evidence_fingerprint,
+    extract_chapter_evidence,
     source_analysis_contract_version,
 )
 
@@ -288,6 +291,29 @@ async def _evaluate_extraction(
         )
     except SourceAnalysisError as exc:
         return StageReport(evaluation_errors=[f"analysis_failed: {exc.code}"]), None
+    # Production adds per-chapter quotations once a funding template is selected.
+    template = fixture_template(loaded)
+    if template is not None:
+        chapters = template_chapter_requirements(template)
+        try:
+            chapter_excerpts = await extract_chapter_evidence(
+                source_label=source.source_label,
+                source_format=source.source_format,
+                pages=loaded.units,
+                chapters=chapters,
+                settings=settings,
+                reader_limit=asyncio.Semaphore(
+                    settings.llm.generation.prompt_budget.cnb_sources.max_concurrency
+                ),
+            )
+        except SourceAnalysisError as exc:
+            return StageReport(evaluation_errors=[f"chapter_evidence_failed: {exc.code}"]), None
+        source = source.model_copy(
+            update={
+                "chapter_excerpts": chapter_excerpts,
+                "chapter_evidence_fingerprint": chapter_evidence_fingerprint(settings, chapters),
+            }
+        )
     (output_dir / "analysis.json").write_text(
         source.model_dump_json(indent=2), encoding="utf-8"
     )

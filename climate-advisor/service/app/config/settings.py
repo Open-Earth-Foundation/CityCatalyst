@@ -140,6 +140,7 @@ class ModelsConfig(BaseModel):
     cnb_source_synthesizer: ResearchModelConfig
     cnb_golden_set_judge: ResearchModelConfig | None = None
     cnb_chapter_drafter: ResearchModelConfig | None = None
+    cnb_chapter_support_checker: ResearchModelConfig | None = None
     cnb_source_impact_reviewer: ResearchModelConfig | None = None
     cnb_chat_edit_planner: ResearchModelConfig | None = None
     cnb_chapter_validator: ResearchModelConfig
@@ -163,10 +164,11 @@ class CnbSourcePromptBudgetConfig(BaseModel):
     max_partition_tokens: int = Field(default=50000, ge=1000)
     max_concurrency: int = Field(default=3, ge=1, le=3)
     max_key_excerpts: int = Field(default=8, ge=1, le=20)
+    max_chapter_excerpts: int = Field(default=8, ge=1, le=20)
     max_topics: int = Field(default=12, ge=1, le=30)
     max_question_chars: int = Field(default=2000, ge=1, le=10000)
-    # Above this total, agents fall back to compact summaries and source queries.
-    full_text_max_tokens: int = Field(default=80000, ge=0)
+    # Above this whole-request size, agents fall back to summaries and quotations.
+    context_window_tokens: int = Field(default=350000, ge=0)
 
 
 class CnbSourceImpactPromptBudgetConfig(BaseModel):
@@ -234,11 +236,16 @@ class PromptsConfig(BaseModel):
     cnb_source_document_mapping: str = "prompts/cnb/source_document_mapping.md"
     cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
+    cnb_source_chapter_evidence: str = "prompts/cnb/source_chapter_evidence.md"
+    cnb_source_chapter_evidence_selection: str = (
+        "prompts/cnb/source_chapter_evidence_selection.md"
+    )
     cnb_golden_set_extraction_judge: str = "prompts/cnb/golden_set/extraction.md"
     cnb_golden_set_chapter_writing_judge: str = "prompts/cnb/golden_set/chapter_writing.md"
     cnb_golden_set_verification_judge: str = "prompts/cnb/golden_set/verification.md"
     cnb_golden_set_editing_judge: str = "prompts/cnb/golden_set/editing.md"
     cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
+    cnb_chapter_support_check: str = "prompts/cnb/chapter_support_check.md"
     cnb_source_impact_review: str = "prompts/cnb/source_impact_review.md"
     cnb_chat_edit_planner: str = "prompts/cnb/chat_edit_planner.md"
     cnb_chat_edit_review: str = "prompts/cnb/chat_edit_review.md"
@@ -248,6 +255,9 @@ class PromptsConfig(BaseModel):
     )
     cnb_chapter_validation_consistency: str = (
         "prompts/cnb/chapter_validation_consistency.md"
+    )
+    cnb_chapter_validation_answered_gaps: str = (
+        "prompts/cnb/chapter_validation_answered_gaps.md"
     )
 
     def get_prompt(self, prompt_type: str) -> str:

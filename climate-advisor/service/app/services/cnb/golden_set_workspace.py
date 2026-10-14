@@ -59,6 +59,19 @@ class GoldenWorkspace:
     templates: list[WorkspaceTemplateChapter]
 
 
+def fixture_template(loaded: LoadedFixture) -> ApplicationContextTemplate | None:
+    """The fixture's application template as production would load it."""
+    template = loaded.drafting_input
+    if template is None:
+        return None
+    return ApplicationContextTemplate(
+        id=golden_id(loaded.fixture.fixture_id, "template"),
+        name=template.template_name,
+        chapter_schema=template.chapter_schema,
+        required_fields=template.required_fields,
+    )
+
+
 def build_workspace(
     loaded: LoadedFixture,
     settings: Settings,
@@ -82,6 +95,7 @@ def build_workspace(
             )
         ],
         settings,
+        selected_sources=[selected_source],
     )
     bundle = ConceptNoteContextBundle(
         selected_sources=[selected_source],
@@ -102,12 +116,7 @@ def build_workspace(
         opportunity=ApplicationContextOpportunity(
             id=golden_id(fid, "opportunity"), name=template.opportunity
         ),
-        template=ApplicationContextTemplate(
-            id=golden_id(fid, "template"),
-            name=template.template_name,
-            chapter_schema=template.chapter_schema,
-            required_fields=template.required_fields,
-        ),
+        template=fixture_template(loaded),
         included_sources=included_sources_from_bundle(bundle),
     )
     templates = normalize_template_chapters(template.chapter_schema)

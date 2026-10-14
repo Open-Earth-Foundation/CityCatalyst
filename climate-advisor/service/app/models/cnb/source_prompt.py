@@ -27,6 +27,28 @@ class QuestionReading(BaseModel):
     sections: list[SectionEvidence]
 
 
+class ChapterTaggedExcerpt(BaseModel):
+    """An exact quotation and the template chapters whose requirements it serves."""
+
+    model_config = ConfigDict(extra="forbid")
+    text: str = Field(min_length=1, max_length=4000)
+    chapter_refs: list[str] = Field(min_length=1, max_length=50)
+
+
+class ChapterSectionEvidence(BaseModel):
+    """Chapter evidence for the section at the same position in the input array."""
+
+    model_config = ConfigDict(extra="forbid")
+    excerpts: list[ChapterTaggedExcerpt] = Field(default_factory=list, max_length=20)
+
+
+class ChapterEvidenceReading(BaseModel):
+    """Chapter-tagged evidence with an entry for every supplied section, in order."""
+
+    model_config = ConfigDict(extra="forbid")
+    sections: list[ChapterSectionEvidence]
+
+
 class ReadableExcerpt(BaseModel):
     """An exact quotation with a human-readable document location."""
 
@@ -34,6 +56,21 @@ class ReadableExcerpt(BaseModel):
     text: str = Field(min_length=1, max_length=4000)
     page: int | None = Field(default=None, ge=1)
     heading: str | None = None
+
+
+class ChapterExcerptChoice(BaseModel):
+    """The quotations chosen for one template chapter."""
+
+    model_config = ConfigDict(extra="forbid")
+    chapter_ref: str = Field(min_length=1, max_length=255)
+    excerpts: list[ReadableExcerpt] = Field(default_factory=list, max_length=20)
+
+
+class ChapterEvidenceSelection(BaseModel):
+    """Per-chapter quotation choices for chapters with more candidates than their quota."""
+
+    model_config = ConfigDict(extra="forbid")
+    chapters: list[ChapterExcerptChoice] = Field(default_factory=list, max_length=100)
 
 
 class DocumentSummary(BaseModel):

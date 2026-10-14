@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from hashlib import sha256
+from typing import Any
 from uuid import UUID
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
@@ -22,6 +23,7 @@ from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
 from app.models.db.concept_note import ConceptNoteRun
+from app.persistence.concept_notes.workspace import normalize_template_chapters
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -98,6 +100,16 @@ class ConceptNoteApplicationContextService:
         run: ConceptNoteRun,
     ) -> str | None:
         """Load the current template fingerprint with one reference query."""
+        template = await self.load_template_for_run(run)
+        if template is None:
+            return None
+        return calculate_application_template_fingerprint(template)
+
+    async def load_template_for_run(
+        self,
+        run: ConceptNoteRun,
+    ) -> ApplicationContextTemplate | None:
+        """Load the run's selected application template with one reference query."""
         if run.funder_id is None or run.selected_funding_opportunity_id is None:
             return None
 
@@ -118,9 +130,7 @@ class ConceptNoteApplicationContextService:
         async with session_factory() as session:
             template = await session.scalar(statement)
 
-        if template is None:
-            return None
-        return calculate_application_template_fingerprint(_template_response(template))
+        return _template_response(template) if template is not None else None
 
     async def _load_included_sources(
         self,
@@ -204,6 +214,26 @@ def _template_response(template: CnbFunderTemplate) -> ApplicationContextTemplat
         chapter_schema=template.chapter_schema,
         required_fields=template.required_fields,
     )
+
+
+def template_chapter_requirements(
+    template: ApplicationContextTemplate,
+) -> list[dict[str, Any]]:
+    """Each template chapter's reference, title, description, and required fields."""
+    required_fields = {
+        str(chapter.get("chapter_ref") or "").strip(): chapter.get("required_fields") or []
+        for chapter in template.chapter_schema
+        if isinstance(chapter, dict)
+    }
+    return [
+        {
+            "chapter_ref": chapter.chapter_ref,
+            "title": chapter.title,
+            "description": chapter.description,
+            "required_fields": [str(field) for field in required_fields.get(chapter.chapter_ref, [])],
+        }
+        for chapter in normalize_template_chapters(template.chapter_schema)
+    ]
 
 
 def calculate_application_template_fingerprint(

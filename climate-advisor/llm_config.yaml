@@ -37,6 +37,10 @@ models:
   cnb_chapter_drafter:
     name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
+  # Checks each drafted chapter's claims against the drafter's inputs.
+  cnb_chapter_support_checker:
+    name: "openai/gpt-5.6-terra"
+    reasoning_effort: "medium"
   cnb_source_impact_reviewer:
     name: "openai/gpt-6-sol"
     reasoning_effort: "medium"
@@ -62,11 +66,15 @@ generation:
       max_partition_tokens: 50000
       max_concurrency: 3
       max_key_excerpts: 8
+      # Exact quotations kept per template chapter and document, chosen for that
+      # chapter's required fields when a funding template is selected.
+      max_chapter_excerpts: 8
       max_topics: 12
       max_question_chars: 2000
-      # Uploaded sources up to this many tokens in total are sent to the chapter
-      # drafter and chat as complete text; larger sets use summaries only.
-      full_text_max_tokens: 80000
+      # Agents receive the complete source text while their whole request
+      # (instructions, run context, earlier chapters, and every source) fits
+      # this context window; otherwise they get summaries and the quotations.
+      context_window_tokens: 350000
     cnb_source_impact:
       max_prompt_tokens: 50000
       max_chapter_slice_tokens: 12000
@@ -108,12 +116,15 @@ prompts:
   cnb_source_document_mapping: "prompts/cnb/source_document_mapping.md"
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
+  cnb_source_chapter_evidence: "prompts/cnb/source_chapter_evidence.md"
+  cnb_source_chapter_evidence_selection: "prompts/cnb/source_chapter_evidence_selection.md"
   # Evaluation-only judges for the four golden-set stages
   cnb_golden_set_extraction_judge: "prompts/cnb/golden_set/extraction.md"
   cnb_golden_set_chapter_writing_judge: "prompts/cnb/golden_set/chapter_writing.md"
   cnb_golden_set_verification_judge: "prompts/cnb/golden_set/verification.md"
   cnb_golden_set_editing_judge: "prompts/cnb/golden_set/editing.md"
   cnb_chapter_drafting: "prompts/cnb/chapter_drafting.md"
+  cnb_chapter_support_check: "prompts/cnb/chapter_support_check.md"
   cnb_source_impact_review: "prompts/cnb/source_impact_review.md"
   cnb_chat_edit_planner: "prompts/cnb/chat_edit_planner.md"
   cnb_chat_edit_review: "prompts/cnb/chat_edit_review.md"
@@ -121,6 +132,7 @@ prompts:
   cnb_draft_overview: "prompts/cnb/draft_overview.md"
   cnb_chapter_validation_completeness: "prompts/cnb/chapter_validation_completeness.md"
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
+  cnb_chapter_validation_answered_gaps: "prompts/cnb/chapter_validation_answered_gaps.md"
 
 # API Configuration
 api:

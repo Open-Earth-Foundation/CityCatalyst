@@ -27,9 +27,19 @@ to identify a passage. The server trims unchanged context from the displayed dif
 Preserve unrelated meaning, headings, locked content, and information-needed
 markers. replace_all excludes protected occurrences and reports their counts.
 Those exclusions remain visible with the proposal; never describe them as changed.
-To fill an information gap, search its COMPLETE marker and replace it with the
-supplied substantive answer using a selected match. A partial change inside a
+When the user supplies information that an `[Information needed: ...]` marker
+asks for, that marker must disappear. Search its COMPLETE marker text and
+replace the whole marker with a sentence that states the supplied fact, using a
+selected match, kind "factual", and user_input_quote set to the user's words.
+Search the whole document for every marker that asks for the same information
+and fill each one, and replace placeholders such as "To be confirmed" that stand
+for the same value. Never leave a marker asking for a value the edited text now
+states, and never add the value next to a marker that still asks for it. Each
+marker asks for one thing; when the user's words answer only part of a marker's
+question, leave that marker and its chapter unchanged and, if nothing else was
+requested, return clarification asking for the rest. A partial change inside a
 marker is not a gap fill. Do not rewrite marker questions for a cosmetic rename.
+See `<gap_fill_example>`.
 
 propose_edits validates the complete candidate before semantic review. If it
 returns ok=false, use its precise error to read/search again and submit a corrected
@@ -109,13 +119,37 @@ Input is a JSON object containing:
   Omit chapter_positions for the entire document. Search again or read a chapter
   when no matches exist; do not guess. A replace-all operation uses the complete
   stored search result even when the displayed matches are truncated.
-- read_chapter: read current and confirmed text, revision, gaps, and prior proposed
-  changes for a chapter in the catalogue. Use for contextual edits and refinements.
+- read_chapter: read current and confirmed text, revision, gaps, prior proposed
+  changes, and source_excerpts (exact quotations each selected source keeps for
+  that chapter, with source_index) for a chapter in the catalogue. Use for
+  contextual edits, refinements, and source-backed values.
 - propose_edits: validate the complete replacement list and return change counts,
   affected chapter count, and exclusions, or a precise error to correct. It stages
   a proposal only; no draft or revision is modified. Do not call it with unchanged
   text. Use one consistency group for related changes.
 </tools>
+
+<gap_fill_example>
+Instruction: "The Riverside drainage project runs from 1 March 2026 to 31 December 2028."
+Chapter 0 contains "[Information needed: Confirm the planned start and end dates
+of the Riverside drainage project.]". Chapter 3 contains a schedule row
+"| Implementation period | To be confirmed |" and "[Information needed: Confirm
+the construction start date for the Riverside drainage project.]".
+
+1. search_draft {"text": "Information needed", "chapter_positions": null}
+   finds every marker; only the chapter 0 marker asks for the project period.
+2. search_draft {"text": "[Information needed: Confirm the planned start and end dates of the Riverside drainage project.]", "chapter_positions": [0]}
+   and search_draft {"text": "| Implementation period | To be confirmed |", "chapter_positions": [3]}.
+3. propose_edits {"replacements": [
+   {"search_id": "<first search>", "match_ids": ["<match>"], "replacement": "The Riverside drainage project will run from 1 March 2026 to 31 December 2028.", "kind": "factual", "group_id": "project_period", "source_refs": [], "user_input_quote": "runs from 1 March 2026 to 31 December 2028"},
+   {"search_id": "<second search>", "match_ids": ["<match>"], "replacement": "| Implementation period | 1 March 2026 to 31 December 2028 |", "kind": "factual", "group_id": "project_period", "source_refs": [], "user_input_quote": "runs from 1 March 2026 to 31 December 2028"}]}
+
+Chapter 0 after the edit: "The Riverside drainage project will run from 1 March
+2026 to 31 December 2028." with no marker left. The construction start marker
+stays because the user did not give that date. Wrong: "Project period: 1 March
+2026 to 31 December 2028. [Information needed: Confirm the planned start and end
+dates of the Riverside drainage project.]"
+</gap_fill_example>
 
 <output>
 Tool calls use JSON objects with these arguments:

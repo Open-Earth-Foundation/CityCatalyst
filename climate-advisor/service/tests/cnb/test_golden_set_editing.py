@@ -258,28 +258,34 @@ def test_unauthorized_change_fails_the_case(judged_edit, verdict):
     assert report.metrics["unsupported_changes"] == 1
 
 
-@pytest.mark.parametrize(
-    "mutation",
-    ["missing_case", "missing_expectation", "unjudged_change", "draft_cited_for_edited_chapter", "other_case_output"],
-)
-def test_invalid_editing_judgments_withhold_metrics(judged_edit, mutation):
-    loaded, payload, judgment, checks, first = judged_edit
+@pytest.mark.parametrize("mutation", ["missing_case", "missing_expectation", "unjudged_change"])
+def test_missing_editing_verdicts_withhold_metrics(judged_edit, mutation):
+    loaded, payload, judgment, checks, _ = judged_edit
     item = judgment.cases[0]
     if mutation == "missing_case":
         judgment.cases = []
     elif mutation == "missing_expectation":
         item.expected_changes = []
-    elif mutation == "unjudged_change":
+    else:
         item.changes = []
-    elif mutation == "draft_cited_for_edited_chapter":
+    assert validate_editing_judgment(payload, judgment)
+    report = score_editing(loaded, payload, judgment, checks)
+    assert report.evaluation_errors and report.metrics == {}
+
+
+@pytest.mark.parametrize("mutation", ["draft_cited_for_edited_chapter", "other_case_output"])
+def test_reference_slips_never_withhold_editing_metrics(judged_edit, mutation):
+    loaded, payload, judgment, checks, first = judged_edit
+    item = judgment.cases[0]
+    if mutation == "draft_cited_for_edited_chapter":
         item.preserved[0].output_refs = [
             TextReference(unit_id=f"draft/{first.chapter_ref}", quote=first.body_markdown[:20])
         ]
     else:
         item.expected_changes[0].output_refs = [TextReference(unit_id="change/other/0", quote="x")]
-    assert validate_editing_judgment(payload, judgment)
+    assert validate_editing_judgment(payload, judgment) == []
     report = score_editing(loaded, payload, judgment, checks)
-    assert report.evaluation_errors and report.metrics == {}
+    assert report.passed and report.metrics["case_pass_rate"] == 1.0
 
 
 def test_fixture_edit_cases_cover_fill_propagate_rewrite_and_clarify(fixtures):

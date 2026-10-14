@@ -121,7 +121,8 @@ def build_run_payload(run_dir: Path, fixtures_dir: Path = FIXTURES_DIR) -> dict[
         "run": {k: v for k, v in report.items() if k != "fixtures"} | {"id": run_dir.name},
         "config": {
             "max_key_excerpts": budget.max_key_excerpts,
-            "full_text_max_tokens": budget.full_text_max_tokens,
+            "max_chapter_excerpts": budget.max_chapter_excerpts,
+            "context_window_tokens": budget.context_window_tokens,
         },
         "prompts": prompts,
         "examples": {stage: _examples(text) for stage, text in prompts.items()},

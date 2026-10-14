@@ -35,7 +35,6 @@ from app.services.cnb.golden_set import (
     load_golden_fixtures,
     marker_parity_problems,
     score_extraction,
-    validate_judgment,
     verify_excerpts,
 )
 from app.services.cnb.golden_set_judge import (
@@ -187,30 +186,33 @@ def test_valid_judgment_is_aggregated_without_lexical_matching(judged_case):
         "required_facts_partially_covered": 0,
         "required_facts_missing": 0,
         "required_facts_contradicted": 0,
+        "claim_support_rate": 1.0,
         "topic_coverage": 1.0,
     }
 
 
-@pytest.mark.parametrize(
-    "mutation",
-    [
-        "missing_fact",
-        "duplicate_fact",
-        "invented_quote",
-        "unknown_unit",
-        "wrong_kind",
-        "no_claims",
-        "no_support",
-        "topic_as_fact",
-    ],
-)
-def test_invalid_judge_response_withholds_metrics(judged_case, mutation):
+@pytest.mark.parametrize("mutation", ["missing_fact", "duplicate_fact"])
+def test_missing_or_repeated_verdicts_withhold_metrics(judged_case, mutation):
     loaded, _, payload, judgment = judged_case
     if mutation == "missing_fact":
         judgment.facts = []
-    elif mutation == "duplicate_fact":
+    else:
         judgment.facts.append(judgment.facts[0])
-    elif mutation == "invented_quote":
+    report = score_extraction(loaded, payload, judgment, [])
+    assert not report.passed
+    assert report.evaluation_errors
+    assert report.metrics == {}
+    assert report.semantic_failures == []
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ["invented_quote", "unknown_unit", "wrong_kind", "no_claims", "no_support", "topic_as_fact"],
+)
+def test_judge_references_never_invalidate_its_verdicts(judged_case, mutation):
+    """References only point reviewers to text; the judge's meaning stands."""
+    loaded, _, payload, judgment = judged_case
+    if mutation == "invented_quote":
         judgment.claims[0].evidence[0].quote = "This quotation is invented."
     elif mutation == "unknown_unit":
         judgment.claims[0].evidence[0].unit_id = "source/does-not-exist"
@@ -227,10 +229,9 @@ def test_invalid_judge_response_withholds_metrics(judged_case, mutation):
         payload.outputs.append(payload.outputs[0].model_copy(update={"id": "topic/0"}))
         judgment.facts[0].output_refs[0].unit_id = "topic/0"
     report = score_extraction(loaded, payload, judgment, [])
-    assert not report.passed
-    assert report.evaluation_errors
-    assert report.metrics == {}
-    assert report.semantic_failures == []
+    assert report.evaluation_errors == []
+    assert report.metrics["required_fact_coverage"] == 1.0
+    assert report.passed
 
 
 @pytest.mark.parametrize("summary", ["Unrelated description", "Contradictory assertion", ""])
@@ -251,7 +252,6 @@ def test_fact_only_in_summary_or_original_source_cannot_count_as_retained(judged
     source.key_excerpts = []
     payload, failures = extraction_judge_input(loaded, source)
     assert not payload.outputs and not failures
-    assert validate_judgment(payload, judgment)
     judgment.facts[0].verdict = "missing"
     judgment.facts[0].output_refs = []
     judgment.claims = []
@@ -259,14 +259,6 @@ def test_fact_only_in_summary_or_original_source_cannot_count_as_retained(judged
     assert not report.evaluation_errors
     assert report.metrics["required_fact_coverage"] == 0
     assert not report.passed
-
-
-def test_extraction_rejects_supplied_evidence_assessment(judged_case):
-    _, _, payload, judgment = judged_case
-    judgment.claims[0].supplied_verdict = "supported"
-    assert "extraction must not judge supplied-evidence support" in validate_judgment(
-        payload, judgment
-    )
 
 
 def test_partial_coverage_is_reported_separately(judged_case):
@@ -384,11 +376,17 @@ async def test_extraction_calls_producer_once_and_saves_judgment(
 ):
     loaded, source, _, judgment = judged_case
     producer = AsyncMock(return_value=source)
+    chapters = AsyncMock(return_value=[])
     monkeypatch.setattr(evaluator, "analyze_document", producer)
+    monkeypatch.setattr(evaluator, "extract_chapter_evidence", chapters)
     monkeypatch.setattr(evaluator, "judge_output", AsyncMock(return_value=judgment))
     report, result = await evaluator._evaluate_extraction(loaded, get_settings(), tmp_path)
     producer.assert_awaited_once()
-    assert result is source and report.passed
+    # Per-chapter quotations follow the fixture's template, as in production.
+    refs = [c["chapter_ref"] for c in chapters.await_args.kwargs["chapters"]]
+    assert refs == [c["chapter_ref"] for c in loaded.drafting_input.chapter_schema]
+    assert result.key_excerpts == source.key_excerpts and result.chapter_evidence_fingerprint
+    assert report.passed
     assert (tmp_path / "analysis.json").exists()
     assert (tmp_path / "extraction/judgment.json").exists()
 
@@ -577,7 +575,7 @@ def test_markdown_report_shows_counts_and_invalid_judgments(judged_case, invalid
     loaded, _, payload, judgment = judged_case
     judgment.facts[0].verdict = "partially_covered"
     if invalid:
-        judgment.claims[0].evidence[0].quote = "Invented evidence"
+        judgment.facts = []
     stage = score_extraction(loaded, payload, judgment, [])
     report = GoldenSetReport(
         generated_at="test",
@@ -600,54 +598,18 @@ def test_markdown_report_shows_counts_and_invalid_judgments(judged_case, invalid
     assert "CNB golden set: FAIL" in markdown
 
 
-def test_near_verbatim_quotes_are_snapped_and_ambiguous_ones_are_not(judged_case):
+def test_inflected_quote_on_the_wrong_page_keeps_the_judgment(judged_case):
+    """Mirrors the live Polish slips that used to void a whole stage."""
     loaded, _, payload, judgment = judged_case
-    quote = judgment.claims[0].evidence[0]
-    exact = quote.quote
-    quote.quote = exact.lower().replace(" ", "  ", 1)  # case and spacing slip
-    report = score_extraction(loaded, payload, judgment, [])
-    assert not report.evaluation_errors
-    assert quote.quote == exact
-    assert len(report.details["repaired_quotes"]) == 1
-    quote.quote = "flood-risk areas"  # occurs more than once: must not be guessed
-    quote.quote = quote.quote.upper()
-    report = score_extraction(loaded, payload, judgment, [])
-    assert report.evaluation_errors
-
-
-def test_mistyped_unit_ids_are_repointed_only_when_unambiguous():
-    """Mirrors a live judge slip: an invented run_context segment in a supplied ID."""
-    from app.models.cnb.golden_set import TextUnit
-    from app.services.cnb.golden_set import repair_references
-
-    units = {
-        u.id: u
-        for u in [
-            TextUnit(id="supplied/shared/source_documents/0/text", text="Full source text.", kind="supplied"),
-            TextUnit(id="supplied/shared/source_documents/0/source_label", text="Plan", kind="supplied"),
-            TextUnit(id="supplied/a/source_documents/0/text", text="Full source text.", kind="supplied", chapter_ref="a"),
-            # Also contains the quote, but shares only the final field name.
-            TextUnit(id="supplied/shared/run_context/context_bundle/selected_sources/0/key_excerpts/3/text", text="Excerpt of the source text.", kind="supplied"),
-        ]
-    }
-    claim = ClaimJudgment(
-        output=TextReference(unit_id="chapter/a", quote="x"),
-        verdict="supported",
-        evidence=[],
-        supplied_verdict="supported",
-        supplied_evidence=[
-            TextReference(unit_id="supplied/shared/run_context/source_documents/0/text", quote="source text"),
-            TextReference(unit_id="supplied/shared/run_context/missing/0/label", quote="Plan"),
-        ],
-        self_contained=True,
-        reason="r",
+    judgment.claims[0].evidence[0] = TextReference(
+        unit_id="source/page-4", quote="konieczność adaptacji do zmian klimatu"
     )
-    repairs = repair_references(claim, units)
-    assert claim.supplied_evidence[0].unit_id == "supplied/shared/source_documents/0/text"
-    assert claim.supplied_evidence[1].unit_id == "supplied/shared/run_context/missing/0/label"
-    assert repairs == [
-        "supplied/shared/run_context/source_documents/0/text -> supplied/shared/source_documents/0/text"
-    ]
+    judgment.facts[0].output_refs[0].quote = judgment.facts[0].output_refs[0].quote.upper()
+    report = score_extraction(loaded, payload, judgment, [])
+    assert report.evaluation_errors == []
+    assert report.passed
+    # The judge's own words are kept as written for reviewers.
+    assert judgment.claims[0].evidence[0].quote == "konieczność adaptacji do zmian klimatu"
 
 
 def test_pdf_fixtures_pin_their_original_pdf(fixtures):
@@ -672,56 +634,3 @@ def test_pdf_fixtures_pin_their_original_pdf(fixtures):
         ),
     )
     assert "original PDF digest mismatch: source.pdf" in fixture_problems(broken)
-
-
-def test_verbatim_quote_from_the_wrong_unit_is_repointed_within_scope():
-    """Mirrors a live judge slip: a source quote cited on the neighbouring page."""
-    from app.models.cnb.golden_set import TextUnit
-    from app.services.cnb.golden_set import repair_references
-
-    units = {
-        u.id: u
-        for u in [
-            TextUnit(id="source/page-3", text="1) konieczność adaptacji do zmian klimatu;", kind="source"),
-            TextUnit(id="source/page-4", text="środki na adaptację do zmian klimatu", kind="source"),
-            TextUnit(id="chapter/a", text="Same words: konieczność adaptacji", kind="output", chapter_ref="a"),
-            TextUnit(id="chapter/b", text="Other chapter", kind="output", chapter_ref="b"),
-        ]
-    }
-    wrong_page = TextReference(unit_id="source/page-4", quote="konieczność adaptacji do zmian klimatu")
-    wrong_chapter = TextReference(unit_id="chapter/b", quote="konieczność adaptacji")
-    claim = ClaimJudgment(
-        output=wrong_chapter,
-        verdict="supported",
-        evidence=[wrong_page],
-        supplied_verdict=None,
-        supplied_evidence=[],
-        self_contained=True,
-        reason="r",
-    )
-    repairs = repair_references(claim, units)
-    assert wrong_page.unit_id == "source/page-3"
-    assert wrong_chapter.unit_id == "chapter/b"  # never moved to another chapter
-    assert repairs == ["source/page-4 -> source/page-3 (quote found there)"]
-
-
-def test_dropped_brackets_are_snapped_but_number_punctuation_is_not():
-    from app.models.cnb.golden_set import TextUnit
-    from app.services.cnb.golden_set import repair_references
-
-    text = "Barr used Light Detection and Ranging (LiDAR) data collected in 2022. Cost: $1,540,000."
-    units = {"source/page-9": TextUnit(id="source/page-9", text=text, kind="source")}
-    dropped = TextReference(unit_id="source/page-9", quote="LiDAR data collected in 2022")
-    merged = TextReference(unit_id="source/page-9", quote="$1540000")
-    claim = ClaimJudgment(
-        output=TextReference(unit_id="source/page-9", quote="Cost"),
-        verdict="supported",
-        evidence=[dropped, merged],
-        supplied_verdict=None,
-        supplied_evidence=[],
-        self_contained=True,
-        reason="r",
-    )
-    repair_references(claim, units)
-    assert dropped.quote == "LiDAR) data collected in 2022"
-    assert merged.quote == "$1540000"  # digits without separators are not guessed

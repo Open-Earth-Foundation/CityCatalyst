@@ -57,8 +57,10 @@ Input is a JSON object matching `JudgeInput`:
 - `expected_gaps` (array): always empty here.
 - `chapter_requirements` (array): always empty here.
 - `outputs` (array): text units with `id`, `text` (strings), `kind: "output"`,
-  and `chapter_ref` (null). Retained quotations use `retained/...` IDs; topic
-  labels use `topic/...` IDs.
+  and `chapter_ref` (null). Retained quotations use `retained/...` IDs:
+  `retained/<n>/...` are the document-level quotations and
+  `retained/<chapter_ref>/<n>/...` are quotations kept for one template
+  chapter; all of them count as retained. Topic labels use `topic/...` IDs.
 - `evidence` (array): text units with `id`, `text`, `kind: "source"`, and
   `chapter_ref` (null): every original page (`source/page-N`) or Markdown
   segment, without summary replacement or excerpt-only reduction.

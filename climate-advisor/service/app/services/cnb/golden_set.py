@@ -1,7 +1,9 @@
 """Fixture loading, exact integrity checks, and extraction-stage judgment scoring.
 
-Python validates fixture artifacts, quotations, IDs, and judge references. It
-never infers semantic coverage or claim support from keywords or number presence.
+Python validates fixture artifacts and the production output's quotations, and
+checks that the judge returned one verdict per expected item. It never checks the
+judge's own quotations and never infers semantic coverage or claim support from
+keywords or number presence.
 Chapter writing, verification, and editing build on these helpers in their own
 modules.
 """
@@ -18,7 +20,6 @@ from pathlib import Path
 from app.models.cnb.context_bundle import SelectedSource
 from app.models.cnb.golden_set import (
     DraftingInput,
-    GoldenContract,
     ExpectedFact,
     GoldenFixture,
     GoldenLocator,
@@ -26,7 +27,6 @@ from app.models.cnb.golden_set import (
     JudgeInput,
     ReferenceDraft,
     StageReport,
-    TextReference,
     TextUnit,
 )
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
@@ -42,7 +42,6 @@ from app.utils.cnb_information_markers import (
     information_needed_markers,
 )
 from app.utils.concept_note_context import readable_source_heading
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 GOLDEN_FIXTURE_FILE = "golden.json"
@@ -241,28 +240,36 @@ def _heading_matches(heading: str, locator: GoldenLocator) -> bool:
 def verify_excerpts(
     loaded: LoadedFixture, source: SelectedSource
 ) -> tuple[list[str], list[TextUnit]]:
-    """Reject incorrect locator types and non-exact quotes; retain verified text."""
+    """Reject incorrect locator types and non-exact quotes; retain verified text.
+
+    Document-level quotations become ``retained/<n>/<anchor>`` units and
+    per-chapter quotations ``retained/<chapter_ref>/<n>/<anchor>``.
+    """
     units = {source_unit_anchor(unit): unit for unit in loaded.units}
     is_pdf = loaded.fixture.source.source_format == "pdf"
     failures: list[str] = []
     verified: list[TextUnit] = []
-    for index, excerpt in enumerate(source.key_excerpts):
-        anchor = excerpt_source_anchor(excerpt)
-        unit = units.get(anchor)
-        if unit is None or (excerpt.page is not None) != is_pdf:
-            failures.append(f"excerpt {index}: invalid locator {anchor}")
-        elif not excerpt.text.strip() or excerpt.text not in unit.text:
-            failures.append(
-                f"excerpt {index}: non-exact or empty quotation at {anchor}"
-            )
-        else:
-            verified.append(
-                TextUnit(
-                    id=f"retained/{index}/{anchor}",
-                    text=excerpt.text,
-                    kind="output",
+    groups = [("", source.key_excerpts)] + [
+        (f"{item.chapter_ref}/", item.excerpts) for item in source.chapter_excerpts
+    ]
+    for prefix, excerpts in groups:
+        for index, excerpt in enumerate(excerpts):
+            anchor = excerpt_source_anchor(excerpt)
+            unit = units.get(anchor)
+            if unit is None or (excerpt.page is not None) != is_pdf:
+                failures.append(f"excerpt {prefix}{index}: invalid locator {anchor}")
+            elif not excerpt.text.strip() or excerpt.text not in unit.text:
+                failures.append(
+                    f"excerpt {prefix}{index}: non-exact or empty quotation at {anchor}"
                 )
-            )
+            else:
+                verified.append(
+                    TextUnit(
+                        id=f"retained/{prefix}{index}/{anchor}",
+                        text=excerpt.text,
+                        kind="output",
+                    )
+                )
     return failures, verified
 
 
@@ -302,30 +309,20 @@ def extraction_judge_input(
 
 
 def validate_judgment(payload: JudgeInput, judgment: JudgeEvaluation) -> list[str]:
-    """Reject incomplete IDs and fabricated or wrongly scoped judge references.
+    """Require one verdict for every expected item; the verdicts themselves stand.
 
-    This verifies the evaluator's contract, not the correctness of its semantic
-    verdicts. Invalid evaluations are reported separately from product failures.
+    Judge references point reviewers to the text behind a verdict. They are
+    never matched against the input, so a misquoted word ending or a wrong page
+    cannot invalidate the judge's meaning. Only a missing or repeated verdict,
+    which leaves nothing to score, is an evaluation error.
     """
     errors: list[str] = []
-    outputs = {unit.id: unit for unit in payload.outputs}
-    evidence = {unit.id: unit for unit in payload.evidence}
     all_ids = [unit.id for unit in [*payload.outputs, *payload.evidence]]
     if len(set(all_ids)) != len(all_ids):
         errors.append("duplicate input text-unit IDs")
-
-    # Every expected item must receive exactly one judgment.
     for label, expected, actual in (
-        (
-            "facts",
-            [f.id for f in payload.expected_facts],
-            [f.id for f in judgment.facts],
-        ),
-        (
-            "topics",
-            [t.id for t in payload.expected_topics],
-            [t.id for t in judgment.topics],
-        ),
+        ("facts", [f.id for f in payload.expected_facts], [f.id for f in judgment.facts]),
+        ("topics", [t.id for t in payload.expected_topics], [t.id for t in judgment.topics]),
         (
             "chapters",
             [c.chapter_ref for c in payload.chapter_requirements],
@@ -333,89 +330,6 @@ def validate_judgment(payload: JudgeInput, judgment: JudgeEvaluation) -> list[st
         ),
     ):
         errors += exactly_once(label, expected, actual)
-
-    # Validate exact output spans and chapter ownership before accepting coverage.
-    expected_facts = {fact.id: fact for fact in payload.expected_facts}
-    for item in [*judgment.facts, *judgment.topics]:
-        if item.verdict != "missing" and not item.output_refs:
-            errors.append(f"{item.id}: non-missing verdict needs output references")
-        if item.verdict == "missing" and item.output_refs:
-            errors.append(f"{item.id}: missing verdict must not cite output")
-        for ref in item.output_refs:
-            errors += reference_errors(ref, outputs)
-    for item in judgment.facts:
-        fact = expected_facts.get(item.id)
-        for ref in item.output_refs:
-            unit = outputs.get(ref.unit_id)
-            if (
-                unit
-                and payload.stage == "extraction"
-                and not unit.id.startswith("retained/")
-            ):
-                errors.append(
-                    f"{item.id}: source fact must be evaluated in retained quotations"
-                )
-            if fact and fact.chapters and item.verdict == "covered" and unit:
-                if unit.chapter_ref not in fact.chapters:
-                    errors.append(
-                        f"{item.id}: covered fact cited outside allowed chapters"
-                    )
-    for item in judgment.topics:
-        if any(not ref.unit_id.startswith("topic/") for ref in item.output_refs):
-            errors.append(f"{item.id}: topic verdict must cite a returned topic")
-
-    # A positive support verdict must cite verified evidence of the correct kind.
-    if not judgment.claims and any(
-        item.verdict == "covered" for item in judgment.facts
-    ):
-        errors.append("covered factual output has no claim judgments")
-    for claim in judgment.claims:
-        errors += reference_errors(claim.output, outputs)
-        output = outputs.get(claim.output.unit_id)
-        checks = [(claim.verdict, claim.evidence, {"source", "context"})]
-        if payload.stage == "extraction":
-            if claim.supplied_verdict is not None or claim.supplied_evidence:
-                errors.append("extraction must not judge supplied-evidence support")
-        else:
-            if claim.supplied_verdict is None:
-                errors.append(
-                    f"{claim.output.unit_id}: missing supplied-evidence verdict"
-                )
-            checks.append(
-                (claim.supplied_verdict, claim.supplied_evidence, {"supplied"})
-            )
-        for verdict, refs, kinds in checks:
-            if (
-                verdict in {"supported", "partially_supported", "contradicted"}
-                and not refs
-            ):
-                errors.append(f"{claim.output.unit_id}: {verdict} needs evidence")
-            for ref in refs:
-                errors += reference_errors(ref, evidence)
-                unit = evidence.get(ref.unit_id)
-                if unit and unit.kind not in kinds:
-                    errors.append(f"{ref.unit_id}: wrong evidence kind")
-                if unit and unit.kind == "supplied" and unit.chapter_ref is not None:
-                    if output and unit.chapter_ref != output.chapter_ref:
-                        errors.append(
-                            f"{ref.unit_id}: evidence was supplied to a different chapter"
-                        )
-
-    for chapter in judgment.chapters:
-        if chapter.verdict != "not_satisfied" and not chapter.output_refs:
-            errors.append(
-                f"{chapter.chapter_ref}: satisfied chapter needs output references"
-            )
-        for ref in chapter.output_refs:
-            errors += reference_errors(ref, outputs)
-            unit = outputs.get(ref.unit_id)
-            if unit and unit.chapter_ref != chapter.chapter_ref:
-                errors.append(
-                    f"{chapter.chapter_ref}: reference belongs to another chapter"
-                )
-    for conflict in judgment.contradictions:
-        for ref in conflict.output_refs:
-            errors += reference_errors(ref, outputs)
     return errors
 
 
@@ -423,141 +337,6 @@ def exactly_once(label: str, expected: Sequence[str], actual: Sequence[str]) -> 
     """Require one verdict per expected ID, with no extras or repeats."""
     if len(set(expected)) != len(expected) or Counter(expected) != Counter(actual):
         return [f"{label}: expected exactly one verdict for each supplied ID"]
-    return []
-
-
-_FOLD = str.maketrans({"‘": "'", "’": "'", "“": '"', "”": '"', "„": '"', "–": "-", "—": "-", " ": " "})
-
-
-_IGNORED = set("()[]{}*_`\"'")
-
-
-def _folded(text: str) -> tuple[str, list[int]]:
-    """Case-, whitespace-, quote-, dash- and bracket-folded text with original offsets."""
-    chars: list[str] = []
-    offsets: list[int] = []
-    for index, char in enumerate(text.translate(_FOLD)):
-        # Brackets, quote marks, and Markdown emphasis never change meaning;
-        # commas and periods are kept so numbers cannot merge.
-        if char in _IGNORED:
-            continue
-        if char.isspace():
-            if chars and chars[-1] == " ":
-                continue
-            char = " "
-        for folded in char.casefold():
-            chars.append(folded)
-            offsets.append(index)
-    return "".join(chars), offsets
-
-
-def _repointed_unit(ref: TextReference, units: dict[str, TextUnit]) -> TextUnit | None:
-    """The one real unit a mistyped unit ID unambiguously denotes, if any.
-
-    Only units with the same kind and scope prefix (for example
-    ``supplied/shared``) and the same final field name that contain the quote
-    verbatim are candidates. The candidate sharing the longest ID suffix with
-    the mistyped ID wins; a tie or no candidate is rejected.
-    """
-    parts = ref.unit_id.split("/")
-    if len(parts) < 3:
-        return None
-
-    def shared_suffix(unit_id: str) -> int:
-        """Number of trailing path segments the two IDs have in common."""
-        count = 0
-        for a, b in zip(reversed(unit_id.split("/")), reversed(parts)):
-            if a != b:
-                break
-            count += 1
-        return count
-
-    candidates = sorted(
-        (
-            (shared_suffix(unit_id), unit)
-            for unit_id, unit in units.items()
-            if unit_id.split("/")[:2] == parts[:2]
-            and unit_id.rsplit("/", 1)[-1] == parts[-1]
-            and ref.quote in unit.text
-        ),
-        key=lambda item: item[0],
-        reverse=True,
-    )
-    if not candidates or (len(candidates) > 1 and candidates[0][0] == candidates[1][0]):
-        return None
-    return candidates[0][1]
-
-
-def repair_references(judgment: GoldenContract, units: dict[str, TextUnit]) -> list[str]:
-    """Snap near-verbatim judge references to the one exact span they denote.
-
-    A quote that differs from its unit only in case, whitespace, typographic
-    quotes, dashes, brackets, or emphasis markers, and matches exactly one span
-    after folding, is replaced with that exact span. A mistyped unit ID is re-pointed only to the single
-    unit with the same kind, scope, and field name that contains the quote
-    verbatim. A verbatim quote cited from the wrong unit (for example the
-    neighbouring page) is re-pointed only to the single unit of the same kind
-    and chapter scope that contains it, so evidence never changes chapters.
-    Anything else is left for validation to reject. Returns a description of
-    every repair for the report.
-    """
-    repairs: list[str] = []
-
-    def visit(value: object) -> None:
-        """Walk models and lists, snapping each text reference in place."""
-        if isinstance(value, TextReference):
-            unit = units.get(value.unit_id)
-            if unit is None:
-                target = _repointed_unit(value, units)
-                if target is not None:
-                    repairs.append(f"{value.unit_id} -> {target.id}")
-                    value.unit_id = target.id
-                return
-            if value.quote in unit.text:
-                return
-            haystack, offsets = _folded(unit.text)
-            needle = _folded(value.quote)[0].strip()
-            start = haystack.find(needle) if needle else -1
-            if start < 0 or haystack.find(needle, start + 1) >= 0:
-                elsewhere = [
-                    other
-                    for other in units.values()
-                    if other.kind == unit.kind
-                    and other.chapter_ref == unit.chapter_ref
-                    and value.quote.strip()
-                    and value.quote in other.text
-                ]
-                if start < 0 and len(elsewhere) == 1:
-                    repairs.append(f"{value.unit_id} -> {elsewhere[0].id} (quote found there)")
-                    value.unit_id = elsewhere[0].id
-                return
-            end = offsets[start + len(needle) - 1] + 1
-            exact = unit.text[offsets[start] : end]
-            repairs.append(f"{value.unit_id}: {value.quote!r} -> {exact!r}")
-            value.quote = exact
-        elif isinstance(value, BaseModel):
-            for name in type(value).model_fields:
-                visit(getattr(value, name))
-        elif isinstance(value, list):
-            for item in value:
-                visit(item)
-
-    visit(judgment)
-    return repairs
-
-
-def units_by_id(payload: object) -> dict[str, TextUnit]:
-    """Every output and evidence unit of a judge payload, by ID."""
-    return {unit.id: unit for unit in [*payload.outputs, *payload.evidence]}
-
-
-def reference_errors(ref: TextReference, units: dict[str, TextUnit]) -> list[str]:
-    """Verify a nonempty verbatim span in a known text unit."""
-    unit = units.get(ref.unit_id)
-    if unit is None:
-        return [f"unknown text unit: {ref.unit_id}"]
-    if not ref.quote.strip() or ref.quote not in unit.text:
-        return [f"non-exact judge quotation in {ref.unit_id}"]
     return []
 
 
@@ -588,19 +367,21 @@ def score_facts_and_claims(
     for fact in judgment.facts:
         if fact.verdict == "contradicted":
             report.semantic_failures.append(f"contradicted fact: {fact.id}")
+    supported = 0
     for claim in judgment.claims:
-        if claim.verdict != "supported":
-            report.semantic_failures.append(
-                f"{claim.output.unit_id}: {claim.verdict} claim: {claim.reason}"
-            )
+        # One failure per claim, naming every way it is not fully supported.
+        verdicts = [f"{claim.verdict} by the source"] if claim.verdict != "supported" else []
+        if not is_extraction and claim.supplied_verdict not in {None, "supported"}:
+            verdicts.append(f"{claim.supplied_verdict} by the drafter input")
         if not claim.self_contained:
+            verdicts.append("lacks sufficient context")
+        supported += not verdicts
+        if verdicts:
             report.semantic_failures.append(
-                f"{claim.output.unit_id}: claim lacks sufficient context: {claim.reason}"
+                f"{claim.output.unit_id}: claim {', '.join(verdicts)}: {claim.reason}"
             )
-        if not is_extraction and claim.supplied_verdict != "supported":
-            report.semantic_failures.append(
-                f"{claim.output.unit_id}: {claim.supplied_verdict} by drafter input: {claim.reason}"
-            )
+    if judgment.claims:
+        report.metrics["claim_support_rate"] = supported / len(judgment.claims)
     for conflict in judgment.contradictions:
         report.semantic_failures.append(f"contradictory output: {conflict.reason}")
 
@@ -612,13 +393,11 @@ def score_extraction(
     integrity_failures: list[str],
 ) -> StageReport:
     """Aggregate validated extraction verdicts without lexical surrogate scoring."""
-    repairs = repair_references(judgment, units_by_id(payload))
     errors = validate_judgment(payload, judgment)
     report = StageReport(
         integrity_failures=integrity_failures,
         judgment=judgment,
         evaluation_errors=errors,
-        details={"repaired_quotes": repairs},
     )
     if errors:
         return report

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from contextlib import suppress
 from typing import Annotated
 from uuid import UUID
@@ -54,6 +55,7 @@ from app.services.cnb.funding_selection import save_funding_selection
 from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
 from app.services.concept_note_runs import ConceptNoteRunService
 from app.services.message_service import MessageService
+from app.utils.citycatalyst_auth import extract_bearer_token
 from app.utils.cnb_observability import CNBInteraction
 from app.utils.mlflow_logging import (
     async_start_run as start_mlflow_run,
@@ -81,6 +83,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post(
@@ -410,17 +413,39 @@ async def get_concept_note_funding_catalogue(
 async def update_concept_note_application_context(
     run_id: UUID,
     payload: FundingSelectionRequest,
+    context_bundle_service: Annotated[
+        ContextBundleService | None,
+        Depends(get_context_bundle_service),
+    ],
     user_id: str = Query(..., min_length=1),
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> ConceptNoteApplicationContextResponse:
-    """Save a compatible funding selection on an authorized concept-note run."""
+    """Save a compatible funding selection on an authorized concept-note run.
+
+    A new template needs its own per-chapter source quotations, so the bundle
+    is refreshed in the background; a refresh failure never undoes the save.
+    """
     run = await ConceptNoteRunService(session).get_authorized_run(
         run_id=run_id,
         requested_user_id=user_id,
         authorization=authorization,
     )
-    return await save_funding_selection(session, run, payload)
+    response = await save_funding_selection(session, run, payload)
+    if context_bundle_service is not None:
+        try:
+            await context_bundle_service.refresh_if_stale(
+                user_id=user_id,
+                run_id=run_id,
+                token=extract_bearer_token(authorization),
+            )
+        except Exception:
+            logger.warning(
+                "Concept Note bundle refresh after funding change failed run_id=%s",
+                run_id,
+                exc_info=True,
+            )
+    return response
 
 
 @router.get(

@@ -101,13 +101,14 @@ for concurrency, review invalidation, and regression tests.
 Chapter validation is triggered from CityCatalyst's **Review & export** button,
 not from chat. The guided review calls
 `POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/validation` for every
-active chapter. Each call runs two structured passes in strict order:
+active chapter. Each call runs its structured passes in strict order:
 completeness first, comparing the generated `output` with the template and
 source evidence in `document`, then consistency, comparing the same output with
-the other active chapters in that document. Validation uses only explicit input
-claims and contains no programme-name or programme-specific keyword rules. The
-second pass receives the first result; large documents are batched without
-truncating the output or document chapters.
+the other active chapters in that document, and, while the output still has
+open questions, answered gaps, checking them against the other chapters.
+Validation uses only explicit input claims and contains no programme-name or
+programme-specific keyword rules. The second pass receives the first result;
+large documents are batched without truncating the output or document chapters.
 
 Before completeness, code matches the output's `template_section_id` against
 the normalized `chapter_ref` and builds `document.validation_profile` containing
@@ -126,7 +127,13 @@ This changes the JSON content contract, not the database columns. See the
 
 `llm_config.yaml` configures `cnb_chapter_validator` as GPT-5.6 Terra with
 medium reasoning and a 50,000-token validation prompt budget. The service uses
-temperature zero. Model or parse failures persist nothing. Successful results
+temperature zero. Each validation runs a completeness pass, a consistency pass,
+and, while the chapter still asks for something, an answered-gaps pass
+(`prompts.cnb_chapter_validation_answered_gaps`) that reports each open question
+another chapter already answers. A statement that answers another chapter's open
+question is a cross-chapter conflict too. Evidence findings appear only for
+chapters with evidence links; drafting does not create links, so a chapter is
+never flagged merely for having none. Model or parse failures persist nothing. Successful results
 store actionable findings, never reasoning, and resolve model-selected evidence
 positions to trusted source labels, locations, claims, and summaries. Invalid or
 invented evidence positions reject the model result. Results are guarded
@@ -654,6 +661,16 @@ including repairs and reviews, shares one 300-second deadline configured by
 The chapter drafter uses GPT-5.6
 Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra with
 medium reasoning, and the chat-edit planner uses GPT-6 Sol with high reasoning.
+After drafting, `models.cnb_chapter_support_checker` (GPT-5.6 Terra, medium)
+reviews each chapter with the drafter's exact inputs
+(`prompts.cnb_chapter_support_check`) and replaces passages the inputs do not
+support, such as an invented commitment, owner, baseline, or overstated result,
+with supported wording or a one-question `[Information needed: ...]` gap. Code
+applies only replacements that match one exact passage, leave headings and
+existing markers untouched, and bring a structured gap for every new marker; a
+failed check keeps the draft as written. The drafter writes one question per
+marker, and the chat-edit planner replaces a marker once the user supplies its
+value.
 
 Current CA model defaults:
 
@@ -688,8 +705,10 @@ Prompt paths are also configured in `llm_config.yaml`:
 - `prompts.cnb_chat` routes Concept Note questions to source queries and explicit
   document-change requests to the available proposal tool; applying changes
   still requires user acceptance in the document review controls
-- the three `prompts.cnb_source_*` entries map document partitions, reduce them
-  to compact document summaries, and read focused questions for exact evidence
+- the `prompts.cnb_source_*` entries map document partitions, reduce them to
+  compact document summaries, read focused questions for exact evidence, and
+  (`cnb_source_chapter_evidence` and `cnb_source_chapter_evidence_selection`)
+  choose exact quotations for each template chapter's required fields
 - `prompts.cnb_source_impact_review` runs only after a new source is analyzed;
   its single tool returns the chapter numbers that the source affects
 - `prompts.cnb_chat_edit_planner` creates bounded, grounded edit proposals from
@@ -731,15 +750,30 @@ model-facing result. An authorized edit request adds the proposal-only edit tool
 that tool invokes the separate `prompts.cnb_chat_edit_planner` prompt and typed
 output model. Durable chat-driven edits remain a separate workflow.
 
-When the verified text of every uploaded source totals at most
-`generation.prompt_budget.cnb_sources.full_text_max_tokens` (80,000 by default,
-counted with the drafter model's tokenizer), the context build stores that
-page-marked text in the bundle's `source_text` section. The chapter drafter and
-CNB chat then receive it as a second user-role `CONCEPT_NOTE_SOURCE_DOCUMENTS`
+When the whole drafting request (the drafter instructions, the selected-source
+context, and the verified text of every uploaded source) fits
+`generation.prompt_budget.cnb_sources.context_window_tokens` (350,000 by
+default, counted with the drafter model's tokenizer), the context build stores
+the page-marked text in the bundle's `source_text` section. The chapter drafter
+and CNB chat then receive it as a second user-role `CONCEPT_NOTE_SOURCE_DOCUMENTS`
 message, after the JSON payload or bundle message, so every chapter is written
-from the complete documents instead of the compact summaries. Above the limit,
-or when a source cannot be re-read, `source_text.mode` is `summary` and agents
-use the summaries and `concept_note_sources_query` as before.
+from the complete documents instead of the compact summaries. Each chapter
+request is checked again before drafting, once its earlier chapters are known;
+a chapter that would exceed the window is drafted without the complete text.
+Above the window, or when a source cannot be re-read, `source_text.mode` is
+`summary` and agents use the summaries, quotations, and
+`concept_note_sources_query` as before.
+
+Each selected source keeps up to `max_key_excerpts` (8) quotations for the whole
+document and, once an application template is selected, up to
+`max_chapter_excerpts` (8) quotations per template chapter, chosen for that
+chapter's required fields by one chapter-evidence reading of the complete source
+(plus one selection call for chapters with more candidates). The drafter
+receives only the current chapter's quotations, and the edit planner and
+reviewer read them in each chapter's `source_excerpts`. Chapter quotations
+carry a fingerprint of the template requirements and settings; a funding change
+or a workspace open with a different template rebuilds them, reusing the
+unchanged document analysis.
 
 The edit planner and semantic reviewer receive allowlisted source evidence with
 the same one-based `source_index` values. Their `source_refs` contain those indices
@@ -1474,20 +1508,24 @@ uv run --directory service python -m scripts.run_ca_e2e
 Fixtures under `service/tests/fixtures/cnb_golden_set/` evaluate the Concept Note
 Builder pipeline stage by stage on three documents (two English, one Polish):
 
-1. **extraction**: production source analysis; retained quotations and topics are
-   judged against the complete original document.
-2. **chapter_writing**: the production drafter writes every chapter from that
-   run's extraction; facts transferred, claim support, chapter requirements, and
-   `[Information needed: ...]` gaps (flagged, invented, or answerable) are judged.
+1. **extraction**: production source analysis plus per-chapter quotations for
+   the fixture's template; every retained quotation and topic is judged against
+   the complete original document.
+2. **chapter_writing**: the production drafter and support check write every
+   chapter from that run's extraction; facts transferred, claim support,
+   chapter requirements, and `[Information needed: ...]` gaps (flagged,
+   invented, or answerable) are judged.
 3. **verification**: the production chapter validator runs on a frozen reference
    draft with seeded defects; findings are mapped to defects and false alarms.
 4. **editing**: the production edit planner applies chat requests to the reference
    draft; outcomes, scope, fidelity, and post-edit consistency are judged.
 
-Each stage runs once. Python checks exact quotations, locators, marker/gap parity,
-seeded edits, changed chapters, and judge references. A configured LLM judge,
-calibrated with few-shot examples quoted verbatim from the fixture documents,
-evaluates meaning. Generated source summaries are excluded from all judge inputs.
+Each stage runs once. Python checks the production output's exact quotations,
+locators, marker/gap parity, seeded edits, and changed chapters. A configured
+LLM judge, calibrated with few-shot examples quoted verbatim from the fixture
+documents, evaluates meaning; its verdicts stand as given. Its quotations only
+point reviewers to evidence and are never matched by code, so only a missing or
+repeated verdict makes a stage an evaluation error. Generated source summaries are excluded from all judge inputs.
 Production generation is unchanged.
 
 ```bash

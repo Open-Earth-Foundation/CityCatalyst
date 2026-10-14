@@ -28,6 +28,7 @@ from app.persistence.concept_notes.workspace_validation import (
     WorkspaceValidationContext,
 )
 from app.services.openrouter_client import build_openrouter_client_options
+from app.utils.cnb_information_markers import information_needed_markers
 from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
 from pydantic import BaseModel, TypeAdapter, ValidationError
@@ -36,7 +37,7 @@ from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 
-ValidationPass = Literal["completeness", "consistency"]
+ValidationPass = Literal["completeness", "consistency", "answered_gaps"]
 ValidationPassOutput = (
     ChapterCompletenessValidationOutput | ChapterConsistencyValidationOutput
 )
@@ -210,7 +211,7 @@ def build_chapter_validation_request(
 
 
 class ConceptNoteChapterValidationService:
-    """Run completeness first, then output-versus-document consistency checks."""
+    """Run completeness, then consistency, then answered-gap checks for open questions."""
 
     def __init__(
         self,
@@ -286,6 +287,9 @@ class ConceptNoteChapterValidationService:
             completeness_payload=completeness_payload,
             evidence_payload=evidence_payload,
             consistency_prompt=prompts.get_prompt("cnb_chapter_validation_consistency"),
+            answered_gaps_prompt=prompts.get_prompt(
+                "cnb_chapter_validation_answered_gaps"
+            ),
             model_name=model_name,
             fallback_encoding=fallback_encoding,
             max_prompt_tokens=budget.max_prompt_tokens,
@@ -322,6 +326,7 @@ class ConceptNoteChapterValidationService:
         completeness_payload: dict[str, Any],
         evidence_payload: list[dict[str, Any]],
         consistency_prompt: str,
+        answered_gaps_prompt: str,
         model_name: str,
         fallback_encoding: str,
         max_prompt_tokens: int,
@@ -330,7 +335,11 @@ class ConceptNoteChapterValidationService:
         list[ChapterConsistencyValidationOutput],
         int,
     ]:
-        """Execute completeness and every required consistency batch."""
+        """Run completeness, every consistency batch, and answered-gap batches.
+
+        The answered-gap pass runs only while the output still asks for
+        something, so a chapter without open questions costs no extra call.
+        """
         client: AsyncOpenAI | None = None
         run_pass = self._run_pass_override
         if run_pass is None:
@@ -367,51 +376,75 @@ class ConceptNoteChapterValidationService:
                 target_chapter_id=request.target_chapter_id,
                 evidence_link_count=len(request.evidence_links),
             )
-            batches = _build_consistency_batches(
-                output=target_payload,
-                completeness=completeness.model_dump(mode="json"),
-                document_chapters=[
-                    chapter.model_dump(mode="json")
-                    for chapter in sorted(
-                        (
-                            chapter
-                            for chapter in request.chapters
-                            if chapter.chapter_id != request.target_chapter_id
-                        ),
-                        key=lambda chapter: (chapter.position, str(chapter.chapter_id)),
-                    )
-                ],
-                evidence_links=evidence_payload,
-                prompt=consistency_prompt,
-                model=model_name,
-                fallback_encoding=fallback_encoding,
-                max_prompt_tokens=max_prompt_tokens,
-            )
+            document_chapters = [
+                chapter.model_dump(mode="json")
+                for chapter in sorted(
+                    (
+                        chapter
+                        for chapter in request.chapters
+                        if chapter.chapter_id != request.target_chapter_id
+                    ),
+                    key=lambda chapter: (chapter.position, str(chapter.chapter_id)),
+                )
+            ]
+            completeness_result = completeness.model_dump(mode="json")
+
+            def consistency_payload(chapters: list[dict[str, Any]]) -> dict[str, Any]:
+                return {
+                    "document": {
+                        "chapters": chapters,
+                        "evidence_links": evidence_payload,
+                    },
+                    "output": target_payload,
+                    "completeness_result": completeness_result,
+                }
+
+            open_gaps = [gap.model_dump(mode="json") for gap in request.open_gaps]
+
+            def answered_gaps_payload(chapters: list[dict[str, Any]]) -> dict[str, Any]:
+                return {
+                    "document": {"chapters": chapters},
+                    "output": target_payload,
+                    "open_gaps": open_gaps,
+                }
+
+            passes: list[tuple[ValidationPass, str, Callable[..., dict[str, Any]]]] = [
+                ("consistency", consistency_prompt, consistency_payload)
+            ]
+            if open_gaps or information_needed_markers(target_payload.get("body_markdown") or ""):
+                passes.append(("answered_gaps", answered_gaps_prompt, answered_gaps_payload))
+
             outputs: list[ChapterConsistencyValidationOutput] = []
-            for batch in batches:
-                output = await _invoke_pass(
-                    run_pass,
-                    "consistency",
-                    {
-                        "document": {
-                            "chapters": batch,
-                            "evidence_links": evidence_payload,
+            batch_count = 0
+            for phase, prompt, payload_for in passes:
+                batches = _build_chapter_batches(
+                    payload_for=payload_for,
+                    document_chapters=document_chapters,
+                    prompt=prompt,
+                    model=model_name,
+                    fallback_encoding=fallback_encoding,
+                    max_prompt_tokens=max_prompt_tokens,
+                )
+                batch_count += len(batches)
+                for batch in batches:
+                    output = await _invoke_pass(
+                        run_pass,
+                        phase,
+                        payload_for(batch),
+                        ChapterConsistencyValidationOutput,
+                    )
+                    _validate_consistency_findings(
+                        output,
+                        target_chapter_id=request.target_chapter_id,
+                        document_chapter_ids={
+                            UUID(chapter["chapter_id"]) for chapter in batch
                         },
-                        "output": target_payload,
-                        "completeness_result": completeness.model_dump(mode="json"),
-                    },
-                    ChapterConsistencyValidationOutput,
-                )
-                _validate_consistency_findings(
-                    output,
-                    target_chapter_id=request.target_chapter_id,
-                    document_chapter_ids={
-                        UUID(chapter["chapter_id"]) for chapter in batch
-                    },
-                    evidence_link_count=len(request.evidence_links),
-                )
-                outputs.append(output)
-            return completeness, outputs, len(batches)
+                        evidence_link_count=(
+                            len(request.evidence_links) if phase == "consistency" else 0
+                        ),
+                    )
+                    outputs.append(output)
+            return completeness, outputs, batch_count
         finally:
             if client is not None:
                 await client.close()
@@ -429,10 +462,14 @@ class ConceptNoteChapterValidationService:
             prompt_name = "cnb_chapter_validation_completeness"
             output_type: type[BaseModel] = ChapterCompletenessValidationOutput
             agent_name = "Concept Note chapter completeness validator"
-        else:
+        elif phase == "consistency":
             prompt_name = "cnb_chapter_validation_consistency"
             output_type = ChapterConsistencyValidationOutput
             agent_name = "Concept Note chapter consistency validator"
+        else:
+            prompt_name = "cnb_chapter_validation_answered_gaps"
+            output_type = ChapterConsistencyValidationOutput
+            agent_name = "Concept Note chapter answered-gap validator"
 
         agent = Agent(
             name=agent_name,
@@ -479,12 +516,10 @@ async def _invoke_pass(
         raise ChapterValidationError(f"{phase.title()} validation failed") from exc
 
 
-def _build_consistency_batches(
+def _build_chapter_batches(
     *,
-    output: dict[str, Any],
-    completeness: dict[str, Any],
+    payload_for: Callable[[list[dict[str, Any]]], dict[str, Any]],
     document_chapters: list[dict[str, Any]],
-    evidence_links: list[dict[str, Any]],
     prompt: str,
     model: str,
     fallback_encoding: str,
@@ -493,18 +528,10 @@ def _build_consistency_batches(
     """Batch complete chapters greedily while never truncating document text."""
 
     def fits(chapters: list[dict[str, Any]]) -> bool:
-        payload = {
-            "document": {
-                "chapters": chapters,
-                "evidence_links": evidence_links,
-            },
-            "output": output,
-            "completeness_result": completeness,
-        }
         token_count = count_prompt_tokens(
             [
                 prompt,
-                payload,
+                payload_for(chapters),
                 ChapterConsistencyValidationOutput.model_json_schema(),
             ],
             model=model,
@@ -515,7 +542,7 @@ def _build_consistency_batches(
     # The generated output and first-pass result must fit without document chapters.
     if not fits([]):
         raise ChapterValidationInputTooLargeError(
-            "Output consistency input exceeds the configured prompt budget"
+            "Chapter validation input exceeds the configured prompt budget"
         )
     if not document_chapters:
         return [[]]

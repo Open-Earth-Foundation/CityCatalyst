@@ -98,11 +98,23 @@
   const metricsOf = (f, stage) => f.stages[stage]?.report?.metrics || {};
 
   // ---------- links between units ----------
+  // Every quotation extraction kept: document-level first, then each chapter's.
+  function retained(f) {
+    const a = f.analysis || {};
+    return [
+      ...(a.key_excerpts || []).map((e, i) => ({ key: `${i}`, label: `retained quotation #${i}`, e })),
+      ...(a.chapter_excerpts || []).flatMap((c) =>
+        c.excerpts.map((e, i) => ({ key: `${c.chapter_ref}/${i}`, label: `${chapterTitle(f, c.chapter_ref)} quotation #${i}`, e }))),
+    ];
+  }
+  // retained/<n>/<anchor> or retained/<chapter_ref>/<n>/<anchor>
+  const retainedKey = (rest) => (isNaN(+rest[0]) ? `${rest[0]}/${rest[1]}` : rest[0]);
+  const retainedAt = (f, rest) => retained(f).find((r) => r.key === retainedKey(rest));
   function refHref(fid, stage, unitId) {
     const [kind, ...rest] = unitId.split("/");
     const to = (tab, id) => `#/f/${fid}/${tab}/${enc(id)}`;
     if (kind === "source") return to("source", "u-" + rest.join("/"));
-    if (kind === "retained") return to("extraction", "ex-" + rest[0]);
+    if (kind === "retained") return to("extraction", "ex-" + retainedKey(rest));
     if (kind === "topic") return to("extraction", "tp-" + rest[0]);
     if (kind === "chapter") return to("chapter_writing", "ch-" + rest.join("/"));
     if (kind === "gap") return to("chapter_writing", `rg-${rest[0]}-${rest[1]}`);
@@ -121,7 +133,7 @@
       const page = /^page-(\d+)$/.exec(rest.join("/"));
       return page ? `original source · page ${page[1]}` : `original source · ${rest.slice(1).join(" / ")}`;
     }
-    if (kind === "retained") return `retained quotation #${rest[0]}`;
+    if (kind === "retained") return retainedAt(f, rest)?.label || `retained quotation #${retainedKey(rest)}`;
     if (kind === "topic") return `topic label #${rest[0]}`;
     if (kind === "chapter") return `draft · ${chapterTitle(f, rest.join("/"))}`;
     if (kind === "gap") return `raised gap · ${chapterTitle(f, rest[0])} · ${rest[1]}`;
@@ -138,11 +150,11 @@
     }
     return unitId;
   }
-  // Same rule Python applies: a judge quote must be an exact substring of its unit.
+  // Judge quotes only point to text; one not found verbatim is shown as written.
   function unitText(f, stage, unitId) {
     const [kind, ...rest] = unitId.split("/");
     if (kind === "source") return f.units.find((u) => u.anchor === rest.join("/"))?.text;
-    if (kind === "retained") return f.analysis?.key_excerpts?.[+rest[0]]?.text;
+    if (kind === "retained") return retainedAt(f, rest)?.e.text;
     if (kind === "topic") return f.analysis?.topics?.[+rest[0]];
     if (kind === "chapter") return f.stages.chapter_writing?.drafts?.find((d) => d.chapter_ref === rest.join("/"))?.body_markdown;
     if (kind === "draft") {
@@ -164,7 +176,7 @@
     const href = refHref(f.golden.fixture_id, stage, ref.unit_id);
     const text = unitText(f, stage, ref.unit_id);
     const bad = text != null && !text.includes(ref.quote);
-    const where = `${bad ? `<b style="color:var(--critical)">✕ not verbatim in this unit, rejected by Python</b> · ` : ""}${esc(refLabel(f, ref.unit_id))}${href ? " →" : ""}`;
+    const where = `${bad ? `<b style="color:var(--warning)">not found verbatim in this unit</b> · ` : ""}${esc(refLabel(f, ref.unit_id))}${href ? " →" : ""}`;
     const inner = `${esc(ref.quote)}<span class="where">${where}</span>`;
     const k = kind + (bad ? " bad" : "");
     return href ? `<a class="quote ${k}" href="${href}">${inner}</a>` : `<div class="quote ${k}">${inner}</div>`;
@@ -420,7 +432,7 @@
         <h1>Does CNB keep the facts straight, end to end?</h1>
         <p class="lede">The benchmark follows a document through the production pipeline in four stages and asks a different question at each.
         Production code runs unchanged. Python checks every exact contract, and an independent LLM judge scores meaning. The judge is calibrated with
-        examples quoted from the documents themselves and must cite the exact text behind every verdict.</p>
+        examples quoted from the documents themselves and cites the text behind every verdict; its quotations point to evidence and are never matched by code.</p>
       </div>
       <div style="text-align:right">${bigBadge(overall, overall === "pass" ? "All stages pass" : overall === "fail" ? "Benchmark failing" : undefined)}</div>
     </div>
@@ -445,9 +457,9 @@
     <h2>How a verdict is made</h2>
     <div class="grid g4">
       <div class="card"><div class="eyebrow">Python · exact</div><h3>Contracts, not meaning</h3><p class="small muted">Quotation and locator exactness, marker/gap parity, seeded edits, which chapters an edit changed, and the judge's output contract. Never keyword overlap.</p></div>
-      <div class="card"><div class="eyebrow">LLM judge · semantic</div><h3>Every verdict cites text</h3><p class="small muted">One structured judgment per stage and document. Each reference must quote an exact span of a real unit, or the judgment is rejected.</p></div>
+      <div class="card"><div class="eyebrow">LLM judge · semantic</div><h3>Every verdict cites text</h3><p class="small muted">One structured judgment per stage and document. References point to the text behind a verdict; a misquote never voids the judgment.</p></div>
       <div class="card"><div class="eyebrow">Calibration</div><h3>${Object.values(D.examples).reduce((n, l) => n + l.length, 0)} few-shot examples</h3><p class="small muted">Passages quoted verbatim from the three documents and tested never to overlap golden evidence, so examples teach the standard without leaking answers.</p></div>
-      <div class="card"><div class="eyebrow">Judge mistakes</div><h3>Not product failures</h3><p class="small muted">A near-verbatim quote (case, spacing, dashes) or a mistyped unit ID with exactly one match is repaired and reported; anything else makes the stage an <b>evaluation error</b>.</p></div>
+      <div class="card"><div class="eyebrow">Judge mistakes</div><h3>Not product failures</h3><p class="small muted">Only a missing or repeated verdict makes the stage an <b>evaluation error</b>. Quotes are never matched by code: an inflected or misplaced quote is shown as written and the verdict stands.</p></div>
     </div>
 
     <h2>What this run found</h2>
@@ -512,7 +524,7 @@
       const ej = judgmentOf(f, "extraction");
       if (ej) {
         const fs = factStats(f, "extraction", ej);
-        items.extraction.push(`<b>${city}</b>: ${fs.counts.covered || 0} of ${fs.required} required facts kept in ${f.analysis?.key_excerpts?.length ?? "?"} quotations from ${f.units.length} source units.`);
+        items.extraction.push(`<b>${city}</b>: ${fs.counts.covered || 0} of ${fs.required} required facts kept in ${retained(f).length} quotations from ${f.units.length} source units.`);
       }
       const cw = f.stages.chapter_writing?.report;
       const cj = judgmentOf(f, "chapter_writing");
@@ -543,8 +555,12 @@
       }
     }
     if (D.config?.max_key_excerpts) {
-      items.extraction.push(`<b>Why so few:</b> production caps extraction at <code>max_key_excerpts = ${D.config.max_key_excerpts}</code> quotations per document.`);
-      items.chapter_writing.push(`<b>Why losses are masked:</b> the drafter also gets the complete source text while it fits in <code>full_text_max_tokens = ${D.config.full_text_max_tokens.toLocaleString()}</code>.`);
+      // Runs before the context-window change recorded full_text_max_tokens.
+      const window = D.config.context_window_tokens ?? D.config.full_text_max_tokens;
+      items.extraction.push(`<b>Quotation limits:</b> <code>max_key_excerpts = ${D.config.max_key_excerpts}</code> per document`
+        + `${D.config.max_chapter_excerpts ? ` plus <code>max_chapter_excerpts = ${D.config.max_chapter_excerpts}</code> per template chapter` : ""}.`);
+      items.chapter_writing.push(`<b>Why losses are masked:</b> the drafter also gets the complete source text while `
+        + `${D.config.context_window_tokens ? "its whole request" : "the sources"} fit in ${window.toLocaleString()} tokens.`);
     }
     return `<div class="grid g2">${STAGE_KEYS.map((s) => `<div class="card"><div class="eyebrow">${STAGES[s].n} · ${esc(STAGES[s].label)}</div>
       <ul class="method">${items[s].map((x) => `<li>${x}</li>`).join("") || "<li class='muted'>Not run.</li>"}</ul>
@@ -609,17 +625,18 @@
 
   function compareExtraction() {
     const cap = D.config?.max_key_excerpts;
+    const perChapter = D.config?.max_chapter_excerpts;
     return `<h2>Retention at a glance</h2>
-      ${cap ? `<div class="callout bad" style="margin-bottom:14px"><b>Production keeps at most ${cap} quotations per document</b>
-        (<code>generation.prompt_budget.cnb_sources.max_key_excerpts</code> in <code>llm_config.yaml</code>; the contract allows 20).
-        Long documents therefore cannot retain most expected facts, whatever the model's quality.</div>` : ""}
+      ${cap ? `<div class="callout ${perChapter ? "" : "bad"}" style="margin-bottom:14px"><b>Production keeps at most ${cap} quotations per document${perChapter ? ` plus ${perChapter} per template chapter` : ""}</b>
+        (<code>max_key_excerpts</code>${perChapter ? " and <code>max_chapter_excerpts</code>" : ""} under <code>generation.prompt_budget.cnb_sources</code> in <code>llm_config.yaml</code>).
+        ${perChapter ? "Chapter quotations are chosen for each chapter's required fields." : "Long documents therefore cannot retain most expected facts, whatever the model's quality."}</div>` : ""}
       <div class="card" style="padding:0"><table>
         <thead><tr><th>Document</th><th>Source units</th><th>Quotations kept</th><th>Required facts</th><th>Topics conveyed</th></tr></thead>
         <tbody>${D.fixtures.map((f) => {
           const j = judgmentOf(f, "extraction");
           const fs = factStats(f, "extraction", j);
           const topics = j?.topics || [];
-          return `<tr><td><b>${esc(cityOf(f))}</b></td><td>${f.units.length}</td><td>${f.analysis?.key_excerpts?.length ?? "–"}</td>
+          return `<tr><td><b>${esc(cityOf(f))}</b></td><td>${f.units.length}</td><td>${f.analysis ? retained(f).length : "–"}</td>
             <td style="min-width:220px">${j ? verdictStack(fs.counts, fs.required, undefined, false) + `<div class="cellnote">${fs.counts.covered || 0}/${fs.required} fully covered</div>` : "–"}</td>
             <td>${j ? `${topics.filter((t) => t.verdict === "covered").length}/${topics.length}` : "–"}</td></tr>`;
         }).join("")}</tbody></table></div>`;
@@ -642,10 +659,10 @@
         <td style="min-width:160px">${j ? verdictStack(rc, j.flagged_gaps.length, raisedOrder, false) + `<div class="cellnote">${rc.valid}/${j.flagged_gaps.length} genuine</div>` : "–"}</td>
         <td>${j ? `${claims.filter((c) => claimStatus(c, "chapter_writing") === "good").length}/${claims.length}` : "–"}</td></tr>`;
     };
-    const limit = D.config?.full_text_max_tokens;
+    const limit = D.config?.context_window_tokens ?? D.config?.full_text_max_tokens;
     return `<h2>Transfer and missing information, side by side</h2>
       <p class="sub"><b>Recovered</b> facts were missed by extraction but used anyway because the drafter also receives the full source text, which masks extraction losses downstream.
-      ${limit ? `That only happens while all sources fit in <code>full_text_max_tokens</code> (${limit.toLocaleString()} tokens); above it the drafter sees just the summary and the kept quotations, so extraction losses would carry into the application.` : ""}</p>
+      ${limit ? `That only happens while the request fits in ${limit.toLocaleString()} tokens; above it the drafter sees just the summary and the kept quotations, so extraction losses would carry into the application.` : ""}</p>
       <div class="card" style="padding:0;overflow-x:auto"><table>
         <thead><tr><th>Document</th><th>Extraction → draft transfer</th><th>Expected gaps</th><th>Gaps the drafter raised</th><th>Claims fully supported</th></tr></thead>
         <tbody>${D.fixtures.map(row).join("")}</tbody></table></div>`;
@@ -884,18 +901,18 @@
       meter(fs.coverage, th.min_required_fact_coverage, "Required facts retained") + verdictStack(fs.counts, fs.required),
       meter(topicRate, th.min_topic_coverage, "Expected topics conveyed"),
       countTile(clean, j.claims.length, "Retained claims supported & clear", "Each quotation checked against the complete document"),
-      plainTile(a?.key_excerpts?.length ?? 0, "Quotations retained", `from ${f.units.length} source units · ${a?.topics?.length ?? 0} topic labels`),
+      plainTile(retained(f).length, "Quotations retained", `from ${f.units.length} source units · ${a?.topics?.length ?? 0} topic labels`),
     ]) : "";
     const spans = {};
     (j?.claims || []).forEach((c, k) => {
       (spans[c.output.unit_id] ||= []).push({ quote: c.output.quote, status: claimStatus(c, stage), go: `cl-${k}`,
         tip: `<b>${esc(label(c.verdict))}${c.self_contained ? "" : " · lacks context"}</b>${esc(c.reason)}` });
     });
-    const excerpts = (a?.key_excerpts || []).map((e, i) => {
+    const excerpts = retained(f).map(({ key, label: name, e }) => {
       const anchor = e.anchor || (e.page ? `page-${e.page}` : "");
-      return `<div class="item" id="ex-${i}">
-        <div class="spread"><span class="fid">retained quotation #${i}</span><a class="small" href="#/f/${fid}/source/${enc("u-" + anchor)}">${esc(e.page ? `page ${e.page}` : anchor)} →</a></div>
-        <div class="doc" style="margin-top:6px">${highlightMd(e.text, spans[`retained/${i}/${anchor}`] || [])}</div></div>`;
+      return `<div class="item" id="ex-${esc(key)}">
+        <div class="spread"><span class="fid">${esc(name)}</span><a class="small" href="#/f/${fid}/source/${enc("u-" + anchor)}">${esc(e.page ? `page ${e.page}` : anchor)} →</a></div>
+        <div class="doc" style="margin-top:6px">${highlightMd(e.text, spans[`retained/${key}/${anchor}`] || [])}</div></div>`;
     }).join("");
     return `${head}
       ${jump(fid, stage, [["sec-facts", "Facts"], ["sec-topics", "Topics"], ["sec-claims", "Claims"], ["sec-output", "LLM output"]])}
@@ -931,6 +948,17 @@
   }
 
   // ----- stage 2: chapter writing -----
+  // What the production support check changed (or declined to change) after drafting.
+  function supportCheck(records) {
+    if (!records?.length) return "";
+    const applied = records.filter((r) => r.applied).length;
+    return `<details style="margin-top:10px"><summary>Support check: ${applied} correction${applied === 1 ? "" : "s"} applied${records.length > applied ? `, ${records.length - applied} skipped` : ""}</summary>
+      ${records.map((r) => `<div class="item" style="margin-top:8px">
+        <div class="small muted">${r.applied ? "Applied" : `Skipped: ${esc(r.skipped)}`} · ${esc(r.reason)}</div>
+        <div class="quote bad">${esc(r.before)}</div><div class="quote out">${esc(r.after) || "<i>removed</i>"}</div></div>`).join("")}
+    </details>`;
+  }
+
   function writingTab(f) {
     const stage = "chapter_writing";
     const st = f.stages[stage];
@@ -975,6 +1003,7 @@
       return `<div class="card chapter" id="ch-${esc(d.chapter_ref)}">
         <div class="spread"><div><div class="eyebrow">${esc(d.chapter_ref)}</div><h3 style="font-size:17px">${esc(chapterTitle(f, d.chapter_ref))}</h3></div>${cj ? badge(cj.verdict) : ""}</div>
         <div class="doc" style="margin-top:8px">${highlightMd(d.body_markdown, [...(claimSpans[`chapter/${d.chapter_ref}`] || []), ...markerSpans(d.body_markdown, gapTip)])}</div>
+        ${supportCheck(d.support_check)}
       </div>`;
     }).join("");
 
@@ -1177,8 +1206,8 @@
     const isPdf = f.golden.source.source_format === "pdf";
     const spans = {};
     const add = (anchor, s) => (spans[anchor] ||= []).push(s);
-    (f.analysis?.key_excerpts || []).forEach((e, i) => {
-      add(e.anchor || (e.page ? `page-${e.page}` : ""), { quote: e.text, cls: "kept", go: `ex-${i}`, tip: `<b>Kept by extraction · quotation #${i}</b>` });
+    retained(f).forEach(({ key, label: name, e }) => {
+      add(e.anchor || (e.page ? `page-${e.page}` : ""), { quote: e.text, cls: "kept", go: `ex-${key}`, tip: `<b>Kept by extraction · ${esc(name)}</b>` });
     });
     const tally = { full: 0, part: 0, none: 0 };
     for (const x of f.golden.extraction.facts)

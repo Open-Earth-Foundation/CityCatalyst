@@ -55,6 +55,7 @@ from app.services.cnb.application_context import (
     calculate_application_template_fingerprint,
     included_sources_from_bundle,
 )
+from app.services.cnb.chapter_support_check import check_chapter_support
 from app.services.cnb.draft_overview import overview_pending
 from app.services.cnb.source_analysis import SourceAnalysisError, query_document
 from app.services.cnb.source_impact_review import (
@@ -63,6 +64,7 @@ from app.services.cnb.source_impact_review import (
 )
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.concept_note_context import (
+    chapter_excerpts_for,
     manual_population_context,
     omit_context_identifiers,
     render_source_documents_message,
@@ -71,6 +73,7 @@ from app.utils.conversation_observability import (
     async_workflow_trace,
     finish_workflow_trace,
 )
+from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -465,11 +468,12 @@ class ConceptNoteChapterDraftService:
     ) -> ConceptNoteChapterDraftOutput:
         if self._generate_chapter_override is not None:
             return await self._generate_chapter_override(payload)
-        return await generate_chapter_draft(
+        draft, _ = await draft_chapter(
             payload,
             settings=self._settings,
             runner=self._runner,
         )
+        return draft
 
     def _begin_draft(
         self,
@@ -863,6 +867,63 @@ async def generate_chapter_draft(
         raise ChapterDraftingError("Chapter generation failed") from exc
 
 
+async def draft_chapter(
+    payload: dict[str, Any],
+    *,
+    settings: Settings,
+    runner: Any = Runner,
+) -> tuple[ConceptNoteChapterDraftOutput, list[dict[str, Any]]]:
+    """Draft one chapter, then correct claims its inputs do not support.
+
+    Returns the checked draft and a record of every support-check revision.
+    Raises ``ChapterDraftingError`` when drafting itself fails; a failed
+    support check keeps the draft as written.
+    """
+    payload = fit_context_window(payload, settings)
+    draft = await generate_chapter_draft(payload, settings=settings, runner=runner)
+    return await check_chapter_support(
+        _chapter_input_messages(payload), draft, settings=settings, runner=runner
+    )
+
+
+def fit_context_window(payload: dict[str, Any], settings: Settings) -> dict[str, Any]:
+    """Drop complete source text from a chapter request too large for the window.
+
+    The count covers the drafter's instructions and every input message. A
+    chapter over the window is drafted from summaries and quotations, and its
+    ``source_text.mode`` says so.
+    """
+    if not payload.get("source_documents"):
+        return payload
+    budget = settings.llm.generation.prompt_budget
+    model = settings.llm.models.cnb_chapter_drafter or settings.llm.models.cnb_source_synthesizer
+    tokens = count_prompt_tokens(
+        [
+            settings.llm.prompts.get_prompt("cnb_chapter_drafting"),
+            *(message["content"] for message in _chapter_input_messages(payload)),
+        ],
+        model=model.name,
+        fallback_encoding=budget.tokenizer_encoding,
+    ).tokens
+    window = budget.cnb_sources.context_window_tokens
+    if tokens <= window:
+        return payload
+    logger.info(
+        "Concept Note chapter request exceeds the context window tokens=%s window=%s",
+        tokens,
+        window,
+    )
+    run_context = payload["run_context"]
+    return {
+        **payload,
+        "run_context": {
+            **run_context,
+            "source_text": {**run_context.get("source_text", {}), "mode": "summary"},
+        },
+        "source_documents": [],
+    }
+
+
 def build_chapter_input(
     *,
     application_context: ConceptNoteApplicationContextResponse,
@@ -885,6 +946,19 @@ def build_chapter_input(
         for key, value in run_context.items()
         if key not in {"context_bundle_status", "source_documents"}
     }
+    bundle = semantic_run_context.get("context_bundle")
+    if isinstance(bundle, dict):
+        # Each source keeps only the quotations chosen for this chapter.
+        semantic_run_context["context_bundle"] = {
+            **bundle,
+            "selected_sources": [
+                {
+                    **source,
+                    "chapter_excerpts": chapter_excerpts_for(source, current.chapter_ref),
+                }
+                for source in bundle.get("selected_sources", [])
+            ],
+        }
     payload = omit_context_identifiers(
         {
             "application_context": application_payload,

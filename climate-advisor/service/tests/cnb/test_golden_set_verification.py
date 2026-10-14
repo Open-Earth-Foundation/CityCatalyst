@@ -260,25 +260,31 @@ def test_missed_defect_fails_and_wrong_category_is_not_strict(verification_case)
     assert any("missed" in f for f in report.semantic_failures)
 
 
-@pytest.mark.parametrize(
-    "mutation", ["no_defect_verdict", "unjudged_finding", "double_judged", "invented_quote", "valid_without_evidence"]
-)
-def test_invalid_verification_judgments_withhold_metrics(verification_case, mutation):
+@pytest.mark.parametrize("mutation", ["no_defect_verdict", "unjudged_finding", "double_judged"])
+def test_missing_or_repeated_verification_verdicts_withhold_metrics(verification_case, mutation):
     loaded, payload, judgment, records = verification_case
     if mutation == "no_defect_verdict":
         judgment.defects = []
         judgment.findings.append(FindingJudgment(unit_id="finding/0", verdict="valid", evidence=[], reason="r"))
     elif mutation == "unjudged_finding":
         judgment.findings = []
-    elif mutation == "double_judged":
-        judgment.findings.append(FindingJudgment(unit_id="finding/0", verdict="duplicate", evidence=[], reason="r"))
-    elif mutation == "invented_quote":
-        judgment.defects[0].finding_refs[0].quote = "Not in the finding."
     else:
-        judgment.findings[0].verdict = "valid"
+        judgment.findings.append(FindingJudgment(unit_id="finding/0", verdict="duplicate", evidence=[], reason="r"))
     assert validate_verification_judgment(payload, judgment)
     report = score_verification(loaded, payload, judgment, records, [])
     assert report.evaluation_errors and report.metrics == {}
+
+
+@pytest.mark.parametrize("mutation", ["invented_quote", "valid_without_evidence"])
+def test_reference_slips_never_withhold_verification_metrics(verification_case, mutation):
+    loaded, payload, judgment, records = verification_case
+    if mutation == "invented_quote":
+        judgment.defects[0].finding_refs[0].quote = "Not in the finding."
+    else:
+        judgment.findings[0].verdict = "valid"
+    assert validate_verification_judgment(payload, judgment) == []
+    report = score_verification(loaded, payload, judgment, records, [])
+    assert report.evaluation_errors == [] and "defect_recall" in report.metrics
 
 
 @pytest.mark.asyncio
@@ -302,7 +308,7 @@ async def test_evaluate_verification_saves_artifacts_and_isolates_judge_failure(
     judge = AsyncMock(return_value=judgment.model_copy(update={"findings": []}))
     report = await module.evaluate_verification(loaded, get_settings(), tmp_path, judge=judge)
     assert (tmp_path / "seeded_draft.json").exists() and (tmp_path / "findings.json").exists()
-    assert report.evaluation_errors  # "detected" cites a finding that does not exist.
+    assert judge.await_count == 1 and (tmp_path / "judgment.json").exists()
     failing = AsyncMock(side_effect=GoldenJudgeError("judge down"))
     report = await module.evaluate_verification(loaded, get_settings(), tmp_path, judge=failing)
     assert report.evaluation_errors == ["judge down"] and not report.semantic_failures

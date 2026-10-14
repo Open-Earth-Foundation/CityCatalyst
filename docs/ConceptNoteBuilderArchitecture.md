@@ -615,7 +615,14 @@ Recommended high-level shape:
       "page_count": 42,
       "summary": "Short document summary",
       "topics": ["adaptation", "transport"],
-      "key_excerpts": [{ "text": "Exact contiguous source text", "page": 7 }]
+      "key_excerpts": [{ "text": "Exact contiguous source text", "page": 7 }],
+      "chapter_excerpts": [
+        {
+          "chapter_ref": "financing",
+          "excerpts": [{ "text": "Exact text for this chapter", "page": 12 }]
+        }
+      ],
+      "chapter_evidence_fingerprint": "64 lowercase hexadecimal characters"
     }
   ],
   "funder_context": null,
@@ -624,7 +631,7 @@ Recommended high-level shape:
   "source_text": {
     "mode": "full_text",
     "token_count": 6308,
-    "max_tokens": 80000,
+    "max_tokens": 350000,
     "documents": [
       {
         "upload_id": "uuid",
@@ -639,11 +646,27 @@ Recommended high-level shape:
 ```
 
 `source_text` holds the complete verified text of every selected source only
-while the total stays within `cnb_sources.full_text_max_tokens` (80,000 by
-default). The chapter drafter and CNB chat receive it as a separate
-`CONCEPT_NOTE_SOURCE_DOCUMENTS` message. Above the limit, or when a reused
-source cannot be re-read, `mode` is `summary`, `documents` is empty, and agents
-rely on summaries and the source-query tool.
+while the whole drafting request (drafter instructions, selected-source context,
+and every document) fits `cnb_sources.context_window_tokens` (350,000 by
+default); `token_count` is that request size. The chapter drafter and CNB chat
+receive it as a separate `CONCEPT_NOTE_SOURCE_DOCUMENTS` message. Each chapter
+request is measured again before drafting, with its earlier chapters, and is
+drafted without the complete text if it no longer fits. Above the window, or
+when a reused source cannot be re-read, `mode` is `summary`, `documents` is
+empty, and agents rely on summaries, quotations, and the source-query tool.
+
+`key_excerpts` (at most `max_key_excerpts`, 8) back the document summary.
+Once the run has an application template, `chapter_excerpts` hold up to
+`max_chapter_excerpts` (8) quotations per template chapter: one chapter-evidence
+reading of the complete source tags exact passages with the chapters whose
+title, description, and required fields they serve, and a selection call runs
+only for chapters with more verified candidates than the quota. The drafter
+receives only the current chapter's quotations; the edit planner and reviewer
+read them as the chapter's `source_excerpts`. `chapter_evidence_fingerprint`
+hashes the template requirements, prompts, models, and limits; a build with a
+different fingerprint re-extracts only the chapter quotations, and a funding
+change or workspace open queues that rebuild. A failed extraction keeps the
+previous quotations and is retried on the next build.
 
 Apart from `source_text`, the bundle contains no raw source, storage key,
 credential, or derived chunk.
@@ -1623,7 +1646,15 @@ How it works:
 - Missing facts are stored as gaps and surfaced to the user in the workspace.
   They do not create chapters by themselves.
 - Users answer gaps through chat: accepting a reviewed edit that fills a
-  gap's marker resolves that gap.
+  gap's marker resolves that gap. The drafter writes one question per marker,
+  and the edit planner replaces every marker whose value the user supplies, so
+  no chapter states a value while still asking for it.
+- After drafting each chapter, a support check reviews it against the drafter's
+  exact inputs and replaces passages they do not support (an invented
+  commitment, owner, baseline, or overstated result) with supported wording or a
+  new one-question gap. Code applies only exact, unique replacements that leave
+  headings and existing markers untouched and bring a structured gap for every
+  new marker; a failed check keeps the draft.
 - A newly processed source runs an impact review. A review-only LLM call picks
   the chapters whose content or open gaps the source affects, and each of their
   open gaps is asked of the verified source text. Only those chapters are
@@ -2632,19 +2663,28 @@ targets only the failed chapters. Chat does not expose a mark-ready tool. Each
 request revalidates current CityCatalyst city access before reading or writing
 the workspace.
 
-The validator always runs two structured calls in order:
+The validator runs up to three structured passes in order:
 
 1. The completeness pass receives the full target body, resolved template
    schema and requirements, open target gaps, and target evidence-link metadata.
    It checks required content, template constraints, unresolved gaps, and
-   evidence support.
+   evidence support. Drafting does not create evidence links, so evidence
+   findings appear only for chapters that have links, never merely because
+   none exist.
 2. The consistency pass receives the complete target again, the first-pass
    result, and every other active chapter. It checks names, dates, quantities,
    units, goals, timelines, dependencies, causality, internal logic, and
    target-involved cross-chapter conflicts. Large documents are split into
    complete non-target batches; the full target is repeated in every batch and
    findings are merged and deduplicated. Input is rejected rather than silently
-   truncated.
+   truncated. A statement in the target that answers another chapter's open
+   question (or placeholder such as "To be confirmed") is a cross-chapter
+   conflict, not an omission.
+3. The answered-gaps pass runs only while the target still asks for something
+   (an `[Information needed: ...]` marker or an open gap). It receives the
+   target, its open gaps, and the other chapters in the same batches, and
+   reports each question another chapter already answers as a
+   `cross_chapter_conflict` warning (phase `consistency`).
 
 After the structured passes, deterministic policy guardrails preserve recorded
 gaps and explicit scope contradictions that must not depend on model recall. A

@@ -12,7 +12,8 @@ from uuid import UUID, uuid4
 import pytest
 from app.config import get_settings
 from app.models.cnb.concept_note_markdown import STRUCTURED_DOCUMENT_SCHEMA_VERSION
-from app.models.cnb.context_bundle import SelectedSource, SourceExcerpt
+from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
+from app.models.cnb.context_bundle import ChapterExcerpts, SelectedSource, SourceExcerpt
 from app.services.citycatalyst_client import (
     CityCatalystClientError,
     ConceptNoteMarkdownArtifact,
@@ -24,12 +25,15 @@ from app.services.cnb.context_bundle import (
     ContextBundleService,
     run_context_bundle_reconciler,
 )
+from app.services.cnb.application_context import template_chapter_requirements
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceBlock,
     SourcePage,
+    chapter_evidence_fingerprint,
     source_analysis_contract_version,
 )
+from app.utils.prompt_budget import count_prompt_tokens
 from app.services.cnb.visual_context import VISUAL_CONTEXT_CONTRACT_VERSION
 
 
@@ -777,6 +781,9 @@ def _source_text_build(
     monkeypatch: pytest.MonkeyPatch,
     *,
     fail_reused_fetch: bool = False,
+    template: ApplicationContextTemplate | None = None,
+    extract: AsyncMock | None = None,
+    reused_fingerprint: str | None = None,
 ) -> tuple[ContextBundleService, AsyncMock, UUID, list[UUID]]:
     """Wire one reused and one new PDF upload for source-text budget tests."""
     run_id = uuid4()
@@ -823,6 +830,7 @@ def _source_text_build(
         summary="Accepted existing summary.",
         topics=["existing"],
         key_excerpts=[],
+        chapter_evidence_fingerprint=reused_fingerprint,
     )
 
     async def get_markdown(*, upload_id: str, token: str) -> ConceptNoteMarkdownArtifact:
@@ -859,8 +867,20 @@ def _source_text_build(
         analyze_document_fn=fake_analyze_document,
         verify_source_artifact_fn=fake_verify_source_artifact,
         cc_client_factory=lambda: client,
+        load_template_fn=AsyncMock(return_value=template) if template else None,
+        extract_chapter_evidence_fn=extract or AsyncMock(side_effect=AssertionError),
     )
     return service, complete_build, run_id, [upload.upload_id for upload in uploads]
+
+
+TEMPLATE = ApplicationContextTemplate(
+    id=uuid4(),
+    name="Template",
+    chapter_schema=[
+        {"chapter_ref": "scope", "title": "Scope", "required_fields": ["location"]},
+        {"chapter_ref": "budget", "title": "Budget", "required_fields": ["total cost"]},
+    ],
+)
 
 
 @pytest.mark.asyncio
@@ -873,7 +893,7 @@ async def test_source_text_keeps_complete_page_marked_text_within_budget(
 
     source_text = complete_build.await_args.kwargs["source_text"]
     assert source_text.mode == "full_text"
-    assert 0 < source_text.token_count <= source_text.max_tokens == 80000
+    assert 0 < source_text.token_count <= source_text.max_tokens == 350000
     assert [document.upload_id for document in source_text.documents] == upload_ids
     assert source_text.documents[0].text == "<!-- page: 1 -->\nCity evidence"
 
@@ -883,7 +903,7 @@ async def test_source_text_falls_back_to_summaries_above_the_budget(
     monkeypatch,
 ) -> None:
     budget = get_settings().llm.generation.prompt_budget.cnb_sources
-    monkeypatch.setattr(budget, "full_text_max_tokens", 1)
+    monkeypatch.setattr(budget, "context_window_tokens", 1)
     service, complete_build, run_id, _ = _source_text_build(monkeypatch)
 
     assert await service.build(user_id="owner", run_id=run_id, token="token")
@@ -892,6 +912,67 @@ async def test_source_text_falls_back_to_summaries_above_the_budget(
     assert source_text.mode == "summary"
     assert source_text.token_count > source_text.max_tokens == 1
     assert source_text.documents == []
+
+
+@pytest.mark.asyncio
+async def test_source_text_counts_the_whole_drafting_request(monkeypatch) -> None:
+    """Documents that fit alone still fall back when the instructions push past the window."""
+    settings = get_settings()
+    documents_only = count_prompt_tokens(
+        ["<!-- page: 1 -->\nold.pdf evidence", "<!-- page: 1 -->\nnew.pdf evidence"],
+        model=settings.llm.models.cnb_chapter_drafter.name,
+        fallback_encoding=settings.llm.generation.prompt_budget.tokenizer_encoding,
+    ).tokens
+    budget = settings.llm.generation.prompt_budget.cnb_sources
+    monkeypatch.setattr(budget, "context_window_tokens", documents_only + 1)
+    service, complete_build, run_id, _ = _source_text_build(monkeypatch)
+
+    assert await service.build(user_id="owner", run_id=run_id, token="token")
+
+    source_text = complete_build.await_args.kwargs["source_text"]
+    assert source_text.mode == "summary"
+    assert source_text.token_count > documents_only
+
+
+@pytest.mark.asyncio
+async def test_chapter_quotations_follow_the_template_and_are_reused_while_current(
+    monkeypatch,
+) -> None:
+    settings = get_settings()
+    current = chapter_evidence_fingerprint(settings, template_chapter_requirements(TEMPLATE))
+    chosen = [ChapterExcerpts(chapter_ref="budget", excerpts=[SourceExcerpt(text="new.pdf evidence", page=1)])]
+    extract = AsyncMock(return_value=chosen)
+    service, complete_build, run_id, upload_ids = _source_text_build(
+        monkeypatch, template=TEMPLATE, extract=extract, reused_fingerprint=current
+    )
+
+    assert await service.build(user_id="owner", run_id=run_id, token="token")
+
+    reused, new = complete_build.await_args.kwargs["selected_sources"]
+    # The reused source already holds quotations for this template.
+    extract.assert_awaited_once()
+    call = extract.await_args.kwargs
+    assert call["source_label"] == "new.pdf"
+    assert [c["chapter_ref"] for c in call["chapters"]] == ["scope", "budget"]
+    assert call["chapters"][1]["required_fields"] == ["total cost"]
+    assert reused.chapter_excerpts == [] and reused.chapter_evidence_fingerprint == current
+    assert new.chapter_excerpts == chosen and new.chapter_evidence_fingerprint == current
+    assert new.upload_id == upload_ids[1]
+
+
+@pytest.mark.asyncio
+async def test_failed_chapter_quotations_keep_the_bundle(monkeypatch) -> None:
+    extract = AsyncMock(side_effect=SourceAnalysisError("source_analysis_failed", "down"))
+    service, complete_build, run_id, _ = _source_text_build(
+        monkeypatch, template=TEMPLATE, extract=extract
+    )
+
+    assert await service.build(user_id="owner", run_id=run_id, token="token")
+
+    sources = complete_build.await_args.kwargs["selected_sources"]
+    assert extract.await_count == 2
+    # No fingerprint is stored, so the next build retries the extraction.
+    assert all(s.chapter_evidence_fingerprint is None and not s.chapter_excerpts for s in sources)
 
 
 @pytest.mark.asyncio
@@ -973,6 +1054,48 @@ async def test_refresh_rebuilds_only_when_the_city_inventory_changed(
         user_id="owner", run_id=uuid4(), token="token"
     ) == "current"
     assert queue.await_count == 1
+
+
+@pytest.mark.asyncio
+async def test_refresh_rebuilds_when_quotations_predate_the_template(monkeypatch) -> None:
+    from app.persistence.concept_notes.context_bundle import ContextBundleRefreshState
+
+    client = SimpleNamespace(close=AsyncMock())
+    service = ContextBundleService(
+        None,  # type: ignore[arg-type]
+        cc_client_factory=lambda: client,  # type: ignore[arg-type,return-value]
+        load_template_fn=AsyncMock(return_value=TEMPLATE),
+    )
+    state = ContextBundleRefreshState(
+        city_id=str(uuid4()), status="ready", selected_inventory_id=None, inventory_candidate=None
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_refresh_state", AsyncMock(return_value=state)
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_accessible_inventory", AsyncMock(return_value=None)
+    )
+    current = chapter_evidence_fingerprint(get_settings(), template_chapter_requirements(TEMPLATE))
+    stored = SelectedSource(
+        upload_id=uuid4(),
+        source_label="plan.pdf",
+        filename="plan.pdf",
+        sha256="a" * 64,
+        page_count=1,
+        summary="Summary.",
+        topics=[],
+        key_excerpts=[],
+        chapter_evidence_fingerprint=current,
+    )
+    sources = AsyncMock(return_value=[stored])
+    monkeypatch.setattr("app.services.cnb.context_bundle.load_selected_sources", sources)
+    queue = AsyncMock()
+    monkeypatch.setattr(service, "_queue_rebuild", queue)
+
+    assert await service.refresh_if_stale(user_id="owner", run_id=uuid4(), token="t") == "current"
+    sources.return_value = [stored.model_copy(update={"chapter_evidence_fingerprint": None})]
+    assert await service.refresh_if_stale(user_id="owner", run_id=uuid4(), token="t") == "queued"
+    queue.assert_awaited_once()
 
 
 @pytest.mark.asyncio

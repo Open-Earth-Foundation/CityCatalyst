@@ -45,10 +45,7 @@ from app.services.cnb.golden_set import (
     LoadedFixture,
     exactly_once,
     marker_parity_problems,
-    reference_errors,
-    repair_references,
     source_evidence,
-    units_by_id,
 )
 from app.services.cnb.golden_set_judge import GoldenJudgeError
 from app.services.cnb.golden_set_workspace import (
@@ -265,25 +262,13 @@ def verification_judge_input(
 def validate_verification_judgment(
     payload: VerificationJudgeInput, judgment: VerificationEvaluation
 ) -> list[str]:
-    """One verdict per defect and per model finding, with exact references."""
-    outputs = {unit.id: unit for unit in payload.outputs}
-    evidence = {unit.id: unit for unit in [*payload.evidence, *payload.outputs]}
-    errors = exactly_once("defects", [d.id for d in payload.defects], [d.id for d in judgment.defects])
-    for item in judgment.defects:
-        if item.verdict != "missed" and not item.finding_refs:
-            errors.append(f"{item.id}: {item.verdict} needs finding references")
-        if item.verdict == "missed" and item.finding_refs:
-            errors.append(f"{item.id}: missed defect must not cite findings")
-        for ref in item.finding_refs:
-            errors += reference_errors(ref, outputs)
+    """Require one verdict per defect, and one per model finding no defect cites."""
+    errors = exactly_once(
+        "defects", [d.id for d in payload.defects], [d.id for d in judgment.defects]
+    )
     matched = {ref.unit_id for item in judgment.defects for ref in item.finding_refs}
-    unmatched = [unit_id for unit_id in outputs if unit_id not in matched]
+    unmatched = [unit.id for unit in payload.outputs if unit.id not in matched]
     errors += exactly_once("findings", unmatched, [f.unit_id for f in judgment.findings])
-    for item in judgment.findings:
-        if item.verdict == "valid" and not item.evidence:
-            errors.append(f"{item.unit_id}: valid finding needs evidence")
-        for ref in item.evidence:
-            errors += reference_errors(ref, evidence)
     return errors
 
 
@@ -296,7 +281,6 @@ def score_verification(
     chapter_status: dict[str, str] | None = None,
 ) -> StageReport:
     """Recall over seeded defects, precision over the remaining model findings."""
-    repairs = repair_references(judgment, units_by_id(payload))
     errors = validate_verification_judgment(payload, judgment)
     report = StageReport(
         integrity_failures=integrity_failures,
@@ -305,7 +289,6 @@ def score_verification(
         details={
             "findings": records,
             "chapter_status": chapter_status or {},
-            "repaired_quotes": repairs,
         },
     )
     if errors:

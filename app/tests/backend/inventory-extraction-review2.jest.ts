@@ -734,3 +734,123 @@ describe("10. PR review: Masterton sector total, repeated rows, overflow", () =>
     expect(Number.isFinite(summary.importedSum)).toBe(true);
   });
 });
+
+describe("11. per-sector tables: a rough run loses to a whole document that reconciles", () => {
+  // One table per sector, no scope or reference: the Masterton report layout.
+  const sectorRow = (
+    sector: string,
+    category: string,
+    value: number,
+  ): ExtractedRow =>
+    row(null, null, value, { sector, subsector: sector, category });
+  const gross = (value: number): ExtractedRow =>
+    row(null, null, value, { ...CITY, rowType: "total", category: "Gross" });
+  const net = (value: number): ExtractedRow =>
+    row(null, null, value, { ...CITY, rowType: "total", category: "Net" });
+
+  it("takes every page when the sum of all pages matches the net total", () => {
+    const result = selectReconciledPages(
+      [
+        pageOf(5, [gross(1000), net(400)]),
+        pageOf(12, [sectorRow("Agriculture", "Enteric", 500)]),
+        pageOf(13, [sectorRow("Transportation", "Diesel", 300)]),
+        pageOf(14, [sectorRow("Waste", "Landfill", 185)]),
+        // Forestry removals sit far from the other tables.
+        pageOf(30, [sectorRow("Forestry", "Sequestration", -585)]),
+      ],
+      2021,
+    );
+    // Pages 12-14 add up to 985, 1.5% under the gross total: a rough run.
+    expect(result.summary.pageSelection).toBe("fallback");
+    expect(result.summary.importedSum).toBe(400);
+    expect(result.rows).toHaveLength(4);
+  });
+
+  it("keeps the run when the whole document does not reconcile either", () => {
+    const result = selectReconciledPages(
+      [
+        pageOf(5, [gross(1000)]),
+        pageOf(12, [sectorRow("Agriculture", "Enteric", 500)]),
+        pageOf(13, [sectorRow("Transportation", "Diesel", 300)]),
+        pageOf(14, [sectorRow("Waste", "Landfill", 185)]),
+        pageOf(30, [sectorRow("Forestry", "Sequestration", 600)]),
+      ],
+      2021,
+    );
+    expect(result.summary.pageSelection).toBe("reconciled");
+    expect(result.summary.selectedPages).toEqual([12, 13, 14]);
+    expect(result.summary.importedSum).toBe(985);
+  });
+
+  it("keeps an exact single page over the whole document", () => {
+    const result = selectReconciledPages(
+      [
+        pageOf(15, [grandTotal()]),
+        pageOf(46, exactTable()),
+        pageOf(60, [row("I.9.1", "1", 5000, { subsector: "Other" })]),
+      ],
+      2021,
+    );
+    expect(result.summary.pageSelection).toBe("reconciled");
+    expect(result.summary.selectedPages).toEqual([46]);
+  });
+});
+
+describe("12. per-sector pages that reach a net total", () => {
+  const sectorRow = (
+    sector: string,
+    category: string,
+    value: number,
+  ): ExtractedRow =>
+    row(null, null, value, { sector, subsector: sector, category });
+  const total = (value: number, category: string): ExtractedRow =>
+    row(null, null, value, { ...CITY, rowType: "total", category });
+  const sectorPages = () => [
+    pageOf(12, [sectorRow("Agriculture", "Enteric", 500)]),
+    pageOf(13, [sectorRow("Transportation", "Diesel", 300)]),
+    pageOf(14, [sectorRow("Waste", "Landfill", 185)]),
+    pageOf(15, [sectorRow("IPPU", "Refrigerants", 15)]),
+  ];
+
+  it("selects a five-page run that reaches the net total, forestry included", () => {
+    const result = selectReconciledPages(
+      [
+        pageOf(5, [total(1000, "Gross"), total(400, "Net")]),
+        ...sectorPages(),
+        pageOf(16, [sectorRow("Forestry", "Sequestration", -600)]),
+      ],
+      2021,
+    );
+    expect(result.summary.pageSelection).toBe("reconciled");
+    expect(result.summary.selectedPages).toEqual([12, 13, 14, 15, 16]);
+    expect(result.summary.importedSum).toBe(400);
+    expect(result.rows).toHaveLength(5);
+    expect(result.summary.droppedRows.other_page).toBeUndefined();
+  });
+
+  it("does not select one sector because it equals the net total", () => {
+    const result = selectReconciledPages(
+      [
+        pageOf(5, [total(1000, "Gross"), total(400, "Net")]),
+        pageOf(20, [sectorRow("Transportation", "Diesel", 400)]),
+      ],
+      2021,
+    );
+    expect(result.summary.pageSelection).toBe("fallback");
+  });
+
+  it("takes the sector tables over a table split by greenhouse gas", () => {
+    const gas = (name: string, value: number): ExtractedRow =>
+      row(null, null, value, { sector: null, subsector: null, category: name });
+    const result = selectReconciledPages(
+      [
+        pageOf(5, [total(1000, "Gross")]),
+        ...sectorPages(),
+        pageOf(21, [gas("CO2", 600), gas("CH4", 300), gas("N2O", 100)]),
+      ],
+      2021,
+    );
+    expect(result.summary.selectedPages).toEqual([12, 13, 14, 15]);
+    expect(result.summary.importedSum).toBe(1000);
+  });
+});

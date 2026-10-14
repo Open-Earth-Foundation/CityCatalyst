@@ -216,7 +216,7 @@ Notation keys: when a cell holds NO, NE, IE or C (or "NA") instead of a number, 
 
 Duplicate tables: the same sector, subsector and scope often appears in a summary table and in a detailed table. Extract each value once, from the table with the most detail (the one with GPC reference numbers when it exists). Do not use tables that compare with a previous inventory, list changes between inventories, or give other years (e.g. "2016 inventory vs this inventory", "analysis of changes"): they are not data for the inventory year.
 
-Tables to use (full coverage only): Use only tables that present a full-coverage summary of emissions—i.e. a comprehensive inventory that covers multiple sectors and/or the full scope (e.g. citywide, all scopes, or a complete sector breakdown with multiple subsectors and activities). Typical titles: "Citywide GHG Emissions Summary", "Emissions by sector", "City-wide GHG emissions", "Full inventory", "Inventory summary", "Emissions by category" (when it covers all categories). Do NOT use: executive summary tables with only a single total; partial tables that cover only one sector or one topic; methodology-only text; targets/projections without full inventory figures; narrative sections; or any table that does not give a full-coverage emissions summary with row-by-row data for multiple sectors/subsectors/activities.
+Tables to use: Prefer tables that present a full-coverage summary of emissions—i.e. a comprehensive inventory that covers multiple sectors and/or the full scope (e.g. citywide, all scopes, or a complete sector breakdown with multiple subsectors and activities). Typical titles: "Citywide GHG Emissions Summary", "Emissions by sector", "City-wide GHG emissions", "Full inventory", "Inventory summary", "Emissions by category" (when it covers all categories). When the report has no single full-coverage table and presents each sector in its own table (for example one table for agriculture, one for transport), use those per-sector tables: together they are the inventory. Take each sector once, from the table with the most detail; never take a second table that splits the same sector total another way (by animal, by fuel, by year). Do NOT use: executive summary tables with only a single total; methodology-only text; targets/projections without full inventory figures; narrative sections; per-capita or percentage-only tables; tables that split the total by greenhouse gas (CO2, CH4, N2O), by region or by population instead of by sector, sub-sector or activity; or tables of another year or a comparison with another inventory.
 
 Tables with year columns (critical): Many full-coverage tables have columns grouped by year (e.g. "CY 2005", "CY 2014", "CY 2015"), each with sub-columns like Consumed, tCO₂e, Source MMBtu. In that case:
 - The year in your output is the year from the column header (e.g. 2015 from "CY 2015"), not a cell value. Set year to that integer for every row you extract from that column.
@@ -233,7 +233,7 @@ Granularity (critical):
 </task>
 
 <input>
-- documentText (string): Full report text, or a segment of a longer report. Use only tables that are full-coverage emissions summaries (comprehensive inventory). Tables may have year as columns (e.g. CY 2005, CY 2015 with sub-columns Consumed, tCO₂e)—then take the year from the column header and, for each table row, take totalCO2e and Consumed from that year column for that row only (many output rows, each with that row's value). Ignore partial tables, single-total summaries, and narrative. When the input is a segment, apply the same granularity rules (one row per activity/subsector/sector—never collapse to one total).
+- documentText (string): Full report text, or a segment of a longer report. Prefer full-coverage emissions summaries (comprehensive inventory); when the report has none, use its per-sector tables once each. Tables may have year as columns (e.g. CY 2005, CY 2015 with sub-columns Consumed, tCO₂e)—then take the year from the column header and, for each table row, take totalCO2e and Consumed from that year column for that row only (many output rows, each with that row's value). Ignore single-total summaries, per-capita tables and narrative. When the input is a segment, apply the same granularity rules (one row per activity/subsector/sector—never collapse to one total).
 </input>
 
 <output>
@@ -280,7 +280,7 @@ Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"
 const USER_PROMPT_PREFIX = `Document text:\n\n`;
 
 /** Prefix when sending a segment of a longer document (chunked extraction). Reinforces same granularity as full-document. */
-const SEGMENT_PROMPT_PREFIX = `The following text is one segment of a longer emissions report. Use only tables that present a full-coverage emissions summary (comprehensive inventory with multiple sectors/subsectors/activities)—e.g. "Citywide GHG Emissions Summary", "Emissions by sector", "Inventory summary". Ignore partial tables (single sector only), executive summary totals, methodology-only text, and tables that are not full-coverage. Apply the same granularity rules as for a full document:
+const SEGMENT_PROMPT_PREFIX = `The following text is one segment of a longer emissions report. Prefer tables that present a full-coverage emissions summary (comprehensive inventory with multiple sectors/subsectors/activities)—e.g. "Citywide GHG Emissions Summary", "Emissions by sector", "Inventory summary". When the report has no such table and gives each sector in its own table, use those per-sector tables once each. Ignore executive summary totals, methodology-only text, and per-capita tables. Apply the same granularity rules as for a full document:
 - If this segment contains activity-level data (e.g. breakdown by fuel type, building type, category): extract one row per activity with totalCO2e for that activity; do not collapse to a single subsector or sector total.
 - If this segment contains only subsector-level data: extract one row per subsector with totalCO2e for that subsector; set category to "Subsector total" or the subsector name.
 - If this segment contains only sector-level totals: output one row per sector.
@@ -341,8 +341,14 @@ const MAX_CANDIDATE_PAGES = 150;
 const PAGE_SELECTION_TOLERANCE = 0.1;
 /** Totals below this share of the largest reported total are sector totals. */
 const MIN_GRAND_TOTAL_SHARE = 0.5;
-/** Longest run of consecutive pages a single inventory table may span. */
-const MAX_PAGES_PER_TABLE = 3;
+/**
+ * Longest run of consecutive pages a single inventory table may span. A report that
+ * gives one table per sector (agriculture, transport, stationary energy, waste, IPPU,
+ * forestry) spreads one inventory over five or six pages.
+ */
+const MAX_PAGES_PER_TABLE = 6;
+/** A run must span this many sectors to be matched against a total below the share. */
+const MIN_SECTORS_FOR_MINOR_TOTAL = 3;
 
 export type DocumentPage = { page: number; text: string };
 
@@ -499,6 +505,12 @@ export function selectReconciledPages(
       yearTotals.filter((v) => Math.abs(v) >= largest * MIN_GRAND_TOTAL_SHARE),
     ),
   ];
+  // Net totals (gross minus forestry removals) fall below the share. A run that spans
+  // several sectors may match one; a single sector may not.
+  const minorTotals = [
+    ...new Set(yearTotals.filter((v) => !grandTotals.includes(v))),
+  ];
+  const allTotals = [...grandTotals, ...minorTotals];
 
   type Run = {
     start: number;
@@ -516,6 +528,16 @@ export function selectReconciledPages(
     if (inBand && a.structured !== b.structured) {
       return a.structured > b.structured;
     }
+    // Two tables of one report that both reach a total: take the more detailed one
+    // (sector tables over the same total split by greenhouse gas).
+    if (
+      inBand &&
+      a.structured === 0 &&
+      b.structured === 0 &&
+      a.rows !== b.rows
+    ) {
+      return a.rows > b.rows;
+    }
     if (a.deviation !== b.deviation) return a.deviation < b.deviation;
     return a.rows > b.rows;
   };
@@ -525,7 +547,9 @@ export function selectReconciledPages(
     let sum = 0;
     let rowCount = 0;
     let structured = 0;
-    let previousDeviation = Infinity;
+    // Deviation from each reported total at the previous page of the run.
+    const previous = allTotals.map(() => Infinity);
+    const runSectors = new Set<string>();
     // A row repeated on the next page (a table row carried over) counts once.
     const runKeys = new Set<string>();
     for (
@@ -543,22 +567,38 @@ export function selectReconciledPages(
           (r) => r.totalCO2e == null && r.notationKey && r.scope && r.gpcRefNo,
         );
       const fresh = rows.filter((r) => !runKeys.has(repeatKey(r)));
-      for (const r of fresh) runKeys.add(repeatKey(r));
+      for (const r of fresh) {
+        runKeys.add(repeatKey(r));
+        const sector = r.sector?.trim().toLowerCase();
+        if (sector) runSectors.add(sector);
+      }
       sum += sumImported(fresh);
       rowCount += fresh.length;
       structured += fresh.filter((r) => r.scope && r.gpcRefNo).length;
       if (rowCount === 0) continue;
-      const deviation = Math.min(
-        ...grandTotals.map((total) => Math.abs(sum - total) / Math.abs(total)),
+      const deviations = allTotals.map(
+        (total) => Math.abs(sum - total) / Math.abs(total),
       );
-      // A page that moves the sum away from the total is not part of the table.
-      if (
-        deviation > previousDeviation ||
-        (deviation === previousDeviation && !notationOnly)
-      ) {
-        break;
-      }
-      previousDeviation = deviation;
+      const eligible = allTotals.map(
+        (total) =>
+          grandTotals.includes(total) ||
+          runSectors.size >= MIN_SECTORS_FOR_MINOR_TOTAL,
+      );
+      const deviation = Math.min(
+        ...deviations.filter((_, index) => eligible[index]),
+      );
+      // A page that moves the sum away from every total is not part of the table.
+      // A page of notation keys leaves the sum where it is and stays.
+      const improved = deviations.some(
+        (d, index) => eligible[index] && d < previous[index],
+      );
+      const unchanged = deviations.every(
+        (d, index) => !eligible[index] || d <= previous[index],
+      );
+      if (!improved && !(notationOnly && unchanged)) break;
+      deviations.forEach((d, index) => {
+        previous[index] = d;
+      });
       if (deviation > selectionTolerance) continue;
       const run = { start, end, rows: rowCount, structured, deviation };
       if (!best || better(run, best)) best = run;
@@ -566,6 +606,57 @@ export function selectReconciledPages(
   }
 
   const base = { reportedTotals, targetYear: targetYear ?? null };
+
+  // All pages, deduped across pages. Rows are already in tonnes and already
+  // filtered by year, so a second pass only removes repeats.
+  const buildFallback = (): ExtractionResult => {
+    const dropped = { ...droppedRows };
+    const merged = finalizeExtractedRows(
+      sorted.flatMap((p) => p.result.rows),
+      targetYear,
+    );
+    mergeDropped(dropped, merged.summary.droppedRows);
+    return {
+      rows: merged.rows,
+      summary: {
+        ...base,
+        droppedRows: dropped,
+        importedSum: merged.summary.importedSum,
+        yearAssumed,
+        pageSelection: "fallback",
+        selectedPages: sorted
+          .filter((p) => p.result.rows.length > 0)
+          .map((p) => p.page),
+      },
+    };
+  };
+
+  if (best && best.deviation > RECONCILIATION_TOLERANCE) {
+    // A run that only roughly reaches a total can be a part of the inventory (the
+    // per-sector tables of one report cover 99% of the gross total and leave out a
+    // small sector and the forestry removals). Take every page instead when the
+    // whole document reconciles with a reported total.
+    const fallback = buildFallback();
+    const wholeDeviation = Math.min(
+      ...yearTotals.map(
+        (total) =>
+          Math.abs(fallback.summary.importedSum - total) / Math.abs(total),
+      ),
+    );
+    logger.info(
+      {
+        runDeviation: best.deviation,
+        runSum: sumImported(
+          sorted.slice(best.start, best.end + 1).flatMap((p) => p.result.rows),
+        ),
+        wholeSum: fallback.summary.importedSum,
+        wholeDeviation,
+        totals: yearTotals,
+      },
+      "Rough page run compared with the whole document",
+    );
+    if (wholeDeviation <= RECONCILIATION_TOLERANCE) return fallback;
+  }
 
   if (best) {
     const chosen = sorted.slice(best.start, best.end + 1);
@@ -597,26 +688,7 @@ export function selectReconciledPages(
     };
   }
 
-  // Fallback: all pages, deduped across pages. Rows are already in tonnes and
-  // already filtered by year, so a second pass only removes repeats.
-  const merged = finalizeExtractedRows(
-    sorted.flatMap((p) => p.result.rows),
-    targetYear,
-  );
-  mergeDropped(droppedRows, merged.summary.droppedRows);
-  return {
-    rows: merged.rows,
-    summary: {
-      ...base,
-      droppedRows,
-      importedSum: merged.summary.importedSum,
-      yearAssumed,
-      pageSelection: "fallback",
-      selectedPages: sorted
-        .filter((p) => p.result.rows.length > 0)
-        .map((p) => p.page),
-    },
-  };
+  return buildFallback();
 }
 
 /**

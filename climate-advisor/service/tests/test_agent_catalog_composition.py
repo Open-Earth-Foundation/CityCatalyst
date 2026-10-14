@@ -6,6 +6,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
+from app.config.settings import _load_llm_config
 from app.services.agent_service import AgentService
 from app.services.native_input_catalog_service import (
     ActiveRequestContext,
@@ -176,3 +177,25 @@ class NativeInputCatalogCompositionTests(unittest.IsolatedAsyncioTestCase):
             getattr(tool, "name", "") for tool in mock_agent.call_args.kwargs["tools"]
         ]
         self.assertIn("climate_vector_search", tool_names)
+
+
+class ChatPromptCatalogRoutingTests(unittest.TestCase):
+    """The composed general-chat prompt must route ranked-action questions to the catalog."""
+
+    def test_composed_chat_prompt_lists_both_catalog_tools_and_hiap_capability(
+        self,
+    ) -> None:
+        prompt = _load_llm_config().prompts.compose_prompt("chat")
+
+        self.assertIn("`native_input_discover`", prompt)
+        self.assertIn("`native_input_read`", prompt)
+        self.assertIn("hiap.inventory.context", prompt)
+        self.assertIn("hiap_meed.ranking.context", prompt)
+        self.assertIn("no ranking was found", prompt)
+        self.assertIn("inventoryId", prompt)
+        self.assertIn("at most 4 cities or city-years", prompt)
+        self.assertIn("run discover and read for each inventory separately", prompt)
+        self.assertIn("Pass the user's language as `language`", prompt)
+        self.assertIn("never print raw action codes", prompt)
+        self.assertIn("keep following the cursor", prompt)
+        self.assertIn("Only pass an `inventoryId` that `inventory_list_accessible` returned", prompt)

@@ -1492,10 +1492,17 @@ Production generation is unchanged.
 
 ```bash
 uv run --directory service pytest tests/cnb/test_golden_set*.py -q
-uv run --directory service python -m scripts.evaluate_cnb_golden_set
+uv run --directory service python -m scripts.evaluate_cnb_golden_set --label baseline
 uv run --directory service python -m scripts.evaluate_cnb_golden_set \
   --fixture krakow-flood-drainage-plan --stage verification --stage editing
+# Rebuild the viewer from saved runs (no model calls).
+uv run --directory service python -m scripts.cnb_golden_set_viewer.publish
 ```
+
+Every run is saved under `output/cnb_golden_set/runs/<run-id>/` and published to
+the static viewer at `output/cnb_golden_set/index.html` (open it directly in a
+browser). The viewer shows each run by stage and document, and **Compare runs**
+diffs any two runs: configuration, stage results, and changed verdicts.
 
 The live evaluation requires `OPENROUTER_API_KEY` for the production models and
 `models.cnb_golden_set_judge` in `llm_config.yaml`. Review the four judge prompts in

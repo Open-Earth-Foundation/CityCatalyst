@@ -16,23 +16,30 @@ Inputs:
 - --fixture: fixture ID; repeat the flag to select multiple fixtures (default all).
 - --stage: extraction, chapter_writing, verification, editing, or all (default);
   repeat to select several. chapter_writing also runs extraction.
-- --output-dir: reports and outputs (default climate-advisor/output/cnb_golden_set).
+- --results-dir: results folder shared by all runs (default
+  climate-advisor/output/cnb_golden_set). This run is saved in runs/<run-id>/.
+- --run-id: folder name for this run (default: UTC time, YYYYMMDD-HHMMSS, plus
+  the label); letters, digits, '.', '_' and '-' only. An existing run is refused.
+- --label: optional short note shown in the viewer, for example "pr-3295".
 - OPENROUTER_API_KEY and normal Climate Advisor settings; llm_config.yaml selects
   producer/judge models and prompts under prompts/cnb/golden_set/.
 
-Outputs:
+Outputs (in <results-dir>/runs/<run-id>/; no database writes):
 - report.json and report.md with per-stage integrity failures, semantic findings,
-  evaluation errors, model configuration, and prompt hashes. No full source text.
+  evaluation errors, model configuration, prompt hashes, run ID, label, and git
+  commit. No full source text.
 - outputs/<fixture>/analysis.json, chapter_writing/drafts.json,
   verification/seeded_draft.json and findings.json, editing/cases.json, and
-  <stage>/judgment.json for review. No database writes.
-- Exit 0 when all evaluated stages pass; 1 for quality/evaluation failures.
+  <stage>/judgment.json for review.
+- viewer.js, and the refreshed viewer at <results-dir>/index.html (see
+  scripts/cnb_golden_set_viewer/publish.py). Open it to browse and compare runs.
+- Exit 0 when all evaluated stages pass; 1 for quality/evaluation failures; 2
+  when the run ID already exists (nothing is evaluated).
 
 Usage (from climate-advisor/):
 - uv run --directory service python -m scripts.evaluate_cnb_golden_set
 - uv run --directory service python -m scripts.evaluate_cnb_golden_set \
-      --fixture krakow-flood-drainage-plan --stage chapter_writing \
-      --output-dir ../output/golden
+      --fixture krakow-flood-drainage-plan --stage chapter_writing --label krakow-drafting
 """
 
 from __future__ import annotations
@@ -41,6 +48,8 @@ import argparse
 import asyncio
 import json
 import logging
+import re
+import subprocess
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -75,6 +84,7 @@ from app.services.cnb.golden_set_judge import (
     judge_output,
     judge_prompt_versions,
 )
+from app.services.cnb.golden_set_viewer import publish_run
 from app.services.cnb.golden_set_workspace import golden_id
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
@@ -87,7 +97,8 @@ from app.config import Settings, get_settings
 logger = logging.getLogger(__name__)
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_FIXTURES_DIR = SERVICE_ROOT / "tests" / "fixtures" / "cnb_golden_set"
-DEFAULT_OUTPUT_DIR = SERVICE_ROOT.parent / "output" / "cnb_golden_set"
+DEFAULT_RESULTS_DIR = SERVICE_ROOT.parent / "output" / "cnb_golden_set"
+RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$")
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -115,12 +126,38 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Stage to evaluate; repeat for several (default: all)",
     )
     parser.add_argument(
-        "--output-dir",
+        "--results-dir",
         type=Path,
-        default=DEFAULT_OUTPUT_DIR,
-        help="Directory for reports and raw outputs",
+        default=DEFAULT_RESULTS_DIR,
+        help="Results folder shared by all runs; this run goes to runs/<run-id>/",
     )
-    return parser.parse_args(argv)
+    parser.add_argument("--run-id", help="Run folder name (default: UTC timestamp plus label)")
+    parser.add_argument("--label", help="Short note shown in the viewer")
+    args = parser.parse_args(argv)
+    if args.run_id is None:
+        stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
+        slug = re.sub(r"[^A-Za-z0-9._-]+", "-", args.label or "").strip("-")
+        args.run_id = f"{stamp}-{slug}" if slug else stamp
+    if not RUN_ID_PATTERN.fullmatch(args.run_id):
+        parser.error("--run-id may contain only letters, digits, '.', '_' and '-'")
+    args.output_dir = args.results_dir / "runs" / args.run_id
+    return args
+
+
+def code_version() -> str | None:
+    """The current git commit, with ``-dirty`` for uncommitted tracked changes."""
+    try:
+        commit = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True, text=True, check=True, cwd=SERVICE_ROOT,
+        ).stdout.strip()
+        dirty = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            capture_output=True, text=True, check=True, cwd=SERVICE_ROOT,
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return f"{commit}-dirty" if dirty else commit
 
 
 def selected_stages(requested: list[str] | None) -> list[str]:
@@ -154,6 +191,9 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
         )
     models = settings.llm.models
     return GoldenSetReport(
+        run_id=args.run_id,
+        label=args.label,
+        code_version=code_version(),
         generated_at=datetime.now(UTC).isoformat(),
         analysis_contract_version=source_analysis_contract_version(settings),
         judge_prompt_versions=judge_prompt_versions(settings, stages),
@@ -398,6 +438,9 @@ def main(argv: list[str] | None = None) -> int:
     """Write review artifacts and return nonzero for quality or evaluation failures."""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(name)s:%(message)s")
     args = parse_args(argv)
+    if (args.output_dir / "report.json").exists():
+        logger.error("Run %s already exists in %s", args.run_id, args.output_dir.parent)
+        return 2
     report = asyncio.run(evaluate(args))
     args.output_dir.mkdir(parents=True, exist_ok=True)
     (args.output_dir / "report.json").write_text(
@@ -416,6 +459,12 @@ def main(argv: list[str] | None = None) -> int:
         "passed" if report.passed else "failed",
         args.output_dir,
     )
+    # The viewer is a convenience; publishing problems never fail the run.
+    try:
+        index = publish_run(args.output_dir, args.results_dir, fixtures_dir=args.fixtures_dir)
+        logger.info("Viewer updated: %s", index)
+    except Exception as exc:  # noqa: BLE001 - keep the run's own exit code
+        logger.warning("Viewer publish failed error_type=%s", type(exc).__name__)
     return 0 if report.passed else 1
 
 

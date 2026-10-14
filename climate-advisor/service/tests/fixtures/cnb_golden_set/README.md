@@ -162,20 +162,26 @@ From `climate-advisor/`:
 # Deterministic tests: contracts, seeding, plumbing, prompt examples; no model calls.
 uv run --directory service pytest tests/cnb/test_golden_set*.py -q
 
-# Every stage for every fixture, once.
-uv run --directory service python -m scripts.evaluate_cnb_golden_set
+# Every stage for every fixture, once; the label is shown in the viewer.
+uv run --directory service python -m scripts.evaluate_cnb_golden_set --label baseline
 
 # Selected stages or fixtures (repeat either flag).
 uv run --directory service python -m scripts.evaluate_cnb_golden_set \
   --fixture krakow-flood-drainage-plan --stage chapter_writing
 uv run --directory service python -m scripts.evaluate_cnb_golden_set \
   --fixture richfield-flood-risk --stage verification --stage editing
+
+# Rebuild the viewer from saved runs (no model calls).
+uv run --directory service python -m scripts.cnb_golden_set_viewer.publish
 ```
 
-`--fixtures-dir` and `--output-dir` override the default directories. There is
-no `--repeats` flag. A full run makes one extraction, one draft per chapter,
-two or more validator passes per chapter, up to four edit plans with review per
-fixture, and four judge calls per fixture; CI runs one job per fixture.
+`--fixtures-dir` overrides the fixture corpus and `--results-dir` the results
+folder. `--run-id` names the run folder (default: UTC time plus the label); an
+existing run is never overwritten. There is no `--repeats` flag; run again to
+measure variance and compare the runs in the viewer. A full run makes one
+extraction, one draft per chapter, two or more validator passes per chapter, up
+to four edit plans with review per fixture, and four judge calls per fixture; CI
+runs one job per fixture.
 
 Live execution requires `OPENROUTER_API_KEY` and the usual Climate Advisor
 settings. `llm_config.yaml` configures `models.cnb_golden_set_judge`
@@ -191,9 +197,35 @@ Prompt paths are configured under `prompts.cnb_golden_set_extraction_judge`,
 SHA-256 hashes of the loaded prompts of the evaluated stages, the analysis
 contract version, and every producer and judge model.
 
-## Reports
+## Results folder and viewer
 
-The evaluator writes to `climate-advisor/output/cnb_golden_set/` by default:
+Every run is saved in one results folder, `climate-advisor/output/cnb_golden_set/`
+by default (gitignored):
+
+```text
+output/cnb_golden_set/
+├── index.html, app.js      # the viewer, copied from service/scripts/cnb_golden_set_viewer/
+├── pdf/<fixture>.pdf       # original PDFs, linked from the viewer
+└── runs/
+    ├── index.js            # summary of every run, for the run picker and comparison
+    └── <run-id>/           # one evaluator invocation
+        ├── report.md, report.json, outputs/...
+        └── viewer.js       # everything the viewer needs for this run
+```
+
+Open `output/cnb_golden_set/index.html` directly in a browser; no server is
+needed. The evaluator publishes after every run: it snapshots the run (fixtures,
+prompts, examples, outputs, judgments) into its `viewer.js` at run time, so old
+runs stay readable after fixtures or prompts change, and refreshes the viewer and
+`runs/index.js`. Publishing problems are logged and never change the run's exit
+code. The viewer shows any run (picker in the top bar) by stage and by document,
+and **Compare runs** shows the run history, headline metrics over time, and for
+any two runs: what changed in models, prompts, sources and expectations, the
+stage results A → B, and every expectation whose verdict changed. Reports
+record the run ID, label, and git commit (`-dirty` for uncommitted changes).
+CI uploads the whole results folder as its artifact.
+
+Each run folder contains:
 
 - `report.md` and `report.json`: metrics, failures, evaluation errors, details
   (transfer table, validator findings, edit checks, repaired quotes), and the
@@ -206,7 +238,8 @@ The evaluator writes to `climate-advisor/output/cnb_golden_set/` by default:
 - `outputs/<fixture>/<stage>/judgment.json`: raw judge output, including invalid judgments.
 
 Exit code 1 means a product failure or an invalid/unavailable evaluation; the
-report distinguishes them.
+report distinguishes them. Exit code 2 means the run ID already exists and
+nothing was evaluated.
 
 ## Add or change a fixture
 

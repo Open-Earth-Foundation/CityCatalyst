@@ -629,8 +629,16 @@ class FixtureReport(GoldenContract):
 
 
 class GoldenSetReport(GoldenContract):
-    """Evaluation provenance and results; contains no complete source documents."""
+    """Evaluation provenance and results; contains no complete source documents.
 
+    ``run_id`` names the run folder, ``label`` is an optional human note, and
+    ``code_version`` is the git commit (with ``-dirty`` for local changes) so
+    runs can be compared.
+    """
+
+    run_id: str | None = None
+    label: str | None = None
+    code_version: str | None = None
     generated_at: str
     analysis_contract_version: str
     judge_prompt_versions: dict[str, str]

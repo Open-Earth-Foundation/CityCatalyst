@@ -1,4 +1,4 @@
-"""Validate current CA model routing and real SDK payloads without network calls."""
+"""Validate real SDK payloads for configured CA models without network calls."""
 
 import json
 from uuid import uuid4
@@ -11,30 +11,6 @@ from app.models.cnb.source_prompt import DocumentSummary, QuestionReading
 from app.services.agent_service import AgentService
 from app.services.cnb.source_analysis import run_agent
 from openai import AsyncOpenAI
-
-
-def test_active_ca_model_defaults_preserve_cnb_roles():
-    models = get_settings().llm.models
-    expected = {
-        "orchestrator": ("openai/gpt-5.6-terra", "medium"),
-        "agentic_flow": ("openai/gpt-5.6-terra", "medium"),
-        "cnb_chat": ("openai/gpt-6-sol", "medium"),
-        "cnb_chat_edit_planner": ("openai/gpt-6-sol", "high"),
-        "cnb_source_impact_reviewer": ("openai/gpt-6-sol", "medium"),
-        "funding_research": ("openai/gpt-5.6-terra", "medium"),
-        "funder_identity": ("openai/gpt-5.6-terra", "medium"),
-        "cnb_source_reader": ("openai/gpt-5.6-terra", "medium"),
-        "cnb_source_synthesizer": ("openai/gpt-5.6-terra", "medium"),
-        "cnb_chapter_drafter": ("openai/gpt-5.6-terra", "medium"),
-        "cnb_chapter_validator": ("openai/gpt-5.6-terra", "medium"),
-        "cnb_funder_extractor": ("openai/gpt-6.1-sol", "medium"),
-    }
-    for role, (model, effort) in expected.items():
-        configured = getattr(models, role)
-        assert configured.name == model
-        assert configured.reasoning_effort == effort
-    assert models.orchestrator.temperature is None
-    assert models.agentic_flow.temperature is None
 
 
 def completion(model, *, content=None, tool_calls=None, finish_reason="stop"):

@@ -526,6 +526,8 @@ export function selectReconciledPages(
     let rowCount = 0;
     let structured = 0;
     let previousDeviation = Infinity;
+    // A row repeated on the next page (a table row carried over) counts once.
+    const runKeys = new Set<string>();
     for (
       let end = start;
       end < sorted.length && end - start < MAX_PAGES_PER_TABLE;
@@ -533,16 +535,18 @@ export function selectReconciledPages(
     ) {
       // A run must be consecutive pages of the document.
       if (end > start && sorted[end].page !== sorted[end - 1].page + 1) break;
-      const { rows, summary } = sorted[end].result;
+      const { rows } = sorted[end].result;
       // Notation keys of the same GPC table carry no value but belong to the run.
       const notationOnly =
         rows.length > 0 &&
         rows.every(
           (r) => r.totalCO2e == null && r.notationKey && r.scope && r.gpcRefNo,
         );
-      sum += summary.importedSum;
-      rowCount += rows.length;
-      structured += rows.filter((r) => r.scope && r.gpcRefNo).length;
+      const fresh = rows.filter((r) => !runKeys.has(repeatKey(r)));
+      for (const r of fresh) runKeys.add(repeatKey(r));
+      sum += sumImported(fresh);
+      rowCount += fresh.length;
+      structured += fresh.filter((r) => r.scope && r.gpcRefNo).length;
       if (rowCount === 0) continue;
       const deviation = Math.min(
         ...grandTotals.map((total) => Math.abs(sum - total) / Math.abs(total)),
@@ -569,16 +573,23 @@ export function selectReconciledPages(
       .filter((p) => !chosen.includes(p))
       .reduce((n, p) => n + p.result.rows.length, 0);
     if (otherRows > 0) droppedRows.other_page = otherRows;
-    const rows = chosen.flatMap((p) => p.result.rows);
+    const keys = new Set<string>();
+    const rows: ExtractedRow[] = [];
+    for (const row of chosen.flatMap((p) => p.result.rows)) {
+      const key = repeatKey(row);
+      if (keys.has(key)) {
+        droppedRows.duplicate = (droppedRows.duplicate ?? 0) + 1;
+        continue;
+      }
+      keys.add(key);
+      rows.push(row);
+    }
     return {
       rows,
       summary: {
         ...base,
         droppedRows,
-        importedSum: chosen.reduce(
-          (sum, p) => sum + p.result.summary.importedSum,
-          0,
-        ),
+        importedSum: sumImported(rows),
         yearAssumed: yearAssumed && rows.length > 0,
         pageSelection: "reconciled",
         selectedPages: chosen.map((p) => p.page),
@@ -1539,19 +1550,41 @@ function isSectorTotal(total: ReportedTotal, rows: ExtractedRow[]): boolean {
   const sector = total.sector?.trim().toLowerCase();
   const subsector = total.subsector?.trim().toLowerCase();
   if (!sector && !subsector) return false;
-  const matching = rows.filter(
-    (row) =>
-      row.gpcRefNo !== GRID_GENERATION_GPC_REF &&
-      row.totalCO2e != null &&
-      (!sector || row.sector?.trim().toLowerCase() === sector) &&
-      (!subsector || row.subsector?.trim().toLowerCase() === subsector),
-  );
-  if (matching.length === 0) return false;
-  const sum = matching.reduce((s, row) => s + (row.totalCO2e as number), 0);
+  const matchesSum = (inPart: (row: ExtractedRow) => boolean): boolean => {
+    const matching = rows.filter(
+      (row) =>
+        row.gpcRefNo !== GRID_GENERATION_GPC_REF &&
+        row.totalCO2e != null &&
+        inPart(row),
+    );
+    if (matching.length === 0) return false;
+    const sum = matching.reduce((s, row) => s + (row.totalCO2e as number), 0);
+    return (
+      Math.abs(sum - total.value) <=
+      Math.abs(total.value) * RECONCILIATION_TOLERANCE
+    );
+  };
+  const sameSector = (row: ExtractedRow) =>
+    !sector || row.sector?.trim().toLowerCase() === sector;
+  const sameSubsector = (row: ExtractedRow) =>
+    !subsector || row.subsector?.trim().toLowerCase() === subsector;
+  // The model may tag a sector total with one of its sub-sectors (seen on the
+  // Masterton report: an agriculture total tagged Livestock), so try the sector too.
   return (
-    Math.abs(sum - total.value) <=
-    Math.abs(total.value) * RECONCILIATION_TOLERANCE
+    matchesSum((row) => sameSector(row) && sameSubsector(row)) ||
+    (!!sector && matchesSum(sameSector))
   );
+}
+
+/** Rows with the same key repeat one value (same year, reference, scope, activity). */
+function repeatKey(row: ExtractedRow): string {
+  return [
+    row.year ?? "",
+    row.gpcRefNo ?? `${row.sector ?? ""}|${row.subsector ?? ""}`,
+    row.scope ?? "",
+    (row.activityType ?? row.category ?? "").trim().toLowerCase(),
+    row.notationKey ?? "",
+  ].join("\t");
 }
 
 /**
@@ -1596,6 +1629,15 @@ export function finalizeExtractedRows(
       if (row.n2o != null) scaled.n2o = row.n2o * multiplier;
     }
     if (row.unit) scaled.unit = "t";
+    // A huge value in Mt can overflow to Infinity; it is not a usable number.
+    if (
+      [scaled.totalCO2e, scaled.co2, scaled.ch4, scaled.n2o].some(
+        (v) => v != null && !Number.isFinite(v),
+      )
+    ) {
+      drop("unsupported_unit");
+      continue;
+    }
 
     const labelLevel = sumLabelLevel(row);
     const rowType: ExtractedRowType | null | undefined =
@@ -1677,13 +1719,7 @@ export function finalizeExtractedRows(
   const seen = new Set<string>();
   const finalRows: ExtractedRow[] = [];
   for (const row of kept) {
-    const key = [
-      row.year ?? "",
-      row.gpcRefNo ?? `${row.sector ?? ""}|${row.subsector ?? ""}`,
-      row.scope ?? "",
-      (row.activityType ?? row.category ?? "").trim().toLowerCase(),
-      row.notationKey ?? "",
-    ].join("\t");
+    const key = repeatKey(row);
     if (seen.has(key)) {
       drop("duplicate");
       continue;

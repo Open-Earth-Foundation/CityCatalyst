@@ -659,3 +659,78 @@ describe("9. PR review: sector totals and notation-only pages", () => {
     expect(result.summary.selectedPages).toEqual([46]);
   });
 });
+
+describe("10. PR review: Masterton sector total, repeated rows, overflow", () => {
+  const AFOLU = "Agriculture, Forestry And Other Land Use";
+  const ag = (
+    ref: string,
+    subsector: string,
+    value: number,
+    category: string,
+  ): ExtractedRow =>
+    row(ref, "1", value, { sector: AFOLU, subsector, category });
+
+  it("demotes a sector total tagged with one of its sub-sectors", () => {
+    const result = selectReconciledPages(
+      [
+        pageOf(5, [grandTotal(785873)]),
+        pageOf(23, [
+          ag("V.1.1", "Livestock", 400000, "Enteric fermentation"),
+          ag("V.1.2", "Livestock", 100000, "Manure management"),
+          ag(
+            "V.3.1",
+            "Aggregate Sources And Non-CO2 Emission Sources On Land",
+            135774,
+            "Agricultural soils",
+          ),
+          // Agriculture total, tagged with the Livestock sub-sector only.
+          row(null, null, 635774, {
+            sector: AFOLU,
+            subsector: "Livestock",
+            category: "Agriculture",
+            rowType: "total",
+          }),
+        ]),
+      ],
+      2021,
+    );
+    expect(
+      result.summary.reportedTotals
+        .filter((t) => t.value === 635774)
+        .map((t) => t.level),
+    ).toEqual(["subtotal"]);
+    expect(result.summary.pageSelection).toBe("fallback");
+    const notes = extractionReviewNotes(result.summary);
+    expect(notes.reconciliation?.reportedTotal).toBe(785873);
+    expect(notes.reconciliation?.mismatch).toBe(true);
+  });
+
+  it("counts a row repeated on the next page once", () => {
+    const result = selectReconciledPages(
+      [
+        pageOf(1, [grandTotal(1000)]),
+        pageOf(2, [
+          row("I.1.1", "1", 400),
+          row("I.2.1", "1", 300, { subsector: "Commercial Buildings" }),
+        ]),
+        pageOf(3, [
+          row("I.2.1", "1", 300, { subsector: "Commercial Buildings" }),
+        ]),
+      ],
+      2021,
+    );
+    expect(result.summary.pageSelection).toBe("fallback");
+    expect(result.summary.importedSum).toBe(700);
+    expect(result.rows).toHaveLength(2);
+  });
+
+  it("drops a value that overflows when converted to tonnes", () => {
+    const { rows, summary } = finalizeExtractedRows(
+      [row("I.1.1", "1", 1e308, { unit: "Mt" }), row("I.1.2", "2", 5)],
+      2021,
+    );
+    expect(rows.map((r) => r.gpcRefNo)).toEqual(["I.1.2"]);
+    expect(summary.droppedRows.unsupported_unit).toBe(1);
+    expect(Number.isFinite(summary.importedSum)).toBe(true);
+  });
+});

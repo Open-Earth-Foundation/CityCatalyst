@@ -52,8 +52,16 @@ const row = (
   ...extra,
 });
 
+/** A city-wide total row has no sector or sub-sector. */
+const CITY = { sector: null, subsector: null };
+
 const grandTotal = (value = TOTAL, year: number | null = 2021): ExtractedRow =>
-  row(null, null, value, { rowType: "total", category: "BASIC+", year });
+  row(null, null, value, {
+    ...CITY,
+    rowType: "total",
+    category: "BASIC+",
+    year,
+  });
 
 /** Finalize one page the way the page path does. */
 const pageOf = (page: number, rows: ExtractedRow[]) => ({
@@ -368,8 +376,12 @@ describe("6. total labels", () => {
   it("turns a line item labeled Total or Grand total into a grand total", () => {
     const { rows, summary } = finalizeExtractedRows(
       [
-        row(null, null, TOTAL, { category: "Total", rowType: "line_item" }),
-        row(null, null, TOTAL, { category: "Grand total" }),
+        row(null, null, TOTAL, {
+          ...CITY,
+          category: "Total",
+          rowType: "line_item",
+        }),
+        row(null, null, TOTAL, { ...CITY, category: "Grand total" }),
         row(null, null, 4424829, {
           category: "Sub-total",
           rowType: "line_item",
@@ -391,7 +403,7 @@ describe("6. total labels", () => {
       [
         row(null, "1", 5200000, { category: "Total", rowType: "line_item" }),
         row(null, "2", 2000000, { category: "Total" }),
-        row(null, null, TOTAL, { category: "Total" }),
+        row(null, null, TOTAL, { ...CITY, category: "Total" }),
       ],
       2021,
     );
@@ -413,7 +425,7 @@ describe("6. total labels", () => {
           row(null, "2", 2000000, { category: "Total" }),
           // A total the model typed itself, with a scope.
           row(null, "1", 5200000, { category: "Scope 1", rowType: "total" }),
-          row(null, null, TOTAL, { category: "Total" }),
+          row(null, null, TOTAL, { ...CITY, category: "Total" }),
         ]),
         pageOf(60, [
           row("I.2.1", "1", 1300000),
@@ -541,5 +553,109 @@ describe("8. reference against the scope column", () => {
       targetYear: 2021,
     });
     expect(rows[0].gpcRefNo).toBe("I.1.2");
+  });
+});
+
+describe("9. PR review: sector totals and notation-only pages", () => {
+  it("does not take a dominant sector's total as the city total", () => {
+    const result = selectReconciledPages(
+      [
+        pageOf(1, [grandTotal(1000)]),
+        pageOf(2, [
+          row("I.1.1", "1", 400),
+          row("I.2.1", "1", 300, { subsector: "Commercial Buildings" }),
+          // Sector total: unscoped "Total" on a Stationary Energy row.
+          row(null, null, 700, { category: "Total", subsector: null }),
+        ]),
+        pageOf(4, [
+          row("II.1.1", "1", 300, { sector: TR, subsector: "On Road" }),
+        ]),
+      ],
+      2021,
+    );
+    expect(
+      result.summary.reportedTotals
+        .filter((t) => t.value === 700)
+        .map((t) => t.level),
+    ).toEqual(["subtotal"]);
+    expect(result.summary.pageSelection).toBe("fallback");
+    expect(result.summary.importedSum).toBe(1000);
+  });
+
+  it("stores a sector total typed as total as a subtotal", () => {
+    const { summary } = finalizeExtractedRows(
+      [
+        grandTotal(1000),
+        row("I.1.1", "1", 400),
+        row("I.2.1", "1", 300, { subsector: "Commercial Buildings" }),
+        row(null, null, 700, {
+          category: "Stationary Energy",
+          subsector: null,
+          rowType: "total",
+        }),
+      ],
+      2021,
+    );
+    expect(summary.reportedTotals.map((t) => [t.value, t.level])).toEqual([
+      [1000, "total"],
+      [700, "subtotal"],
+    ]);
+    // The review screen then warns for a sum that matches only the sector.
+    const notes = extractionReviewNotes({ ...summary, importedSum: 700 });
+    expect(notes.reconciliation?.reportedTotal).toBe(1000);
+    expect(notes.reconciliation?.mismatch).toBe(true);
+  });
+
+  it("keeps a city total that names a sector but has no matching rows", () => {
+    // Seen live with Mistral OCR: the TOTAL row came back with sector "Other".
+    const { summary } = finalizeExtractedRows(
+      [
+        row(null, null, TOTAL, {
+          sector: "Other",
+          subsector: "Non Specified Sources",
+          category: "Subsector total",
+          rowType: "total",
+        }),
+        ...exactTable(),
+      ],
+      2021,
+    );
+    expect(summary.reportedTotals.map((t) => t.level)).toEqual(["total"]);
+  });
+
+  it("keeps a continuation page that holds only notation keys", () => {
+    const result = selectReconciledPages(
+      [
+        pageOf(15, [grandTotal()]),
+        pageOf(46, exactTable()),
+        pageOf(47, [
+          row("II.4.1", "1", null, {
+            sector: TR,
+            subsector: "Aviation",
+            notationKey: "NO",
+          }),
+        ]),
+      ],
+      2021,
+    );
+    expect(result.summary.pageSelection).toBe("reconciled");
+    expect(result.summary.selectedPages).toEqual([46, 47]);
+    expect(result.rows.map((r) => r.notationKey ?? null)).toContain("NO");
+    expect(result.summary.droppedRows.other_page).toBeUndefined();
+    expect(result.summary.importedSum).toBe(TOTAL);
+  });
+
+  it("still stops at a page that adds values without improving the sum", () => {
+    const result = selectReconciledPages(
+      [
+        pageOf(15, [grandTotal()]),
+        pageOf(46, exactTable()),
+        pageOf(47, [
+          row("II.4.1", "1", 0, { sector: TR, subsector: "Aviation" }),
+        ]),
+      ],
+      2021,
+    );
+    expect(result.summary.selectedPages).toEqual([46]);
   });
 });

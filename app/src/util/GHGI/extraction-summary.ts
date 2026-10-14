@@ -43,6 +43,15 @@ export type ExtractionSummary = {
   failedPages?: number[];
 };
 
+/**
+ * True for a total that can stand for the whole city: level "total" and no scope.
+ * A scope total covers one scope column only. Sector totals are already stored as
+ * "subtotal" when the extraction recognizes them (finalizeExtractedRows).
+ */
+export function isGrandTotal(total: ReportedTotal): boolean {
+  return total.level === "total" && !total.scope;
+}
+
 /** Imported sum may differ from the document total by this fraction before the review screen warns. */
 export const RECONCILIATION_TOLERANCE = 0.01;
 
@@ -73,9 +82,8 @@ export function reconcileExtraction(
       (summary.reportedTotals ?? [])
         .filter(
           (total) =>
-            total.level === "total" &&
-            // A scope total (scope 1 of Table A-1) is no grand total.
-            !total.scope &&
+            // A scope total is no city grand total.
+            isGrandTotal(total) &&
             Number.isFinite(total.value) &&
             total.value !== 0 &&
             // A grand total of another year (a 2016 comparison) is no target.

@@ -12,6 +12,7 @@ import { GRID_GENERATION_GPC_REF } from "@/util/GHGI/reported-totals";
 import { toCanonical } from "@/util/notation-keys";
 import {
   RECONCILIATION_TOLERANCE,
+  isGrandTotal,
   type DroppedRowReason,
   type ExtractionSummary,
   type ReportedTotal,
@@ -58,9 +59,10 @@ export function canonicalGpcRefNo(
 /**
  * Labels that mean a sum, whatever rowType the model gave. "Subsector total" is not
  * here: the prompt uses it for a sub-sector that has no activity breakdown.
- * An unqualified "Total" or "Grand total" without a scope is a grand total (the 50%
- * share rule in page selection keeps sector totals out); a scoped "Total" is the
- * total of one scope column, so a subtotal. The others are subtotals.
+ * An unqualified "Total" or "Grand total" without a scope is a grand total; a scoped
+ * "Total" is the total of one scope column, so a subtotal. A sector's "Total" is
+ * demoted later, when it equals that sector's line items (finalizeExtractedRows).
+ * The others are subtotals.
  */
 const GRAND_TOTAL_LABEL = /^\(?\s*(grand\s+)?total\s*\)?$/i;
 const SUBTOTAL_LABEL =
@@ -392,7 +394,7 @@ const EMPTY_RESULT: ExtractionResult = {
 function ownTotalDeviation({ rows, summary }: ExtractionResult): number | null {
   if (!rows.some((row) => row.scope && row.gpcRefNo)) return null;
   const totals = summary.reportedTotals.filter(
-    (t) => t.level === "total" && t.value !== 0,
+    (t) => isGrandTotal(t) && t.value !== 0,
   );
   if (totals.length === 0) return null;
   return Math.min(
@@ -425,7 +427,9 @@ function mergeDropped(
  * Year: pages are finalized with the year assumption deferred. When any line item
  * names a year, year-less rows are dropped here; when none does, the target year is
  * assumed and a run must reconcile within 1%. Without a target year no year logic runs.
- * Totals with a scope are scope totals, never grand totals.
+ * Totals with a scope are never grand totals; sector totals were demoted per page.
+ * A page that adds only notation-key rows with scope and reference (NO, IE, NE, C)
+ * leaves the sum unchanged; it still joins the run as a continuation of the table.
  * Without a candidate every page's rows are kept (fallback).
  * Exported for unit tests.
  */
@@ -483,8 +487,7 @@ export function selectReconciledPages(
   const yearTotals = reportedTotals
     .filter(
       (t) =>
-        t.level === "total" &&
-        !t.scope &&
+        isGrandTotal(t) &&
         t.value !== 0 &&
         (t.year == null || targetYear == null || t.year === targetYear),
     )
@@ -531,6 +534,12 @@ export function selectReconciledPages(
       // A run must be consecutive pages of the document.
       if (end > start && sorted[end].page !== sorted[end - 1].page + 1) break;
       const { rows, summary } = sorted[end].result;
+      // Notation keys of the same GPC table carry no value but belong to the run.
+      const notationOnly =
+        rows.length > 0 &&
+        rows.every(
+          (r) => r.totalCO2e == null && r.notationKey && r.scope && r.gpcRefNo,
+        );
       sum += summary.importedSum;
       rowCount += rows.length;
       structured += rows.filter((r) => r.scope && r.gpcRefNo).length;
@@ -539,7 +548,12 @@ export function selectReconciledPages(
         ...grandTotals.map((total) => Math.abs(sum - total) / Math.abs(total)),
       );
       // A page that moves the sum away from the total is not part of the table.
-      if (deviation >= previousDeviation) break;
+      if (
+        deviation > previousDeviation ||
+        (deviation === previousDeviation && !notationOnly)
+      ) {
+        break;
+      }
       previousDeviation = deviation;
       if (deviation > selectionTolerance) continue;
       const run = { start, end, rows: rowCount, structured, deviation };
@@ -1517,6 +1531,30 @@ export function findHiddenRowTotals(rows: ExtractedRow[]): Set<ExtractedRow> {
 }
 
 /**
+ * True when a total names a sector or sub-sector and equals, within the review
+ * tolerance, the sum of the line items of that part. A sector name alone is not
+ * enough: the model also writes a sector on the city total (seen live: "Other").
+ */
+function isSectorTotal(total: ReportedTotal, rows: ExtractedRow[]): boolean {
+  const sector = total.sector?.trim().toLowerCase();
+  const subsector = total.subsector?.trim().toLowerCase();
+  if (!sector && !subsector) return false;
+  const matching = rows.filter(
+    (row) =>
+      row.gpcRefNo !== GRID_GENERATION_GPC_REF &&
+      row.totalCO2e != null &&
+      (!sector || row.sector?.trim().toLowerCase() === sector) &&
+      (!subsector || row.subsector?.trim().toLowerCase() === subsector),
+  );
+  if (matching.length === 0) return false;
+  const sum = matching.reduce((s, row) => s + (row.totalCO2e as number), 0);
+  return (
+    Math.abs(sum - total.value) <=
+    Math.abs(total.value) * RECONCILIATION_TOLERANCE
+  );
+}
+
+/**
  * Turn LLM rows into importable rows plus a reconciliation summary:
  * - subtotal and total rows leave the rows and go to reportedTotals;
  * - units are converted to tonnes, rows with an unknown unit are dropped;
@@ -1626,6 +1664,15 @@ export function finalizeExtractedRows(
     }
   }
   const kept = yearFiltered.filter((row) => !hiddenTotals.has(row));
+
+  // A "total" naming a sector or sub-sector that equals the line items of that part
+  // on this page is a sector total. The model sometimes types it "total" or labels
+  // it "Total"; left as a grand total it can select one dominant sector alone.
+  for (const total of reportedTotals) {
+    if (isGrandTotal(total) && isSectorTotal(total, kept)) {
+      total.level = "subtotal";
+    }
+  }
 
   const seen = new Set<string>();
   const finalRows: ExtractedRow[] = [];

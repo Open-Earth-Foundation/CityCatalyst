@@ -71,7 +71,7 @@ dependencies = [
     "tqdm==4.67.1",
     "types-requests==2.33.0.20260518",
     "typing-inspection==0.4.2",
-    "typing_extensions==4.15.0",
+    "typing_extensions==4.16.0",
     "urllib3==2.8.0",
     "uuid_utils==0.13.0",
     "watchfiles==1.1.1",

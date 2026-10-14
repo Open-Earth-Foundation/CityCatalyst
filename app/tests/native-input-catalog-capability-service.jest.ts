@@ -1,7 +1,10 @@
 import { describe, expect, it, jest } from "@jest/globals";
 
+import { Op } from "sequelize";
 import {
   authorizeCatalogScope,
+  buildCandidateScopeConditions,
+  requestMatchesEntry,
   discoverNativeInputs,
   readNativeInputCapability,
   type NativeInputDiscoveryRequest,
@@ -218,6 +221,209 @@ describe("NativeInputCatalog capability service", () => {
     );
   });
 
+  describe("candidate scope filter", () => {
+    const fields = [
+      "userId",
+      "organizationId",
+      "projectId",
+      "cityId",
+      "inventoryId",
+    ] as const;
+
+    it.each(fields)(
+      "matches %s only when the request omits it, the row omits it, or both are equal",
+      (field) => {
+        const row = (value: string | null) =>
+          ({ ...authorizedEntry, userId: null, [field]: value }) as never;
+        const request = (value?: string) =>
+          (value ? { [field]: value } : {}) as never;
+
+        expect(requestMatchesEntry(request(), row("a"))).toBe(true);
+        expect(requestMatchesEntry(request("a"), row(null))).toBe(true);
+        expect(requestMatchesEntry(request("a"), row("a"))).toBe(true);
+        expect(requestMatchesEntry(request("a"), row("b"))).toBe(false);
+      },
+    );
+
+    it.each(fields)(
+      "builds the SQL condition for %s as null-or-equal, and nothing when absent",
+      (field) => {
+        expect(buildCandidateScopeConditions({})).toEqual([]);
+        expect(buildCandidateScopeConditions({ [field]: "a" })).toEqual([
+          { [Op.or]: [{ [field]: null }, { [field]: "a" }] },
+        ]);
+      },
+    );
+
+    it("returns the caller's row on the first page when many other rows precede it", async () => {
+      const others = Array.from({ length: 450 }, (_, index) => ({
+        ...authorizedEntry,
+        id: `00000000-0000-4000-8000-${String(index).padStart(12, "0")}`,
+        inventoryId: "99999999-9999-4999-8999-999999999999",
+      }));
+      const target = {
+        ...authorizedEntry,
+        id: "ffffffff-ffff-4fff-8fff-ffffffffffff",
+      };
+      const all = [...others, target];
+      const find = jest.fn(
+        async (query: {
+          after?: { created: string; id: string };
+          limit: number;
+          scope?: Record<string, string>;
+        }) =>
+          all
+            .filter((row) =>
+              requestMatchesEntry(query.scope ?? {}, row as never),
+            )
+            .filter((row) => !query.after || row.id > query.after.id)
+            .slice(0, query.limit),
+      );
+
+      const page = await discoverNativeInputs(
+        { userId: session.user.id, inventoryId: authorizedEntry.inventoryId },
+        session,
+        dependencies([], { findActiveCatalogEntries: find as never }),
+      );
+
+      expect(page.entries.map((entry) => entry.catalog_id)).toEqual([
+        target.id,
+      ]);
+      expect(page.continuationCursor).toBeUndefined();
+      expect(find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          scope: {
+            userId: session.user.id,
+            inventoryId: authorizedEntry.inventoryId,
+          },
+        }),
+      );
+    });
+  });
+
+  it("keeps inventory-owned rows without a userId visible to an authorized caller", async () => {
+    // No scope fields on the row, so only the owner check is exercised.
+    const inventoryOwned = {
+      ...authorizedEntry,
+      userId: null,
+      inventoryId: null,
+      cityId: null,
+    };
+
+    await expect(
+      authorizeCatalogScope(
+        session,
+        { userId: session.user.id },
+        inventoryOwned as never,
+      ),
+    ).resolves.toBe(true);
+  });
+
+  it("still hides rows owned by a different user", async () => {
+    const foreign = {
+      ...authorizedEntry,
+      userId: "99999999-9999-4999-8999-999999999999",
+    };
+
+    await expect(
+      authorizeCatalogScope(
+        session,
+        { userId: session.user.id, inventoryId: authorizedEntry.inventoryId },
+        foreign as never,
+      ),
+    ).resolves.toBe(false);
+  });
+
+  it("keeps caller-supplied city and inventory input instead of overwriting it", async () => {
+    const adapter = {
+      probeReadiness: jest.fn(async () => true),
+      executeSelected: jest.fn(async () => ({ completion: { filled: 10 } })),
+    };
+    const deps = readDependencies(adapter);
+    const callerInput = {
+      city_id: "aaaaaaaa-aaaa-4aaa-8aaa-000000000001",
+      inventory_id: "bbbbbbbb-bbbb-4bbb-8bbb-000000000002",
+    };
+
+    await readNativeInputCapability(
+      {
+        userId: session.user.id,
+        catalogId: authorizedEntry.id,
+        capabilityId: "ghgi.inventory.status_overview",
+        input: callerInput,
+      },
+      session,
+      deps,
+    );
+
+    expect(adapter.executeSelected).toHaveBeenCalledWith(
+      expect.objectContaining({ input: callerInput }),
+    );
+  });
+
+  it("returns the stable 404 for an unauthorized HIAP-MEED entry", async () => {
+    const meedEntry = {
+      ...authorizedEntry,
+      userId: null,
+      kind: "hiap_meed_ranking",
+      owningModule: "hiap_meed",
+      sourceType: "hiap_meed_ranking",
+    };
+    const adapter = {
+      probeReadiness: jest.fn(async () => true),
+      executeSelected: jest.fn(),
+    };
+    const deps = readDependencies(adapter, {
+      findCatalogEntryById: jest.fn(async () => meedEntry as never),
+      authorizeCatalogScope: jest.fn(async () => false),
+    });
+
+    await expect(
+      readNativeInputCapability(
+        {
+          catalogId: meedEntry.id,
+          capabilityId: "hiap_meed.ranking.context",
+          input: {},
+        },
+        session,
+        deps,
+      ),
+    ).rejects.toMatchObject({
+      statusCode: 404,
+      code: "capability_unavailable",
+    });
+    expect(adapter.executeSelected).not.toHaveBeenCalled();
+  });
+
+  it("fills missing city and inventory input from the authorized catalog row", async () => {
+    const adapter = {
+      probeReadiness: jest.fn(async () => true),
+      executeSelected: jest.fn(async () => ({ completion: { filled: 10 } })),
+    };
+    const deps = readDependencies(adapter);
+
+    await readNativeInputCapability(
+      {
+        userId: session.user.id,
+        catalogId: authorizedEntry.id,
+        capabilityId: "ghgi.inventory.status_overview",
+        inventoryId: authorizedEntry.inventoryId,
+        input: {},
+      },
+      session,
+      deps,
+    );
+
+    expect(adapter.executeSelected).toHaveBeenCalledWith(
+      expect.objectContaining({
+        input: {
+          city_id: authorizedEntry.cityId,
+          inventory_id: authorizedEntry.inventoryId,
+        },
+      }),
+    );
+  });
+
   it.each([
     ["missing catalog", null],
     ["withdrawn catalog", { ...authorizedEntry, availability: "withdrawn" }],
@@ -351,7 +557,7 @@ describe("NativeInputCatalog capability service", () => {
       };
       const input =
         label === "malformed input"
-          ? {}
+          ? { city_id: "not-a-uuid" }
           : {
               city_id: authorizedEntry.cityId,
               inventory_id: authorizedEntry.inventoryId,
@@ -436,22 +642,25 @@ describe("NativeInputCatalog capability service", () => {
         completion: { filled: 4, required: 12 },
       })),
     };
-    const deps = dependencies([...inaccessible, ...incompatible, laterAuthorized], {
-      findActiveCatalogEntries: keysetFind([
-        ...inaccessible,
-        ...incompatible,
-        laterAuthorized,
-      ]),
-      authorizeCatalogScope: jest.fn(
-        async (_session, _request, entry) => !deniedIds.has(entry.id),
-      ),
-      findCatalogEntryById: jest.fn(async (catalogId: string) => {
-        return catalogById.get(catalogId) ?? null;
-      }),
-      getSourceAdapter: jest.fn((entry) =>
-        entry.owningModule === "cnb" ? null : adapter,
-      ),
-    });
+    const deps = dependencies(
+      [...inaccessible, ...incompatible, laterAuthorized],
+      {
+        findActiveCatalogEntries: keysetFind([
+          ...inaccessible,
+          ...incompatible,
+          laterAuthorized,
+        ]),
+        authorizeCatalogScope: jest.fn(
+          async (_session, _request, entry) => !deniedIds.has(entry.id),
+        ),
+        findCatalogEntryById: jest.fn(async (catalogId: string) => {
+          return catalogById.get(catalogId) ?? null;
+        }),
+        getSourceAdapter: jest.fn((entry) =>
+          entry.owningModule === "cnb" ? null : adapter,
+        ),
+      },
+    );
 
     const page = (await discoverNativeInputs({}, session, deps)) as {
       entries: Array<{ catalog_id: string }>;
@@ -705,7 +914,10 @@ describe("NativeInputCatalog capability service", () => {
       { cityId: authorizedEntry.cityId },
       session,
       deps,
-    )) as { continuationCursor?: string; entries: Array<{ catalog_id: string }> };
+    )) as {
+      continuationCursor?: string;
+      entries: Array<{ catalog_id: string }>;
+    };
 
     await expect(
       discoverNativeInputs({ cursor: "not-a-cursor" }, session, deps),
@@ -758,7 +970,9 @@ async function scannedCandidateCount(
   return batches.reduce((total, batch) => total + (batch?.length ?? 0), 0);
 }
 
-function keysetFind(entries: Array<typeof authorizedEntry & { created: Date }>) {
+function keysetFind(
+  entries: Array<typeof authorizedEntry & { created: Date }>,
+) {
   const ordered = [...entries].sort((left, right) => {
     const createdDiff = left.created.getTime() - right.created.getTime();
     if (createdDiff !== 0) return createdDiff;
@@ -766,7 +980,10 @@ function keysetFind(entries: Array<typeof authorizedEntry & { created: Date }>) 
   });
 
   return jest.fn(
-    async (query?: { after?: { created: string; id: string }; limit?: number }) => {
+    async (query?: {
+      after?: { created: string; id: string };
+      limit?: number;
+    }) => {
       const limit = query?.limit ?? ordered.length;
       let start = 0;
       if (query?.after) {

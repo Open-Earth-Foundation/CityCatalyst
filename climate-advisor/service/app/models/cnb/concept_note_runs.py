@@ -6,7 +6,10 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from app.models.cnb.concept_note_markdown import ConceptNoteUploadStatusResponse
+from app.models.cnb.concept_note_markdown import (
+    MAX_UPLOADS_PER_RUN,
+    ConceptNoteUploadStatusResponse,
+)
 
 
 class InitialConceptNoteUpload(BaseModel):
@@ -32,7 +35,7 @@ class ConceptNoteStartRequest(BaseModel):
     thread_id: UUID | None = None
     idempotency_key: UUID
     initial_uploads: list[InitialConceptNoteUpload] = Field(
-        default_factory=list, max_length=100
+        default_factory=list, max_length=MAX_UPLOADS_PER_RUN
     )
 
     @field_validator("name")
@@ -124,6 +127,24 @@ class ConceptNoteRunListResponse(BaseModel):
     """Authorized concept-note runs for one user and city."""
 
     runs: list[ConceptNoteRunListItemResponse] = Field(default_factory=list)
+
+
+class ConceptNoteChatThreadResponse(BaseModel):
+    """One chat attached to a concept-note run, newest first in listings."""
+
+    thread_id: UUID
+    title: str | None = None
+    created_at: datetime
+    last_message_at: datetime | None = None
+    message_count: int = 0
+    preview: str | None = None
+
+
+class ConceptNoteChatThreadListResponse(BaseModel):
+    """Every chat attached to one run plus the run's currently active chat."""
+
+    active_thread_id: UUID | None = None
+    threads: list[ConceptNoteChatThreadResponse] = Field(default_factory=list)
 
 
 class ConceptNoteRunResponse(ConceptNoteRunListItemResponse):

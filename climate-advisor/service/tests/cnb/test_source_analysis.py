@@ -35,6 +35,7 @@ from app.services.cnb.source_analysis import (
     prompt_token_count,
     query_document,
     render_partition,
+    render_source_text,
     source_analysis_contract_version,
     verify_source_artifact,
 )
@@ -177,6 +178,48 @@ async def test_analysis_and_query_cover_every_page_with_exact_citations(
     assert set(runner.covered_pages) == set(range(1, 7))
     assert runner.max_active <= 4
     assert all(tools == [] for tools in runner.reader_tools)
+
+
+def test_source_pages_keep_values_inserted_at_mistral_table_placeholders() -> None:
+    markdown = (
+        "<!-- page: 1 -->\n"
+        "# Emissions\n\n"
+        "| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |"
+    )
+
+    pages = parse_source_pages(markdown)
+
+    assert pages == [
+        SourcePage(
+            number=1,
+            text="\n# Emissions\n\n| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |",
+        )
+    ]
+    assert "12.50" in pages[0].text
+
+
+def test_source_pages_keep_each_pages_header_and_footer_in_order() -> None:
+    footer = "This project has received funding from the EU (grant 101036519)"
+    markdown = (
+        "<!-- page: 1 -->\n"
+        "Action Plan | City of Krakow\n\n"
+        "# Emissions\n\n| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |\n\n"
+        f"{footer}\n\n"
+        "<!-- page: 2 -->\n"
+        "Action Plan | City of Krakow\n\n"
+        "Second page\n\n"
+        "2"
+    )
+
+    pages = parse_source_pages(markdown)
+
+    assert [page.number for page in pages] == [1, 2]
+    assert pages[0].text.index("Action Plan") < pages[0].text.index("12.50")
+    assert pages[0].text.index("12.50") < pages[0].text.index(footer)
+    assert "101036519" in pages[0].text
+    assert "101036519" not in pages[1].text
+    assert pages[1].text.startswith("\nAction Plan | City of Krakow")
+    assert render_source_text(pages) == markdown
 
 
 @pytest.mark.asyncio
@@ -369,7 +412,7 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
         (
             "cnb_source_reader",
             "openai/gpt-5.6-terra",
-            "low",
+            "medium",
             QuestionReading,
             {"sections": [{"excerpts": [], "caveats": []}]},
         ),
@@ -544,3 +587,14 @@ async def test_coverage_recovery_has_a_finite_limit(analysis_dependencies) -> No
         )
     assert failure.value.reason == "reader_section_count_mismatch"
     assert len(runner.reader_tools) <= 7
+
+
+@pytest.mark.parametrize(
+    ("markdown", "parse"),
+    [
+        ("<!-- page: 1 -->\nIntro\n\n<!-- page: 2 -->\n| a | b |\n", parse_source_pages),
+        ("# Plan\n\nIntro\n\n## Costs\n\nTable\n", parse_markdown_blocks),
+    ],
+)
+def test_render_source_text_restores_the_verified_markdown(markdown, parse) -> None:
+    assert render_source_text(parse(markdown)) == markdown

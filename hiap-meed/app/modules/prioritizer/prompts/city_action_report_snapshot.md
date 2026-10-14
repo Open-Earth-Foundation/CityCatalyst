@@ -16,8 +16,8 @@ Input is one JSON object derived from ReportChapterInput with user-facing eviden
 - `facts.action` (object): selected action ID and name
 - `facts.ask` (object): one-line ask summary plus support, action, and legal-position components when available
 - `facts.ranking` (object): selected-action rank, returned action count, final score, pillar scores, and explanation text when available
-- `facts.signals` (array): ordered rows for climate benefit, city fit, policy backing, legal room, funding, and track record; each row contains `what_we_checked`, `reading`, and `detail` when available
-- `source_refs` (array): source keys available to cite in `source_refs`
+- `facts.signals` (array): ordered rows for climate benefit, city fit, policy backing, legal room, funding, and track record; each row contains `what_we_checked`, `reading`, `detail`, and `source_refs` for the evidence domains used by that row
+- `source_refs` (array): union of identity sources and the row-level `source_refs`; copy these keys into output `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant
 
 Runtime input:
@@ -29,7 +29,7 @@ Use the shared OutputPlanChapterResponse contract:
 - `markdown` (string): The first line must use `terminology.ask_label` in bold and express the meaning of `facts.ask` fluently in `language`; do not copy a differently worded source-language sentence. Follow it with one concise city/action/rank sentence, then a Markdown table using exactly `terminology.what_we_checked | terminology.reading | terminology.detail`. Preserve the order of `facts.signals` and copy their already-localized recurring labels exactly. Include all six checks, using a natural target-language equivalent of "not available" where a row lacks a reading or detail. Add at most one short sentence after the table for the main evidence tension. Describe that tension as a report conclusion; do not refer to scoring inputs, supplied facts, or analytical mechanics.
 - `limitations` (array of strings): relevant limitations, especially missing track-record data.
 
-Do not rewrite the ask into a stronger financing, legal-authority, implementation-status, or city-level emissions claim than `facts.ask` and the other facts support. Do not claim comparable project counts, implementation status, or city-level per-action emissions unless explicitly present in `facts`.
+Do not rewrite the ask into a stronger financing, legal-authority, implementation-status, or city-level emissions claim than `facts.ask` and the other facts support. Preserve any municipal-asset versus private/external-asset limit in `facts.ask.legal_position` and the legal-room signal; never claim authority over private or external assets when the facts limit direct authority to municipal assets. If `facts.ask.legal_position` does not say the city can lead directly, do not add that claim. Do not claim comparable project counts, implementation status, or city-level per-action emissions unless explicitly present in `facts`. Do not describe funding or track-record signals as confirmed action-specific finance matches.
 </output>
 
 <example_output>

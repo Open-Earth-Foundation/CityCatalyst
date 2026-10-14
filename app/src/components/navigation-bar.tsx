@@ -58,6 +58,10 @@ import { getParamValue } from "@/util/helpers";
 import { env } from "@/lib/runtime-env";
 import { getActiveModuleSegment } from "@/util/module-navigation";
 
+// Derived from the theme's navbar color so it follows every theme.
+const darkerNavbarBg =
+  "color-mix(in srgb, {colors.content.alternative}, black 20%)";
+
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
 }
@@ -157,12 +161,25 @@ export function NavigationBar({
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const currentOrganizationName = organizations?.find(
-    (org) => org.organizationId === organization?.organizationId,
+  // The org context is only populated on some pages (e.g. cities), so fall
+  // back to the org in the route, then to the user's first organization.
+  const routeOrganizationId = pathname?.includes("/organization/")
+    ? getParamValue(params.id)
+    : undefined;
+  const currentOrganizationId =
+    organization?.organizationId ??
+    routeOrganizationId ??
+    organizations?.[0]?.organizationId;
+  const currentOrganizationRawName = organizations?.find(
+    (org) => org.organizationId === currentOrganizationId,
   )?.name;
+  const currentOrganizationName =
+    currentOrganizationRawName === "cc_organization_default"
+      ? t("default-organization")
+      : currentOrganizationRawName;
 
   async function onChangeOrganization(organizationId: string) {
-    if (organizationId === organization?.organizationId) return;
+    if (organizationId === currentOrganizationId) return;
     setOrganization({ organizationId });
     const projects = await getProjects({ organizationId })
       .unwrap()
@@ -278,6 +295,7 @@ export function NavigationBar({
               }}
               open={isLanguageMenuOpen}
               variant="solid"
+              positioning={{ placement: "bottom-end" }}
             >
               <MenuTrigger asChild>
                 <Button
@@ -290,6 +308,8 @@ export function NavigationBar({
                   justifyContent="space-between"
                   px="8px"
                   gap="16px"
+                  _hover={{ bg: darkerNavbarBg }}
+                  _open={{ bg: darkerNavbarBg }}
                 >
                   <Box display="flex" alignItems="center" gap="3">
                     <CircleFlag
@@ -325,7 +345,7 @@ export function NavigationBar({
                     onClick={() => onChangeLanguage(language)}
                     key={language}
                   >
-                    <Box display="flex" alignItems="center">
+                    <Box display="flex" alignItems="center" w="full">
                       <CircleFlag
                         countryCode={
                           countryFromLanguage(language) === "pt"
@@ -336,6 +356,17 @@ export function NavigationBar({
                         style={{ marginRight: "16px" }}
                       />
                       <Text fontSize="title.md">{language.toUpperCase()}</Text>
+                      {language === activeLng && (
+                        <Icon
+                          as={MdCheck}
+                          boxSize={5}
+                          ml="auto"
+                          color="interactive.secondary"
+                          css={{
+                            "[data-highlighted] &": { color: "base.light" },
+                          }}
+                        />
+                      )}
                     </Box>
                   </MenuItem>
                 ))}
@@ -349,6 +380,7 @@ export function NavigationBar({
                   }}
                   open={isOrgMenuOpen}
                   variant="solid"
+                  positioning={{ placement: "bottom-end" }}
                 >
                   <MenuTrigger asChild>
                     <Button
@@ -361,6 +393,8 @@ export function NavigationBar({
                       px="8px"
                       justifyContent="space-between"
                       gap="16px"
+                      _hover={{ bg: darkerNavbarBg }}
+                      _open={{ bg: darkerNavbarBg }}
                     >
                       <Box
                         display="flex"
@@ -410,14 +444,18 @@ export function NavigationBar({
                             textOverflow="ellipsis"
                             whiteSpace="nowrap"
                           >
-                            {org.name}
+                            {org.name === "cc_organization_default"
+                              ? t("default-organization")
+                              : org.name}
                           </Text>
-                          {org.organizationId ===
-                            organization?.organizationId && (
+                          {org.organizationId === currentOrganizationId && (
                             <Icon
                               as={MdCheck}
                               boxSize={5}
                               color="interactive.secondary"
+                              css={{
+                                "[data-highlighted] &": { color: "base.light" },
+                              }}
                             />
                           )}
                         </Box>
@@ -435,6 +473,7 @@ export function NavigationBar({
                   }}
                   open={isUserMenuOpen}
                   variant="solid"
+                  positioning={{ placement: "bottom-end" }}
                   onHighlightChange={(value) =>
                     setUserMenuHighlight(value.highlightedValue)
                   }
@@ -443,8 +482,9 @@ export function NavigationBar({
                     <Button
                       variant="ghost"
                       px="8px"
-                      minW={{ base: "auto", md: "220px" }}
                       minH="48px"
+                      _hover={{ bg: darkerNavbarBg }}
+                      _open={{ bg: darkerNavbarBg }}
                     >
                       <Box display="flex" alignItems="center" gap="4">
                         <Avatar
@@ -457,7 +497,8 @@ export function NavigationBar({
                         />
                         <Text
                           display={{ base: "none", md: "block" }}
-                          w="120px"
+                          maxW="56"
+                          color="base.light"
                           overflow="hidden"
                           textOverflow="ellipsis"
                           whiteSpace="nowrap"
@@ -471,6 +512,7 @@ export function NavigationBar({
                         <Icon
                           as={isUserMenuOpen ? MdArrowDropUp : MdArrowDropDown}
                           boxSize={6}
+                          color="base.light"
                         />
                       </Box>
                     </Button>

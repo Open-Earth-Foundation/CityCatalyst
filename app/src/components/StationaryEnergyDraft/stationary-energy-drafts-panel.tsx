@@ -24,7 +24,7 @@ import type { DraftListItem } from "@/components/StationaryEnergyDraft/types";
 import type {
   StationaryEnergyChatArtifactControllerActions,
   StationaryEnergyChatArtifactControllerState,
-} from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
+} from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-types";
 import { Button } from "@/components/ui/button";
 import { getParamValueRequired } from "@/util/helpers";
 

@@ -1,8 +1,9 @@
-"""Focused contracts for Concept Note rename, duplicate, and delete."""
+"""Focused contracts for Concept Note rename, duplicate, chats, and delete."""
 
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
@@ -29,8 +30,9 @@ from app.models.db.concept_note import (
     ConceptNoteUpload,
 )
 from app.models.db.thread import Thread
-from app.models.db.message import Message
+from app.models.db.message import Message, MessageRole
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
+from app.services.cnb.draft_overview import DRAFT_OVERVIEW_REQUEST
 from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
 
 
@@ -408,8 +410,14 @@ async def test_failed_source_cleanup_preserves_run_and_workspace_for_retry(
 ) -> None:
     async with _ca_session() as session:
         run = _run(run_id=uuid4(), thread_id=uuid4(), city_id=uuid4())
-        session.add(Thread(thread_id=run.thread_id, user_id=run.user_id))
         session.add(run)
+        session.add(
+            Thread(
+                thread_id=run.thread_id,
+                user_id=run.user_id,
+                concept_note_run_id=run.run_id,
+            )
+        )
         await session.commit()
         service = ConceptNoteLifecycleService(session, workspace=AsyncMock())
         service.run_service.get_authorized_run = AsyncMock(return_value=run)
@@ -441,6 +449,212 @@ async def test_failed_source_cleanup_preserves_run_and_workspace_for_retry(
         service.workspace.delete_run.assert_awaited_once_with(run_id=run.run_id)
         assert await session.get(ConceptNoteRun, run.run_id) is None
         assert await session.get(Thread, run.thread_id) is None
+
+
+async def test_chats_stay_attached_to_their_run_and_can_be_switched() -> None:
+    """Starting a chat keeps earlier ones; listing and switching stay run-scoped."""
+    async with _ca_session() as session:
+        run = _run(run_id=uuid4(), thread_id=uuid4(), city_id=uuid4())
+        other_run = _run(run_id=uuid4(), thread_id=uuid4(), city_id=uuid4())
+        session.add_all([run, other_run])
+        # SQLite timestamps have second precision; keep the first chat clearly older.
+        started_at = datetime.now(UTC) - timedelta(minutes=5)
+        first_thread = Thread(
+            thread_id=run.thread_id,
+            user_id=run.user_id,
+            concept_note_run_id=run.run_id,
+            title=run.name,
+            context={"access_token": "old-token"},
+            created_at=started_at,
+        )
+        foreign_thread = Thread(
+            thread_id=other_run.thread_id,
+            user_id=run.user_id,
+            concept_note_run_id=other_run.run_id,
+        )
+        session.add_all([first_thread, foreign_thread])
+        session.add_all(
+            [
+                Message(
+                    message_id=uuid4(),
+                    thread_id=first_thread.thread_id,
+                    user_id=run.user_id,
+                    role=MessageRole.USER,
+                    text=DRAFT_OVERVIEW_REQUEST,
+                    created_at=started_at,
+                ),
+                Message(
+                    message_id=uuid4(),
+                    thread_id=first_thread.thread_id,
+                    user_id=run.user_id,
+                    role=MessageRole.USER,
+                    text="  Tighten the   budget\njustification please  ",
+                    created_at=started_at + timedelta(seconds=1),
+                ),
+                Message(
+                    message_id=uuid4(),
+                    thread_id=first_thread.thread_id,
+                    user_id=run.user_id,
+                    role=MessageRole.ASSISTANT,
+                    text="Done.",
+                    created_at=started_at + timedelta(seconds=2),
+                ),
+            ]
+        )
+        await session.commit()
+        service = ConceptNoteLifecycleService(session, workspace=AsyncMock())
+        service.run_service.get_authorized_run = AsyncMock(return_value=run)
+
+        # Step 1: a new chat becomes active without deleting the first one.
+        started = await service.start_chat(
+            run_id=run.run_id,
+            requested_user_id=run.user_id,
+            authorization="Bearer new-token",
+        )
+        assert started.thread_id not in {first_thread.thread_id, None}
+        assert await session.get(Thread, first_thread.thread_id) is not None
+        new_thread = await session.get(Thread, started.thread_id)
+        assert new_thread.concept_note_run_id == run.run_id
+        assert new_thread.context["concept_note_run_id"] == str(run.run_id)
+
+        # Step 2: listing is run-scoped, newest first, and hides the overview trigger.
+        listing = await service.list_chat_threads(
+            run_id=run.run_id,
+            requested_user_id=run.user_id,
+            authorization="Bearer new-token",
+        )
+        assert listing.active_thread_id == started.thread_id
+        assert [thread.thread_id for thread in listing.threads] == [
+            started.thread_id,
+            first_thread.thread_id,
+        ]
+        newest, oldest = listing.threads
+        assert (newest.message_count, newest.preview, newest.last_message_at) == (
+            0,
+            None,
+            None,
+        )
+        assert oldest.message_count == 2
+        assert oldest.preview == "Tighten the budget justification please"
+        assert oldest.last_message_at is not None
+
+        # Step 3: switching back only accepts chats attached to this run.
+        with pytest.raises(HTTPException) as foreign:
+            await service.activate_chat_thread(
+                run_id=run.run_id,
+                thread_id=foreign_thread.thread_id,
+                requested_user_id=run.user_id,
+                authorization="Bearer new-token",
+            )
+        assert foreign.value.status_code == 404
+        reactivated = await service.activate_chat_thread(
+            run_id=run.run_id,
+            thread_id=first_thread.thread_id,
+            requested_user_id=run.user_id,
+            authorization="Bearer new-token",
+        )
+        assert reactivated.thread_id == first_thread.thread_id
+        assert (await session.get(ConceptNoteRun, run.run_id)).thread_id == (
+            first_thread.thread_id
+        )
+
+        # Step 4: busy runs keep their active chat until the work finishes.
+        run.context_summary = {"draft_document": {"status": "running"}}
+        with pytest.raises(HTTPException) as busy:
+            await service.activate_chat_thread(
+                run_id=run.run_id,
+                thread_id=started.thread_id,
+                requested_user_id=run.user_id,
+                authorization="Bearer new-token",
+            )
+        assert busy.value.status_code == 409
+        with pytest.raises(HTTPException) as busy_start:
+            await service.start_chat(
+                run_id=run.run_id,
+                requested_user_id=run.user_id,
+                authorization="Bearer new-token",
+            )
+        assert busy_start.value.status_code == 409
+
+        # Step 5: deleting the run removes every attached chat, nothing else.
+        run.context_summary = {}
+        service._unshared_source_upload_ids = AsyncMock(return_value=[])
+        await service.delete_run(
+            run_id=run.run_id,
+            requested_user_id=run.user_id,
+            authorization="Bearer new-token",
+        )
+        assert await session.get(Thread, first_thread.thread_id) is None
+        assert await session.get(Thread, started.thread_id) is None
+        assert await session.get(Thread, foreign_thread.thread_id) is not None
+        assert (
+            await session.scalar(
+                select(Message).where(Message.thread_id == first_thread.thread_id)
+            )
+            is None
+        )
+
+
+async def test_delete_hands_a_shared_chat_to_the_note_still_using_it() -> None:
+    """Deleting a note keeps chats another note has open and moves them there."""
+    async with _ca_session() as session:
+        shared_thread_id = uuid4()
+        keeper = _run(run_id=uuid4(), thread_id=shared_thread_id, city_id=uuid4())
+        deleted = _run(run_id=uuid4(), thread_id=shared_thread_id, city_id=uuid4())
+        session.add_all([keeper, deleted])
+        # Both notes started from one chat; the later start claimed it.
+        session.add(
+            Thread(
+                thread_id=shared_thread_id,
+                user_id=deleted.user_id,
+                concept_note_run_id=deleted.run_id,
+                context={"concept_note_run_id": str(deleted.run_id)},
+            )
+        )
+        session.add(
+            Message(
+                message_id=uuid4(),
+                thread_id=shared_thread_id,
+                user_id=deleted.user_id,
+                role=MessageRole.USER,
+                text="Shared history",
+            )
+        )
+        await session.commit()
+        service = ConceptNoteLifecycleService(session, workspace=AsyncMock())
+        service.run_service.get_authorized_run = AsyncMock(return_value=deleted)
+        service._unshared_source_upload_ids = AsyncMock(return_value=[])
+
+        # The note being deleted moves on to its own chat first.
+        started = await service.start_chat(
+            run_id=deleted.run_id,
+            requested_user_id=deleted.user_id,
+            authorization="Bearer token",
+        )
+        await service.delete_run(
+            run_id=deleted.run_id,
+            requested_user_id=deleted.user_id,
+            authorization="Bearer token",
+        )
+
+        assert await session.get(Thread, started.thread_id) is None
+        shared = await session.get(Thread, shared_thread_id)
+        assert shared is not None
+        assert shared.concept_note_run_id == keeper.run_id
+        assert shared.context["concept_note_run_id"] == str(keeper.run_id)
+        assert (
+            await session.scalar(
+                select(Message).where(Message.thread_id == shared_thread_id)
+            )
+            is not None
+        )
+        service.run_service.get_authorized_run = AsyncMock(return_value=keeper)
+        listing = await service.list_chat_threads(
+            run_id=keeper.run_id,
+            requested_user_id=keeper.user_id,
+            authorization="Bearer token",
+        )
+        assert [thread.thread_id for thread in listing.threads] == [shared_thread_id]
 
 
 @pytest.mark.parametrize("value", ["", "   ", "x" * 121])

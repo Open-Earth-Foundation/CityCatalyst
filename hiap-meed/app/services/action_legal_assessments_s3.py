@@ -22,6 +22,12 @@ from pydantic import ValidationError
 
 from app.modules.prioritizer.internal_models import LegalAssessmentRecord
 from app.modules.prioritizer.models import ActionLegalAssessmentS3CsvRow
+from app.services.authority_scope_sidecar import (
+    bind_sidecar_label_to_row,
+    classifier_input_from_s3_row,
+    get_authority_scope_sidecar_prefix,
+    load_matching_authority_scope_sidecar,
+)
 from app.services.http_client import UpstreamApiError
 
 logger = logging.getLogger(__name__)
@@ -32,6 +38,15 @@ DEFAULT_LEGAL_S3_KEY = (
 )
 DEFAULT_LEGAL_S3_COUNTRY_CODE = "CL"
 LEGAL_ASSESSMENTS_S3_ENDPOINT = "s3:GetObject legal classification CSV"
+# Sidecar objects live under the legal CSV parent + /authority-scope/.
+# Default derived prefix for the current release object:
+# raw_data/cl_ssg/cl_ssg_legal_signals/release/v2/authority-scope/
+# Read: report pods need s3:GetObject + s3:ListBucket on that prefix only.
+# Write/delete: release job only; may delete objects under the sidecar prefix
+# older than the five newest valid sidecars. Never deletes the legal CSV.
+DEFAULT_LEGAL_AUTHORITY_SCOPE_SIDECAR_PREFIX = get_authority_scope_sidecar_prefix(
+    DEFAULT_LEGAL_S3_KEY
+)
 
 
 def get_legal_s3_bucket() -> str:
@@ -145,6 +160,7 @@ def _map_s3_csv_row_to_legal_assessment_record(
     row: ActionLegalAssessmentS3CsvRow,
     country_code: str,
     source_metadata: dict[str, Any],
+    authority_scope_fields: dict[str, Any] | None = None,
 ) -> LegalAssessmentRecord:
     """Map one S3 CSV row into the existing backend legal record contract."""
     row_raw = row.model_dump(mode="json")
@@ -155,48 +171,49 @@ def _map_s3_csv_row_to_legal_assessment_record(
             "gpcSector": row.sector,
         }
     )
-    return LegalAssessmentRecord.model_validate(
-        {
-            "action_id": row.action_id,
-            "country_code": country_code,
-            "gpc_sector": row.sector,
-            "verdict_category": row.verdict_category,
-            "verdict_score": row.verdict_score,
-            "ownership_category": row.ownership_category,
-            "ownership_score": row.ownership_score,
-            "ownership_weight": row.ownership_weight,
-            "ownership_description": row.ownership_description,
-            "restrictions_category": row.restrictions_category,
-            "restrictions_score": row.restrictions_score,
-            "restrictions_weight": row.restrictions_weight,
-            "restrictions_description": row.restrictions_description,
-            "legal_justification": row.legal_justification,
-            "analysis_date": row.analysis_date,
-            "generation_method": row.generation_method,
-            "legal_references": _clean_references(
-                row.legal_reference_1,
-                row.legal_reference_2,
-                row.legal_reference_3,
-                row.legal_reference_4,
-                row.legal_reference_5,
-                row.legal_reference_6,
-            ),
-            "ownership_description_i18n": _clean_i18n_map(
-                en=row.ownership_description,
-                es=row.ownership_description_es,
-            ),
-            "restrictions_description_i18n": _clean_i18n_map(
-                en=row.restrictions_description,
-                es=row.restrictions_description_es,
-            ),
-            "legal_justification_i18n": _clean_i18n_map(
-                en=row.legal_justification_en,
-                es=row.legal_justification,
-            ),
-            "raw": row_raw,
-            "source_metadata": source_metadata,
-        }
-    )
+    payload: dict[str, Any] = {
+        "action_id": row.action_id,
+        "country_code": country_code,
+        "gpc_sector": row.sector,
+        "verdict_category": row.verdict_category,
+        "verdict_score": row.verdict_score,
+        "ownership_category": row.ownership_category,
+        "ownership_score": row.ownership_score,
+        "ownership_weight": row.ownership_weight,
+        "ownership_description": row.ownership_description,
+        "restrictions_category": row.restrictions_category,
+        "restrictions_score": row.restrictions_score,
+        "restrictions_weight": row.restrictions_weight,
+        "restrictions_description": row.restrictions_description,
+        "legal_justification": row.legal_justification,
+        "analysis_date": row.analysis_date,
+        "generation_method": row.generation_method,
+        "legal_references": _clean_references(
+            row.legal_reference_1,
+            row.legal_reference_2,
+            row.legal_reference_3,
+            row.legal_reference_4,
+            row.legal_reference_5,
+            row.legal_reference_6,
+        ),
+        "ownership_description_i18n": _clean_i18n_map(
+            en=row.ownership_description,
+            es=row.ownership_description_es,
+        ),
+        "restrictions_description_i18n": _clean_i18n_map(
+            en=row.restrictions_description,
+            es=row.restrictions_description_es,
+        ),
+        "legal_justification_i18n": _clean_i18n_map(
+            en=row.legal_justification_en,
+            es=row.legal_justification,
+        ),
+        "raw": row_raw,
+        "source_metadata": source_metadata,
+    }
+    if authority_scope_fields:
+        payload.update(authority_scope_fields)
+    return LegalAssessmentRecord.model_validate(payload)
 
 
 @dataclass
@@ -322,6 +339,25 @@ class ActionLegalAssessmentsS3Service:
                 url=None,
             ) from error
 
+        sidecar = None
+        try:
+            sidecar = load_matching_authority_scope_sidecar(
+                s3_client=self._get_s3_client(),
+                bucket=self.bucket,
+                legal_s3_key=self.key,
+                source_etag=(
+                    str(object_metadata["etag"])
+                    if object_metadata.get("etag") is not None
+                    else None
+                ),
+            )
+        except Exception:
+            logger.warning(
+                "Authority-scope sidecar unavailable; reports will use conservative scope",
+                exc_info=True,
+            )
+            sidecar = None
+
         assessments_by_action_id: dict[str, LegalAssessmentRecord] = {}
         for row in rows:
             action_id = row.action_id
@@ -334,11 +370,29 @@ class ActionLegalAssessmentsS3Service:
                     ),
                     url=None,
                 )
+            classifier_input = classifier_input_from_s3_row(
+                row=row,
+                country_code=normalized_country_code,
+            )
+            authority_scope_fields = bind_sidecar_label_to_row(
+                country_code=normalized_country_code,
+                action_id=action_id,
+                verdict_category=row.verdict_category,
+                ownership_category=row.ownership_category,
+                classifier_input=classifier_input,
+                sidecar=sidecar,
+                source_etag=(
+                    str(object_metadata["etag"])
+                    if object_metadata.get("etag") is not None
+                    else None
+                ),
+            )
             assessments_by_action_id[action_id] = (
                 _map_s3_csv_row_to_legal_assessment_record(
                     row=row,
                     country_code=normalized_country_code,
                     source_metadata=source_metadata,
+                    authority_scope_fields=authority_scope_fields,
                 )
             )
         return assessments_by_action_id

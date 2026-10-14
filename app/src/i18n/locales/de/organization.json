@@ -33,5 +33,6 @@
   "state-name": "Name des Bundeslandes",
   "view-full-list": "Vollständige Liste anzeigen",
   "search-by-city-name": "Nach Stadtname suchen",
-  "citycatalyst-demo": "CityCatalyst Demo"
+  "citycatalyst-demo": "CityCatalyst Demo",
+  "go-back": "Geh zurück"
 }

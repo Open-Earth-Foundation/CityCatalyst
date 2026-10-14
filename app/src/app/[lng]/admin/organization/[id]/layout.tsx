@@ -65,7 +65,7 @@ export default function AdminOrganizationLayout(props: {
             />
           }
         >
-          <BreadcrumbItem>
+          <BreadcrumbItem asChild>
             <BreadcrumbLink
               href={`/${lng}/admin`}
               color="content.tertiary"

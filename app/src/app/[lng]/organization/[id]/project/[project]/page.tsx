@@ -80,15 +80,15 @@ export default function ProjectPage(props: {
             <VStack spaceY="24px" alignItems="start" justifyContent="start">
               <Button
                 variant="ghost"
+                fontSize="14px"
+                color="content.link"
                 alignSelf="flex-start"
-                color="content.primary"
                 onClick={() =>
                   router.push(`/${lng}/organization/${organizationId}/project/`)
                 }
-                textTransform="unset"
               >
-                <Icon as={MdArrowBack} boxSize={4} />
-                {t("all-projects")}
+                <Icon as={MdArrowBack} boxSize={6} />
+                {t("go-back")}
               </Button>
               <HeadlineLarge>
                 {project?.name === "cc_project_default"

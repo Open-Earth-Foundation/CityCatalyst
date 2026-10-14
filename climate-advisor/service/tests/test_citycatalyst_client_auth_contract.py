@@ -371,7 +371,6 @@ async def test_native_input_catalog_dynamic_runtime_sequence_uses_bounded_camel_
                 fixture_marker="in-process-contract-fixture",
             ),
             token="test-token",
-            refresh_user_id=DYNAMIC_USER_ID,
         )
         second_discovery = await client.discover_native_inputs(
             request_payload=discovery_payload,
@@ -428,6 +427,7 @@ async def test_native_input_catalog_dynamic_runtime_sequence_uses_bounded_camel_
     assert "catalog_id" not in read_requests[0]
     assert "capability_id" not in read_requests[0]
     _assert_no_forbidden_contract_fields(read_requests[0])
+    assert not any(path.endswith("/user-token") for path, _ in recorded_requests)
 
 
 @pytest.mark.asyncio
@@ -547,7 +547,6 @@ async def test_dynamic_runtime_sequence_against_running_core() -> None:
                     fixture_marker=fixture_marker,
                 ),
                 token=token,
-                refresh_user_id=env["user_id"],
             )
             registration_created = registration.get("created") is True
             assert registration_created, (

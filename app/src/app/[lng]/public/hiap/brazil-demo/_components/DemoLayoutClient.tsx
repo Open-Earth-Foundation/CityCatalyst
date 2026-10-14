@@ -1,7 +1,6 @@
 "use client";
 import { Box } from "@chakra-ui/react";
 import { NavigationBar } from "@/components/navigation-bar";
-import { Toaster } from "@/components/ui/toaster";
 import { DemoBanner } from "./DemoBanner";
 
 /**
@@ -25,7 +24,6 @@ export function DemoLayoutClient({
     >
       <NavigationBar lng={lng} isPublic={true} />
       <DemoBanner lng={lng} />
-      <Toaster />
       {/*
         Borderless cards: white surfaces on the grey page carry a 1dp shadow
         instead of a hairline, and a card inside a card sits on the neutral

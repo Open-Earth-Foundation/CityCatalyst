@@ -8,7 +8,7 @@ import type { EditController } from "@/components/ConceptNoteWorkspace/document-
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
-const { DocumentReviewToolbar, selectReviewProposal } =
+const { DocumentReviewToolbar, editFeedbackKey, selectReviewProposal } =
   await import("@/components/ConceptNoteWorkspace/document-review");
 
 function proposal(status: EditProposal["status"]): EditProposal {
@@ -88,5 +88,22 @@ describe("recoverable proposal responses", () => {
     expect(
       selectReviewProposal([proposal("rejected"), proposal("applied")]),
     ).toBeUndefined();
+  });
+});
+
+describe("edit feedback key", () => {
+  const edits = (state: Partial<EditController>) =>
+    ({ error: null, needsDraftReload: false, ...state }) as EditController;
+  test("maps edit failures to the same message in toolbar and dialog", () => {
+    expect(editFeedbackKey(edits({}))).toBeNull();
+    expect(editFeedbackKey(edits({ error: "stale_base" }))).toBe(
+      "edit-stale-hint",
+    );
+    expect(editFeedbackKey(edits({ error: "storage_unavailable" }))).toBe(
+      "edit-request-error",
+    );
+    expect(
+      editFeedbackKey(edits({ error: "stale_base", needsDraftReload: true })),
+    ).toBe("edit-draft-reload-hint");
   });
 });

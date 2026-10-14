@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { FileUploadFileChangeDetails } from "@chakra-ui/react";
 import { Box, Flex, HStack, Icon, Input, Text, VStack } from "@chakra-ui/react";
@@ -39,6 +39,7 @@ import {
 } from "@/util/concept-note-initial-uploads";
 
 import {
+  CONCEPT_NOTE_MAX_UPLOADS,
   conceptNoteSourceLabel,
   formatFileSize,
   validateConceptNoteSourceFile,
@@ -50,6 +51,7 @@ interface NewConceptNoteDialogProps {
   cityName: string;
   lng: string;
   onOpenChange: (open: boolean) => void;
+  onUploadingRunChange?: (runId: string | null) => void;
   open: boolean;
   projectId?: string | null;
   projectName?: string | null;
@@ -74,6 +76,7 @@ export function NewConceptNoteDialog({
   cityName,
   lng,
   onOpenChange,
+  onUploadingRunChange,
   open,
   projectId,
   projectName,
@@ -94,6 +97,9 @@ export function NewConceptNoteDialog({
   const [name, setName] = useState(retryRun?.name ?? "");
   const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const fileListRef = useRef<HTMLDivElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+  const [selectionRevision, setSelectionRevision] = useState(0);
   const [startRun, startState] = api.useStartConceptNoteRunMutation();
   const [createChatThread, chatState] = api.useCreateChatThreadMutation();
   const [uploadSource, uploadState] = api.useUploadConceptNoteSourceMutation();
@@ -114,6 +120,25 @@ export function NewConceptNoteDialog({
       · {t("optional")}
     </Text>
   );
+
+  // The file list and errors render below the dropzone, which can be past the
+  // fold of the dialog body on short screens. Bring the outcome of each
+  // selection into view so the user sees that it worked (or why it did not).
+  useEffect(() => {
+    if (!selectionRevision) return;
+    const target = errorRef.current ?? fileListRef.current?.lastElementChild;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    target?.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block: "nearest",
+    });
+  }, [selectionRevision]);
+
+  function revealSelection(): void {
+    setSelectionRevision((revision) => revision + 1);
+  }
 
   async function updateFiles(selectedFiles: File[]): Promise<void> {
     setError(null);
@@ -136,7 +161,17 @@ export function NewConceptNoteDialog({
   }
 
   function onFileSelect(details: FileUploadFileChangeDetails): void {
-    void updateFiles(details.acceptedFiles);
+    // The dropzone rejects a selection that would pass the per-note limit.
+    if (
+      details.rejectedFiles.some((rejection) =>
+        rejection.errors.includes("TOO_MANY_FILES"),
+      )
+    ) {
+      setError(t("upload-limit-select", { max: CONCEPT_NOTE_MAX_UPLOADS }));
+      revealSelection();
+      return;
+    }
+    void updateFiles(details.acceptedFiles).then(revealSelection);
   }
 
   function closeDialog(): void {
@@ -217,6 +252,9 @@ export function NewConceptNoteDialog({
         targetRunId = run.run_id;
         setCreatedRunId(targetRunId);
       }
+      // Stays set on success: the dashboard should not flash the retry state
+      // for this run while the router navigates to the workspace.
+      onUploadingRunChange?.(targetRunId);
 
       for (const source of pending) {
         const file = selected.find(
@@ -254,6 +292,7 @@ export function NewConceptNoteDialog({
       resetDraft();
       onOpenChange(false);
     } catch {
+      onUploadingRunChange?.(null);
       setError(
         t(targetRunId ? "upload-incomplete-message" : "create-note-error"),
       );
@@ -410,7 +449,7 @@ export function NewConceptNoteDialog({
                     accept:
                       "application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md",
                   }}
-                  maxFiles={100}
+                  maxFiles={CONCEPT_NOTE_MAX_UPLOADS}
                   onFileChange={onFileSelect}
                 >
                   <FileUploadDropzone
@@ -432,13 +471,15 @@ export function NewConceptNoteDialog({
                         </Text>
                       </VStack>
                     }
-                    description={t("pdf-limit")}
+                    description={t("pdf-limit-files", {
+                      max: CONCEPT_NOTE_MAX_UPLOADS,
+                    })}
                   />
                 </FileUploadRoot>
               </Field>
 
               {files.length > 0 && (
-                <VStack align="stretch" gap={2}>
+                <VStack ref={fileListRef} align="stretch" gap={2}>
                   {files.map((file) => (
                     <Flex
                       key={fileIdentity(file)}
@@ -485,6 +526,7 @@ export function NewConceptNoteDialog({
 
               {error && (
                 <Box
+                  ref={errorRef}
                   role="alert"
                   border="1px solid"
                   borderColor="sentiment.negativeDefault"

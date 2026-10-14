@@ -10,7 +10,7 @@ import {
 
 import { db } from "@/models";
 
-import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 
 import { OAuthClient, OAuthClientAttributes } from "@/models/OAuthClient";
 import {
@@ -19,6 +19,8 @@ import {
 } from "@/models/OAuthClientI18N";
 import { FeatureFlags, setFeatureFlag } from "@/util/feature-flags";
 import { expectStatusCode, mockRequest, setupTests } from "../helpers";
+import { AppSession, Auth } from "@/lib/auth";
+import { Roles } from "@/util/types";
 
 const testClients: OAuthClientAttributes[] = [
   {
@@ -88,10 +90,17 @@ const clientCreationArgs = {
 
 const testClientDNE = "test-client-does-not-exist";
 
+const mockAdminSession: AppSession = {
+  user: { id: "test-user", role: Roles.Admin },
+  expires: "1h",
+};
+
 describe("OAuth Client API", () => {
   let oldFeatureFlag: boolean;
   beforeAll(async () => {
     setupTests();
+
+    jest.spyOn(Auth, "getServerSession").mockResolvedValue(mockAdminSession);
     await db.initialize();
     oldFeatureFlag = setFeatureFlag(FeatureFlags.OAUTH_ENABLED, true);
     for (const client of testClients) {

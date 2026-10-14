@@ -28,6 +28,10 @@ export interface UserAttributes {
   twoFactorEnabled?: boolean;
   twoFactorSecret?: string | null;
   twoFactorRecoveryHashes?: string[];
+  /** Set on successful sign-in. Retention uses this as the inactivity clock. */
+  lastActiveAt?: Date | null;
+  /** Set when retention replaces identifying fields. The row stays for foreign keys. */
+  anonymizedAt?: Date | null;
 }
 
 export type UserPk = "userId";
@@ -47,7 +51,9 @@ export type UserOptionalAttributes =
   | "numberFormat"
   | "twoFactorEnabled"
   | "twoFactorSecret"
-  | "twoFactorRecoveryHashes";
+  | "twoFactorRecoveryHashes"
+  | "lastActiveAt"
+  | "anonymizedAt";
 export type UserCreationAttributes = Optional<
   UserAttributes,
   UserOptionalAttributes
@@ -73,6 +79,8 @@ export class User
   declare twoFactorEnabled?: boolean;
   declare twoFactorSecret?: string | null;
   declare twoFactorRecoveryHashes?: string[];
+  declare lastActiveAt?: Date | null;
+  declare anonymizedAt?: Date | null;
 
   // User belongsTo Inventory via defaultInventoryId
   declare defaultInventory: Inventory;
@@ -277,6 +285,16 @@ export class User
           defaultValue: [],
           field: "two_factor_recovery_hashes",
         },
+        lastActiveAt: {
+          type: DataTypes.DATE,
+          allowNull: true,
+          field: "last_active_at",
+        },
+        anonymizedAt: {
+          type: DataTypes.DATE,
+          allowNull: true,
+          field: "anonymized_at",
+        },
       },
       {
         sequelize,
@@ -295,6 +313,14 @@ export class User
             name: "User_pkey",
             unique: true,
             fields: [{ name: "user_id" }],
+          },
+          {
+            name: "User_last_active_at_idx",
+            fields: [{ name: "last_active_at" }],
+          },
+          {
+            name: "User_anonymized_at_idx",
+            fields: [{ name: "anonymized_at" }],
           },
         ],
       },

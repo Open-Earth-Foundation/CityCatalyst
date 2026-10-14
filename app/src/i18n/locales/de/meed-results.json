@@ -239,5 +239,8 @@
   "percent-value": "{{value}}%",
   "legend-item": "{{label}} · {{value}}",
   "route-own-budget": "Eigenbudget machbar",
-  "route-technical-assistance": "Braucht technische Unterstützung"
+  "route-technical-assistance": "Braucht technische Unterstützung",
+  "tradeoffs-title": "Nachteilige Auswirkungen über diese Maßnahmen hinweg",
+  "tradeoffs-description": "Wo eine Top-Aktion ein anderes Ziel zurücksetzen könnte.",
+  "composition-weight-short": "× {{weight}}% Gewicht"
 }

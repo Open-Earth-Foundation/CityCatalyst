@@ -14,6 +14,7 @@ from agents.tool import ToolContext
 from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.native_input_catalog_service import (
     ActiveRequestContext,
+    NativeInputCatalogService,
     NativeInputDiscovery,
 )
 from app.tools.native_input_catalog_tools import build_native_input_catalog_tools
@@ -170,6 +171,7 @@ def test_tools_expose_only_fixed_discovery_and_finite_read_schemas() -> None:
         "type": "object",
         "properties": {
             "cursor": {"type": "string", "minLength": 1, "maxLength": 4096},
+            "inventoryId": {"type": "string", "format": "uuid"},
         },
         "additionalProperties": False,
     }
@@ -179,12 +181,29 @@ def test_tools_expose_only_fixed_discovery_and_finite_read_schemas() -> None:
             "catalogId": {"type": "string", "minLength": 1},
             "capabilityId": {"type": "string", "minLength": 1},
             "language": {"type": "string", "maxLength": 16},
+            "inventoryId": {"type": "string", "format": "uuid"},
         },
         "required": ["catalogId", "capabilityId"],
         "additionalProperties": False,
     }
     assert getattr(discover_tool, "strict_json_schema") is False
     assert getattr(read_tool, "strict_json_schema") is False
+
+
+def test_tool_descriptions_route_ranked_action_questions_to_hiap_capability() -> None:
+    """Descriptions tell the model which questions and capabilities these tools serve."""
+    tools, _, _ = _build(_StubClient())
+
+    discover_description = getattr(_tool(tools, "native_input_discover"), "description")
+    read_description = getattr(_tool(tools, "native_input_read"), "description")
+
+    assert "ranked" in discover_description
+    assert "HIAP" in discover_description
+    assert "hiap.inventory.context" in read_description
+    assert "ghgi.inventory.status_overview" in read_description
+    assert "ghgi.inventory.emissions_context" in read_description
+    assert "hiap_meed.ranking.context" in read_description
+    assert "hiap_meed.output_plan.context" in read_description
 
 
 @pytest.mark.asyncio
@@ -325,8 +344,8 @@ async def test_discovery_rejects_unknown_or_invalid_cursor_arguments() -> None:
 
 
 @pytest.mark.asyncio
-async def test_discovery_updates_shared_token_reference() -> None:
-    """A refreshed discovery token is available to the subsequent bounded read."""
+async def test_discovery_keeps_presented_token_when_client_advertises_refresh() -> None:
+    """Discovery does not adopt a token the client claims to have refreshed."""
     service = _StubService(_discovery())
     service.core_client.last_refreshed_token = "fresh-token"
     tools, _, token_ref = _build(_StubClient(), service=service)
@@ -337,7 +356,7 @@ async def test_discovery_updates_shared_token_reference() -> None:
     )
 
     assert json.loads(output)["success"] is True
-    assert token_ref["value"] == "fresh-token"
+    assert token_ref["value"] == "jwt-token"
 
 
 @pytest.mark.asyncio
@@ -403,6 +422,8 @@ async def test_read_rejects_oversized_or_malformed_json_before_core() -> None:
         ("ghgi.inventory.status_overview", {}, {"city_id": "city-1", "inventory_id": "inventory-1"}),
         ("ghgi.inventory.emissions_context", {}, {"city_id": "city-1", "inventory_id": "inventory-1"}),
         ("hiap.inventory.context", {"language": "pt-BR"}, {"city_id": "city-1", "inventory_id": "inventory-1", "language": "pt-BR"}),
+        ("hiap_meed.ranking.context", {"language": "pt"}, {"city_id": "city-1", "inventory_id": "inventory-1", "language": "pt"}),
+        ("hiap_meed.output_plan.context", {}, {"city_id": "city-1", "inventory_id": "inventory-1", "language": "en"}),
     ],
 )
 async def test_read_builds_capability_bounded_core_request(
@@ -428,6 +449,50 @@ async def test_read_builds_capability_bounded_core_request(
         "token": "jwt-token", "user_id": "user-1", "thread_id": "thread-1",
     }]
     assert client.closed
+
+
+@pytest.mark.asyncio
+async def test_read_with_inventory_only_scope_omits_city_for_core_to_fill() -> None:
+    """General chat carries an inventory but no city; Core derives the city."""
+    client = _StubClient()
+    tools = build_native_input_catalog_tools(
+        service=_StubService(_discovery()),
+        context=_context(city_id=None),
+        token_ref={"value": "jwt-token"},
+        client_factory=lambda: client,
+    )
+    read = {getattr(tool, "name"): tool for tool in tools}["native_input_read"]
+
+    output = await getattr(read, "on_invoke_tool")(
+        _tool_context("native_input_read"),
+        json.dumps({"catalogId": "catalog-1", "capabilityId": "hiap.inventory.context"}),
+    )
+
+    assert json.loads(output)["success"] is True
+    sent = client.requests[0]["request_payload"]
+    assert "cityId" not in sent
+    assert sent["input"] == {"inventory_id": "inventory-1", "language": "en"}
+
+
+@pytest.mark.asyncio
+async def test_read_without_inventory_scope_is_rejected_before_core() -> None:
+    """A chat with no inventory cannot read inventory-bound capabilities."""
+    client = _StubClient()
+    tools = build_native_input_catalog_tools(
+        service=_StubService(_discovery()),
+        context=_context(city_id=None, inventory_id=None),
+        token_ref={"value": "jwt-token"},
+        client_factory=lambda: client,
+    )
+    read = {getattr(tool, "name"): tool for tool in tools}["native_input_read"]
+
+    output = await getattr(read, "on_invoke_tool")(
+        _tool_context("native_input_read"),
+        json.dumps({"catalogId": "catalog-1", "capabilityId": "hiap.inventory.context"}),
+    )
+
+    assert json.loads(output)["error_code"] == "invalid_arguments"
+    assert client.requests == []
 
 
 @pytest.mark.asyncio
@@ -516,8 +581,8 @@ async def test_read_isolates_failures_without_rotating_tokens_and_closes_client(
 
 
 @pytest.mark.asyncio
-async def test_read_updates_token_after_successful_core_call() -> None:
-    """A Core refresh advances the shared token only after a completed read."""
+async def test_read_keeps_presented_token_when_client_advertises_refresh() -> None:
+    """A completed read does not replace the presented bearer with a stub refresh."""
     client = _StubClient(last_refreshed_token="fresh-token")
     tools, _, token_ref = _build(client)
     read = _tool(tools, "native_input_read")
@@ -527,7 +592,8 @@ async def test_read_updates_token_after_successful_core_call() -> None:
         json.dumps({"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview"}),
     )
 
-    assert token_ref["value"] == "fresh-token"
+    assert token_ref["value"] == "jwt-token"
+    assert client.requests[0]["token"] == "jwt-token"
     assert client.closed
 
 
@@ -572,3 +638,202 @@ def test_catalog_consumer_has_no_direct_storage_or_source_access() -> None:
         "get_object(", "storage_client", "os.environ", "os.getenv(", "open(",
     )
     assert not [pattern for pattern in forbidden_patterns if pattern in source]
+
+
+INVENTORY_A = "11111111-1111-4111-8111-111111111111"
+INVENTORY_B = "22222222-2222-4222-8222-222222222222"
+
+
+async def _call(tools: dict[str, object], name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    """Invoke one named tool and decode its JSON envelope."""
+    output = await getattr(_tool(tools, name), "on_invoke_tool")(
+        _tool_context(name), json.dumps(arguments)
+    )
+    return json.loads(output)
+
+
+def _read_args(inventory_id: str | None = None) -> dict[str, Any]:
+    """Build HIAP read arguments, optionally overriding the inventory."""
+    arguments: dict[str, Any] = {"catalogId": "catalog-1", "capabilityId": "hiap.inventory.context"}
+    if inventory_id:
+        arguments["inventoryId"] = inventory_id
+    return arguments
+
+
+@pytest.mark.asyncio
+async def test_read_inventory_override_replaces_chat_scope_for_that_call_only() -> None:
+    """A model-chosen inventory drops the chat city and does not stick."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    await _call(tools, "native_input_read", _read_args(INVENTORY_A))
+    await _call(tools, "native_input_read", _read_args())
+
+    override, chat_default = (r["request_payload"] for r in client.requests)
+    assert override["inventoryId"] == INVENTORY_A
+    assert "cityId" not in override
+    assert override["input"] == {"inventory_id": INVENTORY_A, "language": "en"}
+    assert chat_default["inventoryId"] == "inventory-1"
+    assert chat_default["cityId"] == "city-1"
+
+
+@pytest.mark.asyncio
+async def test_override_also_drops_chat_organization_and_project() -> None:
+    """Another project's row must not be rejected by the chat's project scope."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    await _call(tools, "native_input_read", _read_args(INVENTORY_A))
+
+    payload = client.requests[0]["request_payload"]
+    assert "organizationId" not in payload
+    assert "projectId" not in payload
+    assert payload["userId"] == "user-1"
+
+
+@pytest.mark.asyncio
+async def test_language_is_rejected_for_the_output_plan_capability() -> None:
+    """Core ignores language for the output plan, so the tool does not accept it."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    result = await _call(
+        tools,
+        "native_input_read",
+        {"catalogId": "catalog-1", "capabilityId": "hiap_meed.output_plan.context", "language": "pt"},
+    )
+
+    assert result["error_code"] == "invalid_arguments"
+    assert client.requests == []
+
+
+@pytest.mark.asyncio
+async def test_sequential_reads_for_two_inventories_do_not_mix_scope() -> None:
+    """Consecutive overrides A then B each carry only their own inventory."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    await _call(tools, "native_input_read", _read_args(INVENTORY_A))
+    await _call(tools, "native_input_read", _read_args(INVENTORY_B))
+
+    assert [r["request_payload"]["inventoryId"] for r in client.requests] == [INVENTORY_A, INVENTORY_B]
+    assert all("cityId" not in r["request_payload"] for r in client.requests)
+
+
+@pytest.mark.asyncio
+async def test_parallel_reads_for_two_inventories_do_not_mix_scope() -> None:
+    """Concurrent reads share the tool set and token_ref but keep separate scope."""
+    client = _StubClient()
+    tools, _, token_ref = _build(client)
+
+    await asyncio.gather(
+        _call(tools, "native_input_read", _read_args(INVENTORY_A)),
+        _call(tools, "native_input_read", _read_args(INVENTORY_B)),
+    )
+
+    sent = {r["request_payload"]["inventoryId"] for r in client.requests}
+    assert sent == {INVENTORY_A, INVENTORY_B}
+    assert all("cityId" not in r["request_payload"] for r in client.requests)
+    assert all(r["token"] == "jwt-token" for r in client.requests)
+    assert token_ref == {"value": "jwt-token"}
+
+
+@pytest.mark.asyncio
+async def test_parallel_discovery_for_two_inventories_does_not_mix_scope() -> None:
+    """Concurrent discovery sends each override and leaves the chat context unchanged."""
+    client = _StubClient()
+    service = _StubService(_discovery())
+    tools, _, _ = _build(client, service=service)
+
+    await asyncio.gather(
+        _call(tools, "native_input_discover", {"inventoryId": INVENTORY_A}),
+        _call(tools, "native_input_discover", {"inventoryId": INVENTORY_B}),
+        _call(tools, "native_input_discover", {}),
+    )
+
+    contexts = [call.kwargs["context"] for call in service.discover.await_args_list]
+    assert {c.inventory_id for c in contexts} == {INVENTORY_A, INVENTORY_B, "inventory-1"}
+    chat_context = next(c for c in contexts if c.inventory_id == "inventory-1")
+    assert chat_context.city_id == "city-1"
+    assert all(c.city_id is None for c in contexts if c.inventory_id != "inventory-1")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("bad", ["not-a-uuid", "", 7, None])
+async def test_inventory_override_must_be_a_uuid_before_core(bad: Any) -> None:
+    """Malformed overrides never reach Core on either tool."""
+    client = _StubClient()
+    service = _StubService(_discovery())
+    tools, _, _ = _build(client, service=service)
+
+    read = await _call(tools, "native_input_read", {**_read_args(), "inventoryId": bad})
+    discover = await _call(tools, "native_input_discover", {"inventoryId": bad})
+
+    assert read["error_code"] == "invalid_arguments"
+    assert discover["error_code"] == "invalid_arguments"
+    assert client.requests == []
+    service.discover.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_failure_for_one_inventory_does_not_affect_the_next_call() -> None:
+    """A Core 404 for inventory B returns the stable error; a later A read succeeds."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    client.error = CityCatalystClientError("missing", status_code=404)
+    failed = await _call(tools, "native_input_read", _read_args(INVENTORY_B))
+    client.error = None
+    succeeded = await _call(tools, "native_input_read", _read_args(INVENTORY_A))
+
+    assert failed["error_code"] == "capability_unavailable"
+    assert succeeded["success"] is True
+    assert client.requests[-1]["request_payload"]["inventoryId"] == INVENTORY_A
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "failure",
+    [TimeoutError("Core timed out"), CityCatalystClientError("down", status_code=503)],
+)
+async def test_discovery_outage_is_an_error_not_an_empty_catalog(
+    failure: Exception,
+) -> None:
+    """A Core timeout for an inventory that has a ranking must not look like no ranking."""
+    core = AsyncMock()
+    core.discover_native_inputs.side_effect = failure
+    service = NativeInputCatalogService(core_client=core)
+    tools = build_native_input_catalog_tools(
+        service=service,
+        context=_context(),
+        token_ref={"value": "jwt-token"},
+        client_factory=lambda: _StubClient(),
+    )
+    by_name = {getattr(tool, "name"): tool for tool in tools}
+
+    outage = await _call(by_name, "native_input_discover", {"inventoryId": INVENTORY_A})
+
+    assert outage["success"] is False
+    assert outage["error_code"] == "temporarily_unavailable"
+    assert "entries" not in json.dumps(outage)
+
+    core.discover_native_inputs.side_effect = CityCatalystClientError(
+        "missing", status_code=404
+    )
+    absent = await _call(by_name, "native_input_discover", {"inventoryId": INVENTORY_A})
+
+    assert absent["success"] is True
+    assert absent["data"]["entries"] == []
+
+
+@pytest.mark.asyncio
+async def test_read_outage_is_reported_as_temporarily_unavailable() -> None:
+    """A Core server error on read is not a stored-input absence."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    client.error = CityCatalystClientError("down", status_code=503)
+    failed = await _call(tools, "native_input_read", _read_args(INVENTORY_A))
+
+    assert failed["success"] is False
+    assert failed["error_code"] == "temporarily_unavailable"

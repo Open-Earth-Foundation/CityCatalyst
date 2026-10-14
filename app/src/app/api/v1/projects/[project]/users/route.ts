@@ -41,6 +41,9 @@
  *                     type: string
  *                     format: date-time
  *                     description: Timestamp when user joined the project
+ *                   twoFactorEnabled:
+ *                     type: boolean
+ *                     description: If two factor authorization is enabled for security
  *                 description: User object with project membership details
  *       401:
  *         description: Unauthorized - user lacks admin privileges for the project.
@@ -88,14 +91,14 @@ import { Project } from "@/models/Project";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 
-export const GET = apiHandler(async (req, { params, session }) => {
+export const GET = apiHandler(async (_req, { params, session }) => {
   const { project: projectId } = params;
   const project = await Project.findByPk(projectId as string);
   if (!project) {
     throw new createHttpError.NotFound("project-not-found");
   }
 
-  UserService.validateIsAdminOrOrgAdmin(session, project?.organizationId);
+  await UserService.validateIsAdminOrOrgAdmin(session, project?.organizationId);
 
   // Fetch users associated with the project
   const users = await UserService.findUsersInProject(projectId as string);
@@ -117,7 +120,7 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.NotFound("project-not-found");
   }
 
-  UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
+  await UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
 
   if (!email) {
     throw new createHttpError.BadRequest("user-not-found");

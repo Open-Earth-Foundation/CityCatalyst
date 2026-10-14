@@ -3,6 +3,16 @@
 This is the main CityCatalyst Web app. This directory includes both the
 frontend and backend code for the app, as well as database management scripts.
 
+## Concept Note chat errors
+
+Concept Note chat keeps request rejections separate from connection failures:
+HTTP 401 asks the user to sign in, 403 explains the access restriction, and 404
+asks them to reload the workspace. Other non-transient 4xx responses ask the
+user to check the request. These errors clear any previous failed turn and do
+not offer Retry. HTTP 408/429, server errors, transport failures, and stream
+failures remain retryable. A context-not-ready response also clears a previous
+failed turn because Clima answered successfully and declined that new request.
+
 ## Prerequisites
 
 This guide assumes you have installed and access to the following tools:
@@ -124,7 +134,7 @@ both `CA_SERVICE_INTEGRATION` and `CONCEPT_NOTE_BUILDER` and sets
 
 CNB, chat, PDF OCR delivery, and Stationary Energy use the shared server-side
 `src/backend/climate-advisor-token.ts` client. It caches validated user tokens
-until 60 seconds before expiry and shares one pending issuance (including retries)
+until 10 minutes before expiry and shares one pending issuance (including retries)
 between concurrent calls for the same user. Tokens are user-scoped; inventory IDs
 remain request context. Returned `expires_in` is the remaining lifetime, including
 when a cached token is attached to a new chat thread.
@@ -208,6 +218,20 @@ We use Playwright to run automated E2E tests.
 Setup: `npx playwright install --with-deps`
 
 Run: `npm run e2e:test`
+
+Concept Note Builder (CNB) tests use `e2e/concept-note-*.spec.ts` filenames.
+The default Playwright configuration excludes these files unless
+`NEXT_PUBLIC_FEATURE_FLAGS` contains both `CONCEPT_NOTE_BUILDER` and
+`CA_SERVICE_INTEGRATION`. Other E2E tests remain selected regardless of these flags.
+Keep new CNB feature tests under the same filename pattern.
+
+Playwright loads the app's test environment before selecting tests: shell variables
+take precedence over `.env.test.local`, `.env.test`, and `.env`, in that order.
+`.env.local` is not loaded in test mode. When reusing an existing local server,
+ensure its feature flags match the test runner's environment.
+
+From `app/`, inspect the selected tests with `npx playwright test --list`, or run
+only CNB tests with `npx playwright test concept-note-` when both flags are enabled.
 
 ### API unit tests
 

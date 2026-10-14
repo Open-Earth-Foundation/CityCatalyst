@@ -7,7 +7,7 @@ import { useTranslation } from "@/i18n/client";
 import { Heading, Input, Link, Text } from "@chakra-ui/react";
 import LabelLarge from "@/components/package/Texts/Label";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
@@ -16,7 +16,6 @@ import { Field } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "next-auth/react";
 import { LANGUAGES } from "@/util/types";
-import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
 import { getHomePath } from "@/util/routes";
 import { getApiErrorMessage } from "@/util/helpers";
@@ -35,8 +34,8 @@ type Inputs = {
 const normalizeInviteEmail = (value: string | null): string =>
   (value ?? "").replaceAll(" ", "+");
 
-export default function Signup() {
-  const lng = i18next.language as LANGUAGES;
+export default function Signup(props: { params: Promise<{ lng: string }> }) {
+  const { lng } = use(props.params) as { lng: LANGUAGES };
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
   const searchParams = useSearchParams();

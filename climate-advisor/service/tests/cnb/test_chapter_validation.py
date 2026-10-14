@@ -5,7 +5,7 @@ from uuid import UUID
 import pytest
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.concept_note_chapter_validation import ChapterValidationGap
-from app.persistence.concept_notes.workspace import (
+from app.persistence.concept_notes.workspace_validation import (
     WorkspaceValidationChapter,
     WorkspaceValidationContext,
     WorkspaceValidationEvidence,
@@ -151,7 +151,7 @@ async def test_completeness_receives_only_selected_schema_and_associated_fields(
         "name": "Application template",
         "output_format": None,
         "chapter_schema": {
-            "title": "Timetable",
+            "title": "Chapter 1",
             "description": "Explain delivery milestones.",
             "required": True,
             "word_limit": 200,

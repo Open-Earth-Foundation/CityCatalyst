@@ -1,3 +1,5 @@
+import type Decimal from "decimal.js";
+import type { GeoJSON } from "geojson";
 import type {
   DataSourceWithRelations,
   GlobalAPISourceResponse,
@@ -22,9 +24,9 @@ import type {
   EmissionsFactorAttributes,
 } from "@/models/EmissionsFactor";
 import type { ActivityValue } from "@/models/ActivityValue";
-import type Decimal from "decimal.js";
 import {
   GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
   OrganizationPlanType,
 } from "@/util/enums";
 import type {
@@ -35,7 +37,7 @@ import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
 import type { VersionAttributes } from "@/models/Version";
 import type { BoundingBox } from "@/util/geojson";
-import type { GeoJSON } from "geojson";
+import type { EditProposal } from "@/util/concept-note-edit-types";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -203,7 +205,14 @@ export interface InventoryDeleteQuery {
 
 export interface InventoryUpdateQuery {
   inventoryId: string;
-  data: { isPublic: boolean };
+  data:
+    | { isPublic: boolean }
+    | {
+        inventoryName: string;
+        year: number;
+        inventoryType: InventoryTypeEnum;
+        globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum;
+      };
 }
 
 export type EmissionsFactorWithDataSources = EmissionsFactorAttributes & {
@@ -342,6 +351,8 @@ export interface UsersInvitesResponse {
   success: boolean;
   /** email -> invitation URL (returned so admins can copy if email delivery fails) */
   inviteUrls: Record<string, string>;
+  /** emails of invitees whose invitation email could not be sent */
+  emailFailures?: string[];
 }
 
 export interface OrganizationInviteResponse {
@@ -556,6 +567,7 @@ export type ProjectUserResponse = {
   role: OrganizationRole;
   status: InviteStatus;
   cityId?: string;
+  twoFactorEnabled?: boolean;
 };
 
 export type UserAccessResponse = {
@@ -932,11 +944,47 @@ export interface ImportSummary {
   formatDetected: string;
   rowsFound: number;
   fieldsMapped: number;
+  /**
+   * Rows in the file that will not be imported because CO2, CH4, N2O, and
+   * total CO2e are empty and there is no notation key.
+   */
+  rowsSkippedEmptyEmissions?: number;
 }
 
 export interface FieldMapping {
   sourceColumn: string;
   mappedField: string;
+  sampleValue?: string | null;
+}
+
+/** Why an uploaded row is skipped on import, or imported without counting. */
+export type ImportRowIssue =
+  | "missing-gpc-reference"
+  | "gpc-reference-unresolved"
+  | "gpc-reference-unknown"
+  | "unknown-notation-key"
+  | "no-value-or-notation-key"
+  | "invalid-row"
+  | "outside-inventory-type";
+
+export interface ImportRowOutcome {
+  /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */
+  rowNumber: number;
+  gpcRefNo: string | null;
+  /** Sector / subsector text when no GPC reference could be resolved. */
+  sourceLabel: string | null;
+  /** Notation key as written in the file, for unknown-notation-key rows. */
+  notationKey: string | null;
+  status: "skipped" | "not-counted";
+  issue: ImportRowIssue;
+}
+
+export interface ImportRowPreview {
+  totalRows: number;
+  importedRows: number;
+  skippedRows: number;
+  /** Only rows that are skipped or will not count toward completion. */
+  rows: ImportRowOutcome[];
 }
 
 export interface ReviewData {
@@ -960,6 +1008,8 @@ export interface ImportStatusResponse {
   reviewData: ReviewData | null;
   /** Year inferred from file data (eCRF); used to check match with inventory target year. */
   inferredYearFromFile?: number;
+  /** GPC references in the file the inventory type does not require (e.g. Scope 3 in GPC BASIC). */
+  rowsOutsideInventoryType?: string[];
   /**
    * Full mapping payload from the imported file (Path B/C).
    * Includes `extractionProgress` while AI chunk work is in flight.
@@ -1098,6 +1148,20 @@ export interface ConceptNoteRun {
 
 export interface ConceptNoteRunListResponse {
   runs: ConceptNoteRun[];
+}
+
+export interface ConceptNoteChatThread {
+  thread_id: string;
+  title: string | null;
+  created_at: string;
+  last_message_at: string | null;
+  message_count: number;
+  preview: string | null;
+}
+
+export interface ConceptNoteChatThreadListResponse {
+  active_thread_id: string | null;
+  threads: ConceptNoteChatThread[];
 }
 
 export interface ConceptNoteTemplateChapter {
@@ -1269,6 +1333,7 @@ export interface ValidateConceptNoteChapterRequest {
 }
 
 export interface ConceptNoteDraftChapter {
+  description?: string;
   chapter_id: string;
   template_section_id: string | null;
   title: string;
@@ -1293,6 +1358,7 @@ export interface ConceptNoteDraftState {
   total_chapters: number;
   current_chapter_id: string | null;
   error_code: string | null;
+  overview_pending?: boolean;
   chapters: ConceptNoteDraftChapter[];
 }
 
@@ -1350,7 +1416,20 @@ export interface ConceptNoteUploadStatusRequest {
   uploadId: string;
 }
 
+export interface ConceptNoteWorkspaceSnapshot {
+  edits?: EditProposal[];
+  sequence: number;
+  run?: ConceptNoteRun;
+  draft?: ConceptNoteDraftState;
+  upload?: ConceptNoteUploadResponse;
+}
+
 export interface ConceptNoteContextBundleRetryResponse {
   run_id: string;
   status: "queued";
+}
+
+export interface ConceptNoteContextBundleRefreshResponse {
+  run_id: string;
+  status: "queued" | "current" | "building";
 }

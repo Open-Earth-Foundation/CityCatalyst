@@ -20,7 +20,7 @@ Providers can omit summaries; the app does not generate substitute reasoning.
 - All-match replacements preserve locked chapters, headings, and protected
   information markers, with exclusion counts persisted in the proposal.
   Complete grounded gap fills retain their existing validation rules.
-- Planning and review share a 180-second deadline; the document agent is limited
+- Planning and review share a 300-second deadline; the document agent is limited
   to 12 turns. Only explicit acceptance writes revisions. An SSE end without a
   terminal event reports an error and restores chat controls.
 

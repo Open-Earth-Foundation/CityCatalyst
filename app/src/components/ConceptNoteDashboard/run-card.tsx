@@ -40,6 +40,7 @@ interface RunCardProps {
   run: ConceptNoteRun;
   scopeLabel: string;
   t: TFunction;
+  uploading: boolean;
 }
 
 export function RunCard({
@@ -58,8 +59,9 @@ export function RunCard({
   run,
   scopeLabel,
   t,
+  uploading,
 }: RunCardProps) {
-  const incomplete = hasIncompleteInitialUploads(run);
+  const incomplete = !uploading && hasIncompleteInitialUploads(run);
   const loadReviewStatus = shouldLoadConceptNoteReviewStatus(
     run.status,
     run.progress_summary,
@@ -123,8 +125,14 @@ export function RunCard({
             </IconButton>
           </HStack>
           <StatusBadge
-            label={t(incomplete ? "upload-incomplete" : status.translationKey)}
-            tone={incomplete ? "warning" : status.tone}
+            label={t(
+              uploading
+                ? "uploading-sources"
+                : incomplete
+                  ? "upload-incomplete"
+                  : status.translationKey,
+            )}
+            tone={uploading ? "info" : incomplete ? "warning" : status.tone}
           />
         </Flex>
 

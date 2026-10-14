@@ -17,6 +17,32 @@ export function missingInformationRanges(markdown: string) {
   );
 }
 
+/** Lines that hold nothing but markers (optionally as list items). The
+ * messages are returned so a chapter panel can list them instead. */
+export function splitStandaloneMarkers(markdown: string): {
+  markdown: string;
+  messages: string[];
+} {
+  const messages: string[] = [];
+  const kept: string[] = [];
+  for (const line of markdown.split(/\r?\n/)) {
+    const stripped = line.replace(/^\s*(?:[-*+]|\d+[.)])\s+/, "").trim();
+    const ranges = missingInformationRanges(stripped);
+    const onlyMarkers =
+      ranges.length > 0 &&
+      stripped.replace(missingInformationPattern(), "").trim() === "";
+    if (onlyMarkers) {
+      messages.push(...ranges.map((range) => range.message));
+      continue;
+    }
+    kept.push(line);
+  }
+  return {
+    markdown: kept.join("\n").replace(/\n{3,}/g, "\n\n"),
+    messages,
+  };
+}
+
 interface MarkerMarkdownNode {
   type: string;
   value?: string;

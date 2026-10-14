@@ -568,6 +568,13 @@ export async function buildReportPdf(
       size: 15,
       gapAfter: 3,
     });
+    if (action.classificationStatus) {
+      writeSpans(cursor, [{ text: action.classificationStatus }], {
+        size: 9.5,
+        color: INK,
+        gapAfter: 3,
+      });
+    }
 
     for (const section of action.sections) {
       if (section.title) drawSectionTitle(cursor, section.title);

@@ -25,10 +25,15 @@ from app.persistence.concept_notes.edits import (
 )
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.cnb.edit_planner import ConceptNoteEditPlanner
-from app.services.cnb.edit_validation import validate_edit_plan
+from app.services.cnb.edit_validation import context_snapshot, validate_edit_plan
 from app.utils.cnb_observability import record_edit_outcome
 from app.utils.cnb_progress import emit_cnb_progress
-from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
+from app.utils.concept_note_context import manual_population_context
+from app.utils.conversation_observability import (
+    async_workflow_trace,
+    finish_workflow_trace,
+)
+from app.utils.mlflow_logging import run_mlflow_io
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -53,9 +58,9 @@ class ConceptNoteEditService:
         self._workflow_sessions = workflow_sessions
 
     @asynccontextmanager
-    async def _locked_context(
-        self, run: ConceptNoteRun
-    ) -> AsyncIterator[dict[str, Any]]:
+    async def locked_context(
+        self, run: ConceptNoteRun, *, structure: bool = False
+    ) -> AsyncIterator[tuple[ConceptNoteRun, dict[str, Any]]]:
         """Serialize edit registration/application with funding changes.
 
         Read context only after acquiring the workflow row lock. Registration
@@ -75,8 +80,27 @@ class ConceptNoteEditService:
                 raise EditOperationError(
                     "run_inactive", "Only an active Concept Note can be edited."
                 )
+            if (
+                structure
+                and (current.context_summary or {})
+                .get("draft_document", {})
+                .get("status")
+                == "running"
+            ):
+                raise EditOperationError(
+                    "draft_running",
+                    "Wait for drafting to finish before changing the structure.",
+                )
             bundle = await session.get(ConceptNoteContextBundle, run.run_id)
-            yield bundle.context_bundle if bundle else {}
+            yield (
+                current,
+                {
+                    **(bundle.context_bundle if bundle else {}),
+                    "manual_population": manual_population_context(
+                        current.context_summary
+                    ),
+                },
+            )
 
     async def propose(
         self,
@@ -86,7 +110,7 @@ class ConceptNoteEditService:
         recent_messages: list[dict[str, str]] | None = None,
     ) -> EditProposalResponse:
         """Trace proposal inputs, model calls and the resulting proposed changes."""
-        with workflow_trace(
+        async with async_workflow_trace(
             name="cnb_chat_edit",
             inputs={"request": request, "recent_messages": recent_messages},
             session_id=getattr(run, "thread_id", None) or run.run_id,
@@ -105,7 +129,8 @@ class ConceptNoteEditService:
                     recent_messages=recent_messages,
                 )
             except EditOperationError as error:
-                record_edit_outcome(
+                await run_mlflow_io(
+                    record_edit_outcome,
                     run_id=run.run_id,
                     operation="propose",
                     outcome="failed",
@@ -113,7 +138,8 @@ class ConceptNoteEditService:
                 )
                 raise
             if result.status != "rejected" or result.changes:
-                record_edit_outcome(
+                await run_mlflow_io(
+                    record_edit_outcome,
                     run_id=run.run_id,
                     proposal_id=result.proposal_id,
                     operation="propose",
@@ -133,7 +159,7 @@ class ConceptNoteEditService:
     ) -> EditProposalResponse:
         """Persist progress before planning and recover safely from provider/cancellation failures."""
         # Register processing and snapshot authoritative context under one lock.
-        async with self._locked_context(run) as run_context:
+        async with self.locked_context(run) as (_, run_context):
             proposal, created = await self.repository.start(
                 run_id=run.run_id, user_id=run.user_id, request=request
             )
@@ -155,9 +181,7 @@ class ConceptNoteEditService:
                     proposal_id=request.refines_proposal_id,
                 )
             chapters = await self.workspace.list_chapters(run_id=run.run_id)
-            if not chapters or any(
-                chapter.body_markdown is None for chapter in chapters
-            ):
+            if not chapters:
                 raise EditOperationError(
                     "draft_unavailable",
                     "Finish drafting before requesting edits.",
@@ -185,24 +209,33 @@ class ConceptNoteEditService:
                     changes=[],
                     clarification=plan.clarification,
                 )
-            await emit_cnb_progress("validating")
-            changes = validate_edit_plan(
-                request,
-                chapters,
-                plan,
-                run_context,
-                prior_proposal=prior,
-                recent_messages=recent_messages,
-            )
-            # Automatic edits rely on the whole document remaining the reviewed base.
-            base_revisions = {
-                chapter.chapter_id: chapter.revision_number for chapter in chapters
-            }
+            changes = []
+            if plan.structure is None:
+                await emit_cnb_progress("validating")
+                if any(chapter.revision_number is None for chapter in chapters):
+                    raise EditOperationError(
+                        "draft_unavailable",
+                        "Finish drafting before requesting body-text edits.",
+                        status_code=422,
+                    )
+                changes = validate_edit_plan(
+                    request,
+                    chapters,
+                    plan,
+                    run_context,
+                    prior_proposal=prior,
+                    recent_messages=recent_messages,
+                )
+                # Automatic edits rely on the whole document remaining the reviewed base.
+                base_revisions = {
+                    chapter.chapter_id: chapter.revision_number for chapter in chapters
+                }
             result = await self.repository.finish(
                 **identity,
                 base_revisions=base_revisions,
                 changes=changes,
                 notices=plan.notices,
+                structure=plan.structure,
             )
             if (
                 prior is not None
@@ -240,7 +273,8 @@ class ConceptNoteEditService:
                     error_code="planning_interrupted",
                 )
             )
-            record_edit_outcome(
+            await run_mlflow_io(
+                record_edit_outcome,
                 run_id=run.run_id,
                 proposal_id=proposal.proposal_id,
                 operation="propose",
@@ -295,7 +329,7 @@ class ConceptNoteEditService:
         try:
             # Funding invalidation and acceptance use the same workflow-first
             # lock order; a stale proposal cannot race the funding commit.
-            async with self._locked_context(run) as run_context:
+            async with self.locked_context(run, structure=True) as (_, run_context):
                 proposal = await self.repository.get(
                     run_id=run.run_id, user_id=run.user_id, proposal_id=proposal_id
                 )
@@ -307,6 +341,10 @@ class ConceptNoteEditService:
                     sources.get(str(source.upload_id)) != source.sha256
                     for change in proposal.changes
                     for source in change.source_snapshots
+                ) or any(
+                    context_snapshot(run_context, cited.section) != cited
+                    for change in proposal.changes
+                    for cited in change.context_snapshots
                 )
                 if proposal.status == "proposed" and changed:
                     stale = await self.repository.mark_stale(
@@ -324,7 +362,15 @@ class ConceptNoteEditService:
                     request=request,
                 )
         except EditOperationError as error:
-            record_edit_outcome(
+            if error.code == "stale_structure":
+                await self.repository.mark_stale(
+                    run_id=run.run_id,
+                    user_id=run.user_id,
+                    proposal_id=proposal_id,
+                    error_code="stale_structure",
+                )
+            await run_mlflow_io(
+                record_edit_outcome,
                 run_id=run.run_id,
                 proposal_id=proposal_id,
                 operation="apply",
@@ -332,7 +378,8 @@ class ConceptNoteEditService:
                 error_code=error.code,
             )
             raise
-        record_edit_outcome(
+        await run_mlflow_io(
+            record_edit_outcome,
             run_id=run.run_id,
             proposal_id=proposal_id,
             revision_id=result.result.application_id if result.result else None,
@@ -349,7 +396,8 @@ class ConceptNoteEditService:
         result = await self.repository.reject(
             run_id=run.run_id, user_id=run.user_id, proposal_id=proposal_id
         )
-        record_edit_outcome(
+        await run_mlflow_io(
+            record_edit_outcome,
             run_id=run.run_id,
             proposal_id=proposal_id,
             operation="reject",

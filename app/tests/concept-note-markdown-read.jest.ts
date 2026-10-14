@@ -11,6 +11,7 @@ import { createHash } from "node:crypto";
 const requireServiceRequest = jest.fn();
 const getJob = jest.fn<() => Promise<Record<string, unknown> | null>>();
 const getSourceFormat = jest.fn<() => "pdf" | "markdown">();
+const isLegacyMarkdownOnlyPdfJob = jest.fn<() => boolean>();
 const getFileBuffer = jest.fn<() => Promise<Buffer>>();
 
 jest.unstable_mockModule(
@@ -22,6 +23,7 @@ jest.unstable_mockModule(
 jest.unstable_mockModule("@/backend/PdfOcrService", () => ({
   getConceptNotePdfOcrJob: getJob,
   getConceptNoteSourceFormat: getSourceFormat,
+  isLegacyMarkdownOnlyPdfJob,
 }));
 jest.unstable_mockModule("@/backend/InventoryFileStorageService", () => ({
   default: { getFileBuffer },
@@ -29,7 +31,6 @@ jest.unstable_mockModule("@/backend/InventoryFileStorageService", () => ({
 jest.unstable_mockModule("@/util/api", () => ({
   apiHandler: (handler: unknown) => handler,
 }));
-
 let readHandler: typeof import("@/app/api/v1/internal/ca/concept-note-uploads/[uploadId]/markdown/route").GET;
 const uploadId = "22222222-2222-4222-8222-222222222222";
 const markdown = Buffer.from("# Plan", "utf8");
@@ -50,6 +51,7 @@ describe("authenticated Concept Note Markdown read", () => {
       pageCount: 1,
     });
     getSourceFormat.mockReturnValue("pdf");
+    isLegacyMarkdownOnlyPdfJob.mockReturnValue(false);
     getFileBuffer.mockResolvedValue(markdown);
   });
 
@@ -85,6 +87,34 @@ describe("authenticated Concept Note Markdown read", () => {
     expect(response.headers.get("X-Source-Format")).toBe("markdown");
     expect(response.headers.get("X-Page-Count")).toBeNull();
     expect(await response.text()).toBe("# Plan");
+  });
+
+  it("attests the narrow pre-structured PDF state in the authenticated read", async () => {
+    const legacyJob = {
+      status: "succeeded",
+      sourceType: "concept_note_upload",
+      model: "mistral-ocr-latest",
+      annotationMode: "none",
+      resultS3Key: "result.md",
+      resultSha256: sha256,
+      pageCount: 1,
+      structuredS3Key: null,
+      structuredSha256: null,
+      structuredSizeBytes: null,
+      structuredSchemaVersion: null,
+    };
+    getJob.mockResolvedValueOnce(legacyJob);
+    isLegacyMarkdownOnlyPdfJob.mockReturnValueOnce(true);
+
+    const response = await readHandler(new Request("http://localhost"), {
+      session: { user: { id: "owner-user" } },
+      params: { uploadId },
+    });
+
+    expect(isLegacyMarkdownOnlyPdfJob).toHaveBeenCalledWith(legacyJob);
+    expect(response.headers.get("X-CC-Legacy-Pdf-Delivery")).toBe(
+      "pre-structured-pdf-v1",
+    );
   });
 
   it("rejects missing user auth and a changed stored digest", async () => {

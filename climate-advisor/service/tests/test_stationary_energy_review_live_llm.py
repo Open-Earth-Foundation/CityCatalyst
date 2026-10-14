@@ -16,9 +16,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 pytest.importorskip("pgvector.sqlalchemy")
 
+from agents import Runner
+
 import app.models.db.message  # noqa: F401
 import app.models.db.thread  # noqa: F401
-from agents import Runner
 from app.db import Base
 from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftProposal,
@@ -40,6 +41,7 @@ from app.services.stationary_energy.stationary_energy_review_models import (
 )
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.streaming_handler import StreamingHandler
+from app.utils.streaming_runner import build_stream_run_config
 
 FIXTURE_PATH = (
     Path(__file__).parent
@@ -461,7 +463,7 @@ async def _run_live_turn(
             agent,
             history,
             max_turns=5,
-            run_config=handler._run_config(payload),
+            run_config=build_stream_run_config(handler, payload),
         )
     finally:
         await agent_service.close()

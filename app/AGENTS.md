@@ -19,7 +19,7 @@ npm run openapi:lint            # Spectral lint for OpenAPI spec
 
 # Testing
 npm run jest                    # All Jest tests (unit + API)
-npm run e2e:test                # All Playwright E2E tests
+npm run e2e:test                # Playwright E2E tests for enabled features
 npx jest --testPathPattern=path/to/file.jest.ts   # Single Jest test
 npx playwright test tests/path/to/file.spec.ts    # Single Playwright test
 
@@ -40,7 +40,7 @@ npm run i18n:update             # Auto-translate EN keys to de, es, pt
 
 ```
 app/src/
-├── app/                        # Next.js 15 App Router
+├── app/                        # Next.js 16 App Router
 │   ├── [lng]/                  # Locale-prefixed pages (en, de, es, fr, pt)
 │   │   ├── auth/               # Login, signup, password reset, invite acceptance
 │   │   ├── admin/              # OEF admin panel
@@ -372,6 +372,8 @@ with an empty env from the Docker build.
 - File naming: `*.spec.ts`
 - Config: `playwright.config.ts`
 - Runs against a real dev/test server
+- CNB feature tests use `concept-note-*.spec.ts` and are excluded unless both `CONCEPT_NOTE_BUILDER` and `CA_SERVICE_INTEGRATION` are set in `NEXT_PUBLIC_FEATURE_FLAGS`.
+- The default config loads Next.js test-mode env files before selecting tests; `.env.local` is ignored. See `README.md` for precedence and CNB-only commands.
 
 ---
 

@@ -14,7 +14,7 @@ import {
 import type {
   StationaryEnergyChatArtifactControllerActions,
   StationaryEnergyChatArtifactControllerState,
-} from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
+} from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-types";
 import { getParamValueRequired } from "@/util/helpers";
 
 type SourceDetailPaneProps = {

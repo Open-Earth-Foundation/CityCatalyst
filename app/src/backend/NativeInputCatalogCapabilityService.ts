@@ -58,9 +58,23 @@ type NativeInputCatalogKeyset = {
   id: string;
 };
 
+/**
+ * Request scope fields that narrow catalog candidates. A row matches a field
+ * when the request omits it, the row omits it, or both are equal. The SQL
+ * candidate filter and the in-memory check use this one list and rule.
+ */
+const CANDIDATE_SCOPE_FIELDS = ["userId", ...AUTHORIZED_SCOPE_FIELDS] as const;
+
+type CandidateScopeField = (typeof CANDIDATE_SCOPE_FIELDS)[number];
+
+export type NativeInputCandidateScope = Partial<
+  Record<CandidateScopeField, string>
+>;
+
 type NativeInputCatalogCandidateQuery = {
   after?: NativeInputCatalogKeyset;
   limit: number;
+  scope?: NativeInputCandidateScope;
 };
 
 type NativeInputDiscoveryCursorPayload = {
@@ -109,9 +123,26 @@ export interface NativeInputCapabilityServiceDependencies {
   ) => NativeInputCapabilityDefinition | null;
 }
 
+/** Build the SQL conditions equivalent to the in-memory scope rule. */
+export function buildCandidateScopeConditions(
+  scope: NativeInputCandidateScope = {},
+): WhereOptions[] {
+  return CANDIDATE_SCOPE_FIELDS.flatMap((field) => {
+    const value = scope[field];
+    if (!value) return [];
+    return [{ [Op.or]: [{ [field]: null }, { [field]: value }] }];
+  });
+}
+
 const defaultDependencies: NativeInputCapabilityServiceDependencies = {
   async findActiveCatalogEntries(query) {
     const where: WhereOptions = { availability: "active" };
+    // Narrow candidates in SQL so a large catalog does not push the caller's
+    // rows onto later pages; authorization still runs per row afterwards.
+    const scopeConditions = buildCandidateScopeConditions(query.scope);
+    if (scopeConditions.length > 0) {
+      Object.assign(where, { [Op.and]: scopeConditions });
+    }
     if (query.after) {
       const afterCreated = new Date(query.after.created);
       Object.assign(where, {
@@ -194,19 +225,29 @@ function isSafePermissionMiss(error: unknown): boolean {
   );
 }
 
-function requestMatchesEntry(
+/**
+ * Inventory-owned rows (for example HIAP-MEED) carry no userId; permission
+ * checks in authorizeCatalogScope still apply to them.
+ */
+export function requestMatchesEntry(
   request: NativeInputDiscoveryRequest,
   entry: CatalogEntry,
 ): boolean {
-  if (request.userId && request.userId !== entry.userId) {
-    return false;
-  }
-
-  return AUTHORIZED_SCOPE_FIELDS.every((field) => {
+  return CANDIDATE_SCOPE_FIELDS.every((field) => {
     const requestValue = request[field];
     const entryValue = entry[field];
     return !requestValue || !entryValue || requestValue === entryValue;
   });
+}
+
+function candidateScope(
+  request: NativeInputDiscoveryRequest,
+): NativeInputCandidateScope {
+  return Object.fromEntries(
+    CANDIDATE_SCOPE_FIELDS.flatMap((field) =>
+      request[field] ? [[field, request[field]]] : [],
+    ),
+  );
 }
 
 async function checkPermission(
@@ -465,6 +506,7 @@ export async function discoverNativeInputs(
     const batch = await dependencies.findActiveCatalogEntries({
       after,
       limit: batchLimit,
+      scope: candidateScope(request),
     });
     if (batch.length === 0) {
       exhausted = true;
@@ -562,6 +604,22 @@ function assertBoundedSafeResult(value: unknown): Record<string, unknown> {
   return safeResult as Record<string, unknown>;
 }
 
+/**
+ * Fill city/inventory identifiers missing from the submitted input using the
+ * authorized catalog row, so callers scoped by inventory alone can still read.
+ */
+function withEntryScope(input: unknown, entry: CatalogEntry): unknown {
+  if (typeof input !== "object" || input === null || Array.isArray(input)) {
+    return input;
+  }
+  const scoped: Record<string, unknown> = { ...input };
+  if (!scoped.city_id && entry.cityId) scoped.city_id = entry.cityId;
+  if (!scoped.inventory_id && entry.inventoryId) {
+    scoped.inventory_id = entry.inventoryId;
+  }
+  return scoped;
+}
+
 export async function readNativeInputCapability(
   request: NativeInputSelectedReadRequest,
   session: AppSession,
@@ -612,7 +670,9 @@ export async function readNativeInputCapability(
       throw nativeInputCapabilityUnavailable();
     }
 
-    const parsedInput = definition.schemas.input.safeParse(request.input);
+    const parsedInput = definition.schemas.input.safeParse(
+      withEntryScope(request.input, entry),
+    );
     if (!parsedInput.success) throw nativeInputCapabilityUnavailable();
 
     const sourceResult = await adapter.executeSelected({

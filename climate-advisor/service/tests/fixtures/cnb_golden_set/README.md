@@ -86,11 +86,23 @@ outcome and which chapters changed, and the judge output contract:
   (a covered fact cites an allowed chapter; supplied evidence belongs to the
   claim's chapter; edit references stay within their case).
 
-A reference that differs from its unit only in case, whitespace, typographic
-quotes, or dashes, and matches exactly one span after folding, is replaced with
-that exact span and listed under `repaired_quotes` in the report. Anything else
-invalidates the judgment: metrics are withheld and the stage reports an
-evaluation error, never a product failure. Python never assesses meaning through
+Three judge slips are repaired deterministically and listed under
+`repaired_quotes` in the report:
+
+- a quote that differs from its unit only in case, whitespace, typographic
+  quotes, dashes, brackets, or Markdown emphasis markers (never commas or
+  periods, so numbers cannot merge), and matches exactly one span after
+  folding, is replaced with that exact span;
+- a mistyped unit ID is re-pointed to the single unit with the same kind, scope,
+  and field name that contains the quote verbatim (ties broken by the longest
+  shared ID suffix);
+- a verbatim quote cited from the wrong unit (for example the neighbouring page)
+  is re-pointed to the single unit of the same kind and chapter scope that
+  contains it, so evidence never moves between chapters.
+
+Anything else, such as a paraphrase or an inflected word, invalidates the
+judgment: metrics are withheld and the stage reports an evaluation error, never
+a product failure. Python never assesses meaning through
 term overlap or number presence.
 
 The judge checks entity/quantity relationships, units, time, geographic scope,

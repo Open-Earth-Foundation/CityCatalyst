@@ -672,3 +672,56 @@ def test_pdf_fixtures_pin_their_original_pdf(fixtures):
         ),
     )
     assert "original PDF digest mismatch: source.pdf" in fixture_problems(broken)
+
+
+def test_verbatim_quote_from_the_wrong_unit_is_repointed_within_scope():
+    """Mirrors a live judge slip: a source quote cited on the neighbouring page."""
+    from app.models.cnb.golden_set import TextUnit
+    from app.services.cnb.golden_set import repair_references
+
+    units = {
+        u.id: u
+        for u in [
+            TextUnit(id="source/page-3", text="1) konieczność adaptacji do zmian klimatu;", kind="source"),
+            TextUnit(id="source/page-4", text="środki na adaptację do zmian klimatu", kind="source"),
+            TextUnit(id="chapter/a", text="Same words: konieczność adaptacji", kind="output", chapter_ref="a"),
+            TextUnit(id="chapter/b", text="Other chapter", kind="output", chapter_ref="b"),
+        ]
+    }
+    wrong_page = TextReference(unit_id="source/page-4", quote="konieczność adaptacji do zmian klimatu")
+    wrong_chapter = TextReference(unit_id="chapter/b", quote="konieczność adaptacji")
+    claim = ClaimJudgment(
+        output=wrong_chapter,
+        verdict="supported",
+        evidence=[wrong_page],
+        supplied_verdict=None,
+        supplied_evidence=[],
+        self_contained=True,
+        reason="r",
+    )
+    repairs = repair_references(claim, units)
+    assert wrong_page.unit_id == "source/page-3"
+    assert wrong_chapter.unit_id == "chapter/b"  # never moved to another chapter
+    assert repairs == ["source/page-4 -> source/page-3 (quote found there)"]
+
+
+def test_dropped_brackets_are_snapped_but_number_punctuation_is_not():
+    from app.models.cnb.golden_set import TextUnit
+    from app.services.cnb.golden_set import repair_references
+
+    text = "Barr used Light Detection and Ranging (LiDAR) data collected in 2022. Cost: $1,540,000."
+    units = {"source/page-9": TextUnit(id="source/page-9", text=text, kind="source")}
+    dropped = TextReference(unit_id="source/page-9", quote="LiDAR data collected in 2022")
+    merged = TextReference(unit_id="source/page-9", quote="$1540000")
+    claim = ClaimJudgment(
+        output=TextReference(unit_id="source/page-9", quote="Cost"),
+        verdict="supported",
+        evidence=[dropped, merged],
+        supplied_verdict=None,
+        supplied_evidence=[],
+        self_contained=True,
+        reason="r",
+    )
+    repair_references(claim, units)
+    assert dropped.quote == "LiDAR) data collected in 2022"
+    assert merged.quote == "$1540000"  # digits without separators are not guessed

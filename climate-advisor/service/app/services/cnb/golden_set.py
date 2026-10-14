@@ -429,11 +429,18 @@ def exactly_once(label: str, expected: Sequence[str], actual: Sequence[str]) -> 
 _FOLD = str.maketrans({"‘": "'", "’": "'", "“": '"', "”": '"', "„": '"', "–": "-", "—": "-", " ": " "})
 
 
+_IGNORED = set("()[]{}*_`\"'")
+
+
 def _folded(text: str) -> tuple[str, list[int]]:
-    """Case-, whitespace-, quote- and dash-folded text with original offsets."""
+    """Case-, whitespace-, quote-, dash- and bracket-folded text with original offsets."""
     chars: list[str] = []
     offsets: list[int] = []
     for index, char in enumerate(text.translate(_FOLD)):
+        # Brackets, quote marks, and Markdown emphasis never change meaning;
+        # commas and periods are kept so numbers cannot merge.
+        if char in _IGNORED:
+            continue
         if char.isspace():
             if chars and chars[-1] == " ":
                 continue
@@ -485,11 +492,14 @@ def repair_references(judgment: GoldenContract, units: dict[str, TextUnit]) -> l
     """Snap near-verbatim judge references to the one exact span they denote.
 
     A quote that differs from its unit only in case, whitespace, typographic
-    quotes, or dashes, and matches exactly one span after folding, is replaced
-    with that exact span. A mistyped unit ID is re-pointed only to the single
+    quotes, dashes, brackets, or emphasis markers, and matches exactly one span
+    after folding, is replaced with that exact span. A mistyped unit ID is re-pointed only to the single
     unit with the same kind, scope, and field name that contains the quote
-    verbatim. Anything else is left for validation to reject. Returns a
-    description of every repair for the report.
+    verbatim. A verbatim quote cited from the wrong unit (for example the
+    neighbouring page) is re-pointed only to the single unit of the same kind
+    and chapter scope that contains it, so evidence never changes chapters.
+    Anything else is left for validation to reject. Returns a description of
+    every repair for the report.
     """
     repairs: list[str] = []
 
@@ -509,6 +519,17 @@ def repair_references(judgment: GoldenContract, units: dict[str, TextUnit]) -> l
             needle = _folded(value.quote)[0].strip()
             start = haystack.find(needle) if needle else -1
             if start < 0 or haystack.find(needle, start + 1) >= 0:
+                elsewhere = [
+                    other
+                    for other in units.values()
+                    if other.kind == unit.kind
+                    and other.chapter_ref == unit.chapter_ref
+                    and value.quote.strip()
+                    and value.quote in other.text
+                ]
+                if start < 0 and len(elsewhere) == 1:
+                    repairs.append(f"{value.unit_id} -> {elsewhere[0].id} (quote found there)")
+                    value.unit_id = elsewhere[0].id
                 return
             end = offsets[start + len(needle) - 1] + 1
             exact = unit.text[offsets[start] : end]

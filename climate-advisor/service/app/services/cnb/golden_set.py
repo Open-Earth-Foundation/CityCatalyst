@@ -1,11 +1,14 @@
-"""Exact integrity checks and aggregation of evidence-based LLM judgments.
+"""Fixture loading, exact integrity checks, and extraction-stage judgment scoring.
 
 Python validates fixture artifacts, quotations, IDs, and judge references. It
 never infers semantic coverage or claim support from keywords or number presence.
+Chapter writing, verification, and editing build on these helpers in their own
+modules.
 """
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from collections import Counter
 from collections.abc import Iterable, Sequence
@@ -15,11 +18,13 @@ from pathlib import Path
 from app.models.cnb.context_bundle import SelectedSource
 from app.models.cnb.golden_set import (
     DraftingInput,
+    GoldenContract,
     ExpectedFact,
     GoldenFixture,
     GoldenLocator,
     JudgeEvaluation,
     JudgeInput,
+    ReferenceDraft,
     StageReport,
     TextReference,
     TextUnit,
@@ -32,7 +37,12 @@ from app.services.cnb.source_analysis import (
     source_unit_page,
     verify_source_artifact,
 )
+from app.utils.cnb_information_markers import (
+    information_marker_key,
+    information_needed_markers,
+)
 from app.utils.concept_note_context import readable_source_heading
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 GOLDEN_FIXTURE_FILE = "golden.json"
@@ -46,6 +56,8 @@ class LoadedFixture:
     directory: Path
     markdown: str
     units: list[SourceUnit]
+    drafting_input: DraftingInput | None = None
+    reference_draft: ReferenceDraft | None = None
 
 
 def load_golden_fixtures(
@@ -93,26 +105,37 @@ def load_golden_fixture(directory: Path) -> LoadedFixture:
         source_format=fixture.source.source_format,
         page_count=fixture.source.page_count,
     )
+    drafting_input = None
+    if fixture.chapter_writing is not None:
+        drafting_input = DraftingInput.model_validate_json(
+            (directory / fixture.chapter_writing.input).read_text(encoding="utf-8")
+        )
+    reference_names = {
+        stage.reference_draft
+        for stage in (fixture.verification, fixture.editing)
+        if stage is not None
+    }
+    if len(reference_names) > 1:
+        raise ValueError(f"{fixture.fixture_id}: stages use different reference drafts")
+    reference_draft = None
+    if reference_names:
+        reference_draft = ReferenceDraft.model_validate_json(
+            (directory / reference_names.pop()).read_text(encoding="utf-8")
+        )
     return LoadedFixture(
         fixture=fixture,
         directory=directory,
         markdown=markdown,
         units=units,
+        drafting_input=drafting_input,
+        reference_draft=reference_draft,
     )
 
 
-def load_drafting_input(loaded: LoadedFixture) -> DraftingInput:
-    """Read the frozen stage-2 input declared by a fixture."""
-    if loaded.fixture.drafting is None:
-        raise ValueError(f"{loaded.fixture.fixture_id} has no drafting stage")
-    path = loaded.directory / loaded.fixture.drafting.input
-    return DraftingInput.model_validate_json(path.read_text(encoding="utf-8"))
-
-
 def golden_evidence_problems(loaded: LoadedFixture) -> list[str]:
-    """Return fixture evidence that is not exact text at an allowed locator."""
+    """Return extraction evidence that is not exact text at an allowed locator."""
     problems: list[str] = []
-    for fact in loaded.fixture.source_analysis.facts:
+    for fact in loaded.fixture.extraction.facts:
         for evidence in fact.evidence:
             units = [
                 unit
@@ -125,6 +148,75 @@ def golden_evidence_problems(loaded: LoadedFixture) -> list[str]:
                 problems.append(
                     f"{fact.id}: evidence text is not exact at its locators"
                 )
+    return problems
+
+
+def fixture_problems(loaded: LoadedFixture) -> list[str]:
+    """Check cross-file references a typo would otherwise silently break.
+
+    Covers chapter references, extraction-fact links, the validator's field
+    ownership rule, and reference-draft markers. Defect and edit checks live in
+    the verification and editing modules.
+    """
+    problems = golden_evidence_problems(loaded)
+    fixture = loaded.fixture
+    original = fixture.source.original_pdf
+    if original is not None:
+        pdf = loaded.directory / original.path
+        if not pdf.exists():
+            problems.append(f"original PDF missing: {original.path}")
+        elif hashlib.sha256(pdf.read_bytes()).hexdigest() != original.sha256:
+            problems.append(f"original PDF digest mismatch: {original.path}")
+    writing, template = fixture.chapter_writing, loaded.drafting_input
+    if writing is None or template is None:
+        if fixture.verification or fixture.editing:
+            problems.append("verification and editing require chapter_writing input")
+        return problems
+    refs = [chapter["chapter_ref"] for chapter in template.chapter_schema]
+    extraction_ids = {fact.id for fact in fixture.extraction.facts}
+    for item in [*writing.facts, *writing.gaps]:
+        problems += [
+            f"{item.id}: unknown chapter {ref}" for ref in item.chapters if ref not in refs
+        ]
+    for fact in writing.facts:
+        if fact.extraction_fact and fact.extraction_fact not in extraction_ids:
+            problems.append(f"{fact.id}: unknown extraction fact {fact.extraction_fact}")
+    owned = {
+        field for chapter in template.chapter_schema for field in chapter.get("required_fields", [])
+    }
+    problems += [
+        f"required field not assigned to a chapter: {field}"
+        for field in template.required_fields
+        if field not in owned
+    ]
+    reference = loaded.reference_draft
+    if reference is not None:
+        if [chapter.chapter_ref for chapter in reference.chapters] != refs:
+            problems.append("reference draft chapters do not match the template order")
+        for chapter in reference.chapters:
+            problems += [
+                f"reference {chapter.chapter_ref}: {problem}"
+                for problem in marker_parity_problems(chapter.body_markdown, chapter.gaps)
+            ]
+    return problems
+
+
+def marker_parity_problems(body: str, gaps: Sequence[object]) -> list[str]:
+    """Mirror production's one-to-one marker/gap rule (workspace persistence).
+
+    Production rejects a generated chapter whose ``[Information needed: ...]``
+    markers and structured gap questions do not match exactly once each.
+    """
+    markers = Counter(information_marker_key(marker) for marker in information_needed_markers(body))
+    questions = Counter(information_marker_key(gap.question) for gap in gaps)
+    problems = [
+        f"marker without structured gap: {key}"
+        for key in sorted((markers - questions).elements())
+    ]
+    problems += [
+        f"structured gap without marker: {key}"
+        for key in sorted((questions - markers).elements())
+    ]
     return problems
 
 
@@ -182,14 +274,14 @@ def source_evidence(loaded: LoadedFixture) -> list[TextUnit]:
     ]
 
 
-def source_judge_input(
+def extraction_judge_input(
     loaded: LoadedFixture, source: SelectedSource
 ) -> tuple[JudgeInput, list[str]]:
     """Judge retained quotations against the full source, excluding generated prose."""
     failures, retained = verify_excerpts(loaded, source)
-    golden = loaded.fixture.source_analysis
+    golden = loaded.fixture.extraction
     return JudgeInput(
-        stage="source_analysis",
+        stage="extraction",
         expected_facts=[
             ExpectedFact(
                 id=f.id, statement=f.statement, required=f.required, chapters=[]
@@ -240,8 +332,7 @@ def validate_judgment(payload: JudgeInput, judgment: JudgeEvaluation) -> list[st
             [c.chapter_ref for c in judgment.chapters],
         ),
     ):
-        if len(set(expected)) != len(expected) or Counter(expected) != Counter(actual):
-            errors.append(f"{label}: expected exactly one verdict for each supplied ID")
+        errors += exactly_once(label, expected, actual)
 
     # Validate exact output spans and chapter ownership before accepting coverage.
     expected_facts = {fact.id: fact for fact in payload.expected_facts}
@@ -251,14 +342,14 @@ def validate_judgment(payload: JudgeInput, judgment: JudgeEvaluation) -> list[st
         if item.verdict == "missing" and item.output_refs:
             errors.append(f"{item.id}: missing verdict must not cite output")
         for ref in item.output_refs:
-            errors += _reference_errors(ref, outputs)
+            errors += reference_errors(ref, outputs)
     for item in judgment.facts:
         fact = expected_facts.get(item.id)
         for ref in item.output_refs:
             unit = outputs.get(ref.unit_id)
             if (
                 unit
-                and payload.stage == "source_analysis"
+                and payload.stage == "extraction"
                 and not unit.id.startswith("retained/")
             ):
                 errors.append(
@@ -279,14 +370,12 @@ def validate_judgment(payload: JudgeInput, judgment: JudgeEvaluation) -> list[st
     ):
         errors.append("covered factual output has no claim judgments")
     for claim in judgment.claims:
-        errors += _reference_errors(claim.output, outputs)
+        errors += reference_errors(claim.output, outputs)
         output = outputs.get(claim.output.unit_id)
         checks = [(claim.verdict, claim.evidence, {"source", "context"})]
-        if payload.stage == "source_analysis":
+        if payload.stage == "extraction":
             if claim.supplied_verdict is not None or claim.supplied_evidence:
-                errors.append(
-                    "source analysis must not judge supplied-evidence support"
-                )
+                errors.append("extraction must not judge supplied-evidence support")
         else:
             if claim.supplied_verdict is None:
                 errors.append(
@@ -302,7 +391,7 @@ def validate_judgment(payload: JudgeInput, judgment: JudgeEvaluation) -> list[st
             ):
                 errors.append(f"{claim.output.unit_id}: {verdict} needs evidence")
             for ref in refs:
-                errors += _reference_errors(ref, evidence)
+                errors += reference_errors(ref, evidence)
                 unit = evidence.get(ref.unit_id)
                 if unit and unit.kind not in kinds:
                     errors.append(f"{ref.unit_id}: wrong evidence kind")
@@ -318,7 +407,7 @@ def validate_judgment(payload: JudgeInput, judgment: JudgeEvaluation) -> list[st
                 f"{chapter.chapter_ref}: satisfied chapter needs output references"
             )
         for ref in chapter.output_refs:
-            errors += _reference_errors(ref, outputs)
+            errors += reference_errors(ref, outputs)
             unit = outputs.get(ref.unit_id)
             if unit and unit.chapter_ref != chapter.chapter_ref:
                 errors.append(
@@ -326,11 +415,122 @@ def validate_judgment(payload: JudgeInput, judgment: JudgeEvaluation) -> list[st
                 )
     for conflict in judgment.contradictions:
         for ref in conflict.output_refs:
-            errors += _reference_errors(ref, outputs)
+            errors += reference_errors(ref, outputs)
     return errors
 
 
-def _reference_errors(ref: TextReference, units: dict[str, TextUnit]) -> list[str]:
+def exactly_once(label: str, expected: Sequence[str], actual: Sequence[str]) -> list[str]:
+    """Require one verdict per expected ID, with no extras or repeats."""
+    if len(set(expected)) != len(expected) or Counter(expected) != Counter(actual):
+        return [f"{label}: expected exactly one verdict for each supplied ID"]
+    return []
+
+
+_FOLD = str.maketrans({"‘": "'", "’": "'", "“": '"', "”": '"', "„": '"', "–": "-", "—": "-", " ": " "})
+
+
+def _folded(text: str) -> tuple[str, list[int]]:
+    """Case-, whitespace-, quote- and dash-folded text with original offsets."""
+    chars: list[str] = []
+    offsets: list[int] = []
+    for index, char in enumerate(text.translate(_FOLD)):
+        if char.isspace():
+            if chars and chars[-1] == " ":
+                continue
+            char = " "
+        for folded in char.casefold():
+            chars.append(folded)
+            offsets.append(index)
+    return "".join(chars), offsets
+
+
+def _repointed_unit(ref: TextReference, units: dict[str, TextUnit]) -> TextUnit | None:
+    """The one real unit a mistyped unit ID unambiguously denotes, if any.
+
+    Only units with the same kind and scope prefix (for example
+    ``supplied/shared``) and the same final field name that contain the quote
+    verbatim are candidates. The candidate sharing the longest ID suffix with
+    the mistyped ID wins; a tie or no candidate is rejected.
+    """
+    parts = ref.unit_id.split("/")
+    if len(parts) < 3:
+        return None
+
+    def shared_suffix(unit_id: str) -> int:
+        """Number of trailing path segments the two IDs have in common."""
+        count = 0
+        for a, b in zip(reversed(unit_id.split("/")), reversed(parts)):
+            if a != b:
+                break
+            count += 1
+        return count
+
+    candidates = sorted(
+        (
+            (shared_suffix(unit_id), unit)
+            for unit_id, unit in units.items()
+            if unit_id.split("/")[:2] == parts[:2]
+            and unit_id.rsplit("/", 1)[-1] == parts[-1]
+            and ref.quote in unit.text
+        ),
+        key=lambda item: item[0],
+        reverse=True,
+    )
+    if not candidates or (len(candidates) > 1 and candidates[0][0] == candidates[1][0]):
+        return None
+    return candidates[0][1]
+
+
+def repair_references(judgment: GoldenContract, units: dict[str, TextUnit]) -> list[str]:
+    """Snap near-verbatim judge references to the one exact span they denote.
+
+    A quote that differs from its unit only in case, whitespace, typographic
+    quotes, or dashes, and matches exactly one span after folding, is replaced
+    with that exact span. A mistyped unit ID is re-pointed only to the single
+    unit with the same kind, scope, and field name that contains the quote
+    verbatim. Anything else is left for validation to reject. Returns a
+    description of every repair for the report.
+    """
+    repairs: list[str] = []
+
+    def visit(value: object) -> None:
+        """Walk models and lists, snapping each text reference in place."""
+        if isinstance(value, TextReference):
+            unit = units.get(value.unit_id)
+            if unit is None:
+                target = _repointed_unit(value, units)
+                if target is not None:
+                    repairs.append(f"{value.unit_id} -> {target.id}")
+                    value.unit_id = target.id
+                return
+            if value.quote in unit.text:
+                return
+            haystack, offsets = _folded(unit.text)
+            needle = _folded(value.quote)[0].strip()
+            start = haystack.find(needle) if needle else -1
+            if start < 0 or haystack.find(needle, start + 1) >= 0:
+                return
+            end = offsets[start + len(needle) - 1] + 1
+            exact = unit.text[offsets[start] : end]
+            repairs.append(f"{value.unit_id}: {value.quote!r} -> {exact!r}")
+            value.quote = exact
+        elif isinstance(value, BaseModel):
+            for name in type(value).model_fields:
+                visit(getattr(value, name))
+        elif isinstance(value, list):
+            for item in value:
+                visit(item)
+
+    visit(judgment)
+    return repairs
+
+
+def units_by_id(payload: object) -> dict[str, TextUnit]:
+    """Every output and evidence unit of a judge payload, by ID."""
+    return {unit.id: unit for unit in [*payload.outputs, *payload.evidence]}
+
+
+def reference_errors(ref: TextReference, units: dict[str, TextUnit]) -> list[str]:
     """Verify a nonempty verbatim span in a known text unit."""
     unit = units.get(ref.unit_id)
     if unit is None:
@@ -340,23 +540,13 @@ def _reference_errors(ref: TextReference, units: dict[str, TextUnit]) -> list[st
     return []
 
 
-def score_judgment(
-    loaded: LoadedFixture,
+def score_facts_and_claims(
     payload: JudgeInput,
     judgment: JudgeEvaluation,
-    integrity_failures: list[str],
-) -> StageReport:
-    """Aggregate validated semantic verdicts without lexical surrogate scoring."""
-    errors = validate_judgment(payload, judgment)
-    report = StageReport(
-        integrity_failures=integrity_failures,
-        judgment=judgment,
-        evaluation_errors=errors,
-    )
-    if errors:
-        return report
-
-    # Count only fully covered requirements; partial coverage remains visible.
+    report: StageReport,
+    min_required_fact_coverage: float,
+) -> None:
+    """Add coverage metrics and fail unsupported, unclear, or contradictory output."""
     required = {fact.id for fact in payload.expected_facts if fact.required}
     covered = sum(
         item.id in required and item.verdict == "covered" for item in judgment.facts
@@ -367,18 +557,13 @@ def score_judgment(
         report.metrics[f"required_facts_{verdict}"] = sum(
             item.id in required and item.verdict == verdict for item in judgment.facts
         )
-    is_source = payload.stage == "source_analysis"
-    thresholds = (
-        loaded.fixture.source_analysis.thresholds
-        if is_source
-        else loaded.fixture.drafting.thresholds
-    )
-    if coverage < thresholds.min_required_fact_coverage:
+    if coverage < min_required_fact_coverage:
         report.semantic_failures.append(
-            f"required_fact_coverage {coverage:.2f} < {thresholds.min_required_fact_coverage}"
+            f"required_fact_coverage {coverage:.2f} < {min_required_fact_coverage}"
         )
 
     # Unsupported meaning and contradictions are never averaged away.
+    is_extraction = payload.stage == "extraction"
     for fact in judgment.facts:
         if fact.verdict == "contradicted":
             report.semantic_failures.append(f"contradicted fact: {fact.id}")
@@ -391,37 +576,44 @@ def score_judgment(
             report.semantic_failures.append(
                 f"{claim.output.unit_id}: claim lacks sufficient context: {claim.reason}"
             )
-        if not is_source and claim.supplied_verdict != "supported":
+        if not is_extraction and claim.supplied_verdict != "supported":
             report.semantic_failures.append(
                 f"{claim.output.unit_id}: {claim.supplied_verdict} by drafter input: {claim.reason}"
             )
     for conflict in judgment.contradictions:
         report.semantic_failures.append(f"contradictory output: {conflict.reason}")
 
-    # Source analysis must retain useful evidence; drafting must answer its template.
-    if is_source:
-        topics = sum(t.verdict == "covered" for t in judgment.topics)
-        topic_rate = topics / len(judgment.topics) if judgment.topics else 1.0
-        report.metrics["topic_coverage"] = topic_rate
-        if topic_rate < thresholds.min_topic_coverage:
-            report.semantic_failures.append(
-                f"topic_coverage {topic_rate:.2f} < {thresholds.min_topic_coverage}"
-            )
-    else:
-        required_chapters = {
-            c.chapter_ref for c in payload.chapter_requirements if c.required
-        }
-        for chapter in judgment.chapters:
-            if (
-                chapter.chapter_ref in required_chapters
-                and chapter.verdict != "satisfied"
-            ):
-                report.semantic_failures.append(
-                    f"{chapter.chapter_ref}: {chapter.verdict}: {chapter.reason}"
-                )
+
+def score_extraction(
+    loaded: LoadedFixture,
+    payload: JudgeInput,
+    judgment: JudgeEvaluation,
+    integrity_failures: list[str],
+) -> StageReport:
+    """Aggregate validated extraction verdicts without lexical surrogate scoring."""
+    repairs = repair_references(judgment, units_by_id(payload))
+    errors = validate_judgment(payload, judgment)
+    report = StageReport(
+        integrity_failures=integrity_failures,
+        judgment=judgment,
+        evaluation_errors=errors,
+        details={"repaired_quotes": repairs},
+    )
+    if errors:
+        return report
+    thresholds = loaded.fixture.extraction.thresholds
+    score_facts_and_claims(
+        payload, judgment, report, thresholds.min_required_fact_coverage
+    )
+    topics = sum(t.verdict == "covered" for t in judgment.topics)
+    topic_rate = topics / len(judgment.topics) if judgment.topics else 1.0
+    report.metrics["topic_coverage"] = topic_rate
+    if topic_rate < thresholds.min_topic_coverage:
+        report.semantic_failures.append(
+            f"topic_coverage {topic_rate:.2f} < {thresholds.min_topic_coverage}"
+        )
     logger.info(
-        "Golden judgment stage=%s semantic_failures=%s",
-        payload.stage,
+        "Golden judgment stage=extraction semantic_failures=%s",
         len(report.semantic_failures),
     )
     return report

@@ -1,14 +1,28 @@
-"""Configured OpenRouter judge for the CNB golden set; no production side effects."""
+"""Configured OpenRouter judge for the CNB golden set; no production side effects.
+
+Each stage has its own prompt and structured output type. One judgment per
+stage and fixture: no voting, repetition, or tools.
+"""
 
 from __future__ import annotations
 
 import asyncio
 import hashlib
 import logging
+from collections.abc import Iterable
 from typing import Any
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
-from app.models.cnb.golden_set import JudgeEvaluation, JudgeInput
+from app.models.cnb.golden_set import (
+    ChapterWritingEvaluation,
+    EditingEvaluation,
+    EditingJudgeInput,
+    GoldenContract,
+    JudgeEvaluation,
+    JudgeInput,
+    VerificationEvaluation,
+    VerificationJudgeInput,
+)
 from app.services.openrouter_client import build_openrouter_client_options
 from openai import AsyncOpenAI
 
@@ -16,31 +30,43 @@ from app.config import Settings
 
 logger = logging.getLogger(__name__)
 PROMPT_KEYS = {
-    "source_analysis": "cnb_golden_set_source_judge",
-    "drafting": "cnb_golden_set_drafting_judge",
-    "end_to_end": "cnb_golden_set_drafting_judge",
+    "extraction": "cnb_golden_set_extraction_judge",
+    "chapter_writing": "cnb_golden_set_chapter_writing_judge",
+    "verification": "cnb_golden_set_verification_judge",
+    "editing": "cnb_golden_set_editing_judge",
 }
+OUTPUT_TYPES: dict[str, type[GoldenContract]] = {
+    "extraction": JudgeEvaluation,
+    "chapter_writing": ChapterWritingEvaluation,
+    "verification": VerificationEvaluation,
+    "editing": EditingEvaluation,
+}
+JudgePayload = JudgeInput | VerificationJudgeInput | EditingJudgeInput
+JUDGE_TIMEOUT_SECONDS = 900
 
 
 class GoldenJudgeError(RuntimeError):
     """The judge could not produce an evaluation; not a product-quality verdict."""
 
 
-def judge_prompt_versions(settings: Settings) -> dict[str, str]:
-    """Fingerprint the actual loaded prompts for reviewable report provenance."""
+def judge_prompt_versions(
+    settings: Settings, stages: Iterable[str] | None = None
+) -> dict[str, str]:
+    """Fingerprint the loaded prompts of the evaluated stages for report provenance."""
+    selected = PROMPT_KEYS if stages is None else {s: PROMPT_KEYS[s] for s in stages}
     return {
         stage: hashlib.sha256(settings.llm.prompts.get_prompt(key).encode()).hexdigest()
-        for stage, key in PROMPT_KEYS.items()
+        for stage, key in selected.items()
     }
 
 
 async def judge_output(
-    payload: JudgeInput,
+    payload: JudgePayload,
     settings: Settings,
     *,
     runner: Any = Runner,
-) -> JudgeEvaluation:
-    """Judge once with a structured schema and bounded runtime; close the client.
+) -> GoldenContract:
+    """Judge once with the stage's structured schema and bounded runtime.
 
     Provider, timeout, and parsing failures raise ``GoldenJudgeError``. Source
     content and provider exception bodies are never written to the log.
@@ -50,6 +76,7 @@ async def judge_output(
         raise GoldenJudgeError(
             "Configure models.cnb_golden_set_judge in llm_config.yaml"
         )
+    output_type = OUTPUT_TYPES[payload.stage]
     options = build_openrouter_client_options(
         settings,
         missing_api_key_message="OpenRouter API key is required for the golden-set judge",
@@ -65,7 +92,7 @@ async def judge_output(
                 include_usage=True,
                 reasoning={"effort": model.reasoning_effort},
             ),
-            output_type=JudgeEvaluation,
+            output_type=output_type,
             tools=[],
         )
         logger.info(
@@ -73,9 +100,9 @@ async def judge_output(
         )
         result = await asyncio.wait_for(
             runner.run(agent, payload.model_dump_json()),
-            timeout=600,
+            timeout=JUDGE_TIMEOUT_SECONDS,
         )
-        return JudgeEvaluation.model_validate(result.final_output)
+        return output_type.model_validate(result.final_output)
     except Exception as exc:
         logger.warning(
             "Golden judge unavailable stage=%s error_type=%s",

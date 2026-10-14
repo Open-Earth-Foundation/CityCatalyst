@@ -1469,34 +1469,44 @@ uv run --directory service pytest tests/test_e2e_conversation.py -v
 uv run --directory service python -m scripts.run_ca_e2e
 ```
 
-### CNB Grounding Golden Set
+### CNB Golden Set
 
-Fixtures under `service/tests/fixtures/cnb_golden_set/` evaluate source analysis,
-chapter drafting from a frozen bundle, and drafting from a fresh analysis.
-Each path runs once. Python checks exact quotations, locators, artifact integrity,
-and judge references. A configured LLM judge evaluates meaning, claim support,
-required-fact coverage, clarity, and chapter requirements. There are no lexical
-coverage heuristics, repeated-run stability checks, or judge calibration benchmark.
-Generated source summaries are excluded from all judge inputs. Source-analysis
-coverage checks retained quotations against the full original source; final-document
-coverage checks complete generated chapters. Reports distinguish fully covered,
-partially covered, missing, and contradicted facts. Production generation is unchanged.
+Fixtures under `service/tests/fixtures/cnb_golden_set/` evaluate the Concept Note
+Builder pipeline stage by stage on three documents (two English, one Polish):
+
+1. **extraction**: production source analysis; retained quotations and topics are
+   judged against the complete original document.
+2. **chapter_writing**: the production drafter writes every chapter from that
+   run's extraction; facts transferred, claim support, chapter requirements, and
+   `[Information needed: ...]` gaps (flagged, invented, or answerable) are judged.
+3. **verification**: the production chapter validator runs on a frozen reference
+   draft with seeded defects; findings are mapped to defects and false alarms.
+4. **editing**: the production edit planner applies chat requests to the reference
+   draft; outcomes, scope, fidelity, and post-edit consistency are judged.
+
+Each stage runs once. Python checks exact quotations, locators, marker/gap parity,
+seeded edits, changed chapters, and judge references. A configured LLM judge,
+calibrated with few-shot examples quoted verbatim from the fixture documents,
+evaluates meaning. Generated source summaries are excluded from all judge inputs.
+Production generation is unchanged.
 
 ```bash
-uv run --directory service pytest tests/cnb/test_golden_set.py -q
+uv run --directory service pytest tests/cnb/test_golden_set*.py -q
 uv run --directory service python -m scripts.evaluate_cnb_golden_set
+uv run --directory service python -m scripts.evaluate_cnb_golden_set \
+  --fixture krakow-flood-drainage-plan --stage verification --stage editing
 ```
 
-The live evaluation requires `OPENROUTER_API_KEY` for both production models and
-`models.cnb_golden_set_judge` in `llm_config.yaml`. Review the two judge prompts in
+The live evaluation requires `OPENROUTER_API_KEY` for the production models and
+`models.cnb_golden_set_judge` in `llm_config.yaml`. Review the four judge prompts in
 [`prompts/cnb/golden_set/`](prompts/cnb/golden_set/). Reports record the configured
-models and hashes of the loaded judge prompts. The CI evaluation runs on matching
-pull requests to `develop`; quality failures and unavailable/invalid evaluations
-both return a nonzero exit status. Mocked unit tests verify the evaluator plumbing
-and do not claim to validate the judge's semantic accuracy.
+models and hashes of the loaded judge prompts. The CI evaluation runs one job per
+document on pull requests to `develop`; quality failures and unavailable/invalid
+evaluations both return a nonzero exit status. Mocked unit tests verify the
+evaluator plumbing and do not claim to validate the judge's semantic accuracy.
 
 See the [fixture README](service/tests/fixtures/cnb_golden_set/README.md) for
-stage selection, gates, reports, and how to review fixture changes.
+stage details, gates, reports, and how to add or review fixtures.
 
 ## Docker Deployment (Local Testing)
 

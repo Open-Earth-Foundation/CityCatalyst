@@ -108,8 +108,11 @@ prompts:
   cnb_source_document_mapping: "prompts/cnb/source_document_mapping.md"
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
-  cnb_golden_set_source_judge: "prompts/cnb/golden_set/source_analysis.md"
-  cnb_golden_set_drafting_judge: "prompts/cnb/golden_set/drafting.md"
+  # Evaluation-only judges for the four golden-set stages
+  cnb_golden_set_extraction_judge: "prompts/cnb/golden_set/extraction.md"
+  cnb_golden_set_chapter_writing_judge: "prompts/cnb/golden_set/chapter_writing.md"
+  cnb_golden_set_verification_judge: "prompts/cnb/golden_set/verification.md"
+  cnb_golden_set_editing_judge: "prompts/cnb/golden_set/editing.md"
   cnb_chapter_drafting: "prompts/cnb/chapter_drafting.md"
   cnb_source_impact_review: "prompts/cnb/source_impact_review.md"
   cnb_chat_edit_planner: "prompts/cnb/chat_edit_planner.md"

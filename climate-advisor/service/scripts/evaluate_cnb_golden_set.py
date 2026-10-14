@@ -1,14 +1,21 @@
-"""Evaluate CNB grounding with exact Python checks and an evidence-based LLM judge.
+"""Evaluate the CNB pipeline stage by stage with exact checks and an LLM judge.
 
-Judge retained quotations and complete chapters against full original evidence.
-Generated source summaries are excluded from all judge inputs, while production
-generation is unchanged. Raw analysis artifacts retain the producer response.
+Four stages, each run once per fixture:
+1. extraction: production source analysis; retained quotations and topics are
+   judged against the complete original document.
+2. chapter_writing: the production drafter writes every chapter from THIS run's
+   extraction; the judge scores fact transfer, claim support, chapter
+   requirements, and missing-information gaps. Requires extraction.
+3. verification: the production chapter validator runs on a frozen reference
+   draft with seeded defects; the judge maps findings to defects.
+4. editing: the production edit planner applies chat edit requests to the frozen
+   reference draft; Python diffs chapters, the judge checks fidelity.
 
 Inputs:
 - --fixtures-dir: versioned fixtures (default service/tests/fixtures/cnb_golden_set).
 - --fixture: fixture ID; repeat the flag to select multiple fixtures (default all).
-- --stage: source_analysis, drafting (frozen bundle), end_to_end (fresh analysis),
-  or all (default). Each selected path runs once; no repetition/stability tests.
+- --stage: extraction, chapter_writing, verification, editing, or all (default);
+  repeat to select several. chapter_writing also runs extraction.
 - --output-dir: reports and outputs (default climate-advisor/output/cnb_golden_set).
 - OPENROUTER_API_KEY and normal Climate Advisor settings; llm_config.yaml selects
   producer/judge models and prompts under prompts/cnb/golden_set/.
@@ -16,14 +23,16 @@ Inputs:
 Outputs:
 - report.json and report.md with per-stage integrity failures, semantic findings,
   evaluation errors, model configuration, and prompt hashes. No full source text.
-- outputs/<fixture>/analysis.json, drafting/drafts.json, end_to_end/drafts.json,
-  and <stage>/judgment.json for review. No database writes.
+- outputs/<fixture>/analysis.json, chapter_writing/drafts.json,
+  verification/seeded_draft.json and findings.json, editing/cases.json, and
+  <stage>/judgment.json for review. No database writes.
 - Exit 0 when all evaluated stages pass; 1 for quality/evaluation failures.
 
 Usage (from climate-advisor/):
 - uv run --directory service python -m scripts.evaluate_cnb_golden_set
 - uv run --directory service python -m scripts.evaluate_cnb_golden_set \
-      --fixture richfield-flood-risk --stage drafting --output-dir ../output/golden
+      --fixture krakow-flood-drainage-plan --stage chapter_writing \
+      --output-dir ../output/golden
 """
 
 from __future__ import annotations
@@ -33,68 +42,43 @@ import asyncio
 import json
 import logging
 import sys
-from copy import deepcopy
-from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-from uuid import NAMESPACE_URL, UUID, uuid5
 
 from app.config.settings import ResearchModelConfig
-from app.models.cnb.concept_note_application_context import (
-    ApplicationContextFunder,
-    ApplicationContextOpportunity,
-    ApplicationContextTemplate,
-    ConceptNoteApplicationContextResponse,
-)
-from app.models.cnb.context_bundle import (
-    BundleCcContext,
-    ConceptNoteContextBundle,
-    SelectedSource,
-    SourceDocumentText,
-)
+from app.models.cnb.context_bundle import SelectedSource
 from app.models.cnb.golden_set import (
-    ChapterRequirement,
-    ExpectedFact,
+    STAGES,
+    ChapterWritingEvaluation,
     FixtureReport,
     GoldenSetReport,
+    JudgeEvaluation,
     JudgeInput,
-    Stage,
     StageReport,
-    TextUnit,
 )
-from app.models.db.concept_note import ConceptNoteRun
-from app.persistence.concept_notes.workspace import (
-    WorkspaceTemplateChapter,
-    normalize_template_chapters,
-)
-from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
-from app.services.cnb.application_context import included_sources_from_bundle
-from app.services.cnb.chapter_drafting import (
-    ChapterDraftingError,
-    build_chapter_input,
-    build_run_context,
-    generate_chapter_draft,
-)
-from app.services.cnb.context_bundle import source_text_context
+from app.services.cnb.chapter_drafting import ChapterDraftingError
 from app.services.cnb.golden_set import (
     LoadedFixture,
-    golden_evidence_problems,
-    load_drafting_input,
+    extraction_judge_input,
+    fixture_problems,
     load_golden_fixtures,
-    score_judgment,
-    source_evidence,
-    source_judge_input,
+    score_extraction,
+)
+from app.services.cnb.golden_set_chapters import (
+    chapter_writing_judge_input,
+    score_chapter_writing,
+    write_chapters,
 )
 from app.services.cnb.golden_set_judge import (
     GoldenJudgeError,
     judge_output,
     judge_prompt_versions,
 )
+from app.services.cnb.golden_set_workspace import golden_id
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     analyze_document,
-    render_source_text,
     source_analysis_contract_version,
 )
 
@@ -104,13 +88,12 @@ logger = logging.getLogger(__name__)
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_FIXTURES_DIR = SERVICE_ROOT / "tests" / "fixtures" / "cnb_golden_set"
 DEFAULT_OUTPUT_DIR = SERVICE_ROOT.parent / "output" / "cnb_golden_set"
-STAGES = ("source_analysis", "drafting", "end_to_end", "all")
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse fixture selection, single-pass stages, and report location."""
     parser = argparse.ArgumentParser(
-        description="Evaluate CNB grounding with an LLM judge."
+        description="Evaluate the CNB pipeline stage by stage with an LLM judge."
     )
     parser.add_argument(
         "--fixtures-dir",
@@ -126,9 +109,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--stage",
-        choices=STAGES,
-        default="all",
-        help="Single-pass evaluation path (default: all)",
+        action="append",
+        dest="stages",
+        choices=(*STAGES, "all"),
+        help="Stage to evaluate; repeat for several (default: all)",
     )
     parser.add_argument(
         "--output-dir",
@@ -139,21 +123,24 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+def selected_stages(requested: list[str] | None) -> list[str]:
+    """Expand ``all`` and add extraction, which chapter writing depends on."""
+    chosen = set(STAGES if not requested or "all" in requested else requested)
+    if "chapter_writing" in chosen:
+        chosen.add("extraction")
+    return [stage for stage in STAGES if stage in chosen]
+
+
 async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
     """Evaluate selected fixtures once and record producer/judge provenance."""
     settings = get_settings()
+    stages = selected_stages(args.stages)
     fixtures = load_golden_fixtures(args.fixtures_dir, args.fixtures)
-    if args.stage in {"drafting", "end_to_end"}:
-        if args.fixtures and any(f.fixture.drafting is None for f in fixtures):
-            raise ValueError("A selected fixture has no drafting stage")
-        fixtures = [f for f in fixtures if f.fixture.drafting is not None]
-    if not fixtures:
-        raise ValueError("No fixtures support the selected stage")
     if settings.llm.models.cnb_golden_set_judge is None:
         raise GoldenJudgeError(
             "Configure models.cnb_golden_set_judge before evaluation"
         )
-    logger.info("Evaluating %s fixtures stage=%s", len(fixtures), args.stage)
+    logger.info("Evaluating %s fixtures stages=%s", len(fixtures), ",".join(stages))
     reports = []
     # Keep provider load bounded: one fixture and one judge request at a time.
     for loaded in fixtures:
@@ -161,77 +148,94 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
             await _evaluate_fixture(
                 loaded,
                 settings,
-                args.stage,
+                stages,
                 args.output_dir / "outputs" / loaded.fixture.fixture_id,
             )
         )
+    models = settings.llm.models
     return GoldenSetReport(
         generated_at=datetime.now(UTC).isoformat(),
         analysis_contract_version=source_analysis_contract_version(settings),
-        judge_prompt_versions=judge_prompt_versions(settings),
+        judge_prompt_versions=judge_prompt_versions(settings, stages),
         models={
-            "source_reader": _model_summary(settings.llm.models.cnb_source_reader),
-            "source_synthesizer": _model_summary(
-                settings.llm.models.cnb_source_synthesizer
-            ),
+            "source_reader": _model_summary(models.cnb_source_reader),
+            "source_synthesizer": _model_summary(models.cnb_source_synthesizer),
             "chapter_drafter": _model_summary(
-                settings.llm.models.cnb_chapter_drafter
-                or settings.llm.models.cnb_source_synthesizer
+                models.cnb_chapter_drafter or models.cnb_source_synthesizer
             ),
-            "judge": _model_summary(settings.llm.models.cnb_golden_set_judge),
+            "chapter_validator": _model_summary(
+                models.cnb_chapter_validator or models.cnb_source_synthesizer
+            ),
+            "edit_planner": _model_summary(
+                models.cnb_chat_edit_planner or models.cnb_source_synthesizer
+            ),
+            "judge": _model_summary(models.cnb_golden_set_judge),
         },
         fixtures=reports,
     )
 
 
 async def _evaluate_fixture(
-    loaded: LoadedFixture, settings: Settings, stage: str, output_dir: Path
+    loaded: LoadedFixture, settings: Settings, stages: list[str], output_dir: Path
 ) -> FixtureReport:
-    """Generate once, evaluate each enabled path, and preserve upstream failures."""
+    """Run each enabled stage; extraction output feeds chapter writing."""
     output_dir.mkdir(parents=True, exist_ok=True)
+    fixture = loaded.fixture
     report = FixtureReport(
-        fixture_id=loaded.fixture.fixture_id,
-        source_sha256=loaded.fixture.source.sha256,
-        source_format=loaded.fixture.source.source_format,
+        fixture_id=fixture.fixture_id,
+        source_sha256=fixture.source.sha256,
+        source_format=fixture.source.source_format,
     )
+    problems = fixture_problems(loaded)
+    if problems:
+        invalid = StageReport(evaluation_errors=[f"invalid fixture: {p}" for p in problems])
+        for stage in stages:
+            setattr(report, stage, invalid)
+        return report
+
     source = None
-    if stage in {"source_analysis", "end_to_end", "all"}:
-        report.source_analysis, source = await _evaluate_source_analysis(
-            loaded, settings, output_dir
-        )
-    if stage in {"drafting", "all"} and loaded.fixture.drafting:
-        report.drafting = await _evaluate_drafting(
-            loaded, settings, output_dir / "drafting"
-        )
-    if stage in {"end_to_end", "all"} and loaded.fixture.drafting:
+    if "extraction" in stages:
+        report.extraction, source = await _evaluate_extraction(loaded, settings, output_dir)
+    if "chapter_writing" in stages and fixture.chapter_writing:
         if source is None:
-            report.end_to_end = StageReport(
-                evaluation_errors=["blocked: source analysis did not produce output"]
+            report.chapter_writing = StageReport(
+                evaluation_errors=["blocked: extraction did not produce output"]
             )
         else:
-            # Still draft when analysis has semantic findings so propagation is visible.
-            report.end_to_end = await _evaluate_drafting(
+            extraction = report.extraction.judgment if report.extraction else None
+            report.chapter_writing = await _evaluate_chapter_writing(
                 loaded,
                 settings,
-                output_dir / "end_to_end",
+                output_dir / "chapter_writing",
                 source,
+                extraction
+                if isinstance(extraction, JudgeEvaluation)
+                and not report.extraction.evaluation_errors
+                else None,
             )
+    if "verification" in stages and fixture.verification:
+        from app.services.cnb.golden_set_verification import evaluate_verification
+
+        report.verification = await evaluate_verification(
+            loaded, settings, output_dir / "verification", judge=judge_output
+        )
+    if "editing" in stages and fixture.editing:
+        from app.services.cnb.golden_set_editing import evaluate_editing
+
+        report.editing = await evaluate_editing(
+            loaded, settings, output_dir / "editing", judge=judge_output
+        )
     return report
 
 
-async def _evaluate_source_analysis(
+async def _evaluate_extraction(
     loaded: LoadedFixture, settings: Settings, output_dir: Path
 ) -> tuple[StageReport, SelectedSource | None]:
     """Analyze a source once; distinguish authentic excerpts from semantic support."""
-    problems = golden_evidence_problems(loaded)
-    if problems:
-        return StageReport(
-            evaluation_errors=[f"invalid fixture: {p}" for p in problems]
-        ), None
     fixture = loaded.fixture
     try:
         source = await analyze_document(
-            upload_id=_fixture_upload_id(fixture.fixture_id),
+            upload_id=golden_id(fixture.fixture_id, "upload"),
             filename=fixture.source.filename,
             source_label=fixture.source.source_label,
             sha256=fixture.source.sha256,
@@ -247,293 +251,51 @@ async def _evaluate_source_analysis(
     (output_dir / "analysis.json").write_text(
         source.model_dump_json(indent=2), encoding="utf-8"
     )
-    payload, integrity = source_judge_input(loaded, source)
-    return await _judge_stage(
-        loaded, payload, integrity, settings, output_dir / "source_analysis"
-    ), source
+    payload, integrity = extraction_judge_input(loaded, source)
+    judgment = await _judge(payload, settings, output_dir / "extraction")
+    if isinstance(judgment, StageReport):
+        judgment.integrity_failures = integrity
+        return judgment, source
+    return score_extraction(loaded, payload, judgment, integrity), source
 
 
-async def _judge_stage(
+async def _evaluate_chapter_writing(
     loaded: LoadedFixture,
-    payload: JudgeInput,
-    integrity: list[str],
     settings: Settings,
     output_dir: Path,
+    source: SelectedSource,
+    extraction: JudgeEvaluation | None,
 ) -> StageReport:
-    """Save a structured judgment and fail closed on provider/schema/reference errors."""
+    """Draft from fresh extraction, then judge transfer, support, and gap handling."""
+    try:
+        drafted, supplied = await write_chapters(loaded, settings, source)
+    except ChapterDraftingError:
+        return StageReport(evaluation_errors=["drafting_failed"])
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / "drafts.json").write_text(
+        json.dumps([c.as_json() for c in drafted], ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    payload, integrity = chapter_writing_judge_input(loaded, drafted, supplied)
+    judgment = await _judge(payload, settings, output_dir)
+    if isinstance(judgment, StageReport):
+        judgment.integrity_failures = integrity
+        return judgment
+    assert isinstance(judgment, ChapterWritingEvaluation)
+    return score_chapter_writing(loaded, payload, judgment, integrity, extraction)
+
+
+async def _judge(payload: JudgeInput, settings: Settings, output_dir: Path) -> Any:
+    """Save a structured judgment, or return an evaluation-error report."""
     try:
         judgment = await judge_output(payload, settings)
     except GoldenJudgeError as exc:
-        return StageReport(integrity_failures=integrity, evaluation_errors=[str(exc)])
+        return StageReport(evaluation_errors=[str(exc)])
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "judgment.json").write_text(
         judgment.model_dump_json(indent=2), encoding="utf-8"
     )
-    return score_judgment(loaded, payload, judgment, integrity)
-
-
-async def _evaluate_drafting(
-    loaded: LoadedFixture,
-    settings: Settings,
-    output_dir: Path,
-    analyzed_source: SelectedSource | None = None,
-) -> StageReport:
-    """Draft from frozen or fresh analysis, then judge truth and actual input support."""
-    stage: Stage = "drafting" if analyzed_source is None else "end_to_end"
-    application_context, run_context, chapters, templates = _drafting_workspace(
-        loaded, settings, analyzed_source
-    )
-    supplied: list[TextUnit] = []
-    try:
-        # Match production ordering; previous chapters influence generation, never evidence.
-        for index, chapter in enumerate(chapters):
-            payload = build_chapter_input(
-                application_context=application_context,
-                run_context=run_context,
-                current=chapter,
-                template_chapter=templates[index],
-                chapters=chapters,
-            )
-            inputs = {
-                key: value
-                for key, value in payload.items()
-                if key
-                not in {
-                    "previous_chapters",
-                    "current_body_markdown",
-                    "chapter",
-                    "existing_open_gaps",
-                }
-            }
-            # A producer's own summary is never evidence for evaluating its draft.
-            inputs = deepcopy(inputs)
-            for source in inputs["run_context"]["context_bundle"]["selected_sources"]:
-                source.pop("summary", None)
-            supplied += _text_units(
-                inputs,
-                f"supplied/{chapter.chapter_ref}",
-                "supplied",
-                chapter.chapter_ref,
-            )
-            generated = await generate_chapter_draft(payload, settings=settings)
-            chapters[index] = replace(chapter, body_markdown=generated.body_markdown)
-            logger.info(
-                "Golden drafting fixture=%s stage=%s chapter=%s/%s",
-                loaded.fixture.fixture_id,
-                stage,
-                index + 1,
-                len(chapters),
-            )
-    except ChapterDraftingError:
-        return StageReport(evaluation_errors=["drafting_failed"])
-
-    # Authoritative truth excludes the generated/frozen selected_source analysis.
-    frozen = load_drafting_input(loaded)
-    context = {
-        "cc_context": frozen.cc_context,
-        "funder": frozen.funder,
-        "opportunity": frozen.opportunity,
-    }
-    outputs = [
-        TextUnit(
-            id=f"chapter/{c.chapter_ref}",
-            text=c.body_markdown or "",
-            kind="output",
-            chapter_ref=c.chapter_ref,
-        )
-        for c in chapters
-    ]
-    output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "drafts.json").write_text(
-        json.dumps(
-            [unit.model_dump() for unit in outputs], ensure_ascii=False, indent=2
-        ),
-        encoding="utf-8",
-    )
-    golden = loaded.fixture.drafting
-    judge_input = JudgeInput(
-        stage=stage,
-        expected_facts=[
-            ExpectedFact(
-                id=f.id, statement=f.statement, required=f.required, chapters=f.chapters
-            )
-            for f in golden.facts
-        ],
-        expected_topics=[],
-        chapter_requirements=[
-            ChapterRequirement(
-                chapter_ref=t.chapter_ref,
-                title=t.title,
-                description=t.description or "",
-                required=t.required,
-            )
-            for t in templates
-        ],
-        outputs=outputs,
-        evidence=[
-            *source_evidence(loaded),
-            *_text_units(context, "context", "context"),
-            *_share_common_inputs(supplied, {c.chapter_ref for c in chapters}),
-        ],
-    )
-    integrity = [
-        f"empty chapter: {unit.chapter_ref}"
-        for unit in outputs
-        if not unit.text.strip()
-    ]
-    expected_ids = [t.chapter_ref for t in templates]
-    actual_ids = [unit.chapter_ref for unit in outputs]
-    if actual_ids != expected_ids or len(set(actual_ids)) != len(actual_ids):
-        integrity.append("missing, duplicate, or unexpected chapter IDs")
-    return await _judge_stage(loaded, judge_input, integrity, settings, output_dir)
-
-
-def _share_common_inputs(
-    units: list[TextUnit], chapter_refs: set[str]
-) -> list[TextUnit]:
-    """Send identical inputs shared by every chapter once, preserving access scope."""
-    grouped: dict[tuple[str, str], list[TextUnit]] = {}
-    for unit in units:
-        # Remove only the supplied/chapter prefix; preserve the semantic field path.
-        field = unit.id.split("/", 2)[2]
-        grouped.setdefault((field, unit.text), []).append(unit)
-    shared: list[TextUnit] = []
-    for (field, _), group in grouped.items():
-        if {unit.chapter_ref for unit in group} == chapter_refs:
-            shared.append(
-                group[0].model_copy(
-                    update={"id": f"supplied/shared/{field}", "chapter_ref": None}
-                )
-            )
-        else:
-            shared.extend(group)
-    return shared
-
-
-def _text_units(
-    value: Any, prefix: str, kind: str, chapter_ref: str | None = None
-) -> list[TextUnit]:
-    """Flatten actual JSON leaves into referenceable text without escaped source prose."""
-    units: list[TextUnit] = []
-    if isinstance(value, dict):
-        for key, item in value.items():
-            units += _text_units(item, f"{prefix}/{key}", kind, chapter_ref)
-    elif isinstance(value, list):
-        for index, item in enumerate(value):
-            units += _text_units(item, f"{prefix}/{index}", kind, chapter_ref)
-    elif value is not None:
-        text = (
-            value if isinstance(value, str) else json.dumps(value, ensure_ascii=False)
-        )
-        if text.strip():
-            units.append(
-                TextUnit(id=prefix, text=text, kind=kind, chapter_ref=chapter_ref)
-            )
-    return units
-
-
-def _drafting_workspace(
-    loaded: LoadedFixture,
-    settings: Settings,
-    analyzed_source: SelectedSource | None = None,
-) -> tuple[
-    ConceptNoteApplicationContextResponse,
-    dict[str, Any],
-    list[WorkspaceChapterSnapshot],
-    list[WorkspaceTemplateChapter],
-]:
-    """Build production inputs with reviewed context and frozen or fresh analysis."""
-    fixture = loaded.fixture
-    drafting_input = load_drafting_input(loaded)
-    upload_id = _fixture_upload_id(fixture.fixture_id)
-    run_id = uuid5(NAMESPACE_URL, f"cnb-golden-set/{fixture.fixture_id}/run")
-    city_id = uuid5(NAMESPACE_URL, f"cnb-golden-set/{fixture.fixture_id}/city")
-    is_pdf = fixture.source.source_format == "pdf"
-
-    # Rebuild the bundle exactly as a completed context build would persist it.
-    selected_source = SelectedSource.model_validate(
-        {
-            **drafting_input.selected_source,
-            "upload_id": upload_id,
-            "source_label": fixture.source.source_label,
-            "filename": fixture.source.filename,
-            "sha256": fixture.source.sha256,
-            "source_format": fixture.source.source_format,
-            "page_count": len(loaded.units) if is_pdf else None,
-            "block_count": None if is_pdf else len(loaded.units),
-        }
-    )
-    if analyzed_source is not None:
-        selected_source = analyzed_source
-    source_text = source_text_context(
-        [
-            SourceDocumentText(
-                upload_id=upload_id,
-                source_label=fixture.source.source_label,
-                filename=fixture.source.filename,
-                source_format=fixture.source.source_format,
-                text=render_source_text(loaded.units),
-            )
-        ],
-        settings,
-    )
-    bundle = ConceptNoteContextBundle(
-        selected_sources=[selected_source],
-        cc_context=BundleCcContext.model_validate(drafting_input.cc_context),
-        source_text=source_text,
-    )
-    run = ConceptNoteRun(
-        run_id=run_id,
-        name=drafting_input.run_name,
-        city_id=str(city_id),
-        project_id=None,
-        context_summary={},
-    )
-
-    # Mirror the application context and empty workspace a new run drafts into.
-    application_context = ConceptNoteApplicationContextResponse(
-        run_id=run_id,
-        city_id=city_id,
-        funder=ApplicationContextFunder(
-            id=uuid5(NAMESPACE_URL, f"cnb-golden-set/{fixture.fixture_id}/funder"),
-            name=drafting_input.funder,
-        ),
-        opportunity=ApplicationContextOpportunity(
-            id=uuid5(NAMESPACE_URL, f"cnb-golden-set/{fixture.fixture_id}/opportunity"),
-            name=drafting_input.opportunity,
-        ),
-        template=ApplicationContextTemplate(
-            id=uuid5(NAMESPACE_URL, f"cnb-golden-set/{fixture.fixture_id}/template"),
-            name=drafting_input.template_name,
-            chapter_schema=drafting_input.chapter_schema,
-            required_fields=drafting_input.required_fields,
-        ),
-        included_sources=included_sources_from_bundle(bundle),
-    )
-    templates = normalize_template_chapters(drafting_input.chapter_schema)
-    chapters = [
-        WorkspaceChapterSnapshot(
-            chapter_id=uuid5(
-                NAMESPACE_URL,
-                f"cnb-golden-set/{fixture.fixture_id}/{template.chapter_ref}",
-            ),
-            chapter_ref=template.chapter_ref,
-            title=template.title,
-            position=position,
-            status="pending",
-            required=template.required,
-            user_locked=False,
-            body_markdown=None,
-            description=template.description,
-        )
-        for position, template in enumerate(templates)
-    ]
-    return application_context, build_run_context(run, bundle), chapters, templates
-
-
-def _fixture_upload_id(fixture_id: str) -> UUID:
-    """Give the public fixture a stable synthetic upload identity."""
-    return uuid5(NAMESPACE_URL, f"cnb-golden-set/{fixture_id}/upload")
+    return judgment
 
 
 def _model_summary(model: ResearchModelConfig) -> dict[str, str | None]:
@@ -542,7 +304,7 @@ def _model_summary(model: ResearchModelConfig) -> dict[str, str | None]:
 
 
 def render_markdown(report: GoldenSetReport) -> str:
-    """Show stage metrics and reviewable verdicts without copying source documents."""
+    """Show stage metrics and failures without copying source documents."""
     lines = [
         f"# CNB golden set: {'PASS' if report.passed else 'FAIL'}",
         "",
@@ -561,66 +323,70 @@ def render_markdown(report: GoldenSetReport) -> str:
             f"## {fixture.fixture_id}: {'PASS' if fixture.passed else 'FAIL'}",
             f"Source `{fixture.source_format}` SHA-256 `{fixture.source_sha256}`.",
         ]
-        for name in ("source_analysis", "drafting", "end_to_end"):
+        for name in STAGES:
             stage = getattr(fixture, name)
-            if stage is None:
-                continue
-            lines += ["", f"### {name}: {'PASS' if stage.passed else 'FAIL'}"]
-            scope = (
-                "retained source quotations"
-                if name == "source_analysis"
-                else "complete generated chapters"
-            )
-            lines.append(
-                f"Fact coverage is evaluated in **{scope}**; generated source summaries are excluded."
-            )
-            if "required_fact_coverage" in stage.metrics:
-                counts = [
-                    f"{int(stage.metrics[f'required_facts_{verdict}'])} {label}"
-                    for verdict, label in (
-                        ("covered", "fully covered"),
-                        ("partially_covered", "partially covered"),
-                        ("missing", "missing"),
-                        ("contradicted", "contradicted"),
-                    )
-                ]
-                lines.append("Required facts: **" + " · ".join(counts) + "**.")
-            for metric, value in stage.metrics.items():
-                if metric == "required_fact_coverage":
-                    lines.append(f"- Fully covered required facts: {value:.1%}")
-                elif not metric.startswith("required_facts_"):
-                    lines.append(f"- {metric}: {value:.2f}")
-            for label, findings in (
-                ("Integrity", stage.integrity_failures),
-                ("Semantic", stage.semantic_failures),
-                ("Evaluation error", stage.evaluation_errors),
-            ):
-                lines += [f"- **{label}:** {_snippet(item)}" for item in findings]
-            if stage.judgment:
-                if stage.evaluation_errors:
-                    lines.append(
-                        "Judgment invalid; metrics withheld. Findings below are untrusted."
-                    )
-                for group in (stage.judgment.facts, stage.judgment.topics):
-                    for item in group:
-                        lines.append(
-                            f"- {item.id}: **{item.verdict}** — {_snippet(item.reason)}"
-                        )
-                for claim in stage.judgment.claims:
-                    lines += [
-                        f"- Claim in `{claim.output.unit_id}`: {_snippet(claim.output.quote)}",
-                        f"  - Truth: **{claim.verdict}**; supplied evidence: **{claim.supplied_verdict or 'not applicable'}**; self-contained: {claim.self_contained}.",
-                        f"  - {_snippet(claim.reason)}",
-                    ]
-                    for ref in [*claim.evidence, *claim.supplied_evidence]:
-                        lines.append(
-                            f"  - Evidence `{ref.unit_id}`: {_snippet(ref.quote)}"
-                        )
-                for chapter in stage.judgment.chapters:
-                    lines.append(
-                        f"- Chapter `{chapter.chapter_ref}`: **{chapter.verdict}** — {_snippet(chapter.reason)}"
-                    )
+            if stage is not None:
+                lines += _render_stage(name, stage)
     return "\n".join(lines) + "\n"
+
+
+def _render_stage(name: str, stage: StageReport) -> list[str]:
+    """One stage: counts, metrics, failures, then the judge's verdict list."""
+    lines = ["", f"### {name}: {'PASS' if stage.passed else 'FAIL'}"]
+    if "required_fact_coverage" in stage.metrics:
+        counts = [
+            f"{int(stage.metrics[f'required_facts_{verdict}'])} {label}"
+            for verdict, label in (
+                ("covered", "fully covered"),
+                ("partially_covered", "partially covered"),
+                ("missing", "missing"),
+                ("contradicted", "contradicted"),
+            )
+        ]
+        lines.append("Required facts: **" + " · ".join(counts) + "**.")
+    for metric, value in stage.metrics.items():
+        if not metric.startswith(("required_facts_", "required_gaps_")):
+            lines.append(f"- {metric}: {value:.2f}")
+    for label, findings in (
+        ("Integrity", stage.integrity_failures),
+        ("Semantic", stage.semantic_failures),
+        ("Evaluation error", stage.evaluation_errors),
+    ):
+        lines += [f"- **{label}:** {_snippet(item)}" for item in findings]
+    for record in stage.details.get("transfer", []):
+        lines.append(
+            f"- Transfer `{record['fact']}`: extraction **{record['extraction_verdict']}**"
+            f" → draft **{record['draft_verdict']}** ({record['outcome']})"
+        )
+    if stage.judgment is not None:
+        if stage.evaluation_errors:
+            lines.append("Judgment invalid; metrics withheld. Findings below are untrusted.")
+        lines += _render_verdicts(stage.judgment.model_dump(mode="json"))
+    return lines
+
+
+def _render_verdicts(value: Any, depth: int = 0) -> list[str]:
+    """List every verdict-bearing item, recursing into per-case judgments."""
+    lines: list[str] = []
+    for key, items in value.items():
+        if not isinstance(items, list):
+            continue
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            label = item.get("id") or item.get("unit_id") or item.get("chapter_ref") or item.get("case_id")
+            if label is None and "output" in item:
+                label = item["output"]["unit_id"]
+            if "verdict" in item:
+                lines.append(
+                    f"{'  ' * depth}- {key} `{label}`: **{item['verdict']}** — {_snippet(item.get('reason', ''))}"
+                )
+            elif "case_id" in item:
+                lines.append(f"{'  ' * depth}- case `{label}`")
+                lines += _render_verdicts(item, depth + 1)
+            elif "reason" in item:
+                lines.append(f"{'  ' * depth}- {key}: {_snippet(item['reason'])}")
+    return lines
 
 
 def _snippet(text: str) -> str:

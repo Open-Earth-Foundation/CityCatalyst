@@ -156,10 +156,19 @@ jobs:
   # Live-model grounding evaluation; gates are documented in
   # climate-advisor/service/tests/fixtures/cnb_golden_set/README.md.
   cnbGoldenSet:
-    name: CNB grounding golden set
+    name: CNB golden set (${{ matrix.fixture }})
     if: github.event_name != 'push'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # Four stages per document (extraction, chapter writing, verification,
+    # editing); documents run in parallel.
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        fixture:
+          - harbor-point-heat-resilience
+          - krakow-flood-drainage-plan
+          - richfield-flood-risk
     env:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       CA_LOG_LEVEL: info
@@ -188,26 +197,27 @@ jobs:
         run: |
           uv sync --locked
 
-      - name: Evaluate source analysis and chapter drafting
+      - name: Evaluate extraction, chapter writing, verification and editing
         working-directory: climate-advisor
         run: |
           uv run --directory service python -m scripts.evaluate_cnb_golden_set \
-                 --output-dir ../output/cnb_golden_set
+                 --fixture "${{ matrix.fixture }}" \
+                 --output-dir "../output/cnb_golden_set/${{ matrix.fixture }}"
 
       - name: Publish golden-set report
         if: always()
         working-directory: climate-advisor
         run: |
-          if [ -f output/cnb_golden_set/report.md ]; then
-            cat output/cnb_golden_set/report.md >> "$GITHUB_STEP_SUMMARY"
+          if [ -f "output/cnb_golden_set/${{ matrix.fixture }}/report.md" ]; then
+            cat "output/cnb_golden_set/${{ matrix.fixture }}/report.md" >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Upload golden-set outputs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cnb-golden-set
-          path: climate-advisor/output/cnb_golden_set
+          name: cnb-golden-set-${{ matrix.fixture }}
+          path: climate-advisor/output/cnb_golden_set/${{ matrix.fixture }}
           if-no-files-found: ignore
 
   pushToGHCR:

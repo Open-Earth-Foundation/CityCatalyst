@@ -2226,9 +2226,12 @@ Rules:
   and numeric `error_details` alongside `error_code`. The workspace derives
   chat and draft notices from one shared upload/context status, including
   pending uploads that have not yet reached the bundle. Pending uploads, a failed
-  current upload, and bundle preparation/failure block chat. Older failed uploads
-  are superseded by a newer successful upload and excluded from readiness counts.
-  Ready document context unlocks chat automatically, including after reload.
+  current upload, and bundle preparation/failure block chat submission. With an
+  active thread, the composer remains editable while submission is blocked.
+  Send and Enter wait for readiness; the draft is preserved and never auto-sent.
+  Older failed uploads are superseded by a newer successful upload and excluded
+  from readiness counts. Ready document context unlocks submission automatically,
+  including after reload.
 - `POST /v1/messages` checks the request/thread's owned CNB run before saving a
   user turn or starting SSE. Its persisted bundle must be ready and contain the
   current ready uploads with matching IDs/digests, with no pending uploads or

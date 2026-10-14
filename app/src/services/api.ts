@@ -101,6 +101,7 @@ import type {
   HiapJob,
   ImportedFileResponse,
   ImportStatusResponse,
+  ImportRowPreview,
   VersionHistoryResponse,
   UserOrganizationsResponse,
   OCCityAttributes,
@@ -1304,7 +1305,7 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: InventoryAttributes }) =>
           response.data,
-        invalidatesTags: ["Inventory", "Inventories"],
+        invalidatesTags: ["Inventory", "Inventories", "InventoryProgress"],
       }),
       updatePassword: builder.mutation({
         query: (data) => ({
@@ -2268,12 +2269,39 @@ export const api = createApi({
       }),
       getImportStatus: builder.query<
         ImportStatusResponse,
-        { cityId: string; inventoryId: string; importedFileId: string }
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+          mappingOverrides?: Record<string, unknown>;
+        }
       >({
-        query: ({ cityId, inventoryId, importedFileId }) =>
-          `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
+        query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
+          params: mappingOverrides
+            ? { mappingOverrides: JSON.stringify(mappingOverrides) }
+            : undefined,
+        }),
         transformResponse: (response: { data: ImportStatusResponse }) =>
           response.data,
+      }),
+      getImportRowPreview: builder.query<
+        ImportRowPreview,
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+          mappingOverrides: Record<string, string>;
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}/row-preview`,
+          method: "POST",
+          body: { mappingOverrides },
+        }),
+        transformResponse: (response: { data: ImportRowPreview }) =>
+          response.data,
+        providesTags: ["Inventory"],
       }),
       extractImport: builder.mutation<
         | { id: string; importStatus: string; rowCount: number }

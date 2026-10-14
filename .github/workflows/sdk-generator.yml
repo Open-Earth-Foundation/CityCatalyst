@@ -2,8 +2,10 @@ name: SDK Generator
 
 on:
   push:
+    branches:
+      - "develop"
     paths:
-      - "app/src/api/**"
+      - "app/src/app/api/**"
       - ".github/workflows/sdk-generator.yml"
   workflow_dispatch:
 

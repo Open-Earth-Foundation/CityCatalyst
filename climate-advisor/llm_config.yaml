@@ -156,6 +156,10 @@ streaming:
   retry_attempts: 2
   retry_delay_ms: 500
 
+# Streamed chat execution bounds. Override locally with CHAT_MAX_AGENT_TURNS.
+chat:
+  max_agent_turns: 16
+
 # Tool Configuration
 tools:
   # Offline Concept Note Builder web research

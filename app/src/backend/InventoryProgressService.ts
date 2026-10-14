@@ -3,6 +3,7 @@ import { db } from "@/models";
 import INVENTORY_STRUCTURE from "../data/inventory-structure.json";
 import fs from "fs";
 import { Inventory } from "@/models/Inventory";
+import type { InventoryValue } from "@/models/InventoryValue";
 import * as path from "path";
 import * as process from "node:process";
 import {
@@ -12,6 +13,29 @@ import {
 } from "@/util/constants";
 import { InventoryTypeEnum } from "@/util/enums";
 import { isNotEstimated, isNotOccurring } from "@/util/notation-keys";
+
+// Sectors whose completion is tracked per subcategory; IV and V are per subsector.
+const SUBCATEGORY_SECTORS = ["I", "II", "III"];
+const GPC_SECTORS = new Set(SECTORS.map((sector) => sector.referenceNumber));
+
+function isRequiredScope(
+  scopeName: string | null | undefined,
+  allowedScopes: number[],
+): boolean {
+  return !!scopeName && allowedScopes.includes(parseInt(scopeName));
+}
+
+// Lower wins when several stored rows map to the same required GPC unit.
+function valuePriority(inventoryValue: InventoryValue): number {
+  if (inventoryValue.dataSource) return 0;
+  if (
+    isNotEstimated(inventoryValue.unavailableReason) ||
+    isNotOccurring(inventoryValue.unavailableReason)
+  ) {
+    return 2;
+  }
+  return 1;
+}
 
 const romanTable: Record<string, number> = {
   I: 1,
@@ -95,94 +119,96 @@ export default class InventoryProgressService {
         })),
       }));
 
-    const sectorTotals: Record<string, number> = filteredOutSectors.reduce(
-      (acc, sector) => {
-        const subCategoryCount = sector.subSectors.reduce(
-          (count, subSector) => {
-            const possibleScopesForInventoryType =
-              getScopesForInventoryAndSector(
-                inventory.inventoryType as InventoryTypeEnum,
-                sector.referenceNumber!,
-              );
-            const subCategoryCount = subSector.subCategories.filter(
-              (subcategory) => {
-                const scope = subcategory.scopeName;
-
-                if (!scope) {
-                  return false;
-                }
-
-                return possibleScopesForInventoryType.includes(parseInt(scope));
-              },
-            ).length;
-
-            return count + subCategoryCount;
-          },
-          0,
-        ); // the issue with this is that it is not taking into account the inventory type
-        acc[sector.sectorId] = ["I", "II", "III"].includes(
-          sector.referenceNumber!,
-        )
-          ? subCategoryCount
-          : sector.subSectors.length;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
     const sectorProgress = filteredOutSectors.map((sector) => {
-      const inventoryValues = inventory.inventoryValues.filter(
-        (inventoryValue) => sector.sectorId === inventoryValue.sectorId,
+      // Completion counts each required GPC unit once: subcategories for
+      // sectors I-III, subsectors for IV-V. Stored rows outside the inventory
+      // type (e.g. imported Scope 3 rows in a GPC BASIC inventory) are ignored
+      // so they cannot push completion above 100%.
+      const countsSubCategories = SUBCATEGORY_SECTORS.includes(
+        sector.referenceNumber!,
+      );
+      const allowedScopes = getScopesForInventoryAndSector(
+        inventory.inventoryType as InventoryTypeEnum,
+        sector.referenceNumber!,
+      );
+      const requiredUnitsBySubSector = new Map<string, string[]>(
+        sector.subSectors.map((subSector) => [
+          subSector.subsectorId,
+          countsSubCategories
+            ? subSector.subCategories
+                .filter((subCategory) =>
+                  isRequiredScope(subCategory.scopeName, allowedScopes),
+                )
+                .map((subCategory) => subCategory.subcategoryId)
+            : [subSector.subsectorId],
+        ]),
+      );
+      const subCategoryIdsByReference = new Map<string, string>(
+        sector.subSectors.flatMap((subSector) =>
+          subSector.subCategories
+            .filter((subCategory) => !!subCategory.referenceNumber)
+            .map(
+              (subCategory) =>
+                [subCategory.referenceNumber!, subCategory.subcategoryId] as [
+                  string,
+                  string,
+                ],
+            ),
+        ),
+      );
+      const requiredUnits = new Set(
+        [...requiredUnitsBySubSector.values()].flat(),
       );
 
-      let sectorCounts = {
+      const valuesByUnit = new Map<string, InventoryValue>();
+      for (const inventoryValue of inventory.inventoryValues) {
+        if (inventoryValue.sectorId !== sector.sectorId) {
+          continue;
+        }
+        const unitId = countsSubCategories
+          ? (inventoryValue.subCategoryId ??
+            subCategoryIdsByReference.get(
+              inventoryValue.gpcReferenceNumber ?? "",
+            ))
+          : inventoryValue.subSectorId;
+        if (!unitId || !requiredUnits.has(unitId)) {
+          continue;
+        }
+        const current = valuesByUnit.get(unitId);
+        if (
+          !current ||
+          valuePriority(inventoryValue) < valuePriority(current)
+        ) {
+          valuesByUnit.set(unitId, inventoryValue);
+        }
+      }
+
+      const sectorCounts = {
         thirdParty: 0,
         uploaded: 0,
         reasonNE: 0,
         reasonNO: 0,
       };
-      if (inventoryValues) {
-        sectorCounts = inventoryValues.reduce(
-          (acc, inventoryValue) => {
-            if (inventoryValue.dataSource) {
-              acc.thirdParty++;
-            } else if (isNotEstimated(inventoryValue.unavailableReason)) {
-              acc.reasonNE++;
-            } else if (isNotOccurring(inventoryValue.unavailableReason)) {
-              acc.reasonNO++;
-            } else {
-              acc.uploaded++;
-            }
-            return acc;
-          },
-          { thirdParty: 0, uploaded: 0, reasonNE: 0, reasonNO: 0 },
-        );
+      for (const inventoryValue of valuesByUnit.values()) {
+        if (inventoryValue.dataSource) {
+          sectorCounts.thirdParty++;
+        } else if (isNotEstimated(inventoryValue.unavailableReason)) {
+          sectorCounts.reasonNE++;
+        } else if (isNotOccurring(inventoryValue.unavailableReason)) {
+          sectorCounts.reasonNO++;
+        } else {
+          sectorCounts.uploaded++;
+        }
       }
 
       // add completed field to subsectors if there is a value for it
       const subSectors = sector.subSectors.map((subSector) => {
-        const subCategoryCount =
-          subSector.referenceNumber?.includes("IV") ||
-          subSector.referenceNumber?.includes("V")
-            ? 1
-            : subSector.subCategories.length;
-        const inventoryTypeSubCategoryCount =
-          SECTORS.find(
-            (sectorConstant) =>
-              sectorConstant.referenceNumber === sector.referenceNumber,
-          )?.inventoryTypes[inventory.inventoryType as InventoryTypeEnum]
-            ?.scopes.length ?? 1;
-        const totalCount = Math.min(
-          subCategoryCount,
-          inventoryTypeSubCategoryCount,
-        ); // TODO remove this when scope 3 is added back for SECTOR 1 and 2 in BASIC+;
-        let completedCount = 0;
-        if (inventoryValues?.length > 0) {
-          const currentSubSectorValues = inventoryValues.filter(
-            (inventoryValue) =>
-              inventoryValue.subSectorId === subSector.subsectorId,
-          );
-          completedCount = currentSubSectorValues.length;
-        }
+        const subSectorUnits =
+          requiredUnitsBySubSector.get(subSector.subsectorId) ?? [];
+        const totalCount = subSectorUnits.length;
+        const completedCount = subSectorUnits.filter((unitId) =>
+          valuesByUnit.has(unitId),
+        ).length;
 
         return {
           completed: completedCount === totalCount,
@@ -199,7 +225,7 @@ export default class InventoryProgressService {
 
       return {
         sector: sector,
-        total: sectorTotals[sector.sectorId],
+        total: requiredUnits.size,
         subSectors,
         ...sectorCounts,
       };
@@ -222,6 +248,61 @@ export default class InventoryProgressService {
       totalProgress,
       sectorProgress,
     };
+  }
+
+  /**
+   * Returns the distinct GPC reference numbers that exist in the GPC taxonomy
+   * but are not required for the inventory type, e.g. Scope 3 or IPPU rows in
+   * a GPC BASIC inventory. Unknown references are left to import validation.
+   */
+  public static async findReferencesOutsideInventoryType(
+    inventoryType: InventoryTypeEnum | undefined,
+    gpcReferenceNumbers: string[],
+  ): Promise<string[]> {
+    if (!inventoryType) {
+      return [];
+    }
+    const sectors = await this.getSortedInventoryStructure();
+    const knownReferences = new Set<string>();
+    const requiredReferences = new Set<string>();
+    for (const sector of sectors) {
+      if (!GPC_SECTORS.has(sector.referenceNumber!)) {
+        continue;
+      }
+      const countsSubCategories = SUBCATEGORY_SECTORS.includes(
+        sector.referenceNumber!,
+      );
+      const allowedScopes = getScopesForInventoryAndSector(
+        inventoryType,
+        sector.referenceNumber!,
+      );
+      for (const subSector of sector.subSectors) {
+        // Sectors IV-V are required per subsector, so any of their references
+        // follows the sector's inventory type.
+        const subSectorRequired = allowedScopes.length > 0;
+        if (!countsSubCategories && subSector.referenceNumber) {
+          knownReferences.add(subSector.referenceNumber);
+          if (subSectorRequired)
+            requiredReferences.add(subSector.referenceNumber);
+        }
+        for (const subCategory of subSector.subCategories) {
+          if (!subCategory.referenceNumber) continue;
+          knownReferences.add(subCategory.referenceNumber);
+          const required = countsSubCategories
+            ? isRequiredScope(subCategory.scope?.scopeName, allowedScopes)
+            : subSectorRequired;
+          if (required) requiredReferences.add(subCategory.referenceNumber);
+        }
+      }
+    }
+
+    const references = new Set(
+      gpcReferenceNumbers.map((reference) => reference.trim()),
+    );
+    return [...references].filter(
+      (reference) =>
+        knownReferences.has(reference) && !requiredReferences.has(reference),
+    );
   }
 
   private static romanNumeralComparison(sectorA: Sector, sectorB: Sector) {

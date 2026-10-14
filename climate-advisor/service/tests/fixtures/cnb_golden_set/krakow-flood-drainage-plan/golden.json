@@ -1,0 +1,726 @@
+{
+  "fixture_id": "krakow-flood-drainage-plan",
+  "description": "PDF-derived Markdown of Kraków's 2023-2035 Flood Mitigation and City Drainage Plan (Polish), drafted into a seven-section Polish FEnIKS climate-adaptation application, then verified and edited.",
+  "source": {
+    "original_pdf": {
+      "path": "source.pdf",
+      "sha256": "09127de8465772d71713759654aed332a3c09fe75c6c562defeea29aed87bab8",
+      "url": "https://bip.krakow.pl/_inc/rada/show_pdfdoc.php?id=133384",
+      "notes": "Unmodified annex to the Kraków City Council resolution as printed for the Council; no personal data."
+    },
+    "path": "source.md",
+    "filename": "Plan_Ograniczenia_Skutkow_Powodzi_Odwodnienia_Krakowa_2023-2035.pdf",
+    "source_label": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa",
+    "source_format": "pdf",
+    "language": "pl",
+    "page_count": 30,
+    "sha256": "524d1a70bfaaca436e545998f315cb9f20f720b35e6d8abd02f04c217fee6c28",
+    "provenance": "Mistral OCR (mistral-ocr-latest) of the public annex to the Kraków City Council resolution, as printed for the Council (bip.krakow.pl show_pdfdoc id=133384) and adopted as resolution CXXIV/3390/23 of 6 December 2023; assembled with the CityCatalyst page-marker, header/footer, and table rules. Official documents are excluded from copyright under art. 4 of the Polish Copyright Act. No personal data."
+  },
+  "extraction": {
+    "facts": [
+      {
+        "id": "plan-horizon",
+        "statement": "The plan covers the years 2023-2035.",
+        "evidence": [
+          {
+            "text": "a) Horyzont czasowy: lata „2023-2035”",
+            "locators": [
+              {
+                "page": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "coordinator",
+        "statement": "The plan is coordinated by the City Office department responsible for municipal economy and climate, and the main implementer of municipal tasks is Klimat-Energia-Gospodarka Wodna (KEGW).",
+        "evidence": [
+          {
+            "text": "b) Koordynator: Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu",
+            "locators": [
+              {
+                "page": 1
+              }
+            ]
+          },
+          {
+            "text": "c) Główny realizujący zadania gminne: Klimat-Energia-Gospodarka Wodna we współpracy z innymi jednostkami miejskimi",
+            "locators": [
+              {
+                "page": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "update-of-2018-plan",
+        "statement": "The plan updates the flood and drainage plan adopted by Council resolution CXV/3043/18 of 7 November 2018.",
+        "required": false,
+        "evidence": [
+          {
+            "text": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa przyjęty uchwałą Nr CXV/3043/18 Rady Miasta Krakowa z dnia 7 listopada 2018 r. w sprawie realizacji Planu Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wymagał aktualizacji.",
+            "locators": [
+              {
+                "page": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "protection-standard",
+        "statement": "Kraków's flood defences should protect against a flood with a 0.1% probability (the 1,000-year flood).",
+        "evidence": [
+          {
+            "text": "poziom bezpieczeństwa budowli ochronnych Krakowa powinien osiągnąć zabezpieczenie przed wezbraniem o prawdopodobieństwie wystąpienia Q=0,1% (woda tysiącletnia)",
+            "locators": [
+              {
+                "page": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "three-threat-levels",
+        "statement": "The main flood threat comes from the Vistula; internal urban streams flood the areas behind the levees when flood gates close during Vistula floods because no pumping stations serve them.",
+        "evidence": [
+          {
+            "text": "Główne zagrożenie powodziowe Krakowa generuje rzeka Wisła zasilana bardzo dużą zlewnią górską i podgórską powyżej miasta.",
+            "locators": [
+              {
+                "page": 2
+              }
+            ]
+          },
+          {
+            "text": "Zamknięcie śluz, wobec braku przepompowni dla tych wód, skutkuje wystąpieniem podtopień na terenach zawala.",
+            "locators": [
+              {
+                "page": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "specific-objectives",
+        "statement": "The plan has four specific objectives: reduce flood threats, ensure efficient flood crisis management, reduce the risk of local flooding during intense rainfall and river floods, and ensure sustainable rainwater management.",
+        "evidence": [
+          {
+            "text": "Cel szczegółowy I – ograniczyć zagrożenia powodziowe;",
+            "locators": [
+              {
+                "page": 5
+              }
+            ]
+          },
+          {
+            "text": "Cel szczegółowy II – zapewnić sprawne zarządzanie kryzysowe w sytuacji zagrożenia powodziowego;",
+            "locators": [
+              {
+                "page": 5
+              }
+            ]
+          },
+          {
+            "text": "Cel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;",
+            "locators": [
+              {
+                "page": 5
+              }
+            ]
+          },
+          {
+            "text": "Cel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi.",
+            "locators": [
+              {
+                "page": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "high-water-pumping",
+        "statement": "Building pumping stations for high water levels (NWS) is estimated at PLN 82,400,000, implemented by KEGW by 2035.",
+        "required": false,
+        "evidence": [
+          {
+            "text": "Budowa pompowni na wysokie stany wód (NWS) (Nr działania w PZRP: W_GZW_2582)* | 82 400 000 | KEGW | Do 2035 r.",
+            "locators": [
+              {
+                "page": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "small-retention-programme",
+        "statement": "The Kraków Small Rainwater Retention Programme is budgeted at PLN 30,000,000 for 2023-2030 and implemented by the Air Quality Department (JP).",
+        "evidence": [
+          {
+            "text": "Krakowski Program Małej Retencji Wód Opadowych | 30 000 000 | JP | 2023-2030",
+            "locators": [
+              {
+                "page": 9
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "blue-green-infrastructure",
+        "statement": "Building blue and blue-green infrastructure, including small and micro retention and delayed runoff, is budgeted at PLN 6,000,000 by 2035, implemented by KEGW.",
+        "required": false,
+        "evidence": [
+          {
+            "text": "Realizacja infrastruktury błękitnej oraz błękitno-zielonej jako samodzielnych obiektów, a także w formie małej i mikroretencji oraz opóźniania odpływu | 6 000 000 | KEGW | 2035",
+            "locators": [
+              {
+                "page": 9
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "monitoring-indicator",
+        "statement": "The output indicator is the number of completed tasks within the city's competence, with a baseline of 0 and targets of 8, 5, 22 and 9 tasks for specific objectives I to IV.",
+        "evidence": [
+          {
+            "text": "Wskaźnik monitorowania produktowy: ilość zrealizowanych zadań leżących w kompetencjach Gminy Miejskiej Kraków.",
+            "locators": [
+              {
+                "page": 9
+              }
+            ]
+          },
+          {
+            "text": "Wartość bazowa = 0, kierunek zmian = wzrost, wartość oczekiwana: Cel szczegółowy I = 8, Cel szczegółowy II = 5, Cel szczegółowy III = 22, Cel szczegółowy IV = 9.",
+            "locators": [
+              {
+                "page": 9
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "financing-risk",
+        "statement": "Insufficient financing of the city drainage system is identified as a serious risk.",
+        "required": false,
+        "evidence": [
+          {
+            "text": "1) brak wystarczającego finansowania Miejskiego Systemu Odwodnienia Krakowa - ryzyko poważne;",
+            "locators": [
+              {
+                "page": 9
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "total-cost-city",
+        "statement": "The estimated cost of implementing the plan in 2023-2035 according to Table 1 is PLN 1,275,867,730.",
+        "evidence": [
+          {
+            "text": "Szacunkowy koszt wdrożenia Planu w latach 2023-2035 (zgodnie z tabelą 1) wynosi: **1 275 867 730 zł**.",
+            "locators": [
+              {
+                "page": 11
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "total-cost-with-pzrp",
+        "statement": "Including flood-risk management plan (PZRP) measures not implemented by the city, the total cost is PLN 3,260,819,885.",
+        "evidence": [
+          {
+            "text": "Uwzględniając koszt działań ujętych w Planie zarządzania ryzykiem powodziowym (tabela 2), dla których realizatorem nie jest Gmina Miejska Kraków, koszt ten łącznie wyniesie: **3 260 819 885 zł**.",
+            "locators": [
+              {
+                "page": 11
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cost-is-estimate",
+        "statement": "The costs are estimates that must be verified when investments are prepared.",
+        "required": false,
+        "evidence": [
+          {
+            "text": "Wysokość nakładów ma charakter szacunkowy i wymaga zweryfikowania na etapie przygotowania inwestycji.",
+            "locators": [
+              {
+                "page": 11
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "financing-sources",
+        "statement": "The plan is financed from the city budget and, where possible, from external funds.",
+        "evidence": [
+          {
+            "text": "Realizacja planu będzie finansowana z budżetu miasta oraz w miarę możliwości z funduszy zewnętrznych.",
+            "locators": [
+              {
+                "page": 11
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "topics": [
+      {
+        "id": "flood-risk",
+        "statement": "Flood risk to Kraków from the Vistula, its tributaries and internal urban streams."
+      },
+      {
+        "id": "urban-drainage",
+        "statement": "The city's stormwater drainage system, its problems and its modernisation."
+      },
+      {
+        "id": "rainwater-retention",
+        "statement": "Rainwater retention and blue-green infrastructure."
+      },
+      {
+        "id": "crisis-management",
+        "statement": "Flood crisis management, evacuation planning and public flood education."
+      },
+      {
+        "id": "costs-financing",
+        "statement": "Implementation costs and sources of financing."
+      },
+      {
+        "id": "monitoring-evaluation",
+        "statement": "Monitoring indicators, reporting and evaluation of the plan."
+      }
+    ]
+  },
+  "chapter_writing": {
+    "input": "drafting_input.json",
+    "facts": [
+      {
+        "id": "funding-programme",
+        "statement": "The application targets the FEnIKS 2021-2027 action FENX.01.02 on climate adaptation of urban areas.",
+        "origin": "application_context"
+      },
+      {
+        "id": "applicant-city",
+        "statement": "The applicant is the City of Kraków (Gmina Miejska Kraków).",
+        "origin": "context_bundle",
+        "chapters": [
+          "wnioskodawca"
+        ]
+      },
+      {
+        "id": "coordinator",
+        "statement": "The City Office department responsible for municipal economy and climate coordinates the plan, and KEGW is the main implementer of municipal tasks.",
+        "origin": "document",
+        "chapters": [
+          "wnioskodawca"
+        ],
+        "extraction_fact": "coordinator"
+      },
+      {
+        "id": "plan-horizon",
+        "statement": "The plan covers the years 2023-2035.",
+        "origin": "document",
+        "chapters": [
+          "informacje_o_projekcie",
+          "zadania"
+        ],
+        "extraction_fact": "plan-horizon"
+      },
+      {
+        "id": "three-threat-levels",
+        "statement": "The main flood threat comes from the Vistula, and internal urban streams flood areas behind the levees when flood gates close without pumping stations.",
+        "origin": "document",
+        "chapters": [
+          "uzasadnienie"
+        ],
+        "extraction_fact": "three-threat-levels"
+      },
+      {
+        "id": "specific-objectives",
+        "statement": "The four specific objectives cover flood threats, crisis management, local flooding risk, and sustainable rainwater management.",
+        "origin": "document",
+        "chapters": [
+          "informacje_o_projekcie",
+          "uzasadnienie"
+        ],
+        "extraction_fact": "specific-objectives"
+      },
+      {
+        "id": "small-retention-programme",
+        "statement": "The Kraków Small Rainwater Retention Programme is budgeted at PLN 30,000,000 for 2023-2030.",
+        "origin": "document",
+        "chapters": [
+          "zadania",
+          "budzet"
+        ],
+        "extraction_fact": "small-retention-programme"
+      },
+      {
+        "id": "blue-green-infrastructure",
+        "statement": "Blue and blue-green infrastructure with small and micro retention is budgeted at PLN 6,000,000 by 2035, implemented by KEGW.",
+        "origin": "document",
+        "required": false,
+        "chapters": [
+          "zadania",
+          "budzet"
+        ],
+        "extraction_fact": "blue-green-infrastructure"
+      },
+      {
+        "id": "total-cost-city",
+        "statement": "The estimated cost of implementing the plan per Table 1 is PLN 1,275,867,730.",
+        "origin": "document",
+        "chapters": [
+          "budzet"
+        ],
+        "extraction_fact": "total-cost-city"
+      },
+      {
+        "id": "cost-is-estimate",
+        "statement": "The costs are estimates to be verified when investments are prepared.",
+        "origin": "document",
+        "chapters": [
+          "budzet",
+          "ryzyka"
+        ],
+        "extraction_fact": "cost-is-estimate"
+      },
+      {
+        "id": "financing-sources",
+        "statement": "Implementation is financed from the city budget and, where possible, external funds.",
+        "origin": "document",
+        "chapters": [
+          "budzet"
+        ],
+        "extraction_fact": "financing-sources"
+      },
+      {
+        "id": "financing-risk",
+        "statement": "Insufficient financing of the drainage system is a serious risk.",
+        "origin": "document",
+        "chapters": [
+          "ryzyka"
+        ],
+        "extraction_fact": "financing-risk"
+      },
+      {
+        "id": "monitoring-indicator",
+        "statement": "The output indicator counts completed tasks within the city's competence, from a baseline of 0 to targets of 8, 5, 22 and 9 per specific objective.",
+        "origin": "document",
+        "chapters": [
+          "wskazniki"
+        ],
+        "extraction_fact": "monitoring-indicator"
+      }
+    ],
+    "gaps": [
+      {
+        "id": "project-scope",
+        "statement": "Which tasks from the plan form the project submitted to this call is not decided in the inputs; the plan is a city-wide programme, not a single project.",
+        "chapters": [
+          "informacje_o_projekcie",
+          "zadania"
+        ]
+      },
+      {
+        "id": "contact-person",
+        "statement": "The applicant's contact person and their contact details are not supplied by any input.",
+        "chapters": [
+          "wnioskodawca"
+        ]
+      },
+      {
+        "id": "requested-grant",
+        "statement": "The eligible cost and the co-financing amount requested from the programme are not supplied by any input.",
+        "chapters": [
+          "budzet"
+        ]
+      },
+      {
+        "id": "own-contribution",
+        "statement": "The applicant's own contribution amount or share is not supplied by any input.",
+        "chapters": [
+          "budzet"
+        ]
+      },
+      {
+        "id": "result-indicators",
+        "statement": "Result indicators, such as retention capacity or area served, with baselines and targets are not supplied; the plan defines only an output indicator counting completed tasks.",
+        "chapters": [
+          "wskazniki"
+        ]
+      },
+      {
+        "id": "project-dates",
+        "statement": "Start and end dates for the selected project scope are not supplied; only the plan horizon 2023-2035 is known.",
+        "required": false,
+        "chapters": [
+          "informacje_o_projekcie",
+          "zadania"
+        ]
+      },
+      {
+        "id": "durability",
+        "statement": "How the durability of project results will be ensured, including maintenance financing after completion, is not supplied by any input.",
+        "required": false,
+        "chapters": [
+          "ryzyka"
+        ]
+      }
+    ]
+  },
+  "verification": {
+    "reference_draft": "reference_draft.json",
+    "defects": [
+      {
+        "id": "plan-horizon-conflict",
+        "kind": "cross_chapter_conflict",
+        "description": "The rationale chapter now dates the plan 2023-2030, while the budget chapter dates the same plan 2023-2035 and the tasks chapter says its actions run to 2035.",
+        "edits": [
+          {
+            "chapter_ref": "uzasadnienie",
+            "find": "na lata 2023–2035. Plan zakłada",
+            "replace": "na lata 2023–2030. Plan zakłada"
+          }
+        ],
+        "expected_chapters": [
+          "uzasadnienie",
+          "budzet"
+        ],
+        "expected_categories": [
+          "cross_chapter_conflict"
+        ]
+      },
+      {
+        "id": "financing-sources-conflict",
+        "kind": "cross_chapter_conflict",
+        "description": "The budget chapter now says the plan is financed only from external funds without the city budget, while the risk chapter says it is financed from the city budget and, where possible, external funds.",
+        "edits": [
+          {
+            "chapter_ref": "budzet",
+            "find": "przewiduje finansowanie jego realizacji z budżetu miasta oraz, w miarę możliwości, z funduszy zewnętrznych.",
+            "replace": "przewiduje finansowanie jego realizacji wyłącznie z funduszy zewnętrznych, bez udziału budżetu miasta."
+          }
+        ],
+        "expected_chapters": [
+          "budzet",
+          "ryzyka"
+        ],
+        "expected_categories": [
+          "cross_chapter_conflict"
+        ]
+      },
+      {
+        "id": "schedule-gap-inconsistency",
+        "kind": "gap_inconsistency",
+        "description": "The tasks chapter now states the project runs 2026-2028 instead of flagging the dates, while the project information chapter still asks for the start and end dates and the schedule table still says 'Do potwierdzenia'.",
+        "edits": [
+          {
+            "chapter_ref": "zadania",
+            "find": "[Information needed: Confirm the planned start and end dates and the milestone dates for preparation, procurement, construction, commissioning and settlement of the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.]",
+            "replace": "Projekt będzie realizowany w latach 2026–2028."
+          }
+        ],
+        "remove_gaps": [
+          {
+            "chapter_ref": "zadania",
+            "field_key": "project_task_schedule"
+          }
+        ],
+        "expected_chapters": [
+          "zadania",
+          "informacje_o_projekcie"
+        ],
+        "expected_categories": [
+          "cross_chapter_conflict",
+          "internal_conflict"
+        ]
+      },
+      {
+        "id": "contact-unflagged",
+        "kind": "unflagged_missing_information",
+        "description": "The contact-person marker and gap were deleted, leaving the required contact-person section empty and unflagged.",
+        "edits": [
+          {
+            "chapter_ref": "wnioskodawca",
+            "find": "[Information needed: Provide the name, position, organisational unit, telephone number and email address of the person authorised to contact the applicant regarding the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.]",
+            "replace": ""
+          }
+        ],
+        "remove_gaps": [
+          {
+            "chapter_ref": "wnioskodawca",
+            "field_key": "project_contact_person"
+          }
+        ],
+        "expected_chapters": [
+          "wnioskodawca"
+        ],
+        "expected_categories": [
+          "missing_information",
+          "template_constraint"
+        ]
+      },
+      {
+        "id": "indicator-direction",
+        "kind": "logic_error",
+        "description": "The output indicator counting completed tasks now starts at a baseline of 0 with a decreasing direction of change, which is impossible for a count of completed tasks.",
+        "edits": [
+          {
+            "chapter_ref": "wskazniki",
+            "find": "z wartością bazową 0 i kierunkiem zmian: wzrost",
+            "replace": "z wartością bazową 0 i kierunkiem zmian: spadek"
+          }
+        ],
+        "expected_chapters": [
+          "wskazniki"
+        ],
+        "expected_categories": [
+          "logic_error",
+          "internal_conflict"
+        ]
+      },
+      {
+        "id": "implementer-conflict",
+        "kind": "cross_chapter_conflict",
+        "description": "The tasks chapter now names the municipal greenery authority (ZZM) as the unit implementing drainage inventory and sewer modernisation, while the applicant chapter names KEGW as the main implementer of municipal tasks.",
+        "edits": [
+          {
+            "chapter_ref": "zadania",
+            "find": "wskazuje Klimat-Energia-Gospodarka Wodna (KEGW) jako jednostkę realizującą m.in.",
+            "replace": "wskazuje Zarząd Zieleni Miejskiej w Krakowie jako jednostkę realizującą m.in."
+          }
+        ],
+        "expected_chapters": [
+          "zadania",
+          "wnioskodawca"
+        ],
+        "expected_categories": [
+          "cross_chapter_conflict"
+        ]
+      }
+    ]
+  },
+  "editing": {
+    "reference_draft": "reference_draft.json",
+    "cases": [
+      {
+        "id": "fill-contact",
+        "instruction": "Osobą do kontaktu jest Anna Kowalska, Klimat-Energia-Gospodarka Wodna, tel. +48 12 000 00 00, e-mail anna.kowalska@example.pl.",
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "wnioskodawca"
+        ],
+        "expected_changes": [
+          {
+            "id": "contact-stated",
+            "statement": "The applicant chapter names Anna Kowalska of KEGW with the supplied phone number and e-mail as the contact person instead of asking for one."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "kegw",
+            "statement": "KEGW is described as the main implementer of municipal tasks."
+          },
+          {
+            "id": "applicant",
+            "statement": "Gmina Miejska Kraków is the applicant."
+          }
+        ]
+      },
+      {
+        "id": "fill-dates",
+        "instruction": "Projekt będzie realizowany od 1 marca 2026 r. do 31 grudnia 2028 r. Uzupełnij te daty we wszystkich rozdziałach, które o nie pytają.",
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "informacje_o_projekcie",
+          "zadania",
+          "ryzyka"
+        ],
+        "expected_changes": [
+          {
+            "id": "period-info",
+            "statement": "The project information chapter states the project period 1 March 2026 to 31 December 2028."
+          },
+          {
+            "id": "period-tasks",
+            "statement": "The tasks and schedule chapter states that the project runs from 1 March 2026 to 31 December 2028."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "plan-horizon",
+            "statement": "2023-2035 is still described as the horizon of the city's plan, distinct from the project period."
+          },
+          {
+            "id": "total-cost",
+            "statement": "The plan's estimated cost of PLN 1,275,867,730 is unchanged."
+          }
+        ]
+      },
+      {
+        "id": "shorten-rationale",
+        "instruction": "Skróć rozdział „Uzasadnienie i diagnoza potrzeb” o około jedną trzecią, zachowując wszystkie fakty z Planu.",
+        "focused_chapter": "uzasadnienie",
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "uzasadnienie"
+        ],
+        "expected_changes": [
+          {
+            "id": "shorter",
+            "statement": "The rationale chapter is noticeably shorter than in the reference draft."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "vistula",
+            "statement": "The Vistula is the main source of flood threat to Kraków."
+          },
+          {
+            "id": "flood-gates",
+            "statement": "Closing the flood gates during high water on the rivers worsens drainage of the city's sewer systems."
+          },
+          {
+            "id": "swoszowice",
+            "statement": "The need to protect the Swoszowice spa area from infiltration of polluted rainwater remains."
+          },
+          {
+            "id": "strategy",
+            "statement": "The link to the strategy 'Tu chcę żyć. Kraków 2030' remains."
+          }
+        ]
+      },
+      {
+        "id": "grant-without-value",
+        "instruction": "Uzupełnij kwotę wnioskowanego dofinansowania.",
+        "expected_outcome": "clarification",
+        "must_preserve": [
+          {
+            "id": "unchanged",
+            "statement": "The concept note is unchanged; no grant amount is invented."
+          }
+        ]
+      }
+    ]
+  }
+}

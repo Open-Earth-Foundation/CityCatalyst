@@ -169,7 +169,9 @@ uv run --directory service python -m scripts.cnb_golden_set_viewer.publish
 ```
 
 `--fixtures-dir` overrides the fixture corpus and `--results-dir` the results
-folder. `--run-id` names the run folder (default: UTC time plus the label); an
+folder. `--parallel` evaluates the fixtures concurrently in one process (about
+the slowest fixture's time instead of the sum); by default they run one at a
+time to keep provider load bounded. `--run-id` names the run folder (default: UTC time plus the label); an
 existing run is never overwritten. There is no `--repeats` flag; run again to
 measure variance and compare the runs in the viewer. A full run makes one
 extraction, one draft per chapter, two or more validator passes per chapter, up
@@ -223,6 +225,13 @@ Each run folder contains:
 - `report.md` and `report.json`: metrics, failures, evaluation errors, details
   (transfer table, validator findings, edit checks), and the
   structured judgments. No complete source documents.
+- `usage` per fixture stage in `report.json` (a table in `report.md`): wall
+  time, model requests, input/output/reasoning tokens, and the cost OpenRouter
+  reports per response (its own charge plus, for bring-your-own-key requests,
+  the provider's), also broken down by agent, keyed by the configured prompt
+  that sent each request. `wall_seconds` is the whole run. The Compare runs page
+  shows time and cost A → B and where the money goes. Runs saved before usage
+  recording show no time or cost.
 - `outputs/<fixture>/analysis.json`: the raw extraction output, including the
   per-chapter quotations; its summary is saved here but never sent to the judge.
 - `outputs/<fixture>/chapter_writing/drafts.json`: chapters with structured gaps

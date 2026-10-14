@@ -610,6 +610,33 @@ class StageReport(GoldenContract):
         )
 
 
+class AgentUsage(GoldenContract):
+    """Model requests one agent made: count, tokens, provider cost, and time.
+
+    ``cost_usd`` is what OpenRouter reports per response, including the
+    provider's charge for bring-your-own-key requests. ``request_seconds`` sums
+    request durations, so concurrent requests can exceed the stage's wall time.
+    """
+
+    requests: int = 0
+    input_tokens: int = 0
+    output_tokens: int = 0
+    reasoning_tokens: int = 0
+    cost_usd: float = 0.0
+    request_seconds: float = 0.0
+
+
+class StageUsage(AgentUsage):
+    """Wall time of one fixture stage and its model usage, overall and per agent.
+
+    ``agents`` is keyed by the configured prompt that sent each request (for
+    example ``cnb_chapter_drafting``), or ``other``.
+    """
+
+    seconds: float = 0.0
+    agents: dict[str, AgentUsage] = Field(default_factory=dict)
+
+
 class FixtureReport(GoldenContract):
     """Single-pass results for the enabled stages of one fixture."""
 
@@ -620,6 +647,7 @@ class FixtureReport(GoldenContract):
     chapter_writing: StageReport | None = None
     verification: StageReport | None = None
     editing: StageReport | None = None
+    usage: dict[str, StageUsage] = Field(default_factory=dict)
 
     @property
     def passed(self) -> bool:
@@ -639,6 +667,8 @@ class GoldenSetReport(GoldenContract):
     run_id: str | None = None
     label: str | None = None
     code_version: str | None = None
+    # Elapsed time of the whole run; fixtures may have run concurrently.
+    wall_seconds: float | None = None
     generated_at: str
     analysis_contract_version: str
     judge_prompt_versions: dict[str, str]

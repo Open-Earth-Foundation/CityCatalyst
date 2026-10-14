@@ -1537,6 +1537,8 @@ uv run --directory service python -m scripts.evaluate_cnb_golden_set \
 uv run --directory service python -m scripts.cnb_golden_set_viewer.publish
 ```
 
+Reports record per-stage wall time, requests, tokens, and the cost OpenRouter
+reports, by agent (`--parallel` runs the fixtures concurrently).
 Every run is saved under `output/cnb_golden_set/runs/<run-id>/` and published to
 the static viewer at `output/cnb_golden_set/index.html` (open it directly in a
 browser). The viewer shows each run by stage and document, and **Compare runs**

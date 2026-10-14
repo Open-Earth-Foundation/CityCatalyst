@@ -21,13 +21,16 @@ Inputs:
 - --run-id: folder name for this run (default: UTC time, YYYYMMDD-HHMMSS, plus
   the label); letters, digits, '.', '_' and '-' only. An existing run is refused.
 - --label: optional short note shown in the viewer, for example "pr-3295".
+- --parallel: evaluate fixtures concurrently in one process (faster; default is
+  one fixture at a time to keep provider load bounded).
 - OPENROUTER_API_KEY and normal Climate Advisor settings; llm_config.yaml selects
   producer/judge models and prompts under prompts/cnb/golden_set/.
 
 Outputs (in <results-dir>/runs/<run-id>/; no database writes):
 - report.json and report.md with per-stage integrity failures, semantic findings,
-  evaluation errors, model configuration, prompt hashes, run ID, label, and git
-  commit. No full source text.
+  evaluation errors, model configuration, prompt hashes, run ID, label, git
+  commit, and per-stage usage: wall time, requests, tokens, and the cost
+  OpenRouter reports (per agent too). No full source text.
 - outputs/<fixture>/analysis.json, chapter_writing/drafts.json,
   verification/seeded_draft.json and findings.json, editing/cases.json, and
   <stage>/judgment.json for review.
@@ -51,6 +54,7 @@ import logging
 import re
 import subprocess
 import sys
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -65,6 +69,7 @@ from app.models.cnb.golden_set import (
     JudgeEvaluation,
     JudgeInput,
     StageReport,
+    StageUsage,
 )
 from app.services.cnb.chapter_drafting import ChapterDraftingError
 from app.services.cnb.golden_set import (
@@ -84,6 +89,7 @@ from app.services.cnb.golden_set_judge import (
     judge_output,
     judge_prompt_versions,
 )
+from app.services.cnb.golden_set_usage import UsageRecorder, measure, prompt_names
 from app.services.cnb.golden_set_viewer import publish_run
 from app.services.cnb.application_context import template_chapter_requirements
 from app.services.cnb.golden_set_workspace import fixture_template, golden_id
@@ -136,6 +142,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--run-id", help="Run folder name (default: UTC timestamp plus label)")
     parser.add_argument("--label", help="Short note shown in the viewer")
+    parser.add_argument(
+        "--parallel",
+        action="store_true",
+        help="Evaluate fixtures concurrently instead of one at a time",
+    )
     args = parser.parse_args(argv)
     if args.run_id is None:
         stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
@@ -181,22 +192,25 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
             "Configure models.cnb_golden_set_judge before evaluation"
         )
     logger.info("Evaluating %s fixtures stages=%s", len(fixtures), ",".join(stages))
-    reports = []
-    # Keep provider load bounded: one fixture and one judge request at a time.
-    for loaded in fixtures:
-        reports.append(
-            await _evaluate_fixture(
-                loaded,
-                settings,
-                stages,
-                args.output_dir / "outputs" / loaded.fixture.fixture_id,
-            )
+    started = time.monotonic()
+
+    def run(loaded: LoadedFixture) -> Any:
+        return _evaluate_fixture(
+            loaded, settings, stages, args.output_dir / "outputs" / loaded.fixture.fixture_id
         )
+
+    with UsageRecorder(prompt_names(settings.llm.prompts)):
+        if args.parallel:
+            reports = list(await asyncio.gather(*(run(loaded) for loaded in fixtures)))
+        else:
+            # Keep provider load bounded: one fixture and one judge request at a time.
+            reports = [await run(loaded) for loaded in fixtures]
     models = settings.llm.models
     return GoldenSetReport(
         run_id=args.run_id,
         label=args.label,
         code_version=code_version(),
+        wall_seconds=round(time.monotonic() - started, 1),
         generated_at=datetime.now(UTC).isoformat(),
         analysis_contract_version=source_analysis_contract_version(settings),
         judge_prompt_versions=judge_prompt_versions(settings, stages),
@@ -236,9 +250,13 @@ async def _evaluate_fixture(
             setattr(report, stage, invalid)
         return report
 
+    def usage(stage: str) -> StageUsage:
+        return report.usage.setdefault(stage, StageUsage())
+
     source = None
     if "extraction" in stages:
-        report.extraction, source = await _evaluate_extraction(loaded, settings, output_dir)
+        with measure(usage("extraction")):
+            report.extraction, source = await _evaluate_extraction(loaded, settings, output_dir)
     if "chapter_writing" in stages and fixture.chapter_writing:
         if source is None:
             report.chapter_writing = StageReport(
@@ -246,28 +264,31 @@ async def _evaluate_fixture(
             )
         else:
             extraction = report.extraction.judgment if report.extraction else None
-            report.chapter_writing = await _evaluate_chapter_writing(
-                loaded,
-                settings,
-                output_dir / "chapter_writing",
-                source,
-                extraction
-                if isinstance(extraction, JudgeEvaluation)
-                and not report.extraction.evaluation_errors
-                else None,
-            )
+            with measure(usage("chapter_writing")):
+                report.chapter_writing = await _evaluate_chapter_writing(
+                    loaded,
+                    settings,
+                    output_dir / "chapter_writing",
+                    source,
+                    extraction
+                    if isinstance(extraction, JudgeEvaluation)
+                    and not report.extraction.evaluation_errors
+                    else None,
+                )
     if "verification" in stages and fixture.verification:
         from app.services.cnb.golden_set_verification import evaluate_verification
 
-        report.verification = await evaluate_verification(
-            loaded, settings, output_dir / "verification", judge=judge_output
-        )
+        with measure(usage("verification")):
+            report.verification = await evaluate_verification(
+                loaded, settings, output_dir / "verification", judge=judge_output
+            )
     if "editing" in stages and fixture.editing:
         from app.services.cnb.golden_set_editing import evaluate_editing
 
-        report.editing = await evaluate_editing(
-            loaded, settings, output_dir / "editing", judge=judge_output
-        )
+        with measure(usage("editing")):
+            report.editing = await evaluate_editing(
+                loaded, settings, output_dir / "editing", judge=judge_output
+            )
     return report
 
 
@@ -383,6 +404,7 @@ def render_markdown(report: GoldenSetReport) -> str:
         )
     for stage, digest in report.judge_prompt_versions.items():
         lines.append(f"- {stage} judge prompt SHA-256: `{digest}`")
+    lines += _render_usage(report)
     for fixture in report.fixtures:
         lines += [
             "",
@@ -394,6 +416,33 @@ def render_markdown(report: GoldenSetReport) -> str:
             if stage is not None:
                 lines += _render_stage(name, stage)
     return "\n".join(lines) + "\n"
+
+
+def _render_usage(report: GoldenSetReport) -> list[str]:
+    """Time, requests, tokens, and cost per fixture stage, with run totals."""
+    rows = [
+        (fixture.fixture_id, stage, usage)
+        for fixture in report.fixtures
+        for stage, usage in fixture.usage.items()
+    ]
+    if not rows:
+        return []
+    lines = [
+        "",
+        "## Usage",
+        "",
+        "| Fixture | Stage | Time (s) | Requests | Input tokens | Output tokens | Cost (USD) |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    lines += [
+        f"| {fixture} | {stage} | {u.seconds:.0f} | {u.requests} | {u.input_tokens:,} | "
+        f"{u.output_tokens:,} | {u.cost_usd:.2f} |"
+        for fixture, stage, u in rows
+    ]
+    total = sum(u.cost_usd for _, _, u in rows)
+    wall = f"{report.wall_seconds:.0f} s wall time, " if report.wall_seconds else ""
+    lines.append(f"\nTotal: {wall}{sum(u.requests for _, _, u in rows)} requests, USD {total:.2f}.")
+    return lines
 
 
 def _render_stage(name: str, stage: StageReport) -> list[str]:

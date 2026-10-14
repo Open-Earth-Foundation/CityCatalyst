@@ -113,6 +113,7 @@ def build_run_payload(run_dir: Path, fixtures_dir: Path = FIXTURES_DIR) -> dict[
                 else None,
                 "analysis": _read_json(out / "analysis.json"),
                 "stages": stages,
+                "usage": reports[fid].get("usage") or {},
             }
         )
     prompts = {path.stem: path.read_text(encoding="utf-8") for path in sorted(PROMPTS_DIR.glob("*.md"))}
@@ -157,9 +158,15 @@ def run_summary(run_dir: Path) -> dict[str, Any] | None:
         "judge_prompt_versions": report.get("judge_prompt_versions", {}),
         "analysis_contract_version": report.get("analysis_contract_version"),
         "has_viewer": (run_dir / "viewer.js").exists(),
+        "wall_seconds": report.get("wall_seconds"),
         "fixtures": {
             fixture["fixture_id"]: {
                 "source_sha256": fixture.get("source_sha256"),
+                # Runs before usage recording have none.
+                "usage": {
+                    stage: {key: usage.get(key) for key in ("seconds", "requests", "cost_usd")}
+                    for stage, usage in (fixture.get("usage") or {}).items()
+                },
                 "stages": {
                     stage: {
                         "status": stage_status(fixture.get(stage)),

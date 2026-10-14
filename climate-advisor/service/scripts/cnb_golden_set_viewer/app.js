@@ -1312,6 +1312,17 @@
   const runLabel = (r) => `${r.label ? `${r.label} · ` : ""}${r.generated_at ? new Date(r.generated_at).toLocaleString() : r.id}`;
   const indexFixtureIds = () => [...new Set(INDEX.flatMap((r) => Object.keys(r.fixtures)))].sort();
   const shortFixture = (fid) => fid.split("-")[0].replace(/^./, (c) => c.toUpperCase());
+  const fmtTime = (s) => (s == null ? "–" : s < 60 ? `${Math.round(s)} s` : `${Math.floor(s / 60)} min ${String(Math.round(s % 60)).padStart(2, "0")} s`);
+  const fmtCost = (c) => (c == null ? "–" : `$${c.toFixed(2)}`);
+  // Totals over a run's recorded stages; null for runs saved before usage recording.
+  function usageTotals(usageByFixture) {
+    const stages = Object.values(usageByFixture).flatMap((u) => Object.values(u || {}));
+    if (!stages.length) return null;
+    const sum = (key) => stages.reduce((n, s) => n + (s[key] || 0), 0);
+    return { seconds: sum("seconds"), requests: sum("requests"), cost: sum("cost_usd") };
+  }
+  const indexTotals = (r) => usageTotals(Object.fromEntries(Object.entries(r.fixtures).map(([fid, fx]) => [fid, fx.usage])));
+  const runTotals = (run) => usageTotals(Object.fromEntries(run.fixtures.map((f) => [f.golden.fixture_id, f.usage])));
 
   function loadRun(id) {
     return new Promise((resolve, reject) => {
@@ -1353,10 +1364,14 @@
       <h2>Run history</h2>
       <p class="sub">Every run saved in the results folder, newest first. Each dot is one stage of one document; hover for its metrics. Pick any two runs to compare.</p>
       <div class="card" style="padding:0;overflow-x:auto"><table class="history">
-        <thead><tr><th>Run</th>${fids.map((fid) => `<th>${esc(shortFixture(fid))}<div class="muted small" style="text-transform:none;letter-spacing:0">${STAGE_KEYS.map((s) => STAGES[s].n).join(" · ")}</div></th>`).join("")}<th>Compare</th></tr></thead>
+        <thead><tr><th>Run</th><th>Time · cost</th>${fids.map((fid) => `<th>${esc(shortFixture(fid))}<div class="muted small" style="text-transform:none;letter-spacing:0">${STAGE_KEYS.map((s) => STAGES[s].n).join(" · ")}</div></th>`).join("")}<th>Compare</th></tr></thead>
         <tbody>${INDEX.map((r) => `<tr class="${r.id === aId || r.id === bId ? "picked" : ""}">
           <td><a href="?run=${enc(r.id)}#/"><b>${esc(r.label || r.id)}</b></a><div class="muted small mono">${esc(r.id)}</div>
             <div class="muted small">${esc(r.generated_at ? new Date(r.generated_at).toLocaleString() : "")} · ${esc(r.code_version || "unknown commit")}</div></td>
+          <td class="nowrap">${(() => {
+            const u = indexTotals(r);
+            return u ? `${fmtTime(r.wall_seconds ?? u.seconds)}<div class="muted small">${fmtCost(u.cost)} · ${u.requests} requests</div>` : `<span class="muted" data-tip="Saved before time and cost were recorded">–</span>`;
+          })()}</td>
           ${fids.map((fid) => {
             const fx = r.fixtures[fid];
             if (!fx) return `<td class="muted">–</td>`;
@@ -1400,9 +1415,14 @@
         <h3 style="font-size:17px">${esc(run.run.label || run.run.id)}</h3>
         <div class="muted small mono">${esc(run.run.id)} · ${esc(run.run.code_version || "unknown commit")}</div>
         <div class="muted small">${esc(run.run.generated_at ? new Date(run.run.generated_at).toLocaleString() : "")}${run.run.snapshot === "rebuilt_with_current_fixtures" ? " · snapshot rebuilt with later fixtures" : ""}</div>
+        <div class="small" style="margin-top:6px">${(() => {
+          const u = runTotals(run);
+          return u ? `<b>${fmtTime(run.run.wall_seconds ?? u.seconds)}</b> · <b>${fmtCost(u.cost)}</b> · ${u.requests} model requests` : `<span class="muted">Time and cost not recorded for this run</span>`;
+        })()}</div>
         <a class="small" href="?run=${enc(run.run.id)}#/">Open this run →</a></div>`).join("")}</div>
       ${provenanceDiff(A, B)}
       ${stageDiff(A, B)}
+      ${usageDiff(A, B)}
       ${verdictDiff(A, B)}
       ${history}`;
   }
@@ -1445,6 +1465,50 @@
           }).join("");
           return `<td>${badge(sa)} → ${badge(sb)}${metrics}</td>`;
         }).join("")}</tr>`).join("")}</tbody></table></div>`;
+  }
+
+  function usageDiff(A, B) {
+    if (!runTotals(A) && !runTotals(B)) return "";
+    const fids = [...new Set([...A.fixtures, ...B.fixtures].map((f) => f.golden.fixture_id))];
+    const usage = (run, fid, s) => run.fixtures.find((f) => f.golden.fixture_id === fid)?.usage?.[s];
+    const change = (a, b, fmt, lowerIsBetter = true) => {
+      if (a == null || b == null || !a) return `${fmt(a)} → ${fmt(b)}`;
+      const ratio = b / a - 1;
+      const cls = Math.abs(ratio) < 0.05 ? "muted" : (ratio < 0) === lowerIsBetter ? "up" : "down";
+      return `${fmt(a)} → ${fmt(b)} <span class="${cls}">${ratio > 0 ? "+" : ""}${Math.round(ratio * 100)}%</span>`;
+    };
+    const rows = fids.flatMap((fid) => STAGE_KEYS.map((s) => {
+      const a = usage(A, fid, s), b = usage(B, fid, s);
+      if (!a && !b) return "";
+      return `<tr><td>${esc(shortFixture(fid))} · ${STAGES[s].n} ${esc(STAGES[s].label)}</td>
+        <td class="nowrap">${change(a?.seconds, b?.seconds, fmtTime)}</td>
+        <td class="nowrap">${change(a?.cost_usd, b?.cost_usd, fmtCost)}</td>
+        <td class="nowrap">${a?.requests ?? "–"} → ${b?.requests ?? "–"}</td></tr>`;
+    }));
+    const ta = runTotals(A), tb = runTotals(B);
+    const agents = {};
+    for (const [tag, run] of [["a", A], ["b", B]])
+      for (const f of run.fixtures)
+        for (const st of Object.values(f.usage || {}))
+          for (const [name, u] of Object.entries(st.agents || {})) {
+            const row = (agents[name] ||= { a: 0, b: 0, ra: 0, rb: 0 });
+            row[tag] += u.cost_usd || 0;
+            row["r" + tag] += u.requests || 0;
+          }
+    const agentRows = Object.entries(agents).sort((x, y) => y[1].b - x[1].b).map(([name, u]) =>
+      `<tr><td class="mono small">${esc(name)}</td><td class="nowrap">${ta ? `${fmtCost(u.a)} · ${u.ra}` : "–"}</td><td class="nowrap">${fmtCost(u.b)} · ${u.rb}</td>
+        <td>${tb?.cost ? `${Math.round((u.b / tb.cost) * 100)}%` : "–"}</td></tr>`).join("");
+    return `<h2>Time and cost, A → B</h2>
+      <p class="sub">Wall time of each stage and the cost OpenRouter reported for its model requests (the provider's charge for bring-your-own-key requests). Stage times overlap when documents run in parallel.</p>
+      <div class="card" style="padding:0;overflow-x:auto"><table>
+        <thead><tr><th>Document · stage</th><th>Time</th><th>Cost</th><th>Requests</th></tr></thead>
+        <tbody>${rows.join("")}
+          <tr><td><b>Run total</b></td><td class="nowrap"><b>${change(A.run.wall_seconds ?? ta?.seconds, B.run.wall_seconds ?? tb?.seconds, fmtTime)}</b> <span class="muted small">wall</span></td>
+          <td class="nowrap"><b>${change(ta?.cost, tb?.cost, fmtCost)}</b></td><td>${ta?.requests ?? "–"} → ${tb?.requests ?? "–"}</td></tr></tbody></table></div>
+      ${agentRows ? `<h3 style="margin-top:18px">Where the money goes</h3>
+      <div class="card" style="padding:0;overflow-x:auto"><table>
+        <thead><tr><th>Agent (configured prompt)</th><th>Run A · requests</th><th>Run B · requests</th><th>Share of B</th></tr></thead>
+        <tbody>${agentRows}</tbody></table></div>` : ""}`;
   }
 
   function verdictDiff(A, B) {

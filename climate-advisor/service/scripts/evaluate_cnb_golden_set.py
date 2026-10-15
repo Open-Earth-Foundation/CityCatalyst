@@ -220,6 +220,9 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
             "chapter_drafter": _model_summary(
                 models.cnb_chapter_drafter or models.cnb_source_synthesizer
             ),
+            "support_checker": _model_summary(
+                models.cnb_chapter_support_checker or models.cnb_chapter_drafter
+            ),
             "chapter_validator": _model_summary(
                 models.cnb_chapter_validator or models.cnb_source_synthesizer
             ),

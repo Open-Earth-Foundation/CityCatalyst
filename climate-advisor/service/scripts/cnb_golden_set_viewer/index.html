@@ -283,6 +283,11 @@ details[open] > summary { margin-bottom: 10px; }
 .tocfact > .unlocated { padding: 4px 8px; color: var(--muted); line-height: 1.35; }
 .tocfact .passages { padding: 0 8px 4px; font-size: 12px; color: var(--muted); display: flex; gap: 4px; align-items: center; }
 .toc .tocfact .passages a { display: inline-block; padding: 0 6px; font-size: 12px; border: 1px solid var(--border); }
+.hide-kept mark.kept { background: none; }
+.hide-example mark.example { box-shadow: none; }
+.hide-kept mark.kept:not(.example), .hide-example mark.example:not(.kept), .hide-kept.hide-example mark.kept.example { pointer-events: none; }
+.hide-kept .pip-kept, .hide-example .pip-example { display: none; }
+.srcbar .legend label { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
 mark.flash-target { animation: flashmark 2.4s ease-out; }
 @keyframes flashmark { 0%, 45% { box-shadow: 0 0 0 3px var(--accent); } 100% { box-shadow: 0 0 0 3px transparent; } }
 .pip { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }

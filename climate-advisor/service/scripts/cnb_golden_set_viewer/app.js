@@ -1202,6 +1202,8 @@
   }
 
   // ----- source document -----
+  // Optional highlight layers; off by default so the golden facts stand out.
+  const layerOn = (layer) => localStorage.getItem(`golden-layer-${layer}`) === "on";
   function sourceTab(f) {
     const fid = f.golden.fixture_id;
     const isPdf = f.golden.source.source_format === "pdf";
@@ -1275,7 +1277,7 @@
         : "";
       return `<div class="tocfact">${head}${more}</div>`;
     }).join("");
-    return `<div class="layout-side facts-side">
+    return `<div class="layout-side facts-side${["kept", "example"].filter((l) => !layerOn(l)).map((l) => ` hide-${l}`).join("")}">
       <aside class="toc">
         <div class="eyebrow">${f.golden.extraction.facts.length} golden facts</div>${factList}
         <div class="eyebrow" style="margin-top:18px">${isPdf ? `${f.units.length} pages` : "Sections"}</div>${index}
@@ -1285,8 +1287,7 @@
           <div class="legend" style="margin:0">
             <span><i class="sw sw-both"></i>Golden evidence extraction kept</span>
             <span><i class="sw sw-gold"></i>Golden evidence extraction missed</span>
-            <span><i class="sw sw-kept"></i>Other text extraction kept</span>
-            <span><i class="sw sw-example"></i>Few-shot example passage</span>
+            ${["kept", "example"].map((layer) => `<label><input type="checkbox" data-layer="${layer}"${layerOn(layer) ? " checked" : ""}> <i class="sw sw-${layer}"></i>${layer === "kept" ? "Other text extraction kept" : "Few-shot example passage"}</label>`).join("")}
           </div>
           <div class="small" style="color:var(--ink-2)"><b>${total}</b> golden passages · <b>${tally.full}</b> fully kept · <b>${tally.part}</b> partly · <b>${tally.none}</b> missed
             <span class="muted">(text overlap only; the judge's verdicts are on <a href="#/f/${fid}/extraction">1 · Extraction</a>)</span></div>
@@ -1624,6 +1625,11 @@
   // ---------- interactions ----------
   document.addEventListener("change", (e) => {
     const t = e.target;
+    if (t.dataset.layer) {
+      localStorage.setItem(`golden-layer-${t.dataset.layer}`, t.checked ? "on" : "off");
+      document.querySelector(".facts-side")?.classList.toggle(`hide-${t.dataset.layer}`, !t.checked);
+      return;
+    }
     if (!t.dataset.filter) return;
     const list = document.getElementById(`list-${t.dataset.filter}`);
     list?.querySelectorAll(".item.ok").forEach((el) => (el.style.display = t.checked ? "none" : ""));

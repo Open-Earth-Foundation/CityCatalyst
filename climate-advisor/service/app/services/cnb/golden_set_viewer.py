@@ -12,6 +12,7 @@ picker and run comparison. Nothing here calls a model or the network.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import re
@@ -30,7 +31,6 @@ VIEWER_DIR = SERVICE_ROOT / "scripts" / "cnb_golden_set_viewer"
 FIXTURES_DIR = SERVICE_ROOT / "tests" / "fixtures" / "cnb_golden_set"
 PROMPTS_DIR = SERVICE_ROOT.parent / "prompts" / "cnb" / "golden_set"
 DEFAULT_RESULTS_DIR = SERVICE_ROOT.parent / "output" / "cnb_golden_set"
-VIEWER_ASSETS = ("index.html", "app.js")
 # Raw artefacts each stage writes, keyed by the name the viewer uses.
 ARTEFACTS = {
     "extraction": {"judgment": "extraction/judgment.json"},
@@ -189,8 +189,7 @@ def publish_viewer(results_dir: Path, *, rebuild: bool = False, fixtures_dir: Pa
     """Refresh the viewer, PDFs, missing run snapshots, and the run index."""
     runs_dir = results_dir / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
-    for name in VIEWER_ASSETS:
-        shutil.copyfile(VIEWER_DIR / name, results_dir / name)
+    shutil.copyfile(VIEWER_DIR / "app.js", results_dir / "app.js")
     pdf_dir = results_dir / "pdf"
     pdf_dir.mkdir(exist_ok=True)
     for loaded in load_golden_fixtures(fixtures_dir):
@@ -209,6 +208,12 @@ def publish_viewer(results_dir: Path, *, rebuild: bool = False, fixtures_dir: Pa
     summaries.sort(key=lambda s: s.get("generated_at") or "", reverse=True)
     index = runs_dir / "index.js"
     index.write_text(f"window.GOLDEN_INDEX = {json.dumps(summaries, ensure_ascii=False)};\n", encoding="utf-8")
+    # Browsers cache scripts; content-versioned URLs make every publish show on a normal reload.
+    html = (VIEWER_DIR / "index.html").read_text(encoding="utf-8")
+    for name, path in (("runs/index.js", index), ("app.js", results_dir / "app.js")):
+        version = hashlib.sha256(path.read_bytes()).hexdigest()[:12]
+        html = html.replace(f'src="{name}"', f'src="{name}?v={version}"')
+    (results_dir / "index.html").write_text(html, encoding="utf-8")
     logger.info("Published %s runs to %s", len(summaries), results_dir / "index.html")
     return results_dir / "index.html"
 

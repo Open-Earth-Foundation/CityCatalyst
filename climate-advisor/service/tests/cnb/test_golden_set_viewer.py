@@ -71,6 +71,10 @@ def test_publish_builds_viewer_index_and_missing_snapshots(tmp_path):
 
     assert index == tmp_path / "index.html" and index.exists()
     assert (tmp_path / "app.js").exists()
+    html = index.read_text(encoding="utf-8")
+    # Versioned script URLs, so a republished viewer is never served stale from cache.
+    assert re.search(r'src="app\.js\?v=[0-9a-f]{12}"', html)
+    assert re.search(r'src="runs/index\.js\?v=[0-9a-f]{12}"', html)
     assert (tmp_path / "pdf" / "richfield-flood-risk.pdf").exists()
     entries = json.loads(
         (tmp_path / "runs" / "index.js").read_text(encoding="utf-8").split(" = ", 1)[1].rstrip(";\n")

@@ -60,8 +60,17 @@ class UsageRecorder:
             started = time.monotonic()
             response = await original(client, request, **kwargs)
             stage = _STAGE.get()
-            if stage is not None and not kwargs.get("stream") and _is_model_call(request):
-                recorder._record(stage, request, response, time.monotonic() - started)
+            if stage is None or not _is_model_call(request):
+                return response
+
+            def record(body: bytes) -> None:
+                recorder._record(stage, request, _usage(body), time.monotonic() - started)
+
+            if kwargs.get("stream"):
+                # Streamed usage arrives in the final event; read it as it passes.
+                response.stream = _TeeStream(response.stream, record)
+            else:
+                record(response.content)
             return response
 
         httpx.AsyncClient.send = send  # type: ignore[method-assign]
@@ -72,15 +81,13 @@ class UsageRecorder:
         httpx.AsyncClient.send = self._send  # type: ignore[method-assign]
 
     def _record(
-        self, stage: StageUsage, request: httpx.Request, response: httpx.Response, seconds: float
+        self, stage: StageUsage, request: httpx.Request, usage: dict[str, Any], seconds: float
     ) -> None:
         """Add one response's usage to the stage and to its agent."""
         try:
             body = json.loads(request.content or b"{}")
-            usage = response.json().get("usage") or {}
         except ValueError:
-            logger.warning("Golden usage: unreadable model response status=%s", response.status_code)
-            usage, body = {}, {}
+            body = {}
         agent = stage.agents.setdefault(self._agent(body), AgentUsage())
         details = usage.get("cost_details") or {}
         output_details = usage.get("output_tokens_details") or usage.get("completion_tokens_details") or {}
@@ -99,6 +106,52 @@ class UsageRecorder:
             first = (body.get("messages") or [{}])[0]
             instructions = first.get("content") if first.get("role") in {"system", "developer"} else None
         return self._prompts.get(str(instructions or "").strip(), "other")
+
+
+class _TeeStream(httpx.AsyncByteStream):
+    """Pass a streamed body through unchanged and report it once, when it ends."""
+
+    def __init__(self, inner: Any, done: Any) -> None:
+        self._inner = inner
+        self._done = done
+        self._chunks: list[bytes] = []
+        self._reported = False
+
+    async def __aiter__(self) -> Any:
+        async for chunk in self._inner:
+            self._chunks.append(chunk)
+            yield chunk
+        self._report()
+
+    async def aclose(self) -> None:
+        await self._inner.aclose()
+        self._report()
+
+    def _report(self) -> None:
+        if not self._reported:
+            self._reported = True
+            self._done(b"".join(self._chunks))
+
+
+def _usage(body: bytes) -> dict[str, Any]:
+    """Usage of a JSON response, or of the last event of a server-sent stream."""
+    try:
+        return json.loads(body).get("usage") or {}
+    except ValueError:
+        pass
+    usage: dict[str, Any] = {}
+    for line in body.decode("utf-8", "replace").splitlines():
+        if not line.startswith("data:") or line.strip() == "data: [DONE]":
+            continue
+        try:
+            event = json.loads(line[5:])
+        except ValueError:
+            continue
+        # Chat Completions chunks carry usage directly; Responses events in "response".
+        usage = event.get("usage") or (event.get("response") or {}).get("usage") or usage
+    if not usage:
+        logger.warning("Golden usage: model response without usage")
+    return usage
 
 
 def _is_model_call(request: httpx.Request) -> bool:

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 import httpx
 from app.models.cnb.golden_set import StageUsage
 from app.services.cnb.golden_set_usage import UsageRecorder, measure, prompt_names
@@ -57,6 +59,34 @@ async def test_model_calls_are_attributed_to_the_measured_stage_and_agent():
     assert stage.agents["cnb_chapter_drafting"].cost_usd == 0.25
     assert stage.agents["judge"].requests == 1
     assert stage.seconds >= 0
+
+
+async def test_streamed_responses_report_usage_from_their_final_event():
+    events = [
+        {"type": "response.output_text.delta", "delta": "Hi"},
+        {"type": "response.completed", "response": {"usage": {"input_tokens": 40, "output_tokens": 8, "cost": 0, "cost_details": {"upstream_inference_cost": 0.5}}}},
+    ]
+    sse = "".join(f"data: {json.dumps(e)}\n\n" for e in events) + "data: [DONE]\n\n"
+
+    class Chunks(httpx.AsyncByteStream):
+        """A body delivered in pieces, as the network does (plain bytes are pre-read)."""
+
+        async def __aiter__(self):
+            for line in sse.encode().splitlines(keepends=True):
+                yield line
+
+    def stream(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, stream=Chunks(), headers={"content-type": "text/event-stream"})
+
+    stage = StageUsage()
+    async with httpx.AsyncClient(transport=httpx.MockTransport(stream)) as client:
+        with UsageRecorder({DRAFTING: "planner"}), measure(stage):
+            async with client.stream("POST", "https://openrouter.ai/api/v1/responses", json={"instructions": DRAFTING}) as response:
+                received = b"".join([chunk async for chunk in response.aiter_bytes()])
+
+    assert received == sse.encode()  # the caller still reads the whole stream
+    assert stage.requests == 1 and stage.agents["planner"].cost_usd == 0.5
+    assert (stage.input_tokens, stage.output_tokens) == (40, 8)
 
 
 def test_every_configured_prompt_is_recognised():

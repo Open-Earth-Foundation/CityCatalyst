@@ -110,7 +110,7 @@ def test_cnb_source_impact_review_is_tool_only_and_budgeted() -> None:
     prompt = config.prompts.get_prompt("cnb_source_impact_review")
     budget = config.generation.prompt_budget.cnb_source_impact
 
-    assert config.models.cnb_source_impact_reviewer.name == "openai/gpt-6-sol"
+    assert config.models.cnb_source_impact_reviewer.name == "openai/gpt-6.1-sol"
     assert "call `select_chapters_to_update` exactly once" in prompt
     assert "return no prose" in prompt
     assert "`open_gaps`" in prompt

@@ -660,7 +660,7 @@ including repairs and reviews, shares one 300-second deadline configured by
 `generation.prompt_budget.cnb_edits.max_agent_turns` and `timeout_seconds`.
 The chapter drafter uses GPT-5.6
 Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra with
-medium reasoning, and the chat-edit planner uses GPT-6 Sol with high reasoning.
+medium reasoning, and the chat-edit planner uses GPT-6.1 Sol with high reasoning.
 After drafting, `models.cnb_chapter_support_checker` (GPT-5.6 Terra, medium)
 reviews each chapter with the drafter's exact inputs
 (`prompts.cnb_chapter_support_check`) and replaces passages the inputs do not
@@ -675,12 +675,12 @@ value.
 Current CA model defaults:
 
 - General chat: `openai/gpt-5.6-terra`, reasoning `medium`.
-- CNB chat: `openai/gpt-6-sol`, reasoning `medium`.
+- CNB chat: `openai/gpt-6.1-sol`, reasoning `medium`.
 - Stationary Energy chat: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Funding research and similar-project selection: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `medium`.
-- New-source chapter impact review: `openai/gpt-6-sol`, reasoning `medium`.
+- New-source chapter impact review: `openai/gpt-6.1-sol`, reasoning `medium`.
 - Document-summary synthesis: `openai/gpt-5.6-terra`, reasoning `medium`.
 
 General and Stationary Energy chat use the OpenRouter Chat Completions tool loop

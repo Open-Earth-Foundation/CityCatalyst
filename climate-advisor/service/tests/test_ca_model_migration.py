@@ -18,9 +18,9 @@ def test_active_ca_model_defaults_preserve_cnb_roles():
     expected = {
         "orchestrator": ("openai/gpt-5.6-terra", "medium"),
         "agentic_flow": ("openai/gpt-5.6-terra", "medium"),
-        "cnb_chat": ("openai/gpt-6-sol", "medium"),
-        "cnb_chat_edit_planner": ("openai/gpt-6-sol", "high"),
-        "cnb_source_impact_reviewer": ("openai/gpt-6-sol", "medium"),
+        "cnb_chat": ("openai/gpt-6.1-sol", "medium"),
+        "cnb_chat_edit_planner": ("openai/gpt-6.1-sol", "high"),
+        "cnb_source_impact_reviewer": ("openai/gpt-6.1-sol", "medium"),
         "funding_research": ("openai/gpt-5.6-terra", "medium"),
         "funder_identity": ("openai/gpt-5.6-terra", "medium"),
         "cnb_source_reader": ("openai/gpt-5.6-terra", "medium"),

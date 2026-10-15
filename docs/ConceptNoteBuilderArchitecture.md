@@ -2800,10 +2800,10 @@ prompts:
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 ```
 
-The main CNB chat uses `models.cnb_chat` (`openai/gpt-6-sol`) with explicit
+The main CNB chat uses `models.cnb_chat` (`openai/gpt-6.1-sol`) with explicit
 `reasoning_effort: medium` for its Chat Completions function-tool loop. The
-chat-edit planner uses GPT-6 Sol with high reasoning, and the new-source impact
-reviewer uses GPT-6 Sol with medium reasoning. Funding research and
+chat-edit planner uses GPT-6.1 Sol with high reasoning, and the new-source impact
+reviewer uses GPT-6.1 Sol with medium reasoning. Funding research and
 similar-project selection use Terra with medium reasoning on the existing
 Responses API path; canonical-funder identity matching also uses Terra with
 medium reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.

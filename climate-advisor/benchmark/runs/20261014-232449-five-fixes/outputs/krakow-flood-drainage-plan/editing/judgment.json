@@ -1,0 +1,254 @@
+{
+  "cases": [
+    {
+      "case_id": "fill-contact",
+      "expected_changes": [
+        {
+          "id": "contact-stated",
+          "verdict": "not_applied",
+          "output_refs": [],
+          "reason": "The draft was not edited; the applicant chapter still asks for contact details rather than naming Anna Kowalska."
+        }
+      ],
+      "preserved": [
+        {
+          "id": "kegw",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "draft/wnioskodawca",
+              "quote": "wskazuje Klimat-Energia-Gospodarka Wodna (KEGW) jako głównego realizującego zadania gminne"
+            }
+          ],
+          "reason": "KEGW's role remains unchanged."
+        },
+        {
+          "id": "applicant",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "draft/wnioskodawca",
+              "quote": "Wnioskodawcą jest Gmina Miejska Kraków."
+            }
+          ],
+          "reason": "The applicant remains Gmina Miejska Kraków."
+        }
+      ],
+      "changes": [],
+      "contradictions": []
+    },
+    {
+      "case_id": "fill-dates",
+      "expected_changes": [
+        {
+          "id": "period-info",
+          "verdict": "applied",
+          "output_refs": [
+            {
+              "unit_id": "edited/fill-dates/informacje_o_projekcie",
+              "quote": "### Okres realizacji projektu\n\nProjekt będzie realizowany od 1 marca 2026 r. do 31 grudnia 2028 r."
+            }
+          ],
+          "reason": "The project information chapter states both supplied dates."
+        },
+        {
+          "id": "period-tasks",
+          "verdict": "applied",
+          "output_refs": [
+            {
+              "unit_id": "edited/fill-dates/zadania",
+              "quote": "Projekt będzie realizowany od 1 marca 2026 r. do 31 grudnia 2028 r."
+            }
+          ],
+          "reason": "The tasks and schedule chapter also states the supplied project period."
+        }
+      ],
+      "preserved": [
+        {
+          "id": "plan-horizon",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "draft/uzasadnienie",
+              "quote": "Planie Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa na lata 2023–2035"
+            },
+            {
+              "unit_id": "edited/fill-dates/zadania",
+              "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa obejmuje działania do 2035 r.; terminy wskazane w tym Planie nie stanowią jednak automatycznie harmonogramu niniejszego projektu."
+            }
+          ],
+          "reason": "The 2023–2035 horizon remains attributed to the Plan, and the edited schedule distinguishes Plan dates from the project's schedule."
+        },
+        {
+          "id": "total-cost",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "draft/budzet",
+              "quote": "Łączny szacunkowy koszt wdrożenia Planu w latach 2023–2035 wynosi 1 275 867 730 zł, przy czym kwota ta dotyczy całego Planu"
+            }
+          ],
+          "reason": "The unedited budget chapter retains the Plan's estimated cost and its scope."
+        }
+      ],
+      "changes": [
+        {
+          "unit_id": "change/fill-dates/0",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/fill-dates",
+              "quote": "Projekt będzie realizowany od 1 marca 2026 r. do 31 grudnia 2028 r."
+            }
+          ],
+          "reason": "The user supplied the dates used to fill the project information gap."
+        },
+        {
+          "unit_id": "change/fill-dates/1",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/fill-dates",
+              "quote": "Projekt będzie realizowany od 1 marca 2026 r. do 31 grudnia 2028 r. Uzupełnij te daty we wszystkich rozdziałach, które o nie pytają."
+            }
+          ],
+          "reason": "The user supplied the dates and requested them in every chapter asking for the project period."
+        }
+      ],
+      "contradictions": []
+    },
+    {
+      "case_id": "shorten-rationale",
+      "expected_changes": [
+        {
+          "id": "shorter",
+          "verdict": "applied",
+          "output_refs": [
+            {
+              "unit_id": "edited/shorten-rationale/uzasadnienie",
+              "quote": "Plan wskazuje, że Miejski System Odwodnienia Krakowa wymaga dostosowania do częstszych i intensywniejszych ekstremalnych zjawisk pogodowych. Lokalne podtopienia wynikają z niewystarczającej przepustowości, zamulenia lub złego stanu rowów i kanałów"
+            }
+          ],
+          "reason": "The rationale is noticeably shorter, including consolidation of the original list of needs into prose, although the reduction appears less than approximately one third."
+        }
+      ],
+      "preserved": [
+        {
+          "id": "vistula",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/shorten-rationale/uzasadnienie",
+              "quote": "główne zagrożenie stanowi Wisła, zasilana rozległą zlewnią górską i podgórską powyżej miasta."
+            }
+          ],
+          "reason": "The Vistula remains identified as Kraków's main flood threat."
+        },
+        {
+          "id": "flood-gates",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/shorten-rationale/uzasadnienie",
+              "quote": "Przy wysokich stanach rzek zamknięcie śluz wałowych pogarsza odpływ z kanalizacji ogólnospławnej i opadowej."
+            }
+          ],
+          "reason": "The effect of closing flood gates on sewer drainage remains stated."
+        },
+        {
+          "id": "swoszowice",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/shorten-rationale/uzasadnienie",
+              "quote": "W Uzdrowisku Swoszowice konieczna jest ochrona przed infiltracją zanieczyszczonych wód opadowych przy jednoczesnym zasilaniu zasobów wód podziemnych wodą czystą"
+            }
+          ],
+          "reason": "The protection need and clean-groundwater qualification remain."
+        },
+        {
+          "id": "strategy",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/shorten-rationale/uzasadnienie",
+              "quote": "Plan Odwodnienia Gminy Miejskiej Kraków realizuje cele Strategii Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”"
+            }
+          ],
+          "reason": "The link to the named city strategy remains."
+        }
+      ],
+      "changes": [
+        {
+          "unit_id": "change/shorten-rationale/0",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-rationale",
+              "quote": "Skróć rozdział „Uzasadnienie i diagnoza potrzeb” o około jedną trzecią, zachowując wszystkie fakty z Planu."
+            },
+            {
+              "unit_id": "draft/uzasadnienie",
+              "quote": "Szczególnie trudna jest sytuacja wysokich stanów wód w rzekach, gdy zamknięcie śluz wałowych pogarsza warunki odpływu w systemie kanalizacji ogólnospławnej i opadowej."
+            }
+          ],
+          "reason": "This condenses the diagnosis while retaining its substantive claims, including the drainage effect of high river levels."
+        },
+        {
+          "unit_id": "change/shorten-rationale/1",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-rationale",
+              "quote": "Skróć rozdział „Uzasadnienie i diagnoza potrzeb” o około jedną trzecią, zachowując wszystkie fakty z Planu."
+            },
+            {
+              "unit_id": "draft/uzasadnienie",
+              "quote": "potrzeba ochrony obszaru Uzdrowiska Swoszowice przed infiltracją zanieczyszczonych wód opadowych przy jednoczesnym zapewnieniu zasilania zasobów wód podziemnych wodą czystą"
+            }
+          ],
+          "reason": "The former list is condensed without dropping its stated needs or the Swoszowice qualification."
+        },
+        {
+          "unit_id": "change/shorten-rationale/2",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-rationale",
+              "quote": "Skróć rozdział „Uzasadnienie i diagnoza potrzeb” o około jedną trzecią, zachowując wszystkie fakty z Planu."
+            },
+            {
+              "unit_id": "draft/uzasadnienie",
+              "quote": "Plan Odwodnienia Gminy Miejskiej Kraków realizuje cele Strategii Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”"
+            }
+          ],
+          "reason": "The strategic alignment is rephrased more concisely while retaining the Plan and strategy links."
+        }
+      ],
+      "contradictions": []
+    },
+    {
+      "case_id": "grant-without-value",
+      "expected_changes": [],
+      "preserved": [
+        {
+          "id": "unchanged",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "draft/budzet",
+              "quote": "[Information needed: Confirm the requested NFOŚiGW co-financing amount and percentage of eligible costs for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.]"
+            },
+            {
+              "unit_id": "draft/budzet",
+              "quote": "kwota ta dotyczy całego Planu, obejmuje wiele odrębnych działań i nie stanowi budżetu niniejszego projektu."
+            }
+          ],
+          "reason": "No edit was made. The requested amount remains an open gap, and the Plan-wide cost is not presented as a project grant."
+        }
+      ],
+      "changes": [],
+      "contradictions": []
+    }
+  ]
+}

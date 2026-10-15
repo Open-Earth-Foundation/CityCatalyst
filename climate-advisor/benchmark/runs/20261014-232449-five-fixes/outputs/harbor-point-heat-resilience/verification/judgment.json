@@ -1,0 +1,131 @@
+{
+  "defects": [
+    {
+      "id": "gsi-cost-conflict",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/8",
+          "quote": "green stormwater infrastructure is USD 12.4 million rather than USD 14.2 million."
+        },
+        {
+          "unit_id": "finding/24",
+          "quote": "The output states that green stormwater infrastructure costs USD 14.2 million, while the project-components chapter states that the same activities cost USD 12.4 million."
+        }
+      ],
+      "reason": "Both findings identify the conflicting green stormwater infrastructure estimates in the components and financing chapters."
+    },
+    {
+      "id": "grant-secured",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/2",
+          "quote": "The output states that USD 18.6 million in external grant funding has already been secured, while the financing chapter states that the plan seeks USD 18.6 million in external grant funding."
+        }
+      ],
+      "reason": "The finding identifies the incompatible secured and sought funding statuses."
+    },
+    {
+      "id": "component-total-mismatch",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/22",
+          "quote": "The component costs shown in the table total USD 28.5 million, not the stated USD 26.5 million programme total."
+        }
+      ],
+      "reason": "The finding identifies the financing table's arithmetic mismatch. Other findings about the USD 11.6 million cool-corridor figure concern distinct cost inconsistencies, not the stated total."
+    },
+    {
+      "id": "accredited-entity-gap-inconsistency",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/3",
+          "quote": "The output asks to confirm the GCF-accredited entity that will submit and oversee the Harbor Point Heat and Stormwater Resilience Plan SAP proposal, but the Implementation arrangements chapter identifies the Harbor Point Climate Trust."
+        },
+        {
+          "unit_id": "finding/16",
+          "quote": "The output identifies Harbor Point Climate Trust as the GCF-accredited entity, while the project summary still asks for that entity to be confirmed."
+        }
+      ],
+      "reason": "Both findings locate the unresolved marker in the summary and the asserted accredited entity in implementation."
+    },
+    {
+      "id": "country-unflagged",
+      "verdict": "missed",
+      "finding_refs": [],
+      "reason": "No finding identifies that the project summary neither states the country nor flags it as missing."
+    },
+    {
+      "id": "canopy-target-before-start",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/7",
+          "quote": "The cool-corridor outcome is scheduled for 2025, two years before the project implementation period begins in 2027."
+        },
+        {
+          "unit_id": "finding/9",
+          "quote": "The output sets the tree-canopy outcome for 2025, while the expected-results chapter specifies a target of 25 percent by 2032."
+        },
+        {
+          "unit_id": "finding/13",
+          "quote": "The output sets the tree-canopy targets for Eastside and Millbrook for 2032, while the project-components chapter states that both neighbourhoods will reach 25 percent canopy by 2025, before the 2027–2032 implementation period."
+        }
+      ],
+      "reason": "The findings identify both consequences of the 2025 target: it predates delivery and conflicts with the 2032 results table."
+    }
+  ],
+  "findings": [
+    {
+      "unit_id": "finding/17",
+      "verdict": "false_alarm",
+      "evidence": [],
+      "reason": "The implementation chapter already states that the Office will publish an annual report and lists monitored indicators. Its gap asks for the still-missing protocol details; those statements do not resolve the gap."
+    },
+    {
+      "unit_id": "finding/23",
+      "verdict": "valid",
+      "evidence": [
+        {
+          "unit_id": "draft/financing",
+          "quote": "| Cool corridors | 11.6 |"
+        },
+        {
+          "unit_id": "draft/financing",
+          "quote": "The component financing status identifies both cool corridors (USD 9.6 million)"
+        }
+      ],
+      "reason": "The financing chapter itself assigns two different costs to cool corridors."
+    },
+    {
+      "unit_id": "finding/25",
+      "verdict": "valid",
+      "evidence": [
+        {
+          "unit_id": "draft/financing",
+          "quote": "| Cool corridors | 11.6 |"
+        },
+        {
+          "unit_id": "draft/project_components",
+          "quote": "Cool-corridor planting and establishment watering are estimated to cost USD 9.6 million."
+        }
+      ],
+      "reason": "This identifies a cross-chapter cost conflict, distinct from the within-financing conflict in finding/23."
+    },
+    {
+      "unit_id": "finding/26",
+      "verdict": "false_alarm",
+      "evidence": [],
+      "reason": "The gap already identifies the USD 2.7 million as city operating-budget funding for community cooling. It asks how the city amounts are allocated overall and whether the operating funding overlaps the USD 7.9 million contribution; those questions remain unanswered."
+    },
+    {
+      "unit_id": "finding/27",
+      "verdict": "false_alarm",
+      "evidence": [],
+      "reason": "The financing chapter already states that community cooling is funded from the city operating budget. The gap concerns reconciliation of the external grant requirement and confirmation of the final component financing plan, which that known funding status does not supply."
+    }
+  ]
+}

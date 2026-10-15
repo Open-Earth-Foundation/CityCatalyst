@@ -1543,6 +1543,8 @@ Every run is saved under `output/cnb_golden_set/runs/<run-id>/` and published to
 the static viewer at `output/cnb_golden_set/index.html` (open it directly in a
 browser). The viewer shows each run by stage and document, and **Compare runs**
 diffs any two runs: configuration, stage results, and changed verdicts.
+Reference runs are committed in [`benchmark/`](benchmark/benchmark.md) with the
+same viewer; pass `--results-dir ../benchmark` to save a run there.
 
 The live evaluation requires `OPENROUTER_API_KEY` for the production models and
 `models.cnb_golden_set_judge` in `llm_config.yaml`. Review the four judge prompts in

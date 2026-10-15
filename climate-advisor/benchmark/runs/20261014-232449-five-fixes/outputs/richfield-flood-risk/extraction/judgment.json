@@ -1,0 +1,1365 @@
+{
+  "facts": [
+    {
+      "id": "model-coverage",
+      "verdict": "partially_covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/0/page-9",
+          "quote": "The model has been updated to be one PCSWMM model file that covers the entire city."
+        }
+      ],
+      "reason": "Coverage of the entire city survives, but the retained quotations do not state that the model also covers adjacent areas draining into Richfield."
+    },
+    {
+      "id": "lidar-update",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/existing_mitigation_regulation/2/page-9",
+          "quote": "Barr updated the existing PCSWMM model to incorporate the Light Detection and Ranging (LiDAR) data collected in 2022 and published by the United States Geological Survey (USGS)"
+        }
+      ],
+      "reason": "The model, updater, collection year, and publisher are retained."
+    },
+    {
+      "id": "design-storms",
+      "verdict": "partially_covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/flood_damages/0/page-14",
+          "quote": "Model results of the peak water level for the 2-, 10-, 100-, and MCE100-year 24-hour rainfall events were used to create inundation areas."
+        },
+        {
+          "unit_id": "retained/project_description/0/page-7",
+          "quote": "Climate adaptation evaluation by simulating a larger storm in the model"
+        }
+      ],
+      "reason": "The four events and a climate-adaptation objective survive, but the retained text neither explains the MCE100-year event as the climate-adaptation scenario nor gives the MSE3 rainfall distribution."
+    },
+    {
+      "id": "prioritization-criteria",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/project_analysis/1/page-19",
+          "quote": "The criteria selected to score the flood-risk areas are:\n\n- Storm system conditions\n- Critical infrastructure\n- Frequency of flooding\n- Social vulnerability index (SVI)\n- Number of flood-prone structures"
+        }
+      ],
+      "reason": "All five scoring criteria are retained."
+    },
+    {
+      "id": "flood-risk-area-count",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/flood_damages/1/page-30",
+          "quote": "A total of 746 flood-risk areas were evaluated from the study area with 601 flood-risk areas located within or primarily within the municipal boundary."
+        }
+      ],
+      "reason": "Both counts and the relationship to the municipal boundary are preserved."
+    },
+    {
+      "id": "selected-areas-and-concepts",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/project_activities/7/page-49",
+          "quote": "Three flood-risk areas were selected by the city based on the project prioritization framework developed. For these three flood-risk areas a total of six mitigation concepts were identified and evaluated in the updated stormwater model."
+        }
+      ],
+      "reason": "The city selection, three areas, six concepts, and model evaluation are explicit."
+    },
+    {
+      "id": "selected-sites",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/flood_damages/2/page-32",
+          "quote": "The area around Wilson Pond is one of the locations with the largest risk of flooding in the city."
+        },
+        {
+          "unit_id": "retained/flood_damages/3/page-40",
+          "quote": "The flood-risk area Northwest of Roosevelt Park was selected by the city for further evaluation."
+        },
+        {
+          "unit_id": "retained/flood_damages/4/page-43",
+          "quote": "The flood-risk area near Woodlawn Terrace was selected by the city for further evaluation."
+        },
+        {
+          "unit_id": "retained/project_activities/1/page-32",
+          "quote": "Three potential project flood-risk mitigation concepts were identified for the Wilson Pond area:"
+        }
+      ],
+      "reason": "The retained passages identify all three sites and connect Wilson Pond to the evaluated concepts."
+    },
+    {
+      "id": "concept-level-costs",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/project_activities/0/page-32",
+          "quote": "For each of these three areas, concept level flood-risk reduction projects were modeled to evaluate the reduction in flood risk. Based on the concept level design, a planning-level cost estimate was developed for city staff to consider when planning for further evaluation of each project."
+        }
+      ],
+      "reason": "The projects and their modeled evaluation are described as concept-level, and their costs as planning-level estimates rather than final designs or prices."
+    },
+    {
+      "id": "cost-basis",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/project_financing/5/page-52",
+          "quote": "All costs are presented in 2025 US dollars."
+        },
+        {
+          "unit_id": "retained/project_financing/7/page-53",
+          "quote": "The estimated accuracy range for this point estimate is -30% to +50%."
+        }
+      ],
+      "reason": "The currency year and estimated accuracy range are retained."
+    },
+    {
+      "id": "concept-cost-figures",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/project_financing/1/page-33",
+          "quote": "|  C | Increase storm sewer capacity and number of pipes | **$17,333,000** $12,134,000 – $30,333,000  |"
+        },
+        {
+          "unit_id": "retained/project_financing/3/page-43",
+          "quote": "|  A | Add underground storage chamber | **$1,540,000** $1,078,000 - $2,695,000  |"
+        },
+        {
+          "unit_id": "retained/project_activities/1/page-32",
+          "quote": "- Flood Mitigation Concept C: Increase the storm sewer capacity and number of pipes from Wilson Pond south"
+        },
+        {
+          "unit_id": "retained/project_activities/5/page-43",
+          "quote": "Two potential project flood-risk mitigation concepts were identified for the area near Woodlawn Terrace:"
+        }
+      ],
+      "reason": "The endpoint estimates and their Wilson Pond and Woodlawn Terrace concept identities can be resolved across the retained passages."
+    },
+    {
+      "id": "study-area-size",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/3/page-7",
+          "quote": "The model study area covers the total watershed area included in the H&H model which is approximately 8.8 square miles"
+        }
+      ],
+      "reason": "The approximate area and square-mile unit are explicit."
+    }
+  ],
+  "topics": [
+    {
+      "id": "stormwater-model",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "topic/0",
+          "quote": "stormwater model update"
+        }
+      ],
+      "reason": "The label conveys the updated stormwater model topic."
+    },
+    {
+      "id": "flood-risk-prioritization",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "topic/4",
+          "quote": "flood-risk prioritization"
+        }
+      ],
+      "reason": "The label directly conveys prioritizing areas by flood risk."
+    },
+    {
+      "id": "mitigation-concepts",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "No returned topic label identifies proposed flood-mitigation interventions or alternatives."
+    },
+    {
+      "id": "cost-estimates",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "No returned topic label addresses estimated mitigation costs."
+    },
+    {
+      "id": "design-storms",
+      "verdict": "partially_covered",
+      "output_refs": [
+        {
+          "unit_id": "topic/3",
+          "quote": "climate adaptation"
+        }
+      ],
+      "reason": "Climate adaptation is represented, but design rainfall events and storm scenarios are not identified by the topic labels."
+    },
+    {
+      "id": "social-vulnerability",
+      "verdict": "partially_covered",
+      "output_refs": [
+        {
+          "unit_id": "topic/5",
+          "quote": "environmental justice"
+        },
+        {
+          "unit_id": "topic/4",
+          "quote": "flood-risk prioritization"
+        }
+      ],
+      "reason": "Together the labels suggest an equity dimension to prioritization, but do not identify social vulnerability or its use as an assessment criterion."
+    }
+  ],
+  "claims": [
+    {
+      "output": {
+        "unit_id": "retained/0/page-9",
+        "quote": "The model has been updated to be one PCSWMM model file that covers the entire city."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "The model has been updated to be one PCSWMM model file that covers the entire city."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "This accurately describes the consolidated model file. It does not assert that the city is the model's entire geographic extent."
+    },
+    {
+      "output": {
+        "unit_id": "retained/1/page-9",
+        "quote": "Barr updated the existing PCSWMM model to incorporate the Light Detection and Ranging (LiDAR) data collected in 2022"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "Barr updated the existing PCSWMM model to incorporate the Light Detection and Ranging (LiDAR) data collected in 2022"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The updater, model, data type, and collection year match the source."
+    },
+    {
+      "output": {
+        "unit_id": "retained/2/page-9",
+        "quote": "the storm pump station at Taft Park was added to the model."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "the storm pump station at Taft Park was added to the model."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The addition is stated in the source; the retained model context resolves the referent."
+    },
+    {
+      "output": {
+        "unit_id": "retained/3/page-7",
+        "quote": "The model study area covers the total watershed area included in the H&H model which is approximately 8.8 square miles"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-7",
+          "quote": "The model study area covers the total watershed area included in the H&H model which is approximately 8.8 square miles"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The watershed-area scope and approximate size match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/4/page-7",
+        "quote": "Climate adaptation evaluation by simulating a larger storm in the model"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-7",
+          "quote": "Climate adaptation evaluation by simulating a larger storm in the model"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "This is accurately presented elsewhere among the retained project goals; it does not specify which larger storm."
+    },
+    {
+      "output": {
+        "unit_id": "retained/5/page-7",
+        "quote": "Prioritize flood-risk project areas through environmental justice and additional factors"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-7",
+          "quote": "Prioritize flood-risk project areas through environmental justice and additional factors"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "It preserves the stated prioritization goal and acknowledges other factors."
+    },
+    {
+      "output": {
+        "unit_id": "retained/applicant_project_information/0/page-1",
+        "quote": "Prepared for\nCity of Richfield"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-1",
+          "quote": "Prepared for\nCity of Richfield"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The report's named recipient is accurate."
+    },
+    {
+      "output": {
+        "unit_id": "retained/applicant_project_information/1/page-2",
+        "quote": "August 15, 2025\nDate"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-2",
+          "quote": "August 15, 2025\nDate"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The date matches the certification page; it is not presented as a different project milestone."
+    },
+    {
+      "output": {
+        "unit_id": "retained/funding_breakout/0/page-1",
+        "quote": "*This study was paid for in part by a grant from the MPCA.*"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-1",
+          "quote": "*This study was paid for in part by a grant from the MPCA.*"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The partial-grant qualification is preserved."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_activities/0/page-32",
+        "quote": "The prioritization by flood-risk area was reviewed by city staff who identified three locations for a planning-level evaluation. For each of these three areas, concept level flood-risk reduction projects were modeled to evaluate the reduction in flood risk."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-32",
+          "quote": "The prioritization by flood-risk area was reviewed by city staff who identified three locations for a planning-level evaluation. For each of these three areas, concept level flood-risk reduction projects were modeled to evaluate the reduction in flood risk."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The staff selection, number of locations, and concept-level modeling match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_activities/0/page-32",
+        "quote": "Based on the concept level design, a planning-level cost estimate was developed for city staff to consider when planning for further evaluation of each project."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-32",
+          "quote": "Based on the concept level design, a planning-level cost estimate was developed for city staff to consider when planning for further evaluation of each project."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The estimates' preliminary purpose and further-evaluation status are preserved."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_activities/1/page-32",
+        "quote": "Three potential project flood-risk mitigation concepts were identified for the Wilson Pond area:"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-32",
+          "quote": "Three potential project flood-risk mitigation concepts were identified for the Wilson Pond area:"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The count, location, and potential status are accurate."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_activities/1/page-32",
+        "quote": "- Flood Mitigation Concept A: Reduce the water level in Wilson Pond ahead of a storm event and modify the outlet by lowering the invert and increasing the storm sewer capacity from Wilson Pond south, discussed in Section 5.1.1.\n- Flood Mitigation Concept B: Increase the storm sewer capacity from Wilson Pond south, discussed in Section 5.1.2.\n- Flood Mitigation Concept C: Increase the storm sewer capacity and number of pipes from Wilson Pond south, discussed in Section 5.1.3."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-32",
+          "quote": "- Flood Mitigation Concept A: Reduce the water level in Wilson Pond ahead of a storm event and modify the outlet by lowering the invert and increasing the storm sewer capacity from Wilson Pond south, discussed in Section 5.1.1.\n- Flood Mitigation Concept B: Increase the storm sewer capacity from Wilson Pond south, discussed in Section 5.1.2.\n- Flood Mitigation Concept C: Increase the storm sewer capacity and number of pipes from Wilson Pond south, discussed in Section 5.1.3."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "All three Wilson Pond alternatives are described as concepts, with their distinct proposed changes intact."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_activities/2/page-33",
+        "quote": "|  A | Reduce the water level in Wilson Pond ahead of a storm event and modify the outlet by lowering the invert and increasing the storm sewer capacity | **$8,853,000** $6,198,000 – $15,493,000  |\n|  B | Increase storm sewer capacity | **$11,536,000** $8,076,000 – $20,188,000  |\n|  C | Increase storm sewer capacity and number of pipes | **$17,333,000** $12,134,000 – $30,333,000  |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-33",
+          "quote": "|  A | Reduce the water level in Wilson Pond ahead of a storm event and modify the outlet by lowering the invert and increasing the storm sewer capacity | **$8,853,000** $6,198,000 – $15,493,000  |\n|  B | Increase storm sewer capacity | **$11,536,000** $8,076,000 – $20,188,000  |\n|  C | Increase storm sewer capacity and number of pipes | **$17,333,000** $12,134,000 – $30,333,000  |"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The three concept estimates and displayed ranges match; other retained passages identify the site and the planning-level cost context."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_activities/3/page-33",
+        "quote": "The concept design includes a gate with remote access controlled based on weather forecasts to lower the water level in Wilson Pond ahead of a storm event."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-33",
+          "quote": "The concept design includes a gate with remote access controlled based on weather forecasts to lower the water level in Wilson Pond ahead of a storm event."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The proposed gate and its forecast-based operation match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_activities/3/page-33",
+        "quote": "This concept design would leverage the existing storage in Wilson Pond and result in approximately 5 acre-feet of additional storage ahead of a storm event with an assumed draw down time of 24-hours."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-33",
+          "quote": "This concept design would leverage the existing storage in Wilson Pond and result in approximately 5 acre-feet of additional storage ahead of a storm event with an assumed draw down time of 24-hours."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The approximate storage gain and assumed drawdown time retain their conditional, concept-design framing."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_activities/4/page-40",
+        "quote": "The concept design includes adding approximately 354,000 cubic feet of underground storage for water retention based on a surface area of 300-foot by 300-foot, a depth of 5.25 feet, and an assumed 75% of underground volume available for stormwater storage."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-40",
+          "quote": "The concept design includes adding approximately 354,000 cubic feet of underground storage for water retention based on a surface area of 300-foot by 300-foot, a depth of 5.25 feet, and an assumed 75% of underground volume available for stormwater storage."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The proposed capacity, dimensions, and availability assumption match. The quotation does not identify this as the Roosevelt Park concept, and the retained quotations also discuss underground storage at Woodlawn Terrace."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_activities/5/page-43",
+        "quote": "Two potential project flood-risk mitigation concepts were identified for the area near Woodlawn Terrace:\n\n- Flood Mitigation Concept A: Add underground storage chamber below the parking lot, discussed in Section 5.3.1.\n- Flood Mitigation Concept B: Increase the storm sewer capacity from the flood-risk area to Wood Lake by increasing the pipe sizes, discussed in Section 5.3.2."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-43",
+          "quote": "Two potential project flood-risk mitigation concepts were identified for the area near Woodlawn Terrace:\n\n- Flood Mitigation Concept A: Add underground storage chamber below the parking lot, discussed in Section 5.3.1.\n- Flood Mitigation Concept B: Increase the storm sewer capacity from the flood-risk area to Wood Lake by increasing the pipe sizes, discussed in Section 5.3.2."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "Both alternatives and their proposed status and location match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_activities/6/page-43",
+        "quote": "|  A | Add underground storage chamber | **$1,540,000** $1,078,000 - $2,695,000  |\n|  B | Increase storm sewer capacity | **$7,440,000** $5,208,000 - $13,020,000  |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-43",
+          "quote": "|  A | Add underground storage chamber | **$1,540,000** $1,078,000 - $2,695,000  |\n|  B | Increase storm sewer capacity | **$7,440,000** $5,208,000 - $13,020,000  |"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The Woodlawn Terrace alternatives, estimates, and ranges match; their site is identified in another retained passage."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_activities/7/page-49",
+        "quote": "Three flood-risk areas were selected by the city based on the project prioritization framework developed. For these three flood-risk areas a total of six mitigation concepts were identified and evaluated in the updated stormwater model."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-49",
+          "quote": "Three flood-risk areas were selected by the city based on the project prioritization framework developed. For these three flood-risk areas a total of six mitigation concepts were identified and evaluated in the updated stormwater model."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "Selection, counts, and model evaluation match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_activities/7/page-49",
+        "quote": "Each concept provides some level of flood-risk mitigation but at varied cost and with additional project considerations. Additional design and evaluation of the alternatives will be required as the city plans for future flood-risk mitigation projects."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-49",
+          "quote": "Each concept provides some level of flood-risk mitigation but at varied cost and with additional project considerations. Additional design and evaluation of the alternatives will be required as the city plans for future flood-risk mitigation projects."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The comparison remains about evaluated concepts, not guaranteed completed projects, and retains the need for further work."
+    },
+    {
+      "output": {
+        "unit_id": "retained/flood_damages/0/page-14",
+        "quote": "Model results of the peak water level for the 2-, 10-, 100-, and MCE100-year 24-hour rainfall events were used to create inundation areas."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-14",
+          "quote": "Model results of the peak water level for the 2-, 10-, 100-, and MCE100-year 24-hour rainfall events were used to create inundation areas."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The modeled events and use of peak water levels match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/flood_damages/0/page-14",
+        "quote": "Inundation areas were delineated where water is stored in ponds, wetlands, and topographic depressions using level pool mapping in ArcGIS (i.e., inundation mapping of sloped water surface along roadways and through the floodplain was not completed)."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-14",
+          "quote": "Inundation areas were delineated where water is stored in ponds, wetlands, and topographic depressions using level pool mapping in ArcGIS (i.e., inundation mapping of sloped water surface along roadways and through the floodplain was not completed)."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The mapping method and the material limitation on roadway and floodplain mapping are both retained."
+    },
+    {
+      "output": {
+        "unit_id": "retained/flood_damages/1/page-30",
+        "quote": "A total of 746 flood-risk areas were evaluated from the study area with 601 flood-risk areas located within or primarily within the municipal boundary."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-30",
+          "quote": "A total of 746 flood-risk areas were evaluated from the study area with 601 flood-risk areas located within or primarily within the municipal boundary."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "Both counts and geographic qualification match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/flood_damages/2/page-32",
+        "quote": "The area around Wilson Pond is one of the locations with the largest risk of flooding in the city. This area impacts the most residential structures in a single location, the lowest structures are affected during the 2-year 24-hour rainfall event"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-32",
+          "quote": "The area around Wilson Pond is one of the locations with the largest risk of flooding in the city. This area impacts the most residential structures in a single location, the lowest structures are affected during the 2-year 24-hour rainfall event"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The comparative risk, affected structures, and modeled-event qualification match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/flood_damages/2/page-32",
+        "quote": "Wilson Pond is located within an area of the city with a high social vulnerability index, and surface inundation impacts a critical transportation route through the city as well as a school."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-32",
+          "quote": "Wilson Pond is located within an area of the city with a high social vulnerability index, and surface inundation impacts a critical transportation route through the city as well as a school."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The SVI, route, and school impacts match the source."
+    },
+    {
+      "output": {
+        "unit_id": "retained/flood_damages/3/page-40",
+        "quote": "The flood-risk area Northwest of Roosevelt Park was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 10-year 24-hour duration rainfall event"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-40",
+          "quote": "The flood-risk area Northwest of Roosevelt Park was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 10-year 24-hour duration rainfall event"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The selection, affected structures, and event match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/flood_damages/3/page-40",
+        "quote": "the flood-risk area is located within an area of the city with a high social vulnerability index, and surface inundation impacts a critical transportation route through the city."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-40",
+          "quote": "the flood-risk area is located within an area of the city with a high social vulnerability index, and surface inundation impacts a critical transportation route through the city."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The Roosevelt Park location is established in the same retained passage; the vulnerability and route impacts match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/flood_damages/4/page-43",
+        "quote": "The flood-risk area near Woodlawn Terrace was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 2-year 24-hour duration rainfall event, the storm sewer pipes are classified as moderate to high risk"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-43",
+          "quote": "The flood-risk area near Woodlawn Terrace was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 2-year 24-hour duration rainfall event, the storm sewer pipes are classified as moderate to high risk"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The site selection and stated risk characteristics match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/flood_damages/4/page-43",
+        "quote": "the flood-risk area is located within an area of the city with a high social vulnerability index, and the surface inundation impacts three high-density housing structures."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-43",
+          "quote": "the flood-risk area is located within an area of the city with a high social vulnerability index, and the surface inundation impacts three high-density housing structures."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The SVI description and housing-structure count match for the Woodlawn Terrace area."
+    },
+    {
+      "output": {
+        "unit_id": "retained/existing_mitigation_regulation/0/page-7",
+        "quote": "The stormwater model was originally developed for multiple purposes, which include:\n\n- Identifying inundation extents for the 2-, 10-, and 100-year 24-hour precipitation events\n- Identifying potentially flood-prone structures\n- Assessing the performance of existing stormwater infrastructure\n- Prioritizing areas for infrastructure upgrades and stormwater BMP implementation\n- Evaluating the impact of development and redevelopment within the city"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-7",
+          "quote": "The stormwater model was originally developed for multiple purposes, which include:\n\n- Identifying inundation extents for the 2-, 10-, and 100-year 24-hour precipitation events\n- Identifying potentially flood-prone structures\n- Assessing the performance of existing stormwater infrastructure\n- Prioritizing areas for infrastructure upgrades and stormwater BMP implementation\n- Evaluating the impact of development and redevelopment within the city"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The list accurately describes the original model's purposes, not claims that every purpose was newly completed."
+    },
+    {
+      "output": {
+        "unit_id": "retained/existing_mitigation_regulation/1/page-9",
+        "quote": "The original stormwater model was developed using the Personal Computer Stormwater Management Model (PCSWMM) and had not been updated since provided to the city."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "The original stormwater model was developed using the Personal Computer Stormwater Management Model (PCSWMM) and had not been updated since provided to the city."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The original platform and prior update status match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/existing_mitigation_regulation/1/page-9",
+        "quote": "- New topographic information published by the USGS since the original model development, which was incorporated in the updated model, as discussed in Section 2.1.\n- City staff provided information about construction projects with stormwater impacts that have occurred in the study area since 2018, as discussed in Section 2.2.\n- Barr added additional data to the PCSWMM model based on collected survey data and information from the city of Minneapolis stormwater model, which is discussed in Section 2.3"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "- New topographic information published by the USGS since the original model development, which was incorporated in the updated model, as discussed in Section 2.1.\n- City staff provided information about construction projects with stormwater impacts that have occurred in the study area since 2018, as discussed in Section 2.2.\n- Barr added additional data to the PCSWMM model based on collected survey data and information from the city of Minneapolis stormwater model, which is discussed in Section 2.3"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The three stated inputs to the update match the source."
+    },
+    {
+      "output": {
+        "unit_id": "retained/existing_mitigation_regulation/2/page-9",
+        "quote": "Barr updated the existing PCSWMM model to incorporate the Light Detection and Ranging (LiDAR) data collected in 2022 and published by the United States Geological Survey (USGS) [reference (2)]. The 2018 model was based on LiDAR data collected in 2011 [reference (3)]."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "Barr updated the existing PCSWMM model to incorporate the Light Detection and Ranging (LiDAR) data collected in 2022 and published by the United States Geological Survey (USGS) [reference (2)]. The 2018 model was based on LiDAR data collected in 2011 [reference (3)]."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "Both the new dataset and the 2018 model's older LiDAR basis match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/existing_mitigation_regulation/3/page-9",
+        "quote": "Barr updated the existing PCSWMM model for areas identified by the city as shown in Figure 2-1. These update areas included redevelopments, pond improvement projects, street and storm sewer projects, and areas of the city that had been part of stormwater evaluations since 2018."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "Barr updated the existing PCSWMM model for areas identified by the city as shown in Figure 2-1. These update areas included redevelopments, pond improvement projects, street and storm sewer projects, and areas of the city that had been part of stormwater evaluations since 2018."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The updater, city-identified areas, and categories match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_description/0/page-7",
+        "quote": "The city has experienced redevelopment since the original model development, and the city's goals for this project were to:\n\n- Update the existing H&H stormwater model\n- Climate adaptation evaluation by simulating a larger storm in the model\n- Prioritize flood-risk project areas through environmental justice and additional factors\n- Evaluate concept-level flood-risk reduction projects at selected locations."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-7",
+          "quote": "The city has experienced redevelopment since the original model development, and the city's goals for this project were to:\n\n- Update the existing H&H stormwater model\n- Climate adaptation evaluation by simulating a larger storm in the model\n- Prioritize flood-risk project areas through environmental justice and additional factors\n- Evaluate concept-level flood-risk reduction projects at selected locations."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "Redevelopment and all four items are accurately framed as project goals."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_description/1/page-9",
+        "quote": "The original stormwater model was developed using the Personal Computer Stormwater Management Model (PCSWMM) and had not been updated since provided to the city."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "The original stormwater model was developed using the Personal Computer Stormwater Management Model (PCSWMM) and had not been updated since provided to the city."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "This repeated statement matches the original model's platform and prior update status."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_description/1/page-9",
+        "quote": "- New topographic information published by the USGS since the original model development, which was incorporated in the updated model, as discussed in Section 2.1.\n- City staff provided information about construction projects with stormwater impacts that have occurred in the study area since 2018, as discussed in Section 2.2.\n- Barr added additional data to the PCSWMM model based on collected survey data and information from the city of Minneapolis stormwater model, which is discussed in Section 2.3"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "- New topographic information published by the USGS since the original model development, which was incorporated in the updated model, as discussed in Section 2.1.\n- City staff provided information about construction projects with stormwater impacts that have occurred in the study area since 2018, as discussed in Section 2.2.\n- Barr added additional data to the PCSWMM model based on collected survey data and information from the city of Minneapolis stormwater model, which is discussed in Section 2.3"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The repeated account of the three update inputs matches."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_description/2/page-11",
+        "quote": "The additional watershed area, connecting storm sewer pipes, and boundary condition timeseries data were originally sourced from the city of Minneapolis stormwater model, with their approval [reference (4)]."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-11",
+          "quote": "The additional watershed area, connecting storm sewer pipes, and boundary condition timeseries data were originally sourced from the city of Minneapolis stormwater model, with their approval [reference (4)]."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The source of all three types of model input and Minneapolis's approval match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_description/3/page-19",
+        "quote": "Barr consulted with the city to identify criteria that would be considered in prioritizing flood-risk areas, and the city provided the scoring and weight applied to each criterion."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-19",
+          "quote": "Barr consulted with the city to identify criteria that would be considered in prioritizing flood-risk areas, and the city provided the scoring and weight applied to each criterion."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The roles of Barr and the city in choosing and weighting criteria match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_description/4/page-32",
+        "quote": "The prioritization by flood-risk area was reviewed by city staff who identified three locations for a planning-level evaluation. For each of these three areas, concept level flood-risk reduction projects were modeled to evaluate the reduction in flood risk. Based on the concept level design, a planning-level cost estimate was developed for city staff to consider when planning for further evaluation of each project."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-32",
+          "quote": "The prioritization by flood-risk area was reviewed by city staff who identified three locations for a planning-level evaluation. For each of these three areas, concept level flood-risk reduction projects were modeled to evaluate the reduction in flood risk. Based on the concept level design, a planning-level cost estimate was developed for city staff to consider when planning for further evaluation of each project."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "This repeated passage preserves the three-location selection and preliminary modeling and cost-estimate status."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_description/5/page-33",
+        "quote": "Model results assume sufficient capacity to route the additional flow away from the city which may need to be conveyed through the city of Bloomington or along the Highway 494 corridor to the Minnesota River. This assumption is not accounted for in the planning-level cost estimates"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-33",
+          "quote": "Model results assume sufficient capacity to route the additional flow away from the city which may need to be conveyed through the city of Bloomington or along the Highway 494 corridor to the Minnesota River. This assumption is not accounted for in the planning-level cost estimates"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The assumed downstream capacity, possible routes, and cost-estimate exclusion are retained."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_description/5/page-33",
+        "quote": "further coordination will be required with the city of Bloomington or MnDOT if the city of Richfield decides to further evaluate one of the flood mitigation concepts."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-33",
+          "quote": "further coordination will be required with the city of Bloomington or MnDOT if the city of Richfield decides to further evaluate one of the flood mitigation concepts."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The coordination requirement remains conditional on Richfield's decision."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_description/6/page-48",
+        "quote": "Additional evaluations of each site and mitigation concept will need to be completed as they are pursued further. This includes design optimization, evaluating utility conflicts, reviewing permitting requirements, in some cases agreements with private landowners or other public entities, and additional considerations specific to each project."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-48",
+          "quote": "Additional evaluations of each site and mitigation concept will need to be completed as they are pursued further. This includes design optimization, evaluating utility conflicts, reviewing permitting requirements, in some cases agreements with private landowners or other public entities, and additional considerations specific to each project."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The need for further work and conditional need for agreements match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/0/page-19",
+        "quote": "Barr consulted with the city to identify criteria that would be considered in prioritizing flood-risk areas, and the city provided the scoring and weight applied to each criterion."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-19",
+          "quote": "Barr consulted with the city to identify criteria that would be considered in prioritizing flood-risk areas, and the city provided the scoring and weight applied to each criterion."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "This repeated passage accurately assigns the respective roles."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/1/page-19",
+        "quote": "The criteria selected to score the flood-risk areas are:\n\n- Storm system conditions\n- Critical infrastructure\n- Frequency of flooding\n- Social vulnerability index (SVI)\n- Number of flood-prone structures"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-19",
+          "quote": "The criteria selected to score the flood-risk areas are:\n\n- Storm system conditions\n- Critical infrastructure\n- Frequency of flooding\n- Social vulnerability index (SVI)\n- Number of flood-prone structures"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "All five scoring criteria match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/2/page-32",
+        "quote": "Options that were considered but not pursued for the area near Wilson Pond include adding surface storage areas, underground storage, and a pump to lower the water level in Wilson Pond ahead of a storm event."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-32",
+          "quote": "Options that were considered but not pursued for the area near Wilson Pond include adding surface storage areas, underground storage, and a pump to lower the water level in Wilson Pond ahead of a storm event."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The quotation clearly distinguishes rejected options from the proposed concepts."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/2/page-32",
+        "quote": "Surface storage was not considered due to a lack of undeveloped space near the flood-risk area and the city's direction to not consider property acquisition for flood-risk reduction. Underground storage was not considered due to the expected shallow groundwater in the area."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-32",
+          "quote": "Surface storage was not considered due to a lack of undeveloped space near the flood-risk area and the city's direction to not consider property acquisition for flood-risk reduction. Underground storage was not considered due to the expected shallow groundwater in the area."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The distinct reasons for not pursuing surface and underground storage match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/3/page-34",
+        "quote": "|  2-year 24-hour | Existing Conditions | 823.9 | 825.3 | 825.9  |\n|   |  Mitigation Concept A | 822.0 | 825.2 | 821.6  |\n|   |  Lowered Water Level | 1.9 | 0.1 | 4.2  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-34",
+          "quote": "**Table 5-2 Modeled Peak Water Levels Wilson Pond Flood Mitigation Concept A: Reduce the Water Level in Wilson Pond Ahead of a Storm Event**"
+        },
+        {
+          "unit_id": "source/page-34",
+          "quote": "|  Storm Event | Model Condition | Modeled Peak Water Level by Location (feet)  |   |   |"
+        },
+        {
+          "unit_id": "source/page-34",
+          "quote": "|  2-year 24-hour | Existing Conditions | 823.9 | 825.3 | 825.9  |\n|   |  Mitigation Concept A | 822.0 | 825.2 | 821.6  |\n|   |  Lowered Water Level | 1.9 | 0.1 | 4.2  |"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The figures are authentic, but the retained table omits its Wilson Pond title, location columns, and feet unit. Readers cannot reliably interpret what the three numeric columns measure."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/3/page-34",
+        "quote": "|  10-year 24-hour | Existing Conditions | 826.9 | 826.8 | 827.3  |\n|   |  Mitigation Concept A | 825.4 | 826.0 | 823.4  |\n|   |  Lowered Water Level | 1.4 | 0.8 | 3.9  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-34",
+          "quote": "|  Storm Event | Model Condition | Modeled Peak Water Level by Location (feet)  |   |   |"
+        },
+        {
+          "unit_id": "source/page-34",
+          "quote": "|  10-year 24-hour | Existing Conditions | 826.9 | 826.8 | 827.3  |\n|   |  Mitigation Concept A | 825.4 | 826.0 | 823.4  |\n|   |  Lowered Water Level | 1.4 | 0.8 | 3.9  |"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The numbers match, but the omitted table headers make their locations, measurement, and units unclear."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/3/page-34",
+        "quote": "|  100-year 24-hour | Existing Conditions | 828.6 | 828.4 | 828.6  |\n|   |  Mitigation Concept A | 828.3 | 828.1 | 828.3  |\n|   |  Lowered Water Level | 0.3 | 0.3 | 0.3  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-34",
+          "quote": "|  Storm Event | Model Condition | Modeled Peak Water Level by Location (feet)  |   |   |"
+        },
+        {
+          "unit_id": "source/page-34",
+          "quote": "|  100-year 24-hour | Existing Conditions | 828.6 | 828.4 | 828.6  |\n|   |  Mitigation Concept A | 828.3 | 828.1 | 828.3  |\n|   |  Lowered Water Level | 0.3 | 0.3 | 0.3  |"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The source values survive, but the retained rows omit the locations and feet unit needed to interpret them."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/4/page-40",
+        "quote": "Options that were considered but not pursued for the area Northwest of Roosevelt Park include adding surface storage areas and increasing capacity downstream of the flood-risk area."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-40",
+          "quote": "Options that were considered but not pursued for the area Northwest of Roosevelt Park include adding surface storage areas and increasing capacity downstream of the flood-risk area."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The site, alternatives, and not-pursued status match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/4/page-40",
+        "quote": "Surface storage was not considered because the undeveloped portion of Roosevelt Park is at a higher elevation than the nearby flood-risk area. Preliminary grading of a potential pond at this site did not add significant storage volume below the modeled water level of the flood-risk area and getting the water to the pond by gravity drainage was not feasible."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-40",
+          "quote": "Surface storage was not considered because the undeveloped portion of Roosevelt Park is at a higher elevation than the nearby flood-risk area. Preliminary grading of a potential pond at this site did not add significant storage volume below the modeled water level of the flood-risk area and getting the water to the pond by gravity drainage was not feasible."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The elevation, preliminary-grading, and gravity-drainage reasons match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/4/page-40",
+        "quote": "Increasing capacity of the downstream storm sewer system was not evaluated further as the flood-risk area drains to Norby's Pond which is also identified as a flood-risk area."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-40",
+          "quote": "Increasing capacity of the downstream storm sewer system was not evaluated further as the flood-risk area drains to Norby's Pond which is also identified as a flood-risk area."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The downstream drainage relationship and reason not to pursue this option match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/5/page-43",
+        "quote": "The flood-risk area near Woodlawn Terrace was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 2-year 24-hour duration rainfall event, the storm sewer pipes are classified as moderate to high risk, the flood-risk area is located within an area of the city with a high social vulnerability index, and the surface inundation impacts three high-density housing structures."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-43",
+          "quote": "The flood-risk area near Woodlawn Terrace was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 2-year 24-hour duration rainfall event, the storm sewer pipes are classified as moderate to high risk, the flood-risk area is located within an area of the city with a high social vulnerability index, and the surface inundation impacts three high-density housing structures."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The repeated site-selection and risk description preserves all stated qualifiers."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/6/page-48",
+        "quote": "Additional evaluations of each site and mitigation concept will need to be completed as they are pursued further. This includes design optimization, evaluating utility conflicts, reviewing permitting requirements, in some cases agreements with private landowners or other public entities, and additional considerations specific to each project."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-48",
+          "quote": "Additional evaluations of each site and mitigation concept will need to be completed as they are pursued further. This includes design optimization, evaluating utility conflicts, reviewing permitting requirements, in some cases agreements with private landowners or other public entities, and additional considerations specific to each project."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "This repeated qualification accurately retains the need for further evaluation."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/7/page-48",
+        "quote": "the three mitigation concepts for Wilson Pond include increased flow to Highway 494 which would need to be conveyed to the Minnesota River through the city of Bloomington or along the Highway 494 corridor."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-48",
+          "quote": "the three mitigation concepts for Wilson Pond include increased flow to Highway 494 which would need to be conveyed to the Minnesota River through the city of Bloomington or along the Highway 494 corridor."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The additional-flow implication and alternative routes match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_analysis/7/page-48",
+        "quote": "The details of this stormwater routing beyond the city boundary have not been determined and would also require additional permitting discussions to find an acceptable solution."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-48",
+          "quote": "The details of this stormwater routing beyond the city boundary have not been determined and would also require additional permitting discussions to find an acceptable solution."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The uncertainty about routing and need for permitting discussions are preserved."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_financing/0/page-1",
+        "quote": "*This study was paid for in part by a grant from the MPCA.*"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-1",
+          "quote": "*This study was paid for in part by a grant from the MPCA.*"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The repeated funding statement retains that the grant paid for only part of the study."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_financing/1/page-33",
+        "quote": "|  A | Reduce the water level in Wilson Pond ahead of a storm event and modify the outlet by lowering the invert and increasing the storm sewer capacity | **$8,853,000** $6,198,000 – $15,493,000  |\n|  B | Increase storm sewer capacity | **$11,536,000** $8,076,000 – $20,188,000  |\n|  C | Increase storm sewer capacity and number of pipes | **$17,333,000** $12,134,000 – $30,333,000  |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-33",
+          "quote": "|  A | Reduce the water level in Wilson Pond ahead of a storm event and modify the outlet by lowering the invert and increasing the storm sewer capacity | **$8,853,000** $6,198,000 – $15,493,000  |\n|  B | Increase storm sewer capacity | **$11,536,000** $8,076,000 – $20,188,000  |\n|  C | Increase storm sewer capacity and number of pipes | **$17,333,000** $12,134,000 – $30,333,000  |"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The repeated Wilson Pond concept figures match, with the site and estimate status resolvable elsewhere in the retained quotations."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_financing/2/page-40",
+        "quote": "|  A | Add underground storage chamber | **$15,491,000** $10,844,000 – $27,110,000  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-40",
+          "quote": "**Table 5-5 Northwest of Roosevelt Park Flood Mitigation - Cost Estimate**"
+        },
+        {
+          "unit_id": "source/page-40",
+          "quote": "|  A | Add underground storage chamber | **$15,491,000** $10,844,000 – $27,110,000  |"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The figures match the Roosevelt Park estimate, but the retained row omits its site-identifying table heading. Another retained Concept A also proposes underground storage, so this row's site cannot be reliably resolved from the retained text."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_financing/3/page-43",
+        "quote": "|  A | Add underground storage chamber | **$1,540,000** $1,078,000 - $2,695,000  |\n|  B | Increase storm sewer capacity | **$7,440,000** $5,208,000 - $13,020,000  |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-43",
+          "quote": "|  A | Add underground storage chamber | **$1,540,000** $1,078,000 - $2,695,000  |\n|  B | Increase storm sewer capacity | **$7,440,000** $5,208,000 - $13,020,000  |"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The figures and alternatives match; the retained Woodlawn Terrace concepts identify this pair of alternatives."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_financing/4/page-52",
+        "quote": "The costs provided in this report are intended to provide a planning-level estimate for the potential system modifications that were evaluated."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-52",
+          "quote": "The costs provided in this report are intended to provide a planning-level estimate for the potential system modifications that were evaluated."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The preliminary purpose and scope of the costs match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_financing/5/page-52",
+        "quote": "The cost of time escalation is not included in the opinions of probable cost. All costs are presented in 2025 US dollars."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-52",
+          "quote": "The cost of time escalation is not included in the opinions of probable cost. All costs are presented in 2025 US dollars."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The escalation exclusion and dollar year match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_financing/6/page-52",
+        "quote": "Costs associated with Base Planning Engineering and Design (PED), Construction Management (CM), Permitting, and Property or Easement acquisition are not included in the overall estimate for construction costs."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-52",
+          "quote": "Costs associated with Base Planning Engineering and Design (PED), Construction Management (CM), Permitting, and Property or Easement acquisition are not included in the overall estimate for construction costs."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The named exclusions and their construction-cost scope match."
+    },
+    {
+      "output": {
+        "unit_id": "retained/project_financing/7/page-53",
+        "quote": "The estimated accuracy range for this point estimate is -30% to +50%."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-53",
+          "quote": "The estimated accuracy range for this point estimate is -30% to +50%."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The direction and magnitude of the estimated range match, and the retained cost passages establish the estimate context."
+    }
+  ],
+  "chapters": [],
+  "contradictions": []
+}

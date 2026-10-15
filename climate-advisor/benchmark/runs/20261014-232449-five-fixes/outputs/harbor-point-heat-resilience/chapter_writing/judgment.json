@@ -1,0 +1,1783 @@
+{
+  "facts": [
+    {
+      "id": "funding-programme",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/project_summary",
+          "quote": "the Harbor Point Heat and Stormwater Resilience Plan's GCF SAP proposal"
+        }
+      ],
+      "reason": "The summary identifies the proposal as a GCF SAP proposal, though only in a gap marker."
+    },
+    {
+      "id": "lead-agency",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/implementation",
+          "quote": "The Office of Climate Resilience will lead delivery together with the Department of Public Works."
+        }
+      ],
+      "reason": "Both delivery leads and their joint role are preserved."
+    },
+    {
+      "id": "delivery-period",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/project_summary",
+          "quote": "The programme period is 2027–2032."
+        }
+      ],
+      "reason": "The delivery period is preserved."
+    },
+    {
+      "id": "population",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/climate_context",
+          "quote": "Harbor Point has 182,400 residents."
+        }
+      ],
+      "reason": "The city and population are preserved."
+    },
+    {
+      "id": "extreme-heat-days",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/climate_context",
+          "quote": "The city recorded 23 days above 35 °C in 2025, compared with an average of 9 such days per year between 1991 and 2020."
+        }
+      ],
+      "reason": "Both figures, their periods, threshold and annual-average qualifier are preserved."
+    },
+    {
+      "id": "flooded-intersections",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/climate_context",
+          "quote": "Street flooding affects 37 intersections during a 10-year rainfall event."
+        }
+      ],
+      "reason": "The count retains its rainfall-event qualification."
+    },
+    {
+      "id": "cool-corridors",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/project_components",
+          "quote": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook."
+        }
+      ],
+      "reason": "The activity, quantities and neighbourhoods are preserved."
+    },
+    {
+      "id": "green-stormwater-infrastructure",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/project_components",
+          "quote": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas."
+        }
+      ],
+      "reason": "Both proposed outputs retain their quantities and units."
+    },
+    {
+      "id": "canopy-target",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/project_components",
+          "quote": "The target is to achieve 25 percent tree canopy in both neighbourhoods by 2032."
+        }
+      ],
+      "reason": "Eastside and Millbrook are the two neighbourhoods identified immediately before this sentence; the target and year are preserved."
+    },
+    {
+      "id": "programme-financing",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/project_summary",
+          "quote": "Its total cost is USD 26.5 million. Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding."
+        }
+      ],
+      "reason": "The cost, capital-budget contribution and external grant amount are distinguished; the grant funding is sought, not described as secured."
+    },
+    {
+      "id": "component-costs",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/financing",
+          "quote": "| Cool corridors | 9.6 | Seeking grant funding |\n| Green stormwater infrastructure | 14.2 | Seeking grant funding |\n| Community cooling network | 2.7 | Funded from the city operating budget |"
+        }
+      ],
+      "reason": "All three component amounts and the cooling network’s operating-budget status are preserved."
+    },
+    {
+      "id": "partners",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/implementation",
+          "quote": "The Department of Public Works will deliver green stormwater infrastructure. The Harbor Point Unified School District will host schoolyard conversions, and the community organisation Millbrook Neighbours Alliance will co-design cool-corridor routes with residents."
+        }
+      ],
+      "reason": "All three partners retain their respective roles."
+    },
+    {
+      "id": "monitoring",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/implementation",
+          "quote": "The Office of Climate Resilience will publish an annual progress report. The plan identifies tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits as indicators."
+        }
+      ],
+      "reason": "The reporting entity, annual frequency and three indicators are preserved."
+    }
+  ],
+  "topics": [],
+  "claims": [
+    {
+      "output": {
+        "unit_id": "chapter/project_summary",
+        "quote": "The proposed **Harbor Point Heat and Stormwater Resilience Plan** will reduce extreme-heat exposure and street flooding in Harbor Point between 2027 and 2032."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133",
+          "quote": "The Harbor Point Heat and Stormwater Resilience Plan sets out how the fictional coastal city of Harbor Point will reduce extreme-heat exposure and street flooding between 2027 and 2032."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_summary/run_context/context_bundle/selected_sources/0/chapter_excerpts/0/text",
+          "quote": "The Harbor Point Heat and Stormwater Resilience Plan sets out how the fictional coastal city of Harbor Point will reduce extreme-heat exposure and street flooding between 2027 and 2032."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The proposed purpose, location and period match the plan."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_summary",
+        "quote": "The Office of Climate Resilience will lead delivery together with the Department of Public Works."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/summary/block-d33b993ec07b",
+          "quote": "The Office of Climate Resilience leads delivery together with the Department of Public Works."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_summary/run_context/context_bundle/selected_sources/0/chapter_excerpts/1/text",
+          "quote": "The Office of Climate Resilience leads delivery together with the Department of Public Works."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The joint delivery arrangement is explicit in both."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_summary",
+        "quote": "The Department of Public Works will deliver green stormwater infrastructure; Harbor Point Unified School District will host schoolyard conversions; and Millbrook Neighbours Alliance will co-design cool-corridor routes with residents."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/governance/partners/block-ea9a848dba09",
+          "quote": "The Department of Public Works delivers green stormwater infrastructure. The Harbor Point Unified School District hosts schoolyard conversions. The community organisation Millbrook Neighbours Alliance co-designs cool corridor routes with residents."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/run_context/context_bundle/selected_sources/0/key_excerpts/6/text",
+          "quote": "The Department of Public Works delivers green stormwater infrastructure. The Harbor Point Unified School District hosts schoolyard conversions. The community organisation Millbrook Neighbours Alliance co-designs cool corridor routes with residents."
+        }
+      ],
+      "self_contained": true,
+      "reason": "Each named partner’s role is supported."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_summary",
+        "quote": "The programme period is 2027–2032."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133",
+          "quote": "between 2027 and 2032"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_summary/run_context/context_bundle/selected_sources/0/chapter_excerpts/0/text",
+          "quote": "between 2027 and 2032"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The years match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_summary",
+        "quote": "Its total cost is USD 26.5 million."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492",
+          "quote": "The total programme cost is USD 26.5 million."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_summary/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "The total programme cost is USD 26.5 million."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The pronoun clearly refers to the programme."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_summary",
+        "quote": "Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492",
+          "quote": "Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_summary/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The two amounts have the correct sources and statuses."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/climate_context",
+        "quote": "Harbor Point faces extreme heat and stormwater flooding."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133",
+          "quote": "reduce extreme-heat exposure and street flooding"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/climate_context/run_context/context_bundle/selected_sources/0/chapter_excerpts/0/text",
+          "quote": "reduce extreme-heat exposure and street flooding"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The hazards match the plan."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/climate_context",
+        "quote": "The city recorded 23 days above 35 °C in 2025, compared with an average of 9 such days per year between 1991 and 2020."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-6a2ab61eddd0",
+          "quote": "Harbor Point recorded 23 days above 35 °C in 2025, compared with an average of 9 such days per year between 1991 and 2020."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/climate_context/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "Harbor Point recorded 23 days above 35 °C in 2025, compared with an average of 9 such days per year between 1991 and 2020."
+        }
+      ],
+      "self_contained": true,
+      "reason": "Threshold, observations and reference average match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/climate_context",
+        "quote": "Heat-related emergency department visits rose from 140 in 2021 to 310 in 2025."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-d2c5d0967331",
+          "quote": "Heat-related emergency department visits rose from 140 in 2021 to 310 in 2025."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/climate_context/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "Heat-related emergency department visits rose from 140 in 2021 to 310 in 2025."
+        }
+      ],
+      "self_contained": true,
+      "reason": "Both dated visit counts match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/climate_context",
+        "quote": "Street flooding affects 37 intersections during a 10-year rainfall event."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-b6c2759376bd",
+          "quote": "Street flooding affects 37 intersections during a 10-year rainfall event."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/climate_context/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "Street flooding affects 37 intersections during a 10-year rainfall event."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The count remains specific to a 10-year rainfall event."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/climate_context",
+        "quote": "The Canal Street underpass closed 6 times in 2025 because of standing water."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-b6c2759376bd",
+          "quote": "The Canal Street underpass closed 6 times in 2025 because of standing water."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/climate_context/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "The Canal Street underpass closed 6 times in 2025 because of standing water."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The asset, cause, count and year match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/climate_context",
+        "quote": "Harbor Point has 182,400 residents."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/summary/block-d33b993ec07b",
+          "quote": "Harbor Point has 182,400 residents."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/climate_context/run_context/context_bundle/selected_sources/0/chapter_excerpts/1/text",
+          "quote": "Harbor Point has 182,400 residents."
+        }
+      ],
+      "self_contained": true,
+      "reason": "This is the city population, not a count of exposed beneficiaries."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/climate_context",
+        "quote": "The proposed plan focuses on Eastside and Millbrook, where tree canopy is 11 percent and 13 percent respectively—the lowest levels in the city."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-6a2ab61eddd0",
+          "quote": "The Eastside and Millbrook neighbourhoods have the lowest tree canopy in the city, at 11 percent and 13 percent respectively."
+        },
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4",
+          "quote": "in Eastside and Millbrook"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/climate_context/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "The Eastside and Millbrook neighbourhoods have the lowest tree canopy in the city, at 11 percent and 13 percent respectively."
+        },
+        {
+          "unit_id": "supplied/shared/run_context/context_bundle/selected_sources/0/key_excerpts/1/text",
+          "quote": "in Eastside and Millbrook"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The canopy figures and neighbourhoods match; proposed corridors target those neighbourhoods."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/climate_context",
+        "quote": "The plan identifies street flooding at 37 intersections during a 10-year rainfall event and records six 2025 closures of the Canal Street underpass because of standing water."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-b6c2759376bd",
+          "quote": "Street flooding affects 37 intersections during a 10-year rainfall event. The Canal Street underpass closed 6 times in 2025 because of standing water."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/climate_context/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "Street flooding affects 37 intersections during a 10-year rainfall event. The Canal Street underpass closed 6 times in 2025 because of standing water."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The repeated intersection and underpass facts retain their distinct event and year qualifiers."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/climate_context",
+        "quote": "The existing drainage network in Eastside was designed for a 5-year storm and is undersized for current rainfall intensities."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-10e3c2ae4b58",
+          "quote": "The existing drainage network in Eastside was designed for a 5-year storm and is undersized for current rainfall intensities."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/climate_context/run_context/context_bundle/selected_sources/0/chapter_excerpts/5/text",
+          "quote": "The existing drainage network in Eastside was designed for a 5-year storm and is undersized for current rainfall intensities."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The drainage design standard and current limitation match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/climate_context",
+        "quote": "Without the proposed plan, no source-supported projection of future extreme-heat conditions is available."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-6a2ab61eddd0",
+          "quote": "Harbor Point recorded 23 days above 35 °C in 2025, compared with an average of 9 such days per year between 1991 and 2020."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/climate_context/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "Harbor Point recorded 23 days above 35 °C in 2025, compared with an average of 9 such days per year between 1991 and 2020."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The inputs provide observed heat conditions, not a without-project projection; the sentence does not invent one."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/climate_context",
+        "quote": "Without the proposed plan, no source-supported projection of future stormwater-flooding conditions is available."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-b6c2759376bd",
+          "quote": "Street flooding affects 37 intersections during a 10-year rainfall event."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/climate_context/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "Street flooding affects 37 intersections during a 10-year rainfall event."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The input describes existing event-specific flooding, not projected flooding without the plan."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_components",
+        "quote": "The Harbor Point Heat and Stormwater Resilience Plan comprises three complementary components to reduce extreme-heat exposure and street flooding in Harbor Point between 2027 and 2032."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133",
+          "quote": "reduce extreme-heat exposure and street flooding between 2027 and 2032"
+        },
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-b9e06c938f0c",
+          "quote": "| Cool corridors | 9.6 | Seeking grant funding |\n| Green stormwater infrastructure | 14.2 | Seeking grant funding |\n| Community cooling network | 2.7 | Funded from the city operating budget |"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/run_context/context_bundle/selected_sources/0/key_excerpts/0/text",
+          "quote": "reduce extreme-heat exposure and street flooding between 2027 and 2032"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "| Cool corridors | 9.6 | Seeking grant funding |\n| Green stormwater infrastructure | 14.2 | Seeking grant funding |\n| Community cooling network | 2.7 | Funded from the city operating budget |"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The period and purpose match, and the source lists the three components."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_components",
+        "quote": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4",
+          "quote": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_components/run_context/context_bundle/selected_sources/0/chapter_excerpts/0/text",
+          "quote": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The output, connections and locations match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_components",
+        "quote": "The target is to achieve 25 percent tree canopy in both neighbourhoods by 2032."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4",
+          "quote": "The tree canopy target for both neighbourhoods is 25 percent by 2032."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_components/run_context/context_bundle/selected_sources/0/chapter_excerpts/0/text",
+          "quote": "The tree canopy target for both neighbourhoods is 25 percent by 2032."
+        }
+      ],
+      "self_contained": true,
+      "reason": "Both neighbourhoods are identified in the preceding sentence."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_components",
+        "quote": "Cool-corridor planting and three years of establishment watering are estimated to cost USD 9.6 million."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/costs/block-a6228e491584",
+          "quote": "Cool corridor planting and three years of establishment watering are estimated at USD 9.6 million."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Cool corridor planting and three years of establishment watering are estimated at USD 9.6 million."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The scope, three-year watering period and estimated amount match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_components",
+        "quote": "Millbrook Neighbours Alliance will co-design cool-corridor routes with residents."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/governance/partners/block-ea9a848dba09",
+          "quote": "Millbrook Neighbours Alliance co-designs cool corridor routes with residents."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_components/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "Millbrook Neighbours Alliance co-designs cool corridor routes with residents."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The partner and role match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_components",
+        "quote": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/block-bbaaec8ebcf9",
+          "quote": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_components/run_context/context_bundle/selected_sources/0/chapter_excerpts/1/text",
+          "quote": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas."
+        }
+      ],
+      "self_contained": true,
+      "reason": "Both quantified activities match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_components",
+        "quote": "These measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/block-bbaaec8ebcf9",
+          "quote": "Together these measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_components/run_context/context_bundle/selected_sources/0/chapter_excerpts/1/text",
+          "quote": "Together these measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The design scope is preserved, not presented as an observed result."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_components",
+        "quote": "Green stormwater infrastructure, including design and construction supervision, is estimated to cost USD 14.2 million."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/costs/block-948ede3c0dbf",
+          "quote": "Green stormwater infrastructure is estimated at USD 14.2 million, including design and construction supervision."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Green stormwater infrastructure is estimated at USD 14.2 million, including design and construction supervision."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The estimate and included work match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_components",
+        "quote": "The Department of Public Works will deliver green stormwater infrastructure, and Harbor Point Unified School District will host schoolyard conversions."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/governance/partners/block-ea9a848dba09",
+          "quote": "The Department of Public Works delivers green stormwater infrastructure. The Harbor Point Unified School District hosts schoolyard conversions."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_components/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "The Department of Public Works delivers green stormwater infrastructure. The Harbor Point Unified School District hosts schoolyard conversions."
+        }
+      ],
+      "self_contained": true,
+      "reason": "Both delivery roles match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_components",
+        "quote": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480",
+          "quote": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_components/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The designation commitment, count and types of facilities match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_components",
+        "quote": "The centres will have extended opening hours on days above 32 °C."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480",
+          "quote": "with extended opening hours on days above 32 °C."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/project_components/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "with extended opening hours on days above 32 °C."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The preceding sentence identifies the centres; the threshold matches."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/project_components",
+        "quote": "The community cooling network is budgeted at USD 2.7 million from the city operating budget."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-b9e06c938f0c",
+          "quote": "| Community cooling network | 2.7 | Funded from the city operating budget |"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "| Community cooling network | 2.7 | Funded from the city operating budget |"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The amount and budget source match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "The Harbor Point Heat and Stormwater Resilience Plan is intended to reduce extreme-heat exposure and street flooding between 2027 and 2032."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133",
+          "quote": "will reduce extreme-heat exposure and street flooding between 2027 and 2032"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/run_context/context_bundle/selected_sources/0/key_excerpts/0/text",
+          "quote": "will reduce extreme-heat exposure and street flooding between 2027 and 2032"
+        }
+      ],
+      "self_contained": true,
+      "reason": "This is an intended result, not a claimed measured outcome."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "In Eastside and Millbrook, the plan targets 25 percent tree canopy by 2032, compared with current canopy cover of 11 percent and 13 percent respectively."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4",
+          "quote": "The tree canopy target for both neighbourhoods is 25 percent by 2032."
+        },
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-6a2ab61eddd0",
+          "quote": "The Eastside and Millbrook neighbourhoods have the lowest tree canopy in the city, at 11 percent and 13 percent respectively."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "The tree canopy target for both neighbourhoods is 25 percent by 2032."
+        },
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/1/text",
+          "quote": "The Eastside and Millbrook neighbourhoods have the lowest tree canopy in the city, at 11 percent and 13 percent respectively."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The two existing levels are correctly paired with the shared target."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4",
+          "quote": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The planned outputs and locations match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "It will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas; together, these measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/block-bbaaec8ebcf9",
+          "quote": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas. Together these measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/5/text",
+          "quote": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas. Together these measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The planned outputs and design scope match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480",
+          "quote": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/6/text",
+          "quote": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The responsible office, count, facility types and threshold match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "The Office of Climate Resilience will publish an annual progress report. The plan identifies tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits as indicators."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/monitoring/block-d963acb1232b",
+          "quote": "The Office of Climate Resilience will publish an annual progress report. Indicators include tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/7/text",
+          "quote": "The Office of Climate Resilience will publish an annual progress report. Indicators include tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The annual reporting commitment and three named indicators match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "| Tree canopy cover in Eastside | 11 percent | 25 percent by 2032 |\n| Tree canopy cover in Millbrook | 13 percent | 25 percent by 2032 |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-6a2ab61eddd0",
+          "quote": "The Eastside and Millbrook neighbourhoods have the lowest tree canopy in the city, at 11 percent and 13 percent respectively."
+        },
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4",
+          "quote": "The tree canopy target for both neighbourhoods is 25 percent by 2032."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/1/text",
+          "quote": "The Eastside and Millbrook neighbourhoods have the lowest tree canopy in the city, at 11 percent and 13 percent respectively."
+        },
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "The tree canopy target for both neighbourhoods is 25 percent by 2032."
+        }
+      ],
+      "self_contained": true,
+      "reason": "Both table rows correctly pair each neighbourhood’s existing canopy with its target."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "| Street trees planted along cool corridors | Not stated | 4,800 trees along 12 corridors |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4",
+          "quote": "The plan will plant 4,800 street trees along 12 cool corridors"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "The plan will plant 4,800 street trees along 12 cool corridors"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The target matches; no existing planted-tree baseline is supplied."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "| Bioretention cells built | Not stated | 85 cells |\n| Asphalt schoolyards converted to permeable green play areas | Not stated | 3.2 hectares |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/block-bbaaec8ebcf9",
+          "quote": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/5/text",
+          "quote": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas."
+        }
+      ],
+      "self_contained": true,
+      "reason": "Both output targets match; existing output baselines are not given."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "| Rainfall capture design scope | Not stated | First 25 millimetres of rainfall from 41 hectares of impervious surface |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/block-bbaaec8ebcf9",
+          "quote": "Together these measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/5/text",
+          "quote": "Together these measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The table labels this as design scope, not verified capture."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "| Community cooling centres designated | Not stated | 18 centres |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480",
+          "quote": "will designate 18 community cooling centres"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/6/text",
+          "quote": "will designate 18 community cooling centres"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The planned count matches; no existing-centre baseline is supplied."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "| Flooded intersections during monitored storms | 37 intersections during a 10-year rainfall event | [Information needed: Confirm the target number of flooded intersections during monitored storms for the Harbor Point Heat and Stormwater Resilience Plan.] |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-b6c2759376bd",
+          "quote": "Street flooding affects 37 intersections during a 10-year rainfall event."
+        },
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/monitoring/block-d963acb1232b",
+          "quote": "the number of flooded intersections during monitored storms"
+        }
+      ],
+      "supplied_verdict": "partially_supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "Street flooding affects 37 intersections during a 10-year rainfall event."
+        },
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/7/text",
+          "quote": "the number of flooded intersections during monitored storms"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The 37-intersection figure is event-specific. The inputs do not establish it as the baseline for the separate indicator measured during monitored storms."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "| Heat-related emergency department visits | 310 visits in 2025 | [Information needed: Confirm the target number of heat-related emergency department visits for the Harbor Point Heat and Stormwater Resilience Plan.] |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-d2c5d0967331",
+          "quote": "Heat-related emergency department visits rose from 140 in 2021 to 310 in 2025."
+        },
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/monitoring/block-d963acb1232b",
+          "quote": "heat-related emergency department visits"
+        }
+      ],
+      "supplied_verdict": "partially_supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "Heat-related emergency department visits rose from 140 in 2021 to 310 in 2025."
+        },
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/7/text",
+          "quote": "heat-related emergency department visits"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The 2025 observation is correct, but the inputs do not explicitly designate 2025 or 310 visits as the project indicator’s agreed baseline."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "Harbor Point has 182,400 residents."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/summary/block-d33b993ec07b",
+          "quote": "Harbor Point has 182,400 residents."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/0/text",
+          "quote": "Harbor Point has 182,400 residents."
+        }
+      ],
+      "self_contained": true,
+      "reason": "Correctly presented as city population rather than beneficiary count."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/expected_results",
+        "quote": "The plan focuses on Eastside and Millbrook, where tree canopy is lowest in the city and where the cool-corridor measures will be implemented."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-6a2ab61eddd0",
+          "quote": "The Eastside and Millbrook neighbourhoods have the lowest tree canopy in the city"
+        },
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4",
+          "quote": "in Eastside and Millbrook"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/1/text",
+          "quote": "The Eastside and Millbrook neighbourhoods have the lowest tree canopy in the city"
+        },
+        {
+          "unit_id": "supplied/expected_results/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "in Eastside and Millbrook"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The neighbourhood canopy ranking and corridor locations match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/implementation",
+        "quote": "The Office of Climate Resilience will lead delivery together with the Department of Public Works."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/summary/block-d33b993ec07b",
+          "quote": "The Office of Climate Resilience leads delivery together with the Department of Public Works."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/implementation/run_context/context_bundle/selected_sources/0/chapter_excerpts/1/text",
+          "quote": "The Office of Climate Resilience leads delivery together with the Department of Public Works."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The delivery leads match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/implementation",
+        "quote": "The Department of Public Works will deliver green stormwater infrastructure. The Harbor Point Unified School District will host schoolyard conversions, and the community organisation Millbrook Neighbours Alliance will co-design cool-corridor routes with residents."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/governance/partners/block-ea9a848dba09",
+          "quote": "The Department of Public Works delivers green stormwater infrastructure. The Harbor Point Unified School District hosts schoolyard conversions. The community organisation Millbrook Neighbours Alliance co-designs cool corridor routes with residents."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/implementation/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "The Department of Public Works delivers green stormwater infrastructure. The Harbor Point Unified School District hosts schoolyard conversions. The community organisation Millbrook Neighbours Alliance co-designs cool corridor routes with residents."
+        }
+      ],
+      "self_contained": true,
+      "reason": "All three partner assignments match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/implementation",
+        "quote": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480",
+          "quote": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/implementation/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The office’s activity and operating threshold match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/implementation",
+        "quote": "The Harbor Point Heat and Stormwater Resilience Plan was adopted by the Harbor Point City Council on 14 March 2026."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133",
+          "quote": "The plan was adopted by the Harbor Point City Council on 14 March 2026."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/implementation/run_context/context_bundle/selected_sources/0/chapter_excerpts/0/text",
+          "quote": "The plan was adopted by the Harbor Point City Council on 14 March 2026."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The adopting body and date match. Adoption of the plan does not assert GCF approval."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/implementation",
+        "quote": "The Office of Climate Resilience and the Department of Public Works lead delivery together."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/summary/block-d33b993ec07b",
+          "quote": "The Office of Climate Resilience leads delivery together with the Department of Public Works."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/implementation/run_context/context_bundle/selected_sources/0/chapter_excerpts/1/text",
+          "quote": "The Office of Climate Resilience leads delivery together with the Department of Public Works."
+        }
+      ],
+      "self_contained": true,
+      "reason": "This repeats the supported joint-delivery arrangement, without naming an oversight body."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/implementation",
+        "quote": "The Office of Climate Resilience will publish an annual progress report. The plan identifies tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits as indicators."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/monitoring/block-d963acb1232b",
+          "quote": "The Office of Climate Resilience will publish an annual progress report. Indicators include tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/implementation/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "The Office of Climate Resilience will publish an annual progress report. Indicators include tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits."
+        }
+      ],
+      "self_contained": true,
+      "reason": "Reporting responsibility, frequency and indicators match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/financing",
+        "quote": "The Harbor Point Heat and Stormwater Resilience Plan has an indicative total programme cost of USD 26.5 million for implementation between 2027 and 2032."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492",
+          "quote": "The total programme cost is USD 26.5 million."
+        },
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133",
+          "quote": "between 2027 and 2032"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/financing/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "The total programme cost is USD 26.5 million."
+        },
+        {
+          "unit_id": "supplied/shared/run_context/context_bundle/selected_sources/0/key_excerpts/0/text",
+          "quote": "between 2027 and 2032"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The total is explicitly supplied, not newly derived, and the implementation years match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/financing",
+        "quote": "The cost estimates cover cool-corridor planting and three years of establishment watering; green stormwater infrastructure, including design and construction supervision; and the community cooling network."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/costs/block-a6228e491584",
+          "quote": "Cool corridor planting and three years of establishment watering are estimated at USD 9.6 million."
+        },
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/costs/block-948ede3c0dbf",
+          "quote": "Green stormwater infrastructure is estimated at USD 14.2 million, including design and construction supervision."
+        },
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-b9e06c938f0c",
+          "quote": "| Community cooling network | 2.7 | Funded from the city operating budget |"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/financing/run_context/context_bundle/selected_sources/0/chapter_excerpts/0/text",
+          "quote": "Cool corridor planting and three years of establishment watering are estimated at USD 9.6 million."
+        },
+        {
+          "unit_id": "supplied/financing/run_context/context_bundle/selected_sources/0/chapter_excerpts/1/text",
+          "quote": "Green stormwater infrastructure is estimated at USD 14.2 million, including design and construction supervision."
+        },
+        {
+          "unit_id": "supplied/financing/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "| Community cooling network | 2.7 | Funded from the city operating budget |"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The listed cost coverage matches the three source components; the cooling network is separately budgeted."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/financing",
+        "quote": "| Cool corridors | 9.6 | Seeking grant funding |\n| Green stormwater infrastructure | 14.2 | Seeking grant funding |\n| Community cooling network | 2.7 | Funded from the city operating budget |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-b9e06c938f0c",
+          "quote": "| Cool corridors | 9.6 | Seeking grant funding |\n| Green stormwater infrastructure | 14.2 | Seeking grant funding |\n| Community cooling network | 2.7 | Funded from the city operating budget |"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/financing/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "| Cool corridors | 9.6 | Seeking grant funding |\n| Green stormwater infrastructure | 14.2 | Seeking grant funding |\n| Community cooling network | 2.7 | Funded from the city operating budget |"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The table heading supplies the USD-million unit; all amounts and statuses match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/financing",
+        "quote": "| **Total** | **26.5** |  |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492",
+          "quote": "The total programme cost is USD 26.5 million."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/financing/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "The total programme cost is USD 26.5 million."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The total is stated expressly in the input."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/financing",
+        "quote": "Harbor Point will contribute USD 7.9 million from its capital budget."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492",
+          "quote": "Harbor Point will contribute USD 7.9 million from its capital budget"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/financing/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "Harbor Point will contribute USD 7.9 million from its capital budget"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The capital-budget contribution matches."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/financing",
+        "quote": "The community cooling network is budgeted at USD 2.7 million from the city operating budget."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-b9e06c938f0c",
+          "quote": "| Community cooling network | 2.7 | Funded from the city operating budget |"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/financing/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "| Community cooling network | 2.7 | Funded from the city operating budget |"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The cooling-network amount and operating-budget source match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/financing",
+        "quote": "The plan seeks USD 18.6 million in external grant funding."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492",
+          "quote": "the plan seeks USD 18.6 million in external grant funding."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/financing/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "the plan seeks USD 18.6 million in external grant funding."
+        }
+      ],
+      "self_contained": true,
+      "reason": "It correctly says external funding is sought, without calling the entire amount a GCF request."
+    }
+  ],
+  "chapters": [
+    {
+      "chapter_ref": "project_summary",
+      "verdict": "partially_satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/project_summary",
+          "quote": "The programme period is 2027–2032. Its total cost is USD 26.5 million. Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding."
+        },
+        {
+          "unit_id": "chapter/project_summary",
+          "quote": "[Information needed: Confirm the country in which Harbor Point is located.]"
+        }
+      ],
+      "reason": "It supplies the title, city, executing roles, period and available financing, and flags the unknown country, accredited entity and GCF amount. It does not flag the likewise unavailable national designated authority identified in the expected country gap."
+    },
+    {
+      "chapter_ref": "climate_context",
+      "verdict": "satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/climate_context",
+          "quote": "Street flooding affects 37 intersections during a 10-year rainfall event. The Canal Street underpass closed 6 times in 2025 because of standing water."
+        },
+        {
+          "unit_id": "chapter/climate_context",
+          "quote": "The existing drainage network in Eastside was designed for a 5-year storm and is undersized for current rainfall intensities."
+        },
+        {
+          "unit_id": "chapter/climate_context",
+          "quote": "[Information needed: Provide the number of people in Eastside and Millbrook currently exposed to extreme heat and stormwater flooding.]"
+        }
+      ],
+      "reason": "It describes observed heat and flooding trends, exposed neighbourhoods and road assets, and existing drainage conditions. It flags unavailable neighbourhood exposure counts and without-project projections rather than inventing them."
+    },
+    {
+      "chapter_ref": "project_components",
+      "verdict": "satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/project_components",
+          "quote": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook."
+        },
+        {
+          "unit_id": "chapter/project_components",
+          "quote": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas."
+        },
+        {
+          "unit_id": "chapter/project_components",
+          "quote": "[Information needed: Confirm the locations of the 18 community cooling centres under the Harbor Point Heat and Stormwater Resilience Plan.]"
+        }
+      ],
+      "reason": "It describes all three components and available quantified outputs, gives the corridor neighbourhoods and flags unspecified sites for the other outputs."
+    },
+    {
+      "chapter_ref": "expected_results",
+      "verdict": "partially_satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/expected_results",
+          "quote": "[Information needed: Confirm the number of direct beneficiaries of the Harbor Point Heat and Stormwater Resilience Plan.]"
+        },
+        {
+          "unit_id": "chapter/expected_results",
+          "quote": "| Flooded intersections during monitored storms | 37 intersections during a 10-year rainfall event | [Information needed: Confirm the target number of flooded intersections during monitored storms for the Harbor Point Heat and Stormwater Resilience Plan.] |"
+        }
+      ],
+      "reason": "It states proposed results and many outputs, but flags only direct, not indirect, beneficiary numbers. It flags missing outcome targets while treating historical, differently specified observations as established indicator baselines without confirmation."
+    },
+    {
+      "chapter_ref": "implementation",
+      "verdict": "satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/implementation",
+          "quote": "The Department of Public Works will deliver green stormwater infrastructure. The Harbor Point Unified School District will host schoolyard conversions, and the community organisation Millbrook Neighbours Alliance will co-design cool-corridor routes with residents."
+        },
+        {
+          "unit_id": "chapter/implementation",
+          "quote": "The Office of Climate Resilience will publish an annual progress report."
+        },
+        {
+          "unit_id": "chapter/implementation",
+          "quote": "[Information needed: Confirm the governance body responsible for oversight of the Harbor Point Heat and Stormwater Resilience Plan.]"
+        }
+      ],
+      "reason": "Available implementing roles, adoption and annual reporting are stated. The accredited entity, oversight body and monitoring-data collector are appropriately flagged as unknown."
+    },
+    {
+      "chapter_ref": "financing",
+      "verdict": "satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/financing",
+          "quote": "| Cool corridors | 9.6 | Seeking grant funding |\n| Green stormwater infrastructure | 14.2 | Seeking grant funding |\n| Community cooling network | 2.7 | Funded from the city operating budget |"
+        },
+        {
+          "unit_id": "chapter/financing",
+          "quote": "[Information needed: Confirm the amount of GCF funding requested for the Harbor Point Heat and Stormwater Resilience Plan.]"
+        },
+        {
+          "unit_id": "chapter/financing",
+          "quote": "[Information needed: Confirm the financial instrument requested from GCF for the Harbor Point Heat and Stormwater Resilience Plan.]"
+        }
+      ],
+      "reason": "It gives the stated total, component costs, funding statuses, city contribution and available cost coverage. It does not equate external grant funding with a GCF request and flags the unknown GCF amount and instrument. One additional budget-overlap question is answerable from the inputs."
+    }
+  ],
+  "contradictions": [],
+  "gaps": [
+    {
+      "id": "accredited-entity",
+      "verdict": "flagged",
+      "output_refs": [
+        {
+          "unit_id": "chapter/project_summary",
+          "quote": "[Information needed: Confirm the accredited entity for the Harbor Point Heat and Stormwater Resilience Plan's GCF SAP proposal.]"
+        }
+      ],
+      "reason": "The marker asks for the accredited entity in an allowed chapter."
+    },
+    {
+      "id": "country",
+      "verdict": "partially_flagged",
+      "output_refs": [
+        {
+          "unit_id": "chapter/project_summary",
+          "quote": "[Information needed: Confirm the country in which Harbor Point is located.]"
+        }
+      ],
+      "reason": "The country is flagged, but the expected gap also concerns the unavailable national designated authority, which is not requested."
+    },
+    {
+      "id": "gcf-request",
+      "verdict": "flagged",
+      "output_refs": [
+        {
+          "unit_id": "chapter/financing",
+          "quote": "[Information needed: Confirm the amount of GCF funding requested for the Harbor Point Heat and Stormwater Resilience Plan.]"
+        },
+        {
+          "unit_id": "chapter/financing",
+          "quote": "[Information needed: Confirm the financial instrument requested from GCF for the Harbor Point Heat and Stormwater Resilience Plan.]"
+        }
+      ],
+      "reason": "Both the GCF-specific amount and instrument are flagged without substituting the external grant figure."
+    },
+    {
+      "id": "beneficiaries",
+      "verdict": "partially_flagged",
+      "output_refs": [
+        {
+          "unit_id": "chapter/expected_results",
+          "quote": "[Information needed: Confirm the number of direct beneficiaries of the Harbor Point Heat and Stormwater Resilience Plan.]"
+        }
+      ],
+      "reason": "Direct beneficiaries are flagged, but indirect beneficiaries are not."
+    },
+    {
+      "id": "indicator-targets",
+      "verdict": "partially_flagged",
+      "output_refs": [
+        {
+          "unit_id": "chapter/expected_results",
+          "quote": "[Information needed: Confirm the target number of flooded intersections during monitored storms for the Harbor Point Heat and Stormwater Resilience Plan.]"
+        },
+        {
+          "unit_id": "chapter/expected_results",
+          "quote": "[Information needed: Confirm the target number of heat-related emergency department visits for the Harbor Point Heat and Stormwater Resilience Plan.]"
+        }
+      ],
+      "reason": "Both targets are flagged. The agreed indicator baselines are not flagged; the table instead assigns historical observations as baselines without confirmation, including an event-specific intersection count for a monitored-storm indicator."
+    }
+  ],
+  "flagged_gaps": [
+    {
+      "unit_id": "gap/project_summary/harbor_point_country",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "No input supplies Harbor Point’s country."
+    },
+    {
+      "unit_id": "gap/project_summary/accredited_entity",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "No accredited entity is named."
+    },
+    {
+      "unit_id": "gap/project_summary/gcf_funding_requested",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The specified external grant amount is not identified as the GCF-specific request."
+    },
+    {
+      "unit_id": "gap/climate_context/eastside_millbrook_exposed_population",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "City population is available, but the exposed population in the two neighbourhoods is not."
+    },
+    {
+      "unit_id": "gap/climate_context/without_project_extreme_heat_conditions",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The inputs give historical heat observations, not a without-project heat forecast."
+    },
+    {
+      "unit_id": "gap/climate_context/without_project_stormwater_flooding_conditions",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The inputs give existing event-specific flooding and drainage conditions, not a without-project flooding forecast."
+    },
+    {
+      "unit_id": "gap/project_components/bioretention_cell_locations",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The number of cells is known, but their locations are not supplied."
+    },
+    {
+      "unit_id": "gap/project_components/schoolyard_conversion_locations",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The conversion area and school-district role are known, but individual schoolyard sites are not."
+    },
+    {
+      "unit_id": "gap/project_components/cooling_centre_locations",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Libraries and recreation centres are named as facility types, but the 18 centre locations are not."
+    },
+    {
+      "unit_id": "gap/expected_results/direct_beneficiary_population",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Neither the city population nor the planned output counts establish a direct-beneficiary number."
+    },
+    {
+      "unit_id": "gap/expected_results/flooded_intersections_target",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The event-specific 37-intersection observation is not a target for monitored storms."
+    },
+    {
+      "unit_id": "gap/expected_results/heat_related_ed_visits_target",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Historical visit counts do not specify an intended target."
+    },
+    {
+      "unit_id": "gap/implementation/accredited_entity",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "No input names a GCF accredited entity."
+    },
+    {
+      "unit_id": "gap/implementation/governance_oversight_body",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Adoption by the City Council and joint delivery leadership do not designate an oversight body."
+    },
+    {
+      "unit_id": "gap/implementation/indicator_data_collection_entity",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The Office of Climate Resilience is named as report publisher, but no entity is explicitly assigned collection of the underlying indicator data."
+    },
+    {
+      "unit_id": "gap/financing/operating_budget_within_city_contribution",
+      "verdict": "answerable_from_inputs",
+      "evidence": [
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492",
+          "quote": "Harbor Point will contribute USD 7.9 million from its capital budget"
+        },
+        {
+          "unit_id": "source/harbor-point-heat-and-stormwater-resilience-plan/financing/block-b9e06c938f0c",
+          "quote": "| Community cooling network | 2.7 | Funded from the city operating budget |"
+        }
+      ],
+      "reason": "The inputs explicitly distinguish the USD 7.9 million capital-budget contribution from the cooling network’s operating-budget funding. Any remaining reconciliation of the financing figures would need a differently framed question."
+    },
+    {
+      "unit_id": "gap/financing/gcf_funding_request",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The question correctly distinguishes a GCF-specific request from the stated external grant amount. Its suggested answer repeats the external amount but does not establish it as the GCF request."
+    },
+    {
+      "unit_id": "gap/financing/gcf_financial_instrument",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Seeking external grant funding does not explicitly establish the instrument requested specifically from GCF."
+    },
+    {
+      "unit_id": "gap/financing/external_grant_component_allocation",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Component costs and grant-seeking statuses are given, but no allocation of the USD 18.6 million between those components is supplied."
+    }
+  ]
+}

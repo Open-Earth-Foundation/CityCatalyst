@@ -1,0 +1,86 @@
+{
+  "defects": [
+    {
+      "id": "plan-horizon-conflict",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/6",
+          "quote": "The output describes the Plan as covering 2023–2030, while other chapters state that the Plan covers actions and costs through 2035."
+        }
+      ],
+      "reason": "The finding identifies the conflicting horizons for the same Plan."
+    },
+    {
+      "id": "financing-sources-conflict",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/18",
+          "quote": "The output states that the Plan is financed exclusively from external funds without city-budget participation, but also states that implemented actions must be entered in the City of Kraków Budget and Multiannual Financial Forecast."
+        },
+        {
+          "unit_id": "finding/19",
+          "quote": "The output says the Plan is financed exclusively from external funds without city-budget participation, while the risk-and-durability chapter says it is to be financed from the city budget and, where possible, external funds."
+        },
+        {
+          "unit_id": "finding/23",
+          "quote": "The output states that implementation of the Plan will be financed from the city budget and external funds, while the budget chapter states that the Plan is financed exclusively from external funds without city-budget participation."
+        }
+      ],
+      "reason": "Findings 19 and 23 directly identify the cross-chapter financing conflict. Finding 18 points to the same defective external-only statement, though entering actions in the city budget does not, by itself, prove city-budget financing."
+    },
+    {
+      "id": "schedule-gap-inconsistency",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/2",
+          "quote": "The implementation years are answered; exact start and end dates remain open."
+        },
+        {
+          "unit_id": "finding/10",
+          "quote": "The output states that the project will be implemented in 2026–2028, while the project-information chapter still requests confirmation of its planned start and end dates."
+        },
+        {
+          "unit_id": "finding/24",
+          "quote": "it states the overall project period as 2026–2028, while the components, locations, technical scale and detailed schedule remain open."
+        },
+        {
+          "unit_id": "finding/25",
+          "quote": "it states the overall project period as 2026–2028, while the components, locations, technical scale and detailed schedule remain open."
+        }
+      ],
+      "reason": "Findings 2 and 10 identify the stated project years against the project-information gap. Findings 24 and 25 also point out that the newly stated period partly answers a schedule gap elsewhere. None claims that the years settle the still-open exact dates or stage dates."
+    },
+    {
+      "id": "contact-unflagged",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/4",
+          "quote": "The required contact person information is missing."
+        }
+      ],
+      "reason": "The finding identifies the empty required contact-person section."
+    },
+    {
+      "id": "indicator-direction",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/13",
+          "quote": "The stated Plan-level product indicator has a baseline of 0 but a direction of change of “decrease”; a count of completed tasks cannot decrease from zero without becoming negative."
+        }
+      ],
+      "reason": "The finding names the indicator, its baseline and direction, and the resulting logic error."
+    },
+    {
+      "id": "implementer-conflict",
+      "verdict": "missed",
+      "finding_refs": [],
+      "reason": "No finding addresses the tasks chapter’s assignment of drainage inventory and sewer modernisation to ZZM instead of KEGW."
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,244 @@
+{
+  "upload_id": "773ba5ca-9a8b-5195-9c9e-5be613ddf269",
+  "source_label": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa",
+  "filename": "Plan_Ograniczenia_Skutkow_Powodzi_Odwodnienia_Krakowa_2023-2035.pdf",
+  "sha256": "524d1a70bfaaca436e545998f315cb9f20f720b35e6d8abd02f04c217fee6c28",
+  "source_format": "pdf",
+  "page_count": 30,
+  "block_count": null,
+  "analysis_contract_version": null,
+  "visual_context_contract_version": null,
+  "summary": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa ma horyzont czasowy na lata 2023–2035 i jego aktualizacja ma zapewnić warunki efektywnej współpracy organów i instytucji oraz ewaluację działań. Plan dotyczy ochrony przed powodzią, retencjonowania wód opadowych i efektywnego odwodnienia Gminy Miejskiej Kraków; wskazuje, że główne zagrożenie powodziowe Krakowa generuje Wisła. Plan zakłada osiągnięcie przez budowle ochronne Krakowa zabezpieczenia przed wezbraniem Q=0,1% oraz wdrożenie systemu zarządzania kanalizacją opadową. Wśród wskazanych działań są budowa pompowni na wysokie stany wód do 2035 r. oraz budowa kanału ulgi na Sudole Dominikańskim do 2028 r.",
+  "topics": [
+    "ochrona przeciwpowodziowa",
+    "odwodnienie miasta",
+    "retencja wód opadowych",
+    "zagrożenie powodziowe od Wisły",
+    "kanalizacja opadowa i modelowanie hydrauliczne",
+    "inwestycje hydrotechniczne",
+    "współpraca instytucjonalna"
+  ],
+  "key_excerpts": [
+    {
+      "text": "Horyzont czasowy: lata „2023-2035”",
+      "page": 1,
+      "anchor": null
+    },
+    {
+      "text": "Celem niniejszej aktualizacji Planu jest zapewnienie warunków do efektywnej współpracy organów i instytucji oraz ewaluacja podejmowanych działań",
+      "page": 2,
+      "anchor": null
+    },
+    {
+      "text": "Ochrona przed powodzią, retencjonowanie wód opadowych oraz efektywne odwodnienie Gminy Miejskiej Kraków",
+      "page": 4,
+      "anchor": null
+    },
+    {
+      "text": "Główne zagrożenie powodziowe Krakowa generuje rzeka Wisła zasilana bardzo dużą zlewnią górską i podgórską powyżej miasta.",
+      "page": 2,
+      "anchor": null
+    },
+    {
+      "text": "poziom bezpieczeństwa budowli ochronnych Krakowa powinien osiągnąć zabezpieczenie przed wezbraniem o prawdopodobieństwie wystąpienia Q=0,1% (woda tysiącletnia).",
+      "page": 2,
+      "anchor": null
+    },
+    {
+      "text": "wdrożenie systemu zarządzania kanalizacją opadową (model hydrauliczny, model pokrycia terenu, model opad-odpływ, koncepcja rozwiązań technicznych uwzględniająca nowe uwarunkowania dla funkcjonowania Systemu);",
+      "page": 4,
+      "anchor": null
+    },
+    {
+      "text": "Budowa pompowni na wysokie stany wód (NWS) (Nr działania w PZRP: W_GZW_2582)* | 82 400 000 | KEGW | Do 2035 r.",
+      "page": 5,
+      "anchor": null
+    },
+    {
+      "text": "Budowa kanału ulgi na Sudole Dominikańskim | 60 000 000 | PGW WP/KEGW | Do 2028 r.",
+      "page": 6,
+      "anchor": null
+    }
+  ],
+  "chapter_excerpts": [
+    {
+      "chapter_ref": "informacje_o_projekcie",
+      "excerpts": [
+        {
+          "text": "a) Horyzont czasowy: lata „2023-2035”\nb) Koordynator: Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu\nc) Główny realizujący zadania gminne: Klimat-Energia-Gospodarka Wodna we współpracy z innymi jednostkami miejskimi",
+          "page": 1,
+          "anchor": null
+        },
+        {
+          "text": "Plan Odwodnienia Gminy Miejskiej Kraków realizuje następujące cele Strategii Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”:\nCEL STRATEGICZNY IV: Kraków – miasto przyjazne do życia\nCEL OPERACYJNY IV.3: Zrównoważone środowisko\nDziałania kluczowe: Modernizowanie i rozbudowa infrastruktury komunalnej\nCEL OPERACYJNY IV.5: Wysoki poziom bezpieczeństwa w Krakowie\nDziałania kluczowe: Uprawnienia zarządzania kryzysowego.\n\nPodjęcie działań adaptacyjnych do zachodzących zmian klimatycznych, zagrożeń wynikających z ekstremalnych zjawisk pogodowych, takich jak gwałtowne deszcze, burze, susze, fale upałów i zimna, miejskie wyspy ciepła.",
+          "page": 1,
+          "anchor": null
+        },
+        {
+          "text": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa przyjęty uchwałą Nr CXV/3043/18 Rady Miasta Krakowa z dnia 7 listopada 2018 r. w sprawie realizacji Planu Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wymagał aktualizacji. Celem niniejszej aktualizacji Planu jest zapewnienie warunków do efektywnej współpracy organów i instytucji oraz ewaluacja podejmowanych działań polegająca na weryfikacji pierwotnych założeń, analizie przyczyn odchyleń oraz określenia działań korygujących. Celem aktualizacji jest ponadto adaptacja miasta do zachodzących zjawisk klimatycznych, określonych m.in. w Planie Adaptacji Miasta Krakowa do zmian klimatu do roku 2030.",
+          "page": 2,
+          "anchor": null
+        },
+        {
+          "text": "Ochrona przed powodzią, retencjonowanie wód opadowych oraz efektywne odwodnienie Gminy Miejskiej Kraków, zapewnienie bezpieczeństwa i komfortu mieszkańcom oraz ograniczenie strat materialnych, poprzez:\n\n1) współpracę z Państwowym Gospodarstwem Wodnym Wody Polskie oraz organami administracji rządowej i samorządowej;\n2) zarządzanie kryzysowe w sytuacji zagrożenia powodziowego;\n3) rozbudowę, utrzymanie i modernizację Miejskiego Systemu Odwodnienia Miasta Krakowa;",
+          "page": 4,
+          "anchor": null
+        },
+        {
+          "text": "4) utrzymanie retencji naturalnej i rozwój retencji technicznej dla zagospodarowania wód opadowych;\n5) prowadzenie polityki informacyjnej w zakresie ochrony przed powodzią i podtopieniami oraz ograniczenia ich skutków;\n\ntak, aby:\n\nCel szczegółowy I – ograniczyć zagrożenia powodziowe;\n\nCel szczegółowy II – zapewnić sprawne zarządzanie kryzysowe w sytuacji zagrożenia powodziowego;\n\nCel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi.",
+          "page": 5,
+          "anchor": null
+        }
+      ]
+    },
+    {
+      "chapter_ref": "wnioskodawca",
+      "excerpts": [
+        {
+          "text": "a) Horyzont czasowy: lata „2023-2035”\nb) Koordynator: Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu\nc) Główny realizujący zadania gminne: Klimat-Energia-Gospodarka Wodna we współpracy z innymi jednostkami miejskimi",
+          "page": 1,
+          "anchor": null
+        },
+        {
+          "text": "|  I/2.1 | System prognozowania podtopień i zarządzania retencją kanałową w kanalizacji ogólnospławnej i kanalizacji opadowej w Krakowie – modele predykcyjne sieci (Nr działania w PZRP: W_GZW_1809)* | 9 000 000 | WMK S.A./ KEGW | Do 2035 r.  |\n|  I/2.2 | System prognozowania podtopień i powodzi w aglomeracji krakowskiej (Nr działania w PZRP: W_GZW_1811) | 6 000 000 | Wojewoda Małopolski; PGW WP; KEGW; WMK S.A. | Do 2027 r.  |\n|  I/2.3 | Wdrożenie monitoringu stacji pomp, w OP Wisły w Krakowie (Nr działania w PZRP: W_GZW_4009) | 2 000 000 | KEGW | Do 2027 r.  |\n|  I/2.4 | Budowa pompowni na wysokie stany wód (NWS) (Nr działania w PZRP: W_GZW_2582)* | 82 400 000 | KEGW | Do 2035 r.  |\n|  I/2.5 | Budowa lewobrzeżnego muru oporowego na cieku Dłubnia w km 5+000 - 6+750 (Nr działania w PZRP: W_GZW_520)** | 12 500 000 | KEGW | Do 2027 r.  |\n|  I/2.6 | Budowa lewobrzeżnych murów oporowych na cieku Dłubnia w km 4+800 - 4+900 oraz w km 4+400 - 4+480 (Nr działania w PZRP: W_GZW_530)** | 1 700 000 | KEGW | Do 2027 r.  |\n|  I/2.7 | Budowa bulwaru na prawym brzegu rzeki Dłubnia w km 2+250 - 2+900 (Nr działania w PZRP: W_GZW_867)** | 1 900 000 | KEGW | Do 2027 r.  |\n|  I/2.8 | Budowa prawostronnego muru oporowego wzdłuż koryta rzeki Baranówka w km 0+490 - 0+900 (Nr działania w PZRP: W_GZW_874)** | 1 800 000 | KEGW | Do 2027 r.  |",
+          "page": 5,
+          "anchor": null
+        },
+        {
+          "text": "|  I/5 | Współfinansowanie wspólnych zadań inwestycyjnych dla cieków naturalnych (m.in. Drwina Długa, Drwinka, ale również Bibiczanka, Pompownia Lesisko, Struga Rusiecka, Baranówka, Sudół od Modlnicy, Wilga, inne) | 2 000 000 | PGW WP/GK/KEGW/ZDMK | Do 2035 r.  |\n|  I/6 | Budowa stanowisk pompowni mobilnych (częściowo ujęte w PZRP) (Nr działania w PZRP: W_GZW_2654)* | - | - | -  |\n|  I/6.1 | Wolica (przebudowa) | 500 000 | KEGW | Do 2030 r.  |\n|  I/6.2 | Kostrze | 1 000 000 |   | Do 2030 r.  |\n|  I/6.3 | Łęg | 500 000 |   | Do 2030 r.  |\n|  I/6.4 | Kolna | 500 000 |   | Do 2030 r.  |",
+          "page": 6,
+          "anchor": null
+        },
+        {
+          "text": "|  I/8.4 | Budowa kanału ulgi na Sudole Dominikańskim | 60 000 000 | PGW WP/KEGW | Do 2028 r.  |\n|  I/8.5 | Przebudowa koryta Drwiny Długiej i Drwinki | oszacowanie kosztów po wykonaniu 3 etapu Porozumienia | PGW WP/KEGW | Do 2035 r.  |",
+          "page": 6,
+          "anchor": null
+        },
+        {
+          "text": "|  I/8.6 | Przebudowa koryta Bibiczanki, Sudołu od Modlnicy, Baranówki, Sidzinki, Kostrzeckiego, Strugi Rusieckiej, Wilga | oszacowanie kosztów po wykonaniu koncepcji | PGW WP/ KEGW | Do 2035 r.  |",
+          "page": 7,
+          "anchor": null
+        },
+        {
+          "text": "|  II/1 | Ciągła aktualizacja planu operacyjnego ochrony przed powodzią Miasta Krakowa | w ramach środków bieżących | OC | -  |\n|  II/2 | Ciągła aktualizacja i doskonalenie planów ewakuacji ludności z terenów zalewowych | w ramach środków bieżących | OC | -  |\n|  II/3 | Szkolenia służb, inspekcji, straży i miejskich jednostek organizacyjnych w ramach posiedzeń Zespołu Zarządzania Kryzysowego Miasta Krakowa z zakresu utrzymania gotowości i doskonalenia umiejętności współdziałania do podejmowania działań interwencyjnych podczas powodzi | w ramach środków bieżących | OC | -  |\n|  II/4 | Ograniczanie rozmiaru strat i szkód powodziowych poprzez przygotowanie mieszkańców na wypadek powodzi – edukacja powodziowa | w ramach środków bieżących | OC | -  |\n|  II/5 | Ciągła aktualizacja procedury i dokumentowania i szacowania strat po powodzi i podtopieniach | w ramach środków bieżących | OC | -  |",
+          "page": 7,
+          "anchor": null
+        }
+      ]
+    },
+    {
+      "chapter_ref": "uzasadnienie",
+      "excerpts": [
+        {
+          "text": "Plan Odwodnienia Gminy Miejskiej Kraków realizuje następujące cele Strategii Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”:\nCEL STRATEGICZNY IV: Kraków – miasto przyjazne do życia\nCEL OPERACYJNY IV.3: Zrównoważone środowisko\nDziałania kluczowe: Modernizowanie i rozbudowa infrastruktury komunalnej\nCEL OPERACYJNY IV.5: Wysoki poziom bezpieczeństwa w Krakowie\nDziałania kluczowe: Uprawnienia zarządzania kryzysowego.\n\nPodjęcie działań adaptacyjnych do zachodzących zmian klimatycznych, zagrożeń wynikających z ekstremalnych zjawisk pogodowych, takich jak gwałtowne deszcze, burze, susze, fale upałów i zimna, miejskie wyspy ciepła.",
+          "page": 1,
+          "anchor": null
+        },
+        {
+          "text": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa przyjęty uchwałą Nr CXV/3043/18 Rady Miasta Krakowa z dnia 7 listopada 2018 r. w sprawie realizacji Planu Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wymagał aktualizacji. Celem niniejszej aktualizacji Planu jest zapewnienie warunków do efektywnej współpracy organów i instytucji oraz ewaluacja podejmowanych działań polegająca na weryfikacji pierwotnych założeń, analizie przyczyn odchyleń oraz określenia działań korygujących. Celem aktualizacji jest ponadto adaptacja miasta do zachodzących zjawisk klimatycznych, określonych m.in. w Planie Adaptacji Miasta Krakowa do zmian klimatu do roku 2030.",
+          "page": 2,
+          "anchor": null
+        },
+        {
+          "text": "W świetle obowiązujących przepisów prawa, w tym ustawy z dnia 20 lipca 2017 r. Prawo wodne (Dz.U. z 2023 r., poz. 1478 z późn. zm.), ustawy z dnia 7 lipca 1994 r. Prawo budowlane (Dz.U. z 2023 r., poz. 682 z późn. zm.) oraz wydanego na jego podstawie rozporządzenia Ministra Środowiska z dnia 20 kwietnia 2007 r. w sprawie warunków technicznych, jakim powinny odpowiadać budowle hydrotechniczne i ich usytuowanie (Dz.U. z 2007 r., Nr 86, poz. 579) poziom bezpieczeństwa budowli ochronnych Krakowa powinien osiągnąć zabezpieczenie przed wezbraniem o prawdopodobieństwie wystąpienia Q=0,1% (woda tysiącletnia). Wezbrania z 2010 roku wykazały, że lokalne problemy z utrzymaniem systemu ochrony przeciwpowodziowej pojawiły się już w warunkach przepływu o prawdopodobieństwie wystąpienia bliskim Q=1% (woda stuletnia).",
+          "page": 2,
+          "anchor": null
+        },
+        {
+          "text": "Główne zagrożenie powodziowe Krakowa generuje rzeka Wisła zasilana bardzo dużą zlewnią górską i podgórską powyżej miasta. Aktualna efektywność zbiorników retencyjnych i przyszłych działań w zlewni powyżej Krakowa jest więc istotna dla ochrony przed powodzią miasta. Drugi, nieco niższy poziom zagrożenia stanowią dopływy Wisły z ujściem na terenie miasta, zasilane ze zlewni położonej poza miastem; zagrożenie powodziowe pojawia się na tych ciekach w zasięgu spiętrzenia cofki od wezbrania Wisły. Trzeci poziom zagrożenia powodziowego stanowią cieki miejskie (wewnętrzne), uchodzące do Wisły lub jej dopływów poprzez śluzy wałowe zamykane w trakcie wezbrań na Wiśle. Zamknięcie śluz, wobec braku przepompowni dla tych wód, skutkuje wystąpieniem podtopień na terenach zawala.",
+          "page": 2,
+          "anchor": null
+        },
+        {
+          "text": "Z roku na rok zagrożenie powodziowe Krakowa rośnie, ponieważ w zlewni Wisły i jej dopływów następują niekorzystne zmiany w zagospodarowaniu terenu, ograniczanie naturalnej zdolności retencyjnej terenu i przyspieszanie spływu powierzchniowego. Nakładają się na to zmiany klimatu, skutkujące występowaniem ekstremalnych zjawisk pogodowych, w tym ekstremalnych opadów (deszczy nawalnych).\n\nPrzeprowadzona corocznie ocena stanu zabezpieczenia przeciwpowodziowego miasta Krakowa wskazuje, że pomimo trwających od wielu lat działań mających na celu zmniejszenie ryzyka powodzi, których intensywność stopniowo wzrasta, zagrożenie powodziowe występuje nadal, rodząc wiele potencjalnych negatywnych skutków dla życia i zdrowia ludzi na obszarach narażonych na niebezpieczeństwo powodzi i podtopień. Istnieje wysokie prawdopodobieństwo wystąpienia na Wiśle wezbrań większych niż w lipcu 1997 r. i maju 2010 r. Mimo podejmowanych działań, m.in. zmodernizowania dużego fragmentu obwałowań rzeki Wisły, wybudowania dodatkowych trzech zbiorników na Serafie, podniesienia brzegów (wykonanie opaski z grodzic winylowych) na Serafie, wyczyszczenia kanalizacji opadowej, wykonania rowu retencyjnego w rejonie ul. Udzieli, wybudowania kilku pompowni (w tym pompowni Lesisko, Agatowa, Borowego), aktualny stan zabezpieczenia miasta nie gwarantuje wystarczającego poziomu ochrony.",
+          "page": 3,
+          "anchor": null
+        },
+        {
+          "text": "Główne problemy Miejskiego Systemu Odwodnienia Krakowa (dalej System):\n\n1) konieczność adaptacji do zmian klimatu (większej częstotliwości i intensywności występowania ekstremalnych zjawisk pogodowych);\n2) występowanie lokalnych podtopień spowodowanych zbyt małą przepustowością, zamuleniem lub złym stanem technicznym rowów i kanałów;\n3) brak możliwości odpływu wód opadowych podczas wezbrań na Wiśle, powodujących zamknięcie śluz wałowych;\n4) niedostatecznie rozwinięta retencja i/lub sieć kanalizacji opadowej w obszarach peryferyjnych;\n5) konieczność zabezpieczenia obszaru ochrony Osiedla Uzdrowisko Swoszowice przed infiltracją zanieczyszczonych wód opadowych, przy jednoczesnym zapewnieniu uzupełniania złóż wód podziemnych wodą czystą;\n6) konieczność przeciwdziałania aktywizacji osuwisk;\n7) zmiany w zagospodarowaniu terenu i szybko powiększająca się powierzchnia terenów uszczelnionych;\n8) konieczność przeciwdziałania skutkom suszy.",
+          "page": 3,
+          "anchor": null
+        },
+        {
+          "text": "Warunkami niezbędnymi dla prawidłowej eksploatacji, modernizacji i rozbudowy Systemu są:\n\n1) kontynuacja inwentaryzacji systemu kanalizacji opadowej (odcinki zarurowane i rowy) o stopniu szczegółowości niezbędnym dla wykorzystania nowych narzędzi modelowania;\n2) wdrożenie systemu zarządzania kanalizacją opadową (model hydrauliczny, model pokrycia terenu, model opad-odpływ, koncepcja rozwiązań technicznych uwzględniająca nowe uwarunkowania dla funkcjonowania Systemu);\n3) koordynacja działań wpływających na odwodnienie miasta i planowanie rozwoju systemu kanalizacji opadowej;\n4) zapewnienie środków finansowych na bieżące utrzymanie i inwestycje w System na poziomie adekwatnym do potrzeb.",
+          "page": 4,
+          "anchor": null
+        }
+      ]
+    },
+    {
+      "chapter_ref": "zadania",
+      "excerpts": [
+        {
+          "text": "Warunkami niezbędnymi dla prawidłowej eksploatacji, modernizacji i rozbudowy Systemu są:\n\n1) kontynuacja inwentaryzacji systemu kanalizacji opadowej (odcinki zarurowane i rowy) o stopniu szczegółowości niezbędnym dla wykorzystania nowych narzędzi modelowania;\n2) wdrożenie systemu zarządzania kanalizacją opadową (model hydrauliczny, model pokrycia terenu, model opad-odpływ, koncepcja rozwiązań technicznych uwzględniająca nowe uwarunkowania dla funkcjonowania Systemu);\n3) koordynacja działań wpływających na odwodnienie miasta i planowanie rozwoju systemu kanalizacji opadowej;\n4) zapewnienie środków finansowych na bieżące utrzymanie i inwestycje w System na poziomie adekwatnym do potrzeb.",
+          "page": 4,
+          "anchor": null
+        },
+        {
+          "text": "Ochrona przed powodzią, retencjonowanie wód opadowych oraz efektywne odwodnienie Gminy Miejskiej Kraków, zapewnienie bezpieczeństwa i komfortu mieszkańcom oraz ograniczenie strat materialnych, poprzez:\n\n1) współpracę z Państwowym Gospodarstwem Wodnym Wody Polskie oraz organami administracji rządowej i samorządowej;\n2) zarządzanie kryzysowe w sytuacji zagrożenia powodziowego;\n3) rozbudowę, utrzymanie i modernizację Miejskiego Systemu Odwodnienia Miasta Krakowa;",
+          "page": 4,
+          "anchor": null
+        },
+        {
+          "text": "4) utrzymanie retencji naturalnej i rozwój retencji technicznej dla zagospodarowania wód opadowych;\n5) prowadzenie polityki informacyjnej w zakresie ochrony przed powodzią i podtopieniami oraz ograniczenia ich skutków;\n\ntak, aby:\n\nCel szczegółowy I – ograniczyć zagrożenia powodziowe;\n\nCel szczegółowy II – zapewnić sprawne zarządzanie kryzysowe w sytuacji zagrożenia powodziowego;\n\nCel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi.",
+          "page": 5,
+          "anchor": null
+        },
+        {
+          "text": "|  I/2.1 | System prognozowania podtopień i zarządzania retencją kanałową w kanalizacji ogólnospławnej i kanalizacji opadowej w Krakowie – modele predykcyjne sieci (Nr działania w PZRP: W_GZW_1809)* | 9 000 000 | WMK S.A./ KEGW | Do 2035 r.  |\n|  I/2.2 | System prognozowania podtopień i powodzi w aglomeracji krakowskiej (Nr działania w PZRP: W_GZW_1811) | 6 000 000 | Wojewoda Małopolski; PGW WP; KEGW; WMK S.A. | Do 2027 r.  |\n|  I/2.3 | Wdrożenie monitoringu stacji pomp, w OP Wisły w Krakowie (Nr działania w PZRP: W_GZW_4009) | 2 000 000 | KEGW | Do 2027 r.  |\n|  I/2.4 | Budowa pompowni na wysokie stany wód (NWS) (Nr działania w PZRP: W_GZW_2582)* | 82 400 000 | KEGW | Do 2035 r.  |\n|  I/2.5 | Budowa lewobrzeżnego muru oporowego na cieku Dłubnia w km 5+000 - 6+750 (Nr działania w PZRP: W_GZW_520)** | 12 500 000 | KEGW | Do 2027 r.  |\n|  I/2.6 | Budowa lewobrzeżnych murów oporowych na cieku Dłubnia w km 4+800 - 4+900 oraz w km 4+400 - 4+480 (Nr działania w PZRP: W_GZW_530)** | 1 700 000 | KEGW | Do 2027 r.  |\n|  I/2.7 | Budowa bulwaru na prawym brzegu rzeki Dłubnia w km 2+250 - 2+900 (Nr działania w PZRP: W_GZW_867)** | 1 900 000 | KEGW | Do 2027 r.  |\n|  I/2.8 | Budowa prawostronnego muru oporowego wzdłuż koryta rzeki Baranówka w km 0+490 - 0+900 (Nr działania w PZRP: W_GZW_874)** | 1 800 000 | KEGW | Do 2027 r.  |",
+          "page": 5,
+          "anchor": null
+        },
+        {
+          "text": "|  I/5 | Współfinansowanie wspólnych zadań inwestycyjnych dla cieków naturalnych (m.in. Drwina Długa, Drwinka, ale również Bibiczanka, Pompownia Lesisko, Struga Rusiecka, Baranówka, Sudół od Modlnicy, Wilga, inne) | 2 000 000 | PGW WP/GK/KEGW/ZDMK | Do 2035 r.  |\n|  I/6 | Budowa stanowisk pompowni mobilnych (częściowo ujęte w PZRP) (Nr działania w PZRP: W_GZW_2654)* | - | - | -  |\n|  I/6.1 | Wolica (przebudowa) | 500 000 | KEGW | Do 2030 r.  |\n|  I/6.2 | Kostrze | 1 000 000 |   | Do 2030 r.  |\n|  I/6.3 | Łęg | 500 000 |   | Do 2030 r.  |\n|  I/6.4 | Kolna | 500 000 |   | Do 2030 r.  |",
+          "page": 6,
+          "anchor": null
+        },
+        {
+          "text": "|  I/8.4 | Budowa kanału ulgi na Sudole Dominikańskim | 60 000 000 | PGW WP/KEGW | Do 2028 r.  |\n|  I/8.5 | Przebudowa koryta Drwiny Długiej i Drwinki | oszacowanie kosztów po wykonaniu 3 etapu Porozumienia | PGW WP/KEGW | Do 2035 r.  |",
+          "page": 6,
+          "anchor": null
+        },
+        {
+          "text": "|  I/8.6 | Przebudowa koryta Bibiczanki, Sudołu od Modlnicy, Baranówki, Sidzinki, Kostrzeckiego, Strugi Rusieckiej, Wilga | oszacowanie kosztów po wykonaniu koncepcji | PGW WP/ KEGW | Do 2035 r.  |",
+          "page": 7,
+          "anchor": null
+        },
+        {
+          "text": "|  II/1 | Ciągła aktualizacja planu operacyjnego ochrony przed powodzią Miasta Krakowa | w ramach środków bieżących | OC | -  |\n|  II/2 | Ciągła aktualizacja i doskonalenie planów ewakuacji ludności z terenów zalewowych | w ramach środków bieżących | OC | -  |\n|  II/3 | Szkolenia służb, inspekcji, straży i miejskich jednostek organizacyjnych w ramach posiedzeń Zespołu Zarządzania Kryzysowego Miasta Krakowa z zakresu utrzymania gotowości i doskonalenia umiejętności współdziałania do podejmowania działań interwencyjnych podczas powodzi | w ramach środków bieżących | OC | -  |\n|  II/4 | Ograniczanie rozmiaru strat i szkód powodziowych poprzez przygotowanie mieszkańców na wypadek powodzi – edukacja powodziowa | w ramach środków bieżących | OC | -  |\n|  II/5 | Ciągła aktualizacja procedury i dokumentowania i szacowania strat po powodzi i podtopieniach | w ramach środków bieżących | OC | -  |",
+          "page": 7,
+          "anchor": null
+        }
+      ]
+    },
+    {
+      "chapter_ref": "budzet",
+      "excerpts": [
+        {
+          "text": "|  I/2.1 | System prognozowania podtopień i zarządzania retencją kanałową w kanalizacji ogólnospławnej i kanalizacji opadowej w Krakowie – modele predykcyjne sieci (Nr działania w PZRP: W_GZW_1809)* | 9 000 000 | WMK S.A./ KEGW | Do 2035 r.  |\n|  I/2.2 | System prognozowania podtopień i powodzi w aglomeracji krakowskiej (Nr działania w PZRP: W_GZW_1811) | 6 000 000 | Wojewoda Małopolski; PGW WP; KEGW; WMK S.A. | Do 2027 r.  |\n|  I/2.3 | Wdrożenie monitoringu stacji pomp, w OP Wisły w Krakowie (Nr działania w PZRP: W_GZW_4009) | 2 000 000 | KEGW | Do 2027 r.  |\n|  I/2.4 | Budowa pompowni na wysokie stany wód (NWS) (Nr działania w PZRP: W_GZW_2582)* | 82 400 000 | KEGW | Do 2035 r.  |\n|  I/2.5 | Budowa lewobrzeżnego muru oporowego na cieku Dłubnia w km 5+000 - 6+750 (Nr działania w PZRP: W_GZW_520)** | 12 500 000 | KEGW | Do 2027 r.  |\n|  I/2.6 | Budowa lewobrzeżnych murów oporowych na cieku Dłubnia w km 4+800 - 4+900 oraz w km 4+400 - 4+480 (Nr działania w PZRP: W_GZW_530)** | 1 700 000 | KEGW | Do 2027 r.  |\n|  I/2.7 | Budowa bulwaru na prawym brzegu rzeki Dłubnia w km 2+250 - 2+900 (Nr działania w PZRP: W_GZW_867)** | 1 900 000 | KEGW | Do 2027 r.  |\n|  I/2.8 | Budowa prawostronnego muru oporowego wzdłuż koryta rzeki Baranówka w km 0+490 - 0+900 (Nr działania w PZRP: W_GZW_874)** | 1 800 000 | KEGW | Do 2027 r.  |",
+          "page": 5,
+          "anchor": null
+        },
+        {
+          "text": "|  I/5 | Współfinansowanie wspólnych zadań inwestycyjnych dla cieków naturalnych (m.in. Drwina Długa, Drwinka, ale również Bibiczanka, Pompownia Lesisko, Struga Rusiecka, Baranówka, Sudół od Modlnicy, Wilga, inne) | 2 000 000 | PGW WP/GK/KEGW/ZDMK | Do 2035 r.  |\n|  I/6 | Budowa stanowisk pompowni mobilnych (częściowo ujęte w PZRP) (Nr działania w PZRP: W_GZW_2654)* | - | - | -  |\n|  I/6.1 | Wolica (przebudowa) | 500 000 | KEGW | Do 2030 r.  |\n|  I/6.2 | Kostrze | 1 000 000 |   | Do 2030 r.  |\n|  I/6.3 | Łęg | 500 000 |   | Do 2030 r.  |\n|  I/6.4 | Kolna | 500 000 |   | Do 2030 r.  |",
+          "page": 6,
+          "anchor": null
+        },
+        {
+          "text": "|  I/8.4 | Budowa kanału ulgi na Sudole Dominikańskim | 60 000 000 | PGW WP/KEGW | Do 2028 r.  |\n|  I/8.5 | Przebudowa koryta Drwiny Długiej i Drwinki | oszacowanie kosztów po wykonaniu 3 etapu Porozumienia | PGW WP/KEGW | Do 2035 r.  |",
+          "page": 6,
+          "anchor": null
+        },
+        {
+          "text": "|  I/8.6 | Przebudowa koryta Bibiczanki, Sudołu od Modlnicy, Baranówki, Sidzinki, Kostrzeckiego, Strugi Rusieckiej, Wilga | oszacowanie kosztów po wykonaniu koncepcji | PGW WP/ KEGW | Do 2035 r.  |",
+          "page": 7,
+          "anchor": null
+        }
+      ]
+    }
+  ],
+  "chapter_evidence_fingerprint": "32cc7b0c7299d8fe8f3a2068d1241ae7e8fbcb11839d6a5a0b685399e83fcf9f",
+  "structured_sha256": null,
+  "structured_schema_version": null,
+  "visual_context": []
+}

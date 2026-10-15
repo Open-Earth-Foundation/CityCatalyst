@@ -15,13 +15,14 @@ JUDGING = "You judge chapters."
 
 
 def usage_body(request: httpx.Request) -> httpx.Response:
-    """Mimic OpenRouter: the Responses and Chat Completions usage shapes, BYOK cost."""
+    """Mimic OpenRouter: Responses usage with your own key, Chat Completions usage without."""
     if request.url.path.endswith("/responses"):
         usage = {
             "input_tokens": 100,
             "output_tokens": 20,
             "output_tokens_details": {"reasoning_tokens": 5},
             "cost": 0,
+            "is_byok": True,
             "cost_details": {"upstream_inference_cost": 0.25},
         }
     else:
@@ -29,7 +30,8 @@ def usage_body(request: httpx.Request) -> httpx.Response:
             "prompt_tokens": 50,
             "completion_tokens": 10,
             "completion_tokens_details": {"reasoning_tokens": 2},
-            "cost": 0.01,
+            "cost": 0.1,
+            "is_byok": False,
             "cost_details": {"upstream_inference_cost": 0.1},
         }
     return httpx.Response(200, json={"id": "gen-1", "usage": usage})
@@ -55,7 +57,8 @@ async def test_model_calls_are_attributed_to_the_measured_stage_and_agent():
 
     assert stage.requests == 2
     assert (stage.input_tokens, stage.output_tokens, stage.reasoning_tokens) == (150, 30, 7)
-    assert round(stage.cost_usd, 2) == 0.36
+    # Without your own key, the provider's charge is already in usage.cost.
+    assert round(stage.cost_usd, 2) == 0.35
     assert stage.agents["cnb_chapter_drafting"].cost_usd == 0.25
     assert stage.agents["judge"].requests == 1
     assert stage.seconds >= 0
@@ -64,7 +67,7 @@ async def test_model_calls_are_attributed_to_the_measured_stage_and_agent():
 async def test_streamed_responses_report_usage_from_their_final_event():
     events = [
         {"type": "response.output_text.delta", "delta": "Hi"},
-        {"type": "response.completed", "response": {"usage": {"input_tokens": 40, "output_tokens": 8, "cost": 0, "cost_details": {"upstream_inference_cost": 0.5}}}},
+        {"type": "response.completed", "response": {"usage": {"input_tokens": 40, "output_tokens": 8, "cost": 0, "is_byok": True, "cost_details": {"upstream_inference_cost": 0.5}}}},
     ]
     sse = "".join(f"data: {json.dumps(e)}\n\n" for e in events) + "data: [DONE]\n\n"
 

@@ -5,8 +5,9 @@ The evaluator wraps each fixture stage in ``measure``. While a
 tasks receive is attributed to that stage and to the agent whose configured
 prompt sent it. Cost is what the
 response reports: OpenRouter's charge (``usage.cost``) plus, for
-bring-your-own-key requests, the provider's charge
-(``usage.cost_details.upstream_inference_cost``). Evaluation only; production
+bring-your-own-key requests (``usage.is_byok``), the provider's charge
+(``usage.cost_details.upstream_inference_cost``). Without your own key the
+charge already includes the provider's. Evaluation only; production
 code never imports this module.
 """
 
@@ -89,14 +90,15 @@ class UsageRecorder:
         except ValueError:
             body = {}
         agent = stage.agents.setdefault(self._agent(body), AgentUsage())
-        details = usage.get("cost_details") or {}
+        # Without your own key, usage.cost already includes the provider's charge.
+        upstream = (usage.get("cost_details") or {}).get("upstream_inference_cost") if usage.get("is_byok") else 0
         output_details = usage.get("output_tokens_details") or usage.get("completion_tokens_details") or {}
         for item in (stage, agent):
             item.requests += 1
             item.input_tokens += int(usage.get("input_tokens", usage.get("prompt_tokens")) or 0)
             item.output_tokens += int(usage.get("output_tokens", usage.get("completion_tokens")) or 0)
             item.reasoning_tokens += int(output_details.get("reasoning_tokens") or 0)
-            item.cost_usd += float(usage.get("cost") or 0) + float(details.get("upstream_inference_cost") or 0)
+            item.cost_usd += float(usage.get("cost") or 0) + float(upstream or 0)
             item.request_seconds += seconds
 
     def _agent(self, body: dict[str, Any]) -> str:

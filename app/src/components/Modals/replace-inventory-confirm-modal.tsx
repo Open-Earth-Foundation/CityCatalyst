@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  DialogBackdrop,
   DialogCloseTrigger,
   DialogContent,
   DialogFooter,
@@ -43,8 +42,15 @@ const ReplaceInventoryConfirmModal = ({
         }
       }}
     >
-      <DialogBackdrop />
-      <DialogContent minH="300px" minW="600px" marginTop="2%">
+      {/* Opened from the import wizard's fixed footer (z-index 9999), so it
+          has to sit above it to cover the footer with the backdrop. */}
+      <DialogContent
+        minH="300px"
+        minW="600px"
+        marginTop="2%"
+        backdropProps={{ zIndex: 10000 }}
+        positionerProps={{ zIndex: 10001 }}
+      >
         <DialogHeader
           display="flex"
           justifyContent="center"

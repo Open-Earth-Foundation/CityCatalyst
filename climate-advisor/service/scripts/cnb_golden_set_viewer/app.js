@@ -209,7 +209,8 @@
     const classes = [...plain, ...(c ? ["cl", `s-${c.status}`] : [])].join(" ");
     const tips = act.map((s) => s.tip).filter(Boolean).join("<hr style='border:0;border-top:1px solid #555;margin:6px 0'>");
     const go = c?.go || act.find((s) => s.go)?.go;
-    return `<mark class="${classes}"${tips ? ` data-tip="${esc(tips)}"` : ""}${go ? ` data-go="${esc(go)}"` : ""}>`;
+    const facts = [...new Set(act.flatMap((s) => s.fact || []))].join(" ");
+    return `<mark class="${classes}"${tips ? ` data-tip="${esc(tips)}"` : ""}${go ? ` data-go="${esc(go)}"` : ""}${facts ? ` data-fact="${esc(facts)}"` : ""}>`;
   }
   // Markdown with marks: wrap spans in private-use sentinels per line, render, then swap in tags.
   function highlightMd(text, spans) {
@@ -1210,17 +1211,21 @@
       add(e.anchor || (e.page ? `page-${e.page}` : ""), { quote: e.text, cls: "kept", go: `ex-${key}`, tip: `<b>Kept by extraction · ${esc(name)}</b>` });
     });
     const tally = { full: 0, part: 0, none: 0 };
+    const passages = {}; // fact id -> [{ n, status }] for the facts list
     for (const x of f.golden.extraction.facts)
-      for (const e of x.evidence) {
+      x.evidence.forEach((e, n) => {
         const u = unitForText(f, e.text);
-        if (!u) continue;
+        (passages[x.id] ||= []).push({ n, status: u ? null : "unlocated" });
+        if (!u) return;
         const kept = (spans[u.anchor] || []).filter((s) => s.cls === "kept");
         let covered = 0;
         for (const seg of segments(u.text, [...kept, { quote: e.text, cls: "gold" }]))
           if (seg.act.some((s) => s.cls === "kept") && seg.act.some((s) => s.cls === "gold")) covered += seg.text.length;
-        tally[covered >= e.text.length ? "full" : covered > 0 ? "part" : "none"]++;
-        add(u.anchor, { quote: e.text, cls: "gold", tip: `<b>Golden fact · ${esc(x.id)}</b>${esc(x.statement)}` });
-      }
+        const status = covered >= e.text.length ? "full" : covered > 0 ? "part" : "none";
+        tally[status]++;
+        passages[x.id][n].status = status;
+        add(u.anchor, { quote: e.text, cls: "gold", fact: [`fact-${x.id}`, `fact-${x.id}-${n}`], tip: `<b>Golden fact · ${esc(x.id)}</b>${esc(x.statement)}` });
+      });
     for (const [stage, list] of Object.entries(D.examples))
       for (const ex of list)
         if (ex.fixture === fid && ex.source_passage) {
@@ -1255,8 +1260,26 @@
       index = sections.map((s) => `<a href="${link(s.u)}" class="lvl${s.level}">${inline(s.title)}<span>${pips(s.flags)}</span></a>`).join("");
     }
     const total = tally.full + tally.part + tally.none;
-    return `<div class="layout-side">
-      <aside class="toc"><div class="eyebrow">${isPdf ? `${f.units.length} pages` : "Sections"}</div>${index}</aside>
+    const PASSAGE_PIPS = { full: ["both"], part: ["both", "gold"], none: ["gold"], unlocated: [] };
+    const factList = f.golden.extraction.facts.map((x) => {
+      const ps = passages[x.id];
+      const located = ps.filter((p) => p.status !== "unlocated");
+      const factPips = pips(new Set(ps.flatMap((p) => PASSAGE_PIPS[p.status])));
+      const head = located.length
+        ? `<a href="#/f/${fid}/source/${enc(`fact-${x.id}`)}" title="${esc(x.id)}">${esc(x.statement)}<span>${factPips}</span></a>`
+        : `<div class="unlocated" title="${esc(x.id)}">${esc(x.statement)}<div class="muted small">evidence not found in the source text</div></div>`;
+      const more = ps.length > 1
+        ? `<div class="passages">Passages ${ps.map((p) => p.status === "unlocated"
+            ? `<span class="muted" title="Not found in the source text">${p.n + 1}</span>`
+            : `<a href="#/f/${fid}/source/${enc(`fact-${x.id}-${p.n}`)}">${p.n + 1}</a>`).join("")}</div>`
+        : "";
+      return `<div class="tocfact">${head}${more}</div>`;
+    }).join("");
+    return `<div class="layout-side facts-side">
+      <aside class="toc">
+        <div class="eyebrow">${f.golden.extraction.facts.length} golden facts</div>${factList}
+        <div class="eyebrow" style="margin-top:18px">${isPdf ? `${f.units.length} pages` : "Sections"}</div>${index}
+      </aside>
       <div>
         <div class="srcbar">
           <div class="legend" style="margin:0">
@@ -1550,6 +1573,7 @@
   }
 
   // ---------- routing ----------
+  let lastPage = "";
   async function render() {
     if (!D) return; // the first run is still loading
     const parts = location.hash.replace(/^#\/?/, "").split("/").map(decodeURIComponent);
@@ -1577,14 +1601,22 @@
       `<span class="navsep" aria-hidden="true"></span>`,
       ...D.fixtures.map((f) => `<a href="#/f/${f.golden.fixture_id}/golden" class="doclink ${active === f.golden.fixture_id ? "active" : ""}">${esc(cityOf(f))}</a>`),
     ].join("");
+    // Keep the side list where it was when a link in it re-renders the same page.
+    const page = parts.slice(0, 3).join("/");
+    const tocScroll = page === lastPage ? document.querySelector(".toc")?.scrollTop || 0 : 0;
+    lastPage = page;
     app.innerHTML = html;
+    const toc = document.querySelector(".toc");
+    if (toc) toc.scrollTop = tocScroll;
     const target = parts[0] === "f" ? parts.slice(3).join("/") : "";
     if (target) {
-      const el = document.getElementById(target);
+      // A golden fact's passage can span several marks; flash them all.
+      const marks = [...document.querySelectorAll(`mark[data-fact~="${CSS.escape(target)}"]`)];
+      const el = document.getElementById(target) || marks[0];
       if (el) {
         el.closest("details")?.setAttribute("open", "");
         requestAnimationFrame(() => window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 72 - (document.querySelector(".srcbar")?.offsetHeight || 0), behavior: "instant" }));
-        el.classList.add("flash-target");
+        (marks.length ? marks : [el]).forEach((m) => m.classList.add("flash-target"));
       }
     } else window.scrollTo(0, 0);
   }

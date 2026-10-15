@@ -40,6 +40,12 @@
  *                 description: |
  *                   Optional overrides. For xlsx/csv, maps column header to internal key (e.g. {"Sector Name": "sector"}).
  *                   For PDF imports, per-row field overrides keyed by row index (e.g. {"0": {"sector": "Stationary Energy", "subsector": "Residential Buildings"}}) to correct extracted values.
+ *               replaceExisting:
+ *                 type: boolean
+ *                 description: |
+ *                   Required when the inventory already has data. All existing values (manual data, connected
+ *                   third-party data and notation keys) are replaced by the file. The replaced data is kept in
+ *                   the inventory's version history and can be restored from there.
  *     responses:
  *       202:
  *         description: Import started; poll GET import status until completion.
@@ -47,6 +53,8 @@
  *         description: Invalid request or mappings cannot be approved.
  *       404:
  *         description: Import file not found.
+ *       409:
+ *         description: The inventory already has data and replaceExisting was not set (error code inventory-has-data).
  *       401:
  *         description: Unauthorized.
  */
@@ -59,6 +67,9 @@ import {
   type ImportValidationResults,
 } from "@/backend/ImportResultBuilder";
 import InventoryImportService from "@/backend/InventoryImportService";
+import InventoryReplaceService, {
+  IMPORT_REPLACE_LABEL,
+} from "@/backend/InventoryReplaceService";
 import {
   syncGHGIImportedInventorySource,
   syncGHGIInventory,
@@ -76,6 +87,7 @@ import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 const approveImportSchema = z.object({
   importedFileId: z.string().uuid(),
   mappingOverrides: z.record(z.any()).optional(),
+  replaceExisting: z.boolean().optional(),
 });
 
 /** Quick response so request returns before ingress timeout; import runs in background. */
@@ -187,8 +199,9 @@ async function runApproveImportInBackground(args: {
   inventoryId: string;
   importedFileId: string;
   userId: string;
+  replaceExisting: boolean;
 }): Promise<void> {
-  const { cityId, inventoryId, importedFileId, userId } = args;
+  const { cityId, inventoryId, importedFileId, userId, replaceExisting } = args;
 
   const importedFile = await db.models.ImportedInventoryFile.findOne({
     where: {
@@ -227,10 +240,35 @@ async function runApproveImportInBackground(args: {
         ? "Imported from PDF"
         : "Imported from file");
 
-    const importSummary = await InventoryImportService.importECRFData(
-      inventoryId,
-      importResult,
-      { defaultActivityDataSource },
+    // Replace and import share one transaction: if the import fails, the
+    // existing data is still there.
+    const { importSummary, replacedData } = await db.sequelize!.transaction(
+      async (transaction) => {
+        const replacedData = replaceExisting
+          ? await InventoryReplaceService.replaceInventoryValues(
+              inventoryId,
+              userId,
+              transaction,
+            )
+          : null;
+        const didReplace = !!replacedData?.restoreVersionId;
+        const importSummary = await InventoryImportService.importECRFData(
+          inventoryId,
+          importResult,
+          {
+            defaultActivityDataSource,
+            authorId: userId,
+            versionLabel: didReplace ? IMPORT_REPLACE_LABEL : undefined,
+            transaction,
+          },
+        );
+        if (didReplace && importSummary.importedRows === 0) {
+          throw new Error(
+            "No rows could be imported, so the existing inventory data was kept.",
+          );
+        }
+        return { importSummary, replacedData };
+      },
     );
 
     await importedFile.update({
@@ -240,7 +278,7 @@ async function runApproveImportInBackground(args: {
       lastUpdated: new Date(),
       validationResults: {
         ...((importedFile.validationResults as ImportValidationResults) ?? {}),
-        importSummary,
+        importSummary: { ...importSummary, replacedData },
       },
     });
     await syncGHGIInventory(importedFile);
@@ -320,7 +358,7 @@ export const POST = apiHandler(
 
     // Parse request body
     const body = await req.json();
-    const { importedFileId, mappingOverrides } =
+    const { importedFileId, mappingOverrides, replaceExisting } =
       approveImportSchema.parse(body);
 
     // Find the imported file
@@ -346,14 +384,15 @@ export const POST = apiHandler(
       );
     }
 
-    // Check if this inventory already contains data (InventoryValue records)
-    // to prevent duplicate imports
+    // Existing data is only replaced when the user confirmed it
     const existingValueCount = await db.models.InventoryValue.count({
       where: { inventoryId },
     });
-    if (existingValueCount > 0) {
-      throw new createHttpError.Conflict(
-        "This inventory already contains data. Clear existing data before importing again.",
+    if (existingValueCount > 0 && !replaceExisting) {
+      throw createHttpError(
+        409,
+        "This inventory already contains data. Confirm to replace it.",
+        { code: "inventory-has-data", data: { existingValueCount } },
       );
     }
 
@@ -384,6 +423,7 @@ export const POST = apiHandler(
       inventoryId,
       importedFileId,
       userId: session.user.id,
+      replaceExisting: existingValueCount > 0 && !!replaceExisting,
     }).catch((err) =>
       logger.error({ err, importedFileId }, "Approve/import background failed"),
     );

@@ -1262,24 +1262,34 @@
       index = sections.map((s) => `<a href="${link(s.u)}" class="lvl${s.level}">${inline(s.title)}<span>${pips(s.flags)}</span></a>`).join("");
     }
     const total = tally.full + tally.part + tally.none;
-    const PASSAGE_PIPS = { full: ["both"], part: ["both", "gold"], none: ["gold"], unlocated: [] };
-    const factList = f.golden.extraction.facts.map((x) => {
+    const FACT_STATUS = { full: "Kept", part: "Partly kept", none: "Missed", unlocated: "Not in source text" };
+    const target = decodeURIComponent(location.hash.split("/")[4] || "");
+    const factCounts = { full: 0, part: 0, none: 0, unlocated: 0 };
+    const factList = f.golden.extraction.facts.map((x, i) => {
       const ps = passages[x.id];
-      const located = ps.filter((p) => p.status !== "unlocated");
-      const factPips = pips(new Set(ps.flatMap((p) => PASSAGE_PIPS[p.status])));
-      const head = located.length
-        ? `<a href="#/f/${fid}/source/${enc(`fact-${x.id}`)}" title="${esc(x.id)}">${esc(x.statement)}<span>${factPips}</span></a>`
-        : `<div class="unlocated" title="${esc(x.id)}">${esc(x.statement)}<div class="muted small">evidence not found in the source text</div></div>`;
+      const found = [...new Set(ps.map((p) => p.status).filter((s) => s !== "unlocated"))];
+      const status = !found.length ? "unlocated" : found.length === 1 ? found[0] : "part";
+      factCounts[status]++;
+      const active = new RegExp(`^fact-${x.id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(-\\d+)?$`).test(target);
+      const inner = `<span class="factnum">${i + 1}</span>
+        <span class="factbody"><span class="facthead"><span class="factid">${esc(x.id)}</span><span class="factstatus">${FACT_STATUS[status]}</span></span>
+        <span class="factstmt">${esc(x.statement)}</span></span>`;
+      const head = status === "unlocated"
+        ? `<div class="factlink">${inner}</div>`
+        : `<a class="factlink" href="#/f/${fid}/source/${enc(`fact-${x.id}`)}">${inner}</a>`;
       const more = ps.length > 1
-        ? `<div class="passages">Passages ${ps.map((p) => p.status === "unlocated"
-            ? `<span class="muted" title="Not found in the source text">${p.n + 1}</span>`
-            : `<a href="#/f/${fid}/source/${enc(`fact-${x.id}-${p.n}`)}">${p.n + 1}</a>`).join("")}</div>`
+        ? `<div class="passages"><span>${ps.length} passages</span>${ps.map((p) => p.status === "unlocated"
+            ? `<span class="pbtn s-unlocated" title="Not found in the source text">${p.n + 1}</span>`
+            : `<a class="pbtn s-${p.status}${target === `fact-${x.id}-${p.n}` ? " on" : ""}" href="#/f/${fid}/source/${enc(`fact-${x.id}-${p.n}`)}" title="Passage ${p.n + 1}: ${FACT_STATUS[p.status].toLowerCase()}">${p.n + 1}</a>`).join("")}</div>`
         : "";
-      return `<div class="tocfact">${head}${more}</div>`;
+      return `<div class="factcard s-${status}${active ? " active" : ""}">${head}${more}</div>`;
     }).join("");
+    const factSummary = ["full", "part", "none", "unlocated"].filter((s) => factCounts[s]).map((s) => `${factCounts[s]} ${FACT_STATUS[s].toLowerCase()}`).join(" · ");
     return `<div class="layout-side facts-side${["kept", "example"].filter((l) => !layerOn(l)).map((l) => ` hide-${l}`).join("")}">
       <aside class="toc">
-        <div class="eyebrow">${f.golden.extraction.facts.length} golden facts</div>${factList}
+        <div class="eyebrow">${f.golden.extraction.facts.length} golden facts</div>
+        <div class="factsummary">${factSummary}</div>
+        <div class="factlist">${factList}</div>
         <div class="eyebrow" style="margin-top:18px">${isPdf ? `${f.units.length} pages` : "Sections"}</div>${index}
       </aside>
       <div>

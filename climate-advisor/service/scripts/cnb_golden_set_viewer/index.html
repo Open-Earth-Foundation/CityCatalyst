@@ -278,11 +278,48 @@ details[open] > summary { margin-bottom: 10px; }
 .toc a.lvl4, .toc a.lvl5, .toc a.lvl6 { padding-left: 32px; font-size: 12.5px; }
 .toc a span { display: inline-flex; gap: 3px; flex: none; }
 @media (min-width: 901px) { .layout-side.facts-side { grid-template-columns: 280px minmax(0, 1fr); } }
-.tocfact { margin-bottom: 2px; }
-.tocfact > a, .tocfact > .unlocated { font-size: 13px; }
-.tocfact > .unlocated { padding: 4px 8px; color: var(--muted); line-height: 1.35; }
-.tocfact .passages { padding: 0 8px 4px; font-size: 12px; color: var(--muted); display: flex; gap: 4px; align-items: center; }
-.toc .tocfact .passages a { display: inline-block; padding: 0 6px; font-size: 12px; border: 1px solid var(--border); }
+.factsummary { font-size: 12px; color: var(--muted); margin: -2px 0 10px; }
+.factlist { display: flex; flex-direction: column; gap: 8px; }
+.factcard {
+  --tone: var(--neutral);
+  border: 1px solid var(--border); border-left: 3px solid var(--tone); border-radius: 8px;
+  background: var(--surface); transition: border-color .15s, box-shadow .15s;
+}
+.factcard.s-full { --tone: var(--good); }
+.factcard.s-part { --tone: var(--warning); }
+.factcard.s-none { --tone: var(--serious); }
+.factcard:hover { border-color: color-mix(in srgb, var(--tone) 55%, var(--border)); }
+.factcard.active { border-color: var(--accent); border-left-color: var(--tone); box-shadow: 0 0 0 2px var(--accent-soft); background: var(--surface-2); }
+.toc .factcard .factlink {
+  display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; align-items: start;
+  padding: 9px 10px; border-radius: 7px; color: var(--ink); font-size: 13px; line-height: 1.4;
+}
+.toc .factcard a.factlink:hover { background: none; }
+/* .toc a span would otherwise flatten these; restate each with higher specificity. */
+.toc .factcard .factnum {
+  width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--surface-2); color: var(--ink-2); font: 600 11px var(--sans);
+}
+.toc .factcard.active .factnum { background: var(--accent); color: #fff; }
+.toc .factcard .factbody { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1 1 auto; }
+.toc .factcard .facthead { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.toc .factcard .factid { display: block; flex: 1 1 auto; min-width: 0; font: 11px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toc .factcard .factstatus { display: inline; flex: none; font-size: 11px; font-weight: 600; color: var(--tone); }
+.toc .factcard .factstmt { display: block; }
+.toc .factcard.s-full .factstatus { color: var(--good-text); }
+.toc .factcard.s-unlocated .factstmt { color: var(--muted); }
+.factcard .passages { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 0 10px 9px 38px; font-size: 11.5px; color: var(--muted); }
+.factcard .passages > span:first-child { margin-right: 2px; }
+.toc .factcard .pbtn {
+  display: inline-grid; place-items: center; min-width: 22px; height: 20px; padding: 0 5px; border-radius: 5px;
+  border: 1px solid var(--border); border-bottom: 2px solid var(--neutral); font-size: 11.5px; color: var(--ink-2);
+}
+.factcard .pbtn.s-full { border-bottom-color: var(--good); }
+.factcard .pbtn.s-part { border-bottom-color: var(--warning); }
+.factcard .pbtn.s-none { border-bottom-color: var(--serious); }
+.factcard .pbtn.s-unlocated { opacity: .5; }
+.toc .factcard a.pbtn:hover { background: var(--surface-2); color: var(--ink); }
+.toc .factcard a.pbtn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 .hide-kept mark.kept { background: none; }
 .hide-example mark.example { box-shadow: none; }
 .hide-kept mark.kept:not(.example), .hide-example mark.example:not(.kept), .hide-kept.hide-example mark.kept.example { pointer-events: none; }

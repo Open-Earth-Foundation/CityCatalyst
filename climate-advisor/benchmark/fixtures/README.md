@@ -175,8 +175,8 @@ time to keep provider load bounded. `--run-id` names the run folder (default: UT
 existing run is never overwritten. There is no `--repeats` flag; run again to
 measure variance and compare the runs in the viewer. A full run makes one
 extraction, one draft per chapter, two or more validator passes per chapter, up
-to four edit plans with review per fixture, and four judge calls per fixture; CI
-runs one job per fixture.
+to four edit plans with review per fixture, and four judge calls per fixture. The
+live run is started by hand only; CI runs just the offline tests.
 
 Live execution requires `OPENROUTER_API_KEY` and the usual Climate Advisor
 settings. `llm_config.yaml` configures `models.cnb_golden_set_judge`
@@ -219,7 +219,6 @@ and **Compare runs** shows the run history, headline metrics over time, and for
 any two runs: what changed in models, prompts, sources and expectations, the
 stage results A → B, and every expectation whose verdict changed. Reports
 record the run ID, label, and git commit (`-dirty` for uncommitted changes).
-CI uploads the whole results folder as its artifact.
 
 Each run folder contains:
 

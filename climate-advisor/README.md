@@ -1550,9 +1550,9 @@ tests, and committed runs) lives in [`benchmark/`](benchmark/benchmark.md); pass
 The live evaluation requires `OPENROUTER_API_KEY` for the production models and
 `models.cnb_golden_set_judge` in `llm_config.yaml`. Review the four judge prompts in
 [`benchmark/prompts/`](benchmark/prompts/). Reports record the configured
-models and hashes of the loaded judge prompts. The CI evaluation runs one job per
-document on pull requests to `develop`; quality failures and unavailable/invalid
-evaluations both return a nonzero exit status. Mocked unit tests verify the
+models and hashes of the loaded judge prompts. The live evaluation only runs when
+started by hand (CI runs just the offline `benchmark/tests`); quality failures and
+unavailable/invalid evaluations both return a nonzero exit status. Mocked unit tests verify the
 evaluator plumbing and do not claim to validate the judge's semantic accuracy.
 
 See the [fixture README](benchmark/fixtures/README.md) for
